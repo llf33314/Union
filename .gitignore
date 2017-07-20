@@ -1,0 +1,45 @@
+# Created by .ignore support plugin (hsz.mobi)
+# Generated files
+bin/
+gen/
+out/
+
+# Gradle files
+.gradle/
+build/
+
+# Log Files
+*.log
+
+# Intellij
+*.iml
+/.idea/
+/logs/
+
+### Java template
+# Compiled class file
+*.class
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
+
+# Package Files #
+*.jar
+*.war
+*.ear
+*.zip
+*.tar.gz
+*.rar
+
+# virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
+hs_err_pid*
+### Eclipse template
+
+# JDT-specific (Eclipse Java Development Tools)
+.classpath
+
+/*/target/
+/logs/
+/*/LOG_HOME_IS_UNDEFINED/
+/*/logs/
+

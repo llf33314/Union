@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <!-- 内容输出格式 -->
+    <property name="PATTERN" value="%-12(%d{yyyy-MM-dd HH:mm:ss.SSS}) |-%-5level [%thread] %c [%L] -| %msg%n" />
+    <!-- 默认配置路径 -->
+    <property name="LOG_HOME" value="logs/"/>
+
+    <!--console输出-->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${PATTERN}</pattern>
+        </encoder>
+    </appender>
+    <!--文件输出-->
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <!-- 文件名称 -->
+            <fileNamePattern>${LOG_HOME}/union.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <!-- 文件最大保存历史数量 -->
+            <MaxHistory>100</MaxHistory>
+        </rollingPolicy>
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <pattern>${PATTERN}</pattern>
+        </layout>
+    </appender>
+
+    <!-- 开发环境 -->
+    <springProfile name="dev">
+        <logger name="com.gt.union" level="debug"/>
+        <root level="info">
+            <appender-ref ref="CONSOLE" />
+        </root>
+    </springProfile>
+
+    <!-- 测试环境 -->
+    <springProfile name="test">
+        <root level="info">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE" />
+        </root>
+    </springProfile>
+
+    <!--生产环境-->
+    <springProfile name="prod">
+        <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->
+        <property name="LOG_HOME" value="logs/prod/"/>
+        <!-- 日志输出级别 -->
+        <root level="info">
+            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="FILE"/>
+        </root>
+
+    </springProfile>
+</configuration>

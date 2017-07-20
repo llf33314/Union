@@ -1,0 +1,6 @@
+com\gt\union\config\DruidConfig.class
+com\gt\union\config\CxfConfig.class
+com\gt\union\config\SwaggerConfig.class
+com\gt\union\config\MybatisplusConfig.class
+com\gt\union\UnionApplication.class
+com\gt\union\config\RedisConfig.class
