@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gt.union.mapper.consume.UnionConsumeRecordMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.gt.union.entity.consume.UnionConsumeRecord">
+		<id column="id" property="id" />
+		<result column="del_status" property="delStatus" />
+		<result column="createtime" property="createtime" />
+		<result column="union_card_id" property="unionCardId" />
+		<result column="status" property="status" />
+		<result column="type" property="type" />
+		<result column="total_money" property="totalMoney" />
+		<result column="pay_money" property="payMoney" />
+		<result column="bus_id" property="busId" />
+		<result column="order_no" property="orderNo" />
+		<result column="order_type" property="orderType" />
+		<result column="union_id" property="unionId" />
+		<result column="wx_order_no" property="wxOrderNo" />
+		<result column="model" property="model" />
+		<result column="model_desc" property="modelDesc" />
+		<result column="mode_order_id" property="modeOrderId" />
+		<result column="is_give_integral" property="isGiveIntegral" />
+		<result column="consume_type" property="consumeType" />
+	</resultMap>
+
+</mapper>

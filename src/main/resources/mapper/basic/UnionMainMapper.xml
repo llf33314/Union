@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gt.union.mapper.basic.UnionMainMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.gt.union.entity.basic.UnionMain">
+		<id column="id" property="id" />
+		<result column="createtime" property="createtime" />
+		<result column="del_status" property="delStatus" />
+		<result column="union_name" property="unionName" />
+		<result column="bus_id" property="busId" />
+		<result column="union_img" property="unionImg" />
+		<result column="join_type" property="joinType" />
+		<result column="director_phone" property="directorPhone" />
+		<result column="union_illustration" property="unionIllustration" />
+		<result column="union_wx_group_img" property="unionWxGroupImg" />
+		<result column="union_sign" property="unionSign" />
+		<result column="union_total_member" property="unionTotalMember" />
+		<result column="union_member_num" property="unionMemberNum" />
+		<result column="union_level" property="unionLevel" />
+		<result column="union_verify_status" property="unionVerifyStatus" />
+		<result column="is_integral" property="isIntegral" />
+		<result column="old_member_charge" property="oldMemberCharge" />
+		<result column="black_card_charge" property="blackCardCharge" />
+		<result column="black_card_price" property="blackCardPrice" />
+		<result column="black_card_term" property="blackCardTerm" />
+		<result column="red_card_opend" property="redCardOpend" />
+		<result column="red_card_price" property="redCardPrice" />
+		<result column="red_card_term" property="redCardTerm" />
+		<result column="black_card_illustration" property="blackCardIllustration" />
+		<result column="red_card_illustration" property="redCardIllustration" />
+		<result column="union_validity" property="unionValidity" />
+	</resultMap>
+
+</mapper>
