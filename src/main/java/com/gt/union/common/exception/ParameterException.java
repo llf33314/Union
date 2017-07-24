@@ -1,4 +1,4 @@
-package com.gt.common.exception;
+package com.gt.union.common.exception;
 /**
  * 
  * 参数错误异常

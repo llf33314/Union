@@ -1,4 +1,4 @@
-package com.gt.entity.user;
+package com.gt.union.entity.common;
 
 import java.io.Serializable;
 import java.util.Date;

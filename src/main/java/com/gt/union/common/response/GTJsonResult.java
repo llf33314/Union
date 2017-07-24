@@ -1,9 +1,9 @@
-package com.gt.common.response;
+package com.gt.union.common.response;
 
-import com.gt.common.message.GTCommonMessageEnum;
-import com.gt.util.GsonUtil;
+import com.alibaba.fastjson.JSON;
+import com.gt.union.common.response.GTCommonMessageEnum;
+
 import java.io.Serializable;
-import org.codehaus.jackson.map.annotate.JsonSerialize;
 
 /**
  * 全局JSON格式
@@ -17,10 +17,8 @@ import org.codehaus.jackson.map.annotate.JsonSerialize;
  *      可定制类似 {@link GTCommonMessageEnum} , 命名方式 GT{XXX}MessageEnum 替换{XXX}
  * </pre>
  * @update 2017/05/26 添加注解@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
- * @author zhangmz
  * @create 2017/5/5
  */
-@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
 public class GTJsonResult<T> implements Serializable {
 
     /* true 成功 false 失败 */
@@ -28,7 +26,7 @@ public class GTJsonResult<T> implements Serializable {
     /*返回定义的代码 0 失败 1 成功*/
     private int code;
     /*返回定义的消息*/
-    private String msg;
+    private String message;
     /*返回的数据包*/
     private T data;
     /*重定向地址*/
@@ -72,15 +70,15 @@ public class GTJsonResult<T> implements Serializable {
     /**
      * 构造成功消息
      * @param code 编码
-     * @param msg  消息
+     * @param message  消息
      * @param data 数据包
      * @return GTJsonResult
      */
-    public static <T> GTJsonResult<T> instanceSuccessMsgCode(int code, String msg, T data) {
+    public static <T> GTJsonResult<T> instanceSuccessMsgCode(int code, String message, T data) {
         GTJsonResult<T> response = new GTJsonResult<>();
         response.setData(data);
         response.setCode(code);
-        response.setMsg(msg);
+        response.setMessage(message);
         return response;
     }
 
@@ -98,7 +96,7 @@ public class GTJsonResult<T> implements Serializable {
         response.setSuccess(success);
         response.setData(data);
         response.setCode(GTCommonMessageEnum.SUCCESS.getCode());
-        response.setMsg(GTCommonMessageEnum.SUCCESS.getMsg());
+        response.setMessage(GTCommonMessageEnum.SUCCESS.getMessage());
         response.setRedirectUrl(redirectUrl);
         return response;
     }
@@ -109,7 +107,7 @@ public class GTJsonResult<T> implements Serializable {
      * @return GTJsonResult
      */
     public static GTJsonResult instanceErrorMsg() {
-        return GTJsonResult.instanceErrorMsg(GTCommonMessageEnum.FAIL.getCode(), GTCommonMessageEnum.FAIL.getMsg());
+        return GTJsonResult.instanceErrorMsg(GTCommonMessageEnum.FAIL.getCode(), GTCommonMessageEnum.FAIL.getMessage());
     }
 
     /**
@@ -125,11 +123,11 @@ public class GTJsonResult<T> implements Serializable {
      * 构造错误消息
      *
      * @param code 代码
-     * @param msg 描述
+     * @param message 描述
      * @return GTJsonResult
      */
-    public static GTJsonResult instanceErrorMsg(int code, String msg) {
-        return GTJsonResult.instanceErrorMsg(code, msg, null);
+    public static GTJsonResult instanceErrorMsg(int code, String message) {
+        return GTJsonResult.instanceErrorMsg(code, message, null);
     }
 
     /**
@@ -139,10 +137,10 @@ public class GTJsonResult<T> implements Serializable {
      * @param redirectUrl 重定向地址
      * @return GTJsonResult
      */
-    public static GTJsonResult instanceErrorMsg(int code, String msg, String redirectUrl) {
+    public static GTJsonResult instanceErrorMsg(int code, String message, String redirectUrl) {
         GTJsonResult response = new GTJsonResult<>();
         response.setCode(code);
-        response.setMsg(msg);
+        response.setMessage(message);
         response.setRedirectUrl(redirectUrl);
         return response;
     }
@@ -155,17 +153,17 @@ public class GTJsonResult<T> implements Serializable {
      * @return Json
      */
     public static String convertToJson(GTJsonResult jsonResult) {
-        return GsonUtil.toJson(jsonResult);
+        return JSON.toJSONString(jsonResult);
     }
 
     public static void main(String[] args) {
-        GTJsonResult jsonResultErrorMsg = GTJsonResult.instanceErrorMsg(GTCommonMessageEnum.FAIL.getCode(), GTCommonMessageEnum.FAIL.getMsg());
+        GTJsonResult jsonResultErrorMsg = GTJsonResult.instanceErrorMsg(GTCommonMessageEnum.FAIL.getCode(), GTCommonMessageEnum.FAIL.getMessage());
         System.out.println("jsonResultErrorMsg is " + GTJsonResult.convertToJson(jsonResultErrorMsg));
 
         GTJsonResult<String> jsonResultSuccessMsg = GTJsonResult.instanceSuccessMsg("{aaa:bbb}");
 
 
-        System.out.println("jsonResultSuccessMsg is " + GsonUtil.toJson(jsonResultSuccessMsg));
+        System.out.println("jsonResultSuccessMsg is " + JSON.toJSONString(jsonResultSuccessMsg));
     }
 
     public int getCode() {
@@ -176,12 +174,12 @@ public class GTJsonResult<T> implements Serializable {
         this.code = code;
     }
 
-    public String getMsg() {
-        return msg;
+    public String getMessage() {
+        return message;
     }
 
-    public void setMsg(String msg) {
-        this.msg = msg;
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     public T getData() {
@@ -213,7 +211,7 @@ public class GTJsonResult<T> implements Serializable {
         return "GTJsonResult{" +
                 "success=" + success +
                 ", code=" + code +
-                ", msg='" + msg + '\'' +
+                ", message='" + message + '\'' +
                 ", data=" + data +
                 ", redirectUrl='" + redirectUrl + '\'' +
                 '}';

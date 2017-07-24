@@ -25,6 +25,7 @@
         <pagehelper.version>5.0.3</pagehelper.version>
         <fastjson.version>1.2.34</fastjson.version>
         <cxf.version>3.1.11</cxf.version>
+        <httpclient.version>4.5.3</httpclient.version>
     </properties>
 
     <dependencies>
@@ -146,6 +147,13 @@
             <artifactId>cxf-spring-boot-starter-jaxrs</artifactId>
             <version>${cxf.version}</version>
         </dependency>
+        <!-- httpclient -->
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>${httpclient.version}</version>
+        </dependency>
+
     </dependencies>
 
     <build>

@@ -1,11 +1,11 @@
-package com.gt.common.exception;
+package com.gt.union.common.exception;
 
-import com.gt.util.CommonUtil;
 
+import com.gt.union.common.util.CommonUtil;
 
 /**
  * 
- * 
+ * 基础异常类
  * @author 李逢喜
  * @version 创建时间：2015年9月7日 下午7:14:20
  * 

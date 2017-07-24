@@ -1,4 +1,4 @@
-package com.gt.util;
+package com.gt.union.common.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

@@ -1,11 +1,7 @@
-package com.gt.util;
+package com.gt.union.common.util;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URLDecoder;
-
-import net.sf.json.JSONObject;
-
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.HttpStatus;
@@ -16,6 +12,10 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.log4j.Logger;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URLDecoder;
 
 public class HttpClienUtil {
 	private static Logger logger = Logger.getLogger(HttpClienUtil.class); // 日志记录
@@ -74,7 +74,7 @@ public class HttpClienUtil {
 					}
 
 					/** 把json字符串转换成json对象 **/
-					jsonResult = JSONObject.fromObject(str);
+					jsonResult = JSON.parseObject(str);
 				} catch (Exception e) {
 					logger.error("post请求提交失败:" + url, e);
 					throw new Exception();
@@ -123,7 +123,7 @@ public class HttpClienUtil {
 					httpGet.abort();
 				}
 				/** 把json字符串转换成json对象 **/
-				jsonResult = JSONObject.fromObject(str);
+				jsonResult = JSON.parseObject(str);
 				url = URLDecoder.decode(url, "UTF-8");
 			} else {
 				logger.error("get请求提交失败:" + url);

@@ -1,15 +1,11 @@
-package com.gt.util;
+package com.gt.union.common.util;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import net.sf.json.JSONObject;
+import com.alibaba.fastjson.JSON;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
+
+import java.util.*;
 
 /**
  * 
@@ -46,7 +42,7 @@ public class JedisUtil {
 		Map<String, Integer > params=new HashMap<String, Integer>();
 		params.put("total",36002 );
 		params.put("daysCount",211 );
-		set("busCount", JSONObject.fromObject(params).toString());
+		set("busCount", JSON.toJSONString(params));
 	}
 
 	/**
@@ -66,7 +62,6 @@ public class JedisUtil {
 	 * 
 	 * @param key
 	 * @param value
-	 * @param time
 	 */
 	public static void set(String key, String value) {
 
@@ -92,11 +87,8 @@ public class JedisUtil {
 	 * 
 	 * @param key
 	 * @param value
-	 * @param nxxx
-	 *            NX XX
-	 * @param expx
+	 * @param seconds
 	 *            时间单位 ex:秒 px:毫秒
-	 * @param time
 	 */
 	public static void set(String key, String value, int seconds) {
 		JedisPool pool = null;
@@ -274,7 +266,6 @@ public class JedisUtil {
 	 * 存储成list，对应的key中添加对应的键值对值
 	 * 
 	 * @param key
-	 * @param field
 	 * @param value
 	 */
 	public static void rPush(String key, String value) {
@@ -300,7 +291,6 @@ public class JedisUtil {
 	 * 存储成list，对应的key中添加对应的键值对值
 	 * 
 	 * @param key
-	 * @param field
 	 * @param value
 	 */
 	public static void lPush(String key, String value) {
@@ -326,7 +316,8 @@ public class JedisUtil {
 	 * 查看队列数据
 	 * 
 	 * @param key
-	 * @param field
+	 * @param start
+	 * @param end
 	 * @return
 	 */
 	public static List lpoplist(String key, long start, long end) {
@@ -540,7 +531,7 @@ public class JedisUtil {
 	 * 通过resdis中的key和map中的一个或者多个key获取map中对应的值
 	 * 
 	 * @param key
-	 * @param keys
+	 * @param fields
 	 * @return
 	 */
 	public static List<String> hmgetByKeys(String key, String... fields) {
@@ -679,7 +670,7 @@ public class JedisUtil {
 	 * 存储成set 对象，对应的key中添加对应的键值对值
 	 * 
 	 * @param key
-	 * @param field
+	 * @param score
 	 * @param value
 	 */
 	public static void zAdd(String key, double score, String value) {
@@ -729,8 +720,7 @@ public class JedisUtil {
 	 * 给sort set 排序
 	 * 
 	 * @param key
-	 * @param start
-	 * @param end
+	 * @param value
 	 */
 	public static Double zScore(String key, String value) {
 		JedisPool pool = null;
@@ -750,5 +740,6 @@ public class JedisUtil {
 		}
 		return score;
 	}
+
 
 }

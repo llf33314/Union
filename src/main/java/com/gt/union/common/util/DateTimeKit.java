@@ -1,20 +1,13 @@
-package com.gt.util;
+package com.gt.union.common.util;
+
+import com.gt.union.common.exception.ParameterException;
+import org.springframework.util.StringUtils;
 
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashMap;
-import java.util.Locale;
-import java.util.Map;
-
-import org.apache.commons.lang.time.DateUtils;
-import org.springframework.util.StringUtils;
-
-import com.gt.common.exception.ParameterException;
+import java.util.*;
 
 /**
  * 日期操作工具类
@@ -716,36 +709,36 @@ public class DateTimeKit {
 		return result;
 	}
 
-	public int getDaysBetween(java.util.Calendar d1, java.util.Calendar d2) {
+	public int getDaysBetween(Calendar d1, Calendar d2) {
 		if (d1.after(d2)) { // swap dates so that d1 is start and d2 is end
-			java.util.Calendar swap = d1;
+			Calendar swap = d1;
 			d1 = d2;
 			d2 = swap;
 		}
-		int days = d2.get(java.util.Calendar.DAY_OF_YEAR)
-				- d1.get(java.util.Calendar.DAY_OF_YEAR);
-		int y2 = d2.get(java.util.Calendar.YEAR);
-		if (d1.get(java.util.Calendar.YEAR) != y2) {
-			d1 = (java.util.Calendar) d1.clone();
+		int days = d2.get(Calendar.DAY_OF_YEAR)
+				- d1.get(Calendar.DAY_OF_YEAR);
+		int y2 = d2.get(Calendar.YEAR);
+		if (d1.get(Calendar.YEAR) != y2) {
+			d1 = (Calendar) d1.clone();
 			do {
-				days += d1.getActualMaximum(java.util.Calendar.DAY_OF_YEAR);
-				d1.add(java.util.Calendar.YEAR, 1);
-			} while (d1.get(java.util.Calendar.YEAR) != y2);
+				days += d1.getActualMaximum(Calendar.DAY_OF_YEAR);
+				d1.add(Calendar.YEAR, 1);
+			} while (d1.get(Calendar.YEAR) != y2);
 		}
 		return days;
 	}
 
 	/**
 	 * 计算2个日期之间的相隔天数
-	 * 
+	 *
 	 * @param d1
 	 * @param d2
 	 * @return
 	 */
-	public int getWorkingDay(java.util.Calendar d1, java.util.Calendar d2) {
+	public int getWorkingDay(Calendar d1, Calendar d2) {
 		int result = -1;
 		if (d1.after(d2)) { // swap dates so that d1 is start and d2 is end
-			java.util.Calendar swap = d1;
+			Calendar swap = d1;
 			d1 = d2;
 			d2 = swap;
 		}
@@ -789,7 +782,7 @@ public class DateTimeKit {
 
 	/**
 	 * 获得日期的下一个星期一的日期
-	 * 
+	 *
 	 * @param date
 	 * @return
 	 */
@@ -804,7 +797,7 @@ public class DateTimeKit {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param d1
 	 * @param d2
 	 * @return
@@ -816,17 +809,17 @@ public class DateTimeKit {
 
 	/**
 	 * 获取当前日期并转化成Oracle的日期格式
-	 * 
+	 *
 	 * @return
 	 */
 	public static java.sql.Timestamp getDateDb() {
-		return new java.sql.Timestamp(new java.util.Date().getTime());
+		return new java.sql.Timestamp(new Date().getTime());
 	}
 
 	/**
 	 * 将参数日期转化成Oracle的日期格式
 	 * 
-	 * @param date
+	 * @param dateStr
 	 * @return
 	 */
 	public static java.sql.Timestamp parseDateDb(String dateStr) {
@@ -846,7 +839,8 @@ public class DateTimeKit {
 	/**
 	 * 将参数日期转化成Oracle的日期格式
 	 * 
-	 * @param date
+	 * @param dateStr
+	 * @param format
 	 * @return
 	 */
 	public static java.sql.Timestamp parseDateDb(String dateStr, String format) {
@@ -1018,7 +1012,6 @@ public class DateTimeKit {
 	     * 计算两个时间之间相差的多少时间
 	     * @param sDate
 	     * @param eDate
-	     * @param time 1000得到秒 60000得到分 3600000 得到小时
 	     * @return
 	     */
 	    public static long secondBetween(Date sDate,Date eDate){
@@ -1040,7 +1033,6 @@ public class DateTimeKit {
 	    
 	    /**
 		 * 获取本月第一天
-		 * @param format
 		 * @return
 		 */
 		public static String getMonFirstDay(){
@@ -1249,8 +1241,7 @@ public class DateTimeKit {
 	    /**
 	     * 返回指定日期的上个月的第一天
 	     *
-	     * @param year
-	     * @param month
+	     * @param date
 	     * @return
 	     */
 	    public static String getFirstDayOfLastMonth(Date date) {
@@ -1267,8 +1258,7 @@ public class DateTimeKit {
 	    /**
 	     * 返回指定日期的上个月的最后一天
 	     *
-	     * @param year
-	     * @param month
+	     * @param date
 	     * @return
 	     */
 	    public static String getLastDayOfLastMonth(Date date) {
@@ -1363,7 +1353,7 @@ public class DateTimeKit {
 	        currentTime.setHours(0);
 	        currentTime.setMinutes(0);
 	        currentTime.setSeconds(0);
-			Date backupTime=DateUtils.addDays(currentTime, -1);
+			//Date backupTime= DateUtils.addDays(currentTime, -1);
 	        System.out.println(DateTimeKit.format(currentTime, yyyyMMddHHmmssms));
 	        return currentTime.getTime()/1000;  
 	    }  
@@ -1513,7 +1503,7 @@ public class DateTimeKit {
 	 /**
      * 日期转化时间轴
      * @param date_str 日期
-     * @param format类型
+     * @param format 类型
      * @return
      */
     public static long date2TimeStamp(String date_str,String format){  
@@ -1662,8 +1652,7 @@ public class DateTimeKit {
 	 * @param source
 	 * @param traget
 	 * @param type "YYYY-MM-DD" "yyyyMMdd HH:mm:ss"  类型可自定义
-	 * @param 传递时间的对比格式
-	 * @return 
+	 * @return
 	 *  0 ：source和traget时间相同    
 	 *  1 ：source比traget时间大  
 	 *  -1：source比traget时间小
