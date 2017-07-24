@@ -55,3 +55,61 @@ mybatis:
   type-aliases-package: com.gt.union.entity
 
 
+######################## 全局配置 ########################
+
+
+#图片存放路径
+res:
+  image:
+    path: G:\git_workplace\MedicalSys\src\main\resources\static\upload
+#访问资源URL
+resource:
+  url:
+    prefix: http://192.168.3.41:9998/upload/
+socket:
+  url: http://192.168.2.12:8080:8881
+#企业短信通-密码
+sms:
+  pwd: sd18923646688
+  content:
+   url: http://192.168.2.12:8080/common/%s/%s/79B4DE7C/orderconfirm.do
+
+#mq config
+mq:
+  uri: 192.168.2.12:8080
+  user: guest
+  password: yf26609632
+
+#队列转换器
+exchange:
+  gt:
+    exchange: message
+#队列名称
+queueName:
+  gt:
+    queueName: message
+
+#图片资源ftp ip
+static:
+  source:
+    ftp:
+      ip: 120.25.154.127
+      port: 21
+      user: gt123456
+      password: gt1234561
+#图片资源ftp用户名
+
+#redis:
+#  ip: 113.106.199.74
+#  port: 779
+redis:
+  ip: 127.0.0.1
+  port: 6379
+  pwd: "@gt123456"
+
+
+#数据请求地址
+wxmp:
+   url: http://hz1.yifriend.net
+   #url: http://deeptel.com.cn/
+  #url: http://192.168.3.41:83
