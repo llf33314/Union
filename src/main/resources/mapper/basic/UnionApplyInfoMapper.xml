@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gt.union.mapper.basic.UnionApplyInfoMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.gt.union.entity.basic.UnionApplyInfo">
+		<id column="id" property="id" />
+		<result column="union_apply_id" property="unionApplyId" />
+		<result column="apply_reason" property="applyReason" />
+		<result column="enterprise_name" property="enterpriseName" />
+		<result column="director_name" property="directorName" />
+		<result column="director_phone" property="directorPhone" />
+		<result column="director_email" property="directorEmail" />
+		<result column="bus_address" property="busAddress" />
+		<result column="notify_phone" property="notifyPhone" />
+		<result column="address_longitude" property="addressLongitude" />
+		<result column="address_latitude" property="addressLatitude" />
+		<result column="address_provience_id" property="addressProvienceId" />
+		<result column="address_city_id" property="addressCityId" />
+		<result column="address_district_id" property="addressDistrictId" />
+		<result column="integral_proportion" property="integralProportion" />
+		<result column="is_member_out_advice" property="isMemberOutAdvice" />
+		<result column="sell_divide_proportion" property="sellDivideProportion" />
+	</resultMap>
+
+</mapper>

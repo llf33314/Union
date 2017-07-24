@@ -14,7 +14,7 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
 @SpringBootApplication
 @ServletComponentScan
 @EnableAutoConfiguration
-@MapperScan("com.gt.union.dao")
+@MapperScan("com.gt.union.mapper")
 public class UnionApplication extends SpringBootServletInitializer {
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder springApplicationBuilder) {

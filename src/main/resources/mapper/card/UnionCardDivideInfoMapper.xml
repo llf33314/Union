@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gt.union.mapper.card.UnionCardDivideInfoMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.gt.union.entity.card.UnionCardDivideInfo">
+		<id column="id" property="id" />
+		<result column="price" property="price" />
+		<result column="del_status" property="delStatus" />
+		<result column="union_id" property="unionId" />
+		<result column="bus_id" property="busId" />
+		<result column="member_id" property="memberId" />
+	</resultMap>
+
+</mapper>
