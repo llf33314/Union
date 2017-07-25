@@ -1,12 +1,8 @@
-/**
- * 
- */
 package com.gt.union.common.filter;
 
 import com.alibaba.fastjson.JSONObject;
 import com.gt.union.common.annotation.SysLogAnnotation;
 import com.gt.union.common.util.*;
-import com.gt.union.dao.DaoUtil;
 import com.gt.union.entity.common.BusUser;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;

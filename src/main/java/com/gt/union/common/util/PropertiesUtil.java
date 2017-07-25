@@ -3,11 +3,6 @@ package com.gt.union.common.util;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.Properties;
-
 
 /**
  * Properties 读取工具
@@ -45,6 +40,8 @@ public class PropertiesUtil {
 	private static String redisNamePrefix;
 
 	private static String wxmpUrl;
+
+	private static String articleUrl;
 
 
 	/**
@@ -159,6 +156,14 @@ public class PropertiesUtil {
 		return wxmpUrl;
 	}
 
+	/**
+	 * 获取本项目访问路径
+	 * @return
+	 */
+	public static String getArticleUrl(){
+		return articleUrl;
+	}
+
 	@Value("${resource.url.prefix}")
 	public void setResourceUrl(String resourceUrl) {
 		this.resourceUrl = resourceUrl;
@@ -230,5 +235,9 @@ public class PropertiesUtil {
 		PropertiesUtil.wxmpUrl = wxmpUrl;
 	}
 
+	@Value("${article.url.prefix}")
+	public void setArticleUrl(String articleUrl){
+		PropertiesUtil.articleUrl = articleUrl;
+	}
 
 }

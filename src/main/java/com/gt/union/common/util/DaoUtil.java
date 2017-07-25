@@ -1,8 +1,12 @@
 package com.gt.union.common.util;
 
+import com.alibaba.druid.pool.DruidDataSource;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.*;
+import org.springframework.stereotype.Component;
 
+import javax.sql.DataSource;
 import java.io.Serializable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -10,8 +14,17 @@ import java.sql.*;
 import java.util.*;
 import java.util.Date;
 
-
+@Component
 public class DaoUtil extends JdbcTemplate {
+
+	@Autowired
+	private DruidDataSource dataSource;
+
+	@Override
+	public DataSource getDataSource() {
+		return dataSource;
+	}
+
 
 
 	/**
