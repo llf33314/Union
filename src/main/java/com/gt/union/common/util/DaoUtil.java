@@ -1,4 +1,4 @@
-package com.gt.union.dao;
+package com.gt.union.common.util;
 
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.*;
