@@ -1,9 +1,8 @@
-package com.gt.util;
-
-import java.security.Key;
-import java.security.Security;
+package com.gt.union.common.util;
 
 import javax.crypto.Cipher;
+import java.security.Key;
+import java.security.Security;
 
 /**
  * 密匙工具类(包含des加密与md5加密)
@@ -200,7 +199,7 @@ public class KeysUtil {
      *            构成该字符串的字节数组 
  
      * @return 生成的密钥 
-     * @throws java.lang.Exception 
+     * @throws Exception
      */  
     private Key getKey(byte[] arrBTmp) throws Exception {  
         // 创建一个空的8位字节数组（默认值为0）  

@@ -16,5 +16,5 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UnionConsumeServiceRecordServiceImpl extends ServiceImpl<UnionConsumeServiceRecordMapper, UnionConsumeServiceRecord> implements IUnionConsumeServiceRecordService {
-	
+
 }

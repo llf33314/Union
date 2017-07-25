@@ -14,5 +14,5 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/unionApplyInfo")
 public class UnionApplyInfoController {
-	
+
 }

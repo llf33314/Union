@@ -1,16 +1,12 @@
-package com.gt.util;
+package com.gt.union.common.util;
 
+
+import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-
-import javax.servlet.http.HttpServletRequest;
-
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.jsoup.select.Elements;
 
 /**
  * IP操作
@@ -31,35 +27,7 @@ public class IPKit {
 		String ip = request.getHeader("X-Real-IP");
 	    return ip;
 	}
-	public static String IpByAddress(String ip) {
-		Document doc = null;
-		String regex = "((?:(?:25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d)))\\.){3}(?:25[0-5]|2[0-4]\\d|((1\\d{2})|([1-9]?\\d))))";
-		if (!ip.matches(regex)) {
-			return "无效的IP";
-		}
-		try {
-			doc = Jsoup.connect("http://wap.ip138.com/ip_search138.asp?ip=" + ip)
-					.get();
-		} catch (IOException e) {
-			return e.getMessage();
-		}
-		if (doc != null) {
-			Elements eles = doc.select("b");
-			if (!eles.isEmpty()) {
-				String address = eles.html();
-				if (!address.isEmpty()) {
-					return address.substring(address.indexOf("：") + 1);
-				} else {
-					return "查询错误";
-				}
-			} else {
-				return "无效的域名";
-			}
-		}
-		return "连接超时,请手动刷新";
-	}
-	
-	
+
 	 public static String getIpAddr(HttpServletRequest request) {
 		    String ip = request.getHeader("x-forwarded-for");
 		    if(ip == null || ip.length() == 0 ||"unknown".equalsIgnoreCase(ip)) {
