@@ -40,8 +40,9 @@ spring:
     useGlobalDataSourceStat: false
   # redis配置
   redis:
-      host: 192.168.3.10
+      host: 14.29.79.226
       port: 6379
+      password: gt@123456
       timeout: 0
       pool:
         max-active: 8
@@ -51,7 +52,7 @@ spring:
 
 # mybatis设置
 mybatis:
-  mapper-locations: classpath:mapper/*.Mapper.xml
+  mapper-locations: classpath:mapper/*/*Mapper.xml
   type-aliases-package: com.gt.union.entity
 
 
@@ -100,12 +101,7 @@ static:
 #图片资源ftp用户名
 
 #redis:
-#  ip: 113.106.199.74
-#  port: 779
-redis:
-  ip: 127.0.0.1
-  port: 6379
-  pwd: "@gt123456"
+redisNamePrefix: "Union:"
 
 
 #数据请求地址
