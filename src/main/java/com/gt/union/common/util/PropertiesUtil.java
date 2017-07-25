@@ -204,17 +204,17 @@ public class PropertiesUtil {
 		this.staticSourceFtpUser = staticSourceFtpUser;
 	}
 
-	@Value("${redis.ip}")
+	@Value("${spring.redis.host}")
 	public void setRedisIp(String redisIp) {
 		this.redisIp = redisIp;
 	}
 
-	@Value("${redis.port}")
+	@Value("${spring.redis.port}")
 	public void setRedisPort(Integer redisPort) {
 		this.redisPort = redisPort;
 	}
 
-	@Value("${redis.pwd}")
+	@Value("${spring.redis.password}")
 	public void setRedisPort(String redisPwd) {
 		this.redisPwd = redisPwd;
 	}
