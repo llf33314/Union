@@ -1,23 +1,64 @@
 package com.gt.union.common.filter;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.PropertiesUtil;
+import com.gt.union.common.util.SessionUtils;
+import com.gt.union.entity.common.BusUser;
+import com.gt.union.entity.common.Member;
+
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
+ * 访问过滤器
  * Created by Administrator on 2017/7/25 0025.
  */
 @WebFilter(filterName = "unionAuthFilter", urlPatterns = "/*")
 public class LoginFilter implements Filter {
 
 
+	//不需要登录就可访问的url
+	public static final Map<String, String> urls=new HashMap<String, String>();
+
+
+
+	//可通过的文件类型
+	public static final List<String> suffixs=new ArrayList<String>();
+
+	static {
+		//过滤路径
+		urls.put("/unionBrokerage/toLogin.do", "/unionBrokerage/toLogin.do");
+		urls.put("/unionBrokerage/login.do", "/unionBrokerage/login.do");
+
+		//文件类型
+		suffixs.add("js");
+		suffixs.add("css");
+		suffixs.add("gif");
+		suffixs.add("png");
+		suffixs.add("jpg");
+		suffixs.add("ico");
+		suffixs.add("html");
+		suffixs.add("dwr");
+		suffixs.add("mp3");
+		suffixs.add("txt");
+	}
+
 	@Override
-	public void init(javax.servlet.FilterConfig filterConfig) throws ServletException {
+	public void init(FilterConfig filterConfig) throws ServletException {
 		//项目启动时只执行一次
 	}
 
 	@Override
-	public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
 		// 可通过servletRequest.getParameter获取相关参数进行判断，
 		// 如果通过则执行filterChain.doFilter(servletReqeust, servletResponse)，
 		// 否则可通过servletResponse直接返回相关提示信息或不返回
@@ -27,10 +68,91 @@ public class LoginFilter implements Filter {
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "x-requested-with");*/
-		filterChain.doFilter(servletRequest, servletResponse);//默认不处理
+		HttpServletRequest req = (HttpServletRequest) request;
+		HttpServletResponse res = (HttpServletResponse) response;
+		BusUser busUser = SessionUtils.getLoginUser(req);
+		String url = ((HttpServletRequest) request).getRequestURI();//获取请求路径
+		if(url.equals("/")){
+			res.sendRedirect("http://www."+ PropertiesUtil.getDomain()+"");
+		}else if(url.indexOf("79B4DE7C")>-1){//移动端
+			Member member= SessionUtils.getLoginMember(req);
+			if(CommonUtil.isNotEmpty(member) && member.isPass()){//商家已过期，清空会员登录session
+				req.getSession().removeAttribute("member");
+				String upGradeUrl=PropertiesUtil.getWxmpUrl() + "/jsp/merchants/user/warning.jsp";
+				res.sendRedirect(upGradeUrl);
+			}else{
+				chain.doFilter(request, response);
+			}
+		}else if(passSuffixs(url)||passUrl(url)){
+			chain.doFilter(request, response);
+		}else if (busUser == null) {// 判断到商家没有登录,就跳转到登陆页面
+			response.setCharacterEncoding("UTF-8");
+			String script = "<script type='text/javascript'>"
+					+ "top.location.href="+PropertiesUtil.getWxmpUrl()+"'/user/tologin.do';"
+					+ "</script>";
+			if(isAjax(req)){
+				Map map = new HashMap<>();
+				map.put("timeout", "连接超时，请重新登录！");
+				response.getWriter().write(JSON.toJSONString(map));
+			}else{
+				response.getWriter().write(script);
+			}
+		}else if(busUser!=null&&busUser.getPid()==0&&busUser.getLogin_source()!=1){//会员过期,跳转到充值页面
+			if(busUser.getDays()<0){
+				String upGradeUrl=PropertiesUtil.getWxmpUrl() + "/jsp/merchants/user/pastPage.jsp";
+				res.sendRedirect(upGradeUrl);
+			}else{
+				chain.doFilter(request, response);
+			}
+		}else if(busUser != null && busUser.getPid() != 0) {//主账号过期了
+
+			if (busUser.getDays() < 0) {
+				if (url.equals("/trading/upGrade.do")) {
+					chain.doFilter(request, response);
+				} else {
+					String upGradeUrl = PropertiesUtil.getWxmpUrl() + "/jsp/merchants/user/pastPage.jsp";
+					res.sendRedirect(upGradeUrl);
+				}
+			} else {
+				chain.doFilter(request, response);
+			}
+		}else {
+			// 已经登陆,继续此次请求
+			chain.doFilter(request, response);
+		}
 	}
 
 	@Override
 	public void destroy() {
+	}
+
+	//判断是否是可通过的url
+	private boolean passUrl(String url){
+		return urls.containsKey(url);
+	}
+
+	/**
+	 * 判断文件类型结尾
+	 * @param url
+	 * @return
+	 */
+	private boolean passSuffixs(String url){
+		boolean reuslt=false;
+		for (int i = 0; i < suffixs.size(); i++) {
+			if(url.endsWith(suffixs.get(i))){
+				reuslt=true;
+				break;
+			}
+		}
+		return reuslt;
+	}
+
+	/**
+	 * 判断ajax请求
+	 * @param request
+	 * @return
+	 */
+	boolean isAjax(HttpServletRequest request){
+		return  (request.getHeader("X-Requested-With") != null  && "XMLHttpRequest".equals( request.getHeader("X-Requested-With").toString())   ) ;
 	}
 }

@@ -43,6 +43,8 @@ public class PropertiesUtil {
 
 	private static String articleUrl;
 
+	private static String domain;
+
 
 	/**
 	 * 获取资源访问地址
@@ -164,6 +166,14 @@ public class PropertiesUtil {
 		return articleUrl;
 	}
 
+	/**
+	 * 获取多粉域名
+	 * @return
+	 */
+	public static String getDomain(){
+		return domain;
+	}
+
 	@Value("${resource.url.prefix}")
 	public void setResourceUrl(String resourceUrl) {
 		this.resourceUrl = resourceUrl;
@@ -229,7 +239,6 @@ public class PropertiesUtil {
 		this.redisNamePrefix = redisNamePrefix;
 	}
 
-
 	@Value("${wxmp.url}")
 	public void setWxmpUrl(String wxmpUrl) {
 		PropertiesUtil.wxmpUrl = wxmpUrl;
@@ -240,4 +249,8 @@ public class PropertiesUtil {
 		PropertiesUtil.articleUrl = articleUrl;
 	}
 
+	@Value("${domain}")
+	public void setDomain(String domain){
+		PropertiesUtil.domain = domain;
+	}
 }
