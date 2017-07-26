@@ -85,8 +85,8 @@ public class DruidConfig {
     public JdkRegexpMethodPointcut druidStatPointcut() {
         JdkRegexpMethodPointcut druidStatPointcut = new JdkRegexpMethodPointcut();
         String servicePatterns = "com.gt.union.service.*";
-        String daoPatterns = "com.gt.union.dao.*";
-        druidStatPointcut.setPatterns(servicePatterns, daoPatterns);
+        String mapperPatterns = "com.gt.union.mapeer.*";
+        druidStatPointcut.setPatterns(servicePatterns, mapperPatterns);
         return druidStatPointcut;
     }
 

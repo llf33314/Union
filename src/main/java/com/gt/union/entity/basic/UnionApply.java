@@ -63,6 +63,7 @@ public class UnionApply extends Model<UnionApply> {
 	private Integer recommendBusId;
     /**
      * 商家确认状态(0：申请状态 1：未确认 2：确认通过 3：拒绝)
+	 * 2017/07/24 改成：(1：未确认 2：确认通过 3：拒绝)
      */
 	@TableField("bus_confirm_status")
 	private Integer busConfirmStatus;

@@ -7,42 +7,15 @@ package com.gt.union.common.response;
  */
 public enum GTCommonMessageEnum {
 
-    FAIL(0, "失败"),
-    SUCCESS(1, "成功"),
-    SYS_ERROR(9999, "系统异常");
+    FAIL("失败"),
+    SUCCESS("成功");
 
-    /*代码*/
-    private int code;
     /*描述*/
     private String message;
 
 
-    GTCommonMessageEnum(int code, String message) {
-        this.code = code;
+    GTCommonMessageEnum(String message) {
         this.message = message;
-    }
-
-    /**
-     * 获取 msg 值
-     *
-     * @param messageEnum code
-     * @return msg
-     */
-    public static String getReturnMsg(GTCommonMessageEnum messageEnum) {
-        for (GTCommonMessageEnum msg : values()) {
-            if (msg.getCode() == messageEnum.getCode()) {
-                return msg.getMessage();
-            }
-        }
-        return null;
-    }
-
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
     }
 
     public String getMessage() {
