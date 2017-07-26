@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * Created by Administrator on 2017/7/19 0019.
@@ -14,6 +15,7 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
 @SpringBootApplication
 @ServletComponentScan
 @EnableAutoConfiguration
+@EnableTransactionManagement
 @MapperScan("com.gt.union.mapper")
 public class UnionApplication extends SpringBootServletInitializer {
     @Override

@@ -3,20 +3,12 @@ package com.gt.union.service.basic.impl;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.github.pagehelper.PageHelper;
 import com.gt.union.common.constant.basic.UnionApplyConstant;
-import com.gt.union.common.exception.ParameterException;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.entity.basic.UnionApply;
 import com.gt.union.mapper.basic.UnionApplyMapper;
 import com.gt.union.service.basic.IUnionApplyService;
-import com.gt.union.vo.basic.UnionApplyVO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
 
 /**
  * <p>
@@ -28,11 +20,9 @@ import java.util.List;
  */
 @Service
 public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionApply> implements IUnionApplyService {
-    @Autowired
-    private UnionApplyMapper unionApplyMapper;
 
     @Override
-    public Page listUnionApplyVO(Page page, final Integer unionId, final String enterpriseName, final String directorPhone) throws Exception{
+    public Page listUncheckedApply(Page page, final Integer unionId, final String enterpriseName, final String directorPhone) throws Exception{
         if (page == null) {
             throw new Exception("UnionApplyServiceImpl.pageUnionApplyVO()：参数page不能为空!");
         }
@@ -69,4 +59,5 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
 
         return this.selectMapsPage(page, wrapper);
     }
+
 }

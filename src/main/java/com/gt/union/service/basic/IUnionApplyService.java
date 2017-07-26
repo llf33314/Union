@@ -22,5 +22,6 @@ public interface IUnionApplyService extends IService<UnionApply> {
 	 * @return
 	 * @throws Exception
 	 */
-	Page listUnionApplyVO(Page page, final Integer unionId, final String enterpriseName, final String directorPhone) throws Exception;
+	Page listUncheckedApply(Page page, final Integer unionId, final String enterpriseName, final String directorPhone) throws Exception;
+
 }

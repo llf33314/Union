@@ -26,17 +26,32 @@ public class UnionApplyController {
     private IUnionApplyService unionApplyService;
 
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    @SysLogAnnotation(description = "查询联盟成员申请推荐", op_function = "1")
-    public String listUnionApplyVO(Page page, @RequestParam(name = "unionId", required = true) Integer unionId
+    public String listUncheckedApply(Page page, @RequestParam(name = "unionId", required = true) Integer unionId
             , @RequestParam(name = "enterpriseName", required = false) String enterpriseName
             , @RequestParam(name = "directorPhone", required = false) String directorPhone){
         Page result = null;
         try {
-            result = this.unionApplyService.listUnionApplyVO(page, unionId, enterpriseName, directorPhone);
+            result = this.unionApplyService.listUncheckedApply(page, unionId, enterpriseName, directorPhone);
         } catch (Exception e) {
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
         }
         return GTJsonResult.instanceSuccessMsg(result).toString();
+    }
+
+    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    @SysLogAnnotation(description = "通过或不通过入盟申请", op_function = "1")
+    public String updateApplyStatus(@PathVariable("id")Integer id, @RequestParam(name = "unionId", required = true) Integer unionId
+            , @RequestParam(name = "applyStatus", required = true) Integer applyStatus) {
+        //TODO
+        return GTJsonResult.instanceSuccessMsg().toString();
+    }
+
+    @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @SysLogAnnotation(description = "申请入盟或推荐入盟", op_function = "1")
+    public String saveApply(@RequestParam(name = "unionId", required = true) Integer unionId
+            , @RequestParam(name = "applyType", required = true) Integer applyType , String unionName, UnionApplyInfo unionApplyInfo){
+        //TODO
+        return GTJsonResult.instanceSuccessMsg().toString();
     }
 }

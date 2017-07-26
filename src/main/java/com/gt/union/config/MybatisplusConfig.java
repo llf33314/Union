@@ -39,13 +39,6 @@ public class MybatisplusConfig {
 
     @Autowired(required = false)
     private DatabaseIdProvider databaseIdProvider;
-/*
-    @Bean
-    public PaginationInterceptor paginationInterceptor() {
-        PaginationInterceptor page = new PaginationInterceptor();
-        page.setDialectType("mysql");
-        return page;
-    }*/
 
     @Bean
     public PaginationInterceptor paginationInterceptor() {
@@ -69,7 +62,7 @@ public class MybatisplusConfig {
         GlobalConfiguration globalConfig = new GlobalConfiguration();
         globalConfig.setDbType(DBType.MYSQL.name());
         // ID 策略 AUTO->`0`("数据库ID自增") INPUT->`1`(用户输入ID") ID_WORKER->`2`("全局唯一ID") UUID->`3`("全局唯一ID")
-        globalConfig.setIdType(3);
+        globalConfig.setIdType(0);
         mybatisPlus.setGlobalConfig(globalConfig);
 
         MybatisConfiguration mc = new MybatisConfiguration();
