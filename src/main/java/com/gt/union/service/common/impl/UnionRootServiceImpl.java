@@ -2,9 +2,11 @@ package com.gt.union.service.common.impl;
 
 import com.gt.union.common.exception.ParameterException;
 import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.DaoUtil;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.service.common.UnionRootService;
 import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -14,6 +16,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UnionRootServiceImpl implements UnionRootService{
+
+	@Autowired
+	private DaoUtil daoUtil;
 
 	private Logger logger = Logger.getLogger(UnionRootServiceImpl.class);
 
@@ -29,6 +34,34 @@ public class UnionRootServiceImpl implements UnionRootService{
 		}catch (Exception e){
 			logger.error("判断该商家是否是该盟盟主错误：" + e.getMessage());
 			return -2;
+		}
+		return 0;
+	}
+
+	@Override
+	public int isBusUserOverdue(Integer busId) {
+		try{
+			if(CommonUtil.isEmpty(busId)){
+				return -1;
+			}
+			//TODO 根据商家id查询商家账号
+		}catch (Exception e){
+
+		}
+		return 0;
+	}
+
+	@Override
+	public int isUnionMainOverdue(UnionMain main) {
+		try{
+			if(CommonUtil.isEmpty(main)){
+				return -1;
+			}
+			//TODO 判断联盟有效期
+
+
+		}catch (Exception e){
+
 		}
 		return 0;
 	}

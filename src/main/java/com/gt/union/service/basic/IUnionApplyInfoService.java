@@ -12,5 +12,5 @@ import com.gt.union.entity.basic.UnionApplyInfo;
  * @since 2017-07-21
  */
 public interface IUnionApplyInfoService extends IService<UnionApplyInfo> {
-	
+
 }

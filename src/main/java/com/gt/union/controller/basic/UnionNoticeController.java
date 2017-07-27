@@ -1,7 +1,16 @@
 package com.gt.union.controller.basic;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.gt.union.common.exception.BaseException;
+import com.gt.union.common.response.GTJsonResult;
+import com.gt.union.common.util.CommonUtil;
+import com.gt.union.entity.basic.UnionMain;
+import com.gt.union.entity.basic.UnionNotice;
+import com.gt.union.service.basic.IUnionNoticeService;
+import org.apache.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 /**
  * <p>
@@ -14,5 +23,63 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @Controller
 @RequestMapping("/unionNotice")
 public class UnionNoticeController {
-	
+
+	private Logger logger = Logger.getLogger(UnionNoticeController.class);
+
+	@Autowired
+	private IUnionNoticeService unionNoticeService;
+
+	/**
+	 * 获取联盟公告
+	 * @param unionId
+	 * @return
+	 */
+	@RequestMapping(value = "", method = RequestMethod.GET)
+	public String unionNotice(@RequestParam(value = "unionId", required = true) Integer unionId) {
+		if(CommonUtil.isEmpty(unionId)){
+			return GTJsonResult.instanceErrorMsg("参数错误").toString();
+		}
+		UnionNotice notice = null;
+		try{
+			EntityWrapper wrapper = new EntityWrapper<UnionNotice>();
+			wrapper.eq("union_id",unionId);
+			notice = unionNoticeService.selectOne(wrapper);
+		}catch (Exception e){
+			logger.error("获取联盟公告失败" + e.getMessage());
+			return GTJsonResult.instanceErrorMsg("获取联盟公告失败").toString();
+		}
+		return GTJsonResult.instanceSuccessMsg(notice,null,"获取联盟公告成功").toString();
+	}
+
+
+
+	/**
+	 * 新增联盟公告
+	 * @param notice
+	 * @return
+	 */
+	@RequestMapping(value = "/saveNotice", method = RequestMethod.POST)
+	public String saveNotice(UnionNotice notice) {
+		try{
+			notice = unionNoticeService.saveNotice(notice);
+		}catch (BaseException e){
+			logger.error("保存联盟公告失败"+e.getMessage());
+			return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+		}catch (Exception e){
+			logger.error("保存联盟公告失败"+e.getMessage());
+			return GTJsonResult.instanceErrorMsg("保存失败").toString();
+		}
+		return GTJsonResult.instanceSuccessMsg(notice,null,"保存成功").toString();
+	}
+
+	/**
+	 * 修改联盟公告
+	 * @param notice
+	 * @return
+	 */
+	@RequestMapping(value = "/updateNotice/{id}", method = RequestMethod.PUT)
+	public String updateNotice(UnionNotice notice, @PathVariable("id")Integer id) {
+		notice.setId(id);
+		return saveNotice(notice);
+	}
 }

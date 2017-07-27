@@ -43,7 +43,7 @@ public class PropertiesUtil {
 
 	private static String articleUrl;
 
-	private static String domain;
+	private static String domainDf;
 
 
 	/**
@@ -170,8 +170,8 @@ public class PropertiesUtil {
 	 * 获取多粉域名
 	 * @return
 	 */
-	public static String getDomain(){
-		return domain;
+	public static String getDomainDf(){
+		return domainDf;
 	}
 
 	@Value("${resource.url.prefix}")
@@ -249,8 +249,8 @@ public class PropertiesUtil {
 		PropertiesUtil.articleUrl = articleUrl;
 	}
 
-	@Value("${domain}")
-	public void setDomain(String domain){
-		PropertiesUtil.domain = domain;
+	@Value("${domain.df}")
+	public void setDomain(String domainDf){
+		PropertiesUtil.domainDf = domainDf;
 	}
 }

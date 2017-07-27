@@ -1,9 +1,11 @@
 package com.gt.union.service.basic.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.entity.basic.UnionApplyInfo;
 import com.gt.union.mapper.basic.UnionApplyInfoMapper;
 import com.gt.union.service.basic.IUnionApplyInfoService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,5 +18,5 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper, UnionApplyInfo> implements IUnionApplyInfoService {
-	
+
 }

@@ -1,13 +1,18 @@
 package com.gt.union.service.basic.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.basic.UnionApplyConstant;
+import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.entity.basic.UnionApply;
+import com.gt.union.entity.basic.UnionApplyInfo;
+import com.gt.union.mapper.basic.UnionApplyInfoMapper;
 import com.gt.union.mapper.basic.UnionApplyMapper;
 import com.gt.union.service.basic.IUnionApplyService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -20,6 +25,9 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionApply> implements IUnionApplyService {
+
+    @Autowired
+    private UnionApplyInfoMapper unionApplyInfoMapper;
 
     @Override
     public Page listUncheckedApply(Page page, final Integer unionId, final String enterpriseName, final String directorPhone) throws Exception{
@@ -58,6 +66,20 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         wrapper.setSqlSelect(sbSqlSelect.toString());
 
         return this.selectMapsPage(page, wrapper);
+    }
+
+
+
+    @Override
+    public UnionApplyInfo getUnionApplyInfo(Integer busId, Integer unionId) {
+        if(CommonUtil.isEmpty(busId) || CommonUtil.isEmpty(unionId)){
+            return null;
+        }
+        try{
+            return unionApplyInfoMapper.selectUnionApplyInfo(busId,unionId);
+        }catch (Exception e){
+            return null;
+        }
     }
 
 }

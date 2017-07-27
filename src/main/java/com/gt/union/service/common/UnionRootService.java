@@ -1,6 +1,5 @@
 package com.gt.union.service.common;
 
-import com.gt.union.common.exception.ParameterException;
 import com.gt.union.entity.basic.UnionMain;
 
 /**
@@ -17,6 +16,20 @@ public interface UnionRootService {
 	 */
 	int isUnionMainOwner(Integer busId, UnionMain main);
 
+	/**
+	 * 当对某个商家进行操作时，需判断商家账号是否过期
+	 * @param busId  商家id
+	 * @return
+	 */
+	int isBusUserOverdue(Integer busId);
+
+
+	/**
+	 * 判断联盟服务是否过期
+	 * @param main  联盟
+	 * @return
+	 */
+	int isUnionMainOverdue(UnionMain main);
 
 	//int unionMainOwnerServiceValidity(UnionMain main);
 

@@ -1,7 +1,10 @@
 package com.gt.union.service.basic;
 
 import com.baomidou.mybatisplus.service.IService;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.entity.basic.UnionMain;
+
+import java.util.Map;
 
 /**
  * <p>
@@ -12,5 +15,12 @@ import com.gt.union.entity.basic.UnionMain;
  * @since 2017-07-21
  */
 public interface IUnionMainService extends IService<UnionMain> {
-	
+
+	/**
+	 * 根据商家id和联盟id获取联盟相关信息
+	 * @param busId 	主账号商家id
+	 * @param unionId	联盟id
+	 * @return
+	 */
+	Map<String,Object> getUnionMainInfo(Integer busId, Integer unionId);
 }

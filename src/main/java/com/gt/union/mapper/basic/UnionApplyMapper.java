@@ -2,6 +2,8 @@ package com.gt.union.mapper.basic;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.gt.union.entity.basic.UnionApply;
+import com.gt.union.entity.basic.UnionApplyInfo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>

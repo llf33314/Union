@@ -3,6 +3,7 @@ package com.gt.union.service.basic;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.entity.basic.UnionApply;
+import com.gt.union.entity.basic.UnionApplyInfo;
 
 /**
  * <p>
@@ -24,4 +25,11 @@ public interface IUnionApplyService extends IService<UnionApply> {
 	 */
 	Page listUncheckedApply(Page page, final Integer unionId, final String enterpriseName, final String directorPhone) throws Exception;
 
+	/**
+	 * 获取盟员信息
+	 * @param busId	主账号商家id
+	 * @param unionId	联盟id
+	 * @return
+	 */
+	UnionApplyInfo getUnionApplyInfo(Integer busId, Integer unionId);
 }

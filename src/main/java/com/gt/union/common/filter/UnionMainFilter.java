@@ -1,7 +1,6 @@
 package com.gt.union.common.filter;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.PropertiesUtil;
@@ -14,44 +13,15 @@ import javax.servlet.annotation.WebFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
- * 访问过滤器
- * Created by Administrator on 2017/7/25 0025.
+ * 联盟的过滤器 处理联盟的有效性
+ * Created by Administrator on 2017/7/26 0026.
  */
-@WebFilter(filterName = "loginFilter", urlPatterns = "/*")
-public class LoginFilter implements Filter {
-
-
-	//不需要登录就可访问的url
-	public static final Map<String, String> urls=new HashMap<String, String>();
-
-
-
-	//可通过的文件类型
-	public static final List<String> suffixs=new ArrayList<String>();
-
-	static {
-		//过滤路径
-		urls.put("/unionBrokerage/toLogin.do", "/unionBrokerage/toLogin.do");
-		urls.put("/unionBrokerage/login.do", "/unionBrokerage/login.do");
-
-		//文件类型
-		suffixs.add("js");
-		suffixs.add("css");
-		suffixs.add("gif");
-		suffixs.add("png");
-		suffixs.add("jpg");
-		suffixs.add("ico");
-		suffixs.add("html");
-		suffixs.add("dwr");
-		suffixs.add("mp3");
-		suffixs.add("txt");
-	}
+@WebFilter(filterName = "unionMainFilter", urlPatterns = "/*")
+public class UnionMainFilter implements Filter {
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -91,8 +61,10 @@ public class LoginFilter implements Filter {
 			String script = "<script type='text/javascript'>"
 					+ "top.location.href="+PropertiesUtil.getWxmpUrl()+"'/user/tologin.do';"
 					+ "</script>";
-			if(isAjax(req)){
-				response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录",PropertiesUtil.getWxmpUrl()+"/user/tologin.do")));
+			if(isAjax(req)){//TODO 过滤器ajax请求未登录处理
+				Map map = new HashMap<>();
+				map.put("timeout", "连接超时，请重新登录！");
+				response.getWriter().write(JSON.toJSONString(GTJsonResult.));
 			}else{
 				response.getWriter().write(script);
 			}
@@ -124,35 +96,5 @@ public class LoginFilter implements Filter {
 
 	@Override
 	public void destroy() {
-	}
-
-	//判断是否是可通过的url
-	private boolean passUrl(String url){
-		return urls.containsKey(url);
-	}
-
-	/**
-	 * 判断文件类型结尾
-	 * @param url
-	 * @return
-	 */
-	private boolean passSuffixs(String url){
-		boolean reuslt=false;
-		for (int i = 0; i < suffixs.size(); i++) {
-			if(url.endsWith(suffixs.get(i))){
-				reuslt=true;
-				break;
-			}
-		}
-		return reuslt;
-	}
-
-	/**
-	 * 判断ajax请求
-	 * @param request
-	 * @return
-	 */
-	boolean isAjax(HttpServletRequest request){
-		return  (request.getHeader("X-Requested-With") != null  && "XMLHttpRequest".equals( request.getHeader("X-Requested-With").toString())   ) ;
 	}
 }
