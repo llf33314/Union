@@ -1,6 +1,5 @@
 package com.gt.union.service.basic.impl;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
@@ -46,23 +45,30 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
                             .append(" LEFT JOIN t_union_apply_info i2 ON i2.union_apply_id = a2.id ")
                             .append(" WHERE ")
                             .append("    (a.recommend_bus_id is null OR (a.recommend_bus_id IS NOT null AND a.bus_confirm_status = ")
-                            .append(UnionApplyConstant.BUS_CONFIRM_STATUS_PASS).append(")")
+                            .append(UnionApplyConstant.BUS_CONFIRM_STATUS_PASS).append(") ")
                             .append("     ) ")
-                            .append("     AND a.union_id = " + unionId);
+                            .append("     AND a.union_id = " ).append(unionId);
                 if (StringUtil.isNotEmpty(enterpriseName)) {
-                    sbSqlSegment.append(" AND i.enterprise_name LIKE %").append(enterpriseName.trim()).append("% ");
+                    sbSqlSegment.append(" AND i.enterprise_name LIKE '%").append(enterpriseName.trim()).append("%' ");
                 }
                 if (StringUtil.isNotEmpty(directorPhone)) {
-                    sbSqlSegment.append(" AND i.director_phone LIKE %").append(directorPhone.trim()).append("% ");
+                    sbSqlSegment.append(" AND i.director_phone LIKE '%").append(directorPhone.trim()).append("%' ");
                 }
+                sbSqlSegment.append(" ORDER BY a.createtime DESC ");
                 return sbSqlSegment.toString();
             };
 
         };
         StringBuilder sbSqlSelect = new StringBuilder("");
-        sbSqlSelect.append(" a.id id, a.union_id unionId, DATE_FORMAT(a.createtime, '%Y-%m-%d %T') createtime, i2.enterprise_name recommendBusName" +
-                ", a.apply_status applyStatus, i.enterprise_name enterpriseName, i.director_name directorName" +
-                ", i.director_phone directorPhone, i.director_email directorEmail, i.apply_reason applyReason ");
+        sbSqlSelect.append(" a.id id, a.union_id unionId")
+                .append(", DATE_FORMAT(a.createtime, '%Y-%m-%d %T') createtime ")
+                .append(", a.apply_status applyStatus ")
+                .append(", i.enterprise_name enterpriseName ")
+                .append(", i.director_name directorName ")
+                .append(", i.director_phone directorPhone ")
+                .append(", i.director_email directorEmail ")
+                .append(", i.apply_reason applyReason ")
+                .append(", i2.enterprise_name recommendBusName ");
         wrapper.setSqlSelect(sbSqlSelect.toString());
 
         return this.selectMapsPage(page, wrapper);
