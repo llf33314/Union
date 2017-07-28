@@ -6,10 +6,14 @@ import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.entity.basic.UnionApply;
 import com.gt.union.entity.basic.UnionApplyInfo;
 import com.gt.union.service.basic.IUnionApplyService;
+import com.gt.union.vo.basic.UnionApplyVO;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * <p>
@@ -51,8 +55,16 @@ public class UnionApplyController {
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @SysLogAnnotation(description = "申请入盟或推荐入盟", op_function = "1")
     public String saveApply(@RequestParam(name = "unionId", required = true) Integer unionId
-            , @RequestParam(name = "applyType", required = true) Integer applyType , String unionName, UnionApplyInfo unionApplyInfo){
+            , @RequestParam(name = "applyType", required = true) Integer applyType , @RequestBody UnionApplyVO unionApplyVO){
         //TODO
-        return GTJsonResult.instanceSuccessMsg().toString();
+        Map<String, Object> resultMap = new HashMap<>();
+        resultMap.put("unionId", unionId);
+        resultMap.put("applyType", applyType);
+        if (unionApplyVO != null) {
+            resultMap.put("userName", unionApplyVO.getUserName());
+            resultMap.put("unionApply", unionApplyVO.getUnionApply());
+            resultMap.put("unionApplyInfo", unionApplyVO.getUnionApplyInfo());
+        }
+        return GTJsonResult.instanceSuccessMsg(resultMap).toString();
     }
 }
