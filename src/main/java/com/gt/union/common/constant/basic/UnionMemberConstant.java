@@ -25,6 +25,11 @@ public interface UnionMemberConstant {
     public static final int LIST_TYPE_OUT = 2;
 
     /**
+     * 查询信息类型：盟主权限转移盟员列表
+     */
+    public static final int LIST_TYPE_TRANSFER = 3;
+
+    /**
      * 商家退出状态：正常
      */
     public static final int OUT_STATUS_NORMAL = 0;
@@ -38,4 +43,14 @@ public interface UnionMemberConstant {
      * 商家退出状态：过渡期
      */
     public static final int OUT_STATUS_PERIOD = 2;
+
+    /**
+     * 是否是盟主：否
+     */
+    public static final int IS_UNION_OWNER_NO = 0;
+
+    /**
+     * 是否是盟主：是
+     */
+    public static final int IS_UNION_OWNER_YES = 1;
 }

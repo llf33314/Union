@@ -3,8 +3,6 @@ package com.gt.union.controller.basic;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.common.annotation.SysLogAnnotation;
 import com.gt.union.common.response.GTJsonResult;
-import com.gt.union.entity.basic.UnionApply;
-import com.gt.union.entity.basic.UnionApplyInfo;
 import com.gt.union.service.basic.IUnionApplyService;
 import com.gt.union.vo.basic.UnionApplyVO;
 import org.slf4j.Logger;

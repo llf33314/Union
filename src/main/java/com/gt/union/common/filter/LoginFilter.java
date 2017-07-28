@@ -26,7 +26,6 @@ import java.util.Map;
 @WebFilter(filterName = "loginFilter", urlPatterns = "/*")
 public class LoginFilter implements Filter {
 
-	static int c = 1;
 
 	//不需要登录就可访问的url
 	public static final Map<String, String> urls=new HashMap<String, String>();
@@ -61,12 +60,6 @@ public class LoginFilter implements Filter {
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-		HttpServletResponse httpServletResponse = (HttpServletResponse) response;
-		httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
-		httpServletResponse.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, DELETE");
-		httpServletResponse.setHeader("Access-Control-Max-Age", "3600");
-		httpServletResponse.setHeader("Access-Control-Allow-Headers", "Accept, Origin, XRequestedWith, Content-Type, LastModified");
-		//chain.doFilter(request, httpServletResponse);
 		// 可通过servletRequest.getParameter获取相关参数进行判断，
 		// 如果通过则执行filterChain.doFilter(servletReqeust, servletResponse)，
 		// 否则可通过servletResponse直接返回相关提示信息或不返回
@@ -96,7 +89,7 @@ public class LoginFilter implements Filter {
 		}else if (busUser == null) {// 判断到商家没有登录,就跳转到登陆页面
 			response.setCharacterEncoding("UTF-8");
 			String script = "<script type='text/javascript'>"
-					+ "top.location.href='"+PropertiesUtil.getWxmpUrl()+"/user/tologin.do;'"
+					+ "top.location.href="+PropertiesUtil.getWxmpUrl()+"'/user/tologin.do';"
 					+ "</script>";
 			if(isAjax(req)){
 				response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录",PropertiesUtil.getWxmpUrl()+"/user/tologin.do")));
