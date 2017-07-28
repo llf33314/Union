@@ -2,6 +2,7 @@ package com.gt.union.mapper.basic;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.gt.union.entity.basic.UnionApplyInfo;
+import org.apache.ibatis.annotations.Param;
 
 /**
  * <p>
@@ -19,5 +20,5 @@ public interface UnionApplyInfoMapper extends BaseMapper<UnionApplyInfo> {
 	 * @param unionId	联盟id
 	 * @return
 	 */
-	UnionApplyInfo selectUnionApplyInfo(Integer busId, Integer unionId);
+	UnionApplyInfo selectUnionApplyInfo(@Param("busId") Integer busId, @Param("unionId") Integer unionId);
 }

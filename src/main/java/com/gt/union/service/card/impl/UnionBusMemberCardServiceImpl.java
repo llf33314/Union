@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.entity.card.UnionBusMemberCard;
 import com.gt.union.mapper.card.UnionBusMemberCardMapper;
 import com.gt.union.service.card.IUnionBusMemberCardService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 /**
@@ -16,5 +17,12 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCardMapper, UnionBusMemberCard> implements IUnionBusMemberCardService {
-	
+
+	@Autowired
+	private UnionBusMemberCardMapper unionBusMemberCardMapper;
+
+	@Override
+	public double getUnionMemberIntegral(Integer unionId) {
+		return unionBusMemberCardMapper.getUnionMemberIntegral(unionId);
+	}
 }

@@ -12,5 +12,11 @@ import com.gt.union.entity.card.UnionBusMemberCard;
  * @since 2017-07-24
  */
 public interface IUnionBusMemberCardService extends IService<UnionBusMemberCard> {
-	
+
+	/**
+	 * 根据联盟id获取联盟积分
+	 * @param unionId	联盟id
+	 * @return
+	 */
+	public double getUnionMemberIntegral(Integer unionId);
 }

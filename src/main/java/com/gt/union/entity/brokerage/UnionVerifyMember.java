@@ -56,6 +56,11 @@ public class UnionVerifyMember extends Model<UnionVerifyMember> {
 	@TableField("member_name")
 	private String memberName;
 
+	/**
+	 * 验证码
+	 */
+	private String code;
+
 
 	public Integer getId() {
 		return id;
@@ -118,4 +123,11 @@ public class UnionVerifyMember extends Model<UnionVerifyMember> {
 		return this.id;
 	}
 
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
 }

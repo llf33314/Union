@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.common.annotation.SysLogAnnotation;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.entity.basic.UnionApply;
+import com.gt.union.entity.basic.UnionApplyInfo;
 import com.gt.union.service.basic.IUnionApplyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

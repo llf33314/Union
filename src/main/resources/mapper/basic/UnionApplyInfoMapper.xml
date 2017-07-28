@@ -30,7 +30,7 @@
 		t2.address_city_id, t2.address_district_id, t2.integral_proportion, t2.is_member_out_advice,
 		t1.sell_divide_proportion
 		FROM t_union_apply t1 LEFT JOIN t_union_apply_info t2 ON t1.id = t2.union_apply_id
-		WHERE t1.union_id = #{unionId,,jdbcType=INTEGER} and t1.apply_bus_id = #{busId,,jdbcType=INTEGER} and t1.apply_status = 1 and t1.del_status = 0
+		WHERE t1.union_id = #{unionId,jdbcType=INTEGER} and t1.apply_bus_id = #{busId,jdbcType=INTEGER} and t1.apply_status = 1 and t1.del_status = 0
 	</select>
 
 </mapper>
