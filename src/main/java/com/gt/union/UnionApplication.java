@@ -14,8 +14,6 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
  */
 @SpringBootApplication
 @ServletComponentScan
-@EnableAutoConfiguration
-@EnableTransactionManagement
 @MapperScan("com.gt.union.mapper")
 public class UnionApplication extends SpringBootServletInitializer {
     @Override
