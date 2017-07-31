@@ -31,6 +31,9 @@ public class StringUtil {
 	 * @return
 	 */
 	public static double getStringLength(String str) {
+		if(CommonUtil.isEmpty(str)){
+			return 0;
+		}
 		double valueLength = 0;
 		String chinese = "[\u4e00-\u9fa5]";       // 获取字段值的长度，如果含中文字符，则每个中文字符长度为2，否则为1
 		for (int i = 0; i < str.length(); i++) {         // 获取一个字符

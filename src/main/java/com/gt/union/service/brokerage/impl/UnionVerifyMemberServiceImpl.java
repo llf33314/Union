@@ -2,6 +2,7 @@ package com.gt.union.service.brokerage.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.common.constant.brokerage.UnionVerifyMemberConstant;
 import com.gt.union.common.exception.ParameterException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.CommonUtil;
@@ -50,32 +51,32 @@ public class UnionVerifyMemberServiceImpl extends ServiceImpl<UnionVerifyMemberM
 	@Override
 	public void saveUnionVerifyMember(UnionVerifyMember unionVerifyMember) throws Exception {
 		if(CommonUtil.isEmpty(unionVerifyMember.getMemberName())){
-			throw new ParameterException("姓名内容不能为空，请重新输入");
+			throw new ParameterException(UnionVerifyMemberConstant.UNION_VERIFY_MEMBER_NAME_NULL);
 		}else {
 			if(StringUtil.getStringLength(unionVerifyMember.getMemberName()) > 5){
-				throw new ParameterException("姓名内容长度不可超过5个字，请重新输入");
+				throw new ParameterException(UnionVerifyMemberConstant.UNION_VERIFY_MEMBER_NAME_LENGTH_ERROR);
 			}
 		}
 		if(CommonUtil.isEmpty(unionVerifyMember.getPhone())){
-			throw new ParameterException("手机号码内容不能为空，请重新输入");
+			throw new ParameterException(UnionVerifyMemberConstant.UNION_VERIFY_MEMBER_PHONE_NULL);
 		}else {
 			//TODO 正则校验手机号
 		}
 		EntityWrapper<UnionVerifyMember> memberEntityWrapper = new EntityWrapper<UnionVerifyMember>();
-		memberEntityWrapper.eq("bus_id",unionVerifyMember.getBusId());
 		memberEntityWrapper.eq("del_status",0);
-		//member.or()
-		UnionVerifyMember member = this.selectOne(memberEntityWrapper);
-		if(CommonUtil.isEmpty(member)){
-			this.insert(unionVerifyMember);
-		}else{
-			if(member.getMemberName().equals(unionVerifyMember.getMemberName())){
-				throw new ParameterException("您输入的姓名已存在，请重新输入");
-			}
-			if(member.getPhone().equals(unionVerifyMember.getPhone())){
-				throw new ParameterException("您输入的手机号码已存在，请重新输入");
-			}
+		memberEntityWrapper.eq("phone",unionVerifyMember.getPhone());
+		int count = this.selectCount(memberEntityWrapper);
+		if(count > 0){
+			throw new ParameterException(UnionVerifyMemberConstant.UNION_VERIFY_MEMBER_PHONE_EXITS);
 		}
-
+		EntityWrapper<UnionVerifyMember> memberWrapper = new EntityWrapper<UnionVerifyMember>();
+		memberWrapper.eq("del_status",0);
+		memberWrapper.eq("bus_id",unionVerifyMember.getBusId());
+		memberWrapper.eq("member_name",unionVerifyMember.getMemberName());
+		count = this.selectCount(memberEntityWrapper);
+		if(count > 0){
+			throw new ParameterException(UnionVerifyMemberConstant.UNION_VERIFY_MEMBER_NAME_EXITS);
+		}
+		this.insert(unionVerifyMember);
 	}
 }

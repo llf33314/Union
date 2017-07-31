@@ -47,7 +47,7 @@ public class UnionVerifyMemberController {
 	 * @param request
 	 * @return
 	 */
-	@RequestMapping(value = "", method = RequestMethod.GET)
+	@RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String unionVerifyMember(Page<UnionVerifyMember> page, HttpServletRequest request){
 		BusUser user = SessionUtils.getLoginUser(request);
 		try{
@@ -60,8 +60,8 @@ public class UnionVerifyMemberController {
 			wrapper.eq("del_status", 0);
 			page = unionVerifyMemberService.selectPage(page,wrapper);
 		}catch (Exception e){
-			logger.error("获取商家的佣金平台管理员成功"+e.getMessage());
-			return GTJsonResult.instanceSuccessMsg(page,null,"获取商家的佣金平台管理员失败").toString();
+			logger.error("获取商家的佣金平台管理员错误"+e.getMessage());
+			return GTJsonResult.instanceErrorMsg("获取商家的佣金平台管理员错误").toString();
 		}
 		return GTJsonResult.instanceSuccessMsg(page,null,"获取商家的佣金平台管理员成功").toString();
 	}
@@ -72,7 +72,7 @@ public class UnionVerifyMemberController {
 	 * @param id
 	 * @return
 	 */
-	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json;charset=UTF-8")
 	public String delUnionVerifyMember(HttpServletRequest request,@PathVariable("id") Integer id){
 		try{
 			unionVerifyMemberService.delUnionVerifyMember(id);
@@ -90,15 +90,11 @@ public class UnionVerifyMemberController {
 	 * @param unionVerifyMember
 	 * @return
 	 */
-	@RequestMapping(value = "", method = RequestMethod.POST)
+	@RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String saveUnionVerifyMember(HttpServletRequest request, @RequestBody UnionVerifyMember unionVerifyMember){
 		BusUser user = SessionUtils.getLoginUser(request);
 		try{
-			Integer busId = user.getId();
-			if(user.getPid() != null && user.getPid() != 0){
-				busId = user.getPid();
-			}
-			unionVerifyMember.setBusId(busId);
+			unionVerifyMember.setBusId(user.getId());
 			unionVerifyMember.setCreatetime(new Date());
 			unionVerifyMember.setDelStatus(0);
 			unionVerifyMemberService.saveUnionVerifyMember(unionVerifyMember);
@@ -118,22 +114,18 @@ public class UnionVerifyMemberController {
 	 * @param response
 	 * @param phone
 	 */
-	@RequestMapping(value = "/getPhoneCode")
+	@RequestMapping(value = "/getPhoneCode", produces = "application/json;charset=UTF-8")
 	public String getPhoneCode(HttpServletRequest request, HttpServletResponse response, @RequestBody String phone) {
 		BusUser user = SessionUtils.getLoginUser(request);
 		String code = RandomKit.getRandomString(6, 0);
 		try {
-			Integer busId = user.getId();
-			if(user.getPid() != null && user.getPid() != 0){
-				busId = user.getPid();
-			}
 			if (phone != null) {
-				//生产验证码
+				//生成验证码
 				Map<String,Object> smsMap = new HashMap<>();
 				smsMap.put("mobiles",phone);
 				smsMap.put("content","佣金平台管理员验证码:" + code.toString());
 				smsMap.put("model",33);
-				smsMap.put("busId",busId);
+				smsMap.put("busId",user.getId());
 				smsMap.put("company",user.getName());
 				//TODO 发送短信接口
 

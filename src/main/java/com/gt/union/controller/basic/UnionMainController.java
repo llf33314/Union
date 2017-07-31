@@ -44,7 +44,7 @@ public class UnionMainController {
             data.put("unionList",list);
             if(list.size() > 0){
                 UnionMain main = list.get(0);
-                data.put("main",main);
+                data.put("main",main);//第一个联盟
             }
         }catch (Exception e){
             logger.error("获取联盟列表失败");

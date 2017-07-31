@@ -1,6 +1,6 @@
 package com.gt.union.common.util;
 
-import com.gt.union.common.constant.CommonConst;
+import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.entity.common.Member;
 import org.apache.log4j.Logger;
@@ -15,7 +15,7 @@ public class SessionUtils {
 	//获取用户bus_user   SESSION的值
 	public static BusUser getLoginUser(HttpServletRequest request) {
 		try {
-			Object obj = request.getSession().getAttribute(CommonConst.SESSION_BUSINESS_KEY);
+			Object obj = request.getSession().getAttribute(CommonConstant.SESSION_BUSINESS_KEY);
 			if(obj != null){
 				return (BusUser) obj;
 			}else{
@@ -32,7 +32,7 @@ public class SessionUtils {
 	public static void setLoginUser(HttpServletRequest request, BusUser busUser) {
 		try {
 			request.getSession().setAttribute(
-					CommonConst.SESSION_BUSINESS_KEY, busUser);
+					CommonConstant.SESSION_BUSINESS_KEY, busUser);
 		} catch (Exception e) {
 			log.info(e.getLocalizedMessage());
 			e.printStackTrace();

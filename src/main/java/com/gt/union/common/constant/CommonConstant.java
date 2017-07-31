@@ -5,7 +5,7 @@ package com.gt.union.common.constant;
  * @author Mr.Yu
  *
  */
-public class CommonConst {
+public class CommonConstant {
 	/** 商家账户在session key*/
 	public static String SESSION_BUSINESS_KEY = "business_key" ;
 

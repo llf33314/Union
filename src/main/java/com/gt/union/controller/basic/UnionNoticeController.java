@@ -34,7 +34,7 @@ public class UnionNoticeController {
 	 * @param unionId
 	 * @return
 	 */
-	@RequestMapping(value = "", method = RequestMethod.GET)
+	@RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String unionNotice(@RequestParam(value = "unionId", required = true) Integer unionId) {
 		if(CommonUtil.isEmpty(unionId)){
 			return GTJsonResult.instanceErrorMsg("参数错误").toString();
@@ -58,8 +58,8 @@ public class UnionNoticeController {
 	 * @param notice
 	 * @return
 	 */
-	@RequestMapping(value = "/saveNotice", method = RequestMethod.POST)
-	public String saveNotice(UnionNotice notice) {
+	@RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public String saveNotice(@RequestBody UnionNotice notice) {
 		try{
 			notice = unionNoticeService.saveNotice(notice);
 		}catch (BaseException e){
@@ -77,7 +77,7 @@ public class UnionNoticeController {
 	 * @param notice
 	 * @return
 	 */
-	@RequestMapping(value = "/updateNotice/{id}", method = RequestMethod.PUT)
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
 	public String updateNotice(UnionNotice notice, @PathVariable("id")Integer id) {
 		notice.setId(id);
 		return saveNotice(notice);

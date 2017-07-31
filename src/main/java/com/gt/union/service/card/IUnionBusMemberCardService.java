@@ -1,7 +1,9 @@
 package com.gt.union.service.card;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.entity.card.UnionBusMemberCard;
+import com.gt.union.vo.card.UnionBusMemberCardVo;
 
 /**
  * <p>
@@ -19,4 +21,12 @@ public interface IUnionBusMemberCardService extends IService<UnionBusMemberCard>
 	 * @return
 	 */
 	public double getUnionMemberIntegral(Integer unionId);
+
+	/**
+	 * 查询盟员的联盟卡列表
+	 * @param page
+	 * @param vo
+	 * @return
+	 */
+	Page selectUnionBusMemberCardList(Page page, UnionBusMemberCardVo vo) throws Exception;
 }
