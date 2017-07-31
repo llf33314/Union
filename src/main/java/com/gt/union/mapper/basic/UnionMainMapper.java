@@ -15,10 +15,4 @@ import java.util.List;
  */
 public interface UnionMainMapper extends BaseMapper<UnionMain> {
 
-	/**
-	 * 根据商家id获取该商家加入的联盟列表
-	 * @param busId
-	 * @return
-	 */
-	List<UnionMain> selectMemberUnionList(Integer busId);
 }

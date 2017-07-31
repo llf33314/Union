@@ -14,5 +14,10 @@ import com.gt.union.entity.business.UnionBrokerage;
  */
 public interface IUnionBrokerageService extends IService<UnionBrokerage> {
 
-	Page selectUnionBrokerageList(Page page, Integer unionId);
+	/**
+	 * 更新佣金比设置
+	 * @param unionBrokerage
+	 * @throws Exception
+	 */
+	public void updateUnionBrokerage(UnionBrokerage unionBrokerage) throws Exception;
 }

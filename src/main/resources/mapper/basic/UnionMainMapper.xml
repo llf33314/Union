@@ -32,15 +32,4 @@
 		<result column="union_validity" property="unionValidity" />
 	</resultMap>
 
-	<!-- 查询商家加入的联盟列表 -->
-    <select id="selectMemberUnionList" resultType="com.gt.union.entity.basic.UnionMain">
-		SELECT t1.id, t1.createtime, t1.del_status, t1.union_name, t1.bus_id, t1.union_img, t1.join_type, t1.director_phone,
-		t1.union_illustration, t1.union_wx_group_img, t1.union_sign, t1.union_total_member, t1.union_member_num,
-		t1.union_level, t1.union_verify_status, t1.is_integral, t1.old_member_charge, t1.black_card_charge,
-		t1.black_card_price, t1.black_card_term, t1.red_card_opend, t1.red_card_price, t1.red_card_term,
-		t1.black_card_illustration, t1.red_card_illustration, t1.union_validity
-		from t_union_main t1 left join t_union_member t2 on t1.id = t2.union_id
-		where t2.bus_id = #{busId,jdbcType=INTEGER} and t2.del_status = 0 order by t2.id asc
-	</select>
-
 </mapper>

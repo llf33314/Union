@@ -39,6 +39,7 @@ hs_err_pid*
 .classpath
 
 /target/
+/classes/
 /logs/
 /*/LOG_HOME_IS_UNDEFINED/
 /*/logs/

@@ -39,4 +39,11 @@ public interface IUnionMainService extends IService<UnionMain> {
 	 * @return
 	 */
 	Map<String,Object> getUnionMainMemberInfo(UnionMain main,Integer busId);
+
+	/**
+	 * 更新联盟
+	 * @param main
+	 * @param busId
+	 */
+	void updateUnionMain(UnionMain main, Integer busId) throws Exception;
 }

@@ -32,6 +32,7 @@ import java.util.Date;
 @Service
 public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusinessRecommendMapper, UnionBusinessRecommend> implements IUnionBusinessRecommendService {
 
+
 	@Autowired
 	private IUnionBusinessRecommendInfoService unionBusinessRecommendInfoService;
 

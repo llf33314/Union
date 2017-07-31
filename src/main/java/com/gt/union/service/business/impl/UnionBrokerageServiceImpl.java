@@ -1,10 +1,18 @@
 package com.gt.union.service.business.impl;
 
+import com.baomidou.mybatisplus.mapper.Wrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.common.constant.basic.UnionApplyConstant;
+import com.gt.union.common.exception.ParameterException;
+import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.StringUtil;
 import com.gt.union.entity.business.UnionBrokerage;
 import com.gt.union.mapper.business.UnionBrokerageMapper;
 import com.gt.union.service.business.IUnionBrokerageService;
 import org.springframework.stereotype.Service;
+
+import java.util.Date;
 
 /**
  * <p>
@@ -16,5 +24,22 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UnionBrokerageServiceImpl extends ServiceImpl<UnionBrokerageMapper, UnionBrokerage> implements IUnionBrokerageService {
-	
+
+
+	@Override
+	public void updateUnionBrokerage(UnionBrokerage unionBrokerage) throws Exception {
+		if (CommonUtil.isEmpty(unionBrokerage.getBrokerageRatio()) || CommonUtil.isEmpty(unionBrokerage.getFromBusId()) || CommonUtil.isEmpty(unionBrokerage.getToBusId()) || CommonUtil.isEmpty(unionBrokerage.getUnionId())) {
+			throw new ParameterException("参数错误");
+		}
+		//TODO 判断权限
+		if (CommonUtil.isEmpty(unionBrokerage.getId())) {//新增
+			unionBrokerage.setCreatetime(new Date());
+			unionBrokerage.setDelStatus(0);
+			unionBrokerage.setModifytime(new Date());
+			this.insert(unionBrokerage);
+		} else {
+			unionBrokerage.setModifytime(new Date());
+			updateById(unionBrokerage);
+		}
+	}
 }

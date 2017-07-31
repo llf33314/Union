@@ -1,5 +1,6 @@
 package com.gt.union.controller.basic;
 
+import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.basic.UnionMain;
@@ -44,7 +45,7 @@ public class UnionMainController {
             data.put("unionList",list);
             if(list.size() > 0){
                 UnionMain main = list.get(0);
-                data.put("main",main);//第一个联盟
+                data.put("main",main);//当前联盟
             }
         }catch (Exception e){
             logger.error("获取联盟列表失败");
@@ -96,5 +97,30 @@ public class UnionMainController {
         }
     }
 
+    /**
+     * 更新联盟信息
+     * @param request
+     * @param unionId   联盟id
+     * @return
+     */
+    @RequestMapping(value = "/{unionId}", method = RequestMethod.PUT)
+    public String updateUnionMain(HttpServletRequest request, @PathVariable Integer unionId, @RequestBody UnionMain main){
+        BusUser user = SessionUtils.getLoginUser(request);
+        try{
+            Integer busId = user.getId();
+            if(user.getPid() != null && user.getPid() != 0){
+                busId = user.getPid();
+            }
+            main.setId(unionId);
+            unionMainService.updateUnionMain(main, busId);
+            return GTJsonResult.instanceSuccessMsg(null,null,"更新成功").toString();
+        }catch (BaseException e){
+            logger.error("获取联盟信息错误");
+            return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+        }catch (Exception e){
+            logger.error("获取联盟信息错误");
+            return GTJsonResult.instanceErrorMsg("更新失败").toString();
+        }
+    }
 
 }
