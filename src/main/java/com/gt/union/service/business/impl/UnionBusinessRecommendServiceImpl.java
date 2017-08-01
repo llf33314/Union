@@ -3,7 +3,6 @@ package com.gt.union.service.business.impl;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.gt.union.common.constant.business.UnionBusinessRecommendConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParameterException;
 import com.gt.union.common.util.CommonUtil;
@@ -11,6 +10,8 @@ import com.gt.union.common.util.StringUtil;
 import com.gt.union.entity.business.UnionBusinessRecommend;
 import com.gt.union.entity.business.UnionBusinessRecommendInfo;
 import com.gt.union.mapper.business.UnionBusinessRecommendMapper;
+import com.gt.union.service.basic.IUnionMainService;
+import com.gt.union.service.basic.IUnionMemberService;
 import com.gt.union.service.business.IUnionBusinessRecommendInfoService;
 import com.gt.union.service.business.IUnionBusinessRecommendService;
 import com.gt.union.vo.business.UnionBusinessRecommendFormVo;
@@ -35,6 +36,12 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 
 	@Autowired
 	private IUnionBusinessRecommendInfoService unionBusinessRecommendInfoService;
+
+	@Autowired
+	private IUnionMemberService unionMemberService;
+
+	@Autowired
+	private IUnionMainService unionMainService;
 
 	@Override
 	public Page selectUnionBusinessRecommendList(Page page,final UnionBusinessRecommendVo vo) throws Exception{
@@ -86,7 +93,9 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 
 	@Override
 	public void saveUnionBusinessRecommend(UnionBusinessRecommendFormVo vo) throws Exception{
-		//TODO 判断推荐的商家是否有效
+		//TODO 判断被推荐的商家是否有效
+		//联盟是否有效
+		unionMainService.isUnionValid(unionMainService.selectById(vo.getUnionId()));
 		if(CommonUtil.isEmpty(vo.getUnionId())){
 			throw new ParameterException("请选择联盟");
 		}
@@ -114,7 +123,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 		recommend.setFromBusId(vo.getBusId());
 		recommend.setRecommendType(2);
 		recommend.setUnionId(vo.getUnionId());
-		recommend.setToBusId(1);
+		recommend.setToBusId(vo.getToBusId());
 		recommend.setFromMemberId(2);
 		recommend.setToMemberId(vo.getToMemberId());
 		this.insert(recommend);

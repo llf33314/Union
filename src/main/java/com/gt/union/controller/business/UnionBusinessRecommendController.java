@@ -1,7 +1,6 @@
 package com.gt.union.controller.business;
 
 import com.baomidou.mybatisplus.plugins.Page;
-import com.gt.union.common.constant.business.UnionBusinessRecommendConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.SessionUtils;
@@ -83,10 +82,10 @@ public class UnionBusinessRecommendController {
 			unionBusinessRecommendService.updateVerifyRecommend(recommend);
 			if(isAcceptance == 1){
 				//接受
-				return GTJsonResult.instanceSuccessMsg(null,null, UnionBusinessRecommendConstant.UNION_BUSINESS_RECOMMEND_ACCEPT_SUCCESS).toString();
+				return GTJsonResult.instanceSuccessMsg(null,null, "商机接受成功").toString();
 			}else if(isAcceptance == 2){
 				//拒绝
-				return GTJsonResult.instanceSuccessMsg(null,null,UnionBusinessRecommendConstant.UNION_BUSINESS_RECOMMEND_REFUND_SUCCESS).toString();
+				return GTJsonResult.instanceSuccessMsg(null,null,"商机拒绝成功").toString();
 			}
 			return GTJsonResult.instanceErrorMsg("审核失败").toString();
 		}catch (BaseException e){
@@ -96,10 +95,10 @@ public class UnionBusinessRecommendController {
 			logger.error("审核商机消息错误"+e.getMessage());
 			if(isAcceptance == 1){
 				//接受
-				return GTJsonResult.instanceErrorMsg(UnionBusinessRecommendConstant.UNION_BUSINESS_RECOMMEND_ACCEPT_FAILED).toString();
+				return GTJsonResult.instanceErrorMsg("商机拒绝失败").toString();
 			}else if(isAcceptance == 2){
 				//拒绝
-				return GTJsonResult.instanceErrorMsg(UnionBusinessRecommendConstant.UNION_BUSINESS_RECOMMEND_REFUND_FAILED).toString();
+				return GTJsonResult.instanceErrorMsg("商机拒绝失败").toString();
 			}
 			return GTJsonResult.instanceErrorMsg("审核失败").toString();
 		}

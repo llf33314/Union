@@ -21,7 +21,7 @@ public interface IUnionDiscountService extends IService<UnionDiscount> {
      * @param discount
      * @throws Exception
      */
-	void updateUnionDiscount(Integer unionId, Integer fromBusId, Integer toBusId, Double discount) throws Exception;
+	void  updateUnionDiscount(Integer unionId, Integer fromBusId, Integer toBusId, Double discount) throws Exception;
 
 	/**
 	 * 判断是否存在

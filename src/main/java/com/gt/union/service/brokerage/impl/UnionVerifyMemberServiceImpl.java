@@ -2,7 +2,6 @@ package com.gt.union.service.brokerage.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.gt.union.common.constant.brokerage.UnionVerifyMemberConstant;
 import com.gt.union.common.exception.ParameterException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.CommonUtil;

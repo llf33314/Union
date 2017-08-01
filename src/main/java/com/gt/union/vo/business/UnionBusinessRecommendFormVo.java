@@ -24,6 +24,11 @@ public class UnionBusinessRecommendFormVo {
 	private Integer toMemberId;
 
 	/**
+	 * 被推荐的商家id
+	 */
+	private Integer toBusId;
+
+	/**
 	 * 推荐信息
 	 */
 	private UnionBusinessRecommendInfo unionBusinessRecommendInfo;
@@ -51,6 +56,14 @@ public class UnionBusinessRecommendFormVo {
 
 	public void setToMemberId(Integer toMemberId) {
 		this.toMemberId = toMemberId;
+	}
+
+	public Integer getToBusId() {
+		return toBusId;
+	}
+
+	public void setToBusId(Integer toBusId) {
+		this.toBusId = toBusId;
 	}
 
 	public UnionBusinessRecommendInfo getUnionBusinessRecommendInfo() {

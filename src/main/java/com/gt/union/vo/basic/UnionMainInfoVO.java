@@ -6,7 +6,7 @@ import com.gt.union.entity.basic.UnionMain;
 /**
  * Created by Administrator on 2017/7/31 0031.
  */
-public class UnionMainInfoVo {
+public class UnionMainInfoVO {
 
 	/**
 	 * 联盟信息

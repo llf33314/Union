@@ -1,6 +1,7 @@
 package com.gt.union.service.common;
 
 import com.gt.union.entity.basic.UnionMain;
+import com.gt.union.entity.common.BusUser;
 
 /**
  * 商家联盟权限统一管理类
@@ -18,10 +19,10 @@ public interface UnionRootService {
 
 	/**
 	 * 当对某个商家进行操作时，需判断商家账号是否过期
-	 * @param busId  商家id
+	 * @param user  商家
 	 * @return
 	 */
-	int isBusUserOverdue(Integer busId);
+	int isBusUserOverdue(BusUser user);
 
 
 	/**

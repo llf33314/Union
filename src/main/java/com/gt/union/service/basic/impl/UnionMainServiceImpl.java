@@ -3,12 +3,10 @@ package com.gt.union.service.basic.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.gt.union.common.constant.basic.UnionApplyConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParameterException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.StringUtil;
 import com.gt.union.entity.basic.UnionApplyInfo;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.common.BusUser;
@@ -16,7 +14,7 @@ import com.gt.union.mapper.basic.UnionMainMapper;
 import com.gt.union.service.basic.IUnionApplyService;
 import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.basic.IUnionMemberService;
-import com.gt.union.vo.basic.UnionMainInfoVo;
+import com.gt.union.vo.basic.UnionMainInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -46,7 +44,12 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	private IUnionMemberService unionMemberService;
 
 	public UnionMain getUnionMain(Integer unionId){
-		return unionMainMapper.selectById(unionId);
+		EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<UnionMain>();
+		entityWrapper.eq("id",unionId);
+		entityWrapper.eq("del_status",0);
+		entityWrapper.eq("union_verify_status",1);
+		UnionMain main = this.selectOne(entityWrapper);
+		return main;
 	}
 
 	@Override
@@ -146,8 +149,13 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	}
 
 	@Override
-	public void saveCreateUnion(UnionMainInfoVo vo) {
+	public void saveCreateUnion(UnionMainInfoVO vo) {
 
+	}
+
+	@Override
+	public int isUnionValid(UnionMain main) {
+		return 0;
 	}
 
 	/**
@@ -156,7 +164,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	 * @return
 	 */
 	UnionMain getCreateUnion(Integer busId){
-		EntityWrapper entityWrapper = new EntityWrapper<UnionMain>();
+		EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<UnionMain>();
 		entityWrapper.eq("bus_id",busId);
 		entityWrapper.eq("del_status",0);
 		entityWrapper.eq("union_verify_status",1);

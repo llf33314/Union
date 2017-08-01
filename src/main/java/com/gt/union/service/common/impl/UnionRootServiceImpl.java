@@ -4,6 +4,7 @@ import com.gt.union.common.exception.ParameterException;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.DaoUtil;
 import com.gt.union.entity.basic.UnionMain;
+import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.common.UnionRootService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -39,9 +40,9 @@ public class UnionRootServiceImpl implements UnionRootService{
 	}
 
 	@Override
-	public int isBusUserOverdue(Integer busId) {
+	public int isBusUserOverdue(BusUser user) {
 		try{
-			if(CommonUtil.isEmpty(busId)){
+			if(CommonUtil.isEmpty(user)){
 				return -1;
 			}
 			//TODO 根据商家id查询商家账号

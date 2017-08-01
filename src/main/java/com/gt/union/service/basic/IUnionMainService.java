@@ -1,10 +1,9 @@
 package com.gt.union.service.basic;
 
 import com.baomidou.mybatisplus.service.IService;
-import com.gt.union.common.exception.BusinessException;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.common.BusUser;
-import com.gt.union.vo.basic.UnionMainInfoVo;
+import com.gt.union.vo.basic.UnionMainInfoVO;
 
 import java.util.List;
 import java.util.Map;
@@ -18,6 +17,20 @@ import java.util.Map;
  * @since 2017-07-21
  */
 public interface IUnionMainService extends IService<UnionMain> {
+
+	/**
+	 * 获取联盟信息
+	 * @param unionId
+	 * @return
+	 */
+	UnionMain getUnionMain(Integer unionId);
+
+	/**
+	 * 判断联盟是否有效
+	 * @param main
+	 * @return
+	 */
+	int isUnionValid(UnionMain main);
 
 	/**
 	 * 根据联盟和商家id获取商家的联盟信息
@@ -60,5 +73,6 @@ public interface IUnionMainService extends IService<UnionMain> {
 	 * 保存创建联盟
 	 * @param vo
 	 */
-	void saveCreateUnion(UnionMainInfoVo vo);
+	void saveCreateUnion(UnionMainInfoVO vo);
+
 }
