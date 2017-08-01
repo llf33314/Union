@@ -3,7 +3,6 @@ package com.gt.union.controller.card;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.SessionUtils;
-import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.card.IUnionCardDivideRecordService;
 import com.gt.union.vo.card.UnionCardDivideRecordVo;
@@ -15,9 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * <p>

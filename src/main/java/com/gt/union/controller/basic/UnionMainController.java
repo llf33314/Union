@@ -123,4 +123,25 @@ public class UnionMainController {
         }
     }
 
+
+    /**
+     * 获取创建联盟信息
+     * @param request
+     * @return
+     */
+    @RequestMapping(value = "/getCreateUnionInfo", method = RequestMethod.POST)
+    public String getCreateUnionInfo(HttpServletRequest request){
+        BusUser user = SessionUtils.getLoginUser(request);
+        try{
+            return unionMainService.getCreateUnionInfo(user);
+        }catch (BaseException e){
+            logger.error("获取联盟信息错误");
+            return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+        }catch (Exception e){
+            logger.error("获取联盟信息错误");
+            return GTJsonResult.instanceErrorMsg("更新失败").toString();
+        }
+    }
+
+
 }

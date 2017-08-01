@@ -1,17 +1,22 @@
 package com.gt.union.service.basic.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.basic.UnionApplyConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParameterException;
+import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.entity.basic.UnionApplyInfo;
 import com.gt.union.entity.basic.UnionMain;
+import com.gt.union.entity.common.BusUser;
 import com.gt.union.mapper.basic.UnionMainMapper;
 import com.gt.union.service.basic.IUnionApplyService;
 import com.gt.union.service.basic.IUnionMainService;
+import com.gt.union.service.basic.IUnionMemberService;
+import com.gt.union.vo.basic.UnionMainInfoVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +41,9 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
 	@Autowired
 	private IUnionApplyService unionApplyService;
+
+	@Autowired
+	private IUnionMemberService unionMemberService;
 
 	public UnionMain getUnionMain(Integer unionId){
 		return unionMainMapper.selectById(unionId);
@@ -102,7 +110,57 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
 	@Override
 	public void updateUnionMain(UnionMain main, Integer busId) throws Exception{
+		if(CommonUtil.isEmpty(main.getId())){
+			throw new ParameterException("参数错误");
+		}
 		//TODO  判断是否该联盟盟主
-		//判断该商家是否
+		boolean isUnionOwner =  unionMemberService.isUnionOwner(main.getId(),busId);
+		if(!isUnionOwner){
+			//判断联盟是否有效
+			throw new BusinessException("不是该盟盟主");
+		}
+		//判断联盟信息
+		if(CommonUtil.isEmpty(main.getUnionName())){
+			throw new ParameterException("联盟名称不能为空");
+		}
+		this.updateById(main);
+	}
+
+	//TODO 创建联盟
+	@Override
+	public String getCreateUnionInfo(BusUser user) throws Exception{
+		Map<String,Object> data = new HashMap<String,Object>();
+		int type = 1;
+		if(user.getPid() != null && user.getPid() != 0){
+			return GTJsonResult.instanceErrorMsg("请使用主账号创建").toString();
+		}
+		if(getCreateUnion(user.getId()) != null){
+			//1、判断商家等级是否需要收费创建联盟
+
+			//2、如果需收费，判断联盟是否过有效期
+			return GTJsonResult.instanceErrorMsg("已创建联盟").toString();
+		}
+		//判断商家账号是否有创建联盟的权限
+		data.put("type",type);
+		return GTJsonResult.instanceSuccessMsg(data,null,"去创建联盟").toString();
+	}
+
+	@Override
+	public void saveCreateUnion(UnionMainInfoVo vo) {
+
+	}
+
+	/**
+	 * 根据商家id获取他创建的联盟
+	 * @param busId
+	 * @return
+	 */
+	UnionMain getCreateUnion(Integer busId){
+		EntityWrapper entityWrapper = new EntityWrapper<UnionMain>();
+		entityWrapper.eq("bus_id",busId);
+		entityWrapper.eq("del_status",0);
+		entityWrapper.eq("union_verify_status",1);
+		UnionMain main = this.selectOne(entityWrapper);
+		return main;
 	}
 }

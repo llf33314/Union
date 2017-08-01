@@ -3,6 +3,8 @@ package com.gt.union.service.basic;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.entity.basic.UnionMain;
+import com.gt.union.entity.common.BusUser;
+import com.gt.union.vo.basic.UnionMainInfoVo;
 
 import java.util.List;
 import java.util.Map;
@@ -46,4 +48,17 @@ public interface IUnionMainService extends IService<UnionMain> {
 	 * @param busId
 	 */
 	void updateUnionMain(UnionMain main, Integer busId) throws Exception;
+
+	/**
+	 * 创建联盟判断信息
+	 * @param user
+	 * @return
+	 */
+	String getCreateUnionInfo(BusUser user) throws Exception;
+
+	/**
+	 * 保存创建联盟
+	 * @param vo
+	 */
+	void saveCreateUnion(UnionMainInfoVo vo);
 }

@@ -32,4 +32,12 @@ public interface IUnionApplyService extends IService<UnionApply> {
 	 * @return
 	 */
 	UnionApplyInfo getUnionApplyInfo(Integer busId, Integer unionId);
+
+	/**
+	 * 获取商家申请加盟
+	 * @param busId	商家id
+	 * @param unionId	联盟id
+	 * @return
+	 */
+	int getUnionApply(Integer busId, Integer unionId);
 }

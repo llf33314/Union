@@ -76,10 +76,10 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 		}
 		UnionBusinessRecommend businessRecommend = this.selectById(recommend.getId());
 		if(CommonUtil.isEmpty(businessRecommend) || businessRecommend.getDelStatus() == 1){
-			throw new BusinessException(UnionBusinessRecommendConstant.UNION_BUSINESS_RECOMMEND_NOTEXITS);
+			throw new BusinessException("该商机不存在，请刷新后重试");
 		}
 		if(businessRecommend.getIsAcceptance() != 0){
-			throw new BusinessException(UnionBusinessRecommendConstant.UNION_BUSINESS_RECOMMEND_VERIFIED);
+			throw new BusinessException("该商机已处理，请刷新后重试");
 		}
 		this.updateById(recommend);
 	}
@@ -88,24 +88,24 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	public void saveUnionBusinessRecommend(UnionBusinessRecommendFormVo vo) throws Exception{
 		//TODO 判断推荐的商家是否有效
 		if(CommonUtil.isEmpty(vo.getUnionId())){
-			throw new ParameterException(UnionBusinessRecommendConstant.UNION_BUSINESS_RECOMMEND_CHOICE_UNION);
+			throw new ParameterException("请选择联盟");
 		}
 		if(CommonUtil.isEmpty(vo.getToMemberId())){
-			throw new ParameterException(UnionBusinessRecommendConstant.UNION_BUSINESS_RECOMMEND_CHOICE_TOMEMBER);
+			throw new ParameterException("请选择推荐的商家");
 		}
 		if(CommonUtil.isEmpty(vo.getUnionBusinessRecommendInfo().getUserName())){
-			throw new ParameterException(UnionBusinessRecommendConstant.UNION_BUSINESS_RECOMMEND_USERNAME_NULL);
+			throw new ParameterException("意向客户姓名不能为空，请重新输入");
 		}
 		if(StringUtil.getStringLength(vo.getUnionBusinessRecommendInfo().getUserName()) > 5){
-			throw new ParameterException(UnionBusinessRecommendConstant.UNION_BUSINESS_RECOMMEND_USERNAME_LENGTH);
+			throw new ParameterException("意向客户姓名不可超过5个字，请重新输入");
 		}
 		if(CommonUtil.isEmpty(vo.getUnionBusinessRecommendInfo().getUserPhone())){
-			throw new ParameterException(UnionBusinessRecommendConstant.UNION_BUSINESS_RECOMMEND_PHONE_NULL);
+			throw new ParameterException("意向客户电话不能为空，请重新输入");
 		}
 		if(StringUtil.getStringLength(vo.getUnionBusinessRecommendInfo().getBusinessMsg()) > 20){
-			throw new ParameterException(UnionBusinessRecommendConstant.UNION_BUSINESS_RECOMMEND_REASON_LENGTH);
+			throw new ParameterException("业务备注不可超过20个字，请重新输入");
 		}
-		//TODO 判断商机推荐的手机号是否正确
+		//TODO 判断商机推荐的手机号是否正确   您输入的意向客户电话有误，请重新输入
 		UnionBusinessRecommend recommend = new UnionBusinessRecommend();
 		recommend.setCreatetime(new Date());
 		recommend.setDelStatus(0);

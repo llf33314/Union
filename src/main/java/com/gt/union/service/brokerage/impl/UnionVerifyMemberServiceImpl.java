@@ -51,14 +51,14 @@ public class UnionVerifyMemberServiceImpl extends ServiceImpl<UnionVerifyMemberM
 	@Override
 	public void saveUnionVerifyMember(UnionVerifyMember unionVerifyMember) throws Exception {
 		if(CommonUtil.isEmpty(unionVerifyMember.getMemberName())){
-			throw new ParameterException(UnionVerifyMemberConstant.UNION_VERIFY_MEMBER_NAME_NULL);
+			throw new ParameterException("姓名内容不能为空，请重新输入");
 		}else {
 			if(StringUtil.getStringLength(unionVerifyMember.getMemberName()) > 5){
-				throw new ParameterException(UnionVerifyMemberConstant.UNION_VERIFY_MEMBER_NAME_LENGTH_ERROR);
+				throw new ParameterException("姓名内容不可超过5个字，请重新输入");
 			}
 		}
 		if(CommonUtil.isEmpty(unionVerifyMember.getPhone())){
-			throw new ParameterException(UnionVerifyMemberConstant.UNION_VERIFY_MEMBER_PHONE_NULL);
+			throw new ParameterException("手机号码内容不能为空，请重新输入");
 		}else {
 			//TODO 正则校验手机号
 		}
@@ -67,7 +67,7 @@ public class UnionVerifyMemberServiceImpl extends ServiceImpl<UnionVerifyMemberM
 		memberEntityWrapper.eq("phone",unionVerifyMember.getPhone());
 		int count = this.selectCount(memberEntityWrapper);
 		if(count > 0){
-			throw new ParameterException(UnionVerifyMemberConstant.UNION_VERIFY_MEMBER_PHONE_EXITS);
+			throw new ParameterException("您输入的手机号码已存在，请重新输入");
 		}
 		EntityWrapper<UnionVerifyMember> memberWrapper = new EntityWrapper<UnionVerifyMember>();
 		memberWrapper.eq("del_status",0);
@@ -75,7 +75,7 @@ public class UnionVerifyMemberServiceImpl extends ServiceImpl<UnionVerifyMemberM
 		memberWrapper.eq("member_name",unionVerifyMember.getMemberName());
 		count = this.selectCount(memberEntityWrapper);
 		if(count > 0){
-			throw new ParameterException(UnionVerifyMemberConstant.UNION_VERIFY_MEMBER_NAME_EXITS);
+			throw new ParameterException("您输入的姓名已存在，请重新输入");
 		}
 		this.insert(unionVerifyMember);
 	}

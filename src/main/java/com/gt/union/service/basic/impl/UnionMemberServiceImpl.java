@@ -252,7 +252,8 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         entityWrapper.eq("del_status", UnionMemberConstant.DEL_STATUS_NO)
                 .eq("union_id", unionId)
                 .eq("bus_id", busId)
-                .eq("is_nuion_owner", UnionMemberConstant.IS_UNION_OWNER_YES);
+                .eq("is_nuion_owner", UnionMemberConstant.IS_UNION_OWNER_YES)
+                .eq("out_staus", UnionMemberConstant.OUT_STATUS_NORMAL);
 
         return this.isExistUnionMember(entityWrapper);
     }
@@ -302,5 +303,28 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         sbSqlSelect.append("t1.id, t1.bus_id, t2.id as from_id, t2.brokerage_ratio as from_brokerage, t3.id as to_id, t3.brokerage_ratio as to_brokerage, t6.enterprise_name");
         wrapper.setSqlSelect(sbSqlSelect.toString());
         return this.selectMapsPage(page, wrapper);
+    }
+
+    @Override
+    public int isMemberValid(UnionMember unionMember) {
+        if(unionMember == null){
+            return -1;
+        }
+        if(unionMember.getDelStatus() == 1){
+            return -2;
+        }
+        if(unionMember.getOutStaus() == 2){
+            return -3;
+        }
+        return 1;
+    }
+
+    @Override
+    public UnionMember getUnionMember(Integer busId, Integer unionId) {
+        EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<UnionMember>();
+        entityWrapper.eq("union_id",unionId);
+        entityWrapper.eq("bus_id",busId);
+        entityWrapper.eq("del_status",0);
+        return this.selectOne(entityWrapper);
     }
 }

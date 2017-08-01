@@ -91,4 +91,19 @@ public interface IUnionMemberService extends IService<UnionMember> {
      */
     Page selectUnionBrokerageList(Page page, Integer unionId, Integer busId) throws Exception;
 
+    /**
+     * 判断盟员是否有效
+     * @param unionMember 联盟成员
+     * @return -1-->联盟成员不存在 -2-->联盟成员已退出 -3-->联盟成员处于过渡期 1-->联盟成员有效
+     */
+    int isMemberValid(UnionMember unionMember);
+
+
+    /**
+     * 查询联盟成员
+     * @param busId 商家id
+     * @param unionId   联盟id
+     * @return
+     */
+    UnionMember getUnionMember(Integer busId, Integer unionId);
 }

@@ -1,5 +1,6 @@
 package com.gt.union.service.basic.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
@@ -87,5 +88,39 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
             return null;
         }
     }
+
+	@Override
+	public int getUnionApply(Integer busId, Integer unionId) {
+        EntityWrapper<UnionApply> entityWrapper = new EntityWrapper<UnionApply>();
+        entityWrapper.eq("union_id",unionId)
+                .eq("bus_id",busId)
+                .eq("del_status",UnionApplyConstant.DEL_STATUS_NO);
+        UnionApply apply = this.selectOne(entityWrapper);
+        if(apply == null){
+            return 1;
+        }
+        if(apply.getApplyStatus() ==0 ){
+            return 2;//未审核
+        }
+        if(apply.getApplyStatus() == 1){
+            return -2;//盟主审核通过
+        }
+        if(apply.getApplyStatus() == 2){
+            return -3;//审核不通过
+        }
+        if(apply.getBusConfirmStatus() == 0){
+            return 3;   //商家申请未审核
+        }
+        if(apply.getBusConfirmStatus() == 1){
+            return 4; //盟员推荐未审核
+        }
+        if(apply.getBusConfirmStatus() == 2){
+            return -13;
+        }
+        if(apply.getBusConfirmStatus() == 3){
+            return -14;
+        }
+		return 0;
+	}
 
 }
