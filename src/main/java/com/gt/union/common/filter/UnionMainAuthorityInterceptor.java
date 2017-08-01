@@ -12,6 +12,7 @@ import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Map;
 
 /**
  * Created by Administrator on 2017/8/1 0001.
@@ -48,8 +49,13 @@ public class UnionMainAuthorityInterceptor extends HandlerInterceptorAdapter {
 			}else {
 				Integer id = CommonUtil.toInteger(unionId);
 				//查询联盟信息
-				UnionMain main = daoUtil.queryForObject("select * from t_union_main where id = ? and del_status = ? and union_verify_status = ?",UnionMain.class,id,0,1);
+				Map<String,Object> main = daoUtil.queryForMap("select * from t_union_main where id = ? and del_status = ? and union_verify_status = ?",id,0,1);
 				if(CommonUtil.isNotEmpty(main)){
+					Integer busId = CommonUtil.toInteger(main.get("bus_id"));
+					//TODO 1、判断商家权限
+
+
+					//TODO 2、根据商家权限判断判断是否需要判断联盟有效期
 
 				}else {
 					request.setAttribute("unionMainAuthority",UnionMainAuthorityConstant.UNION_MIAN_IS_NULL);
