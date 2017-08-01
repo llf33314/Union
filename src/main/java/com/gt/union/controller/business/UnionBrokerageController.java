@@ -1,6 +1,8 @@
 package com.gt.union.controller.business;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.gt.union.common.annotation.SysLogAnnotation;
+import com.gt.union.common.annotation.UnionMainAuthorityAnnotation;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.SessionUtils;
@@ -43,6 +45,7 @@ public class UnionBrokerageController {
 	 * @param request
 	 * @return
 	 */
+	@UnionMainAuthorityAnnotation
 	@RequestMapping(value = "", method = RequestMethod.GET,produces = "application/json;charset=UTF-8")
 	public String unionBrokerage(Page page, HttpServletRequest request, @RequestParam(name = "unionId", required = true) Integer unionId){
 		BusUser user = SessionUtils.getLoginUser(request);
@@ -69,6 +72,7 @@ public class UnionBrokerageController {
 	 * @param unionBrokerage
 	 * @return
 	 */
+	@SysLogAnnotation(description = "更新盟员佣金比", op_function = "3")
 	@RequestMapping("/{id}")
 	public String updateUnionBrokerage(HttpServletRequest request, @PathVariable Integer id, @RequestBody UnionBrokerage unionBrokerage){
 		BusUser user = SessionUtils.getLoginUser(request);

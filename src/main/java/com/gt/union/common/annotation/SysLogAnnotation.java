@@ -17,7 +17,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface SysLogAnnotation {
 	/**
-	 * 功能模块
+	 * 功能模块 1、查询 2、新增 3、修改 4、删除 5、其他
 	 * @return
 	 */
 	public String op_function() default "" ;
