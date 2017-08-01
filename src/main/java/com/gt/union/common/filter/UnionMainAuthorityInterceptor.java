@@ -52,7 +52,8 @@ public class UnionMainAuthorityInterceptor extends HandlerInterceptorAdapter {
 				Map<String,Object> main = daoUtil.queryForMap("select * from t_union_main where id = ? and del_status = ? and union_verify_status = ?",id,0,1);
 				if(CommonUtil.isNotEmpty(main)){
 					Integer busId = CommonUtil.toInteger(main.get("bus_id"));
-					//TODO 1、判断商家权限
+					//TODO 1、判断盟主商家有效期
+
 
 
 					//TODO 2、根据商家权限判断判断是否需要判断联盟有效期

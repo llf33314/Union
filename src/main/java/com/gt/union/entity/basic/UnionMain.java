@@ -152,7 +152,6 @@ public class UnionMain extends Model<UnionMain> {
 	@TableField("union_validity")
 	private Date unionValidity;
 
-
 	public Integer getId() {
 		return id;
 	}

@@ -22,4 +22,12 @@ public interface IUnionCardDivideRecordService extends IService<UnionCardDivideR
 	 * @return
 	 */
 	Page getUnionCardDivideRecordList(Page page, UnionCardDivideRecordVo vo);
+
+	/**
+	 * 查询分成记录总和
+	 * @param busId	商家id
+	 * @param unionId	联盟id 可以为空
+	 * @return
+	 */
+	public double getUnionCardDivideRecordSum(Integer busId, Integer unionId);
 }

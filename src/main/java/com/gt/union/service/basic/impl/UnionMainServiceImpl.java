@@ -3,10 +3,12 @@ package com.gt.union.service.basic.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParameterException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.DateTimeKit;
 import com.gt.union.entity.basic.UnionApplyInfo;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.common.BusUser;
@@ -14,10 +16,16 @@ import com.gt.union.mapper.basic.UnionMainMapper;
 import com.gt.union.service.basic.IUnionApplyService;
 import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.basic.IUnionMemberService;
+import com.gt.union.service.brokerage.IUnionBrokerageWithdrawalsRecordService;
+import com.gt.union.service.business.IUnionBrokeragePayRecordService;
+import com.gt.union.service.card.IUnionBusMemberCardService;
+import com.gt.union.service.card.IUnionCardDivideRecordService;
 import com.gt.union.vo.basic.UnionMainInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,13 +43,22 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
 
 	@Autowired
-	private UnionMainMapper unionMainMapper;
-
-	@Autowired
 	private IUnionApplyService unionApplyService;
 
 	@Autowired
 	private IUnionMemberService unionMemberService;
+
+	@Autowired
+	private IUnionBusMemberCardService unionBusMemberCardService;
+
+	@Autowired
+	private IUnionCardDivideRecordService unionCardDivideRecordService;
+
+	@Autowired
+	private IUnionBrokeragePayRecordService unionBrokeragePayRecordService;
+
+	@Autowired
+	private IUnionBrokerageWithdrawalsRecordService unionBrokerageWithdrawalsRecordService;
 
 	public UnionMain getUnionMain(Integer unionId){
 		EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<UnionMain>();
@@ -50,21 +67,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		entityWrapper.eq("union_verify_status",1);
 		UnionMain main = this.selectOne(entityWrapper);
 		return main;
-	}
-
-	@Override
-	public Map<String, Object> getUnionMainMemberInfo(Integer busId, Integer unionId) {
-		Map<String,Object> data = new HashMap<String,Object>();
-		UnionMain main = getUnionMain(unionId);
-		data.put("main",main);
-		UnionApplyInfo info  = unionApplyService.getUnionApplyInfo(busId,unionId);//本商家的
-		data.put("info",info);
-		if(!busId.equals(main.getBusId())){
-			busId = main.getBusId();
-			UnionApplyInfo mainInfo = unionApplyService.getUnionApplyInfo(busId,unionId);
-			data.put("mainInfo",mainInfo);//盟主信息
-		}
-		return data;
 	}
 
 	@Override
@@ -82,12 +84,16 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
 		};
 		StringBuilder sbSqlSelect = new StringBuilder("");
-		sbSqlSelect.append("t1.id, t1.createtime, t1.del_status, t1.union_name, t1.bus_id, t1.union_img, t1.join_type, t1.director_phone, ")
-				.append("t1.union_illustration, t1.union_wx_group_img, t1.union_sign, t1.union_total_member, t1.union_member_num, ")
-				.append("t1.union_level, t1.union_verify_status, t1.is_integral, t1.old_member_charge, t1.black_card_charge, ")
-				.append("t1.black_card_price, t1.black_card_term, t1.red_card_opend, t1.red_card_price, t1.red_card_term, ")
-				.append("t1.black_card_illustration, t1.red_card_illustration, t1.union_validity ");
+		sbSqlSelect.append("t1.id, t1.createtime, t1.del_status delStatus, t1.union_name unionName, ")
+				.append("t1.bus_id busId, t1.union_img unionImg, t1.join_type joinType, t1.director_phone directorPhone,")
+				.append("t1.union_illustration unionIllustration, t1.union_wx_group_img unionWxGroupImg, t1.union_sign unionSign, ")
+				.append("t1.union_total_member uniontotalMember, t1.union_member_num unionMemberNum, t1.union_level unionLevel, ")
+				.append("t1.union_verify_status unionVerifyStatus, t1.is_integral isIntegral, t1.old_member_charge oldMemberCharge, ")
+				.append("t1.black_card_charge blackCardCcharge, t1.black_card_price blackCardPrice, t1.black_card_term blackCardTerm, ")
+				.append(" t1.red_card_opend redCardOpend, t1.red_card_price redCardPrice, t1.red_card_term redCardTerm, ")
+				.append("t1.black_card_illustration blackCardIllustration, t1.red_card_illustration redCardIllustration, t1.union_validity unionValidity");
 		wrapper.setSqlSelect(sbSqlSelect.toString());
+
 		List<UnionMain> list = selectList(wrapper);
 		for (int i = 0; i < list.size(); i++) {
 			UnionMain main = list.get(i);
@@ -106,10 +112,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		return list;
 	}
 
-	@Override
-	public Map<String, Object> getUnionMainMemberInfo(UnionMain main, Integer busId) {
-		return null;
-	}
 
 	@Override
 	public void updateUnionMain(UnionMain main, Integer busId) throws Exception{
@@ -154,6 +156,71 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	}
 
 	@Override
+	public Map<String, Object> getUnionMainMemberInfo(Integer busId) throws Exception{
+		return unionMainMemberInfo(null,busId);
+	}
+
+	@Override
+	public Map<String, Object> getUnionMainMemberInfo(Integer busId, Integer id) throws Exception{
+		UnionMain main = getUnionMain(id);
+		return unionMainMemberInfo(main,busId);
+
+	}
+
+	Map<String,Object> unionMainMemberInfo(UnionMain main, Integer busId) throws Exception{
+		List<UnionMain> list = getMemberUnionList(busId);
+		Map<String,Object> data = new HashMap<String,Object>();
+		List<UnionMain> createUnions = new ArrayList<UnionMain>();
+		List<UnionMain> joinUnions = new ArrayList<UnionMain>();
+		//是否是该盟盟主
+		int isUnionOwner = 1;
+		if(list.size() > 0){
+			if(CommonUtil.isEmpty(main)){
+				main = list.get(0);
+			}
+			data.put("unionName",main.getUnionName());
+			data.put("unionIllustration",main.getUnionIllustration());
+			data.put("createtime", DateTimeKit.format(main.getCreatetime(),DateTimeKit.DEFAULT_DATETIME_FORMAT));
+			data.put("unionMemberNum",main.getUnionMemberNum());
+			data.put("unionTotalMember",main.getUnionTotalMember());
+			data.put("surplusMemberNum",main.getUnionTotalMember() - main.getUnionMemberNum());
+			UnionApplyInfo info  = unionApplyService.getUnionApplyInfo(busId,main.getId());//本商家的
+			data.put("enterpriseName",info.getEnterpriseName());
+			data.put("ownerEnterpriseName",info.getEnterpriseName());
+			if(!busId.equals(main.getBusId())){//不是盟主
+				busId = main.getBusId();
+				UnionApplyInfo mainInfo = unionApplyService.getUnionApplyInfo(busId,main.getId());
+				data.put("ownerEnterpriseName",mainInfo.getEnterpriseName());
+				isUnionOwner = 0;
+			}
+			if(CommonUtil.isNotEmpty(main.getIsIntegral()) && main.getIsIntegral() == 1){
+				//查询联盟积分
+				double integral = unionBusMemberCardService.getUnionMemberIntegral(main.getId());
+				data.put("integral",integral);
+			}
+			double divideSum = unionCardDivideRecordService.getUnionCardDivideRecordSum(busId,main.getId());//收卡分成收入总和
+			double brokerageSum = unionBrokeragePayRecordService.getBrokeragePayRecordSum(busId,main.getId());//佣金收入总和
+			double withdrawalsSum = unionBrokerageWithdrawalsRecordService.getUnionBrokerageWithdrawalsSum(busId,main.getId());//提现总和
+			//查询该联盟可提现佣金总和
+			double ableWithDrawalsSum = new BigDecimal(divideSum).add(new BigDecimal(brokerageSum)).subtract(new BigDecimal(withdrawalsSum)).doubleValue();
+			data.put("ableWithDrawalsSum",ableWithDrawalsSum);
+			for(UnionMain unionMain : list){
+				if(unionMain.getBusId().equals(busId)){
+					createUnions.add(unionMain);
+				}else {
+					joinUnions.add(unionMain);
+				}
+			}
+		}else{
+			isUnionOwner = 0;
+		}
+		data.put("createUnions",createUnions);
+		data.put("joinUnions",joinUnions);
+		data.put("isUnionOwner",isUnionOwner);
+		return data;
+	}
+
+	@Override
 	public int isUnionValid(UnionMain main) {
 		return 0;
 	}
@@ -171,4 +238,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		UnionMain main = this.selectOne(entityWrapper);
 		return main;
 	}
+
+
 }

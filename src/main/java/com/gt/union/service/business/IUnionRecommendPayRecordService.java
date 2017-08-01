@@ -21,12 +21,4 @@ public interface IUnionRecommendPayRecordService extends IService<UnionRecommend
 	 */
 	public double getRecommendPay(Integer busId, Integer unionId);
 
-	/**
-	 * 查询
-	 * @param busId
-	 * @param unionId
-	 * @param delStatus
-	 * @return
-	 */
-	//public double getAllRecommendPay(Integer busId, Integer unionId, Integer delStatus);
 }

@@ -12,5 +12,15 @@ import com.gt.union.entity.business.UnionBrokeragePayRecord;
  * @since 2017-07-24
  */
 public interface IUnionBrokeragePayRecordService extends IService<UnionBrokeragePayRecord> {
+
+	/**
+	 * 查询商机佣金支付总和  可根据联盟id查
+	 * @param busId	商家id
+	 * @param unionId	联盟id
+	 * @return
+	 */
+	public double getBrokeragePayRecordSum(Integer busId, Integer unionId);
+
+
 	
 }

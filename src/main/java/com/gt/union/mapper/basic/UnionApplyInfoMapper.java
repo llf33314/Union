@@ -14,11 +14,4 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface UnionApplyInfoMapper extends BaseMapper<UnionApplyInfo> {
 
-	/**
-	 * 根据主账号商家id和联盟id查询盟员信息
-	 * @param busId	主账号商家id
-	 * @param unionId	联盟id
-	 * @return
-	 */
-	UnionApplyInfo selectUnionApplyInfo(@Param("busId") Integer busId, @Param("unionId") Integer unionId);
 }

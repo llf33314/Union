@@ -20,7 +20,7 @@ public interface UnionMainAuthorityConstant {
 	public static final int UNION_MAIN_IS_OUT = -2;
 
 	/**
-	 * 联盟商家过期
+	 * 盟主商家账号过期
 	 */
 	public static final int UNION_MAIN_OWNER_OUT = -3;
 

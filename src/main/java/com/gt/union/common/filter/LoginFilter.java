@@ -64,13 +64,12 @@ public class LoginFilter implements Filter {
 		// 如果通过则执行filterChain.doFilter(servletReqeust, servletResponse)，
 		// 否则可通过servletResponse直接返回相关提示信息或不返回
 		//设置允许跨域
-       /* HttpServletResponse response = (HttpServletResponse) servletResponse;
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
-        response.setHeader("Access-Control-Max-Age", "3600");
-        response.setHeader("Access-Control-Allow-Headers", "x-requested-with");*/
-		/*HttpServletRequest req = (HttpServletRequest) request;
+		HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
+		res.setHeader("Access-Control-Allow-Origin", "*");
+		res.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
+		res.setHeader("Access-Control-Max-Age", "3600");
+		res.setHeader("Access-Control-Allow-Headers", "x-requested-with");
 		BusUser busUser = SessionUtils.getLoginUser(req);
 		String url = ((HttpServletRequest) request).getRequestURI();//获取请求路径
 		if(url.equals("/")){
@@ -87,6 +86,12 @@ public class LoginFilter implements Filter {
 		}else if(passSuffixs(url)||passUrl(url)){
 			chain.doFilter(request, response);
 		}else if (busUser == null) {// 判断到商家没有登录,就跳转到登陆页面
+			//TODO 设置默认登录
+			busUser = new BusUser();
+			busUser.setId(33);
+			busUser.setPid(0);
+			busUser.setLogin_source(1);
+			SessionUtils.setLoginUser(req,busUser);
 			response.setCharacterEncoding("UTF-8");
 			String script = "<script type='text/javascript'>"
 					+ "top.location.href="+PropertiesUtil.getWxmpUrl()+"'/user/tologin.do';"
@@ -118,8 +123,7 @@ public class LoginFilter implements Filter {
 		}else {
 			// 已经登陆,继续此次请求
 			chain.doFilter(request, response);
-		}*/
-		chain.doFilter(request, response);
+		}
 	}
 
 	@Override

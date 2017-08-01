@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.basic.UnionApplyConstant;
+import com.gt.union.common.exception.ParameterException;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.entity.basic.UnionApply;
@@ -13,7 +14,10 @@ import com.gt.union.mapper.basic.UnionApplyInfoMapper;
 import com.gt.union.mapper.basic.UnionApplyMapper;
 import com.gt.union.service.basic.IUnionApplyService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cglib.beans.BeanMap;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 /**
  * <p>
@@ -71,22 +75,42 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
                 .append(", i.apply_reason applyReason ")
                 .append(", i2.enterprise_name recommendBusName ");
         wrapper.setSqlSelect(sbSqlSelect.toString());
-
         return this.selectMapsPage(page, wrapper);
     }
 
 
 
     @Override
-    public UnionApplyInfo getUnionApplyInfo(Integer busId, Integer unionId) {
+    public UnionApplyInfo getUnionApplyInfo(final Integer busId, final Integer unionId) throws Exception{
         if(CommonUtil.isEmpty(busId) || CommonUtil.isEmpty(unionId)){
-            return null;
+            throw new ParameterException("参数错误");
         }
-        try{
-            return unionApplyInfoMapper.selectUnionApplyInfo(busId,unionId);
-        }catch (Exception e){
-            return null;
-        }
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                StringBuilder sbSqlSegment = new StringBuilder(" t1");
+                sbSqlSegment.append(" LEFT JOIN t_union_apply_info t2 ON t1.id = t2.union_apply_id ")
+                        .append(" WHERE")
+                        .append(" t1.union_id = ").append(unionId)
+                        .append(" AND t1.apply_bus_id = " ).append(busId)
+                        .append(" AND t1.apply_status = " ).append(UnionApplyConstant.APPLY_STATUS_PASS)
+                        .append(" AND t1.del_status = " ).append(UnionApplyConstant.DEL_STATUS_NO);
+                return sbSqlSegment.toString();
+            };
+
+        };
+        StringBuilder sbSqlSelect = new StringBuilder();
+        sbSqlSelect.append(" t2.id , t2.union_apply_id unionApplyId, t2.apply_reason applyReason, t2.enterprise_name enterpriseName, t2.director_name, ")
+                .append("t2.director_phone directorPhone, t2.director_email directorEmail, t2.bus_address busAddress, t2.notify_phone notifyPhone, ")
+                .append("t2.address_longitude addressLongitude, t2.address_latitude addressLatitude, t2.address_provience_id addressProvienceId, ")
+                .append("t2.address_city_id addressCityId, t2.address_district_id addressDistrictId, t2.integral_proportion integralProportion, ")
+                .append("t2.is_member_out_advice isMemberOutAdvice");
+        wrapper.setSqlSelect(sbSqlSelect.toString());
+        Map<String,Object> map = this.selectMap(wrapper);
+        UnionApplyInfo info = new UnionApplyInfo();
+        BeanMap beanMap = BeanMap.create(info);
+        beanMap.putAll(map);
+        return info;
     }
 
 	@Override
