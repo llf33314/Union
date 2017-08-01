@@ -43,4 +43,14 @@ public interface UnionApplyConstant {
      * 商家确认状态：拒绝
      */
     public static final int BUS_CONFIRM_STATUS_FAIL = 3;
+
+    /**
+     * 入盟申请类型：自由申请
+     */
+    public static final int APPLY_TYPE_FREE = 1;
+
+    /**
+     * 入盟申请类型：推荐申请
+     */
+    public static final int APPLY_TYPE_RECOMMEND = 2;
 }

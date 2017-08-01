@@ -15,7 +15,7 @@ import com.gt.union.entity.basic.UnionApplyInfo;
  */
 public interface IUnionApplyService extends IService<UnionApply> {
 	/**
-	 * 根据联盟id获取入盟申请，并根据enterpriseName/directorPhone进行模块匹配
+	 * 根据联盟id获取入盟申请，并根据enterpriseName/directorPhone进行模糊匹配
 	 * @param page
 	 * @param unionId
 	 * @param enterpriseName

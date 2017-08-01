@@ -64,11 +64,11 @@ public class LoginFilter implements Filter {
 		// 如果通过则执行filterChain.doFilter(servletReqeust, servletResponse)，
 		// 否则可通过servletResponse直接返回相关提示信息或不返回
 		//设置允许跨域
-       /* HttpServletResponse response = (HttpServletResponse) servletResponse;
-        response.setHeader("Access-Control-Allow-Origin", "*");
-        response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE");
-        response.setHeader("Access-Control-Max-Age", "3600");
-        response.setHeader("Access-Control-Allow-Headers", "x-requested-with");*/
+        HttpServletResponse httpServletResponse = (HttpServletResponse) response;
+		httpServletResponse.setHeader("Access-Control-Allow-Origin", "*");
+		httpServletResponse.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
+		httpServletResponse.setHeader("Access-Control-Max-Age", "3600");
+		httpServletResponse.setHeader("Access-Control-Allow-Headers", "x-requested-with");
 		/*HttpServletRequest req = (HttpServletRequest) request;
 		HttpServletResponse res = (HttpServletResponse) response;
 		BusUser busUser = SessionUtils.getLoginUser(req);

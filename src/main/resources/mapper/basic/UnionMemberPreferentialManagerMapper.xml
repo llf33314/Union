@@ -6,6 +6,7 @@
 	<resultMap id="BaseResultMap" type="com.gt.union.entity.basic.UnionMemberPreferentialManager">
 		<id column="id" property="id" />
 		<result column="createtime" property="createtime" />
+		<result column="del_status" property="delStatus" />
 		<result column="last_modify_time" property="lastModifyTime" />
 		<result column="member_id" property="memberId" />
 		<result column="preferential_illustration" property="preferentialIllustration" />
