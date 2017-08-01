@@ -65,7 +65,7 @@ public class UnionMemberController {
                     result = this.unionMemberService.listTransfer(page, unionId, busUser.getId());
                     break;
                 default:
-                    throw new Exception("不支持的查询类型listType:" + listType);
+                    throw new Exception("UnionMemberController.listUnionMember():不支持的查询类型listType-" + listType);
             }
 
         } catch (Exception e) {

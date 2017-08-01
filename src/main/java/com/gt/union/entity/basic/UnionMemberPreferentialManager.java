@@ -31,6 +31,13 @@ public class UnionMemberPreferentialManager extends Model<UnionMemberPreferentia
      * 创建时间
      */
 	private Date createtime;
+
+	/**
+	 * 删除状态（0：未删除，1：删除）
+	 */
+	@TableField("del_status")
+	private int delStatus;
+
     /**
      * 最后修改时间
      */
@@ -72,6 +79,14 @@ public class UnionMemberPreferentialManager extends Model<UnionMemberPreferentia
 
 	public void setCreatetime(Date createtime) {
 		this.createtime = createtime;
+	}
+
+	public int getDelStatus() {
+		return delStatus;
+	}
+
+	public void setDelStatus(int delStatus) {
+		this.delStatus = delStatus;
 	}
 
 	public Date getLastModifyTime() {

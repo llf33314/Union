@@ -3,7 +3,7 @@ package com.gt.union.common.constant.basic;
 /**
  * Created by Administrator on 2017/7/27 0027.
  */
-public class UnionDiscountConstant {
+public interface UnionDiscountConstant {
     /**
      * 删除状态：未删除
      */
