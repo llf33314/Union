@@ -3,6 +3,9 @@ package com.gt.union.service.business.impl;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.common.constant.basic.UnionApplyConstant;
+import com.gt.union.common.constant.basic.UnionMainConstant;
+import com.gt.union.common.constant.business.UnionBusinessRecommendConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParameterException;
 import com.gt.union.common.util.CommonUtil;
@@ -134,4 +137,103 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 		info.setUserPhone(vo.getUnionBusinessRecommendInfo().getUserPhone());
 		unionBusinessRecommendInfoService.insert(info);
 	}
+
+	@Override
+	public Page listUnionBusinessRecommendToMe(Page page, final Integer busId, final Integer unionId, final String isAcceptance) throws Exception {
+		if (page == null) {
+			throw new Exception("UnionBusinessRecommendServiceImpl.listUnionBusinessRecommendToMe():参数page不能为空!");
+		}
+        if (busId == null) {
+            throw new Exception("UnionBusinessRecommendServiceImpl.listUnionBusinessRecommendToMe():参数busId不能为空!");
+        }
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                StringBuilder sbSqlSegment = new StringBuilder(" r");
+                sbSqlSegment.append(" LEFT JOIN t_union_business_recommend_info ri ON ri.recommend_id = r.id ")
+                        .append(" LEFT JOIN t_union_apply a ON a.union_member_id = r.from_member_id ")
+                        .append(" LEFT JOIN t_union_apply_info ai ON ai.union_apply_id = a.id ")
+                        .append(" LEFT JOIN t_union_main m ON m.id = r.union_id ")
+                        .append(" WHERE r.del_status = ").append(UnionBusinessRecommendConstant.DEL_STATUS_NO)
+                        .append("    AND r.to_bus_id = ").append(busId)
+                        .append("    AND a.del_status = ").append(UnionApplyConstant.DEL_STATUS_NO)
+                        .append("    AND a.apply_status = ").append(UnionApplyConstant.APPLY_STATUS_PASS)
+                        .append("    AND m.del_status = ").append(UnionMainConstant.DEL_STATUS_NO);
+                if (unionId != null) {
+                    sbSqlSegment.append(" AND r.union_id = ").append(unionId);
+                }
+                if (StringUtil.isNotEmpty(isAcceptance)) {
+                    String[] isAcceptanceArray = isAcceptance.split(",");
+                    sbSqlSegment.append(" AND (");
+                    for (int i = 0, length = isAcceptanceArray.length; i < length; i++) {
+                        sbSqlSegment.append(i == 0 ? "" : " OR ").append(" r.is_acceptance = ").append(isAcceptanceArray[i]);
+                    }
+                    sbSqlSegment.append(" ) ");
+                }
+                sbSqlSegment.append(" ORDER BY r.is_acceptance ASC,r.id DESC ");
+                return sbSqlSegment.toString();
+            }
+        };
+		StringBuilder sbSqlSelect = new StringBuilder(" r.id recommendId ")
+                .append(" , ri.user_name userName ")
+                .append(" , ri.user_phone userPhone ")
+                .append(" , ri.business_msg businessMsg ")
+                .append(" , ai.enterprise_name enterpriseName ")
+                .append(" , m.id unionId ")
+                .append(" , m.union_name unionName ")
+                .append(" , r.is_acceptance isAcceptance ");
+		wrapper.setSqlSelect(sbSqlSelect.toString());
+
+		return this.selectMapsPage(page, wrapper);
+	}
+
+	@Override
+	public Page listUnionBusinessRecommendFromMe(Page page, final Integer busId, final Integer unionId, final String isAcceptance) throws Exception {
+        if (page == null) {
+            throw new Exception("UnionBusinessRecommendServiceImpl.listUnionBusinessRecommedFromMe():参数page不能为空!");
+        }
+        if (busId == null) {
+            throw new Exception("UnionBusinessRecommendServiceImpl.listUnionBusinessRecommedFromMe():参数busId不能为空!");
+        }
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                StringBuilder sbSqlSegment = new StringBuilder(" r");
+                sbSqlSegment.append(" LEFT JOIN t_union_business_recommend_info ri ON ri.recommend_id = r.id ")
+                        .append(" LEFT JOIN t_union_apply a ON a.union_member_id = r.to_member_id ")
+                        .append(" LEFT JOIN t_union_apply_info ai ON ai.union_apply_id = a.id ")
+                        .append(" LEFT JOIN t_union_main m ON m.id = r.union_id ")
+                        .append(" WHERE r.del_status = ").append(UnionBusinessRecommendConstant.DEL_STATUS_NO)
+                        .append("    AND r.from_bus_id = ").append(busId)
+                        .append("    AND a.del_status = ").append(UnionApplyConstant.DEL_STATUS_NO)
+                        .append("    AND a.apply_status = ").append(UnionApplyConstant.APPLY_STATUS_PASS)
+                        .append("    AND m.del_status = ").append(UnionMainConstant.DEL_STATUS_NO);
+                if (unionId != null) {
+                    sbSqlSegment.append(" AND r.union_id = ").append(unionId);
+                }
+                if (StringUtil.isNotEmpty(isAcceptance)) {
+                    String[] isAcceptanceArray = isAcceptance.split(",");
+                    sbSqlSegment.append(" AND (");
+                    for (int i = 0, length = isAcceptanceArray.length; i < length; i++) {
+                        sbSqlSegment.append(i != 0 ? " OR " : "").append(" r.is_acceptance = ").append(isAcceptanceArray[i]);
+                    }
+                    sbSqlSegment.append(" ) ");
+                }
+                sbSqlSegment.append(" ORDER BY r.is_acceptance ASC,r.id DESC ");
+                return sbSqlSegment.toString();
+            }
+        };
+        StringBuilder sbSqlSelect = new StringBuilder(" r.id recommendId ")
+                .append(" , ri.user_name userName ")
+                .append(" , ri.user_phone userPhone ")
+                .append(" , ri.business_msg businessMsg ")
+                .append(" , ai.enterprise_name enterpriseName ")
+                .append(" , m.id unionId ")
+                .append(" , m.union_name unionName ")
+                .append(" , r.is_acceptance isAcceptance ");
+        wrapper.setSqlSelect(sbSqlSelect.toString());
+
+        return this.selectMapsPage(page, wrapper);
+	}
+
 }
