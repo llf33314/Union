@@ -2,7 +2,6 @@ package com.gt.union.controller.basic;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.common.annotation.SysLogAnnotation;
-import com.gt.union.common.annotation.UnionMainAuthorityAnnotation;
 import com.gt.union.common.constant.basic.UnionApplyInfoConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
@@ -14,6 +13,7 @@ import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.basic.IUnionApplyInfoService;
 import com.gt.union.service.basic.IUnionMemberService;
 import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
