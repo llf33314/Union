@@ -108,8 +108,10 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         wrapper.setSqlSelect(sbSqlSelect.toString());
         Map<String,Object> map = this.selectMap(wrapper);
         UnionApplyInfo info = new UnionApplyInfo();
-        BeanMap beanMap = BeanMap.create(info);
-        beanMap.putAll(map);
+        if(CommonUtil.isNotEmpty(map)){
+            BeanMap beanMap = BeanMap.create(info);
+            beanMap.putAll(map);
+        }
         return info;
     }
 

@@ -1,7 +1,6 @@
 package com.gt.union.controller.basic;
 
 import com.gt.union.common.annotation.SysLogAnnotation;
-import com.gt.union.common.annotation.UnionMainAuthorityAnnotation;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
@@ -44,17 +43,19 @@ public class UnionApplyInfoController {
 	 * @param unionApplyInfo
 	 * @return
 	 */
-	@UnionMainAuthorityAnnotation
 	@ApiOperation(value = "更新盟员信息", notes = "更新盟员信息", produces = "application/json;charset=UTF-8")
 	@SysLogAnnotation(op_function = "3", description = "更新盟员信息")
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-	public String updateUnionApplyInfo(HttpServletRequest request, @RequestBody UnionApplyInfo unionApplyInfo
-			, @RequestParam(name = "unionId", required = true) Integer unionId) {
+	public String updateUnionApplyInfo(HttpServletRequest request,
+									   @ApiParam(name="id", value = "盟员信息id", required = true) @PathVariable Integer id ,
+									   @ApiParam(name="unionApplyInfo", value = "盟员信息", required = true) @RequestBody UnionApplyInfo unionApplyInfo ,
+									   @ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId) {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
 			if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
 				throw new BusinessException("请使用主账号操作");
 			}
+			unionApplyInfo.setId(id);
 			this.unionApplyInfoService.updateUnionApplyInfo(unionApplyInfo,busUser.getId(),unionId);
 		} catch (BaseException e) {
 			logger.error("", e);

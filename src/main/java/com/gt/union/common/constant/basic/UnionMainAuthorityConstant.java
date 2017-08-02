@@ -12,7 +12,7 @@ public interface UnionMainAuthorityConstant {
 	/**
 	 * 联盟不存在
 	 */
-	public static final int UNION_MIAN_IS_NULL = -1;
+	public static final int UNION_MAIN_IS_NULL = -1;
 
 	/**
 	 * 联盟过期

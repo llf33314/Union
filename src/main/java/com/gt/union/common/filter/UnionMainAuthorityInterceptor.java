@@ -1,12 +1,7 @@
 package com.gt.union.common.filter;
 
-import com.gt.union.common.annotation.UnionMainAuthorityAnnotation;
-import com.gt.union.common.constant.basic.UnionMainAuthorityConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.util.*;
-import com.gt.union.entity.basic.UnionMain;
-import com.gt.union.service.basic.IUnionMainService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
@@ -38,31 +33,24 @@ public class UnionMainAuthorityInterceptor extends HandlerInterceptorAdapter {
 	@Override
 	public boolean preHandle(HttpServletRequest request,
 							 HttpServletResponse response, Object handler) throws Exception {
-		HandlerMethod handlerMethod=(HandlerMethod) handler;
-		UnionMainAuthorityAnnotation annotation = handlerMethod.getMethodAnnotation(UnionMainAuthorityAnnotation.class);
-		//加了联盟权限注解
-		if (annotation!=null) {
-			DaoUtil daoUtil= CommonUtil.getApplicationContext().getBean(DaoUtil.class);
-			String unionId = request.getParameter("unionId");
-			if(CommonUtil.isEmpty(unionId)){
-				request.setAttribute("unionMainAuthority", UnionMainAuthorityConstant.UNION_ID_IS_NULL);
-			}else {
-				Integer id = CommonUtil.toInteger(unionId);
+		DaoUtil daoUtil= CommonUtil.getApplicationContext().getBean(DaoUtil.class);
+		String unionId = request.getParameter("unionId");
+		if(CommonUtil.isNotEmpty(unionId)){
+			Integer id = CommonUtil.toInteger(unionId);
 				//查询联盟信息
-				Map<String,Object> main = daoUtil.queryForMap("select * from t_union_main where id = ? and del_status = ? and union_verify_status = ?",id,0,1);
-				if(CommonUtil.isNotEmpty(main)){
-					Integer busId = CommonUtil.toInteger(main.get("bus_id"));
-					//TODO 1、判断盟主商家有效期
+			Map<String,Object> main = daoUtil.queryForMap("select * from t_union_main where id = ? and del_status = ? and union_verify_status = ?",id,0,1);
+			if(CommonUtil.isNotEmpty(main)){
+				Integer busId = CommonUtil.toInteger(main.get("bus_id"));
+				//TODO 1、判断盟主商家有效期
 
 
 
-					//TODO 2、根据商家权限判断判断是否需要判断联盟有效期
+				//TODO 2、根据商家权限判断判断是否需要判断联盟有效期
+				//throw new BusinessException("联盟失效");
 
-				}else {
-					request.setAttribute("unionMainAuthority",UnionMainAuthorityConstant.UNION_MIAN_IS_NULL);
-				}
+			}else {
+				throw new BusinessException("联盟不存在");
 			}
-
 		}
 		return super.preHandle(request, response, handler);
 	}

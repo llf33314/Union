@@ -3,13 +3,11 @@ package com.gt.union.service.card.impl;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.gt.union.common.exception.ParameterException;
 import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.StringUtil;
 import com.gt.union.entity.card.UnionCardDivideRecord;
 import com.gt.union.mapper.card.UnionCardDivideRecordMapper;
 import com.gt.union.service.card.IUnionCardDivideRecordService;
-import com.gt.union.vo.card.UnionCardDivideRecordVo;
+import com.gt.union.vo.card.UnionCardDivideRecordVO;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -26,7 +24,7 @@ import java.util.Map;
 public class UnionCardDivideRecordServiceImpl extends ServiceImpl<UnionCardDivideRecordMapper, UnionCardDivideRecord> implements IUnionCardDivideRecordService {
 
 	@Override
-	public Page getUnionCardDivideRecordList(Page page, UnionCardDivideRecordVo vo) {
+	public Page getUnionCardDivideRecordList(Page page, UnionCardDivideRecordVO vo) {
 		return null;
 	}
 

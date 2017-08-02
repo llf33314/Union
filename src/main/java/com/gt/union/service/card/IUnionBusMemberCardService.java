@@ -3,7 +3,7 @@ package com.gt.union.service.card;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.entity.card.UnionBusMemberCard;
-import com.gt.union.vo.card.UnionBusMemberCardVo;
+import com.gt.union.vo.card.UnionBusMemberCardVO;
 
 /**
  * <p>
@@ -28,5 +28,5 @@ public interface IUnionBusMemberCardService extends IService<UnionBusMemberCard>
 	 * @param vo
 	 * @return
 	 */
-	Page selectUnionBusMemberCardList(Page page, UnionBusMemberCardVo vo) throws Exception;
+	Page selectUnionBusMemberCardList(Page page, UnionBusMemberCardVO vo) throws Exception;
 }

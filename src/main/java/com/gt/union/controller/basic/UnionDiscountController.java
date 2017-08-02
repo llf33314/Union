@@ -4,6 +4,8 @@ import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.basic.IUnionDiscountService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,10 +39,11 @@ public class UnionDiscountController {
      * @param discount
      * @return
      */
+    @ApiOperation(value = "设置盟员折扣", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public String updateUnionDiscount(HttpServletRequest request, @RequestParam(name = "unionId", required = true) Integer unionId
-            , @RequestParam(name = "busId", required = true) Integer busId
-            , @RequestParam(name = "discount", required = true) Double discount) {
+    public String updateUnionDiscount(HttpServletRequest request, @ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId
+            , @ApiParam(name="busId", value = "被设置的盟员商家id", required = true) @RequestParam(name = "busId", required = true) Integer busId
+            , @ApiParam(name="discount", value = "设置的折扣", required = true) @RequestParam(name = "discount", required = true) Double discount) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
             if (busUser == null) {

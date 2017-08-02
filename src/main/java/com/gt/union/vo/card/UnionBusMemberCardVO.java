@@ -5,7 +5,7 @@ import java.util.Date;
 /**
  * Created by Administrator on 2017/7/28 0028.
  */
-public class UnionBusMemberCardVo {
+public class UnionBusMemberCardVO {
 
 	/**
 	 * 联盟卡号

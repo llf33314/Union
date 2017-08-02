@@ -3,7 +3,7 @@ package com.gt.union.service.card;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.entity.card.UnionCardDivideRecord;
-import com.gt.union.vo.card.UnionCardDivideRecordVo;
+import com.gt.union.vo.card.UnionCardDivideRecordVO;
 
 /**
  * <p>
@@ -21,7 +21,7 @@ public interface IUnionCardDivideRecordService extends IService<UnionCardDivideR
 	 * @param vo
 	 * @return
 	 */
-	Page getUnionCardDivideRecordList(Page page, UnionCardDivideRecordVo vo);
+	Page getUnionCardDivideRecordList(Page page, UnionCardDivideRecordVO vo);
 
 	/**
 	 * 查询分成记录总和

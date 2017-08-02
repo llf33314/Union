@@ -10,10 +10,12 @@ import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.DateTimeKit;
 import com.gt.union.entity.basic.UnionApplyInfo;
+import com.gt.union.entity.basic.UnionInfoDict;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.mapper.basic.UnionMainMapper;
 import com.gt.union.service.basic.IUnionApplyService;
+import com.gt.union.service.basic.IUnionInfoDictService;
 import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.basic.IUnionMemberService;
 import com.gt.union.service.brokerage.IUnionBrokerageWithdrawalsRecordService;
@@ -23,6 +25,7 @@ import com.gt.union.service.card.IUnionCardDivideRecordService;
 import com.gt.union.vo.basic.UnionMainInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -59,6 +62,9 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
 	@Autowired
 	private IUnionBrokerageWithdrawalsRecordService unionBrokerageWithdrawalsRecordService;
+
+	@Autowired
+	private IUnionInfoDictService unionInfoDictService;
 
 	public UnionMain getUnionMain(Integer unionId){
 		EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<UnionMain>();
@@ -112,9 +118,10 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		return list;
 	}
 
-
+	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public void updateUnionMain(UnionMain main, Integer busId) throws Exception{
+	public void updateUnionMain(UnionMainInfoVO unionMainInfoVO, Integer busId) throws Exception{
+		UnionMain main = unionMainInfoVO.getUnionMain();
 		if(CommonUtil.isEmpty(main.getId())){
 			throw new ParameterException("参数错误");
 		}
@@ -128,6 +135,10 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		if(CommonUtil.isEmpty(main.getUnionName())){
 			throw new ParameterException("联盟名称不能为空");
 		}
+		EntityWrapper<UnionInfoDict> entityWrapper = new EntityWrapper<UnionInfoDict>();
+		entityWrapper.eq("union_id",main.getId());
+		unionInfoDictService.delete(entityWrapper);
+		unionInfoDictService.insertBatch(unionMainInfoVO.getInfos());
 		this.updateById(main);
 	}
 
@@ -139,7 +150,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		if(user.getPid() != null && user.getPid() != 0){
 			return GTJsonResult.instanceErrorMsg("请使用主账号创建").toString();
 		}
-		if(getCreateUnion(user.getId()) != null){
+		if(getCreateUnion(user.getId()) != null){  //已是盟主
 			//1、判断商家等级是否需要收费创建联盟
 
 			//2、如果需收费，判断联盟是否过有效期
@@ -151,7 +162,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	}
 
 	@Override
-	public void saveCreateUnion(UnionMainInfoVO vo) {
+	public void saveUnionMainInfo(UnionMainInfoVO unionMainInfo, BusUser user) {
 
 	}
 
@@ -161,8 +172,8 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	}
 
 	@Override
-	public Map<String, Object> getUnionMainMemberInfo(Integer busId, Integer id) throws Exception{
-		UnionMain main = getUnionMain(id);
+	public Map<String, Object> getUnionMainMemberInfo(Integer busId, Integer unionId) throws Exception{
+		UnionMain main = getUnionMain(unionId);
 		return unionMainMemberInfo(main,busId);
 
 	}

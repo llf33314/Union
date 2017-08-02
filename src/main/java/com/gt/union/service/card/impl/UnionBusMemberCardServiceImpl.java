@@ -3,13 +3,12 @@ package com.gt.union.service.card.impl;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.gt.union.common.constant.basic.UnionApplyConstant;
 import com.gt.union.common.exception.ParameterException;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.entity.card.UnionBusMemberCard;
 import com.gt.union.mapper.card.UnionBusMemberCardMapper;
 import com.gt.union.service.card.IUnionBusMemberCardService;
-import com.gt.union.vo.card.UnionBusMemberCardVo;
+import com.gt.union.vo.card.UnionBusMemberCardVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -33,7 +32,7 @@ public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCar
 	}
 
 	@Override
-	public Page selectUnionBusMemberCardList(Page page, final UnionBusMemberCardVo vo) throws Exception{
+	public Page selectUnionBusMemberCardList(Page page, final UnionBusMemberCardVO vo) throws Exception{
 		if (vo.getUnionId() == null) {
 			throw new ParameterException("参数错误");
 		}

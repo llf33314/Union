@@ -51,10 +51,10 @@ public interface IUnionMainService extends IService<UnionMain> {
 	/**
 	 * 根据联盟id获取联盟信息
 	 * @param busId	商家id
-	 * @param id	联盟id
+	 * @param unionId	联盟id
 	 * @return
 	 */
-	Map<String,Object> getUnionMainMemberInfo(Integer busId, Integer id) throws Exception;
+	Map<String,Object> getUnionMainMemberInfo(Integer busId, Integer unionId) throws Exception;
 
 	/**
 	 * 根据商家id获取商家加入的联盟列表
@@ -65,10 +65,10 @@ public interface IUnionMainService extends IService<UnionMain> {
 
 	/**
 	 * 更新联盟
-	 * @param main
+	 * @param unionMainInfoVO
 	 * @param busId
 	 */
-	void updateUnionMain(UnionMain main, Integer busId) throws Exception;
+	void updateUnionMain(UnionMainInfoVO unionMainInfoVO, Integer busId) throws Exception;
 
 	/**
 	 * 创建联盟判断信息
@@ -78,10 +78,9 @@ public interface IUnionMainService extends IService<UnionMain> {
 	String getCreateUnionInfo(BusUser user) throws Exception;
 
 	/**
-	 * 保存创建联盟
-	 * @param vo
+	 * 保存创建联盟的信息
+	 * @param unionMainInfo
+	 * @param user
 	 */
-	void saveCreateUnion(UnionMainInfoVO vo);
-
-
+	void saveUnionMainInfo(UnionMainInfoVO unionMainInfo, BusUser user);
 }

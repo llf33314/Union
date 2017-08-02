@@ -6,7 +6,9 @@ import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.card.IUnionBusMemberCardService;
-import com.gt.union.vo.card.UnionBusMemberCardVo;
+import com.gt.union.vo.card.UnionBusMemberCardVO;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -39,17 +41,18 @@ public class UnionBusMemberCardController {
 	 * @param request
 	 * @return
 	 */
+	@ApiOperation(value = "获取盟员的联盟卡列表", notes = "根据unionId获取盟员的联盟卡列表，可模糊搜索电话号码、联盟卡号关键字", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "", method = RequestMethod.GET,produces = "application/json;charset=UTF-8")
-	public String unionBusMemberCard(Page page, HttpServletRequest request, @RequestParam(name = "unionId", required = true) Integer unionId
-			, @RequestParam(name = "phone", required = false) String phone
-			, @RequestParam(name = "cardNo", required = false) String cardNo){
+	public String unionBusMemberCard(Page page, HttpServletRequest request,@ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId
+			,@ApiParam(name="phone", value = "电话号码", required = false) @RequestParam(name = "phone", required = false) String phone
+			,@ApiParam(name="cardNo", value = "联盟卡号", required = false) @RequestParam(name = "cardNo", required = false) String cardNo){
 		BusUser user = SessionUtils.getLoginUser(request);
 		try{
 			Integer busId = user.getId();
 			if(user.getPid() != null && user.getPid() != 0){
 				busId = user.getPid();
 			}
-			UnionBusMemberCardVo vo = new UnionBusMemberCardVo();
+			UnionBusMemberCardVO vo = new UnionBusMemberCardVO();
 			vo.setUnionId(unionId);
 			vo.setBusId(busId);
 			vo.setCardNo(cardNo);

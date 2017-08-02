@@ -5,7 +5,7 @@ import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.card.IUnionCardDivideRecordService;
-import com.gt.union.vo.card.UnionCardDivideRecordVo;
+import com.gt.union.vo.card.UnionCardDivideRecordVO;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -33,7 +33,7 @@ public class UnionCardDivideRecordController {
 	private IUnionCardDivideRecordService unionCardDivideRecordService;
 
 	@RequestMapping(value = "", method = RequestMethod.GET)
-	public String unionCardDivideRecordList(Page page, HttpServletRequest request, @RequestBody UnionCardDivideRecordVo vo) {
+	public String unionCardDivideRecordList(Page page, HttpServletRequest request, @RequestBody UnionCardDivideRecordVO vo) {
 		BusUser user = SessionUtils.getLoginUser(request);
 		try {
 			page = unionCardDivideRecordService.getUnionCardDivideRecordList(page,vo);
