@@ -32,6 +32,15 @@ public class UnionMemberPreferentialManagerController {
     @Autowired
     private IUnionMemberPreferentialManagerService unionMemberPreferentialManagerService;
 
+    /**
+     * 优惠项目信息查询
+     * @param request
+     * @param page
+     * @param unionId
+     * @param listType
+     * @param verifyStatus
+     * @return
+     */
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listPreferentialManager(HttpServletRequest request, Page page
             , @RequestParam(name = "unionId", required = true) Integer unionId
@@ -68,6 +77,13 @@ public class UnionMemberPreferentialManagerController {
         }
     }
 
+    /**
+     * 优惠项目审核详情
+     * @param page
+     * @param id
+     * @param verifyStatus
+     * @return
+     */
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json;charset=utf-8")
     public String detailPreferentialManager(Page page, @PathVariable("id") Integer id
             , @RequestParam(name = "verifyStatus") Integer verifyStatus) {
