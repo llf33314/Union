@@ -7,6 +7,8 @@ import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.basic.IUnionMemberPreferentialManagerService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,11 +43,17 @@ public class UnionMemberPreferentialManagerController {
      * @param verifyStatus
      * @return
      */
+    @ApiOperation(value = "优惠项目信息查询"
+            , notes = "优惠项目信息查询，根据listType进行分类查询"
+            , produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listPreferentialManager(HttpServletRequest request, Page page
-            , @RequestParam(name = "unionId", required = true) Integer unionId
-            , @RequestParam(name = "listType", required = true) Integer listType
-            , @RequestParam(name = "verifyStatus") Integer verifyStatus) {
+            , @ApiParam(name = "unionId", value = "联盟id", required = true)
+              @RequestParam(name = "unionId", required = true) Integer unionId
+            , @ApiParam(name = "listType", value = "查询类型：1代表优惠项目审核，2代表我的优惠项目", required = true)
+              @RequestParam(name = "listType", required = true) Integer listType
+            , @ApiParam(name = "verifyStatus", value = "审核状态，在listType=1时必填,1代表未审核，2代表审核通过，3代表审核不通过")
+              @RequestParam(name = "verifyStatus") Integer verifyStatus) {
         try {
             switch (listType) {
                 case UnionMemberPreferentialManagerConstant.LIST_TYPE_CHECK:
@@ -84,9 +92,15 @@ public class UnionMemberPreferentialManagerController {
      * @param verifyStatus
      * @return
      */
+    @ApiOperation(value = "优惠项目审核详情"
+            , notes = "根据id和审核状态verifyStatus查询优惠项目审核详情"
+            , produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json;charset=utf-8")
-    public String detailPreferentialManager(Page page, @PathVariable("id") Integer id
-            , @RequestParam(name = "verifyStatus") Integer verifyStatus) {
+    public String detailPreferentialManager(Page page
+            , @ApiParam(name = "id", value = "优惠项目审核id", required = true)
+                @PathVariable("id") Integer id
+            , @ApiParam(name = "verifyStatus", value = "审核状态：1代表未审核，2代表审核通过，3代表审核不通过", required = true)
+                @RequestParam(name = "verifyStatus") Integer verifyStatus) {
         Map<String, Object> result = null;
         try {
             result = this.unionMemberPreferentialManagerService.detailPreferentialManager(page, id, verifyStatus);

@@ -43,17 +43,22 @@ public class UnionApplyInfoController {
 	private IUnionMemberService unionMemberService;
 
     /***
-     * 售卡佣金分成管理.比例设置查询
+     * 售卡佣金分成管理-比例设置查询
      * @param request
      * @param page
      * @param unionId
      * @param listType
      * @return
      */
+    @ApiOperation(value = "比例设置"
+            , notes = "售卡佣金分成管理-比例设置查询"
+            , produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String listSellDivideProportion(HttpServletRequest request, Page page
-            , @RequestParam(name = "unionId", required = true)Integer unionId
-            , @RequestParam(name = "listType", required = true)Integer listType) {
+            , @ApiParam(name = "unionId", value = "联盟id", required = true)
+                @RequestParam(name = "unionId", required = true)Integer unionId
+            , @ApiParam(name = "listType", value = "查询类型：1为分页查询，2为列表全部查询", required = true)
+               @RequestParam(name = "listType", required = true)Integer listType) {
 	    try {
 	        BusUser busUser = SessionUtils.getLoginUser(request);
 	        if (busUser == null) {
@@ -79,15 +84,20 @@ public class UnionApplyInfoController {
 	}
 
     /**
-     * 售卡佣金分成管理.更新比例
+     * 售卡佣金分成管理-更新比例
      * @param request
      * @param unionId
      * @return
      */
+    @ApiOperation(value = "更新比例"
+            , notes = "售卡佣金分成管理-更新比例"
+            , produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
 	public String updateSellDivideProportion(HttpServletRequest request
-            , @RequestParam(name = "unionId", required = true) Integer unionId
-            , @RequestBody List<UnionApplyInfo> unionApplyInfoList) {
+            , @ApiParam(name = "unionId", value = "联盟id", required = true)
+             @RequestParam(name = "unionId", required = true) Integer unionId
+            , @ApiParam(name = "unionApplyInfoList", value = "更新的比例实体，只需填写id和sellDivideProportion即可", required = true)
+             @RequestBody List<UnionApplyInfo> unionApplyInfoList) {
 	    try {
 	        BusUser busUser = SessionUtils.getLoginUser(request);
 	        if (busUser == null) {
@@ -115,9 +125,9 @@ public class UnionApplyInfoController {
 	@SysLogAnnotation(op_function = "3", description = "更新盟员信息")
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
 	public String updateUnionApplyInfo(HttpServletRequest request,
-									   @ApiParam(name="id", value = "盟员信息id", required = true) @PathVariable Integer id ,
-									   @ApiParam(name="unionApplyInfo", value = "盟员信息", required = true) @RequestBody UnionApplyInfo unionApplyInfo ,
-									   @ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId) {
+		   @ApiParam(name="id", value = "盟员信息id", required = true) @PathVariable Integer id ,
+		   @ApiParam(name="unionApplyInfo", value = "盟员信息", required = true) @RequestBody UnionApplyInfo unionApplyInfo ,
+		   @ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId) {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
 			if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
