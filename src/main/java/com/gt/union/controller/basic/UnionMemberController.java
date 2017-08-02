@@ -6,6 +6,8 @@ import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.basic.IUnionMemberService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,12 +44,24 @@ public class UnionMemberController {
      * @param outStatus 当listType=UnionMemberConstant.LIST_TYPE_OUT时，不能为空
      * @return
      */
+    @ApiOperation(value = "查询盟员信息"
+            , notes = "根据listType进行请求分类"
+            , produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listUnionMember(HttpServletRequest request, Page page
-            , @RequestParam(name = "unionId", required = true)Integer unionId
-            , @RequestParam(name = "listType", required = true)Integer listType
-            , @RequestParam(name = "enterpriseName", required = false) String enterpriseName
-            , @RequestParam(name = "outStatus", required = false) Integer outStatus) {
+            , @ApiParam(name = "unionId", value = "联盟id", required = true)
+              @RequestParam(name = "unionId", required = true)Integer unionId
+            , @ApiParam(name = "listType"
+                , value = "查询类型:"
+                    + "（1）当值为1时，根据联盟id和session中的bus_id获取盟员列表信息，并支持根据盟员名称enterpriseName进行模糊查询；"
+                    + "（2）当值为2时，根据联盟id获取退盟申请列表信息，并根据outStatus进行退盟状态分类查询;"
+                    + "（3）当值为3时，根据联盟id获取非盟主盟员列表信息."
+                , required = true)
+              @RequestParam(name = "listType", required = true)Integer listType
+            , @ApiParam(name = "enterpriseName", value = "企业名称", required = false)
+              @RequestParam(name = "enterpriseName", required = false) String enterpriseName
+            , @ApiParam(name = "outStatus", value = "商家退出状态，当listType=2时必填，0代表整成，1代表未处理，2代表过渡期")
+              @RequestParam(name = "outStatus", required = false) Integer outStatus) {
         Page result = null;
         try {
             switch (listType) {
@@ -80,8 +94,11 @@ public class UnionMemberController {
      * @param unionMemberId
      * @return
      */
+    @ApiOperation(value = "盟员信息详情"
+            , notes = "根据盟员id获取盟员信息详情"
+            , produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getUnionMember(@PathVariable("id") Integer unionMemberId) {
+    public String getUnionMember(@ApiParam(name = "id", value = "盟员id", required = true)@PathVariable("id") Integer unionMemberId) {
         Map<String, Object> result = null;
         try {
             result = this.unionMemberService.getDetail(unionMemberId);
@@ -92,10 +109,25 @@ public class UnionMemberController {
         return GTJsonResult.instanceSuccessMsg(result).toString();
     }
 
+    /**
+     * 盟主权限转移
+     * @param request
+     * @param unionMemberId
+     * @param unionId
+     * @param isUnionOwner
+     * @return
+     */
+    @ApiOperation(value = "盟主权限转移"
+            , notes = "盟主权限转移"
+            , produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public String updateUnionMember(HttpServletRequest request, @PathVariable("id") Integer unionMemberId
-            , @RequestParam(name = "unionId", required = true) Integer unionId
-            , @RequestParam(name = "isUnionOwner", required = true) Integer isUnionOwner) {
+    public String updateUnionMember(HttpServletRequest request
+            , @ApiParam(name = "id", value = "被授予盟主权限的盟员id", required = true)
+                @PathVariable("id") Integer unionMemberId
+            , @ApiParam(name = "unionId", value = "联盟id", required = true)
+                @RequestParam(name = "unionId", required = true) Integer unionId
+            , @ApiParam(name = "isUnionOwner", value = "目标值：1代表成为盟主", required = true)
+                @RequestParam(name = "isUnionOwner", required = true) Integer isUnionOwner) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
             if (busUser == null) {
