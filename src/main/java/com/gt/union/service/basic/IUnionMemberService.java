@@ -3,6 +3,7 @@ package com.gt.union.service.basic;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.entity.basic.UnionMember;
 
 import java.util.Map;
@@ -92,18 +93,24 @@ public interface IUnionMemberService extends IService<UnionMember> {
     Page selectUnionBrokerageList(Page page, Integer unionId, Integer busId) throws Exception;
 
     /**
-     * 判断盟员是否有效
-     * @param unionMember 联盟成员
-     * @return -1-->联盟成员不存在 -2-->联盟成员已退出 -3-->联盟成员处于过渡期 1-->联盟成员有效
-     */
-    int isMemberValid(UnionMember unionMember);
-
-
-    /**
      * 查询联盟成员
      * @param busId 商家id
      * @param unionId   联盟id
      * @return
      */
     UnionMember getUnionMember(Integer busId, Integer unionId);
+
+
+    /**
+     * 判断盟员是否有效
+     * @param unionMember 联盟成员
+     */
+    void isMemberValid(UnionMember unionMember) throws Exception;
+
+    /**
+     * 判断盟员是否有效
+     * @param busId 商家id
+     * @param unionId   联盟id
+     */
+    void isMemberValid(Integer busId, Integer unionId) throws Exception;
 }

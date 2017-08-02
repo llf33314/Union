@@ -10,7 +10,6 @@ import com.gt.union.entity.business.UnionBrokerage;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.basic.IUnionMemberService;
 import com.gt.union.service.business.IUnionBrokerageService;
-import com.gt.union.vo.business.UnionBusinessRecommendVo;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;

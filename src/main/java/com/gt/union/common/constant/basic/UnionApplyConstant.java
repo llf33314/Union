@@ -30,6 +30,11 @@ public interface UnionApplyConstant {
     public static final int DEL_STATUS_YES = 1;
 
     /**
+     * 商家确认状态：申请状态
+     */
+    public static final int BUS_CONFIRM_STATUS_APPLY = 0;
+
+    /**
      * 商家确认状态：未确认
      */
     public static final int BUS_CONFIRM_STATUS_UNCHECK = 1;

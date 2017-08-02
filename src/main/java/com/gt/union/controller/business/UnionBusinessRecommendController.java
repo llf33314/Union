@@ -7,8 +7,8 @@ import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.business.UnionBusinessRecommend;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.business.IUnionBusinessRecommendService;
-import com.gt.union.vo.business.UnionBusinessRecommendFormVo;
-import com.gt.union.vo.business.UnionBusinessRecommendVo;
+import com.gt.union.vo.business.UnionBusinessRecommendFormVO;
+import com.gt.union.vo.business.UnionBusinessRecommendVO;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -49,7 +49,7 @@ public class UnionBusinessRecommendController {
 			if(user.getPid() != null && user.getPid() != 0){
 				busId = user.getPid();
 			}
-			UnionBusinessRecommendVo vo = new UnionBusinessRecommendVo();
+			UnionBusinessRecommendVO vo = new UnionBusinessRecommendVO();
 			vo.setUnionId(unionId);
 			vo.setBusId(busId);
 			vo.setPhone(phone);
@@ -110,7 +110,7 @@ public class UnionBusinessRecommendController {
 	 * @return
 	 */
 	@RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public String saveUnionBusinessRecommend(HttpServletRequest request, @RequestBody UnionBusinessRecommendFormVo vo){
+	public String saveUnionBusinessRecommend(HttpServletRequest request, @RequestBody UnionBusinessRecommendFormVO vo){
 		BusUser user = SessionUtils.getLoginUser(request);
 		try{
 			Integer busId = user.getId();

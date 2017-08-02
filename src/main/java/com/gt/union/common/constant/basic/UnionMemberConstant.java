@@ -53,4 +53,6 @@ public interface UnionMemberConstant {
      * 是否是盟主：是
      */
     public static final int IS_UNION_OWNER_YES = 1;
+
+
 }

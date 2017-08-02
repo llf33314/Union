@@ -3,8 +3,8 @@ package com.gt.union.service.business;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.entity.business.UnionBusinessRecommend;
-import com.gt.union.vo.business.UnionBusinessRecommendFormVo;
-import com.gt.union.vo.business.UnionBusinessRecommendVo;
+import com.gt.union.vo.business.UnionBusinessRecommendFormVO;
+import com.gt.union.vo.business.UnionBusinessRecommendVO;
 
 /**
  * <p>
@@ -22,7 +22,7 @@ public interface IUnionBusinessRecommendService extends IService<UnionBusinessRe
 	 * @param vo
 	 * @return
 	 */
-	Page selectUnionBusinessRecommendList(Page page, UnionBusinessRecommendVo vo) throws Exception;
+	Page selectUnionBusinessRecommendList(Page page, UnionBusinessRecommendVO vo) throws Exception;
 
 	/**
 	 * 审核商机推荐
@@ -34,5 +34,5 @@ public interface IUnionBusinessRecommendService extends IService<UnionBusinessRe
 	 * 添加商机推荐
 	 * @param vo
 	 */
-	void saveUnionBusinessRecommend(UnionBusinessRecommendFormVo vo) throws Exception;
+	void saveUnionBusinessRecommend(UnionBusinessRecommendFormVO vo) throws Exception;
 }

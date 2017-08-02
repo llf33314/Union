@@ -221,8 +221,16 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	}
 
 	@Override
-	public int isUnionValid(UnionMain main) {
-		return 0;
+	public void isUnionValid(UnionMain main) {
+		//首先判断盟主的有效期
+		//判断盟主的权限
+		//判断联盟的有效期
+	}
+
+	@Override
+	public void isUnionValid(Integer unionId) {
+		UnionMain main = getUnionMain(unionId);
+		isUnionValid(main);
 	}
 
 	/**

@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.basic.UnionApplyConstant;
 import com.gt.union.common.constant.basic.UnionDiscountConstant;
 import com.gt.union.common.constant.basic.UnionMemberConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParameterException;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.entity.basic.UnionMember;
@@ -306,17 +307,13 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    public int isMemberValid(UnionMember unionMember) {
+    public void isMemberValid(UnionMember unionMember) throws Exception {
         if(unionMember == null){
-            return -1;
+            throw new BusinessException("未加入联盟");
         }
-        if(unionMember.getDelStatus() == 1){
-            return -2;
+        if(unionMember.getOutStaus() == UnionMemberConstant.OUT_STATUS_PERIOD){
+            throw new BusinessException("已退出联盟");
         }
-        if(unionMember.getOutStaus() == 2){
-            return -3;
-        }
-        return 1;
     }
 
     @Override
@@ -326,5 +323,11 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         entityWrapper.eq("bus_id",busId);
         entityWrapper.eq("del_status",0);
         return this.selectOne(entityWrapper);
+    }
+
+    @Override
+    public void isMemberValid(Integer busId, Integer unionId) throws Exception {
+        UnionMember unionMember = getUnionMember(busId,unionId);
+        isMemberValid(unionMember);
     }
 }

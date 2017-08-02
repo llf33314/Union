@@ -30,7 +30,14 @@ public interface IUnionMainService extends IService<UnionMain> {
 	 * @param main
 	 * @return
 	 */
-	int isUnionValid(UnionMain main);
+	void isUnionValid(UnionMain main);
+
+	/**
+	 * 判断联盟是否有效
+	 * @param unionId
+	 * @return
+	 */
+	void isUnionValid(Integer unionId);
 
 	/**
 	 * 获取我的联盟信息

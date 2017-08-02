@@ -31,7 +31,7 @@ public interface IUnionApplyService extends IService<UnionApply> {
 	 * @param unionId	联盟id
 	 * @return
 	 */
-	UnionApplyInfo getUnionApplyInfo(Integer busId, Integer unionId);
+	UnionApplyInfo getUnionApplyInfo(Integer busId, Integer unionId) throws Exception;
 
 	/**
 	 * 获取商家申请加盟

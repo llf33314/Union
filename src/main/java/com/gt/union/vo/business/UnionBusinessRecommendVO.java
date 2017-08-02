@@ -3,7 +3,7 @@ package com.gt.union.vo.business;
 /**
  * Created by Administrator on 2017/7/28 0028.
  */
-public class UnionBusinessRecommendVo {
+public class UnionBusinessRecommendVO {
 
 	/**
 	 * 所属联盟id

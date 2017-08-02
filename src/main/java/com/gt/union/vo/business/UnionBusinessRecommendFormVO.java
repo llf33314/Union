@@ -6,7 +6,7 @@ import com.gt.union.entity.business.UnionBusinessRecommendInfo;
  * 保存数据的vo
  * Created by Administrator on 2017/7/28 0028.
  */
-public class UnionBusinessRecommendFormVo {
+public class UnionBusinessRecommendFormVO {
 
 	/**
 	 * 商家id

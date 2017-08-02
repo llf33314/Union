@@ -55,7 +55,7 @@ public class UnionMainController {
             data = unionMainService.getUnionMainMemberInfo(busId);
             return GTJsonResult.instanceSuccessMsg(data,null,"我的联盟信息成功").toString();
         }catch (Exception e){
-            logger.error("我的联盟信息失败");
+            logger.error("我的联盟信息失败",e);
             return GTJsonResult.instanceErrorMsg("我的联盟信息失败").toString();
         }
     }
@@ -74,7 +74,7 @@ public class UnionMainController {
             data = unionMainService.getUnionMainMemberInfo(busId, id);
             return GTJsonResult.instanceSuccessMsg(data,null,"我的联盟信息成功").toString();
         }catch (Exception e){
-            logger.error("我的联盟信息失败");
+            logger.error("我的联盟信息失败", e);
             return GTJsonResult.instanceErrorMsg("我的联盟信息失败").toString();
         }
     }
@@ -94,7 +94,7 @@ public class UnionMainController {
             List<UnionMain> list = unionMainService.getMemberUnionList(busId);
             return GTJsonResult.instanceSuccessMsg(list,null,"获取联盟列表成功").toString();
         }catch (Exception e){
-            logger.error("获取联盟列表失败");
+            logger.error("获取联盟列表失败", e);
             return GTJsonResult.instanceErrorMsg("获取联盟列表失败").toString();
         }
     }
@@ -119,10 +119,10 @@ public class UnionMainController {
             unionMainService.updateUnionMain(main, busId);
             return GTJsonResult.instanceSuccessMsg(null,null,"更新成功").toString();
         }catch (BaseException e){
-            logger.error("获取联盟信息错误");
+            logger.error("获取联盟信息错误", e);
             return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
         }catch (Exception e){
-            logger.error("获取联盟信息错误");
+            logger.error("获取联盟信息错误", e);
             return GTJsonResult.instanceErrorMsg("更新失败").toString();
         }
     }
@@ -133,16 +133,16 @@ public class UnionMainController {
      * @param request
      * @return
      */
-    @RequestMapping(value = "/getCreateUnionInfo", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/createUnionInfo", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String getCreateUnionInfo(HttpServletRequest request){
         BusUser user = SessionUtils.getLoginUser(request);
         try{
             return unionMainService.getCreateUnionInfo(user);
         }catch (BaseException e){
-            logger.error("获取联盟信息错误");
+            logger.error("获取联盟信息错误", e);
             return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
         }catch (Exception e){
-            logger.error("获取联盟信息错误");
+            logger.error("获取联盟信息错误", e);
             return GTJsonResult.instanceErrorMsg("更新失败").toString();
         }
     }

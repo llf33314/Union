@@ -123,25 +123,25 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         if(apply == null){
             return 1;
         }
-        if(apply.getApplyStatus() ==0 ){
+        if(apply.getApplyStatus() == UnionApplyConstant.APPLY_STATUS_UNCHECKED ){
             return 2;//未审核
         }
-        if(apply.getApplyStatus() == 1){
+        if(apply.getApplyStatus() == UnionApplyConstant.APPLY_STATUS_PASS){
             return -2;//盟主审核通过
         }
-        if(apply.getApplyStatus() == 2){
+        if(apply.getApplyStatus() == UnionApplyConstant.APPLY_STATUS_FAIL){
             return -3;//审核不通过
         }
-        if(apply.getBusConfirmStatus() == 0){
+        if(apply.getBusConfirmStatus() == UnionApplyConstant.BUS_CONFIRM_STATUS_APPLY){
             return 3;   //商家申请未审核
         }
-        if(apply.getBusConfirmStatus() == 1){
+        if(apply.getBusConfirmStatus() == UnionApplyConstant.BUS_CONFIRM_STATUS_UNCHECK){
             return 4; //盟员推荐未审核
         }
-        if(apply.getBusConfirmStatus() == 2){
+        if(apply.getBusConfirmStatus() == UnionApplyConstant.BUS_CONFIRM_STATUS_PASS){
             return -13;
         }
-        if(apply.getBusConfirmStatus() == 3){
+        if(apply.getBusConfirmStatus() == UnionApplyConstant.BUS_CONFIRM_STATUS_FAIL){
             return -14;
         }
 		return 0;

@@ -13,4 +13,11 @@ import com.gt.union.entity.basic.UnionApplyInfo;
  */
 public interface IUnionApplyInfoService extends IService<UnionApplyInfo> {
 
+	/**
+	 * 更新盟员信息
+	 * @param unionApplyInfo
+	 * @param id
+	 * @param unionId
+	 */
+	void updateUnionApplyInfo(UnionApplyInfo unionApplyInfo, Integer id, Integer unionId) throws Exception;
 }

@@ -14,8 +14,8 @@ import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.basic.IUnionMemberService;
 import com.gt.union.service.business.IUnionBusinessRecommendInfoService;
 import com.gt.union.service.business.IUnionBusinessRecommendService;
-import com.gt.union.vo.business.UnionBusinessRecommendFormVo;
-import com.gt.union.vo.business.UnionBusinessRecommendVo;
+import com.gt.union.vo.business.UnionBusinessRecommendFormVO;
+import com.gt.union.vo.business.UnionBusinessRecommendVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,7 +44,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	private IUnionMainService unionMainService;
 
 	@Override
-	public Page selectUnionBusinessRecommendList(Page page,final UnionBusinessRecommendVo vo) throws Exception{
+	public Page selectUnionBusinessRecommendList(Page page,final UnionBusinessRecommendVO vo) throws Exception{
 		if (vo.getUnionId() == null) {
 			throw new ParameterException("参数错误");
 		}
@@ -92,7 +92,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	}
 
 	@Override
-	public void saveUnionBusinessRecommend(UnionBusinessRecommendFormVo vo) throws Exception{
+	public void saveUnionBusinessRecommend(UnionBusinessRecommendFormVO vo) throws Exception{
 		//TODO 判断被推荐的商家是否有效
 		//联盟是否有效
 		unionMainService.isUnionValid(unionMainService.selectById(vo.getUnionId()));
