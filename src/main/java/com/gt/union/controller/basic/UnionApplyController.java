@@ -36,14 +36,13 @@ public class UnionApplyController {
             , @ApiParam(name = "unionId", value = "联盟id",required = true) @RequestParam(name = "unionId", required = true) Integer unionId
             , @ApiParam(name = "enterpriseName", value = "申请企业") @RequestParam(name = "enterpriseName", required = false) String enterpriseName
             , @ApiParam(name = "directorPhone", value = "联系电话") @RequestParam(name = "directorPhone", required = false) String directorPhone){
-        Page result = null;
         try {
-            result = this.unionApplyService.listUncheckedApply(page, unionId, enterpriseName, directorPhone);
+            page = this.unionApplyService.listUncheckedApply(page, unionId, enterpriseName, directorPhone);
         } catch (Exception e) {
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
         }
-        return GTJsonResult.instanceSuccessMsg(result).toString();
+        return GTJsonResult.instanceSuccessMsg(page).toString();
     }
 
     @ApiOperation(value = "通过或不通过入盟申请", notes = "根据联盟id及审批状态applyStatus通过或不通过入盟申请")

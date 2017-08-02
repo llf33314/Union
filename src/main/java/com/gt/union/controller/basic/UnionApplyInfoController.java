@@ -134,4 +134,5 @@ public class UnionApplyInfoController {
 		}
 		return GTJsonResult.instanceSuccessMsg(null,null,"更新成功").toString();
 	}
+
 }

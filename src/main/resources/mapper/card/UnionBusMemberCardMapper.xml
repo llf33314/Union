@@ -16,11 +16,4 @@
 		<result column="integral" property="integral" />
 	</resultMap>
 
-	<!-- 查询联盟的商家联盟卡积分总和 -->
-    <select id="getUnionMemberIntegral" resultType="java.lang.Double">
-		SELECT IFNULL(SUM(integral),0)AS integral
-		FROM t_union_bus_member_card WHERE bus_id IN(SELECT bus_id from t_union_member WHERE union_id = #{unionId,jdbcType=INTEGER} and del_status = 0)
-		AND del_status = 0
-	</select>
-
 </mapper>

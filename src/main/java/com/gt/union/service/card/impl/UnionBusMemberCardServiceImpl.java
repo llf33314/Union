@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.exception.ParameterException;
+import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.entity.card.UnionBusMemberCard;
 import com.gt.union.mapper.card.UnionBusMemberCardMapper;
@@ -11,6 +12,8 @@ import com.gt.union.service.card.IUnionBusMemberCardService;
 import com.gt.union.vo.card.UnionBusMemberCardVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.Map;
 
 /**
  * <p>
@@ -23,12 +26,24 @@ import org.springframework.stereotype.Service;
 @Service
 public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCardMapper, UnionBusMemberCard> implements IUnionBusMemberCardService {
 
-	@Autowired
-	private UnionBusMemberCardMapper unionBusMemberCardMapper;
-
 	@Override
-	public double getUnionMemberIntegral(Integer unionId) {
-		return unionBusMemberCardMapper.getUnionMemberIntegral(unionId);
+	public double getUnionMemberIntegral(final Integer unionId) {
+		Wrapper wrapper = new Wrapper() {
+			@Override
+			public String getSqlSegment() {
+				StringBuilder sbSqlSegment = new StringBuilder();
+				sbSqlSegment.append(" WHERE bus_id IN (SELECT bus_id from t_union_member WHERE union_id = ")
+						.append(unionId)
+						.append(" AND del_status = ").append(0).append(")")
+						.append(" AND del_status = ").append(0);
+				return sbSqlSegment.toString();
+			};
+		};
+		StringBuilder sbSqlSelect = new StringBuilder("");
+		sbSqlSelect.append("IFNULL(SUM(integral),0)AS integral");
+		wrapper.setSqlSelect(sbSqlSelect.toString());
+		Map<String,Object> map = this.selectMap(wrapper);
+		return CommonUtil.toDouble(map.get("integral"));
 	}
 
 	@Override
@@ -58,7 +73,7 @@ public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCar
 
 		};
 		StringBuilder sbSqlSelect = new StringBuilder("");
-		sbSqlSelect.append(" t1.id, t1.tcardNo, t1.phone, t1.integral, DATE_FORMAT(t1.createtime, '%Y-%m-%d %T') createtime, t2.card_type, DATE_FORMAT(t2.card_term_time, '%Y-%m-%d %T') cardTermTime");
+		sbSqlSelect.append(" t1.id, t1.cardNo, t1.phone, t1.integral, DATE_FORMAT(t1.createtime, '%Y-%m-%d %T') createtime, t2.card_type, DATE_FORMAT(t2.card_term_time, '%Y-%m-%d %T') cardTermTime");
 		wrapper.setSqlSelect(sbSqlSelect.toString());
 		return this.selectMapsPage(page, wrapper);
 	}

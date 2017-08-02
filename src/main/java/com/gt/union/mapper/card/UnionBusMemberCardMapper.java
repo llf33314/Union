@@ -14,10 +14,4 @@ import org.apache.ibatis.annotations.Param;
  */
 public interface UnionBusMemberCardMapper extends BaseMapper<UnionBusMemberCard> {
 
-	/**
-	 * 根据联盟id获取联盟积分
-	 * @param unionId 联盟id
-	 * @return
-	 */
-	double getUnionMemberIntegral(@Param("unionId") Integer unionId);
 }

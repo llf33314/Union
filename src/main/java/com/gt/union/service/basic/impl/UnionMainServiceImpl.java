@@ -7,6 +7,7 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParameterException;
 import com.gt.union.common.response.GTJsonResult;
+import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.DateTimeKit;
 import com.gt.union.entity.basic.UnionApplyInfo;
@@ -213,7 +214,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 			double brokerageSum = unionBrokeragePayRecordService.getBrokeragePayRecordSum(busId,main.getId());//佣金收入总和
 			double withdrawalsSum = unionBrokerageWithdrawalsRecordService.getUnionBrokerageWithdrawalsSum(busId,main.getId());//提现总和
 			//查询该联盟可提现佣金总和
-			double ableWithDrawalsSum = new BigDecimal(divideSum).add(new BigDecimal(brokerageSum)).subtract(new BigDecimal(withdrawalsSum)).doubleValue();
+			double ableWithDrawalsSum = BigDecimalUtil.add(divideSum,brokerageSum).subtract(new BigDecimal(withdrawalsSum)).doubleValue();
 			data.put("ableWithDrawalsSum",ableWithDrawalsSum);
 			for(UnionMain unionMain : list){
 				if(unionMain.getBusId().equals(busId)){
