@@ -75,7 +75,7 @@ public interface IUnionMainService extends IService<UnionMain> {
 	 * @param user
 	 * @return
 	 */
-	String getCreateUnionInfo(BusUser user) throws Exception;
+	Map<String, Object> getCreateUnionInfo(BusUser user) throws Exception;
 
 	/**
 	 * 保存创建联盟的信息
@@ -83,4 +83,11 @@ public interface IUnionMainService extends IService<UnionMain> {
 	 * @param user
 	 */
 	void saveUnionMainInfo(UnionMainInfoVO unionMainInfo, BusUser user);
+
+	/**
+	 * 根据id获取编辑联盟的信息
+	 * @param id
+	 * @return
+	 */
+	Map<String, Object> getUnionMainInfo(Integer id);
 }

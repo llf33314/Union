@@ -49,6 +49,8 @@ spring:
         max-wait: -1
         max-idle: 8
         min-idle: 0
+  session:
+       store-type: redis
 
 # mybatis设置
 mybatis:

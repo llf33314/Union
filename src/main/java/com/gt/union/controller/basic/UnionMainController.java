@@ -66,7 +66,7 @@ public class UnionMainController {
     @ApiOperation(value = "查询我的联盟信息", notes = "选择某个联盟时调取该方法", produces = "application/json;charset=UTF-8")
     @SysLogAnnotation(op_function = "1", description = "查询我的联盟信息")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String unionMain(HttpServletRequest request, @PathVariable("id") Integer id,
+    public String unionMain(HttpServletRequest request,@ApiParam(name="id", value = "联盟id", required = true)  @PathVariable("id") Integer id,
                             @ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId) {
         BusUser user = SessionUtils.getLoginUser(request);
         Map<String,Object> data = new HashMap<String,Object>();
@@ -138,6 +138,32 @@ public class UnionMainController {
 
 
     /**
+     * 获取编辑联盟信息
+     * @param request
+     * @return
+     */
+    @ApiOperation(value = "获取编辑联盟信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/UnionMainInfo/{id}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String getUnionMainInfo(HttpServletRequest request, @ApiParam(name="id", value = "联盟id", required = true) @PathVariable("id") Integer id,
+                        @ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name="unionId", required = true) Integer unionId){
+        BusUser user = SessionUtils.getLoginUser(request);
+        Map<String,Object> data = new HashMap<String,Object>();
+        try{
+            if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
+                throw new BusinessException("请使用主账号操作");
+            }
+            data = unionMainService.getUnionMainInfo(id);
+        }catch (BaseException e){
+            logger.error("获取编辑联盟信息错误", e);
+            return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+        }catch (Exception e){
+            logger.error("获取编辑联盟信息错误", e);
+            return GTJsonResult.instanceErrorMsg("获取编辑联盟信息错误").toString();
+        }
+        return GTJsonResult.instanceSuccessMsg(data,null,"获取编辑联盟信息成功").toString();
+    }
+
+    /**
      * 获取创建联盟信息
      * @param request
      * @return
@@ -145,11 +171,12 @@ public class UnionMainController {
     @RequestMapping(value = "/unionCreateInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getUnionCreateInfo(HttpServletRequest request){
         BusUser user = SessionUtils.getLoginUser(request);
+        Map<String,Object> data = new HashMap<String,Object>();
         try{
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
                 throw new BusinessException("请使用主账号操作");
             }
-            return unionMainService.getCreateUnionInfo(user);
+            data = unionMainService.getCreateUnionInfo(user);
         }catch (BaseException e){
             logger.error("获取创建联盟信息错误", e);
             return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
@@ -157,6 +184,7 @@ public class UnionMainController {
             logger.error("获取创建联盟信息错误", e);
             return GTJsonResult.instanceErrorMsg("创建失败").toString();
         }
+        return GTJsonResult.instanceSuccessMsg(data,null,"获取编辑联盟信息成功").toString();
     }
 
 
@@ -169,7 +197,7 @@ public class UnionMainController {
      */
     @ApiOperation(value = "保存创建联盟的信息", produces = "application/json;charset=UTF-8")
     @SysLogAnnotation(op_function = "3", description = "保存创建联盟的信息")
-    @RequestMapping(value = "/{id}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String saveUnionMain(HttpServletRequest request,
                                   @ApiParam(name="unionMain", value = "保存创建联盟的信息", required = true) @RequestBody UnionMainInfoVO unionMainInfo ){
         BusUser user = SessionUtils.getLoginUser(request);

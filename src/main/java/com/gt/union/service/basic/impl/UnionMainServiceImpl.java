@@ -1,15 +1,16 @@
 package com.gt.union.service.basic.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParameterException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.DateTimeKit;
+import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.entity.basic.UnionApplyInfo;
 import com.gt.union.entity.basic.UnionInfoDict;
 import com.gt.union.entity.basic.UnionMain;
@@ -67,12 +68,25 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	@Autowired
 	private IUnionInfoDictService unionInfoDictService;
 
+	@Autowired
+	private RedisCacheUtil redisCacheUtil;
+
+
 	public UnionMain getUnionMain(Integer unionId){
-		EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<UnionMain>();
-		entityWrapper.eq("id",unionId);
-		entityWrapper.eq("del_status",0);
-		entityWrapper.eq("union_verify_status",1);
-		UnionMain main = this.selectOne(entityWrapper);
+		UnionMain main = null;
+		if ( redisCacheUtil.exists( "union:"+unionId ) ) {
+			// 1.1 存在则从redis 读取
+			main = (UnionMain) redisCacheUtil.get( "union:"+unionId );
+		} else {
+			// 2. 不存在则从数据库查询
+			EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<UnionMain>();
+			entityWrapper.eq("id",unionId);
+			entityWrapper.eq("del_status",0);
+			entityWrapper.eq("union_verify_status",1);
+			main = this.selectOne(entityWrapper);
+			// 写入 Redis 操作
+			redisCacheUtil.set( "union:"+unionId, main );
+		}
 		return main;
 	}
 
@@ -145,26 +159,35 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
 	//TODO 创建联盟
 	@Override
-	public String getCreateUnionInfo(BusUser user) throws Exception{
+	public Map<String, Object> getCreateUnionInfo(BusUser user) throws Exception{
 		Map<String,Object> data = new HashMap<String,Object>();
 		int type = 1;
-		if(user.getPid() != null && user.getPid() != 0){
-			return GTJsonResult.instanceErrorMsg("请使用主账号创建").toString();
-		}
 		if(getCreateUnion(user.getId()) != null){  //已是盟主
 			//1、判断商家等级是否需要收费创建联盟
 
 			//2、如果需收费，判断联盟是否过有效期
-			return GTJsonResult.instanceErrorMsg("已创建联盟").toString();
+			return data;
 		}
 		//判断商家账号是否有创建联盟的权限
 		data.put("type",type);
-		return GTJsonResult.instanceSuccessMsg(data,null,"去创建联盟").toString();
+		return data;
 	}
 
 	@Override
 	public void saveUnionMainInfo(UnionMainInfoVO unionMainInfo, BusUser user) {
 
+	}
+
+	@Override
+	public Map<String, Object> getUnionMainInfo(Integer id) {
+		Map<String,Object> data = new HashMap<String,Object>();
+		UnionMain main = getUnionMain(id);
+		EntityWrapper entityWrapper = new EntityWrapper<UnionInfoDict>();
+		entityWrapper.eq("union_id",id);
+		List<Map<String,Object>> infos = unionInfoDictService.getUnionInfoDict(id);
+		data.put("main",main);
+		data.put("infos",infos);
+		return data;
 	}
 
 	@Override
@@ -190,6 +213,8 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 			if(CommonUtil.isEmpty(main)){
 				main = list.get(0);
 			}
+			data.put("unionId",main.getId());
+			data.put("isIntegral",main.getIsIntegral());
 			data.put("unionName",main.getUnionName());
 			data.put("unionIllustration",main.getUnionIllustration());
 			data.put("createtime", DateTimeKit.format(main.getCreatetime(),DateTimeKit.DEFAULT_DATETIME_FORMAT));
@@ -199,6 +224,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 			UnionApplyInfo info  = unionApplyService.getUnionApplyInfo(busId,main.getId());//本商家的
 			data.put("enterpriseName",info.getEnterpriseName());
 			data.put("ownerEnterpriseName",info.getEnterpriseName());
+			data.put("infoId",info.getId());
 			if(!busId.equals(main.getBusId())){//不是盟主
 				busId = main.getBusId();
 				UnionApplyInfo mainInfo = unionApplyService.getUnionApplyInfo(busId,main.getId());

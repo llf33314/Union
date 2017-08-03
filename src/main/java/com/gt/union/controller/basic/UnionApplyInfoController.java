@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -143,6 +144,36 @@ public class UnionApplyInfoController {
 			return GTJsonResult.instanceErrorMsg("更新盟员信息错误").toString();
 		}
 		return GTJsonResult.instanceSuccessMsg(null,null,"更新成功").toString();
+	}
+
+	/**
+	 * 获取编辑盟员信息
+	 * @param request
+	 * @param id
+	 * @param unionId
+	 * @return
+	 */
+	@ApiOperation(value = "获取编辑盟员信息", notes = "获取编辑盟员信息", produces = "application/json;charset=UTF-8")
+	@SysLogAnnotation(op_function = "3", description = "获取编辑盟员信息")
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String editUnionApplyInfo(HttpServletRequest request,
+									   @ApiParam(name="id", value = "盟员信息id", required = true) @PathVariable Integer id ,
+									   @ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId) {
+		Map<String,Object> data = new HashMap<String,Object>();
+		try {
+			BusUser busUser = SessionUtils.getLoginUser(request);
+			if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
+				throw new BusinessException("请使用主账号操作");
+			}
+			data = this.unionApplyInfoService.getUnionApplyInfo(id, unionId, busUser.getId());
+		} catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+		}catch (Exception e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg("获取编辑盟员信息错误").toString();
+		}
+		return GTJsonResult.instanceSuccessMsg(data,null,"获取编辑盟员信息成功").toString();
 	}
 
 }

@@ -48,4 +48,12 @@ public interface IUnionApplyInfoService extends IService<UnionApplyInfo> {
      */
     void updateSellDivideProportion(List<UnionApplyInfo> unionApplyInfoList) throws Exception;
 
+	/**
+	 * 根据infoId获取编辑盟员信息
+	 * @param id
+	 * @param unionId	联盟id
+	 * @param busId	商家id
+	 * @return
+	 */
+	Map<String,Object> getUnionApplyInfo(Integer id, Integer unionId, Integer busId) throws Exception;
 }

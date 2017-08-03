@@ -1,5 +1,6 @@
 package com.gt.union.service.basic.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
@@ -8,8 +9,10 @@ import com.gt.union.common.constant.basic.UnionMemberConstant;
 import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.entity.basic.UnionApplyInfo;
+import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.mapper.basic.UnionApplyInfoMapper;
 import com.gt.union.service.basic.IUnionApplyInfoService;
+import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.basic.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -17,7 +20,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -36,9 +39,13 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 	@Autowired
 	private IUnionMemberService unionMemberService;
 
+	@Autowired
+	private IUnionMainService unionMainService;
+
 	@Override
 	public void updateUnionApplyInfo(UnionApplyInfo unionApplyInfo, Integer busId, Integer unionId) throws Exception{
 		unionMemberService.isMemberValid(busId,unionId);
+		//TODO 转换商家地址
 		this.updateById(unionApplyInfo);
 	}
 
@@ -125,4 +132,27 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 	        this.updateBatchById(unionApplyInfos);
         }
     }
+
+	@Override
+	public Map<String, Object> getUnionApplyInfo(Integer id, Integer unionId, Integer busId) throws Exception {
+		unionMemberService.isMemberValid(busId,unionId);
+		UnionMain main = unionMainService.getUnionMain(unionId);
+		Map<String,Object> data = new HashMap<String,Object>();
+		UnionApplyInfo info = this.selectById(id);
+		data.put("enterpriseName",info.getEnterpriseName());
+		data.put("directorName",info.getDirectorName());
+		data.put("directorPhone",info.getDirectorPhone());
+		data.put("notifyPhone",info.getNotifyPhone());
+		data.put("directorEmail",info.getDirectorEmail());
+		data.put("busAddress",info.getBusAddress());
+		data.put("integralProportion",info.getIntegralProportion());
+		data.put("isIntegralProportion",main.getIsIntegral());
+		data.put("address_longitude",info.getAddressLongitude());
+		data.put("address_latitude",info.getAddressLatitude());
+		//TODO 根据id获取地址名称
+		data.put("addressProvience","省");
+		data.put("addressCity","市");
+		data.put("addressDistrict","区");
+		return data;
+	}
 }
