@@ -139,7 +139,8 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	}
 
 	@Override
-	public Page listUnionBusinessRecommendToMe(Page page, final Integer busId, final Integer unionId, final String isAcceptance) throws Exception {
+	public Page listUnionBusinessRecommendToMe(Page page, final Integer busId, final Integer unionId
+            , final String isAcceptance, final String userName, final String userPhone) throws Exception {
 		if (page == null) {
 			throw new Exception("UnionBusinessRecommendServiceImpl.listUnionBusinessRecommendToMe():参数page不能为空!");
 		}
@@ -151,7 +152,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
             public String getSqlSegment() {
                 StringBuilder sbSqlSegment = new StringBuilder(" r");
                 sbSqlSegment.append(" LEFT JOIN t_union_business_recommend_info ri ON ri.recommend_id = r.id ")
-                        .append(" LEFT JOIN t_union_apply a ON a.union_member_id = r.from_member_id ")
+                        .append(" LEFT JOIN t_union_apply a ON a.union_member_id = r.from_member_id AND a.union_id = r.union_id ")
                         .append(" LEFT JOIN t_union_apply_info ai ON ai.union_apply_id = a.id ")
                         .append(" LEFT JOIN t_union_main m ON m.id = r.union_id ")
                         .append(" WHERE r.del_status = ").append(UnionBusinessRecommendConstant.DEL_STATUS_NO)
@@ -169,6 +170,12 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
                         sbSqlSegment.append(i == 0 ? "" : " OR ").append(" r.is_acceptance = ").append(isAcceptanceArray[i]);
                     }
                     sbSqlSegment.append(" ) ");
+                }
+                if (StringUtil.isNotEmpty(userName)) {
+                    sbSqlSegment.append(" AND ri.user_name LIKE '%").append(userName).append("%' ");
+                }
+                if (StringUtil.isNotEmpty(userPhone)) {
+                    sbSqlSegment.append(" AND ri.user_phone LIKE '%").append(userPhone).append("%' ");
                 }
                 sbSqlSegment.append(" ORDER BY r.is_acceptance ASC,r.id DESC ");
                 return sbSqlSegment.toString();
@@ -188,7 +195,8 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	}
 
 	@Override
-	public Page listUnionBusinessRecommendFromMe(Page page, final Integer busId, final Integer unionId, final String isAcceptance) throws Exception {
+	public Page listUnionBusinessRecommendFromMe(Page page, final Integer busId, final Integer unionId
+            , final String isAcceptance, final String userName, final String userPhone) throws Exception {
         if (page == null) {
             throw new Exception("UnionBusinessRecommendServiceImpl.listUnionBusinessRecommedFromMe():参数page不能为空!");
         }
@@ -200,7 +208,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
             public String getSqlSegment() {
                 StringBuilder sbSqlSegment = new StringBuilder(" r");
                 sbSqlSegment.append(" LEFT JOIN t_union_business_recommend_info ri ON ri.recommend_id = r.id ")
-                        .append(" LEFT JOIN t_union_apply a ON a.union_member_id = r.to_member_id ")
+                        .append(" LEFT JOIN t_union_apply a ON a.union_member_id = r.to_member_id AND a.union_id = r.union_id ")
                         .append(" LEFT JOIN t_union_apply_info ai ON ai.union_apply_id = a.id ")
                         .append(" LEFT JOIN t_union_main m ON m.id = r.union_id ")
                         .append(" WHERE r.del_status = ").append(UnionBusinessRecommendConstant.DEL_STATUS_NO)
@@ -219,6 +227,12 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
                     }
                     sbSqlSegment.append(" ) ");
                 }
+                if (StringUtil.isNotEmpty(userName)) {
+                    sbSqlSegment.append(" AND ri.user_name LIKE '%").append(userName).append("%' ");
+                }
+                if (StringUtil.isNotEmpty(userPhone)) {
+                    sbSqlSegment.append(" AND ri.user_phone LIKE '%").append(userPhone).append("%' ");
+                }
                 sbSqlSegment.append(" ORDER BY r.is_acceptance ASC,r.id DESC ");
                 return sbSqlSegment.toString();
             }
@@ -231,6 +245,138 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
                 .append(" , m.id unionId ")
                 .append(" , m.union_name unionName ")
                 .append(" , r.is_acceptance isAcceptance ");
+        wrapper.setSqlSelect(sbSqlSelect.toString());
+
+        return this.selectMapsPage(page, wrapper);
+	}
+
+	@Override
+	public Page listBrokerageToMe(Page page, final Integer fromBusId, final Integer toBusId, final Integer unionId
+            , final String isConfirm, final String userName, final String userPhone) throws Exception {
+		if (page == null) {
+			throw new Exception("UnionBusinessRecommendServiceImpl.listBrokerageToMe():参数page不能为空!");
+		}
+		if (fromBusId == null) {
+			throw new Exception("UnionBusinessRecommendServiceImpl.listBrokerageToMe():参数fromBusId不能为空!");
+		}
+		Wrapper wrapper = new Wrapper() {
+			@Override
+			public String getSqlSegment() {
+				StringBuilder sbSqlSegment = new StringBuilder(" r");
+				sbSqlSegment.append(" LEFT JOIN t_union_business_recommend_info ri ON ri.recommend_id = r.id ")
+						.append(" LEFT JOIN t_union_apply a ON a.union_member_id = r.to_member_id AND a.union_id = r.union_id ")
+						.append(" LEFT JOIN t_union_apply_info ai ON ai.union_apply_id = a.id ")
+						.append(" LEFT JOIN t_union_main m ON m.id = r.union_id ")
+						.append(" WHERE r.del_status = ").append(UnionBusinessRecommendConstant.DEL_STATUS_NO)
+						.append("    AND r.from_bus_id = ").append(fromBusId)
+						.append("    AND r.is_acceptance = ").append(UnionBusinessRecommendConstant.IS_ACCEPTANCE_ACCEPT)
+                        .append("    AND (r.is_confirm = ").append(UnionBusinessRecommendConstant.IS_CONFIRM_UNCHECK)
+                        .append("        OR r.is_confirm = ").append(UnionBusinessRecommendConstant.IS_CONFIRM_CONFIRM).append(") ")
+						.append("    AND a.del_status = ").append(UnionApplyConstant.DEL_STATUS_NO)
+						.append("    AND a.apply_status = ").append(UnionApplyConstant.APPLY_STATUS_PASS)
+						.append("    AND m.del_status = ").append(UnionMainConstant.DEL_STATUS_NO);
+				if (toBusId != null) {
+				    sbSqlSegment.append(" AND r.to_bus_id = ").append(toBusId);
+                }
+				if (unionId != null) {
+					sbSqlSegment.append(" AND r.union_id = ").append(unionId);
+				}
+				if (StringUtil.isNotEmpty(isConfirm)) {
+					String[] isConfirmArray = isConfirm.split(",");
+					sbSqlSegment.append(" AND (");
+					for (int i = 0, length = isConfirmArray.length; i < length; i++) {
+						sbSqlSegment.append(i == 0 ? "" : " OR ").append(" r.is_confirm = ").append(isConfirmArray[i]);
+					}
+					sbSqlSegment.append(" ) ");
+				}
+				if (StringUtil.isNotEmpty(userName)) {
+				    sbSqlSegment.append(" AND ri.user_name LIKE '%").append(userName).append("%' ");
+                }
+                if (StringUtil.isNotEmpty(userPhone)) {
+				    sbSqlSegment.append(" AND ri.user_phone LIKE '%").append(userPhone).append("%' ");
+                }
+				sbSqlSegment.append(" ORDER BY r.is_confirm ASC,r.id DESC ");
+				return sbSqlSegment.toString();
+			}
+		};
+		StringBuilder sbSqlSelect = new StringBuilder(" r.id recommendId ")
+				.append(" , ri.user_name userName ")
+				.append(" , ri.user_phone userPhone ")
+				.append(" , ri.business_msg businessMsg ")
+				.append(" , ai.enterprise_name enterpriseName ")
+				.append(" , m.id unionId ")
+				.append(" , m.union_name unionName ")
+				.append(" , r.acceptance_price acceptancePrice ")
+		        .append(" , r.business_price businessPrice ")
+                .append(" , r.recommend_type recommendType ")
+                .append(" , r.is_confirm isConfirm ")
+                .append(" , DATE_FORMAT(r.confirm_time, '%Y-%m-%d %T') confirmTime ");
+		wrapper.setSqlSelect(sbSqlSelect.toString());
+
+		return this.selectMapsPage(page, wrapper);
+	}
+
+	@Override
+	public Page listBrokerageFromMe(Page page, final Integer toBusId, final Integer fromBusId, final Integer unionId
+            , final String isConfirm, final String userName, final String userPhone) throws Exception {
+        if (page == null) {
+            throw new Exception("UnionBusinessRecommendServiceImpl.listBrokerageFromMe():参数page不能为空!");
+        }
+        if (toBusId == null) {
+            throw new Exception("UnionBusinessRecommendServiceImpl.listBrokerageFromMe():参数toBusId不能为空!");
+        }
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                StringBuilder sbSqlSegment = new StringBuilder(" r");
+                sbSqlSegment.append(" LEFT JOIN t_union_business_recommend_info ri ON ri.recommend_id = r.id ")
+                        .append(" LEFT JOIN t_union_apply a ON a.union_member_id = r.to_member_id AND a.union_id = r.union_id ")
+                        .append(" LEFT JOIN t_union_apply_info ai ON ai.union_apply_id = a.id ")
+                        .append(" LEFT JOIN t_union_main m ON m.id = r.union_id ")
+                        .append(" WHERE r.del_status = ").append(UnionBusinessRecommendConstant.DEL_STATUS_NO)
+                        .append("    AND r.to_bus_id = ").append(toBusId)
+                        .append("    AND r.is_acceptance = ").append(UnionBusinessRecommendConstant.IS_ACCEPTANCE_ACCEPT)
+                        .append("    AND (r.is_confirm = ").append(UnionBusinessRecommendConstant.IS_CONFIRM_UNCHECK)
+                        .append("        OR r.is_confirm = ").append(UnionBusinessRecommendConstant.IS_CONFIRM_CONFIRM).append(") ")
+                        .append("    AND a.del_status = ").append(UnionApplyConstant.DEL_STATUS_NO)
+                        .append("    AND a.apply_status = ").append(UnionApplyConstant.APPLY_STATUS_PASS)
+                        .append("    AND m.del_status = ").append(UnionMainConstant.DEL_STATUS_NO);
+                if (fromBusId != null) {
+                    sbSqlSegment.append(" AND r.from_bus_id = ").append(fromBusId);
+                }
+                if (unionId != null) {
+                    sbSqlSegment.append(" AND r.union_id = ").append(unionId);
+                }
+                if (StringUtil.isNotEmpty(isConfirm)) {
+                    String[] isConfirmArray = isConfirm.split(",");
+                    sbSqlSegment.append(" AND (");
+                    for (int i = 0, length = isConfirmArray.length; i < length; i++) {
+                        sbSqlSegment.append(i != 0 ? " OR " : "").append(" r.is_confirm = ").append(isConfirmArray[i]);
+                    }
+                    sbSqlSegment.append(" ) ");
+                }
+                if (StringUtil.isNotEmpty(userName)) {
+                    sbSqlSegment.append(" AND ri.user_name LIKE '%").append(userName).append("%' ");
+                }
+                if (StringUtil.isNotEmpty(userPhone)) {
+                    sbSqlSegment.append(" AND ri.user_phone LIKE '%").append(userPhone).append("%' ");
+                }
+                sbSqlSegment.append(" ORDER BY r.is_confirm ASC,r.id DESC ");
+                return sbSqlSegment.toString();
+            }
+        };
+        StringBuilder sbSqlSelect = new StringBuilder(" r.id recommendId ")
+                .append(" , ri.user_name userName ")
+                .append(" , ri.user_phone userPhone ")
+                .append(" , ri.business_msg businessMsg ")
+                .append(" , ai.enterprise_name enterpriseName ")
+                .append(" , m.id unionId ")
+                .append(" , m.union_name unionName ")
+                .append(" , r.acceptance_price acceptancePrice ")
+                .append(" , r.business_price businessPrice ")
+                .append(" , r.recommend_type recommendType ")
+                .append(" , r.is_confirm isConfirm ")
+                .append(" , DATE_FORMAT(r.confirm_time, '%Y-%m-%d %T') confirmTime ");
         wrapper.setSqlSelect(sbSqlSelect.toString());
 
         return this.selectMapsPage(page, wrapper);
