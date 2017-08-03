@@ -2,6 +2,7 @@ package com.gt.union.controller.brokerage;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.gt.union.common.annotation.SysLogAnnotation;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.ParameterException;
 import com.gt.union.common.response.GTJsonResult;
@@ -10,6 +11,8 @@ import com.gt.union.entity.brokerage.UnionBrokerageWithdrawalsRecord;
 import com.gt.union.entity.brokerage.UnionVerifyMember;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.brokerage.IUnionVerifyMemberService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -42,11 +45,12 @@ public class UnionVerifyMemberController {
 
 
 	/**
-	 * 获取商家的佣金平台管理员
+	 * 获取商家的佣金平台管理员列表
 	 * @param page
 	 * @param request
 	 * @return
 	 */
+	@ApiOperation(value = "获取商家的佣金平台管理员列表", notes = "获取商家的佣金平台管理员列表", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String unionVerifyMember(Page<UnionVerifyMember> page, HttpServletRequest request){
 		BusUser user = SessionUtils.getLoginUser(request);
@@ -72,8 +76,10 @@ public class UnionVerifyMemberController {
 	 * @param id
 	 * @return
 	 */
+	@SysLogAnnotation(op_function = "4", description = "删除佣金平台管理员")
+	@ApiOperation(value = "删除佣金平台管理员", notes = "删除佣金平台管理员", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json;charset=UTF-8")
-	public String delUnionVerifyMember(HttpServletRequest request,@PathVariable("id") Integer id){
+	public String delUnionVerifyMember(HttpServletRequest request, @ApiParam(name="id", value = "管理员id", required = true) @PathVariable("id") Integer id){
 		try{
 			unionVerifyMemberService.delUnionVerifyMember(id);
 		}catch (Exception e){
@@ -90,11 +96,17 @@ public class UnionVerifyMemberController {
 	 * @param unionVerifyMember
 	 * @return
 	 */
+	@SysLogAnnotation(op_function = "2", description = "保存佣金平台管理员")
+	@ApiOperation(value = "保存佣金平台管理员", notes = "保存佣金平台管理员", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public String saveUnionVerifyMember(HttpServletRequest request, @RequestBody UnionVerifyMember unionVerifyMember){
+	public String saveUnionVerifyMember(HttpServletRequest request, @ApiParam(name="unionVerifyMember", value = "平台管理员信息", required = true) @RequestBody UnionVerifyMember unionVerifyMember){
 		BusUser user = SessionUtils.getLoginUser(request);
 		try{
-			unionVerifyMember.setBusId(user.getId());
+			Integer busId = user.getId();
+			if(user.getPid() != null && user.getPid() != 0){
+				busId = user.getPid();
+			}
+			unionVerifyMember.setBusId(busId);
 			unionVerifyMember.setCreatetime(new Date());
 			unionVerifyMember.setDelStatus(0);
 			unionVerifyMemberService.saveUnionVerifyMember(unionVerifyMember);
@@ -114,21 +126,22 @@ public class UnionVerifyMemberController {
 	 * @param response
 	 * @param phone
 	 */
-	@RequestMapping(value = "/getPhoneCode", produces = "application/json;charset=UTF-8")
-	public String getPhoneCode(HttpServletRequest request, HttpServletResponse response, @RequestBody String phone) {
+	@SysLogAnnotation(op_function = "1", description = "获取佣金平台管理员验证码")
+	@ApiOperation(value = "获取佣金平台管理员验证码", notes = "获取佣金平台管理员验证码", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/phoneCode", produces = "application/json;charset=UTF-8")
+	public String getPhoneCode(HttpServletRequest request, HttpServletResponse response,
+							   @ApiParam(name="phone", value = "手机号", required = true) @RequestParam String phone) {
 		BusUser user = SessionUtils.getLoginUser(request);
+		//生成验证码
 		String code = RandomKit.getRandomString(6, 0);
 		try {
-			if (phone != null) {
-				//生成验证码
-				Map<String,Object> smsMap = new HashMap<>();
-				smsMap.put("mobiles",phone);
-				smsMap.put("content","佣金平台管理员验证码:" + code.toString());
-				smsMap.put("model",33);
-				smsMap.put("busId",user.getId());
-				smsMap.put("company",user.getName());
+			Integer busId = user.getId();
+			if(user.getPid() != null && user.getPid() != 0){
+				busId = user.getPid();
+			}
+			if (CommonUtil.isNotEmpty(phone)) {
 				//TODO 发送短信接口
-
+				SmsUtil.sendMsg(phone,33,busId, "佣金平台管理员验证码:" + code.toString(), user.getName());
 			}
 		} catch (Exception e) {
 			logger.error("发送佣金平台管理员验证码错误");

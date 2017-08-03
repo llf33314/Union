@@ -74,9 +74,9 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
 	public UnionMain getUnionMain(Integer unionId){
 		UnionMain main = null;
-		if ( redisCacheUtil.exists( "union:"+unionId ) ) {
+		if ( redisCacheUtil.exists( "unionMain:"+unionId ) ) {
 			// 1.1 存在则从redis 读取
-			main = (UnionMain) redisCacheUtil.get( "union:"+unionId );
+			main = (UnionMain) redisCacheUtil.get("unionMain:"+unionId );
 		} else {
 			// 2. 不存在则从数据库查询
 			EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<UnionMain>();
@@ -85,7 +85,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 			entityWrapper.eq("union_verify_status",1);
 			main = this.selectOne(entityWrapper);
 			// 写入 Redis 操作
-			redisCacheUtil.set( "union:"+unionId, main );
+			redisCacheUtil.set( "unionMain:"+unionId, main );
 		}
 		return main;
 	}
@@ -155,6 +155,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		unionInfoDictService.delete(entityWrapper);
 		unionInfoDictService.insertBatch(unionMainInfoVO.getInfos());
 		this.updateById(main);
+		redisCacheUtil.set("unionMain:" + main.getId(),main);
 	}
 
 	//TODO 创建联盟

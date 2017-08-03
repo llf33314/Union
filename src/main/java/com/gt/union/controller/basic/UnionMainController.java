@@ -168,6 +168,7 @@ public class UnionMainController {
      * @param request
      * @return
      */
+    @ApiOperation(value = "获取创建联盟信息", notes = "当需要创建联盟时，先调取该方法，再根据返回数据做后面的处理", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionCreateInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getUnionCreateInfo(HttpServletRequest request){
         BusUser user = SessionUtils.getLoginUser(request);

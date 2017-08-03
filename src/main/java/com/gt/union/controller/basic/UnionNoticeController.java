@@ -7,6 +7,8 @@ import com.gt.union.common.util.CommonUtil;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.basic.UnionNotice;
 import com.gt.union.service.basic.IUnionNoticeService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,6 +36,7 @@ public class UnionNoticeController {
 	 * @param unionId
 	 * @return
 	 */
+	@ApiOperation(value = "获取联盟公告" , notes = "获取联盟公告" , produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String unionNotice(@RequestParam(value = "unionId", required = true) Integer unionId) {
 		if(CommonUtil.isEmpty(unionId)){
@@ -58,8 +61,10 @@ public class UnionNoticeController {
 	 * @param notice
 	 * @return
 	 */
+	@ApiOperation(value = "新增联盟公告" , notes = "新增联盟公告" , produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public String saveNotice(@RequestBody UnionNotice notice) {
+	public String saveNotice(@ApiParam(name = "notice", value = "联盟公告信息", required = true) @RequestBody UnionNotice notice,
+							 @ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam("unionId")Integer unionId) {
 		try{
 			notice = unionNoticeService.saveNotice(notice);
 		}catch (BaseException e){
@@ -77,9 +82,12 @@ public class UnionNoticeController {
 	 * @param notice
 	 * @return
 	 */
+	@ApiOperation(value = "修改联盟公告" , notes = "修改联盟公告" , produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-	public String updateNotice(UnionNotice notice, @PathVariable("id")Integer id) {
+	public String updateNotice(@ApiParam(name = "notice", value = "联盟公告信息", required = true) @RequestBody  UnionNotice notice,
+							   @ApiParam(name = "id", value = "联盟公告id", required = true) @PathVariable("id")Integer id,
+							   @ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam("unionId")Integer unionId) {
 		notice.setId(id);
-		return saveNotice(notice);
+		return saveNotice(notice,unionId);
 	}
 }

@@ -7,9 +7,11 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.basic.UnionApplyConstant;
 import com.gt.union.common.exception.ParameterException;
 import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.entity.basic.UnionApply;
 import com.gt.union.entity.basic.UnionApplyInfo;
+import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.mapper.basic.UnionApplyInfoMapper;
 import com.gt.union.mapper.basic.UnionApplyMapper;
 import com.gt.union.service.basic.IUnionApplyService;
@@ -31,7 +33,7 @@ import java.util.Map;
 public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionApply> implements IUnionApplyService {
 
     @Autowired
-    private UnionApplyInfoMapper unionApplyInfoMapper;
+    private RedisCacheUtil redisCacheUtil;
 
     @Override
     public Page listUncheckedApply(Page page, final Integer unionId, final String enterpriseName, final String directorPhone) throws Exception{
@@ -82,35 +84,43 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
 
     @Override
     public UnionApplyInfo getUnionApplyInfo(final Integer busId, final Integer unionId) throws Exception{
+
         if(CommonUtil.isEmpty(busId) || CommonUtil.isEmpty(unionId)){
             throw new ParameterException("参数错误");
         }
-        Wrapper wrapper = new Wrapper() {
-            @Override
-            public String getSqlSegment() {
-                StringBuilder sbSqlSegment = new StringBuilder(" t1");
-                sbSqlSegment.append(" LEFT JOIN t_union_apply_info t2 ON t1.id = t2.union_apply_id ")
-                        .append(" WHERE")
-                        .append(" t1.union_id = ").append(unionId)
-                        .append(" AND t1.apply_bus_id = " ).append(busId)
-                        .append(" AND t1.apply_status = " ).append(UnionApplyConstant.APPLY_STATUS_PASS)
-                        .append(" AND t1.del_status = " ).append(UnionApplyConstant.DEL_STATUS_NO);
-                return sbSqlSegment.toString();
-            };
-
-        };
-        StringBuilder sbSqlSelect = new StringBuilder();
-        sbSqlSelect.append(" t2.id , t2.union_apply_id unionApplyId, t2.apply_reason applyReason, t2.enterprise_name enterpriseName, t2.director_name, ")
-                .append("t2.director_phone directorPhone, t2.director_email directorEmail, t2.bus_address busAddress, t2.notify_phone notifyPhone, ")
-                .append("t2.address_longitude addressLongitude, t2.address_latitude addressLatitude, t2.address_provience_id addressProvienceId, ")
-                .append("t2.address_city_id addressCityId, t2.address_district_id addressDistrictId, t2.integral_proportion integralProportion, ")
-                .append("t2.is_member_out_advice isMemberOutAdvice");
-        wrapper.setSqlSelect(sbSqlSelect.toString());
-        Map<String,Object> map = this.selectMap(wrapper);
         UnionApplyInfo info = new UnionApplyInfo();
-        if(CommonUtil.isNotEmpty(map)){
-            BeanMap beanMap = BeanMap.create(info);
-            beanMap.putAll(map);
+        if ( redisCacheUtil.exists( "unionId:" + unionId + ":busId:" + busId ) ) {
+            // 1.1 存在则从redis 读取
+            info = (UnionApplyInfo) redisCacheUtil.get("unionId:" + unionId + ":busId:" + busId );
+        } else {
+            Wrapper wrapper = new Wrapper() {
+                @Override
+                public String getSqlSegment() {
+                    StringBuilder sbSqlSegment = new StringBuilder(" t1");
+                    sbSqlSegment.append(" LEFT JOIN t_union_apply_info t2 ON t1.id = t2.union_apply_id ")
+                            .append(" WHERE")
+                            .append(" t1.union_id = ").append(unionId)
+                            .append(" AND t1.apply_bus_id = " ).append(busId)
+                            .append(" AND t1.apply_status = " ).append(UnionApplyConstant.APPLY_STATUS_PASS)
+                            .append(" AND t1.del_status = " ).append(UnionApplyConstant.DEL_STATUS_NO);
+                    return sbSqlSegment.toString();
+                };
+
+            };
+            StringBuilder sbSqlSelect = new StringBuilder();
+            sbSqlSelect.append(" t2.id , t2.union_apply_id unionApplyId, t2.apply_reason applyReason, t2.enterprise_name enterpriseName, t2.director_name, ")
+                    .append("t2.director_phone directorPhone, t2.director_email directorEmail, t2.bus_address busAddress, t2.notify_phone notifyPhone, ")
+                    .append("t2.address_longitude addressLongitude, t2.address_latitude addressLatitude, t2.address_provience_id addressProvienceId, ")
+                    .append("t2.address_city_id addressCityId, t2.address_district_id addressDistrictId, t2.integral_proportion integralProportion, ")
+                    .append("t2.is_member_out_advice isMemberOutAdvice");
+            wrapper.setSqlSelect(sbSqlSelect.toString());
+            Map<String,Object> map = this.selectMap(wrapper);
+            if(CommonUtil.isNotEmpty(map)){
+                BeanMap beanMap = BeanMap.create(info);
+                beanMap.putAll(map);
+            }
+            // 写入 Redis 操作
+            redisCacheUtil.set("unionId:" + unionId + ":busId:" + busId, info );
         }
         return info;
     }

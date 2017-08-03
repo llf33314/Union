@@ -9,6 +9,8 @@ import com.gt.union.entity.business.UnionBrokerage;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.basic.IUnionMemberService;
 import com.gt.union.service.business.IUnionBrokerageService;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -43,8 +45,10 @@ public class UnionBrokerageController {
 	 * @param request
 	 * @return
 	 */
+	@ApiOperation(value = "获取联盟佣金比例列表", notes = "获取联盟佣金比例列表", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "", method = RequestMethod.GET,produces = "application/json;charset=UTF-8")
-	public String unionBrokerage(Page page, HttpServletRequest request, @RequestParam(name = "unionId", required = true) Integer unionId){
+	public String unionBrokerage(Page page, HttpServletRequest request,
+								 @ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId){
 		BusUser user = SessionUtils.getLoginUser(request);
 		try{
 			Integer busId = user.getId();
@@ -63,15 +67,18 @@ public class UnionBrokerageController {
 	}
 
 	/**
-	 *	更新盟员佣金比
+	 *	设置盟员佣金比
 	 * @param request
 	 * @param id	盟员id
 	 * @param unionBrokerage
 	 * @return
 	 */
-	@SysLogAnnotation(description = "更新盟员佣金比", op_function = "3")
+	@SysLogAnnotation(description = "设置盟员佣金比", op_function = "3")
 	@RequestMapping("/{id}")
-	public String updateUnionBrokerage(HttpServletRequest request, @PathVariable Integer id, @RequestBody UnionBrokerage unionBrokerage){
+	public String updateUnionBrokerage(HttpServletRequest request,
+					   @ApiParam(name="id", value = "佣金比例id", required = true) @PathVariable Integer id,
+					   @ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam Integer unionId,
+					   @ApiParam(name="unionBrokerage", value = "佣金比例信息", required = true) @RequestBody UnionBrokerage unionBrokerage){
 		BusUser user = SessionUtils.getLoginUser(request);
 		try{
 			Integer busId = user.getId();
@@ -81,10 +88,10 @@ public class UnionBrokerageController {
 			unionBrokerage.setFromBusId(busId);
 			unionBrokerageService.updateUnionBrokerage(unionBrokerage);
 		}catch (BaseException e){
-			logger.error("更新盟员佣金比错误"+e.getMessage());
+			logger.error("设置盟员佣金比错误"+e.getMessage());
 			return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
 		}catch (Exception e){
-			logger.error("更新盟员佣金比错误"+e.getMessage());
+			logger.error("设置盟员佣金比错误"+e.getMessage());
 			return GTJsonResult.instanceErrorMsg("设置失败").toString();
 		}
 		return GTJsonResult.instanceSuccessMsg(null,null,"设置成功").toString();

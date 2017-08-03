@@ -12,6 +12,7 @@ import com.gt.union.entity.basic.UnionApplyInfo;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.mapper.basic.UnionApplyInfoMapper;
 import com.gt.union.service.basic.IUnionApplyInfoService;
+import com.gt.union.service.basic.IUnionApplyService;
 import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.basic.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,6 +36,9 @@ import java.util.Map;
  */
 @Service
 public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper, UnionApplyInfo> implements IUnionApplyInfoService {
+
+	@Autowired
+	private IUnionApplyService unionApplyService;
 
 	@Autowired
 	private IUnionMemberService unionMemberService;
@@ -138,7 +142,7 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 		unionMemberService.isMemberValid(busId,unionId);
 		UnionMain main = unionMainService.getUnionMain(unionId);
 		Map<String,Object> data = new HashMap<String,Object>();
-		UnionApplyInfo info = this.selectById(id);
+		UnionApplyInfo info = unionApplyService.getUnionApplyInfo(busId,unionId);
 		data.put("enterpriseName",info.getEnterpriseName());
 		data.put("directorName",info.getDirectorName());
 		data.put("directorPhone",info.getDirectorPhone());

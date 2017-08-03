@@ -112,13 +112,16 @@ public class UnionBusinessRecommendController {
 
 
 	/**
-	 * 审核
+	 * 商机审核
 	 * @param request
 	 * @param id
 	 * @return
 	 */
+	@ApiOperation(value = "商机审核" , notes = "商机审核，审核状态 1：接受 2：拒绝" , produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-	public String verifyUnionBusinessRecommend(HttpServletRequest request,@PathVariable("id") Integer id, @RequestBody Integer isAcceptance){
+	public String verifyUnionBusinessRecommend(HttpServletRequest request,
+											   @ApiParam(name = "id", value = "商机id", required = true) @PathVariable("id") Integer id,
+											   @ApiParam(name = "isAcceptance", value = "审核状态 1：接受 2：拒绝", required = true) @RequestParam Integer isAcceptance){
 		BusUser user = SessionUtils.getLoginUser(request);
 		try{
 			UnionBusinessRecommend recommend = new UnionBusinessRecommend();
@@ -154,8 +157,11 @@ public class UnionBusinessRecommendController {
 	 * @param vo
 	 * @return
 	 */
+	@ApiOperation(value = "添加商机推荐" , notes = "添加商机推荐" , produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public String saveUnionBusinessRecommend(HttpServletRequest request, @RequestBody UnionBusinessRecommendFormVO vo){
+	public String saveUnionBusinessRecommend(HttpServletRequest request,
+											 @ApiParam(name = "unionBusinessRecommendFormVO", value = "推荐的商机信息", required = true) @RequestBody UnionBusinessRecommendFormVO vo,
+											 @ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam Integer unionId){
 		BusUser user = SessionUtils.getLoginUser(request);
 		try{
 			Integer busId = user.getId();

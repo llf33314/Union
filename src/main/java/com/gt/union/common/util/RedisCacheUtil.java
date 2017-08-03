@@ -11,6 +11,8 @@ import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * redis缓存工具类  联盟使用的 所有的key已加 Union:前缀
+ *
  * Created by Administrator on 2017/8/2 0002.
  */
 @Component
@@ -20,6 +22,8 @@ public class RedisCacheUtil {
 	@Qualifier( "redisTemplate" )
 	private RedisTemplate redisTemplate;
 
+	private static String redisNamePrefix = PropertiesUtil.redisNamePrefix();
+
 	/**
 	 * 批量删除对应的value
 	 *
@@ -27,7 +31,7 @@ public class RedisCacheUtil {
 	 */
 	public void remove( final String... keys ) {
 		for ( String key : keys ) {
-			remove( key );
+			remove( redisNamePrefix + key );
 		}
 	}
 
@@ -38,7 +42,7 @@ public class RedisCacheUtil {
 	 */
 	public void removePattern( final String pattern ) {
 		Set< Serializable > keys = redisTemplate.keys( pattern );
-		if ( keys.size() > 0 ) redisTemplate.delete( keys );
+		if ( keys.size() > 0 ) redisTemplate.delete( redisNamePrefix + keys );
 	}
 
 	/**
@@ -48,7 +52,7 @@ public class RedisCacheUtil {
 	 */
 	public void remove( final String key ) {
 		if ( exists( key ) ) {
-			redisTemplate.delete( key );
+			redisTemplate.delete( redisNamePrefix +key );
 		}
 	}
 
@@ -60,7 +64,7 @@ public class RedisCacheUtil {
 	 * @return boolean
 	 */
 	public boolean exists( final String key ) {
-		return redisTemplate.hasKey( key );
+		return redisTemplate.hasKey( redisNamePrefix + key );
 	}
 
 	/**
@@ -73,7 +77,7 @@ public class RedisCacheUtil {
 	public Object get( final String key ) {
 		Object result = null;
 		ValueOperations< Serializable,Object > operations = redisTemplate.opsForValue();
-		result = operations.get( key );
+		result = operations.get( redisNamePrefix + key );
 		return result;
 	}
 
@@ -89,7 +93,7 @@ public class RedisCacheUtil {
 		boolean result = false;
 		try {
 			ValueOperations<Serializable,Object > operations = redisTemplate.opsForValue();
-			operations.set( key, value );
+			operations.set( redisNamePrefix + key, value );
 			result = true;
 		} catch ( Exception e ) {
 			e.printStackTrace();
@@ -110,7 +114,7 @@ public class RedisCacheUtil {
 		try {
 			ValueOperations< Serializable,Object > operations = redisTemplate.opsForValue();
 			operations.set( key, value );
-			redisTemplate.expire( key, expireTime, TimeUnit.SECONDS );
+			redisTemplate.expire( redisNamePrefix + key, expireTime, TimeUnit.SECONDS );
 			result = true;
 		} catch ( Exception e ) {
 			e.printStackTrace();

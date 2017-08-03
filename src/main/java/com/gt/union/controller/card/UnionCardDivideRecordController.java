@@ -32,15 +32,22 @@ public class UnionCardDivideRecordController {
 	@Autowired
 	private IUnionCardDivideRecordService unionCardDivideRecordService;
 
+	/**
+	 * 获取收卡分成列表
+	 * @param page
+	 * @param request
+	 * @param vo
+	 * @return
+	 */
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	public String unionCardDivideRecordList(Page page, HttpServletRequest request, @RequestBody UnionCardDivideRecordVO vo) {
 		BusUser user = SessionUtils.getLoginUser(request);
 		try {
 			page = unionCardDivideRecordService.getUnionCardDivideRecordList(page,vo);
 		}catch (Exception e){
-			logger.error("获取联盟列表失败");
-			return GTJsonResult.instanceSuccessMsg(page,null,"获取联盟信息成功").toString();
+			logger.error("获取收卡分成列表错误");
+			return GTJsonResult.instanceSuccessMsg(page,null,"获取收卡分成列表成功").toString();
 		}
-		return GTJsonResult.instanceSuccessMsg(page,null,"获取联盟信息成功").toString();
+		return GTJsonResult.instanceSuccessMsg(page,null,"获取收卡分成列表成功").toString();
 	}
 }
