@@ -16,13 +16,6 @@ import com.gt.union.vo.business.UnionBusinessRecommendVO;
  */
 public interface IUnionBusinessRecommendService extends IService<UnionBusinessRecommend> {
 
-	/**
-	 * 获取联盟商机推荐列表
-	 * @param page
-	 * @param vo
-	 * @return
-	 */
-	Page selectUnionBusinessRecommendList(Page page, UnionBusinessRecommendVO vo) throws Exception;
 
 	/**
 	 * 审核商机推荐

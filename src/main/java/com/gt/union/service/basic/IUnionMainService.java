@@ -90,4 +90,10 @@ public interface IUnionMainService extends IService<UnionMain> {
 	 * @return
 	 */
 	Map<String, Object> getUnionMainInfo(Integer id);
+
+	/**
+	 * 查询联盟列表
+	 * @return
+	 */
+	List<UnionMain> getUnionMainList();
 }

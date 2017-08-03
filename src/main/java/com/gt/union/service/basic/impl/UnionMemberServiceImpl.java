@@ -9,14 +9,19 @@ import com.gt.union.common.constant.basic.UnionDiscountConstant;
 import com.gt.union.common.constant.basic.UnionMemberConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParameterException;
+import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.StringUtil;
+import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.basic.UnionMember;
 import com.gt.union.mapper.basic.UnionMemberMapper;
 import com.gt.union.service.basic.IUnionMemberService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,6 +34,9 @@ import java.util.Map;
  */
 @Service
 public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, UnionMember> implements IUnionMemberService {
+
+    @Autowired
+    private RedisCacheUtil redisCacheUtil;
 
     @Override
     public Page listMember(Page page, final Integer unionId, final String enterpriseName) throws Exception {
@@ -318,16 +326,52 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
 
     @Override
     public UnionMember getUnionMember(Integer busId, Integer unionId) {
-        EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<UnionMember>();
-        entityWrapper.eq("union_id",unionId);
-        entityWrapper.eq("bus_id",busId);
-        entityWrapper.eq("del_status",0);
-        return this.selectOne(entityWrapper);
+        UnionMember unionMember = null;
+        if ( redisCacheUtil.exists( "unionMember:" + unionId + ":" + busId) ) {
+            // 1.1 存在则从redis 读取
+            unionMember = (UnionMember) redisCacheUtil.get("unionMember:" + unionId + ":" + busId );
+        } else {
+            // 2. 不存在则从数据库查询
+            EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<UnionMember>();
+            entityWrapper.eq("union_id",unionId);
+            entityWrapper.eq("bus_id",busId);
+            entityWrapper.eq("del_status",0);
+            unionMember = this.selectOne(entityWrapper);
+            // 写入 Redis 操作
+            if(CommonUtil.isNotEmpty(unionMember)){
+                redisCacheUtil.set( "unionMember:" + unionId + ":" + busId, unionMember );
+            }
+        }
+        return unionMember;
     }
 
     @Override
     public void isMemberValid(Integer busId, Integer unionId) throws Exception {
         UnionMember unionMember = getUnionMember(busId,unionId);
         isMemberValid(unionMember);
+    }
+
+    @Override
+    public List<Map<String, Object>> getUnionMemberList(final Integer unionId) {
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                StringBuilder sbSqlSegment = new StringBuilder(" m");
+                sbSqlSegment.append(" LEFT JOIN t_union_apply a on a.union_member_id = m.id ")
+                        .append(" LEFT JOIN t_union_apply_info i on i.union_apply_id = a.id ")
+                        .append(" WHERE m.union_id = ").append(unionId)
+                        .append("    AND m.out_staus = ").append(UnionMemberConstant.OUT_STATUS_NORMAL)
+                        .append("    AND a.del_status = ").append(UnionApplyConstant.DEL_STATUS_NO)
+                        .append("    AND m.del_status = ").append(UnionMemberConstant.DEL_STATUS_NO);
+                sbSqlSegment.append(" ORDER BY m.apply_out_time DESC ");
+                return sbSqlSegment.toString();
+            };
+
+        };
+        StringBuilder sbSqlSelect = new StringBuilder("");
+        sbSqlSelect.append(", m.id id ")
+                .append(", i.enterprise_name enterpriseName ");
+        wrapper.setSqlSelect(sbSqlSelect.toString());
+        return null;
     }
 }

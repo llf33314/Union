@@ -88,10 +88,10 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         if(CommonUtil.isEmpty(busId) || CommonUtil.isEmpty(unionId)){
             throw new ParameterException("参数错误");
         }
-        UnionApplyInfo info = new UnionApplyInfo();
-        if ( redisCacheUtil.exists( "unionId:" + unionId + ":busId:" + busId ) ) {
+        UnionApplyInfo info = null;
+        if ( redisCacheUtil.exists( "unionApplyInfo:" + unionId + ":" + busId ) ) {
             // 1.1 存在则从redis 读取
-            info = (UnionApplyInfo) redisCacheUtil.get("unionId:" + unionId + ":busId:" + busId );
+            info = (UnionApplyInfo) redisCacheUtil.get("unionApplyInfo:" + unionId + ":" + busId );
         } else {
             Wrapper wrapper = new Wrapper() {
                 @Override
@@ -116,11 +116,14 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
             wrapper.setSqlSelect(sbSqlSelect.toString());
             Map<String,Object> map = this.selectMap(wrapper);
             if(CommonUtil.isNotEmpty(map)){
+                info = new UnionApplyInfo();
                 BeanMap beanMap = BeanMap.create(info);
                 beanMap.putAll(map);
             }
             // 写入 Redis 操作
-            redisCacheUtil.set("unionId:" + unionId + ":busId:" + busId, info );
+            if(CommonUtil.isNotEmpty(info)){
+                redisCacheUtil.set("unionApplyInfo:" + unionId + ":" + busId, info );
+            }
         }
         return info;
     }

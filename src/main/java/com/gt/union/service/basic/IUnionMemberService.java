@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.entity.basic.UnionMember;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -113,4 +114,11 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @param unionId   联盟id
      */
     void isMemberValid(Integer busId, Integer unionId) throws Exception;
+
+    /**
+     * 获取联盟内所有盟员列表
+     * @param unionId
+     * @return
+     */
+    List<Map<String,Object>> getUnionMemberList(Integer unionId);
 }

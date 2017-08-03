@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -60,7 +61,7 @@ public class UnionMemberController {
               @RequestParam(name = "listType", required = true)Integer listType
             , @ApiParam(name = "enterpriseName", value = "企业名称", required = false)
               @RequestParam(name = "enterpriseName", required = false) String enterpriseName
-            , @ApiParam(name = "outStatus", value = "商家退出状态，当listType=2时必填，0代表整成，1代表未处理，2代表过渡期")
+            , @ApiParam(name = "outStatus", value = "商家退出状态，当listType=2时必填，0代表正常，1代表未处理，2代表过渡期")
               @RequestParam(name = "outStatus", required = false) Integer outStatus) {
         Page result = null;
         try {
@@ -108,6 +109,25 @@ public class UnionMemberController {
         }
         return GTJsonResult.instanceSuccessMsg(result).toString();
     }
+
+    /**
+     * 获取盟员列表 不分页
+     * @param unionId
+     * @return
+     */
+    @ApiOperation(value = "获取盟员列表 不分页" , notes = "获取联盟内所有的盟员 不分页" , produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/memberList", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String getUnionMemberList(@ApiParam(name = "unionId", value = "盟员id", required = true) @RequestParam("unionId") Integer unionId) {
+        List<Map<String, Object>> result = null;
+        try {
+            result = this.unionMemberService.getUnionMemberList(unionId);
+        } catch (Exception e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+        }
+        return GTJsonResult.instanceSuccessMsg(result).toString();
+    }
+
 
     /**
      * 盟主权限转移

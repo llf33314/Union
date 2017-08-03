@@ -103,6 +103,24 @@ public class UnionMainController {
         }
     }
 
+    /**
+     * 联盟列表
+     * @param request
+     * @return
+     */
+    @ApiOperation(value = "联盟列表", produces = "application/json;charset=UTF-8")
+    @SysLogAnnotation(op_function = "1", description = "查询联盟列表")
+    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String unionMainlist(HttpServletRequest request) {
+        BusUser user = SessionUtils.getLoginUser(request);
+        try {
+            List<UnionMain> list = unionMainService.getUnionMainList();
+            return GTJsonResult.instanceSuccessMsg(list,null,"查询联盟列表成功").toString();
+        }catch (Exception e){
+            logger.error("查询联盟列表错误", e);
+            return GTJsonResult.instanceErrorMsg("查询联盟列表失败").toString();
+        }
+    }
 
     /**
      * 更新联盟信息

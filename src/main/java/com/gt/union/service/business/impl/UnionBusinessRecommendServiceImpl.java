@@ -10,6 +10,7 @@ import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParameterException;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.StringUtil;
+import com.gt.union.entity.basic.UnionMember;
 import com.gt.union.entity.business.UnionBusinessRecommend;
 import com.gt.union.entity.business.UnionBusinessRecommendInfo;
 import com.gt.union.mapper.business.UnionBusinessRecommendMapper;
@@ -41,38 +42,10 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	private IUnionBusinessRecommendInfoService unionBusinessRecommendInfoService;
 
 	@Autowired
-	private IUnionMemberService unionMemberService;
-
-	@Autowired
 	private IUnionMainService unionMainService;
 
-	@Override
-	public Page selectUnionBusinessRecommendList(Page page,final UnionBusinessRecommendVO vo) throws Exception{
-		if (vo.getUnionId() == null) {
-			throw new ParameterException("参数错误");
-		}
-		Wrapper wrapper = new Wrapper() {
-			@Override
-			public String getSqlSegment() {
-				StringBuilder sbSqlSegment = new StringBuilder();
-				sbSqlSegment.append(" t1 LEFT JOIN t_union_business_recommend_info t2 ON t1.id = t2.t_union_business_recommend_info")
-						.append(" WHERE")
-						.append(" t1.to_bus_id = ").append(vo.getBusId())
-						.append(" AND t2.union_id = ").append(vo.getUnionId())
-						.append(" AND t1.del_status = ").append(0);
-				if (StringUtil.isNotEmpty(vo.getPhone())) {
-					sbSqlSegment.append(" AND t1.phone LIKE '%").append(vo.getPhone().trim()).append("%' ");
-				}
-				sbSqlSegment.append(" ORDER BY t1.id DESC ");
-				return sbSqlSegment.toString();
-			};
-
-		};
-		StringBuilder sbSqlSelect = new StringBuilder("");
-		sbSqlSelect.append(" t1.id, t1.tcardNo, t1.phone, t1.integral, DATE_FORMAT(t1.createtime, '%Y-%m-%d %T') createtime, t2.card_type, DATE_FORMAT(t2.card_term_time, '%Y-%m-%d %T') cardTermTime");
-		wrapper.setSqlSelect(sbSqlSelect.toString());
-		return this.selectMapsPage(page, wrapper);
-	}
+	@Autowired
+	private IUnionMemberService unionMemberService;
 
 	@Transactional(rollbackFor = Exception.class)
 	@Override
@@ -118,6 +91,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 			throw new ParameterException("业务备注不可超过20个字，请重新输入");
 		}
 		//TODO 判断商机推荐的手机号是否正确   您输入的意向客户电话有误，请重新输入
+		UnionMember fromUnionMember = unionMemberService.getUnionMember(vo.getBusId(),vo.getUnionId());
 		UnionBusinessRecommend recommend = new UnionBusinessRecommend();
 		recommend.setCreatetime(new Date());
 		recommend.setDelStatus(0);
@@ -127,7 +101,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 		recommend.setRecommendType(2);
 		recommend.setUnionId(vo.getUnionId());
 		recommend.setToBusId(vo.getToBusId());
-		recommend.setFromMemberId(2);
+		recommend.setFromMemberId(fromUnionMember.getId());
 		recommend.setToMemberId(vo.getToMemberId());
 		this.insert(recommend);
 		UnionBusinessRecommendInfo info = new UnionBusinessRecommendInfo();
@@ -232,7 +206,6 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
                 .append(" , m.union_name unionName ")
                 .append(" , r.is_acceptance isAcceptance ");
         wrapper.setSqlSelect(sbSqlSelect.toString());
-
         return this.selectMapsPage(page, wrapper);
 	}
 

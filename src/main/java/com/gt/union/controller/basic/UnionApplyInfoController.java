@@ -154,7 +154,7 @@ public class UnionApplyInfoController {
 	 * @return
 	 */
 	@ApiOperation(value = "获取编辑盟员信息", notes = "获取编辑盟员信息", produces = "application/json;charset=UTF-8")
-	@SysLogAnnotation(op_function = "3", description = "获取编辑盟员信息")
+	@SysLogAnnotation(op_function = "1", description = "获取编辑盟员信息")
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String editUnionApplyInfo(HttpServletRequest request,
 									   @ApiParam(name="id", value = "盟员信息id", required = true) @PathVariable Integer id ,
@@ -167,10 +167,10 @@ public class UnionApplyInfoController {
 			}
 			data = this.unionApplyInfoService.getUnionApplyInfo(id, unionId, busUser.getId());
 		} catch (BaseException e) {
-			logger.error("", e);
+			logger.error("获取编辑盟员信息错误", e);
 			return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
 		}catch (Exception e) {
-			logger.error("", e);
+			logger.error("获取编辑盟员信息错误", e);
 			return GTJsonResult.instanceErrorMsg("获取编辑盟员信息错误").toString();
 		}
 		return GTJsonResult.instanceSuccessMsg(data,null,"获取编辑盟员信息成功").toString();

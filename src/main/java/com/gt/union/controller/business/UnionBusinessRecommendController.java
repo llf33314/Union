@@ -34,38 +34,6 @@ public class UnionBusinessRecommendController {
 	@Autowired
 	private IUnionBusinessRecommendService unionBusinessRecommendService;
 
-	/**
-	 * 获取盟员的联盟卡列表  TODO 多状态查询 排序
-	 * @param page
-	 * @param request
-	 * @return
-	 */
-	/*@RequestMapping(value = "", method = RequestMethod.GET,produces = "application/json;charset=UTF-8")
-	public String unionBusinessRecommend(Page page, HttpServletRequest request, @RequestParam(name = "unionId", required = true) Integer unionId
-			, @RequestParam(name = "phone", required = false) String phone
-			, @RequestParam(name = "isAcceptance", required = false) Integer isAcceptance){
-		BusUser user = SessionUtils.getLoginUser(request);
-		try{
-			Integer busId = user.getId();
-			if(user.getPid() != null && user.getPid() != 0){
-				busId = user.getPid();
-			}
-			UnionBusinessRecommendVO vo = new UnionBusinessRecommendVO();
-			vo.setUnionId(unionId);
-			vo.setBusId(busId);
-			vo.setPhone(phone);
-			vo.setIsAcceptance(isAcceptance);
-			page = unionBusinessRecommendService.selectUnionBusinessRecommendList(page,vo);
-		}catch (BaseException e){
-			logger.error("获取盟员联盟卡列表错误"+e.getMessage());
-			return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
-		}catch (Exception e){
-			logger.error("获取盟员联盟卡列表错误"+e.getMessage());
-			return GTJsonResult.instanceErrorMsg("获取盟员联盟卡列表错误").toString();
-		}
-		return GTJsonResult.instanceSuccessMsg(page,null,"获取商家的佣金平台管理员成功").toString();
-	}*/
-
     /**
      * 商机信息查询：
      * （1）当listType=LIST_TYPE_TO_ME时，查询我的商机信息；
@@ -89,16 +57,20 @@ public class UnionBusinessRecommendController {
              @RequestParam(name = "isAcceptance", required = false) String isAcceptance) {
         Page result = null;
         try {
-            /*BusUser busUser = SessionUtils.getLoginUser(request);
+            BusUser busUser = SessionUtils.getLoginUser(request);
             if (busUser == null) {
                 throw new Exception("UnionBusinessRecommendController.listUnionBusinessRecommend()：无法通过session获取用户的信息!");
-            }*/
+            }
+			Integer busId = busUser.getId();
+			if(busUser.getPid() != null && busUser.getPid() != 0){
+				busId = busUser.getPid();
+			}
             switch (listType) {
                 case UnionBusinessRecommendConstant.LIST_TYPE_TO_ME:
-                    result = this.unionBusinessRecommendService.listUnionBusinessRecommendToMe(page, 33, unionId, isAcceptance);
+                    result = this.unionBusinessRecommendService.listUnionBusinessRecommendToMe(page, busId, unionId, isAcceptance);
                     break;
                 case UnionBusinessRecommendConstant.LIST_TYPE_FROM_ME:
-                    result = this.unionBusinessRecommendService.listUnionBusinessRecommendFromMe(page, 33, unionId, isAcceptance);
+                    result = this.unionBusinessRecommendService.listUnionBusinessRecommendFromMe(page, busId, unionId, isAcceptance);
                     break;
                 default:
                     throw new Exception("UnionBusinessRecommendController.listUnionBusinessRecommend():不支持的查询类型listType(value=" + listType + ")!");
