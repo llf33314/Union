@@ -76,22 +76,22 @@ public class UnionBusinessRecommendController {
             if (busUser == null) {
                 throw new Exception("UnionBusinessRecommendController.listUnionBusinessRecommend()：无法通过session获取用户的信息!");
             }
-			Integer busId = busUser.getId();
+			Integer busUserId = busUser.getId();
 			if(busUser.getPid() != null && busUser.getPid() != 0){
-				busId = busUser.getPid();
+				busUserId = busUser.getPid();
 			}
             switch (listType) {
                 case UnionBusinessRecommendConstant.LIST_TYPE_TO_ME:
-                    result = this.unionBusinessRecommendService.listUnionBusinessRecommendToMe(page, busUser.getId(), unionId, isAcceptance, userName, userPhone);
+                    result = this.unionBusinessRecommendService.listUnionBusinessRecommendToMe(page, busUserId, unionId, isAcceptance, userName, userPhone);
                     break;
                 case UnionBusinessRecommendConstant.LIST_TYPE_FROM_ME:
-                    result = this.unionBusinessRecommendService.listUnionBusinessRecommendFromMe(page, busUser.getId(), unionId, isAcceptance, userName, userPhone);
+                    result = this.unionBusinessRecommendService.listUnionBusinessRecommendFromMe(page, busUserId, unionId, isAcceptance, userName, userPhone);
                     break;
                 case UnionBusinessRecommendConstant.LIST_TYPE_BROKERAGE_TO_ME:
-                    result = this.unionBusinessRecommendService.listBrokerageToMe(page, busUser.getId(), busId, unionId, isConfirm, userName, userPhone);
+                    result = this.unionBusinessRecommendService.listBrokerageToMe(page, busUserId, busId, unionId, isConfirm, userName, userPhone);
                     break;
                 case UnionBusinessRecommendConstant.LIST_TYPE_BROKERAGE_FROM_ME:
-                    result = this.unionBusinessRecommendService.listBrokerageFromMe(page, busUser.getId(), busId, unionId, isConfirm, userName, userPhone);
+                    result = this.unionBusinessRecommendService.listBrokerageFromMe(page, busUserId, busId, unionId, isConfirm, userName, userPhone);
                     break;
                 default:
                     throw new Exception("UnionBusinessRecommendController.listUnionBusinessRecommend():不支持的查询类型listType(value=" + listType + ")!");
