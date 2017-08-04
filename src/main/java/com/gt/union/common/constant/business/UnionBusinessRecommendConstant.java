@@ -25,6 +25,16 @@ public interface UnionBusinessRecommendConstant {
     public static final int LIST_TYPE_BROKERAGE_FROM_ME = 4;
 
     /**
+     * 佣金结算查询类型：支付明细
+     */
+    public static final int LIST_TYPE_PAY_DETAIL = 5;
+
+    /**
+     * 佣金结算查询类型：佣金明细，即支付明细详情
+     */
+    public static final int LIST_TYPE_PAY_PARTICULAR = 6;
+
+    /**
      * 删除状态：否
      */
     public static final int DEL_STATUS_NO = 0;

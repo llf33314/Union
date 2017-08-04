@@ -4,7 +4,9 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.entity.business.UnionBusinessRecommend;
 import com.gt.union.vo.business.UnionBusinessRecommendFormVO;
-import com.gt.union.vo.business.UnionBusinessRecommendVO;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -73,5 +75,26 @@ public interface IUnionBusinessRecommendService extends IService<UnionBusinessRe
      * @return
      * @throws Exception
      */
-	Page listBrokerageFromMe(Page page, Integer toBusId, Integer fromBusId, Integer unionId, String isConfirm, String userName, String userPhone) throws Exception;
+
+    Page listBrokerageFromMe(Page page, Integer toBusId, Integer fromBusId, Integer unionId, String isConfirm, String userName, String userPhone) throws Exception;
+
+    /**
+     * 根据fromBusId查询我的支付明细，并可根据unionId进行过滤
+     * @param page
+     * @param fromBusId
+     * @param unionId
+     * @return
+     * @throws Exception
+     */
+    Page listPayDetail(Page page, Integer fromBusId, Integer unionId) throws Exception;
+
+    /**
+     * 查询我的支付详情
+     * @param unionId
+     * @param fromBusId
+     * @param toBusId
+     * @return
+     * @throws Exception
+     */
+    List<Map<String, Object>> listPayParticular(Integer unionId, Integer fromBusId, Integer toBusId) throws Exception;
 }
