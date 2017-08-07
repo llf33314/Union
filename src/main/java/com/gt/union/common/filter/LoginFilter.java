@@ -93,14 +93,7 @@ public class LoginFilter implements Filter {
 			busUser.setLogin_source(1);
 			SessionUtils.setLoginUser(req,busUser);
 			response.setCharacterEncoding("UTF-8");
-			String script = "<script type='text/javascript'>"
-					+ "top.location.href="+PropertiesUtil.getWxmpUrl()+"'/user/tologin.do';"
-					+ "</script>";
-			if(isAjax(req)){
-				response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录",PropertiesUtil.getWxmpUrl()+"/user/tologin.do")));
-			}else{
-				response.getWriter().write(script);
-			}
+			response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录",PropertiesUtil.getWxmpUrl()+"/user/tologin.do")));
 		}else if(busUser != null && busUser.getPid() == 0 && busUser.getLogin_source() != 1){//商家主账号过期,跳转到充值页面
 			if(busUser.getDays()<0){
 				String upGradeUrl=PropertiesUtil.getWxmpUrl() + "/jsp/merchants/user/pastPage.jsp";

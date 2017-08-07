@@ -93,7 +93,7 @@ public class RedisCacheUtil {
 		boolean result = false;
 		try {
 			ValueOperations<Serializable,Object > operations = redisTemplate.opsForValue();
-			operations.set( redisNamePrefix + key, value );
+			operations.set( redisNamePrefix + key, value, 7200l );
 			result = true;
 		} catch ( Exception e ) {
 			e.printStackTrace();

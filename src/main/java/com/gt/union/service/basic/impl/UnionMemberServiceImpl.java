@@ -360,7 +360,6 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 sbSqlSegment.append(" LEFT JOIN t_union_apply a on a.union_member_id = m.id ")
                         .append(" LEFT JOIN t_union_apply_info i on i.union_apply_id = a.id ")
                         .append(" WHERE m.union_id = ").append(unionId)
-                        .append("    AND m.out_staus = ").append(UnionMemberConstant.OUT_STATUS_NORMAL)
                         .append("    AND a.del_status = ").append(UnionApplyConstant.DEL_STATUS_NO)
                         .append("    AND m.del_status = ").append(UnionMemberConstant.DEL_STATUS_NO);
                 sbSqlSegment.append(" ORDER BY m.apply_out_time DESC ");
@@ -373,5 +372,13 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 .append(", i.enterprise_name enterpriseName ");
         wrapper.setSqlSelect(sbSqlSelect.toString());
         return null;
+    }
+
+    @Override
+    public int getUnionMemberCount(Integer applyBusId) {
+        EntityWrapper entityWrapper = new EntityWrapper<UnionMember>();
+        entityWrapper.eq("bus_id",applyBusId);
+        entityWrapper.eq("del_status",0);
+        return this.selectCount(entityWrapper);
     }
 }

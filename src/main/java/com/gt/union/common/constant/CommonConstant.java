@@ -15,6 +15,11 @@ public class CommonConstant {
 	public static int MAX_UNION_APPLY = 3;
 
 	/**
+	 * 短信model
+	 */
+	public static int SMS_UNION_MODEL = 33;
+
+	/**
 	 * 创建联盟支付内部订单前缀
 	 */
 	public static final String CREATE_UNION_PAY_ORDER_CODE = "000060000";

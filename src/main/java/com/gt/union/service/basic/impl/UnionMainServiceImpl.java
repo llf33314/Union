@@ -82,7 +82,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 			EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<UnionMain>();
 			entityWrapper.eq("id",unionId);
 			entityWrapper.eq("del_status",0);
-			entityWrapper.eq("union_verify_status",1);
 			main = this.selectOne(entityWrapper);
 			// 写入 Redis 操作
 			if(CommonUtil.isNotEmpty(main)){
@@ -197,7 +196,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	public List<UnionMain> getUnionMainList() {
 		EntityWrapper entityWrapper = new EntityWrapper<UnionMain>();
 		entityWrapper.eq("del_status",0);
-		entityWrapper.eq("union_verify_status",1);
 		return this.selectList(entityWrapper);
 	}
 
@@ -291,7 +289,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<UnionMain>();
 		entityWrapper.eq("bus_id",busId);
 		entityWrapper.eq("del_status",0);
-		entityWrapper.eq("union_verify_status",1);
 		UnionMain main = this.selectOne(entityWrapper);
 		return main;
 	}

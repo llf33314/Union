@@ -48,7 +48,7 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
 	public CacheManager cacheManager(RedisTemplate redisTemplate ) {
 		RedisCacheManager cacheManager = new RedisCacheManager( redisTemplate );
 		//默认超时时间,单位秒 两小时
-		cacheManager.setDefaultExpiration( 7200 );
+		cacheManager.setDefaultExpiration( 20 );
 		//根据缓存名称设置超时时间,0为不超时
 		Map< String,Long > expires = new ConcurrentHashMap<>();
 		cacheManager.setExpires( expires );

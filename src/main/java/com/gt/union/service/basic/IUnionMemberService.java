@@ -121,4 +121,11 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @return
      */
     List<Map<String,Object>> getUnionMemberList(Integer unionId);
+
+    /**
+     * 查询商家加入的联盟数
+     * @param applyBusId    商家id
+     * @return
+     */
+    int getUnionMemberCount(Integer applyBusId);
 }

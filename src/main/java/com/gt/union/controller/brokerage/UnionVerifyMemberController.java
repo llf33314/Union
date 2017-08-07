@@ -3,6 +3,7 @@ package com.gt.union.controller.brokerage;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.common.annotation.SysLogAnnotation;
+import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.ParameterException;
 import com.gt.union.common.response.GTJsonResult;
@@ -141,7 +142,7 @@ public class UnionVerifyMemberController {
 			}
 			if (CommonUtil.isNotEmpty(phone)) {
 				//TODO 发送短信接口
-				SmsUtil.sendMsg(phone,33,busId, "佣金平台管理员验证码:" + code.toString(), user.getName());
+				SmsUtil.sendMsg(phone, CommonConstant.SMS_UNION_MODEL,busId, "佣金平台管理员验证码:" + code.toString(), user.getName());
 			}
 		} catch (Exception e) {
 			logger.error("发送佣金平台管理员验证码错误");

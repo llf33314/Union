@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.entity.basic.UnionApply;
 import com.gt.union.entity.basic.UnionApplyInfo;
+import com.gt.union.vo.basic.UnionApplyVO;
+
+import java.util.Map;
 
 /**
  * <p>
@@ -39,5 +42,23 @@ public interface IUnionApplyService extends IService<UnionApply> {
 	 * @param unionId	联盟id
 	 * @return
 	 */
-	int getUnionApply(Integer busId, Integer unionId);
+	UnionApply getUnionApply(Integer busId, Integer unionId);
+
+	/**
+	 * 审核申请信息
+	 * @param busId		审核的商家id
+	 * @param id		申请id
+	 * @param unionId	联盟id
+	 * @param applyStatus	审核状态 1：通过 2：不通过
+	 */
+	void updateUnionApplyVerify(Integer busId, Integer id, Integer unionId, Integer applyStatus) throws Exception;
+
+	/**
+	 * 添加盟员申请
+	 * @param busId    商家id
+	 * @param unionId    联盟id
+	 * @param unionApplyVO    申请信息
+	 * @param applyType    申请状态 1：自由申请 2：推荐申请
+	 */
+	Map<String, Object> addUnionApply(Integer busId, Integer unionId, UnionApplyVO unionApplyVO, Integer applyType) throws Exception;
 }

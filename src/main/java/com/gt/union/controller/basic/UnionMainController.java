@@ -140,7 +140,7 @@ public class UnionMainController {
         BusUser user = SessionUtils.getLoginUser(request);
         try{
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
-                throw new BusinessException("请使用主账号操作");
+                throw new BusinessException("请使用主账号权限");
             }
             unionMainInfo.getUnionMain().setId(id);
             unionMainService.updateUnionMain(unionMainInfo, user.getId());
@@ -168,7 +168,7 @@ public class UnionMainController {
         Map<String,Object> data = new HashMap<String,Object>();
         try{
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
-                throw new BusinessException("请使用主账号操作");
+                throw new BusinessException("请使用主账号权限");
             }
             data = unionMainService.getUnionMainInfo(id);
         }catch (BaseException e){
@@ -193,7 +193,7 @@ public class UnionMainController {
         Map<String,Object> data = new HashMap<String,Object>();
         try{
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
-                throw new BusinessException("请使用主账号操作");
+                throw new BusinessException("请使用主账号权限");
             }
             data = unionMainService.getCreateUnionInfo(user);
         }catch (BaseException e){
@@ -222,7 +222,7 @@ public class UnionMainController {
         BusUser user = SessionUtils.getLoginUser(request);
         try{
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
-                throw new BusinessException("请使用主账号操作");
+                throw new BusinessException("请使用主账号权限");
             }
             unionMainService.saveUnionMainInfo(unionMainInfo, user);
             return GTJsonResult.instanceSuccessMsg(null,null,"创建成功").toString();

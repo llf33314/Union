@@ -102,8 +102,8 @@ public class UnionApplyInfoController {
 	    try {
 	        BusUser busUser = SessionUtils.getLoginUser(request);
 	        if (busUser == null) {
-	            throw new Exception("UnionApplyInfoController.listSellDivideProportion():无法通过session获取用户的信息!");
-            }
+				throw new Exception("UnionApplyInfoController.listSellDivideProportion():无法通过session获取用户的信息!");
+			}
 	        if (!this.unionMemberService.isUnionOwner(unionId, busUser.getId())) {
                 throw new Exception("UnionApplyInfoController.listSellDivideProportion():当前请求人不是联盟的盟主(unionId=" + unionId + ")!");
             }
@@ -132,7 +132,7 @@ public class UnionApplyInfoController {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
 			if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
-				throw new BusinessException("请使用主账号操作");
+				throw new BusinessException("请使用主账号权限");
 			}
 			unionApplyInfo.setId(id);
 			this.unionApplyInfoService.updateUnionApplyInfo(unionApplyInfo,busUser.getId(),unionId);
@@ -163,7 +163,7 @@ public class UnionApplyInfoController {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
 			if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
-				throw new BusinessException("请使用主账号操作");
+				throw new BusinessException("请使用主账号权限");
 			}
 			data = this.unionApplyInfoService.getUnionApplyInfo(id, unionId, busUser.getId());
 		} catch (BaseException e) {

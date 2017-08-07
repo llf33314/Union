@@ -2,7 +2,12 @@ package com.gt.union.controller.basic;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.common.annotation.SysLogAnnotation;
+import com.gt.union.common.exception.BaseException;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
+import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.SessionUtils;
+import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.basic.IUnionApplyService;
 import com.gt.union.vo.basic.UnionApplyVO;
 import io.swagger.annotations.ApiOperation;
@@ -12,6 +17,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,9 +32,12 @@ import java.util.Map;
 @RestController
 @RequestMapping("/unionApply")
 public class UnionApplyController {
+
     private Logger logger = LoggerFactory.getLogger(UnionApplyController.class);
+
     @Autowired
     private IUnionApplyService unionApplyService;
+
 
     @ApiOperation(value = "查询入盟申请列表"
             , notes = "根据联盟id获取入盟申请，并根据enterpriseName/directorPhone进行模糊匹配"
@@ -56,14 +65,26 @@ public class UnionApplyController {
             , produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     @SysLogAnnotation(description = "通过或不通过入盟申请", op_function = "1")
-    public String updateApplyStatus(@ApiParam(name = "id", value = "入盟申请id", required = true)
+    public String updateApplyStatus(HttpServletRequest request, @ApiParam(name = "id", value = "入盟申请id", required = true)
                 @PathVariable("id")Integer id
             , @ApiParam(name = "unionId", value = "联盟id", required = true)
                 @RequestParam(name = "unionId", required = true) Integer unionId
             , @ApiParam(name = "applyStatus", value = "审批状态，1代表通过，2代表不通过", required = true)
                 @RequestParam(name = "applyStatus", required = true) Integer applyStatus) {
-        //TODO
-        return GTJsonResult.instanceSuccessMsg().toString();
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        try{
+            if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
+                throw new BusinessException("请使用主账号权限");
+            }
+            unionApplyService.updateUnionApplyVerify(busUser.getId(),id,unionId, applyStatus);
+        }catch (BaseException e){
+            logger.error(e.getMessage(),e);
+            return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+        } catch (Exception e){
+            logger.error(e.getMessage(),e);
+            return GTJsonResult.instanceErrorMsg("审核失败").toString();
+        }
+        return GTJsonResult.instanceSuccessMsg(null, null,"审核成功").toString();
     }
 
     @ApiOperation(value = "新建申请入盟或推荐入盟"
@@ -71,21 +92,25 @@ public class UnionApplyController {
             , produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @SysLogAnnotation(description = "新建申请入盟或推荐入盟", op_function = "1")
-    public String saveApply(@ApiParam(name = "unionId", value = "联盟id",required = true)
+    public String saveApply(HttpServletRequest request, @ApiParam(name = "unionId", value = "联盟id",required = true)
                 @RequestParam(name = "unionId", required = true) Integer unionId
             , @ApiParam(name = "applyType", value = "新建类型，1代表自由申请，2代表推荐申请", required = true)
                 @RequestParam(name = "applyType", required = true) Integer applyType
             , @ApiParam(name = "unionApplyVO", value = "新建的数据模型", required = true)
                 @RequestBody UnionApplyVO unionApplyVO){
-        //TODO
-        Map<String, Object> resultMap = new HashMap<>();
-        resultMap.put("unionId", unionId);
-        resultMap.put("applyType", applyType);
-        if (unionApplyVO != null) {
-            resultMap.put("userName", unionApplyVO.getUserName());
-            resultMap.put("unionApply", unionApplyVO.getUnionApply());
-            resultMap.put("unionApplyInfo", unionApplyVO.getUnionApplyInfo());
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        try{
+            if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
+                throw new BusinessException("请使用主账号权限");
+            }
+            Map<String,Object> data = unionApplyService.addUnionApply(busUser.getId(), unionId, unionApplyVO, applyType);
+            return GTJsonResult.instanceSuccessMsg(data,null,"添加成功").toString();
+        }catch (BaseException e){
+            logger.error(e.getMessage(),e);
+            return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+        }catch (Exception e){
+            logger.error(e.getMessage(),e);
+            return GTJsonResult.instanceErrorMsg("添加失败").toString();
         }
-        return GTJsonResult.instanceSuccessMsg(resultMap).toString();
     }
 }
