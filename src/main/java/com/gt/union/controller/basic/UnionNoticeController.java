@@ -4,14 +4,12 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.CommonUtil;
-import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.basic.UnionNotice;
 import com.gt.union.service.basic.IUnionNoticeService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -22,7 +20,7 @@ import org.springframework.web.bind.annotation.*;
  * @author linweicong
  * @since 2017-07-21
  */
-@Controller
+@RestController
 @RequestMapping("/unionNotice")
 public class UnionNoticeController {
 
