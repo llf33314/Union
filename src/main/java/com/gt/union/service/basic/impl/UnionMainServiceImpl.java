@@ -186,6 +186,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		UnionMain main = getUnionMain(id);
 		EntityWrapper entityWrapper = new EntityWrapper<UnionInfoDict>();
 		entityWrapper.eq("union_id",id);
+		entityWrapper.eq("del_status",0);
 		List<Map<String,Object>> infos = unionInfoDictService.getUnionInfoDict(id);
 		data.put("main",main);
 		data.put("infos",infos);
