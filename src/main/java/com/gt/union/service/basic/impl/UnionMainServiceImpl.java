@@ -12,14 +12,12 @@ import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.DateTimeKit;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.entity.basic.UnionApplyInfo;
+import com.gt.union.entity.basic.UnionDiscount;
 import com.gt.union.entity.basic.UnionInfoDict;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.mapper.basic.UnionMainMapper;
-import com.gt.union.service.basic.IUnionApplyService;
-import com.gt.union.service.basic.IUnionInfoDictService;
-import com.gt.union.service.basic.IUnionMainService;
-import com.gt.union.service.basic.IUnionMemberService;
+import com.gt.union.service.basic.*;
 import com.gt.union.service.brokerage.IUnionBrokerageWithdrawalsRecordService;
 import com.gt.union.service.business.IUnionBrokeragePayRecordService;
 import com.gt.union.service.card.IUnionBusMemberCardService;
@@ -70,6 +68,9 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
+
+	@Autowired
+	private IUnionDiscountService unionDiscountService;
 
 
 	public UnionMain getUnionMain(Integer unionId){
@@ -199,6 +200,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		entityWrapper.eq("del_status",0);
 		return this.selectList(entityWrapper);
 	}
+
 
 	@Override
 	public Map<String, Object> getUnionMainMemberInfo(Integer busId) throws Exception{

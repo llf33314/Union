@@ -96,4 +96,5 @@ public interface IUnionMainService extends IService<UnionMain> {
 	 * @return
 	 */
 	List<UnionMain> getUnionMainList();
+
 }
