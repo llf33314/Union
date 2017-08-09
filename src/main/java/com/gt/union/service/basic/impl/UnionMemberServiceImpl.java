@@ -1,6 +1,7 @@
 package com.gt.union.service.basic.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -422,13 +423,16 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 unionApplyInfo.setSellDivideProportion(0d);
                 unionApplyInfoService.updateById(unionApplyInfo);
             }
+            unionMember.setOutStaus(2);
             unionMember.setConfirm(new Date());
             unionMember.setConfirmOutTime(DateTimeKit.addDate(unionMember.getConfirm(), 15));
             this.updateById(unionMember);
-            String redisKey = "union:confirmOut:" + System.currentTimeMillis();
-           /* params.put("member",member);
-            JedisUtil.set(redisKey, JSONObject.fromObject(params).toString(),60*1);
-            msg.put("redisKey",redisKey);*/
+            String redisKey = "confirmOut:" + System.currentTimeMillis();
+            Map<String,Object> param = new HashMap<String,Object>();
+            param.put("busId",unionMember.getBusId());
+            param.put("unionId",unionMember.getUnionId());
+            redisCacheUtil.set(redisKey, JSON.toJSONString(param),60l);
+            data.put("redisKey",redisKey);
         }else if(verifyStatus == 2){//拒绝
             unionMember.setOutStaus(0);
             unionMember.setApplyOutTime(null);

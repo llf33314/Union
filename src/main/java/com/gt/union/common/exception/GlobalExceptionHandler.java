@@ -24,7 +24,11 @@ public class GlobalExceptionHandler {
 	@ExceptionHandler(value = Exception.class)
 	@ResponseBody
 	public String defaultErrorHandler(HttpServletRequest req, Exception e) throws Exception {
-		return GTJsonResult.instanceErrorMsg("系统错误").toString();
+		if(e instanceof BaseException){
+			return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+		}else{
+			return GTJsonResult.instanceErrorMsg("系统错误").toString();
+		}
 	}
 
 }

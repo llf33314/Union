@@ -112,8 +112,7 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         UnionApplyInfo info = null;
         if ( redisCacheUtil.exists( "unionApplyInfo:" + unionId + ":" + busId ) ) {
             // 1.1 存在则从redis 读取
-            redisCacheUtil.removePattern("*Union:*");
-//            info = JSON.parseObject(redisCacheUtil.get("unionApplyInfo:" + unionId + ":" + busId ).toString(),UnionApplyInfo.class);
+            info = JSON.parseObject(redisCacheUtil.get("unionApplyInfo:" + unionId + ":" + busId ).toString(),UnionApplyInfo.class);
         } else {
             Wrapper wrapper = new Wrapper() {
                 @Override
@@ -172,7 +171,7 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
             throw new BusinessException("该申请不存在");
         }
         if(unionApply.getApplyStatus() != 0){
-            throw new BusinessException("该申请已审核");
+            throw new BusinessException("已审核");
         }
         if(applyStatus == 1){//通过
             //TODO 判断对方的商家账号是否过期
@@ -210,16 +209,9 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         }else if(applyStatus == 2){//不通过
             //删除信息
             this.deleteById(id);
-            Wrapper wrapper = new Wrapper() {
-                @Override
-                public String getSqlSegment() {
-                    StringBuilder sbSqlSegment = new StringBuilder(" t1");
-                    sbSqlSegment.append(" WHERE union_apply_id = ").append(id);
-                    return sbSqlSegment.toString();
-                };
-
-            };
-            unionApplyInfoService.delete(wrapper);
+            EntityWrapper<UnionApplyInfo> entityWrapper = new EntityWrapper<>();
+            entityWrapper.eq("union_apply_id",id);
+            unionApplyInfoService.delete(entityWrapper);
         }
     }
 
@@ -279,6 +271,9 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
             }
             //TODO 2、判断推荐人的账号
             String userName = vo.getUserName();
+            if(CommonUtil.isNotEmpty(userName)){
+                throw new ParameterException("参数错误");
+            }
             UnionMember unionMember = unionMemberService.getUnionMember(busId,unionId);
             //1、判断是否加入了该盟
             if(unionMember != null){

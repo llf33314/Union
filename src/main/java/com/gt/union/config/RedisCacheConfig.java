@@ -46,8 +46,8 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
 		RedisSerializer<String> stringRedisSerializer = new StringRedisSerializer();
 		redisTemplate.setKeySerializer(stringRedisSerializer);
 		redisTemplate.setHashKeySerializer(stringRedisSerializer);
-		redisTemplate.afterPropertiesSet();
 		redisTemplate.setValueSerializer(stringRedisSerializer);
+		redisTemplate.afterPropertiesSet();
 		return redisTemplate;
 	}
 

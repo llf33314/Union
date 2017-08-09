@@ -92,8 +92,7 @@ public class RedisCacheUtil {
 	public boolean set( final String key, String value ) {
 		boolean result = false;
 		try {
-			ValueOperations<String,String > operations = redisTemplate.opsForValue();
-			operations.set( redisNamePrefix + key, value, 7200l );
+			set(key, value, 7200l);
 			result = true;
 		} catch ( Exception e ) {
 			e.printStackTrace();
@@ -113,7 +112,7 @@ public class RedisCacheUtil {
 		boolean result = false;
 		try {
 			ValueOperations< String,String > operations = redisTemplate.opsForValue();
-			operations.set( key, value );
+			operations.set(redisNamePrefix + key, value );
 			redisTemplate.expire( redisNamePrefix + key, expireTime, TimeUnit.SECONDS );
 			result = true;
 		} catch ( Exception e ) {
