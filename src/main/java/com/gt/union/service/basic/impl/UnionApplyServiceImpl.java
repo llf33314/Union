@@ -68,7 +68,7 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
             public String getSqlSegment() {
                 StringBuilder sbSqlSegment = new StringBuilder(" a");
                 sbSqlSegment.append(" LEFT JOIN t_union_apply_info i ON i.union_apply_id = a.id ")
-                            .append(" LEFT JOIN t_union_apply a2 ON a2.apply_bus_id = a.recommend_bus_id AND t2.union_id = ")
+                            .append(" LEFT JOIN t_union_apply a2 ON a2.apply_bus_id = a.recommend_bus_id AND a2.union_id = ")
                             .append(unionId)
                             .append(" LEFT JOIN t_union_apply_info i2 ON i2.union_apply_id = a2.id ")
                             .append(" WHERE ")
