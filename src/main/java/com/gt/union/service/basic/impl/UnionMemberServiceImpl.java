@@ -348,7 +348,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             unionMember = this.selectOne(entityWrapper);
             // 写入 Redis 操作
             if(CommonUtil.isNotEmpty(unionMember)){
-                redisCacheUtil.set( "unionMember:" + unionId + ":" + busId, JSON.toJSON(unionMember) );
+                redisCacheUtil.set( "unionMember:" + unionId + ":" + busId, JSON.toJSONString(unionMember) );
             }
         }
         return unionMember;

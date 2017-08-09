@@ -36,17 +36,18 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
 		LOG.debug( "注入StringRedisTemplate" );
 		RedisTemplate< String,String > redisTemplate = new RedisTemplate<>();
 		redisTemplate.setConnectionFactory( cf );
-		Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
-		ObjectMapper om = new ObjectMapper();
-		om.setVisibility( PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
-		om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
-		jackson2JsonRedisSerializer.setObjectMapper(om);
-		redisTemplate.setValueSerializer(jackson2JsonRedisSerializer);//如果key是String 需要配置一下StringSerializer,不然key会乱码 /XX/XX
+//		Jackson2JsonRedisSerializer jackson2JsonRedisSerializer = new Jackson2JsonRedisSerializer(Object.class);
+//		ObjectMapper om = new ObjectMapper();
+//		om.setVisibility( PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+//		om.enableDefaultTyping(ObjectMapper.DefaultTyping.NON_FINAL);
+//		jackson2JsonRedisSerializer.setObjectMapper(om);
+//		redisTemplate.setValueSerializer(jackson2JsonRedisSerializer);//如果key是String 需要配置一下StringSerializer,不然key会乱码 /XX/XX
 		//字符串序列化配置
 		RedisSerializer<String> stringRedisSerializer = new StringRedisSerializer();
 		redisTemplate.setKeySerializer(stringRedisSerializer);
 		redisTemplate.setHashKeySerializer(stringRedisSerializer);
 		redisTemplate.afterPropertiesSet();
+		redisTemplate.setValueSerializer(stringRedisSerializer);
 		return redisTemplate;
 	}
 

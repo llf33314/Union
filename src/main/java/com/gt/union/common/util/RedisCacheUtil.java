@@ -41,8 +41,8 @@ public class RedisCacheUtil {
 	 * @param pattern pattern
 	 */
 	public void removePattern( final String pattern ) {
-		Set< Serializable > keys = redisTemplate.keys( pattern );
-		if ( keys.size() > 0 ) redisTemplate.delete( redisNamePrefix + keys );
+		Set< String > keys = redisTemplate.keys( pattern );
+		if ( keys.size() > 0 ) redisTemplate.delete( keys );
 	}
 
 	/**
@@ -76,7 +76,7 @@ public class RedisCacheUtil {
 	 */
 	public Object get( final String key ) {
 		Object result = null;
-		ValueOperations< Serializable,Object > operations = redisTemplate.opsForValue();
+		ValueOperations< String,String > operations = redisTemplate.opsForValue();
 		result = operations.get( redisNamePrefix + key );
 		return result;
 	}
@@ -89,10 +89,10 @@ public class RedisCacheUtil {
 	 *
 	 * @return boolean
 	 */
-	public boolean set( final String key, Object value ) {
+	public boolean set( final String key, String value ) {
 		boolean result = false;
 		try {
-			ValueOperations<Serializable,Object > operations = redisTemplate.opsForValue();
+			ValueOperations<String,String > operations = redisTemplate.opsForValue();
 			operations.set( redisNamePrefix + key, value, 7200l );
 			result = true;
 		} catch ( Exception e ) {
@@ -109,10 +109,10 @@ public class RedisCacheUtil {
 	 *
 	 * @return boolean
 	 */
-	public boolean set( final String key, Object value, Long expireTime ) {
+	public boolean set( final String key, String value, Long expireTime ) {
 		boolean result = false;
 		try {
-			ValueOperations< Serializable,Object > operations = redisTemplate.opsForValue();
+			ValueOperations< String,String > operations = redisTemplate.opsForValue();
 			operations.set( key, value );
 			redisTemplate.expire( redisNamePrefix + key, expireTime, TimeUnit.SECONDS );
 			result = true;

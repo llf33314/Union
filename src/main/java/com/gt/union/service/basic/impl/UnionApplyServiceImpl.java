@@ -112,8 +112,8 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         UnionApplyInfo info = null;
         if ( redisCacheUtil.exists( "unionApplyInfo:" + unionId + ":" + busId ) ) {
             // 1.1 存在则从redis 读取
-//            redisCacheUtil.remove("unionApplyInfo:" + unionId + ":" + busId);
-            info = JSON.parseObject(redisCacheUtil.get("unionApplyInfo:" + unionId + ":" + busId ).toString(),UnionApplyInfo.class);
+            redisCacheUtil.removePattern("*Union:*");
+//            info = JSON.parseObject(redisCacheUtil.get("unionApplyInfo:" + unionId + ":" + busId ).toString(),UnionApplyInfo.class);
         } else {
             Wrapper wrapper = new Wrapper() {
                 @Override
@@ -141,7 +141,8 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
             info = unionApplyInfoService.selectOne(wrapper);
             // 写入 Redis 操作
             if(CommonUtil.isNotEmpty(info)){
-                redisCacheUtil.set("unionApplyInfo:" + unionId + ":" + busId, JSON.toJSON(info));
+                System.out.printf(JSON.toJSONString(info));
+                redisCacheUtil.set("unionApplyInfo:" + unionId + ":" + busId, JSON.toJSONString(info));
             }
         }
         return info;

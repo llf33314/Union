@@ -1,5 +1,6 @@
 package com.gt.union.service.basic.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
@@ -77,7 +78,8 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		UnionMain main = null;
 		if ( redisCacheUtil.exists( "unionMain:"+unionId ) ) {
 			// 1.1 存在则从redis 读取
-			main = (UnionMain) redisCacheUtil.get("unionMain:"+unionId );
+			redisCacheUtil.remove("unionMain:"+unionId );
+			main = JSON.parseObject(redisCacheUtil.get("unionMain:"+unionId ).toString(),UnionMain.class);
 		} else {
 			// 2. 不存在则从数据库查询
 			EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<UnionMain>();
@@ -86,7 +88,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 			main = this.selectOne(entityWrapper);
 			// 写入 Redis 操作
 			if(CommonUtil.isNotEmpty(main)){
-				redisCacheUtil.set( "unionMain:"+unionId, main );
+				redisCacheUtil.set( "unionMain:"+unionId, JSON.toJSONString(main) );
 			}
 		}
 		return main;
@@ -157,7 +159,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		unionInfoDictService.delete(entityWrapper);
 		unionInfoDictService.insertBatch(unionMainInfoVO.getInfos());
 		this.updateById(main);
-		redisCacheUtil.set("unionMain:" + main.getId(),main);
+		redisCacheUtil.set("unionMain:" + main.getId(),JSON.toJSONString(main));
 	}
 
 	//TODO 创建联盟
