@@ -49,6 +49,7 @@ public class UnionNoticeServiceImpl extends ServiceImpl<UnionNoticeMapper, Union
 			if(count > 0){
 				throw new BusinessException("系统错误，请刷新后重试");
 			}
+			notice.setDelStatus(0);
 			notice.setCreatetime(new Date());
 			unionNoticeMapper.insert(notice);
 		}else{

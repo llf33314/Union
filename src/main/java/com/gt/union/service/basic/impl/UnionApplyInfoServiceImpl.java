@@ -159,4 +159,16 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 		data.put("addressDistrict","区");
 		return data;
 	}
+
+	@Override
+	public UnionApplyInfo saveUnionApplyInfo(UnionApplyInfo unionApplyInfo, Integer applyId) {
+		UnionApplyInfo info = new UnionApplyInfo();
+		info.setUnionApplyId(applyId);
+		info.setApplyReason(unionApplyInfo.getApplyReason());
+		info.setEnterpriseName(unionApplyInfo.getEnterpriseName());
+		info.setDirectorEmail(unionApplyInfo.getDirectorEmail());
+		info.setDirectorPhone(unionApplyInfo.getDirectorPhone());
+		info.setDirectorName(unionApplyInfo.getDirectorName());
+		return info;
+	}
 }

@@ -17,7 +17,7 @@ import java.io.Serializable;
  * @since 2017-07-21
  */
 @TableName("t_union_apply_info")
-public class UnionApplyInfo extends Model<UnionApplyInfo> {
+public class UnionApplyInfo extends Model<UnionApplyInfo> implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

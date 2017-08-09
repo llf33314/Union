@@ -3,7 +3,6 @@ package com.gt.union.service.basic;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
-import com.gt.union.common.exception.BusinessException;
 import com.gt.union.entity.basic.UnionMember;
 
 import java.util.List;
@@ -128,4 +127,14 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @return
      */
     int getUnionMemberCount(Integer applyBusId);
+
+    /**
+     * 审核退盟成员
+     * @param unionMemberId 盟员id
+     * @param unionId   联盟id
+     * @param busId    操作的商家id
+     * @param isUnionOwner  盟主
+     * @param verifyStatus  审核状态 1：同意 2：拒绝
+     */
+	Map<String, Object> updateUnionMemberOut(Integer unionMemberId, Integer unionId, Integer busId, Integer isUnionOwner, Integer verifyStatus) throws Exception;
 }

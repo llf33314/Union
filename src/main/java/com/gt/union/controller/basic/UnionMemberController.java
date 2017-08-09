@@ -2,7 +2,9 @@ package com.gt.union.controller.basic;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.common.constant.basic.UnionMemberConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
+import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.basic.IUnionMemberService;
@@ -137,27 +139,42 @@ public class UnionMemberController {
      * @param isUnionOwner
      * @return
      */
-    @ApiOperation(value = "盟主权限转移"
-            , notes = "盟主权限转移"
+    @ApiOperation(value = "盟主权限转移、盟主审核退盟成员"
+            , notes = "盟主权限转移、盟主审核退盟成员"
             , produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateUnionMember(HttpServletRequest request
-            , @ApiParam(name = "id", value = "被授予盟主权限的盟员id", required = true)
+            , @ApiParam(name = "id", value = "被授予盟主权限的盟员id、审核退盟的成员id", required = true)
                 @PathVariable("id") Integer unionMemberId
             , @ApiParam(name = "unionId", value = "联盟id", required = true)
                 @RequestParam(name = "unionId", required = true) Integer unionId
             , @ApiParam(name = "isUnionOwner", value = "目标值：1代表成为盟主", required = true)
-                @RequestParam(name = "isUnionOwner", required = true) Integer isUnionOwner) {
+                @RequestParam(name = "isUnionOwner", required = true) Integer isUnionOwner
+            , @ApiParam(name = "verifyStatus", value = "1：同意退盟 2：拒绝退盟  当opType为2时 必须传", required = false)
+                    @RequestParam(name = "verifyStatus", required = false) Integer verifyStatus
+            , @ApiParam(name = "opType", value = "操作类型 1：盟主权限转移 2：盟主审核退盟成员", required = true)
+            @RequestParam(name = "opType", required = true) Integer opType) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
             if (busUser == null) {
                 throw new Exception("UnionMemberController.listUnionMember():无法通过session获取用户的信息!");
             }
-            this.unionMemberService.updateIsUnionMember(unionMemberId, unionId, busUser.getId(), isUnionOwner);
+            if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
+                throw new BusinessException("请使用主账号权限");
+            }
+            switch (opType) {
+                case 1 :
+                    this.unionMemberService.updateIsUnionMember(unionMemberId, unionId, busUser.getId(), isUnionOwner);
+                    return GTJsonResult.instanceSuccessMsg().toString();
+                case 2 :
+                    Map<String,Object> data = this.unionMemberService.updateUnionMemberOut(unionMemberId, unionId, busUser.getId(), isUnionOwner, verifyStatus);
+                    return GTJsonResult.instanceSuccessMsg(data).toString();
+                default:
+                    throw new Exception("UnionMemberController.updateUnionMember():不支持的操作类型opType-" + opType);
+            }
         } catch (Exception e) {
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
         }
-        return GTJsonResult.instanceSuccessMsg().toString();
     }
 }

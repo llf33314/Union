@@ -14,6 +14,7 @@ import org.springframework.data.redis.cache.RedisCacheManager;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.Jackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -48,7 +49,7 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
 	public CacheManager cacheManager(RedisTemplate redisTemplate ) {
 		RedisCacheManager cacheManager = new RedisCacheManager( redisTemplate );
 		//默认超时时间,单位秒 两小时
-		cacheManager.setDefaultExpiration( 20 );
+		cacheManager.setDefaultExpiration( 7200L );
 		//根据缓存名称设置超时时间,0为不超时
 		Map< String,Long > expires = new ConcurrentHashMap<>();
 		cacheManager.setExpires( expires );

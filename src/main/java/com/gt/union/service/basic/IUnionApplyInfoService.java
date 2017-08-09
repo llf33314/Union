@@ -56,4 +56,12 @@ public interface IUnionApplyInfoService extends IService<UnionApplyInfo> {
 	 * @return
 	 */
 	Map<String,Object> getUnionApplyInfo(Integer id, Integer unionId, Integer busId) throws Exception;
+
+	/**
+	 * 保存unionApplyInfo
+	 * @param unionApplyInfo
+	 * @param applyId 申请id
+	 * @return
+	 */
+	UnionApplyInfo saveUnionApplyInfo(UnionApplyInfo unionApplyInfo, Integer applyId);
 }

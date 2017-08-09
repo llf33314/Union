@@ -1,5 +1,6 @@
 package com.gt.union.service.basic.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -9,18 +10,20 @@ import com.gt.union.common.constant.basic.UnionDiscountConstant;
 import com.gt.union.common.constant.basic.UnionMemberConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParameterException;
-import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.RedisCacheUtil;
-import com.gt.union.common.util.StringUtil;
-import com.gt.union.entity.basic.UnionMain;
+import com.gt.union.common.util.*;
+import com.gt.union.entity.basic.UnionApplyInfo;
 import com.gt.union.entity.basic.UnionMember;
 import com.gt.union.mapper.basic.UnionMemberMapper;
+import com.gt.union.service.basic.IUnionApplyInfoService;
+import com.gt.union.service.basic.IUnionApplyService;
 import com.gt.union.service.basic.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +40,12 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
 
     @Autowired
     private RedisCacheUtil redisCacheUtil;
+
+    @Autowired
+    private IUnionApplyService unionApplyService;
+
+    @Autowired
+    private IUnionApplyInfoService unionApplyInfoService;
 
     @Override
     public Page listMember(Page page, final Integer unionId, final String enterpriseName) throws Exception {
@@ -195,7 +204,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(propagation = Propagation.REQUIRED)//TODO 盟主权限转移
     public void updateIsUnionMember(Integer unionMemberId, Integer unionId, Integer busId, Integer isUnionOwner) throws Exception {
         if (unionMemberId == null) {
             throw new Exception("UnionMemberServiceImpl.updateIsUnionMember():参数unionMemberId不能为空!");
@@ -329,7 +338,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         UnionMember unionMember = null;
         if ( redisCacheUtil.exists( "unionMember:" + unionId + ":" + busId) ) {
             // 1.1 存在则从redis 读取
-            unionMember = (UnionMember) redisCacheUtil.get("unionMember:" + unionId + ":" + busId );
+            unionMember = JSON.parseObject(redisCacheUtil.get("unionMember:" + unionId + ":" + busId ).toString(),UnionMember.class);
         } else {
             // 2. 不存在则从数据库查询
             EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<UnionMember>();
@@ -339,7 +348,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             unionMember = this.selectOne(entityWrapper);
             // 写入 Redis 操作
             if(CommonUtil.isNotEmpty(unionMember)){
-                redisCacheUtil.set( "unionMember:" + unionId + ":" + busId, unionMember );
+                redisCacheUtil.set( "unionMember:" + unionId + ":" + busId, JSON.toJSON(unionMember) );
             }
         }
         return unionMember;
@@ -380,5 +389,51 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         entityWrapper.eq("bus_id",applyBusId);
         entityWrapper.eq("del_status",0);
         return this.selectCount(entityWrapper);
+    }
+
+    @Override
+    public Map<String, Object> updateUnionMemberOut(Integer unionMemberId, Integer unionId, Integer busId, Integer isUnionOwner, Integer verifyStatus) throws Exception{
+        Map<String,Object> data = new HashMap<String,Object>();
+        if(CommonUtil.isEmpty(unionMemberId) || CommonUtil.isEmpty(unionId) || CommonUtil.isEmpty(busId) || CommonUtil.isEmpty(isUnionOwner) || CommonUtil.isEmpty(verifyStatus)){
+            throw new ParameterException("参数错误");
+        }
+        if(!this.isUnionOwner(unionId,busId)){
+            throw new BusinessException("没有盟主权限");
+        }
+        EntityWrapper entityWrapper = new EntityWrapper<UnionMember>();
+        entityWrapper.eq("id",unionMemberId);
+        entityWrapper.eq("union_id",unionId);
+        UnionMember unionMember = this.selectOne(entityWrapper);
+        if(unionMember.getDelStatus() == 1){
+            throw new BusinessException("已退出联盟");
+        }
+        if(unionMember.getOutStaus() == 0){
+            throw new BusinessException("未申请退盟");
+        }
+        if(unionMember.getOutStaus() == 2){
+            throw new BusinessException("已处退盟过渡期");
+        }
+        if(verifyStatus == 1){//同意
+            UnionApplyInfo unionApplyInfo = unionApplyService.getUnionApplyInfo(unionMember.getBusId(),unionId);
+            UnionApplyInfo mainApplyInfo = unionApplyService.getUnionApplyInfo(busId,unionId);
+            if(CommonUtil.isNotEmpty(unionApplyInfo.getSellDivideProportion())){
+                mainApplyInfo.setSellDivideProportion(CommonUtil.isNotEmpty(mainApplyInfo.getSellDivideProportion()) ? BigDecimalUtil.add(mainApplyInfo.getSellDivideProportion(),unionApplyInfo.getSellDivideProportion()).doubleValue() : unionApplyInfo.getSellDivideProportion());
+                unionApplyInfoService.updateById(mainApplyInfo);
+                unionApplyInfo.setSellDivideProportion(0d);
+                unionApplyInfoService.updateById(unionApplyInfo);
+            }
+            unionMember.setConfirm(new Date());
+            unionMember.setConfirmOutTime(DateTimeKit.addDate(unionMember.getConfirm(), 15));
+            this.updateById(unionMember);
+            String redisKey = "union:confirmOut:" + System.currentTimeMillis();
+           /* params.put("member",member);
+            JedisUtil.set(redisKey, JSONObject.fromObject(params).toString(),60*1);
+            msg.put("redisKey",redisKey);*/
+        }else if(verifyStatus == 2){//拒绝
+            unionMember.setOutStaus(0);
+            unionMember.setApplyOutTime(null);
+            this.updateById(unionMember);
+        }
+        return data;
     }
 }

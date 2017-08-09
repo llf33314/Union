@@ -24,6 +24,7 @@ import com.gt.union.service.basic.IUnionApplyService;
 import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.basic.IUnionMemberService;
 import com.gt.union.vo.basic.UnionApplyVO;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cglib.beans.BeanMap;
 import org.springframework.stereotype.Service;
@@ -111,38 +112,36 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         UnionApplyInfo info = null;
         if ( redisCacheUtil.exists( "unionApplyInfo:" + unionId + ":" + busId ) ) {
             // 1.1 存在则从redis 读取
-            info = (UnionApplyInfo) redisCacheUtil.get("unionApplyInfo:" + unionId + ":" + busId );
+//            redisCacheUtil.remove("unionApplyInfo:" + unionId + ":" + busId);
+            info = JSON.parseObject(redisCacheUtil.get("unionApplyInfo:" + unionId + ":" + busId ).toString(),UnionApplyInfo.class);
         } else {
             Wrapper wrapper = new Wrapper() {
                 @Override
                 public String getSqlSegment() {
                     StringBuilder sbSqlSegment = new StringBuilder(" t1");
-                    sbSqlSegment.append(" LEFT JOIN t_union_apply_info t2 ON t1.id = t2.union_apply_id ")
-                            .append(" WHERE")
-                            .append(" t1.union_id = ").append(unionId)
-                            .append(" AND t1.apply_bus_id = " ).append(busId)
-                            .append(" AND t1.apply_status = " ).append(UnionApplyConstant.APPLY_STATUS_PASS)
-                            .append(" AND t1.del_status = " ).append(UnionApplyConstant.DEL_STATUS_NO);
+                    sbSqlSegment.append(" WHERE EXISTS  ")
+                            .append("( SELECT t2.* from t_union_apply t2")
+                            .append(" WHERE t1.union_apply_id = t2.id " )
+                            .append(" AND t2.union_id = " ).append(unionId)
+                            .append(" AND t2.del_status = " ).append(UnionApplyConstant.DEL_STATUS_NO)
+                            .append(" AND t2.apply_bus_id = " ).append(busId)
+                            .append(" AND t2.apply_status = " ).append(UnionApplyConstant.APPLY_STATUS_PASS)
+                            .append(")");
                     return sbSqlSegment.toString();
                 };
 
             };
             StringBuilder sbSqlSelect = new StringBuilder();
-            sbSqlSelect.append(" t2.id , t2.union_apply_id unionApplyId, t2.apply_reason applyReason, t2.enterprise_name enterpriseName, t2.director_name, ")
-                    .append("t2.director_phone directorPhone, t2.director_email directorEmail, t2.bus_address busAddress, t2.notify_phone notifyPhone, ")
-                    .append("t2.address_longitude addressLongitude, t2.address_latitude addressLatitude, t2.address_provience_id addressProvienceId, ")
-                    .append("t2.address_city_id addressCityId, t2.address_district_id addressDistrictId, t2.integral_proportion integralProportion, ")
-                    .append("t2.is_member_out_advice isMemberOutAdvice");
+            sbSqlSelect.append(" t1.id , t1.union_apply_id unionApplyId, t1.apply_reason applyReason, t1.enterprise_name enterpriseName, t1.director_name, ")
+                    .append("t1.director_phone directorPhone, t1.director_email directorEmail, t1.bus_address busAddress, t1.notify_phone notifyPhone, ")
+                    .append("t1.address_longitude addressLongitude, t1.address_latitude addressLatitude, t1.address_provience_id addressProvienceId, ")
+                    .append("t1.address_city_id addressCityId, t1.address_district_id addressDistrictId, t1.integral_proportion integralProportion, ")
+                    .append("t1.is_member_out_advice isMemberOutAdvice");
             wrapper.setSqlSelect(sbSqlSelect.toString());
-            Map<String,Object> map = this.selectMap(wrapper);
-            if(CommonUtil.isNotEmpty(map)){
-                info = new UnionApplyInfo();
-                BeanMap beanMap = BeanMap.create(info);
-                beanMap.putAll(map);
-            }
+            info = unionApplyInfoService.selectOne(wrapper);
             // 写入 Redis 操作
             if(CommonUtil.isNotEmpty(info)){
-                redisCacheUtil.set("unionApplyInfo:" + unionId + ":" + busId, info );
+                redisCacheUtil.set("unionApplyInfo:" + unionId + ":" + busId, JSON.toJSON(info));
             }
         }
         return info;
@@ -160,32 +159,33 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
 
 	@Transactional(rollbackFor = Exception.class)
     @Override
-    public void updateUnionApplyVerify(Integer busId, Integer id, Integer unionId, Integer applyStatus) throws Exception{
+    public void updateUnionApplyVerify(Integer busId, final Integer id, Integer unionId, Integer applyStatus) throws Exception{
         if(CommonUtil.isEmpty(busId) || CommonUtil.isEmpty(id) || CommonUtil.isEmpty(unionId) || CommonUtil.isEmpty(applyStatus)){
             throw new ParameterException("参数错误");
         }
         if(!unionMemberService.isUnionOwner(unionId, busId)){
             throw new BusinessException("没有盟主权限");
         }
+        UnionApply unionApply = this.selectById(id);
+        if(unionApply == null || unionApply.getDelStatus() == 1){
+            throw new BusinessException("该申请不存在");
+        }
+        if(unionApply.getApplyStatus() != 0){
+            throw new BusinessException("该申请已审核");
+        }
         if(applyStatus == 1){//通过
-            UnionApply unionApply = this.selectById(id);
-            if(unionApply == null || unionApply.getDelStatus() == 1){
-                throw new BusinessException("该申请不存在");
-            }
-            if(unionApply.getApplyStatus() != 0){
-                throw new BusinessException("该申请已审核");
-            }
             //TODO 判断对方的商家账号是否过期
-            //商家加盟数上限
-            int count = unionMemberService.getUnionMemberCount(unionApply.getApplyBusId());
-            if(count == CommonConstant.MAX_UNION_APPLY){
-                throw new BusinessException("该商家加盟数已达上限");
-            }
             //盟员数达上限
             UnionMain main = unionMainService.getUnionMain(unionId);
             if(main.getUnionMemberNum().equals(main.getUnionTotalMember())){
-                throw new BusinessException("联盟成员数已达上限");
+                throw new BusinessException("联盟成员已达上限");
             }
+            //商家加盟数上限
+            int count = unionMemberService.getUnionMemberCount(unionApply.getApplyBusId());
+            if(count == CommonConstant.MAX_UNION_APPLY){
+                throw new BusinessException("该商家加盟已达上限");
+            }
+
             UnionApply apply = new UnionApply();
             apply.setId(id);
             apply.setApplyStatus(1);
@@ -209,9 +209,16 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         }else if(applyStatus == 2){//不通过
             //删除信息
             this.deleteById(id);
-            EntityWrapper entityWrapper = new EntityWrapper<UnionApplyInfo>();
-            entityWrapper.eq("union_apply_id",id);
-            unionApplyInfoService.delete(entityWrapper);
+            Wrapper wrapper = new Wrapper() {
+                @Override
+                public String getSqlSegment() {
+                    StringBuilder sbSqlSegment = new StringBuilder(" t1");
+                    sbSqlSegment.append(" WHERE union_apply_id = ").append(id);
+                    return sbSqlSegment.toString();
+                };
+
+            };
+            unionApplyInfoService.delete(wrapper);
         }
     }
 
@@ -222,31 +229,30 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         if(CommonUtil.isEmpty(busId) || CommonUtil.isEmpty(unionId) || CommonUtil.isEmpty(vo) || CommonUtil.isEmpty(applyType)){
             throw new ParameterException("参数错误");
         }
+        UnionMain main = unionMainService.getUnionMain(unionId);
         if(applyType == 1){//自由申请
             //1、判断是否加入了该盟
-            //2、判断盟员数是否达上限
-            //3、判断加盟数是否达上限
-            //4、
-            UnionApply apply = new UnionApply();
-            apply.setApplyStatus(0);
-            apply.setBusConfirmStatus(0);
-            apply.setApplyBusId(busId);
-            apply.setCreatetime(new Date());
-            apply.setDelStatus(0);
-            apply.setUnionId(unionId);
-            apply.setApplyType(applyType);
-            this.insert(apply);
+            UnionMember unionMember = unionMemberService.getUnionMember(busId,unionId);
+            if(unionMember != null){
+                throw new BusinessException("您已加入该盟");
+            }
+            //2、判断是否申请了
+            UnionApply unionApply = this.getUnionApply(busId,unionId);
+            if(unionApply != null){
+                throw new BusinessException("您已申请加入该盟");
+            }
+            //3、判断盟员数是否达上限
+            if(main.getUnionMemberNum().equals(main.getUnionTotalMember())){
+                throw new BusinessException("联盟成员已达上限");
+            }
+            //4、判断加盟数是否达上限
+            if(unionMemberService.getUnionMemberCount(busId) == CommonConstant.MAX_UNION_APPLY){
+                throw new BusinessException("您加入的联盟已达上限");
+            }
+            UnionApply apply = saveUnionApply(busId,unionId,applyType);
             UnionApplyInfo unionApplyInfo = vo.getUnionApplyInfo();
-            UnionApplyInfo info = new UnionApplyInfo();
-            info.setUnionApplyId(apply.getId());
-            info.setApplyReason(unionApplyInfo.getApplyReason());
-            info.setEnterpriseName(unionApplyInfo.getEnterpriseName());
-            info.setDirectorEmail(unionApplyInfo.getDirectorEmail());
-            info.setDirectorPhone(unionApplyInfo.getDirectorPhone());
-            info.setDirectorName(unionApplyInfo.getDirectorName());
-            unionApplyInfoService.insert(info);
+            UnionApplyInfo info = unionApplyInfoService.saveUnionApplyInfo(unionApplyInfo, apply.getId());
             //申请成功后，发送短信让盟主审核
-            UnionMain main = unionMainService.getUnionMain(unionId);
             UnionApplyInfo mainInfo = this.getUnionApplyInfo(main.getBusId(),main.getId());
             String nowTime = "apply:"+System.currentTimeMillis();
             HashMap<String, Object> redisMap = new HashMap<>();
@@ -259,23 +265,81 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
             data.put("redisKey",nowTime);
         }else if(applyType == 2){//推荐加盟
             //1、判断联盟是否可推荐加盟
-            //2
-            UnionMember unionMember = unionMemberService.getUnionMember(busId,unionId);
-            if(unionMember == null){
+            if(main.getJoinType() != 2){
+                throw new BusinessException("联盟不支持推荐加盟");
+            }
+            //当前用户
+            UnionMember userMember = unionMemberService.getUnionMember(busId,unionId);
+            if(userMember == null){
                 throw new BusinessException("您已退盟，不可推荐");
             }
-            if(unionMember.getOutStaus() == 2){
+            if(userMember.getOutStaus() == 2){
                 throw new BusinessException("您处于退盟过渡期，不可推荐");
             }
+            //TODO 2、判断推荐人的账号
+            String userName = vo.getUserName();
+            UnionMember unionMember = unionMemberService.getUnionMember(busId,unionId);
+            //1、判断是否加入了该盟
+            if(unionMember != null){
+                throw new BusinessException("已加入本联盟");
+            }
+            //2、判断是否申请了
+            UnionApply unionApply = this.getUnionApply(busId,unionId);
+            if(unionApply != null){
+                throw new BusinessException("已申请加入本联盟");
+            }
+            //3、判断盟员数是否达上限
+            if(main.getUnionMemberNum().equals(main.getUnionTotalMember())){
+                throw new BusinessException("联盟成员已达上限");
+            }
+            //4、判断加盟数是否达上限
+            if(unionMemberService.getUnionMemberCount(busId) == CommonConstant.MAX_UNION_APPLY){
+                throw new BusinessException("您加入的联盟已达上限");
+            }
+            UnionApply apply = saveUnionApply(busId,unionId,applyType);
+            UnionApplyInfo unionApplyInfo = vo.getUnionApplyInfo();
+            UnionApplyInfo info = unionApplyInfoService.saveUnionApplyInfo(unionApplyInfo, apply.getId());
             boolean isOwner = unionMemberService.isUnionOwner(unionId,busId);//联盟盟主
             if(isOwner){
-
-            }else{
-
+                UnionMember member = new UnionMember();
+                member.setBusId(busId);
+                member.setCreatetime(new Date());
+                member.setUnionId(unionId);
+                member.setDelStatus(0);
+                member.setIsNuionOwner(0);
+                member.setOutStaus(0);
+                String unionSign = createUnionSignByUnionId(unionId);
+                member.setUnionIDSign(unionSign);
+                unionMemberService.insert(member);
+                apply.setUnionMemberId(member.getId());
+                this.updateById(apply);
+                main.setUnionMemberNum(CommonUtil.isEmpty(main.getUnionMemberNum()) ? 1 : main.getUnionMemberNum() + 1);
+                unionMainService.updateById(main);
             }
         }
         return data;
 	}
+
+    /**
+     * 保存UnionApply
+     * @param busId
+     * @param unionId
+     * @param applyType
+     * @return
+     */
+	private UnionApply saveUnionApply(Integer busId, Integer unionId, Integer applyType){
+        UnionApply apply = new UnionApply();
+        apply.setApplyStatus(0);
+        apply.setBusConfirmStatus(0);
+        apply.setApplyBusId(busId);
+        apply.setCreatetime(new Date());
+        apply.setDelStatus(0);
+        apply.setUnionId(unionId);
+        apply.setApplyType(applyType);
+        this.insert(apply);
+        return apply;
+    }
+
 
 	/**
      * 根据联盟id获取联盟商家标识

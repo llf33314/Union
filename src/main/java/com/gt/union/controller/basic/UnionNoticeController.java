@@ -44,6 +44,7 @@ public class UnionNoticeController {
 		try{
 			EntityWrapper wrapper = new EntityWrapper<UnionNotice>();
 			wrapper.eq("union_id",unionId);
+			wrapper.eq("del_status",0);
 			notice = unionNoticeService.selectOne(wrapper);
 		}catch (Exception e){
 			logger.error("获取联盟公告失败" + e.getMessage());
