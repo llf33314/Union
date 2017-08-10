@@ -10,12 +10,12 @@ public class UnionApplyVO {
     /**
      * 盟员商家帐号
      */
-    String userName = null;
+    private String userName = null;
 
     /**
      * 入盟申请
      */
-    UnionApply unionApply = null;
+    private UnionApply unionApply = null;
 
     /**
      * 入盟申请信息

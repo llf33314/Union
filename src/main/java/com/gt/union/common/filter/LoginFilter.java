@@ -69,12 +69,10 @@ public class LoginFilter implements Filter {
 		res.setHeader("Access-Control-Allow-Origin", "*");
 		res.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
 		res.setHeader("Access-Control-Max-Age", "3600");
-		res.setHeader("Access-Control-Allow-Headers", "x-requested-with");
+		res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, api_key, Authorization");
 		BusUser busUser = SessionUtils.getLoginUser(req);
 		String url = ((HttpServletRequest) request).getRequestURI();//获取请求路径
-		if(url.equals("/")){
-			res.sendRedirect("http://www."+ PropertiesUtil.getDomainDf());
-		}else if(url.indexOf("79B4DE7C")>-1){//移动端
+		if(url.indexOf("79B4DE7C")>-1){//移动端
 			Member member= SessionUtils.getLoginMember(req);
 			if(CommonUtil.isNotEmpty(member) && member.isPass()){//商家已过期，清空会员登录session
 				req.getSession().removeAttribute("member");
@@ -93,7 +91,8 @@ public class LoginFilter implements Filter {
 			busUser.setLogin_source(1);
 			SessionUtils.setLoginUser(req,busUser);
 			response.setCharacterEncoding("UTF-8");
-			response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录",PropertiesUtil.getWxmpUrl()+"/user/tologin.do")));
+			chain.doFilter(request, response);
+			//response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录",PropertiesUtil.getWxmpUrl()+"/user/tologin.do")));
 		}else if(busUser != null && busUser.getPid() == 0 && busUser.getLogin_source() != 1){//商家主账号过期,跳转到充值页面
 			if(busUser.getDays()<0){
 				String upGradeUrl=PropertiesUtil.getWxmpUrl() + "/jsp/merchants/user/pastPage.jsp";
@@ -102,7 +101,6 @@ public class LoginFilter implements Filter {
 				chain.doFilter(request, response);
 			}
 		}else if(busUser != null && busUser.getPid() != 0) {//TODO 登录的是子账户，但是主账号过期了跳转到充值页面
-
 			if (busUser.getDays() < 0) {
 				if (url.equals("/trading/upGrade.do")) {
 					chain.doFilter(request, response);
