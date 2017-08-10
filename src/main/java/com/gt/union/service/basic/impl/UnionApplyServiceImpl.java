@@ -227,12 +227,12 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
             //1、判断是否加入了该盟
             UnionMember unionMember = unionMemberService.getUnionMember(busId,unionId);
             if(unionMember != null){
-                throw new BusinessException("您已加入该盟");
+                throw new BusinessException("您已加入本联盟");
             }
             //2、判断是否申请了
             UnionApply unionApply = this.getUnionApply(busId,unionId);
             if(unionApply != null){
-                throw new BusinessException("您已申请加入该盟");
+                throw new BusinessException("您已申请加入本联盟");
             }
             //3、判断盟员数是否达上限
             if(main.getUnionMemberNum().equals(main.getUnionTotalMember())){

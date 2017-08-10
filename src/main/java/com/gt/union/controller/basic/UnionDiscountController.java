@@ -1,6 +1,9 @@
 package com.gt.union.controller.basic;
 
+import com.gt.union.common.annotation.SysLogAnnotation;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
+import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.basic.IUnionDiscountService;
@@ -40,6 +43,7 @@ public class UnionDiscountController {
      * @return
      */
     @ApiOperation(value = "设置盟员折扣", produces = "application/json;charset=UTF-8")
+    @SysLogAnnotation(description = "设置盟员折扣", op_function = "2")
     @RequestMapping(value = "", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateUnionDiscount(HttpServletRequest request, @ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId
             , @ApiParam(name="busId", value = "被设置的盟员商家id", required = true) @RequestParam(name = "busId", required = true) Integer busId
@@ -49,9 +53,12 @@ public class UnionDiscountController {
             if (busUser == null) {
                 throw new Exception("UnionDiscountController.updateUnionDiscount():无法通过session获取用户的信息!");
             }
+            if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
+                throw new BusinessException("请使用主账号权限");
+            }
             this.unionDiscountService.updateUnionDiscount(unionId, busUser.getId(), busId, discount);
         } catch (Exception e) {
-            logger.error("", e);
+            logger.error("设置盟员折扣错误", e);
             return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
         }
         return GTJsonResult.instanceSuccessMsg().toString();

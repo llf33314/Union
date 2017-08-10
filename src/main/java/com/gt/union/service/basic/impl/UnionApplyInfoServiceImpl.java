@@ -1,5 +1,6 @@
 package com.gt.union.service.basic.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -8,6 +9,7 @@ import com.gt.union.common.constant.basic.UnionApplyConstant;
 import com.gt.union.common.constant.basic.UnionMemberConstant;
 import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.ListUtil;
+import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.entity.basic.UnionApplyInfo;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.mapper.basic.UnionApplyInfoMapper;
@@ -46,11 +48,18 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 	@Autowired
 	private IUnionMainService unionMainService;
 
+	@Autowired
+	private RedisCacheUtil redisCacheUtil;
+
+	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public void updateUnionApplyInfo(UnionApplyInfo unionApplyInfo, Integer busId, Integer unionId) throws Exception{
 		unionMemberService.isMemberValid(busId,unionId);
 		//TODO 转换商家地址
 		this.updateById(unionApplyInfo);
+		if(redisCacheUtil.exists("unionApplyInfo:" + unionId + ":" + busId)){
+			redisCacheUtil.set("unionApplyInfo:" + unionId + ":" + busId, JSON.toJSONString(unionApplyInfo));
+		}
 	}
 
 	@Override
@@ -111,7 +120,7 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 	}
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(rollbackFor = Exception.class)
     public void updateSellDivideProportion(List<UnionApplyInfo> unionApplyInfoList) throws Exception {
 	    if (ListUtil.isNotEmpty(unionApplyInfoList)) {
 	        List<UnionApplyInfo> unionApplyInfos = new LinkedList<>();

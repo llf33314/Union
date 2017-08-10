@@ -32,27 +32,29 @@ public class SysLogInterceptor extends HandlerInterceptorAdapter {
 	public void postHandle(HttpServletRequest request,
 						   HttpServletResponse response, Object handler,
 						   ModelAndView modelAndView) throws Exception {
-		HandlerMethod handlerMethod=(HandlerMethod) handler;
-		SysLogAnnotation annotation=handlerMethod.getMethodAnnotation(SysLogAnnotation.class);
-		if (annotation!=null) {
-			DaoUtil daoUtil= CommonUtil.getApplicationContext().getBean(DaoUtil.class);
-			Map<String, Object> logObj=new HashMap<String, Object>();
-			BusUser user= SessionUtils.getLoginUser(request);
-			Class<?> bean=handlerMethod.getBeanType();
-			String controller=bean.getName();
-			if(user!=null){
-				logObj.put("opt_person", user.getName());
+		if(handler instanceof HandlerMethod){
+			HandlerMethod handlerMethod=(HandlerMethod) handler;
+			SysLogAnnotation annotation=handlerMethod.getMethodAnnotation(SysLogAnnotation.class);
+			if (annotation!=null) {
+				DaoUtil daoUtil= CommonUtil.getApplicationContext().getBean(DaoUtil.class);
+				Map<String, Object> logObj=new HashMap<String, Object>();
+				BusUser user= SessionUtils.getLoginUser(request);
+				Class<?> bean=handlerMethod.getBeanType();
+				String controller=bean.getName();
+				if(user!=null){
+					logObj.put("opt_person", user.getName());
+				}
+				logObj.put("opt_controller",controller);
+				logObj.put("opt_method", handlerMethod.getMethod().getName());
+				logObj.put("opt_desc", annotation.description());
+				logObj.put("opt_function", annotation.op_function());
+				logObj.put("log_type", annotation.log_type());
+				logObj.put("opt_ip", IPKit.getIpAddr(request));
+				KeysUtil des = new KeysUtil();
+				logObj.put("opt_paramers",des.getEncString(JSONObject.toJSONString(getParamers(request))));
+				String date= DateTimeKit.getDateTime(DateTimeKit.DEFAULT_DATE_FORMAT_YYYYMM);
+				daoUtil.saveObjectByMap("", "t_bus_log_"+date, logObj);
 			}
-			logObj.put("opt_controller",controller);
-			logObj.put("opt_method", handlerMethod.getMethod().getName());
-			logObj.put("opt_desc", annotation.description());
-			logObj.put("opt_function", annotation.op_function());
-			logObj.put("log_type", annotation.log_type());
-			logObj.put("opt_ip", IPKit.getIpAddr(request));
-			KeysUtil des = new KeysUtil();
-			logObj.put("opt_paramers",des.getEncString(JSONObject.toJSONString(getParamers(request))));
-			String date= DateTimeKit.getDateTime(DateTimeKit.DEFAULT_DATE_FORMAT_YYYYMM);
-			daoUtil.saveObjectByMap("", "t_bus_log_"+date, logObj);
 		}
 		super.postHandle(request, response, handler, modelAndView);
 	}

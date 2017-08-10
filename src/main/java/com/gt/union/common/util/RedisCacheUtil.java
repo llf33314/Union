@@ -7,6 +7,7 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
@@ -26,12 +27,11 @@ public class RedisCacheUtil {
 
 	/**
 	 * 批量删除对应的value
-	 *
-	 * @param keys 数组Key
+	 * @param keys 集合keys
 	 */
-	public void remove( final String... keys ) {
+	public void remove( final List<String> keys) {
 		for ( String key : keys ) {
-			remove( redisNamePrefix + key );
+			remove( key );
 		}
 	}
 

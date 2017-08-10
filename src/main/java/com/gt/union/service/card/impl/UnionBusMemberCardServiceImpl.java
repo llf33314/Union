@@ -65,7 +65,7 @@ public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCar
 					sbSqlSegment.append(" AND t1.phone LIKE '%").append(vo.getPhone().trim()).append("%' ");
 				}
 				if (StringUtil.isNotEmpty(vo.getCardNo())) {
-					sbSqlSegment.append(" AND i.cardNo LIKE '%").append(vo.getCardNo().trim()).append("%' ");
+					sbSqlSegment.append(" AND t1.cardNo LIKE '%").append(vo.getCardNo().trim()).append("%' ");
 				}
 				sbSqlSegment.append(" ORDER BY t1.id DESC ");
 				return sbSqlSegment.toString();

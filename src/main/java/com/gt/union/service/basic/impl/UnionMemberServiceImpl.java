@@ -330,7 +330,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             throw new BusinessException("未加入联盟");
         }
         if(unionMember.getOutStaus() == UnionMemberConstant.OUT_STATUS_PERIOD){
-            throw new BusinessException("已退出联盟");
+            throw new BusinessException("处于退盟过渡期");
         }
     }
 
@@ -414,6 +414,9 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         if(unionMember.getOutStaus() == 2){
             throw new BusinessException("已处退盟过渡期");
         }
+        if(unionMember.getBusId().equals(busId)){
+            throw new BusinessException("请刷新后重试");
+        }
         if(verifyStatus == 1){//同意
             UnionApplyInfo unionApplyInfo = unionApplyService.getUnionApplyInfo(unionMember.getBusId(),unionId);
             UnionApplyInfo mainApplyInfo = unionApplyService.getUnionApplyInfo(busId,unionId);
@@ -433,10 +436,15 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             param.put("unionId",unionMember.getUnionId());
             redisCacheUtil.set(redisKey, JSON.toJSONString(param),60l);
             data.put("redisKey",redisKey);
+            redisCacheUtil.set("unionApplyInfo:" + unionId + ":" + unionMember.getBusId(), JSON.toJSONString(unionApplyInfo));
+            redisCacheUtil.set("unionApplyInfo:" + unionId + ":" + busId, JSON.toJSONString(mainApplyInfo));
         }else if(verifyStatus == 2){//拒绝
             unionMember.setOutStaus(0);
             unionMember.setApplyOutTime(null);
             this.updateById(unionMember);
+        }
+        if(redisCacheUtil.exists("unionMember:" + unionId + ":" + unionMember.getBusId())){
+            redisCacheUtil.set("unionMember:" + unionId + ":" + unionMember.getBusId(), JSON.toJSONString(unionMember));
         }
         return data;
     }
