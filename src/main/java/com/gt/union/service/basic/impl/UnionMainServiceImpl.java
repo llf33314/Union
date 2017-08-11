@@ -1,22 +1,11 @@
 package com.gt.union.service.basic.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.gt.union.common.exception.BusinessException;
-import com.gt.union.common.exception.ParameterException;
-import com.gt.union.common.response.GTJsonResult;
-import com.gt.union.common.util.BigDecimalUtil;
-import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.DateTimeKit;
+import com.gt.union.common.constant.ExceptionConstant;
+import com.gt.union.common.constant.basic.UnionMainConstant;
+import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.RedisCacheUtil;
-import com.gt.union.entity.basic.UnionApplyInfo;
-import com.gt.union.entity.basic.UnionDiscount;
-import com.gt.union.entity.basic.UnionInfoDict;
 import com.gt.union.entity.basic.UnionMain;
-import com.gt.union.entity.common.BusUser;
 import com.gt.union.mapper.basic.UnionMainMapper;
 import com.gt.union.service.basic.*;
 import com.gt.union.service.brokerage.IUnionBrokerageWithdrawalsRecordService;
@@ -26,11 +15,7 @@ import com.gt.union.service.card.IUnionCardDivideRecordService;
 import com.gt.union.vo.basic.UnionMainInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -44,7 +29,16 @@ import java.util.Map;
  */
 @Service
 public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain> implements IUnionMainService {
-
+	private static final String INDEX_BUSID = "UnionMainServiceImpl.indexByBusId()";
+	private static final String INDEX_ID = "UnionMainServiceImpl.indexById()";
+	private static final String LIST_MY_UNION = "UnionMainServiceImpl.listMyUnion()";
+	private static final String LIST = "UnionMainServiceImpl.list()";
+	private static final String UPDATE_ID = "UnionMainServiceImpl.updateById()";
+	private static final String GET_ID = "UnionMainServiceImpl.getById()";
+	private static final String GET_INSTANCE_STEP = "UnionMainServiceImpl.getInstanceStep()";
+	private static final String SAVE = "UnionMainServiceImpl.save()";
+	private static final String GETID_BUSID = "UnionMainServiceImpl.getIdByBusId()";
+	private static final String IS_UNION_MAIN_VALID_DETAIL = "UnionMainServiceImpl.isUnionMainValidDETAIL()";
 
 	@Autowired
 	private IUnionApplyService unionApplyService;
@@ -73,7 +67,130 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	@Autowired
 	private IUnionDiscountService unionDiscountService;
 
+	@Override
+	public Map<String, Object> indexByBusId(Integer busId) throws Exception {
+	    if (busId == null) {
+	        throw new ParamException(INDEX_BUSID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+        }
+        Integer unionId = this.getIdByBusId(busId);
+		return this.indexById(unionId);
+	}
 
+	@Override
+	public Map<String, Object> indexById(Integer id) throws Exception {
+	    if (id == null) {
+	        throw new ParamException(INDEX_ID, "参数id为空", ExceptionConstant.PARAM_ERROR);
+        }
+        //TODO 获取我的联盟首页信息
+		return null;
+	}
+
+	@Override
+	public List<UnionMain> listMyUnion(Integer busId) throws Exception {
+	    if (busId == null) {
+	        throw new ParamException(LIST_MY_UNION, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+        }
+        //TODO 查询商家创建及加入的所有联盟列表
+		return null;
+	}
+
+	@Override
+	public List<UnionMain> list() throws Exception {
+	    //TODO 查询所有联盟列表
+		return null;
+	}
+
+	@Override
+	public void updateById(Integer id, Integer busId, UnionMainInfoVO unionMainInfoVO) throws Exception {
+        if (id == null) {
+            throw new ParamException(UPDATE_ID, "参数id为空", ExceptionConstant.PARAM_ERROR);
+        }
+        if (busId == null) {
+            throw new ParamException(UPDATE_ID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+        }
+        //TODO 校验unionMainInfoVO
+        //TODO 更新联盟信息，要求盟主权限
+	}
+
+	@Override
+	public Map<String, Object> getById(Integer id) throws Exception {
+	    if (id == null) {
+	        throw new ParamException(GET_ID, "参数id为空", ExceptionConstant.PARAM_ERROR);
+        }
+        //TODO 获取联盟信息
+		return null;
+	}
+
+	@Override
+	public Map<String, Object> getInstanceStep(Integer busId) throws Exception {
+	    if (busId == null) {
+	        throw new ParamException(GET_INSTANCE_STEP, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+        }
+        //TODO 获取创建联盟步骤信息
+		return null;
+	}
+
+	@Override
+	public void save(Integer busId, List<UnionMainInfoVO> unionMainInfoVOList) throws Exception {
+        if (busId == null) {
+            throw new ParamException(SAVE, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+        }
+        //TODO 校验unionMainInfoVOList
+        //TODO 保存创建联盟的信息
+	}
+
+	@Override
+	public Integer getIdByBusId(Integer busId) throws Exception {
+	    if (busId == null) {
+	        throw new ParamException(GETID_BUSID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+        }
+        //TODO 通过busId获取联盟id
+		return null;
+	}
+
+    /**
+     * 通过id获取对象
+     * @param id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public UnionMain getUnionMainById(Integer id) throws Exception {
+        return this.selectById(id);
+    }
+
+    /**
+     * ------------ 判断联盟是否有效 ------------
+     */
+    @Override
+    public boolean isUnionMainValid(Integer id) throws Exception {
+        return isUnionValid(this.getUnionMainById(id));
+    }
+
+    @Override
+    public boolean isUnionValid(UnionMain unionMain) throws Exception {
+       return this.isUnionMainValidDETAIL(unionMain) == UnionMainConstant.VALID_OK ? true : false;
+    }
+
+    @Override
+    public Integer isUnionMainValidDETAIL(Integer id) throws Exception {
+        return this.isUnionMainValidDETAIL(this.getUnionMainById(id));
+    }
+
+    @Override
+    public Integer isUnionMainValidDETAIL(UnionMain unionMain) throws Exception {
+        if (unionMain == null) {
+            throw new ParamException(IS_UNION_MAIN_VALID_DETAIL, "参数unionMain为空", ExceptionConstant.PARAM_ERROR);
+        }
+        //TODO
+        //首先判断盟主的有效期
+        //判断盟主的权限
+        //判断联盟的有效期
+        return null;
+    }
+
+
+/*
 	public UnionMain getUnionMain(Integer unionId){
 		UnionMain main = null;
 		if ( redisCacheUtil.exists( "unionMain:"+unionId ) ) {
@@ -142,17 +259,17 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	public void updateUnionMain(UnionMainInfoVO unionMainInfoVO, Integer busId) throws Exception{
 		UnionMain main = unionMainInfoVO.getUnionMain();
 		if(CommonUtil.isEmpty(main.getId())){
-			throw new ParameterException("参数错误");
+			throw new ParamException(UPDATE_UNION_MAIN, "参数错误", ExceptionConstant.PARAM_ERROR);
 		}
 		//TODO  判断是否该联盟盟主
 		boolean isUnionOwner =  unionMemberService.isUnionOwner(main.getId(),busId);
 		if(!isUnionOwner){
 			//判断联盟是否有效
-			throw new BusinessException("不是该盟盟主");
+			throw new BusinessException(UPDATE_UNION_MAIN, "", "不是该盟盟主");
 		}
 		//判断联盟信息
 		if(CommonUtil.isEmpty(main.getUnionName())){
-			throw new ParameterException("联盟名称不能为空");
+			throw new ParamException(UPDATE_UNION_MAIN, "", "联盟名称不能为空");
 		}
 		EntityWrapper<UnionInfoDict> entityWrapper = new EntityWrapper<UnionInfoDict>();
 		entityWrapper.eq("union_id",main.getId());
@@ -285,11 +402,13 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		isUnionValid(main);
 	}
 
-	/**
+	*/
+/**
 	 * 根据商家id获取他创建的联盟
 	 * @param busId
 	 * @return
-	 */
+	 *//*
+
 	UnionMain getCreateUnion(Integer busId){
 		EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<UnionMain>();
 		entityWrapper.eq("bus_id",busId);
@@ -298,5 +417,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		return main;
 	}
 
+*/
 
 }

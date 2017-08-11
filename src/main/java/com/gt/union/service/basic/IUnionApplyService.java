@@ -18,15 +18,16 @@ import java.util.Map;
  */
 public interface IUnionApplyService extends IService<UnionApply> {
 	/**
-	 * 根据联盟id获取入盟申请，并根据enterpriseName/directorPhone进行模糊匹配
+	 * 根据联盟id和审核状态applyStatus获取入盟申请相关信息，并根据enterpriseName/directorPhone进行模糊匹配
 	 * @param page
 	 * @param unionId
+	 * @param applyStatus
 	 * @param enterpriseName
 	 * @param directorPhone
 	 * @return
 	 * @throws Exception
 	 */
-	Page listUncheckedApply(Page page, final Integer unionId, final String enterpriseName, final String directorPhone) throws Exception;
+	Page listByUnionIdAndApplyStatus(Page page, final Integer unionId, final Integer applyStatus, final String enterpriseName, final String directorPhone) throws Exception;
 
 	/**
 	 * 获取盟员信息
@@ -51,14 +52,12 @@ public interface IUnionApplyService extends IService<UnionApply> {
 	 * @param unionId	联盟id
 	 * @param applyStatus	审核状态 1：通过 2：不通过
 	 */
-	void updateUnionApplyVerify(Integer busId, Integer id, Integer unionId, Integer applyStatus) throws Exception;
+	void updateByUnionIdAndApplyStatus(Integer busId, Integer id, Integer unionId, Integer applyStatus) throws Exception;
 
 	/**
 	 * 添加盟员申请
 	 * @param busId    商家id
-	 * @param unionId    联盟id
 	 * @param unionApplyVO    申请信息
-	 * @param applyType    申请状态 1：自由申请 2：推荐申请
 	 */
-	Map<String, Object> addUnionApply(Integer busId, Integer unionId, UnionApplyVO unionApplyVO, Integer applyType) throws Exception;
+	Map<String, Object> save(Integer busId, UnionApplyVO unionApplyVO) throws Exception;
 }

@@ -1,7 +1,8 @@
 package com.gt.union.controller.basic;
 
 import com.baomidou.mybatisplus.plugins.Page;
-import com.gt.union.common.constant.basic.UnionMemberConstant;
+import com.gt.union.common.constant.ExceptionConstant;
+import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.CommonUtil;
@@ -30,151 +31,148 @@ import java.util.Map;
 @RestController
 @RequestMapping("/unionMember")
 public class UnionMemberController {
+    private static final String LIST_UNIONID_PAGE = "UnionMemberController.listByUnionIdInPage()";
+    private static final String LIST_UNIONID_LIST = "UnionMemberController.listByUnionIdInList()";
+    private static final String LIST_UNIONID_OUTSTATUS = "UnionMemberController.listByUnionIdAndOutStatus()";
+    private static final String LIST_UNIONID_OUTSTATUS_ISNUIONOWNER = "UnionMemberController.listByUnionIdAndOutStatusAndIsNuionOwner()";
+    private static final String GET_ID = "UnionMemberController.getById()";
+    private static final String UPDATE_ISNUIONOWNER_ID = "UnionMemberController.updateIsNuionOwnerById()";
     private Logger logger = LoggerFactory.getLogger(UnionMemberController.class);
 
     @Autowired
     private IUnionMemberService unionMemberService;
 
-    /**
-     * 根据listType进行请求分类：
-     * (1)当listType为请求盟员列表时，即值为UnionMemberConstant.LIST_TYPE_MEMBER，根据联盟id和session中的bus_id获取盟员列表信息，并支持根据盟员名称enterpriseName进行模糊查询；
-     * (2)当listType为请求退盟申请列表时，即值为UnionMemberConstant.LIST_TYPE_OUT，根据联盟id获取退盟申请列表信息，并根据outStatus进行退盟状态分类查询;
-     * (3)当listType为请求盟主权限转移盟员列表时，即值为UnionMemberConstant.LIST_TYPE_TRANSFER，根据联盟id获取非盟主盟员列表信息
-     * @param page
-     * @param unionId
-     * @param listType
-     * @param enterpriseName
-     * @param outStatus 当listType=UnionMemberConstant.LIST_TYPE_OUT时，不能为空
-     * @return
-     */
-    @ApiOperation(value = "查询盟员信息"
-            , notes = "根据listType进行请求分类"
-            , produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String listUnionMember(HttpServletRequest request, Page page
+    @ApiOperation(value = "根据联盟id获取盟员列表信息，并支持根据盟员名称enterpriseName进行模糊查询", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String listByUnionIdInPage(Page page
+        , @ApiParam(name = "unionId", value = "联盟id", required = true)
+        @PathVariable("unionId") Integer unionId
+        , @ApiParam(name = "enterpriseName", value = "企业名称，模糊匹配", required = false)
+        @RequestParam(name = "enterpriseName", required = false) String enterpriseName) {
+        try {
+            Page result = this.unionMemberService.listByUnionIdInPage(page, unionId, enterpriseName);
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(LIST_UNIONID_PAGE, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
+    }
+
+    @ApiOperation(value = "根据联盟id获取盟员列表信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{unionId}/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String listByUnionIdInList(@ApiParam(name = "unionId", value = "盟员id", required = true) @PathVariable("unionId") Integer unionId) {
+        try {
+            List<Map<String, Object>> result = this.unionMemberService.listByUnionIdInList(unionId);
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(LIST_UNIONID_LIST, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
+    }
+
+    @ApiOperation(value = "根据联盟id和退盟状态outStatus获取退盟申请列表信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{unionId}/{outStatus}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String listByUnionIdAndOutStatus(Page page
+        , @ApiParam(name = "unionId", value = "联盟id", required = true)
+        @PathVariable("unionId") Integer unionId
+        , @ApiParam(name = "outStatus", value = "退盟状态，0代表正常，1代表未处理，2代表过渡期", required = true)
+        @PathVariable("outStatus") Integer outStatus) {
+        try {
+            Page result = this.unionMemberService.listByUnionIdAndOutStatus(page, unionId, outStatus);
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(LIST_UNIONID_OUTSTATUS, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
+    }
+
+    @ApiOperation(value = "根据联盟id、退盟状态outStatus和是否盟主isNuionOwner获取盟员列表信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{unionId}/{outStatus}/{isNuionOwner}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String listByUnionIdAndOutStatusAndIsNuionOwner(HttpServletRequest request, Page page
             , @ApiParam(name = "unionId", value = "联盟id", required = true)
-              @RequestParam(name = "unionId", required = true)Integer unionId
-            , @ApiParam(name = "listType"
-                , value = "查询类型:"
-                    + "（1）当值为1时，根据联盟id和session中的bus_id获取盟员列表信息，并支持根据盟员名称enterpriseName进行模糊查询；"
-                    + "（2）当值为2时，根据联盟id获取退盟申请列表信息，并根据outStatus进行退盟状态分类查询;"
-                    + "（3）当值为3时，根据联盟id获取非盟主盟员列表信息."
-                , required = true)
-              @RequestParam(name = "listType", required = true)Integer listType
-            , @ApiParam(name = "enterpriseName", value = "盟员名称", required = false)
-              @RequestParam(name = "enterpriseName", required = false) String enterpriseName
-            , @ApiParam(name = "outStatus", value = "商家退出状态，当listType=2时必填，0代表正常，1代表未处理，2代表过渡期")
-              @RequestParam(name = "outStatus", required = false) Integer outStatus) {
-        Page result = null;
-        try {
-            switch (listType) {
-                case UnionMemberConstant.LIST_TYPE_MEMBER:
-                    result = this.unionMemberService.listMember(page, unionId, enterpriseName);
-                    break;
-                case UnionMemberConstant.LIST_TYPE_OUT:
-                    result = this.unionMemberService.listOut(page, unionId, outStatus);
-                    break;
-                case UnionMemberConstant.LIST_TYPE_TRANSFER:
-                    BusUser busUser = SessionUtils.getLoginUser(request);
-                    if (busUser == null) {
-                        throw new Exception("UnionMemberController.listUnionMember():无法通过session获取用户的信息!");
-                    }
-                    result = this.unionMemberService.listTransfer(page, unionId, busUser.getId());
-                    break;
-                default:
-                    throw new Exception("UnionMemberController.listUnionMember():不支持的查询类型listType-" + listType);
-            }
-
-        } catch (Exception e) {
-            logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
-        }
-        return GTJsonResult.instanceSuccessMsg(result).toString();
-    }
-
-    /**
-     * 根据盟员id获取盟员信息详情
-     * @param unionMemberId
-     * @return
-     */
-    @ApiOperation(value = "盟员信息详情"
-            , notes = "根据盟员id获取盟员信息详情"
-            , produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getUnionMember(@ApiParam(name = "id", value = "盟员id", required = true)@PathVariable("id") Integer unionMemberId) {
-        Map<String, Object> result = null;
-        try {
-            result = this.unionMemberService.getDetail(unionMemberId);
-        } catch (Exception e) {
-            logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
-        }
-        return GTJsonResult.instanceSuccessMsg(result).toString();
-    }
-
-    /**
-     * 获取盟员列表 不分页
-     * @param unionId
-     * @return
-     */
-    @ApiOperation(value = "获取盟员列表 不分页" , notes = "获取联盟内所有的盟员 不分页" , produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/memberList", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getUnionMemberList(@ApiParam(name = "unionId", value = "盟员id", required = true) @RequestParam("unionId") Integer unionId) {
-        List<Map<String, Object>> result = null;
-        try {
-            result = this.unionMemberService.getUnionMemberList(unionId);
-        } catch (Exception e) {
-            logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
-        }
-        return GTJsonResult.instanceSuccessMsg(result).toString();
-    }
-
-
-    /**
-     * 盟主权限转移
-     * @param request
-     * @param unionMemberId
-     * @param unionId
-     * @param isUnionOwner
-     * @return
-     */
-    @ApiOperation(value = "盟主权限转移、盟主审核退盟成员"
-            , notes = "盟主权限转移、盟主审核退盟成员"
-            , produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public String updateUnionMember(HttpServletRequest request
-            , @ApiParam(name = "id", value = "被授予盟主权限的盟员id、审核退盟的成员id", required = true)
-                @PathVariable("id") Integer unionMemberId
-            , @ApiParam(name = "unionId", value = "联盟id", required = true)
-                @RequestParam(name = "unionId", required = true) Integer unionId
-            , @ApiParam(name = "isUnionOwner", value = "目标值：1代表成为盟主", required = true)
-                @RequestParam(name = "isUnionOwner", required = true) Integer isUnionOwner
-            , @ApiParam(name = "verifyStatus", value = "1：同意退盟 2：拒绝退盟  当opType为2时 必须传", required = false)
-                    @RequestParam(name = "verifyStatus", required = false) Integer verifyStatus
-            , @ApiParam(name = "opType", value = "操作类型 1：盟主权限转移 2：盟主审核退盟成员", required = true)
-            @RequestParam(name = "opType", required = true) Integer opType) {
+            @PathVariable("unionId") Integer unionId
+            , @ApiParam(name = "outStatus", value = "退盟状态，0代表正常，1代表未处理，2代表过渡期", required = true)
+            @PathVariable("outStatus") Integer outStatus
+            , @ApiParam(name = "isNuionOwner", value = "是否盟主，0代表不是，1代表是", required = true)
+            @PathVariable("isNuionOwner") Integer isNuionOwner) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
-            if (busUser == null) {
-                throw new Exception("UnionMemberController.listUnionMember():无法通过session获取用户的信息!");
-            }
-            if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
-                throw new BusinessException("请使用主账号权限");
-            }
-            switch (opType) {
-                case 1 :
-                    this.unionMemberService.updateIsUnionMember(unionMemberId, unionId, busUser.getId(), isUnionOwner);
-                    return GTJsonResult.instanceSuccessMsg().toString();
-                case 2 :
-                    Map<String,Object> data = this.unionMemberService.updateUnionMemberOut(unionMemberId, unionId, busUser.getId(), isUnionOwner, verifyStatus);
-                    return GTJsonResult.instanceSuccessMsg(data).toString();
-                default:
-                    throw new Exception("UnionMemberController.updateUnionMember():不支持的操作类型opType-" + opType);
-            }
+            Page result = this.unionMemberService.listByUnionIdAndOutStatusAndIsNuionOwner(page, unionId, busUser.getId(), outStatus, isNuionOwner);
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+            return GTJsonResult.instanceErrorMsg(LIST_UNIONID_OUTSTATUS_ISNUIONOWNER, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
     }
+
+    @ApiOperation(value = "根据盟员id获取盟员信息详情", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String getById(@ApiParam(name = "id", value = "盟员id", required = true) @PathVariable("id") Integer id) {
+        try {
+            Map<String, Object> result = this.unionMemberService.getById(id);
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(GET_ID, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
+    }
+
+    @ApiOperation(value = "盟主权限转移", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{id}/isNuionOwner", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    public String updateIsNuionOwnerById(HttpServletRequest request
+        , @ApiParam(name = "id", value = "盟员id", required = true) @PathVariable("id") Integer id
+        , @ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam(value = "unionId", required = true) Integer unionId){
+        try {
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            if (CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0) {
+                throw new BusinessException(UPDATE_ISNUIONOWNER_ID, "", "请使用主账号权限");
+            }
+            this.unionMemberService.updateIsNuionOwnerById(id, unionId, busUser.getId());
+            return GTJsonResult.instanceSuccessMsg().toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(UPDATE_ISNUIONOWNER_ID, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
+    }
+
+    @ApiOperation(value = "盟主审核退盟成员", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{id}/outStatus", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    public String updateOutStatusById(HttpServletRequest request
+            , @ApiParam(name = "id", value = "盟员id", required = true) @PathVariable("id") Integer id
+            , @ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam(value = "unionId", required = true) Integer unionId
+            , @ApiParam(name = "verifyStatus", value = "1为同意，2为拒绝", required = true) @RequestParam(name = "verifyStatus", required = true) Integer verifyStatus){
+        try {
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            if (CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0) {
+                throw new BusinessException(UPDATE_ISNUIONOWNER_ID, "", "请使用主账号权限");
+            }
+            this.unionMemberService.updateOutStatusById(id, unionId, busUser.getId(), verifyStatus);
+            return GTJsonResult.instanceSuccessMsg().toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(UPDATE_ISNUIONOWNER_ID, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
+    }
+
 }

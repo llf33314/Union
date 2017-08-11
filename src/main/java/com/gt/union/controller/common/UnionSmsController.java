@@ -21,8 +21,8 @@ import java.io.IOException;
  * 联盟短信发送控制器
  * Created by Administrator on 2017/8/9 0009.
  */
-@RequestMapping("/unionSms")
 @RestController
+@RequestMapping("/unionSms")
 public class UnionSmsController {
 
 	private Logger logger = LoggerFactory.getLogger(UnionSmsController.class);

@@ -1,7 +1,7 @@
 package com.gt.union.common.exception;
 
+import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.response.GTJsonResult;
-import org.apache.log4j.Logger;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -15,20 +15,11 @@ import javax.servlet.http.HttpServletRequest;
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
-	private Logger logger = Logger.getLogger(GlobalExceptionHandler.class);
-
-	@ExceptionHandler(value = BaseException.class)
-	@ResponseBody
-	public String defaultErrorHandler(HttpServletRequest req, BaseException e) throws Exception {
-		logger.error(e.getMessage(),e);
-		return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
-	}
-
 	@ExceptionHandler(value = Exception.class)
 	@ResponseBody
 	public String defaultErrorHandler(HttpServletRequest req, Exception e) throws Exception {
-		logger.error(e.getMessage(),e);
-		return GTJsonResult.instanceErrorMsg("系统错误").toString();
+		return GTJsonResult.instanceErrorMsg("GlobalExceptionHandler.defaultErrorHandler()"
+				, e.getMessage(), ExceptionConstant.SYS_ERROR).toString();
 	}
 
 }

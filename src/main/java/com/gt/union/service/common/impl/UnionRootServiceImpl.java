@@ -1,6 +1,5 @@
 package com.gt.union.service.common.impl;
 
-import com.gt.union.common.exception.ParameterException;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.DaoUtil;
 import com.gt.union.entity.basic.UnionMain;

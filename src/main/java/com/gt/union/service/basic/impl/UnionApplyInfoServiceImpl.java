@@ -1,15 +1,15 @@
 package com.gt.union.service.basic.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionApplyConstant;
 import com.gt.union.common.constant.basic.UnionMemberConstant;
+import com.gt.union.common.exception.BusinessException;
+import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.entity.basic.UnionApplyInfo;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.mapper.basic.UnionApplyInfoMapper;
@@ -38,6 +38,12 @@ import java.util.Map;
  */
 @Service
 public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper, UnionApplyInfo> implements IUnionApplyInfoService {
+    private static final String UPDATE_ID = "UnionApplyInfoServiceImpl.updateById()";
+	private static final String LIST_SELLDIVIDEPROPORTION_PAGE = "UnionApplyInfoServiceImpl.listBySellDivideProportionInPage()";
+	private static final String LIST_SELLDIVIDEPROPORTION_LIST = "UnionApplyInfoServiceImpl.listBySellDivideProportionInList()";
+	private static final String UPDATE_SELLDIVIDEPROPORTION = "UnionApplyInfoServiceImpl.updateBySellDivideProportion()";
+	private static final String GET_ID = "UnionApplyInfoServiceImpl.getById()";
+	private static final String SAVE_UNION_APPLY_INFO = "UnionApplyInfoServiceImpl.saveUnionApplyInfo()";
 
 	@Autowired
 	private IUnionApplyService unionApplyService;
@@ -48,27 +54,20 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 	@Autowired
 	private IUnionMainService unionMainService;
 
-	@Autowired
-	private RedisCacheUtil redisCacheUtil;
-
-	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public void updateUnionApplyInfo(UnionApplyInfo unionApplyInfo, Integer busId, Integer unionId) throws Exception{
+	public void updateById(UnionApplyInfo unionApplyInfo, Integer busId, Integer unionId) throws Exception{
 		unionMemberService.isMemberValid(busId,unionId);
 		//TODO 转换商家地址
 		this.updateById(unionApplyInfo);
-		if(redisCacheUtil.exists("unionApplyInfo:" + unionId + ":" + busId)){
-			redisCacheUtil.set("unionApplyInfo:" + unionId + ":" + busId, JSON.toJSONString(unionApplyInfo));
-		}
 	}
 
 	@Override
-	public Page pageSellDivideProportion(Page page, final Integer unionId) throws Exception {
+	public Page listBySellDivideProportionInPage(Page page, final Integer unionId) throws Exception {
 		if (page == null) {
-			throw new Exception("UnionApplyInfoServiceImpl.pageSellDivideProportion():参数page不能为空!");
+			throw new ParamException(LIST_SELLDIVIDEPROPORTION_PAGE, "参数page为空", ExceptionConstant.PARAM_ERROR);
 		}
 		if (unionId == null) {
-			throw new Exception("UnionApplyInfoServiceImpl.pageSellDivideProportion():参数unionId不能为空!");
+			throw new ParamException(LIST_SELLDIVIDEPROPORTION_PAGE, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
 		}
         Wrapper wrapper = new Wrapper() {
             @Override
@@ -93,9 +92,9 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 	}
 
 	@Override
-	public List<Map<String,Object>> listSellDivideProportion(final Integer unionId) throws Exception {
+	public List<Map<String,Object>> listBySellDivideProportionInList(final Integer unionId) throws Exception {
         if (unionId == null) {
-            throw new Exception("UnionApplyInfoServiceImpl.listSellDivideProportion():参数unionId不能为空!");
+            throw new ParamException(LIST_SELLDIVIDEPROPORTION_LIST, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         Wrapper wrapper = new Wrapper() {
             @Override
@@ -120,18 +119,18 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 	}
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void updateSellDivideProportion(List<UnionApplyInfo> unionApplyInfoList) throws Exception {
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void updateBySellDivideProportion(List<UnionApplyInfo> unionApplyInfoList) throws Exception {
 	    if (ListUtil.isNotEmpty(unionApplyInfoList)) {
 	        List<UnionApplyInfo> unionApplyInfos = new LinkedList<>();
             BigDecimal sellDivideProportionSum = BigDecimal.valueOf(0.0);
 	        for (int i = 0, size = unionApplyInfoList.size(); i < size; i++) {
 	            UnionApplyInfo fromUnionApplyInfo = unionApplyInfoList.get(i);
 	            if (fromUnionApplyInfo.getId() == null) {
-	                throw new Exception("UnionApplyInfoServiceImpl.updateSellDivideProportion():更新列表中存在id为空的对象!");
+	                throw new BusinessException(UPDATE_SELLDIVIDEPROPORTION, "更新列表中存在id为空的对象", ExceptionConstant.OPERATE_FAIL);
                 }
                 if (fromUnionApplyInfo.getSellDivideProportion() == null) {
-                    throw new Exception("UnionApplyInfoServiceImpl.updateSellDivideProportion():更新列表中存在比例为空的对象!");
+                    throw new BusinessException(UPDATE_SELLDIVIDEPROPORTION, "更新列表中存在比例为空的对象", ExceptionConstant.OPERATE_FAIL);
                 }
                 sellDivideProportionSum = BigDecimalUtil.add(sellDivideProportionSum, fromUnionApplyInfo.getSellDivideProportion());
                 UnionApplyInfo toUnionApplyInfo = new UnionApplyInfo();
@@ -140,16 +139,16 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 	            unionApplyInfos.add(toUnionApplyInfo);
             }
             if (BigDecimalUtil.subtract(sellDivideProportionSum, BigDecimal.valueOf(100.0)).doubleValue() != 0.0) {
-                throw new Exception("UnionApplyInfoServiceImpl.updateSellDivideProportion():更新列表中的比例之和必须等于100!");
+                throw new BusinessException(UPDATE_SELLDIVIDEPROPORTION, "更新列表中的比例之和必须等于100", ExceptionConstant.OPERATE_FAIL);
             }
 	        this.updateBatchById(unionApplyInfos);
         }
     }
 
 	@Override
-	public Map<String, Object> getUnionApplyInfo(Integer id, Integer unionId, Integer busId) throws Exception {
+	public Map<String, Object> getById(Integer id, Integer unionId, Integer busId) throws Exception {
 		unionMemberService.isMemberValid(busId,unionId);
-		UnionMain main = unionMainService.getUnionMain(unionId);
+		UnionMain main = unionMainService.getUnionMainById(unionId);
 		Map<String,Object> data = new HashMap<String,Object>();
 		UnionApplyInfo info = unionApplyService.getUnionApplyInfo(busId,unionId);
 		data.put("enterpriseName",info.getEnterpriseName());

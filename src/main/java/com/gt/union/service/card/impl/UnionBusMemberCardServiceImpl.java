@@ -3,14 +3,14 @@ package com.gt.union.service.card.impl;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.gt.union.common.exception.ParameterException;
+import com.gt.union.common.constant.ExceptionConstant;
+import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.entity.card.UnionBusMemberCard;
 import com.gt.union.mapper.card.UnionBusMemberCardMapper;
 import com.gt.union.service.card.IUnionBusMemberCardService;
 import com.gt.union.vo.card.UnionBusMemberCardVO;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -25,6 +25,8 @@ import java.util.Map;
  */
 @Service
 public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCardMapper, UnionBusMemberCard> implements IUnionBusMemberCardService {
+    private static final String GET_UNION_MEMBER_INTEGRAL = "UnionBusMemberCardServiceImpl.getUnionMemberIntegral()";
+    private static final String SELECT_UNION_BUS_MEMBER_CARD_LIST = "UnionBusMemberCardServiceImpl.selectUnionBusMemberCardList()";
 
 	@Override
 	public double getUnionMemberIntegral(final Integer unionId) {
@@ -49,7 +51,7 @@ public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCar
 	@Override
 	public Page selectUnionBusMemberCardList(Page page, final UnionBusMemberCardVO vo) throws Exception{
 		if (vo.getUnionId() == null) {
-			throw new ParameterException("参数错误");
+			throw new ParamException(SELECT_UNION_BUS_MEMBER_CARD_LIST, "参数错误", ExceptionConstant.PARAM_ERROR);
 		}
 		Wrapper wrapper = new Wrapper() {
 			@Override
@@ -65,7 +67,7 @@ public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCar
 					sbSqlSegment.append(" AND t1.phone LIKE '%").append(vo.getPhone().trim()).append("%' ");
 				}
 				if (StringUtil.isNotEmpty(vo.getCardNo())) {
-					sbSqlSegment.append(" AND t1.cardNo LIKE '%").append(vo.getCardNo().trim()).append("%' ");
+					sbSqlSegment.append(" AND i.cardNo LIKE '%").append(vo.getCardNo().trim()).append("%' ");
 				}
 				sbSqlSegment.append(" ORDER BY t1.id DESC ");
 				return sbSqlSegment.toString();

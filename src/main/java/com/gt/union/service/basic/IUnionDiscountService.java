@@ -21,7 +21,7 @@ public interface IUnionDiscountService extends IService<UnionDiscount> {
      * @param discount
      * @throws Exception
      */
-	void  updateUnionDiscount(Integer unionId, Integer fromBusId, Integer toBusId, Double discount) throws Exception;
+	void  updateByUnionIdAndToBusIdAndDiscount(Integer unionId, Integer fromBusId, Integer toBusId, Double discount) throws Exception;
 
 	/**
 	 * 判断是否存在
@@ -29,5 +29,5 @@ public interface IUnionDiscountService extends IService<UnionDiscount> {
 	 * @return
 	 * @throws Exception
 	 */
-	boolean isExistUnionDiscount(Wrapper wrapper) throws Exception;
+	boolean isExist(Wrapper wrapper) throws Exception;
 }

@@ -2,7 +2,6 @@ package com.gt.union.service.business.impl;
 
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.gt.union.common.constant.basic.UnionApplyConstant;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.entity.business.UnionBrokeragePayRecord;
 import com.gt.union.mapper.business.UnionBrokeragePayRecordMapper;
@@ -21,6 +20,7 @@ import java.util.Map;
  */
 @Service
 public class UnionBrokeragePayRecordServiceImpl extends ServiceImpl<UnionBrokeragePayRecordMapper, UnionBrokeragePayRecord> implements IUnionBrokeragePayRecordService {
+	private static final String GET_BROKERAGE_PAY_RECORD_SUM = "UnionBrokeragePayRecordServiceImpl.getBrokeragePayRecordSum()";
 
 	@Override
 	public double getBrokeragePayRecordSum(final Integer busId,final Integer unionId) {

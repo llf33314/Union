@@ -3,7 +3,9 @@ package com.gt.union.service.basic.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionMemberPreferentialServiceConstant;
+import com.gt.union.common.exception.ParamException;
 import com.gt.union.entity.basic.UnionMemberPreferentialService;
 import com.gt.union.mapper.basic.UnionMemberPreferentialServiceMapper;
 import com.gt.union.service.basic.IUnionMemberPreferentialServiceService;
@@ -20,17 +22,18 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UnionMemberPreferentialServiceServiceImpl extends ServiceImpl<UnionMemberPreferentialServiceMapper, UnionMemberPreferentialService> implements IUnionMemberPreferentialServiceService {
+    private static final String PAGE_PREFERENTIAL_SERVICE_MANAGERID = "UnionMemberPreferentialServiceServiceImpl.pagePreferentialServiceByManagerId()";
 
     @Override
     public Page pagePreferentialServiceByManagerId(Page page, final Integer managerId, final Integer verifyStatus) throws Exception {
         if (page == null) {
-            throw new Exception("UnionMemberPreferentialServiceServiceImpl.pagePreferentialServiceByManagerId():参数page不能为空!");
+            throw new ParamException(PAGE_PREFERENTIAL_SERVICE_MANAGERID, "参数page为空", ExceptionConstant.PARAM_ERROR);
         }
         if (managerId == null) {
-            throw new Exception("UnionMemberPreferentialServiceServiceImpl.pagePreferentialServiceByManagerId():参数managerId不能为空!");
+            throw new ParamException(PAGE_PREFERENTIAL_SERVICE_MANAGERID, "参数managerId为空", ExceptionConstant.PARAM_ERROR);
         }
         if (verifyStatus == null) {
-            throw new Exception("UnionMemberPreferentialServiceServiceImpl.pagePreferentialServiceByManagerId():参数verifyStatus不能为空!");
+            throw new ParamException(PAGE_PREFERENTIAL_SERVICE_MANAGERID, "参数verifyStatus为空", ExceptionConstant.PARAM_ERROR);
         }
 
         EntityWrapper entityWrapper = new EntityWrapper();

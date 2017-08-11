@@ -1,8 +1,9 @@
 package com.gt.union.controller.basic;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.gt.union.common.annotation.SysLogAnnotation;
+import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.exception.BaseException;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.entity.basic.UnionNotice;
@@ -24,6 +25,10 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/unionNotice")
 public class UnionNoticeController {
+	//TODO 修改标签名RESTFUL化
+	private static final String UNION_NOTICE = "UnionNoticeController.unionNotice()";
+	private static final String SAVE_NOTICE = "UnionNoticeController.saveNotice()";
+	private static final String UPDATE_NOTICE = "UnionNoticeController.updateNotice()";
 
 	private Logger logger = Logger.getLogger(UnionNoticeController.class);
 
@@ -38,20 +43,23 @@ public class UnionNoticeController {
 	@ApiOperation(value = "获取联盟公告" , notes = "获取联盟公告" , produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String unionNotice(@RequestParam(value = "unionId", required = true) Integer unionId) {
-		if(CommonUtil.isEmpty(unionId)){
-			return GTJsonResult.instanceErrorMsg("参数错误").toString();
-		}
-		UnionNotice notice = null;
-		try{
+		try {
+			if (CommonUtil.isEmpty(unionId)) {
+				throw new BusinessException(UNION_NOTICE, "", "参数错误");
+			}
+			UnionNotice notice = null;
 			EntityWrapper wrapper = new EntityWrapper<UnionNotice>();
-			wrapper.eq("union_id",unionId);
-			wrapper.eq("del_status",0);
+			wrapper.eq("union_id", unionId);
+			wrapper.eq("del_status", 0);
 			notice = unionNoticeService.selectOne(wrapper);
+			return GTJsonResult.instanceSuccessMsg(notice).toString();
+		} catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
 		}catch (Exception e){
-			logger.error("获取联盟公告错误" + e.getMessage());
-			return GTJsonResult.instanceErrorMsg("获取联盟公告错误").toString();
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(UNION_NOTICE,"获取联盟公告失败").toString();
 		}
-		return GTJsonResult.instanceSuccessMsg(notice,null,"获取联盟公告成功").toString();
 	}
 
 
@@ -62,20 +70,19 @@ public class UnionNoticeController {
 	 * @return
 	 */
 	@ApiOperation(value = "新增联盟公告" , notes = "新增联盟公告" , produces = "application/json;charset=UTF-8")
-	@SysLogAnnotation(description = "新增联盟公告", op_function = "2")
 	@RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String saveNotice(@ApiParam(name = "notice", value = "联盟公告信息", required = true) @RequestBody UnionNotice notice,
 							 @ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam("unionId")Integer unionId) {
 		try{
 			notice = unionNoticeService.saveNotice(notice);
-		}catch (BaseException e){
-			logger.error("保存联盟公告错误",e);
-			return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
-		}catch (Exception e){
-			logger.error("保存联盟公告错误",e);
-			return GTJsonResult.instanceErrorMsg("保存失败").toString();
-		}
-		return GTJsonResult.instanceSuccessMsg(notice,null,"保存成功").toString();
+            return GTJsonResult.instanceSuccessMsg(notice).toString();
+        }catch (BaseException e){
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        }catch (Exception e){
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(SAVE_NOTICE, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
 	}
 
 	/**
@@ -84,12 +91,20 @@ public class UnionNoticeController {
 	 * @return
 	 */
 	@ApiOperation(value = "修改联盟公告" , notes = "修改联盟公告" , produces = "application/json;charset=UTF-8")
-	@SysLogAnnotation(description = "修改联盟公告", op_function = "3")
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
 	public String updateNotice(@ApiParam(name = "notice", value = "联盟公告信息", required = true) @RequestBody  UnionNotice notice,
 							   @ApiParam(name = "id", value = "联盟公告id", required = true) @PathVariable("id")Integer id,
 							   @ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam("unionId")Integer unionId) {
-		notice.setId(id);
-		return saveNotice(notice,unionId);
+        try{
+            notice.setId(id);
+            return saveNotice(notice,unionId);
+//        }catch (BaseException e){
+//            logger.error("", e);
+//            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        }catch (Exception e){
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(UPDATE_NOTICE, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
+
 	}
 }

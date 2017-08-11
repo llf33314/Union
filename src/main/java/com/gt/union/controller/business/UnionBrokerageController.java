@@ -2,6 +2,7 @@ package com.gt.union.controller.business;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.common.annotation.SysLogAnnotation;
+import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.SessionUtils;
@@ -26,10 +27,12 @@ import javax.servlet.http.HttpServletRequest;
  * @author linweicong
  * @since 2017-07-24
  */
-@Controller
+@RestController
 @RequestMapping("/unionBrokerage")
 public class UnionBrokerageController {
-
+	//TODO 方法签名RESTFUL化
+	private static final String UNION_BROKERAGE = "UnionBrokerageController.unionBrokerage()";
+	private static final String UPDATE_UNION_BROKERAGE = "UnionBrokerageController.updateUnionBrokerage()";
 	private Logger logger = Logger.getLogger(UnionBusinessRecommendController.class);
 
 	@Autowired
@@ -49,21 +52,21 @@ public class UnionBrokerageController {
 	@RequestMapping(value = "", method = RequestMethod.GET,produces = "application/json;charset=UTF-8")
 	public String unionBrokerage(Page page, HttpServletRequest request,
 								 @ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId){
-		BusUser user = SessionUtils.getLoginUser(request);
 		try{
-			Integer busId = user.getId();
+            BusUser user = SessionUtils.getLoginUser(request); //TODO 没有校验user是否为空
+            Integer busId = user.getId();
 			if(user.getPid() != null && user.getPid() != 0){
 				busId = user.getPid();
 			}
 			page = unionMemberService.selectUnionBrokerageList(page,unionId,busId);
-		}catch (BaseException e){
-			logger.error("获取联盟佣金比例列表错误"+e.getMessage());
-			return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
-		}catch (Exception e){
-			logger.error("获取联盟佣金比例列表错误"+e.getMessage());
-			return GTJsonResult.instanceErrorMsg("获取盟员联盟卡列表错误").toString();
-		}
-		return GTJsonResult.instanceSuccessMsg(page,null,"获取联盟佣金比例列表成功").toString();
+            return GTJsonResult.instanceSuccessMsg(page).toString();
+        }catch (BaseException e){
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        }catch (Exception e){
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(UNION_BROKERAGE, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
 	}
 
 	/**
@@ -79,21 +82,21 @@ public class UnionBrokerageController {
 					   @ApiParam(name="id", value = "佣金比例id", required = true) @PathVariable Integer id,
 					   @ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam Integer unionId,
 					   @ApiParam(name="unionBrokerage", value = "佣金比例信息", required = true) @RequestBody UnionBrokerage unionBrokerage){
-		BusUser user = SessionUtils.getLoginUser(request);
 		try{
-			Integer busId = user.getId();
+            BusUser user = SessionUtils.getLoginUser(request);//TODO 没有校验user是否为空
+            Integer busId = user.getId();
 			if(user.getPid() != null && user.getPid() != 0){
 				busId = user.getPid();
 			}
 			unionBrokerage.setFromBusId(busId);
 			unionBrokerageService.updateUnionBrokerage(unionBrokerage);
-		}catch (BaseException e){
-			logger.error("设置盟员佣金比错误"+e.getMessage());
-			return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
-		}catch (Exception e){
-			logger.error("设置盟员佣金比错误"+e.getMessage());
-			return GTJsonResult.instanceErrorMsg("设置失败").toString();
-		}
-		return GTJsonResult.instanceSuccessMsg(null,null,"设置成功").toString();
+            return GTJsonResult.instanceSuccessMsg().toString();
+        }catch (BaseException e){
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        }catch (Exception e){
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(UPDATE_UNION_BROKERAGE, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
 	}
 }

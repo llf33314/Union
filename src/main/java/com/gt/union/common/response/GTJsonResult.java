@@ -1,138 +1,78 @@
 package com.gt.union.common.response;
 
 import com.alibaba.fastjson.JSON;
+import com.gt.union.common.constant.ExceptionConstant;
 
 import java.io.Serializable;
 
-/**
- * 全局JSON格式
- * <pre>
- *      供给 Controller 使用
- *      定制 JSON 消息返回格式
- *      example:
- *      GTJsonResult jsonResultErrorMsg = GTJsonResult.instanceErrorMsg();
- *      GTJsonResult jsonResultSuccessMsg = GTJsonResult.instanceSuccessMsg();
- *      建议采用 {@link GTCommonMessageEnum} 辅助
- *      可定制类似 {@link GTCommonMessageEnum} , 命名方式 GT{XXX}MessageEnum 替换{XXX}
- * </pre>
- * @update 2017/05/26 添加注解@JsonSerialize(include = JsonSerialize.Inclusion.NON_NULL)
- * @create 2017/5/5
- */
 public class GTJsonResult<T> implements Serializable {
+    private static final long serialVersionUID = 1L;
 
-    /**
-     * true:成功;false:失败-由方法标签控制
-     */
-    private boolean success;
-    /**
-     * 返回定义的提示消息
-     */
-    private String message;
-    /**
-     * 重定向地址
-     */
-    private String redirectUrl;
-    /**
-     * 返回定义的数据包
-     */
-    private T data;
+    private boolean success; //true:成功;false:失败-由方法标签控制
 
+    private T data;  //成功：自定义的数据包
+
+    private String redirectUrl; //成功或失败：重定向地址
+
+    private String errorMsg; //失败：友好的用户提示消息
+
+    private String errorLocation; //失败：抛出异常的代码位置，格式为"类名.方法名()"
+
+    private String errorCausedBy; //失败：抛出异常的原因
 
     private GTJsonResult() {
         super();
     }
 
-
     /**
-     * 构造成功消息
-     *
-     * @return GTJsonResult<T>
+     * ------------ 构造成功消息 ------------
      */
     public static <T> GTJsonResult<T> instanceSuccessMsg() {
-        return GTJsonResult.instanceSuccessMsg(null);
+        return instanceSuccessMsg(null);
     }
 
-    /**
-     * 构造成功消息
-     *
-     * @param data 数据包
-     * @return GTJsonResult<T>
-     */
     public static <T> GTJsonResult<T> instanceSuccessMsg(T data) {
-        return GTJsonResult.instanceSuccessMsg(data, null);
+        return instanceSuccessMsg(data, null);
     }
 
-    /**
-     * 构造成功消息
-     *
-     * @param data        T 泛型
-     * @param redirectUrl 重定向地址
-     * @return GTJsonResult<T>
-     */
     public static <T> GTJsonResult<T> instanceSuccessMsg(T data, String redirectUrl) {
-        return GTJsonResult.instanceSuccessMsg(data, redirectUrl, GTCommonMessageEnum.SUCCESS.getMessage());
-    }
-
-    /**
-     * 构造成功消息
-     *
-     * @param data        T 泛型
-     * @param redirectUrl 重定向地址
-     * @param message 自定义消息
-     * @return GTJsonResult<T>
-     */
-    public static <T> GTJsonResult<T> instanceSuccessMsg(T data, String redirectUrl, String message) {
         GTJsonResult gtJsonResult = new GTJsonResult();
         gtJsonResult.setSuccess(true);
         gtJsonResult.setData(data);
         gtJsonResult.setRedirectUrl(redirectUrl);
-        gtJsonResult.setMessage(message);
         return gtJsonResult;
     }
 
-
     /**
-     * 默认方法 构造错误消息
-     *
-     * @return GTJsonResult
+     * ------------ 构造失败消息 ------------
      */
-    public static GTJsonResult instanceErrorMsg() {
-        return GTJsonResult.instanceErrorMsg(GTCommonMessageEnum.FAIL.getMessage());
+    public static GTJsonResult instanceErrorMsg(String errorLocation, String errorCausedBy) {
+        return instanceErrorMsg(errorLocation, errorCausedBy, ExceptionConstant.OPERATE_FAIL);
     }
 
-    /**
-     * 默认方法 构造错误消息
-     * @param msg 描述
-     * @return GTJsonResult
-     */
-    public static GTJsonResult instanceErrorMsg(String msg) {
-        return GTJsonResult.instanceErrorMsg(msg, null);
+    public static GTJsonResult instanceErrorMsg(String errorLocation, String errorCausedBy, String errorMsg) {
+        return instanceErrorMsg(errorLocation, errorCausedBy, errorMsg, "");
     }
 
-    /**
-     * 构造错误消息
-     * @param message 描述
-     * @param redirectUrl 重定向地址
-     * @return GTJsonResult
-     */
-    public static GTJsonResult instanceErrorMsg(String message, String redirectUrl) {
+    public static GTJsonResult instanceErrorMsg(String errorLocation, String errorCausedBy, String errorMsg, String redirectUrl) {
         GTJsonResult gtJsonResult = new GTJsonResult();
         gtJsonResult.setSuccess(false);
-        gtJsonResult.setMessage(message);
+        gtJsonResult.setErrorLocation(errorLocation);
+        gtJsonResult.setErrorCausedBy(errorCausedBy);
+        gtJsonResult.setErrorMsg(errorMsg);
         gtJsonResult.setRedirectUrl(redirectUrl);
         return gtJsonResult;
     }
 
     /**
-     * ------------getter && setter ------------
+     * ------------ getter && setter ------------
      */
-
-    public String getMessage() {
-        return message;
+    public boolean isSuccess() {
+        return success;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public void setSuccess(boolean success) {
+        this.success = success;
     }
 
     public T getData() {
@@ -143,20 +83,36 @@ public class GTJsonResult<T> implements Serializable {
         this.data = data;
     }
 
-    public boolean isSuccess() {
-        return success;
-    }
-
-    public void setSuccess(boolean success) {
-        this.success = success;
-    }
-
     public String getRedirectUrl() {
         return redirectUrl;
     }
 
     public void setRedirectUrl(String redirectUrl) {
         this.redirectUrl = redirectUrl;
+    }
+
+    public String getErrorMsg() {
+        return errorMsg;
+    }
+
+    public void setErrorMsg(String errorMsg) {
+        this.errorMsg = errorMsg;
+    }
+
+    public String getErrorLocation() {
+        return errorLocation;
+    }
+
+    public void setErrorLocation(String errorLocation) {
+        this.errorLocation = errorLocation;
+    }
+
+    public String getErrorCausedBy() {
+        return errorCausedBy;
+    }
+
+    public void setErrorCausedBy(String errorCausedBy) {
+        this.errorCausedBy = errorCausedBy;
     }
 
     @Override

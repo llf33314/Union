@@ -29,6 +29,8 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/unionConsumeRecord")
 public class UnionConsumeRecordController {
+    //TODO RESTFUL
+    private static final String LIST_UNION_CONSUME_RECORD = "UnionConsumeRecordController.listUnionConsumeRecord()";
     private Logger logger = LoggerFactory.getLogger(UnionConsumeRecordController.class);
 
     @Autowired
@@ -54,7 +56,7 @@ public class UnionConsumeRecordController {
             , @ApiParam(name = "beginTime", value = "开始时间", required = false)
              @RequestParam(name = "beginTime", required = false) String beginTime
             , @ApiParam(name = "endTime", value = "结束时间", required = false)
-             @RequestParam(name = "endTime", required = false) String endTime){
+             @RequestParam(name = "endTime", required = false) String endTIme){
         Page result = null;
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
@@ -63,18 +65,21 @@ public class UnionConsumeRecordController {
             }
             switch (listType) {
                 case UnionConsumeRecordConstant.LIST_TYPE_MY:
-                    result = this.unionConsumeRecordService.listMyConsumeRecord(page, unionId, busUser.getId(), busId, cardNo, phone, beginTime, endTime);
+                    result = this.unionConsumeRecordService.listMyConsumeRecord(page, unionId, busUser.getId(), busId, cardNo, phone, beginTime, endTIme);
                     break;
                 case UnionConsumeRecordConstant.LIST_TYPE_OTHER:
-                    result = this.unionConsumeRecordService.listOtherConsumeRecord(page, unionId, busUser.getId(), busId, cardNo, phone, beginTime, endTime);
+                    result = this.unionConsumeRecordService.listOtherConsumeRecord(page, unionId, busUser.getId(), busId, cardNo, phone, beginTime, endTIme);
                     break;
                 default:
                     throw new Exception("UnionConsumeRecordController.listUnionConsumeRecord()：不支持的查询类型(listType=" + listType + ")!");
             }
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+            return GTJsonResult.instanceErrorMsg(LIST_UNION_CONSUME_RECORD, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
-        return GTJsonResult.instanceSuccessMsg(result).toString();
     }
 }

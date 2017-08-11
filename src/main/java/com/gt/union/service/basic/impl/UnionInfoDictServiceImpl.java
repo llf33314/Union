@@ -1,6 +1,5 @@
 package com.gt.union.service.basic.impl;
 
-import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.util.DaoUtil;
 import com.gt.union.entity.basic.UnionInfoDict;
@@ -22,7 +21,7 @@ import java.util.Map;
  */
 @Service
 public class UnionInfoDictServiceImpl extends ServiceImpl<UnionInfoDictMapper, UnionInfoDict> implements IUnionInfoDictService {
-
+	private static final String GET_UNION_INFO_DICT = "UnionInfoDictServiceImpl.getUnionInfoDict()";
 	@Autowired
 	private DaoUtil daoUtil;
 

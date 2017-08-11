@@ -23,7 +23,7 @@ public interface IUnionApplyInfoService extends IService<UnionApplyInfo> {
 	 * @param id
 	 * @param unionId
 	 */
-	void updateUnionApplyInfo(UnionApplyInfo unionApplyInfo, Integer id, Integer unionId) throws Exception;
+	void updateById(UnionApplyInfo unionApplyInfo, Integer id, Integer unionId) throws Exception;
 
     /**
      * 比例设置分页展示
@@ -32,21 +32,21 @@ public interface IUnionApplyInfoService extends IService<UnionApplyInfo> {
      * @return
      * @throws Exception
      */
-	Page pageSellDivideProportion(Page page, Integer unionId) throws Exception;
+	Page listBySellDivideProportionInPage(Page page, Integer unionId) throws Exception;
 
     /**
      * 比例设置列表展示
-     * @param unionid
+     * @param unionId
      * @throws Exception
      */
-    List<Map<String,Object>> listSellDivideProportion(Integer unionid) throws Exception;
+    List<Map<String,Object>> listBySellDivideProportionInList(Integer unionId) throws Exception;
 
     /**
      * 更新比例
      * @param unionApplyInfoList
      * @throws Exception
      */
-    void updateSellDivideProportion(List<UnionApplyInfo> unionApplyInfoList) throws Exception;
+    void updateBySellDivideProportion(List<UnionApplyInfo> unionApplyInfoList) throws Exception;
 
 	/**
 	 * 根据infoId获取编辑盟员信息
@@ -55,7 +55,7 @@ public interface IUnionApplyInfoService extends IService<UnionApplyInfo> {
 	 * @param busId	商家id
 	 * @return
 	 */
-	Map<String,Object> getUnionApplyInfo(Integer id, Integer unionId, Integer busId) throws Exception;
+	Map<String,Object> getById(Integer id, Integer unionId, Integer busId) throws Exception;
 
 	/**
 	 * 保存unionApplyInfo

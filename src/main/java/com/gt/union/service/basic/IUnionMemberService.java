@@ -25,45 +25,54 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @return
      * @throws Exception
      */
-    Page listMember(Page page, final Integer unionId, final String enterpriseName) throws Exception;
+    Page listByUnionIdInPage(Page page, final Integer unionId, final String enterpriseName) throws Exception;
 
     /**
-     * 根据联盟id获取退盟申请列表，并根据退盟状态outStatus进行过滤
+     * 根据联盟id获取盟员列表信息
+     * @param unionId
+     * @return
+     */
+    List<Map<String,Object>> listByUnionIdInList(Integer unionId) throws Exception;
+
+    /**
+     * 根据联盟id和退盟状态outStatus获取退盟申请列表
      * @param page
      * @param unionId
      * @param outStatus
      * @return
      * @throws Exception
      */
-    Page listOut(Page page, final Integer unionId, final Integer outStatus) throws Exception;
+    Page listByUnionIdAndOutStatus(Page page, final Integer unionId, final Integer outStatus) throws Exception;
 
     /**
-     * 根据联盟id及用户id获取可转移盟主权限的盟员信息列表
+     * 根据联盟id、用户id、退盟状态和是否盟主获取盟员信息列表
      * @param page
      * @param unionId
      * @param busId
+     * @param outStatus
+     * @param isNuionOwner
      * @return
      * @throws Exception
      */
-    Page listTransfer(Page page, final Integer unionId, final Integer busId) throws Exception;
+    Page listByUnionIdAndOutStatusAndIsNuionOwner(Page page, final Integer unionId, final Integer busId
+            , final Integer outStatus, final Integer isNuionOwner) throws Exception;
 
     /**
      * 根据盟员id获取详细信息
-     * @param unionMemberId
+     * @param id
      * @return
      * @throws Exception
      */
-    Map<String, Object> getDetail(Integer unionMemberId) throws Exception;
+    Map<String, Object> getById(Integer id) throws Exception;
 
     /**
      * 盟主权限转移
-     * @param unionMemberId
+     * @param id
      * @param unionId
      * @param busId
-     * @param isUnionOwner
      * @throws Exception
      */
-    void updateIsUnionMember(Integer unionMemberId, Integer unionId, Integer busId, Integer isUnionOwner) throws Exception;
+    void updateIsNuionOwnerById(Integer id, Integer unionId, Integer busId) throws Exception;
 
     /**
      * 判断用户是否是对应联盟的盟主
@@ -115,13 +124,6 @@ public interface IUnionMemberService extends IService<UnionMember> {
     void isMemberValid(Integer busId, Integer unionId) throws Exception;
 
     /**
-     * 获取联盟内所有盟员列表
-     * @param unionId
-     * @return
-     */
-    List<Map<String,Object>> getUnionMemberList(Integer unionId);
-
-    /**
      * 查询商家加入的联盟数
      * @param applyBusId    商家id
      * @return
@@ -130,11 +132,12 @@ public interface IUnionMemberService extends IService<UnionMember> {
 
     /**
      * 审核退盟成员
-     * @param unionMemberId 盟员id
-     * @param unionId   联盟id
-     * @param busId    操作的商家id
-     * @param isUnionOwner  盟主
-     * @param verifyStatus  审核状态 1：同意 2：拒绝
+     * @param id
+     * @param unionId
+     * @param busId
+     * @param verifyStatus
+     * @return
+     * @throws Exception
      */
-	Map<String, Object> updateUnionMemberOut(Integer unionMemberId, Integer unionId, Integer busId, Integer isUnionOwner, Integer verifyStatus) throws Exception;
+	Map<String, Object> updateOutStatusById(Integer id, Integer unionId, Integer busId, Integer verifyStatus) throws Exception;
 }
