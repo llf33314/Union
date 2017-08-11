@@ -21,7 +21,7 @@ public interface IUnionCardDivideRecordService extends IService<UnionCardDivideR
 	 * @param vo
 	 * @return
 	 */
-	Page getUnionCardDivideRecordList(Page page, UnionCardDivideRecordVO vo);
+	Page getUnionCardDivideRecordList(Page page, UnionCardDivideRecordVO vo) throws Exception;
 
 	/**
 	 * 查询分成记录总和

@@ -2,6 +2,7 @@ package com.gt.union.controller.basic;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.common.annotation.SysLogAnnotation;
+import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
@@ -31,6 +32,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/unionApply")
 public class UnionApplyController {
+    private static final String LIST_UNIONID_APPLYSTATUS = "UnionApplyController.listByUnionIdAndApplyStatus()";
+    private static final String UPDATE_UNIONID_APPLYSTATUS = "UnionApplyController.updateByUnionIdAndApplyStatus()";
+    private static final String SAVE = "UnionApplyController.save()";
 
     private Logger logger = LoggerFactory.getLogger(UnionApplyController.class);
 
@@ -38,78 +42,70 @@ public class UnionApplyController {
     private IUnionApplyService unionApplyService;
 
 
-    @ApiOperation(value = "查询入盟申请列表"
-            , notes = "根据联盟id获取入盟申请，并根据enterpriseName/directorPhone进行模糊匹配"
-            , produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String listUncheckedApply(Page page
+    @ApiOperation(value = "查询入盟申请相关信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{unionId}/{applyStatus}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String listByUnionIdAndApplyStatus(Page page
             , @ApiParam(name = "unionId", value = "联盟id",required = true)
-             @RequestParam(name = "unionId", required = true) Integer unionId
-            , @ApiParam(name = "enterpriseName", value = "申请企业")
+             @PathVariable("unionId") Integer unionId
+            , @ApiParam(name = "applyStatus", value = "审核状态，可选值0=未审核，1=审核通过，2=审核不通过", required = true)
+             @PathVariable("applyStatus") Integer applyStatus
+            , @ApiParam(name = "enterpriseName", value = "申请企业,模糊匹配")
              @RequestParam(name = "enterpriseName", required = false) String enterpriseName
-            , @ApiParam(name = "directorPhone", value = "联系电话")
+            , @ApiParam(name = "directorPhone", value = "联系电话,模糊匹配")
              @RequestParam(name = "directorPhone", required = false) String directorPhone){
-        Page result = null;
         try {
-            result = this.unionApplyService.listUncheckedApply(page, unionId, enterpriseName, directorPhone);
+            Page result = this.unionApplyService.listByUnionIdAndApplyStatus(page, unionId, applyStatus, enterpriseName, directorPhone);
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+            return GTJsonResult.instanceErrorMsg(LIST_UNIONID_APPLYSTATUS, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
-        return GTJsonResult.instanceSuccessMsg(result).toString();
     }
 
-    @ApiOperation(value = "通过或不通过入盟申请"
-            , notes = "根据联盟id及审批状态applyStatus通过或不通过入盟申请"
-            , produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "审批入盟申请", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{id}/{unionId}/{applyStatus}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     @SysLogAnnotation(description = "通过或不通过入盟申请", op_function = "1")
-    public String updateApplyStatus(HttpServletRequest request, @ApiParam(name = "id", value = "入盟申请id", required = true)
-                @PathVariable("id")Integer id
-            , @ApiParam(name = "unionId", value = "联盟id", required = true)
-                @RequestParam(name = "unionId", required = true) Integer unionId
-            , @ApiParam(name = "applyStatus", value = "审批状态，1代表通过，2代表不通过", required = true)
-                @RequestParam(name = "applyStatus", required = true) Integer applyStatus) {
-        BusUser busUser = SessionUtils.getLoginUser(request);
+    public String updateByUnionIdAndApplyStatus(HttpServletRequest request
+            , @ApiParam(name = "id", value = "入盟申请id", required = true) @PathVariable("id")Integer id
+            , @ApiParam(name = "unionId", value = "联盟id", required = true) @PathVariable("unionId") Integer unionId
+            , @ApiParam(name = "applyStatus", value = "审批状态，可选值1=通过，2=不通过", required = true) @PathVariable("applyStatus") Integer applyStatus) {
         try{
+            BusUser busUser = SessionUtils.getLoginUser(request);
             if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
-                throw new BusinessException("请使用主账号权限");
+                throw new BusinessException(UPDATE_UNIONID_APPLYSTATUS, "","请使用主账号权限");
             }
-            unionApplyService.updateUnionApplyVerify(busUser.getId(),id,unionId, applyStatus);
+            this.unionApplyService.updateByUnionIdAndApplyStatus(busUser.getId(), id, unionId, applyStatus);
+            return GTJsonResult.instanceSuccessMsg().toString();
         }catch (BaseException e){
-            logger.error(e.getMessage(),e);
-            return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
         } catch (Exception e){
-            logger.error(e.getMessage(),e);
-            return GTJsonResult.instanceErrorMsg("审核失败").toString();
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(UPDATE_UNIONID_APPLYSTATUS, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
-        return GTJsonResult.instanceSuccessMsg(null, null,"审核成功").toString();
     }
 
-    @ApiOperation(value = "新建申请入盟或推荐入盟"
-            , notes = "新建申请入盟或推荐入盟"
-            , produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "新建申请入盟或推荐入盟", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @SysLogAnnotation(description = "新建申请入盟或推荐入盟", op_function = "1")
-    public String saveApply(HttpServletRequest request, @ApiParam(name = "unionId", value = "联盟id",required = true)
-                @RequestParam(name = "unionId", required = true) Integer unionId
-            , @ApiParam(name = "applyType", value = "新建类型，1代表自由申请，2代表推荐申请", required = true)
-                @RequestParam(name = "applyType", required = true) Integer applyType
-            , @ApiParam(name = "unionApplyVO", value = "新建的数据模型", required = true)
-                @RequestBody UnionApplyVO unionApplyVO){
-        BusUser busUser = SessionUtils.getLoginUser(request);
+    public String save(HttpServletRequest request
+            , @ApiParam(name = "unionApplyVO", value = "新建的数据模型", required = true) @RequestBody UnionApplyVO unionApplyVO){
         try{
+            BusUser busUser = SessionUtils.getLoginUser(request);
             if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
-                throw new BusinessException("请使用主账号权限");
+                throw new BusinessException(SAVE, "","请使用主账号权限");
             }
-            Map<String,Object> data = unionApplyService.addUnionApply(busUser.getId(), unionId, unionApplyVO, applyType);
-            return GTJsonResult.instanceSuccessMsg(data,null,"添加成功").toString();
+            Map<String,Object> data = this.unionApplyService.save(busUser.getId(), unionApplyVO);
+            return GTJsonResult.instanceSuccessMsg(data).toString();
         }catch (BaseException e){
-            logger.error(e.getMessage(),e);
-            return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
         }catch (Exception e){
-            logger.error(e.getMessage(),e);
-            return GTJsonResult.instanceErrorMsg("添加失败").toString();
+            logger.error("",e);
+            return GTJsonResult.instanceErrorMsg(SAVE, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
     }
 }

@@ -1,6 +1,7 @@
 package com.gt.union.controller.business;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.business.UnionBusinessRecommendConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
@@ -34,6 +35,10 @@ import java.util.Map;
 @RestController
 @RequestMapping("/unionBusinessRecommend")
 public class UnionBusinessRecommendController {
+    //TODO 方法签名RESTFUL
+	private static final String LIST_UNION_BUSINESS_RECOMMEND = "UnionBusinessRecommendController.listUnionBusinessRecommend()";
+	private static final String VERIFY_UNION_BUSINESS_RECOMMEND = "UnionBusinessRecommendController.verifyUnionBusinessRecommend()";
+	private static final String SAVE_UNION_BUSINESS_RECOMMEND = "UnionBusinessRecommendController.saveUnionBusinessRecommend()";
 
 	private Logger logger = Logger.getLogger(UnionBusinessRecommendController.class);
 
@@ -78,16 +83,16 @@ public class UnionBusinessRecommendController {
              @RequestParam(name = "userName", required = false) String userName
             , @ApiParam(name = "userPhone", value = "顾客电话，模糊查询", required = false)
              @RequestParam(name = "userPhone", required = false) String userPhone) {
-        Page result = null;
         try {
+            Page result = null;
             BusUser busUser = SessionUtils.getLoginUser(request);
             if (busUser == null) {
                 throw new Exception("UnionBusinessRecommendController.listUnionBusinessRecommend()：无法通过session获取用户的信息!");
             }
-			Integer busUserId = busUser.getId();
-			if(busUser.getPid() != null && busUser.getPid() != 0){
-				busUserId = busUser.getPid();
-			}
+            Integer busUserId = busUser.getId();
+            if (busUser.getPid() != null && busUser.getPid() != 0) {
+                busUserId = busUser.getPid();
+            }
             switch (listType) {
                 case UnionBusinessRecommendConstant.LIST_TYPE_TO_ME:
                     result = this.unionBusinessRecommendService.listUnionBusinessRecommendToMe(page, busUserId, unionId, isAcceptance, userName, userPhone);
@@ -106,30 +111,33 @@ public class UnionBusinessRecommendController {
                     break;
                 case UnionBusinessRecommendConstant.LIST_TYPE_PAY_PARTICULAR:
                     List<Map<String, Object>> dataList = this.unionBusinessRecommendService.listPayParticular(unionId, busUserId, busId);
-					BigDecimal businessPriceSum = BigDecimal.valueOf(0.0);
-					if (ListUtil.isNotEmpty(dataList)) {
-						for (int i = 0, size = dataList.size(); i < size; i++) {
-							Map<String, Object> map = dataList.get(i);
-							if (map == null) {
-							    continue;
-							}
+                    BigDecimal businessPriceSum = BigDecimal.valueOf(0.0);
+                    if (ListUtil.isNotEmpty(dataList)) {
+                        for (int i = 0, size = dataList.size(); i < size; i++) {
+                            Map<String, Object> map = dataList.get(i);
+                            if (map == null) {
+                                continue;
+                            }
                             Object businessPriceObj = map.get("businessPrice");
-							Double businessPrice = businessPriceObj == null ? Double.valueOf(0.0) : Double.valueOf(businessPriceObj.toString());
+                            Double businessPrice = businessPriceObj == null ? Double.valueOf(0.0) : Double.valueOf(businessPriceObj.toString());
                             businessPriceSum = BigDecimalUtil.add(businessPriceSum, businessPrice);
-						}
-					}
-					Map<String, Object> resultMap = new HashMap<>();
-					resultMap.put("data", dataList);
-					resultMap.put("businessPriceSum", businessPriceSum);
-					return GTJsonResult.instanceSuccessMsg(resultMap).toString();
+                        }
+                    }
+                    Map<String, Object> resultMap = new HashMap<>();
+                    resultMap.put("data", dataList);
+                    resultMap.put("businessPriceSum", businessPriceSum);
+                    return GTJsonResult.instanceSuccessMsg(resultMap).toString();
                 default:
                     throw new Exception("UnionBusinessRecommendController.listUnionBusinessRecommend():不支持的查询类型listType(value=" + listType + ")!");
             }
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+            return GTJsonResult.instanceErrorMsg(LIST_UNION_BUSINESS_RECOMMEND, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
-        return GTJsonResult.instanceSuccessMsg(result).toString();
 	}
 
 
@@ -144,33 +152,26 @@ public class UnionBusinessRecommendController {
 	public String verifyUnionBusinessRecommend(HttpServletRequest request
 			, @ApiParam(name = "id", value = "商机id", required = true) @PathVariable("id") Integer id
 			, @ApiParam(name = "isAcceptance", value = "审核状态 1：接受 2：拒绝", required = true) @RequestParam Integer isAcceptance){
-		BusUser user = SessionUtils.getLoginUser(request);
 		try{
-			UnionBusinessRecommend recommend = new UnionBusinessRecommend();
+            BusUser user = SessionUtils.getLoginUser(request);
+            UnionBusinessRecommend recommend = new UnionBusinessRecommend();
 			recommend.setId(id);
 			recommend.setIsAcceptance(isAcceptance);
 			unionBusinessRecommendService.updateVerifyRecommend(recommend);
 			if(isAcceptance == 1){
 				//接受
-				return GTJsonResult.instanceSuccessMsg(null,null, "商机接受成功").toString();
+				return GTJsonResult.instanceSuccessMsg().toString();
 			}else if(isAcceptance == 2){
 				//拒绝
-				return GTJsonResult.instanceSuccessMsg(null,null,"商机拒绝成功").toString();
+				return GTJsonResult.instanceSuccessMsg().toString();
 			}
-			return GTJsonResult.instanceErrorMsg("审核失败").toString();
+			return GTJsonResult.instanceErrorMsg(VERIFY_UNION_BUSINESS_RECOMMEND, "","审核失败").toString();
 		}catch (BaseException e){
-			logger.error("审核商机消息错误"+e.getMessage());
-			return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
 		}catch (Exception e){
-			logger.error("审核商机消息错误"+e.getMessage());
-			if(isAcceptance == 1){
-				//接受
-				return GTJsonResult.instanceErrorMsg("商机拒绝失败").toString();
-			}else if(isAcceptance == 2){
-				//拒绝
-				return GTJsonResult.instanceErrorMsg("商机拒绝失败").toString();
-			}
-			return GTJsonResult.instanceErrorMsg("审核失败").toString();
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(VERIFY_UNION_BUSINESS_RECOMMEND, e.getMessage(),ExceptionConstant.OPERATE_FAIL).toString();
 		}
 	}
 
@@ -184,19 +185,19 @@ public class UnionBusinessRecommendController {
 	public String saveUnionBusinessRecommend(HttpServletRequest request
 			, @ApiParam(name = "unionBusinessRecommendFormVO", value = "推荐的商机信息", required = true) @RequestBody UnionBusinessRecommendFormVO vo
 			, @ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam Integer unionId){
-		BusUser user = SessionUtils.getLoginUser(request);
 		try{
-			Integer busId = user.getId();
+            BusUser user = SessionUtils.getLoginUser(request);
+            Integer busId = user.getId();
 			vo.setBusId(busId);
 			unionBusinessRecommendService.saveUnionBusinessRecommend(vo);
-		}catch (BaseException e){
-			logger.error("添加商机推荐错误"+e.getMessage());
-			return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
-		}catch (Exception e){
-			logger.error("添加商机推荐错误"+e.getMessage());
-			return GTJsonResult.instanceErrorMsg("添加失败").toString();
-		}
-		return GTJsonResult.instanceSuccessMsg(null,null,"添加成功").toString();
+            return GTJsonResult.instanceSuccessMsg().toString();
+        }catch (BaseException e){
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        }catch (Exception e){
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(SAVE_UNION_BUSINESS_RECOMMEND, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
 	}
 
 }

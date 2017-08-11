@@ -1,7 +1,9 @@
 package com.gt.union.controller.consume;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.consume.UnionConsumeRecordConstant;
+import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.common.BusUser;
@@ -29,6 +31,8 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/unionConsumeRecord")
 public class UnionConsumeRecordController {
+    //TODO RESTFUL
+    private static final String LIST_UNION_CONSUME_RECORD = "UnionConsumeRecordController.listUnionConsumeRecord()";
     private Logger logger = LoggerFactory.getLogger(UnionConsumeRecordController.class);
 
     @Autowired
@@ -55,8 +59,8 @@ public class UnionConsumeRecordController {
              @RequestParam(name = "beginTime", required = false) String beginTime
             , @ApiParam(name = "endTime", value = "结束时间", required = false)
              @RequestParam(name = "endTime", required = false) String endTIme){
-        Page result = null;
         try {
+            Page result = null;
             BusUser busUser = SessionUtils.getLoginUser(request);
             if (busUser == null) {
                 throw new Exception("UnionConsumeRecordController.listUnionConsumeRecord()：无法通过session获取用户的信息!");
@@ -71,10 +75,13 @@ public class UnionConsumeRecordController {
                 default:
                     throw new Exception("UnionConsumeRecordController.listUnionConsumeRecord()：不支持的查询类型(listType=" + listType + ")!");
             }
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+            return GTJsonResult.instanceErrorMsg(LIST_UNION_CONSUME_RECORD, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
-        return GTJsonResult.instanceSuccessMsg(result).toString();
     }
 }

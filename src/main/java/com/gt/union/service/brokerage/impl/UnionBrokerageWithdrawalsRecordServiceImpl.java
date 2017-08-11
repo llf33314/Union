@@ -20,6 +20,7 @@ import java.util.Map;
  */
 @Service
 public class UnionBrokerageWithdrawalsRecordServiceImpl extends ServiceImpl<UnionBrokerageWithdrawalsRecordMapper, UnionBrokerageWithdrawalsRecord> implements IUnionBrokerageWithdrawalsRecordService {
+	private static final String GET_UNION_BROKERAGE_WITHDRAWALS_SUM = "UnionBrokerageWithdrawalsRecordServiceImpl.getUnionBrokerageWithdrawalsSum()";
 
 	@Override
 	public double getUnionBrokerageWithdrawalsSum(final Integer busId, final Integer unionId) {

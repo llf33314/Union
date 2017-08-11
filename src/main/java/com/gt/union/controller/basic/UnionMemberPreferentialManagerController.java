@@ -1,8 +1,11 @@
 package com.gt.union.controller.basic;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionMemberPreferentialManagerConstant;
 import com.gt.union.common.constant.basic.UnionMemberPreferentialServiceConstant;
+import com.gt.union.common.exception.BaseException;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.common.BusUser;
@@ -29,6 +32,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/unionMemberPreferentialManager")
 public class UnionMemberPreferentialManagerController {
+    //TODO 方法标签名RESTFUL化
+    private static final String LIST_PREFERENTIAL_MANAGER = "UnionMemberPreferentialManagerController.listPreferentialManager()";
+    private static final String DETAIL_PREFERENTIAL_MANAGER = "UnionMemberPreferentialManagerController.detailPreferentialManager()";
     private Logger logger = LoggerFactory.getLogger(UnionMemberPreferentialManagerController.class);
 
     @Autowired
@@ -72,16 +78,19 @@ public class UnionMemberPreferentialManagerController {
                 case UnionMemberPreferentialManagerConstant.LIST_TYPE_MY:
                     BusUser busUser = SessionUtils.getLoginUser(request);
                     if (busUser == null) {
-                        throw new Exception("UnionMemberPreferentialManagerController.listPreferentialManager():无法通过session获取用户的信息!");
+                        throw new BusinessException(LIST_PREFERENTIAL_MANAGER, "", "无法通过session获取用户的信息");
                     }
                     Page result = this.unionMemberPreferentialManagerService.listMyPreferentialManager(page, unionId, busUser.getId());
                     return GTJsonResult.instanceSuccessMsg(result).toString();
                 default:
-                    throw new Exception("UnionMemberPreferentialManagerController.listPreferentialManager():不支持的查询类型listType(value=" + listType + ")!");
+                    throw new BusinessException(LIST_PREFERENTIAL_MANAGER, "", "不支持的查询类型listType");
             }
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+            return GTJsonResult.instanceErrorMsg(LIST_PREFERENTIAL_MANAGER, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
     }
 
@@ -101,14 +110,16 @@ public class UnionMemberPreferentialManagerController {
                 @PathVariable("id") Integer id
             , @ApiParam(name = "verifyStatus", value = "审核状态：1代表未审核，2代表审核通过，3代表审核不通过", required = true)
                 @RequestParam(name = "verifyStatus") Integer verifyStatus) {
-        Map<String, Object> result = null;
         try {
-            result = this.unionMemberPreferentialManagerService.detailPreferentialManager(page, id, verifyStatus);
+            Map<String, Object> result = this.unionMemberPreferentialManagerService.detailPreferentialManager(page, id, verifyStatus);
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+            return GTJsonResult.instanceErrorMsg(DETAIL_PREFERENTIAL_MANAGER, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
-        return GTJsonResult.instanceSuccessMsg(result).toString();
     }
 
 }

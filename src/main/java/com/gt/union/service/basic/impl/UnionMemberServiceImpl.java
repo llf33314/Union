@@ -1,16 +1,16 @@
 package com.gt.union.service.basic.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionApplyConstant;
 import com.gt.union.common.constant.basic.UnionDiscountConstant;
 import com.gt.union.common.constant.basic.UnionMemberConstant;
 import com.gt.union.common.exception.BusinessException;
-import com.gt.union.common.exception.ParameterException;
+import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
 import com.gt.union.entity.basic.UnionApplyInfo;
 import com.gt.union.entity.basic.UnionMember;
@@ -38,6 +38,17 @@ import java.util.Map;
  */
 @Service
 public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, UnionMember> implements IUnionMemberService {
+    private static final String LIST_UNIONID_PAGE = "UnionMemberServiceImpl.listByUnionIdInPage()";
+    private static final String LIST_UNIONID_LIST = "UnionMemberServiceImpl.listByUnionIdInList()";
+    private static final String LIST_UNIONID_OUTSTATUS = "UnionMemberServiceImpl.listByUnionIdAndOutStatus()";
+    private static final String LIST_UNIONID_OUTSTATUS_ISNUIONOWNER = "UnionMemberServiceImpl.listByUnionIdAndOutStatusAndIsNuionOwner()";
+    private static final String GET_ID = "UnionMemberServiceImpl.getById()";
+    private static final String UPDATEISNUIONOWNER_ID = "UnionMemberServiceImpl.updateIsNuionOwnerById()";
+    private static final String IS_UNION_OWNER = "UnionMemberServiceImpl.isUnionOwner()";
+    private static final String IS_EXIST_UNION_MEMBER = "UnionMemberServiceImpl.isExistUnionMember()";
+    private static final String SELECT_UNION_BROKERAGE_LIST = "UnionMemberServiceImpl.selectUnionBrokerageList()";
+    private static final String IS_MEMBER_VALID_UNIONMANE = "UnionMemberServiceImpl.isMemberValid(UnionMain)";
+    private static final String UPDATEOUTSTATUS_ID = "UnionMemberServiceImpl.updateOutStatusById()";
 
     @Autowired
     private RedisCacheUtil redisCacheUtil;
@@ -49,12 +60,12 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     private IUnionApplyInfoService unionApplyInfoService;
 
     @Override
-    public Page listMember(Page page, final Integer unionId, final String enterpriseName) throws Exception {
+    public Page listByUnionIdInPage(Page page, final Integer unionId, final String enterpriseName) throws Exception {
         if (page == null) {
-            throw new Exception("UnionMemberServiceImpl.listUnionMember():参数page不能为空!");
+            throw new ParamException(LIST_UNIONID_PAGE, "参数page为空", ExceptionConstant.PARAM_ERROR);
         }
         if (unionId == null) {
-            throw new Exception("UnionMemberServiceImpl.listUnionMember():参数unionId不能为空!");
+            throw new ParamException(LIST_UNIONID_PAGE, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         Wrapper wrapper = new Wrapper() {
             @Override
@@ -93,15 +104,41 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    public Page listOut(Page page, final Integer unionId, final Integer outStatus) throws Exception {
+    public List<Map<String, Object>> listByUnionIdInList(final Integer unionId) throws Exception{
+        if (unionId == null) {
+            throw new ParamException(LIST_UNIONID_LIST, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
+        }
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                StringBuilder sbSqlSegment = new StringBuilder(" m");
+                sbSqlSegment.append(" LEFT JOIN t_union_apply a on a.union_member_id = m.id ")
+                        .append(" LEFT JOIN t_union_apply_info i on i.union_apply_id = a.id ")
+                        .append(" WHERE m.union_id = ").append(unionId)
+                        .append("    AND a.del_status = ").append(UnionApplyConstant.DEL_STATUS_NO)
+                        .append("    AND m.del_status = ").append(UnionMemberConstant.DEL_STATUS_NO);
+                sbSqlSegment.append(" ORDER BY m.apply_out_time DESC ");
+                return sbSqlSegment.toString();
+            };
+
+        };
+        StringBuilder sbSqlSelect = new StringBuilder("");
+        sbSqlSelect.append(", m.id id ")
+                .append(", i.enterprise_name enterpriseName ");
+        wrapper.setSqlSelect(sbSqlSelect.toString());
+        return null;
+    }
+
+    @Override
+    public Page listByUnionIdAndOutStatus(Page page, final Integer unionId, final Integer outStatus) throws Exception {
         if (page == null) {
-            throw new Exception("UnionMemberServiceImpl.listUnionMember():参数page不能为空!");
+            throw new ParamException(LIST_UNIONID_OUTSTATUS, "参数page为空", ExceptionConstant.PARAM_ERROR);
         }
         if (unionId == null) {
-            throw new Exception("UnionMemberServiceImpl.listUnionMember():参数unionId不能为空!");
+            throw new ParamException(LIST_UNIONID_OUTSTATUS, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         if (outStatus == null) {
-            throw new Exception("UnionMemberServiceImpl.listUnionMember():参数outStatus不能为空!");
+            throw new ParamException(LIST_UNIONID_OUTSTATUS, "参数outStatus为空", ExceptionConstant.PARAM_ERROR);
         }
 
         Wrapper wrapper = new Wrapper() {
@@ -132,19 +169,26 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    public Page listTransfer(Page page, final Integer unionId, final Integer busId) throws Exception {
+    public Page listByUnionIdAndOutStatusAndIsNuionOwner(Page page, final Integer unionId, final Integer busId
+            , final Integer outStatus, final Integer isNuionOwner) throws Exception {
         if (page == null) {
-            throw new Exception("UnionMemberServiceImpl.listUnionMember():参数page不能为空!");
+            throw new ParamException(LIST_UNIONID_OUTSTATUS_ISNUIONOWNER, "参数page为空", ExceptionConstant.PARAM_ERROR);
         }
         if (unionId == null) {
-            throw new Exception("UnionMemberServiceImpl.listUnionMember():参数unionId不能为空!");
+            throw new ParamException(LIST_UNIONID_OUTSTATUS_ISNUIONOWNER, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         if (busId == null) {
-            throw new Exception("UnionMemberServiceImpl.listUnionMember():参数busId不能为空!");
+            throw new ParamException(LIST_UNIONID_OUTSTATUS_ISNUIONOWNER, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         } else {
             if (!this.isUnionOwner(unionId, busId)) {
-                throw new Exception("UnionMemberServiceImpl.listUnionMember():当前用户不能是盟主，无法查询!");
+                throw new BusinessException(LIST_UNIONID_OUTSTATUS_ISNUIONOWNER, "", "当前用户不能是盟主，无法查询");
             }
+        }
+        if (outStatus == null) {
+            throw new ParamException(LIST_UNIONID_OUTSTATUS_ISNUIONOWNER, "参数outStatus为空", ExceptionConstant.PARAM_ERROR);
+        }
+        if (isNuionOwner == null) {
+            throw new ParamException(LIST_UNIONID_OUTSTATUS_ISNUIONOWNER, "参数isNuionOwner为空", ExceptionConstant.PARAM_ERROR);
         }
 
         Wrapper wrapper = new Wrapper() {
@@ -154,8 +198,8 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 sbSqlSegment.append(" LEFT JOIN t_union_apply a on a.union_member_id = m.id ")
                         .append(" LEFT JOIN t_union_apply_info i on i.union_apply_id = a.id ")
                         .append(" WHERE m.del_status = ").append(UnionMemberConstant.DEL_STATUS_NO)
-                        .append("    AND m.is_nuion_owner = ").append(UnionMemberConstant.IS_UNION_OWNER_NO)
-                        .append("    AND m.out_staus = ").append(UnionMemberConstant.OUT_STATUS_NORMAL)
+                        .append("    AND m.is_nuion_owner = ").append(isNuionOwner)
+                        .append("    AND m.out_staus = ").append(outStatus)
                         .append("    AND a.del_status = ").append(UnionApplyConstant.DEL_STATUS_NO)
                         .append("    AND a.apply_status = ").append(UnionApplyConstant.APPLY_STATUS_PASS)
                         .append("    AND m.union_id = ").append(unionId);
@@ -174,9 +218,9 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    public Map<String, Object> getDetail(final Integer unionMemberId) throws Exception {
-        if (unionMemberId == null) {
-            throw new Exception("UnionMemberServiceImpl.getDetail():参数unionMemberId不能为空!");
+    public Map<String, Object> getById(final Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(GET_ID, "参数id为空", ExceptionConstant.PARAM_ERROR);
         }
         Wrapper wrapper = new Wrapper() {
             @Override
@@ -185,7 +229,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 sbSqlSegment.append(" LEFT JOIN t_union_apply a on a.union_member_id = m.id ")
                         .append(" LEFT JOIN t_union_apply_info i on i.union_apply_id = a.id ")
                         .append(" WHERE m.del_status=").append(UnionMemberConstant.DEL_STATUS_NO)
-                        .append("    AND m.id = ").append(unionMemberId)
+                        .append("    AND m.id = ").append(id)
                         .append("    AND a.del_status = ").append(UnionApplyConstant.DEL_STATUS_NO)
                         .append("    AND a.apply_status = ").append(UnionApplyConstant.APPLY_STATUS_PASS);
                 return sbSqlSegment.toString();
@@ -206,36 +250,24 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
 
     @Override
     @Transactional(propagation = Propagation.REQUIRED)//TODO 盟主权限转移
-    public void updateIsUnionMember(Integer unionMemberId, Integer unionId, Integer busId, Integer isUnionOwner) throws Exception {
-        if (unionMemberId == null) {
-            throw new Exception("UnionMemberServiceImpl.updateIsUnionMember():参数unionMemberId不能为空!");
+    public void updateIsNuionOwnerById(Integer id, Integer unionId, Integer busId) throws Exception {
+        if (id == null) {
+            throw new ParamException(UPDATEISNUIONOWNER_ID, "参数id为空", ExceptionConstant.PARAM_ERROR);
         }
         if (unionId == null) {
-            throw new Exception("UnionMemberServiceImpl.updateIsUnionMember():参数unionId不能为空!");
+            throw new ParamException(UPDATEISNUIONOWNER_ID, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         if (busId == null) {
-            throw new Exception("UnionMemberServiceImpl.updateIsUnionMember():参数busId不能为空!");
-        }
-        if (isUnionOwner == null) {
-            throw new Exception("UnionMemberServiceImpl.updateIsUnionMember():参数isUnionOwner不能为空!");
-        } else {
-            switch (isUnionOwner) {
-                case UnionMemberConstant.IS_UNION_OWNER_YES:
-                    break;
-                /*case UnionMemberConstant.IS_UNION_OWNER_NO:
-                    throw new Exception("UnionMemberServiceImpl.updateIsUnionMember():不支持的参数值(isUnionOwner=" + isUnionOwner + ")!");*/
-                default:
-                    throw new Exception("UnionMemberServiceImpl.updateIsUnionMember():不支持的参数值(isUnionOwner=" + isUnionOwner + ")!");
-            }
+            throw new ParamException(UPDATEISNUIONOWNER_ID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
 
         //判断盟员是否未申请退盟
         EntityWrapper newOwnerWrapper = new EntityWrapper();
-        newOwnerWrapper.eq("id", unionMemberId)
+        newOwnerWrapper.eq("id", id)
                 .eq("del_status", UnionMemberConstant.DEL_STATUS_NO)
                 .eq("out_staus", UnionMemberConstant.OUT_STATUS_NORMAL);
         if (!this.isExistUnionMember(newOwnerWrapper)) {
-            throw new Exception("UnionMemberServiceImpl.updateIsUnionMember():盟员信息不存在，或已申请退盟，或正在退盟过渡期!");
+            throw new BusinessException(UPDATEISNUIONOWNER_ID, "", "盟员信息不存在，或已申请退盟，或正在退盟过渡期!");
         }
 
         //判断当前用户是否用户盟主的身份
@@ -245,7 +277,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 .eq("bus_id", busId)
                 .eq("is_nuion_owner", UnionMemberConstant.IS_UNION_OWNER_YES);
         if (!this.isExistUnionMember(oldOwnerWrapper)) {
-            throw new Exception("UnionMemberServiceImpl.updateIsUnionMember():当前用户不是盟主，没有转移盟主身份的权限!");
+            throw new BusinessException(UPDATEISNUIONOWNER_ID, "", "当前用户不是盟主，没有转移盟主身份的权限!");
         }
 
         //盟主取消身份
@@ -262,10 +294,10 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     @Override
     public boolean isUnionOwner(Integer unionId, Integer busId) throws Exception {
         if (unionId == null) {
-            throw new Exception("UnionMemberServiceImpl.isUnionOwner():参数unionId不能为空!");
+            throw new ParamException(IS_UNION_OWNER, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         if (busId == null) {
-            throw new Exception("UnionMemberServiceImpl.isUnionOwner():参数busId不能为空!");
+            throw new ParamException(IS_UNION_OWNER, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
         EntityWrapper entityWrapper = new EntityWrapper();
         entityWrapper.eq("del_status", UnionMemberConstant.DEL_STATUS_NO)
@@ -280,7 +312,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     @Override
     public boolean isExistUnionMember(Wrapper wrapper) throws Exception {
         if (wrapper == null) {
-            throw new Exception("UnionMemberServiceImpl.isExistUnionMember():参数wrapper不能为空!");
+            throw new ParamException(IS_EXIST_UNION_MEMBER, "参数wrapper为空", ExceptionConstant.PARAM_ERROR);
         }
 
         return this.selectCount(wrapper) > 0 ? true : false;
@@ -289,13 +321,13 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     @Override
     public Page selectUnionBrokerageList(Page page, final Integer unionId, final Integer busId) throws Exception {
         if (page == null) {
-            throw new ParameterException("参数错误");
+            throw new ParamException(SELECT_UNION_BROKERAGE_LIST, "参数page为空", ExceptionConstant.PARAM_ERROR);
         }
         if (unionId == null) {
-            throw new ParameterException("参数错误");
+            throw new ParamException(SELECT_UNION_BROKERAGE_LIST, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         if (busId == null) {
-            throw new ParameterException("参数错误");
+            throw new ParamException(SELECT_UNION_BROKERAGE_LIST, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
         Wrapper wrapper = new Wrapper() {
             @Override
@@ -327,10 +359,10 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     @Override
     public void isMemberValid(UnionMember unionMember) throws Exception {
         if(unionMember == null){
-            throw new BusinessException("未加入联盟");
+            throw new BusinessException(IS_MEMBER_VALID_UNIONMANE, "", "未加入联盟");
         }
         if(unionMember.getOutStaus() == UnionMemberConstant.OUT_STATUS_PERIOD){
-            throw new BusinessException("处于退盟过渡期");
+            throw new BusinessException(IS_MEMBER_VALID_UNIONMANE, "", "已退出联盟");
         }
     }
 
@@ -362,29 +394,6 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    public List<Map<String, Object>> getUnionMemberList(final Integer unionId) {
-        Wrapper wrapper = new Wrapper() {
-            @Override
-            public String getSqlSegment() {
-                StringBuilder sbSqlSegment = new StringBuilder(" m");
-                sbSqlSegment.append(" LEFT JOIN t_union_apply a on a.union_member_id = m.id ")
-                        .append(" LEFT JOIN t_union_apply_info i on i.union_apply_id = a.id ")
-                        .append(" WHERE m.union_id = ").append(unionId)
-                        .append("    AND a.del_status = ").append(UnionApplyConstant.DEL_STATUS_NO)
-                        .append("    AND m.del_status = ").append(UnionMemberConstant.DEL_STATUS_NO);
-                sbSqlSegment.append(" ORDER BY m.apply_out_time DESC ");
-                return sbSqlSegment.toString();
-            };
-
-        };
-        StringBuilder sbSqlSelect = new StringBuilder("");
-        sbSqlSelect.append(", m.id id ")
-                .append(", i.enterprise_name enterpriseName ");
-        wrapper.setSqlSelect(sbSqlSelect.toString());
-        return null;
-    }
-
-    @Override
     public int getUnionMemberCount(Integer applyBusId) {
         EntityWrapper entityWrapper = new EntityWrapper<UnionMember>();
         entityWrapper.eq("bus_id",applyBusId);
@@ -393,29 +402,26 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    public Map<String, Object> updateUnionMemberOut(Integer unionMemberId, Integer unionId, Integer busId, Integer isUnionOwner, Integer verifyStatus) throws Exception{
+    public Map<String, Object> updateOutStatusById(Integer id, Integer unionId, Integer busId, Integer verifyStatus) throws Exception{
         Map<String,Object> data = new HashMap<String,Object>();
-        if(CommonUtil.isEmpty(unionMemberId) || CommonUtil.isEmpty(unionId) || CommonUtil.isEmpty(busId) || CommonUtil.isEmpty(isUnionOwner) || CommonUtil.isEmpty(verifyStatus)){
-            throw new ParameterException("参数错误");
+        if(CommonUtil.isEmpty(id) || CommonUtil.isEmpty(unionId) || CommonUtil.isEmpty(busId) || CommonUtil.isEmpty(verifyStatus)){
+            throw new ParamException(UPDATEOUTSTATUS_ID, "参数...错误", ExceptionConstant.PARAM_ERROR);
         }
         if(!this.isUnionOwner(unionId,busId)){
-            throw new BusinessException("没有盟主权限");
+            throw new BusinessException(UPDATEOUTSTATUS_ID, "", "没有盟主权限");
         }
         EntityWrapper entityWrapper = new EntityWrapper<UnionMember>();
-        entityWrapper.eq("id",unionMemberId);
+        entityWrapper.eq("id", id);
         entityWrapper.eq("union_id",unionId);
         UnionMember unionMember = this.selectOne(entityWrapper);
         if(unionMember.getDelStatus() == 1){
-            throw new BusinessException("已退出联盟");
+            throw new BusinessException(UPDATEOUTSTATUS_ID, "", "已退出联盟");
         }
         if(unionMember.getOutStaus() == 0){
-            throw new BusinessException("未申请退盟");
+            throw new BusinessException(UPDATEOUTSTATUS_ID, "", "未申请退盟");
         }
         if(unionMember.getOutStaus() == 2){
-            throw new BusinessException("已处退盟过渡期");
-        }
-        if(unionMember.getBusId().equals(busId)){
-            throw new BusinessException("请刷新后重试");
+            throw new BusinessException(UPDATEOUTSTATUS_ID, "", "已处退盟过渡期");
         }
         if(verifyStatus == 1){//同意
             UnionApplyInfo unionApplyInfo = unionApplyService.getUnionApplyInfo(unionMember.getBusId(),unionId);
@@ -436,15 +442,10 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             param.put("unionId",unionMember.getUnionId());
             redisCacheUtil.set(redisKey, JSON.toJSONString(param),60l);
             data.put("redisKey",redisKey);
-            redisCacheUtil.set("unionApplyInfo:" + unionId + ":" + unionMember.getBusId(), JSON.toJSONString(unionApplyInfo));
-            redisCacheUtil.set("unionApplyInfo:" + unionId + ":" + busId, JSON.toJSONString(mainApplyInfo));
         }else if(verifyStatus == 2){//拒绝
             unionMember.setOutStaus(0);
             unionMember.setApplyOutTime(null);
             this.updateById(unionMember);
-        }
-        if(redisCacheUtil.exists("unionMember:" + unionId + ":" + unionMember.getBusId())){
-            redisCacheUtil.set("unionMember:" + unionId + ":" + unionMember.getBusId(), JSON.toJSONString(unionMember));
         }
         return data;
     }

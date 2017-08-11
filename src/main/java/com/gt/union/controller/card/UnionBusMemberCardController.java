@@ -1,6 +1,7 @@
 package com.gt.union.controller.card;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.SessionUtils;
@@ -11,7 +12,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,7 +30,8 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/unionBusMemberCard")
 public class UnionBusMemberCardController {
-
+	//TODO RESTFUL
+	private static final String UNION_BUS_MEMBER_CARD = "UnionBusMemberCardController.unionBusMemberCard()";
 	private Logger logger = Logger.getLogger(UnionBusMemberCardController.class);
 
 	@Autowired
@@ -47,9 +48,9 @@ public class UnionBusMemberCardController {
 	public String unionBusMemberCard(Page page, HttpServletRequest request,@ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId
 			,@ApiParam(name="phone", value = "电话号码", required = false) @RequestParam(name = "phone", required = false) String phone
 			,@ApiParam(name="cardNo", value = "联盟卡号", required = false) @RequestParam(name = "cardNo", required = false) String cardNo){
-		BusUser user = SessionUtils.getLoginUser(request);
-		Page result = null;
 		try{
+			BusUser user = SessionUtils.getLoginUser(request);
+			Page result = null;
 			Integer busId = user.getId();
 			if(user.getPid() != null && user.getPid() != 0){
 				busId = user.getPid();
@@ -60,13 +61,13 @@ public class UnionBusMemberCardController {
 			vo.setCardNo(cardNo);
 			vo.setPhone(phone);
 			result = unionBusMemberCardService.selectUnionBusMemberCardList(page,vo);
+			return GTJsonResult.instanceSuccessMsg(result).toString();
 		}catch (BaseException e){
-			logger.error("获取盟员联盟卡列表错误"+e.getMessage());
-			return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
 		}catch (Exception e){
-			logger.error("获取盟员联盟卡列表错误"+e.getMessage());
-			return GTJsonResult.instanceErrorMsg("获取盟员联盟卡列表错误").toString();
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(UNION_BUS_MEMBER_CARD, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
 		}
-		return GTJsonResult.instanceSuccessMsg(result,null,"获取盟员联盟卡列表成功").toString();
 	}
 }

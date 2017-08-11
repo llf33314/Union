@@ -1,6 +1,8 @@
 package com.gt.union.controller.card;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.gt.union.common.constant.ExceptionConstant;
+import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.common.BusUser;
@@ -8,10 +10,10 @@ import com.gt.union.service.card.IUnionCardDivideRecordService;
 import com.gt.union.vo.card.UnionCardDivideRecordVO;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -23,10 +25,11 @@ import javax.servlet.http.HttpServletRequest;
  * @author linweicong
  * @since 2017-07-24
  */
-@Controller
+@RestController
 @RequestMapping("/unionCardDivideRecord")
 public class UnionCardDivideRecordController {
-
+	//TODO RESTFUL
+	private static final String UNION_CARD_DIVIDE_RECORD_LIST = "UnionCardDivideRecordController.unionCardDivideRecordList()";
 	private Logger logger = Logger.getLogger(UnionCardDivideRecordController.class);
 
 	@Autowired
@@ -41,13 +44,16 @@ public class UnionCardDivideRecordController {
 	 */
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	public String unionCardDivideRecordList(Page page, HttpServletRequest request, @RequestBody UnionCardDivideRecordVO vo) {
-		BusUser user = SessionUtils.getLoginUser(request);
 		try {
-			page = unionCardDivideRecordService.getUnionCardDivideRecordList(page,vo);
+			BusUser user = SessionUtils.getLoginUser(request);
+			page = unionCardDivideRecordService.getUnionCardDivideRecordList(page, vo);
+			return GTJsonResult.instanceSuccessMsg(page).toString();
+		} catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
 		}catch (Exception e){
-			logger.error("获取收卡分成列表错误");
-			return GTJsonResult.instanceSuccessMsg(page,null,"获取收卡分成列表成功").toString();
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(UNION_CARD_DIVIDE_RECORD_LIST, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
 		}
-		return GTJsonResult.instanceSuccessMsg(page,null,"获取收卡分成列表成功").toString();
 	}
 }

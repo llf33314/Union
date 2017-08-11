@@ -13,4 +13,10 @@ public interface UnionMainConstant {
      * 删除状态：已删除
      */
     public static final int DEL_STATUS_YES = 1;
+
+    /**
+     * 是否有效：是
+     */
+    public static final int VALID_OK = 0;
+
 }

@@ -3,12 +3,13 @@ package com.gt.union.service.basic.impl;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionApplyConstant;
 import com.gt.union.common.constant.basic.UnionMemberPreferentialManagerConstant;
 import com.gt.union.common.constant.basic.UnionMemberPreferentialServiceConstant;
+import com.gt.union.common.exception.ParamException;
 import com.gt.union.entity.basic.UnionMemberPreferentialManager;
 import com.gt.union.mapper.basic.UnionMemberPreferentialManagerMapper;
-import com.gt.union.mapper.basic.UnionMemberPreferentialServiceMapper;
 import com.gt.union.service.basic.IUnionMemberPreferentialManagerService;
 import com.gt.union.service.basic.IUnionMemberPreferentialServiceService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,19 +28,24 @@ import java.util.Map;
  */
 @Service
 public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<UnionMemberPreferentialManagerMapper, UnionMemberPreferentialManager> implements IUnionMemberPreferentialManagerService {
+    private static final String LIST_PREFERENTIAL_MANAGER = "UnionMemberPreferentialManagerServiceImpl.listPreferentialManager()";
+    private static final String LIST_MY_PREFERENTIAL_MANAGER = "UnionMemberPreferentialManagerServiceImpl.listMyPreferentialManager()";
+    private static final String COUNT_PREFERENTIAL_MANAGER = "UnionMemberPreferentialManagerServiceImpl.countPreferentialManager()";
+    private static final String DETAIL_PREFERENTIAL_MANAGER = "UnionMemberPreferentialManagerServiceImpl.detailPreferentialManager()";
+
     @Autowired
     private IUnionMemberPreferentialServiceService unionMemberPreferentialServiceService;
 
     @Override
     public Page listPreferentialManager(Page page, final Integer unionId, final Integer verifyStatus) throws Exception {
         if (page == null) {
-            throw new Exception("UnionMemberPreferentialManagerServiceImpl.listPreferentialManager():参数page不能为空!");
+            throw new ParamException(LIST_PREFERENTIAL_MANAGER, "参数page为空", ExceptionConstant.PARAM_ERROR);
         }
         if (unionId == null) {
-            throw new Exception("UnionMemberPreferentialManagerServiceImpl.listPreferentialManager():参数unionId不能为空!");
+            throw new ParamException(LIST_PREFERENTIAL_MANAGER, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         if (verifyStatus == null) {
-            throw new Exception("UnionMemberPreferentialManagerServiceImpl.listPreferentialManager():参数verifyStatus不能为空!");
+            throw new ParamException(LIST_PREFERENTIAL_MANAGER, "参数verifyStatus为空", ExceptionConstant.PARAM_ERROR);
         }
         Wrapper wrapper = new Wrapper() {
             @Override
@@ -74,13 +80,13 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
     @Override
     public Page listMyPreferentialManager(Page page, final Integer unionId, final Integer memberId) throws Exception {
         if (page == null) {
-            throw new Exception("UnionMemberPreferentialManagerServiceImpl.listMyPreferentialManager():参数page不能为空!");
+            throw new ParamException(LIST_MY_PREFERENTIAL_MANAGER, "参数page为空", ExceptionConstant.PARAM_ERROR);
         }
         if (unionId == null) {
-            throw new Exception("UnionMemberPreferentialManagerServiceImpl.listMyPreferentialManager():参数unionId不能为空!");
+            throw new ParamException(LIST_MY_PREFERENTIAL_MANAGER, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         if (memberId == null) {
-            throw new Exception("UnionMemberPreferentialManagerServiceImpl.listMyPreferentialManager():参数memberId不能为空!");
+            throw new ParamException(LIST_MY_PREFERENTIAL_MANAGER, "参数memberId为空", ExceptionConstant.PARAM_ERROR);
         }
         Wrapper wrapper = new Wrapper() {
             @Override
@@ -111,15 +117,15 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
     @Override
     public int countPreferentialManager(final Integer unionId, final Integer verifyStatus) throws Exception {
         if (unionId == null) {
-            throw new Exception("UnionMemberPreferentialManagerServiceImpl.countPreferentialManager():参数unionId不能为空!");
+            throw new ParamException(COUNT_PREFERENTIAL_MANAGER, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         if (verifyStatus == null) {
-            throw new Exception("UnionMemberPreferentialManagerServiceImpl.countPreferentialManager():参数verifyStatus不能为空!");
+            throw new ParamException(COUNT_PREFERENTIAL_MANAGER, "参数verifyStatus为空", ExceptionConstant.PARAM_ERROR);
         } else if (UnionMemberPreferentialServiceConstant.VERIFY_STATUS_UNCOMMIT != verifyStatus
                 && UnionMemberPreferentialServiceConstant.VERIFY_STATUS_UNCHECK != verifyStatus
                 && UnionMemberPreferentialServiceConstant.VERIFY_STATUS_PASS != verifyStatus
                 && UnionMemberPreferentialServiceConstant.VERIFY_STATUS_FAIL != verifyStatus) {
-            throw new Exception("UnionMemberPreferentialManagerServiceImpl.countPreferentialManager():不支持的参数值verifyStatus(value=" + verifyStatus + ")!");
+            throw new ParamException(COUNT_PREFERENTIAL_MANAGER, "不支持的参数值", ExceptionConstant.PARAM_ERROR);
         }
         Wrapper wrapper = null;
         switch (verifyStatus) {
@@ -165,13 +171,13 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
     @Override
     public Map<String, Object> detailPreferentialManager(Page page, final Integer id, final Integer verifyStatus) throws Exception {
         if (page == null) {
-            throw new Exception("UnionMemberPreferentialManagerServiceImpl.detailPreferentialManager():参数page不能为空!");
+            throw new ParamException(DETAIL_PREFERENTIAL_MANAGER, "参数page为空", ExceptionConstant.PARAM_ERROR);
         }
         if (id == null) {
-            throw new Exception("UnionMemberPreferentialManagerServiceImpl.detailPreferentialManager():参数id不能为空!");
+            throw new ParamException(DETAIL_PREFERENTIAL_MANAGER, "参数id为空", ExceptionConstant.PARAM_ERROR);
         }
         if (verifyStatus == null) {
-            throw new Exception("UnionMemberPreferentialManagerServiceImpl.detailPreferentialManager():参数verifyStatus不能为空!");
+            throw new ParamException(DETAIL_PREFERENTIAL_MANAGER, "参数verifyStatus为空", ExceptionConstant.PARAM_ERROR);
         }
         Wrapper managerWrapper = new Wrapper() {
             @Override

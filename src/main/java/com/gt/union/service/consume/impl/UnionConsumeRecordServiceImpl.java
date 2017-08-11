@@ -3,10 +3,12 @@ package com.gt.union.service.consume.impl;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionApplyConstant;
 import com.gt.union.common.constant.card.UnionBusMemberCardConstant;
 import com.gt.union.common.constant.card.UnionCardInfoConstant;
 import com.gt.union.common.constant.consume.UnionConsumeRecordConstant;
+import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.entity.consume.UnionConsumeRecord;
 import com.gt.union.mapper.consume.UnionConsumeRecordMapper;
@@ -23,18 +25,20 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UnionConsumeRecordServiceImpl extends ServiceImpl<UnionConsumeRecordMapper, UnionConsumeRecord> implements IUnionConsumeRecordService {
+    private static final String LIST_MY_CONSUME_RECORD = "UnionConsumeRecordServiceImpl.listMyConsumeRecord()";
+    private static final String LIST_OTHER_CONSUME_RECORD = "UnionConsumeRecordServiceImpl.listOtherConsumeRecord()";
 
     @Override
     public Page listMyConsumeRecord(final Page page, final Integer unionId, final Integer busId, final Integer cardBusId
             , final String cardNo, final String phone, final String beginTime, final String endTime) throws Exception {
         if (page == null) {
-            throw new Exception("UnionConsumeRecordServiceImpl.listMyConsumeRecord()：参数page不能为空!");
+            throw new ParamException(LIST_MY_CONSUME_RECORD, "参数page为空", ExceptionConstant.PARAM_ERROR);
         }
         if (unionId == null) {
-            throw new Exception("UnionConsumeRecordServiceImpl.listMyConsumeRecord()：参数unionId不能为空!");
+            throw new ParamException(LIST_MY_CONSUME_RECORD, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         if (busId == null) {
-            throw new Exception("UnionConsumeRecordServiceImpl.listMyConsumeRecord()：参数busId不能为空!");
+            throw new ParamException(LIST_MY_CONSUME_RECORD, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
 
         Wrapper wrapper = new Wrapper() {
@@ -96,13 +100,13 @@ public class UnionConsumeRecordServiceImpl extends ServiceImpl<UnionConsumeRecor
     public Page listOtherConsumeRecord(Page page, final Integer unionId, final Integer busId, final Integer cardBusId
             , final String cardNo, final String phone, final String beginTime, final String endTime) throws Exception {
         if (page == null) {
-            throw new Exception("UnionConsumeRecordServiceImpl.listOtherConsumeRecord()：参数page不能为空!");
+            throw new ParamException(LIST_OTHER_CONSUME_RECORD, "参数page为空", ExceptionConstant.PARAM_ERROR);
         }
         if (unionId == null) {
-            throw new Exception("UnionConsumeRecordServiceImpl.listOtherConsumeRecord()：参数unionId不能为空!");
+            throw new ParamException(LIST_OTHER_CONSUME_RECORD, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         if (busId == null) {
-            throw new Exception("UnionConsumeRecordServiceImpl.listOtherConsumeRecord()：参数busId不能为空!");
+            throw new ParamException(LIST_OTHER_CONSUME_RECORD, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
 
         Wrapper wrapper = new Wrapper() {

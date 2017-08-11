@@ -2,7 +2,6 @@ package com.gt.union.controller.common;
 
 import com.gt.union.common.annotation.SysLogAnnotation;
 import com.gt.union.common.response.GTJsonResult;
-import com.gt.union.common.util.CommonUtil;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,15 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * 联盟短信发送控制器
  * Created by Administrator on 2017/8/9 0009.
  */
-@RequestMapping("/unionSms")
 @RestController
+@RequestMapping("/unionSms")
 public class UnionSmsController {
 
 

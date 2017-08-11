@@ -2,7 +2,7 @@ package com.gt.union.controller.basic;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.common.annotation.SysLogAnnotation;
-import com.gt.union.common.constant.basic.UnionApplyInfoConstant;
+import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
@@ -19,7 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -34,7 +33,11 @@ import java.util.Map;
 @RestController
 @RequestMapping("/unionApplyInfo")
 public class UnionApplyInfoController {
-
+    private static final String GET_ID = "UnionApplyInfoController.getById()";
+    private static final String UPDATE_ID = "UnionApplyInfoController.updateById()";
+    private static final String LIST_SELLDIVIDEPROPORTION_PAGE = "UnionApplyInfoController.listBySellDivideProportionInPage()";
+    private static final String LIST_SELLDIVIDEPROPORTION_LIST = "UnionApplyInfoController.listBySellDivideProportionInList()";
+    private static final String UPDATE_SELLDIVIDEPROPORTION = "UnionApplyInfoController.updateBySellDivideProportion()";
 	private Logger logger = Logger.getLogger(UnionApplyInfoController.class);
 
 	@Autowired
@@ -43,81 +46,34 @@ public class UnionApplyInfoController {
 	@Autowired
 	private IUnionMemberService unionMemberService;
 
-    /***
-     * 售卡佣金分成管理-比例设置查询
-     * @param request
-     * @param page
-     * @param unionId
-     * @param listType
-     * @return
-     */
-    @ApiOperation(value = "比例设置"
-            , notes = "售卡佣金分成管理-比例设置查询"
-            , produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public String listSellDivideProportion(HttpServletRequest request, Page page
-            , @ApiParam(name = "unionId", value = "联盟id", required = true)
-                @RequestParam(name = "unionId", required = true)Integer unionId
-            , @ApiParam(name = "listType", value = "查询类型：1为分页查询，2为列表全部查询", required = true)
-               @RequestParam(name = "listType", required = true)Integer listType) {
-	    try {
-	        BusUser busUser = SessionUtils.getLoginUser(request);
-	        if (busUser == null) {
-	            throw new Exception("UnionApplyInfoController.listSellDivideProportion():无法通过session获取用户的信息!");
+	/**
+	 * 获取编辑盟员信息
+	 * @param request
+	 * @param id
+	 * @param unionId
+	 * @return
+	 */
+	@ApiOperation(value = "获取编辑盟员信息", produces = "application/json;charset=UTF-8")
+	@SysLogAnnotation(op_function = "1", description = "获取编辑盟员信息")
+	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String getById(HttpServletRequest request
+        , @ApiParam(name="id", value = "盟员信息id", required = true) @PathVariable("id") Integer id
+        , @ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId) {
+		try {
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
+                throw new BusinessException(GET_ID, "", "请使用主账号权限");
             }
-	        if (!this.unionMemberService.isUnionOwner(unionId, busUser.getId())) {
-                throw new Exception("UnionApplyInfoController.listSellDivideProportion():当前请求人不是联盟的盟主(unionId=" + unionId + ")!");
-            }
-	        switch (listType) {
-                case UnionApplyInfoConstant.LIST_TYPE_PROPORTION_PAGE:
-                    Page result = this.unionApplyInfoService.pageSellDivideProportion(page, unionId);
-                    return GTJsonResult.instanceSuccessMsg(result).toString();
-                case UnionApplyInfoConstant.LIST_TYPE_PROPORTION_LIST:
-                    List<Map<String, Object>> resultList = this.unionApplyInfoService.listSellDivideProportion(unionId);
-                    return GTJsonResult.instanceSuccessMsg(resultList).toString();
-                default:
-                    throw new Exception("UnionApplyInfoController.listSellDivideProportion():不支持的查询类型listType(value=" + listType + ")!");
-            }
-        } catch (Exception e) {
+            Map<String,Object> data = this.unionApplyInfoService.getById(id, unionId, busUser.getId());
+            return GTJsonResult.instanceSuccessMsg(data).toString();
+        } catch (BaseException e) {
             logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        }catch (Exception e) {
+            logger.error("",e);
+            return GTJsonResult.instanceErrorMsg(GET_ID, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
 	}
-
-    /**
-     * 售卡佣金分成管理-更新比例
-     * @param request
-     * @param unionId
-     * @return
-     */
-    @ApiOperation(value = "更新比例"
-            , notes = "售卡佣金分成管理-更新比例"
-            , produces = "application/json;charset=UTF-8")
-	@SysLogAnnotation(op_function = "3", description = "更新收卡分成比例")
-	@RequestMapping(value = "", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-	public String updateSellDivideProportion(HttpServletRequest request
-            , @ApiParam(name = "unionId", value = "联盟id", required = true)
-             @RequestParam(name = "unionId", required = true) Integer unionId
-            , @ApiParam(name = "unionApplyInfoList", value = "更新的比例实体，只需填写id和sellDivideProportion即可", required = true)
-             @RequestBody List<UnionApplyInfo> unionApplyInfoList) {
-	    try {
-	        BusUser busUser = SessionUtils.getLoginUser(request);
-	        if (busUser == null) {
-				throw new Exception("UnionApplyInfoController.listSellDivideProportion():无法通过session获取用户的信息!");
-			}
-			if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
-				throw new BusinessException("请使用主账号权限");
-			}
-	        if (!this.unionMemberService.isUnionOwner(unionId, busUser.getId())) {
-                throw new Exception("UnionApplyInfoController.listSellDivideProportion():当前请求人不是联盟的盟主(unionId=" + unionId + ")!");
-            }
-	        this.unionApplyInfoService.updateSellDivideProportion(unionApplyInfoList);
-        } catch (Exception e) {
-	        logger.error("", e);
-	        return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
-        }
-	    return GTJsonResult.instanceSuccessMsg().toString();
-    }
 
 	/**
 	 * 更新盟员信息
@@ -126,58 +82,111 @@ public class UnionApplyInfoController {
 	 * @param unionApplyInfo
 	 * @return
 	 */
-	@ApiOperation(value = "更新盟员信息", notes = "更新盟员信息", produces = "application/json;charset=UTF-8")
+	@ApiOperation(value = "更新盟员信息", produces = "application/json;charset=UTF-8")
 	@SysLogAnnotation(op_function = "3", description = "更新盟员信息")
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-	public String updateUnionApplyInfo(HttpServletRequest request,
-		   @ApiParam(name="id", value = "盟员信息id", required = true) @PathVariable Integer id ,
-		   @ApiParam(name="unionApplyInfo", value = "盟员信息", required = true) @RequestBody UnionApplyInfo unionApplyInfo ,
-		   @ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId) {
+	public String updateById(HttpServletRequest request
+        , @ApiParam(name="id", value = "盟员信息id", required = true) @PathVariable Integer id
+        , @ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId
+        , @ApiParam(name="unionApplyInfo", value = "盟员信息", required = true) @RequestBody UnionApplyInfo unionApplyInfo) {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
 			if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
-				throw new BusinessException("请使用主账号权限");
+				throw new BusinessException(UPDATE_ID, "", "请使用主账号权限");
 			}
 			unionApplyInfo.setId(id);
-			this.unionApplyInfoService.updateUnionApplyInfo(unionApplyInfo,busUser.getId(),unionId);
-		} catch (BaseException e) {
-			logger.error("更新盟员信息错误", e);
-			return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
-		}catch (Exception e) {
-			logger.error("更新盟员信息错误", e);
-			return GTJsonResult.instanceErrorMsg("更新失败").toString();
-		}
-		return GTJsonResult.instanceSuccessMsg(null,null,"更新成功").toString();
+			this.unionApplyInfoService.updateById(unionApplyInfo,busUser.getId(),unionId);
+            return GTJsonResult.instanceSuccessMsg().toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        }catch (Exception e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(UPDATE_ID, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
 	}
 
-	/**
-	 * 获取编辑盟员信息
+	/***
+	 * 售卡佣金分成管理-比例设置查询-分页
 	 * @param request
-	 * @param id
+	 * @param page
 	 * @param unionId
 	 * @return
 	 */
-	@ApiOperation(value = "获取编辑盟员信息", notes = "获取编辑盟员信息", produces = "application/json;charset=UTF-8")
-	@SysLogAnnotation(op_function = "1", description = "获取编辑盟员信息")
-	@RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public String editUnionApplyInfo(HttpServletRequest request,
-									   @ApiParam(name="id", value = "盟员信息id", required = true) @PathVariable Integer id ,
-									   @ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId) {
-		Map<String,Object> data = new HashMap<String,Object>();
+	@ApiOperation(value = "售卡佣金分成管理-比例设置查询-分页", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/sellDivideProportion/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String listBySellDivideProportionInPage(HttpServletRequest request, Page page
+			, @ApiParam(name = "unionId", value = "联盟id", required = true)@RequestParam(name = "unionId", required = true)Integer unionId) {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
-			if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
-				throw new BusinessException("请使用主账号权限");
+			if (!this.unionMemberService.isUnionOwner(unionId, busUser.getId())) {
+				throw new BusinessException(LIST_SELLDIVIDEPROPORTION_PAGE, "", "当前请求人不是联盟的盟主");
 			}
-			data = this.unionApplyInfoService.getUnionApplyInfo(id, unionId, busUser.getId());
-		} catch (BaseException e) {
-			logger.error("获取编辑盟员信息错误", e);
-			return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
-		}catch (Exception e) {
-			logger.error("获取编辑盟员信息错误", e);
-			return GTJsonResult.instanceErrorMsg("获取编辑盟员信息错误").toString();
+            Page result = this.unionApplyInfoService.listBySellDivideProportionInPage(page, unionId);
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        } catch (Exception e) {
+			logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(LIST_SELLDIVIDEPROPORTION_PAGE, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
 		}
-		return GTJsonResult.instanceSuccessMsg(data,null,"获取编辑盟员信息成功").toString();
+	}
+
+    /***
+     * 售卡佣金分成管理-比例设置查询-列表
+     * @param request
+     * @param page
+     * @param unionId
+     * @return
+     */
+    @ApiOperation(value = "售卡佣金分成管理-比例设置查询-列表", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/sellDivideProportion/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String listBySellDivideProportionInList(HttpServletRequest request, Page page
+            , @ApiParam(name = "unionId", value = "联盟id", required = true)@RequestParam(name = "unionId", required = true)Integer unionId) {
+        try {
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            if (!this.unionMemberService.isUnionOwner(unionId, busUser.getId())) {
+                throw new BusinessException(LIST_SELLDIVIDEPROPORTION_LIST, "", "当前请求人不是联盟的盟主");
+            }
+            List<Map<String,Object>> result = this.unionApplyInfoService.listBySellDivideProportionInList(unionId);
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(LIST_SELLDIVIDEPROPORTION_LIST, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
+    }
+
+	/**
+	 * 售卡佣金分成管理-更新比例
+	 * @param request
+	 * @param unionId
+	 * @return
+	 */
+	@ApiOperation(value = "售卡佣金分成管理-更新比例", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/sellDivideProportion", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+	public String updateBySellDivideProportion(HttpServletRequest request
+			, @ApiParam(name = "unionId", value = "联盟id", required = true)
+             @RequestParam(name = "unionId", required = true) Integer unionId
+			, @ApiParam(name = "unionApplyInfoList", value = "更新的比例实体，只需填写id和sellDivideProportion即可", required = true)
+             @RequestBody List<UnionApplyInfo> unionApplyInfoList) {
+		try {
+			BusUser busUser = SessionUtils.getLoginUser(request);
+			if (!this.unionMemberService.isUnionOwner(unionId, busUser.getId())) {
+				throw new BusinessException(UPDATE_SELLDIVIDEPROPORTION, "", "当前请求人不是联盟的盟主");
+			}
+			this.unionApplyInfoService.updateBySellDivideProportion(unionApplyInfoList);
+            return GTJsonResult.instanceSuccessMsg().toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(UPDATE_SELLDIVIDEPROPORTION, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
 	}
 
 }

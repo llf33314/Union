@@ -1,6 +1,6 @@
 package com.gt.union.common.util;
 
-import com.gt.union.common.exception.ParameterException;
+import com.gt.union.common.exception.ParamException;
 import org.springframework.util.StringUtils;
 
 import java.text.DateFormat;
@@ -953,7 +953,7 @@ public class DateTimeKit {
 	        	smdate=sdf.parse(sdf.format(smdate));  
 				bdate=sdf.parse(sdf.format(bdate));
 			} catch (ParseException e) {
-				throw new ParameterException("计算两个日期之间相差的天数  ");
+				throw new ParamException("DateTimeKit.daysBetween(Date, Date)", "", "计算两个日期之间相差的天数  ");
 			}  
 	        Calendar cal = Calendar.getInstance();    
 	        cal.setTime(smdate);    
