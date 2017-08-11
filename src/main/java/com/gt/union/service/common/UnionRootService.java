@@ -35,4 +35,17 @@ public interface UnionRootService {
 	//int unionMainOwnerServiceValidity(UnionMain main);
 
 
+	/**
+	 * 判断联盟是否可用
+	 * @param unionId	联盟id
+	 * return
+	 */
+	public int unionRoot(Integer unionId);
+
+	/**
+	 * 判断联盟是否可用
+	 * @param main	联盟
+	 * return
+	 */
+	public int unionRoot(UnionMain main);
 }

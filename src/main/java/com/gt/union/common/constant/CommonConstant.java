@@ -9,6 +9,9 @@ public class CommonConstant {
 	/** 商家账户在session key*/
 	public static String SESSION_BUSINESS_KEY = "business_key" ;
 
+	/*****商家主账号id key****/
+	public static String SESSION_BUSUSER_ID_KEY = "bususer_key";
+
 	/**
 	 * 最大加入联盟数
 	 */

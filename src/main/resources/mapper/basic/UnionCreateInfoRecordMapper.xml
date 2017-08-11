@@ -10,6 +10,7 @@
 		<result column="bus_id" property="busId" />
 		<result column="create_status" property="createStatus" />
 		<result column="period_validity" property="periodValidity" />
+		<result column="union_id" property="unionId" />
 	</resultMap>
 
 </mapper>

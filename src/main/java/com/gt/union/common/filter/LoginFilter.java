@@ -112,6 +112,15 @@ public class LoginFilter implements Filter {
 				chain.doFilter(request, response);
 			}
 		}else {
+			Integer busId = SessionUtils.getLoginBusId(req);
+			if(busId == null){
+				if(busUser.getPid() != null && busUser.getPid() != 0){
+					busId = busUser.getPid();
+				}else {
+					busId = busUser.getId();
+				}
+				SessionUtils.setLoginBusId(req,busId);
+			}
 			// 已经登陆,继续此次请求
 			chain.doFilter(request, response);
 		}

@@ -27,6 +27,9 @@ public class SessionUtils {
 		}
 		return null;
 	}
+
+
+
 	//存入 用户bus_user  的值
 	@SuppressWarnings("unchecked")
 	public static void setLoginUser(HttpServletRequest request, BusUser busUser) {
@@ -66,6 +69,46 @@ public class SessionUtils {
 			Object obj = request.getSession().getAttribute("member");
 			if(obj != null){
 				return (Member) obj;
+			}else{
+				return null;
+			}
+		} catch (Exception e) {
+			log.info(e.getLocalizedMessage());
+			e.printStackTrace();
+
+		}
+		return null;
+	}
+
+
+	/**
+	 * 设置session中的商家id信息
+	 *
+	 * @param request
+	 * @param busId
+	 * @return
+	 */
+	public static void setLoginBusId(HttpServletRequest request,Integer busId) {
+		try {
+			request.getSession().setAttribute(
+					CommonConstant.SESSION_BUSUSER_ID_KEY, busId);
+		} catch (Exception e) {
+			log.info(e.getLocalizedMessage());
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * 获取session中的商家id信息
+	 *
+	 * @param request
+	 * @return
+	 */
+	public static Integer getLoginBusId(HttpServletRequest request) {
+		try {
+			Object obj = request.getSession().getAttribute(CommonConstant.SESSION_BUSUSER_ID_KEY);
+			if(obj != null){
+				return (Integer) obj;
 			}else{
 				return null;
 			}

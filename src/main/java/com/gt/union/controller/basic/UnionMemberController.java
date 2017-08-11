@@ -61,7 +61,7 @@ public class UnionMemberController {
                     + "（3）当值为3时，根据联盟id获取非盟主盟员列表信息."
                 , required = true)
               @RequestParam(name = "listType", required = true)Integer listType
-            , @ApiParam(name = "enterpriseName", value = "企业名称", required = false)
+            , @ApiParam(name = "enterpriseName", value = "盟员名称", required = false)
               @RequestParam(name = "enterpriseName", required = false) String enterpriseName
             , @ApiParam(name = "outStatus", value = "商家退出状态，当listType=2时必填，0代表正常，1代表未处理，2代表过渡期")
               @RequestParam(name = "outStatus", required = false) Integer outStatus) {

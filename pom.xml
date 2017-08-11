@@ -40,6 +40,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- 添加soring boot测试依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
         <!--添加外置tomcat支持-->
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
@@ -127,6 +133,12 @@
             <groupId>com.google.zxing</groupId>
             <artifactId>core</artifactId>
             <version>3.3.0</version>
+        </dependency>
+        <!-- 添加导出excel支持 -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.9</version>
         </dependency>
     </dependencies>
 

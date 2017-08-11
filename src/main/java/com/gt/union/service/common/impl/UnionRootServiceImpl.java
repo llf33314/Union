@@ -5,6 +5,7 @@ import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.DaoUtil;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.common.BusUser;
+import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.common.UnionRootService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,9 @@ public class UnionRootServiceImpl implements UnionRootService{
 
 	@Autowired
 	private DaoUtil daoUtil;
+
+	@Autowired
+	private IUnionMainService unionMainService;
 
 	private Logger logger = Logger.getLogger(UnionRootServiceImpl.class);
 
@@ -65,5 +69,21 @@ public class UnionRootServiceImpl implements UnionRootService{
 
 		}
 		return 0;
+	}
+
+	@Override
+	public int unionRoot(Integer unionId) {
+		UnionMain unionMain = unionMainService.getUnionMain(unionId);
+		return unionRoot(unionMain);
+	}
+
+	@Override
+	public int unionRoot(UnionMain main) {
+		if(main == null){
+
+		}
+		Integer busId = main.getBusId();//盟主商家id
+		//TODO 查询盟主信息
+		return 1;
 	}
 }

@@ -54,7 +54,7 @@ public class UnionConsumeRecordController {
             , @ApiParam(name = "beginTime", value = "开始时间", required = false)
              @RequestParam(name = "beginTime", required = false) String beginTime
             , @ApiParam(name = "endTime", value = "结束时间", required = false)
-             @RequestParam(name = "endTime", required = false) String endTIme){
+             @RequestParam(name = "endTime", required = false) String endTime){
         Page result = null;
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
@@ -63,10 +63,10 @@ public class UnionConsumeRecordController {
             }
             switch (listType) {
                 case UnionConsumeRecordConstant.LIST_TYPE_MY:
-                    result = this.unionConsumeRecordService.listMyConsumeRecord(page, unionId, busUser.getId(), busId, cardNo, phone, beginTime, endTIme);
+                    result = this.unionConsumeRecordService.listMyConsumeRecord(page, unionId, busUser.getId(), busId, cardNo, phone, beginTime, endTime);
                     break;
                 case UnionConsumeRecordConstant.LIST_TYPE_OTHER:
-                    result = this.unionConsumeRecordService.listOtherConsumeRecord(page, unionId, busUser.getId(), busId, cardNo, phone, beginTime, endTIme);
+                    result = this.unionConsumeRecordService.listOtherConsumeRecord(page, unionId, busUser.getId(), busId, cardNo, phone, beginTime, endTime);
                     break;
                 default:
                     throw new Exception("UnionConsumeRecordController.listUnionConsumeRecord()：不支持的查询类型(listType=" + listType + ")!");
