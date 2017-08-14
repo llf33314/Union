@@ -1,7 +1,6 @@
 package com.gt.union.service.basic;
 
 import com.baomidou.mybatisplus.service.IService;
-import com.gt.union.common.exception.ParameterException;
 import com.gt.union.entity.basic.UnionNotice;
 
 /**

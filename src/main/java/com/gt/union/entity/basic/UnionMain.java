@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -40,6 +42,7 @@ public class UnionMain extends Model<UnionMain> {
     /**
      * 联盟名称
      */
+    @NotNull(message = "联盟名称内容不能为空")
 	@TableField("union_name")
 	private String unionName;
     /**
@@ -50,11 +53,13 @@ public class UnionMain extends Model<UnionMain> {
     /**
      * 联盟图标
      */
+    @NotNull(message = "请设置联盟图标")
 	@TableField("union_img")
 	private String unionImg;
     /**
      * 加盟方式（1：推荐 2：申请、推荐）
      */
+    @NotNull( message = "请选择加入方式" )
 	@TableField("join_type")
 	private Integer joinType;
     /**
@@ -65,6 +70,7 @@ public class UnionMain extends Model<UnionMain> {
     /**
      * 联盟说明
      */
+	@NotNull(message = "联盟说明内容不能为空")
 	@TableField("union_illustration")
 	private String unionIllustration;
     /**
@@ -100,16 +106,19 @@ public class UnionMain extends Model<UnionMain> {
     /**
      * 联盟是否开启积分（0：否 1：是）
      */
+    @NotNull(message = "请选择是否开启积分")
 	@TableField("is_integral")
 	private Integer isIntegral;
     /**
      * 旧联盟会员是否要收费（0：否 1：是）
      */
+    @NotNull(message = "请选择老会员升级是否收费")
 	@TableField("old_member_charge")
 	private Integer oldMemberCharge;
     /**
      * 黑卡是否收费（0：否 1：是）
      */
+	@NotNull(message = "请选择黑卡是否收费")
 	@TableField("black_card_charge")
 	private Integer blackCardCharge;
     /**
@@ -125,6 +134,7 @@ public class UnionMain extends Model<UnionMain> {
     /**
      * 是否开启红卡（0：否 1：是）
      */
+	@NotNull(message = "请选择红卡是否收费")
 	@TableField("red_card_opend")
 	private Integer redCardOpend;
     /**

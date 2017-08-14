@@ -12,7 +12,7 @@ spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://14.29.79.226:3306/gt_aliyuan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false
+    url: jdbc:mysql://113.106.202.51:3306/gt_aliyuan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false
     username: root
     password: gt123456
     # 初始化大小、最大、最小
@@ -40,7 +40,7 @@ spring:
     useGlobalDataSourceStat: false
   # redis配置
   redis:
-      host: 14.29.79.226
+      host: 113.106.202.51
       port: 6379
       password: gt@123456
       timeout: 0

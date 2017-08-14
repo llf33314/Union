@@ -10,14 +10,17 @@ import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.basic.IUnionMainService;
-import com.gt.union.vo.basic.UnionMainInfoVO;
+import com.gt.union.vo.basic.UnionMainCreateInfoVO;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -125,14 +128,15 @@ public class UnionMainController {
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateById(HttpServletRequest request
           , @ApiParam(name="id", value = "联盟id", required = true) @PathVariable Integer id
-          , @ApiParam(name="unionMain", value = "联盟更新信息", required = true) @RequestBody UnionMainInfoVO unionMainInfo ){
+          , @ApiParam(name="unionMain", value = "联盟更新信息", required = true) @RequestBody @Valid UnionMain unionMain , BindingResult result){
         try{
+            InvalidParameter( result );
             BusUser user = SessionUtils.getLoginUser(request);
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
                 throw new BusinessException(UPDATE_ID, "","请使用主账号权限");
             }
-            unionMainInfo.getUnionMain().setId(id);
-            unionMainService.updateById(id, user.getId(), unionMainInfo);
+            unionMain.setId(id);
+            unionMainService.updateById(id, user.getId(), unionMain);
             return GTJsonResult.instanceSuccessMsg().toString();
         }catch (BaseException e){
             logger.error("", e);
@@ -140,6 +144,20 @@ public class UnionMainController {
         }catch (Exception e){
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(UPDATE_ID, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
+    }
+
+    /**
+     * 参数校验是否合法
+     *
+     * @param result BindingResult
+     */
+    private void InvalidParameter( BindingResult result ) throws BusinessException {
+        if ( result.hasErrors() ) {
+            List<ObjectError> errorList = result.getAllErrors();
+            for ( ObjectError error : errorList ) {
+                throw new BusinessException("","",error.getDefaultMessage());
+            }
         }
     }
 
@@ -185,13 +203,13 @@ public class UnionMainController {
     @SysLogAnnotation(op_function = "3", description = "保存创建联盟的信息")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String save(HttpServletRequest request
-        , @ApiParam(name="unionMain", value = "保存创建联盟的信息", required = true) @RequestBody List<UnionMainInfoVO> unionMainInfoVOList ){
+        , @ApiParam(name="unionMain", value = "保存创建联盟的信息", required = true) @RequestBody UnionMainCreateInfoVO unionMainCreateInfoVO ){
         try{
-            BusUser user = SessionUtils.getLoginUser(request); //TODO 没有判断user是否为空
+            BusUser user = SessionUtils.getLoginUser(request);
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
                 throw new BusinessException(SAVE, "", "请使用主账号权限");
             }
-            unionMainService.save(user.getId(), unionMainInfoVOList);
+            unionMainService.save(user.getId(), unionMainCreateInfoVO);
             return GTJsonResult.instanceSuccessMsg().toString();
         }catch (BaseException e){
             logger.error("", e);

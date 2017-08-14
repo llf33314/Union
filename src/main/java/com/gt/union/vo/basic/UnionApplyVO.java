@@ -2,6 +2,7 @@ package com.gt.union.vo.basic;
 
 import com.gt.union.entity.basic.UnionApply;
 import com.gt.union.entity.basic.UnionApplyInfo;
+import lombok.Data;
 
 /**
  * Created by Administrator on 2017/7/24 0024.

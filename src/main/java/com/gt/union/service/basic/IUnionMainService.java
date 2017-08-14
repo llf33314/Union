@@ -1,9 +1,8 @@
 package com.gt.union.service.basic;
 
 import com.baomidou.mybatisplus.service.IService;
-import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.entity.basic.UnionMain;
-import com.gt.union.entity.common.BusUser;
+import com.gt.union.vo.basic.UnionMainCreateInfoVO;
 import com.gt.union.vo.basic.UnionMainInfoVO;
 
 import java.util.List;
@@ -53,10 +52,10 @@ public interface IUnionMainService extends IService<UnionMain> {
      * 更新联盟信息，要求盟主权限
      * @param id
      * @param busId
-     * @param unionMainInfoVO
+     * @param unionMain
      * @throws Exception
      */
-    public void updateById(Integer id, Integer busId, UnionMainInfoVO unionMainInfoVO) throws Exception;
+    public void updateById(Integer id, Integer busId, UnionMain unionMain) throws Exception;
 
     /**
      * 获取联盟信息
@@ -77,10 +76,10 @@ public interface IUnionMainService extends IService<UnionMain> {
     /**
      * 保存创建联盟的信息
      * @param busId
-     * @param unionMainInfoVOList
+     * @param unionMainCreateInfoVO
      * @throws Exception
      */
-    public void save(Integer busId, List<UnionMainInfoVO> unionMainInfoVOList) throws Exception;
+    public void save(Integer busId, UnionMainCreateInfoVO unionMainCreateInfoVO) throws Exception;
 
     /**
      * 通过busId获取联盟id
@@ -96,7 +95,7 @@ public interface IUnionMainService extends IService<UnionMain> {
      * @return
      * @throws Exception
      */
-    public UnionMain getUnionMainById(Integer id) throws Exception;
+    public UnionMain getUnionMainById(Integer id);
 
     /**
      * ------------ 判断联盟是否有效 ------------

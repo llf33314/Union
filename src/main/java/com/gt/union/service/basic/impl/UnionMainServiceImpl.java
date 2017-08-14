@@ -12,7 +12,7 @@ import com.gt.union.service.brokerage.IUnionBrokerageWithdrawalsRecordService;
 import com.gt.union.service.business.IUnionBrokeragePayRecordService;
 import com.gt.union.service.card.IUnionBusMemberCardService;
 import com.gt.union.service.card.IUnionCardDivideRecordService;
-import com.gt.union.vo.basic.UnionMainInfoVO;
+import com.gt.union.vo.basic.UnionMainCreateInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -101,7 +101,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	}
 
 	@Override
-	public void updateById(Integer id, Integer busId, UnionMainInfoVO unionMainInfoVO) throws Exception {
+	public void updateById(Integer id, Integer busId, UnionMain unionMain) throws Exception {
         if (id == null) {
             throw new ParamException(UPDATE_ID, "参数id为空", ExceptionConstant.PARAM_ERROR);
         }
@@ -131,7 +131,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	}
 
 	@Override
-	public void save(Integer busId, List<UnionMainInfoVO> unionMainInfoVOList) throws Exception {
+	public void save(Integer busId, UnionMainCreateInfoVO unionMainCreateInfoVO) throws Exception {
         if (busId == null) {
             throw new ParamException(SAVE, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
@@ -155,7 +155,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
      * @throws Exception
      */
     @Override
-    public UnionMain getUnionMainById(Integer id) throws Exception {
+    public UnionMain getUnionMainById(Integer id){
         return this.selectById(id);
     }
 

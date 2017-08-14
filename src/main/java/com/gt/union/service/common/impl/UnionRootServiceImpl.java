@@ -72,7 +72,7 @@ public class UnionRootServiceImpl implements UnionRootService{
 
 	@Override
 	public int unionRoot(Integer unionId) {
-		UnionMain unionMain = unionMainService.getUnionMain(unionId);
+		UnionMain unionMain = unionMainService.getUnionMainById(unionId);
 		return unionRoot(unionMain);
 	}
 

@@ -1,7 +1,9 @@
 package com.gt.union.controller.consume;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.consume.UnionConsumeRecordConstant;
+import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.common.BusUser;

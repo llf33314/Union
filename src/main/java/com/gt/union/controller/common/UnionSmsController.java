@@ -42,10 +42,8 @@ public class UnionSmsController {
 		try {
 			Object data = redisCacheUtil.get(redisKey);
 			if(data == null){
-				throw new BusinessException("redis失效");
 			}
 		} catch (Exception e) {
-			return GTJsonResult.instanceErrorMsg().toString();
 		}
 		return GTJsonResult.instanceSuccessMsg().toString();
 	}
