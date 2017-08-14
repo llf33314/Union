@@ -1,5 +1,8 @@
 package com.gt.union.controller.common;
 
+import com.gt.union.common.exception.BaseException;
+import com.gt.union.common.exception.BusinessException;
+import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.ExportUtil;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.common.BusUser;
@@ -18,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +33,14 @@ import java.util.Map;
 @RestController
 @RequestMapping("/dataExport")
 public class DataExportController {
+
+	private static final String BUS_MEMBER_CARD = "DataExportController.busMemberCard()";
+	private static final String UNION_MEMBER = "DataExportController.unionMember()";
+	private static final String CARD_DIVIDE = "DataExportController.cardDivide()";
+	private static final String BROKERAGE_DETAIL = "DataExportController.brokerageDetail()";
+	private static final String RECOMMEND_BROKERAGE_DETAIL = "DataExportController.recommendBrokerageDetail()";
+	private static final String CONSUME_FROM_DETAIL = "DataExportController.consumeFromDetail()";
+	private static final String CONSUME_TO_DETAIL = "DataExportController.consumeToDetail()";
 
 	private Logger logger = LoggerFactory.getLogger(DataExportController.class);
 
@@ -45,8 +57,8 @@ public class DataExportController {
 	 * @throws IOException
 	 */
 	@ApiOperation(value = "导出盟员的联盟卡列表", notes = "导出盟员的联盟卡列表，可模糊搜索电话号码、联盟卡号关键字", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/busMemberCar", method = RequestMethod.GET)
-	public void busMemberCar(HttpServletRequest request, HttpServletResponse response, @ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId
+	@RequestMapping(value = "/busMemberCard", method = RequestMethod.GET)
+	public void busMemberCard(HttpServletRequest request, HttpServletResponse response, @ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId
 										,@ApiParam(name="phone", value = "电话号码", required = false) @RequestParam(name = "phone", required = false) String phone
 										,@ApiParam(name="cardNo", value = "联盟卡号", required = false) @RequestParam(name = "cardNo", required = false) String cardNo) throws IOException {
 		try {
@@ -57,9 +69,26 @@ public class DataExportController {
 			String filename = "联盟卡列表";
 			HSSFWorkbook wb = exportService.exportBusMemberCar(titles,contentName,list);
 			ExportUtil.responseExport(response, wb, filename);
+		} catch (BaseException e){
+			response.setContentType("text/html");
+			response.setHeader("Cache-Control", "no-cache");
+			response.setCharacterEncoding("UTF-8");
+			String result = GTJsonResult.instanceErrorMsg(BUS_MEMBER_CARD,e.getMessage(),"导出失败").toString();
+			PrintWriter writer = response.getWriter();
+			writer.print(result);
+			writer.close();
+			logger.error("",e);
+		} catch (RuntimeException e){
+			logger.error("",e);
 		} catch (Exception e) {
-			logger.error("导出盟员的联盟卡列表错误",e);
-			e.printStackTrace();
+			response.setContentType("text/html");
+			response.setHeader("Cache-Control", "no-cache");
+			response.setCharacterEncoding("UTF-8");
+			String result = GTJsonResult.instanceErrorMsg(BUS_MEMBER_CARD,e.getMessage(),"导出失败").toString();
+			PrintWriter writer = response.getWriter();
+			writer.print(result);
+			writer.close();
+			logger.error("",e);
 		}
 	}
 
@@ -82,9 +111,26 @@ public class DataExportController {
 			String filename = "盟员列表";
 			HSSFWorkbook wb = exportService.exportUnionMember(titles,contentName,list);
 			ExportUtil.responseExport(response, wb, filename);
+		} catch (BaseException e){
+			response.setContentType("text/html");
+			response.setHeader("Cache-Control", "no-cache");
+			response.setCharacterEncoding("UTF-8");
+			String result = GTJsonResult.instanceErrorMsg(UNION_MEMBER,e.getMessage(),"导出失败").toString();
+			PrintWriter writer = response.getWriter();
+			writer.print(result);
+			writer.close();
+			logger.error("",e);
+		} catch (RuntimeException e){
+			logger.error("",e);
 		} catch (Exception e) {
-			logger.error("导出盟员列表错误",e);
-			e.printStackTrace();
+			response.setContentType("text/html");
+			response.setHeader("Cache-Control", "no-cache");
+			response.setCharacterEncoding("UTF-8");
+			String result = GTJsonResult.instanceErrorMsg(UNION_MEMBER,e.getMessage(),"导出失败").toString();
+			PrintWriter writer = response.getWriter();
+			writer.print(result);
+			writer.close();
+			logger.error("",e);
 		}
 	}
 
@@ -114,9 +160,26 @@ public class DataExportController {
 			String filename = "盟员列表";
 			HSSFWorkbook wb = exportService.exportCardDivide(titles,contentName,list);
 			ExportUtil.responseExport(response, wb, filename);
+		} catch (BaseException e){
+			response.setContentType("text/html");
+			response.setHeader("Cache-Control", "no-cache");
+			response.setCharacterEncoding("UTF-8");
+			String result = GTJsonResult.instanceErrorMsg(CARD_DIVIDE,e.getMessage(),"导出失败").toString();
+			PrintWriter writer = response.getWriter();
+			writer.print(result);
+			writer.close();
+			logger.error("",e);
+		} catch (RuntimeException e){
+			logger.error("",e);
 		} catch (Exception e) {
-			logger.error("导出售卡分成错误",e);
-			e.printStackTrace();
+			response.setContentType("text/html");
+			response.setHeader("Cache-Control", "no-cache");
+			response.setCharacterEncoding("UTF-8");
+			String result = GTJsonResult.instanceErrorMsg(CARD_DIVIDE,e.getMessage(),"导出失败").toString();
+			PrintWriter writer = response.getWriter();
+			writer.print(result);
+			writer.close();
+			logger.error("",e);
 		}
 	}
 
@@ -141,9 +204,26 @@ public class DataExportController {
 			String filename = "佣金明细详情";
 			HSSFWorkbook wb = exportService.exportBrokerageDetail(titles,contentName,list);
 			ExportUtil.responseExport(response, wb, filename);
+		} catch (BaseException e){
+			response.setContentType("text/html");
+			response.setHeader("Cache-Control", "no-cache");
+			response.setCharacterEncoding("UTF-8");
+			String result = GTJsonResult.instanceErrorMsg(BROKERAGE_DETAIL,e.getMessage(),"导出失败").toString();
+			PrintWriter writer = response.getWriter();
+			writer.print(result);
+			writer.close();
+			logger.error("",e);
+		} catch (RuntimeException e){
+			logger.error("",e);
 		} catch (Exception e) {
-			logger.error("导出佣金明细详情列表错误",e);
-			e.printStackTrace();
+			response.setContentType("text/html");
+			response.setHeader("Cache-Control", "no-cache");
+			response.setCharacterEncoding("UTF-8");
+			String result = GTJsonResult.instanceErrorMsg(BROKERAGE_DETAIL,e.getMessage(),"导出失败").toString();
+			PrintWriter writer = response.getWriter();
+			writer.print(result);
+			writer.close();
+			logger.error("",e);
 		}
 	}
 
@@ -167,9 +247,26 @@ public class DataExportController {
 			String filename = "佣金支付明细";
 			HSSFWorkbook wb = exportService.exportRecommendBrokerageDetail(titles,contentName,list);
 			ExportUtil.responseExport(response, wb, filename);
+		} catch (BaseException e){
+			response.setContentType("text/html");
+			response.setHeader("Cache-Control", "no-cache");
+			response.setCharacterEncoding("UTF-8");
+			String result = GTJsonResult.instanceErrorMsg(RECOMMEND_BROKERAGE_DETAIL,e.getMessage(),"导出失败").toString();
+			PrintWriter writer = response.getWriter();
+			writer.print(result);
+			writer.close();
+			logger.error("",e);
+		} catch (RuntimeException e){
+			logger.error("",e);
 		} catch (Exception e) {
-			logger.error("导出佣金支付明细列表错误",e);
-			e.printStackTrace();
+			response.setContentType("text/html");
+			response.setHeader("Cache-Control", "no-cache");
+			response.setCharacterEncoding("UTF-8");
+			String result = GTJsonResult.instanceErrorMsg(RECOMMEND_BROKERAGE_DETAIL,e.getMessage(),"导出失败").toString();
+			PrintWriter writer = response.getWriter();
+			writer.print(result);
+			writer.close();
+			logger.error("",e);
 		}
 	}
 
@@ -202,9 +299,26 @@ public class DataExportController {
 			String filename = "本店消费记录";
 			HSSFWorkbook wb = exportService.exportConsumeFromDetail(titles,contentName,list);
 			ExportUtil.responseExport(response, wb, filename);
+		} catch (BaseException e){
+			response.setContentType("text/html");
+			response.setHeader("Cache-Control", "no-cache");
+			response.setCharacterEncoding("UTF-8");
+			String result = GTJsonResult.instanceErrorMsg(CONSUME_FROM_DETAIL,e.getMessage(),"导出失败").toString();
+			PrintWriter writer = response.getWriter();
+			writer.print(result);
+			writer.close();
+			logger.error("",e);
+		} catch (RuntimeException e){
+			logger.error("",e);
 		} catch (Exception e) {
-			logger.error("导出本店消费记录列表错误",e);
-			e.printStackTrace();
+			response.setContentType("text/html");
+			response.setHeader("Cache-Control", "no-cache");
+			response.setCharacterEncoding("UTF-8");
+			String result = GTJsonResult.instanceErrorMsg(CONSUME_FROM_DETAIL,e.getMessage(),"导出失败").toString();
+			PrintWriter writer = response.getWriter();
+			writer.print(result);
+			writer.close();
+			logger.error("",e);
 		}
 	}
 
@@ -238,9 +352,26 @@ public class DataExportController {
 			String filename = "他店消费记录";
 			HSSFWorkbook wb = exportService.exportConsumeToDetail(titles,contentName,list);
 			ExportUtil.responseExport(response, wb, filename);
+		} catch (BaseException e){
+			response.setContentType("text/html");
+			response.setHeader("Cache-Control", "no-cache");
+			response.setCharacterEncoding("UTF-8");
+			String result = GTJsonResult.instanceErrorMsg(CONSUME_TO_DETAIL,e.getMessage(),"导出失败").toString();
+			PrintWriter writer = response.getWriter();
+			writer.print(result);
+			writer.close();
+			logger.error("",e);
+		} catch (RuntimeException e){
+			logger.error("",e);
 		} catch (Exception e) {
-			logger.error("导出他店消费记录列表错误",e);
-			e.printStackTrace();
+			response.setContentType("text/html");
+			response.setHeader("Cache-Control", "no-cache");
+			response.setCharacterEncoding("UTF-8");
+			String result = GTJsonResult.instanceErrorMsg(CONSUME_TO_DETAIL,e.getMessage(),"导出失败").toString();
+			PrintWriter writer = response.getWriter();
+			writer.print(result);
+			writer.close();
+			logger.error("",e);
 		}
 	}
 }

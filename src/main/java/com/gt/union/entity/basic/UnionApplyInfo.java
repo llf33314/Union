@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 
 /**
@@ -39,16 +41,19 @@ public class UnionApplyInfo extends Model<UnionApplyInfo> {
     /**
      * 企业名称
      */
+    @NotNull(message = "企业名称内容不能为空")
 	@TableField("enterprise_name")
 	private String enterpriseName;
     /**
      * 负责人名称
      */
+    @NotNull(message = "请选择")
 	@TableField("director_name")
 	private String directorName;
     /**
      * 负责人电话
      */
+	@NotNull(message = "联系电话内容不能为空")
 	@TableField("director_phone")
 	private String directorPhone;
     /**
@@ -59,12 +64,14 @@ public class UnionApplyInfo extends Model<UnionApplyInfo> {
     /**
      * 商家地址
      */
+	@NotNull(message = "我的地址内容不能为空")
 	@TableField("bus_address")
 	private String busAddress;
     /**
      * 商机推荐短信通知
      */
 	@TableField("notify_phone")
+	@Pattern(regexp = "", message = "手机短信通知有误")
 	private String notifyPhone;
     /**
      * 地址经度
@@ -79,16 +86,19 @@ public class UnionApplyInfo extends Model<UnionApplyInfo> {
     /**
      * 地址省份id
      */
+    @NotNull(message = "请选择省份")
 	@TableField("address_provience_id")
 	private Integer addressProvienceId;
     /**
      * 地址城市id
      */
+	@NotNull(message = "请选择城市")
 	@TableField("address_city_id")
 	private Integer addressCityId;
     /**
      * 地址区id
      */
+	@NotNull(message = "请选择地区市")
 	@TableField("address_district_id")
 	private Integer addressDistrictId;
     /**

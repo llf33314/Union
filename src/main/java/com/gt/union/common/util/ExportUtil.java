@@ -1,14 +1,13 @@
 package com.gt.union.common.util;
 
+import com.gt.union.common.response.GTJsonResult;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.servlet.http.HttpServletResponse;
-import java.io.BufferedOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.*;
 import java.net.URLEncoder;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -16,6 +15,10 @@ import java.util.Date;
  * Created by Administrator on 2017/8/10 0010.
  */
 public class ExportUtil {
+
+	private static Logger logger = LoggerFactory.getLogger(ExportUtil.class);
+
+	private static final String RESPONSE_EXPORT = "ExportUtil.responseExport()";
 
 	/**
 	 * 输出导出excel文件
@@ -25,7 +28,7 @@ public class ExportUtil {
 	 * @throws UnsupportedEncodingException
 	 * @throws IOException
 	 */
-	public static void responseExport(HttpServletResponse response, HSSFWorkbook wb, String filename){
+	public static void responseExport(HttpServletResponse response, HSSFWorkbook wb, String filename) throws Exception {
 		OutputStream os = null;
 		try {
 			response.reset();
@@ -38,9 +41,17 @@ public class ExportUtil {
 			response.setContentType("application/vnd.ms-excel");
 			wb.write(os);// 输出文件
 			os.flush();
-			os.close();
 		}catch (Exception e){
-			e.printStackTrace();
+			logger.error("",e);
+			response.reset();
+			response.setContentType("text/html");
+			response.setHeader("Cache-Control", "no-cache");
+			response.setCharacterEncoding("UTF-8");
+			String result = GTJsonResult.instanceErrorMsg(RESPONSE_EXPORT,e.getMessage(),"导出失败").toString();
+			PrintWriter writer = response.getWriter();
+			writer.print(result);
+			writer.close();
+			throw new RuntimeException("导出异常");
 		}finally {
 			try {
 				if(os != null) os.close();
