@@ -25,20 +25,20 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UnionConsumeRecordServiceImpl extends ServiceImpl<UnionConsumeRecordMapper, UnionConsumeRecord> implements IUnionConsumeRecordService {
-    private static final String LIST_MY_CONSUME_RECORD = "UnionConsumeRecordServiceImpl.listMyConsumeRecord()";
-    private static final String LIST_OTHER_CONSUME_RECORD = "UnionConsumeRecordServiceImpl.listOtherConsumeRecord()";
+    private static final String LIST_MY_UNNIONID = "UnionConsumeRecordServiceImpl.listMyByUnionId()";
+    private static final String LIST_OTHER_UNIONID = "UnionConsumeRecordServiceImpl.LIST_OTHER_UNIONID()";
 
     @Override
-    public Page listMyConsumeRecord(final Page page, final Integer unionId, final Integer busId, final Integer cardBusId
+    public Page listMyByUnionId(final Page page, final Integer unionId, final Integer busId, final Integer cardBusId
             , final String cardNo, final String phone, final String beginTime, final String endTime) throws Exception {
         if (page == null) {
-            throw new ParamException(LIST_MY_CONSUME_RECORD, "参数page为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(LIST_MY_UNNIONID, "参数page为空", ExceptionConstant.PARAM_ERROR);
         }
         if (unionId == null) {
-            throw new ParamException(LIST_MY_CONSUME_RECORD, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(LIST_MY_UNNIONID, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         if (busId == null) {
-            throw new ParamException(LIST_MY_CONSUME_RECORD, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(LIST_MY_UNNIONID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
 
         Wrapper wrapper = new Wrapper() {
@@ -97,16 +97,16 @@ public class UnionConsumeRecordServiceImpl extends ServiceImpl<UnionConsumeRecor
     }
 
     @Override
-    public Page listOtherConsumeRecord(Page page, final Integer unionId, final Integer busId, final Integer cardBusId
+    public Page listOtherByUnionId(Page page, final Integer unionId, final Integer busId, final Integer cardBusId
             , final String cardNo, final String phone, final String beginTime, final String endTime) throws Exception {
         if (page == null) {
-            throw new ParamException(LIST_OTHER_CONSUME_RECORD, "参数page为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(LIST_OTHER_UNIONID, "参数page为空", ExceptionConstant.PARAM_ERROR);
         }
         if (unionId == null) {
-            throw new ParamException(LIST_OTHER_CONSUME_RECORD, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(LIST_OTHER_UNIONID, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         if (busId == null) {
-            throw new ParamException(LIST_OTHER_CONSUME_RECORD, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(LIST_OTHER_UNIONID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
 
         Wrapper wrapper = new Wrapper() {

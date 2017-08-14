@@ -43,7 +43,7 @@ public class UnionMemberController {
     private IUnionMemberService unionMemberService;
 
     @ApiOperation(value = "根据联盟id获取盟员列表信息，并支持根据盟员名称enterpriseName进行模糊查询", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listByUnionIdInPage(Page page
         , @ApiParam(name = "unionId", value = "联盟id", required = true)
         @PathVariable("unionId") Integer unionId
@@ -62,7 +62,7 @@ public class UnionMemberController {
     }
 
     @ApiOperation(value = "根据联盟id获取盟员列表信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{unionId}/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listByUnionIdInList(@ApiParam(name = "unionId", value = "盟员id", required = true) @PathVariable("unionId") Integer unionId) {
         try {
             List<Map<String, Object>> result = this.unionMemberService.listByUnionIdInList(unionId);
@@ -77,7 +77,7 @@ public class UnionMemberController {
     }
 
     @ApiOperation(value = "根据联盟id和退盟状态outStatus获取退盟申请列表信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{unionId}/{outStatus}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/outStatus/{outStatus}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listByUnionIdAndOutStatus(Page page
         , @ApiParam(name = "unionId", value = "联盟id", required = true)
         @PathVariable("unionId") Integer unionId
@@ -96,7 +96,7 @@ public class UnionMemberController {
     }
 
     @ApiOperation(value = "根据联盟id、退盟状态outStatus和是否盟主isNuionOwner获取盟员列表信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{unionId}/{outStatus}/{isNuionOwner}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/outStatus/{outStatus}/isNuionOwner/{isNuionOwner}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listByUnionIdAndOutStatusAndIsNuionOwner(HttpServletRequest request, Page page
             , @ApiParam(name = "unionId", value = "联盟id", required = true)
             @PathVariable("unionId") Integer unionId
@@ -133,7 +133,7 @@ public class UnionMemberController {
     }
 
     @ApiOperation(value = "盟主权限转移", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{id}/isNuionOwner", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{id}/isNuionOwner/isNuionOwner", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateIsNuionOwnerById(HttpServletRequest request
         , @ApiParam(name = "id", value = "盟员id", required = true) @PathVariable("id") Integer id
         , @ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam(value = "unionId", required = true) Integer unionId){
@@ -154,7 +154,7 @@ public class UnionMemberController {
     }
 
     @ApiOperation(value = "盟主审核退盟成员", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{id}/outStatus", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{id}/outStatus/outStatus", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateOutStatusById(HttpServletRequest request
             , @ApiParam(name = "id", value = "盟员id", required = true) @PathVariable("id") Integer id
             , @ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam(value = "unionId", required = true) Integer unionId

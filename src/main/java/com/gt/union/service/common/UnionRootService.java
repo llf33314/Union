@@ -40,7 +40,7 @@ public interface UnionRootService {
 	 * @param unionId	联盟id
 	 * return
 	 */
-	public int unionRoot(Integer unionId);
+	public int unionRoot(Integer unionId) throws Exception;
 
 	/**
 	 * 判断联盟是否可用

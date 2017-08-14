@@ -23,7 +23,7 @@ public interface IUnionMemberPreferentialManagerService extends IService<UnionMe
      * @return
      * @throws Exception
      */
-	Page listPreferentialManager(Page page, Integer unionId, Integer verifyStatus) throws Exception;
+	Page listByUnionIdAndVerifyStatus(Page page, Integer unionId, Integer verifyStatus) throws Exception;
 
     /**
      * 根据联盟id和盟员id查询该盟员的优惠项目
@@ -33,7 +33,7 @@ public interface IUnionMemberPreferentialManagerService extends IService<UnionMe
      * @return
      * @throws Exception
      */
-	Page listMyPreferentialManager(Page page, Integer unionId, Integer memberId) throws Exception;
+	Page listMyByUnionId(Page page, Integer unionId, Integer memberId) throws Exception;
 
     /**
      * 根据联盟id和优惠服务项审核状态verifyStatus查询数量
@@ -52,5 +52,5 @@ public interface IUnionMemberPreferentialManagerService extends IService<UnionMe
      * @return
      * @throws Exception
      */
-	Map<String, Object> detailPreferentialManager(Page page, Integer id, Integer verifyStatus) throws Exception;
+	Map<String, Object> getByIdAndVerifyStatus(Page page, Integer id, Integer verifyStatus) throws Exception;
 }

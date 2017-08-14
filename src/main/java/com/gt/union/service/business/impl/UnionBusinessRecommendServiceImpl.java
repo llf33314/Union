@@ -39,14 +39,14 @@ import java.util.Map;
  */
 @Service
 public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusinessRecommendMapper, UnionBusinessRecommend> implements IUnionBusinessRecommendService {
-	private static final String UPDATE_VERIFY_RECOMMEND = "UnionBusinessRecommendServiceImpl.updateVerifyRecommend()";
-	private static final String SAVE_UNION_BUSINESS_RECOMMEND = "UnionBusinessRecommendServiceImpl.saveUnionBusinessRecommend()";
-	private static final String LIST_BROKERAGE_TO_ME = "UnionBusinessRecommendServiceImpl.listBrokerageToMe()";
-	private static final String LIST_BROKERAGE_FROM_ME = "UnionBusinessRecommendServiceImpl.listBrokerageFromMe()";
-	private static final String LIST_UNION_BUSINESS_RECOMMEND_TO_ME = "UnionBusinessRecommendServiceImpl.listUnionBusinessRecommendToMe()";
-	private static final String LIST_UNION_BUSINESS_RECOMMEND_FROM_ME = "UnionBusinessRecommendServiceImpl.listUnionBusinessRecommendFromMe()";
-	private static final String LIST_PAY_DETAIL = "UnionBusinessRecommendServiceImpl.listPayDetail()";
-	private static final String LIST_PAY_PARTICULAR = "UnionBusinessRecommendServiceImpl.listPayParticular()";
+	private static final String UPDATE_ID_ISACCEPTANCE = "UnionBusinessRecommendServiceImpl.updateByIdAndIsAcceptance()";
+	private static final String SAVE = "UnionBusinessRecommendServiceImpl.save()";
+	private static final String LIST_TOBUSID = "UnionBusinessRecommendServiceImpl.listByToBusId()";
+	private static final String LIST_FROMBUSID = "UnionBusinessRecommendServiceImpl.listByFromBusId()";
+	private static final String LIST_BROKERAGE_FROMBUSID = "UnionBusinessRecommendServiceImpl.listBrokerageByFromBusId()";
+	private static final String LIST_BROKERAGE_TOBUSID = "UnionBusinessRecommendServiceImpl.listBrokerageByToBusId()";
+	private static final String LIST_PAYDETAIL_FROMBUSID = "UnionBusinessRecommendServiceImpl.listPayDetailByFromBusId()";
+	private static final String LIST_PAYDETAILPARTICULAR_UNIONID_FROMBUSID_TOBUSID = "UnionBusinessRecommendServiceImpl.listPayDetailParticularByUnionIdAndFromBusIdAndToBusId()";
 
 	@Autowired
 	private IUnionBusinessRecommendInfoService unionBusinessRecommendInfoService;
@@ -59,46 +59,46 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 
 	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public void updateVerifyRecommend(UnionBusinessRecommend recommend) throws Exception{
+	public void updateByIdAndIsAcceptance(UnionBusinessRecommend recommend) throws Exception{
 		//TODO 判断推荐的商家是否有效
 		if(CommonUtil.isEmpty(recommend.getId())){
-			throw new ParamException(UPDATE_VERIFY_RECOMMEND, "", ExceptionConstant.PARAM_ERROR);
+			throw new ParamException(UPDATE_ID_ISACCEPTANCE, "", ExceptionConstant.PARAM_ERROR);
 		}
 		if(CommonUtil.isEmpty(recommend.getIsAcceptance()) || !(recommend.getIsAcceptance() == 1 || recommend.getIsAcceptance() == 2 )){
-			throw new ParamException(UPDATE_VERIFY_RECOMMEND, "", ExceptionConstant.PARAM_ERROR);
+			throw new ParamException(UPDATE_ID_ISACCEPTANCE, "", ExceptionConstant.PARAM_ERROR);
 		}
 		UnionBusinessRecommend businessRecommend = this.selectById(recommend.getId());
 		if(CommonUtil.isEmpty(businessRecommend) || businessRecommend.getDelStatus() == 1){
-			throw new BusinessException(UPDATE_VERIFY_RECOMMEND, "", "该商机不存在，请刷新后重试");
+			throw new BusinessException(UPDATE_ID_ISACCEPTANCE, "", "该商机不存在，请刷新后重试");
 		}
 		if(businessRecommend.getIsAcceptance() != 0){
-			throw new BusinessException(UPDATE_VERIFY_RECOMMEND, "", "该商机已处理，请刷新后重试");
+			throw new BusinessException(UPDATE_ID_ISACCEPTANCE, "", "该商机已处理，请刷新后重试");
 		}
 		this.updateById(recommend);
 	}
 
 	@Override
-	public void saveUnionBusinessRecommend(UnionBusinessRecommendFormVO vo) throws Exception{
+	public void save(UnionBusinessRecommendFormVO vo) throws Exception{
 		//TODO 判断被推荐的商家是否有效
 		//联盟是否有效
 		unionMainService.isUnionMainValid(vo.getUnionId());
 		if(CommonUtil.isEmpty(vo.getUnionId())){
-			throw new ParamException(SAVE_UNION_BUSINESS_RECOMMEND, "", ExceptionConstant.PARAM_ERROR);
+			throw new ParamException(SAVE, "", ExceptionConstant.PARAM_ERROR);
 		}
 		if(CommonUtil.isEmpty(vo.getToMemberId())){
-			throw new ParamException(SAVE_UNION_BUSINESS_RECOMMEND, "", ExceptionConstant.PARAM_ERROR);
+			throw new ParamException(SAVE, "", ExceptionConstant.PARAM_ERROR);
 		}
 		if(CommonUtil.isEmpty(vo.getUnionBusinessRecommendInfo().getUserName())){
-			throw new ParamException(SAVE_UNION_BUSINESS_RECOMMEND, "", ExceptionConstant.PARAM_ERROR);
+			throw new ParamException(SAVE, "", ExceptionConstant.PARAM_ERROR);
 		}
 		if(StringUtil.getStringLength(vo.getUnionBusinessRecommendInfo().getUserName()) > 5){
-			throw new ParamException(SAVE_UNION_BUSINESS_RECOMMEND, "", ExceptionConstant.PARAM_ERROR);
+			throw new ParamException(SAVE, "", ExceptionConstant.PARAM_ERROR);
 		}
 		if(CommonUtil.isEmpty(vo.getUnionBusinessRecommendInfo().getUserPhone())){
-			throw new ParamException(SAVE_UNION_BUSINESS_RECOMMEND, "", ExceptionConstant.PARAM_ERROR);
+			throw new ParamException(SAVE, "", ExceptionConstant.PARAM_ERROR);
 		}
 		if(StringUtil.getStringLength(vo.getUnionBusinessRecommendInfo().getBusinessMsg()) > 20){
-			throw new ParamException(SAVE_UNION_BUSINESS_RECOMMEND, "", ExceptionConstant.PARAM_ERROR);
+			throw new ParamException(SAVE, "", ExceptionConstant.PARAM_ERROR);
 		}
 		//TODO 判断商机推荐的手机号是否正确   您输入的意向客户电话有误，请重新输入
 		UnionMember fromUnionMember = unionMemberService.getUnionMember(vo.getBusId(),vo.getUnionId());
@@ -123,13 +123,13 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	}
 
 	@Override
-	public Page listUnionBusinessRecommendToMe(Page page, final Integer busId, final Integer unionId
+	public Page listByToBusId(Page page, final Integer busId, final Integer unionId
             , final String isAcceptance, final String userName, final String userPhone) throws Exception {
 		if (page == null) {
-			throw new ParamException(LIST_UNION_BUSINESS_RECOMMEND_TO_ME, "参数page为空", ExceptionConstant.PARAM_ERROR);
+			throw new ParamException(LIST_TOBUSID, "参数page为空", ExceptionConstant.PARAM_ERROR);
 		}
         if (busId == null) {
-            throw new ParamException(LIST_UNION_BUSINESS_RECOMMEND_TO_ME, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(LIST_TOBUSID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
         Wrapper wrapper = new Wrapper() {
             @Override
@@ -179,13 +179,13 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	}
 
 	@Override
-	public Page listUnionBusinessRecommendFromMe(Page page, final Integer busId, final Integer unionId
+	public Page listByFromBusId(Page page, final Integer busId, final Integer unionId
             , final String isAcceptance, final String userName, final String userPhone) throws Exception {
         if (page == null) {
-            throw new ParamException(LIST_UNION_BUSINESS_RECOMMEND_FROM_ME, "参数page为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(LIST_FROMBUSID, "参数page为空", ExceptionConstant.PARAM_ERROR);
         }
         if (busId == null) {
-            throw new ParamException(LIST_UNION_BUSINESS_RECOMMEND_FROM_ME, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(LIST_FROMBUSID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
         Wrapper wrapper = new Wrapper() {
             @Override
@@ -234,13 +234,13 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	}
 
 	@Override
-	public Page listBrokerageToMe(Page page, final Integer fromBusId, final Integer toBusId, final Integer unionId
+	public Page listBrokerageByFromBusId(Page page, final Integer fromBusId, final Integer toBusId, final Integer unionId
             , final String isConfirm, final String userName, final String userPhone) throws Exception {
 		if (page == null) {
-			throw new ParamException(LIST_BROKERAGE_TO_ME, "参数page为空", ExceptionConstant.PARAM_ERROR);
+			throw new ParamException(LIST_BROKERAGE_FROMBUSID, "参数page为空", ExceptionConstant.PARAM_ERROR);
 		}
 		if (fromBusId == null) {
-			throw new ParamException(LIST_BROKERAGE_TO_ME, "参数fromBusId为空", ExceptionConstant.PARAM_ERROR);
+			throw new ParamException(LIST_BROKERAGE_FROMBUSID, "参数fromBusId为空", ExceptionConstant.PARAM_ERROR);
 		}
 		Wrapper wrapper = new Wrapper() {
 			@Override
@@ -300,13 +300,13 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	}
 
 	@Override
-	public Page listBrokerageFromMe(Page page, final Integer toBusId, final Integer fromBusId, final Integer unionId
+	public Page listBrokerageByToBusId(Page page, final Integer toBusId, final Integer fromBusId, final Integer unionId
             , final String isConfirm, final String userName, final String userPhone) throws Exception {
         if (page == null) {
-            throw new ParamException(LIST_BROKERAGE_FROM_ME, "参数page为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(LIST_BROKERAGE_TOBUSID, "参数page为空", ExceptionConstant.PARAM_ERROR);
         }
         if (toBusId == null) {
-            throw new ParamException(LIST_BROKERAGE_FROM_ME, "参数toBusId为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(LIST_BROKERAGE_TOBUSID, "参数toBusId为空", ExceptionConstant.PARAM_ERROR);
         }
         Wrapper wrapper = new Wrapper() {
             @Override
@@ -366,12 +366,12 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	}
 
 	@Override
-	public Page listPayDetail(Page page, final Integer fromBusId, final Integer unionId) throws Exception {
+	public Page listPayDetailByFromBusId(Page page, final Integer fromBusId, final Integer unionId) throws Exception {
 		if (page == null) {
-		    throw new ParamException(LIST_PAY_DETAIL, "参数page为空", ExceptionConstant.PARAM_ERROR);
+		    throw new ParamException(LIST_PAYDETAIL_FROMBUSID, "参数page为空", ExceptionConstant.PARAM_ERROR);
         }
         if (fromBusId == null) {
-		    throw new ParamException(LIST_PAY_DETAIL, "参数fromBusId为空", ExceptionConstant.PARAM_ERROR);
+		    throw new ParamException(LIST_PAYDETAIL_FROMBUSID, "参数fromBusId为空", ExceptionConstant.PARAM_ERROR);
         }
         Wrapper wrapper = new Wrapper() {
             @Override
@@ -414,15 +414,16 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	}
 
     @Override
-    public List<Map<String, Object>> listPayParticular(final Integer unionId, final Integer fromBusId, final Integer toBusId) throws Exception {
+    public List<Map<String, Object>> listPayDetailParticularByUnionIdAndFromBusIdAndToBusId(final Integer unionId
+			, final Integer fromBusId, final Integer toBusId) throws Exception {
 	    if (unionId == null) {
-	        throw new ParamException(LIST_PAY_PARTICULAR, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
+	        throw new ParamException(LIST_PAYDETAILPARTICULAR_UNIONID_FROMBUSID_TOBUSID, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         if (fromBusId == null) {
-	        throw new ParamException(LIST_PAY_PARTICULAR, "参数fromBusId为空", ExceptionConstant.PARAM_ERROR);
+	        throw new ParamException(LIST_PAYDETAILPARTICULAR_UNIONID_FROMBUSID_TOBUSID, "参数fromBusId为空", ExceptionConstant.PARAM_ERROR);
         }
         if (toBusId == null) {
-	        throw new ParamException(LIST_PAY_PARTICULAR, "参数toBusId为空", ExceptionConstant.PARAM_ERROR);
+	        throw new ParamException(LIST_PAYDETAILPARTICULAR_UNIONID_FROMBUSID_TOBUSID, "参数toBusId为空", ExceptionConstant.PARAM_ERROR);
         }
         Wrapper wrapper = new Wrapper() {
             @Override

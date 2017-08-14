@@ -10,10 +10,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -29,36 +26,29 @@ import java.util.Map;
 @RestController
 @RequestMapping("/dataExport")
 public class DataExportController {
-
+    //TODO 错误返回提醒
+    private static final String EXPORT_BUSMEMBERCARD_UNIONID = "DataExportController.exportBusMemberCarByUnionId()";
 	private Logger logger = LoggerFactory.getLogger(DataExportController.class);
 
 	@Autowired
 	private ExportService exportService;
 
-
-	/**
-	 * 导出联盟卡列表信息
-	 * @param request
-	 * @param response
-	 * @param phone		模糊查询手机号
-	 * @param cardNo	模糊查询联盟卡号
-	 * @throws IOException
-	 */
-	@ApiOperation(value = "导出盟员的联盟卡列表", notes = "导出盟员的联盟卡列表，可模糊搜索电话号码、联盟卡号关键字", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/busMemberCar", method = RequestMethod.GET)
-	public void busMemberCar(HttpServletRequest request, HttpServletResponse response, @ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId
-										,@ApiParam(name="phone", value = "电话号码", required = false) @RequestParam(name = "phone", required = false) String phone
-										,@ApiParam(name="cardNo", value = "联盟卡号", required = false) @RequestParam(name = "cardNo", required = false) String cardNo) throws IOException {
+	@ApiOperation(value = "导出盟员的联盟卡列表", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/busMemberCar/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public void exportBusMemberCarByUnionId(HttpServletRequest request, HttpServletResponse response
+			, @ApiParam(name="unionId", value = "联盟id", required = true) @PathVariable("unionId") Integer unionId
+			,@ApiParam(name="phone", value = "电话号码", required = false) @RequestParam(name = "phone", required = false) String phone
+			,@ApiParam(name="cardNo", value = "联盟卡号", required = false) @RequestParam(name = "cardNo", required = false) String cardNo) throws IOException {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
 			List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
 			String[] titles = new String[]{"房号", "业主姓名", "联系电话","余额（元）"};
 			String[] contentName = new String[]{"roomNum", "ownerName", "ownerPhone", "ownerAccount"};
 			String filename = "联盟卡列表";
-			HSSFWorkbook wb = exportService.exportBusMemberCar(titles,contentName,list);
+			HSSFWorkbook wb = exportService.exportBusMemberCar(titles, contentName, list);
 			ExportUtil.responseExport(response, wb, filename);
 		} catch (Exception e) {
-			logger.error("导出盟员的联盟卡列表错误",e);
+			logger.error("", e);
 			e.printStackTrace();
 		}
 	}
@@ -73,7 +63,7 @@ public class DataExportController {
 	@ApiOperation(value = "导出盟员列表", notes = "导出盟员列表，可模糊搜索盟员名称关键字", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/unionMember", method = RequestMethod.GET)
 	public void unionMember(HttpServletRequest request, HttpServletResponse response, @ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId
-							,@ApiParam(name = "enterpriseName", value = "盟员名称", required = false) @RequestParam(name = "enterpriseName", required = false) String enterpriseName) throws IOException {
+            ,@ApiParam(name = "enterpriseName", value = "盟员名称", required = false) @RequestParam(name = "enterpriseName", required = false) String enterpriseName) throws IOException {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
 			List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();

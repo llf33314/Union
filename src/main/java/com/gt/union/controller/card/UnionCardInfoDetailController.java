@@ -2,6 +2,7 @@ package com.gt.union.controller.card;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * <p>
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author linweicong
  * @since 2017-07-24
  */
-@Controller
+@RestController
 @RequestMapping("/unionCardInfoDetail")
 public class UnionCardInfoDetailController {
 	

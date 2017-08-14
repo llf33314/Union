@@ -37,7 +37,7 @@ public class UnionApplyInfoController {
     private static final String UPDATE_ID = "UnionApplyInfoController.updateById()";
     private static final String LIST_SELLDIVIDEPROPORTION_PAGE = "UnionApplyInfoController.listBySellDivideProportionInPage()";
     private static final String LIST_SELLDIVIDEPROPORTION_LIST = "UnionApplyInfoController.listBySellDivideProportionInList()";
-    private static final String UPDATE_SELLDIVIDEPROPORTION = "UnionApplyInfoController.updateBySellDivideProportion()";
+    private static final String UPDATE_SELLDIVIDEPROPORTION_ID = "UnionApplyInfoController.updateSellDivideProportionById()";
 	private Logger logger = Logger.getLogger(UnionApplyInfoController.class);
 
 	@Autowired
@@ -168,7 +168,7 @@ public class UnionApplyInfoController {
 	 */
 	@ApiOperation(value = "售卡佣金分成管理-更新比例", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/sellDivideProportion", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-	public String updateBySellDivideProportion(HttpServletRequest request
+	public String updateSellDivideProportionById(HttpServletRequest request
 			, @ApiParam(name = "unionId", value = "联盟id", required = true)
              @RequestParam(name = "unionId", required = true) Integer unionId
 			, @ApiParam(name = "unionApplyInfoList", value = "更新的比例实体，只需填写id和sellDivideProportion即可", required = true)
@@ -176,7 +176,7 @@ public class UnionApplyInfoController {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
 			if (!this.unionMemberService.isUnionOwner(unionId, busUser.getId())) {
-				throw new BusinessException(UPDATE_SELLDIVIDEPROPORTION, "", "当前请求人不是联盟的盟主");
+				throw new BusinessException(UPDATE_SELLDIVIDEPROPORTION_ID, "", "当前请求人不是联盟的盟主");
 			}
 			this.unionApplyInfoService.updateBySellDivideProportion(unionApplyInfoList);
             return GTJsonResult.instanceSuccessMsg().toString();
@@ -185,7 +185,7 @@ public class UnionApplyInfoController {
             return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(UPDATE_SELLDIVIDEPROPORTION, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+            return GTJsonResult.instanceErrorMsg(UPDATE_SELLDIVIDEPROPORTION_ID, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
 	}
 

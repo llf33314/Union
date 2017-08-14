@@ -23,13 +23,13 @@ public interface IUnionBusinessRecommendService extends IService<UnionBusinessRe
 	 * 审核商机推荐
 	 * @param recommend
 	 */
-	void updateVerifyRecommend(UnionBusinessRecommend recommend) throws Exception;
+	void updateByIdAndIsAcceptance(UnionBusinessRecommend recommend) throws Exception;
 
 	/**
 	 * 添加商机推荐
 	 * @param vo
 	 */
-	void saveUnionBusinessRecommend(UnionBusinessRecommendFormVO vo) throws Exception;
+	void save(UnionBusinessRecommendFormVO vo) throws Exception;
 
 	/**
 	 * 根据busId查询我的商机信息，并支持根据所属联盟id和受理状态isAcceptance进行过滤，且对顾客姓名userName、电话userPhone进行模糊匹配
@@ -40,7 +40,7 @@ public interface IUnionBusinessRecommendService extends IService<UnionBusinessRe
 	 * @return
 	 * @throws Exception
 	 */
-	Page listUnionBusinessRecommendToMe(Page page, Integer busId, Integer unionId, String isAcceptance, String userName, String userPhone) throws Exception;
+	Page listByToBusId(Page page, Integer busId, Integer unionId, String isAcceptance, String userName, String userPhone) throws Exception;
 
 	/**
 	 * 根据busId查询我推荐的商机信息，并支持根据所属联盟id和受理状态isAcceptance进行过滤，且对顾客姓名userName、电话userPhone进行模糊匹配
@@ -51,7 +51,7 @@ public interface IUnionBusinessRecommendService extends IService<UnionBusinessRe
 	 * @return
 	 * @throws Exception
 	 */
-	Page listUnionBusinessRecommendFromMe(Page page, Integer busId, Integer unionId, String isAcceptance, String userName, String userPhone) throws Exception;
+	Page listByFromBusId(Page page, Integer busId, Integer unionId, String isAcceptance, String userName, String userPhone) throws Exception;
 
     /**
      * 根据fromBusId查询我的佣金收入，并支持根据消费去向toBusId和所属联盟id、结算状态isConfirm进行过滤，且对顾客姓名userName、电话userPhone进行模糊匹配
@@ -63,7 +63,7 @@ public interface IUnionBusinessRecommendService extends IService<UnionBusinessRe
      * @return
      * @throws Exception
      */
-	Page listBrokerageToMe(Page page, Integer fromBusId, Integer toBusId, Integer unionId, String isConfirm, String userName, String userPhone) throws Exception;
+	Page listBrokerageByFromBusId(Page page, Integer fromBusId, Integer toBusId, Integer unionId, String isConfirm, String userName, String userPhone) throws Exception;
 
     /**
      * 根据toBusId查询我需要支付佣金，并支持根据消费来源fromBusId和所属联盟id、结算状态isConfirm进行过滤，且对顾客姓名userName、电话userPhone进行模糊匹配
@@ -76,7 +76,7 @@ public interface IUnionBusinessRecommendService extends IService<UnionBusinessRe
      * @throws Exception
      */
 
-    Page listBrokerageFromMe(Page page, Integer toBusId, Integer fromBusId, Integer unionId, String isConfirm, String userName, String userPhone) throws Exception;
+    Page listBrokerageByToBusId(Page page, Integer toBusId, Integer fromBusId, Integer unionId, String isConfirm, String userName, String userPhone) throws Exception;
 
     /**
      * 根据fromBusId查询我的支付明细，并可根据unionId进行过滤
@@ -86,7 +86,7 @@ public interface IUnionBusinessRecommendService extends IService<UnionBusinessRe
      * @return
      * @throws Exception
      */
-    Page listPayDetail(Page page, Integer fromBusId, Integer unionId) throws Exception;
+    Page listPayDetailByFromBusId(Page page, Integer fromBusId, Integer unionId) throws Exception;
 
     /**
      * 查询我的支付详情
@@ -96,5 +96,5 @@ public interface IUnionBusinessRecommendService extends IService<UnionBusinessRe
      * @return
      * @throws Exception
      */
-    List<Map<String, Object>> listPayParticular(Integer unionId, Integer fromBusId, Integer toBusId) throws Exception;
+    List<Map<String, Object>> listPayDetailParticularByUnionIdAndFromBusIdAndToBusId(Integer unionId, Integer fromBusId, Integer toBusId) throws Exception;
 }

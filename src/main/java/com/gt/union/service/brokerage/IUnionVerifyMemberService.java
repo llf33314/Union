@@ -17,11 +17,11 @@ public interface IUnionVerifyMemberService extends IService<UnionVerifyMember> {
 	 * 删除佣金平台管理员
 	 * @param id
 	 */
-	void delUnionVerifyMember(Integer id);
+	void deleteById(Integer id) throws Exception;
 
 	/**
 	 * 保存佣金平台管理员
 	 * @param unionVerifyMember
 	 */
-	void saveUnionVerifyMember(UnionVerifyMember unionVerifyMember) throws Exception;
+	void save(UnionVerifyMember unionVerifyMember) throws Exception;
 }

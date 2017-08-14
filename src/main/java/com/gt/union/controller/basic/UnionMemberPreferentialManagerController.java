@@ -2,10 +2,8 @@ package com.gt.union.controller.basic;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.common.constant.ExceptionConstant;
-import com.gt.union.common.constant.basic.UnionMemberPreferentialManagerConstant;
 import com.gt.union.common.constant.basic.UnionMemberPreferentialServiceConstant;
 import com.gt.union.common.exception.BaseException;
-import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.common.BusUser;
@@ -32,93 +30,76 @@ import java.util.Map;
 @RestController
 @RequestMapping("/unionMemberPreferentialManager")
 public class UnionMemberPreferentialManagerController {
-    //TODO 方法标签名RESTFUL化
-    private static final String LIST_PREFERENTIAL_MANAGER = "UnionMemberPreferentialManagerController.listPreferentialManager()";
-    private static final String DETAIL_PREFERENTIAL_MANAGER = "UnionMemberPreferentialManagerController.detailPreferentialManager()";
+    private static final String LIST_UNIONID_VERIFYSTATUS = "UnionMemberPreferentialManagerController.listByUnionIdAndVerifyStatus()";
+    private static final String LIST_UNIONID = "UnionMemberPreferentialManagerController.listMyByUnionId()";
+    private static final String GET_ID_VERIFYSTATUS = "UnionMemberPreferentialManagerController.getByIdAndVerifyStatus()";
     private Logger logger = LoggerFactory.getLogger(UnionMemberPreferentialManagerController.class);
 
     @Autowired
     private IUnionMemberPreferentialManagerService unionMemberPreferentialManagerService;
 
-    /**
-     * 优惠项目信息查询
-     * @param request
-     * @param page
-     * @param unionId
-     * @param listType
-     * @param verifyStatus
-     * @return
-     */
-    @ApiOperation(value = "优惠项目信息查询"
-            , notes = "优惠项目信息查询，根据listType进行分类查询"
-            , produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String listPreferentialManager(HttpServletRequest request, Page page
-            , @ApiParam(name = "unionId", value = "联盟id", required = true)
-              @RequestParam(name = "unionId", required = true) Integer unionId
-            , @ApiParam(name = "listType", value = "查询类型：1代表优惠项目审核，2代表我的优惠项目", required = true)
-              @RequestParam(name = "listType", required = true) Integer listType
-            , @ApiParam(name = "verifyStatus", value = "审核状态，在listType=1时必填,1代表未审核，2代表审核通过，3代表审核不通过")
-              @RequestParam(name = "verifyStatus") Integer verifyStatus) {
+    @ApiOperation(value = "优惠项目审核", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/verifyStatus/{verifyStatus}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String listByUnionIdAndVerifyStatus(HttpServletRequest request, Page page
+        , @ApiParam(name = "unionId", value = "联盟id", required = true)
+          @RequestParam(name = "unionId", required = true) Integer unionId
+        , @ApiParam(name = "verifyStatus", value = "审核状态，1代表未审核，2代表审核通过，3代表审核不通过")
+          @RequestParam(name = "verifyStatus") Integer verifyStatus) {
         try {
-            switch (listType) {
-                case UnionMemberPreferentialManagerConstant.LIST_TYPE_CHECK:
-                    Page pageData = this.unionMemberPreferentialManagerService.listPreferentialManager(page, unionId, verifyStatus);
-                    int unCommitCount = this.unionMemberPreferentialManagerService.countPreferentialManager(unionId, UnionMemberPreferentialServiceConstant.VERIFY_STATUS_UNCOMMIT);
-                    int unCheckCount = this.unionMemberPreferentialManagerService.countPreferentialManager(unionId, UnionMemberPreferentialServiceConstant.VERIFY_STATUS_UNCHECK);
-                    int passCount = this.unionMemberPreferentialManagerService.countPreferentialManager(unionId, UnionMemberPreferentialServiceConstant.VERIFY_STATUS_PASS);
-                    int failCount = this.unionMemberPreferentialManagerService.countPreferentialManager(unionId, UnionMemberPreferentialServiceConstant.VERIFY_STATUS_FAIL);
-                    Map<String, Object> resultMap = new HashMap<>();
-                    resultMap.put("page", pageData);
-                    resultMap.put("unCommitCount", unCommitCount);
-                    resultMap.put("unCheckCount", unCheckCount);
-                    resultMap.put("passCount", passCount);
-                    resultMap.put("failCount", failCount);
-                    return GTJsonResult.instanceSuccessMsg(resultMap).toString();
-                case UnionMemberPreferentialManagerConstant.LIST_TYPE_MY:
-                    BusUser busUser = SessionUtils.getLoginUser(request);
-                    if (busUser == null) {
-                        throw new BusinessException(LIST_PREFERENTIAL_MANAGER, "", "无法通过session获取用户的信息");
-                    }
-                    Page result = this.unionMemberPreferentialManagerService.listMyPreferentialManager(page, unionId, busUser.getId());
-                    return GTJsonResult.instanceSuccessMsg(result).toString();
-                default:
-                    throw new BusinessException(LIST_PREFERENTIAL_MANAGER, "", "不支持的查询类型listType");
-            }
+            Page pageData = this.unionMemberPreferentialManagerService.listByUnionIdAndVerifyStatus(page, unionId, verifyStatus);
+            int unCommitCount = this.unionMemberPreferentialManagerService.countPreferentialManager(unionId, UnionMemberPreferentialServiceConstant.VERIFY_STATUS_UNCOMMIT);
+            int unCheckCount = this.unionMemberPreferentialManagerService.countPreferentialManager(unionId, UnionMemberPreferentialServiceConstant.VERIFY_STATUS_UNCHECK);
+            int passCount = this.unionMemberPreferentialManagerService.countPreferentialManager(unionId, UnionMemberPreferentialServiceConstant.VERIFY_STATUS_PASS);
+            int failCount = this.unionMemberPreferentialManagerService.countPreferentialManager(unionId, UnionMemberPreferentialServiceConstant.VERIFY_STATUS_FAIL);
+            Map<String, Object> resultMap = new HashMap<>();
+            resultMap.put("page", pageData);
+            resultMap.put("unCommitCount", unCommitCount);
+            resultMap.put("unCheckCount", unCheckCount);
+            resultMap.put("passCount", passCount);
+            resultMap.put("failCount", failCount);
+            return GTJsonResult.instanceSuccessMsg(resultMap).toString();
         } catch (BaseException e) {
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(LIST_PREFERENTIAL_MANAGER, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+            return GTJsonResult.instanceErrorMsg(LIST_UNIONID_VERIFYSTATUS, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
     }
 
-    /**
-     * 优惠项目审核详情
-     * @param page
-     * @param id
-     * @param verifyStatus
-     * @return
-     */
-    @ApiOperation(value = "优惠项目审核详情"
-            , notes = "根据id和审核状态verifyStatus查询优惠项目审核详情"
-            , produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json;charset=utf-8")
-    public String detailPreferentialManager(Page page
-            , @ApiParam(name = "id", value = "优惠项目审核id", required = true)
-                @PathVariable("id") Integer id
-            , @ApiParam(name = "verifyStatus", value = "审核状态：1代表未审核，2代表审核通过，3代表审核不通过", required = true)
-                @RequestParam(name = "verifyStatus") Integer verifyStatus) {
+    @ApiOperation(value = "我的优惠项目", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String listMyByUnionId(HttpServletRequest request, Page page
+            , @ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId) {
         try {
-            Map<String, Object> result = this.unionMemberPreferentialManagerService.detailPreferentialManager(page, id, verifyStatus);
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            Page result = this.unionMemberPreferentialManagerService.listMyByUnionId(page, unionId, busUser.getId());
             return GTJsonResult.instanceSuccessMsg(result).toString();
         } catch (BaseException e) {
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(DETAIL_PREFERENTIAL_MANAGER, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+            return GTJsonResult.instanceErrorMsg(LIST_UNIONID, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
+    }
+
+    @ApiOperation(value = "优惠项目审核详情", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{id}/verifyStatus/{verifyStatus}", method = RequestMethod.GET, produces = "application/json;charset=utf-8")
+    public String getByIdAndVerifyStatus(Page page
+        , @ApiParam(name = "id", value = "优惠项目审核id", required = true)
+        @PathVariable("id") Integer id
+        , @ApiParam(name = "verifyStatus", value = "审核状态：1代表未审核，2代表审核通过，3代表审核不通过", required = true)
+        @RequestParam(name = "verifyStatus") Integer verifyStatus) {
+        try {
+            Map<String, Object> result = this.unionMemberPreferentialManagerService.getByIdAndVerifyStatus(page, id, verifyStatus);
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(GET_ID_VERIFYSTATUS, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
     }
 
