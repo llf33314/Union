@@ -35,33 +35,25 @@ import java.util.Date;
 @RestController
 @RequestMapping("/unionVerifyMember")
 public class UnionVerifyMemberController {
-	//TODO 方法标签名RESTFUL化
-	private static final String UNION_VERIFY_MEMBER = "UnionVerifyMemberController.unionVerifyMember()";
-    private static final String DEL_UNION_VERIFY_MEMBER = "UnionVerifyMemberController.delUnionVerifyMember()";
-    private static final String SAVE_UNION_VERIFY_MEMBER = "UnionVerifyMemberController.saveUnionVerifyMember()";
-    private static final String GET_PHONE_CODE = "UnionVerifyMemberController.getPhoneCode()";
+	private static final String LIST = "UnionVerifyMemberController.list()";
+    private static final String DELETE_ID = "UnionVerifyMemberController.deleteById()";
+    private static final String SAVE = "UnionVerifyMemberController.save()";
+    private static final String GET_CODE_PHONE = "UnionVerifyMemberController.getCodeByPhone()";
 	private Logger logger = Logger.getLogger(UnionVerifyMemberController.class);
 
 	@Autowired
 	private IUnionVerifyMemberService unionVerifyMemberService;
 
-
-
-	/**
-	 * 获取商家的佣金平台管理员列表
-	 * @param page
-	 * @param request
-	 * @return
-	 */
 	@ApiOperation(value = "获取商家的佣金平台管理员列表", notes = "获取商家的佣金平台管理员列表", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public String unionVerifyMember(Page<UnionVerifyMember> page, HttpServletRequest request){
+	public String list(Page<UnionVerifyMember> page, HttpServletRequest request){
 		try {
-            BusUser user = SessionUtils.getLoginUser(request); //TODO user没有校验是否为空
+            BusUser user = SessionUtils.getLoginUser(request);
             Integer busId = user.getId();
             if (user.getPid() != null && user.getPid() != 0) {
                 busId = user.getPid();
             }
+            //TODO 以下代码应放在service中
             EntityWrapper<UnionVerifyMember> wrapper = new EntityWrapper<UnionVerifyMember>();
             wrapper.eq("bus_id", busId);
             wrapper.eq("del_status", 0);
@@ -72,45 +64,32 @@ public class UnionVerifyMemberController {
 //            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
         } catch (Exception e){
             logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(UNION_VERIFY_MEMBER, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+            return GTJsonResult.instanceErrorMsg(LIST, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
 	}
 
-	/**
-	 * 删除佣金平台管理员
-	 * @param request
-	 * @param id
-	 * @return
-	 */
 	@SysLogAnnotation(op_function = "4", description = "删除佣金平台管理员")
 	@ApiOperation(value = "删除佣金平台管理员", notes = "删除佣金平台管理员", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE, produces = "application/json;charset=UTF-8")
-	public String delUnionVerifyMember(HttpServletRequest request, @ApiParam(name="id", value = "管理员id", required = true) @PathVariable("id") Integer id){
+	public String deleteById(HttpServletRequest request, @ApiParam(name="id", value = "管理员id", required = true) @PathVariable("id") Integer id){
 		try {
-            unionVerifyMemberService.delUnionVerifyMember(id);
+            unionVerifyMemberService.deleteById(id);
             return GTJsonResult.instanceSuccessMsg().toString();
-//        } catch (BaseException e) {
-//            logger.error("", e);
-//            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
         }catch (Exception e){
             logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(DEL_UNION_VERIFY_MEMBER, e.getMessage(),ExceptionConstant.OPERATE_FAIL).toString();
+            return GTJsonResult.instanceErrorMsg(DELETE_ID, e.getMessage(),ExceptionConstant.OPERATE_FAIL).toString();
         }
 	}
 
-
-	/**
-	 * 保存佣金平台管理员
-	 * @param request
-	 * @param unionVerifyMember
-	 * @return
-	 */
 	@SysLogAnnotation(op_function = "2", description = "保存佣金平台管理员")
 	@ApiOperation(value = "保存佣金平台管理员", notes = "保存佣金平台管理员", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public String saveUnionVerifyMember(HttpServletRequest request, @ApiParam(name="unionVerifyMember", value = "平台管理员信息", required = true) @RequestBody UnionVerifyMember unionVerifyMember){
+	public String save(HttpServletRequest request, @ApiParam(name="unionVerifyMember", value = "平台管理员信息", required = true) @RequestBody UnionVerifyMember unionVerifyMember){
 		try{
-            BusUser user = SessionUtils.getLoginUser(request);//TODO user没有校验是否为空
+            BusUser user = SessionUtils.getLoginUser(request);
             Integer busId = user.getId();
 			if(user.getPid() != null && user.getPid() != 0){
 				busId = user.getPid();
@@ -118,28 +97,22 @@ public class UnionVerifyMemberController {
 			unionVerifyMember.setBusId(busId);
 			unionVerifyMember.setCreatetime(new Date());
 			unionVerifyMember.setDelStatus(0);
-			unionVerifyMemberService.saveUnionVerifyMember(unionVerifyMember);
+			unionVerifyMemberService.save(unionVerifyMember);
             return GTJsonResult.instanceSuccessMsg().toString();
         }catch (BaseException e){
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
         }catch (Exception e){
             logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(SAVE_UNION_VERIFY_MEMBER, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+            return GTJsonResult.instanceErrorMsg(SAVE, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
 	}
 
-	/**
-	 *	获取佣金平台管理员验证码
-	 * @param request
-	 * @param response
-	 * @param phone
-	 */
 	@SysLogAnnotation(op_function = "1", description = "获取佣金平台管理员验证码")
 	@ApiOperation(value = "获取佣金平台管理员验证码", notes = "获取佣金平台管理员验证码", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/phoneCode", produces = "application/json;charset=UTF-8")
-	public String getPhoneCode(HttpServletRequest request, HttpServletResponse response,
-							   @ApiParam(name="phone", value = "手机号", required = true) @RequestParam String phone) {
+	@RequestMapping(value = "/phone/{phone}", produces = "application/json;charset=UTF-8")
+	public String getCodeByPhone(HttpServletRequest request, HttpServletResponse response
+       , @ApiParam(name="phone", value = "手机号", required = true) @PathVariable String phone) {
 		try {
             BusUser user = SessionUtils.getLoginUser(request);//TODO user没有校验是否为空
             //生成验证码
@@ -158,7 +131,7 @@ public class UnionVerifyMemberController {
 //            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(GET_PHONE_CODE, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+            return GTJsonResult.instanceErrorMsg(GET_CODE_PHONE, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
 	}
 

@@ -1,7 +1,7 @@
 package com.gt.union.controller.basic;
 
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 /**
  * <p>
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * @author linweicong
  * @since 2017-07-21
  */
-@Controller
+@RestController
 @RequestMapping("/unionTransferRecord")
 public class UnionTransferRecordController {
 	

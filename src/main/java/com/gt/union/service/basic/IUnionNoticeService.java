@@ -18,5 +18,5 @@ public interface IUnionNoticeService extends IService<UnionNotice> {
 	 * @param notice
 	 * @return
 	 */
-	UnionNotice saveNotice(UnionNotice notice) throws Exception;
+	UnionNotice saveByUnionId(UnionNotice notice) throws Exception;
 }

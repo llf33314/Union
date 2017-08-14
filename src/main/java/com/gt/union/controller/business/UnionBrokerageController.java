@@ -14,7 +14,6 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,9 +29,8 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/unionBrokerage")
 public class UnionBrokerageController {
-	//TODO 方法签名RESTFUL化
-	private static final String UNION_BROKERAGE = "UnionBrokerageController.unionBrokerage()";
-	private static final String UPDATE_UNION_BROKERAGE = "UnionBrokerageController.updateUnionBrokerage()";
+	private static final String LIST_UNIONID = "UnionBrokerageController.listByUnionId()";
+	private static final String UPDATE_ID_UNIONID = "UnionBrokerageController.updateByIdAndUnionId()";
 	private Logger logger = Logger.getLogger(UnionBusinessRecommendController.class);
 
 	@Autowired
@@ -41,62 +39,48 @@ public class UnionBrokerageController {
 	@Autowired
 	private IUnionBrokerageService unionBrokerageService;
 
-
-	/**
-	 * 获取联盟佣金比例列表
-	 * @param page
-	 * @param request
-	 * @return
-	 */
 	@ApiOperation(value = "获取联盟佣金比例列表", notes = "获取联盟佣金比例列表", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "", method = RequestMethod.GET,produces = "application/json;charset=UTF-8")
-	public String unionBrokerage(Page page, HttpServletRequest request,
-								 @ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId){
+	@RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.GET,produces = "application/json;charset=UTF-8")
+	public String listByUnionId(Page page, HttpServletRequest request
+		 , @ApiParam(name="unionId", value = "联盟id", required = true) @PathVariable("unionId") Integer unionId){
 		try{
-            BusUser user = SessionUtils.getLoginUser(request); //TODO 没有校验user是否为空
+            BusUser user = SessionUtils.getLoginUser(request);
             Integer busId = user.getId();
 			if(user.getPid() != null && user.getPid() != 0){
 				busId = user.getPid();
 			}
-			page = unionMemberService.selectUnionBrokerageList(page,unionId,busId);
+			page = unionMemberService.selectUnionBrokerageList(page,unionId,busId);//TODO controller调用对应的service；还有方法名用list
             return GTJsonResult.instanceSuccessMsg(page).toString();
         }catch (BaseException e){
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
         }catch (Exception e){
             logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(UNION_BROKERAGE, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+            return GTJsonResult.instanceErrorMsg(LIST_UNIONID, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
 	}
 
-	/**
-	 *	设置盟员佣金比
-	 * @param request
-	 * @param id	盟员id
-	 * @param unionBrokerage
-	 * @return
-	 */
 	@SysLogAnnotation(description = "设置盟员佣金比", op_function = "3")
-	@RequestMapping("/{id}")
-	public String updateUnionBrokerage(HttpServletRequest request,
-					   @ApiParam(name="id", value = "佣金比例id", required = true) @PathVariable Integer id,
-					   @ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam Integer unionId,
-					   @ApiParam(name="unionBrokerage", value = "佣金比例信息", required = true) @RequestBody UnionBrokerage unionBrokerage){
+	@RequestMapping("/{id}/unionId/{unionId}")
+	public String updateByIdAndUnionId(HttpServletRequest request
+	    , @ApiParam(name="id", value = "佣金比例id", required = true) @PathVariable Integer id
+	    , @ApiParam(name="unionId", value = "联盟id", required = true) @PathVariable Integer unionId
+	    , @ApiParam(name="unionBrokerage", value = "佣金比例信息", required = true) @RequestBody UnionBrokerage unionBrokerage){
 		try{
-            BusUser user = SessionUtils.getLoginUser(request);//TODO 没有校验user是否为空
+            BusUser user = SessionUtils.getLoginUser(request);
             Integer busId = user.getId();
 			if(user.getPid() != null && user.getPid() != 0){
 				busId = user.getPid();
 			}
 			unionBrokerage.setFromBusId(busId);
-			unionBrokerageService.updateUnionBrokerage(unionBrokerage);
+			unionBrokerageService.updateByIdAndUnionId(unionBrokerage);
             return GTJsonResult.instanceSuccessMsg().toString();
         }catch (BaseException e){
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
         }catch (Exception e){
             logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(UPDATE_UNION_BROKERAGE, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+            return GTJsonResult.instanceErrorMsg(UPDATE_ID_UNIONID, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
 	}
 }

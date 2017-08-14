@@ -15,21 +15,6 @@ public interface UnionMemberConstant {
     public static final int DEL_STATUS_YES = 1;
 
     /**
-     * 查询信息类型：盟员列表
-     */
-    public static final int LIST_TYPE_MEMBER = 1;
-
-    /**
-     * 查询信息类型：退盟申请列表
-     */
-    public static final int LIST_TYPE_OUT = 2;
-
-    /**
-     * 查询信息类型：盟主权限转移盟员列表
-     */
-    public static final int LIST_TYPE_TRANSFER = 3;
-
-    /**
      * 商家退出状态：正常
      */
     public static final int OUT_STATUS_NORMAL = 0;

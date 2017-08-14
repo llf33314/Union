@@ -21,12 +21,12 @@ import java.util.Date;
  */
 @Service
 public class UnionBrokerageServiceImpl extends ServiceImpl<UnionBrokerageMapper, UnionBrokerage> implements IUnionBrokerageService {
-	private static final String UPDATE_UNION_BROKERAGE = "UnionBrokerageServiceImpl.updateUnionBrokerage()";
+	private static final String UPDATE_ID_UNIONID = "UnionBrokerageServiceImpl.updateByIdAndUnionId()";
 
 	@Override
-	public void updateUnionBrokerage(UnionBrokerage unionBrokerage) throws Exception {
+	public void updateByIdAndUnionId(UnionBrokerage unionBrokerage) throws Exception {
 		if (CommonUtil.isEmpty(unionBrokerage.getBrokerageRatio()) || CommonUtil.isEmpty(unionBrokerage.getFromBusId()) || CommonUtil.isEmpty(unionBrokerage.getToBusId()) || CommonUtil.isEmpty(unionBrokerage.getUnionId())) {
-			throw new ParamException(UPDATE_UNION_BROKERAGE, "参数错误", ExceptionConstant.PARAM_ERROR);
+			throw new ParamException(UPDATE_ID_UNIONID, "参数错误", ExceptionConstant.PARAM_ERROR);
 		}
 		//TODO 判断权限
 		if (CommonUtil.isEmpty(unionBrokerage.getId())) {//新增

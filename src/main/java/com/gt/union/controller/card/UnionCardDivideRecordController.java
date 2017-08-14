@@ -28,20 +28,13 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/unionCardDivideRecord")
 public class UnionCardDivideRecordController {
-	//TODO RESTFUL
 	private static final String UNION_CARD_DIVIDE_RECORD_LIST = "UnionCardDivideRecordController.unionCardDivideRecordList()";
 	private Logger logger = Logger.getLogger(UnionCardDivideRecordController.class);
 
 	@Autowired
 	private IUnionCardDivideRecordService unionCardDivideRecordService;
 
-	/**
-	 * 获取收卡分成列表
-	 * @param page
-	 * @param request
-	 * @param vo
-	 * @return
-	 */
+	//TODO 这里不建议用VO
 	@RequestMapping(value = "", method = RequestMethod.GET)
 	public String unionCardDivideRecordList(Page page, HttpServletRequest request, @RequestBody UnionCardDivideRecordVO vo) {
 		try {

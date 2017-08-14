@@ -28,24 +28,24 @@ import java.util.Map;
  */
 @Service
 public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<UnionMemberPreferentialManagerMapper, UnionMemberPreferentialManager> implements IUnionMemberPreferentialManagerService {
-    private static final String LIST_PREFERENTIAL_MANAGER = "UnionMemberPreferentialManagerServiceImpl.listPreferentialManager()";
-    private static final String LIST_MY_PREFERENTIAL_MANAGER = "UnionMemberPreferentialManagerServiceImpl.listMyPreferentialManager()";
+    private static final String LIST_UNIONID_VERIFYSTATUS = "UnionMemberPreferentialManagerServiceImpl.listByUnionIdAndVerifyStatus()";
+    private static final String LIST_MY_UNIONID = "UnionMemberPreferentialManagerServiceImpl.listMyByUnionId()";
     private static final String COUNT_PREFERENTIAL_MANAGER = "UnionMemberPreferentialManagerServiceImpl.countPreferentialManager()";
-    private static final String DETAIL_PREFERENTIAL_MANAGER = "UnionMemberPreferentialManagerServiceImpl.detailPreferentialManager()";
+    private static final String GET_ID_VERIFYSTATUS = "UnionMemberPreferentialManagerServiceImpl.getByIdAndVerifyStatus()";
 
     @Autowired
     private IUnionMemberPreferentialServiceService unionMemberPreferentialServiceService;
 
     @Override
-    public Page listPreferentialManager(Page page, final Integer unionId, final Integer verifyStatus) throws Exception {
+    public Page listByUnionIdAndVerifyStatus(Page page, final Integer unionId, final Integer verifyStatus) throws Exception {
         if (page == null) {
-            throw new ParamException(LIST_PREFERENTIAL_MANAGER, "参数page为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(LIST_UNIONID_VERIFYSTATUS, "参数page为空", ExceptionConstant.PARAM_ERROR);
         }
         if (unionId == null) {
-            throw new ParamException(LIST_PREFERENTIAL_MANAGER, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(LIST_UNIONID_VERIFYSTATUS, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         if (verifyStatus == null) {
-            throw new ParamException(LIST_PREFERENTIAL_MANAGER, "参数verifyStatus为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(LIST_UNIONID_VERIFYSTATUS, "参数verifyStatus为空", ExceptionConstant.PARAM_ERROR);
         }
         Wrapper wrapper = new Wrapper() {
             @Override
@@ -78,15 +78,15 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
     }
 
     @Override
-    public Page listMyPreferentialManager(Page page, final Integer unionId, final Integer memberId) throws Exception {
+    public Page listMyByUnionId(Page page, final Integer unionId, final Integer memberId) throws Exception {
         if (page == null) {
-            throw new ParamException(LIST_MY_PREFERENTIAL_MANAGER, "参数page为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(LIST_MY_UNIONID, "参数page为空", ExceptionConstant.PARAM_ERROR);
         }
         if (unionId == null) {
-            throw new ParamException(LIST_MY_PREFERENTIAL_MANAGER, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(LIST_MY_UNIONID, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         if (memberId == null) {
-            throw new ParamException(LIST_MY_PREFERENTIAL_MANAGER, "参数memberId为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(LIST_MY_UNIONID, "参数memberId为空", ExceptionConstant.PARAM_ERROR);
         }
         Wrapper wrapper = new Wrapper() {
             @Override
@@ -169,15 +169,15 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
     }
 
     @Override
-    public Map<String, Object> detailPreferentialManager(Page page, final Integer id, final Integer verifyStatus) throws Exception {
+    public Map<String, Object> getByIdAndVerifyStatus(Page page, final Integer id, final Integer verifyStatus) throws Exception {
         if (page == null) {
-            throw new ParamException(DETAIL_PREFERENTIAL_MANAGER, "参数page为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(GET_ID_VERIFYSTATUS, "参数page为空", ExceptionConstant.PARAM_ERROR);
         }
         if (id == null) {
-            throw new ParamException(DETAIL_PREFERENTIAL_MANAGER, "参数id为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(GET_ID_VERIFYSTATUS, "参数id为空", ExceptionConstant.PARAM_ERROR);
         }
         if (verifyStatus == null) {
-            throw new ParamException(DETAIL_PREFERENTIAL_MANAGER, "参数verifyStatus为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(GET_ID_VERIFYSTATUS, "参数verifyStatus为空", ExceptionConstant.PARAM_ERROR);
         }
         Wrapper managerWrapper = new Wrapper() {
             @Override

@@ -42,32 +42,26 @@ public class DataExportController {
 	private static final String CONSUME_FROM_DETAIL = "DataExportController.consumeFromDetail()";
 	private static final String CONSUME_TO_DETAIL = "DataExportController.consumeToDetail()";
 
+    //TODO 错误返回提醒
+    private static final String EXPORT_BUSMEMBERCARD_UNIONID = "DataExportController.exportBusMemberCarByUnionId()";
 	private Logger logger = LoggerFactory.getLogger(DataExportController.class);
 
 	@Autowired
 	private ExportService exportService;
 
-
-	/**
-	 * 导出联盟卡列表信息
-	 * @param request
-	 * @param response
-	 * @param phone		模糊查询手机号
-	 * @param cardNo	模糊查询联盟卡号
-	 * @throws IOException
-	 */
-	@ApiOperation(value = "导出盟员的联盟卡列表", notes = "导出盟员的联盟卡列表，可模糊搜索电话号码、联盟卡号关键字", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/busMemberCard", method = RequestMethod.GET)
-	public void busMemberCard(HttpServletRequest request, HttpServletResponse response, @ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId
-										,@ApiParam(name="phone", value = "电话号码", required = false) @RequestParam(name = "phone", required = false) String phone
-										,@ApiParam(name="cardNo", value = "联盟卡号", required = false) @RequestParam(name = "cardNo", required = false) String cardNo) throws IOException {
+	@ApiOperation(value = "导出盟员的联盟卡列表", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/busMemberCar/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public void exportBusMemberCarByUnionId(HttpServletRequest request, HttpServletResponse response
+			, @ApiParam(name="unionId", value = "联盟id", required = true) @PathVariable("unionId") Integer unionId
+			,@ApiParam(name="phone", value = "电话号码", required = false) @RequestParam(name = "phone", required = false) String phone
+			,@ApiParam(name="cardNo", value = "联盟卡号", required = false) @RequestParam(name = "cardNo", required = false) String cardNo) throws IOException {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
 			List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
 			String[] titles = new String[]{"房号", "业主姓名", "联系电话","余额（元）"};
 			String[] contentName = new String[]{"roomNum", "ownerName", "ownerPhone", "ownerAccount"};
 			String filename = "联盟卡列表";
-			HSSFWorkbook wb = exportService.exportBusMemberCar(titles,contentName,list);
+			HSSFWorkbook wb = exportService.exportBusMemberCar(titles, contentName, list);
 			ExportUtil.responseExport(response, wb, filename);
 		} catch (BaseException e){
 			response.setContentType("text/html");

@@ -43,7 +43,7 @@ public class UnionApplyController {
 
 
     @ApiOperation(value = "查询入盟申请相关信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{unionId}/{applyStatus}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/applyStatus/{applyStatus}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listByUnionIdAndApplyStatus(Page page
             , @ApiParam(name = "unionId", value = "联盟id",required = true)
              @PathVariable("unionId") Integer unionId
@@ -66,7 +66,7 @@ public class UnionApplyController {
     }
 
     @ApiOperation(value = "审批入盟申请", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{id}/{unionId}/{applyStatus}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{id}/unionId/{unionId}/applyStatus/{applyStatus}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     @SysLogAnnotation(description = "通过或不通过入盟申请", op_function = "1")
     public String updateByUnionIdAndApplyStatus(HttpServletRequest request
             , @ApiParam(name = "id", value = "入盟申请id", required = true) @PathVariable("id")Integer id

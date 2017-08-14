@@ -4,35 +4,6 @@ package com.gt.union.common.constant.business;
  * Created by Administrator on 2017/8/2 0002.
  */
 public interface UnionBusinessRecommendConstant {
-    /**
-     * 商机查询类型：推荐给我的商机
-     */
-    public static final int LIST_TYPE_TO_ME = 1;
-
-    /**
-     * 商机查询类型：我推荐的商机
-     */
-    public static final int LIST_TYPE_FROM_ME = 2;
-
-    /**
-     * 佣金结算查询类型：我的佣金收入
-     */
-    public static final int LIST_TYPE_BROKERAGE_TO_ME = 3;
-
-    /**
-     * 佣金结算查询类型：我需支付的佣金
-     */
-    public static final int LIST_TYPE_BROKERAGE_FROM_ME = 4;
-
-    /**
-     * 佣金结算查询类型：支付明细
-     */
-    public static final int LIST_TYPE_PAY_DETAIL = 5;
-
-    /**
-     * 佣金结算查询类型：佣金明细，即支付明细详情
-     */
-    public static final int LIST_TYPE_PAY_PARTICULAR = 6;
 
     /**
      * 删除状态：否
