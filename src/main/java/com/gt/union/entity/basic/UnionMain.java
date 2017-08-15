@@ -210,7 +210,7 @@ public class UnionMain extends Model<UnionMain> {
 	}
 
 	public void setUnionImg(String unionImg) {
-		this.unionImg = CommonUtil.isNotEmpty(unionImg) ? PropertiesUtil.getResourceUrl() + unionImg : unionImg;
+		this.unionImg = CommonUtil.isNotEmpty(unionImg) ? (unionImg.indexOf(PropertiesUtil.getResourceUrl()) > -1 ?  unionImg : PropertiesUtil.getResourceUrl() + unionImg) : unionImg;
 	}
 
 	public Integer getJoinType() {
@@ -242,7 +242,7 @@ public class UnionMain extends Model<UnionMain> {
 	}
 
 	public void setUnionWxGroupImg(String unionWxGroupImg) {
-		this.unionWxGroupImg = CommonUtil.isNotEmpty(unionWxGroupImg) ? PropertiesUtil.getResourceUrl() + unionWxGroupImg : unionWxGroupImg;
+		this.unionWxGroupImg = CommonUtil.isNotEmpty(unionWxGroupImg) ? (unionWxGroupImg.indexOf(PropertiesUtil.getResourceUrl()) > -1 ?  unionWxGroupImg : PropertiesUtil.getResourceUrl() + unionWxGroupImg) : unionWxGroupImg;
 	}
 
 	public String getUnionSign() {
