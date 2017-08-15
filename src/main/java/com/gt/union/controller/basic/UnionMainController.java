@@ -164,7 +164,7 @@ public class UnionMainController {
         }
     }
 
-    @ApiOperation(value = "获取联盟信息", produces = "application/json;charset=UTF-8")
+/*    @ApiOperation(value = "获取联盟信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getById(HttpServletRequest request, @ApiParam(name="id", value = "联盟id", required = true) @PathVariable("id") Integer id){
         try{
@@ -181,7 +181,7 @@ public class UnionMainController {
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(GET_ID, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
-    }
+    }*/
 
     @ApiOperation(value = "获取创建联盟步骤信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/instance/step", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
