@@ -115,7 +115,7 @@ public class UnionMainController {
 
     @ApiOperation(value = "查询所有联盟列表", produces = "application/json;charset=UTF-8")
     @SysLogAnnotation(op_function = "1", description = "查询所有联盟列表")
-    @RequestMapping(value = "/", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String list(HttpServletRequest request) {
         try {
             List<UnionMain> list = unionMainService.list();
