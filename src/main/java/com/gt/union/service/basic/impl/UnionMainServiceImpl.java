@@ -1,10 +1,15 @@
 package com.gt.union.service.basic.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionMainConstant;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.*;
+import com.gt.union.entity.basic.UnionApplyInfo;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.mapper.basic.UnionMainMapper;
 import com.gt.union.service.basic.*;
@@ -12,12 +17,13 @@ import com.gt.union.service.brokerage.IUnionBrokerageWithdrawalsRecordService;
 import com.gt.union.service.business.IUnionBrokeragePayRecordService;
 import com.gt.union.service.card.IUnionBusMemberCardService;
 import com.gt.union.service.card.IUnionCardDivideRecordService;
+import com.gt.union.service.common.UnionRootService;
 import com.gt.union.vo.basic.UnionMainCreateInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * <p>
@@ -39,6 +45,9 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	private static final String SAVE = "UnionMainServiceImpl.save()";
 	private static final String GETID_BUSID = "UnionMainServiceImpl.getIdByBusId()";
 	private static final String IS_UNION_MAIN_VALID_DETAIL = "UnionMainServiceImpl.isUnionMainValidDETAIL()";
+
+	@Autowired
+	private UnionRootService unionRootService;
 
 	@Autowired
 	private IUnionApplyService unionApplyService;
@@ -69,20 +78,82 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
 	@Override
 	public Map<String, Object> indexByBusId(Integer busId) throws Exception {
+		Map<String,Object> data = new HashMap<String,Object>();
 	    if (busId == null) {
 	        throw new ParamException(INDEX_BUSID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
-        Integer unionId = this.getIdByBusId(busId);
-		return this.indexById(unionId);
+        UnionMain createUnion = this.getUnionMainByBusId(busId);//我创建的联盟
+	    UnionMain currentUnion = createUnion;
+		List<UnionMain> joins = this.listJoinUnion(busId);
+		if(CommonUtil.isEmpty(createUnion)){
+			if(joins.size() > 0){
+				currentUnion = joins.get(0);
+			}
+		}
+		data.put("createUnion",createUnion);
+		data.put("joinUnions", joins);
+		return indexUnionMain(currentUnion, busId, data);
 	}
 
 	@Override
-	public Map<String, Object> indexById(Integer id) throws Exception {
+	public Map<String, Object> indexById(Integer id, Integer busId) throws Exception {
+		Map<String,Object> data = new HashMap<String,Object>();
 	    if (id == null) {
 	        throw new ParamException(INDEX_ID, "参数id为空", ExceptionConstant.PARAM_ERROR);
         }
-        //TODO 获取我的联盟首页信息
-		return null;
+		if (busId == null) {
+			throw new ParamException(INDEX_ID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+		}
+		UnionMain createUnion = this.getUnionMainByBusId(busId);
+        UnionMain main = this.getUnionMainById(id);
+        try{
+        	unionRootService.unionRoot(main);
+		}catch (Exception e){
+        	main = null;
+		}
+		data.put("createUnion",createUnion);
+		List<UnionMain> joins = this.listJoinUnion(busId);
+		data.put("joinUnions", joins);
+		return indexUnionMain(main, busId, data);
+	}
+
+	private Map<String, Object> indexUnionMain(UnionMain currentUnion, Integer busId, Map<String,Object> data )throws Exception{
+		if(CommonUtil.isEmpty(currentUnion)){
+			return data;
+		}
+		//是否是该盟盟主
+		int isUnionOwner = 1;
+		data.put("unionId",currentUnion.getId());
+		data.put("isIntegral",currentUnion.getIsIntegral());
+		data.put("unionName",currentUnion.getUnionName());
+		data.put("unionIllustration",currentUnion.getUnionIllustration());
+		data.put("createtime", DateTimeKit.format(currentUnion.getCreatetime(),DateTimeKit.DEFAULT_DATETIME_FORMAT));
+		data.put("unionMemberNum",currentUnion.getUnionMemberNum());
+		data.put("unionTotalMember",currentUnion.getUnionTotalMember());
+		data.put("surplusMemberNum",currentUnion.getUnionTotalMember() - currentUnion.getUnionMemberNum());
+		UnionApplyInfo info  = unionApplyService.getUnionApplyInfo(busId,currentUnion.getId());//本商家的
+		data.put("enterpriseName",info.getEnterpriseName());
+		data.put("ownerEnterpriseName",info.getEnterpriseName());
+		data.put("infoId",info.getId());
+		if(!busId.equals(currentUnion.getBusId())){//不是盟主
+			busId = currentUnion.getBusId();
+			UnionApplyInfo mainInfo = unionApplyService.getUnionApplyInfo(busId,currentUnion.getId());
+			data.put("ownerEnterpriseName",mainInfo.getEnterpriseName());
+			isUnionOwner = 0;
+		}
+		if(CommonUtil.isNotEmpty(currentUnion.getIsIntegral()) && currentUnion.getIsIntegral() == 1){
+			//查询联盟积分
+			double integral = unionBusMemberCardService.getUnionMemberIntegral(currentUnion.getId());
+			data.put("integral",integral);
+		}
+		data.put("isRedCardOpend", 0);
+		if(CommonUtil.isNotEmpty(currentUnion.getRedCardOpend()) && currentUnion.getRedCardOpend() == 1){
+			data.put("isRedCardOpend",1);
+		}
+		double ableWithDrawalsSum = unionBrokerageWithdrawalsRecordService.getUnionBrokerageAbleToWithdrawalsSum(busId,currentUnion.getId());//联盟可提现佣金总和
+		data.put("ableWithDrawalsSum",ableWithDrawalsSum);
+		data.put("isUnionOwner",isUnionOwner);
+		return data;
 	}
 
 	@Override
@@ -90,14 +161,86 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	    if (busId == null) {
 	        throw new ParamException(LIST_MY_UNION, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
-        //TODO 查询商家创建及加入的所有联盟列表
-		return null;
+		List<UnionMain> list = new ArrayList<UnionMain>();
+		UnionMain unionMain = getUnionMainByBusId(busId);
+		if(CommonUtil.isNotEmpty(unionMain)){
+			list.add(unionMain);
+		}
+		List<UnionMain> joinUnions = listJoinUnion(busId);
+		if(joinUnions.size() > 0){
+			list.addAll(joinUnions);
+		}
+		Iterator<UnionMain> it = list.iterator();
+		while (it.hasNext()){
+			UnionMain main = it.next();
+			try{
+				unionRootService.unionRoot(main);
+			}catch (Exception e){
+				it.remove();
+			}
+		}
+		return list;
+	}
+
+
+	/**
+	 * 我加入的联盟
+	 * @param busId
+	 * @return
+	 */
+	private List<UnionMain> listJoinUnion(final Integer busId){
+		Wrapper wrapper = new Wrapper() {
+			@Override
+			public String getSqlSegment() {
+				StringBuilder sbSqlSegment = new StringBuilder(" t1");
+				sbSqlSegment.append(" LEFT JOIN t_union_member t2 ON t1.id = t2.union_id")
+						.append(" WHERE t2.bus_id = ").append(busId)
+						.append(" AND t2.del_status = ").append(0)
+						.append(" AND t2.is_nuion_owner = ").append(0)
+						.append(" ORDER BY t2.id ASC");
+				return sbSqlSegment.toString();
+			};
+
+		};
+		StringBuilder sbSqlSelect = new StringBuilder("");
+		sbSqlSelect.append("t1.id, t1.createtime, t1.del_status delStatus, t1.union_name unionName, ")
+				.append("t1.bus_id busId, t1.union_img unionImg, t1.join_type joinType, t1.director_phone directorPhone,")
+				.append("t1.union_illustration unionIllustration, t1.union_wx_group_img unionWxGroupImg, t1.union_sign unionSign, ")
+				.append("t1.union_total_member uniontotalMember, t1.union_member_num unionMemberNum, t1.union_level unionLevel, ")
+				.append("t1.union_verify_status unionVerifyStatus, t1.is_integral isIntegral, t1.old_member_charge oldMemberCharge, ")
+				.append("t1.black_card_charge blackCardCcharge, t1.black_card_price blackCardPrice, t1.black_card_term blackCardTerm, ")
+				.append(" t1.red_card_opend redCardOpend, t1.red_card_price redCardPrice, t1.red_card_term redCardTerm, ")
+				.append("t1.black_card_illustration blackCardIllustration, t1.red_card_illustration redCardIllustration, t1.union_validity unionValidity");
+		wrapper.setSqlSelect(sbSqlSelect.toString());
+		List<UnionMain> list = this.selectList(wrapper);
+		Iterator<UnionMain> it = list.iterator();
+		while(it.hasNext()){
+			UnionMain unionMain = it.next();
+			try{
+				unionRootService.unionRoot(unionMain);
+			}catch (Exception e){
+				it.remove();
+			}
+		}
+		return list;
 	}
 
 	@Override
-	public List<UnionMain> list() throws Exception {
-	    //TODO 查询所有联盟列表
-		return null;
+	public List<UnionMain> list() {
+		List<UnionMain> list = null;
+		if(redisCacheUtil.exists("unionList")){
+			Object obj = redisCacheUtil.get("unionList");
+			if(CommonUtil.isNotEmpty(obj)){
+				return JSONArray.parseArray(obj.toString(),UnionMain.class);
+			}
+		}
+		EntityWrapper entityWrapper = new EntityWrapper<UnionMain>();
+		entityWrapper.eq("del_status",0);
+		list = this.selectList(entityWrapper);
+		if(CommonUtil.isNotEmpty(list)){
+			redisCacheUtil.set("unionList",JSON.toJSONString(list));
+		}
+		return list;
 	}
 
 	@Override
@@ -112,14 +255,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         //TODO 更新联盟信息，要求盟主权限
 	}
 
-	@Override
-	public Map<String, Object> getById(Integer id) throws Exception {
-	    if (id == null) {
-	        throw new ParamException(GET_ID, "参数id为空", ExceptionConstant.PARAM_ERROR);
-        }
-        //TODO 获取联盟信息
-		return null;
-	}
 
 	@Override
 	public Map<String, Object> getInstanceStep(Integer busId) throws Exception {
@@ -140,12 +275,27 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	}
 
 	@Override
-	public Integer getIdByBusId(Integer busId) throws Exception {
+	public UnionMain getUnionMainByBusId(Integer busId) throws Exception {
 	    if (busId == null) {
 	        throw new ParamException(GETID_BUSID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
-        //TODO 通过busId获取联盟id
-		return null;
+		StringBuilder sqlWhere = new StringBuilder("");
+		sqlWhere.append("SELECT t1.id, t1.union_id, t1.bus_id, t1.del_status, t1.is_nuion_owner from t_union_member t1 WHERE t_union_main.id = t1.union_id")
+				.append(" AND t1.bus_id = ").append(busId)
+				.append(" AND t_union_main.bus_id = ").append(busId)
+				.append(" AND t1.del_status = ").append(0)
+				.append(" AND t1.is_nuion_owner = ").append(1);
+		EntityWrapper entityWrapper = new EntityWrapper<UnionMain>();
+		entityWrapper.exists(sqlWhere.toString());
+		UnionMain unionMain = this.selectOne(entityWrapper);
+		try{
+			if(unionRootService.unionRoot(unionMain) == 1){
+				return unionMain;
+			}
+		}catch (Exception e){
+			unionMain = null;
+		}
+		return unionMain;
 	}
 
     /**
@@ -156,7 +306,23 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
      */
     @Override
     public UnionMain getUnionMainById(Integer id){
-        return this.selectById(id);
+		UnionMain main = null;
+		if ( redisCacheUtil.exists( "unionMain:"+id ) ) {
+			Object obj = redisCacheUtil.get("unionMain:"+id);
+			if (CommonUtil.isNotEmpty(obj)) {
+				return JSON.parseObject(obj.toString(),UnionMain.class);
+			}
+		}
+		// 2. 不存在则从数据库查询
+		EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<UnionMain>();
+		entityWrapper.eq("id",id);
+		entityWrapper.eq("del_status",0);
+		main = this.selectOne(entityWrapper);
+		// 写入 Redis 操作
+		if(CommonUtil.isNotEmpty(main)){
+			redisCacheUtil.set( "unionMain:"+id, JSON.toJSONString(main) );
+		}
+		return main;
     }
 
     /**
@@ -191,25 +357,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
 
 /*
-	public UnionMain getUnionMain(Integer unionId){
-		UnionMain main = null;
-		if ( redisCacheUtil.exists( "unionMain:"+unionId ) ) {
-			// 1.1 存在则从redis 读取
-			redisCacheUtil.remove("unionMain:"+unionId );
-			main = JSON.parseObject(redisCacheUtil.get("unionMain:"+unionId ).toString(),UnionMain.class);
-		} else {
-			// 2. 不存在则从数据库查询
-			EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<UnionMain>();
-			entityWrapper.eq("id",unionId);
-			entityWrapper.eq("del_status",0);
-			main = this.selectOne(entityWrapper);
-			// 写入 Redis 操作
-			if(CommonUtil.isNotEmpty(main)){
-				redisCacheUtil.set( "unionMain:"+unionId, JSON.toJSONString(main) );
-			}
-		}
-		return main;
-	}
 
 	@Override
 	public List<UnionMain> getMemberUnionList(final Integer busId) {

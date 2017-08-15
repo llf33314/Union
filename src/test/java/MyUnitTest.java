@@ -4,8 +4,11 @@ import com.gt.union.UnionApplication;
 import com.gt.union.common.util.DateTimeKit;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.entity.basic.UnionCreateInfoRecord;
+import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.basic.UnionTransferRecord;
+import com.gt.union.service.basic.IUnionApplyService;
 import com.gt.union.service.basic.IUnionCreateInfoRecordService;
+import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.basic.IUnionTransferRecordService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,10 +33,16 @@ public class MyUnitTest {
 	@Autowired
 	IUnionTransferRecordService unionTransferRecordService;
 
+	@Autowired
+	private IUnionMainService unionMainService;
+
+	@Autowired
+	private IUnionApplyService unionApplyService;
+
+
 	@Test
-	public void test1(){
-		UnionTransferRecord record = unionTransferRecordService.get(null,4);
-		System.out.println(record);
+	public void test1() throws Exception {
+		System.out.println(unionApplyService.getUnionApplyInfo(33,16));
 	}
 
 }

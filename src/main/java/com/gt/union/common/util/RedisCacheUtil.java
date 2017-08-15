@@ -41,8 +41,12 @@ public class RedisCacheUtil {
 	 * @param pattern pattern
 	 */
 	public void removePattern( final String pattern ) {
-		Set< String > keys = redisTemplate.keys( pattern );
-		if ( keys.size() > 0 ) redisTemplate.delete( keys );
+		try{
+			Set< String > keys = redisTemplate.keys( pattern );
+			if ( keys.size() > 0 ) redisTemplate.delete( keys );
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 	}
 
 	/**
@@ -51,8 +55,12 @@ public class RedisCacheUtil {
 	 * @param key key
 	 */
 	public void remove( final String key ) {
-		if ( exists( key ) ) {
-			redisTemplate.delete( redisNamePrefix +key );
+		try{
+			if ( exists( key ) ) {
+				redisTemplate.delete( redisNamePrefix +key );
+			}
+		}catch (Exception e){
+			e.printStackTrace();
 		}
 	}
 
@@ -64,7 +72,11 @@ public class RedisCacheUtil {
 	 * @return boolean
 	 */
 	public boolean exists( final String key ) {
-		return redisTemplate.hasKey( redisNamePrefix + key );
+		try{
+			return redisTemplate.hasKey( redisNamePrefix + key );
+		}catch (Exception e){
+			return false;
+		}
 	}
 
 	/**
@@ -76,8 +88,12 @@ public class RedisCacheUtil {
 	 */
 	public Object get( final String key ) {
 		Object result = null;
-		ValueOperations< String,String > operations = redisTemplate.opsForValue();
-		result = operations.get( redisNamePrefix + key );
+		try {
+			ValueOperations< String,String > operations = redisTemplate.opsForValue();
+			result = operations.get( redisNamePrefix + key );
+		}catch (Exception e){
+			e.printStackTrace();
+		}
 		return result;
 	}
 

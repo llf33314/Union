@@ -117,14 +117,27 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                         .append(" WHERE m.union_id = ").append(unionId)
                         .append("    AND a.del_status = ").append(UnionApplyConstant.DEL_STATUS_NO)
                         .append("    AND m.del_status = ").append(UnionMemberConstant.DEL_STATUS_NO);
-                sbSqlSegment.append(" ORDER BY m.apply_out_time DESC ");
+                sbSqlSegment.append(" ORDER BY m.id DESC ");
                 return sbSqlSegment.toString();
             };
 
         };
         StringBuilder sbSqlSelect = new StringBuilder("");
         sbSqlSelect.append(", m.id id ")
-                .append(", i.enterprise_name enterpriseName ");
+                .append(", m.union_id unionId ")
+                .append(", m.bus_id busId ")
+                .append(", i.enterprise_name enterpriseName ")
+                .append(", i.sell_divide_proportion sellDivideProportion ")
+                .append(", i.notify_phone notifyPhone ")
+                .append(", i.bus_address busAddress ")
+                .append(", i.director_phone directorPhone ")
+                .append(", i.address_longitude addressLongitude ")
+                .append(", i.address_latitude addressLatitude ")
+                .append(", i.integral_proportion integralProportion ")
+                .append(", i.address_provience_id addressProvienceId ")
+                .append(", i.address_city_id addressCityId ")
+                .append(", i.address_district_id addressDistrictId ")
+                .append(", i.is_member_out_advice isMemberOutAdvice ");
         wrapper.setSqlSelect(sbSqlSelect.toString());
         return null;
     }
@@ -314,7 +327,6 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         if (wrapper == null) {
             throw new ParamException(IS_EXIST_UNION_MEMBER, "参数wrapper为空", ExceptionConstant.PARAM_ERROR);
         }
-
         return this.selectCount(wrapper) > 0 ? true : false;
     }
 
@@ -371,18 +383,20 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         UnionMember unionMember = null;
         if ( redisCacheUtil.exists( "unionMember:" + unionId + ":" + busId) ) {
             // 1.1 存在则从redis 读取
-            unionMember = JSON.parseObject(redisCacheUtil.get("unionMember:" + unionId + ":" + busId ).toString(),UnionMember.class);
-        } else {
-            // 2. 不存在则从数据库查询
-            EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<UnionMember>();
-            entityWrapper.eq("union_id",unionId);
-            entityWrapper.eq("bus_id",busId);
-            entityWrapper.eq("del_status",0);
-            unionMember = this.selectOne(entityWrapper);
-            // 写入 Redis 操作
-            if(CommonUtil.isNotEmpty(unionMember)){
-                redisCacheUtil.set( "unionMember:" + unionId + ":" + busId, JSON.toJSONString(unionMember) );
+            Object obj = redisCacheUtil.get("unionMember:" + unionId + ":" + busId );
+            if(CommonUtil.isNotEmpty(obj)){
+                return JSON.parseObject(redisCacheUtil.get("unionMember:" + unionId + ":" + busId ).toString(),UnionMember.class);
             }
+        }
+        // 2. 不存在则从数据库查询
+        EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<UnionMember>();
+        entityWrapper.eq("union_id",unionId);
+        entityWrapper.eq("bus_id",busId);
+        entityWrapper.eq("del_status",0);
+        unionMember = this.selectOne(entityWrapper);
+        // 写入 Redis 操作
+        if(CommonUtil.isNotEmpty(unionMember)){
+            redisCacheUtil.set( "unionMember:" + unionId + ":" + busId, JSON.toJSONString(unionMember) );
         }
         return unionMember;
     }

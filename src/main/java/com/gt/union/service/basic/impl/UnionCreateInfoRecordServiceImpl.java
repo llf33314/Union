@@ -2,6 +2,7 @@ package com.gt.union.service.basic.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.DateTimeKit;
 import com.gt.union.entity.basic.UnionCreateInfoRecord;
 import com.gt.union.mapper.basic.UnionCreateInfoRecordMapper;
@@ -22,11 +23,15 @@ import java.util.Date;
 public class UnionCreateInfoRecordServiceImpl extends ServiceImpl<UnionCreateInfoRecordMapper, UnionCreateInfoRecord> implements IUnionCreateInfoRecordService {
 
 	@Override
-	public UnionCreateInfoRecord getByBusId(Integer busId) {
+	public UnionCreateInfoRecord getBusUnion(Integer busId, Integer unionId) {
 		EntityWrapper entityWrapper = new EntityWrapper<UnionCreateInfoRecord>();
 		entityWrapper.eq("del_status", 0);
 		entityWrapper.eq("bus_id",busId);
+		if(CommonUtil.isNotEmpty(unionId)){
+			entityWrapper.eq("union_id",unionId);
+		}
 		entityWrapper.gt("period_validity", DateTimeKit.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
+		entityWrapper.orderBy("id",false);
 		UnionCreateInfoRecord unionCreateInfoRecord = this.selectOne(entityWrapper);
 		return unionCreateInfoRecord;
 	}

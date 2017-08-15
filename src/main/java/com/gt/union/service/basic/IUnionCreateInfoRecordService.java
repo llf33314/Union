@@ -16,7 +16,8 @@ public interface IUnionCreateInfoRecordService extends IService<UnionCreateInfoR
 	/**
 	 * 根据商家id 获取创建盟主服务的信息
 	 * @param busId	商家id
+	 * @param unionId	联盟id
 	 * @return  	返回为空：则联盟盟主服务已过，或没有创建  如果不为空，则可能创建了联盟，也可以没有创建联盟
 	 */
-	public UnionCreateInfoRecord getByBusId(Integer busId);
+	public UnionCreateInfoRecord getBusUnion(Integer busId, Integer unionId);
 }

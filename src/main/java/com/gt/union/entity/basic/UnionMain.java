@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.PropertiesUtil;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -208,7 +210,7 @@ public class UnionMain extends Model<UnionMain> {
 	}
 
 	public void setUnionImg(String unionImg) {
-		this.unionImg = unionImg;
+		this.unionImg = CommonUtil.isNotEmpty(unionImg) ? PropertiesUtil.getResourceUrl() + unionImg : unionImg;
 	}
 
 	public Integer getJoinType() {
@@ -240,7 +242,7 @@ public class UnionMain extends Model<UnionMain> {
 	}
 
 	public void setUnionWxGroupImg(String unionWxGroupImg) {
-		this.unionWxGroupImg = unionWxGroupImg;
+		this.unionWxGroupImg = CommonUtil.isNotEmpty(unionWxGroupImg) ? PropertiesUtil.getResourceUrl() + unionWxGroupImg : unionWxGroupImg;
 	}
 
 	public String getUnionSign() {

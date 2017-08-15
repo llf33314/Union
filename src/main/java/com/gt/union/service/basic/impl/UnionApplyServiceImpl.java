@@ -123,37 +123,23 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         UnionApplyInfo info = null;
         if ( redisCacheUtil.exists( "unionApplyInfo:" + unionId + ":" + busId ) ) {
             // 1.1 存在则从redis 读取
-            info = JSON.parseObject(redisCacheUtil.get("unionApplyInfo:" + unionId + ":" + busId ).toString(),UnionApplyInfo.class);
-        } else {
-            Wrapper wrapper = new Wrapper() {
-                @Override
-                public String getSqlSegment() {
-                    StringBuilder sbSqlSegment = new StringBuilder(" t1");
-                    sbSqlSegment.append(" WHERE EXISTS  ")
-                            .append("( SELECT t2.* from t_union_apply t2")
-                            .append(" WHERE t1.union_apply_id = t2.id " )
-                            .append(" AND t2.union_id = " ).append(unionId)
-                            .append(" AND t2.del_status = " ).append(UnionApplyConstant.DEL_STATUS_NO)
-                            .append(" AND t2.apply_bus_id = " ).append(busId)
-                            .append(" AND t2.apply_status = " ).append(UnionApplyConstant.APPLY_STATUS_PASS)
-                            .append(")");
-                    return sbSqlSegment.toString();
-                };
-
-            };
-            StringBuilder sbSqlSelect = new StringBuilder();
-            sbSqlSelect.append(" t1.id , t1.union_apply_id unionApplyId, t1.apply_reason applyReason, t1.enterprise_name enterpriseName, t1.director_name, ")
-                    .append("t1.director_phone directorPhone, t1.director_email directorEmail, t1.bus_address busAddress, t1.notify_phone notifyPhone, ")
-                    .append("t1.address_longitude addressLongitude, t1.address_latitude addressLatitude, t1.address_provience_id addressProvienceId, ")
-                    .append("t1.address_city_id addressCityId, t1.address_district_id addressDistrictId, t1.integral_proportion integralProportion, ")
-                    .append("t1.is_member_out_advice isMemberOutAdvice");
-            wrapper.setSqlSelect(sbSqlSelect.toString());
-            info = unionApplyInfoService.selectOne(wrapper);
-            // 写入 Redis 操作
-            if(CommonUtil.isNotEmpty(info)){
-                System.out.printf(JSON.toJSONString(info));
-                redisCacheUtil.set("unionApplyInfo:" + unionId + ":" + busId, JSON.toJSONString(info));
+            Object obj = redisCacheUtil.get("unionApplyInfo:" + unionId + ":" + busId );
+            if(CommonUtil.isNotEmpty(obj)){
+                return JSON.parseObject(obj.toString(),UnionApplyInfo.class);
             }
+        }
+        EntityWrapper entityWrapper = new EntityWrapper<UnionApplyInfo>();
+        StringBuilder sqlExists = new StringBuilder();
+        sqlExists.append("SELECT t1.id, t1.union_id, t1.apply_bus_id, t1.del_status, t1.apply_status FROM t_union_apply t1 WHERE t1.id = t_union_apply_info.union_apply_id")
+                .append(" AND t1.union_id = ").append(unionId)
+                .append(" AND t1.apply_bus_id = ").append(busId)
+                .append(" AND t1.del_status = ").append(0)
+                .append(" AND t1.apply_status = ").append(1);
+        entityWrapper.exists(sqlExists.toString());
+        info = unionApplyInfoService.selectOne(entityWrapper);
+        // 写入 Redis 操作
+        if(CommonUtil.isNotEmpty(info)){
+            redisCacheUtil.set("unionApplyInfo:" + unionId + ":" + busId, JSON.toJSONString(info));
         }
         return info;
     }
@@ -162,7 +148,7 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
 	public UnionApply getUnionApply(Integer busId, Integer unionId) {
         EntityWrapper<UnionApply> entityWrapper = new EntityWrapper<UnionApply>();
         entityWrapper.eq("union_id",unionId)
-                .eq("bus_id",busId)
+                .eq("apply_bus_id",busId)
                 .eq("del_status",UnionApplyConstant.DEL_STATUS_NO);
         UnionApply apply = this.selectOne(entityWrapper);
 		return apply;

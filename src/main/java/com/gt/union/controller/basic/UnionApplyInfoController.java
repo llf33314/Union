@@ -2,6 +2,7 @@ package com.gt.union.controller.basic;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.common.annotation.SysLogAnnotation;
+import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
@@ -62,7 +63,7 @@ public class UnionApplyInfoController {
 		try {
             BusUser busUser = SessionUtils.getLoginUser(request);
             if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
-                throw new BusinessException(GET_ID, "", "请使用主账号权限");
+                throw new BusinessException(GET_ID, "", CommonConstant.UNION_BUS_PARENT_MSG);
             }
             Map<String,Object> data = this.unionApplyInfoService.getById(id, unionId, busUser.getId());
             return GTJsonResult.instanceSuccessMsg(data).toString();
@@ -92,7 +93,7 @@ public class UnionApplyInfoController {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
 			if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
-				throw new BusinessException(UPDATE_ID, "", "请使用主账号权限");
+				throw new BusinessException(UPDATE_ID, "", CommonConstant.UNION_BUS_PARENT_MSG);
 			}
 			unionApplyInfo.setId(id);
 			this.unionApplyInfoService.updateById(unionApplyInfo,busUser.getId(),unionId);

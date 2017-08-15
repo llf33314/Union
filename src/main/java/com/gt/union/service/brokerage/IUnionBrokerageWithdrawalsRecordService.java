@@ -20,4 +20,12 @@ public interface IUnionBrokerageWithdrawalsRecordService extends IService<UnionB
 	 * @return
 	 */
 	public double getUnionBrokerageWithdrawalsSum(Integer busId, Integer unionId);
+
+	/**
+	 * 联盟的可提现佣金总和
+	 * @param busId
+	 * @param unionId
+	 * @return
+	 */
+	public double getUnionBrokerageAbleToWithdrawalsSum(Integer busId, Integer unionId);
 }

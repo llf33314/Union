@@ -110,11 +110,11 @@ public class UnionVerifyMemberController {
 
 	@SysLogAnnotation(op_function = "1", description = "获取佣金平台管理员验证码")
 	@ApiOperation(value = "获取佣金平台管理员验证码", notes = "获取佣金平台管理员验证码", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/phone/{phone}", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/phone/{phone}", produces = "application/json;charset=UTF-8",method = RequestMethod.GET)
 	public String getCodeByPhone(HttpServletRequest request, HttpServletResponse response
        , @ApiParam(name="phone", value = "手机号", required = true) @PathVariable String phone) {
 		try {
-            BusUser user = SessionUtils.getLoginUser(request);//TODO user没有校验是否为空
+            BusUser user = SessionUtils.getLoginUser(request);
             //生成验证码
             String code = RandomKit.getRandomString(6, 0);
             Integer busId = user.getId();

@@ -27,10 +27,11 @@ public interface IUnionMainService extends IService<UnionMain> {
     /**
      * 选择联盟时查询我的联盟信息
      * @param id
-     * @return
+     * @param busId
+	 * @return
      * @throws Exception
      */
-    public Map<String, Object> indexById(Integer id) throws Exception;
+    public Map<String, Object> indexById(Integer id, Integer busId) throws Exception;
 
     /**
      * 查询商家创建及加入的所有联盟列表
@@ -45,7 +46,7 @@ public interface IUnionMainService extends IService<UnionMain> {
      * @return
      * @throws Exception
      */
-    public List<UnionMain> list() throws Exception;
+    public List<UnionMain> list();
 
     /**
      * 更新联盟信息，要求盟主权限
@@ -55,14 +56,6 @@ public interface IUnionMainService extends IService<UnionMain> {
      * @throws Exception
      */
     public void updateById(Integer id, Integer busId, UnionMain unionMain) throws Exception;
-
-    /**
-     * 获取联盟信息
-     * @param id
-     * @return
-     * @throws Exception
-     */
-    public Map<String, Object> getById(Integer id) throws Exception;
 
     /**
      * 获取创建联盟步骤信息
@@ -81,12 +74,12 @@ public interface IUnionMainService extends IService<UnionMain> {
     public void save(Integer busId, UnionMainCreateInfoVO unionMainCreateInfoVO) throws Exception;
 
     /**
-     * 通过busId获取联盟id
+     * 通过busId获取他创建的联盟
      * @param busId
      * @return
      * @throws Exception
      */
-    public Integer getIdByBusId(Integer busId) throws Exception;
+    public UnionMain getUnionMainByBusId(Integer busId) throws Exception;
 
     /**
      * 根据id获取对象
@@ -95,6 +88,8 @@ public interface IUnionMainService extends IService<UnionMain> {
      * @throws Exception
      */
     public UnionMain getUnionMainById(Integer id);
+
+
 
     /**
      * ------------ 判断联盟是否有效 ------------

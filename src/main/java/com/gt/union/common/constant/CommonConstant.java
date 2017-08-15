@@ -23,6 +23,11 @@ public class CommonConstant {
 	public static int SMS_UNION_MODEL = 33;
 
 	/**
+	 * 联盟支付model
+	 */
+	public static int PAY_MODEL = 36;
+
+	/**
 	 * 创建联盟支付内部订单前缀
 	 */
 	public static final String CREATE_UNION_PAY_ORDER_CODE = "000060000";
@@ -47,4 +52,15 @@ public class CommonConstant {
 	 * 创建联盟的等级相应成员数、金额、名称
 	 */
 	public static final String UNION_CREATE_INFO = "1145";
+
+	/**
+	 * 联盟已过期
+	 */
+	public static final String UNION_OVERDUE_MSG = "联盟已失效";
+
+
+	/**
+	 * 主账号权限
+	 */
+	public static final String UNION_BUS_PARENT_MSG = "请使用主账号权限";
 }

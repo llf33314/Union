@@ -1,6 +1,7 @@
 package com.gt.union.controller.basic;
 
 import com.gt.union.common.annotation.SysLogAnnotation;
+import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
@@ -75,7 +76,12 @@ public class UnionMainController {
     public String indexById(HttpServletRequest request
             , @ApiParam(name="id", value = "联盟id", required = true)  @PathVariable("id") Integer id) {
         try {
-            Map<String, Object> data = unionMainService.indexById(id);
+            BusUser user = SessionUtils.getLoginUser(request);
+            Integer busId = user.getId();
+            if (user.getPid() != null && user.getPid() != 0) {
+                busId = user.getPid();
+            }
+            Map<String, Object> data = unionMainService.indexById(id, busId);
             return GTJsonResult.instanceSuccessMsg(data).toString();
         } catch (BaseException e) {
             logger.error("", e);
@@ -114,10 +120,7 @@ public class UnionMainController {
         try {
             List<UnionMain> list = unionMainService.list();
             return GTJsonResult.instanceSuccessMsg(list).toString();
-        } catch (BaseException e) {
-            logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
-        } catch (Exception e){
+        }  catch (Exception e){
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(LIST, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
@@ -133,7 +136,7 @@ public class UnionMainController {
             InvalidParameter( result );
             BusUser user = SessionUtils.getLoginUser(request);
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
-                throw new BusinessException(UPDATE_ID, "","请使用主账号权限");
+                throw new BusinessException(UPDATE_ID, "", CommonConstant.UNION_BUS_PARENT_MSG);
             }
             unionMain.setId(id);
             unionMainService.updateById(id, user.getId(), unionMain);
@@ -167,7 +170,7 @@ public class UnionMainController {
         try{
             BusUser user = SessionUtils.getLoginUser(request);
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
-                throw new BusinessException(GET_ID, "", "请使用主账号权限");
+                throw new BusinessException(GET_ID, "", CommonConstant.UNION_BUS_PARENT_MSG);
             }
             Map<String,Object> data = unionMainService.getById(id);
             return GTJsonResult.instanceSuccessMsg(data).toString();
@@ -186,7 +189,7 @@ public class UnionMainController {
         try{
             BusUser user = SessionUtils.getLoginUser(request);
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
-                throw new BusinessException(GET_INSTANCE_STEP, "", "请使用主账号权限");
+                throw new BusinessException(GET_INSTANCE_STEP, "", CommonConstant.UNION_BUS_PARENT_MSG);
             }
             Map<String,Object> data = unionMainService.getInstanceStep(user.getId());
             return GTJsonResult.instanceSuccessMsg(data).toString();
@@ -207,7 +210,7 @@ public class UnionMainController {
         try{
             BusUser user = SessionUtils.getLoginUser(request);
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
-                throw new BusinessException(SAVE, "", "请使用主账号权限");
+                throw new BusinessException(SAVE, "", CommonConstant.UNION_BUS_PARENT_MSG);
             }
             unionMainService.save(user.getId(), unionMainCreateInfoVO);
             return GTJsonResult.instanceSuccessMsg().toString();
