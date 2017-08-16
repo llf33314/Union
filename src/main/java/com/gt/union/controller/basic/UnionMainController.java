@@ -1,5 +1,6 @@
 package com.gt.union.controller.basic;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.common.annotation.SysLogAnnotation;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
@@ -113,13 +114,13 @@ public class UnionMainController {
         }
     }
 
-    @ApiOperation(value = "查询所有联盟列表", produces = "application/json;charset=UTF-8")
-    @SysLogAnnotation(op_function = "1", description = "查询所有联盟列表")
+    @ApiOperation(value = "分页查询所有联盟列表", produces = "application/json;charset=UTF-8")
+    @SysLogAnnotation(op_function = "1", description = "分页查询所有联盟列表")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String list(HttpServletRequest request) {
+    public String list(Page page, HttpServletRequest request) {
         try {
-            List<UnionMain> list = unionMainService.list();
-            return GTJsonResult.instanceSuccessMsg(list).toString();
+            Page result = unionMainService.list(page);
+            return GTJsonResult.instanceSuccessMsg(result).toString();
         }  catch (Exception e){
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(LIST, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();

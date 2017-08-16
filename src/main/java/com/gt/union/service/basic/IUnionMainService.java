@@ -1,5 +1,6 @@
 package com.gt.union.service.basic;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.vo.basic.UnionMainCreateInfoVO;
@@ -45,8 +46,9 @@ public interface IUnionMainService extends IService<UnionMain> {
      * 查询所有联盟列表
      * @return
      * @throws Exception
+	 * @param page
      */
-    public List<UnionMain> list();
+    public Page list(Page page);
 
     /**
      * 更新联盟信息，要求盟主权限

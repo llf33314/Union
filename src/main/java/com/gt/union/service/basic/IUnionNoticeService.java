@@ -14,9 +14,18 @@ import com.gt.union.entity.basic.UnionNotice;
 public interface IUnionNoticeService extends IService<UnionNotice> {
 
 	/**
-	 * 保存联盟公告
-	 * @param notice
+	 * 获取联盟公告
+	 * @param unionId
 	 * @return
 	 */
-	UnionNotice saveByUnionId(UnionNotice notice) throws Exception;
+	UnionNotice getByUnionId(Integer unionId);
+
+	/**
+	 *	保存联盟公告
+	 * @param unionId
+	 * @param busId
+	 * @param noticeContent
+	 * @return
+	 */
+	UnionNotice saveByUnionId(Integer unionId, Integer busId, String noticeContent) throws Exception;
 }

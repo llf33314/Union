@@ -10,8 +10,10 @@ import com.gt.union.common.util.StringUtil;
 import com.gt.union.entity.basic.UnionNotice;
 import com.gt.union.mapper.basic.UnionNoticeMapper;
 import com.gt.union.service.basic.IUnionNoticeService;
+import com.gt.union.service.common.UnionRootService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 
@@ -28,34 +30,35 @@ public class UnionNoticeServiceImpl extends ServiceImpl<UnionNoticeMapper, Union
 	private static final String SAVE_UNIONID = "UnionNoticeServiceImpl.saveByUnionId()";
 
 	@Autowired
-	private UnionNoticeMapper unionNoticeMapper;
+	private UnionRootService unionRootService;
 
 	@Override
-	public UnionNotice saveByUnionId(UnionNotice notice) throws Exception {
-		//TODO 联盟公告判断是否该联盟盟主，判断联盟是否有效
+	public UnionNotice getByUnionId(Integer unionId) {
+		EntityWrapper wrapper = new EntityWrapper<UnionNotice>();
+		wrapper.eq("union_id", unionId);
+		wrapper.eq("del_status", 0);
+		return this.selectOne(wrapper);
+	}
 
-		if(CommonUtil.isEmpty(notice.getUnionId())){
-			throw new ParamException(SAVE_UNIONID, "参数错误", ExceptionConstant.PARAM_ERROR);
-		}
-		if(StringUtil.isEmpty(notice.getNoticeContent())){
+	@Override
+	@Transactional
+	public UnionNotice saveByUnionId(Integer unionId, Integer busId, String noticeContent) throws Exception{
+		unionRootService.unionRoot(unionId);
+		UnionNotice notice = getByUnionId(unionId);
+		if(StringUtil.isEmpty(noticeContent)){
 			throw new BusinessException(SAVE_UNIONID, "", "公告内容不能为空");
 		}
-		if(StringUtil.getStringLength(notice.getNoticeContent()) > 50){
+		if(StringUtil.getStringLength(noticeContent) > 50){
 			throw new BusinessException(SAVE_UNIONID, "", "公告内容最多可输入50字");
 		}
 		notice.setModifytime(new Date());
-		if(CommonUtil.isEmpty(notice.getId())){
-			EntityWrapper wrapper = new EntityWrapper<UnionNotice>();
-			wrapper.eq("union_id",notice.getUnionId());
-			Integer count = unionNoticeMapper.selectCount(wrapper);
-			if(count > 0){
-				throw new BusinessException(SAVE_UNIONID, "", "系统错误，请刷新后重试");
-			}
+		notice.setNoticeContent(noticeContent);
+		if(CommonUtil.isEmpty(notice)){
 			notice.setDelStatus(0);
 			notice.setCreatetime(new Date());
-			unionNoticeMapper.insert(notice);
+			this.insert(notice);
 		}else{
-			unionNoticeMapper.updateById(notice);
+			this.updateById(notice);
 		}
 		return notice;
 	}
