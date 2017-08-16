@@ -3,6 +3,7 @@ package com.gt.union.service.basic;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.entity.basic.UnionApplyInfo;
+import com.gt.union.vo.basic.UnionApplyVO;
 
 import java.util.List;
 import java.util.Map;
@@ -59,9 +60,9 @@ public interface IUnionApplyInfoService extends IService<UnionApplyInfo> {
 
 	/**
 	 * 保存unionApplyInfo
-	 * @param unionApplyInfo
+	 * @param vo
 	 * @param applyId 申请id
 	 * @return
 	 */
-	UnionApplyInfo saveUnionApplyInfo(UnionApplyInfo unionApplyInfo, Integer applyId);
+	UnionApplyInfo saveUnionApplyInfo(UnionApplyVO vo, Integer applyId);
 }

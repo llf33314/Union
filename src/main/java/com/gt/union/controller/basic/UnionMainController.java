@@ -134,7 +134,6 @@ public class UnionMainController {
           , @ApiParam(name="id", value = "联盟id", required = true) @PathVariable Integer id
           , @ApiParam(name="unionMain", value = "联盟更新信息", required = true) @RequestBody @Valid UnionMain unionMain , BindingResult result){
         try{
-            InvalidParameter( result );
             BusUser user = SessionUtils.getLoginUser(request);
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
                 throw new BusinessException(UPDATE_ID, "", CommonConstant.UNION_BUS_PARENT_MSG);
@@ -148,20 +147,6 @@ public class UnionMainController {
         }catch (Exception e){
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(UPDATE_ID, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
-        }
-    }
-
-    /**
-     * 参数校验是否合法
-     *
-     * @param result BindingResult
-     */
-    private void InvalidParameter( BindingResult result ) throws BusinessException {
-        if ( result.hasErrors() ) {
-            List<ObjectError> errorList = result.getAllErrors();
-            for ( ObjectError error : errorList ) {
-                throw new BusinessException("","",error.getDefaultMessage());
-            }
         }
     }
 

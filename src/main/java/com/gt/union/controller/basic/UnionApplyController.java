@@ -11,15 +11,20 @@ import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.basic.IUnionApplyService;
+import com.gt.union.service.common.UnionInvalidService;
 import com.gt.union.vo.basic.UnionApplyVO;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -41,6 +46,9 @@ public class UnionApplyController {
 
     @Autowired
     private IUnionApplyService unionApplyService;
+
+    @Autowired
+    private UnionInvalidService unionInvalidService;
 
 
     @ApiOperation(value = "查询入盟申请相关信息", produces = "application/json;charset=UTF-8")
@@ -93,8 +101,9 @@ public class UnionApplyController {
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @SysLogAnnotation(description = "新建申请入盟或推荐入盟", op_function = "1")
     public String save(HttpServletRequest request
-            , @ApiParam(name = "unionApplyVO", value = "新建的数据模型", required = true) @RequestBody UnionApplyVO unionApplyVO){
+            , @ModelAttribute @Valid UnionApplyVO unionApplyVO, BindingResult result){
         try{
+            unionInvalidService.invalidParameter( result );
             BusUser busUser = SessionUtils.getLoginUser(request);
             if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
                 throw new BusinessException(SAVE, "",CommonConstant.UNION_BUS_PARENT_MSG);
@@ -109,4 +118,5 @@ public class UnionApplyController {
             return GTJsonResult.instanceErrorMsg(SAVE, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
     }
+
 }

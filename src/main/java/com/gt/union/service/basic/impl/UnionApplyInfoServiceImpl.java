@@ -17,6 +17,7 @@ import com.gt.union.service.basic.IUnionApplyInfoService;
 import com.gt.union.service.basic.IUnionApplyService;
 import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.basic.IUnionMemberService;
+import com.gt.union.vo.basic.UnionApplyVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -169,14 +170,14 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 	}
 
 	@Override
-	public UnionApplyInfo saveUnionApplyInfo(UnionApplyInfo unionApplyInfo, Integer applyId) {
+	public UnionApplyInfo saveUnionApplyInfo(UnionApplyVO vo, Integer applyId) {
 		UnionApplyInfo info = new UnionApplyInfo();
 		info.setUnionApplyId(applyId);
-		info.setApplyReason(unionApplyInfo.getApplyReason());
-		info.setEnterpriseName(unionApplyInfo.getEnterpriseName());
-		info.setDirectorEmail(unionApplyInfo.getDirectorEmail());
-		info.setDirectorPhone(unionApplyInfo.getDirectorPhone());
-		info.setDirectorName(unionApplyInfo.getDirectorName());
+		info.setApplyReason(vo.getApplyReason());
+		info.setEnterpriseName(vo.getEnterpriseName());
+		info.setDirectorEmail(vo.getDirectorEmail());
+		info.setDirectorPhone(vo.getDirectorPhone());
+		info.setDirectorName(vo.getDirectorName());
 		return info;
 	}
 }

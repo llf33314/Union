@@ -217,11 +217,8 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
 	public Map<String, Object> save(Integer busId, UnionApplyVO vo) throws Exception{
         Map<String,Object> data = new HashMap<String,Object>();
         //TODO 修改逻辑，需要重新判断必填字符
-        Integer unionId = vo.getUnionApply().getUnionId(); //vo没有判断是否为空...
-        Integer applyType = vo.getUnionApply().getApplyType();
-        if(CommonUtil.isEmpty(busId) || CommonUtil.isEmpty(unionId) || CommonUtil.isEmpty(vo) || CommonUtil.isEmpty(applyType)){
-            throw new ParamException(SAVE, "参数...错误", ExceptionConstant.PARAM_ERROR);
-        }
+        Integer unionId = vo.getUnionId();
+        Integer applyType = vo.getApplyType();
         UnionMain main = unionMainService.getUnionMainById(unionId);
         if(applyType == 1){//自由申请
             //1、判断是否加入了该盟
@@ -243,8 +240,7 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
                 throw new BusinessException(SAVE, "", "您加入的联盟已达上限");
             }
             UnionApply apply = saveUnionApply(busId,unionId,applyType);
-            UnionApplyInfo unionApplyInfo = vo.getUnionApplyInfo();
-            UnionApplyInfo info = unionApplyInfoService.saveUnionApplyInfo(unionApplyInfo, apply.getId());
+            UnionApplyInfo info = unionApplyInfoService.saveUnionApplyInfo(vo, apply.getId());
             //申请成功后，发送短信让盟主审核
             UnionApplyInfo mainInfo = this.getUnionApplyInfo(main.getBusId(),main.getId());
             String nowTime = "apply:"+System.currentTimeMillis();
@@ -271,7 +267,7 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
             }
             //TODO 2、判断推荐人的账号
             String userName = vo.getUserName();
-            if(CommonUtil.isNotEmpty(userName)){
+            if(StringUtil.isNotEmpty(userName)){
                 throw new ParamException(UPDATE_UNIONID_APPLYSTATUS, "参数错误", ExceptionConstant.PARAM_ERROR);
             }
             UnionMember unionMember = unionMemberService.getUnionMember(busId,unionId);
@@ -293,8 +289,7 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
                 throw new BusinessException(UPDATE_UNIONID_APPLYSTATUS, "", "您加入的联盟已达上限");
             }
             UnionApply apply = saveUnionApply(busId,unionId,applyType);
-            UnionApplyInfo unionApplyInfo = vo.getUnionApplyInfo();
-            UnionApplyInfo info = unionApplyInfoService.saveUnionApplyInfo(unionApplyInfo, apply.getId());
+            UnionApplyInfo info = unionApplyInfoService.saveUnionApplyInfo(vo, apply.getId());
             boolean isOwner = unionMemberService.isUnionOwner(unionId,busId);//联盟盟主
             if(isOwner){
                 UnionMember member = new UnionMember();

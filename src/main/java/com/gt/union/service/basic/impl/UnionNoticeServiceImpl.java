@@ -55,6 +55,7 @@ public class UnionNoticeServiceImpl extends ServiceImpl<UnionNoticeMapper, Union
 		notice.setNoticeContent(noticeContent);
 		if(CommonUtil.isEmpty(notice)){
 			notice.setDelStatus(0);
+			notice.setUnionId(unionId);
 			notice.setCreatetime(new Date());
 			this.insert(notice);
 		}else{

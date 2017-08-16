@@ -1,26 +1,77 @@
 package com.gt.union.vo.basic;
 
-import com.gt.union.entity.basic.UnionApply;
-import com.gt.union.entity.basic.UnionApplyInfo;
+import com.gt.union.valid.annotation.PhoneValid;
+import com.gt.union.valid.annotation.StringLengthValid;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import org.hibernate.validator.constraints.Email;
+import org.hibernate.validator.constraints.NotBlank;
+
+import javax.validation.constraints.NotNull;
 
 /**
  * Created by Administrator on 2017/7/24 0024.
  */
+@ApiModel( value = "UnionApplyVO", description = "申请推荐加盟实体" )
+@Data
 public class UnionApplyVO {
     /**
      * 盟员商家帐号
      */
-    private String userName = null;
+    @ApiModelProperty( value = "推荐时的盟员账号" )
+    private String userName;
 
     /**
-     * 入盟申请
+     * 申请推荐理由
      */
-    private UnionApply unionApply = null;
+    @ApiModelProperty( value = "申请推荐理由")
+    @StringLengthValid(length = 150, message = "申请推荐理由长度不可超过150字")
+    private String applyReason;
 
     /**
-     * 入盟申请信息
+     * 邮箱
      */
-    UnionApplyInfo unionApplyInfo = null;
+    @ApiModelProperty( value = "邮箱")
+    @Email(message = "邮箱有误", regexp = "^[A-Za-z0-9\\u4e00-\\u9fa5]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$")
+    private String directorEmail;
+
+    /**
+     * 负责人姓名
+     */
+    @ApiModelProperty( value = "负责人姓名")
+    @StringLengthValid(length = 10, message = "负责人内容长度不可超过10字")
+    private String directorName;
+
+    /**
+     * 联系电话
+     */
+    @ApiModelProperty( value = "联系电话" ,required = true)
+    @NotBlank( message = "联系电话内容不能为空")
+    @PhoneValid(message = "联系电话有误")
+    private String directorPhone;
+
+    /**
+     * 企业名称
+     */
+    @ApiModelProperty( value = "企业名称" ,required = true)
+    @NotBlank( message = "企业名称内容不能为空")
+    @StringLengthValid(length = 10, message = "企业名称内容长度不可超过")
+    private String enterpriseName;
+
+    /**
+     * 联盟id
+     */
+    @ApiModelProperty( value = "联盟id" ,required = true)
+    @NotNull(message = "请选择联盟")
+    private Integer unionId;
+
+    /**
+     * 申请推荐类型
+     */
+    @ApiModelProperty( value = "申请推荐类型 1：申请  2：推荐" ,required = true )
+    @NotNull(message = "请选择申请推荐类型")
+    private Integer applyType;
 
     public String getUserName() {
         return userName;
@@ -30,19 +81,60 @@ public class UnionApplyVO {
         this.userName = userName;
     }
 
-    public UnionApply getUnionApply() {
-        return unionApply;
+    public String getApplyReason() {
+        return applyReason;
     }
 
-    public void setUnionApply(UnionApply unionApply) {
-        this.unionApply = unionApply;
+    public void setApplyReason(String applyReason) {
+        this.applyReason = applyReason;
     }
 
-    public UnionApplyInfo getUnionApplyInfo() {
-        return unionApplyInfo;
+    public String getDirectorEmail() {
+        return directorEmail;
     }
 
-    public void setUnionApplyInfo(UnionApplyInfo unionApplyInfo) {
-        this.unionApplyInfo = unionApplyInfo;
+    public void setDirectorEmail(String directorEmail) {
+        this.directorEmail = directorEmail;
+    }
+
+    public String getDirectorName() {
+        return directorName;
+    }
+
+    public void setDirectorName(String directorName) {
+        this.directorName = directorName;
+    }
+
+    public String getDirectorPhone() {
+        return directorPhone;
+    }
+
+    public void setDirectorPhone(String directorPhone) {
+        this.directorPhone = directorPhone;
+    }
+
+    public String getEnterpriseName() {
+        return enterpriseName;
+    }
+
+    public void setEnterpriseName(String enterpriseName) {
+        this.enterpriseName = enterpriseName;
+    }
+
+    public Integer getUnionId() {
+        return unionId;
+    }
+
+    public void setUnionId(Integer unionId) {
+        this.unionId = unionId;
+    }
+
+    public Integer getApplyType() {
+        return applyType;
+    }
+
+    public void setApplyType(Integer applyType) {
+        this.applyType = applyType;
     }
 }
+
