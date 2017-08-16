@@ -2,8 +2,6 @@ server:
   display-name: union
   context-path: /
   port: 8080
-  tomcat:
-    uri-encoding: UTF-8
 
 # logback配置
 logging:
@@ -53,12 +51,6 @@ spring:
         min-idle: 0
   session:
        store-type: redis
-  http:
-      encoding:
-          force: true
-          charset: UTF-8
-          enabled: true
-
 
 # mybatis设置
 mybatis:
