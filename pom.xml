@@ -26,6 +26,7 @@
         <fastjson.version>1.2.34</fastjson.version>
         <cxf.version>3.1.12</cxf.version>
         <httpclient.version>4.5.3</httpclient.version>
+        <dev.lib.lombok>1.16.18</dev.lib.lombok>
     </properties>
 
     <dependencies>
@@ -139,6 +140,12 @@
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
             <version>3.9</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${dev.lib.lombok}</version>
         </dependency>
     </dependencies>
 
