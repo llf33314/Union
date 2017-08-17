@@ -8,10 +8,12 @@ import com.gt.union.common.constant.basic.UnionApplyConstant;
 import com.gt.union.common.constant.basic.UnionMemberPreferentialManagerConstant;
 import com.gt.union.common.constant.basic.UnionMemberPreferentialServiceConstant;
 import com.gt.union.common.exception.ParamException;
+import com.gt.union.entity.basic.UnionMember;
 import com.gt.union.entity.basic.UnionMemberPreferentialManager;
 import com.gt.union.mapper.basic.UnionMemberPreferentialManagerMapper;
 import com.gt.union.service.basic.IUnionMemberPreferentialManagerService;
 import com.gt.union.service.basic.IUnionMemberPreferentialServiceService;
+import com.gt.union.service.basic.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -36,6 +38,8 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
     @Autowired
     private IUnionMemberPreferentialServiceService unionMemberPreferentialServiceService;
 
+    @Autowired
+    private IUnionMemberService unionMemberService;
     @Override
     public Page listByUnionIdAndVerifyStatus(Page page, final Integer unionId, final Integer verifyStatus) throws Exception {
         if (page == null) {
@@ -78,16 +82,18 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
     }
 
     @Override
-    public Page listMyByUnionId(Page page, final Integer unionId, final Integer memberId) throws Exception {
+    public Page listMyByUnionId(Page page, final Integer unionId, final Integer busId) throws Exception {
         if (page == null) {
             throw new ParamException(LIST_MY_UNIONID, "参数page为空", ExceptionConstant.PARAM_ERROR);
         }
         if (unionId == null) {
             throw new ParamException(LIST_MY_UNIONID, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
-        if (memberId == null) {
-            throw new ParamException(LIST_MY_UNIONID, "参数memberId为空", ExceptionConstant.PARAM_ERROR);
+        if (busId == null) {
+            throw new ParamException(LIST_MY_UNIONID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
+        UnionMember member = unionMemberService.getUnionMember(busId,unionId);
+        final Integer memberId = member.getId();
         Wrapper wrapper = new Wrapper() {
             @Override
             public String getSqlSegment() {
@@ -107,10 +113,9 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
         };
         StringBuilder sbSqlSelect = new StringBuilder("");
         sbSqlSelect.append(" m.verify_status verifyStatus ")
-                .append(" i.enterprise_name enterpriseName ")
+                .append(", i.enterprise_name enterpriseName ")
                 .append(", m.preferential_illustration preferentialIllustration ");
         wrapper.setSqlSelect(sbSqlSelect.toString());
-
         return this.selectMapsPage(page, wrapper);
     }
 

@@ -69,8 +69,6 @@ public class UnionApplyVO {
     /**
      * 申请推荐类型
      */
-    @ApiModelProperty( value = "申请推荐类型 1：申请  2：推荐" ,required = true )
-    @NotNull(message = "请选择申请推荐类型")
     private Integer applyType;
 
     public String getUserName() {

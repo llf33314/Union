@@ -28,12 +28,12 @@ public interface IUnionMemberPreferentialManagerService extends IService<UnionMe
     /**
      * 根据联盟id和盟员id查询该盟员的优惠项目
      * @param page
-     * @param unionId
-     * @param memberId
+     * @param unionId	联盟id
+     * @param busId		商家id
      * @return
      * @throws Exception
      */
-	Page listMyByUnionId(Page page, Integer unionId, Integer memberId) throws Exception;
+	Page listMyByUnionId(Page page, Integer unionId, Integer busId) throws Exception;
 
     /**
      * 根据联盟id和优惠服务项审核状态verifyStatus查询数量

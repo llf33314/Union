@@ -106,11 +106,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		}
 		UnionMain createUnion = this.getUnionMainByBusId(busId);
         UnionMain main = this.getUnionMainById(id);
-        try{
-        	unionRootService.unionRoot(main);
-		}catch (Exception e){
-        	main = null;
-		}
 		data.put("createUnion",createUnion);
 		List<UnionMain> joins = this.listJoinUnion(busId);
 		data.put("joinUnions", joins);
@@ -124,13 +119,14 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		//是否是该盟盟主
 		int isUnionOwner = 1;
 		data.put("unionId",currentUnion.getId());
-		data.put("isIntegral",currentUnion.getIsIntegral());
+		data.put("isIntegral",CommonUtil.isEmpty(currentUnion.getIsIntegral())? 0 : currentUnion.getIsIntegral());
 		data.put("unionName",currentUnion.getUnionName());
 		data.put("unionIllustration",currentUnion.getUnionIllustration());
 		data.put("createtime", DateTimeKit.format(currentUnion.getCreatetime(),DateTimeKit.DEFAULT_DATETIME_FORMAT));
 		data.put("unionMemberNum",currentUnion.getUnionMemberNum());
 		data.put("unionTotalMember",currentUnion.getUnionTotalMember());
 		data.put("surplusMemberNum",currentUnion.getUnionTotalMember() - currentUnion.getUnionMemberNum());
+		data.put("isRedCardOpend",CommonUtil.isEmpty(currentUnion.getRedCardOpend()) ? 0 : currentUnion.getRedCardOpend());
 		UnionApplyInfo info  = unionApplyService.getUnionApplyInfo(busId,currentUnion.getId());//本商家的
 		data.put("enterpriseName",info.getEnterpriseName());
 		data.put("ownerEnterpriseName",info.getEnterpriseName());
@@ -145,10 +141,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 			//查询联盟积分
 			double integral = unionBusMemberCardService.getUnionMemberIntegral(currentUnion.getId());
 			data.put("integral",integral);
-		}
-		data.put("isRedCardOpend", 0);
-		if(CommonUtil.isNotEmpty(currentUnion.getRedCardOpend()) && currentUnion.getRedCardOpend() == 1){
-			data.put("isRedCardOpend",1);
 		}
 		double ableWithDrawalsSum = unionBrokerageWithdrawalsRecordService.getUnionBrokerageAbleToWithdrawalsSum(busId,currentUnion.getId());//联盟可提现佣金总和
 		data.put("ableWithDrawalsSum",ableWithDrawalsSum);
@@ -169,15 +161,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		List<UnionMain> joinUnions = listJoinUnion(busId);
 		if(joinUnions.size() > 0){
 			list.addAll(joinUnions);
-		}
-		Iterator<UnionMain> it = list.iterator();
-		while (it.hasNext()){
-			UnionMain main = it.next();
-			try{
-				unionRootService.unionRoot(main);
-			}catch (Exception e){
-				it.remove();
-			}
 		}
 		return list;
 	}
@@ -213,15 +196,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 				.append("t1.black_card_illustration blackCardIllustration, t1.red_card_illustration redCardIllustration, t1.union_validity unionValidity");
 		wrapper.setSqlSelect(sbSqlSelect.toString());
 		List<UnionMain> list = this.selectList(wrapper);
-		Iterator<UnionMain> it = list.iterator();
-		while(it.hasNext()){
-			UnionMain unionMain = it.next();
-			try{
-				unionRootService.unionRoot(unionMain);
-			}catch (Exception e){
-				it.remove();
-			}
-		}
 		return list;
 	}
 
@@ -277,13 +251,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		EntityWrapper entityWrapper = new EntityWrapper<UnionMain>();
 		entityWrapper.exists(sqlWhere.toString());
 		UnionMain unionMain = this.selectOne(entityWrapper);
-		try{
-			if(unionRootService.unionRoot(unionMain) == 1){
-				return unionMain;
-			}
-		}catch (Exception e){
-			unionMain = null;
-		}
 		return unionMain;
 	}
 
