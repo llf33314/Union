@@ -42,8 +42,8 @@ public class UnionMainController {
     private static final String LIST_MY_UNION = "UnionMainController.listMyUnion()";
     private static final String LIST = "UnionMainController.list()";
     private static final String UPDATE_ID = "UnionMainController.updateById()";
-    private static final String GET_ID = "UnionMainController.getById()";
-    private static final String GET_INSTANCE_STEP = "UnionMainController.getInstanceStep()";
+    private static final String INSTANCE = "UnionMainController.instance()";
+    private static final String MEMBER = "UnionMainController.member()";
     private static final String SAVE = "UnionMainController.save()";
     private Logger logger = Logger.getLogger(UnionMainController.class);
 
@@ -150,41 +150,22 @@ public class UnionMainController {
         }
     }
 
-/*    @ApiOperation(value = "获取联盟信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getById(HttpServletRequest request, @ApiParam(name="id", value = "联盟id", required = true) @PathVariable("id") Integer id){
+    @ApiOperation(value = "创建联盟", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/instance", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String instance(HttpServletRequest request){
         try{
             BusUser user = SessionUtils.getLoginUser(request);
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
-                throw new BusinessException(GET_ID, "", CommonConstant.UNION_BUS_PARENT_MSG);
+                throw new BusinessException(INSTANCE, "", CommonConstant.UNION_BUS_PARENT_MSG);
             }
-            Map<String,Object> data = unionMainService.getById(id);
-            return GTJsonResult.instanceSuccessMsg(data).toString();
+            unionMainService.instance(user.getId());
+            return GTJsonResult.instanceSuccessMsg().toString();
         }catch (BaseException e){
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
         }catch (Exception e){
             logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(GET_ID, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
-        }
-    }*/
-
-    @ApiOperation(value = "获取创建联盟步骤信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/instance/step", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getInstanceStep(HttpServletRequest request){
-        try{
-            BusUser user = SessionUtils.getLoginUser(request);
-            if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
-                throw new BusinessException(GET_INSTANCE_STEP, "", CommonConstant.UNION_BUS_PARENT_MSG);
-            }
-            Map<String,Object> data = unionMainService.getInstanceStep(user.getId());
-            return GTJsonResult.instanceSuccessMsg(data).toString();
-        }catch (BaseException e){
-            logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
-        }catch (Exception e){
-            logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(GET_INSTANCE_STEP, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+            return GTJsonResult.instanceErrorMsg(INSTANCE, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
     }
 
@@ -192,7 +173,7 @@ public class UnionMainController {
     @SysLogAnnotation(op_function = "3", description = "保存创建联盟的信息")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String save(HttpServletRequest request
-        , @ApiParam(name="unionMain", value = "保存创建联盟的信息", required = true) @RequestBody UnionMainCreateInfoVO unionMainCreateInfoVO ){
+        , @ApiParam(name="unionMain", value = "保存创建联盟的信息", required = true) @RequestBody UnionMainCreateInfoVO unionMainCreateInfoVO ){ //TODO VO修改
         try{
             BusUser user = SessionUtils.getLoginUser(request);
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){

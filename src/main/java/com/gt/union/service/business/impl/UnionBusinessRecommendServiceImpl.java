@@ -20,6 +20,7 @@ import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.basic.IUnionMemberService;
 import com.gt.union.service.business.IUnionBusinessRecommendInfoService;
 import com.gt.union.service.business.IUnionBusinessRecommendService;
+import com.gt.union.service.common.IUnionRootService;
 import com.gt.union.vo.business.UnionBusinessRecommendFormVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -52,7 +53,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	private IUnionBusinessRecommendInfoService unionBusinessRecommendInfoService;
 
 	@Autowired
-	private IUnionMainService unionMainService;
+	private IUnionRootService unionRootService;
 
 	@Autowired
 	private IUnionMemberService unionMemberService;
@@ -81,7 +82,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	public void save(UnionBusinessRecommendFormVO vo) throws Exception{
 		//TODO 判断被推荐的商家是否有效
 		//联盟是否有效
-		unionMainService.isUnionMainValid(vo.getUnionId());
+		this.unionRootService.checkUnionMainValid(vo.getUnionId());
 		if(CommonUtil.isEmpty(vo.getUnionId())){
 			throw new ParamException(SAVE, "", ExceptionConstant.PARAM_ERROR);
 		}
