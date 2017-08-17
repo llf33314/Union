@@ -18,6 +18,11 @@ public class CommonConstant {
 	public static int MAX_UNION_APPLY = 3;
 
 	/**
+	 * 最大优惠项目数
+	 */
+	public static int MAX_PREFERENIAL_COUNT = 5;
+
+	/**
 	 * 短信model
 	 */
 	public static int SMS_UNION_MODEL = 33;
@@ -26,6 +31,8 @@ public class CommonConstant {
 	 * 联盟支付model
 	 */
 	public static int PAY_MODEL = 36;
+
+
 
 	/**
 	 * 创建联盟支付内部订单前缀

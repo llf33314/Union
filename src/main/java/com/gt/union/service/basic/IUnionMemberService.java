@@ -107,7 +107,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @param unionId   联盟id
      * @return
      */
-    UnionMember getUnionMember(Integer busId, Integer unionId);
+    UnionMember getUnionMember(Integer busId, Integer unionId) throws Exception;
 
 
     /**

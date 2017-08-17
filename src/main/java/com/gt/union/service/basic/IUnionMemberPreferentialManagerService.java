@@ -53,4 +53,21 @@ public interface IUnionMemberPreferentialManagerService extends IService<UnionMe
      * @throws Exception
      */
 	Map<String, Object> getByIdAndVerifyStatus(Page page, Integer id, Integer verifyStatus) throws Exception;
+
+	/**
+	 * 项目说明
+	 * @param unionId	联盟id
+	 * @param busId	商家id
+	 * @return
+	 */
+	UnionMemberPreferentialManager getManagerByUnionId(Integer unionId, Integer busId) throws Exception;
+
+	/**
+	 * 保存优惠项目说明
+	 * @param unionId	联盟id
+	 * @param busId	商家id
+	 * @param preferentialIllustration	项目说明
+	 * @return
+	 */
+	UnionMemberPreferentialManager save(Integer unionId, Integer busId, String preferentialIllustration) throws Exception;
 }

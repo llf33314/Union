@@ -49,6 +49,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     private static final String SELECT_UNION_BROKERAGE_LIST = "UnionMemberServiceImpl.selectUnionBrokerageList()";
     private static final String IS_MEMBER_VALID_UNIONMANE = "UnionMemberServiceImpl.isMemberValid(UnionMain)";
     private static final String UPDATEOUTSTATUS_ID = "UnionMemberServiceImpl.updateOutStatusById()";
+    private static final String GET_UNIONMEMBER = "UnionMemberServiceImpl.getUnionMember()";
 
     @Autowired
     private RedisCacheUtil redisCacheUtil;
@@ -293,7 +294,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             throw new BusinessException(UPDATEISNUIONOWNER_ID, "", "当前用户不是盟主，没有转移盟主身份的权限!");
         }
 
-        //盟主取消身份
+        //盟主取消身份get
         UnionMember oldOwner = new UnionMember();
         oldOwner.setIsNuionOwner(UnionMemberConstant.IS_UNION_OWNER_NO);
         this.update(oldOwner, oldOwnerWrapper);
@@ -379,7 +380,13 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    public UnionMember getUnionMember(Integer busId, Integer unionId) {
+    public UnionMember getUnionMember(Integer busId, Integer unionId) throws Exception{
+        if (unionId == null) {
+            throw new ParamException(GET_UNIONMEMBER, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
+        }
+        if (busId == null) {
+            throw new ParamException(GET_UNIONMEMBER, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+        }
         UnionMember unionMember = null;
         if ( redisCacheUtil.exists( "unionMember:" + unionId + ":" + busId) ) {
             // 1.1 存在则从redis 读取
