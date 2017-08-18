@@ -3,10 +3,11 @@ package com.gt.union.service.common.impl;
 import com.alibaba.fastjson.JSON;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.ExceptionConstant;
-import com.gt.union.common.constant.RedisContant;
 import com.gt.union.common.constant.basic.UnionCreateInfoRecordConstant;
 import com.gt.union.common.exception.ParamException;
+import com.gt.union.common.util.DateTimeKit;
 import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.RedisKeyUtil;
 import com.gt.union.entity.basic.UnionCreateInfoRecord;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.common.BusUser;
@@ -31,6 +32,7 @@ public class UnionRootServiceImpl implements IUnionRootService {
     private static final String CHECK_UNIONMAIN_VALID = "UnionRootServiceImpl.checkUnionMainValid()";
     private static final String IS_UNION_OWNER_BUSID = "UnionRootServiceImpl.isUnionOwner(busId)";
     private static final String IS_UNION_OWNER_UNIONID_BUSID = "UnionRootServiceImpl.isUnionOwner(unionId, busId)";
+    private static final String HAS_UNION_MEMBER_AUTHORITY = "UnionRootServiceImpl.hasUnionMemberAuthority(unionId, busId)";
 
 	@Autowired
     private RedisCacheUtil redisCacheUtil;
@@ -46,18 +48,19 @@ public class UnionRootServiceImpl implements IUnionRootService {
             throw new ParamException(GET_BUSUSER_BUSID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
 
-        String busIdKey = RedisContant.KEY_BUS_USER + String.valueOf(busId);
-        if (this.redisCacheUtil.exists(busIdKey)) {//（1）通过busId获取缓存中的busUser对象，如果存在，则直接返回
+        String busUserKey = RedisKeyUtil.getBusUserKey(busId);
+        if (this.redisCacheUtil.exists(busUserKey)) {//（1）通过busId获取缓存中的busUser对象，如果存在，则直接返回
             Object obj = this.redisCacheUtil.get(String.valueOf(busId));
             return JSON.parseObject(obj.toString(), BusUser.class);
         }
 
         //（2）如果缓存中不存在busUser对象，则调用接口获取 //TODO
         BusUser busUser = new BusUser();
+        busUser.setEndTime(DateTimeKit.addDays(DateTimeKit.getNow(), 1));
 
         // （3）不为空时重新存入缓存
         if (busUser != null) {
-            this.redisCacheUtil.set(String.valueOf(busId), JSON.toJSONString(busUser));
+            this.redisCacheUtil.set(busUserKey, JSON.toJSONString(busUser));
         }
         return busUser;
     }
@@ -72,7 +75,7 @@ public class UnionRootServiceImpl implements IUnionRootService {
         if (busUser == null) {
             throw new ParamException(CHECK_BUSUSER_VALID_BUSID, "无法通过busId获取busUser对象", ExceptionConstant.PARAM_ERROR);
         }
-        return (new Date()).compareTo(busUser.getEndTime()) < 0 ? true : false;
+        return DateTimeKit.getNow().compareTo(busUser.getEndTime()) < 0 ? true : false;
     }
 
     @Override
@@ -112,8 +115,8 @@ public class UnionRootServiceImpl implements IUnionRootService {
         }
 
         // （1）如果缓存中已存在，说明有效，直接返回
-        String unionIdValidKey = RedisContant.KEY_UNION_MAIN_VALID + unionId;
-        if (this.redisCacheUtil.exists(unionIdValidKey)) {
+        String unionMainValidKey = RedisKeyUtil.getUnionMainValidKey(unionId);
+        if (this.redisCacheUtil.exists(unionMainValidKey)) {
             return true;
         }
 
@@ -138,7 +141,7 @@ public class UnionRootServiceImpl implements IUnionRootService {
         }
 
         // （5）重新存入缓存
-        this.redisCacheUtil.set(unionIdValidKey, "1");
+        this.redisCacheUtil.set(unionMainValidKey, "1");
         return true;
     }
 
@@ -167,5 +170,18 @@ public class UnionRootServiceImpl implements IUnionRootService {
         }
 
         return busId.equals(unionMain.getBusId());
+    }
+
+    @Override
+    public boolean hasUnionMemberAuthority(Integer unionId, Integer busId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(HAS_UNION_MEMBER_AUTHORITY, "unionId=" + unionId, ExceptionConstant.PARAM_ERROR);
+        }
+        if (busId == null) {
+            throw new ParamException(HAS_UNION_MEMBER_AUTHORITY, "busId=" + busId, ExceptionConstant.PARAM_ERROR);
+        }
+
+
+        return false;
     }
 }

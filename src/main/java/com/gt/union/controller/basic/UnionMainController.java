@@ -8,6 +8,7 @@ import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.PageUtil;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.common.BusUser;
@@ -114,13 +115,17 @@ public class UnionMainController {
         }
     }
 
-    @ApiOperation(value = "分页查询所有联盟列表", produces = "application/json;charset=UTF-8")
-    @SysLogAnnotation(op_function = "1", description = "分页查询所有联盟列表")
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页查询所有可加入的联盟列表", produces = "application/json;charset=UTF-8")
+    @SysLogAnnotation(op_function = "1", description = "分页查询所有可加入的联盟列表")
+    @RequestMapping(value = "/valid/access", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String list(Page page, HttpServletRequest request) {
         try {
-            Page result = unionMainService.list(page);
-            return GTJsonResult.instanceSuccessMsg(result).toString();
+            List<UnionMain> unionMainList = unionMainService.listValidAccess();
+            PageUtil pageUtil = new PageUtil();
+            pageUtil.setRecords(unionMainList);
+            pageUtil.setCurrent(page.getCurrent());
+            pageUtil.setSize(page.getSize());
+            return GTJsonResult.instanceSuccessMsg(pageUtil.getMapAsPage()).toString();
         }  catch (Exception e){
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(LIST, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();

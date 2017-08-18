@@ -1,11 +1,7 @@
 package com.gt.union.mapper.basic;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
-import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.entity.basic.UnionMemberPreferentialManager;
-
-import java.util.List;
-import java.util.Map;
 
 /**
  * <p>

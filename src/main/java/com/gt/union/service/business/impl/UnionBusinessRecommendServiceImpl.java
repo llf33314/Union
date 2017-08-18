@@ -82,8 +82,9 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	public void save(UnionBusinessRecommendVO vo) throws Exception{
 		//联盟是否有效
 		this.unionRootService.checkUnionMainValid(vo.getUnionId());
-		UnionMember fromUnionMember = unionMemberService.getUnionMember(vo.getBusId(),vo.getUnionId());
-		unionMemberService.isMemberValid(fromUnionMember);//判断自己状态
+		//TODO
+		// UnionMember fromUnionMember = unionMemberService.getUnionMember(vo.getBusId(),vo.getUnionId());
+		//unionMemberService.isMemberValid(fromUnionMember);//判断自己状态
 		UnionMember toUnionMeber = unionMemberService.selectById(vo.getToMemberId());
 		if(toUnionMeber == null){
 			throw new BusinessException(SAVE,"盟员不存在","您推荐的盟员不存在");
@@ -103,7 +104,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 		recommend.setRecommendType(2);
 		recommend.setUnionId(vo.getUnionId());
 		recommend.setToBusId(toUnionMeber.getBusId());
-		recommend.setFromMemberId(fromUnionMember.getId());
+		//recommend.setFromMemberId(fromUnionMember.getId());
 		recommend.setToMemberId(vo.getToMemberId());
 		this.insert(recommend);
 		UnionBusinessRecommendInfo info = new UnionBusinessRecommendInfo();

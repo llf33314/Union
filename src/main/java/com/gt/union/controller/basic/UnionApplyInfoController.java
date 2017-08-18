@@ -13,6 +13,7 @@ import com.gt.union.entity.basic.UnionApplyInfo;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.basic.IUnionApplyInfoService;
 import com.gt.union.service.basic.IUnionMemberService;
+import com.gt.union.service.common.IUnionRootService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
@@ -46,6 +47,9 @@ public class UnionApplyInfoController {
 
 	@Autowired
 	private IUnionMemberService unionMemberService;
+
+	@Autowired
+    private IUnionRootService unionRootService;
 
 	/**
 	 * 获取编辑盟员信息
@@ -120,7 +124,7 @@ public class UnionApplyInfoController {
 			, @ApiParam(name = "unionId", value = "联盟id", required = true)@RequestParam(name = "unionId", required = true)Integer unionId) {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
-			if (!this.unionMemberService.isUnionOwner(unionId, busUser.getId())) {
+			if (!this.unionRootService.isUnionOwner(unionId, busUser.getId())) {
 				throw new BusinessException(LIST_SELLDIVIDEPROPORTION_PAGE, "", "当前请求人不是联盟的盟主");
 			}
             Page result = this.unionApplyInfoService.listBySellDivideProportionInPage(page, unionId);
@@ -147,7 +151,7 @@ public class UnionApplyInfoController {
             , @ApiParam(name = "unionId", value = "联盟id", required = true)@RequestParam(name = "unionId", required = true)Integer unionId) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
-            if (!this.unionMemberService.isUnionOwner(unionId, busUser.getId())) {
+            if (!this.unionRootService.isUnionOwner(unionId, busUser.getId())) {
                 throw new BusinessException(LIST_SELLDIVIDEPROPORTION_LIST, "", "当前请求人不是联盟的盟主");
             }
             List<Map<String,Object>> result = this.unionApplyInfoService.listBySellDivideProportionInList(unionId);
@@ -176,7 +180,7 @@ public class UnionApplyInfoController {
              @RequestBody List<UnionApplyInfo> unionApplyInfoList) {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
-			if (!this.unionMemberService.isUnionOwner(unionId, busUser.getId())) {
+			if (!this.unionRootService.isUnionOwner(unionId, busUser.getId())) {
 				throw new BusinessException(UPDATE_SELLDIVIDEPROPORTION_ID, "", "当前请求人不是联盟的盟主");
 			}
 			this.unionApplyInfoService.updateBySellDivideProportion(unionApplyInfoList);

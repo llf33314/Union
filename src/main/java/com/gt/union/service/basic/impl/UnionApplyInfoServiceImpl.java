@@ -17,6 +17,7 @@ import com.gt.union.service.basic.IUnionApplyInfoService;
 import com.gt.union.service.basic.IUnionApplyService;
 import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.basic.IUnionMemberService;
+import com.gt.union.service.common.IUnionRootService;
 import com.gt.union.vo.basic.UnionApplyVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -39,12 +40,9 @@ import java.util.Map;
  */
 @Service
 public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper, UnionApplyInfo> implements IUnionApplyInfoService {
-    private static final String UPDATE_ID = "UnionApplyInfoServiceImpl.updateById()";
 	private static final String LIST_SELLDIVIDEPROPORTION_PAGE = "UnionApplyInfoServiceImpl.listBySellDivideProportionInPage()";
 	private static final String LIST_SELLDIVIDEPROPORTION_LIST = "UnionApplyInfoServiceImpl.listBySellDivideProportionInList()";
 	private static final String UPDATE_SELLDIVIDEPROPORTION = "UnionApplyInfoServiceImpl.updateBySellDivideProportion()";
-	private static final String GET_ID = "UnionApplyInfoServiceImpl.getById()";
-	private static final String SAVE_UNION_APPLY_INFO = "UnionApplyInfoServiceImpl.saveUnionApplyInfo()";
 
 	@Autowired
 	private IUnionApplyService unionApplyService;
@@ -55,11 +53,14 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 	@Autowired
 	private IUnionMainService unionMainService;
 
+	@Autowired
+    private IUnionRootService unionRootService;
+
 	@Override
 	public void updateById(UnionApplyInfo unionApplyInfo, Integer busId, Integer unionId) throws Exception{
-		unionMemberService.isMemberValid(busId,unionId);
+		//TODO 只有盟主和盟员自己才有权限更新
 		//TODO 转换商家地址
-		this.updateById(unionApplyInfo);
+		//this.updateById(unionApplyInfo);
 	}
 
 	@Override
@@ -148,6 +149,8 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 
 	@Override
 	public Map<String, Object> getById(Integer id, Integer unionId, Integer busId) throws Exception {
+		//TODO 判断是否有权限
+        // this.unionRootService.hasUnionMemberAuthority(unionId, busId);
 		UnionMain main = unionMainService.getById(unionId);
 		Map<String,Object> data = new HashMap<String,Object>();
 		UnionApplyInfo info = unionApplyService.getUnionApplyInfo(busId,unionId);

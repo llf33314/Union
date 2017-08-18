@@ -23,6 +23,7 @@ import com.gt.union.service.basic.IUnionApplyInfoService;
 import com.gt.union.service.basic.IUnionApplyService;
 import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.basic.IUnionMemberService;
+import com.gt.union.service.common.IUnionRootService;
 import com.gt.union.vo.basic.UnionApplyVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -62,6 +63,9 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
 
     @Autowired
     private IUnionApplyInfoService unionApplyInfoService;
+
+    @Autowired
+    private IUnionRootService unionRootService;
 
     @Override
     public Page listByUnionIdAndApplyStatus(Page page, final Integer unionId, final Integer applyStatus, final String enterpriseName, final String directorPhone) throws Exception{
@@ -160,7 +164,7 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         if(CommonUtil.isEmpty(busId) || CommonUtil.isEmpty(id) || CommonUtil.isEmpty(unionId) || CommonUtil.isEmpty(applyStatus)){
             throw new ParamException(UPDATE_UNIONID_APPLYSTATUS, "参数...错误", ExceptionConstant.PARAM_ERROR);
         }
-        if(!unionMemberService.isUnionOwner(unionId, busId)){
+        if(!unionRootService.isUnionOwner(unionId, busId)){
             throw new BusinessException(UPDATE_UNIONID_APPLYSTATUS, "", "没有盟主权限");
         }
         UnionApply unionApply = this.selectById(id);
@@ -290,7 +294,7 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
             }
             UnionApply apply = saveUnionApply(busId,unionId,applyType);
             UnionApplyInfo info = unionApplyInfoService.saveUnionApplyInfo(vo, apply.getId());
-            boolean isOwner = unionMemberService.isUnionOwner(unionId,busId);//联盟盟主
+            boolean isOwner = unionRootService.isUnionOwner(unionId,busId);//联盟盟主
             if(isOwner){
                 UnionMember member = new UnionMember();
                 member.setBusId(busId);

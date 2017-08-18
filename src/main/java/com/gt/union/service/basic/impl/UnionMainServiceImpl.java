@@ -3,16 +3,12 @@ package com.gt.union.service.basic.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
-import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.ExceptionConstant;
-import com.gt.union.common.constant.RedisContant;
 import com.gt.union.common.constant.basic.UnionMainConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.DateTimeKit;
-import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.*;
 import com.gt.union.entity.basic.UnionApplyInfo;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.mapper.basic.UnionMainMapper;
@@ -44,7 +40,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	private static final String INDEX_BUSID = "UnionMainServiceImpl.indexByBusId()";
 	private static final String INDEX_ID = "UnionMainServiceImpl.indexById()";
 	private static final String LIST_MY_UNION = "UnionMainServiceImpl.listMyUnion()";
-	private static final String LIST = "UnionMainServiceImpl.list()";
 	private static final String UPDATE_ID = "UnionMainServiceImpl.updateById()";
 	private static final String GET_ID = "UnionMainServiceImpl.getById()";
 	private static final String INSTANCE = "UnionMainServiceImpl.instance()";
@@ -193,13 +188,24 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	}
 
 	@Override
-	public Page list(Page page) throws Exception{
-	    if (page == null) {
-	        throw new ParamException(LIST, "参数page为空", ExceptionConstant.PARAM_ERROR);
-        }
+	public List listValidAccess() throws Exception{
 		EntityWrapper entityWrapper = new EntityWrapper<UnionMain>();
-		entityWrapper.eq("del_status",0);
-		return this.selectPage(page,entityWrapper);
+		entityWrapper.eq("del_status",0)
+			.ge("union_validity", DateTimeKit.getDateTime());
+		List<UnionMain> list =  this.selectList(entityWrapper);
+
+		if (ListUtil.isEmpty(list)) {
+		    return null;
+        }
+        int size = list.size();
+        List<UnionMain> resultList = new ArrayList<>(size);
+        for (int i = 0; i < size; i++) {
+            UnionMain unionMain = list.get(i);
+		    if (this.unionRootService.checkUnionMainValid(unionMain.getId()) && unionMain.getUnionMemberNum() < unionMain.getUnionTotalMember()) {
+                resultList.add(unionMain);
+            }
+        }
+		return resultList;
 	}
 
 	@Override
@@ -222,9 +228,10 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         }
 
         // （1）判断商家是否有盟主权限
-        if (!this.unionRootService.hasUnionOwnerAuthority(busId)) {
+        this.unionRootService.hasUnionOwnerAuthority(busId);
+        /*if (!this.unionRootService.hasUnionOwnerAuthority(busId)) {
 	        throw new BusinessException(INSTANCE, "busId=" + busId, "当前登录商家帐号不具有盟主权限");
-        }
+        }*/
 
         // （2）判断商家是否创建过联盟
         if (this.unionRootService.hasCreatedUnion(busId)) {
@@ -270,9 +277,9 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
     	    throw new ParamException(GET_ID, "参数id为空", ExceptionConstant.PARAM_ERROR);
         }
 
-        String idKey = RedisContant.KEY_UNION_MAIN + String.valueOf(id);
-		if (this.redisCacheUtil.exists( idKey) ) { // （1）先从缓存中获取，如果存在，则直接返回
-			Object obj = this.redisCacheUtil.get(idKey);
+        String unionMainKey = RedisKeyUtil.getUnionMainKey(id);
+		if (this.redisCacheUtil.exists(unionMainKey) ) { // （1）先从缓存中获取，如果存在，则直接返回
+			Object obj = this.redisCacheUtil.get(unionMainKey);
             return JSON.parseObject(obj.toString(), UnionMain.class);
 		}
 		// （2）如果不存在，则从数据库查询
@@ -282,7 +289,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         UnionMain unionMain = this.selectOne(entityWrapper);
 		// （3）不为空时重新存入缓存
         if (unionMain != null) {
-            this.redisCacheUtil.set(idKey, JSON.toJSONString(unionMain) );
+            this.redisCacheUtil.set(unionMainKey, JSON.toJSONString(unionMain) );
         }
 		return unionMain;
     }

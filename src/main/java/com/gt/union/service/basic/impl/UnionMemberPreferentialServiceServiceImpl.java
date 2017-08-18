@@ -20,12 +20,16 @@ import com.gt.union.mapper.basic.UnionMemberPreferentialServiceMapper;
 import com.gt.union.service.basic.IUnionMemberPreferentialManagerService;
 import com.gt.union.service.basic.IUnionMemberPreferentialServiceService;
 import com.gt.union.service.basic.IUnionMemberService;
+import com.gt.union.service.common.IUnionRootService;
 import com.gt.union.service.consume.IUnionConsumeServiceRecordService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Iterator;
+import java.util.List;
 
 
 /**
@@ -53,6 +57,9 @@ public class UnionMemberPreferentialServiceServiceImpl extends ServiceImpl<Union
 
     @Autowired
     private IUnionConsumeServiceRecordService unionConsumeServiceRecordService;
+
+    @Autowired
+    private IUnionRootService unionRootService;
 
     @Override
     public Page pagePreferentialServiceByManagerId(Page page, final Integer managerId, final Integer verifyStatus) throws Exception {
@@ -258,7 +265,7 @@ public class UnionMemberPreferentialServiceServiceImpl extends ServiceImpl<Union
             throw new ParamException(VERIFY, "参数verifyStatus为空", ExceptionConstant.PARAM_ERROR);
         }
         //TODO 判断联盟是否有效
-        if(!unionMemberService.isUnionOwner(unionId,busId)){
+        if(!this.unionRootService.isUnionOwner(unionId,busId)){
             throw new BusinessException(VERIFY, "您不是盟主，没有权限审核", "您不是盟主，没有权限审核");
         }
         String[] list = ids.split(",");
