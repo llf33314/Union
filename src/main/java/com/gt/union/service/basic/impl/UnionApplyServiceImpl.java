@@ -173,7 +173,7 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         if(applyStatus == 1){//通过
             //TODO 判断对方的商家账号是否过期
             //盟员数达上限
-            UnionMain main = unionMainService.getUnionMainById(unionId);
+            UnionMain main = unionMainService.getById(unionId);
             if(main.getUnionMemberNum().equals(main.getUnionTotalMember())){
                 throw new BusinessException(UPDATE_UNIONID_APPLYSTATUS, "", "联盟成员已达上限");
             }
@@ -219,7 +219,7 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         //TODO 修改逻辑，需要重新判断必填字符
         Integer unionId = vo.getUnionId();
         Integer applyType = vo.getApplyType();
-        UnionMain main = unionMainService.getUnionMainById(unionId);
+        UnionMain main = unionMainService.getById(unionId);
         if(applyType == 1){//自由申请
             //1、判断是否加入了该盟
             UnionMember unionMember = unionMemberService.getUnionMember(busId,unionId);

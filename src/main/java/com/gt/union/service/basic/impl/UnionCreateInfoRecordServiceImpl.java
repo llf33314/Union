@@ -2,14 +2,13 @@ package com.gt.union.service.basic.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.DateTimeKit;
+import com.gt.union.common.constant.ExceptionConstant;
+import com.gt.union.common.constant.basic.UnionCreateInfoRecordConstant;
+import com.gt.union.common.exception.ParamException;
 import com.gt.union.entity.basic.UnionCreateInfoRecord;
 import com.gt.union.mapper.basic.UnionCreateInfoRecordMapper;
 import com.gt.union.service.basic.IUnionCreateInfoRecordService;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
 
 /**
  * <p>
@@ -21,18 +20,19 @@ import java.util.Date;
  */
 @Service
 public class UnionCreateInfoRecordServiceImpl extends ServiceImpl<UnionCreateInfoRecordMapper, UnionCreateInfoRecord> implements IUnionCreateInfoRecordService {
+    private static final String GET_BUSID = "UnionCreateInfoRecordServiceImpl.getByBusId()";
 
 	@Override
-	public UnionCreateInfoRecord getBusUnion(Integer busId, Integer unionId) {
-		EntityWrapper entityWrapper = new EntityWrapper<UnionCreateInfoRecord>();
-		entityWrapper.eq("del_status", 0);
-		entityWrapper.eq("bus_id",busId);
-		if(CommonUtil.isNotEmpty(unionId)){
-			entityWrapper.eq("union_id",unionId);
-		}
-		entityWrapper.gt("period_validity", DateTimeKit.format(new Date(),"yyyy-MM-dd HH:mm:ss"));
-		entityWrapper.orderBy("id",false);
-		UnionCreateInfoRecord unionCreateInfoRecord = this.selectOne(entityWrapper);
-		return unionCreateInfoRecord;
+	public UnionCreateInfoRecord getByBusId(Integer busId) throws Exception {
+	    if (busId == null) {
+	        throw new ParamException(GET_BUSID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionCreateInfoRecord> entityWrapper = new EntityWrapper<>();
+	    entityWrapper.eq("del_status", UnionCreateInfoRecordConstant.DEL_STATUS_NO)
+                .eq("bus_id", busId);
+
+		return this.selectOne(entityWrapper);
 	}
+
 }

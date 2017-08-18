@@ -21,6 +21,7 @@ import com.gt.union.service.basic.IUnionMemberService;
 import com.gt.union.service.business.IUnionBusinessRecommendInfoService;
 import com.gt.union.service.business.IUnionBusinessRecommendService;
 import com.gt.union.vo.business.UnionBusinessRecommendVO;
+import com.gt.union.service.common.IUnionRootService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,7 +53,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	private IUnionBusinessRecommendInfoService unionBusinessRecommendInfoService;
 
 	@Autowired
-	private IUnionMainService unionMainService;
+	private IUnionRootService unionRootService;
 
 	@Autowired
 	private IUnionMemberService unionMemberService;
@@ -80,7 +81,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	@Override
 	public void save(UnionBusinessRecommendVO vo) throws Exception{
 		//联盟是否有效
-		unionMainService.isUnionMainValid(vo.getUnionId());
+		this.unionRootService.checkUnionMainValid(vo.getUnionId());
 		UnionMember fromUnionMember = unionMemberService.getUnionMember(vo.getBusId(),vo.getUnionId());
 		unionMemberService.isMemberValid(fromUnionMember);//判断自己状态
 		UnionMember toUnionMeber = unionMemberService.selectById(vo.getToMemberId());
