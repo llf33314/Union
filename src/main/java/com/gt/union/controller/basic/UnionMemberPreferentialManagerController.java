@@ -47,7 +47,7 @@ public class UnionMemberPreferentialManagerController {
     public String listByUnionIdAndVerifyStatus(HttpServletRequest request, Page page
         , @ApiParam(name = "unionId", value = "联盟id", required = true)
           @PathVariable(name = "unionId", required = true) Integer unionId
-        , @ApiParam(name = "verifyStatus", value = "审核状态，1代表未审核，2代表审核通过，3代表审核不通过")
+        , @ApiParam(name = "verifyStatus", value = "审核状态，0代表未提交，1代表未审核，2代表审核通过，3代表审核不通过")
           @PathVariable(name = "verifyStatus") Integer verifyStatus) {
         try {
             Page pageData = this.unionMemberPreferentialManagerService.listByUnionIdAndVerifyStatus(page, unionId, verifyStatus);

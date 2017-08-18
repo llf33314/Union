@@ -1,6 +1,8 @@
 package com.gt.union.vo.business;
 
 import com.gt.union.entity.business.UnionBusinessRecommendInfo;
+import io.swagger.annotations.ApiModel;
+import lombok.Data;
 
 /**
  * 保存数据的vo

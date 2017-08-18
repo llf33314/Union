@@ -148,7 +148,6 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 
 	@Override
 	public Map<String, Object> getById(Integer id, Integer unionId, Integer busId) throws Exception {
-		unionMemberService.isMemberValid(busId,unionId);
 		UnionMain main = unionMainService.getUnionMainById(unionId);
 		Map<String,Object> data = new HashMap<String,Object>();
 		UnionApplyInfo info = unionApplyService.getUnionApplyInfo(busId,unionId);

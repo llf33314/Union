@@ -11,6 +11,7 @@ import com.gt.union.entity.business.UnionBusinessRecommend;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.business.IUnionBusinessRecommendService;
 import com.gt.union.vo.business.UnionBusinessRecommendFormVO;
+import com.gt.union.vo.business.UnionBusinessRecommendVO;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
@@ -245,7 +246,7 @@ public class UnionBusinessRecommendController {
 	@ApiOperation(value = "添加商机推荐", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String save(HttpServletRequest request
-			, @ApiParam(name = "unionBusinessRecommendFormVO", value = "推荐的商机信息", required = true) @RequestBody UnionBusinessRecommendFormVO vo){
+			, @ApiParam(name = "unionBusinessRecommendFormVO", value = "推荐的商机信息", required = true) @RequestBody UnionBusinessRecommendVO vo){
 		try{
             BusUser user = SessionUtils.getLoginUser(request);
             Integer busId = user.getId();

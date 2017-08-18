@@ -1,7 +1,6 @@
 package com.gt.union.vo.basic;
 
-import com.gt.union.valid.annotation.PhoneValid;
-import com.gt.union.valid.annotation.StringLengthValid;
+import com.gt.union.common.annotation.valid.StringLengthValid;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
@@ -9,6 +8,7 @@ import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
 import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Pattern;
 
 /**
  * Created by Administrator on 2017/7/24 0024.
@@ -26,7 +26,7 @@ public class UnionApplyVO {
      * 申请推荐理由
      */
     @ApiModelProperty( value = "申请推荐理由")
-    @StringLengthValid(length = 150, message = "申请推荐理由长度不可超过150字")
+    @StringLengthValid(length = 20, message = "申请推荐理由不可超过20字")
     private String applyReason;
 
     /**
@@ -40,7 +40,7 @@ public class UnionApplyVO {
      * 负责人姓名
      */
     @ApiModelProperty( value = "负责人姓名")
-    @StringLengthValid(length = 10, message = "负责人内容长度不可超过10字")
+    @StringLengthValid(length = 10, message = "负责人内容不可超过10字")
     private String directorName;
 
     /**
@@ -48,7 +48,7 @@ public class UnionApplyVO {
      */
     @ApiModelProperty( value = "联系电话" ,required = true)
     @NotBlank( message = "联系电话内容不能为空")
-    @PhoneValid(message = "联系电话有误")
+    @Pattern(regexp = "^1[3|4|5|6|7|8][0-9][0-9]{8}$", message = "联系电话有误")
     private String directorPhone;
 
     /**
@@ -56,7 +56,7 @@ public class UnionApplyVO {
      */
     @ApiModelProperty( value = "企业名称" ,required = true)
     @NotBlank( message = "企业名称内容不能为空")
-    @StringLengthValid(length = 10, message = "企业名称内容长度不可超过")
+    @StringLengthValid(length = 10, message = "企业名称内容不可超过10字")
     private String enterpriseName;
 
     /**

@@ -49,7 +49,7 @@ public class UnionNoticeServiceImpl extends ServiceImpl<UnionNoticeMapper, Union
 			throw new BusinessException(SAVE_UNIONID, "", "公告内容不能为空");
 		}
 		if(StringUtil.getStringLength(noticeContent) > 50){
-			throw new BusinessException(SAVE_UNIONID, "", "公告内容最多可输入50字");
+			throw new BusinessException(SAVE_UNIONID, "", "公告内容不可超过50字");
 		}
 		notice.setModifytime(new Date());
 		notice.setNoticeContent(noticeContent);

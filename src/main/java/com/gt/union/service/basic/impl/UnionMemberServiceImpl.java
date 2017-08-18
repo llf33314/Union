@@ -6,9 +6,7 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.ExceptionConstant;
-import com.gt.union.common.constant.basic.UnionApplyConstant;
-import com.gt.union.common.constant.basic.UnionDiscountConstant;
-import com.gt.union.common.constant.basic.UnionMemberConstant;
+import com.gt.union.common.constant.basic.*;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
@@ -372,10 +370,13 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     @Override
     public void isMemberValid(UnionMember unionMember) throws Exception {
         if(unionMember == null){
-            throw new BusinessException(IS_MEMBER_VALID_UNIONMANE, "", "未加入联盟");
+            throw new BusinessException(IS_MEMBER_VALID_UNIONMANE, "", "您未加入联盟");
+        }
+        if(unionMember.getDelStatus() == UnionMemberConstant.DEL_STATUS_YES){
+            throw new BusinessException(IS_MEMBER_VALID_UNIONMANE, "", "您已退出联盟");
         }
         if(unionMember.getOutStaus() == UnionMemberConstant.OUT_STATUS_PERIOD){
-            throw new BusinessException(IS_MEMBER_VALID_UNIONMANE, "", "已退出联盟");
+            throw new BusinessException(IS_MEMBER_VALID_UNIONMANE, "", "您处于退盟过渡期");
         }
     }
 
@@ -469,5 +470,58 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             this.updateById(unionMember);
         }
         return data;
+    }
+
+	@Override
+	public Page listUncommitByUnionId(Page page, final Integer unionId) {
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                StringBuilder sbSqlSegment = new StringBuilder(" t1");
+                sbSqlSegment.append(" LEFT JOIN t_union_apply t2 ON t1.id = t2.union_member_id ")
+                        .append(" LEFT JOIN t_union_apply_info t3 on t3.union_apply_id = t2.id ")
+                        .append(" WHERE t1.union_id = ").append(unionId)
+                        .append(" AND t1.del_status=").append(UnionMemberConstant.DEL_STATUS_NO)
+                        .append(" AND t2.del_status = ").append(UnionApplyConstant.DEL_STATUS_NO)
+                        .append(" AND NOT EXISTS (SELECT id from t_union_member_preferential_manager m ")
+                        .append(" WHERE m.member_id = t1.id ")
+                        .append(" AND m.del_status = ").append(UnionMemberPreferentialManagerConstant.DEL_STATUS_NO)
+                        .append(" )");
+                sbSqlSegment.append(" ORDER BY t1.id DESC ");
+                return sbSqlSegment.toString();
+            };
+
+        };
+        StringBuilder sbSqlSelect = new StringBuilder("");
+        sbSqlSelect.append("t1.id")
+                .append(", t3.enterprise_name enterpriseName ");
+        wrapper.setSqlSelect(sbSqlSelect.toString());
+		return this.selectMapsPage(page, wrapper);
+	}
+
+    @Override
+    public int countUncommitPreferentialManager(final Integer unionId) {
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                StringBuilder sbSqlSegment = new StringBuilder(" t1");
+                sbSqlSegment.append(" LEFT JOIN t_union_apply t2 ON t1.id = t2.union_member_id ")
+                        .append(" LEFT JOIN t_union_apply_info t3 on t3.union_apply_id = t2.id ")
+                        .append(" WHERE t1.union_id = ").append(unionId)
+                        .append(" AND t1.del_status=").append(UnionMemberConstant.DEL_STATUS_NO)
+                        .append(" AND t2.del_status = ").append(UnionApplyConstant.DEL_STATUS_NO)
+                        .append(" AND NOT EXISTS (SELECT id from t_union_member_preferential_manager m ")
+                        .append(" WHERE m.member_id = t1.id ")
+                        .append(" AND m.del_status = ").append(UnionMemberPreferentialManagerConstant.DEL_STATUS_NO)
+                        .append(" )");
+                sbSqlSegment.append(" ORDER BY t1.id DESC ");
+                return sbSqlSegment.toString();
+            };
+
+        };
+        StringBuilder sbSqlSelect = new StringBuilder("");
+        sbSqlSelect.append("t1.id id");
+        wrapper.setSqlSelect(sbSqlSelect.toString());
+        return this.selectCount(wrapper);
     }
 }

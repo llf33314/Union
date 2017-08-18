@@ -42,8 +42,24 @@ public interface IUnionMemberPreferentialServiceService extends IService<UnionMe
 
 	/**
 	 * 删除优惠服务项目
+	 * @param unionId    联盟id
+	 * @param ids    优惠服务项目ids
+	 */
+	void delete(Integer unionId, String ids) throws Exception;
+
+	/**
+	 *	提交优惠服务项目审核
 	 * @param unionId	联盟id
 	 * @param id	优惠服务项目id
 	 */
-	void delete(Integer unionId, Integer id) throws Exception;
+	void addServiceVerify(Integer unionId, Integer id) throws Exception;
+
+	/**
+	 * 审核优惠服务项目
+	 * @param unionId	联盟id
+	 * @param busId		商家id
+	 * @param ids		服务项目ids
+	 * @param verifyStatus	审核状态 2：通过 3：不通过
+	 */
+	void verify(Integer unionId, Integer busId, String ids, Integer verifyStatus) throws Exception;
 }

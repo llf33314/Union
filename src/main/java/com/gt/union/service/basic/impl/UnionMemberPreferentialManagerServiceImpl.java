@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.plugins.pagination.PageHelper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionApplyConstant;
@@ -22,6 +23,7 @@ import com.gt.union.service.basic.IUnionMemberPreferentialServiceService;
 import com.gt.union.service.basic.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -52,6 +54,7 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
 
     @Autowired
     private RedisCacheUtil redisCacheUtil;
+
     @Override
     public Page listByUnionIdAndVerifyStatus(Page page, final Integer unionId, final Integer verifyStatus) throws Exception {
         if (page == null) {
@@ -63,34 +66,42 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
         if (verifyStatus == null) {
             throw new ParamException(LIST_UNIONID_VERIFYSTATUS, "参数verifyStatus为空", ExceptionConstant.PARAM_ERROR);
         }
-        Wrapper wrapper = new Wrapper() {
-            @Override
-            public String getSqlSegment() {
-                StringBuilder sbSqlSegment = new StringBuilder(" m");
-                sbSqlSegment.append(" LEFT JOIN t_union_apply a ON a.union_member_id = m.member_id ")
-                        .append(" LEFT JOIN t_union_apply_info i on i.union_apply_id = a.id ")
-                        .append(" WHERE m.del_status=").append(UnionMemberPreferentialManagerConstant.DEL_STATUS_NO)
-                        .append("    AND m.union_id = ").append(unionId)
-                        .append("    AND EXISTS ( ")
-                        .append("        SELECT s.manager_id FROM t_union_member_preferential_service s ")
-                        .append("        WHERE s.manager_id = m.id ")
-                        .append("           AND s.del_status = ").append(UnionMemberPreferentialServiceConstant.DEL_STATUS_NO)
-                        .append("           AND s.verify_status = ").append(verifyStatus)
-                        .append("    ) ")
-                        .append("    AND a.del_status = ").append(UnionApplyConstant.DEL_STATUS_NO)
-                        .append("    AND a.apply_status = ").append(UnionApplyConstant.APPLY_STATUS_PASS);
-                sbSqlSegment.append(" ORDER BY m.createtime DESC ");
-                return sbSqlSegment.toString();
-            };
+        Page result = null;
+        switch (verifyStatus){
+            case UnionMemberPreferentialServiceConstant.VERIFY_STATUS_UNCOMMIT:
+                result =  unionMemberService.listUncommitByUnionId(page, unionId);
+                break;
+            default:
+                Wrapper wrapper = new Wrapper() {
+                    @Override
+                    public String getSqlSegment() {
+                        StringBuilder sbSqlSegment = new StringBuilder(" m");
+                        sbSqlSegment.append(" LEFT JOIN t_union_apply a ON a.union_member_id = m.member_id ")
+                                .append(" LEFT JOIN t_union_apply_info i on i.union_apply_id = a.id ")
+                                .append(" WHERE m.del_status=").append(UnionMemberPreferentialManagerConstant.DEL_STATUS_NO)
+                                .append("    AND m.union_id = ").append(unionId)
+                                .append("    AND EXISTS ( ")
+                                .append("        SELECT s.manager_id FROM t_union_member_preferential_service s ")
+                                .append("        WHERE s.manager_id = m.id ")
+                                .append("           AND s.del_status = ").append(UnionMemberPreferentialServiceConstant.DEL_STATUS_NO)
+                                .append("           AND s.verify_status = ").append(verifyStatus)
+                                .append("    ) ")
+                                .append("    AND a.del_status = ").append(UnionApplyConstant.DEL_STATUS_NO)
+                                .append("    AND a.apply_status = ").append(UnionApplyConstant.APPLY_STATUS_PASS);
+                        sbSqlSegment.append(" ORDER BY m.createtime DESC ");
+                        return sbSqlSegment.toString();
+                    };
 
-        };
-        StringBuilder sbSqlSelect = new StringBuilder("");
-        sbSqlSelect.append(" m.id managerId ")
-                .append(", i.enterprise_name enterpriseName ")
-                .append(", m.preferential_illustration preferentialIllustration ");
-        wrapper.setSqlSelect(sbSqlSelect.toString());
-
-        return this.selectMapsPage(page, wrapper);
+                };
+                StringBuilder sbSqlSelect = new StringBuilder("");
+                sbSqlSelect.append(" m.id managerId ")
+                        .append(", i.enterprise_name enterpriseName ")
+                        .append(", m.preferential_illustration preferentialIllustration ");
+                wrapper.setSqlSelect(sbSqlSelect.toString());
+                result = this.selectMapsPage(page, wrapper);
+                break;
+        }
+        return result;
     }
 
     @Override
@@ -121,27 +132,13 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
                 && UnionMemberPreferentialServiceConstant.VERIFY_STATUS_FAIL != verifyStatus) {
             throw new ParamException(COUNT_PREFERENTIAL_MANAGER, "不支持的参数值", ExceptionConstant.PARAM_ERROR);
         }
-        Wrapper wrapper = null;
+        int count = 0;
         switch (verifyStatus) {
             case UnionMemberPreferentialServiceConstant.VERIFY_STATUS_UNCOMMIT://注意：未提交的逻辑改为不存在优惠服务项
-                wrapper = new Wrapper() {
-                    @Override
-                    public String getSqlSegment() {
-                        StringBuilder sbSqlSegment = new StringBuilder(" m");
-                        sbSqlSegment.append(" WHERE m.del_status=").append(UnionMemberPreferentialManagerConstant.DEL_STATUS_NO)
-                                .append("    AND m.union_id = ").append(unionId)
-                                .append("    AND NOT EXISTS( ")
-                                .append("        SELECT s.manager_id FROM t_union_member_preferential_service s ")
-                                .append("        WHERE s.del_status = ").append(UnionMemberPreferentialServiceConstant.DEL_STATUS_NO)
-                                .append("        AND s.manager_id = m.id ")
-                                .append("    ) ");
-                        return sbSqlSegment.toString();
-                    }
-                };
-                wrapper.setSqlSelect(" m.id ");
+                count = unionMemberService.countUncommitPreferentialManager(unionId);
                 break;
             default:
-                wrapper = new Wrapper() {
+                Wrapper wrapper = new Wrapper() {
                     @Override
                     public String getSqlSegment() {
                         StringBuilder sbSqlSegment = new StringBuilder(" m");
@@ -157,9 +154,9 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
                     };
                 };
                 wrapper.setSqlSelect(" m.id managerId ");
+                count = this.selectCount(wrapper);
         }
-
-        return this.selectCount(wrapper);
+        return count;
     }
 
     @Override
@@ -224,6 +221,7 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public UnionMemberPreferentialManager save(Integer unionId, Integer busId, String preferentialIllustration) throws Exception{
         //TODO 判断联盟有效
         if (unionId == null) {

@@ -1,5 +1,8 @@
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.plugins.pagination.PageHelper;
+import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.gt.union.UnionApplication;
 import com.gt.union.common.util.DateTimeKit;
 import com.gt.union.common.util.RedisCacheUtil;
@@ -16,7 +19,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  *
@@ -42,7 +48,26 @@ public class MyUnitTest {
 
 	@Test
 	public void test1() throws Exception {
-		System.out.println(unionApplyService.getUnionApplyInfo(33,16));
+		List list = new ArrayList<String>();
+		list.add("1");
+		list.add("1");
+		list.add("1");
+		list.add("1");
+		list.add("1");
+		list.add("1");
+		list.add("1");
+		list.add("1");
+		list.add("1");
+		list.add("1");
+		list.add("1");
+		list.add("1");
+		list.add("1");
+		list.add("1");
+		PageHelper.startPage(1,2);
+		Page<Map<String,Object>> page = new Page<Map<String,Object>>();
+		page.setRecords(list);
+		System.out.println(page);
+
 	}
 
 }

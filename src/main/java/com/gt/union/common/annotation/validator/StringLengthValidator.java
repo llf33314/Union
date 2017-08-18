@@ -1,6 +1,6 @@
-package com.gt.union.validator;
+package com.gt.union.common.annotation.validator;
 
-import com.gt.union.valid.annotation.StringLengthValid;
+import com.gt.union.common.annotation.valid.StringLengthValid;
 import com.gt.union.common.util.StringUtil;
 
 import javax.validation.ConstraintValidator;

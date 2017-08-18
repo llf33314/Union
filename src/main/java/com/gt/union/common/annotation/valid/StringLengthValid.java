@@ -1,7 +1,7 @@
-package com.gt.union.valid.annotation;
+package com.gt.union.common.annotation.valid;
 
-import com.gt.union.validator.PhoneValidator;
-import com.gt.union.validator.StringLengthValidator;
+
+import com.gt.union.common.annotation.validator.StringLengthValidator;
 
 import javax.validation.Constraint;
 import javax.validation.Payload;
@@ -11,13 +11,15 @@ import java.lang.annotation.Target;
 /**
  * Created by Administrator on 2017/8/16 0016.
  */
-@Constraint(validatedBy = PhoneValidator.class) //具体的实现
+@Constraint(validatedBy = StringLengthValidator.class) //具体的实现
 @Target( { java.lang.annotation.ElementType.METHOD,
 		java.lang.annotation.ElementType.FIELD })
 @Retention(java.lang.annotation.RetentionPolicy.RUNTIME)
-public @interface PhoneValid {
+public @interface StringLengthValid {
 
-	String message() default "手机号有误";
+	String message() default "内容长度有误";
+
+	int length() default 0;
 
 	//下面这两个属性必须添加
 	Class<?>[] groups() default {};

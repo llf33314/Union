@@ -3,7 +3,7 @@ package com.gt.union.service.business;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.entity.business.UnionBusinessRecommend;
-import com.gt.union.vo.business.UnionBusinessRecommendFormVO;
+import com.gt.union.vo.business.UnionBusinessRecommendVO;
 
 import java.util.List;
 import java.util.Map;
@@ -29,7 +29,7 @@ public interface IUnionBusinessRecommendService extends IService<UnionBusinessRe
 	 * 添加商机推荐
 	 * @param vo
 	 */
-	void save(UnionBusinessRecommendFormVO vo) throws Exception;
+	void save(UnionBusinessRecommendVO vo) throws Exception;
 
 	/**
 	 * 根据busId查询我的商机信息，并支持根据所属联盟id和受理状态isAcceptance进行过滤，且对顾客姓名userName、电话userPhone进行模糊匹配

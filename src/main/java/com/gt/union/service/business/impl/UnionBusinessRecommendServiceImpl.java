@@ -20,7 +20,7 @@ import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.basic.IUnionMemberService;
 import com.gt.union.service.business.IUnionBusinessRecommendInfoService;
 import com.gt.union.service.business.IUnionBusinessRecommendService;
-import com.gt.union.vo.business.UnionBusinessRecommendFormVO;
+import com.gt.union.vo.business.UnionBusinessRecommendVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -78,30 +78,21 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	}
 
 	@Override
-	public void save(UnionBusinessRecommendFormVO vo) throws Exception{
-		//TODO 判断被推荐的商家是否有效
+	public void save(UnionBusinessRecommendVO vo) throws Exception{
 		//联盟是否有效
 		unionMainService.isUnionMainValid(vo.getUnionId());
-		if(CommonUtil.isEmpty(vo.getUnionId())){
-			throw new ParamException(SAVE, "", ExceptionConstant.PARAM_ERROR);
-		}
-		if(CommonUtil.isEmpty(vo.getToMemberId())){
-			throw new ParamException(SAVE, "", ExceptionConstant.PARAM_ERROR);
-		}
-		if(CommonUtil.isEmpty(vo.getUnionBusinessRecommendInfo().getUserName())){
-			throw new ParamException(SAVE, "", ExceptionConstant.PARAM_ERROR);
-		}
-		if(StringUtil.getStringLength(vo.getUnionBusinessRecommendInfo().getUserName()) > 5){
-			throw new ParamException(SAVE, "", ExceptionConstant.PARAM_ERROR);
-		}
-		if(CommonUtil.isEmpty(vo.getUnionBusinessRecommendInfo().getUserPhone())){
-			throw new ParamException(SAVE, "", ExceptionConstant.PARAM_ERROR);
-		}
-		if(StringUtil.getStringLength(vo.getUnionBusinessRecommendInfo().getBusinessMsg()) > 20){
-			throw new ParamException(SAVE, "", ExceptionConstant.PARAM_ERROR);
-		}
-		//TODO 判断商机推荐的手机号是否正确   您输入的意向客户电话有误，请重新输入
 		UnionMember fromUnionMember = unionMemberService.getUnionMember(vo.getBusId(),vo.getUnionId());
+		unionMemberService.isMemberValid(fromUnionMember);//判断自己状态
+		UnionMember toUnionMeber = unionMemberService.selectById(vo.getToMemberId());
+		if(toUnionMeber == null){
+			throw new BusinessException(SAVE,"盟员不存在","您推荐的盟员不存在");
+		}
+		if(toUnionMeber.getDelStatus() == UnionMemberConstant.DEL_STATUS_YES){
+			throw new BusinessException(SAVE,"已退盟","您推荐的盟员已退盟");
+		}
+		if(toUnionMeber.getOutStaus() == UnionMemberConstant.OUT_STATUS_PERIOD){
+			throw new BusinessException(SAVE,"已退盟","您推荐的盟员处于退盟过渡期");
+		}
 		UnionBusinessRecommend recommend = new UnionBusinessRecommend();
 		recommend.setCreatetime(new Date());
 		recommend.setDelStatus(0);
@@ -110,15 +101,15 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 		recommend.setFromBusId(vo.getBusId());
 		recommend.setRecommendType(2);
 		recommend.setUnionId(vo.getUnionId());
-		recommend.setToBusId(vo.getToBusId());
+		recommend.setToBusId(toUnionMeber.getBusId());
 		recommend.setFromMemberId(fromUnionMember.getId());
 		recommend.setToMemberId(vo.getToMemberId());
 		this.insert(recommend);
 		UnionBusinessRecommendInfo info = new UnionBusinessRecommendInfo();
-		info.setBusinessMsg(vo.getUnionBusinessRecommendInfo().getBusinessMsg());
+		info.setBusinessMsg(vo.getBusinessMsg());
 		info.setRecommendId(recommend.getId());
-		info.setUserName(vo.getUnionBusinessRecommendInfo().getUserName());
-		info.setUserPhone(vo.getUnionBusinessRecommendInfo().getUserPhone());
+		info.setUserName(vo.getUserName());
+		info.setUserPhone(vo.getUserPhone());
 		unionBusinessRecommendInfoService.insert(info);
 	}
 

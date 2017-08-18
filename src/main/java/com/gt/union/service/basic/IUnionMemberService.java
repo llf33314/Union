@@ -132,12 +132,28 @@ public interface IUnionMemberService extends IService<UnionMember> {
 
     /**
      * 审核退盟成员
-     * @param id
-     * @param unionId
-     * @param busId
-     * @param verifyStatus
+     * @param id    盟员id
+     * @param unionId   联盟id
+     * @param busId     商家id
+     * @param verifyStatus  审核状态  1：同意退盟 2：拒绝退盟
      * @return
      * @throws Exception
      */
 	Map<String, Object> updateOutStatusById(Integer id, Integer unionId, Integer busId, Integer verifyStatus) throws Exception;
+
+    /**
+     * 根据联盟id查询未提交优惠项目的盟员
+     *
+     * @param page      分页参数
+     * @param unionId   联盟id
+     * @return
+     */
+	Page listUncommitByUnionId(Page page, Integer unionId);
+
+    /**
+     * 根据联盟id查询非提交优惠项目的盟员数
+     * @param unionId   联盟id
+     * @return
+     */
+    int countUncommitPreferentialManager(Integer unionId);
 }
