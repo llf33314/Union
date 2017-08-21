@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.entity.business.UnionBusinessRecommend;
 import com.gt.union.vo.business.UnionBusinessRecommendVO;
+import io.swagger.models.auth.In;
 
 import java.util.List;
 import java.util.Map;
@@ -21,9 +22,13 @@ public interface IUnionBusinessRecommendService extends IService<UnionBusinessRe
 
 	/**
 	 * 审核商机推荐
-	 * @param recommend
+	 * @param busId
+	 * @param id
+	 * @param isAcceptance
+     * @param acceptancePrice
+	 * @throws Exception
 	 */
-	void updateByIdAndIsAcceptance(UnionBusinessRecommend recommend) throws Exception;
+	void updateByIdAndIsAcceptance(Integer busId, Integer id, Integer isAcceptance, Double acceptancePrice) throws Exception;
 
 	/**
 	 * 添加商机推荐
@@ -97,4 +102,13 @@ public interface IUnionBusinessRecommendService extends IService<UnionBusinessRe
      * @throws Exception
      */
     List<Map<String, Object>> listPayDetailParticularByUnionIdAndFromBusIdAndToBusId(Integer unionId, Integer fromBusId, Integer toBusId) throws Exception;
+
+    /**
+     * 获取商机统计数据
+     * @param unionId
+     * @param busId
+     * @return
+     * @throws Exception
+     */
+    Map<String, Object> getStatisticData(Integer unionId, Integer busId) throws Exception;
 }

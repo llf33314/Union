@@ -1,5 +1,6 @@
 package com.gt.union.service.business.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
@@ -10,23 +11,26 @@ import com.gt.union.common.constant.basic.UnionMemberConstant;
 import com.gt.union.common.constant.business.UnionBusinessRecommendConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.entity.basic.UnionMember;
+import com.gt.union.entity.business.UnionBrokerage;
 import com.gt.union.entity.business.UnionBusinessRecommend;
 import com.gt.union.entity.business.UnionBusinessRecommendInfo;
 import com.gt.union.mapper.business.UnionBusinessRecommendMapper;
-import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.basic.IUnionMemberService;
+import com.gt.union.service.business.IUnionBrokerageService;
 import com.gt.union.service.business.IUnionBusinessRecommendInfoService;
 import com.gt.union.service.business.IUnionBusinessRecommendService;
-import com.gt.union.vo.business.UnionBusinessRecommendVO;
 import com.gt.union.service.common.IUnionRootService;
+import com.gt.union.vo.business.UnionBusinessRecommendVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,13 +45,15 @@ import java.util.Map;
 @Service
 public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusinessRecommendMapper, UnionBusinessRecommend> implements IUnionBusinessRecommendService {
 	private static final String UPDATE_ID_ISACCEPTANCE = "UnionBusinessRecommendServiceImpl.updateByIdAndIsAcceptance()";
+	private static final String ACCEPT_RECOMMEND = "UnionBusinessRecommendServiceImpl.acceptRecommend()";
 	private static final String SAVE = "UnionBusinessRecommendServiceImpl.save()";
 	private static final String LIST_TOBUSID = "UnionBusinessRecommendServiceImpl.listByToBusId()";
 	private static final String LIST_FROMBUSID = "UnionBusinessRecommendServiceImpl.listByFromBusId()";
 	private static final String LIST_BROKERAGE_FROMBUSID = "UnionBusinessRecommendServiceImpl.listBrokerageByFromBusId()";
 	private static final String LIST_BROKERAGE_TOBUSID = "UnionBusinessRecommendServiceImpl.listBrokerageByToBusId()";
-	private static final String LIST_PAYDETAIL_FROMBUSID = "UnionBusinessRecommendServiceImpl.listPayDetailByFromBusId()";
-	private static final String LIST_PAYDETAILPARTICULAR_UNIONID_FROMBUSID_TOBUSID = "UnionBusinessRecommendServiceImpl.listPayDetailParticularByUnionIdAndFromBusIdAndToBusId()";
+    private static final String LIST_PAYDETAILPARTICULAR_UNIONID_FROMBUSID_TOBUSID = "UnionBusinessRecommendServiceImpl.listPayDetailParticularByUnionIdAndFromBusIdAndToBusId()";
+    private static final String LIST_PAYDETAIL_FROMBUSID = "UnionBusinessRecommendServiceImpl.listPayDetailByFromBusId()";
+    private static final String GET_STATISTIC_DATA = "UnionBusinessRecommendServiceImpl.getStatisticData()";
 
 	@Autowired
 	private IUnionBusinessRecommendInfoService unionBusinessRecommendInfoService;
@@ -58,63 +64,50 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	@Autowired
 	private IUnionMemberService unionMemberService;
 
-	@Transactional(rollbackFor = Exception.class)
-	@Override
-	public void updateByIdAndIsAcceptance(UnionBusinessRecommend recommend) throws Exception{
-		//TODO 判断推荐的商家是否有效
-		if(CommonUtil.isEmpty(recommend.getId())){
-			throw new ParamException(UPDATE_ID_ISACCEPTANCE, "", ExceptionConstant.PARAM_ERROR);
-		}
-		if(CommonUtil.isEmpty(recommend.getIsAcceptance()) || !(recommend.getIsAcceptance() == 1 || recommend.getIsAcceptance() == 2 )){
-			throw new ParamException(UPDATE_ID_ISACCEPTANCE, "", ExceptionConstant.PARAM_ERROR);
-		}
-		UnionBusinessRecommend businessRecommend = this.selectById(recommend.getId());
-		if(CommonUtil.isEmpty(businessRecommend) || businessRecommend.getDelStatus() == 1){
-			throw new BusinessException(UPDATE_ID_ISACCEPTANCE, "", "该商机不存在，请刷新后重试");
-		}
-		if(businessRecommend.getIsAcceptance() != 0){
-			throw new BusinessException(UPDATE_ID_ISACCEPTANCE, "", "该商机已处理，请刷新后重试");
-		}
-		this.updateById(recommend);
-	}
+	@Autowired
+    private IUnionBrokerageService unionBrokerageService;
 
 	@Override
+    @Transactional(propagation = Propagation.REQUIRED)
 	public void save(UnionBusinessRecommendVO vo) throws Exception{
-		//联盟是否有效
-		this.unionRootService.checkUnionMainValid(vo.getUnionId());
-		UnionMember fromUnionMember = unionMemberService.getByUnionIdAndBusId(vo.getBusId(),vo.getUnionId());
-		unionRootService.hasUnionMemberAuthority(vo.getUnionId(), vo.getBusId());
-		UnionMember toUnionMeber = unionMemberService.selectById(vo.getToMemberId());
-		if(toUnionMeber == null){
-			throw new BusinessException(SAVE,"盟员不存在","您推荐的盟员不存在");
+		//判断联盟是否有效
+		if (!this.unionRootService.checkUnionMainValid(vo.getUnionId())) {
+			throw new BusinessException(SAVE, "", "联盟已无效");
 		}
-		if(toUnionMeber.getDelStatus() == UnionMemberConstant.DEL_STATUS_YES){
-			throw new BusinessException(SAVE,"已退盟","您推荐的盟员已退盟");
+		UnionMember fromUnionMember = this.unionMemberService.getByUnionIdAndBusId(vo.getUnionId(), vo.getBusId());
+		if (fromUnionMember == null) {
+		    throw new BusinessException(SAVE, "unionId=" + vo.getUnionId() + ";busId=" + vo.getBusId(), "未找到推荐商家信息");
+        }
+		//判断推荐商家是否是联盟的有效成员
+		if (!this.unionRootService.hasUnionMemberAuthority(vo.getUnionId(), vo.getBusId())) {
+		    throw new BusinessException(SAVE, "", "推荐商家不是该联盟的有效成员");
+        }
+        //判断被推荐商家是否是联盟的有效成员
+		UnionMember toUnionMeber = this.unionMemberService.selectById(vo.getToMemberId());
+		if(toUnionMeber == null || this.unionRootService.hasUnionMemberAuthority(toUnionMeber)
+                || this.unionRootService.checkBusUserValid(toUnionMeber.getBusId())){
+			throw new BusinessException(SAVE, "", "您推荐的盟员是无效盟员");
 		}
-		if(toUnionMeber.getOutStaus() == UnionMemberConstant.OUT_STATUS_PERIOD){
-			throw new BusinessException(SAVE,"已退盟","您推荐的盟员处于退盟过渡期");
-		}
-		if(!unionRootService.checkBusUserValid(toUnionMeber.getBusId())){
-			throw new BusinessException(SAVE,"盟员账号过期","盟员账号已过期");
-		}
+		//保存推荐主表信息
 		UnionBusinessRecommend recommend = new UnionBusinessRecommend();
 		recommend.setCreatetime(new Date());
-		recommend.setDelStatus(0);
-		recommend.setIsAcceptance(0);
-		recommend.setIsConfirm(0);
+		recommend.setDelStatus(UnionBusinessRecommendConstant.DEL_STATUS_NO);
+		recommend.setIsAcceptance(UnionBusinessRecommendConstant.IS_ACCEPTANCE_UNCHECK);
+		recommend.setIsConfirm(UnionBusinessRecommendConstant.IS_CONFIRM_UNCHECK);
 		recommend.setFromBusId(vo.getBusId());
-		recommend.setRecommendType(2);
+		recommend.setRecommendType(UnionBusinessRecommendConstant.RECOMMEND_TYPE_OFFLINE);
 		recommend.setUnionId(vo.getUnionId());
 		recommend.setToBusId(toUnionMeber.getBusId());
 		recommend.setFromMemberId(fromUnionMember.getId());
 		recommend.setToMemberId(vo.getToMemberId());
 		this.insert(recommend);
+		//保存推荐辅表信息
 		UnionBusinessRecommendInfo info = new UnionBusinessRecommendInfo();
 		info.setBusinessMsg(vo.getBusinessMsg());
 		info.setRecommendId(recommend.getId());
 		info.setUserName(vo.getUserName());
 		info.setUserPhone(vo.getUserPhone());
-		unionBusinessRecommendInfoService.insert(info);
+		this.unionBusinessRecommendInfoService.insert(info);
 	}
 
 	@Override
@@ -172,6 +165,98 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 
 		return this.selectMapsPage(page, wrapper);
 	}
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void updateByIdAndIsAcceptance(Integer busId, Integer id, Integer isAcceptance, Double acceptancePrice) throws Exception{
+        if (busId == null) {
+            throw new ParamException(UPDATE_ID_ISACCEPTANCE, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+        }
+        if (id == null) {
+            throw new ParamException(UPDATE_ID_ISACCEPTANCE, "参数id为空", ExceptionConstant.PARAM_ERROR);
+        }
+        if (isAcceptance == null) {
+            throw new ParamException(UPDATE_ID_ISACCEPTANCE, "参数isAcceptance为空", ExceptionConstant.PARAM_ERROR);
+        }
+        if (acceptancePrice == null) {
+            throw new ParamException(UPDATE_ID_ISACCEPTANCE, "参数acceptancePrice为空", ExceptionConstant.PARAM_ERROR);
+        }
+        // （1）判断审核的商机是否存在
+        UnionBusinessRecommend unionBusinessRecommend = this.selectById(id);
+        if (unionBusinessRecommend == null) {
+            throw new ParamException(UPDATE_ID_ISACCEPTANCE, "id=" + id, ExceptionConstant.PARAM_ERROR);
+        }
+        // （2）判断当前商家是否是商机的接收者
+        if (unionBusinessRecommend.getToBusId() != busId) {
+            throw new BusinessException(UPDATE_ID_ISACCEPTANCE, "", "当前登录的商家帐号不是该商机的接收者");
+        }
+        // （3）判断商机是否是未处理状态
+        if (unionBusinessRecommend.getIsAcceptance() != UnionBusinessRecommendConstant.IS_ACCEPTANCE_UNCHECK) {
+            throw new BusinessException(UPDATE_ID_ISACCEPTANCE, "",  "当前商机已处理");
+        }
+        switch (isAcceptance) {
+            case UnionBusinessRecommendConstant.IS_ACCEPTANCE_ACCEPT:
+                // （4-1）接受商机
+                unionBusinessRecommend.setAcceptancePrice(acceptancePrice);
+                this.acceptRecommend(unionBusinessRecommend);
+                break;
+            case UnionBusinessRecommendConstant.IS_ACCEPTANCE_REFUSE:
+                // （4-2）拒绝商机
+                this.refuseRecommend(unionBusinessRecommend);
+                break;
+            default:
+                throw new ParamException(UPDATE_ID_ISACCEPTANCE, "isAcceptance=" + isAcceptance, ExceptionConstant.PARAM_ERROR);
+        }
+    }
+
+    /**
+     * 接受商机
+     * @param unionBusinessRecommend
+     * @throws Exception
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    private void acceptRecommend(UnionBusinessRecommend unionBusinessRecommend) throws Exception {
+        if (unionBusinessRecommend != null) {
+            // （1）判断该商机关联的联盟是否有效
+            if (!this.unionRootService.checkUnionMainValid(unionBusinessRecommend.getUnionId())) {
+                throw new BusinessException(ACCEPT_RECOMMEND, "", "该商机所关联的联盟信息已无效");
+            }
+            // （2）判断该商机关联的推荐方是否有效
+            Integer fromBusId = unionBusinessRecommend.getFromBusId();
+            if (!this.unionRootService.checkBusUserValid(fromBusId)) {
+                throw new BusinessException(ACCEPT_RECOMMEND, "", "该商机的推荐方信息已无效");
+            }
+            // （3）判断该商机的接收方是否对推荐方设置了商机佣金比
+            UnionBrokerage unionBrokerage = this.unionBrokerageService.getByUnionIdAndFromBusIdAndToBusId(unionBusinessRecommend.getUnionId()
+                , unionBusinessRecommend.getFromBusId(), unionBusinessRecommend.getToBusId());
+            if (unionBrokerage == null) {
+                throw new BusinessException(ACCEPT_RECOMMEND, "", "未对该商机的推荐方设置商机佣金比");
+            }
+
+            // （4）保存更新信息
+            UnionBusinessRecommend updateRecommend = new UnionBusinessRecommend();
+            updateRecommend.setId(unionBusinessRecommend.getId());
+            updateRecommend.setIsAcceptance(UnionBusinessRecommendConstant.IS_ACCEPTANCE_ACCEPT);
+            updateRecommend.setBusinessPrice(BigDecimalUtil.multiply(unionBusinessRecommend.getAcceptancePrice(), unionBrokerage.getBrokerageRatio()).doubleValue());
+            this.updateById(updateRecommend);
+
+        }
+    }
+
+    /**
+     * 拒绝商机
+     * @param unionBusinessRecommend
+     * @throws Exception
+     */
+    @Transactional(propagation = Propagation.REQUIRED)
+    private void refuseRecommend(UnionBusinessRecommend unionBusinessRecommend) throws Exception {
+	    if (unionBusinessRecommend != null) {
+	        UnionBusinessRecommend updateRecommend = new UnionBusinessRecommend();
+	        updateRecommend.setId(unionBusinessRecommend.getId());
+	        updateRecommend.setIsAcceptance(UnionBusinessRecommendConstant.IS_ACCEPTANCE_REFUSE);
+	        this.updateById(updateRecommend);
+        }
+    }
 
 	@Override
 	public Page listByFromBusId(Page page, final Integer busId, final Integer unionId
@@ -411,7 +496,6 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
     @Override
     public List<Map<String, Object>> listPayDetailParticularByUnionIdAndFromBusIdAndToBusId(final Integer unionId
 			, final Integer fromBusId, final Integer toBusId) throws Exception {
-		//TODO 来往商家佣金明细
 	    if (unionId == null) {
 	        throw new ParamException(LIST_PAYDETAILPARTICULAR_UNIONID_FROMBUSID_TOBUSID, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
@@ -451,6 +535,42 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	    wrapper.setSqlSelect(sbSqlSelect.toString());
 
         return this.selectMaps(wrapper);
+    }
+
+    @Override
+    public Map<String, Object> getStatisticData(Integer unionId, Integer busId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(GET_STATISTIC_DATA, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
+        }
+        if (busId == null) {
+            throw new ParamException(GET_STATISTIC_DATA, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+        }
+
+        //TODO
+        Map<String, Object> resultMap = new HashMap<>();
+        Double uncheckBrokerageIncome = getBrokerageIncome(unionId, busId, UnionBusinessRecommendConstant.IS_CONFIRM_CONFIRM);
+        resultMap.put("uncheckBrokerageIncome", uncheckBrokerageIncome);
+
+        return resultMap;
+    }
+
+    private Double getBrokerageIncome(Integer unionId, Integer busId, Integer isConfirm) {
+        if (unionId != null && busId != null && isConfirm != null) {
+            EntityWrapper entityWrapper = new EntityWrapper();
+            entityWrapper.eq("del_status", UnionBusinessRecommendConstant.DEL_STATUS_NO)
+                    .eq("is_acceptance", UnionBusinessRecommendConstant.IS_ACCEPTANCE_ACCEPT)
+                    .eq("union_id", unionId)
+                    .eq("from_bus_id", busId)
+                    .eq("is_confirm", isConfirm);
+            entityWrapper.setSqlSelect(" SUM(business_price) businessPriceSum ");
+
+            Map<String, Object> map = this.selectMap(entityWrapper);
+            if (map == null || map.get("businessPriceSum") == null) {
+                return Double.valueOf(0.0);
+            }
+            return Double.valueOf(map.get("businessPriceSum").toString());
+        }
+        return null;
     }
 
 }

@@ -37,8 +37,8 @@ import java.util.Map;
  */
 @Service
 public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, UnionMember> implements IUnionMemberService {
-    private static final String LIST_UNIONID_PAGE = "UnionMemberServiceImpl.listByUnionIdInPage()";
-    private static final String LIST_UNIONID_LIST = "UnionMemberServiceImpl.listByUnionIdInList()";
+    private static final String LIST_MAP_UNIONID_PAGE = "UnionMemberServiceImpl.listMapByUnionIdInPage()";
+    private static final String LIST_MAP_UNIONID_LIST = "UnionMemberServiceImpl.listMapByUnionIdInList()";
     private static final String LIST_UNIONID_OUTSTATUS = "UnionMemberServiceImpl.listByUnionIdAndOutStatus()";
     private static final String LIST_UNIONID_OUTSTATUS_ISNUIONOWNER = "UnionMemberServiceImpl.listByUnionIdAndOutStatusAndIsNuionOwner()";
     private static final String GET_MAP_ID = "UnionMemberServiceImpl.getById()";
@@ -66,12 +66,12 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     private IUnionTransferRecordService unionTransferRecordService;
 
     @Override
-    public Page listByUnionIdInPage(Page page, final Integer unionId, final String enterpriseName) throws Exception {
+    public Page listMapByUnionIdInPage(Page page, final Integer unionId, final String enterpriseName) throws Exception {
         if (page == null) {
-            throw new ParamException(LIST_UNIONID_PAGE, "参数page为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(LIST_MAP_UNIONID_PAGE, "参数page为空", ExceptionConstant.PARAM_ERROR);
         }
         if (unionId == null) {
-            throw new ParamException(LIST_UNIONID_PAGE, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(LIST_MAP_UNIONID_PAGE, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         Wrapper wrapper = new Wrapper() {
             @Override
@@ -109,9 +109,9 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    public List<Map<String, Object>> listByUnionIdInList(final Integer unionId) throws Exception{
+    public List<Map<String, Object>> listMapByUnionIdInList(final Integer unionId) throws Exception{
         if (unionId == null) {
-            throw new ParamException(LIST_UNIONID_LIST, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(LIST_MAP_UNIONID_LIST, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         Wrapper wrapper = new Wrapper() {
             @Override

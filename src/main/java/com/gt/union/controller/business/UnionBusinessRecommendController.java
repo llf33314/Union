@@ -41,6 +41,7 @@ public class UnionBusinessRecommendController {
 	private static final String LIST_BROKERAGE_TOBUSID = "UnionBusinessRecommendController.listBrokerageByToBusId()";
 	private static final String LIST_PAYDETAIL_FROMBUSID = "UnionBusinessRecommendController.listPayDetailByFromBusId()";
 	private static final String LIST_PAYDETAILPARTICULAR_UNIONID_FROMBUSID_TOBUSID = "UnionBusinessRecommendController.listPayDetailParticularByUnionIdAndFromBusIdAndToBusId()";
+	private static final String GET_STATISTIC_DATA = "UnionBusinessRecommendController.getStatisticData()";
 	private static final String UPDATE_ID_ISACCEPTANCE = "UnionBusinessRecommendController.updateByIdAndIsAcceptance()";
 	private static final String SAVE = "UnionBusinessRecommendController.save()";
 
@@ -215,25 +216,33 @@ public class UnionBusinessRecommendController {
         }
     }
 
+    @ApiOperation(value = "获取商机统计数据", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/statisticData", produces = "application/json;charset=UTF-8")
+    public String getStatisticData(HttpServletRequest request
+        , @ApiParam(name = "unionId", value = "联盟id", required = true) @PathVariable("unionId") Integer unionId) {
+	    try {
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            Map<String, Object> result = this.unionBusinessRecommendService.getStatisticData(unionId, busUser.getId());
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+	        logger.error("", e);
+	        return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        } catch (Exception e) {
+	        logger.error("", e);
+	        return GTJsonResult.instanceErrorMsg(GET_STATISTIC_DATA, "", ExceptionConstant.OPERATE_FAIL).toString();
+        }
+    }
+
 	@ApiOperation(value = "商机审核", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/{id}/isAcceptance/{isAcceptance}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
 	public String updateByIdAndIsAcceptance(HttpServletRequest request
 			, @ApiParam(name = "id", value = "商机id", required = true) @PathVariable("id") Integer id
-			, @ApiParam(name = "isAcceptance", value = "审核状态 1：接受 2：拒绝", required = true) @PathVariable Integer isAcceptance){
+			, @ApiParam(name = "isAcceptance", value = "审核状态 1：接受 2：拒绝", required = true) @PathVariable Integer isAcceptance
+            , @ApiParam(name = "acceptancePrice", value = "受理价格，拒绝时可传0", required = true) @RequestParam Double acceptancePrice){
 		try{
             BusUser user = SessionUtils.getLoginUser(request);
-            UnionBusinessRecommend recommend = new UnionBusinessRecommend();
-			recommend.setId(id);
-			recommend.setIsAcceptance(isAcceptance);
-			unionBusinessRecommendService.updateByIdAndIsAcceptance(recommend);
-			if(isAcceptance == 1){
-				//接受
-				return GTJsonResult.instanceSuccessMsg().toString();
-			}else if(isAcceptance == 2){
-				//拒绝
-				return GTJsonResult.instanceSuccessMsg().toString();
-			}
-			return GTJsonResult.instanceErrorMsg(UPDATE_ID_ISACCEPTANCE, "","审核失败").toString();
+			unionBusinessRecommendService.updateByIdAndIsAcceptance(user.getId(), id, isAcceptance, acceptancePrice);
+			return GTJsonResult.instanceSuccessMsg().toString();
 		}catch (BaseException e){
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();

@@ -19,4 +19,14 @@ public interface IUnionBrokerageService extends IService<UnionBrokerage> {
 	 * @throws Exception
 	 */
 	public void updateByIdAndUnionId(UnionBrokerage unionBrokerage) throws Exception;
+
+    /**
+     * 根据联盟id、推荐方、接受方获取商机佣金比信息
+     * @param unionId
+     * @param fromBusId
+     * @param toBusId
+     * @return
+     * @throws Exception
+     */
+	public UnionBrokerage getByUnionIdAndFromBusIdAndToBusId(Integer unionId, Integer fromBusId, Integer toBusId) throws Exception;
 }

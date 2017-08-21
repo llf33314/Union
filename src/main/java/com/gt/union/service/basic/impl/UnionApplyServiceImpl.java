@@ -287,23 +287,23 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
             UnionMember unionMember = unionMemberService.getByUnionIdAndBusId(user.getId(),unionId);
             //1、判断是否加入了该盟
             if(unionMember != null){
-                throw new BusinessException(SAVE, "", "已加入本联盟");
+                throw new BusinessException(UPDATE_UNIONID_APPLYSTATUS, "", "已加入本联盟");
             }
             //2、判断是否申请了
             UnionApply unionApply = this.getUnionApply(busId,unionId);
             if(unionApply != null){
-                throw new BusinessException(SAVE, "", "已申请加入本联盟");
+                throw new BusinessException(UPDATE_UNIONID_APPLYSTATUS, "", "已申请加入本联盟");
             }
             //3、判断盟员数是否达上限
             if(main.getUnionMemberNum().equals(main.getUnionTotalMember())){
-                throw new BusinessException(SAVE, "", CommonConstant.UNION_NUM_MAX_MSG);
+                throw new BusinessException(UPDATE_UNIONID_APPLYSTATUS, "", "联盟成员已达上限");
             }
             //4、判断加盟数是否达上限
             if(unionMemberService.getUnionMemberCount(busId) == CommonConstant.MAX_UNION_APPLY){
-                throw new BusinessException(SAVE, "", CommonConstant.UNION_MEMBER_NUM_MAX_MSG);
+                throw new BusinessException(UPDATE_UNIONID_APPLYSTATUS, "", "您加入的联盟已达上限");
             }
             UnionApply apply = saveUnionApply(busId,unionId,applyType);
-            unionApplyInfoService.saveUnionApplyInfo(vo, apply.getId());
+            UnionApplyInfo info = unionApplyInfoService.saveUnionApplyInfo(vo, apply.getId());
             boolean isOwner = unionRootService.isUnionOwner(unionId,busId);//联盟盟主
             if(isOwner){
                 UnionMember member = new UnionMember();
@@ -317,8 +317,6 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
                 member.setUnionIDSign(unionSign);
                 unionMemberService.insert(member);
                 apply.setUnionMemberId(member.getId());
-                apply.setApplyStatus(1);
-                apply.setBusConfirmStatus(2);
                 this.updateById(apply);
                 main.setUnionMemberNum(CommonUtil.isEmpty(main.getUnionMemberNum()) ? 1 : main.getUnionMemberNum() + 1);
                 unionMainService.updateById(main);

@@ -32,8 +32,8 @@ import java.util.Map;
 @RestController
 @RequestMapping("/unionMember")
 public class UnionMemberController {
-    private static final String LIST_UNIONID_PAGE = "UnionMemberController.listByUnionIdInPage()";
-    private static final String LIST_UNIONID_LIST = "UnionMemberController.listByUnionIdInList()";
+    private static final String LIST_MAP_UNIONID_PAGE = "UnionMemberController.listMapByUnionIdInPage()";
+    private static final String LIST_MAP_UNIONID_LIST = "UnionMemberController.listMapByUnionIdInList()";
     private static final String LIST_UNIONID_OUTSTATUS = "UnionMemberController.listByUnionIdAndOutStatus()";
     private static final String LIST_UNIONID_OUTSTATUS_ISNUIONOWNER = "UnionMemberController.listByUnionIdAndOutStatusAndIsNuionOwner()";
     private static final String GET_ID = "UnionMemberController.getById()";
@@ -45,35 +45,35 @@ public class UnionMemberController {
 
     @ApiOperation(value = "根据联盟id获取盟员列表信息，并支持根据盟员名称enterpriseName进行模糊查询", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String listByUnionIdInPage(Page page
+    public String listMapByUnionIdInPage(Page page
         , @ApiParam(name = "unionId", value = "联盟id", required = true)
         @PathVariable("unionId") Integer unionId
         , @ApiParam(name = "enterpriseName", value = "企业名称，模糊匹配", required = false)
         @RequestParam(name = "enterpriseName", required = false) String enterpriseName) {
         try {
-            Page result = this.unionMemberService.listByUnionIdInPage(page, unionId, enterpriseName);
+            Page result = this.unionMemberService.listMapByUnionIdInPage(page, unionId, enterpriseName);
             return GTJsonResult.instanceSuccessMsg(result).toString();
         } catch (BaseException e) {
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(LIST_UNIONID_PAGE, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+            return GTJsonResult.instanceErrorMsg(LIST_MAP_UNIONID_PAGE, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
     }
 
     @ApiOperation(value = "根据联盟id获取盟员列表信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String listByUnionIdInList(@ApiParam(name = "unionId", value = "盟员id", required = true) @PathVariable("unionId") Integer unionId) {
+    public String listMapByUnionIdInList(@ApiParam(name = "unionId", value = "盟员id", required = true) @PathVariable("unionId") Integer unionId) {
         try {
-            List<Map<String, Object>> result = this.unionMemberService.listByUnionIdInList(unionId);
+            List<Map<String, Object>> result = this.unionMemberService.listMapByUnionIdInList(unionId);
             return GTJsonResult.instanceSuccessMsg(result).toString();
         } catch (BaseException e) {
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(LIST_UNIONID_LIST, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+            return GTJsonResult.instanceErrorMsg(LIST_MAP_UNIONID_LIST, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
     }
 
