@@ -5,12 +5,12 @@ import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.BigDecimalUtil;
+import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.business.UnionBusinessRecommend;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.business.IUnionBusinessRecommendService;
-import com.gt.union.vo.business.UnionBusinessRecommendFormVO;
 import com.gt.union.vo.business.UnionBusinessRecommendVO;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -250,6 +250,9 @@ public class UnionBusinessRecommendController {
 		try{
             BusUser user = SessionUtils.getLoginUser(request);
             Integer busId = user.getId();
+            if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){//子账号
+            	busId = user.getPid();
+			}
 			vo.setBusId(busId);
 			unionBusinessRecommendService.save(vo);
             return GTJsonResult.instanceSuccessMsg().toString();

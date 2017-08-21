@@ -32,6 +32,13 @@ public class CommonConstant {
 	 */
 	public static int PAY_MODEL = 36;
 
+	/**
+	 * 最大积分抵扣率
+	 */
+	public static double MAX_INTEGRAL_DEDUCTION = 30;
+
+
+	public static double DEFAULT_DISCOUNT = 9.5;
 
 
 	/**
@@ -49,16 +56,6 @@ public class CommonConstant {
 	 */
 	public final static String CREATE_UNION_UN_PAY_PRODUCTID_CODE="00006200";
 
-
-	/**
-	 * 联盟收集资料信息参数
-	 */
-	public static final String UNION_INFO_DICT = "1144";
-
-	/**
-	 * 创建联盟的等级相应成员数、金额、名称
-	 */
-	public static final String UNION_CREATE_INFO = "1145";
 
 	/**
 	 * 联盟已过期

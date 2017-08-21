@@ -83,8 +83,10 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 		//联盟是否有效
 		this.unionRootService.checkUnionMainValid(vo.getUnionId());
 		UnionMember fromUnionMember = unionMemberService.getUnionMember(vo.getBusId(),vo.getUnionId());
-		unionMemberService.isMemberValid(fromUnionMember);//判断自己状态
+		//判断自己状态
+		unionMemberService.isMemberValid(fromUnionMember);
 		UnionMember toUnionMeber = unionMemberService.selectById(vo.getToMemberId());
+		//判断被推荐商家的状态
 		if(toUnionMeber == null){
 			throw new BusinessException(SAVE,"盟员不存在","您推荐的盟员不存在");
 		}
@@ -93,6 +95,9 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 		}
 		if(toUnionMeber.getOutStaus() == UnionMemberConstant.OUT_STATUS_PERIOD){
 			throw new BusinessException(SAVE,"已退盟","您推荐的盟员处于退盟过渡期");
+		}
+		if(!unionRootService.checkBusUserValid(toUnionMeber.getBusId())){
+			throw new BusinessException(SAVE,"盟员账号过期","盟员账号已过期");
 		}
 		UnionBusinessRecommend recommend = new UnionBusinessRecommend();
 		recommend.setCreatetime(new Date());
