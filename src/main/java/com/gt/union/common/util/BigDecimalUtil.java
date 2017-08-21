@@ -105,4 +105,9 @@ public class BigDecimalUtil {
         BigDecimal b2 = d1 == null ? BigDecimal.valueOf(0.0) : BigDecimal.valueOf(d1.doubleValue());
         return divide(b2, b1);
     }
+
+    public static final BigDecimal divide(Double d1, Double d2) {
+        BigDecimal b1 = d1 == null ? BigDecimal.valueOf(0.0) : BigDecimal.valueOf(d1.doubleValue());
+        return divide(b1, d2);
+    }
 }

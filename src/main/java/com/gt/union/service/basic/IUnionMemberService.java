@@ -63,33 +63,23 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @return
      * @throws Exception
      */
-    Map<String, Object> getById(Integer id) throws Exception;
+    Map<String, Object> getMapById(Integer id) throws Exception;
 
     /**
-     * 盟主权限转移
+     * 接受盟主权限转移
+     * @param busId
+     * @param unionId
+     * @throws Exception
+     */
+    void acceptUnionOwner(Integer busId, Integer unionId) throws Exception;
+
+    /**
+     * 转移盟主权限
      * @param id
      * @param unionId
-     * @param busId
-     * @throws Exception
+     * @param originalOwnerBusId
      */
-    void updateIsNuionOwnerById(Integer id, Integer unionId, Integer busId) throws Exception;
-
-    /**
-     * 判断用户是否是对应联盟的盟主
-     * @param unionId
-     * @param busId
-     * @return
-     * @throws Exception
-     */
-    boolean isUnionOwner(Integer unionId, Integer busId) throws Exception;
-
-    /**
-     * 通过：判断是否存在
-     * @param wrapper
-     * @return
-     * @throws Exception
-     */
-    boolean isExistUnionMember(Wrapper wrapper) throws Exception;
+    void transferUnionOwner(Integer id, Integer unionId, Integer originalOwnerBusId) throws Exception;
 
     /**
      * 查询联盟的盟员佣金比设置
@@ -108,20 +98,6 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @return
      */
     UnionMember getUnionMember(Integer busId, Integer unionId) throws Exception;
-
-
-    /**
-     * 判断盟员是否有效
-     * @param unionMember 联盟成员
-     */
-    void isMemberValid(UnionMember unionMember) throws Exception;
-
-    /**
-     * 判断盟员是否有效
-     * @param busId 商家id
-     * @param unionId   联盟id
-     */
-    void isMemberValid(Integer busId, Integer unionId) throws Exception;
 
     /**
      * 查询商家加入的联盟数

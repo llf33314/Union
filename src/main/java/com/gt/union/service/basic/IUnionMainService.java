@@ -44,12 +44,11 @@ public interface IUnionMainService extends IService<UnionMain> {
     public List<UnionMain> listMyUnion(Integer busId) throws Exception;
 
     /**
-     * 查询所有联盟列表
+     * 查询所有可加入的联盟列表
      * @return
      * @throws Exception
-	 * @param page
      */
-    public Page list(Page page) throws Exception;
+    public List listValidAccess() throws Exception;
 
     /**
      * 更新联盟信息，要求盟主权限

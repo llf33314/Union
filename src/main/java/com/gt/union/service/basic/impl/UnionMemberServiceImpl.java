@@ -12,14 +12,15 @@ import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
 import com.gt.union.entity.basic.UnionApplyInfo;
 import com.gt.union.entity.basic.UnionMember;
+import com.gt.union.entity.basic.UnionTransferRecord;
 import com.gt.union.mapper.basic.UnionMemberMapper;
 import com.gt.union.service.basic.IUnionApplyInfoService;
 import com.gt.union.service.basic.IUnionApplyService;
 import com.gt.union.service.basic.IUnionMemberService;
+import com.gt.union.service.basic.IUnionTransferRecordService;
+import com.gt.union.service.common.IUnionRootService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -40,13 +41,12 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     private static final String LIST_UNIONID_LIST = "UnionMemberServiceImpl.listByUnionIdInList()";
     private static final String LIST_UNIONID_OUTSTATUS = "UnionMemberServiceImpl.listByUnionIdAndOutStatus()";
     private static final String LIST_UNIONID_OUTSTATUS_ISNUIONOWNER = "UnionMemberServiceImpl.listByUnionIdAndOutStatusAndIsNuionOwner()";
-    private static final String GET_ID = "UnionMemberServiceImpl.getById()";
-    private static final String UPDATEISNUIONOWNER_ID = "UnionMemberServiceImpl.updateIsNuionOwnerById()";
-    private static final String IS_UNION_OWNER = "UnionMemberServiceImpl.isUnionOwner()";
-    private static final String IS_EXIST_UNION_MEMBER = "UnionMemberServiceImpl.isExistUnionMember()";
+    private static final String GET_MAP_ID = "UnionMemberServiceImpl.getById()";
+    private static final String TRANSFER_UNION_OWNER = "UnionMemberServiceImpl.transferUnionOwner()";
+    private static final String ACCEPT_UNION_OWNER = "UnionMemberServiceImpl.acceptUnionOwner()";
     private static final String SELECT_UNION_BROKERAGE_LIST = "UnionMemberServiceImpl.selectUnionBrokerageList()";
     private static final String IS_MEMBER_VALID_UNIONMANE = "UnionMemberServiceImpl.isMemberValid(UnionMain)";
-    private static final String UPDATEOUTSTATUS_ID = "UnionMemberServiceImpl.updateOutStatusById()";
+    private static final String UPDATE_OUTSTATUS_ID = "UnionMemberServiceImpl.updateOutStatusById()";
     private static final String GET_UNIONMEMBER = "UnionMemberServiceImpl.getUnionMember()";
 
     @Autowired
@@ -57,6 +57,12 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
 
     @Autowired
     private IUnionApplyInfoService unionApplyInfoService;
+
+    @Autowired
+    private IUnionRootService unionRootService;
+
+    @Autowired
+    private IUnionTransferRecordService unionTransferRecordService;
 
     @Override
     public Page listByUnionIdInPage(Page page, final Integer unionId, final String enterpriseName) throws Exception {
@@ -192,7 +198,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         if (busId == null) {
             throw new ParamException(LIST_UNIONID_OUTSTATUS_ISNUIONOWNER, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         } else {
-            if (!this.isUnionOwner(unionId, busId)) {
+            if (!this.unionRootService.isUnionOwner(unionId, busId)) {
                 throw new BusinessException(LIST_UNIONID_OUTSTATUS_ISNUIONOWNER, "", "当前用户不能是盟主，无法查询");
             }
         }
@@ -230,9 +236,9 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    public Map<String, Object> getById(final Integer id) throws Exception {
+    public Map<String, Object> getMapById(final Integer id) throws Exception {
         if (id == null) {
-            throw new ParamException(GET_ID, "参数id为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(GET_MAP_ID, "参数id为空", ExceptionConstant.PARAM_ERROR);
         }
         Wrapper wrapper = new Wrapper() {
             @Override
@@ -261,72 +267,61 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    @Transactional(propagation = Propagation.REQUIRED)//TODO 盟主权限转移
-    public void updateIsNuionOwnerById(Integer id, Integer unionId, Integer busId) throws Exception {
+    public void acceptUnionOwner(Integer busId, Integer unionId) throws Exception {
+        //TODO
+    }
+
+    @Override
+    public void transferUnionOwner(Integer id, Integer unionId, Integer originalOwnerBusId) throws Exception {
+        UnionMember unionMember;
         if (id == null) {
-            throw new ParamException(UPDATEISNUIONOWNER_ID, "参数id为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(TRANSFER_UNION_OWNER, "参数id为空", ExceptionConstant.PARAM_ERROR);
+        } else {
+            unionMember = this.selectById(id);
+            if (unionMember == null) {
+                throw new ParamException(TRANSFER_UNION_OWNER, "无法通过id获取对象", ExceptionConstant.PARAM_ERROR);
+            }
         }
         if (unionId == null) {
-            throw new ParamException(UPDATEISNUIONOWNER_ID, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(TRANSFER_UNION_OWNER, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
-        if (busId == null) {
-            throw new ParamException(UPDATEISNUIONOWNER_ID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
-        }
-
-        //判断盟员是否未申请退盟
-        EntityWrapper newOwnerWrapper = new EntityWrapper();
-        newOwnerWrapper.eq("id", id)
-                .eq("del_status", UnionMemberConstant.DEL_STATUS_NO)
-                .eq("out_staus", UnionMemberConstant.OUT_STATUS_NORMAL);
-        if (!this.isExistUnionMember(newOwnerWrapper)) {
-            throw new BusinessException(UPDATEISNUIONOWNER_ID, "", "盟员信息不存在，或已申请退盟，或正在退盟过渡期!");
+        if (originalOwnerBusId == null) {
+            throw new ParamException(TRANSFER_UNION_OWNER, "参数originalOwnerBusId为空", ExceptionConstant.PARAM_ERROR);
         }
 
-        //判断当前用户是否用户盟主的身份
-        EntityWrapper oldOwnerWrapper = new EntityWrapper();
-        oldOwnerWrapper.eq("del_status", UnionMemberConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("bus_id", busId)
-                .eq("is_nuion_owner", UnionMemberConstant.IS_UNION_OWNER_YES);
-        if (!this.isExistUnionMember(oldOwnerWrapper)) {
-            throw new BusinessException(UPDATEISNUIONOWNER_ID, "", "当前用户不是盟主，没有转移盟主身份的权限!");
+        // （1）判断当前用户是否用户盟主的身份
+        if (!this.unionRootService.isUnionOwner(unionId, originalOwnerBusId)) {
+            throw new BusinessException(TRANSFER_UNION_OWNER, "", "当前用户不是盟主，没有转移盟主身份的权限");
         }
 
-        //盟主取消身份get
-        UnionMember oldOwner = new UnionMember();
-        oldOwner.setIsNuionOwner(UnionMemberConstant.IS_UNION_OWNER_NO);
-        this.update(oldOwner, oldOwnerWrapper);
-
-        //盟员增加盟主身份
-        UnionMember newOwner = new UnionMember();
-        newOwner.setIsNuionOwner(UnionMemberConstant.IS_UNION_OWNER_YES);
-        this.update(newOwner, newOwnerWrapper);
-    }
-
-    @Override
-    public boolean isUnionOwner(Integer unionId, Integer busId) throws Exception {
-        if (unionId == null) {
-            throw new ParamException(IS_UNION_OWNER, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
+        // （2）判断盟员是否拥有该联盟权限，即是否仍在该联盟中
+        Integer newOwnerBusId = unionMember.getBusId();
+        if (!this.unionRootService.hasUnionMemberAuthority(unionId, newOwnerBusId)) {
+            throw new BusinessException(TRANSFER_UNION_OWNER, "", "盟员信息不存在，或正在退盟过渡期");
         }
-        if (busId == null) {
-            throw new ParamException(IS_UNION_OWNER, "参数busId为空", ExceptionConstant.PARAM_ERROR);
-        }
-        EntityWrapper entityWrapper = new EntityWrapper();
-        entityWrapper.eq("del_status", UnionMemberConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("bus_id", busId)
-                .eq("is_nuion_owner", UnionMemberConstant.IS_UNION_OWNER_YES)
-                .eq("out_staus", UnionMemberConstant.OUT_STATUS_NORMAL);
 
-        return this.isExistUnionMember(entityWrapper);
-    }
-
-    @Override
-    public boolean isExistUnionMember(Wrapper wrapper) throws Exception {
-        if (wrapper == null) {
-            throw new ParamException(IS_EXIST_UNION_MEMBER, "参数wrapper为空", ExceptionConstant.PARAM_ERROR);
+        // （3）判断盟员是否具有成为盟主的权限
+        if (!this.unionRootService.hasUnionOwnerAuthority(newOwnerBusId)) {
+            throw new BusinessException(TRANSFER_UNION_OWNER, "", "盟员不具有成为盟主的权限");
         }
-        return this.selectCount(wrapper) > 0 ? true : false;
+
+        // （4）判断盟员是否已经是盟主
+        if (!this.unionRootService.isUnionOwner(newOwnerBusId)) {
+            throw new BusinessException(TRANSFER_UNION_OWNER, "", "盟员已经是某联盟的盟主，无法同时成为多个联盟的盟主");
+        }
+
+        // （5）判断是否已经存在转移申请，若有，则直接返回操作成功，否则，新增转移申请记录
+        if (!this.unionTransferRecordService.existByUnionIdAndBusIdAndConfirmStatus(unionId
+                , originalOwnerBusId, newOwnerBusId, UnionTransferRecordConstant.CONFIRM_STATUS_UNCHECK)) {
+            UnionTransferRecord unionTransferRecord = new UnionTransferRecord();
+            unionTransferRecord.setDelStatus(UnionTransferRecordConstant.DEL_STATUS_NO);
+            unionTransferRecord.setCreatetime(DateTimeKit.getNow());
+            unionTransferRecord.setUnionId(unionId);
+            unionTransferRecord.setFromBusId(originalOwnerBusId);
+            unionTransferRecord.setToBusId(newOwnerBusId);
+            unionTransferRecord.setConfirmStatus(UnionTransferRecordConstant.CONFIRM_STATUS_UNCHECK);
+            this.unionTransferRecordService.save(unionTransferRecord);
+        }
     }
 
     @Override
@@ -368,19 +363,6 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    public void isMemberValid(UnionMember unionMember) throws Exception {
-        if(unionMember == null){
-            throw new BusinessException(IS_MEMBER_VALID_UNIONMANE, "", "您未加入联盟");
-        }
-        if(unionMember.getDelStatus() == UnionMemberConstant.DEL_STATUS_YES){
-            throw new BusinessException(IS_MEMBER_VALID_UNIONMANE, "", "您已退出联盟");
-        }
-        if(unionMember.getOutStaus() == UnionMemberConstant.OUT_STATUS_PERIOD){
-            throw new BusinessException(IS_MEMBER_VALID_UNIONMANE, "", "您处于退盟过渡期");
-        }
-    }
-
-    @Override
     public UnionMember getUnionMember(Integer busId, Integer unionId) throws Exception{
         if (unionId == null) {
             throw new ParamException(GET_UNIONMEMBER, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
@@ -410,12 +392,6 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    public void isMemberValid(Integer busId, Integer unionId) throws Exception {
-        UnionMember unionMember = getUnionMember(busId,unionId);
-        isMemberValid(unionMember);
-    }
-
-    @Override
     public int getUnionMemberCount(Integer applyBusId) {
         EntityWrapper entityWrapper = new EntityWrapper<UnionMember>();
         entityWrapper.eq("bus_id",applyBusId);
@@ -427,23 +403,23 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     public Map<String, Object> updateOutStatusById(Integer id, Integer unionId, Integer busId, Integer verifyStatus) throws Exception{
         Map<String,Object> data = new HashMap<String,Object>();
         if(CommonUtil.isEmpty(id) || CommonUtil.isEmpty(unionId) || CommonUtil.isEmpty(busId) || CommonUtil.isEmpty(verifyStatus)){
-            throw new ParamException(UPDATEOUTSTATUS_ID, "参数...错误", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(UPDATE_OUTSTATUS_ID, "参数...错误", ExceptionConstant.PARAM_ERROR);
         }
-        if(!this.isUnionOwner(unionId,busId)){
-            throw new BusinessException(UPDATEOUTSTATUS_ID, "", "没有盟主权限");
+        if(!this.unionRootService.isUnionOwner(unionId, busId)){
+            throw new BusinessException(UPDATE_OUTSTATUS_ID, "", "没有盟主权限");
         }
         EntityWrapper entityWrapper = new EntityWrapper<UnionMember>();
         entityWrapper.eq("id", id);
         entityWrapper.eq("union_id",unionId);
         UnionMember unionMember = this.selectOne(entityWrapper);
         if(unionMember.getDelStatus() == 1){
-            throw new BusinessException(UPDATEOUTSTATUS_ID, "", "已退出联盟");
+            throw new BusinessException(UPDATE_OUTSTATUS_ID, "", "已退出联盟");
         }
         if(unionMember.getOutStaus() == 0){
-            throw new BusinessException(UPDATEOUTSTATUS_ID, "", "未申请退盟");
+            throw new BusinessException(UPDATE_OUTSTATUS_ID, "", "未申请退盟");
         }
         if(unionMember.getOutStaus() == 2){
-            throw new BusinessException(UPDATEOUTSTATUS_ID, "", "已处退盟过渡期");
+            throw new BusinessException(UPDATE_OUTSTATUS_ID, "", "已处退盟过渡期");
         }
         if(verifyStatus == 1){//同意
             UnionApplyInfo unionApplyInfo = unionApplyService.getUnionApplyInfo(unionMember.getBusId(),unionId);
@@ -471,9 +447,9 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         }
         return data;
     }
-
-	@Override
-	public Page listUncommitByUnionId(Page page, final Integer unionId) {
+    
+    @Override
+    public Page listUncommitByUnionId(Page page, final Integer unionId) {
         Wrapper wrapper = new Wrapper() {
             @Override
             public String getSqlSegment() {
@@ -496,8 +472,8 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         sbSqlSelect.append("t1.id")
                 .append(", t3.enterprise_name enterpriseName ");
         wrapper.setSqlSelect(sbSqlSelect.toString());
-		return this.selectMapsPage(page, wrapper);
-	}
+        return this.selectMapsPage(page, wrapper);
+    }
 
     @Override
     public int countUncommitPreferentialManager(final Integer unionId) {
@@ -524,4 +500,5 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         wrapper.setSqlSelect(sbSqlSelect.toString());
         return this.selectCount(wrapper);
     }
+
 }
