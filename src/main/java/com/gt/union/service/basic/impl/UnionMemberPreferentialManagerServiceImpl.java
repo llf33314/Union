@@ -4,7 +4,6 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.baomidou.mybatisplus.plugins.pagination.PageHelper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionApplyConstant;
@@ -14,7 +13,6 @@ import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.StringUtil;
-import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.basic.UnionMember;
 import com.gt.union.entity.basic.UnionMemberPreferentialManager;
 import com.gt.union.mapper.basic.UnionMemberPreferentialManagerMapper;
@@ -115,7 +113,7 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
         if (busId == null) {
             throw new ParamException(LIST_MY_UNIONID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
-        UnionMember member = unionMemberService.getUnionMember(busId,unionId);
+        UnionMember member = unionMemberService.getByUnionIdAndBusId(unionId, busId);
         return unionMemberPreferentialServiceService.listMyByUnionId(page, unionId, member.getId());
     }
 
@@ -208,7 +206,7 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
                 return JSON.parseObject(obj.toString(),UnionMemberPreferentialManager.class);
             }
         }
-        UnionMember member = unionMemberService.getUnionMember(busId,unionId);
+        UnionMember member = unionMemberService.getByUnionIdAndBusId(unionId, busId);
         EntityWrapper entityWrapper = new EntityWrapper<UnionMemberPreferentialManager>();
         entityWrapper.eq("del_status",UnionMemberPreferentialManagerConstant.DEL_STATUS_NO);
         entityWrapper.eq("union_id",unionId);
@@ -238,7 +236,7 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
         }
         UnionMemberPreferentialManager manager = getManagerByUnionId(unionId,busId);
         if(manager == null){
-            UnionMember member = unionMemberService.getUnionMember(busId,unionId);
+            UnionMember member = unionMemberService.getByUnionIdAndBusId(unionId, busId);
             manager = new UnionMemberPreferentialManager();
             manager.setDelStatus(0);
             manager.setCreatetime(new Date());

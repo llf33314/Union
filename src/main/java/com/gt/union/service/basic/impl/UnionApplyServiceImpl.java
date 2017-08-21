@@ -226,7 +226,7 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         UnionMain main = unionMainService.getById(unionId);
         if(applyType == 1){//自由申请
             //1、判断是否加入了该盟
-            UnionMember unionMember = unionMemberService.getUnionMember(busId,unionId);
+            UnionMember unionMember = unionMemberService.getByUnionIdAndBusId(unionId, busId);
             if(unionMember != null){
                 throw new BusinessException(SAVE, "", "您已加入该盟");
             }
@@ -262,7 +262,7 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
                 throw new BusinessException(UPDATE_UNIONID_APPLYSTATUS, "", "联盟不支持推荐加盟");
             }
             //当前用户
-            UnionMember userMember = unionMemberService.getUnionMember(busId,unionId);
+            UnionMember userMember = unionMemberService.getByUnionIdAndBusId(unionId, busId);
             if(userMember == null){
                 throw new BusinessException(UPDATE_UNIONID_APPLYSTATUS, "", "您已退盟，不可推荐");
             }
@@ -274,7 +274,7 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
             if(StringUtil.isNotEmpty(userName)){
                 throw new ParamException(UPDATE_UNIONID_APPLYSTATUS, "参数错误", ExceptionConstant.PARAM_ERROR);
             }
-            UnionMember unionMember = unionMemberService.getUnionMember(busId,unionId);
+            UnionMember unionMember = unionMemberService.getByUnionIdAndBusId(unionId, busId);
             //1、判断是否加入了该盟
             if(unionMember != null){
                 throw new BusinessException(UPDATE_UNIONID_APPLYSTATUS, "", "已加入本联盟");

@@ -122,7 +122,7 @@ public class UnionMemberPreferentialServiceServiceImpl extends ServiceImpl<Union
         if(StringUtil.getStringLength(serviceName) > 50){
             throw new ParamException(SAVE, "优惠项目名称长度超过50字", "优惠项目名称长度不可超过50字");
         }
-        UnionMember member = unionMemberService.getUnionMember(busId,unionId);
+        UnionMember member = unionMemberService.getByUnionIdAndBusId(unionId, busId);
         EntityWrapper entityWrapper = new EntityWrapper<UnionMemberPreferentialService>();
         entityWrapper.eq("del_status",0);
         entityWrapper.eq("union_member_id",member.getId());

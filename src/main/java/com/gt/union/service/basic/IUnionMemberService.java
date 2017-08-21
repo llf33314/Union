@@ -24,14 +24,14 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @return
      * @throws Exception
      */
-    Page listByUnionIdInPage(Page page, final Integer unionId, final String enterpriseName) throws Exception;
+    Page listMapByUnionIdInPage(Page page, final Integer unionId, final String enterpriseName) throws Exception;
 
     /**
      * 根据联盟id获取盟员列表信息
      * @param unionId
      * @return
      */
-    List<Map<String,Object>> listByUnionIdInList(Integer unionId) throws Exception;
+    List<Map<String,Object>> listMapByUnionIdInList(Integer unionId) throws Exception;
 
     /**
      * 根据联盟id和退盟状态outStatus获取退盟申请列表

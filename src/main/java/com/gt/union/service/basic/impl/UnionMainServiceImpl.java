@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionMainConstant;
+import com.gt.union.common.constant.basic.UnionMemberConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
@@ -166,14 +167,14 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 				StringBuilder sbSqlSegment = new StringBuilder(" t1");
 				sbSqlSegment.append(" LEFT JOIN t_union_member t2 ON t1.id = t2.union_id")
 						.append(" WHERE t2.bus_id = ").append(busId)
-						.append(" AND t2.del_status = ").append(0)
-						.append(" AND t2.is_nuion_owner = ").append(0)
+						.append(" AND t2.del_status = ").append(UnionMemberConstant.DEL_STATUS_NO)
+						.append(" AND t2.is_nuion_owner = ").append(UnionMemberConstant.IS_UNION_OWNER_NO)
 						.append(" ORDER BY t2.id ASC");
 				return sbSqlSegment.toString();
 			};
 
 		};
-		StringBuilder sbSqlSelect = new StringBuilder("");
+		/*StringBuilder sbSqlSelect = new StringBuilder("");
 		sbSqlSelect.append("t1.id, t1.createtime, t1.del_status delStatus, t1.union_name unionName, ")
 				.append("t1.bus_id busId, t1.union_img unionImg, t1.join_type joinType, t1.director_phone directorPhone,")
 				.append("t1.union_illustration unionIllustration, t1.union_wx_group_img unionWxGroupImg, t1.union_sign unionSign, ")
@@ -182,7 +183,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 				.append("t1.black_card_charge blackCardCcharge, t1.black_card_price blackCardPrice, t1.black_card_term blackCardTerm, ")
 				.append(" t1.red_card_opend redCardOpend, t1.red_card_price redCardPrice, t1.red_card_term redCardTerm, ")
 				.append("t1.black_card_illustration blackCardIllustration, t1.red_card_illustration redCardIllustration, t1.union_validity unionValidity");
-		wrapper.setSqlSelect(sbSqlSelect.toString());
+		wrapper.setSqlSelect(sbSqlSelect.toString());*/
 		List<UnionMain> list = this.selectList(wrapper);
 		return list;
 	}
