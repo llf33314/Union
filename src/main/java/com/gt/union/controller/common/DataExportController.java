@@ -4,8 +4,13 @@ import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.ExportUtil;
 import com.gt.union.common.util.SessionUtils;
+import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.common.BusUser;
+import com.gt.union.service.basic.IUnionMainService;
+import com.gt.union.service.basic.IUnionMemberService;
+import com.gt.union.service.card.IUnionBusMemberCardService;
 import com.gt.union.service.common.ExportService;
+import com.gt.union.service.consume.IUnionConsumeRecordService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -43,6 +48,20 @@ public class DataExportController {
 	@Autowired
 	private ExportService exportService;
 
+
+	@Autowired
+	private IUnionBusMemberCardService unionBusMemberCardService;
+
+	@Autowired
+	private IUnionMemberService unionMemberService;
+
+	@Autowired
+	private IUnionMainService unionMainService;
+
+	@Autowired
+	private IUnionConsumeRecordService unionConsumeRecordService;
+
+
 	@ApiOperation(value = "导出盟员的联盟卡列表", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/busMemberCard/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public void exportBusMemberCardByUnionId(HttpServletRequest request, HttpServletResponse response
@@ -51,9 +70,13 @@ public class DataExportController {
 			,@ApiParam(name="cardNo", value = "联盟卡号", required = false) @RequestParam(name = "cardNo", required = false) String cardNo) throws IOException {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
-			List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
-			String[] titles = new String[]{"房号", "业主姓名", "联系电话","余额（元）"};
-			String[] contentName = new String[]{"roomNum", "ownerName", "ownerPhone", "ownerAccount"};
+			Integer busId = busUser.getId();
+			if(busUser.getPid() != null && busUser.getPid() != 0){
+				busId = busUser.getPid();
+			}
+			List<Map<String,Object>> list = unionBusMemberCardService.selectUnionBusMemberCardList(unionId, busId, cardNo, phone);
+			String[] titles = new String[]{"联盟卡号", "联盟卡类型", "手机号","联盟积分","升级时间","有效期"};
+			String[] contentName = new String[]{"cardNo", "card_type", "phone", "integral", "updatetime", "cardTermTime"};
 			String filename = "联盟卡列表";
 			HSSFWorkbook wb = exportService.exportBusMemberCar(titles, contentName, list);
 			ExportUtil.responseExport(response, wb, filename);
@@ -93,10 +116,11 @@ public class DataExportController {
 							,@ApiParam(name = "enterpriseName", value = "盟员名称", required = false) @RequestParam(name = "enterpriseName", required = false) String enterpriseName) throws IOException {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
-			List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
-			String[] titles = new String[]{"房号", "业主姓名", "联系电话","余额（元）"};
-			String[] contentName = new String[]{"roomNum", "ownerName", "ownerPhone", "ownerAccount"};
-			String filename = "盟员列表";
+			List<Map<String,Object>> list = unionMemberService.listByUnionIdList(unionId, enterpriseName);
+			String[] titles = new String[]{"企业名称", "加入时间", "我给TA的折扣（折）","TA给我的折扣（折）", "售卡分成比例"};
+			String[] contentName = new String[]{"enterpriseName", "createtime", "fromDiscount", "toDiscount", "sellDivideProportion"};
+			UnionMain main = unionMainService.getById(unionId);
+			String filename = main.getUnionName() + "的盟员列表";
 			HSSFWorkbook wb = exportService.exportUnionMember(titles,contentName,list);
 			ExportUtil.responseExport(response, wb, filename);
 		} catch (BaseException e){
@@ -265,9 +289,9 @@ public class DataExportController {
 	 * @param unionId
 	 * @param cardNo
 	 * @param phone
-	 * @param busId
+	 * @param fromBusId
 	 * @param beginTime
-	 * @param endTIme
+	 * @param endTime
 	 * @throws IOException
 	 */
 	@ApiOperation(value = "导出本店消费记录列表", notes = "导出本店消费记录列表", produces = "application/json;charset=UTF-8")
@@ -276,15 +300,20 @@ public class DataExportController {
 							 @ApiParam(name="unionId", value = "联盟id", required = false) @RequestParam(name = "unionId", required = false) Integer unionId
 							,@ApiParam(name = "cardNo", value = "联盟卡号", required = false) @RequestParam(name = "cardNo", required = false) String cardNo
 							,@ApiParam(name = "phone", value = "手机号", required = false) @RequestParam(name = "phone", required = false) String phone
-							,@ApiParam(name = "busId", value = "来往的商家id", required = false) @RequestParam(name = "busId", required = false) Integer busId
+							,@ApiParam(name = "fromBusId", value = "来往的商家id", required = false) @RequestParam(name = "fromBusId", required = false) Integer fromBusId
 							,@ApiParam(name = "beginTime", value = "开始时间", required = false) @RequestParam(name = "beginTime", required = false) String beginTime
-							,@ApiParam(name = "endTime", value = "结束时间", required = false) @RequestParam(name = "endTime", required = false) String endTIme) throws IOException {
+							,@ApiParam(name = "endTime", value = "结束时间", required = false) @RequestParam(name = "endTime", required = false) String endTime) throws IOException {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
-			List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
-			String[] titles = new String[]{"房号", "业主姓名", "联系电话","余额（元）"};
-			String[] contentName = new String[]{"roomNum", "ownerName", "ownerPhone", "ownerAccount"};
-			String filename = "本店消费记录";
+			Integer busId = busUser.getId();
+			if(busUser.getPid() != null && busUser.getPid() != 0){
+				busId = busUser.getPid();
+			}
+			List<Map<String,Object>> list = unionConsumeRecordService.listMyByUnionId(unionId, busId, fromBusId, cardNo, phone, beginTime, endTime);
+			String[] titles = new String[]{"来源", "联盟卡号","手机号", "消费金额（元）", "实收金额（元）", "优惠项目", "创建时间"};
+			String[] contentName = new String[]{"serviceName", "cardNo", "phone", "totalMoney", "payMoney", "serviceNames", "createTime"};
+			UnionMain main = unionMainService.getById(unionId);
+			String filename = main.getUnionName() + "的本店消费记录";
 			HSSFWorkbook wb = exportService.exportConsumeFromDetail(titles,contentName,list);
 			ExportUtil.responseExport(response, wb, filename);
 		} catch (BaseException e){
@@ -318,7 +347,7 @@ public class DataExportController {
 	 * @param unionId
 	 * @param cardNo
 	 * @param phone
-	 * @param busId
+	 * @param toBusId
 	 * @param beginTime
 	 * @param endTime
 	 * @throws IOException
@@ -329,15 +358,20 @@ public class DataExportController {
 								@ApiParam(name="unionId", value = "联盟id", required = false) @RequestParam(name = "unionId", required = false) Integer unionId
 								,@ApiParam(name = "cardNo", value = "联盟卡号", required = false) @RequestParam(name = "cardNo", required = false) String cardNo
 								,@ApiParam(name = "phone", value = "手机号", required = false) @RequestParam(name = "phone", required = false) String phone
-								,@ApiParam(name = "busId", value = "来往的商家id", required = false) @RequestParam(name = "busId", required = false) Integer busId
+								,@ApiParam(name = "toBusId", value = "来往的商家id", required = false) @RequestParam(name = "toBusId", required = false) Integer toBusId
 								,@ApiParam(name = "beginTime", value = "开始时间", required = false) @RequestParam(name = "beginTime", required = false) String beginTime
 								,@ApiParam(name = "endTime", value = "结束时间", required = false) @RequestParam(name = "endTime", required = false) String endTime) throws IOException {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
+			Integer busId = busUser.getId();
+			if(busUser.getPid() != null && busUser.getPid() != 0){
+				busId = busUser.getPid();
+			}
 			List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
 			String[] titles = new String[]{"房号", "业主姓名", "联系电话","余额（元）"};
 			String[] contentName = new String[]{"roomNum", "ownerName", "ownerPhone", "ownerAccount"};
-			String filename = "他店消费记录";
+			UnionMain main = unionMainService.getById(unionId);
+			String filename = main.getUnionName() + "的他店消费记录";
 			HSSFWorkbook wb = exportService.exportConsumeToDetail(titles,contentName,list);
 			ExportUtil.responseExport(response, wb, filename);
 		} catch (BaseException e){

@@ -48,6 +48,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     private static final String IS_MEMBER_VALID_UNIONMANE = "UnionMemberServiceImpl.isMemberValid(UnionMain)";
     private static final String UPDATE_OUTSTATUS_ID = "UnionMemberServiceImpl.updateOutStatusById()";
     private static final String GET_UNIONMEMBER = "UnionMemberServiceImpl.getUnionMember()";
+    private static final String LIST_UNIONID_LIST_ALL = "UnionMemberServiceImpl.listByUnionIdList()";
 
     @Autowired
     private RedisCacheUtil redisCacheUtil;
@@ -104,7 +105,6 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             .append(", i.sell_divide_proportion sellDivideProportion ")
             .append(", i.enterprise_name enterpriseName ");
         wrapper.setSqlSelect(sbSqlSelect.toString());
-
         return this.selectMapsPage(page, wrapper);
     }
 
@@ -144,7 +144,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 .append(", i.address_district_id addressDistrictId ")
                 .append(", i.is_member_out_advice isMemberOutAdvice ");
         wrapper.setSqlSelect(sbSqlSelect.toString());
-        return null;
+        return this.selectMaps(wrapper);
     }
 
     @Override
@@ -268,7 +268,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
 
     @Override
     public void acceptUnionOwner(Integer busId, Integer unionId) throws Exception {
-        //TODO
+        //TODO  接受盟主权限转移
     }
 
     @Override
@@ -499,6 +499,46 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         sbSqlSelect.append("t1.id id");
         wrapper.setSqlSelect(sbSqlSelect.toString());
         return this.selectCount(wrapper);
+    }
+
+    @Override
+    public List<Map<String, Object>> listByUnionIdList(final Integer unionId, final String enterpriseName) throws Exception{
+        if (unionId == null) {
+            throw new ParamException(LIST_UNIONID_LIST_ALL, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
+        }
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                StringBuilder sbSqlSegment = new StringBuilder(" m");
+                sbSqlSegment.append(" LEFT JOIN t_union_discount d4 on d4.from_bus_id = m.bus_id ")
+                        .append(" LEFT JOIN t_union_discount d2 on d2.to_bus_id = m.bus_id ")
+                        .append(" LEFT JOIN t_union_apply a on a.union_member_id = m.id ")
+                        .append(" LEFT JOIN t_union_apply_info i on i.union_apply_id = a.id ")
+                        .append(" WHERE m.del_status=").append(UnionMemberConstant.DEL_STATUS_NO)
+                        .append("    AND d4.del_status = ").append(UnionDiscountConstant.DEL_STATUS_NO)
+                        .append("    AND d2.del_status = ").append(UnionMemberConstant.DEL_STATUS_NO)
+                        .append("    AND a.del_status = ").append(UnionApplyConstant.DEL_STATUS_NO)
+                        .append("    AND a.apply_status = ").append(UnionApplyConstant.APPLY_STATUS_PASS)
+                        .append("    AND m.union_id = ").append(unionId);
+                if (StringUtil.isNotEmpty(enterpriseName)) {
+                    sbSqlSegment.append(" AND i.enterprise_name LIKE '%").append(enterpriseName).append("%' ");
+                }
+                sbSqlSegment.append(" ORDER BY m.is_nuion_owner DESC,m.createtime DESC ");
+                return sbSqlSegment.toString();
+            };
+
+        };
+        StringBuilder sbSqlSelect = new StringBuilder("");
+        sbSqlSelect.append(" m.is_nuion_owner isUnionOwner ")
+                .append(", m.id id ")
+                .append(", m.bus_id busId ")
+                .append(", DATE_FORMAT(m.createtime, '%Y-%m-%d %T') createtime ")
+                .append(", d4.discount fromDiscount ")
+                .append(", d2.discount toDiscount ")
+                .append(", i.sell_divide_proportion sellDivideProportion ")
+                .append(", i.enterprise_name enterpriseName ");
+        wrapper.setSqlSelect(sbSqlSelect.toString());
+        return this.selectMaps(wrapper);
     }
 
 }

@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.entity.consume.UnionConsumeRecord;
 
+import java.util.List;
+import java.util.Map;
+
 /**
  * <p>
  * 会员消费 服务类
@@ -42,4 +45,17 @@ public interface IUnionConsumeRecordService extends IService<UnionConsumeRecord>
      * @throws Exception
      */
 	Page listOtherByUnionId(Page page, Integer unionId, Integer busId, Integer cardBusId, String cardNo, String phone, String beginTime, String endTime) throws Exception;
+
+	/**
+	 * 导出本店联盟卡消费记录列表
+	 * @param unionId	联盟id
+	 * @param busId		本商家id
+	 * @param fromBusId	来源的商家id
+	 * @param cardNo	联盟卡号
+	 * @param phone		手机号
+	 * @param beginTime	开始时间
+	 * @param endTime	结束时间
+	 * @return
+	 */
+	List<Map<String,Object>> listMyByUnionId(Integer unionId, Integer busId, Integer fromBusId, String cardNo, String phone, String beginTime, String endTime) throws Exception;
 }

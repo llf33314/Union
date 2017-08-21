@@ -163,7 +163,28 @@ public class UnionMemberController {
             if (CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0) {
                 throw new BusinessException(UPDATE_ISNUIONOWNER_ID, "", CommonConstant.UNION_BUS_PARENT_MSG);
             }
-            //TODO
+            //TODO  盟主权限转移
+            return GTJsonResult.instanceSuccessMsg().toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(UPDATE_ISNUIONOWNER_ID, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
+    }
+
+    @ApiOperation(value = "盟主撤销权限转移", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{id}/isNuionOwner/cancel", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    public String cancelUnionOwner(HttpServletRequest request
+            , @ApiParam(name = "id", value = "盟员id", required = true) @PathVariable("id") Integer id
+            , @ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam(value = "unionId", required = true) Integer unionId) {
+        try {
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            if (CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0) {
+                throw new BusinessException(UPDATE_ISNUIONOWNER_ID, "", CommonConstant.UNION_BUS_PARENT_MSG);
+            }
+            //TODO  盟主撤销权限转移
             return GTJsonResult.instanceSuccessMsg().toString();
         } catch (BaseException e) {
             logger.error("", e);

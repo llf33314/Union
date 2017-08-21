@@ -50,7 +50,7 @@ public class UnionBusMemberCardController {
             vo.setBusId(busId);
             vo.setCardNo(cardNo);
             vo.setPhone(phone);
-            Page result = unionBusMemberCardService.selectUnionBusMemberCardList(page,vo); //TODO 这里可以不建议放VO...
+            Page result = unionBusMemberCardService.selectUnionBusMemberCardList(page, unionId, busId, cardNo, phone);
             return GTJsonResult.instanceSuccessMsg(result).toString();
 		}catch (BaseException e){
 			logger.error("", e);

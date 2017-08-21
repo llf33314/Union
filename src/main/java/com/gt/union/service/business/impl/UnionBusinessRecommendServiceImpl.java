@@ -83,7 +83,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 		//联盟是否有效
 		this.unionRootService.checkUnionMainValid(vo.getUnionId());
 		UnionMember fromUnionMember = unionMemberService.getUnionMember(vo.getBusId(),vo.getUnionId());
-		unionMemberService.isMemberValid(fromUnionMember);//判断自己状态
+		unionRootService.hasUnionMemberAuthority(vo.getUnionId(), vo.getBusId());
 		UnionMember toUnionMeber = unionMemberService.selectById(vo.getToMemberId());
 		if(toUnionMeber == null){
 			throw new BusinessException(SAVE,"盟员不存在","您推荐的盟员不存在");

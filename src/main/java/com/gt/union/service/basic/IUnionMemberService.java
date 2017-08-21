@@ -1,6 +1,5 @@
 package com.gt.union.service.basic;
 
-import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.entity.basic.UnionMember;
@@ -132,4 +131,12 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @return
      */
     int countUncommitPreferentialManager(Integer unionId);
+
+    /**
+     * 查询导出盟员列表的数据
+     * @param unionId   联盟id
+     * @param enterpriseName    企业名称
+     * @return
+     */
+    List<Map<String,Object>> listByUnionIdList(Integer unionId, String enterpriseName) throws Exception;
 }

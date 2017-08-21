@@ -123,6 +123,7 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public void updateBySellDivideProportion(List<UnionApplyInfo> unionApplyInfoList) throws Exception {
+		//TODO 售卡分成比例权限判断
 	    if (ListUtil.isNotEmpty(unionApplyInfoList)) {
 	        List<UnionApplyInfo> unionApplyInfos = new LinkedList<>();
             BigDecimal sellDivideProportionSum = BigDecimal.valueOf(0.0);
