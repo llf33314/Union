@@ -108,7 +108,7 @@ public class RedisCacheUtil {
 	public boolean set( final String key, String value ) {
 		boolean result = false;
 		try {
-			set(key, value, 7200l);
+			set(key, value, 7200L);
 			result = true;
 		} catch ( Exception e ) {
 			e.printStackTrace();

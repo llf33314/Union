@@ -4,15 +4,18 @@ import com.alibaba.fastjson.JSON;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionCreateInfoRecordConstant;
+import com.gt.union.common.constant.basic.UnionMemberConstant;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.DateTimeKit;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.RedisKeyUtil;
 import com.gt.union.entity.basic.UnionCreateInfoRecord;
 import com.gt.union.entity.basic.UnionMain;
+import com.gt.union.entity.basic.UnionMember;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.basic.IUnionCreateInfoRecordService;
 import com.gt.union.service.basic.IUnionMainService;
+import com.gt.union.service.basic.IUnionMemberService;
 import com.gt.union.service.common.IUnionRootService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -42,6 +45,9 @@ public class UnionRootServiceImpl implements IUnionRootService {
 
 	@Autowired
     private IUnionMainService unionMainService;
+
+	@Autowired
+    private IUnionMemberService unionMemberService;
 
     public BusUser getBusUserByBusId(Integer busId) throws Exception {
         if (busId == null) {
@@ -181,7 +187,12 @@ public class UnionRootServiceImpl implements IUnionRootService {
             throw new ParamException(HAS_UNION_MEMBER_AUTHORITY, "busId=" + busId, ExceptionConstant.PARAM_ERROR);
         }
 
+        UnionMember unionMember = this.unionMemberService.getByUnionIdAndBusId(unionId, busId);
+        return hasUnionMemberAuthority(unionMember);
+    }
 
-        return false;
+    @Override
+    public boolean hasUnionMemberAuthority(UnionMember unionMember) throws Exception {
+        return unionMember != null && UnionMemberConstant.OUT_STATUS_PERIOD != unionMember.getOutStaus() ? true : false;
     }
 }

@@ -43,13 +43,13 @@ public class RedisKeyUtil {
     /**
      * 获取封装的unionMain & unionMember key
      * @param unionId
-     * @param memberId
+     * @param busId
      * @return
      */
-    public static final String getUnionMemberKey(Integer unionId, Integer memberId) {
-        return getUnionMemberKey(String.valueOf(unionId), String.valueOf(memberId));
+    public static final String getUnionMemberBusIdKey(Integer unionId, Integer busId) {
+        return getUnionMemberBusIdKey(String.valueOf(unionId), String.valueOf(busId));
     }
-    public static final String getUnionMemberKey(String unionId, String memberId) {
-        return "unionMain:" + unionId + ":unionMember:" + memberId;
+    public static final String getUnionMemberBusIdKey(String unionId, String busId) {
+        return "unionMain:" + unionId + ":unionMember:busId:" + busId;
     }
 }

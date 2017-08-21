@@ -1,6 +1,6 @@
 package com.gt.union.service.common;
 
-import com.gt.union.common.constant.ExceptionConstant;
+import com.gt.union.entity.basic.UnionMember;
 import com.gt.union.entity.common.BusUser;
 
 /**
@@ -74,4 +74,11 @@ public interface IUnionRootService {
      */
     public boolean hasUnionMemberAuthority(Integer unionId, Integer busId) throws Exception;
 
+    /**
+     * 判断该用户是否具有该联盟的盟员权限，未加盟、已退盟以及退盟过渡期不具有。当unionMember为空时，返回false
+     * @param unionMember
+     * @return
+     * @throws Exception
+     */
+    public boolean hasUnionMemberAuthority(UnionMember unionMember) throws Exception;
 }

@@ -92,11 +92,11 @@ public interface IUnionMemberService extends IService<UnionMember> {
 
     /**
      * 查询联盟成员
-     * @param busId 商家id
      * @param unionId   联盟id
+     * @param busId 商家id
      * @return
      */
-    UnionMember getUnionMember(Integer busId, Integer unionId) throws Exception;
+    UnionMember getByUnionIdAndBusId(Integer unionId, Integer busId) throws Exception;
 
     /**
      * 查询商家加入的联盟数

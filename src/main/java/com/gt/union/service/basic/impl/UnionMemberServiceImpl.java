@@ -47,7 +47,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     private static final String SELECT_UNION_BROKERAGE_LIST = "UnionMemberServiceImpl.selectUnionBrokerageList()";
     private static final String IS_MEMBER_VALID_UNIONMANE = "UnionMemberServiceImpl.isMemberValid(UnionMain)";
     private static final String UPDATE_OUTSTATUS_ID = "UnionMemberServiceImpl.updateOutStatusById()";
-    private static final String GET_UNIONMEMBER = "UnionMemberServiceImpl.getUnionMember()";
+    private static final String GET_UNIONID_BUSID = "UnionMemberServiceImpl.getByUnionIdAndBusId()";
     private static final String LIST_UNIONID_LIST_ALL = "UnionMemberServiceImpl.listByUnionIdList()";
 
     @Autowired
@@ -363,31 +363,32 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    public UnionMember getUnionMember(Integer busId, Integer unionId) throws Exception{
+    public UnionMember getByUnionIdAndBusId(Integer unionId, Integer busId) throws Exception{
         if (unionId == null) {
-            throw new ParamException(GET_UNIONMEMBER, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(GET_UNIONID_BUSID, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         if (busId == null) {
-            throw new ParamException(GET_UNIONMEMBER, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(GET_UNIONID_BUSID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
-        UnionMember unionMember = null;
-        if ( redisCacheUtil.exists( "unionMember:" + unionId + ":" + busId) ) {
-            // 1.1 存在则从redis 读取
-            Object obj = redisCacheUtil.get("unionMember:" + unionId + ":" + busId );
-            if(CommonUtil.isNotEmpty(obj)){
-                return JSON.parseObject(redisCacheUtil.get("unionMember:" + unionId + ":" + busId ).toString(),UnionMember.class);
-            }
+
+        // （1）判断缓存中是否存在，如存在，则直接返回
+        String unionMemberBusIdKey = RedisKeyUtil.getUnionMemberBusIdKey(unionId, busId);
+        if (redisCacheUtil.exists(unionMemberBusIdKey)) {
+            return JSON.parseObject(redisCacheUtil.get(unionMemberBusIdKey).toString(), UnionMember.class);
         }
-        // 2. 不存在则从数据库查询
+
+        // （2） 如不存在，则从数据库查询
         EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<UnionMember>();
-        entityWrapper.eq("union_id",unionId);
-        entityWrapper.eq("bus_id",busId);
-        entityWrapper.eq("del_status",0);
-        unionMember = this.selectOne(entityWrapper);
-        // 写入 Redis 操作
-        if(CommonUtil.isNotEmpty(unionMember)){
-            redisCacheUtil.set( "unionMember:" + unionId + ":" + busId, JSON.toJSONString(unionMember) );
+        entityWrapper.eq("del_status",UnionMemberConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("bus_id", busId);
+        UnionMember unionMember = this.selectOne(entityWrapper);
+
+        // （3）如查询到有效数据，则存入缓存中
+        if (unionMember != null) {
+            redisCacheUtil.set(unionMemberBusIdKey, JSON.toJSONString(unionMember), 3600L);
         }
+
         return unionMember;
     }
 
