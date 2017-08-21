@@ -58,4 +58,17 @@ public interface IUnionConsumeRecordService extends IService<UnionConsumeRecord>
 	 * @return
 	 */
 	List<Map<String,Object>> listMyByUnionId(Integer unionId, Integer busId, Integer fromBusId, String cardNo, String phone, String beginTime, String endTime) throws Exception;
+
+	/**
+	 * 导出他店联盟卡消费记录列表
+	 * @param unionId	联盟id
+	 * @param busId		本商家id
+	 * @param toBusId	去向的商家id
+	 * @param cardNo	联盟卡号
+	 * @param phone		手机号
+	 * @param beginTime	开始时间
+	 * @param endTime	结束时间
+	 * @return
+	 */
+	List<Map<String,Object>> listOtherByUnionId(Integer unionId, Integer busId, Integer toBusId, String cardNo, String phone, String beginTime, String endTime) throws Exception;
 }

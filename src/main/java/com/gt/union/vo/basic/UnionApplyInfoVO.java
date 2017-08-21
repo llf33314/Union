@@ -7,6 +7,7 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 /**
@@ -17,8 +18,15 @@ import javax.validation.constraints.Pattern;
 public class UnionApplyInfoVO {
 
 	/**
+	 * 信息id
+	 */
+	private Integer id;
+
+	/**
 	 * 联盟id
 	 */
+	@ApiModelProperty( value = "联盟id", required = true)
+	@NotNull(message = "联盟不存在")
 	private Integer unionId;
 
 	/**
@@ -94,13 +102,13 @@ public class UnionApplyInfoVO {
 	/**
 	 * 省代码
 	 */
-	@NotBlank(message = "短信通知手机号不能为空")
+	@NotBlank(message = "请选择省")
 	private String provienceCode;
 
 	/**
 	 * 市代码
 	 */
-	@NotBlank(message = "短信通知手机号不能为空")
+	@NotBlank(message = "请选择市")
 	private String cityCode;
 
 	/**
@@ -109,6 +117,13 @@ public class UnionApplyInfoVO {
 	@NotBlank(message = "请选择区")
 	private String districtCode;
 
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
 	public Integer getUnionId() {
 		return unionId;

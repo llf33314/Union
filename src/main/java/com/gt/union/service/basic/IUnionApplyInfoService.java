@@ -3,6 +3,7 @@ package com.gt.union.service.basic;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.entity.basic.UnionApplyInfo;
+import com.gt.union.vo.basic.UnionApplyInfoVO;
 import com.gt.union.vo.basic.UnionApplyVO;
 
 import java.util.List;
@@ -20,11 +21,10 @@ public interface IUnionApplyInfoService extends IService<UnionApplyInfo> {
 
 	/**
 	 * 更新盟员信息
-	 * @param unionApplyInfo
-	 * @param id
-	 * @param unionId
+	 * @param vo	盟员信息
+	 * @param busId
 	 */
-	void updateById(UnionApplyInfo unionApplyInfo, Integer id, Integer unionId) throws Exception;
+	void updateById(UnionApplyInfoVO vo, Integer busId) throws Exception;
 
     /**
      * 比例设置分页展示

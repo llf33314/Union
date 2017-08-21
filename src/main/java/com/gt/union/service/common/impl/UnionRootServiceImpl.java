@@ -6,6 +6,7 @@ import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionCreateInfoRecordConstant;
 import com.gt.union.common.constant.basic.UnionMemberConstant;
 import com.gt.union.common.exception.ParamException;
+import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.DateTimeKit;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.RedisKeyUtil;
@@ -16,11 +17,14 @@ import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.basic.IUnionCreateInfoRecordService;
 import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.basic.IUnionMemberService;
+import com.gt.union.service.common.DictService;
 import com.gt.union.service.common.IUnionRootService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 商家联盟权限统一管理类
@@ -49,6 +53,9 @@ public class UnionRootServiceImpl implements IUnionRootService {
 	@Autowired
     private IUnionMemberService unionMemberService;
 
+	@Autowired
+	private DictService dictService;
+
     public BusUser getBusUserByBusId(Integer busId) throws Exception {
         if (busId == null) {
             throw new ParamException(GET_BUSUSER_BUSID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
@@ -56,11 +63,11 @@ public class UnionRootServiceImpl implements IUnionRootService {
 
         String busUserKey = RedisKeyUtil.getBusUserKey(busId);
         if (this.redisCacheUtil.exists(busUserKey)) {//（1）通过busId获取缓存中的busUser对象，如果存在，则直接返回
-            Object obj = this.redisCacheUtil.get(String.valueOf(busId));
+            Object obj = this.redisCacheUtil.get(busUserKey);
             return JSON.parseObject(obj.toString(), BusUser.class);
         }
 
-        //（2）如果缓存中不存在busUser对象，则调用接口获取 //TODO
+        //（2）如果缓存中不存在busUser对象，则调用接口获取 //TODO 调取接口获取商家信息
         BusUser busUser = new BusUser();
         busUser.setEndTime(DateTimeKit.addDays(DateTimeKit.getNow(), 1));
 
@@ -78,6 +85,11 @@ public class UnionRootServiceImpl implements IUnionRootService {
         }
 
         BusUser busUser = getBusUserByBusId(busId);
+        return checkBusUserValid(busUser);
+    }
+
+    @Override
+    public boolean checkBusUserValid(BusUser busUser) throws Exception {
         if (busUser == null) {
             throw new ParamException(CHECK_BUSUSER_VALID_BUSID, "无法通过busId获取busUser对象", ExceptionConstant.PARAM_ERROR);
         }
@@ -96,12 +108,13 @@ public class UnionRootServiceImpl implements IUnionRootService {
         if (busUser == null) {
             throw new ParamException(HAS_UNION_OWNER_AUTHORITY, "无法通过busId获取busUser对象", ExceptionConstant.PARAM_ERROR);
         }
-        if (busUser.getLevel() == BusUserConstant.LEVEL_EXTREME || busUser.getLevel() == BusUserConstant.LEVEL_PLATINA || busUser.getLevel() == BusUserConstant.LEVEL_DIAMOND) {
+        Map<Integer,Object> data = getFreeUnionMainAuthority();
+        if(data.containsKey(busUser.getLevel())){
             return true;
         }
         //（2）其他版本，如升级版、高级版需要判断是否购买了盟主服务
         UnionCreateInfoRecord unionCreateInfoRecord = this.unionCreateInfoRecordService.getByBusId(busId);
-        return unionCreateInfoRecord != null && (new Date()).compareTo(unionCreateInfoRecord.getPeriodValidity()) < 0 ? true : false;
+        return (unionCreateInfoRecord != null && (new Date()).compareTo(unionCreateInfoRecord.getPeriodValidity()) < 0) ? true : false;
     }
 
     @Override
@@ -124,26 +137,28 @@ public class UnionRootServiceImpl implements IUnionRootService {
         String unionMainValidKey = RedisKeyUtil.getUnionMainValidKey(unionId);
         if (this.redisCacheUtil.exists(unionMainValidKey)) {
             return true;
-        }
+    }
 
-        // （2）否则，判断联盟是否过期
         UnionMain unionMain = this.unionMainService.getById(unionId);
         if (unionMain == null) {
             throw new ParamException(CHECK_UNIONMAIN_VALID, "无法通过unionId获取unionMain对象", ExceptionConstant.PARAM_ERROR);
         }
-        if ((new Date()).compareTo(unionMain.getUnionValidity()) > 0) {
-            return false;
-        }
 
-        // （3）判断盟主是否过期
+        // （2）判断盟主是否过期
         Integer busId = unionMain.getBusId();
-        if (!this.checkBusUserValid(busId)) {
+        BusUser busUser = this.getBusUserByBusId(busId);
+        if (!this.checkBusUserValid(busUser)) {
             return false;
         }
 
-        // （4）判断盟主是否具有盟主服务
+        // （3）判断盟主是否具有盟主服务
         if (!this.hasUnionOwnerAuthority(busId)) {
-            return false;
+            // （4）判断联盟是否过期
+            if(CommonUtil.isNotEmpty(unionMain.getUnionValidity())){
+                if ((new Date()).compareTo(unionMain.getUnionValidity()) > 0) {
+                    return false;
+                }
+            }
         }
 
         // （5）重新存入缓存
@@ -195,4 +210,16 @@ public class UnionRootServiceImpl implements IUnionRootService {
     public boolean hasUnionMemberAuthority(UnionMember unionMember) throws Exception {
         return unionMember != null && UnionMemberConstant.OUT_STATUS_PERIOD != unionMember.getOutStaus() ? true : false;
     }
+
+    /**
+     * 获取免费的盟主权限
+     * @return
+     */
+    private Map<Integer,Object> getFreeUnionMainAuthority(){
+        //TODO 字典数据  缓存起来
+        Map<Integer,Object> data = new HashMap<Integer,Object>();
+        data.put(BusUserConstant.LEVEL_EXTREME, 1);
+        return data;
+    }
+
 }

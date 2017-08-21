@@ -1,8 +1,10 @@
 package com.gt.union.service.basic.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionApplyConstant;
 import com.gt.union.common.constant.basic.UnionMemberConstant;
@@ -10,6 +12,7 @@ import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.ListUtil;
+import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.entity.basic.UnionApplyInfo;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.mapper.basic.UnionApplyInfoMapper;
@@ -18,6 +21,7 @@ import com.gt.union.service.basic.IUnionApplyService;
 import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.basic.IUnionMemberService;
 import com.gt.union.service.common.IUnionRootService;
+import com.gt.union.vo.basic.UnionApplyInfoVO;
 import com.gt.union.vo.basic.UnionApplyVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,6 +47,7 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 	private static final String LIST_SELLDIVIDEPROPORTION_PAGE = "UnionApplyInfoServiceImpl.listBySellDivideProportionInPage()";
 	private static final String LIST_SELLDIVIDEPROPORTION_LIST = "UnionApplyInfoServiceImpl.listBySellDivideProportionInList()";
 	private static final String UPDATE_SELLDIVIDEPROPORTION = "UnionApplyInfoServiceImpl.updateBySellDivideProportion()";
+	private static final String UPDATE_ID = "UnionApplyInfoServiceImpl.updateById()";
 
 	@Autowired
 	private IUnionApplyService unionApplyService;
@@ -56,11 +61,31 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 	@Autowired
     private IUnionRootService unionRootService;
 
+	@Autowired
+	private RedisCacheUtil redisCacheUtil;
+
+	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public void updateById(UnionApplyInfo unionApplyInfo, Integer busId, Integer unionId) throws Exception{
-		//TODO 只有盟主和盟员自己才有权限更新
-		//TODO 转换商家地址
-		//this.updateById(unionApplyInfo);
+	public void updateById(UnionApplyInfoVO vo, Integer busId) throws Exception {
+		if(!unionRootService.checkUnionMainValid(vo.getUnionId())){
+			throw new BusinessException(UPDATE_ID, "" , CommonConstant.UNION_OVERDUE_MSG);
+		}
+		if(!unionRootService.hasUnionMemberAuthority(vo.getUnionId(),busId)){
+			throw new BusinessException(UPDATE_ID, "" , CommonConstant.UNION_MEMBER_NON_AUTHORITY_MSG);
+		}
+		//TODO 更新盟员信息的地址
+		UnionApplyInfo info = unionApplyService.getUnionApplyInfo(busId,vo.getUnionId());
+		info.setDirectorName(vo.getDirectorName());
+		info.setDirectorPhone(vo.getDirectorPphone());
+		info.setDirectorEmail(vo.getDirectorEmail());
+		info.setNotifyPhone(vo.getNotifyPhone());
+		info.setEnterpriseName(vo.getEnterpriseName());
+		info.setIntegralProportion(vo.getIntegralProportion());
+		info.setBusAddress(vo.getBusAddress());
+		info.setAddressLatitude(vo.getAddressLatitude());
+		info.setAddressLongitude(vo.getAddressLongitude());
+		this.updateById(info);
+		redisCacheUtil.set("unionApplyInfo:" + vo.getUnionId() + ":" + busId, JSON.toJSONString(info));
 	}
 
 	@Override
@@ -181,6 +206,7 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 		info.setDirectorEmail(vo.getDirectorEmail());
 		info.setDirectorPhone(vo.getDirectorPhone());
 		info.setDirectorName(vo.getDirectorName());
+		this.insert(info);
 		return info;
 	}
 }

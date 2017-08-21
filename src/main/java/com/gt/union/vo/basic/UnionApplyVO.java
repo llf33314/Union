@@ -19,7 +19,7 @@ public class UnionApplyVO {
     /**
      * 盟员商家帐号
      */
-    @ApiModelProperty( value = "推荐时的盟员账号" )
+    @ApiModelProperty( value = "推荐时必填的盟员账号" )
     private String userName;
 
     /**
@@ -69,6 +69,7 @@ public class UnionApplyVO {
     /**
      * 申请推荐类型
      */
+    @ApiModelProperty( value = "申请推荐加盟类型，在请求路径处填写即可")
     private Integer applyType;
 
     public String getUserName() {

@@ -25,6 +25,14 @@ public interface IUnionRootService {
 	public boolean checkBusUserValid(Integer busId) throws Exception;
 
     /**
+     * 根据用户判断该用户是否有效
+     * @param busUser
+     * @return
+     * @throws Exception
+     */
+	public boolean checkBusUserValid(BusUser busUser) throws Exception;
+
+    /**
      * 根据用户id判断该用户是否拥有盟主权限
      * @param busId
      * @return
@@ -81,4 +89,6 @@ public interface IUnionRootService {
      * @throws Exception
      */
     public boolean hasUnionMemberAuthority(UnionMember unionMember) throws Exception;
+
+
 }

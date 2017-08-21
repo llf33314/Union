@@ -14,13 +14,18 @@ import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.basic.IUnionApplyInfoService;
 import com.gt.union.service.basic.IUnionMemberService;
 import com.gt.union.service.common.IUnionRootService;
+import com.gt.union.service.common.UnionInvalidService;
+import com.gt.union.vo.basic.UnionApplyInfoVO;
+import com.gt.union.vo.basic.UnionApplyVO;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Map;
 
@@ -50,6 +55,9 @@ public class UnionApplyInfoController {
 
 	@Autowired
     private IUnionRootService unionRootService;
+
+	@Autowired
+	private UnionInvalidService unionInvalidService;
 
 	/**
 	 * 获取编辑盟员信息
@@ -83,8 +91,7 @@ public class UnionApplyInfoController {
 	/**
 	 * 更新盟员信息
 	 * @param request
-	 * @param unionId
-	 * @param unionApplyInfo
+	 * @param vo
 	 * @return
 	 */
 	@ApiOperation(value = "更新盟员信息", produces = "application/json;charset=UTF-8")
@@ -92,15 +99,15 @@ public class UnionApplyInfoController {
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
 	public String updateById(HttpServletRequest request
         , @ApiParam(name="id", value = "盟员信息id", required = true) @PathVariable Integer id
-        , @ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId
-        , @ApiParam(name="unionApplyInfo", value = "盟员信息", required = true) @RequestBody UnionApplyInfo unionApplyInfo) {
+        , @ApiParam(name="unionApplyInfo", value = "盟员信息", required = true) @ModelAttribute @Valid UnionApplyInfoVO vo, BindingResult result) {
 		try {
+			unionInvalidService.invalidParameter( result );
 			BusUser busUser = SessionUtils.getLoginUser(request);
 			if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
 				throw new BusinessException(UPDATE_ID, "", CommonConstant.UNION_BUS_PARENT_MSG);
 			}
-			unionApplyInfo.setId(id);
-			this.unionApplyInfoService.updateById(unionApplyInfo,busUser.getId(),unionId);
+			vo.setId(id);
+			this.unionApplyInfoService.updateById(vo,busUser.getId());
             return GTJsonResult.instanceSuccessMsg().toString();
         } catch (BaseException e) {
             logger.error("", e);

@@ -115,7 +115,7 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
         if (busId == null) {
             throw new ParamException(LIST_MY_UNIONID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
-        UnionMember member = unionMemberService.getUnionMember(busId,unionId);
+        UnionMember member = unionMemberService.getByUnionIdAndBusId(busId,unionId);
         return unionMemberPreferentialServiceService.listMyByUnionId(page, unionId, member.getId());
     }
 
@@ -208,7 +208,7 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
                 return JSON.parseObject(obj.toString(),UnionMemberPreferentialManager.class);
             }
         }
-        UnionMember member = unionMemberService.getUnionMember(busId,unionId);
+        UnionMember member = unionMemberService.getByUnionIdAndBusId(busId,unionId);
         EntityWrapper entityWrapper = new EntityWrapper<UnionMemberPreferentialManager>();
         entityWrapper.eq("del_status",UnionMemberPreferentialManagerConstant.DEL_STATUS_NO);
         entityWrapper.eq("union_id",unionId);
@@ -238,7 +238,7 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
         }
         UnionMemberPreferentialManager manager = getManagerByUnionId(unionId,busId);
         if(manager == null){
-            UnionMember member = unionMemberService.getUnionMember(busId,unionId);
+            UnionMember member = unionMemberService.getByUnionIdAndBusId(busId,unionId);
             manager = new UnionMemberPreferentialManager();
             manager.setDelStatus(0);
             manager.setCreatetime(new Date());

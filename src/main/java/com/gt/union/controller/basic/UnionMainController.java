@@ -13,7 +13,9 @@ import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.basic.IUnionMainService;
+import com.gt.union.service.common.UnionInvalidService;
 import com.gt.union.vo.basic.UnionMainCreateInfoVO;
+import com.gt.union.vo.basic.UnionMainInfoVO;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
@@ -51,6 +53,9 @@ public class UnionMainController {
     @Autowired
     private IUnionMainService unionMainService;
 
+	@Autowired
+	private UnionInvalidService unionInvalidService;
+
     @ApiOperation(value = "首页查询我的联盟信息", produces = "application/json;charset=UTF-8")
     @SysLogAnnotation(op_function = "1", description = "首页查询我的联盟信息")
     @RequestMapping(value = "/index", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -62,6 +67,7 @@ public class UnionMainController {
                 busId = user.getPid();
             }
             Map<String, Object> data = unionMainService.indexByBusId(busId);
+            data.put("userType", (user.getPid() != null && user.getPid() != 0) ? 1 : 2);//1：子账号  2：主账号
             return GTJsonResult.instanceSuccessMsg(data).toString();
         } catch (BaseException e) {
             logger.error("", e);
@@ -84,6 +90,7 @@ public class UnionMainController {
                 busId = user.getPid();
             }
             Map<String, Object> data = unionMainService.indexById(id, busId);
+            data.put("userType", (user.getPid() != null && user.getPid() != 0) ? 1 : 2);//1：子账号  2：主账号
             return GTJsonResult.instanceSuccessMsg(data).toString();
         } catch (BaseException e) {
             logger.error("", e);
@@ -137,14 +144,14 @@ public class UnionMainController {
     @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateById(HttpServletRequest request
           , @ApiParam(name="id", value = "联盟id", required = true) @PathVariable Integer id
-          , @ApiParam(name="unionMain", value = "联盟更新信息", required = true) @RequestBody @Valid UnionMain unionMain , BindingResult result){
+          , @ApiParam(name="vo", value = "联盟更新信息", required = true) @ModelAttribute @Valid UnionMainInfoVO vo , BindingResult result){
         try{
+			unionInvalidService.invalidParameter( result );
             BusUser user = SessionUtils.getLoginUser(request);
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
                 throw new BusinessException(UPDATE_ID, "", CommonConstant.UNION_BUS_PARENT_MSG);
             }
-            unionMain.setId(id);
-            unionMainService.updateById(id, user.getId(), unionMain);
+            unionMainService.updateById(id, user.getId(), vo);
             return GTJsonResult.instanceSuccessMsg().toString();
         }catch (BaseException e){
             logger.error("", e);
@@ -163,8 +170,8 @@ public class UnionMainController {
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
                 throw new BusinessException(INSTANCE, "", CommonConstant.UNION_BUS_PARENT_MSG);
             }
-            unionMainService.instance(user.getId());
-            return GTJsonResult.instanceSuccessMsg().toString();
+            Map<String,Object> data = unionMainService.instance(user.getId());
+            return GTJsonResult.instanceSuccessMsg(data).toString();
         }catch (BaseException e){
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
@@ -178,7 +185,7 @@ public class UnionMainController {
     @SysLogAnnotation(op_function = "3", description = "保存创建联盟的信息")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String save(HttpServletRequest request
-        , @ApiParam(name="unionMain", value = "保存创建联盟的信息", required = true) @RequestBody UnionMainCreateInfoVO unionMainCreateInfoVO ){ //TODO VO修改
+        , @ApiParam(name="unionMainCreateInfoVO", value = "保存创建联盟的信息", required = true) @RequestBody UnionMainCreateInfoVO unionMainCreateInfoVO ){
         try{
             BusUser user = SessionUtils.getLoginUser(request);
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){

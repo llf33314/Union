@@ -33,7 +33,7 @@ public class MybatisGenerator {
 
     public static final DbType dbType = DbType.MYSQL;
     public static final String driverName = "com.mysql.jdbc.Driver";
-    public static final String url = "jdbc:mysql://14.29.79.226:3306/gt_aliyuan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false";
+    public static final String url = "jdbc:mysql://113.106.202.51:3306/gt_aliyuan?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false";
     public static final String userName = "root";
     public static final String password = "gt123456";
 
@@ -58,7 +58,7 @@ public class MybatisGenerator {
     //brokerage
     /*public static final String[] generateTables = new String[]{"t_union_brokerage_withdrawals_record", "t_union_verify_member"};*/
 
-    public static final String[] generateTables = new String[]{"t_union_create_info_record"};
+    public static final String[] generateTables = new String[]{"t_union_info_dict"};
 
     public static final String author = "linweicong";
 

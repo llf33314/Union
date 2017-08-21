@@ -1,5 +1,6 @@
 package com.gt.union.common.util;
 
+import com.gt.union.common.exception.DataExportException;
 import com.gt.union.common.response.GTJsonResult;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
@@ -51,7 +52,7 @@ public class ExportUtil {
 			PrintWriter writer = response.getWriter();
 			writer.print(result);
 			writer.close();
-			throw new RuntimeException("导出异常");
+			throw new DataExportException("导出异常");
 		}finally {
 			try {
 				if(os != null) os.close();

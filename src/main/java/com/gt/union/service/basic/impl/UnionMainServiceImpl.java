@@ -4,23 +4,23 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionMainConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
-import com.gt.union.entity.basic.UnionApplyInfo;
-import com.gt.union.entity.basic.UnionMain;
+import com.gt.union.entity.basic.*;
 import com.gt.union.mapper.basic.UnionMainMapper;
-import com.gt.union.service.basic.IUnionApplyService;
-import com.gt.union.service.basic.IUnionDiscountService;
-import com.gt.union.service.basic.IUnionMainService;
+import com.gt.union.service.basic.*;
 import com.gt.union.service.brokerage.IUnionBrokerageWithdrawalsRecordService;
 import com.gt.union.service.card.IUnionBusMemberCardService;
 import com.gt.union.service.common.IUnionRootService;
 import com.gt.union.vo.basic.UnionMainCreateInfoVO;
+import com.gt.union.vo.basic.UnionMainInfoVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -62,7 +62,13 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	private RedisCacheUtil redisCacheUtil;
 
 	@Autowired
-	private IUnionDiscountService unionDiscountService;
+	private IUnionInfoDictService unionInfoDictService;
+
+	@Autowired
+	private IUnionApplyInfoService unionApplyInfoService;
+
+	@Autowired
+	private IUnionMemberService unionMemberService;
 
 	@Override
 	public Map<String, Object> indexByBusId(Integer busId) throws Exception {
@@ -208,21 +214,105 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		return resultList;
 	}
 
+	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public void updateById(Integer id, Integer busId, UnionMain unionMain) throws Exception {
+	public void updateById(Integer id, Integer busId, UnionMainInfoVO vo) throws Exception {
         if (id == null) {
             throw new ParamException(UPDATE_ID, "参数id为空", ExceptionConstant.PARAM_ERROR);
         }
         if (busId == null) {
             throw new ParamException(UPDATE_ID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
-        //TODO 校验unionMainInfoVO
-        //TODO 更新联盟信息，要求盟主权限
+        if(!unionRootService.checkUnionMainValid(id)){
+        	throw new BusinessException(UPDATE_ID, "" , CommonConstant.UNION_OVERDUE_MSG);
+		}
+		if(!unionRootService.isUnionOwner(id, busId)){
+			throw new BusinessException(UPDATE_ID, "" , "您不是盟主，不可操作");
+		}
+		UnionMain main = this.getById(id);
+		if(CommonUtil.isNotEmpty(main.getIsIntegral()) && main.getIsIntegral() == 1){
+			if(vo.getIsIntegral() == 0){
+				throw new BusinessException(UPDATE_ID, "" , "积分开启后不可关闭");
+			}
+		}
+		if(vo.getUnionImg().indexOf("/upload/") > -1){
+			main.setEditUnionImg(vo.getUnionImg().split("/upload/")[1]);
+		}
+		if(StringUtil.isNotEmpty(vo.getUnionWxGroupImg()) && vo.getUnionWxGroupImg().indexOf("/upload/") > -1){
+			main.setEditUnionWxGroupImg(vo.getUnionWxGroupImg().split("/upload/")[1]);
+		}
+		if(StringUtil.isNotEmpty(main.getUnionWxGroupImg()) && main.getUnionWxGroupImg().indexOf("/upload/") > -1){
+			main.setEditUnionWxGroupImg(main.getUnionWxGroupImg().split("/upload/")[1]);
+		}
+		if(vo.getRedCardOpend() == 1){
+			if(CommonUtil.isEmpty(vo.getRedCardPrice())){
+				throw new BusinessException(UPDATE_ID, "" , "请设置红卡价格");
+			}
+			if(CommonUtil.isEmpty(CommonUtil.toDouble(vo.getRedCardPrice())) || vo.getRedCardPrice() < 0){
+				throw new BusinessException(UPDATE_ID, "" , "红卡价格有误");
+			}
+			if(CommonUtil.isEmpty(vo.getRedCardTerm())){
+				throw new BusinessException(UPDATE_ID, "" , "请设置红卡期限");
+			}
+			if(CommonUtil.isEmpty(CommonUtil.toInteger(vo.getRedCardTerm())) || vo.getRedCardTerm() < 0){
+				throw new BusinessException(UPDATE_ID, "" , "红卡期限有误");
+			}
+			main.setRedCardIllustration(vo.getRedCardIllustration());
+			main.setRedCardPrice(vo.getRedCardPrice());
+			main.setRedCardTerm(vo.getRedCardTerm());
+		}else {
+			main.setRedCardPrice(0d);
+			main.setRedCardTerm(0);
+			main.setRedCardIllustration("");
+		}
+		if(vo.getBlackCardCharge() == 1){
+			if(CommonUtil.isEmpty(vo.getRedCardPrice())){
+				throw new BusinessException(UPDATE_ID, "" , "请设置黑卡价格");
+			}
+			if(CommonUtil.isEmpty(CommonUtil.toDouble(vo.getRedCardPrice())) || vo.getRedCardPrice() < 0){
+				throw new BusinessException(UPDATE_ID, "" , "黑卡价格有误");
+			}
+			if(CommonUtil.isEmpty(vo.getBlackCardTerm())){
+				throw new BusinessException(UPDATE_ID, "" , "请设置黑卡期限");
+			}
+			if(CommonUtil.isEmpty(CommonUtil.toInteger(vo.getBlackCardTerm())) || vo.getBlackCardTerm() < 0){
+				throw new BusinessException(UPDATE_ID, "" , "黑卡期限有误");
+			}
+			main.setBlackCardIllustration(vo.getBlackCardIllustration());
+			main.setBlackCardPrice(vo.getBlackCardPrice());
+			main.setBlackCardTerm(vo.getBlackCardTerm());
+		}else {
+			main.setBlackCardPrice(0d);
+			main.setBlackCardTerm(0);
+			main.setBlackCardIllustration("");
+		}
+		if(vo.getBlackCardCharge() == 1 && vo.getRedCardOpend() == 1){
+			if(vo.getBlackCardPrice().doubleValue() > vo.getRedCardPrice()){
+				throw new BusinessException(UPDATE_ID, "" , "黑卡价格不可高于红卡价格");
+			}
+		}
+		main.setBlackCardCharge(vo.getBlackCardCharge());
+		main.setRedCardOpend(vo.getRedCardOpend());
+		main.setUnionName(vo.getUnionName());
+		main.setUnionIllustration(vo.getUnionIllustration());
+		main.setJoinType(vo.getJoinType());
+		main.setOldMemberCharge(vo.getOldMemberCharge());
+		main.setIsIntegral(vo.getIsIntegral());
+		this.updateById(main);
+		EntityWrapper entityWrapper = new EntityWrapper<UnionInfoDict>();
+		entityWrapper.eq("union_id",main.getId());
+		unionInfoDictService.delete(entityWrapper);
+		List<UnionInfoDict> list = vo.getInfos();
+		unionInfoDictService.insertBatch(list);
+		redisCacheUtil.set("infoDict:" + main.getId(), JSON.toJSONString(list));
+		String unionMainKey = RedisKeyUtil.getUnionMainKey(main.getId());
+		this.redisCacheUtil.set(unionMainKey, JSON.toJSONString(main) );
 	}
 
 
 	@Override
-	public void instance(Integer busId) throws Exception {
+	public Map<String, Object> instance(Integer busId) throws Exception {
+		Map<String,Object> data = new HashMap<String,Object>();
 	    if (busId == null) {
 	        throw new ParamException(INSTANCE, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
@@ -234,23 +324,37 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         }*/
 
         // （2）判断商家是否创建过联盟
-        if (this.unionRootService.hasCreatedUnion(busId)) {
-	        throw new BusinessException(INSTANCE, "busId=" + busId, "当前登录商家帐号已创建过一次联盟，无法再次创建");
+        if (!this.unionRootService.hasCreatedUnion(busId)) {
+	        throw new BusinessException(INSTANCE, "busId=" + busId, "不可创建");
         }
 
         // （3）判断商家是否已是盟主
-        if (this.unionRootService.isUnionOwner(busId)) {
-	        throw new BusinessException(INSTANCE, "busId=" + busId, "当前登录商家已是盟主，无法同时成为多个联盟的盟主");
+        if (!this.unionRootService.isUnionOwner(busId)) {
+	        throw new BusinessException(INSTANCE, "busId=" + busId, "不可创建");
         }
+		return data;
 	}
 
     @Override
-	public void save(Integer busId, UnionMainCreateInfoVO unionMainCreateInfoVO) throws Exception {
+	@Transactional(rollbackFor = Exception.class)
+	public void save(Integer busId, UnionMainCreateInfoVO vo) throws Exception {
         if (busId == null) {
             throw new ParamException(SAVE, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
+        UnionMain main = new UnionMain();
         //TODO 校验unionMainInfoVOList
         //TODO 保存创建联盟的信息
+		UnionApply apply = new UnionApply();
+		unionApplyService.insert(apply);
+		UnionApplyInfo info = new UnionApplyInfo();
+		unionApplyInfoService.insert(info);
+		UnionMember member = new UnionMember();
+		unionMemberService.insert(member);
+		this.insert(main);
+		String unionMainKey = RedisKeyUtil.getUnionMainKey(main.getId());
+		this.redisCacheUtil.set(unionMainKey, JSON.toJSONString(main) );
+		this.redisCacheUtil.set(unionMainKey, JSON.toJSONString(member) );
+		this.redisCacheUtil.set(unionMainKey, JSON.toJSONString(info) );
 	}
 
 	@Override

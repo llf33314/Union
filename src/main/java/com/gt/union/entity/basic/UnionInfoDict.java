@@ -14,7 +14,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author linweicong
- * @since 2017-07-21
+ * @since 2017-08-21
  */
 @TableName("t_union_info_dict")
 public class UnionInfoDict extends Model<UnionInfoDict> {
@@ -36,6 +36,11 @@ public class UnionInfoDict extends Model<UnionInfoDict> {
      */
 	@TableField("dict_item_id")
 	private Integer dictItemId;
+    /**
+     * 字典关键key
+     */
+	@TableField("item_key")
+	private String itemKey;
 
 
 	public Integer getId() {
@@ -60,6 +65,14 @@ public class UnionInfoDict extends Model<UnionInfoDict> {
 
 	public void setDictItemId(Integer dictItemId) {
 		this.dictItemId = dictItemId;
+	}
+
+	public String getItemKey() {
+		return itemKey;
+	}
+
+	public void setItemKey(String itemKey) {
+		this.itemKey = itemKey;
 	}
 
 	@Override

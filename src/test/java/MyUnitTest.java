@@ -13,6 +13,7 @@ import com.gt.union.service.basic.IUnionApplyService;
 import com.gt.union.service.basic.IUnionCreateInfoRecordService;
 import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.basic.IUnionTransferRecordService;
+import com.gt.union.service.card.IUnionBusMemberCardService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,40 +35,13 @@ import java.util.Map;
 public class MyUnitTest {
 
 	@Autowired
-	RedisCacheUtil redisCacheUtil;
-
-	@Autowired
-	IUnionTransferRecordService unionTransferRecordService;
-
-	@Autowired
-	private IUnionMainService unionMainService;
-
-	@Autowired
-	private IUnionApplyService unionApplyService;
+	private IUnionBusMemberCardService unionBusMemberCardService;
 
 
 	@Test
 	public void test1() throws Exception {
-		List list = new ArrayList<String>();
-		list.add("1");
-		list.add("1");
-		list.add("1");
-		list.add("1");
-		list.add("1");
-		list.add("1");
-		list.add("1");
-		list.add("1");
-		list.add("1");
-		list.add("1");
-		list.add("1");
-		list.add("1");
-		list.add("1");
-		list.add("1");
-		PageHelper.startPage(1,2);
-		Page<Map<String,Object>> page = new Page<Map<String,Object>>();
-		page.setRecords(list);
+		Page page = unionBusMemberCardService.selectUnionBusMemberCardList(null, 15 , 33 , null, null);
 		System.out.println(page);
-
 	}
 
 }

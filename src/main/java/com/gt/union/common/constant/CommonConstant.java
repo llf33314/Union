@@ -71,4 +71,20 @@ public class CommonConstant {
 	 * 主账号权限
 	 */
 	public static final String UNION_BUS_PARENT_MSG = "请使用主账号权限";
+
+	/**
+	 * 联盟成员数上限
+	 */
+	public static final String UNION_NUM_MAX_MSG = "联盟成员数已达上限";
+
+	/**
+	 * 加入的联盟数上限
+	 */
+	public static final String UNION_MEMBER_NUM_MAX_MSG = "您加入的联盟已达上限";
+
+	/**
+	 * 没有权限操作
+	 */
+	public static final String UNION_MEMBER_NON_AUTHORITY_MSG = "您没有权限";
+
 }

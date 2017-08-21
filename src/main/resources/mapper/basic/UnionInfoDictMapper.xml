@@ -7,6 +7,7 @@
 		<id column="id" property="id" />
 		<result column="union_id" property="unionId" />
 		<result column="dict_item_id" property="dictItemId" />
+		<result column="item_key" property="itemKey" />
 	</resultMap>
 
 </mapper>

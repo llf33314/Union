@@ -1,10 +1,9 @@
 package com.gt.union.service.basic;
 
-import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
-import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.vo.basic.UnionMainCreateInfoVO;
+import com.gt.union.vo.basic.UnionMainInfoVO;
 
 import java.util.List;
 import java.util.Map;
@@ -54,17 +53,17 @@ public interface IUnionMainService extends IService<UnionMain> {
      * 更新联盟信息，要求盟主权限
      * @param id
      * @param busId
-     * @param unionMain
+     * @param vo
      * @throws Exception
      */
-    public void updateById(Integer id, Integer busId, UnionMain unionMain) throws Exception;
+    public void updateById(Integer id, Integer busId, UnionMainInfoVO vo) throws Exception;
 
     /**
      * 创建联盟
      * @param busId
      * @throws Exception
      */
-    public void instance(Integer busId) throws Exception;
+    public Map<String, Object> instance(Integer busId) throws Exception;
 
     /**
      * 保存创建联盟的信息

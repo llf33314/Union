@@ -82,7 +82,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	public void save(UnionBusinessRecommendVO vo) throws Exception{
 		//联盟是否有效
 		this.unionRootService.checkUnionMainValid(vo.getUnionId());
-		UnionMember fromUnionMember = unionMemberService.getUnionMember(vo.getBusId(),vo.getUnionId());
+		UnionMember fromUnionMember = unionMemberService.getByUnionIdAndBusId(vo.getBusId(),vo.getUnionId());
 		unionRootService.hasUnionMemberAuthority(vo.getUnionId(), vo.getBusId());
 		UnionMember toUnionMeber = unionMemberService.selectById(vo.getToMemberId());
 		if(toUnionMeber == null){
@@ -411,6 +411,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
     @Override
     public List<Map<String, Object>> listPayDetailParticularByUnionIdAndFromBusIdAndToBusId(final Integer unionId
 			, final Integer fromBusId, final Integer toBusId) throws Exception {
+		//TODO 来往商家佣金明细
 	    if (unionId == null) {
 	        throw new ParamException(LIST_PAYDETAILPARTICULAR_UNIONID_FROMBUSID_TOBUSID, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
