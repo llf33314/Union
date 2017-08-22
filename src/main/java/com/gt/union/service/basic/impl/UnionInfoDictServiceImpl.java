@@ -1,7 +1,12 @@
 package com.gt.union.service.basic.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.gt.union.common.util.DaoUtil;
+import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.ListUtil;
+import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.RedisKeyUtil;
 import com.gt.union.entity.basic.UnionInfoDict;
 import com.gt.union.mapper.basic.UnionInfoDictMapper;
 import com.gt.union.service.basic.IUnionInfoDictService;
@@ -22,12 +27,27 @@ import java.util.Map;
 @Service
 public class UnionInfoDictServiceImpl extends ServiceImpl<UnionInfoDictMapper, UnionInfoDict> implements IUnionInfoDictService {
 	private static final String GET_UNION_INFO_DICT = "UnionInfoDictServiceImpl.getUnionInfoDict()";
+
 	@Autowired
-	private DaoUtil daoUtil;
+	private RedisCacheUtil redisCacheUtil;
 
 	@Override
-	public List<Map<String, Object>> getUnionInfoDict(final Integer unionId) {
-		List<Map<String, Object>> list = daoUtil.queryForList("SELECT t2.* from t_union_info_dict t1 LEFT JOIN t_man_dict_items t2 on t1.dict_item_id = t2.id  where union_id = ? order by t1.id asc",unionId);
+	public List<UnionInfoDict> getUnionInfoDict(Integer unionId) {
+		String key = RedisKeyUtil.getUnionInfoDictKey(unionId);
+		if(redisCacheUtil.exists(key)){
+			Object obj = redisCacheUtil.get(key);
+			if(CommonUtil.isNotEmpty(obj)){
+				return JSON.parseObject(obj.toString(),List.class);
+			}
+		}
+		EntityWrapper entityWrapper = new EntityWrapper<UnionInfoDict>();
+		entityWrapper.eq("union_id", unionId);
+		List<UnionInfoDict> list = this.selectList(entityWrapper);
+		if(ListUtil.isNotEmpty(list)){
+			if(ListUtil.isNotEmpty(list)){
+				redisCacheUtil.set(key, JSON.toJSONString(list));
+			}
+		}
 		return list;
 	}
 }

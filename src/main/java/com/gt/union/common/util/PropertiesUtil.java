@@ -17,7 +17,7 @@ public class PropertiesUtil {
 
 	private static String socketUrl;
 
-	private static String mgUrl;
+	private static String mqUrl;
 
 	private static String mqUser;
 
@@ -45,6 +45,8 @@ public class PropertiesUtil {
 
 	private static String domainDf;
 
+	private static String wxmpSignkey;
+
 
 	/**
 	 * 获取资源访问地址
@@ -67,7 +69,7 @@ public class PropertiesUtil {
 	 * @return mgUrl
 	 */
 	public static String getMqUrl() {
-		return mgUrl;
+		return mqUrl;
 	}
 
 	/**
@@ -174,6 +176,14 @@ public class PropertiesUtil {
 		return domainDf;
 	}
 
+	/**
+	 * 获取wxmp项目api密钥
+	 * @return
+	 */
+	public static String getWxmpSignKey() {
+		return wxmpSignkey;
+	}
+
 	@Value("${resource.url.prefix}")
 	public void setResourceUrl(String resourceUrl) {
 		this.resourceUrl = resourceUrl;
@@ -185,8 +195,8 @@ public class PropertiesUtil {
 	}
 
 	@Value("${mq.uri}")
-	public void setMgUrl(String mgUrl) {
-		this.mgUrl = mgUrl;
+	public void setMqUrl(String mqUrl) {
+		this.mqUrl = mqUrl;
 	}
 
 	@Value("${mq.user}")
@@ -230,7 +240,7 @@ public class PropertiesUtil {
 	}
 
 	@Value("${spring.redis.password}")
-	public void setRedisPort(String redisPwd) {
+	public void setRedisPwd(String redisPwd) {
 		this.redisPwd = redisPwd;
 	}
 
@@ -252,5 +262,10 @@ public class PropertiesUtil {
 	@Value("${domain.df}")
 	public void setDomain(String domainDf){
 		PropertiesUtil.domainDf = domainDf;
+	}
+
+	@Value("${wxmp.signkey}")
+	public void setWxmpSignKey(String wxmpSignKey) {
+		PropertiesUtil.wxmpSignkey = wxmpSignKey;
 	}
 }

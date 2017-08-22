@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.plugins.pagination.PageHelper;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.gt.union.UnionApplication;
+import com.gt.union.api.client.dict.DictService;
+import com.gt.union.api.client.sms.SmsService;
+import com.gt.union.api.client.sms.impl.SmsServiceImpl;
 import com.gt.union.common.util.DateTimeKit;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.entity.basic.UnionCreateInfoRecord;
@@ -14,16 +17,14 @@ import com.gt.union.service.basic.IUnionCreateInfoRecordService;
 import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.basic.IUnionTransferRecordService;
 import com.gt.union.service.card.IUnionBusMemberCardService;
+import com.gt.union.service.common.IUnionRootService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  *
@@ -37,11 +38,18 @@ public class MyUnitTest {
 	@Autowired
 	private IUnionBusMemberCardService unionBusMemberCardService;
 
+	@Autowired
+	private IUnionRootService unionRootService;
+
+	@Autowired
+	private SmsService smsService;
+
+	@Autowired
+	private DictService dictService;
 
 	@Test
 	public void test1() throws Exception {
-		Page page = unionBusMemberCardService.selectUnionBusMemberCardList(null, 15 , 33 , null, null);
-		System.out.println(page);
+		System.out.println(dictService.getUnionApplyInfoDict());
 	}
 
 }

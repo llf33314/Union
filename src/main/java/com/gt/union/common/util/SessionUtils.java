@@ -2,7 +2,6 @@ package com.gt.union.common.util;
 
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.entity.common.BusUser;
-import com.gt.union.entity.common.Member;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
@@ -42,43 +41,6 @@ public class SessionUtils {
 		}
 	}
 
-	/**
-	 * 设置session中的商家member会员信息
-	 *
-	 * @param request
-	 * @return
-	 */
-	public static void setLoginMember(HttpServletRequest request,Member member) {
-		try {
-			request.getSession().setAttribute(
-					"member", member);
-		} catch (Exception e) {
-			log.info(e.getLocalizedMessage());
-			e.printStackTrace();
-		}
-	}
-
-	/**
-	 * 获取session中的商家会员信息
-	 *
-	 * @param request
-	 * @return
-	 */
-	public static Member getLoginMember(HttpServletRequest request) {
-		try {
-			Object obj = request.getSession().getAttribute("member");
-			if(obj != null){
-				return (Member) obj;
-			}else{
-				return null;
-			}
-		} catch (Exception e) {
-			log.info(e.getLocalizedMessage());
-			e.printStackTrace();
-
-		}
-		return null;
-	}
 
 
 	/**

@@ -4,7 +4,6 @@ import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.entity.basic.UnionInfoDict;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -21,5 +20,5 @@ public interface IUnionInfoDictService extends IService<UnionInfoDict> {
 	 * @param unionId
 	 * @return
 	 */
-	List<Map<String,Object>> getUnionInfoDict(Integer unionId);
+	List<UnionInfoDict> getUnionInfoDict(Integer unionId);
 }

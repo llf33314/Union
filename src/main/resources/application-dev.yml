@@ -115,5 +115,6 @@ redisNamePrefix: "Union:"
 #数据请求地址
 wxmp:
    url: http://hz1.yifriend.net
+   signkey: "WXMP2017"
    #url: http://deeptel.com.cn/
   #url: http://192.168.3.41:83

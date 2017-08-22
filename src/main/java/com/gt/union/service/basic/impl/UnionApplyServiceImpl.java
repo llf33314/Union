@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.api.client.dict.DictService;
+import com.gt.union.api.client.user.BusUserService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionApplyConstant;
@@ -13,28 +15,19 @@ import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.RedisKeyUtil;
 import com.gt.union.common.util.StringUtil;
-import com.gt.union.entity.basic.UnionApply;
-import com.gt.union.entity.basic.UnionApplyInfo;
-import com.gt.union.entity.basic.UnionMain;
-import com.gt.union.entity.basic.UnionMember;
+import com.gt.union.entity.basic.*;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.mapper.basic.UnionApplyMapper;
-import com.gt.union.service.basic.IUnionApplyInfoService;
-import com.gt.union.service.basic.IUnionApplyService;
-import com.gt.union.service.basic.IUnionMainService;
-import com.gt.union.service.basic.IUnionMemberService;
-import com.gt.union.service.common.DictService;
+import com.gt.union.service.basic.*;
 import com.gt.union.service.common.IUnionRootService;
 import com.gt.union.vo.basic.UnionApplyVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 
 /**
  * <p>
@@ -67,7 +60,10 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
     private IUnionRootService unionRootService;
 
     @Autowired
-    private DictService dictService;
+    private IUnionInfoDictService unionInfoDictService;
+
+    @Autowired
+    private BusUserService busUserService;
 
     @Override
     public Page listByUnionIdAndApplyStatus(Page page, final Integer unionId, final Integer applyStatus, final String enterpriseName, final String directorPhone) throws Exception{
@@ -127,9 +123,10 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
             throw new ParamException(GET_UNION_APPLY_INFO, "参数busId或unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         UnionApplyInfo info = null;
-        if ( redisCacheUtil.exists( "unionApplyInfo:" + unionId + ":" + busId ) ) {
+        String unionApplyInfoKey = RedisKeyUtil.getUnionApplyInfoKey(unionId,busId);
+        if ( redisCacheUtil.exists( unionApplyInfoKey) ) {
             // 1.1 存在则从redis 读取
-            Object obj = redisCacheUtil.get("unionApplyInfo:" + unionId + ":" + busId );
+            Object obj = redisCacheUtil.get(unionApplyInfoKey);
             if(CommonUtil.isNotEmpty(obj)){
                 return JSON.parseObject(obj.toString(),UnionApplyInfo.class);
             }
@@ -145,7 +142,7 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         info = unionApplyInfoService.selectOne(entityWrapper);
         // 写入 Redis 操作
         if(CommonUtil.isNotEmpty(info)){
-            redisCacheUtil.set("unionApplyInfo:" + unionId + ":" + busId, JSON.toJSONString(info));
+            redisCacheUtil.set(unionApplyInfoKey, JSON.toJSONString(info));
         }
         return info;
     }
@@ -166,6 +163,9 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         if(CommonUtil.isEmpty(busId) || CommonUtil.isEmpty(id) || CommonUtil.isEmpty(unionId) || CommonUtil.isEmpty(applyStatus)){
             throw new ParamException(UPDATE_UNIONID_APPLYSTATUS, "参数...错误", ExceptionConstant.PARAM_ERROR);
         }
+        if(!unionRootService.checkUnionMainValid(unionId)){
+            throw new BusinessException(UPDATE_UNIONID_APPLYSTATUS, "", CommonConstant.UNION_OVERDUE_MSG);
+        }
         if(!unionRootService.isUnionOwner(unionId, busId)){
             throw new BusinessException(UPDATE_UNIONID_APPLYSTATUS, "", "没有盟主权限");
         }
@@ -177,7 +177,10 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
             throw new BusinessException(UPDATE_UNIONID_APPLYSTATUS, "", "已审核");
         }
         if(applyStatus == 1){//通过
-            //TODO 判断对方的商家账号是否过期
+            //判断审核的账号有效期
+            if(!unionRootService.checkBusUserValid(unionApply.getApplyBusId())){
+                throw new BusinessException(UPDATE_UNIONID_APPLYSTATUS, "", "该盟员账号已过期");
+            }
             //盟员数达上限
             UnionMain main = unionMainService.getById(unionId);
             if(main.getUnionMemberNum().equals(main.getUnionTotalMember())){
@@ -209,6 +212,10 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
             this.updateById(apply);
             main.setUnionMemberNum(CommonUtil.isEmpty(main.getUnionMemberNum()) ? 1 : main.getUnionMemberNum() + 1);
             unionMainService.updateById(main);
+            String unionMainKey = RedisKeyUtil.getUnionMainKey(main.getId());
+            redisCacheUtil.set(unionMainKey,JSON.toJSONString(main));
+            String unionMemberBusIdKey = RedisKeyUtil.getUnionMemberBusIdKey(main.getId(),unionMember.getBusId());
+            redisCacheUtil.set(unionMemberBusIdKey,JSON.toJSONString(unionMember));
         }else if(applyStatus == 2){//不通过
             //删除信息
             UnionApply apply = new UnionApply();
@@ -222,7 +229,6 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
 	@Override
 	public Map<String, Object> save(Integer busId, UnionApplyVO vo) throws Exception{
         Map<String,Object> data = new HashMap<String,Object>();
-        //TODO 修改逻辑，需要重新判断必填字符
         Integer unionId = vo.getUnionId();
         if(!unionRootService.checkUnionMainValid(unionId)){
             throw new BusinessException(SAVE, "", CommonConstant.UNION_OVERDUE_MSG);
@@ -230,100 +236,166 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         Integer applyType = vo.getApplyType();
         UnionMain main = unionMainService.getById(unionId);
         if(applyType == 1){//自由申请
-            //1、判断是否加入了该盟
-            UnionMember unionMember = unionMemberService.getByUnionIdAndBusId(busId,unionId);
-            if(unionMember != null){
-                throw new BusinessException(SAVE, "", "您已加入该盟");
-            }
-            //2、判断是否申请了
-            UnionApply unionApply = this.getUnionApply(busId,unionId);
-            if(unionApply != null){
-                throw new BusinessException(SAVE, "", "您已申请加入该盟");
-            }
-            //3、判断盟员数是否达上限
-            if(main.getUnionMemberNum().equals(main.getUnionTotalMember())){
-                throw new BusinessException(SAVE, "", CommonConstant.UNION_NUM_MAX_MSG);
-            }
-            //4、判断加盟数是否达上限
-            if(unionMemberService.getUnionMemberCount(busId) == CommonConstant.MAX_UNION_APPLY){
-                throw new BusinessException(SAVE, "", CommonConstant.UNION_MEMBER_NUM_MAX_MSG);
-            }
-            UnionApply apply = saveUnionApply(busId,unionId,applyType);
-            UnionApplyInfo info = unionApplyInfoService.saveUnionApplyInfo(vo, apply.getId());
-            //申请成功后，发送短信让盟主审核
-            UnionApplyInfo mainInfo = this.getUnionApplyInfo(main.getBusId(),main.getId());
-            String nowTime = "apply:"+System.currentTimeMillis();
-            HashMap<String, Object> redisMap = new HashMap<>();
-            redisMap.put("busId",main.getBusId());
-            redisMap.put("mobiles",mainInfo.getNotifyPhone());
-            String content = "\""+info.getEnterpriseName()+"\" 申请加入 \"" + main.getUnionName() +"\"，请到入盟审核处查看并处理。";//短信内容
-            redisMap.put("content",content);
-            redisMap.put("model",CommonConstant.SMS_UNION_MODEL);
-            redisCacheUtil.set(nowTime, JSON.toJSONString(redisMap),60l);
-            data.put("redisKey",nowTime);
+            saveApply(busId,vo,main);
         }else if(applyType == 2){//推荐加盟
-            //1、判断联盟是否可推荐加盟
-            if(main.getJoinType() != 2){
-                throw new BusinessException(SAVE, "", "联盟不支持推荐加盟");
-            }
-            //当前用户
-            UnionMember userMember = unionMemberService.getByUnionIdAndBusId(busId,unionId);
-            if(!unionRootService.hasUnionMemberAuthority(userMember)){
-                throw new BusinessException(SAVE, "", CommonConstant.UNION_MEMBER_NON_AUTHORITY_MSG);
-            }
-            //TODO 2、判断推荐人的账号
-            String userName = vo.getUserName();
-            if(StringUtil.isEmpty(userName)){
-                throw new ParamException(SAVE, "参数错误", ExceptionConstant.PARAM_ERROR);
-            }
-            BusUser user = new BusUser();
-            user.setId(35);
-            if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
-                throw new BusinessException(SAVE, "推荐子账号", "请推荐主账号");
-            }
-            if(!unionRootService.checkBusUserValid(user)){
-                throw new BusinessException(SAVE, "被推荐账号无效", "被推荐盟员账号已过期");
-            }
-            UnionMember unionMember = unionMemberService.getByUnionIdAndBusId(user.getId(),unionId);
-            //1、判断是否加入了该盟
-            if(unionMember != null){
-                throw new BusinessException(UPDATE_UNIONID_APPLYSTATUS, "", "已加入本联盟");
-            }
-            //2、判断是否申请了
-            UnionApply unionApply = this.getUnionApply(busId,unionId);
-            if(unionApply != null){
-                throw new BusinessException(UPDATE_UNIONID_APPLYSTATUS, "", "已申请加入本联盟");
-            }
-            //3、判断盟员数是否达上限
-            if(main.getUnionMemberNum().equals(main.getUnionTotalMember())){
-                throw new BusinessException(UPDATE_UNIONID_APPLYSTATUS, "", "联盟成员已达上限");
-            }
-            //4、判断加盟数是否达上限
-            if(unionMemberService.getUnionMemberCount(busId) == CommonConstant.MAX_UNION_APPLY){
-                throw new BusinessException(UPDATE_UNIONID_APPLYSTATUS, "", "您加入的联盟已达上限");
-            }
-            UnionApply apply = saveUnionApply(busId,unionId,applyType);
-            UnionApplyInfo info = unionApplyInfoService.saveUnionApplyInfo(vo, apply.getId());
-            boolean isOwner = unionRootService.isUnionOwner(unionId,busId);//联盟盟主
-            if(isOwner){
-                UnionMember member = new UnionMember();
-                member.setBusId(busId);
-                member.setCreatetime(new Date());
-                member.setUnionId(unionId);
-                member.setDelStatus(0);
-                member.setIsNuionOwner(0);
-                member.setOutStaus(0);
-                String unionSign = createUnionSignByUnionId(unionId);
-                member.setUnionIDSign(unionSign);
-                unionMemberService.insert(member);
-                apply.setUnionMemberId(member.getId());
-                this.updateById(apply);
-                main.setUnionMemberNum(CommonUtil.isEmpty(main.getUnionMemberNum()) ? 1 : main.getUnionMemberNum() + 1);
-                unionMainService.updateById(main);
-            }
+           saveRecommendApply(busId,vo,main);
         }
         return data;
 	}
+
+    /**
+     * 申请
+     * @param busId
+     * @param vo
+     * @return
+     */
+	private Map<String, Object> saveApply(Integer busId, UnionApplyVO vo, UnionMain main) throws Exception{
+        Map<String,Object> data = new HashMap<String,Object>();
+        //1、判断是否加入了该盟
+        UnionMember unionMember = unionMemberService.getByUnionIdAndBusId(busId,main.getId());
+        if(unionMember != null){
+            throw new BusinessException(SAVE, "", "您已加入该盟");
+        }
+        //2、判断是否申请了
+        UnionApply unionApply = this.getUnionApply(busId,main.getId());
+        if(unionApply != null){
+            throw new BusinessException(SAVE, "", "您已申请加入该盟");
+        }
+        //3、判断盟员数是否达上限
+        if(main.getUnionMemberNum().equals(main.getUnionTotalMember())){
+            throw new BusinessException(SAVE, "", CommonConstant.UNION_NUM_MAX_MSG);
+        }
+        //4、判断加盟数是否达上限
+        if(unionMemberService.getUnionMemberCount(busId) == CommonConstant.MAX_UNION_APPLY){
+            throw new BusinessException(SAVE, "", CommonConstant.UNION_MEMBER_NUM_MAX_MSG);
+        }
+        List<UnionInfoDict> list = unionInfoDictService.getUnionInfoDict(main.getId());
+        checkUnionApplyInfo(list,vo);//校验数据
+        UnionApply apply = saveUnionApply(busId,main.getId(),vo.getApplyType());
+        UnionApplyInfo info = unionApplyInfoService.saveUnionApplyInfo(vo, apply.getId());
+        //申请成功后，发送短信让盟主审核
+        UnionApplyInfo mainInfo = this.getUnionApplyInfo(main.getBusId(),main.getId());
+        String nowTime = "apply:"+System.currentTimeMillis();
+        HashMap<String, Object> redisMap = new HashMap<>();
+        redisMap.put("busId",main.getBusId());
+        redisMap.put("mobiles",mainInfo.getNotifyPhone());
+        String content = "\""+info.getEnterpriseName()+"\" 申请加入 \"" + main.getUnionName() +"\"，请到入盟审核处查看并处理。";//短信内容
+        redisMap.put("content",content);
+        redisMap.put("model",CommonConstant.SMS_UNION_MODEL);
+        redisCacheUtil.set(nowTime, JSON.toJSONString(redisMap),60l);
+        data.put("redisKey",nowTime);
+        return data;
+    }
+
+
+    /**
+     * 保存推荐加盟
+     * @param busId
+     * @param vo
+     * @param main
+     * @return
+     * @throws Exception
+     */
+    private Map<String, Object> saveRecommendApply(Integer busId, UnionApplyVO vo, UnionMain main) throws Exception{
+        Map<String,Object> data = new HashMap<String,Object>();
+        //1、判断联盟是否可推荐加盟
+        if(main.getJoinType() != 2){
+            throw new BusinessException(SAVE, "", "联盟不支持推荐加盟");
+        }
+        //当前用户
+        UnionMember userMember = unionMemberService.getByUnionIdAndBusId(busId,main.getId());
+        if(!unionRootService.hasUnionMemberAuthority(userMember)){
+            throw new BusinessException(SAVE, "", CommonConstant.UNION_MEMBER_NON_AUTHORITY_MSG);
+        }
+        String userName = vo.getUserName();
+        if(StringUtil.isEmpty(userName)){
+            throw new ParamException(SAVE, "参数错误", ExceptionConstant.PARAM_ERROR);
+        }
+        BusUser user = busUserService.getBusUserByName(userName);
+        if(CommonUtil.isEmpty(user)){
+            throw new ParamException(SAVE, "账号不存在", "您推荐的盟员账号不存在");
+        }
+        if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
+            throw new BusinessException(SAVE, "推荐子账号", "请推荐主账号");
+        }
+        if(!unionRootService.checkBusUserValid(user)){
+            throw new BusinessException(SAVE, "被推荐账号无效", "您推荐的盟员账号已过期");
+        }
+        UnionMember unionMember = unionMemberService.getByUnionIdAndBusId(user.getId(),main.getId());
+        //1、判断是否加入了该盟
+        if(unionMember != null){
+            throw new BusinessException(SAVE, "", "已加入本联盟");
+        }
+        //2、判断是否申请了
+        UnionApply unionApply = this.getUnionApply(user.getId(),main.getId());
+        if(unionApply != null){
+            throw new BusinessException(SAVE, "", "已申请加入本联盟");
+        }
+        //3、判断盟员数是否达上限
+        if(main.getUnionMemberNum().equals(main.getUnionTotalMember())){
+            throw new BusinessException(SAVE, "", CommonConstant.UNION_NUM_MAX_MSG);
+        }
+        //4、判断加盟数是否达上限
+        if(unionMemberService.getUnionMemberCount(user.getId()) == CommonConstant.MAX_UNION_APPLY){
+            throw new BusinessException(SAVE, "", "您推荐的账号加入的联盟已达上限");
+        }
+        List<UnionInfoDict> list = unionInfoDictService.getUnionInfoDict(main.getId());
+        checkUnionApplyInfo(list,vo);//校验数据
+        UnionApply apply = saveUnionApply(user.getId(),main.getId(),vo.getApplyType());
+        UnionApplyInfo info = unionApplyInfoService.saveUnionApplyInfo(vo, apply.getId());
+        boolean isOwner = unionRootService.isUnionOwner(main.getId(),user.getId());//联盟盟主
+        if(isOwner){
+            UnionMember member = new UnionMember();
+            member.setBusId(user.getId());
+            member.setCreatetime(new Date());
+            member.setUnionId(main.getId());
+            member.setDelStatus(0);
+            member.setIsNuionOwner(0);
+            member.setOutStaus(0);
+            String unionSign = createUnionSignByUnionId(main.getId());
+            member.setUnionIDSign(unionSign);
+            unionMemberService.insert(member);
+            apply.setUnionMemberId(member.getId());
+            this.updateById(apply);
+            main.setUnionMemberNum(CommonUtil.isEmpty(main.getUnionMemberNum()) ? 1 : main.getUnionMemberNum() + 1);
+            unionMainService.updateById(main);
+            String unionMainKey = RedisKeyUtil.getUnionMainKey(main.getId());
+            String unionMemberKey = RedisKeyUtil.getUnionMemberBusIdKey(main.getId(),user.getId());
+            this.redisCacheUtil.set(unionMainKey, JSON.toJSONString(main) );
+            this.redisCacheUtil.set(unionMemberKey, JSON.toJSONString(member) );
+            this.redisCacheUtil.set(unionMainKey, JSON.toJSONString(info) );
+        }
+        return data;
+    }
+
+
+    /**
+     * 校验必填内容是否为空
+     * @param list
+     * @param vo
+     * @return
+     * @throws BaseException
+     */
+	private boolean checkUnionApplyInfo(List<UnionInfoDict> list, UnionApplyVO vo) throws BaseException{
+        for(UnionInfoDict dict : list){
+            if(dict.getItemKey().equals("directorName")){
+                if(StringUtil.isEmpty(vo.getDirectorName())){
+                    throw new ParamException(SAVE,"参数错误","负责人内容不能为空");
+                }
+            }
+            if(dict.getItemKey().equals("directorEmail")){
+                if(StringUtil.isEmpty(vo.getDirectorName())){
+                    throw new ParamException(SAVE,"参数错误","邮箱内容不能为空");
+                }
+            }
+            if(dict.getItemKey().equals("applyReason")){
+                if(StringUtil.isEmpty(vo.getDirectorName())){
+                    throw new ParamException(SAVE,"参数错误","申请推荐理由不能为空");
+                }
+            }
+        }
+        return true;
+    }
 
     /**
      * 保存UnionApply
@@ -335,7 +407,7 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
 	private UnionApply saveUnionApply(Integer busId, Integer unionId, Integer applyType){
         UnionApply apply = new UnionApply();
         apply.setApplyStatus(0);
-        apply.setBusConfirmStatus(0);
+        apply.setBusConfirmStatus(2);
         apply.setApplyBusId(busId);
         apply.setCreatetime(new Date());
         apply.setDelStatus(0);

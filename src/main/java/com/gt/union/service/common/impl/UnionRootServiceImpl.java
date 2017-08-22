@@ -1,15 +1,14 @@
 package com.gt.union.service.common.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.gt.union.api.client.dict.DictService;
+import com.gt.union.api.client.user.BusUserService;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionCreateInfoRecordConstant;
 import com.gt.union.common.constant.basic.UnionMemberConstant;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.DateTimeKit;
-import com.gt.union.common.util.RedisCacheUtil;
-import com.gt.union.common.util.RedisKeyUtil;
+import com.gt.union.common.util.*;
 import com.gt.union.entity.basic.UnionCreateInfoRecord;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.basic.UnionMember;
@@ -17,7 +16,6 @@ import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.basic.IUnionCreateInfoRecordService;
 import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.basic.IUnionMemberService;
-import com.gt.union.service.common.DictService;
 import com.gt.union.service.common.IUnionRootService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -56,21 +54,21 @@ public class UnionRootServiceImpl implements IUnionRootService {
 	@Autowired
 	private DictService dictService;
 
+	@Autowired
+	private BusUserService busUserService;
+
     public BusUser getBusUserByBusId(Integer busId) throws Exception {
         if (busId == null) {
             throw new ParamException(GET_BUSUSER_BUSID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
-
         String busUserKey = RedisKeyUtil.getBusUserKey(busId);
-        if (this.redisCacheUtil.exists(busUserKey)) {//（1）通过busId获取缓存中的busUser对象，如果存在，则直接返回
-            Object obj = this.redisCacheUtil.get(busUserKey);
-            return JSON.parseObject(obj.toString(), BusUser.class);
-        }
+//        if (this.redisCacheUtil.exists(busUserKey)) {//（1）通过busId获取缓存中的busUser对象，如果存在，则直接返回
+//            Object obj = this.redisCacheUtil.get(busUserKey);
+//            return JSON.parseObject(obj.toString(), BusUser.class);
+//        }
 
-        //（2）如果缓存中不存在busUser对象，则调用接口获取 //TODO 调取接口获取商家信息
-        BusUser busUser = new BusUser();
-        busUser.setEndTime(DateTimeKit.addDays(DateTimeKit.getNow(), 1));
-
+        //（2）如果缓存中不存在busUser对象，则调用接口获取
+        BusUser busUser = busUserService.getBusUserById(busId);
         // （3）不为空时重新存入缓存
         if (busUser != null) {
             this.redisCacheUtil.set(busUserKey, JSON.toJSONString(busUser));

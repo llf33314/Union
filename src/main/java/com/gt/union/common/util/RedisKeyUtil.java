@@ -4,6 +4,8 @@ package com.gt.union.common.util;
  * Created by Administrator on 2017/8/18 0018.
  */
 public class RedisKeyUtil {
+
+
     /**
      * 获取封装的busUser key
      * @param busUserId
@@ -52,4 +54,40 @@ public class RedisKeyUtil {
     public static final String getUnionMemberBusIdKey(String unionId, String busId) {
         return "unionMain:" + unionId + ":unionMember:busId:" + busId;
     }
+
+    /**
+     * 获取封装的unionApplyInfo
+     * @param unionId
+     * @param busId
+     * @return
+     */
+    public static final String getUnionApplyInfoKey(Integer unionId, Integer busId) {
+        return getUnionMemberBusIdKey(String.valueOf(unionId), String.valueOf(busId));
+    }
+    public static final String getUnionApplyInfoKey(String unionId, String busId) {
+        return "unionMain:" + unionId + ":unionApplyInfo:busId:" + busId;
+    }
+
+    /**
+     * 字典类型
+     * @param itemKey
+     * @return
+     */
+    public static final String getDictTypeKey(String itemKey){
+        return "dictType:" + itemKey;
+    }
+
+    /**
+     * 获取封装的unionInfoDict的缓存key
+     * @param unionId
+     * @return
+     */
+    public static final String getUnionInfoDictKey(Integer unionId){
+        return getUnionInfoDictKey(String.valueOf(unionId));
+    }
+
+    public static final String getUnionInfoDictKey(String unionId){
+        return "dict:unionId:" + unionId;
+    }
+
 }
