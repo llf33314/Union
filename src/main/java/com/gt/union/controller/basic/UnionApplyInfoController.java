@@ -14,9 +14,8 @@ import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.basic.IUnionApplyInfoService;
 import com.gt.union.service.basic.IUnionMemberService;
 import com.gt.union.service.common.IUnionRootService;
-import com.gt.union.service.common.UnionInvalidService;
+import com.gt.union.service.common.IUnionValidateService;
 import com.gt.union.vo.basic.UnionApplyInfoVO;
-import com.gt.union.vo.basic.UnionApplyVO;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
@@ -57,7 +56,7 @@ public class UnionApplyInfoController {
     private IUnionRootService unionRootService;
 
 	@Autowired
-	private UnionInvalidService unionInvalidService;
+	private IUnionValidateService unionValidateService;
 
 	/**
 	 * 获取编辑盟员信息
@@ -101,7 +100,7 @@ public class UnionApplyInfoController {
         , @ApiParam(name="id", value = "盟员信息id", required = true) @PathVariable Integer id
         , @ApiParam(name="unionApplyInfo", value = "盟员信息", required = true) @ModelAttribute @Valid UnionApplyInfoVO vo, BindingResult result) {
 		try {
-			unionInvalidService.invalidParameter( result );
+			this.unionValidateService.checkBindingResult(result);
 			BusUser busUser = SessionUtils.getLoginUser(request);
 			if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
 				throw new BusinessException(UPDATE_ID, "", CommonConstant.UNION_BUS_PARENT_MSG);

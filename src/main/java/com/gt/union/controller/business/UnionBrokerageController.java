@@ -6,17 +6,19 @@ import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.SessionUtils;
-import com.gt.union.entity.business.UnionBrokerage;
 import com.gt.union.entity.common.BusUser;
-import com.gt.union.service.basic.IUnionMemberService;
 import com.gt.union.service.business.IUnionBrokerageService;
+import com.gt.union.service.common.IUnionValidateService;
+import com.gt.union.vo.business.UnionBrokerageVO;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 /**
  * <p>
@@ -34,12 +36,12 @@ public class UnionBrokerageController {
 	private Logger logger = Logger.getLogger(UnionBusinessRecommendController.class);
 
 	@Autowired
-	private IUnionMemberService unionMemberService;
+	private IUnionValidateService unionValidateService;
 
 	@Autowired
 	private IUnionBrokerageService unionBrokerageService;
 
-	@ApiOperation(value = "获取联盟佣金比例列表", notes = "获取联盟佣金比例列表", produces = "application/json;charset=UTF-8")
+	@ApiOperation(value = "获取联盟佣金比例列表", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.GET,produces = "application/json;charset=UTF-8")
 	public String listByUnionId(Page page, HttpServletRequest request
 		 , @ApiParam(name="unionId", value = "联盟id", required = true) @PathVariable("unionId") Integer unionId){
@@ -49,7 +51,7 @@ public class UnionBrokerageController {
 			if(user.getPid() != null && user.getPid() != 0){
 				busId = user.getPid();
 			}
-			page = unionMemberService.selectUnionBrokerageList(page,unionId,busId);//TODO controller调用对应的service；还有方法名用list
+			page = this.unionBrokerageService.listMapByUnionIdAndFromBusId(page, unionId, busId);
             return GTJsonResult.instanceSuccessMsg(page).toString();
         }catch (BaseException e){
             logger.error("", e);
@@ -60,20 +62,21 @@ public class UnionBrokerageController {
         }
 	}
 
-	@SysLogAnnotation(description = "设置盟员佣金比", op_function = "3")
-	@RequestMapping("/{id}/unionId/{unionId}")
+	@SysLogAnnotation(description = "商机佣金比例设置", op_function = "3")
+	@ApiOperation(value = "商机佣金比例设置", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
 	public String updateByIdAndUnionId(HttpServletRequest request
-	    , @ApiParam(name="id", value = "佣金比例id", required = true) @PathVariable Integer id
-	    , @ApiParam(name="unionId", value = "联盟id", required = true) @PathVariable Integer unionId
-	    , @ApiParam(name="unionBrokerage", value = "佣金比例信息", required = true) @RequestBody UnionBrokerage unionBrokerage){
+	    , @ApiParam(name="unionBrokerageVO", value = "商机佣金比例参数实体", required = true)
+        @RequestBody @Valid UnionBrokerageVO unionBrokerageVO, BindingResult bindingResult){
 		try{
+		    this.unionValidateService.checkBindingResult(bindingResult);
             BusUser user = SessionUtils.getLoginUser(request);
             Integer busId = user.getId();
 			if(user.getPid() != null && user.getPid() != 0){
 				busId = user.getPid();
 			}
-			unionBrokerage.setFromBusId(busId);
-			unionBrokerageService.updateByIdAndUnionId(unionBrokerage);
+
+			this.unionBrokerageService.updateOrSave(unionBrokerageVO, busId);
             return GTJsonResult.instanceSuccessMsg().toString();
         }catch (BaseException e){
             logger.error("", e);
