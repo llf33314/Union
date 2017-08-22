@@ -180,7 +180,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 			};
 
 		};
-		/*StringBuilder sbSqlSelect = new StringBuilder("");
+		StringBuilder sbSqlSelect = new StringBuilder("");
 		sbSqlSelect.append("t1.id, t1.createtime, t1.del_status delStatus, t1.union_name unionName, ")
 				.append("t1.bus_id busId, t1.union_img unionImg, t1.join_type joinType, t1.director_phone directorPhone,")
 				.append("t1.union_illustration unionIllustration, t1.union_wx_group_img unionWxGroupImg, t1.union_sign unionSign, ")
@@ -189,7 +189,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 				.append("t1.black_card_charge blackCardCcharge, t1.black_card_price blackCardPrice, t1.black_card_term blackCardTerm, ")
 				.append(" t1.red_card_opend redCardOpend, t1.red_card_price redCardPrice, t1.red_card_term redCardTerm, ")
 				.append("t1.black_card_illustration blackCardIllustration, t1.red_card_illustration redCardIllustration, t1.union_validity unionValidity");
-		wrapper.setSqlSelect(sbSqlSelect.toString());*/
+		wrapper.setSqlSelect(sbSqlSelect.toString());
 		List<UnionMain> list = this.selectList(wrapper);
 		return list;
 	}
