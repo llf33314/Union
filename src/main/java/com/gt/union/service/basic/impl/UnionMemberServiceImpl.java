@@ -44,7 +44,6 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     private static final String GET_MAP_ID = "UnionMemberServiceImpl.getById()";
     private static final String TRANSFER_UNION_OWNER = "UnionMemberServiceImpl.transferUnionOwner()";
     private static final String ACCEPT_UNION_OWNER = "UnionMemberServiceImpl.acceptUnionOwner()";
-    private static final String SELECT_UNION_BROKERAGE_LIST = "UnionMemberServiceImpl.selectUnionBrokerageList()";
     private static final String IS_MEMBER_VALID_UNIONMANE = "UnionMemberServiceImpl.isMemberValid(UnionMain)";
     private static final String UPDATE_OUTSTATUS_ID = "UnionMemberServiceImpl.updateOutStatusById()";
     private static final String GET_UNIONID_BUSID = "UnionMemberServiceImpl.getByUnionIdAndBusId()";
@@ -322,44 +321,6 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             unionTransferRecord.setConfirmStatus(UnionTransferRecordConstant.CONFIRM_STATUS_UNCHECK);
             this.unionTransferRecordService.save(unionTransferRecord);
         }
-    }
-
-    @Override
-    public Page selectUnionBrokerageList(Page page, final Integer unionId, final Integer busId) throws Exception {
-        if (page == null) {
-            throw new ParamException(SELECT_UNION_BROKERAGE_LIST, "参数page为空", ExceptionConstant.PARAM_ERROR);
-        }
-        if (unionId == null) {
-            throw new ParamException(SELECT_UNION_BROKERAGE_LIST, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
-        }
-        if (busId == null) {
-            throw new ParamException(SELECT_UNION_BROKERAGE_LIST, "参数busId为空", ExceptionConstant.PARAM_ERROR);
-        }
-        Wrapper wrapper = new Wrapper() {
-            @Override
-            public String getSqlSegment() {
-                StringBuilder sbSqlSegment = new StringBuilder(" t1");
-                sbSqlSegment.append(" LEFT JOIN t_union_brokerage t2 on t1.bus_id = t2.to_bus_id")
-                        .append(" and t2.from_bus_id = ").append(busId)
-                        .append(" and t2.union_id = ").append(unionId)
-                        .append(" and t2.del_status = ").append(0)
-                        .append(" LEFT JOIN t_union_brokerage t3 on t1.bus_id = t3.from_bus_id")
-                        .append(" and t3.to_bus_id = ").append(busId)
-                        .append(" and t3.union_id = ").append(unionId)
-                        .append(" and t3.del_status = ").append(0)
-                        .append(" LEFT JOIN t_union_apply t4 on t4.union_member_id = t1.id")
-                        .append(" LEFT JOIN t_union_apply_info t5 on t5.union_apply_id = t4.id")
-                        .append(" where t1.union_id = ").append(unionId)
-                        .append(" and t1.del_status = ").append(0);
-                sbSqlSegment.append(" ORDER BY t1.id asc ");
-                return sbSqlSegment.toString();
-            };
-
-        };
-        StringBuilder sbSqlSelect = new StringBuilder("");
-        sbSqlSelect.append("t1.id, t1.bus_id, t2.id as from_id, t2.brokerage_ratio as from_brokerage, t3.id as to_id, t3.brokerage_ratio as to_brokerage, t6.enterprise_name");
-        wrapper.setSqlSelect(sbSqlSelect.toString());
-        return this.selectMapsPage(page, wrapper);
     }
 
     @Override

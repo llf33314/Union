@@ -8,17 +8,19 @@ import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.SessionUtils;
-import com.gt.union.entity.business.UnionBusinessRecommend;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.business.IUnionBusinessRecommendService;
+import com.gt.union.service.common.IUnionValidateService;
 import com.gt.union.vo.business.UnionBusinessRecommendVO;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
@@ -49,6 +51,9 @@ public class UnionBusinessRecommendController {
 
 	@Autowired
 	private IUnionBusinessRecommendService unionBusinessRecommendService;
+
+	@Autowired
+    private IUnionValidateService unionValidateService;
 
 	@ApiOperation(value = "查询我的商机信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/toBusId", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -159,7 +164,7 @@ public class UnionBusinessRecommendController {
     }
 
     @ApiOperation(value = "查询支付明细信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/payDetail")
+    @RequestMapping(value = "/payDetail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listPayDetailByFromBusId(HttpServletRequest request, Page page
             , @ApiParam(name = "unionId", value = "联盟id", required = false) Integer unionId) {
 	    try {
@@ -180,7 +185,7 @@ public class UnionBusinessRecommendController {
     }
 
     @ApiOperation(value = "查询支付明细详情信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/payDetailParticular/toBusId/{toBusId}")
+    @RequestMapping(value = "/payDetailParticular/toBusId/{toBusId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listPayDetailParticularByUnionIdAndFromBusIdAndToBusId(HttpServletRequest request
             , @ApiParam(name = "toBusId", value = "佣金消费盟员id", required = true) @PathVariable("toBusId") Integer toBusId
             , @ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId) {
@@ -193,12 +198,8 @@ public class UnionBusinessRecommendController {
             List<Map<String, Object>> dataList = this.unionBusinessRecommendService.listPayDetailParticularByUnionIdAndFromBusIdAndToBusId(unionId, fromBusId, toBusId);
             BigDecimal businessPriceSum = BigDecimal.valueOf(0.0);
             if (ListUtil.isNotEmpty(dataList)) {
-                for (int i = 0, size = dataList.size(); i < size; i++) {
-                    Map<String, Object> map = dataList.get(i);
-                    if (map == null) {
-                        continue;
-                    }
-                    Object businessPriceObj = map.get("businessPrice");
+                for (int i = 0, size = dataList.size(); i < size && dataList.get(i) != null; i++) {
+                    Object businessPriceObj = dataList.get(i).get("businessPrice");
                     Double businessPrice = businessPriceObj == null ? Double.valueOf(0.0) : Double.valueOf(businessPriceObj.toString());
                     businessPriceSum = BigDecimalUtil.add(businessPriceSum, businessPrice);
                 }
@@ -217,7 +218,7 @@ public class UnionBusinessRecommendController {
     }
 
     @ApiOperation(value = "获取商机统计数据", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/unionId/{unionId}/statisticData", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/statisticData", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getStatisticData(HttpServletRequest request
         , @ApiParam(name = "unionId", value = "联盟id", required = true) @PathVariable("unionId") Integer unionId) {
 	    try {
@@ -255,8 +256,10 @@ public class UnionBusinessRecommendController {
 	@ApiOperation(value = "添加商机推荐", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String save(HttpServletRequest request
-			, @ApiParam(name = "unionBusinessRecommendFormVO", value = "推荐的商机信息", required = true) @RequestBody UnionBusinessRecommendVO vo){
+        , @ApiParam(name = "unionBusinessRecommendFormVO", value = "推荐的商机信息", required = true)
+        @RequestBody @Valid UnionBusinessRecommendVO vo, BindingResult bindingResult){
 		try{
+		    this.unionValidateService.checkBindingResult(bindingResult);
             BusUser user = SessionUtils.getLoginUser(request);
             Integer busId = user.getId();
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){//子账号

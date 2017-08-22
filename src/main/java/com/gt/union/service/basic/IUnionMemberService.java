@@ -81,16 +81,6 @@ public interface IUnionMemberService extends IService<UnionMember> {
     void transferUnionOwner(Integer id, Integer unionId, Integer originalOwnerBusId) throws Exception;
 
     /**
-     * 查询联盟的盟员佣金比设置
-     * @param page  分页
-     * @param unionId   联盟id
-     * @param busId   商家id
-     * @return
-     * @throws Exception
-     */
-    Page selectUnionBrokerageList(Page page, Integer unionId, Integer busId) throws Exception;
-
-    /**
      * 查询联盟成员
      * @param unionId   联盟id
      * @param busId 商家id

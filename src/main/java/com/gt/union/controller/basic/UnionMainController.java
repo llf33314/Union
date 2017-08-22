@@ -13,7 +13,7 @@ import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.basic.IUnionMainService;
-import com.gt.union.service.common.UnionInvalidService;
+import com.gt.union.service.common.IUnionValidateService;
 import com.gt.union.vo.basic.UnionMainCreateInfoVO;
 import com.gt.union.vo.basic.UnionMainInfoVO;
 import io.swagger.annotations.ApiOperation;
@@ -21,7 +21,6 @@ import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -54,7 +53,7 @@ public class UnionMainController {
     private IUnionMainService unionMainService;
 
 	@Autowired
-	private UnionInvalidService unionInvalidService;
+	private IUnionValidateService unionValidateService;
 
     @ApiOperation(value = "首页查询我的联盟信息", produces = "application/json;charset=UTF-8")
     @SysLogAnnotation(op_function = "1", description = "首页查询我的联盟信息")
@@ -146,7 +145,7 @@ public class UnionMainController {
           , @ApiParam(name="id", value = "联盟id", required = true) @PathVariable Integer id
           , @ApiParam(name="vo", value = "联盟更新信息", required = true) @ModelAttribute @Valid UnionMainInfoVO vo , BindingResult result){
         try{
-			unionInvalidService.invalidParameter( result );
+			this.unionValidateService.checkBindingResult(result);
             BusUser user = SessionUtils.getLoginUser(request);
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
                 throw new BusinessException(UPDATE_ID, "", CommonConstant.UNION_BUS_PARENT_MSG);

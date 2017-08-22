@@ -1,5 +1,6 @@
 package com.gt.union.service.business.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -12,6 +13,8 @@ import com.gt.union.common.constant.business.UnionBusinessRecommendConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.BigDecimalUtil;
+import com.gt.union.common.util.DateUtil;
+import com.gt.union.common.util.DoubleUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.entity.basic.UnionMember;
 import com.gt.union.entity.business.UnionBrokerage;
@@ -29,10 +32,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * <p>
@@ -546,14 +547,45 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
             throw new ParamException(GET_STATISTIC_DATA, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
 
-        //TODO
         Map<String, Object> resultMap = new HashMap<>();
+        //未结算佣金收入
         Double uncheckBrokerageIncome = getBrokerageIncome(unionId, busId, UnionBusinessRecommendConstant.IS_CONFIRM_CONFIRM);
         resultMap.put("uncheckBrokerageIncome", uncheckBrokerageIncome);
+        //已结算佣金收入
+        Double confirmBrokerageIncome = getBrokerageIncome(unionId, busId, UnionBusinessRecommendConstant.IS_CONFIRM_CONFIRM);
+        resultMap.put("confirmBrokerageIncome", confirmBrokerageIncome);
+        //未结算佣金收入占总佣金收入的百分比
+        BigDecimal bdUncheckBrokerageIncomePercent = BigDecimalUtil.divide(uncheckBrokerageIncome, BigDecimalUtil.add(uncheckBrokerageIncome, confirmBrokerageIncome), 4);
+        String uncheckBrokerageIncomePercent = DoubleUtil.formatPercent(bdUncheckBrokerageIncomePercent.doubleValue());
+        resultMap.put("uncheckBrokerageIncomePercent", uncheckBrokerageIncomePercent);
+        //已结算佣金收入占总佣金收入的百分比
+        BigDecimal bdConfirmBrokerageIncomePercent = BigDecimalUtil.subtract(Double.valueOf(1.00), bdUncheckBrokerageIncomePercent, 4);
+        String confirmBrokerageIncomePercent = DoubleUtil.formatPercent(bdConfirmBrokerageIncomePercent.doubleValue());
+        resultMap.put("confirmBrokerageIncomePercent", confirmBrokerageIncomePercent);
+
+        //未结算支出佣金
+        Double uncheckBrokerageExpense = getBrokerageExpense(unionId, busId, UnionBusinessRecommendConstant.IS_CONFIRM_UNCHECK);
+        resultMap.put("uncheckBrokerageExpense", uncheckBrokerageExpense);
+        //已结算支出佣金
+        Double confirmBrokerageExpense = getBrokerageExpense(unionId, busId, UnionBusinessRecommendConstant.IS_CONFIRM_CONFIRM);
+        resultMap.put("confirmBrokerageExpense", confirmBrokerageExpense);
+        //未结算支出佣金占总支出佣金的百分比
+        BigDecimal bdUncheckBrokerageExpensePercent = BigDecimalUtil.divide(uncheckBrokerageExpense, BigDecimalUtil.add(uncheckBrokerageExpense, confirmBrokerageExpense), 4);
+        String uncheckBrokerageExpensePercent = DoubleUtil.formatPercent(bdUncheckBrokerageExpensePercent.doubleValue());
+        resultMap.put("uncheckBrokerageExpensePercent", uncheckBrokerageExpensePercent);
+        //已结算支出佣金占总支出佣金的百分比
+        BigDecimal bdConfirmBrokerageExpensePercent = BigDecimalUtil.subtract(Double.valueOf(1.00), bdUncheckBrokerageExpensePercent, 4);
+        String confirmBrokerageExpensePercent = DoubleUtil.formatPercent(bdConfirmBrokerageExpensePercent.doubleValue());
+        resultMap.put("confirmBrokerageExpensePercent", confirmBrokerageExpensePercent);
+
+        //获取一周统计数据
+        List<Map<String, Map<String, Double>>> brokerageInWeek = getBrokerageInWeek(unionId, busId);
+        resultMap.put("brokerageInWeek", brokerageInWeek);
 
         return resultMap;
     }
 
+    //根据联盟id、推荐商家id和是否给予佣金状态isConfirm获取总佣金收入信息
     private Double getBrokerageIncome(Integer unionId, Integer busId, Integer isConfirm) {
         if (unionId != null && busId != null && isConfirm != null) {
             EntityWrapper entityWrapper = new EntityWrapper();
@@ -573,4 +605,83 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
         return null;
     }
 
+    //根据联盟id、推荐商家id和是否给予佣金状态isConfirm获取总支出佣金信息
+    private Double getBrokerageExpense(Integer unionId, Integer busId, Integer isConfirm) {
+        if (unionId != null && busId != null && isConfirm != null) {
+            EntityWrapper entityWrapper = new EntityWrapper();
+            entityWrapper.eq("del_status", UnionBusinessRecommendConstant.DEL_STATUS_NO)
+                    .eq("is_acceptance", UnionBusinessRecommendConstant.IS_ACCEPTANCE_ACCEPT)
+                    .eq("union_id", unionId)
+                    .eq("to_bus_id", busId)
+                    .eq("is_confirm", isConfirm);
+            entityWrapper.setSqlSelect(" SUM(business_price) businessPriceSum ");
+
+            Map<String, Object> map = this.selectMap(entityWrapper);
+            if (map == null || map.get("businessPriceSum") == null) {
+                return Double.valueOf(0.0);
+            }
+            return Double.valueOf(map.get("businessPriceSum").toString());
+        }
+        return null;
+    }
+
+    //获取一周佣金信息
+    private List<Map<String, Map<String, Double>>> getBrokerageInWeek(Integer unionId, Integer busId) {
+        List<Map<String, Map<String, Double>>> resultList = new ArrayList<>();
+        Date currentDate = DateUtil.getCurrentDate();
+        for (int i = 0; i > -7; i--) {
+            Date date = DateUtil.addDays(currentDate, i);
+            String strDate = DateUtil.getDateString(date, DateUtil.DATE_PATTERN);
+            String strDateBegin = strDate + " 00:00:00";
+            String strDateEnd = strDate + " 23:59:59";
+            Map<String, Double> brokerageInDayMap = getBrokerageInDay(unionId, busId, strDateBegin, strDateEnd);
+            String strWeek = DateUtil.getWeek(date);
+            Map<String, Map<String, Double>> weekMap = new HashMap<>();
+            weekMap.put(strWeek, brokerageInDayMap);
+            resultList.add(weekMap);
+        }
+        return resultList;
+    }
+
+    //获取一天的佣金信息
+    private Map<String,Double> getBrokerageInDay(Integer unionId, Integer busId, String strDateBegin, String strDateEnd) {
+        if (unionId != null && busId != null && StringUtil.isNotEmpty(strDateBegin) && StringUtil.isNotEmpty(strDateEnd)) {
+            Map<String, Double> resultMap = new HashMap<>();
+
+            //已结算的佣金收入
+            EntityWrapper incomeWrapper = new EntityWrapper();
+            incomeWrapper.eq("del_status", UnionBusinessRecommendConstant.DEL_STATUS_NO)
+                    .eq("is_acceptance", UnionBusinessRecommendConstant.IS_ACCEPTANCE_ACCEPT)
+                    .eq("union_id", unionId)
+                    .eq("from_bus_id", busId)
+                    .eq("is_confirm", UnionBusinessRecommendConstant.IS_CONFIRM_CONFIRM)
+                    .between("confirm_time", strDateBegin, strDateEnd);
+            incomeWrapper.setSqlSelect(" SUM(business_price) businessPriceSum ");
+            Map<String, Object> incomeMap = this.selectMap(incomeWrapper);
+            if (incomeMap == null || incomeMap.get("businessPriceSum") == null) {
+                resultMap.put("incomeBrokerage", Double.valueOf(0.0));
+            } else {
+                resultMap.put("incomeBrokerage", Double.valueOf(incomeMap.get("businessPriceSum").toString()));
+            }
+
+            //已结算的支出佣金
+            EntityWrapper expanseWrapper = new EntityWrapper();
+            expanseWrapper.eq("del_status", UnionBusinessRecommendConstant.DEL_STATUS_NO)
+                    .eq("is_acceptance", UnionBusinessRecommendConstant.IS_ACCEPTANCE_ACCEPT)
+                    .eq("union_id", unionId)
+                    .eq("to_bus_id", busId)
+                    .eq("is_confirm", UnionBusinessRecommendConstant.IS_CONFIRM_CONFIRM)
+                    .between("confirm_time", strDateBegin, strDateEnd);
+            expanseWrapper.setSqlSelect(" SUM(business_price) businessPriceSum ");
+            Map<String, Object> expanseMap = this.selectMap(expanseWrapper);
+            if (expanseMap == null || expanseMap.get("businessPriceSum") == null) {
+                resultMap.put("expanseBrokerage", Double.valueOf(0.0));
+            } else {
+                resultMap.put("expanseBrokerage", Double.valueOf(expanseMap.get("expanseBrokerage").toString()));
+            }
+
+            return resultMap;
+        }
+        return null;
+    }
 }
