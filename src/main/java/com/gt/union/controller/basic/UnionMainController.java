@@ -8,7 +8,6 @@ import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.PageUtil;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.common.BusUser;
@@ -100,7 +99,7 @@ public class UnionMainController {
         }
     }
 
-    @ApiOperation(value = "查询商家创建及加入的所有联盟列表", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "查询我创建及加入的所有联盟列表", produces = "application/json;charset=UTF-8")
     @SysLogAnnotation(op_function = "1", description = "查询商家创建及加入的所有联盟列表")
     @RequestMapping(value = "/myUnion", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listMyUnion(HttpServletRequest request) {
@@ -121,17 +120,13 @@ public class UnionMainController {
         }
     }
 
-    @ApiOperation(value = "分页查询所有可加入的联盟列表", produces = "application/json;charset=UTF-8")
-    @SysLogAnnotation(op_function = "1", description = "分页查询所有可加入的联盟列表")
-    @RequestMapping(value = "/valid/access", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String list(Page page, HttpServletRequest request) {
+    @ApiOperation(value = "分页查询所有联盟", produces = "application/json;charset=UTF-8")
+    @SysLogAnnotation(op_function = "1", description = "分页查询所有联盟")
+    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String list(Page page) {
         try {
-            List<UnionMain> unionMainList = unionMainService.listValidAccess();
-            PageUtil pageUtil = new PageUtil();
-            pageUtil.setRecords(unionMainList);
-            pageUtil.setCurrent(page.getCurrent());
-            pageUtil.setSize(page.getSize());
-            return GTJsonResult.instanceSuccessMsg(pageUtil.getMapAsPage()).toString();
+            Page result = unionMainService.list(page);
+            return GTJsonResult.instanceSuccessMsg(result).toString();
         }  catch (Exception e){
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(LIST, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
@@ -169,8 +164,8 @@ public class UnionMainController {
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
                 throw new BusinessException(INSTANCE, "", CommonConstant.UNION_BUS_PARENT_MSG);
             }
-            Map<String,Object> data = unionMainService.instance(user.getId());
-            return GTJsonResult.instanceSuccessMsg(data).toString();
+            unionMainService.instance(user.getId());
+            return GTJsonResult.instanceSuccessMsg().toString();
         }catch (BaseException e){
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
@@ -184,8 +179,10 @@ public class UnionMainController {
     @SysLogAnnotation(op_function = "3", description = "保存创建联盟的信息")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String save(HttpServletRequest request
-        , @ApiParam(name="unionMainCreateInfoVO", value = "保存创建联盟的信息", required = true) @RequestBody UnionMainCreateInfoVO unionMainCreateInfoVO ){
+        , @ApiParam(name="unionMainCreateInfoVO", value = "保存创建联盟的信息", required = true)
+        @RequestBody @Valid UnionMainCreateInfoVO unionMainCreateInfoVO, BindingResult bindingResult){
         try{
+            this.unionValidateService.checkBindingResult(bindingResult);
             BusUser user = SessionUtils.getLoginUser(request);
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
                 throw new BusinessException(SAVE, "", CommonConstant.UNION_BUS_PARENT_MSG);

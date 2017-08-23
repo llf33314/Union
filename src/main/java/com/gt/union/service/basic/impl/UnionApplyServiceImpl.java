@@ -10,6 +10,7 @@ import com.gt.union.api.client.user.BusUserService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionApplyConstant;
+import com.gt.union.common.constant.basic.UnionMainConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
@@ -242,20 +243,18 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
 
     @Transactional(rollbackFor = Exception.class)
 	@Override
-	public Map<String, Object> save(Integer busId, UnionApplyVO vo) throws Exception{
-        Map<String,Object> data = new HashMap<String,Object>();
+	public void save(Integer busId, UnionApplyVO vo) throws Exception{
         Integer unionId = vo.getUnionId();
         if(!unionRootService.checkUnionMainValid(unionId)){
             throw new BusinessException(SAVE, "", CommonConstant.UNION_OVERDUE_MSG);
         }
         Integer applyType = vo.getApplyType();
         UnionMain main = unionMainService.getById(unionId);
-        if(applyType == 1){//自由申请
+        if(applyType == UnionApplyConstant.APPLY_TYPE_FREE){//自由申请
             saveApply(busId,vo,main);
-        }else if(applyType == 2){//推荐加盟
+        }else if(applyType == UnionApplyConstant.APPLY_TYPE_RECOMMEND){//推荐加盟
             saveRecommendApply(busId,vo,main);
         }
-        return data;
 	}
 
     /**
