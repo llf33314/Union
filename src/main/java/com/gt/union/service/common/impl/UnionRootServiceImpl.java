@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -135,9 +136,14 @@ public class UnionRootServiceImpl implements IUnionRootService {
         String unionMainValidKey = RedisKeyUtil.getUnionMainValidKey(unionId);
         if (this.redisCacheUtil.exists(unionMainValidKey)) {
             return true;
-    }
+        }
 
         UnionMain unionMain = this.unionMainService.getById(unionId);
+        return checkUnionMainValid(unionMain);
+    }
+
+    @Override
+    public boolean checkUnionMainValid(UnionMain unionMain) throws Exception {
         if (unionMain == null) {
             throw new ParamException(CHECK_UNIONMAIN_VALID, "无法通过unionId获取unionMain对象", ExceptionConstant.PARAM_ERROR);
         }
@@ -158,7 +164,7 @@ public class UnionRootServiceImpl implements IUnionRootService {
                 }
             }
         }
-
+        String unionMainValidKey = RedisKeyUtil.getUnionMainValidKey(unionMain.getId());
         // （5）重新存入缓存
         this.redisCacheUtil.set(unionMainValidKey, "1");
         return true;
@@ -215,6 +221,7 @@ public class UnionRootServiceImpl implements IUnionRootService {
      */
     private Map<Integer,Object> getFreeUnionMainAuthority(){
         //TODO 字典数据  缓存起来
+        List<Map> list = dictService.getCreateUnionDict();
         Map<Integer,Object> data = new HashMap<Integer,Object>();
         data.put(BusUserConstant.LEVEL_EXTREME, 1);
         return data;

@@ -13,6 +13,7 @@ import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.RedisKeyUtil;
 import com.gt.union.entity.basic.UnionApplyInfo;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.mapper.basic.UnionApplyInfoMapper;
@@ -85,7 +86,8 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 		info.setAddressLatitude(vo.getAddressLatitude());
 		info.setAddressLongitude(vo.getAddressLongitude());
 		this.updateById(info);
-		redisCacheUtil.set("unionApplyInfo:" + vo.getUnionId() + ":" + busId, JSON.toJSONString(info));
+		String infoKey = RedisKeyUtil.getUnionApplyInfoKey(vo.getUnionId(),busId);
+		redisCacheUtil.set(infoKey, JSON.toJSONString(info));
 	}
 
 	@Override

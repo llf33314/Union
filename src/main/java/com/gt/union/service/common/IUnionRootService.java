@@ -1,5 +1,6 @@
 package com.gt.union.service.common;
 
+import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.basic.UnionMember;
 import com.gt.union.entity.common.BusUser;
 
@@ -55,6 +56,14 @@ public interface IUnionRootService {
      * @throws Exception
      */
     public boolean checkUnionMainValid(Integer unionId) throws Exception;
+
+    /**
+     * 根据联盟判断该联盟是否有效
+     * @param unionMain
+     * @return
+     * @throws Exception
+     */
+    public boolean checkUnionMainValid(UnionMain unionMain) throws Exception;
 
     /**
      * 根据用户id判断该用户是否是某联盟的盟主

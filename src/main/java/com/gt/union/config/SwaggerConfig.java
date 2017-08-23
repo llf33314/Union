@@ -22,7 +22,7 @@ public class SwaggerConfig {
             .groupName("controller")
             .apiInfo(apiInfo())
             .select()
-            .apis(RequestHandlerSelectors.basePackage("com.gt.union.controller"))
+            .apis(RequestHandlerSelectors.basePackage("com.gt.union.controller,com.api.server"))
             .paths(PathSelectors.regex("/.*")) //可通过"或"来匹配多个模块
             .build();
     }

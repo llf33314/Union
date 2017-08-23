@@ -46,4 +46,12 @@ public interface IUnionBusMemberCardService extends IService<UnionBusMemberCard>
 	 * @throws Exception
 	 */
 	List<Map<String,Object>> selectUnionBusMemberCardList(Integer unionId, Integer busId, String cardNo, String phone) throws Exception;
+
+	/**
+	 * 根据用户id和商家id查询联盟卡信息
+	 * @param memberId	用户id
+	 * @param busId		商家id
+	 * @return
+	 */
+	Map getConsumeUnionDiscount(Integer memberId, Integer busId) throws Exception;
 }

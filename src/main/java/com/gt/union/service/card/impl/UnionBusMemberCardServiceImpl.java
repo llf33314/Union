@@ -1,20 +1,25 @@
 package com.gt.union.service.card.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.StringUtil;
+import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.card.UnionBusMemberCard;
 import com.gt.union.mapper.card.UnionBusMemberCardMapper;
+import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.card.IUnionBusMemberCardService;
+import com.gt.union.service.common.IUnionRootService;
 import com.gt.union.vo.card.UnionBusMemberCardVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -28,6 +33,12 @@ import java.util.Map;
 public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCardMapper, UnionBusMemberCard> implements IUnionBusMemberCardService {
     private static final String GET_UNION_MEMBER_INTEGRAL = "UnionBusMemberCardServiceImpl.getUnionMemberIntegral()";
     private static final String SELECT_UNION_BUS_MEMBER_CARD_LIST = "UnionBusMemberCardServiceImpl.selectUnionBusMemberCardList()";
+
+    @Autowired
+    private IUnionMainService unionMainService;
+
+    @Autowired
+    private IUnionRootService unionRootService;
 
 	@Override
 	public double getUnionMemberIntegral(final Integer unionId) {
@@ -120,5 +131,35 @@ public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCar
 		sbSqlSelect.append(" t1.id, t1.cardNo, t1.phone, t1.integral, DATE_FORMAT(t2.updatetime, '%Y-%m-%d %T') updatetime, t2.card_type, DATE_FORMAT(t2.card_term_time, '%Y-%m-%d %T') cardTermTime");
 		wrapper.setSqlSelect(sbSqlSelect.toString());
 		return this.selectMaps(wrapper);
+	}
+
+	@Override
+	public Map getConsumeUnionDiscount(Integer memberId, Integer busId) throws Exception{
+		Map<String, Object> discount_map = new HashMap<>();
+		List<UnionMain> list = unionMainService.listMyUnion(busId);//查询我加入的联盟
+		if(ListUtil.isEmpty(list)){
+			return discount_map;
+		}
+		List<UnionMain> myUnions = new ArrayList();
+		Iterator<UnionMain> it = list.iterator();
+		while (it.hasNext()){
+			UnionMain main = it.next();
+			if(unionRootService.checkUnionMainValid(main)){
+				myUnions.add(main);
+			}
+		}
+		//得到有效的联盟
+		if(ListUtil.isEmpty(myUnions)){
+			return discount_map;
+		}
+		EntityWrapper entityWrapper = new EntityWrapper<UnionBusMemberCard>();
+		entityWrapper.eq("del_status", 0 );
+		entityWrapper.eq("member_id",memberId);
+		entityWrapper.eq("bus_id",busId);
+		UnionBusMemberCard card = this.selectOne(entityWrapper);
+		if(card == null){
+			discount_map.put("")
+		}
+		return discount_map;
 	}
 }

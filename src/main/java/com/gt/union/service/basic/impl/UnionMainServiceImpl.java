@@ -208,7 +208,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         List<UnionMain> resultList = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             UnionMain unionMain = list.get(i);
-		    if (this.unionRootService.checkUnionMainValid(unionMain.getId()) && unionMain.getUnionMemberNum() < unionMain.getUnionTotalMember()) {
+		    if (this.unionRootService.checkUnionMainValid(unionMain) && unionMain.getUnionMemberNum() < unionMain.getUnionTotalMember()) {
                 resultList.add(unionMain);
             }
         }
