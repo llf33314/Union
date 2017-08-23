@@ -55,7 +55,7 @@ public class UnionApplyInfoVO {
 	@ApiModelProperty( value = "联系电话", required = true)
 	@NotBlank(message = "联系电话内容不能为空")
 	@Pattern(regexp = "^1[3|4|5|6|7|8][0-9][0-9]{8}$", message = "联系电话有误")
-	private String directorPphone;
+	private String directorPhone;
 
 	/**
 	 * 邮箱
@@ -157,12 +157,12 @@ public class UnionApplyInfoVO {
 		this.directorName = directorName;
 	}
 
-	public String getDirectorPphone() {
-		return directorPphone;
+	public String getDirectorPhone() {
+		return directorPhone;
 	}
 
-	public void setDirectorPphone(String directorPphone) {
-		this.directorPphone = directorPphone;
+	public void setDirectorPhone(String directorPhone) {
+		this.directorPhone = directorPhone;
 	}
 
 	public String getDirectorEmail() {
