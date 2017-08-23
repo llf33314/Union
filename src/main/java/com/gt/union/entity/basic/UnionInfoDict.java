@@ -5,7 +5,12 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 
 /**
@@ -17,6 +22,8 @@ import java.io.Serializable;
  * @since 2017-08-21
  */
 @TableName("t_union_info_dict")
+@ApiModel( value = "UnionInfoDict", description = "申请/推荐收集信息主体" )
+@Data
 public class UnionInfoDict extends Model<UnionInfoDict> {
 
     private static final long serialVersionUID = 1L;
@@ -29,6 +36,8 @@ public class UnionInfoDict extends Model<UnionInfoDict> {
     /**
      * 联盟id
      */
+    @NotNull(message = "请选择联盟")
+	@ApiModelProperty( value = "联盟id", required = true)
 	@TableField("union_id")
 	private Integer unionId;
     /**
@@ -39,6 +48,8 @@ public class UnionInfoDict extends Model<UnionInfoDict> {
     /**
      * 字典关键key
      */
+	@NotBlank(message = "请选择收集信息")
+	@ApiModelProperty( value = "收集信息item_key", required = true)
 	@TableField("item_key")
 	private String itemKey;
 

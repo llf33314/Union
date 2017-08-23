@@ -305,7 +305,8 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		unionInfoDictService.delete(entityWrapper);
 		List<UnionInfoDict> list = vo.getInfos();
 		unionInfoDictService.insertBatch(list);
-		redisCacheUtil.set("infoDict:" + main.getId(), JSON.toJSONString(list));
+		String infoDictKey = RedisKeyUtil.getUnionInfoDictKey(main.getId());
+		redisCacheUtil.set(infoDictKey, JSON.toJSONString(list));
 		String unionMainKey = RedisKeyUtil.getUnionMainKey(main.getId());
 		this.redisCacheUtil.set(unionMainKey, JSON.toJSONString(main) );
 	}

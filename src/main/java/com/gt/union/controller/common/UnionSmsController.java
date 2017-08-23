@@ -1,9 +1,18 @@
 package com.gt.union.controller.common;
 
+import com.alibaba.fastjson.JSON;
+import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.common.constant.ExceptionConstant;
+import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
+import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.response.GTJsonResult;
+import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.StringUtil;
+import com.gt.union.service.basic.IUnionApplyService;
+import com.gt.union.service.basic.IUnionMemberService;
+import com.gt.union.service.business.IUnionBusinessRecommendService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
@@ -13,10 +22,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import springfox.documentation.spring.web.json.Json;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * 联盟短信发送控制器
@@ -25,40 +36,70 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/unionSms")
 public class UnionSmsController {
-	private static final String CONFIRM_OUT_SEND_MSG = "UnionSmsController.confirmOutSendMsg()";
+	private static final String CONFIRM_OUT_CONFIRM_MSG = "UnionSmsController.confirmOutConfirmdMsg()";
+	private static final String MEMBER_OUT_APPLY_MSG = "UnionSmsController.memberOutApplyMsg()";
+	private static final String UNION_APPLY_MSG = "UnionSmsController.unionApplyMsg()";
+	private static final String BUSINESS_RECOMMEND_MSG = "UnionSmsController.businessRecommendMsg()";
 	private Logger logger = LoggerFactory.getLogger(UnionSmsController.class);
 
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
 
+	@Autowired
+	private IUnionMemberService unionMemberService;
+
+	@Autowired
+	private SmsService smsService;
+
+	@Autowired
+	private IUnionApplyService unionApplyService;
+
+	@Autowired
+	private IUnionBusinessRecommendService unionBusinessRecommendService;
+
 	@ApiOperation(value = "盟主审核确认退盟发送短信", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/memberOut", method= RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public String confirmOutSendMsg(HttpServletRequest request, HttpServletResponse response
+	@RequestMapping(value = "/memberOutConfirm", method= RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public String confirmOutConfirmdMsg(HttpServletRequest request, HttpServletResponse response
 		, @ApiParam(name = "redisKey", value = "审核确认退盟后返回的数据", required = true)
 		@RequestParam(name = "redisKey", required = true) String redisKey) throws IOException {
 		try {
+			if(StringUtil.isEmpty(redisKey)){
+				throw new ParamException(CONFIRM_OUT_CONFIRM_MSG, "参数redisKey为空", "参数redisKey为空");
+			}
 			Object data = redisCacheUtil.get(redisKey);
 			if(data == null){
-				throw new BusinessException(CONFIRM_OUT_SEND_MSG, "", "redis失效");
+				throw new ParamException(CONFIRM_OUT_CONFIRM_MSG, "", "redis失效");
 			}
-            return GTJsonResult.instanceSuccessMsg().toString();
-        } catch (Exception e) {
+			//发送短信
+			return GTJsonResult.instanceSuccessMsg().toString();
+        } catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+		} catch (Exception e) {
             logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(CONFIRM_OUT_SEND_MSG, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+            return GTJsonResult.instanceErrorMsg(CONFIRM_OUT_CONFIRM_MSG, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
 	}
 
 	@ApiOperation(value = "盟员退盟申请发送短信", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/memberOutApply", method= RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public String memberOutApply(HttpServletRequest request, HttpServletResponse response
+	public String memberOutApplyMsg(HttpServletRequest request, HttpServletResponse response
         , @ApiParam(name = "redisKey", value = "盟员退盟申请后返回的数据", required = true)
         @RequestParam(name = "redisKey", required = true) String redisKey) throws IOException {
 		try {
-
+			Map<String,Object> param = unionMemberService.getMemberOutApplyMsgInfo(redisKey);
+			int code = smsService.sendSms(param);
+			if(code == 0){
+				return GTJsonResult.instanceErrorMsg(MEMBER_OUT_APPLY_MSG,"发送失败").toString();
+			}
+			return GTJsonResult.instanceSuccessMsg().toString();
+		} catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
 		} catch (Exception e) {
-
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(MEMBER_OUT_APPLY_MSG, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
 		}
-		return GTJsonResult.instanceSuccessMsg().toString();
 	}
 
 
@@ -78,31 +119,49 @@ public class UnionSmsController {
 
 
 	@ApiOperation(value = "推荐商机后发送短信" , notes = "推荐商机后发送短信" , produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/businessRecommend", method= RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public String businessRecommend(HttpServletRequest request, HttpServletResponse response
+	@RequestMapping(value = "/businessRecommendMsg", method= RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public String businessRecommendMsg(HttpServletRequest request, HttpServletResponse response
         , @ApiParam(name = "redisKey", value = "推荐商机后返回的数据", required = true)
         @RequestParam(name = "redisKey", required = true) String redisKey) throws IOException {
 		try {
-
+			Map<String,Object> param = unionBusinessRecommendService.getRecommendMsgInfo(redisKey);
+			int code = smsService.sendSms(param);
+			if(code == 0){
+				return GTJsonResult.instanceErrorMsg(BUSINESS_RECOMMEND_MSG,"发送失败").toString();
+			}
+			return GTJsonResult.instanceSuccessMsg().toString();
+		} catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
 		} catch (Exception e) {
-
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(BUSINESS_RECOMMEND_MSG, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
 		}
-		return GTJsonResult.instanceSuccessMsg().toString();
+
 	}
 
 
 
 	@ApiOperation(value = "申请加盟成功后发送短信" , notes = "申请加盟成功后发送短信" , produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/unionApply", method= RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public String unionApply(HttpServletRequest request, HttpServletResponse response
+	@RequestMapping(value = "/unionApplyMsg", method= RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public String unionApplyMsg(HttpServletRequest request, HttpServletResponse response
         , @ApiParam(name = "redisKey", value = "申请加盟成功后返回的数据", required = true)
         @RequestParam(name = "redisKey", required = true) String redisKey) throws IOException {
 		try {
-
+			Map<String,Object> param = unionApplyService.getUnionApplyMsgInfo(redisKey);
+			int code = smsService.sendSms(param);
+			if(code == 0){
+				return GTJsonResult.instanceErrorMsg(UNION_APPLY_MSG,"发送失败").toString();
+			}
+			return GTJsonResult.instanceSuccessMsg().toString();
+		} catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
 		} catch (Exception e) {
-
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(UNION_APPLY_MSG, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
 		}
-		return GTJsonResult.instanceSuccessMsg().toString();
+
 	}
 
 }

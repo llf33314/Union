@@ -17,6 +17,7 @@
 		<result column="union_id" property="unionId" />
 		<result column="member_id" property="memberId" />
 		<result column="recommend_ids" property="recommendIds" />
+		<result column="union_verify_member" property="unionVerifyMember" />
 	</resultMap>
 
 </mapper>

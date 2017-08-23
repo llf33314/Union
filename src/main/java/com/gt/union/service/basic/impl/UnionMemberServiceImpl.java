@@ -5,22 +5,22 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.*;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
 import com.gt.union.entity.basic.UnionApplyInfo;
+import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.basic.UnionMember;
 import com.gt.union.entity.basic.UnionTransferRecord;
 import com.gt.union.mapper.basic.UnionMemberMapper;
-import com.gt.union.service.basic.IUnionApplyInfoService;
-import com.gt.union.service.basic.IUnionApplyService;
-import com.gt.union.service.basic.IUnionMemberService;
-import com.gt.union.service.basic.IUnionTransferRecordService;
+import com.gt.union.service.basic.*;
 import com.gt.union.service.common.IUnionRootService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.HashMap;
@@ -44,10 +44,11 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     private static final String GET_MAP_ID = "UnionMemberServiceImpl.getById()";
     private static final String TRANSFER_UNION_OWNER = "UnionMemberServiceImpl.transferUnionOwner()";
     private static final String ACCEPT_UNION_OWNER = "UnionMemberServiceImpl.acceptUnionOwner()";
-    private static final String IS_MEMBER_VALID_UNIONMANE = "UnionMemberServiceImpl.isMemberValid(UnionMain)";
     private static final String UPDATE_OUTSTATUS_ID = "UnionMemberServiceImpl.updateOutStatusById()";
     private static final String GET_UNIONID_BUSID = "UnionMemberServiceImpl.getByUnionIdAndBusId()";
     private static final String LIST_UNIONID_LIST_ALL = "UnionMemberServiceImpl.listByUnionIdList()";
+    private static final String UPDATE_APPLY_UNION_OUT = "UnionMemberServiceImpl.updateApplyOutUnion()";
+    private static final String MEMBER_OUT_APPLY_MSG = "UnionMemberServiceImpl.getMemberOutApplyMsgInfo()";
 
     @Autowired
     private RedisCacheUtil redisCacheUtil;
@@ -63,6 +64,9 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
 
     @Autowired
     private IUnionTransferRecordService unionTransferRecordService;
+
+    @Autowired
+    private IUnionMainService unionMainService;
 
     @Override
     public Page listMapByUnionIdInPage(Page page, final Integer unionId, final String enterpriseName) throws Exception {
@@ -347,7 +351,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
 
         // （3）如查询到有效数据，则存入缓存中
         if (unionMember != null) {
-            redisCacheUtil.set(unionMemberBusIdKey, JSON.toJSONString(unionMember), 3600L);
+            redisCacheUtil.set(unionMemberBusIdKey, JSON.toJSONString(unionMember));
         }
 
         return unionMember;
@@ -501,6 +505,72 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 .append(", i.enterprise_name enterpriseName ");
         wrapper.setSqlSelect(sbSqlSelect.toString());
         return this.selectMaps(wrapper);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+	@Override
+	public Map updateApplyOutUnion(Integer unionId, Integer busId, String outReason) throws Exception{
+        Map<String,Object> data = new HashMap<String,Object>();
+        if (unionId == null) {
+            throw new ParamException(UPDATE_APPLY_UNION_OUT, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
+        }
+        if (busId == null) {
+            throw new ParamException(UPDATE_APPLY_UNION_OUT, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+        }
+        if(StringUtil.isEmpty(outReason)){
+            throw new ParamException(UPDATE_APPLY_UNION_OUT, "参数outReason为空", "退盟理由内容不能为空");
+        }
+        if(StringUtil.getStringLength(outReason) > 20){
+            throw new ParamException(UPDATE_APPLY_UNION_OUT, "参数outReason为空", "退盟理由内容不可超过20字");
+        }
+        if(!unionRootService.checkUnionMainValid(unionId)){
+            throw new BusinessException(UPDATE_APPLY_UNION_OUT, "", CommonConstant.UNION_OVERDUE_MSG);
+        }
+        UnionMember member = this.getByUnionIdAndBusId(unionId,busId);
+        if(!unionRootService.hasUnionMemberAuthority(member)){
+            throw new BusinessException(UPDATE_APPLY_UNION_OUT, "", CommonConstant.UNION_MEMBER_NON_AUTHORITY_MSG);
+        }
+        member.setOutReason(outReason);
+        member.setOutStaus(1);
+        member.setApplyOutTime(new Date());
+        this.updateById(member);
+        String memberKey = RedisKeyUtil.getUnionMemberBusIdKey(unionId,busId);
+        if(redisCacheUtil.exists(memberKey)){
+            redisCacheUtil.set(memberKey,JSON.toJSONString(member));
+        }
+        String nowTime = "applyOut:"+System.currentTimeMillis();
+        data.put("redisKey",nowTime);
+        HashMap<String, Object> redisMap = new HashMap<>();
+        redisMap.put("unionId",unionId);
+        redisMap.put("busId",busId);
+        redisCacheUtil.set(nowTime, JSON.toJSONString(redisMap),60l);
+        return data;
+    }
+
+    @Override
+    public Map<String, Object> getMemberOutApplyMsgInfo(String redisKey) throws Exception{
+        if(StringUtil.isEmpty(redisKey)){
+            throw new ParamException(MEMBER_OUT_APPLY_MSG, "参数redisKey为空", "参数redisKey为空");
+        }
+        Object data = redisCacheUtil.get(redisKey);
+        if(data == null){
+            throw new ParamException(MEMBER_OUT_APPLY_MSG, "", "redis失效");
+        }
+        Map<String,Object> result = JSON.parseObject(data.toString(), Map.class);
+        Integer unionId = CommonUtil.toInteger(result.get("unionId"));//联盟id
+        Integer busId = CommonUtil.toInteger(result.get("busId")); //退盟的商家id
+        UnionMain main = unionMainService.getById(unionId);
+        UnionApplyInfo mainInfo = unionApplyService.getUnionApplyInfo(main.getBusId(),main.getId());//盟主
+        UnionApplyInfo memberInfo = unionApplyService.getUnionApplyInfo(busId,main.getId());//盟员
+        Map<String,Object> param = new HashMap<String,Object>();
+        param.put("mobiles",StringUtil.isEmpty(mainInfo.getNotifyPhone()) ? mainInfo.getDirectorPhone() : mainInfo.getNotifyPhone());
+        param.put("company",PropertiesUtil.getWxmpCompany());
+        param.put("busId",main.getBusId());
+        param.put("model",CommonConstant.SMS_UNION_MODEL);
+        param.put("content","\"" + memberInfo.getEnterpriseName() + "\"" + "申请退出" + "\"" + main.getUnionName() + "\"" + "，请到退盟审核处查看并处理");
+        Map<String,Object> obj = new HashMap<String,Object>();
+        obj.put("reqdata",param);
+        return obj;
     }
 
 }

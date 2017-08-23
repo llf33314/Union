@@ -60,4 +60,11 @@ public interface IUnionApplyService extends IService<UnionApply> {
 	 * @param unionApplyVO    申请信息
 	 */
 	Map<String, Object> save(Integer busId, UnionApplyVO unionApplyVO) throws Exception;
+
+	/**
+	 * 获取申请入盟后发送短信内容
+	 * @param redisKey
+	 * @return
+	 */
+	Map<String,Object> getUnionApplyMsgInfo(String redisKey) throws Exception;
 }

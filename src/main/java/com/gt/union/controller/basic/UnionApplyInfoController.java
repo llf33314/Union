@@ -98,7 +98,7 @@ public class UnionApplyInfoController {
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
 	public String updateById(HttpServletRequest request
         , @ApiParam(name="id", value = "盟员信息id", required = true) @PathVariable Integer id
-        , @ApiParam(name="unionApplyInfo", value = "盟员信息", required = true) @ModelAttribute @Valid UnionApplyInfoVO vo, BindingResult result) {
+        , @ApiParam(name="unionApplyInfo", value = "盟员信息", required = true) @RequestBody @Valid UnionApplyInfoVO vo, BindingResult result) {
 		try {
 			this.unionValidateService.checkBindingResult(result);
 			BusUser busUser = SessionUtils.getLoginUser(request);

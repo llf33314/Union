@@ -129,4 +129,19 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @return
      */
     List<Map<String,Object>> listByUnionIdList(Integer unionId, String enterpriseName) throws Exception;
+
+    /**
+     * 申请退盟
+     * @param unionId   联盟id
+     * @param busId        商家id
+     * @param outReason 退盟理由
+     */
+	Map updateApplyOutUnion(Integer unionId, Integer busId, String outReason) throws Exception;
+
+    /**
+     * 获取申请退盟发送短信的参数信息
+     * @param redisKey
+     * @return
+     */
+    Map<String,Object> getMemberOutApplyMsgInfo(String redisKey) throws Exception;
 }

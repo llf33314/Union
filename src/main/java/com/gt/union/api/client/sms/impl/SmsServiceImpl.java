@@ -23,15 +23,14 @@ public class SmsServiceImpl implements SmsService {
 	public int sendSms(Map<String,Object> param) {
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/smsapi/6F6D9AD2/79B4DE7C/sendSmsOld.do";
 		try {
-			String result = SignHttpUtils.WxmppostByHttp(url, param, CommonConstant.WXMP_SIGN_KEY);
+			String result = SignHttpUtils.postByHttp(url, param, CommonConstant.WXMP_SIGN_KEY);
 			if(StringUtil.isEmpty(result)){
 				return 0;
 			}
 			Map<String,Object> data= JSON.parseObject(result,Map.class);
-			if(CommonUtil.isEmpty(data.get("data"))){
+			if(CommonUtil.toInteger(data.get("code")) != 0){
 				return 0;
 			}
-			System.out.println(data);
 		}catch (Exception e){
 			return 0;
 		}

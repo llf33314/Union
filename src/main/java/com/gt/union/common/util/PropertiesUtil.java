@@ -47,6 +47,8 @@ public class PropertiesUtil {
 
 	private static String wxmpSignkey;
 
+	private static String wxmpCompany;
+
 
 	/**
 	 * 获取资源访问地址
@@ -176,6 +178,10 @@ public class PropertiesUtil {
 		return domainDf;
 	}
 
+	public static String getWxmpCompany() {
+		return wxmpCompany;
+	}
+
 	/**
 	 * 获取wxmp项目api密钥
 	 * @return
@@ -251,21 +257,26 @@ public class PropertiesUtil {
 
 	@Value("${wxmp.url}")
 	public void setWxmpUrl(String wxmpUrl) {
-		PropertiesUtil.wxmpUrl = wxmpUrl;
+		this.wxmpUrl = wxmpUrl;
 	}
 
 	@Value("${article.url.prefix}")
 	public void setArticleUrl(String articleUrl){
-		PropertiesUtil.articleUrl = articleUrl;
+		this.articleUrl = articleUrl;
 	}
 
 	@Value("${domain.df}")
 	public void setDomain(String domainDf){
-		PropertiesUtil.domainDf = domainDf;
+		this.domainDf = domainDf;
 	}
 
 	@Value("${wxmp.signkey}")
 	public void setWxmpSignKey(String wxmpSignKey) {
-		PropertiesUtil.wxmpSignkey = wxmpSignKey;
+		this.wxmpSignkey = wxmpSignKey;
+	}
+
+	@Value("${wxmp.company}")
+	public void setWxmpCompany(String wxmpCompany) {
+		this.wxmpCompany = wxmpCompany;
 	}
 }

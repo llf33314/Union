@@ -116,5 +116,6 @@ redisNamePrefix: "Union:"
 wxmp:
    url: http://hz1.yifriend.net
    signkey: "WXMP2017"
+   company: "多粉平台"
    #url: http://deeptel.com.cn/
   #url: http://192.168.3.41:83

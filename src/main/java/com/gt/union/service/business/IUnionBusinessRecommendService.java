@@ -111,4 +111,11 @@ public interface IUnionBusinessRecommendService extends IService<UnionBusinessRe
      * @throws Exception
      */
     Map<String, Object> getStatisticData(Integer unionId, Integer busId) throws Exception;
+
+	/**
+	 * 推荐商机发送短信
+	 * @param redisKey
+	 * @return
+	 */
+	Map<String,Object> getRecommendMsgInfo(String redisKey) throws Exception;
 }

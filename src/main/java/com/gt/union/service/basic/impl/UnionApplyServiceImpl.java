@@ -43,6 +43,7 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
     private static final String GET_UNION_APPLY_INFO = "UnionApplyServiceImpl.getUnionApplyInfo()";
     private static final String UPDATE_UNIONID_APPLYSTATUS = "UnionApplyServiceImpl.updateByUnionIdAndApplyStatus()";
     private static final String SAVE = "UnionApplyServiceImpl.save()";
+    private static final String UNION_APPLY_MSG = "UnionApplyServiceImpl.getUnionApplyMsgInfo()";
 
     @Autowired
     private RedisCacheUtil redisCacheUtil;
@@ -195,9 +196,6 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
             UnionApply apply = new UnionApply();
             apply.setId(id);
             apply.setApplyStatus(1);
-            if(CommonUtil.isNotEmpty(unionApply.getRecommendBusId())){
-                apply.setBusConfirmStatus(2);
-            }
             UnionMember unionMember = new UnionMember();
             unionMember.setBusId(unionApply.getApplyBusId());
             unionMember.setCreatetime(new Date());
@@ -222,7 +220,24 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
             apply.setId(id);
             apply.setDelStatus(1);
             this.updateById(apply);
+            String infoKey = RedisKeyUtil.getUnionApplyInfoKey(unionId,unionApply.getApplyBusId());
+            redisCacheUtil.remove(infoKey);
         }
+    }
+
+    @Override
+    public Map<String, Object> getUnionApplyMsgInfo(String redisKey) throws Exception{
+        if(StringUtil.isEmpty(redisKey)){
+            throw new ParamException(UNION_APPLY_MSG, "参数redisKey为空", "参数redisKey为空");
+        }
+        Object data = redisCacheUtil.get(redisKey);
+        if(data == null){
+            throw new ParamException(UNION_APPLY_MSG, "", "redis失效");
+        }
+        Map<String,Object> result = JSON.parseObject(data.toString(), Map.class);
+        Map<String,Object> obj = new HashMap<String,Object>();
+        obj.put("reqdata",result);
+        return obj;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -238,7 +253,7 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         if(applyType == 1){//自由申请
             saveApply(busId,vo,main);
         }else if(applyType == 2){//推荐加盟
-           saveRecommendApply(busId,vo,main);
+            saveRecommendApply(busId,vo,main);
         }
         return data;
 	}
@@ -271,8 +286,8 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         }
         List<UnionInfoDict> list = unionInfoDictService.getUnionInfoDict(main.getId());
         checkUnionApplyInfo(list,vo);//校验数据
-        UnionApply apply = saveUnionApply(busId,main.getId(),vo.getApplyType());
-        UnionApplyInfo info = unionApplyInfoService.saveUnionApplyInfo(vo, apply.getId());
+        UnionApply apply = saveUnionApply(busId,main.getId(),vo.getApplyType());//创建apply
+        UnionApplyInfo info = unionApplyInfoService.saveUnionApplyInfo(vo, apply.getId());//创建applyInfo
         //申请成功后，发送短信让盟主审核
         UnionApplyInfo mainInfo = this.getUnionApplyInfo(main.getBusId(),main.getId());
         String nowTime = "apply:"+System.currentTimeMillis();
@@ -284,6 +299,8 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         redisMap.put("model",CommonConstant.SMS_UNION_MODEL);
         redisCacheUtil.set(nowTime, JSON.toJSONString(redisMap),60l);
         data.put("redisKey",nowTime);
+        String infoKey = RedisKeyUtil.getUnionApplyInfoKey(main.getId(),busId);
+        redisCacheUtil.set(infoKey,JSON.toJSONString(info));
         return data;
     }
 
@@ -361,10 +378,11 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
             unionMainService.updateById(main);
             String unionMainKey = RedisKeyUtil.getUnionMainKey(main.getId());
             String unionMemberKey = RedisKeyUtil.getUnionMemberBusIdKey(main.getId(),user.getId());
-            this.redisCacheUtil.set(unionMainKey, JSON.toJSONString(main) );
-            this.redisCacheUtil.set(unionMemberKey, JSON.toJSONString(member) );
-            this.redisCacheUtil.set(unionMainKey, JSON.toJSONString(info) );
+            this.redisCacheUtil.set(unionMainKey, JSON.toJSONString(main));
+            this.redisCacheUtil.set(unionMemberKey, JSON.toJSONString(member));
         }
+        String infoKey = RedisKeyUtil.getUnionApplyInfoKey(main.getId(),user.getId());
+        this.redisCacheUtil.set(infoKey, JSON.toJSONString(info));
         return data;
     }
 

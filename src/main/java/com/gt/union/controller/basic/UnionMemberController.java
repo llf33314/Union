@@ -38,6 +38,7 @@ public class UnionMemberController {
     private static final String LIST_UNIONID_OUTSTATUS_ISNUIONOWNER = "UnionMemberController.listByUnionIdAndOutStatusAndIsNuionOwner()";
     private static final String GET_ID = "UnionMemberController.getById()";
     private static final String UPDATE_ISNUIONOWNER_ID = "UnionMemberController.updateIsNuionOwnerById()";
+    private static final String APPLY_OUT_UNION = "UnionMemberController.applyOutUnion()";
     private Logger logger = LoggerFactory.getLogger(UnionMemberController.class);
 
     @Autowired
@@ -192,6 +193,27 @@ public class UnionMemberController {
         } catch (Exception e) {
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(UPDATE_ISNUIONOWNER_ID, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
+    }
+
+    @ApiOperation(value = "盟员申请退盟", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/outUnion", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    public String applyOutUnion(HttpServletRequest request
+            , @ApiParam(name = "unionId", value = "联盟id", required = true) @PathVariable(value = "unionId", required = true) Integer unionId
+            , @ApiParam(name = "outReason", value = "退盟理由", required = true) @RequestParam(name = "outReason", required = true) String outReason){
+        try {
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            if (CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0) {
+                throw new BusinessException(APPLY_OUT_UNION, "", CommonConstant.UNION_BUS_PARENT_MSG);
+            }
+            Map<String,Object> data = this.unionMemberService.updateApplyOutUnion(unionId, busUser.getId(), outReason);
+            return GTJsonResult.instanceSuccessMsg(data).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(APPLY_OUT_UNION, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
     }
 

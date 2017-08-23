@@ -12,10 +12,7 @@ import com.gt.union.common.constant.basic.UnionMemberConstant;
 import com.gt.union.common.constant.business.UnionBusinessRecommendConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.BigDecimalUtil;
-import com.gt.union.common.util.DateUtil;
-import com.gt.union.common.util.DoubleUtil;
-import com.gt.union.common.util.StringUtil;
+import com.gt.union.common.util.*;
 import com.gt.union.entity.basic.UnionMember;
 import com.gt.union.entity.business.UnionBrokerage;
 import com.gt.union.entity.business.UnionBusinessRecommend;
@@ -55,6 +52,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
     private static final String LIST_PAYDETAILPARTICULAR_UNIONID_FROMBUSID_TOBUSID = "UnionBusinessRecommendServiceImpl.listPayDetailParticularByUnionIdAndFromBusIdAndToBusId()";
     private static final String LIST_PAYDETAIL_FROMBUSID = "UnionBusinessRecommendServiceImpl.listPayDetailByFromBusId()";
     private static final String GET_STATISTIC_DATA = "UnionBusinessRecommendServiceImpl.getStatisticData()";
+    private static final String RECOMMEND_MSG = "UnionBusinessRecommendServiceImpl.getRecommendMsgInfo()";
 
 	@Autowired
 	private IUnionBusinessRecommendInfoService unionBusinessRecommendInfoService;
@@ -67,6 +65,9 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 
 	@Autowired
     private IUnionBrokerageService unionBrokerageService;
+
+	@Autowired
+	private RedisCacheUtil redisCacheUtil;
 
 	@Override
     @Transactional(propagation = Propagation.REQUIRED)
@@ -585,7 +586,20 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
         return resultMap;
     }
 
-    //根据联盟id、推荐商家id和是否给予佣金状态isConfirm获取总佣金收入信息
+	@Override
+	public Map<String, Object> getRecommendMsgInfo(String redisKey) throws Exception{
+		if(StringUtil.isEmpty(redisKey)){
+			throw new ParamException(RECOMMEND_MSG, "参数redisKey为空", "参数redisKey为空");
+		}
+		Object data = redisCacheUtil.get(redisKey);
+		if(data == null){
+			throw new ParamException(RECOMMEND_MSG, "", "redis失效");
+		}
+		Map<String,Object> result = JSON.parseObject(data.toString(), Map.class);
+		return null;
+	}
+
+	//根据联盟id、推荐商家id和是否给予佣金状态isConfirm获取总佣金收入信息
     private Double getBrokerageIncome(Integer unionId, Integer busId, Integer isConfirm) {
         if (unionId != null && busId != null && isConfirm != null) {
             EntityWrapper entityWrapper = new EntityWrapper();

@@ -15,7 +15,7 @@ import java.util.Date;
  * </p>
  *
  * @author linweicong
- * @since 2017-07-24
+ * @since 2017-08-22
  */
 @TableName("t_union_brokerage_pay_record")
 public class UnionBrokeragePayRecord extends Model<UnionBrokeragePayRecord> {
@@ -83,6 +83,11 @@ public class UnionBrokeragePayRecord extends Model<UnionBrokeragePayRecord> {
      */
 	@TableField("recommend_ids")
 	private String recommendIds;
+    /**
+     * 佣金平台管理员id
+     */
+	@TableField("union_verify_member")
+	private Integer unionVerifyMember;
 
 
 	public Integer getId() {
@@ -187,6 +192,14 @@ public class UnionBrokeragePayRecord extends Model<UnionBrokeragePayRecord> {
 
 	public void setRecommendIds(String recommendIds) {
 		this.recommendIds = recommendIds;
+	}
+
+	public Integer getUnionVerifyMember() {
+		return unionVerifyMember;
+	}
+
+	public void setUnionVerifyMember(Integer unionVerifyMember) {
+		this.unionVerifyMember = unionVerifyMember;
 	}
 
 	@Override
