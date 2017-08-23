@@ -4,18 +4,22 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.api.entity.UnionDiscountResult;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.entity.basic.UnionMain;
+import com.gt.union.entity.basic.UnionMember;
 import com.gt.union.entity.card.UnionBusMemberCard;
+import com.gt.union.entity.card.UnionMemberCard;
 import com.gt.union.mapper.card.UnionBusMemberCardMapper;
 import com.gt.union.service.basic.IUnionMainService;
+import com.gt.union.service.basic.IUnionMemberService;
 import com.gt.union.service.card.IUnionBusMemberCardService;
+import com.gt.union.service.card.IUnionMemberCardService;
 import com.gt.union.service.common.IUnionRootService;
-import com.gt.union.vo.card.UnionBusMemberCardVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -39,6 +43,12 @@ public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCar
 
     @Autowired
     private IUnionRootService unionRootService;
+
+    @Autowired
+    private IUnionMemberCardService unionMemberCardService;
+
+    @Autowired
+    private IUnionMemberService unionMemberService;
 
 	@Override
 	public double getUnionMemberIntegral(final Integer unionId) {
@@ -134,32 +144,32 @@ public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCar
 	}
 
 	@Override
-	public Map getConsumeUnionDiscount(Integer memberId, Integer busId) throws Exception{
-		Map<String, Object> discount_map = new HashMap<>();
-		List<UnionMain> list = unionMainService.listMyUnion(busId);//查询我加入的联盟
+	public UnionDiscountResult getConsumeUnionDiscount(Integer memberId, Integer busId) throws Exception{
+		UnionDiscountResult result = new UnionDiscountResult();
+		if(CommonUtil.isEmpty(memberId) || CommonUtil.isEmpty(busId)){
+			result.setCode(-2);
+			return result;
+		}
+		List<UnionMain> list = unionMainService.listMyValidUnion(busId);//查询我加入的有效联盟
 		if(ListUtil.isEmpty(list)){
-			return discount_map;
+			result.setCode(-1);
+			return result;
 		}
-		List<UnionMain> myUnions = new ArrayList();
-		Iterator<UnionMain> it = list.iterator();
-		while (it.hasNext()){
-			UnionMain main = it.next();
-			if(unionRootService.checkUnionMainValid(main)){
-				myUnions.add(main);
-			}
-		}
-		//得到有效的联盟
-		if(ListUtil.isEmpty(myUnions)){
-			return discount_map;
+		//绑定
+		UnionMemberCard memberCard = unionMemberCardService.getUnionMemberCard(memberId, busId);
+		if(memberCard == null){
+			result.setCode(0);
+			return result;
 		}
 		EntityWrapper entityWrapper = new EntityWrapper<UnionBusMemberCard>();
-		entityWrapper.eq("del_status", 0 );
-		entityWrapper.eq("member_id",memberId);
-		entityWrapper.eq("bus_id",busId);
+		entityWrapper.eq("del_status",0);
+		entityWrapper.eq("id", memberCard.getUnionMemberCardId());
 		UnionBusMemberCard card = this.selectOne(entityWrapper);
-		if(card == null){
-			discount_map.put("")
+		List<UnionMain> sameUnions = unionMainService.getSameUnionBus(list, memberCard.getBusId());
+		if(ListUtil.isEmpty(sameUnions)){
+			result.setCode(-1);
+			return result;
 		}
-		return discount_map;
+		return result;
 	}
 }

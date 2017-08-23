@@ -1,5 +1,6 @@
 package com.gt.union.api.server.card;
 
+import com.gt.union.api.entity.UnionDiscountResult;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
@@ -33,18 +34,18 @@ public class CardApiController {
 
 	@ApiOperation(value = "获取联盟卡折扣", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/consumeUnionDiscount", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public String getConsumeUnionDiscount(HttpServletRequest request,
+	public GTJsonResult<UnionDiscountResult> getConsumeUnionDiscount(HttpServletRequest request,
 					@ApiParam(name="memberId", value = "用户id", required = true) @RequestParam(name = "memberId", required = true) Integer memberId
 					,@ApiParam(name="busId", value = "商家id", required = true) @RequestParam(name = "busId", required = true) Integer busId ){
 		try {
-			Map data = unionBusMemberCardService.getConsumeUnionDiscount(memberId, busId);
-			return GTJsonResult.instanceSuccessMsg(data).toString();
+			UnionDiscountResult data = unionBusMemberCardService.getConsumeUnionDiscount(memberId, busId);
+			return GTJsonResult.instanceSuccessMsg(data);
 		} catch (BaseException e) {
 			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg());
 		}catch (Exception e) {
 			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(GET_CONSUME_UNION_DISCOUNT, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+			return GTJsonResult.instanceErrorMsg(GET_CONSUME_UNION_DISCOUNT, e.getMessage(), ExceptionConstant.OPERATE_FAIL);
 		}
 	}
 }

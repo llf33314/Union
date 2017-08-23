@@ -166,7 +166,7 @@ public class UnionBusinessRecommendController {
     @ApiOperation(value = "查询支付明细信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/payDetail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listPayDetailByFromBusId(HttpServletRequest request, Page page
-            , @ApiParam(name = "unionId", value = "联盟id", required = false) Integer unionId) {
+            , @ApiParam(name = "unionId", value = "联盟id", required = false) @RequestParam(name = "unionId",  required = false) Integer unionId) {
 	    try {
             BusUser busUser = SessionUtils.getLoginUser(request);
             Integer fromBusId = busUser.getId();

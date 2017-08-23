@@ -339,7 +339,10 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         // （1）判断缓存中是否存在，如存在，则直接返回
         String unionMemberBusIdKey = RedisKeyUtil.getUnionMemberBusIdKey(unionId, busId);
         if (redisCacheUtil.exists(unionMemberBusIdKey)) {
-            return JSON.parseObject(redisCacheUtil.get(unionMemberBusIdKey).toString(), UnionMember.class);
+            Object obj = redisCacheUtil.get(unionMemberBusIdKey);
+            if(CommonUtil.isNotEmpty(obj)){
+                return JSON.parseObject(obj.toString(), UnionMember.class);
+            }
         }
 
         // （2） 如不存在，则从数据库查询

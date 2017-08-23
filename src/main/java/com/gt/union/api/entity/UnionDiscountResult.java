@@ -1,7 +1,72 @@
 package com.gt.union.api.entity;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+
+import java.io.Serializable;
+
 /**
  * Created by Administrator on 2017/8/23 0023.
  */
-public class UnionDiscountResult {
+@ApiModel( value = "UnionDiscountResult", description = "获取联盟折扣实体" )
+@Data
+public class UnionDiscountResult implements Serializable{
+
+	/**
+	 * 状态码信息
+	 */
+	@ApiModelProperty( value = "状态码信息 -1：没有联盟信息，不显示 0：没有关联联盟卡，需绑定联盟卡 1：返回联盟折扣")
+	private Integer code;
+
+	/**
+	 * 是否默认折扣
+	 */
+	@ApiModelProperty( value = "是否默认折扣 false：否 true：是")
+	private Boolean defaultDiscount;
+
+	/**
+	 * 升级的联盟卡id
+	 */
+	@ApiModelProperty( value = "升级的联盟卡id")
+	private Integer cardId;
+
+	/**
+	 * 联盟折扣
+	 */
+	@ApiModelProperty( value = "联盟卡折扣")
+	private Double discount;
+
+
+	public Integer getCode() {
+		return code;
+	}
+
+	public void setCode(Integer code) {
+		this.code = code;
+	}
+
+	public boolean isDefaultDiscount() {
+		return defaultDiscount;
+	}
+
+	public void setDefaultDiscount(boolean defaultDiscount) {
+		this.defaultDiscount = defaultDiscount;
+	}
+
+	public Integer getCardId() {
+		return cardId;
+	}
+
+	public void setCardId(Integer cardId) {
+		this.cardId = cardId;
+	}
+
+	public Double getDiscount() {
+		return discount;
+	}
+
+	public void setDiscount(Double discount) {
+		this.discount = discount;
+	}
 }

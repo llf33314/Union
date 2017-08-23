@@ -2,22 +2,33 @@ package com.gt.union.common.response;
 
 import com.alibaba.fastjson.JSON;
 import com.gt.union.common.constant.ExceptionConstant;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
 
 import java.io.Serializable;
 
+@ApiModel( value = "GTJsonResult", description = "响应结果实体" )
+@Data
 public class GTJsonResult<T> implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @ApiModelProperty( value = "true:成功;false:失败")
     private boolean success; //true:成功;false:失败-由方法标签控制
 
+    @ApiModelProperty( value = "成功返回的具体数据")
     private T data;  //成功：自定义的数据包
 
+    @ApiModelProperty( value = "成功或失败：重定向地址")
     private String redirectUrl; //成功或失败：重定向地址
 
+    @ApiModelProperty( value = "失败：友好的用户提示消息")
     private String errorMsg; //失败：友好的用户提示消息
 
+    @ApiModelProperty( value = "失败：抛出异常的代码位置，格式为类名.方法名()")
     private String errorLocation; //失败：抛出异常的代码位置，格式为"类名.方法名()"
 
+    @ApiModelProperty( value = "失败：抛出异常的原因")
     private String errorCausedBy; //失败：抛出异常的原因
 
     private GTJsonResult() {

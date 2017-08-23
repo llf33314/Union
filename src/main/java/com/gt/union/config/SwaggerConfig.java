@@ -1,5 +1,6 @@
 package com.gt.union.config;
 
+import io.swagger.annotations.ApiOperation;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -22,7 +23,7 @@ public class SwaggerConfig {
             .groupName("controller")
             .apiInfo(apiInfo())
             .select()
-            .apis(RequestHandlerSelectors.basePackage("com.gt.union.controller,com.api.server"))
+            .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
             .paths(PathSelectors.regex("/.*")) //可通过"或"来匹配多个模块
             .build();
     }

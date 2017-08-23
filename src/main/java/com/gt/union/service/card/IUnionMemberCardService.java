@@ -1,7 +1,7 @@
-package com.gt.union.service;
+package com.gt.union.service.card;
 
-import com.gt.union.entity.UnionMemberCard;
 import com.baomidou.mybatisplus.service.IService;
+import com.gt.union.entity.card.UnionMemberCard;
 
 /**
  * <p>
@@ -12,5 +12,12 @@ import com.baomidou.mybatisplus.service.IService;
  * @since 2017-08-23
  */
 public interface IUnionMemberCardService extends IService<UnionMemberCard> {
-	
+
+	/**
+	 * 获取绑定的联盟卡
+	 * @param memberId	用户id
+	 * @param busId		商家id
+	 * @return
+	 */
+	UnionMemberCard getUnionMemberCard(Integer memberId, Integer busId);
 }

@@ -1,7 +1,7 @@
-package com.gt.union.mapper;
+package com.gt.union.mapper.card;
 
-import com.gt.union.entity.UnionMemberCard;
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.gt.union.entity.card.UnionMemberCard;
 
 /**
  * <p>

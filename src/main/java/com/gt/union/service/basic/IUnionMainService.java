@@ -90,4 +90,18 @@ public interface IUnionMainService extends IService<UnionMain> {
      */
     public UnionMain getById(Integer id) throws Exception;
 
+    /**
+     * 获取商家加入的联盟和该联盟列表的交集
+     * @param list  联盟列表
+     * @param busId 商家id
+     * @return
+     */
+	List<UnionMain> getSameUnionBus(List<UnionMain> list, Integer busId);
+
+    /**
+     * 查询我的有效联盟
+     * @param busId
+     * @return
+     */
+    List<UnionMain> listMyValidUnion(Integer busId);
 }

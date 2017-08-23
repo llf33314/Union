@@ -90,4 +90,19 @@ public class RedisKeyUtil {
         return "dict:unionId:" + unionId;
     }
 
+
+    /**
+     * 获取封装unionMemberCard的缓存key
+     * @param memberId  用户id
+     * @param busId     商家id
+     * @return
+     */
+    public static final String getUnionMemberCardKey(Integer memberId, Integer busId){
+        return getUnionMemberCardKey(String.valueOf(memberId), String.valueOf(busId));
+    }
+
+    public static final String getUnionMemberCardKey(String memberId, String busId){
+        return "memberCard:" + memberId + "busId:" + busId;
+    }
+
 }

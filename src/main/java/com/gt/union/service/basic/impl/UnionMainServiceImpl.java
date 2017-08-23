@@ -24,10 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -417,4 +414,67 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         }
 		return unionMain;
     }
+
+	@Override
+	public List<UnionMain> getSameUnionBus(List<UnionMain> list, final Integer busId) {
+		StringBuilder str = new StringBuilder();
+		for(UnionMain main : list){
+			str.append(main.getId()).append(",");
+		}
+		String ids = str.toString();
+		final String id = ids.substring(0,ids.length() - 1);
+		Wrapper wrapper = new Wrapper() {
+			@Override
+			public String getSqlSegment() {
+				StringBuilder sbSqlSegment = new StringBuilder(" t1");
+				sbSqlSegment.append(" LEFT JOIN t_union_member t2 ON t1.id = t2.union_id")
+						.append(" WHERE t2.bus_id = ").append(busId)
+						.append(" AND t2.del_status = ").append(UnionMemberConstant.DEL_STATUS_NO)
+						.append(" AND t2.out_staus != ").append(UnionMemberConstant.OUT_STATUS_PERIOD)
+						.append(" AND t2.union_id in (").append(id).append(")");
+				return sbSqlSegment.toString();
+			};
+
+		};
+		StringBuilder sbSqlSelect = new StringBuilder("");
+		sbSqlSelect.append("t1.id, t1.createtime, t1.del_status delStatus, t1.union_name unionName, ")
+				.append("t1.bus_id busId, t1.union_img unionImg, t1.join_type joinType, t1.director_phone directorPhone,")
+				.append("t1.union_illustration unionIllustration, t1.union_wx_group_img unionWxGroupImg, t1.union_sign unionSign, ")
+				.append("t1.union_total_member uniontotalMember, t1.union_member_num unionMemberNum, t1.union_level unionLevel, ")
+				.append("t1.union_verify_status unionVerifyStatus, t1.is_integral isIntegral, t1.old_member_charge oldMemberCharge, ")
+				.append("t1.black_card_charge blackCardCcharge, t1.black_card_price blackCardPrice, t1.black_card_term blackCardTerm, ")
+				.append(" t1.red_card_opend redCardOpend, t1.red_card_price redCardPrice, t1.red_card_term redCardTerm, ")
+				.append("t1.black_card_illustration blackCardIllustration, t1.red_card_illustration redCardIllustration, t1.union_validity unionValidity");
+		wrapper.setSqlSelect(sbSqlSelect.toString());
+		List<UnionMain> sameUnions = this.selectList(wrapper);
+		return sameUnions;
+	}
+
+	@Override
+	public List<UnionMain> listMyValidUnion(Integer busId) {
+    	List<UnionMain> list = new ArrayList<UnionMain>();
+		EntityWrapper entityWrapper = new EntityWrapper<UnionMain>();
+		StringBuilder existsSql = new StringBuilder();
+		existsSql.append("select id from t_union_member m")
+				.append(" where m.bus_id = ").append(busId)
+				.append(" and m.union_id = t_union_main.id")
+				.append(" and m.del_status = ").append(UnionMemberConstant.DEL_STATUS_NO)
+				.append(" and m.out_staus != ").append(UnionMemberConstant.OUT_STATUS_PERIOD);
+		entityWrapper.exists(existsSql.toString());
+		List<UnionMain> unions = this.selectList(entityWrapper);
+		if(ListUtil.isNotEmpty(unions)){
+			Iterator<UnionMain> it = unions.iterator();
+			while (it.hasNext()){
+				UnionMain main = it.next();
+				try{
+					if(unionRootService.checkUnionMainValid(main)){
+						list.add(main);
+					}
+				}catch (Exception e){
+
+				}
+			}
+		}
+		return list;
+	}
 }
