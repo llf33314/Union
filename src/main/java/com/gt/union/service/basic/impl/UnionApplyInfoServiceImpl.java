@@ -76,7 +76,7 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 		//TODO 更新盟员信息的地址
 		UnionApplyInfo info = unionApplyService.getUnionApplyInfo(busId,vo.getUnionId());
 		info.setDirectorName(vo.getDirectorName());
-		info.setDirectorPhone(vo.getDirectorPphone());
+		info.setDirectorPhone(vo.getDirectorPhone());
 		info.setDirectorEmail(vo.getDirectorEmail());
 		info.setNotifyPhone(vo.getNotifyPhone());
 		info.setEnterpriseName(vo.getEnterpriseName());
