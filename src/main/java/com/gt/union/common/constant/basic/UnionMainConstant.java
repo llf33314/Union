@@ -19,4 +19,15 @@ public interface UnionMainConstant {
      */
     public static final int VALID_OK = 0;
 
+    /**
+     * 初始化或新建联盟时，默认的盟员数为1，即盟主
+     */
+    public static final int MEMBER_NUM_INIT = 1;
+
+    /**
+     * 初始化或新建联盟时，默认的联盟级别为0
+     */
+    public static final int LEVEL_INIT = 0;
+
+
 }

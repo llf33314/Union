@@ -59,7 +59,7 @@ public interface IUnionApplyService extends IService<UnionApply> {
 	 * @param busId    商家id
 	 * @param unionApplyVO    申请信息
 	 */
-	Map<String, Object> save(Integer busId, UnionApplyVO unionApplyVO) throws Exception;
+	void save(Integer busId, UnionApplyVO unionApplyVO) throws Exception;
 
 	/**
 	 * 获取申请入盟后发送短信内容

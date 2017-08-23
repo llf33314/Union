@@ -1,5 +1,6 @@
 package com.gt.union.service.basic;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.vo.basic.UnionMainCreateInfoVO;
@@ -43,11 +44,11 @@ public interface IUnionMainService extends IService<UnionMain> {
     public List<UnionMain> listMyUnion(Integer busId) throws Exception;
 
     /**
-     * 查询所有可加入的联盟列表
+     * 查询所有联盟
      * @return
      * @throws Exception
      */
-    public List listValidAccess() throws Exception;
+    public Page list(Page page) throws Exception;
 
     /**
      * 更新联盟信息，要求盟主权限
@@ -63,7 +64,7 @@ public interface IUnionMainService extends IService<UnionMain> {
      * @param busId
      * @throws Exception
      */
-    public Map<String, Object> instance(Integer busId) throws Exception;
+    public void instance(Integer busId) throws Exception;
 
     /**
      * 保存创建联盟的信息

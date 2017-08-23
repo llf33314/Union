@@ -3,6 +3,7 @@ package com.gt.union.service.basic.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
@@ -195,24 +196,10 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	}
 
 	@Override
-	public List listValidAccess() throws Exception{
+	public Page list(Page page) throws Exception{
 		EntityWrapper entityWrapper = new EntityWrapper<UnionMain>();
-		entityWrapper.eq("del_status",0)
-			.ge("union_validity", DateTimeKit.getDateTime());
-		List<UnionMain> list =  this.selectList(entityWrapper);
-
-		if (ListUtil.isEmpty(list)) {
-		    return null;
-        }
-        int size = list.size();
-        List<UnionMain> resultList = new ArrayList<>(size);
-        for (int i = 0; i < size; i++) {
-            UnionMain unionMain = list.get(i);
-		    if (this.unionRootService.checkUnionMainValid(unionMain) && unionMain.getUnionMemberNum() < unionMain.getUnionTotalMember()) {
-                resultList.add(unionMain);
-            }
-        }
-		return resultList;
+		entityWrapper.eq("del_status",UnionMainConstant.DEL_STATUS_NO);
+		return this.selectPage(page, entityWrapper);
 	}
 
 	@Transactional(rollbackFor = Exception.class)
@@ -313,29 +300,35 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
 
 	@Override
-	public Map<String, Object> instance(Integer busId) throws Exception {
-		Map<String,Object> data = new HashMap<String,Object>();
+	public void instance(Integer busId) throws Exception {
 	    if (busId == null) {
 	        throw new ParamException(INSTANCE, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
 
+        checkBeforeInstance(busId);
+	}
+
+    /**
+     * 创建或保存联盟时校验权限
+     * @param busId
+     * @throws Exception
+     */
+	private void checkBeforeInstance(Integer busId) throws Exception {
         // （1）判断商家是否有盟主权限
-        this.unionRootService.hasUnionOwnerAuthority(busId);
-        /*if (!this.unionRootService.hasUnionOwnerAuthority(busId)) {
-	        throw new BusinessException(INSTANCE, "busId=" + busId, "当前登录商家帐号不具有盟主权限");
-        }*/
+        if (!this.unionRootService.hasUnionOwnerAuthority(busId)) {
+            throw new BusinessException(INSTANCE, "busId=" + busId, "当前登录商家帐号不具有盟主权限");
+        }
 
         // （2）判断商家是否创建过联盟
         if (!this.unionRootService.hasCreatedUnion(busId)) {
-	        throw new BusinessException(INSTANCE, "busId=" + busId, "不可创建");
+            throw new BusinessException(INSTANCE, "busId=" + busId, "不可创建");
         }
 
         // （3）判断商家是否已是盟主
         if (!this.unionRootService.isUnionOwner(busId)) {
-	        throw new BusinessException(INSTANCE, "busId=" + busId, "不可创建");
+            throw new BusinessException(INSTANCE, "busId=" + busId, "不可创建");
         }
-		return data;
-	}
+    }
 
     @Override
 	@Transactional(rollbackFor = Exception.class)
@@ -343,20 +336,45 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         if (busId == null) {
             throw new ParamException(SAVE, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
+        checkBeforeInstance(busId);
+
+        //（1）保存联盟信息
         UnionMain main = new UnionMain();
-        //TODO 校验unionMainInfoVOList
-        //TODO 保存创建联盟的信息
-		UnionApply apply = new UnionApply();
-		unionApplyService.insert(apply);
-		UnionApplyInfo info = new UnionApplyInfo();
-		unionApplyInfoService.insert(info);
-		UnionMember member = new UnionMember();
-		unionMemberService.insert(member);
-		this.insert(main);
+        main.setCreatetime(DateUtil.getCurrentDate());
+        main.setDelStatus(UnionMainConstant.DEL_STATUS_NO);
+        main.setUnionName(vo.getUnionName());
+        main.setBusId(busId);
+        main.setUnionImg(vo.getUnionImg());
+        main.setJoinType(vo.getJoinType());
+        main.setDirectorPhone(vo.getDirectorPphone());
+        main.setUnionIllustration(vo.getUnionIllustration());
+        main.setUnionWxGroupImg(vo.getUnionWxGroupImg());
+        //TODO union_sign? union_total_member?...
+        main.setUnionMemberNum(UnionMainConstant.MEMBER_NUM_INIT);
+        main.setUnionLevel(UnionMainConstant.LEVEL_INIT);
+        this.insert(main);
+
+        // （2）保存盟主信息 //TODO
+        UnionMember member = new UnionMember();
+        unionMemberService.insert(member);
+
+        // （3）保存申请信息 //TODO
+        UnionApply apply = new UnionApply();
+        unionApplyService.insert(apply);
+
+        // （4）保存申请关联信息 //TODO
+        UnionApplyInfo info = new UnionApplyInfo();
+        unionApplyInfoService.insert(info);
+
+        // （5）保存相关缓存信息
 		String unionMainKey = RedisKeyUtil.getUnionMainKey(main.getId());
 		this.redisCacheUtil.set(unionMainKey, JSON.toJSONString(main) );
-		this.redisCacheUtil.set(unionMainKey, JSON.toJSONString(member) );
-		this.redisCacheUtil.set(unionMainKey, JSON.toJSONString(info) );
+		String unionMainValidKey = RedisKeyUtil.getUnionMainValidKey(main.getId());
+		this.redisCacheUtil.set(unionMainValidKey, "1");
+		String unionMemberBusIdKey = RedisKeyUtil.getUnionMemberBusIdKey(member.getId(), busId);
+		this.redisCacheUtil.set(unionMemberBusIdKey, JSON.toJSONString(member) );
+		String unionApplyInfoKey = RedisKeyUtil.getUnionApplyInfoKey(main.getId(), busId);
+		this.redisCacheUtil.set(unionApplyInfoKey, JSON.toJSONString(info) );
 	}
 
 	@Override

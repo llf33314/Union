@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.Map;
 
 /**
  * <p>
@@ -107,8 +106,8 @@ public class UnionApplyController {
                 throw new BusinessException(SAVE, "",CommonConstant.UNION_BUS_PARENT_MSG);
             }
             unionApplyVO.setApplyType(applyType);
-            Map<String,Object> data = this.unionApplyService.save(busUser.getId(), unionApplyVO);
-            return GTJsonResult.instanceSuccessMsg(data).toString();
+            this.unionApplyService.save(busUser.getId(), unionApplyVO);
+            return GTJsonResult.instanceSuccessMsg().toString();
         }catch (BaseException e){
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();

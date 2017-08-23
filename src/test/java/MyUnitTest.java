@@ -49,7 +49,15 @@ public class MyUnitTest {
 
 	@Test
 	public void test1() throws Exception {
-		System.out.println(dictService.getUnionApplyInfoDict());
+		Map param = new HashMap<String,Object>();
+		Map obj = new HashMap<String,Object>();
+		param.put("mobiles","15986670850");
+		param.put("company","多粉平台");
+		param.put("busId",33);
+		param.put("model",0);
+		param.put("content","测试调用短信哦");
+		obj.put("reqdata",param);
+		System.out.println(smsService.sendSms(obj));
 	}
 
 }
