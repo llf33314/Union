@@ -29,5 +29,13 @@ public interface UnionMainConstant {
      */
     public static final int LEVEL_INIT = 0;
 
+    /**
+     * 加盟方式：只允许申请
+     */
+    public static final int JOIN_TYPE_APPLY_ONLY = 1;
 
+    /**
+     * 加盟方式：允许申请和推荐
+     */
+    public static final int JOIN_TYPE_APPLY_RECOMMEND = 2;
 }

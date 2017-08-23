@@ -56,7 +56,7 @@ public interface IUnionApplyInfoService extends IService<UnionApplyInfo> {
 	 * @param busId	商家id
 	 * @return
 	 */
-	Map<String,Object> getById(Integer id, Integer unionId, Integer busId) throws Exception;
+	Map<String,Object> getMapById(Integer id, Integer unionId, Integer busId) throws Exception;
 
 	/**
 	 * 保存unionApplyInfo
@@ -65,4 +65,13 @@ public interface IUnionApplyInfoService extends IService<UnionApplyInfo> {
 	 * @return
 	 */
 	UnionApplyInfo saveUnionApplyInfo(UnionApplyVO vo, Integer applyId);
+
+    /**
+     * 根据联盟id和busId获取申请附加信息
+     * @param unionId
+     * @param busId
+     * @return
+     * @throws Exception
+     */
+	UnionApplyInfo getByUnionIdAndBusId(Integer unionId, Integer busId) throws Exception;
 }

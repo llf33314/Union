@@ -76,12 +76,12 @@ public class UnionApplyInfoController {
             if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
                 throw new BusinessException(GET_ID, "", CommonConstant.UNION_BUS_PARENT_MSG);
             }
-            Map<String,Object> data = this.unionApplyInfoService.getById(id, unionId, busUser.getId());
+            Map<String,Object> data = this.unionApplyInfoService.getMapById(id, unionId, busUser.getId());
             return GTJsonResult.instanceSuccessMsg(data).toString();
         } catch (BaseException e) {
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("",e);
             return GTJsonResult.instanceErrorMsg(GET_ID, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }

@@ -206,8 +206,8 @@ public class UnionMemberController {
             if (CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0) {
                 throw new BusinessException(APPLY_OUT_UNION, "", CommonConstant.UNION_BUS_PARENT_MSG);
             }
-            Map<String,Object> data = this.unionMemberService.updateApplyOutUnion(unionId, busUser.getId(), outReason);
-            return GTJsonResult.instanceSuccessMsg(data).toString();
+            this.unionMemberService.applyOutUnion(unionId, busUser.getId(), outReason);
+            return GTJsonResult.instanceSuccessMsg().toString();
         } catch (BaseException e) {
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();

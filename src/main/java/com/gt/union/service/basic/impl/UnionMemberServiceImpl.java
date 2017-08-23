@@ -43,11 +43,10 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     private static final String LIST_UNIONID_OUTSTATUS_ISNUIONOWNER = "UnionMemberServiceImpl.listByUnionIdAndOutStatusAndIsNuionOwner()";
     private static final String GET_MAP_ID = "UnionMemberServiceImpl.getById()";
     private static final String TRANSFER_UNION_OWNER = "UnionMemberServiceImpl.transferUnionOwner()";
-    private static final String ACCEPT_UNION_OWNER = "UnionMemberServiceImpl.acceptUnionOwner()";
     private static final String UPDATE_OUTSTATUS_ID = "UnionMemberServiceImpl.updateOutStatusById()";
     private static final String GET_UNIONID_BUSID = "UnionMemberServiceImpl.getByUnionIdAndBusId()";
     private static final String LIST_UNIONID_LIST_ALL = "UnionMemberServiceImpl.listByUnionIdList()";
-    private static final String UPDATE_APPLY_UNION_OUT = "UnionMemberServiceImpl.updateApplyOutUnion()";
+    private static final String APPLY_OUT_UNION = "UnionMemberServiceImpl.applyOutUnion()";
     private static final String MEMBER_OUT_APPLY_MSG = "UnionMemberServiceImpl.getMemberOutApplyMsgInfo()";
 
     @Autowired
@@ -391,8 +390,8 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             throw new BusinessException(UPDATE_OUTSTATUS_ID, "", "已处退盟过渡期");
         }
         if(verifyStatus == 1){//同意
-            UnionApplyInfo unionApplyInfo = unionApplyService.getUnionApplyInfo(unionMember.getBusId(),unionId);
-            UnionApplyInfo mainApplyInfo = unionApplyService.getUnionApplyInfo(busId,unionId);
+            UnionApplyInfo unionApplyInfo = this.unionApplyInfoService.getByUnionIdAndBusId(unionId, unionMember.getBusId());
+            UnionApplyInfo mainApplyInfo = this.unionApplyInfoService.getByUnionIdAndBusId(unionId, busId);
             if(CommonUtil.isNotEmpty(unionApplyInfo.getSellDivideProportion())){
                 mainApplyInfo.setSellDivideProportion(CommonUtil.isNotEmpty(mainApplyInfo.getSellDivideProportion()) ? BigDecimalUtil.add(mainApplyInfo.getSellDivideProportion(),unionApplyInfo.getSellDivideProportion()).doubleValue() : unionApplyInfo.getSellDivideProportion());
                 unionApplyInfoService.updateById(mainApplyInfo);
@@ -512,27 +511,29 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
 
     @Transactional(rollbackFor = Exception.class)
 	@Override
-	public Map updateApplyOutUnion(Integer unionId, Integer busId, String outReason) throws Exception{
-        Map<String,Object> data = new HashMap<String,Object>();
+	public void applyOutUnion(Integer unionId, Integer busId, String outReason) throws Exception{
         if (unionId == null) {
-            throw new ParamException(UPDATE_APPLY_UNION_OUT, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(APPLY_OUT_UNION, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         if (busId == null) {
-            throw new ParamException(UPDATE_APPLY_UNION_OUT, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(APPLY_OUT_UNION, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
         if(StringUtil.isEmpty(outReason)){
-            throw new ParamException(UPDATE_APPLY_UNION_OUT, "参数outReason为空", "退盟理由内容不能为空");
+            throw new ParamException(APPLY_OUT_UNION, "参数outReason为空", "退盟理由内容不能为空");
         }
         if(StringUtil.getStringLength(outReason) > 20){
-            throw new ParamException(UPDATE_APPLY_UNION_OUT, "参数outReason为空", "退盟理由内容不可超过20字");
+            throw new ParamException(APPLY_OUT_UNION, "参数outReason为空", "退盟理由内容不可超过20字");
         }
+        // （1）判断联盟是否有效
         if(!unionRootService.checkUnionMainValid(unionId)){
-            throw new BusinessException(UPDATE_APPLY_UNION_OUT, "", CommonConstant.UNION_OVERDUE_MSG);
+            throw new BusinessException(APPLY_OUT_UNION, "", CommonConstant.UNION_OVERDUE_MSG);
         }
+        // （2）判断当前用户是否是联盟的有效盟员
         UnionMember member = this.getByUnionIdAndBusId(unionId,busId);
         if(!unionRootService.hasUnionMemberAuthority(member)){
-            throw new BusinessException(UPDATE_APPLY_UNION_OUT, "", CommonConstant.UNION_MEMBER_NON_AUTHORITY_MSG);
+            throw new BusinessException(APPLY_OUT_UNION, "", CommonConstant.UNION_MEMBER_NON_AUTHORITY_MSG);
         }
+        // （3）判断当前用户是否已申请退盟
         member.setOutReason(outReason);
         member.setOutStaus(1);
         member.setApplyOutTime(new Date());
@@ -541,13 +542,12 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         if(redisCacheUtil.exists(memberKey)){
             redisCacheUtil.set(memberKey,JSON.toJSONString(member));
         }
+        //TODO 使用消息队列发送消息
         String nowTime = "applyOut:"+System.currentTimeMillis();
-        data.put("redisKey",nowTime);
         HashMap<String, Object> redisMap = new HashMap<>();
         redisMap.put("unionId",unionId);
         redisMap.put("busId",busId);
         redisCacheUtil.set(nowTime, JSON.toJSONString(redisMap),60l);
-        return data;
     }
 
     @Override
@@ -563,8 +563,8 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         Integer unionId = CommonUtil.toInteger(result.get("unionId"));//联盟id
         Integer busId = CommonUtil.toInteger(result.get("busId")); //退盟的商家id
         UnionMain main = unionMainService.getById(unionId);
-        UnionApplyInfo mainInfo = unionApplyService.getUnionApplyInfo(main.getBusId(),main.getId());//盟主
-        UnionApplyInfo memberInfo = unionApplyService.getUnionApplyInfo(busId,main.getId());//盟员
+        UnionApplyInfo mainInfo = this.unionApplyInfoService.getByUnionIdAndBusId(main.getId(), main.getBusId());//盟主
+        UnionApplyInfo memberInfo = this.unionApplyInfoService.getByUnionIdAndBusId(main.getId(), busId);//盟员
         Map<String,Object> param = new HashMap<String,Object>();
         param.put("mobiles",StringUtil.isEmpty(mainInfo.getNotifyPhone()) ? mainInfo.getDirectorPhone() : mainInfo.getNotifyPhone());
         param.put("company",PropertiesUtil.getWxmpCompany());
