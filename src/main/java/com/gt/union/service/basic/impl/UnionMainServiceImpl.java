@@ -123,13 +123,13 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		data.put("unionTotalMember",currentUnion.getUnionTotalMember());
 		data.put("surplusMemberNum",currentUnion.getUnionTotalMember() - currentUnion.getUnionMemberNum());
 		data.put("isRedCardOpend",CommonUtil.isEmpty(currentUnion.getRedCardOpend()) ? 0 : currentUnion.getRedCardOpend());
-		UnionApplyInfo info  = unionApplyService.getUnionApplyInfo(busId,currentUnion.getId());//本商家的
+		UnionApplyInfo info  = this.unionApplyInfoService.getByUnionIdAndBusId(currentUnion.getId(), busId);//本商家的
 		data.put("enterpriseName",info.getEnterpriseName());
 		data.put("ownerEnterpriseName",info.getEnterpriseName());
 		data.put("infoId",info.getId());
 		if(!busId.equals(currentUnion.getBusId())){//不是盟主
 			busId = currentUnion.getBusId();
-			UnionApplyInfo mainInfo = unionApplyService.getUnionApplyInfo(busId,currentUnion.getId());
+			UnionApplyInfo mainInfo = this.unionApplyInfoService.getByUnionIdAndBusId(currentUnion.getId(), busId);
 			data.put("ownerEnterpriseName",mainInfo.getEnterpriseName());
 			isUnionOwner = 0;
 		}

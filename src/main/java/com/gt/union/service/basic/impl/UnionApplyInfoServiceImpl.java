@@ -1,6 +1,7 @@
 package com.gt.union.service.basic.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
@@ -13,13 +14,13 @@ import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.RedisKeyUtil;
 import com.gt.union.entity.basic.UnionApplyInfo;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.mapper.basic.UnionApplyInfoMapper;
 import com.gt.union.service.basic.IUnionApplyInfoService;
 import com.gt.union.service.basic.IUnionApplyService;
 import com.gt.union.service.basic.IUnionMainService;
-import com.gt.union.service.basic.IUnionMemberService;
 import com.gt.union.service.common.IUnionRootService;
 import com.gt.union.vo.basic.UnionApplyInfoVO;
 import com.gt.union.vo.basic.UnionApplyVO;
@@ -48,12 +49,10 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 	private static final String LIST_SELLDIVIDEPROPORTION_LIST = "UnionApplyInfoServiceImpl.listBySellDivideProportionInList()";
 	private static final String UPDATE_SELLDIVIDEPROPORTION = "UnionApplyInfoServiceImpl.updateBySellDivideProportion()";
 	private static final String UPDATE_ID = "UnionApplyInfoServiceImpl.updateById()";
+	private static final String GET_UNIONID_BUSID = "UnionApplyInfoServiceImpl.getByUnionIdAndBusId()";
 
 	@Autowired
 	private IUnionApplyService unionApplyService;
-
-	@Autowired
-	private IUnionMemberService unionMemberService;
 
 	@Autowired
 	private IUnionMainService unionMainService;
@@ -74,7 +73,7 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 			throw new BusinessException(UPDATE_ID, "" , CommonConstant.UNION_MEMBER_NON_AUTHORITY_MSG);
 		}
 		//TODO 更新盟员信息的地址
-		UnionApplyInfo info = unionApplyService.getUnionApplyInfo(busId,vo.getUnionId());
+		UnionApplyInfo info = this.getByUnionIdAndBusId(vo.getUnionId(), busId);
 		info.setDirectorName(vo.getDirectorName());
 		info.setDirectorPhone(vo.getDirectorPhone());
 		info.setDirectorEmail(vo.getDirectorEmail());
@@ -174,12 +173,12 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
     }
 
 	@Override
-	public Map<String, Object> getById(Integer id, Integer unionId, Integer busId) throws Exception {
+	public Map<String, Object> getMapById(Integer id, Integer unionId, Integer busId) throws Exception {
 		//TODO 判断是否有权限
         // this.unionRootService.hasUnionMemberAuthority(unionId, busId);
 		UnionMain main = unionMainService.getById(unionId);
 		Map<String,Object> data = new HashMap<String,Object>();
-		UnionApplyInfo info = unionApplyService.getUnionApplyInfo(busId,unionId);
+		UnionApplyInfo info = this.getByUnionIdAndBusId(unionId, busId);
 		data.put("enterpriseName",info.getEnterpriseName());
 		data.put("directorName",info.getDirectorName());
 		data.put("directorPhone",info.getDirectorPhone());
@@ -208,5 +207,39 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 		info.setDirectorName(vo.getDirectorName());
 		this.insert(info);
 		return info;
+	}
+
+	@Override
+	public UnionApplyInfo getByUnionIdAndBusId(Integer unionId, Integer busId) throws Exception {
+		if (unionId == null) {
+		    throw new ParamException(GET_UNIONID_BUSID, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
+        }
+        if (busId == null) {
+		    throw new ParamException(GET_UNIONID_BUSID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+        }
+
+		String unionApplyInfoKey = RedisKeyUtil.getUnionApplyInfoKey(unionId, busId);
+		// （1）判断缓存中是否存在，如是，则直接返回
+		if ( redisCacheUtil.exists( unionApplyInfoKey) ) {
+			Object obj = redisCacheUtil.get(unionApplyInfoKey);
+            return JSON.parseObject(obj.toString(),UnionApplyInfo.class);
+		}
+
+		// （2）否则，查找数据库
+		EntityWrapper entityWrapper = new EntityWrapper<UnionApplyInfo>();
+		StringBuilder sqlExists = new StringBuilder();
+		sqlExists.append("SELECT t1.id, t1.union_id, t1.apply_bus_id, t1.del_status, t1.apply_status FROM t_union_apply t1 WHERE t1.id = t_union_apply_info.union_apply_id")
+				.append(" AND t1.union_id = ").append(unionId)
+				.append(" AND t1.apply_bus_id = ").append(busId)
+				.append(" AND t1.del_status = ").append(UnionApplyConstant.DEL_STATUS_NO)
+				.append(" AND t1.apply_status = ").append(UnionApplyConstant.APPLY_STATUS_PASS);
+		entityWrapper.exists(sqlExists.toString());
+		UnionApplyInfo unionApplyInfo = this.selectOne(entityWrapper);
+		// （3）如果数据库查处的值不为空，则写入缓存中
+		if(unionApplyInfo != null){
+			redisCacheUtil.set(unionApplyInfoKey, JSON.toJSONString(unionApplyInfo));
+		}
+
+		return unionApplyInfo;
 	}
 }

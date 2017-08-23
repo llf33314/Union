@@ -44,7 +44,6 @@ public class UnionMainController {
     private static final String LIST = "UnionMainController.list()";
     private static final String UPDATE_ID = "UnionMainController.updateById()";
     private static final String INSTANCE = "UnionMainController.instance()";
-    private static final String MEMBER = "UnionMainController.member()";
     private static final String SAVE = "UnionMainController.save()";
     private Logger logger = Logger.getLogger(UnionMainController.class);
 

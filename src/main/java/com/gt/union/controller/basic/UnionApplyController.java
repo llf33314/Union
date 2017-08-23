@@ -83,7 +83,7 @@ public class UnionApplyController {
             if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
                 throw new BusinessException(UPDATE_UNIONID_APPLYSTATUS, "", CommonConstant.UNION_BUS_PARENT_MSG);
             }
-            this.unionApplyService.updateByUnionIdAndApplyStatus(busUser.getId(), id, unionId, applyStatus);
+            this.unionApplyService.updateByUnionIdAndApplyStatus(id, unionId, busUser.getId(), applyStatus);
             return GTJsonResult.instanceSuccessMsg().toString();
         }catch (BaseException e){
             logger.error("", e);
@@ -97,8 +97,10 @@ public class UnionApplyController {
     @ApiOperation(value = "新建申请入盟或推荐入盟", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/applyType/{applyType}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     @SysLogAnnotation(description = "新建申请入盟或推荐入盟", op_function = "1")
-    public String save(HttpServletRequest request, @ApiParam(name = "applyType", value = "申请推荐加盟类型 1：申请 2：推荐", required = true) @PathVariable("applyType") Integer applyType
-            , @RequestBody @Valid UnionApplyVO unionApplyVO, BindingResult result){
+    public String save(HttpServletRequest request
+        , @ApiParam(name = "applyType", value = "申请推荐加盟类型 1：申请 2：推荐", required = true)
+        @PathVariable("applyType") Integer applyType
+        , @RequestBody @Valid UnionApplyVO unionApplyVO, BindingResult result){
         try{
             this.unionValidateService.checkBindingResult(result);
             BusUser busUser = SessionUtils.getLoginUser(request);

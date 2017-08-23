@@ -85,9 +85,9 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 		    throw new BusinessException(SAVE, "", "推荐商家不是该联盟的有效成员");
         }
         //判断被推荐商家是否是联盟的有效成员
-		UnionMember toUnionMeber = this.unionMemberService.selectById(vo.getToMemberId());
-		if(toUnionMeber == null || this.unionRootService.hasUnionMemberAuthority(toUnionMeber)
-                || this.unionRootService.checkBusUserValid(toUnionMeber.getBusId())){
+		UnionMember toUnionMember = this.unionMemberService.selectById(vo.getToMemberId());
+		if(toUnionMember == null || this.unionRootService.hasUnionMemberAuthority(toUnionMember)
+                || this.unionRootService.checkBusUserValid(toUnionMember.getBusId())){
 			throw new BusinessException(SAVE, "", "您推荐的盟员是无效盟员");
 		}
 		//保存推荐主表信息
@@ -99,7 +99,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 		recommend.setFromBusId(vo.getBusId());
 		recommend.setRecommendType(UnionBusinessRecommendConstant.RECOMMEND_TYPE_OFFLINE);
 		recommend.setUnionId(vo.getUnionId());
-		recommend.setToBusId(toUnionMeber.getBusId());
+		recommend.setToBusId(toUnionMember.getBusId());
 		recommend.setFromMemberId(fromUnionMember.getId());
 		recommend.setToMemberId(vo.getToMemberId());
 		this.insert(recommend);

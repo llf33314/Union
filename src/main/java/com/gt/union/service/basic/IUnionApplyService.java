@@ -27,32 +27,25 @@ public interface IUnionApplyService extends IService<UnionApply> {
 	 * @return
 	 * @throws Exception
 	 */
-	Page listByUnionIdAndApplyStatus(Page page, final Integer unionId, final Integer applyStatus, final String enterpriseName, final String directorPhone) throws Exception;
-
-	/**
-	 * 获取盟员信息
-	 * @param busId	主账号商家id
-	 * @param unionId	联盟id
-	 * @return
-	 */
-	UnionApplyInfo getUnionApplyInfo(Integer busId, Integer unionId) throws Exception;
+	Page listByUnionIdAndApplyStatus(Page page, final Integer unionId, final Integer applyStatus
+            , final String enterpriseName, final String directorPhone) throws Exception;
 
 	/**
 	 * 获取商家申请加盟
-	 * @param busId	商家id
 	 * @param unionId	联盟id
+	 * @param busId	商家id
 	 * @return
 	 */
-	UnionApply getUnionApply(Integer busId, Integer unionId);
+	UnionApply getByUnionIdAndBusId(Integer unionId, Integer busId);
 
 	/**
 	 * 审核申请信息
-	 * @param busId		审核的商家id
 	 * @param id		申请id
 	 * @param unionId	联盟id
+     * @param busId	审核的商家id
 	 * @param applyStatus	审核状态 1：通过 2：不通过
 	 */
-	void updateByUnionIdAndApplyStatus(Integer busId, Integer id, Integer unionId, Integer applyStatus) throws Exception;
+	void updateByUnionIdAndApplyStatus(Integer id, Integer unionId, Integer busId, Integer applyStatus) throws Exception;
 
 	/**
 	 * 添加盟员申请

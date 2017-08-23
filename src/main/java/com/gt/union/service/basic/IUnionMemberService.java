@@ -136,7 +136,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @param busId        商家id
      * @param outReason 退盟理由
      */
-	Map updateApplyOutUnion(Integer unionId, Integer busId, String outReason) throws Exception;
+	void applyOutUnion(Integer unionId, Integer busId, String outReason) throws Exception;
 
     /**
      * 获取申请退盟发送短信的参数信息
