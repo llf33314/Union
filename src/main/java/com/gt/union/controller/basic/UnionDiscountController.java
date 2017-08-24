@@ -1,9 +1,11 @@
 package com.gt.union.controller.basic;
 
+import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
+import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.basic.IUnionDiscountService;
@@ -51,8 +53,8 @@ public class UnionDiscountController {
             , @ApiParam(name="discount", value = "设置的折扣", required = true) @PathVariable("discount") Double discount) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
-            if (busUser == null) {
-                throw new BusinessException(UPDATE_UNIONID_TOBUSID_DISCOUNT, "", "无法通过session获取用户的信息");
+            if (CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0) {
+                throw new BusinessException(UPDATE_UNIONID_TOBUSID_DISCOUNT, "", CommonConstant.UNION_BUS_PARENT_MSG);
             }
             this.unionDiscountService.updateByUnionIdAndToBusIdAndDiscount(unionId, busUser.getId(), toBusId, discount);
             return GTJsonResult.instanceSuccessMsg().toString();

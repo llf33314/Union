@@ -140,7 +140,7 @@ public class UnionApplyInfoController {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
 			if (!this.unionRootService.isUnionOwner(unionId, busUser.getId())) {
-				throw new BusinessException(LIST_SELLDIVIDEPROPORTION_PAGE, "", "当前请求人不是联盟的盟主");
+				throw new BusinessException(LIST_SELLDIVIDEPROPORTION_PAGE, "", CommonConstant.UNION_OWNER_NON_AUTHORITY_MSG);
 			}
             Page result = this.unionApplyInfoService.listBySellDivideProportionInPage(page, unionId);
             return GTJsonResult.instanceSuccessMsg(result).toString();
@@ -167,7 +167,7 @@ public class UnionApplyInfoController {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
             if (!this.unionRootService.isUnionOwner(unionId, busUser.getId())) {
-                throw new BusinessException(LIST_SELLDIVIDEPROPORTION_LIST, "", "当前请求人不是联盟的盟主");
+                throw new BusinessException(LIST_SELLDIVIDEPROPORTION_LIST, "", CommonConstant.UNION_OWNER_NON_AUTHORITY_MSG);
             }
             List<Map<String,Object>> result = this.unionApplyInfoService.listBySellDivideProportionInList(unionId);
             return GTJsonResult.instanceSuccessMsg(result).toString();
@@ -196,7 +196,7 @@ public class UnionApplyInfoController {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
 			if (!this.unionRootService.isUnionOwner(unionId, busUser.getId())) {
-				throw new BusinessException(UPDATE_SELLDIVIDEPROPORTION_ID, "", "当前请求人不是联盟的盟主");
+				throw new BusinessException(UPDATE_SELLDIVIDEPROPORTION_ID, "", CommonConstant.UNION_OWNER_NON_AUTHORITY_MSG);
 			}
 			this.unionApplyInfoService.updateBySellDivideProportion(unionApplyInfoList);
             return GTJsonResult.instanceSuccessMsg().toString();

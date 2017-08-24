@@ -24,13 +24,12 @@ public interface IUnionTransferRecordService extends IService<UnionTransferRecor
     /**
      * 根据联盟id、转移商家id和被转移商家id判断是否存在指定审核状态的转移记录
      * @param unionId
-     * @param fromBusId
      * @param toBusId
      * @param confirmStatus
      * @return
      * @throws Exception
      */
-	public boolean existByUnionIdAndBusIdAndConfirmStatus(Integer unionId, Integer fromBusId, Integer toBusId, Integer confirmStatus) throws Exception;
+	public boolean existByUnionIdAndBusIdAndConfirmStatus(Integer unionId, Integer toBusId, Integer confirmStatus) throws Exception;
 
     /**
      * 新增盟主权限转移记录

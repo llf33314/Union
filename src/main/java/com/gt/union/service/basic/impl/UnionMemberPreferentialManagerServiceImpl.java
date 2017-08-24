@@ -5,20 +5,25 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionApplyConstant;
 import com.gt.union.common.constant.basic.UnionMemberPreferentialManagerConstant;
 import com.gt.union.common.constant.basic.UnionMemberPreferentialServiceConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.StringUtil;
+import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.basic.UnionMember;
 import com.gt.union.entity.basic.UnionMemberPreferentialManager;
 import com.gt.union.mapper.basic.UnionMemberPreferentialManagerMapper;
+import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.basic.IUnionMemberPreferentialManagerService;
 import com.gt.union.service.basic.IUnionMemberPreferentialServiceService;
 import com.gt.union.service.basic.IUnionMemberService;
+import com.gt.union.service.common.IUnionRootService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -52,6 +57,12 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
 
     @Autowired
     private RedisCacheUtil redisCacheUtil;
+
+    @Autowired
+    private IUnionRootService unionRootService;
+
+    @Autowired
+    private IUnionMainService unionMainService;
 
     @Override
     public Page listByUnionIdAndVerifyStatus(Page page, final Integer unionId, final Integer verifyStatus) throws Exception {
@@ -102,20 +113,6 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
         return result;
     }
 
-    @Override
-    public Page listMyByUnionId(Page page, final Integer unionId, final Integer busId) throws Exception {
-        if (page == null) {
-            throw new ParamException(LIST_MY_UNIONID, "参数page为空", ExceptionConstant.PARAM_ERROR);
-        }
-        if (unionId == null) {
-            throw new ParamException(LIST_MY_UNIONID, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
-        }
-        if (busId == null) {
-            throw new ParamException(LIST_MY_UNIONID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
-        }
-        UnionMember member = unionMemberService.getByUnionIdAndBusId(unionId, busId);
-        return unionMemberPreferentialServiceService.listMyByUnionId(page, unionId, member.getId());
-    }
 
     @Override
     public int countPreferentialManager(final Integer unionId, final Integer verifyStatus) throws Exception {
@@ -158,10 +155,7 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
     }
 
     @Override
-    public Map<String, Object> getByIdAndVerifyStatus(Page page, final Integer id, final Integer verifyStatus) throws Exception {
-        if (page == null) {
-            throw new ParamException(GET_ID_VERIFYSTATUS, "参数page为空", ExceptionConstant.PARAM_ERROR);
-        }
+    public Map<String, Object> getByIdAndVerifyStatus(final Integer id, final Integer verifyStatus) throws Exception {
         if (id == null) {
             throw new ParamException(GET_ID_VERIFYSTATUS, "参数id为空", ExceptionConstant.PARAM_ERROR);
         }
@@ -186,8 +180,11 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
                 .append(", m.preferential_illustration preferentialIllustration ");
         managerWrapper.setSqlSelect(sbSqlSelect.toString());
         Map<String, Object> resultMap = this.selectMap(managerWrapper);
-        resultMap = null == resultMap ? new HashMap<String, Object>() : resultMap; //防止空指针
-        resultMap.put("page", this.unionMemberPreferentialServiceService.pagePreferentialServiceByManagerId(page, id, verifyStatus));
+        if(resultMap == null){
+            resultMap =  new HashMap<String, Object>();
+            return resultMap;
+        }
+        resultMap.put("list", this.unionMemberPreferentialServiceService.listPreferentialServiceByManagerId(id, verifyStatus));
         return resultMap;
     }
 
@@ -221,12 +218,18 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
     @Override
     @Transactional(rollbackFor = Exception.class)
     public UnionMemberPreferentialManager save(Integer unionId, Integer busId, String preferentialIllustration) throws Exception{
-        //TODO 判断联盟有效
         if (unionId == null) {
             throw new ParamException(SAVE, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         if (busId == null) {
             throw new ParamException(SAVE, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+        }
+        UnionMain main = unionMainService.getById(unionId);
+        if(!unionRootService.checkUnionMainValid(main)){
+            throw new BusinessException(SAVE, "", CommonConstant.UNION_OVERDUE_MSG);
+        }
+        if(CommonUtil.isEmpty(main.getRedCardOpend()) || main.getRedCardOpend().intValue() == 0){
+            throw new BusinessException(SAVE, "", "联盟未开启红卡，不可保存");
         }
         if(StringUtil.isEmpty(preferentialIllustration)){
             throw new ParamException(SAVE, "项目说明为空", "项目说明不能为空");

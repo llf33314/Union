@@ -90,6 +90,11 @@ public class CommonConstant {
 	public static final String UNION_MEMBER_NON_AUTHORITY_MSG = "您没有权限";
 
 	/**
+	 * 没有盟主权限
+	 */
+	public static final String UNION_OWNER_NON_AUTHORITY_MSG = "您没有盟主权限";
+
+	/**
 	 * wxmp项目的密钥
 	 */
 	public static final String WXMP_SIGN_KEY = PropertiesUtil.getWxmpSignKey();

@@ -25,15 +25,6 @@ public interface IUnionMemberPreferentialManagerService extends IService<UnionMe
      */
 	Page listByUnionIdAndVerifyStatus(Page page, Integer unionId, Integer verifyStatus) throws Exception;
 
-    /**
-     * 根据联盟id和盟员id查询该盟员的优惠项目
-     * @param page
-     * @param unionId	联盟id
-     * @param busId		商家id
-     * @return
-     * @throws Exception
-     */
-	Page listMyByUnionId(Page page, Integer unionId, Integer busId) throws Exception;
 
     /**
      * 根据联盟id和优惠服务项审核状态verifyStatus查询数量
@@ -46,13 +37,12 @@ public interface IUnionMemberPreferentialManagerService extends IService<UnionMe
 
     /**
      * 根据managerId和verifyStatus获取对应详情信息，page封装优惠服务项列表信息
-     * @param page
      * @param id
      * @param verifyStatus
      * @return
      * @throws Exception
      */
-	Map<String, Object> getByIdAndVerifyStatus(Page page, Integer id, Integer verifyStatus) throws Exception;
+	Map<String, Object> getByIdAndVerifyStatus(Integer id, Integer verifyStatus) throws Exception;
 
 	/**
 	 * 项目说明

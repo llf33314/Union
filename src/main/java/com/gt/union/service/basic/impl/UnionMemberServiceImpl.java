@@ -48,6 +48,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     private static final String LIST_UNIONID_LIST_ALL = "UnionMemberServiceImpl.listByUnionIdList()";
     private static final String APPLY_OUT_UNION = "UnionMemberServiceImpl.applyOutUnion()";
     private static final String MEMBER_OUT_APPLY_MSG = "UnionMemberServiceImpl.getMemberOutApplyMsgInfo()";
+    private static final String CANCEL_UNION_OWNER = "UnionMemberServiceImpl.cancelUnionOwner()";
 
     @Autowired
     private RedisCacheUtil redisCacheUtil;
@@ -201,7 +202,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             throw new ParamException(LIST_UNIONID_OUTSTATUS_ISNUIONOWNER, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         } else {
             if (!this.unionRootService.isUnionOwner(unionId, busId)) {
-                throw new BusinessException(LIST_UNIONID_OUTSTATUS_ISNUIONOWNER, "", "当前用户不能是盟主，无法查询");
+                throw new BusinessException(LIST_UNIONID_OUTSTATUS_ISNUIONOWNER, "", CommonConstant.UNION_OWNER_NON_AUTHORITY_MSG);
             }
         }
         if (outStatus == null) {
@@ -271,6 +272,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     @Override
     public void acceptUnionOwner(Integer busId, Integer unionId) throws Exception {
         //TODO  接受盟主权限转移
+
     }
 
     @Override
@@ -293,13 +295,13 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
 
         // （1）判断当前用户是否用户盟主的身份
         if (!this.unionRootService.isUnionOwner(unionId, originalOwnerBusId)) {
-            throw new BusinessException(TRANSFER_UNION_OWNER, "", "当前用户不是盟主，没有转移盟主身份的权限");
+            throw new BusinessException(TRANSFER_UNION_OWNER, "", CommonConstant.UNION_OWNER_NON_AUTHORITY_MSG);
         }
 
         // （2）判断盟员是否拥有该联盟权限，即是否仍在该联盟中
         Integer newOwnerBusId = unionMember.getBusId();
-        if (!this.unionRootService.hasUnionMemberAuthority(unionId, newOwnerBusId)) {
-            throw new BusinessException(TRANSFER_UNION_OWNER, "", "盟员信息不存在，或正在退盟过渡期");
+        if (!this.unionRootService.hasUnionMemberAuthority(unionMember)) {
+            throw new BusinessException(TRANSFER_UNION_OWNER, "", "盟员正处于退盟过渡期");
         }
 
         // （3）判断盟员是否具有成为盟主的权限
@@ -313,8 +315,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         }
 
         // （5）判断是否已经存在转移申请，若有，则直接返回操作成功，否则，新增转移申请记录
-        if (!this.unionTransferRecordService.existByUnionIdAndBusIdAndConfirmStatus(unionId
-                , originalOwnerBusId, newOwnerBusId, UnionTransferRecordConstant.CONFIRM_STATUS_UNCHECK)) {
+        if (!this.unionTransferRecordService.existByUnionIdAndBusIdAndConfirmStatus(unionId , newOwnerBusId, UnionTransferRecordConstant.CONFIRM_STATUS_UNCHECK)) {
             UnionTransferRecord unionTransferRecord = new UnionTransferRecord();
             unionTransferRecord.setDelStatus(UnionTransferRecordConstant.DEL_STATUS_NO);
             unionTransferRecord.setCreatetime(DateTimeKit.getNow());
@@ -373,13 +374,19 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         if(CommonUtil.isEmpty(id) || CommonUtil.isEmpty(unionId) || CommonUtil.isEmpty(busId) || CommonUtil.isEmpty(verifyStatus)){
             throw new ParamException(UPDATE_OUTSTATUS_ID, "参数...错误", ExceptionConstant.PARAM_ERROR);
         }
+        // （1）判断联盟是否有效
+        if(!unionRootService.checkUnionMainValid(unionId)){
+            throw new BusinessException(APPLY_OUT_UNION, "", CommonConstant.UNION_OVERDUE_MSG);
+        }
         if(!this.unionRootService.isUnionOwner(unionId, busId)){
-            throw new BusinessException(UPDATE_OUTSTATUS_ID, "", "没有盟主权限");
+            throw new BusinessException(UPDATE_OUTSTATUS_ID, "", CommonConstant.UNION_OWNER_NON_AUTHORITY_MSG);
         }
         EntityWrapper entityWrapper = new EntityWrapper<UnionMember>();
         entityWrapper.eq("id", id);
-        entityWrapper.eq("union_id",unionId);
         UnionMember unionMember = this.selectOne(entityWrapper);
+        if(unionMember == null ){
+            throw new BusinessException(UPDATE_OUTSTATUS_ID, "", "盟员不存在");
+        }
         if(unionMember.getDelStatus() == 1){
             throw new BusinessException(UPDATE_OUTSTATUS_ID, "", "已退出联盟");
         }
@@ -389,10 +396,15 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         if(unionMember.getOutStaus() == 2){
             throw new BusinessException(UPDATE_OUTSTATUS_ID, "", "已处退盟过渡期");
         }
+        if(unionMember.getIsNuionOwner() == 1){
+            throw new BusinessException(UPDATE_OUTSTATUS_ID, "", "不可审核盟主");
+        }
+        UnionApplyInfo unionApplyInfo = null;
+        UnionApplyInfo mainApplyInfo = null;
         if(verifyStatus == 1){//同意
-            UnionApplyInfo unionApplyInfo = this.unionApplyInfoService.getByUnionIdAndBusId(unionId, unionMember.getBusId());
-            UnionApplyInfo mainApplyInfo = this.unionApplyInfoService.getByUnionIdAndBusId(unionId, busId);
-            if(CommonUtil.isNotEmpty(unionApplyInfo.getSellDivideProportion())){
+            unionApplyInfo = this.unionApplyInfoService.getByUnionIdAndBusId(unionId, unionMember.getBusId());
+            mainApplyInfo = this.unionApplyInfoService.getByUnionIdAndBusId(unionId, busId);
+            if(CommonUtil.isNotEmpty(unionApplyInfo.getSellDivideProportion()) && unionApplyInfo.getSellDivideProportion() > 0){
                 mainApplyInfo.setSellDivideProportion(CommonUtil.isNotEmpty(mainApplyInfo.getSellDivideProportion()) ? BigDecimalUtil.add(mainApplyInfo.getSellDivideProportion(),unionApplyInfo.getSellDivideProportion()).doubleValue() : unionApplyInfo.getSellDivideProportion());
                 unionApplyInfoService.updateById(mainApplyInfo);
                 unionApplyInfo.setSellDivideProportion(0d);
@@ -411,7 +423,17 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         }else if(verifyStatus == 2){//拒绝
             unionMember.setOutStaus(0);
             unionMember.setApplyOutTime(null);
-            this.updateById(unionMember);
+            this.updateAllColumnById(unionMember);
+        }
+        String memberKey = RedisKeyUtil.getUnionMemberBusIdKey(unionMember.getUnionId(),unionMember.getBusId());
+        redisCacheUtil.set(memberKey,JSON.toJSONString(unionMember));
+        if(CommonUtil.isNotEmpty(unionApplyInfo)){
+            String infoKey = RedisKeyUtil.getUnionApplyInfoKey(unionMember.getUnionId(),unionMember.getBusId());
+            redisCacheUtil.set(infoKey,JSON.toJSONString(unionApplyInfo));
+        }
+        if(CommonUtil.isNotEmpty(mainApplyInfo)){
+            String infoKey = RedisKeyUtil.getUnionApplyInfoKey(unionId,busId);
+            redisCacheUtil.set(infoKey,JSON.toJSONString(unionApplyInfo));
         }
         return data;
     }
@@ -518,20 +540,23 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         if (busId == null) {
             throw new ParamException(APPLY_OUT_UNION, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
+        // （1）判断联盟是否有效
+        if(!unionRootService.checkUnionMainValid(unionId)){
+            throw new BusinessException(APPLY_OUT_UNION, "", CommonConstant.UNION_OVERDUE_MSG);
+        }
         if(StringUtil.isEmpty(outReason)){
             throw new ParamException(APPLY_OUT_UNION, "参数outReason为空", "退盟理由内容不能为空");
         }
         if(StringUtil.getStringLength(outReason) > 20){
             throw new ParamException(APPLY_OUT_UNION, "参数outReason为空", "退盟理由内容不可超过20字");
         }
-        // （1）判断联盟是否有效
-        if(!unionRootService.checkUnionMainValid(unionId)){
-            throw new BusinessException(APPLY_OUT_UNION, "", CommonConstant.UNION_OVERDUE_MSG);
-        }
         // （2）判断当前用户是否是联盟的有效盟员
         UnionMember member = this.getByUnionIdAndBusId(unionId,busId);
         if(!unionRootService.hasUnionMemberAuthority(member)){
             throw new BusinessException(APPLY_OUT_UNION, "", CommonConstant.UNION_MEMBER_NON_AUTHORITY_MSG);
+        }
+        if(member.getOutStaus() == 1){
+            throw new BusinessException(APPLY_OUT_UNION, "", "您已申请退盟，请耐心等待盟主审核");
         }
         // （3）判断当前用户是否已申请退盟
         member.setOutReason(outReason);
@@ -574,6 +599,40 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         Map<String,Object> obj = new HashMap<String,Object>();
         obj.put("reqdata",param);
         return obj;
+    }
+
+    @Override
+    public void cancelUnionOwner(Integer id, Integer unionId, Integer busId) throws Exception{
+        UnionMember unionMember = null;
+        if (unionId == null) {
+            throw new ParamException(CANCEL_UNION_OWNER, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
+        }
+        if (busId == null) {
+            throw new ParamException(CANCEL_UNION_OWNER, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+        }
+        if (id == null) {
+            throw new ParamException(CANCEL_UNION_OWNER, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+        }else {
+            unionMember = this.selectById(id);
+            if (unionMember == null) {
+                throw new ParamException(TRANSFER_UNION_OWNER, "无法通过id获取对象", ExceptionConstant.PARAM_ERROR);
+            }
+        }
+        //1、判断联盟是否有效
+        if(!unionRootService.checkUnionMainValid(unionId)){
+            throw new BusinessException(TRANSFER_UNION_OWNER, "", CommonConstant.UNION_OVERDUE_MSG);
+        }
+
+        //2、判断是否盟主
+        if(!unionRootService.isUnionOwner(unionId,busId)){
+            throw new BusinessException(TRANSFER_UNION_OWNER, "", CommonConstant.UNION_OWNER_NON_AUTHORITY_MSG);
+        }
+
+        //3、判断盟员是否有效
+        if(!unionRootService.hasUnionMemberAuthority(unionMember)){
+            throw new BusinessException(APPLY_OUT_UNION, "", "该盟");
+        }
+        UnionMain main = unionMainService.getById(unionId);
     }
 
 }

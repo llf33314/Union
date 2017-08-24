@@ -144,4 +144,12 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @return
      */
     Map<String,Object> getMemberOutApplyMsgInfo(String redisKey) throws Exception;
+
+    /**
+     * 盟主撤销权限转移
+     * @param id    盟员id
+     * @param unionId   联盟id
+     * @param busId 盟主商家id
+     */
+	void cancelUnionOwner(Integer id, Integer unionId, Integer busId) throws Exception;
 }
