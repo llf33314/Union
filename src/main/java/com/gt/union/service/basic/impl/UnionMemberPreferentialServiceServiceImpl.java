@@ -12,11 +12,13 @@ import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.StringUtil;
+import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.basic.UnionMember;
 import com.gt.union.entity.basic.UnionMemberPreferentialManager;
 import com.gt.union.entity.basic.UnionMemberPreferentialService;
 import com.gt.union.entity.consume.UnionConsumeServiceRecord;
 import com.gt.union.mapper.basic.UnionMemberPreferentialServiceMapper;
+import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.basic.IUnionMemberPreferentialManagerService;
 import com.gt.union.service.basic.IUnionMemberPreferentialServiceService;
 import com.gt.union.service.basic.IUnionMemberService;
@@ -58,6 +60,9 @@ public class UnionMemberPreferentialServiceServiceImpl extends ServiceImpl<Union
     @Autowired
     private IUnionRootService unionRootService;
 
+    @Autowired
+    private IUnionMainService unionMainService;
+
     @Override
     public List<Map<String, Object>> listPreferentialServiceByManagerId(final Integer managerId, final Integer verifyStatus) throws Exception {
         if (managerId == null) {
@@ -77,14 +82,15 @@ public class UnionMemberPreferentialServiceServiceImpl extends ServiceImpl<Union
     }
 
 	@Override
-	public Page listMyByUnionId(Page page, final Integer unionId, final Integer memberId) {
+	public Page listMyByUnionId(Page page, final Integer unionId, final Integer busId) throws Exception{
+        final UnionMember member = unionMemberService.getByUnionIdAndBusId(unionId, busId);
         Wrapper wrapper = new Wrapper() {
             @Override
             public String getSqlSegment() {
                 StringBuilder sbSqlSegment = new StringBuilder(" s");
                 sbSqlSegment.append(" LEFT JOIN t_union_member_preferential_manager m ON s.manager_id = m.id ")
                         .append(" WHERE m.union_id=").append(unionId)
-                        .append("    AND m.member_id = ").append(memberId)
+                        .append("    AND m.member_id = ").append(member.getId())
                         .append("    AND m.del_status = ").append(UnionMemberPreferentialManagerConstant.DEL_STATUS_NO)
                         .append("    AND s.del_status = ").append(UnionMemberPreferentialServiceConstant.DEL_STATUS_NO);
                 sbSqlSegment.append(" ORDER BY s.createtime DESC ");
@@ -103,12 +109,18 @@ public class UnionMemberPreferentialServiceServiceImpl extends ServiceImpl<Union
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void save(Integer unionId, Integer busId, String serviceName) throws Exception{
-        //TODO 判断联盟有效
         if (unionId == null) {
             throw new ParamException(SAVE, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         if (busId == null) {
             throw new ParamException(SAVE, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+        }
+        UnionMain main = unionMainService.getById(unionId);
+        if(!unionRootService.checkUnionMainValid(main)){
+            throw new BusinessException(SAVE, "", CommonConstant.UNION_OVERDUE_MSG);
+        }
+        if(CommonUtil.isEmpty(main.getRedCardOpend()) || main.getRedCardOpend().intValue() == 0){
+            throw new BusinessException(SAVE, "", "联盟未开启红卡，不可保存");
         }
         if (StringUtil.isEmpty(serviceName)) {
             throw new ParamException(SAVE, "优惠项目名称为空", "优惠项目名称不能为空");
@@ -158,7 +170,13 @@ public class UnionMemberPreferentialServiceServiceImpl extends ServiceImpl<Union
         if (StringUtil.isEmpty(ids)) {
             throw new ParamException(DELETE, "参数ids为空", ExceptionConstant.PARAM_ERROR);
         }
-        //TODO 判断联盟有效
+        UnionMain main = unionMainService.getById(unionId);
+        if(!unionRootService.checkUnionMainValid(main)){
+            throw new BusinessException(SAVE, "", CommonConstant.UNION_OVERDUE_MSG);
+        }
+        if(CommonUtil.isEmpty(main.getRedCardOpend()) || main.getRedCardOpend().intValue() == 0){
+            throw new BusinessException(SAVE, "", "联盟未开启红卡，不可删除");
+        }
         String[] list = ids.split(",");
         if(list.length == 0){
             throw new ParamException(DELETE, ids, ExceptionConstant.PARAM_ERROR);
@@ -229,7 +247,13 @@ public class UnionMemberPreferentialServiceServiceImpl extends ServiceImpl<Union
         if (id == null) {
             throw new ParamException(ADD_SERVICE_VERIFY, "参数id为空", ExceptionConstant.PARAM_ERROR);
         }
-        //TODO 判断联盟有效
+        UnionMain main = unionMainService.getById(unionId);
+        if(!unionRootService.checkUnionMainValid(main)){
+            throw new BusinessException(SAVE, "", CommonConstant.UNION_OVERDUE_MSG);
+        }
+        if(CommonUtil.isEmpty(main.getRedCardOpend()) || main.getRedCardOpend().intValue() == 0){
+            throw new BusinessException(SAVE, "", "联盟未开启红卡，不可保存");
+        }
         EntityWrapper entityWrapper = new EntityWrapper<UnionMemberPreferentialService>();
         entityWrapper.eq("del_status",0);
         entityWrapper.eq("id",id);
@@ -258,9 +282,15 @@ public class UnionMemberPreferentialServiceServiceImpl extends ServiceImpl<Union
         if (verifyStatus == null) {
             throw new ParamException(VERIFY, "参数verifyStatus为空", ExceptionConstant.PARAM_ERROR);
         }
-        //TODO 判断联盟是否有效
+        UnionMain main = unionMainService.getById(unionId);
+        if(!unionRootService.checkUnionMainValid(main)){
+            throw new BusinessException(SAVE, "", CommonConstant.UNION_OVERDUE_MSG);
+        }
+        if(CommonUtil.isEmpty(main.getRedCardOpend()) || main.getRedCardOpend().intValue() == 0){
+            throw new BusinessException(SAVE, "", "联盟未开启红卡，不可保存");
+        }
         if(!this.unionRootService.isUnionOwner(unionId,busId)){
-            throw new BusinessException(VERIFY, "您不是盟主，没有权限审核", "您不是盟主，没有权限审核");
+            throw new BusinessException(VERIFY, "您不是盟主，没有权限审核", CommonConstant.UNION_OWNER_NON_AUTHORITY_MSG);
         }
         String[] list = ids.split(",");
         if(list.length == 0){

@@ -137,7 +137,7 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         }
         // （2）判断当前用户是否是盟主
         if(!unionRootService.isUnionOwner(unionId, busId)){
-            throw new BusinessException(UPDATE_UNIONID_APPLYSTATUS, "", "没有盟主权限");
+            throw new BusinessException(UPDATE_UNIONID_APPLYSTATUS, "", CommonConstant.UNION_OWNER_NON_AUTHORITY_MSG);
         }
         // （3）判断该申请是否存在，或是否已经处理过
         UnionApply unionApply = this.selectById(id);

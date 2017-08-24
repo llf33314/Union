@@ -221,7 +221,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         	throw new BusinessException(UPDATE_ID, "" , CommonConstant.UNION_OVERDUE_MSG);
 		}
 		if(!unionRootService.isUnionOwner(id, busId)){
-			throw new BusinessException(UPDATE_ID, "" , "您不是盟主，不可操作");
+			throw new BusinessException(UPDATE_ID, "" , CommonConstant.UNION_OWNER_NON_AUTHORITY_MSG);
 		}
 		UnionMain main = this.getById(id);
 		if(CommonUtil.isNotEmpty(main.getIsIntegral()) && main.getIsIntegral() == 1){

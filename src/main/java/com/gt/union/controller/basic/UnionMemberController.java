@@ -164,7 +164,7 @@ public class UnionMemberController {
             if (CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0) {
                 throw new BusinessException(UPDATE_ISNUIONOWNER_ID, "", CommonConstant.UNION_BUS_PARENT_MSG);
             }
-            //TODO  盟主权限转移
+            unionMemberService.transferUnionOwner(id, busUser.getId(), unionId);
             return GTJsonResult.instanceSuccessMsg().toString();
         } catch (BaseException e) {
             logger.error("", e);
@@ -185,7 +185,7 @@ public class UnionMemberController {
             if (CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0) {
                 throw new BusinessException(UPDATE_ISNUIONOWNER_ID, "", CommonConstant.UNION_BUS_PARENT_MSG);
             }
-            //TODO  盟主撤销权限转移
+            unionMemberService.cancelUnionOwner(id, unionId, busUser.getId());
             return GTJsonResult.instanceSuccessMsg().toString();
         } catch (BaseException e) {
             logger.error("", e);

@@ -23,7 +23,9 @@ public class RedisCacheUtil {
 	@Qualifier( "redisTemplate" )
 	private RedisTemplate redisTemplate;
 
-	private static String redisNamePrefix = PropertiesUtil.redisNamePrefix();
+	private String getRedisNamePrefix(){
+		return PropertiesUtil.redisNamePrefix();
+	}
 
 	/**
 	 * 批量删除对应的value
@@ -57,7 +59,7 @@ public class RedisCacheUtil {
 	public void remove( final String key ) {
 		try{
 			if ( exists( key ) ) {
-				redisTemplate.delete( redisNamePrefix +key );
+				redisTemplate.delete( this.getRedisNamePrefix() +key );
 			}
 		}catch (Exception e){
 			e.printStackTrace();
@@ -73,7 +75,7 @@ public class RedisCacheUtil {
 	 */
 	public boolean exists( final String key ) {
 		try{
-			return redisTemplate.hasKey( redisNamePrefix + key );
+			return redisTemplate.hasKey( this.getRedisNamePrefix() + key );
 		}catch (Exception e){
 			return false;
 		}
@@ -90,7 +92,7 @@ public class RedisCacheUtil {
 		Object result = null;
 		try {
 			ValueOperations< String,String > operations = redisTemplate.opsForValue();
-			result = operations.get( redisNamePrefix + key );
+			result = operations.get( this.getRedisNamePrefix() + key );
 		}catch (Exception e){
 			e.printStackTrace();
 		}
@@ -128,8 +130,8 @@ public class RedisCacheUtil {
 		boolean result = false;
 		try {
 			ValueOperations< String,String > operations = redisTemplate.opsForValue();
-			operations.set(redisNamePrefix + key, value );
-			redisTemplate.expire( redisNamePrefix + key, expireTime, TimeUnit.SECONDS );
+			operations.set(this.getRedisNamePrefix() + key, value );
+			redisTemplate.expire( this.getRedisNamePrefix() + key, expireTime, TimeUnit.SECONDS );
 			result = true;
 		} catch ( Exception e ) {
 			e.printStackTrace();

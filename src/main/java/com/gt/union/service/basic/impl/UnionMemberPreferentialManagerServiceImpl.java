@@ -15,9 +15,11 @@ import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.StringUtil;
+import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.basic.UnionMember;
 import com.gt.union.entity.basic.UnionMemberPreferentialManager;
 import com.gt.union.mapper.basic.UnionMemberPreferentialManagerMapper;
+import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.basic.IUnionMemberPreferentialManagerService;
 import com.gt.union.service.basic.IUnionMemberPreferentialServiceService;
 import com.gt.union.service.basic.IUnionMemberService;
@@ -58,6 +60,9 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
 
     @Autowired
     private IUnionRootService unionRootService;
+
+    @Autowired
+    private IUnionMainService unionMainService;
 
     @Override
     public Page listByUnionIdAndVerifyStatus(Page page, final Integer unionId, final Integer verifyStatus) throws Exception {
@@ -108,20 +113,6 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
         return result;
     }
 
-    @Override
-    public Page listMyByUnionId(Page page, final Integer unionId, final Integer busId) throws Exception {
-        if (page == null) {
-            throw new ParamException(LIST_MY_UNIONID, "参数page为空", ExceptionConstant.PARAM_ERROR);
-        }
-        if (unionId == null) {
-            throw new ParamException(LIST_MY_UNIONID, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
-        }
-        if (busId == null) {
-            throw new ParamException(LIST_MY_UNIONID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
-        }
-        UnionMember member = unionMemberService.getByUnionIdAndBusId(unionId, busId);
-        return unionMemberPreferentialServiceService.listMyByUnionId(page, unionId, member.getId());
-    }
 
     @Override
     public int countPreferentialManager(final Integer unionId, final Integer verifyStatus) throws Exception {
@@ -193,7 +184,7 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
             resultMap =  new HashMap<String, Object>();
             return resultMap;
         }
-        resultMap.put("page", this.unionMemberPreferentialServiceService.listPreferentialServiceByManagerId(id, verifyStatus));
+        resultMap.put("list", this.unionMemberPreferentialServiceService.listPreferentialServiceByManagerId(id, verifyStatus));
         return resultMap;
     }
 
@@ -233,8 +224,12 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
         if (busId == null) {
             throw new ParamException(SAVE, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
-        if(!unionRootService.checkUnionMainValid(unionId)){
+        UnionMain main = unionMainService.getById(unionId);
+        if(!unionRootService.checkUnionMainValid(main)){
             throw new BusinessException(SAVE, "", CommonConstant.UNION_OVERDUE_MSG);
+        }
+        if(CommonUtil.isEmpty(main.getRedCardOpend()) || main.getRedCardOpend().intValue() == 0){
+            throw new BusinessException(SAVE, "", "联盟未开启红卡，不可保存");
         }
         if(StringUtil.isEmpty(preferentialIllustration)){
             throw new ParamException(SAVE, "项目说明为空", "项目说明不能为空");

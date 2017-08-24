@@ -97,7 +97,11 @@ public class UnionMemberPreferentialManagerController {
     public String getManagerByUnionId(HttpServletRequest request, @ApiParam(name = "unionId", value = "联盟id", required = true) @PathVariable(name = "unionId", required = true) Integer unionId) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
-            UnionMemberPreferentialManager manager = this.unionMemberPreferentialManagerService.getManagerByUnionId(unionId, busUser.getId());
+            Integer busId = busUser.getId();
+            if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
+                busId = busUser.getPid();
+            }
+            UnionMemberPreferentialManager manager = this.unionMemberPreferentialManagerService.getManagerByUnionId(unionId, busId);
             return GTJsonResult.instanceSuccessMsg(manager).toString();
         } catch (BaseException e) {
             logger.error("", e);

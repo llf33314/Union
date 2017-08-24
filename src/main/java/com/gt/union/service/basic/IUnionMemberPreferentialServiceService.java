@@ -29,10 +29,10 @@ public interface IUnionMemberPreferentialServiceService extends IService<UnionMe
 	 * 查询我的优惠服务
 	 * @param page
 	 * @param unionId	联盟id
-	 * @param memberId	盟员id
+	 * @param busId	商家id
 	 * @return
 	 */
-	Page listMyByUnionId(Page page, Integer unionId, Integer memberId);
+	Page listMyByUnionId(Page page, Integer unionId, Integer busId) throws Exception;
 
 	/**
 	 * 保存优惠服务项目

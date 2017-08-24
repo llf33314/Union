@@ -35,12 +35,9 @@ public class UnionTransferRecordServiceImpl extends ServiceImpl<UnionTransferRec
 	}
 
 	@Override
-	public boolean existByUnionIdAndBusIdAndConfirmStatus(Integer unionId, Integer fromBusId, Integer toBusId, Integer confirmStatus) throws Exception {
+	public boolean existByUnionIdAndBusIdAndConfirmStatus(Integer unionId, Integer toBusId, Integer confirmStatus) throws Exception {
 		if (unionId == null) {
 		    throw new ParamException(EXIST_UNIONID_BUSID_CONFIRMSTATUS, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
-        }
-        if (fromBusId == null) {
-		    throw new ParamException(EXIST_UNIONID_BUSID_CONFIRMSTATUS, "参数fromBusId为空", ExceptionConstant.PARAM_ERROR);
         }
         if (toBusId == null) {
 		    throw new ParamException(EXIST_UNIONID_BUSID_CONFIRMSTATUS, "参数toBusId为空", ExceptionConstant.PARAM_ERROR);
@@ -52,7 +49,6 @@ public class UnionTransferRecordServiceImpl extends ServiceImpl<UnionTransferRec
         EntityWrapper entityWrapper = new EntityWrapper();
 		entityWrapper.eq("del_status", UnionTransferRecordConstant.DEL_STATUS_NO)
                 .eq("union_id", unionId)
-                .eq("from_bus_id", fromBusId)
                 .eq("to_bus_id", toBusId)
                 .eq("confirm_status", confirmStatus);
 		return this.selectCount(entityWrapper) > 0 ? true : false;

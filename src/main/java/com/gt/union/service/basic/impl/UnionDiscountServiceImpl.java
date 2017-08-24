@@ -12,6 +12,7 @@ import com.gt.union.mapper.basic.UnionDiscountMapper;
 import com.gt.union.service.basic.IUnionDiscountService;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 /**
@@ -41,29 +42,28 @@ public class UnionDiscountServiceImpl extends ServiceImpl<UnionDiscountMapper, U
         if (discount == null) {
             throw new ParamException(UPDATE_UNIONID_TOBUSID_DISCOUNT, "参数discount为空", ExceptionConstant.PARAM_ERROR);
         } else {
+            if(!(new BigDecimal(discount).doubleValue() > 0 && new BigDecimal(discount).doubleValue() <= 10)){
+                throw new ParamException(UPDATE_UNIONID_TOBUSID_DISCOUNT, "参数discount在0<discount<=10", ExceptionConstant.PARAM_ERROR);
+            }
             if (!DoubleUtil.checkDecimalPrecision(discount, 2)) {
                 throw new ParamException(UPDATE_UNIONID_TOBUSID_DISCOUNT, "参数discount的有效小数点长度不能超过2位", ExceptionConstant.PARAM_ERROR);
             }
         }
-
-        UnionDiscount unionDiscount = new UnionDiscount();
-        unionDiscount.setDelStatus(UnionDiscountConstant.DEL_STATUS_NO);
-        unionDiscount.setUnionId(unionId);
-        unionDiscount.setFromBusId(fromBusId);
-        unionDiscount.setToBusId(toBusId);
-        unionDiscount.setDiscount(discount);
-
         EntityWrapper entityWrapper = new EntityWrapper();
         entityWrapper.eq("del_status", UnionDiscountConstant.DEL_STATUS_NO)
                 .eq("union_id", unionId)
                 .eq("from_bus_id", fromBusId)
                 .eq("to_bus_id", toBusId);
-        if (this.isExist(entityWrapper)) {
-            unionDiscount.setModifytime(new Date());
-            this.update(unionDiscount, entityWrapper);
-        } else {
+        UnionDiscount unionDiscount = this.selectOne(entityWrapper);
+        if(unionDiscount == null){
+            unionDiscount.setDiscount(discount);
             unionDiscount.setCreatetime(new Date());
+            unionDiscount.setModifytime(new Date());
             this.insert(unionDiscount);
+        }else {
+            unionDiscount.setModifytime(new Date());
+            unionDiscount.setDiscount(discount);
+            this.updateById(unionDiscount);
         }
     }
 
