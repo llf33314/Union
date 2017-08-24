@@ -19,13 +19,4 @@ import org.springframework.stereotype.Service;
 @Service
 public class UnionRecommendPayRecordServiceImpl extends ServiceImpl<UnionRecommendPayRecordMapper, UnionRecommendPayRecord> implements IUnionRecommendPayRecordService {
 
-	private Logger logger = Logger.getLogger(UnionRecommendPayRecordServiceImpl.class);
-
-	@Autowired
-	private UnionRecommendPayRecordMapper unionRecommendPayRecordMapper; //TODO 为什么是调用mapper，而不是service?
-
-	@Override
-	public double getRecommendPay(Integer busId, Integer unionId) {
-		return unionRecommendPayRecordMapper.selectRecommendPaySum(busId,unionId);
-	}
 }

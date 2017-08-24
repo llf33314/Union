@@ -1,6 +1,7 @@
 package com.gt.union.controller.basic;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.gt.union.common.annotation.SysLogAnnotation;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.exception.BaseException;
@@ -135,6 +136,7 @@ public class UnionMemberController {
     }
 
     @ApiOperation(value = "接受盟主权限转移", produces = "application/json;charset=UTF-8")
+    @SysLogAnnotation(op_function = "3", description = "接受盟主权限转移")
     @RequestMapping(value = "/isNuionOwner/accept", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateIsNuionOwnerById(HttpServletRequest request
         , @ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam(value = "unionId", required = true) Integer unionId){
@@ -155,6 +157,7 @@ public class UnionMemberController {
     }
 
     @ApiOperation(value = "转移盟主权限", produces = "application/json;charset=UTF-8")
+    @SysLogAnnotation(op_function = "3", description = "转移盟主权限")
     @RequestMapping(value = "/{id}/isNuionOwner/transfer", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String transferUnionOwner(HttpServletRequest request
         , @ApiParam(name = "id", value = "盟员id", required = true) @PathVariable("id") Integer id
@@ -176,6 +179,7 @@ public class UnionMemberController {
     }
 
     @ApiOperation(value = "盟主撤销权限转移", produces = "application/json;charset=UTF-8")
+    @SysLogAnnotation(op_function = "3", description = "盟主撤销权限转移")
     @RequestMapping(value = "/{id}/isNuionOwner/cancel", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String cancelUnionOwner(HttpServletRequest request
             , @ApiParam(name = "id", value = "盟员id", required = true) @PathVariable("id") Integer id
@@ -197,6 +201,7 @@ public class UnionMemberController {
     }
 
     @ApiOperation(value = "盟员申请退盟", produces = "application/json;charset=UTF-8")
+    @SysLogAnnotation(op_function = "3", description = "盟员申请退盟")
     @RequestMapping(value = "/unionId/{unionId}/outUnion", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String applyOutUnion(HttpServletRequest request
             , @ApiParam(name = "unionId", value = "联盟id", required = true) @PathVariable(value = "unionId", required = true) Integer unionId
@@ -218,7 +223,8 @@ public class UnionMemberController {
     }
 
     @ApiOperation(value = "盟主审核退盟成员", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{id}/outStatus/outStatus", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    @SysLogAnnotation(op_function = "3", description = "盟主审核退盟成员")
+    @RequestMapping(value = "/{id}/outStatus", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateOutStatusById(HttpServletRequest request
             , @ApiParam(name = "id", value = "盟员id", required = true) @PathVariable("id") Integer id
             , @ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam(value = "unionId", required = true) Integer unionId
@@ -229,6 +235,29 @@ public class UnionMemberController {
                 throw new BusinessException(UPDATE_ISNUIONOWNER_ID, "", CommonConstant.UNION_BUS_PARENT_MSG);
             }
             this.unionMemberService.updateOutStatusById(id, unionId, busUser.getId(), verifyStatus);
+            return GTJsonResult.instanceSuccessMsg().toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(UPDATE_ISNUIONOWNER_ID, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
+    }
+
+    @ApiOperation(value = "盟主移出成员", produces = "application/json;charset=UTF-8")
+    @SysLogAnnotation(op_function = "3", description = "盟主移出成员")
+    @RequestMapping(value = "/{id}/memberOut", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    public String updateMemberOutById(HttpServletRequest request
+            , @ApiParam(name = "id", value = "盟员id", required = true) @PathVariable("id") Integer id
+            , @ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam(value = "unionId", required = true) Integer unionId
+            ){
+        try {
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            if (CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0) {
+                throw new BusinessException(UPDATE_ISNUIONOWNER_ID, "", CommonConstant.UNION_BUS_PARENT_MSG);
+            }
+            this.unionMemberService.updateMemberOutById(id,unionId,busUser.getId());
             return GTJsonResult.instanceSuccessMsg().toString();
         } catch (BaseException e) {
             logger.error("", e);

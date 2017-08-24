@@ -13,12 +13,4 @@ import com.gt.union.entity.business.UnionRecommendPayRecord;
  */
 public interface IUnionRecommendPayRecordService extends IService<UnionRecommendPayRecord> {
 
-	/**
-	 * 获取联盟内的商家的佣金总和
-	 * @param busId  主账号商家id
-	 * @param unionId	联盟id
-	 * @return
-	 */
-	public double getRecommendPay(Integer busId, Integer unionId);
-
 }

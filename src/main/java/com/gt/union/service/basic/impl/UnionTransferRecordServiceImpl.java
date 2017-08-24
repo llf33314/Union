@@ -28,9 +28,9 @@ public class UnionTransferRecordServiceImpl extends ServiceImpl<UnionTransferRec
 		EntityWrapper entityWrapper = new EntityWrapper<UnionTransferRecord>();
 		entityWrapper.eq("union_id",unionId);
 		entityWrapper.eq("to_bus_id",busId);
-		entityWrapper.eq("del_status",0);
-		entityWrapper.eq("no_advice",0);
-		entityWrapper.eq("confirm_status",0);
+		entityWrapper.eq("del_status",UnionTransferRecordConstant.DEL_STATUS_NO);
+		entityWrapper.eq("no_advice",UnionTransferRecordConstant.NO_ADVICE_NO);
+		entityWrapper.eq("confirm_status",UnionTransferRecordConstant.CONFIRM_STATUS_UNCHECK);
 		return this.selectOne(entityWrapper);
 	}
 

@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.amqp.entity.PhoneMessage;
+import com.gt.union.amqp.sender.PhoneMessageSender;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.*;
@@ -54,9 +56,6 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     private RedisCacheUtil redisCacheUtil;
 
     @Autowired
-    private IUnionApplyService unionApplyService;
-
-    @Autowired
     private IUnionApplyInfoService unionApplyInfoService;
 
     @Autowired
@@ -67,6 +66,9 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
 
     @Autowired
     private IUnionMainService unionMainService;
+
+    @Autowired
+    private PhoneMessageSender phoneMessageSender;
 
     @Override
     public Page listMapByUnionIdInPage(Page page, final Integer unionId, final String enterpriseName) throws Exception {
@@ -282,7 +284,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             throw new ParamException(TRANSFER_UNION_OWNER, "参数id为空", ExceptionConstant.PARAM_ERROR);
         } else {
             unionMember = this.selectById(id);
-            if (unionMember == null) {
+            if (unionMember == null || unionMember.getDelStatus() == UnionMemberConstant.DEL_STATUS_YES) {
                 throw new ParamException(TRANSFER_UNION_OWNER, "无法通过id获取对象", ExceptionConstant.PARAM_ERROR);
             }
         }
@@ -412,7 +414,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             }
             unionMember.setOutStaus(2);
             unionMember.setConfirm(new Date());
-            unionMember.setConfirmOutTime(DateTimeKit.addDate(unionMember.getConfirm(), 15));
+            unionMember.setConfirmOutTime(DateUtil.addDays(unionMember.getConfirm(), 15));
             this.updateById(unionMember);
             String redisKey = "confirmOut:" + System.currentTimeMillis();
             Map<String,Object> param = new HashMap<String,Object>();
@@ -559,20 +561,23 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             throw new BusinessException(APPLY_OUT_UNION, "", "您已申请退盟，请耐心等待盟主审核");
         }
         // （3）判断当前用户是否已申请退盟
-        member.setOutReason(outReason);
-        member.setOutStaus(1);
-        member.setApplyOutTime(new Date());
-        this.updateById(member);
+        UnionMember updateMember = new UnionMember();
+        updateMember.setId(member.getId());
+        updateMember.setOutReason(outReason);
+        updateMember.setOutStaus(1);
+        updateMember.setApplyOutTime(new Date());
+        this.updateById(updateMember);
+        member = this.selectById(member.getId());
         String memberKey = RedisKeyUtil.getUnionMemberBusIdKey(unionId,busId);
         if(redisCacheUtil.exists(memberKey)){
             redisCacheUtil.set(memberKey,JSON.toJSONString(member));
         }
-        //TODO 使用消息队列发送消息
-        String nowTime = "applyOut:"+System.currentTimeMillis();
-        HashMap<String, Object> redisMap = new HashMap<>();
-        redisMap.put("unionId",unionId);
-        redisMap.put("busId",busId);
-        redisCacheUtil.set(nowTime, JSON.toJSONString(redisMap),60l);
+        UnionMain main = unionMainService.getById(unionId);
+        UnionApplyInfo memberInfo = unionApplyInfoService.getByUnionIdAndBusId(unionId,busId);
+        UnionApplyInfo mainInfo = unionApplyInfoService.getByUnionIdAndBusId(unionId,main.getBusId());
+        String content = "\"" + memberInfo.getEnterpriseName() + "\"" + "申请退出" + "\"" + main.getUnionName() + "\"" + ",请到退盟审核处查看并处理";
+        PhoneMessage phoneMessage = new PhoneMessage(main.getBusId(), CommonUtil.isEmpty(mainInfo.getNotifyPhone()) ? mainInfo.getDirectorPhone() : mainInfo.getNotifyPhone(), content);
+        phoneMessageSender.sendMsg(phoneMessage);
     }
 
     @Override
@@ -611,10 +616,10 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             throw new ParamException(CANCEL_UNION_OWNER, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
         if (id == null) {
-            throw new ParamException(CANCEL_UNION_OWNER, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(CANCEL_UNION_OWNER, "参数id为空", ExceptionConstant.PARAM_ERROR);
         }else {
             unionMember = this.selectById(id);
-            if (unionMember == null) {
+            if (unionMember == null || unionMember.getDelStatus() == UnionMemberConstant.DEL_STATUS_YES) {
                 throw new ParamException(TRANSFER_UNION_OWNER, "无法通过id获取对象", ExceptionConstant.PARAM_ERROR);
             }
         }
@@ -628,11 +633,47 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             throw new BusinessException(TRANSFER_UNION_OWNER, "", CommonConstant.UNION_OWNER_NON_AUTHORITY_MSG);
         }
 
-        //3、判断盟员是否有效
-        if(!unionRootService.hasUnionMemberAuthority(unionMember)){
-            throw new BusinessException(APPLY_OUT_UNION, "", "该盟");
+        EntityWrapper entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("to_bus_id",unionMember.getBusId());
+        entityWrapper.eq("del_status", UnionTransferRecordConstant.DEL_STATUS_NO);
+        entityWrapper.eq("union_id", unionId);
+        entityWrapper.eq("confirm_status",UnionTransferRecordConstant.CONFIRM_STATUS_UNCHECK);
+        UnionTransferRecord record = unionTransferRecordService.selectOne(entityWrapper);
+        if(record == null){
+            throw new BusinessException(TRANSFER_UNION_OWNER, "", ExceptionConstant.OPERATE_FAIL);
         }
-        UnionMain main = unionMainService.getById(unionId);
+        UnionTransferRecord transferRecord = new UnionTransferRecord();
+        transferRecord.setId(record.getId());
+        transferRecord.setDelStatus(UnionTransferRecordConstant.DEL_STATUS_YES);
+        unionTransferRecordService.updateById(transferRecord);
+    }
+
+    @Override
+    public void updateMemberOutById(Integer id, Integer unionId, Integer busId) throws Exception{
+        UnionMember unionMember = null;
+        if (unionId == null) {
+            throw new ParamException(CANCEL_UNION_OWNER, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
+        }
+        if (busId == null) {
+            throw new ParamException(CANCEL_UNION_OWNER, "参数id为空", ExceptionConstant.PARAM_ERROR);
+        }
+        if (id == null) {
+            throw new ParamException(CANCEL_UNION_OWNER, "参数busId为空", ExceptionConstant.PARAM_ERROR);
+        }else {
+            unionMember = this.selectById(id);
+            if (unionMember == null || unionMember.getDelStatus() == UnionMemberConstant.DEL_STATUS_YES) {
+                throw new ParamException(TRANSFER_UNION_OWNER, "无法通过id获取对象", ExceptionConstant.PARAM_ERROR);
+            }
+        }
+        //1、判断联盟是否有效
+        if(!unionRootService.checkUnionMainValid(unionId)){
+            throw new BusinessException(TRANSFER_UNION_OWNER, "", CommonConstant.UNION_OVERDUE_MSG);
+        }
+
+        //2、判断是否盟主
+        if(!unionRootService.isUnionOwner(unionId,busId)){
+            throw new BusinessException(TRANSFER_UNION_OWNER, "", CommonConstant.UNION_OWNER_NON_AUTHORITY_MSG);
+        }
     }
 
 }

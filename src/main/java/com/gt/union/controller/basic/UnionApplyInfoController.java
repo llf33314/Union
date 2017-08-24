@@ -56,16 +56,6 @@ public class UnionApplyInfoController {
 	@Autowired
 	private IUnionValidateService unionValidateService;
 
-	@Autowired
-    private PhoneMessageSender phoneMessageSender;
-
-	@ApiOperation(value = "测试消息队列短信功能", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/test", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public String test(){
-        PhoneMessage phoneMessage = new PhoneMessage(33, "13923639694", "hello world");
-	    this.phoneMessageSender.sendMsg(phoneMessage);
-	    return GTJsonResult.instanceSuccessMsg().toString();
-    }
 
 	/**
 	 * 获取编辑盟员信息

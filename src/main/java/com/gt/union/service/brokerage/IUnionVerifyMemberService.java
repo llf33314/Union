@@ -1,5 +1,6 @@
 package com.gt.union.service.brokerage;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.entity.brokerage.UnionVerifyMember;
 
@@ -24,4 +25,12 @@ public interface IUnionVerifyMemberService extends IService<UnionVerifyMember> {
 	 * @param unionVerifyMember
 	 */
 	void save(UnionVerifyMember unionVerifyMember) throws Exception;
+
+	/**
+	 * 查询佣金平台管理员
+	 * @param page
+	 * @param busId
+	 * @return
+	 */
+	Page list(Page<UnionVerifyMember> page, Integer busId) throws Exception;
 }

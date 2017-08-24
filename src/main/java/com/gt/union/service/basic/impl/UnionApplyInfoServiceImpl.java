@@ -21,7 +21,6 @@ import com.gt.union.entity.basic.vo.UnionApplyInfoVO;
 import com.gt.union.entity.basic.vo.UnionApplyVO;
 import com.gt.union.mapper.basic.UnionApplyInfoMapper;
 import com.gt.union.service.basic.IUnionApplyInfoService;
-import com.gt.union.service.basic.IUnionApplyService;
 import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.common.IUnionRootService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -50,9 +49,7 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 	private static final String UPDATE_SELLDIVIDEPROPORTION = "UnionApplyInfoServiceImpl.updateBySellDivideProportion()";
 	private static final String UPDATE_ID = "UnionApplyInfoServiceImpl.updateById()";
 	private static final String GET_UNIONID_BUSID = "UnionApplyInfoServiceImpl.getByUnionIdAndBusId()";
-
-	@Autowired
-	private IUnionApplyService unionApplyService;
+	private static final String GET_MAP_BY_ID = "UnionApplyInfoServiceImpl.getMapById()";
 
 	@Autowired
 	private IUnionMainService unionMainService;
@@ -175,9 +172,13 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 
 	@Override
 	public Map<String, Object> getMapById(Integer id, Integer unionId, Integer busId) throws Exception {
-		//TODO 判断是否有权限
-        // this.unionRootService.hasUnionMemberAuthority(unionId, busId);
 		UnionMain main = unionMainService.getById(unionId);
+		if(!this.unionRootService.checkUnionMainValid(main)){
+			throw new BusinessException(GET_MAP_BY_ID, "", CommonConstant.UNION_OVERDUE_MSG);
+		}
+		if(!unionRootService.hasUnionMemberAuthority(unionId, busId)){
+			throw new BusinessException(GET_MAP_BY_ID, "", CommonConstant.UNION_MEMBER_NON_AUTHORITY_MSG);
+		}
 		Map<String,Object> data = new HashMap<String,Object>();
 		UnionApplyInfo info = this.getByUnionIdAndBusId(unionId, busId);
 		data.put("enterpriseName",info.getEnterpriseName());
@@ -194,6 +195,7 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 		data.put("addressProvience","省");
 		data.put("addressCity","市");
 		data.put("addressDistrict","区");
+		data.put("infoId",info.getId());
 		return data;
 	}
 

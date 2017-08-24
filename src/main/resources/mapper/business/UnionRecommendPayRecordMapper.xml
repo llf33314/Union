@@ -14,16 +14,4 @@
 		<result column="recommend_id" property="recommendId" />
 	</resultMap>
 
-	<!-- 查询商家获得佣金的总和 -->
-	<select id="selectRecommendPaySum" resultType="java.lang.Double">
-		SELECT SUM(price) as price FROM t_union_recommend_pay_record WHERE del_status = 0
-		<if test="busId != null" >
-			and bus_id = #{busId,jdbcType=INTEGER}
-		</if>
-		<if test="unionId != null" >
-			and union_id = #{unionId,jdbcType=INTEGER}
-		</if>
-
-	</select>
-
 </mapper>

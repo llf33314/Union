@@ -152,4 +152,12 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @param busId 盟主商家id
      */
 	void cancelUnionOwner(Integer id, Integer unionId, Integer busId) throws Exception;
+
+    /**
+     * 盟主移出盟员
+     * @param id    盟员id
+     * @param unionId   联盟id
+     * @param busId 商家id
+     */
+	void updateMemberOutById(Integer id, Integer unionId, Integer busId) throws Exception;
 }

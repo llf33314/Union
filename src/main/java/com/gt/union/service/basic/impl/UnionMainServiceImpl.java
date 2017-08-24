@@ -78,6 +78,9 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	@Autowired
 	private DictService dictService;
 
+	@Autowired
+	private IUnionTransferRecordService unionTransferRecordService;
+
 	@Override
 	public Map<String, Object> indexByBusId(Integer busId) throws Exception {
 		Map<String,Object> data = new HashMap<String,Object>();
@@ -147,6 +150,8 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		double ableWithDrawalsSum = unionBrokerageWithdrawalsRecordService.getUnionBrokerageAbleToWithdrawalsSum(busId,currentUnion.getId());//联盟可提现佣金总和
 		data.put("ableWithDrawalsSum",ableWithDrawalsSum);
 		data.put("isUnionOwner",isUnionOwner);
+		UnionTransferRecord record = unionTransferRecordService.get(currentUnion.getId(),busId);//转盟记录
+		data.put("transferRecord",record);
 		return data;
 	}
 
