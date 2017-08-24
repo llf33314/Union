@@ -1,4 +1,4 @@
-package com.gt.union.vo.business;
+package com.gt.union.entity.business.vo;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

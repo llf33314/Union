@@ -1,4 +1,4 @@
-package com.gt.union.vo.card;
+package com.gt.union.entity.card.vo;
 
 import java.util.Date;
 

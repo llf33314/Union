@@ -3,8 +3,8 @@ package com.gt.union.service.basic;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.entity.basic.UnionMain;
-import com.gt.union.vo.basic.UnionMainCreateInfoVO;
-import com.gt.union.vo.basic.UnionMainInfoVO;
+import com.gt.union.entity.basic.vo.UnionMainCreateInfoVO;
+import com.gt.union.entity.basic.vo.UnionMainInfoVO;
 
 import java.util.List;
 import java.util.Map;

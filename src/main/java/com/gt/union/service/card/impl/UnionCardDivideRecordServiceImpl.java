@@ -5,9 +5,9 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.entity.card.UnionCardDivideRecord;
+import com.gt.union.entity.card.vo.UnionCardDivideRecordVO;
 import com.gt.union.mapper.card.UnionCardDivideRecordMapper;
 import com.gt.union.service.card.IUnionCardDivideRecordService;
-import com.gt.union.vo.card.UnionCardDivideRecordVO;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;

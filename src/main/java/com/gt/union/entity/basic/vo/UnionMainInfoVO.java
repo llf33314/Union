@@ -1,21 +1,13 @@
-package com.gt.union.vo.basic;
+package com.gt.union.entity.basic.vo;
 
-import com.baomidou.mybatisplus.annotations.TableField;
-import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.enums.IdType;
 import com.gt.union.common.annotation.valid.StringLengthValid;
-import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.PropertiesUtil;
 import com.gt.union.entity.basic.UnionInfoDict;
-import com.gt.union.entity.basic.UnionMain;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.util.Date;
 import java.util.List;
 
 /**

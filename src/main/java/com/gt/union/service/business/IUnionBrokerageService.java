@@ -3,7 +3,7 @@ package com.gt.union.service.business;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.entity.business.UnionBrokerage;
-import com.gt.union.vo.business.UnionBrokerageVO;
+import com.gt.union.entity.business.vo.UnionBrokerageVO;
 
 /**
  * <p>
