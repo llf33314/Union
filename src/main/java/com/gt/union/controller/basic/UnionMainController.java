@@ -163,8 +163,8 @@ public class UnionMainController {
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
                 throw new BusinessException(INSTANCE, "", CommonConstant.UNION_BUS_PARENT_MSG);
             }
-            unionMainService.instance(user.getId());
-            return GTJsonResult.instanceSuccessMsg().toString();
+            Map<String,Object> data = unionMainService.instance(user.getId());
+            return GTJsonResult.instanceSuccessMsg(data).toString();
         }catch (BaseException e){
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();

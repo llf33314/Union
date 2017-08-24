@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.api.client.dict.DictService;
+import com.gt.union.api.client.user.BusUserService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionMainConstant;
@@ -13,6 +15,7 @@ import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
 import com.gt.union.entity.basic.*;
+import com.gt.union.entity.common.BusUser;
 import com.gt.union.mapper.basic.UnionMainMapper;
 import com.gt.union.service.basic.*;
 import com.gt.union.service.brokerage.IUnionBrokerageWithdrawalsRecordService;
@@ -68,6 +71,12 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
 	@Autowired
 	private IUnionMemberService unionMemberService;
+
+	@Autowired
+	private BusUserService busUserService;
+
+	@Autowired
+	private DictService dictService;
 
 	@Override
 	public Map<String, Object> indexByBusId(Integer busId) throws Exception {
@@ -297,12 +306,39 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
 
 	@Override
-	public void instance(Integer busId) throws Exception {
+	public Map<String, Object> instance(Integer busId) throws Exception {
+		Map<String,Object> data = new HashMap<String,Object>();
 	    if (busId == null) {
 	        throw new ParamException(INSTANCE, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
 
-        checkBeforeInstance(busId);
+		// 1、判断商家是否已是盟主
+		if (this.unionRootService.isUnionOwner(busId)) {
+			throw new BusinessException(INSTANCE, "busId=" + busId, "您已是联盟盟主，不可创建");
+		}
+
+		//2、判断是否有创建联盟的权限
+		BusUser user = busUserService.getBusUserById(busId);
+	    if(user == null){
+			throw new BusinessException(INSTANCE, "参数user为空", "账号不存在");
+		}
+		List<Map> createDict = dictService.getCreateUnionDict();
+	    boolean flag = false;
+	    Map info = null;
+		for(Map map : createDict){
+			if(CommonUtil.toInteger(map.get("item_key")).equals(user.getLevel())){
+				info = map;
+				flag = true;
+				break;
+			}
+		}
+		if(!flag){
+			throw new BusinessException(INSTANCE, "没有创建权限", "您没有创建联盟的权限");
+		}
+		//3、根据等级判断是否需要付费
+
+		//4、需要付费，判断是否已经付费
+		return data;
 	}
 
     /**

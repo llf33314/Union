@@ -24,7 +24,6 @@
         <mybatis.plus.version>2.1-gamma</mybatis.plus.version>
         <pagehelper.version>5.0.3</pagehelper.version>
         <fastjson.version>1.2.34</fastjson.version>
-        <cxf.version>3.1.12</cxf.version>
         <httpclient.version>4.5.3</httpclient.version>
         <dev.lib.lombok>1.16.18</dev.lib.lombok>
     </properties>
@@ -117,12 +116,6 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
-        </dependency>
-        <!--添加cxf支持-->
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-spring-boot-starter-jaxws</artifactId>
-            <version>${cxf.version}</version>
         </dependency>
         <!-- httpclient -->
         <dependency>

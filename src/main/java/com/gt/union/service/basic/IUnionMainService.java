@@ -64,7 +64,7 @@ public interface IUnionMainService extends IService<UnionMain> {
      * @param busId
      * @throws Exception
      */
-    public void instance(Integer busId) throws Exception;
+    public Map<String, Object> instance(Integer busId) throws Exception;
 
     /**
      * 保存创建联盟的信息
