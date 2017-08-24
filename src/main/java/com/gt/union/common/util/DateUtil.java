@@ -108,6 +108,7 @@ public class DateUtil {
 
     public static final Date addDays(Date date, Integer amount) {
         Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
         calendar.add(Calendar.DATE, amount);
         return calendar.getTime();
     }

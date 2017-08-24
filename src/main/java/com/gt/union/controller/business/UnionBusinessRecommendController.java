@@ -60,7 +60,7 @@ public class UnionBusinessRecommendController {
 	public String listByToBusId(HttpServletRequest request, Page page
             , @ApiParam(name = "unionId", value = "所属联盟id", required = false)
             @RequestParam(name = "unionId", required = false) Integer unionId
-            , @ApiParam(name = "isAcceptance", value = "商机状态，当勾选多个时用英文字符的分号拼接，如=1;2", required = false)
+            , @ApiParam(name = "isAcceptance", value = "商机状态，0为未处理，1为受理，2为拒绝，当勾选多个时用英文字符的分号拼接，如=1;2", required = false)
             @RequestParam(name = "isAcceptance", required = false) String isAcceptance
             , @ApiParam(name = "userName", value = "顾客姓名，模糊查询", required = false)
             @RequestParam(name = "userName", required = false) String userName
@@ -84,7 +84,7 @@ public class UnionBusinessRecommendController {
     public String listByFromBusId(HttpServletRequest request, Page page
             , @ApiParam(name = "unionId", value = "所属联盟id", required = false)
             @RequestParam(name = "unionId", required = false) Integer unionId
-            , @ApiParam(name = "isAcceptance", value = "商机状态，当勾选多个时用英文字符的分号拼接，如=1;2", required = false)
+            , @ApiParam(name = "isAcceptance", value = "商机状态，0为未处理，1为受理，2为拒绝，当勾选多个时用英文字符的分号拼接，如=1;2", required = false)
             @RequestParam(name = "isAcceptance", required = false) String isAcceptance
             , @ApiParam(name = "userName", value = "顾客姓名，模糊查询", required = false)
             @RequestParam(name = "userName", required = false) String userName
@@ -110,7 +110,7 @@ public class UnionBusinessRecommendController {
             @RequestParam(name = "toBusId", required = false) Integer toBusId
             , @ApiParam(name = "unionId", value = "所属联盟id", required = false)
             @RequestParam(name = "unionId", required = false) Integer unionId
-            , @ApiParam(name = "isConfirm", value = "佣金结算状态，当勾选多个时用英文字符的分号拼接，如=1;2", required = false)
+            , @ApiParam(name = "isConfirm", value = "佣金结算状态，0为未处理，1为受理，2为拒绝，当勾选多个时用英文字符的分号拼接，如=1;2", required = false)
             @RequestParam(name = "isConfirm", required = false) String isConfirm
             , @ApiParam(name = "userName", value = "顾客姓名，模糊查询", required = false)
             @RequestParam(name = "userName", required = false) String userName
@@ -140,7 +140,7 @@ public class UnionBusinessRecommendController {
             @RequestParam(name = "fromBusId", required = false) Integer fromBusId
             , @ApiParam(name = "unionId", value = "所属联盟id", required = false)
             @RequestParam(name = "unionId", required = false) Integer unionId
-            , @ApiParam(name = "isConfirm", value = "佣金结算状态，当勾选多个时用英文字符的分号拼接，如=1;2", required = false)
+            , @ApiParam(name = "isConfirm", value = "佣金结算状态，0为未处理，1为受理，2为拒绝，当勾选多个时用英文字符的分号拼接，如=1;2", required = false)
             @RequestParam(name = "isConfirm", required = false) String isConfirm
             , @ApiParam(name = "userName", value = "顾客姓名，模糊查询", required = false)
             @RequestParam(name = "userName", required = false) String userName

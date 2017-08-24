@@ -94,4 +94,8 @@ public class CommonConstant {
 	 */
 	public static final String WXMP_SIGN_KEY = PropertiesUtil.getWxmpSignKey();
 
+    /**
+     * wxmp公司名称
+     */
+	public static final String WXMP_COMPANY = PropertiesUtil.getWxmpCompany();
 }

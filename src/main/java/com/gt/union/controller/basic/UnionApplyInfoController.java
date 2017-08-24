@@ -1,6 +1,8 @@
 package com.gt.union.controller.basic;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.gt.union.amqp.entity.PhoneMessage;
+import com.gt.union.amqp.sender.PhoneMessageSender;
 import com.gt.union.common.annotation.SysLogAnnotation;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
@@ -13,7 +15,6 @@ import com.gt.union.entity.basic.UnionApplyInfo;
 import com.gt.union.entity.basic.vo.UnionApplyInfoVO;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.basic.IUnionApplyInfoService;
-import com.gt.union.service.basic.IUnionMemberService;
 import com.gt.union.service.common.IUnionRootService;
 import com.gt.union.service.common.IUnionValidateService;
 import io.swagger.annotations.ApiOperation;
@@ -50,13 +51,21 @@ public class UnionApplyInfoController {
 	private IUnionApplyInfoService unionApplyInfoService;
 
 	@Autowired
-	private IUnionMemberService unionMemberService;
-
-	@Autowired
     private IUnionRootService unionRootService;
 
 	@Autowired
 	private IUnionValidateService unionValidateService;
+
+	@Autowired
+    private PhoneMessageSender phoneMessageSender;
+
+	@ApiOperation(value = "测试消息队列短信功能", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/test", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String test(){
+        PhoneMessage phoneMessage = new PhoneMessage(33, "13923639694", "hello world");
+	    this.phoneMessageSender.sendMsg(phoneMessage);
+	    return GTJsonResult.instanceSuccessMsg().toString();
+    }
 
 	/**
 	 * 获取编辑盟员信息

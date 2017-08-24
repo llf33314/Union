@@ -555,14 +555,20 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
         //已结算佣金收入
         Double confirmBrokerageIncome = getBrokerageIncome(unionId, busId, UnionBusinessRecommendConstant.IS_CONFIRM_CONFIRM);
         resultMap.put("confirmBrokerageIncome", confirmBrokerageIncome);
-        //未结算佣金收入占总佣金收入的百分比
-        BigDecimal bdUncheckBrokerageIncomePercent = BigDecimalUtil.divide(uncheckBrokerageIncome, BigDecimalUtil.add(uncheckBrokerageIncome, confirmBrokerageIncome), 4);
-        String uncheckBrokerageIncomePercent = DoubleUtil.formatPercent(bdUncheckBrokerageIncomePercent.doubleValue());
-        resultMap.put("uncheckBrokerageIncomePercent", uncheckBrokerageIncomePercent);
-        //已结算佣金收入占总佣金收入的百分比
-        BigDecimal bdConfirmBrokerageIncomePercent = BigDecimalUtil.subtract(Double.valueOf(1.00), bdUncheckBrokerageIncomePercent, 4);
-        String confirmBrokerageIncomePercent = DoubleUtil.formatPercent(bdConfirmBrokerageIncomePercent.doubleValue());
-        resultMap.put("confirmBrokerageIncomePercent", confirmBrokerageIncomePercent);
+        //总佣金收入
+        BigDecimal brokerageIncomeSum = BigDecimalUtil.add(uncheckBrokerageIncome, confirmBrokerageIncome);
+        resultMap.put("brokerageIncomeSum", brokerageIncomeSum);
+        //收入百分比
+        if (brokerageIncomeSum.doubleValue() != 0.0D) {
+            //未结算佣金收入占总佣金收入的百分比
+            BigDecimal bdUncheckBrokerageIncomePercent = BigDecimalUtil.divide(uncheckBrokerageIncome, brokerageIncomeSum, 4);
+            String uncheckBrokerageIncomePercent = DoubleUtil.formatPercent(bdUncheckBrokerageIncomePercent.doubleValue());
+            resultMap.put("uncheckBrokerageIncomePercent", uncheckBrokerageIncomePercent);
+            //已结算佣金收入占总佣金收入的百分比
+            BigDecimal bdConfirmBrokerageIncomePercent = BigDecimalUtil.subtract(Double.valueOf(1.00), bdUncheckBrokerageIncomePercent, 4);
+            String confirmBrokerageIncomePercent = DoubleUtil.formatPercent(bdConfirmBrokerageIncomePercent.doubleValue());
+            resultMap.put("confirmBrokerageIncomePercent", confirmBrokerageIncomePercent);
+        }
 
         //未结算支出佣金
         Double uncheckBrokerageExpense = getBrokerageExpense(unionId, busId, UnionBusinessRecommendConstant.IS_CONFIRM_UNCHECK);
@@ -570,14 +576,20 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
         //已结算支出佣金
         Double confirmBrokerageExpense = getBrokerageExpense(unionId, busId, UnionBusinessRecommendConstant.IS_CONFIRM_CONFIRM);
         resultMap.put("confirmBrokerageExpense", confirmBrokerageExpense);
-        //未结算支出佣金占总支出佣金的百分比
-        BigDecimal bdUncheckBrokerageExpensePercent = BigDecimalUtil.divide(uncheckBrokerageExpense, BigDecimalUtil.add(uncheckBrokerageExpense, confirmBrokerageExpense), 4);
-        String uncheckBrokerageExpensePercent = DoubleUtil.formatPercent(bdUncheckBrokerageExpensePercent.doubleValue());
-        resultMap.put("uncheckBrokerageExpensePercent", uncheckBrokerageExpensePercent);
-        //已结算支出佣金占总支出佣金的百分比
-        BigDecimal bdConfirmBrokerageExpensePercent = BigDecimalUtil.subtract(Double.valueOf(1.00), bdUncheckBrokerageExpensePercent, 4);
-        String confirmBrokerageExpensePercent = DoubleUtil.formatPercent(bdConfirmBrokerageExpensePercent.doubleValue());
-        resultMap.put("confirmBrokerageExpensePercent", confirmBrokerageExpensePercent);
+        //总支出佣金
+        BigDecimal brokerageExpenseSum = BigDecimalUtil.add(uncheckBrokerageExpense, confirmBrokerageExpense);
+        resultMap.put("brokerageExpenseSum", brokerageExpenseSum);
+        //支出百分比
+        if (brokerageExpenseSum.doubleValue() != 0.0D) {
+            //未结算支出佣金占总支出佣金的百分比
+            BigDecimal bdUncheckBrokerageExpensePercent = BigDecimalUtil.divide(uncheckBrokerageExpense, brokerageExpenseSum, 4);
+            String uncheckBrokerageExpensePercent = DoubleUtil.formatPercent(bdUncheckBrokerageExpensePercent.doubleValue());
+            resultMap.put("uncheckBrokerageExpensePercent", uncheckBrokerageExpensePercent);
+            //已结算支出佣金占总支出佣金的百分比
+            BigDecimal bdConfirmBrokerageExpensePercent = BigDecimalUtil.subtract(Double.valueOf(1.00), bdUncheckBrokerageExpensePercent, 4);
+            String confirmBrokerageExpensePercent = DoubleUtil.formatPercent(bdConfirmBrokerageExpensePercent.doubleValue());
+            resultMap.put("confirmBrokerageExpensePercent", confirmBrokerageExpensePercent);
+        }
 
         //获取一周统计数据
         List<Map<String, Map<String, Double>>> brokerageInWeek = getBrokerageInWeek(unionId, busId);
@@ -642,17 +654,19 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
     //获取一周佣金信息
     private List<Map<String, Map<String, Double>>> getBrokerageInWeek(Integer unionId, Integer busId) {
         List<Map<String, Map<String, Double>>> resultList = new ArrayList<>();
-        Date currentDate = DateUtil.getCurrentDate();
-        for (int i = 0; i > -7; i--) {
-            Date date = DateUtil.addDays(currentDate, i);
-            String strDate = DateUtil.getDateString(date, DateUtil.DATE_PATTERN);
+        int mondayOffset = 0 - ((Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 2 + 7) % 7);//例如今天是星期四，则mondayOffSet=-3
+        Date mondayInThisWeek = DateUtil.addDays(DateUtil.getCurrentDate(), mondayOffset);
+        for (; mondayOffset <= 0; mondayOffset++) {
+            String strDate = DateUtil.getDateString(mondayInThisWeek, DateUtil.DATE_PATTERN);
             String strDateBegin = strDate + " 00:00:00";
             String strDateEnd = strDate + " 23:59:59";
             Map<String, Double> brokerageInDayMap = getBrokerageInDay(unionId, busId, strDateBegin, strDateEnd);
-            String strWeek = DateUtil.getWeek(date);
+            String strWeek = DateUtil.getWeek(mondayInThisWeek);
             Map<String, Map<String, Double>> weekMap = new HashMap<>();
             weekMap.put(strWeek, brokerageInDayMap);
             resultList.add(weekMap);
+
+            mondayInThisWeek = DateUtil.addDays(mondayInThisWeek, 1);
         }
         return resultList;
     }

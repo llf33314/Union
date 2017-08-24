@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.amqp.entity.PhoneMessage;
+import com.gt.union.amqp.sender.PhoneMessageSender;
 import com.gt.union.api.client.user.BusUserService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
@@ -65,6 +67,9 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
 
     @Autowired
     private BusUserService busUserService;
+
+    @Autowired
+    private PhoneMessageSender phoneMessageSender;
 
     @Override
     public Page listByUnionIdAndApplyStatus(Page page, final Integer unionId, final Integer applyStatus, final String enterpriseName, final String directorPhone) throws Exception{
@@ -257,16 +262,12 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         checkUnionApplyInfo(list,vo);//校验数据
         UnionApply apply = saveUnionApply(busId,main.getId(),vo.getApplyType());//创建apply
         UnionApplyInfo info = unionApplyInfoService.saveUnionApplyInfo(vo, apply.getId());//创建applyInfo
-        //申请成功后，发送短信让盟主审核 // TODO 使用消息队列发送消息
+
+        //申请成功后，发送短信让盟主审核
         UnionApplyInfo mainInfo = this.unionApplyInfoService.getByUnionIdAndBusId(main.getBusId(),main.getId());
-        String nowTime = "apply:"+System.currentTimeMillis();
-        HashMap<String, Object> redisMap = new HashMap<>();
-        redisMap.put("busId",main.getBusId());
-        redisMap.put("mobiles",mainInfo.getNotifyPhone());
         String content = "\""+info.getEnterpriseName()+"\" 申请加入 \"" + main.getUnionName() +"\"，请到入盟审核处查看并处理。";//短信内容
-        redisMap.put("content",content);
-        redisMap.put("model",CommonConstant.SMS_UNION_MODEL);
-        redisCacheUtil.set(nowTime, JSON.toJSONString(redisMap),60l);
+        PhoneMessage phoneMessage = new PhoneMessage(main.getBusId(), mainInfo.getNotifyPhone(), content);
+        this.phoneMessageSender.sendMsg(phoneMessage);
         //操作成功后，存入缓存
         String infoKey = RedisKeyUtil.getUnionApplyInfoKey(main.getId(), busId);
         redisCacheUtil.set(infoKey,JSON.toJSONString(info));
