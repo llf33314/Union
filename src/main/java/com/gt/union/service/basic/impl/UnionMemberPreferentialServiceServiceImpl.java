@@ -26,10 +26,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 
 /**
@@ -62,10 +59,7 @@ public class UnionMemberPreferentialServiceServiceImpl extends ServiceImpl<Union
     private IUnionRootService unionRootService;
 
     @Override
-    public Page pagePreferentialServiceByManagerId(Page page, final Integer managerId, final Integer verifyStatus) throws Exception {
-        if (page == null) {
-            throw new ParamException(PAGE_PREFERENTIAL_SERVICE_MANAGERID, "参数page为空", ExceptionConstant.PARAM_ERROR);
-        }
+    public List<Map<String, Object>> listPreferentialServiceByManagerId(final Integer managerId, final Integer verifyStatus) throws Exception {
         if (managerId == null) {
             throw new ParamException(PAGE_PREFERENTIAL_SERVICE_MANAGERID, "参数managerId为空", ExceptionConstant.PARAM_ERROR);
         }
@@ -79,7 +73,7 @@ public class UnionMemberPreferentialServiceServiceImpl extends ServiceImpl<Union
                 .eq("verify_status", verifyStatus);
 
         entityWrapper.setSqlSelect(" id id, service_name serviceName, DATE_FORMAT(createtime, '%Y-%m-%d %T') createtime, verify_status verifyStatus ");
-        return this.selectPage(page, entityWrapper);
+        return this.selectMaps(entityWrapper);
     }
 
 	@Override

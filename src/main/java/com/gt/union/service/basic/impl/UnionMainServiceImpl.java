@@ -346,7 +346,33 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
      * @param busId
      * @throws Exception
      */
-	private void checkBeforeInstance(Integer busId) throws Exception {
+	private Map checkBeforeInstance(Integer busId) throws Exception {
+		// 1、判断商家是否已是盟主
+		if (this.unionRootService.isUnionOwner(busId)) {
+			throw new BusinessException(INSTANCE, "busId=" + busId, "您已是联盟盟主，不可创建");
+		}
+		// 2、判断商家是否有盟主权限
+		BusUser user = busUserService.getBusUserById(busId);
+		if(user == null){
+			throw new BusinessException(INSTANCE, "参数user为空", "账号不存在");
+		}
+		List<Map> createDict = dictService.getCreateUnionDict();
+		boolean flag = false;
+		Map info = null;
+		for(Map map : createDict){
+			if(CommonUtil.toInteger(map.get("item_key")).equals(user.getLevel())){
+				info = map;
+				flag = true;
+				break;
+			}
+		}
+		if(!flag){
+			throw new BusinessException(INSTANCE, "没有创建权限", "您没有创建联盟的权限");
+		}
+		//3、判断是否需要付费
+
+		//4、需要付费的，
+
         // （1）判断商家是否有盟主权限
         if (!this.unionRootService.hasUnionOwnerAuthority(busId)) {
             throw new BusinessException(INSTANCE, "busId=" + busId, "当前登录商家帐号不具有盟主权限");
@@ -361,6 +387,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         if (!this.unionRootService.isUnionOwner(busId)) {
             throw new BusinessException(INSTANCE, "busId=" + busId, "不可创建");
         }
+        return info;
     }
 
     @Override
@@ -369,10 +396,69 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         if (busId == null) {
             throw new ParamException(SAVE, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
-        checkBeforeInstance(busId);
+		// 1、判断商家是否已是盟主
+		if (this.unionRootService.isUnionOwner(busId)) {
+			throw new BusinessException(INSTANCE, "busId=" + busId, "您已是联盟盟主，不可创建");
+		}
+		//（1）保存联盟信息
+		UnionMain main = new UnionMain();
+		if(vo.getUnionImg().indexOf("/upload/") > -1){
+			main.setEditUnionImg(vo.getUnionImg().split("/upload/")[1]);
+		}
+		if(StringUtil.isNotEmpty(vo.getUnionWxGroupImg()) && vo.getUnionWxGroupImg().indexOf("/upload/") > -1){
+			main.setEditUnionWxGroupImg(vo.getUnionWxGroupImg().split("/upload/")[1]);
+		}
+		if(StringUtil.isNotEmpty(main.getUnionWxGroupImg()) && main.getUnionWxGroupImg().indexOf("/upload/") > -1){
+			main.setEditUnionWxGroupImg(main.getUnionWxGroupImg().split("/upload/")[1]);
+		}
+		if(vo.getRedCardOpend() == 1){
+			if(CommonUtil.isEmpty(vo.getRedCardPrice())){
+				throw new BusinessException(UPDATE_ID, "" , "请设置红卡价格");
+			}
+			if(CommonUtil.isEmpty(CommonUtil.toDouble(vo.getRedCardPrice())) || vo.getRedCardPrice() < 0){
+				throw new BusinessException(UPDATE_ID, "" , "红卡价格有误");
+			}
+			if(CommonUtil.isEmpty(vo.getRedCardTerm())){
+				throw new BusinessException(UPDATE_ID, "" , "请设置红卡期限");
+			}
+			if(CommonUtil.isEmpty(CommonUtil.toInteger(vo.getRedCardTerm())) || vo.getRedCardTerm() < 0){
+				throw new BusinessException(UPDATE_ID, "" , "红卡期限有误");
+			}
+			main.setRedCardIllustration(vo.getRedCardIllustration());
+			main.setRedCardPrice(vo.getRedCardPrice());
+			main.setRedCardTerm(vo.getRedCardTerm());
+		}else {
+			main.setRedCardPrice(0d);
+			main.setRedCardTerm(0);
+			main.setRedCardIllustration("");
+		}
+		if(vo.getBlackCardCharge() == 1){
+			if(CommonUtil.isEmpty(vo.getRedCardPrice())){
+				throw new BusinessException(UPDATE_ID, "" , "请设置黑卡价格");
+			}
+			if(CommonUtil.isEmpty(CommonUtil.toDouble(vo.getRedCardPrice())) || vo.getRedCardPrice() < 0){
+				throw new BusinessException(UPDATE_ID, "" , "黑卡价格有误");
+			}
+			if(CommonUtil.isEmpty(vo.getBlackCardTerm())){
+				throw new BusinessException(UPDATE_ID, "" , "请设置黑卡期限");
+			}
+			if(CommonUtil.isEmpty(CommonUtil.toInteger(vo.getBlackCardTerm())) || vo.getBlackCardTerm() < 0){
+				throw new BusinessException(UPDATE_ID, "" , "黑卡期限有误");
+			}
+			main.setBlackCardIllustration(vo.getBlackCardIllustration());
+			main.setBlackCardPrice(vo.getBlackCardPrice());
+			main.setBlackCardTerm(vo.getBlackCardTerm());
+		}else {
+			main.setBlackCardPrice(0d);
+			main.setBlackCardTerm(0);
+			main.setBlackCardIllustration("");
+		}
+		if(vo.getBlackCardCharge() == 1 && vo.getRedCardOpend() == 1){
+			if(vo.getBlackCardPrice().doubleValue() > vo.getRedCardPrice()){
+				throw new BusinessException(UPDATE_ID, "" , "黑卡价格不可高于红卡价格");
+			}
+		}
 
-        //（1）保存联盟信息
-        UnionMain main = new UnionMain();
         main.setCreatetime(DateUtil.getCurrentDate());
         main.setDelStatus(UnionMainConstant.DEL_STATUS_NO);
         main.setUnionName(vo.getUnionName());
@@ -381,8 +467,15 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         main.setJoinType(vo.getJoinType());
         main.setDirectorPhone(vo.getDirectorPphone());
         main.setUnionIllustration(vo.getUnionIllustration());
-        main.setUnionWxGroupImg(vo.getUnionWxGroupImg());
-        //TODO union_sign? union_total_member?...
+		main.setUnionWxGroupImg(vo.getUnionWxGroupImg());
+		List<Map> dicts = dictService.getCreateUnionDict();
+		BusUser user = busUserService.getBusUserById(busId);
+		for(Map map : dicts){
+			if(map.get("item_key").equals(user.getLevel())){
+				//获取可加入的盟员数
+			}
+		}
+		main.setUnionSign(RandomKit.getRandomString(8,2));
         main.setUnionMemberNum(UnionMainConstant.MEMBER_NUM_INIT);
         main.setUnionLevel(UnionMainConstant.LEVEL_INIT);
         this.insert(main);

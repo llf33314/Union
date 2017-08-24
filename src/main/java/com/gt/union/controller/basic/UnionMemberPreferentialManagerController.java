@@ -2,10 +2,13 @@ package com.gt.union.controller.basic;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.common.annotation.SysLogAnnotation;
+import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionMemberPreferentialServiceConstant;
 import com.gt.union.common.exception.BaseException;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
+import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.basic.UnionMemberPreferentialManager;
 import com.gt.union.entity.common.BusUser;
@@ -73,13 +76,12 @@ public class UnionMemberPreferentialManagerController {
 
     @ApiOperation(value = "优惠项目审核详情", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{id}/verifyStatus/{verifyStatus}", method = RequestMethod.GET, produces = "application/json;charset=utf-8")
-    public String getByIdAndVerifyStatus(Page page
-        , @ApiParam(name = "id", value = "优惠项目审核id", required = true)
+    public String getByIdAndVerifyStatus(@ApiParam(name = "id", value = "优惠项目审核id", required = true)
         @PathVariable("id") Integer id
         , @ApiParam(name = "verifyStatus", value = "审核状态：1代表未审核，2代表审核通过，3代表审核不通过", required = true)
         @PathVariable(name = "verifyStatus") Integer verifyStatus) {
         try {
-            Map<String, Object> result = this.unionMemberPreferentialManagerService.getByIdAndVerifyStatus(page, id, verifyStatus);
+            Map<String, Object> result = this.unionMemberPreferentialManagerService.getByIdAndVerifyStatus(id, verifyStatus);
             return GTJsonResult.instanceSuccessMsg(result).toString();
         } catch (BaseException e) {
             logger.error("", e);
@@ -113,6 +115,9 @@ public class UnionMemberPreferentialManagerController {
                 ,@ApiParam(name = "preferentialIllustration", value = "项目说明", required = true) @RequestParam(name = "preferentialIllustration", required = true) String preferentialIllustration) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
+            if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
+                throw new BusinessException(SAVE, "", CommonConstant.UNION_BUS_PARENT_MSG);
+            }
             UnionMemberPreferentialManager manager = this.unionMemberPreferentialManagerService.save(unionId, busUser.getId(), preferentialIllustration);
             return GTJsonResult.instanceSuccessMsg(manager).toString();
         } catch (BaseException e) {

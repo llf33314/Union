@@ -46,13 +46,12 @@ public interface IUnionMemberPreferentialManagerService extends IService<UnionMe
 
     /**
      * 根据managerId和verifyStatus获取对应详情信息，page封装优惠服务项列表信息
-     * @param page
      * @param id
      * @param verifyStatus
      * @return
      * @throws Exception
      */
-	Map<String, Object> getByIdAndVerifyStatus(Page page, Integer id, Integer verifyStatus) throws Exception;
+	Map<String, Object> getByIdAndVerifyStatus(Integer id, Integer verifyStatus) throws Exception;
 
 	/**
 	 * 项目说明

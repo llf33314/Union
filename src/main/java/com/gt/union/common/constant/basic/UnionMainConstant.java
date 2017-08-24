@@ -25,9 +25,9 @@ public interface UnionMainConstant {
     public static final int MEMBER_NUM_INIT = 1;
 
     /**
-     * 初始化或新建联盟时，默认的联盟级别为0
+     * 初始化或新建联盟时，默认的联盟级别为1
      */
-    public static final int LEVEL_INIT = 0;
+    public static final int LEVEL_INIT = 1;
 
     /**
      * 加盟方式：只允许申请
