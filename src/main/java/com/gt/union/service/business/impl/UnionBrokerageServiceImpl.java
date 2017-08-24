@@ -9,17 +9,14 @@ import com.gt.union.common.constant.basic.UnionApplyConstant;
 import com.gt.union.common.constant.business.UnionBrokerageConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.DateUtil;
 import com.gt.union.entity.business.UnionBrokerage;
+import com.gt.union.entity.business.vo.UnionBrokerageVO;
 import com.gt.union.mapper.business.UnionBrokerageMapper;
 import com.gt.union.service.business.IUnionBrokerageService;
 import com.gt.union.service.common.IUnionRootService;
-import com.gt.union.vo.business.UnionBrokerageVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
 
 /**
  * <p>

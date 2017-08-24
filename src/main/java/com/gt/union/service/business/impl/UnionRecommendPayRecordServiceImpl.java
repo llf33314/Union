@@ -1,14 +1,12 @@
 package com.gt.union.service.business.impl;
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.gt.union.common.util.CommonUtil;
 import com.gt.union.entity.business.UnionRecommendPayRecord;
 import com.gt.union.mapper.business.UnionRecommendPayRecordMapper;
 import com.gt.union.service.business.IUnionRecommendPayRecordService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 /**
  * <p>
@@ -24,7 +22,7 @@ public class UnionRecommendPayRecordServiceImpl extends ServiceImpl<UnionRecomme
 	private Logger logger = Logger.getLogger(UnionRecommendPayRecordServiceImpl.class);
 
 	@Autowired
-	private UnionRecommendPayRecordMapper unionRecommendPayRecordMapper;
+	private UnionRecommendPayRecordMapper unionRecommendPayRecordMapper; //TODO 为什么是调用mapper，而不是service?
 
 	@Override
 	public double getRecommendPay(Integer busId, Integer unionId) {

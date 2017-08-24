@@ -1,4 +1,4 @@
-package com.gt.union.vo.business;
+package com.gt.union.entity.business.vo;
 
 import com.gt.union.common.annotation.valid.StringLengthValid;
 import io.swagger.annotations.ApiModel;

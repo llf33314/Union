@@ -3,8 +3,7 @@ package com.gt.union.service.business;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.entity.business.UnionBusinessRecommend;
-import com.gt.union.vo.business.UnionBusinessRecommendVO;
-import io.swagger.models.auth.In;
+import com.gt.union.entity.business.vo.UnionBusinessRecommendVO;
 
 import java.util.List;
 import java.util.Map;

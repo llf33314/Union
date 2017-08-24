@@ -3,7 +3,7 @@ package com.gt.union.service.card;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.entity.card.UnionCardDivideRecord;
-import com.gt.union.vo.card.UnionCardDivideRecordVO;
+import com.gt.union.entity.card.vo.UnionCardDivideRecordVO;
 
 /**
  * <p>
