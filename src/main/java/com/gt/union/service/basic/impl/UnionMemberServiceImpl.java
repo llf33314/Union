@@ -549,15 +549,15 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         if(StringUtil.isEmpty(outReason)){
             throw new ParamException(APPLY_OUT_UNION, "参数outReason为空", "退盟理由内容不能为空");
         }
-        if(StringUtil.getStringLength(outReason) > 20){
+        if(StringUtil.getStringLength(outReason) > UnionMemberConstant.OUT_REASON_LENGTH_LIMIT){
             throw new ParamException(APPLY_OUT_UNION, "参数outReason为空", "退盟理由内容不可超过20字");
         }
         // （2）判断当前用户是否是联盟的有效盟员
-        UnionMember member = this.getByUnionIdAndBusId(unionId,busId);
+        UnionMember member = this.getByUnionIdAndBusId(unionId, busId);
         if(!unionRootService.hasUnionMemberAuthority(member)){
             throw new BusinessException(APPLY_OUT_UNION, "", CommonConstant.UNION_MEMBER_NON_AUTHORITY_MSG);
         }
-        if(member.getOutStaus() == 1){
+        if(member.getOutStaus() == UnionMemberConstant.OUT_STATUS_UNCHECKED){
             throw new BusinessException(APPLY_OUT_UNION, "", "您已申请退盟，请耐心等待盟主审核");
         }
         // （3）判断当前用户是否已申请退盟
@@ -674,6 +674,12 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         if(!unionRootService.isUnionOwner(unionId,busId)){
             throw new BusinessException(TRANSFER_UNION_OWNER, "", CommonConstant.UNION_OWNER_NON_AUTHORITY_MSG);
         }
+
+        //3、判断盟员是否有效
+        if(!unionRootService.hasUnionMemberAuthority(unionMember)){
+            throw new BusinessException(APPLY_OUT_UNION, "", "该盟");
+        }
+        UnionMain main = unionMainService.getById(unionId);
     }
 
 }

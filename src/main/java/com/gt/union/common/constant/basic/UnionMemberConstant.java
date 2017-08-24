@@ -39,5 +39,8 @@ public interface UnionMemberConstant {
      */
     public static final int IS_UNION_OWNER_YES = 1;
 
-
+    /**
+     * 退盟理由长度限制
+     */
+    public static final int OUT_REASON_LENGTH_LIMIT = 20;
 }

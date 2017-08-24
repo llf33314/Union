@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.amqp.entity.PhoneMessage;
+import com.gt.union.amqp.sender.PhoneMessageSender;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionApplyConstant;
 import com.gt.union.common.constant.basic.UnionMainConstant;
@@ -13,12 +15,16 @@ import com.gt.union.common.constant.business.UnionBusinessRecommendConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
+import com.gt.union.entity.basic.UnionApplyInfo;
+import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.basic.UnionMember;
 import com.gt.union.entity.business.UnionBrokerage;
 import com.gt.union.entity.business.UnionBusinessRecommend;
 import com.gt.union.entity.business.UnionBusinessRecommendInfo;
 import com.gt.union.entity.business.vo.UnionBusinessRecommendVO;
 import com.gt.union.mapper.business.UnionBusinessRecommendMapper;
+import com.gt.union.service.basic.IUnionApplyInfoService;
+import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.basic.IUnionMemberService;
 import com.gt.union.service.business.IUnionBrokerageService;
 import com.gt.union.service.business.IUnionBusinessRecommendInfoService;
@@ -69,6 +75,15 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
 
+	@Autowired
+    private IUnionMainService unionMainService;
+
+	@Autowired
+	private IUnionApplyInfoService unionApplyInfoService;
+
+	@Autowired
+	private PhoneMessageSender phoneMessageSender;
+
 	@Override
     @Transactional(propagation = Propagation.REQUIRED)
 	public void save(UnionBusinessRecommendVO vo) throws Exception{
@@ -110,6 +125,16 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 		info.setUserName(vo.getUserName());
 		info.setUserPhone(vo.getUserPhone());
 		this.unionBusinessRecommendInfoService.insert(info);
+		//发送短信通过
+        UnionMain unionMain = this.unionMainService.getById(vo.getUnionId());
+        UnionApplyInfo fromUnionApplyInfo = this.unionApplyInfoService.getByUnionIdAndBusId(vo.getUnionId(), vo.getBusId());
+        UnionApplyInfo toUnionApplyInfo = this.unionApplyInfoService.getByUnionIdAndBusId(vo.getUnionId(), vo.getToMemberId());
+        String phone = StringUtil.isNotEmpty(toUnionApplyInfo.getNotifyPhone()) ? toUnionApplyInfo.getNotifyPhone() : toUnionApplyInfo.getDirectorPhone();
+        StringBuilder sbContent = new StringBuilder("\"").append(unionMain.getUnionName()).append("\"的盟员\"")
+                .append(fromUnionApplyInfo.getEnterpriseName()).append("\"为你推荐了客户，请到商机消息处查看。客户信息：")
+                .append(vo.getUserName()).append("，").append(vo.getUserPhone()).append("，").append(vo.getBusinessMsg());
+        PhoneMessage phoneMessage = new PhoneMessage(vo.getBusId(), phone, sbContent.toString());
+        this.phoneMessageSender.sendMsg(phoneMessage);
 	}
 
 	@Override
@@ -242,6 +267,18 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
             updateRecommend.setBusinessPrice(BigDecimalUtil.multiply(unionBusinessRecommend.getAcceptancePrice(), unionBrokerage.getBrokerageRatio()).doubleValue());
             this.updateById(updateRecommend);
 
+            // （5）短信通知
+            UnionMain unionMain = this.unionMainService.getById(unionBusinessRecommend.getUnionId());
+            UnionBusinessRecommendInfo unionBusinessRecommendInfo = this.unionBusinessRecommendInfoService.getByRecommendId(unionBusinessRecommend.getId());
+            UnionApplyInfo fromUnionApplyInfo = this.unionApplyInfoService.getByUnionIdAndBusId(unionBusinessRecommend.getUnionId(), unionBusinessRecommend.getFromBusId());
+            UnionApplyInfo toUnionApplyInfo = this.unionApplyInfoService.getByUnionIdAndBusId(unionBusinessRecommend.getUnionId(), unionBusinessRecommend.getToBusId());
+            String phone = StringUtil.isNotEmpty(fromUnionApplyInfo.getNotifyPhone()) ? fromUnionApplyInfo.getNotifyPhone() : fromUnionApplyInfo.getDirectorPhone();
+            StringBuilder sbContent = new StringBuilder("\"").append(unionMain.getUnionName()).append("\"的盟员\"")
+                    .append(toUnionApplyInfo.getEnterpriseName()).append("\"已接收您推荐的商机消息。客户信息：")
+                    .append(unionBusinessRecommendInfo.getUserName()).append("，")
+                    .append(unionBusinessRecommendInfo.getUserPhone()).append("，")
+                    .append(unionBusinessRecommendInfo.getBusinessMsg());
+            PhoneMessage phoneMessage = new PhoneMessage(unionBusinessRecommend.getToBusId(), phone, sbContent.toString());
         }
     }
 
@@ -257,6 +294,19 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	        updateRecommend.setId(unionBusinessRecommend.getId());
 	        updateRecommend.setIsAcceptance(UnionBusinessRecommendConstant.IS_ACCEPTANCE_REFUSE);
 	        this.updateById(updateRecommend);
+
+	        //短信通知
+            UnionMain unionMain = this.unionMainService.getById(unionBusinessRecommend.getUnionId());
+            UnionBusinessRecommendInfo unionBusinessRecommendInfo = this.unionBusinessRecommendInfoService.getByRecommendId(unionBusinessRecommend.getId());
+            UnionApplyInfo fromUnionApplyInfo = this.unionApplyInfoService.getByUnionIdAndBusId(unionBusinessRecommend.getUnionId(), unionBusinessRecommend.getFromBusId());
+            UnionApplyInfo toUnionApplyInfo = this.unionApplyInfoService.getByUnionIdAndBusId(unionBusinessRecommend.getUnionId(), unionBusinessRecommend.getToBusId());
+            String phone = StringUtil.isNotEmpty(fromUnionApplyInfo.getNotifyPhone()) ? fromUnionApplyInfo.getNotifyPhone() : fromUnionApplyInfo.getDirectorPhone();
+            StringBuilder sbContent = new StringBuilder("\"").append(unionMain.getUnionName()).append("\"的盟员\"")
+                    .append(toUnionApplyInfo.getEnterpriseName()).append("\"已拒绝您推荐的商机消息。客户信息：")
+                    .append(unionBusinessRecommendInfo.getUserName()).append("，")
+                    .append(unionBusinessRecommendInfo.getUserPhone()).append("，")
+                    .append(unionBusinessRecommendInfo.getBusinessMsg());
+            PhoneMessage phoneMessage = new PhoneMessage(unionBusinessRecommend.getToBusId(), phone, sbContent.toString());
         }
     }
 
