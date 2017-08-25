@@ -11,11 +11,9 @@ import com.gt.union.common.util.DateTimeKit;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.entity.basic.UnionCreateInfoRecord;
 import com.gt.union.entity.basic.UnionMain;
+import com.gt.union.entity.basic.UnionMember;
 import com.gt.union.entity.basic.UnionTransferRecord;
-import com.gt.union.service.basic.IUnionApplyService;
-import com.gt.union.service.basic.IUnionCreateInfoRecordService;
-import com.gt.union.service.basic.IUnionMainService;
-import com.gt.union.service.basic.IUnionTransferRecordService;
+import com.gt.union.service.basic.*;
 import com.gt.union.service.card.IUnionBusMemberCardService;
 import com.gt.union.service.common.IUnionRootService;
 import org.junit.Test;
@@ -47,15 +45,18 @@ public class MyUnitTest {
 	@Autowired
 	private DictService dictService;
 
+	@Autowired
+	private IUnionMemberService unionMemberService;
+
 	@Test
 	public void test1() throws Exception {
 		Map param = new HashMap<String,Object>();
 		Map obj = new HashMap<String,Object>();
 		param.put("mobiles","15986670850");
-		param.put("company","多粉平台");
+		param.put("company","aa");
 		param.put("busId",33);
 		param.put("model",0);
-		param.put("content","测试调用短信哦");
+		param.put("content","dfasgfa");
 		obj.put("reqdata",param);
 		System.out.println(smsService.sendSms(obj));
 	}

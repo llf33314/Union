@@ -139,13 +139,6 @@ public interface IUnionMemberService extends IService<UnionMember> {
 	void applyOutUnion(Integer unionId, Integer busId, String outReason) throws Exception;
 
     /**
-     * 获取申请退盟发送短信的参数信息
-     * @param redisKey
-     * @return
-     */
-    Map<String,Object> getMemberOutApplyMsgInfo(String redisKey) throws Exception;
-
-    /**
      * 盟主撤销权限转移
      * @param id    盟员id
      * @param unionId   联盟id

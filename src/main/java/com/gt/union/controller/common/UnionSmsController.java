@@ -37,7 +37,6 @@ import java.util.Map;
 @RequestMapping("/unionSms")
 public class UnionSmsController {
 	private static final String CONFIRM_OUT_CONFIRM_MSG = "UnionSmsController.confirmOutConfirmdMsg()";
-	private static final String MEMBER_OUT_APPLY_MSG = "UnionSmsController.memberOutApplyMsg()";
 	private static final String UNION_APPLY_MSG = "UnionSmsController.unionApplyMsg()";
 	private static final String BUSINESS_RECOMMEND_MSG = "UnionSmsController.businessRecommendMsg()";
 	private Logger logger = LoggerFactory.getLogger(UnionSmsController.class);
@@ -79,27 +78,6 @@ public class UnionSmsController {
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(CONFIRM_OUT_CONFIRM_MSG, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
-	}
-
-	@ApiOperation(value = "盟员退盟申请发送短信", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/memberOutApply", method= RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public String memberOutApplyMsg(HttpServletRequest request, HttpServletResponse response
-        , @ApiParam(name = "redisKey", value = "盟员退盟申请后返回的数据", required = true)
-        @RequestParam(name = "redisKey", required = true) String redisKey) throws IOException {
-		try {
-			Map<String,Object> param = unionMemberService.getMemberOutApplyMsgInfo(redisKey);
-			int code = smsService.sendSms(param);
-			if(code == 0){
-				return GTJsonResult.instanceErrorMsg(MEMBER_OUT_APPLY_MSG,"发送失败").toString();
-			}
-			return GTJsonResult.instanceSuccessMsg().toString();
-		} catch (BaseException e) {
-			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
-		} catch (Exception e) {
-			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(MEMBER_OUT_APPLY_MSG, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
-		}
 	}
 
 

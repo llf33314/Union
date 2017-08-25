@@ -1,6 +1,8 @@
 package com.gt.union.api.client.sms.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.gt.api.util.HttpClienUtils;
 import com.gt.api.util.sign.SignHttpUtils;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.common.constant.CommonConstant;
@@ -23,12 +25,11 @@ public class SmsServiceImpl implements SmsService {
 	public int sendSms(Map<String,Object> param) {
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/smsapi/6F6D9AD2/79B4DE7C/sendSmsOld.do";
 		try {
-			String result = SignHttpUtils.postByHttp(url, param, CommonConstant.WXMP_SIGN_KEY);
-			if(StringUtil.isEmpty(result)){
+			Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param),url, Map.class, CommonConstant.WXMP_SIGN_KEY);
+			if(CommonUtil.isEmpty(result)){
 				return 0;
 			}
-			Map<String,Object> data= JSON.parseObject(result,Map.class);
-			if(CommonUtil.toInteger(data.get("code")) != 0){
+			if(CommonUtil.toInteger(result.get("code")) != 0){
 				return 0;
 			}
 		}catch (Exception e){
