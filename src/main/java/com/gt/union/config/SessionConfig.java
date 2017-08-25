@@ -12,10 +12,12 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 public class SessionConfig {
 
     //冒号后的值为没有配置文件时，制动装载的默认值
-    @Value("${redis.hostname:localhost}")
+    @Value("${spring.redis.host}")
     String HostName;
-    @Value("${redis.port:6379}")
+    @Value("${spring.redis.port}")
     int Port;
+    @Value("${spring.redis.password}")
+    String password;
 
 
     @Bean
@@ -33,6 +35,7 @@ public class SessionConfig {
         connection.setPort(Port);
         connection.setHostName(HostName);
         connection.setDatabase(2);
+        connection.setPassword(password);
         return connection;
     }
 }
