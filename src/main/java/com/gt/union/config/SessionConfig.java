@@ -30,7 +30,7 @@ public class SessionConfig {
     }
 
     @Bean
-    public JedisConnectionFactory connectionFactory() {
+    public JedisConnectionFactory jedisConnectionFactory() {
         JedisConnectionFactory connection = new JedisConnectionFactory();
         connection.setPort(Port);
         connection.setHostName(HostName);
