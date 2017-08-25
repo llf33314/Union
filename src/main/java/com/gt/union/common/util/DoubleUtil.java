@@ -1,5 +1,6 @@
 package com.gt.union.common.util;
 
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 
 /**
@@ -7,26 +8,73 @@ import java.text.DecimalFormat;
  */
 public class DoubleUtil {
     public static final String PERCENT_PATTERN = "0.00%";
+
     /**
-     * 判断data中的小数精度是否超过了precision //TODO 感觉这个方法可以有更好的实现
-     * @param data
-     * @param precision
+     * 判断num中的小数精度
+     * @param num
+     * @param decimal
      * @return
      */
-    public static final boolean checkDecimalPrecision(Double data, int precision) {
-        data = data == null ? Double.valueOf(0.0) : data;
-        String dataStr = String.valueOf(data.doubleValue());
-        return dataStr.substring(dataStr.indexOf(".") + 1).length() > precision ? false : true;
+    public static final boolean checkDecimalPrecision(Double num, int decimal) {
+        num = num == null ? Double.valueOf(0.0) : num;
+        String strNum = BigDecimal.valueOf(num.doubleValue()).toString();
+        int index = strNum.indexOf(".");
+        return (index != -1 ? strNum.substring(index + 1).length() : 0) > decimal ? false : true;
     }
 
     /**
-     * 判断data中的小数精度是否超过了precision //TODO 感觉这个方法可以有更好的实现
-     * @param data
-     * @param precision
+     * 判断num中的小数精度
+     * @param num
+     * @param decimal
      * @return
      */
-    public static final boolean checkDecimalPrecision(double data, int precision) {
-        return checkDecimalPrecision(Double.valueOf(data), precision);
+    public static final boolean checkDecimalPrecision(double num, int decimal) {
+        return checkDecimalPrecision(Double.valueOf(num), decimal);
+    }
+
+    /**
+     * 判断num中的整数精度
+     * @param num
+     * @param integer
+     * @return
+     */
+    public static final boolean checkIntegerPrecision(Double num, int integer) {
+        num = num == null ? Double.valueOf(num) : num;
+        String strNum = BigDecimal.valueOf(num.doubleValue()).toString();
+        int index = strNum.indexOf(".");
+        return strNum.substring(index != -1 ? index : 0).length() > integer ? false : true;
+    }
+
+    /**
+     * 判断num中的整数精度
+     * @param num
+     * @param integer
+     * @return
+     */
+    public static final boolean checkIntegerPrecision(double num, int integer) {
+        return checkIntegerPrecision(Double.valueOf(num), integer);
+    }
+
+    /**
+     * 判断整数和小数精度
+     * @param num
+     * @param integer
+     * @param decimal
+     * @return
+     */
+    public static final boolean checkPrecision(Double num, int integer, int decimal) {
+        return checkIntegerPrecision(num, integer) && checkDecimalPrecision(num, decimal);
+    }
+
+    /**
+     * 判断整数和小数精度
+     * @param num
+     * @param integer
+     * @param decimal
+     * @return
+     */
+    public static final boolean checkPrecision(double num, int integer, int decimal) {
+        return checkPrecision(Double.valueOf(num), integer, decimal);
     }
 
     /**

@@ -1,5 +1,6 @@
 package com.gt.union.entity.basic.vo;
 
+import com.gt.union.common.annotation.valid.DoublePrecisionValid;
 import com.gt.union.common.annotation.valid.StringLengthValid;
 import com.gt.union.entity.basic.UnionInfoDict;
 import io.swagger.annotations.ApiModel;
@@ -78,6 +79,7 @@ public class UnionMainCreateInfoVO {
 	 * 黑卡收费价格
 	 */
 	@ApiModelProperty( value = "黑卡收费价格，设置黑卡收费时必填")
+	@DoublePrecisionValid(integer = 8, decimal = 2, message = "黑卡收费价格字数限制为整数8位，小数2位")
 	private Double blackCardPrice;
 	/**
 	 * 黑卡有效期限
@@ -95,6 +97,7 @@ public class UnionMainCreateInfoVO {
 	 * 红卡价格
 	 */
 	@ApiModelProperty( value = "红卡价格，设置红卡收费时必填")
+    @DoublePrecisionValid(integer = 8, decimal = 2, message = "红卡收费价格字数限制为整数8位，小数2位")
 	private Double redCardPrice;
 	/**
 	 * 红卡有效期限
@@ -105,13 +108,13 @@ public class UnionMainCreateInfoVO {
 	 * 黑卡说明
 	 */
 	@ApiModelProperty( value = "黑卡说明，不可超过50字")
-	@StringLengthValid(length = 50, message = "黑卡说明内容不可超过50字")
+	@StringLengthValid(length = 20, message = "黑卡说明内容不可超过20字")
 	private String blackCardIllustration;
 	/**
 	 * 红卡说明
 	 */
 	@ApiModelProperty( value = "红卡说明，不可超过50字")
-	@StringLengthValid(length = 50, message = "红卡说明内容不可超过50字")
+	@StringLengthValid(length = 20, message = "红卡说明内容不可超过20字")
 	private String redCardIllustration;
 
 	/**
@@ -138,7 +141,7 @@ public class UnionMainCreateInfoVO {
 	 * 负责人
 	 */
 	@ApiModelProperty( value = "负责人")
-	@StringLengthValid(length = 5, message = "负责人不可超过5个字")
+	@StringLengthValid(length = 10, message = "负责人不可超过10个字")
 	private String directorName;
 
 	/**

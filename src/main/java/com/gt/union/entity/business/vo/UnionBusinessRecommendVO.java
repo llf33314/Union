@@ -40,7 +40,7 @@ public class UnionBusinessRecommendVO {
 	 */
 	@ApiModelProperty( value = "意向客户姓名" ,required = true)
 	@NotBlank(message = "意向客户姓名不能为空")
-	@StringLengthValid(length = 10, message = "")
+	@StringLengthValid(length = 10, message = "意向客户姓名不可超过10字")
 	private String userName;
 
 	/**
