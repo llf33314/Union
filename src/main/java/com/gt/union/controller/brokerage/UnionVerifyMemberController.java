@@ -103,7 +103,9 @@ public class UnionVerifyMemberController {
 	@SysLogAnnotation(op_function = "2", description = "保存佣金平台管理员")
 	@ApiOperation(value = "保存佣金平台管理员", notes = "保存佣金平台管理员", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public String save(HttpServletRequest request, @ApiParam(name="unionVerifyMember", value = "平台管理员信息", required = true) @Valid @RequestBody UnionVerifyMember unionVerifyMember, BindingResult result){
+	public String save(HttpServletRequest request
+		, @ApiParam(name="unionVerifyMember", value = "平台管理员信息", required = true)
+        @Valid @RequestBody UnionVerifyMember unionVerifyMember, BindingResult result){
 		try{
 			this.unionValidateService.checkBindingResult(result);
             BusUser user = SessionUtils.getLoginUser(request);
