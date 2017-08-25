@@ -66,6 +66,10 @@ public class UnionVerifyMemberServiceImpl extends ServiceImpl<UnionVerifyMemberM
 		if(count > 0){
 			throw new ParamException(SAVE, "", "您输入的手机号码已存在，请重新输入");
 		}
+
+		if (StringUtil.getStringLength(unionVerifyMember.getMemberName()) > 10) {
+		    throw new BusinessException(SAVE, "", "姓名字数不能超过10个字");
+        }
 		EntityWrapper<UnionVerifyMember> memberWrapper = new EntityWrapper<UnionVerifyMember>();
 		memberWrapper.eq("del_status",0);
 		memberWrapper.eq("bus_id",unionVerifyMember.getBusId());

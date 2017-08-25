@@ -234,8 +234,8 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
         if(StringUtil.isEmpty(preferentialIllustration)){
             throw new ParamException(SAVE, "项目说明为空", "项目说明不能为空");
         }
-        if(StringUtil.getStringLength(preferentialIllustration) > 50){
-            throw new ParamException(SAVE, "项目说明长度超过50字", "项目说明长度不可超过50字");
+        if(StringUtil.getStringLength(preferentialIllustration) > 10){
+            throw new ParamException(SAVE, "项目说明长度超过10字", "项目说明长度不可超过10字");
         }
         UnionMemberPreferentialManager manager = getManagerByUnionId(unionId,busId);
         if(manager == null){
