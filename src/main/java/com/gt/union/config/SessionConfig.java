@@ -23,7 +23,7 @@ public class SessionConfig {
     @Bean
     public DefaultCookieSerializer defaultCookieSerializer(){
         DefaultCookieSerializer defaultCookieSerializer = new DefaultCookieSerializer();
-        defaultCookieSerializer.setDomainName("yifriend.net");
+        defaultCookieSerializer.setDomainName(".yifriend.net");
         defaultCookieSerializer.setCookieName("JSESSIONID");
         defaultCookieSerializer.setCookiePath("/");
         return defaultCookieSerializer;

@@ -1,5 +1,6 @@
 package com.gt.union.common.util;
 
+import com.alibaba.fastjson.JSON;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.entity.common.BusUser;
 import org.apache.log4j.Logger;
@@ -16,7 +17,7 @@ public class SessionUtils {
 		try {
 			Object obj = request.getSession().getAttribute(CommonConstant.SESSION_BUSINESS_KEY);
 			if(obj != null){
-				return (BusUser) obj;
+				return JSON.parseObject(obj.toString(),BusUser.class);
 			}else{
 				return null;
 			}
@@ -34,7 +35,7 @@ public class SessionUtils {
 	public static void setLoginUser(HttpServletRequest request, BusUser busUser) {
 		try {
 			request.getSession().setAttribute(
-					CommonConstant.SESSION_BUSINESS_KEY, busUser);
+					CommonConstant.SESSION_BUSINESS_KEY, JSON.toJSONString(busUser));
 		} catch (Exception e) {
 			log.info(e.getLocalizedMessage());
 			e.printStackTrace();

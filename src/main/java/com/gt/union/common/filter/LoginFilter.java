@@ -1,5 +1,7 @@
 package com.gt.union.common.filter;
 
+import com.alibaba.fastjson.JSON;
+import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.PropertiesUtil;
 import com.gt.union.common.util.SessionUtils;
@@ -81,14 +83,8 @@ public class LoginFilter implements Filter {
 		}else if(passSuffixs(url)||passUrl(url)){
 			chain.doFilter(request, response);
 		}else if (busUser == null) {// 判断到商家没有登录,就跳转到登陆页面
-			//TODO 设置默认登录
-			busUser = new BusUser();
-			busUser.setId(33);
-			busUser.setPid(0);
-			SessionUtils.setLoginUser(req,busUser);
 			response.setCharacterEncoding("UTF-8");
-			chain.doFilter(request, response);
-			//response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录",PropertiesUtil.getWxmpUrl()+"/user/tologin.do")));
+			response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录",PropertiesUtil.getWxmpUrl()+"/user/tologin.do")));
 		}else if(busUser != null && busUser.getPid() == 0){//商家主账号过期,跳转到充值页面
 			/*if(busUser.getDays()<0){
 				String upGradeUrl=PropertiesUtil.getWxmpUrl() + "/jsp/merchants/user/pastPage.jsp";
