@@ -24,10 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -685,6 +682,36 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         if(redisCacheUtil.exists(memberKey)){
         	redisCacheUtil.remove(memberKey);
 		}
+    }
+
+    @Override
+    public String createUnionSignByUnionId(Integer unionId) {
+        int count = 0;
+        String unionSign = "";
+        EntityWrapper entityWrapper = new EntityWrapper<UnionMember>();
+        do{
+            unionSign  = getUnionSign(8);
+            entityWrapper.eq("union_ID_sign",unionSign);
+            entityWrapper.eq("union_id",unionId);
+            count = this.selectCount(entityWrapper);
+        }while(count > 0);
+        return unionSign;
+    }
+
+    /**
+     * 获取联盟标识
+     * @param length
+     * @return
+     */
+    public String getUnionSign(int length){
+        String letterAndFigureBase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
+        Random random = new Random();
+        StringBuffer sb = new StringBuffer();
+        for (int i = 0; i < length; i++) {
+            int number = random.nextInt(letterAndFigureBase.length());
+            sb.append(letterAndFigureBase.charAt(number));
+        }
+        return sb.toString();
     }
 
 }

@@ -175,11 +175,11 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
             unionMember.setDelStatus(UnionMemberConstant.DEL_STATUS_NO);
             unionMember.setIsNuionOwner(UnionMemberConstant.IS_UNION_OWNER_NO);
             unionMember.setOutStaus(UnionMemberConstant.OUT_STATUS_NORMAL);
-            String unionSign = createUnionSignByUnionId(unionId);
+            String unionSign = unionMemberService.createUnionSignByUnionId(unionId);
             unionMember.setUnionIDSign(unionSign);
             this.unionMemberService.insert(unionMember);
             String unionMemberBusIdKey = RedisKeyUtil.getUnionMemberBusIdKey(main.getId(),unionMember.getBusId());
-            redisCacheUtil.set(unionMemberBusIdKey,JSON.toJSONString(unionMember));
+            redisCacheUtil.remove(unionMemberBusIdKey);
 
             UnionApply apply = new UnionApply();
             apply.setId(id);
@@ -190,7 +190,7 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
             main.setUnionMemberNum(CommonUtil.isEmpty(main.getUnionMemberNum()) ? 1 : main.getUnionMemberNum() + 1);
             unionMainService.updateById(main);
             String unionMainKey = RedisKeyUtil.getUnionMainKey(main.getId());
-            redisCacheUtil.set(unionMainKey,JSON.toJSONString(main));
+            redisCacheUtil.remove(unionMainKey);
         }else if(applyStatus == UnionApplyConstant.APPLY_STATUS_FAIL){//不通过
             //删除信息
             UnionApply apply = new UnionApply();
@@ -268,9 +268,6 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         String content = "\""+info.getEnterpriseName()+"\" 申请加入 \"" + main.getUnionName() +"\"，请到入盟审核处查看并处理。";//短信内容
         PhoneMessage phoneMessage = new PhoneMessage(main.getBusId(), mainInfo.getNotifyPhone(), content);
         this.phoneMessageSender.sendMsg(phoneMessage);
-        //操作成功后，存入缓存
-        String infoKey = RedisKeyUtil.getUnionApplyInfoKey(main.getId(), busId);
-        redisCacheUtil.set(infoKey,JSON.toJSONString(info));
     }
 
 
@@ -341,20 +338,14 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
             member.setDelStatus(UnionMemberConstant.DEL_STATUS_NO);
             member.setIsNuionOwner(UnionMemberConstant.IS_UNION_OWNER_NO);
             member.setOutStaus(UnionMemberConstant.OUT_STATUS_NORMAL);
-            String unionSign = createUnionSignByUnionId(main.getId());
+            String unionSign = unionMemberService.createUnionSignByUnionId(main.getId());
             member.setUnionIDSign(unionSign);
             this.unionMemberService.insert(member);
             apply.setUnionMemberId(member.getId());
             this.updateById(apply);
             main.setUnionMemberNum(CommonUtil.isEmpty(main.getUnionMemberNum()) ? 1 : main.getUnionMemberNum() + 1);
             unionMainService.updateById(main);
-            String unionMainKey = RedisKeyUtil.getUnionMainKey(main.getId());
-            this.redisCacheUtil.set(unionMainKey, JSON.toJSONString(main));
-            String unionMemberKey = RedisKeyUtil.getUnionMemberBusIdKey(main.getId(),busUser.getId());
-            this.redisCacheUtil.set(unionMemberKey, JSON.toJSONString(member));
         }
-        String infoKey = RedisKeyUtil.getUnionApplyInfoKey(main.getId(),busUser.getId());
-        this.redisCacheUtil.set(infoKey, JSON.toJSONString(info));
     }
 
 
@@ -406,40 +397,4 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         return apply;
     }
 
-
-	/**
-     * 根据联盟id获取联盟商家标识
-     * @param unionId
-     * @return
-     * @throws BaseException
-     */
-    private String createUnionSignByUnionId(Integer unionId) throws BaseException {
-        int count = 0;
-        String unionSign = "";
-        EntityWrapper entityWrapper = new EntityWrapper<UnionMember>();
-        do{
-            unionSign  = getUnionSign(8);
-            entityWrapper.eq("union_ID_sign",unionSign);
-            entityWrapper.eq("union_id",unionId);
-            count = unionMemberService.selectCount(entityWrapper);
-        }while(count > 0);
-        return unionSign;
-    }
-
-
-    /**
-     * 获取联盟标识
-     * @param length
-     * @return
-     */
-    public String getUnionSign(int length){
-        String letterAndFigureBase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        Random random = new Random();
-        StringBuffer sb = new StringBuffer();
-        for (int i = 0; i < length; i++) {
-            int number = random.nextInt(letterAndFigureBase.length());
-            sb.append(letterAndFigureBase.charAt(number));
-        }
-        return sb.toString();
-    }
 }

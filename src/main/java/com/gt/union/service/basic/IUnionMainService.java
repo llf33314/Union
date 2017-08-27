@@ -104,4 +104,11 @@ public interface IUnionMainService extends IService<UnionMain> {
      * @return
      */
     List<UnionMain> listMyValidUnion(Integer busId);
+
+    /**
+     * 支付购买联盟服务
+     * @param busId   商家id
+     * @param infoItemKey   服务类型
+     */
+    void payCreateUnion(Integer busId, String infoItemKey) throws Exception;
 }

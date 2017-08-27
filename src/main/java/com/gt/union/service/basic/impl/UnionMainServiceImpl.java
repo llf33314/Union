@@ -6,9 +6,12 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.api.client.dict.DictService;
+import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.user.BusUserService;
+import com.gt.union.api.entity.PayParam;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
+import com.gt.union.common.constant.basic.UnionApplyConstant;
 import com.gt.union.common.constant.basic.UnionMainConstant;
 import com.gt.union.common.constant.basic.UnionMemberConstant;
 import com.gt.union.common.exception.BusinessException;
@@ -80,6 +83,9 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
 	@Autowired
 	private IUnionTransferRecordService unionTransferRecordService;
+
+	@Autowired
+	private WxPayService wxPayService;
 
 	@Override
 	public Map<String, Object> indexByBusId(Integer busId) throws Exception {
@@ -234,14 +240,16 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 				throw new BusinessException(UPDATE_ID, "" , "积分开启后不可关闭");
 			}
 		}
+		UnionMain unionMain = new UnionMain();
+		unionMain.setId(main.getId());
 		if(vo.getUnionImg().indexOf("/upload/") > -1){
-			main.setEditUnionImg(vo.getUnionImg().split("/upload/")[1]);
+			unionMain.setEditUnionImg(vo.getUnionImg().split("/upload/")[1]);
 		}
 		if(StringUtil.isNotEmpty(vo.getUnionWxGroupImg()) && vo.getUnionWxGroupImg().indexOf("/upload/") > -1){
-			main.setEditUnionWxGroupImg(vo.getUnionWxGroupImg().split("/upload/")[1]);
+			unionMain.setEditUnionWxGroupImg(vo.getUnionWxGroupImg().split("/upload/")[1]);
 		}
 		if(StringUtil.isNotEmpty(main.getUnionWxGroupImg()) && main.getUnionWxGroupImg().indexOf("/upload/") > -1){
-			main.setEditUnionWxGroupImg(main.getUnionWxGroupImg().split("/upload/")[1]);
+			unionMain.setEditUnionWxGroupImg(main.getUnionWxGroupImg().split("/upload/")[1]);
 		}
 		if(vo.getRedCardOpend() == 1){
 			if(CommonUtil.isEmpty(vo.getRedCardPrice())){
@@ -256,13 +264,13 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 			if(CommonUtil.isEmpty(CommonUtil.toInteger(vo.getRedCardTerm())) || vo.getRedCardTerm() < 0){
 				throw new BusinessException(UPDATE_ID, "" , "红卡期限有误");
 			}
-			main.setRedCardIllustration(vo.getRedCardIllustration());
-			main.setRedCardPrice(vo.getRedCardPrice());
-			main.setRedCardTerm(vo.getRedCardTerm());
+			unionMain.setRedCardIllustration(vo.getRedCardIllustration());
+			unionMain.setRedCardPrice(vo.getRedCardPrice());
+			unionMain.setRedCardTerm(vo.getRedCardTerm());
 		}else {
-			main.setRedCardPrice(0d);
-			main.setRedCardTerm(0);
-			main.setRedCardIllustration("");
+			unionMain.setRedCardPrice(0d);
+			unionMain.setRedCardTerm(0);
+			unionMain.setRedCardIllustration("");
 		}
 		if(vo.getBlackCardCharge() == 1){
 			if(CommonUtil.isEmpty(vo.getRedCardPrice())){
@@ -277,36 +285,36 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 			if(CommonUtil.isEmpty(CommonUtil.toInteger(vo.getBlackCardTerm())) || vo.getBlackCardTerm() < 0){
 				throw new BusinessException(UPDATE_ID, "" , "黑卡期限有误");
 			}
-			main.setBlackCardIllustration(vo.getBlackCardIllustration());
-			main.setBlackCardPrice(vo.getBlackCardPrice());
-			main.setBlackCardTerm(vo.getBlackCardTerm());
+			unionMain.setBlackCardIllustration(vo.getBlackCardIllustration());
+			unionMain.setBlackCardPrice(vo.getBlackCardPrice());
+			unionMain.setBlackCardTerm(vo.getBlackCardTerm());
 		}else {
-			main.setBlackCardPrice(0d);
-			main.setBlackCardTerm(0);
-			main.setBlackCardIllustration("");
+			unionMain.setBlackCardPrice(0d);
+			unionMain.setBlackCardTerm(0);
+			unionMain.setBlackCardIllustration("");
 		}
 		if(vo.getBlackCardCharge() == 1 && vo.getRedCardOpend() == 1){
 			if(vo.getBlackCardPrice().doubleValue() > vo.getRedCardPrice()){
 				throw new BusinessException(UPDATE_ID, "" , "黑卡价格不可高于红卡价格");
 			}
 		}
-		main.setBlackCardCharge(vo.getBlackCardCharge());
-		main.setRedCardOpend(vo.getRedCardOpend());
-		main.setUnionName(vo.getUnionName());
-		main.setUnionIllustration(vo.getUnionIllustration());
-		main.setJoinType(vo.getJoinType());
-		main.setOldMemberCharge(vo.getOldMemberCharge());
-		main.setIsIntegral(vo.getIsIntegral());
-		this.updateById(main);
+		unionMain.setBlackCardCharge(vo.getBlackCardCharge());
+		unionMain.setRedCardOpend(vo.getRedCardOpend());
+		unionMain.setUnionName(vo.getUnionName());
+		unionMain.setUnionIllustration(vo.getUnionIllustration());
+		unionMain.setJoinType(vo.getJoinType());
+		unionMain.setOldMemberCharge(vo.getOldMemberCharge());
+		unionMain.setIsIntegral(vo.getIsIntegral());
+		this.updateById(unionMain);
 		EntityWrapper entityWrapper = new EntityWrapper<UnionInfoDict>();
 		entityWrapper.eq("union_id",main.getId());
 		unionInfoDictService.delete(entityWrapper);
 		List<UnionInfoDict> list = vo.getInfos();
 		unionInfoDictService.insertBatch(list);
 		String infoDictKey = RedisKeyUtil.getUnionInfoDictKey(main.getId());
-		redisCacheUtil.set(infoDictKey, JSON.toJSONString(list));
+		redisCacheUtil.remove(infoDictKey);
 		String unionMainKey = RedisKeyUtil.getUnionMainKey(main.getId());
-		this.redisCacheUtil.set(unionMainKey, JSON.toJSONString(main) );
+		this.redisCacheUtil.remove(unionMainKey );
 	}
 
 
@@ -485,16 +493,35 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         main.setUnionLevel(UnionMainConstant.LEVEL_INIT);
         this.insert(main);
 
-        // （2）保存盟主信息 //TODO
+        // （2）保存盟主信息
         UnionMember member = new UnionMember();
-        unionMemberService.insert(member);
+		member.setBusId(busId);
+		member.setDelStatus(UnionMemberConstant.DEL_STATUS_NO);
+		member.setCreatetime(new Date());
+		member.setUnionId(main.getId());
+		member.setIsNuionOwner(UnionMemberConstant.IS_UNION_OWNER_YES);
+		member.setOutStaus(UnionMemberConstant.OUT_STATUS_NORMAL);
+		String signID = unionMemberService.createUnionSignByUnionId(main.getId());
+		member.setUnionIDSign(signID);
+		unionMemberService.insert(member);
 
-        // （3）保存申请信息 //TODO
+        // （3）保存申请信息
         UnionApply apply = new UnionApply();
+        apply.setDelStatus(UnionApplyConstant.DEL_STATUS_NO);
+        apply.setUnionMemberId(member.getId());
+        apply.setApplyBusId(busId);
+        apply.setApplyType(UnionApplyConstant.APPLY_TYPE_FREE);
+        apply.setCreatetime(new Date());
+        apply.setUnionId(main.getId());
+        apply.setApplyStatus(UnionApplyConstant.APPLY_STATUS_PASS);
+        apply.setBusConfirmStatus(UnionApplyConstant.BUS_CONFIRM_STATUS_PASS);
         unionApplyService.insert(apply);
 
         // （4）保存申请关联信息 //TODO
         UnionApplyInfo info = new UnionApplyInfo();
+        info.setUnionApplyId(apply.getId());
+        info.setEnterpriseName(vo.getEnterpriseName());
+        info.setDirectorPhone(vo.getDirectorPphone());
         unionApplyInfoService.insert(info);
 
         // （5）保存相关缓存信息
@@ -611,4 +638,13 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		}
 		return list;
 	}
+
+    @Override
+    public void payCreateUnion(Integer busId, String infoItemKey) throws Exception{
+    	//TODO  权限校验   支付创建联盟服务
+        Map<String,Object> obj = new HashMap<String,Object>();
+		PayParam payParam = new PayParam();
+		obj.put("reqdata",payParam);
+		wxPayService.pay(obj);
+    }
 }

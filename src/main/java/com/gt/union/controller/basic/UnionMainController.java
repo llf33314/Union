@@ -197,4 +197,27 @@ public class UnionMainController {
         }
     }
 
+
+    @ApiOperation(value = "购买联盟服务", produces = "application/json;charset=UTF-8")
+    @SysLogAnnotation(op_function = "3", description = "购买联盟服务")
+    @RequestMapping(value = "/payment/{infoItemKey}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public String payCreateUnion(HttpServletRequest request
+            , @ApiParam(name="infoItemKey", value = "购买联盟服务的信息", required = true)
+                       @PathVariable String infoItemKey){
+        try{
+            BusUser user = SessionUtils.getLoginUser(request);
+            if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
+                throw new BusinessException(SAVE, "", CommonConstant.UNION_BUS_PARENT_MSG);
+            }
+            unionMainService.payCreateUnion(user.getId(), infoItemKey);
+            return GTJsonResult.instanceSuccessMsg().toString();
+        }catch (BaseException e){
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        }catch (Exception e){
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(SAVE, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
+    }
+
 }

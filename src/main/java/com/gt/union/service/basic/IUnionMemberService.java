@@ -1,5 +1,6 @@
 package com.gt.union.service.basic;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.entity.basic.UnionMember;
@@ -153,4 +154,11 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @param busId 商家id
      */
 	void updateMemberOutById(Integer id, Integer unionId, Integer busId) throws Exception;
+
+    /**
+     * 生成盟
+     * @param unionId   联盟id
+     * @return
+     */
+	String createUnionSignByUnionId(Integer unionId);
 }
