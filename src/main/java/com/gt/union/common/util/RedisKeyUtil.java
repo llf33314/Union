@@ -62,7 +62,7 @@ public class RedisKeyUtil {
      * @return
      */
     public static final String getUnionApplyInfoKey(Integer unionId, Integer busId) {
-        return getUnionMemberBusIdKey(String.valueOf(unionId), String.valueOf(busId));
+        return getUnionApplyInfoKey(String.valueOf(unionId), String.valueOf(busId));
     }
     public static final String getUnionApplyInfoKey(String unionId, String busId) {
         return "unionMain:" + unionId + ":unionApplyInfo:busId:" + busId;

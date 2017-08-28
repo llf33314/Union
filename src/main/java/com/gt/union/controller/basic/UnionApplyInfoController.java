@@ -185,6 +185,12 @@ public class UnionApplyInfoController {
              @RequestBody List<UnionApplyInfo> unionApplyInfoList) {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
+			if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
+				throw new BusinessException(UPDATE_SELLDIVIDEPROPORTION_ID, "", CommonConstant.UNION_BUS_PARENT_MSG);
+			}
+			if(!this.unionRootService.checkUnionMainValid(unionId)){
+				throw new BusinessException(UPDATE_SELLDIVIDEPROPORTION_ID, "", CommonConstant.UNION_OVERDUE_MSG);
+			}
 			if (!this.unionRootService.isUnionOwner(unionId, busUser.getId())) {
 				throw new BusinessException(UPDATE_SELLDIVIDEPROPORTION_ID, "", CommonConstant.UNION_OWNER_NON_AUTHORITY_MSG);
 			}

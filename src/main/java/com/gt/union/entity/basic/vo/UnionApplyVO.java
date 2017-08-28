@@ -48,7 +48,7 @@ public class UnionApplyVO {
      */
     @ApiModelProperty( value = "联系电话" ,required = true)
     @NotBlank( message = "联系电话内容不能为空")
-    @Pattern(regexp = "^1[3|4|5|6|7|8][0-9][0-9]{8}$", message = "联系电话有误")
+    @Pattern(regexp = "(^1[3|4|5|6|7|8][0-9][0-9]{8}$)|(^0\\d{2,3}-?\\d{7,8}$)", message = "联系电话有误")
     private String directorPhone;
 
     /**

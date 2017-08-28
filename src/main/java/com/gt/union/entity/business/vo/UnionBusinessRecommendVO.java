@@ -46,9 +46,9 @@ public class UnionBusinessRecommendVO {
 	/**
 	 * 用户电话
 	 */
-	@ApiModelProperty( value = "意向客户电话" ,required = true)
-	@NotBlank(message = "意向客户电话不能为空")
-	@Pattern(regexp = "^1[3|4|5|6|7|8][0-9][0-9]{8}$", message = "意向客户电话有误")
+	@ApiModelProperty( value = "意向客户手机" ,required = true)
+	@NotBlank(message = "意向客户手机不能为空")
+	@Pattern(regexp = "^1[3|4|5|6|7|8][0-9][0-9]{8}$", message = "意向客户手机有误")
 	private String userPhone;
 
 	/**
