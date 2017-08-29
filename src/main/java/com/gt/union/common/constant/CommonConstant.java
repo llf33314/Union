@@ -35,13 +35,19 @@ public class CommonConstant {
 	public static int PAY_MODEL = 36;
 
 	/**
-	 * 最大积分抵扣率
+	 * 省级
 	 */
-	public static double MAX_INTEGRAL_DEDUCTION = 30;
+	public static String PROVIENCE_LEVEL = "2";
 
+	/**
+	 * 市级
+	 */
+	public static String CITY_LEVEL = "3";
 
-	public static double DEFAULT_DISCOUNT = 9.5;
-
+	/**
+	 * 区级
+	 */
+	public static String DISTRICT_LEVEL = "4";
 
 	/**
 	 * 创建联盟支付内部订单前缀

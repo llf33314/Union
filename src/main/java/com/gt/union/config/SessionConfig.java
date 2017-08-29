@@ -11,31 +11,23 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 @EnableRedisHttpSession(maxInactiveIntervalInSeconds= 1800)
 public class SessionConfig {
 
-    //冒号后的值为没有配置文件时，制动装载的默认值
-    @Value("${spring.redis.host}")
-    String HostName;
-    @Value("${spring.redis.port}")
-    int Port;
-    @Value("${spring.redis.password}")
-    String password;
+    @Value( "${redisSession.cookieName}" )
+    private String cookieName;
+    @Value( "${redisSession.cookiePath}" )
+    private String cookiePath;
+    @Value( "${redisSession.domainName}" )
+    private String domainName;
+
+
 
 
     @Bean
     public DefaultCookieSerializer defaultCookieSerializer(){
         DefaultCookieSerializer defaultCookieSerializer = new DefaultCookieSerializer();
-        defaultCookieSerializer.setDomainName(".yifriend.net");
-        defaultCookieSerializer.setCookieName("JSESSIONID");
-        defaultCookieSerializer.setCookiePath("/");
+        defaultCookieSerializer.setDomainName(cookieName);
+        defaultCookieSerializer.setCookieName(cookieName);
+        defaultCookieSerializer.setCookiePath(cookiePath);
         return defaultCookieSerializer;
     }
 
-    @Bean
-    public JedisConnectionFactory jedisConnectionFactory() {
-        JedisConnectionFactory connection = new JedisConnectionFactory();
-        connection.setPort(Port);
-        connection.setHostName(HostName);
-        connection.setDatabase(2);
-        connection.setPassword(password);
-        return connection;
-    }
 }

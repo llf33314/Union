@@ -44,6 +44,7 @@ spring:
       port: 6379
       password: gt@123456
       timeout: 0
+      database: 2
       pool:
         max-active: 8
         max-wait: -1
@@ -111,6 +112,11 @@ static:
 #redis:
 redisNamePrefix: "Union:"
 
+
+redisSession:
+  domainName: .yifriend.net
+  cookiePath: /
+  cookieName: JSESSIONID
 
 #数据请求地址
 wxmp:

@@ -54,7 +54,7 @@ public class UnionApplyInfoVO {
 	 */
 	@ApiModelProperty( value = "联系电话", required = true)
 	@NotBlank(message = "联系电话内容不能为空")
-	@Pattern(regexp = "^1[3|4|5|6|7|8][0-9][0-9]{8}$", message = "联系电话有误")
+	@Pattern(regexp = "(^1[3|4|5|6|7|8][0-9][0-9]{8}$)|(^0\\d{2,3}-?\\d{7,8}$)", message = "联系电话有误")
 	private String directorPhone;
 
 	/**
@@ -76,45 +76,50 @@ public class UnionApplyInfoVO {
 	/**
 	 * 积分抵扣率
 	 */
-	@ApiModelProperty( value = "手机短信通知", required = true)
+	@ApiModelProperty( value = "积分抵扣率 (0-30%]", required = true)
 	private Double integralProportion;
 
 
 	/**
 	 * 我的地址
 	 */
-	@ApiModelProperty( value = "手机短信通知", required = true)
-	@NotBlank(message = "短信通知手机号不能为空")
+	@ApiModelProperty( value = "商家地址", required = true)
+	@NotBlank(message = "我的地址不能为空")
 	private String busAddress;
 
 	/**
 	 * 地址经度
 	 */
-	@NotBlank(message = "短信通知手机号不能为空")
+	@ApiModelProperty( value = "地址经度，选择腾讯地图后得出", required = true)
+	@NotBlank(message = "请地图所在位置")
 	private String addressLongitude;
 
 	/**
 	 * 地址纬度
 	 */
-	@NotBlank(message = "短信通知手机号不能为空")
+	@ApiModelProperty( value = "地址纬度，选择腾讯地图后得出", required = true)
+	@NotBlank(message = "请地图所在位置")
 	private String addressLatitude;
 
 	/**
 	 * 省代码
 	 */
 	@NotBlank(message = "请选择省")
+	@ApiModelProperty( value = "省 格式：名字，代码")
 	private String provienceCode;
 
 	/**
 	 * 市代码
 	 */
 	@NotBlank(message = "请选择市")
+	@ApiModelProperty( value = "市 格式：名字，代码")
 	private String cityCode;
 
 	/**
 	 * 区代码
 	 */
 	@NotBlank(message = "请选择区")
+	@ApiModelProperty( value = "区 格式：名字，代码")
 	private String districtCode;
 
 	public Integer getId() {

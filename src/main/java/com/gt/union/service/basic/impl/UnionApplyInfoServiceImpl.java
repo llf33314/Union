@@ -5,16 +5,14 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.api.client.address.AddressService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionApplyConstant;
 import com.gt.union.common.constant.basic.UnionMemberConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.BigDecimalUtil;
-import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.RedisCacheUtil;
-import com.gt.union.common.util.RedisKeyUtil;
+import com.gt.union.common.util.*;
 import com.gt.union.entity.basic.UnionApplyInfo;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.basic.vo.UnionApplyInfoVO;
@@ -60,6 +58,9 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
 
+	@Autowired
+	private AddressService addressService;
+
 	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public void updateById(UnionApplyInfoVO vo, Integer busId) throws Exception {
@@ -69,8 +70,8 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 		if(!unionRootService.hasUnionMemberAuthority(vo.getUnionId(),busId)){
 			throw new BusinessException(UPDATE_ID, "" , CommonConstant.UNION_MEMBER_NON_AUTHORITY_MSG);
 		}
-		//TODO 更新盟员信息的地址
-		UnionApplyInfo info = this.getByUnionIdAndBusId(vo.getUnionId(), busId);
+		UnionApplyInfo info = new UnionApplyInfo();
+		info.setId(vo.getId());
 		info.setDirectorName(vo.getDirectorName());
 		info.setDirectorPhone(vo.getDirectorPhone());
 		info.setDirectorEmail(vo.getDirectorEmail());
@@ -80,9 +81,33 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 		info.setBusAddress(vo.getBusAddress());
 		info.setAddressLatitude(vo.getAddressLatitude());
 		info.setAddressLongitude(vo.getAddressLongitude());
+		String[] p = vo.getProvienceCode().split(",");
+		String provience_name = p[0];
+		String provience = p[1];
+		String[] c = vo.getCityCode().split(",");
+		String city_name = c[1];
+		String city = c[1];
+		String[] d = vo.getDistrictCode().split(",");
+		String district_name = d[0];
+		String district = d[1];
+		String city_codes = provience + "," + city + "," + district;
+		Map<String,Object> param = new HashMap<String,Object>();
+		param.put("reqdata",city_codes);
+		List<Map> list = addressService.getByCityCode(param);
+		for(Map map : list){
+			if(map.get("city_level").toString().equals(CommonConstant.PROVIENCE_LEVEL) && map.get("city_name").toString().equals(provience_name)){
+				info.setAddressProvienceId(CommonUtil.toInteger(map.get("id")));
+			}
+			if(map.get("city_level").toString().equals(CommonConstant.CITY_LEVEL) && map.get("city_name").toString().equals(city_name)){
+				info.setAddressCityId(CommonUtil.toInteger(map.get("id")));
+			}
+			if(map.get("city_level").toString().equals(CommonConstant.DISTRICT_LEVEL) && map.get("city_name").toString().equals(district_name)){
+				info.setAddressDistrictId(CommonUtil.toInteger(map.get("id")));
+			}
+		}
 		this.updateById(info);
 		String infoKey = RedisKeyUtil.getUnionApplyInfoKey(vo.getUnionId(),busId);
-		redisCacheUtil.set(infoKey, JSON.toJSONString(info));
+		redisCacheUtil.remove(infoKey);
 	}
 
 	@Override
@@ -145,7 +170,6 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
     public void updateBySellDivideProportion(List<UnionApplyInfo> unionApplyInfoList) throws Exception {
-		//TODO 售卡分成比例权限判断
 	    if (ListUtil.isNotEmpty(unionApplyInfoList)) {
 	        List<UnionApplyInfo> unionApplyInfos = new LinkedList<>();
             BigDecimal sellDivideProportionSum = BigDecimal.valueOf(0.0);
@@ -186,15 +210,30 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 		data.put("directorPhone",info.getDirectorPhone());
 		data.put("notifyPhone",info.getNotifyPhone());
 		data.put("directorEmail",info.getDirectorEmail());
-		data.put("busAddress",info.getBusAddress());
 		data.put("integralProportion",info.getIntegralProportion());
 		data.put("isIntegralProportion",main.getIsIntegral());
-		data.put("address_longitude",info.getAddressLongitude());
-		data.put("address_latitude",info.getAddressLatitude());
-		//TODO 根据id获取地址名称
-		data.put("addressProvience","省");
-		data.put("addressCity","市");
-		data.put("addressDistrict","区");
+		if(CommonUtil.isNotEmpty(info.getAddressProvienceId())){
+			String ids = info.getAddressProvienceId() + "," + info.getAddressCityId() + "," + info.getAddressDistrictId();
+			Map<String,Object> param = new HashMap<String,Object>();
+			param.put("reqdata",ids);
+			List<Map> list = addressService.getByIds(param);
+			if(ListUtil.isNotEmpty(list)){
+				data.put("busAddress",info.getBusAddress());
+				data.put("addressLongitude",info.getAddressLongitude());
+				data.put("addressLatitude",info.getAddressLatitude());
+				for(Map map : list){
+					if(map.get("city_level").toString().equals(CommonConstant.PROVIENCE_LEVEL)){
+						data.put("addressProvience",map.get("city_name").toString() + "," + map.get("city_code").toString());
+					}
+					if(map.get("city_level").toString().equals(CommonConstant.CITY_LEVEL)){
+						data.put("addressCity",map.get("city_name").toString() + "," + map.get("city_code").toString());
+					}
+					if(map.get("city_level").toString().equals(CommonConstant.DISTRICT_LEVEL)){
+						data.put("addressDistrict",map.get("city_name").toString() + "," + map.get("city_code").toString());
+					}
+				}
+			}
+		}
 		data.put("infoId",info.getId());
 		return data;
 	}
