@@ -2,7 +2,6 @@ package com.gt.union.controller.card;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.common.constant.ExceptionConstant;
-import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.card.vo.UnionCardDivideRecordVO;
@@ -39,11 +38,11 @@ public class UnionCardDivideRecordController {
 	public String unionCardDivideRecordList(Page page, HttpServletRequest request, @RequestBody UnionCardDivideRecordVO vo) {
 		try {
 			BusUser user = SessionUtils.getLoginUser(request);
-			page = unionCardDivideRecordService.getUnionCardDivideRecordList(page, vo);
+			//page = unionCardDivideRecordService.getUnionCardDivideRecordList(page, vo);
 			return GTJsonResult.instanceSuccessMsg(page).toString();
-		} catch (BaseException e) {
-			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+//		} catch (BaseException e) {
+//			logger.error("", e);
+//			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
 		}catch (Exception e){
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(UNION_CARD_DIVIDE_RECORD_LIST, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();

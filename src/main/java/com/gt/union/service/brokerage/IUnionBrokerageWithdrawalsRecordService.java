@@ -1,5 +1,6 @@
 package com.gt.union.service.brokerage;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.entity.brokerage.UnionBrokerageWithdrawalsRecord;
 
@@ -12,20 +13,39 @@ import com.gt.union.entity.brokerage.UnionBrokerageWithdrawalsRecord;
  * @since 2017-07-24
  */
 public interface IUnionBrokerageWithdrawalsRecordService extends IService<UnionBrokerageWithdrawalsRecord> {
+    /**
+     * 根据商家id，统计提现金额总和
+     * @param busId
+     * @return
+     * @throws Exception
+     */
+    Double sumMoneyByBusId(Integer busId) throws Exception;
 
-	/**
-	 * 查询佣金提现记录  包括推荐佣金和售卡佣金
-	 * @param busId	商家id
-	 * @param unionId	联盟id 可以为空
-	 * @return
-	 */
-	public double getUnionBrokerageWithdrawalsSum(Integer busId, Integer unionId);
+    /**
+     * 根据联盟id和商家id， 统计提现金额总和
+     * @param unionId
+     * @param busId
+     * @return
+     * @throws Exception
+     */
+    Double sumMoneyByUnionIdAndBusId(Integer unionId, Integer busId) throws Exception;
 
-	/**
-	 * 联盟的可提现佣金总和
-	 * @param busId
-	 * @param unionId
-	 * @return
-	 */
-	public double getUnionBrokerageAbleToWithdrawalsSum(Integer busId, Integer unionId);
+    /**
+     * 根据商家id，分页获取提现记录信息
+     * @param page
+     * @param busId
+     * @return
+     * @throws Exception
+     */
+    Page pageMapByBusId(Page page, Integer busId) throws Exception;
+
+    /**
+     * 根据联盟id、商家id，分页获取提现记录信息
+     * @param page
+     * @param unionId
+     * @param busId
+     * @return
+     * @throws Exception
+     */
+    Page pageMapByUnionIdAndBusId(Page page, Integer unionId, Integer busId) throws Exception;
 }

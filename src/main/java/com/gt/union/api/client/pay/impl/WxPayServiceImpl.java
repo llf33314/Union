@@ -1,6 +1,7 @@
 package com.gt.union.api.client.pay.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.gt.api.util.HttpClienUtils;
 import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.util.CommonUtil;

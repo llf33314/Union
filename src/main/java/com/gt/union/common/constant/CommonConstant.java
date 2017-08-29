@@ -58,6 +58,10 @@ public class CommonConstant {
 	 */
 	public final static String CREATE_UNION_UN_PAY_PRODUCTID_CODE="00006200";
 
+    /**
+     * 开发者联系电话
+     */
+	public final static String DEVELOPER_PHONE = "15986670850";
 
 	/**
 	 * 联盟已过期

@@ -2,6 +2,7 @@ package com.gt.union.service.business;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
+import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.entity.business.UnionBusinessRecommend;
 import com.gt.union.entity.business.vo.UnionBusinessRecommendVO;
 
@@ -117,4 +118,21 @@ public interface IUnionBusinessRecommendService extends IService<UnionBusinessRe
 	 * @return
 	 */
 	Map<String,Object> getRecommendMsgInfo(String redisKey) throws Exception;
+
+    /**
+     * 根据商家id统计已被接受的推荐商机佣金
+     * @param fromBusId
+     * @param isConfirm
+     * @return
+     * @throws Exception
+     */
+	Double sumBusinessPriceByFromBusIdAndIsConfirm(Integer fromBusId, Integer isConfirm) throws Exception;
+
+    /**
+     * 根据商机id统计已被接受，但由于接受方退盟而变成坏账状态的推荐商机佣金
+     * @param fromBusId
+     * @return
+     * @throws Exception
+     */
+	Double sumBusinessPriceByFromBusIdInBadDebt(Integer fromBusId) throws Exception;
 }

@@ -59,6 +59,8 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
     private static final String LIST_PAYDETAIL_FROMBUSID = "UnionBusinessRecommendServiceImpl.listPayDetailByFromBusId()";
     private static final String GET_STATISTIC_DATA = "UnionBusinessRecommendServiceImpl.getStatisticData()";
     private static final String RECOMMEND_MSG = "UnionBusinessRecommendServiceImpl.getRecommendMsgInfo()";
+    private static final String SUM_BUSINESSPRICE_FROMBUSID_ISCONFIRM = "UnionBusinessRecommendServiceImpl.sumBusinessPriceByFromBusIdAndIsConfirm()";
+    private static final String SUM_BUSINESSPRICE_FROMBUSID_BADDEBT = "UnionBusinessRecommendServiceImpl.sumBusinessPriceByFromBusIdInBadDebt()";
 
 	@Autowired
 	private IUnionBusinessRecommendInfoService unionBusinessRecommendInfoService;
@@ -661,7 +663,58 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 		return null;
 	}
 
-	//根据联盟id、推荐商家id和是否给予佣金状态isConfirm获取总佣金收入信息
+    @Override
+    public Double sumBusinessPriceByFromBusIdAndIsConfirm(final Integer fromBusId, final Integer isConfirm) throws Exception {
+        if (fromBusId == null) {
+            throw new ParamException(SUM_BUSINESSPRICE_FROMBUSID_ISCONFIRM, "参数fromBusId为空", ExceptionConstant.PARAM_ERROR);
+        }
+        if (isConfirm == null) {
+            throw new ParamException(SUM_BUSINESSPRICE_FROMBUSID_ISCONFIRM, "参数isConfirm为空", ExceptionConstant.PARAM_ERROR);
+        }
+
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                return new StringBuffer(" r")
+                        .append(" WHERE r.del_status = ").append(UnionBusinessRecommendConstant.DEL_STATUS_NO)
+                        .append("  AND r.is_acceptance = ").append(UnionBusinessRecommendConstant.IS_ACCEPTANCE_ACCEPT)
+                        .append("  AND r.is_confirm = ").append(isConfirm)
+                        .append("  AND r.from_bus_id = ").append(fromBusId)
+                        .toString();
+            }
+        };
+        wrapper.setSqlSelect(" SUM(r.business_price) businessPriceSum ");
+        Map<String, Object> map = this.selectMap(wrapper);
+
+        return map != null && map.get("businessPriceSum") != null ? Double.valueOf(map.get("businessPriceSum").toString()) : null;
+    }
+
+    @Override
+    public Double sumBusinessPriceByFromBusIdInBadDebt(Integer fromBusId) throws Exception {
+        if (fromBusId == null) {
+            throw new ParamException(SUM_BUSINESSPRICE_FROMBUSID_BADDEBT, "参数fromBusId为空", ExceptionConstant.PARAM_ERROR);
+        }
+
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                return new StringBuilder(" r")
+                        .append(" LEFT JOIN t_union_member m ON m.union_id = r.union_id ")
+                        .append("  AND m.bus_id = r.to_bus_id")
+                        .append(" WHERE r.del_status = ").append(UnionBusinessRecommendConstant.DEL_STATUS_NO)
+                        .append("  AND r.is_acceptance = ").append(UnionBusinessRecommendConstant.IS_ACCEPTANCE_ACCEPT)
+                        .append("  AND r.is_confirm = ").append(UnionBusinessRecommendConstant.IS_CONFIRM_UNCHECK)
+                        .append("  AND r.del_status = ").append(UnionMemberConstant.DEL_STATUS_YES)
+                        .toString();
+            }
+        };
+        wrapper.setSqlSelect(" SUM(r.business_price) businessPriceSum ");
+        Map<String, Object> map = this.selectMap(wrapper);
+
+        return map != null && map.get("businessPriceSum") != null ? Double.valueOf(map.get("businessPriceSum").toString()) : null;
+    }
+
+    //根据联盟id、推荐商家id和是否给予佣金状态isConfirm获取总佣金收入信息
     private Double getBrokerageIncome(Integer unionId, Integer busId, Integer isConfirm) {
         if (unionId != null && busId != null && isConfirm != null) {
             EntityWrapper entityWrapper = new EntityWrapper();
