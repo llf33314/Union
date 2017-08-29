@@ -46,6 +46,10 @@ public class UnionBusinessRecommendController {
 	private static final String GET_STATISTIC_DATA = "UnionBusinessRecommendController.getStatisticData()";
 	private static final String UPDATE_ID_ISACCEPTANCE = "UnionBusinessRecommendController.updateByIdAndIsAcceptance()";
 	private static final String SAVE = "UnionBusinessRecommendController.save()";
+	private static final String SUM_BUSINESSPRICE_FROMBUSID_ISCONFIRM = "UnionBusinessRecommendController.sumBusinessPriceByFromBusIdAndIsConfirm()";
+	private static final String SUM_BUSINESSPRICE_FROMBUSID_BADDEBT = "UnionBusinessRecommendController.sumBusinessPriceByFromBusIdInBadDebt()";
+	private static final String PAGE_MAP_FROMBUSID_BADDEBT = "UnionBusinessRecommendController.pageMapByFromBusIdInBadDebt()";
+	private static final String PAGE_MAP_UNIONID_FROMBUSID_BADDEBT = "UnionBusinessRecommendController.pageMapByUnionIdAndFromBusIdInBadDebt()";
 
 	private Logger logger = Logger.getLogger(UnionBusinessRecommendController.class);
 
@@ -277,4 +281,69 @@ public class UnionBusinessRecommendController {
         }
 	}
 
+	@ApiOperation(value = "统计我的所有已被接受的，目前未支付或已支付的商机佣金总额", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/isConfirm/{isConfirm}/sum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String sumBusinessPriceByFromBusIdAndIsConfirm(HttpServletRequest request
+        , @ApiParam(name = "isConfirm", value = "是否已支付：0未支付，1已支付", required = true) @PathVariable("isConfirm") Integer isConfirm) {
+	    try {
+	        BusUser busUser = SessionUtils.getLoginUser(request);
+	        Double businessPriceSum = this.unionBusinessRecommendService.sumBusinessPriceByFromBusIdAndIsConfirm(busUser.getId(), isConfirm);
+	        return GTJsonResult.instanceSuccessMsg(businessPriceSum).toString();
+        } catch (BaseException e) {
+	        logger.error("", e);
+	        return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        } catch (Exception e) {
+	        logger.error("", e);
+	        return GTJsonResult.instanceErrorMsg(SUM_BUSINESSPRICE_FROMBUSID_ISCONFIRM, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
+    }
+
+    @ApiOperation(value = "统计我的所有已被接受的，但由于接收方退盟造成的坏账状态下的商机佣金总额", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/badDebt/sum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String sumBusinessPriceByFromBusIdInBadDebt(HttpServletRequest request) {
+        try {
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            Double businessPriceSum = this.unionBusinessRecommendService.sumBusinessPriceByFromBusIdInBadDebt(busUser.getId());
+            return GTJsonResult.instanceSuccessMsg(businessPriceSum).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(SUM_BUSINESSPRICE_FROMBUSID_BADDEBT, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
+    }
+
+    @ApiOperation(value = "分页获取我的所有坏账明细", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/badDebt", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String pageMapByFromBusIdInBadDebt(HttpServletRequest request, Page page) {
+        try {
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            Page result = this.unionBusinessRecommendService.pageMapByFromBusIdInBadDebt(page, busUser.getId());
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(PAGE_MAP_FROMBUSID_BADDEBT, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
+    }
+
+    @ApiOperation(value = "分页获取我在某联盟的所有坏账明细", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/badDebt", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String pageMapByUnionIdAndFromBusIdInBadDebt(HttpServletRequest request, Page page
+        , @ApiParam(name = "unionId", value = "联盟id", required = true) @PathVariable("unionId") Integer unionId) {
+        try {
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            Page result = this.unionBusinessRecommendService.pageMapByUnionIdAndFromBusIdInBadDebt(page, unionId, busUser.getId());
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(PAGE_MAP_UNIONID_FROMBUSID_BADDEBT, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
+    }
 }

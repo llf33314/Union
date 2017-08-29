@@ -61,6 +61,8 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
     private static final String RECOMMEND_MSG = "UnionBusinessRecommendServiceImpl.getRecommendMsgInfo()";
     private static final String SUM_BUSINESSPRICE_FROMBUSID_ISCONFIRM = "UnionBusinessRecommendServiceImpl.sumBusinessPriceByFromBusIdAndIsConfirm()";
     private static final String SUM_BUSINESSPRICE_FROMBUSID_BADDEBT = "UnionBusinessRecommendServiceImpl.sumBusinessPriceByFromBusIdInBadDebt()";
+    private static final String PAGE_MAP_FROMBUSID_BADDEBT = "UnionBusinessRecommendServiceImpl.pageMapByFromBusIdInBadDebt()";
+    private static final String PAGE_MAP_UNIONID_FROMBUSID_BADDEBT = "UnionBusinessRecommendServiceImpl.pageMapByUnionIdAndFromBusIdInBadDebt()";
 
 	@Autowired
 	private IUnionBusinessRecommendInfoService unionBusinessRecommendInfoService;
@@ -704,14 +706,94 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
                         .append(" WHERE r.del_status = ").append(UnionBusinessRecommendConstant.DEL_STATUS_NO)
                         .append("  AND r.is_acceptance = ").append(UnionBusinessRecommendConstant.IS_ACCEPTANCE_ACCEPT)
                         .append("  AND r.is_confirm = ").append(UnionBusinessRecommendConstant.IS_CONFIRM_UNCHECK)
-                        .append("  AND r.del_status = ").append(UnionMemberConstant.DEL_STATUS_YES)
+                        .append("  AND m.del_status = ").append(UnionMemberConstant.DEL_STATUS_YES)
                         .toString();
             }
         };
-        wrapper.setSqlSelect(" SUM(r.business_price) businessPriceSum ");
+        wrapper.setSqlSelect(" SUM(IFNULL(r.business_price,0)) businessPriceSum ");
         Map<String, Object> map = this.selectMap(wrapper);
 
         return map != null && map.get("businessPriceSum") != null ? Double.valueOf(map.get("businessPriceSum").toString()) : null;
+    }
+
+    @Override
+    public Page pageMapByFromBusIdInBadDebt(Page page, final Integer fromBusId) throws Exception {
+        if (page == null) {
+            throw new ParamException(PAGE_MAP_FROMBUSID_BADDEBT, "参数page为空", ExceptionConstant.PARAM_ERROR);
+        }
+        if (fromBusId == null) {
+            throw new ParamException(PAGE_MAP_FROMBUSID_BADDEBT, "参数fromBusId为空", ExceptionConstant.PARAM_ERROR);
+        }
+
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                return new StringBuilder(" r")
+                        .append(" LEFT JOIN t_union_main m ON m.id = r.union_id")
+                        .append(" LEFT JOIN t_union_member m2 on m2.union_id = r.union_id")
+                        .append("  AND m2.bus_id = r.to_bus_id")
+                        .append(" LEFT JOIN t_union_apply a ON a.union_id = r.union_id")
+                        .append("  AND a.apply_bus_id = r.to_bus_id")
+                        .append(" LEFT JOIN t_union_apply_info ai ON ai.union_apply_id = a.id")
+                        .append(" WHERE r.del_status = ").append(UnionBusinessRecommendConstant.DEL_STATUS_NO)
+                        .append("  AND m.del_status = ").append(UnionMainConstant.DEL_STATUS_NO)
+                        .append("  AND m2.del_status = ").append(UnionMemberConstant.DEL_STATUS_YES)
+                        .append("  AND a.del_status = ").append(UnionApplyConstant.DEL_STATUS_NO)
+                        .append("  AND r.from_bus_id = ").append(fromBusId)
+                        .append(" ORDER BY r.id DESC")
+                        .toString();
+            }
+        };
+        wrapper.setSqlSelect(new StringBuilder(" m.union_name unionName") //联盟名称
+                .append(", ai.enterprise_name enterpriseName") //接收方盟员名称
+                .append(", ai.director_phone directorPhone") //接收方盟员负责人电话
+                .append(", r.createtime createtime") //商机推荐时间
+                .append(", r.business_price businessPrice") //商家佣金
+                .toString());
+
+        return this.selectMapsPage(page, wrapper);
+    }
+
+    @Override
+    public Page pageMapByUnionIdAndFromBusIdInBadDebt(Page page, final Integer unionId, final Integer fromBusId) throws Exception {
+        if (page == null) {
+            throw new ParamException(PAGE_MAP_UNIONID_FROMBUSID_BADDEBT, "参数page为空", ExceptionConstant.PARAM_ERROR);
+        }
+        if (unionId == null) {
+            throw new ParamException(PAGE_MAP_UNIONID_FROMBUSID_BADDEBT, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
+        }
+        if (fromBusId == null) {
+            throw new ParamException(PAGE_MAP_UNIONID_FROMBUSID_BADDEBT, "参数fromBusId为空", ExceptionConstant.PARAM_ERROR);
+        }
+
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                return new StringBuilder(" r")
+                        .append(" LEFT JOIN t_union_main m ON m.id = r.union_id")
+                        .append(" LEFT JOIN t_union_member m2 on m2.union_id = r.union_id")
+                        .append("  AND m2.bus_id = r.to_bus_id")
+                        .append(" LEFT JOIN t_union_apply a ON a.union_id = r.union_id")
+                        .append("  AND a.apply_bus_id = r.to_bus_id")
+                        .append(" LEFT JOIN t_union_apply_info ai ON ai.union_apply_id = a.id")
+                        .append(" WHERE r.del_status = ").append(UnionBusinessRecommendConstant.DEL_STATUS_NO)
+                        .append("  AND m.del_status = ").append(UnionMainConstant.DEL_STATUS_NO)
+                        .append("  AND m2.del_status = ").append(UnionMemberConstant.DEL_STATUS_YES)
+                        .append("  AND a.del_status = ").append(UnionApplyConstant.DEL_STATUS_NO)
+                        .append("  AND r.union_id = ").append(unionId)
+                        .append("  AND r.from_bus_id = ").append(fromBusId)
+                        .append(" ORDER BY r.id DESC")
+                        .toString();
+            }
+        };
+        wrapper.setSqlSelect(new StringBuilder(" m.union_name unionName") //联盟名称
+                .append(", ai.enterprise_name enterpriseName") //接收方盟员名称
+                .append(", ai.director_phone directorPhone") //接收方盟员负责人电话
+                .append(", r.createtime createtime") //商机推荐时间
+                .append(", r.business_price businessPrice") //商家佣金
+                .toString());
+
+        return this.selectMapsPage(page, wrapper);
     }
 
     //根据联盟id、推荐商家id和是否给予佣金状态isConfirm获取总佣金收入信息

@@ -14,7 +14,7 @@ import com.gt.union.entity.brokerage.UnionBrokerageWithdrawalsRecord;
  */
 public interface IUnionBrokerageWithdrawalsRecordService extends IService<UnionBrokerageWithdrawalsRecord> {
     /**
-     * 根据商家id，统计提现金额总和
+     * 根据商家id，统计历史提现金额总和
      * @param busId
      * @return
      * @throws Exception
@@ -22,7 +22,7 @@ public interface IUnionBrokerageWithdrawalsRecordService extends IService<UnionB
     Double sumMoneyByBusId(Integer busId) throws Exception;
 
     /**
-     * 根据联盟id和商家id， 统计提现金额总和
+     * 根据联盟id和商家id，统计历史提现金额总和
      * @param unionId
      * @param busId
      * @return

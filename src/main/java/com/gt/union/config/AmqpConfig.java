@@ -18,11 +18,14 @@ public class AmqpConfig {
     public static final String UNION_ROUTINGKEY_PHONE_MESSAGE = "union_routingKey_phone_message";
 
     @Bean
-    public ConnectionFactory mqConnectionFactory() {
+    public ConnectionFactory amqpConnectionFactory() {
         CachingConnectionFactory factory = new CachingConnectionFactory();
-        factory.setAddresses("183.47.242.4:5672");
+//        factory.setAddresses("183.47.242.4:5672");
+//        factory.setUsername("guest");
+//        factory.setPassword("yf26609632");
+        factory.setAddresses("127.0.0.1:5672");
         factory.setUsername("guest");
-        factory.setPassword("yf26609632");
+        factory.setPassword("guest");
         factory.setVirtualHost("/");
         factory.setPublisherConfirms(true);//必须设置
         return factory;
@@ -31,7 +34,7 @@ public class AmqpConfig {
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE) //必须是prototype类型
     public RabbitTemplate rabbitTemplate() {
-        RabbitTemplate template = new RabbitTemplate(mqConnectionFactory());
+        RabbitTemplate template = new RabbitTemplate(amqpConnectionFactory());
         return template;
     }
 

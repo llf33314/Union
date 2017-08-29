@@ -2,7 +2,6 @@ package com.gt.union.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 
@@ -18,9 +17,6 @@ public class SessionConfig {
     @Value( "${redisSession.domainName}" )
     private String domainName;
 
-
-
-
     @Bean
     public DefaultCookieSerializer defaultCookieSerializer(){
         DefaultCookieSerializer defaultCookieSerializer = new DefaultCookieSerializer();
@@ -29,5 +25,4 @@ public class SessionConfig {
         defaultCookieSerializer.setCookiePath(cookiePath);
         return defaultCookieSerializer;
     }
-
 }

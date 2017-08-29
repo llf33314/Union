@@ -68,6 +68,7 @@ public class CommonConstant {
      * 开发者联系电话
      */
 	public final static String DEVELOPER_PHONE = "15986670850";
+//	public final static String DEVELOPER_PHONE = "13923639694";
 
 	/**
 	 * 联盟已过期

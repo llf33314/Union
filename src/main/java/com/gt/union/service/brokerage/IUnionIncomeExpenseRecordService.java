@@ -1,7 +1,6 @@
 package com.gt.union.service.brokerage;
 
 import com.baomidou.mybatisplus.service.IService;
-import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.entity.brokerage.UnionIncomeExpenseRecord;
 
 /**

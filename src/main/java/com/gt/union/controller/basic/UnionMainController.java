@@ -204,8 +204,7 @@ public class UnionMainController {
     @SysLogAnnotation(op_function = "3", description = "购买联盟服务")
     @RequestMapping(value = "/payment/{infoItemKey}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String payCreateUnion(HttpServletRequest request
-            , @ApiParam(name="infoItemKey", value = "购买联盟服务的信息", required = true)
-                       @PathVariable String infoItemKey){
+            , @ApiParam(name="infoItemKey", value = "购买联盟服务的信息", required = true) @PathVariable String infoItemKey){
         try{
             BusUser user = SessionUtils.getLoginUser(request);
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){

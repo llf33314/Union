@@ -2,7 +2,6 @@ package com.gt.union.service.business;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
-import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.entity.business.UnionBusinessRecommend;
 import com.gt.union.entity.business.vo.UnionBusinessRecommendVO;
 
@@ -135,4 +134,23 @@ public interface IUnionBusinessRecommendService extends IService<UnionBusinessRe
      * @throws Exception
      */
 	Double sumBusinessPriceByFromBusIdInBadDebt(Integer fromBusId) throws Exception;
+
+    /**
+     * 根据推荐商家的id，分页获取坏账明细
+     * @param page
+     * @param fromBusId
+     * @return
+     * @throws Exception
+     */
+	Page pageMapByFromBusIdInBadDebt(Page page, Integer fromBusId) throws Exception;
+
+    /**
+     * 根据联盟id和推荐商家的id，分页获取坏账明细
+     * @param page
+     * @param unionId
+     * @param fromBusId
+     * @return
+     * @throws Exception
+     */
+	Page pageMapByUnionIdAndFromBusIdInBadDebt(Page page, Integer unionId, Integer fromBusId) throws Exception;
 }
