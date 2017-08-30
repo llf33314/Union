@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.plugins.pagination.PageHelper;
 import com.baomidou.mybatisplus.plugins.pagination.Pagination;
 import com.gt.union.UnionApplication;
+import com.gt.union.api.client.address.AddressService;
 import com.gt.union.api.client.dict.DictService;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.api.client.sms.impl.SmsServiceImpl;
@@ -48,17 +49,16 @@ public class MyUnitTest {
 	@Autowired
 	private IUnionMemberService unionMemberService;
 
+	@Autowired
+	private AddressService addressService;
+
 	@Test
 	public void test1() throws Exception {
-		Map param = new HashMap<String,Object>();
-		Map obj = new HashMap<String,Object>();
-		param.put("mobiles","15986670850");
-		param.put("company","aa");
-		param.put("busId",33);
-		param.put("model",0);
-		param.put("content","dfasgfa");
-		obj.put("reqdata",param);
-		System.out.println(smsService.sendSms(obj));
+
+		Map<String,Object> param = new HashMap<String,Object>();
+		param.put("reqdata","440000,441300,441302");
+		List list = addressService.getByCityCode(param);
+		System.out.println(list);
 	}
 
 }

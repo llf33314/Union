@@ -202,20 +202,6 @@ public class UnionApplyServiceImpl extends ServiceImpl<UnionApplyMapper, UnionAp
         }
     }
 
-    @Override
-    public Map<String, Object> getUnionApplyMsgInfo(String redisKey) throws Exception{
-        if(StringUtil.isEmpty(redisKey)){
-            throw new ParamException(UNION_APPLY_MSG, "参数redisKey为空", "参数redisKey为空");
-        }
-        Object data = redisCacheUtil.get(redisKey);
-        if(data == null){
-            throw new ParamException(UNION_APPLY_MSG, "", "redis失效");
-        }
-        Map<String,Object> result = JSON.parseObject(data.toString(), Map.class);
-        Map<String,Object> obj = new HashMap<String,Object>();
-        obj.put("reqdata",result);
-        return obj;
-    }
 
     @Transactional(rollbackFor = Exception.class)
 	@Override

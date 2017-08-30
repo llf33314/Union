@@ -14,4 +14,16 @@ public interface UnionMemberPreferentialManagerConstant {
      *  删除状态：是
      */
     public static final int DEL_STATUS_YES = 1;
+
+    /**
+     * 项目说明最大字数限制
+     */
+    int ILLUSTRANTION_MAX_LENGTH = 20;
+
+    /**
+     * 审核通过
+     */
+    int VERIFY_PASS_STATUS = 2;
+
+
 }

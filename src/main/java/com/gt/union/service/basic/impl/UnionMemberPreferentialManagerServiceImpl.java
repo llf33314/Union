@@ -8,6 +8,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionApplyConstant;
+import com.gt.union.common.constant.basic.UnionMainConstant;
 import com.gt.union.common.constant.basic.UnionMemberPreferentialManagerConstant;
 import com.gt.union.common.constant.basic.UnionMemberPreferentialServiceConstant;
 import com.gt.union.common.exception.BusinessException;
@@ -228,24 +229,27 @@ public class UnionMemberPreferentialManagerServiceImpl extends ServiceImpl<Union
         if(!unionRootService.checkUnionMainValid(main)){
             throw new BusinessException(SAVE, "", CommonConstant.UNION_OVERDUE_MSG);
         }
-        if(CommonUtil.isEmpty(main.getRedCardOpend()) || main.getRedCardOpend().intValue() == 0){
-            throw new BusinessException(SAVE, "", "联盟未开启红卡，不可保存");
+        if(!unionRootService.hasUnionMemberAuthority(unionId,busId)){
+            throw new BusinessException(SAVE, "", CommonConstant.UNION_MEMBER_NON_AUTHORITY_MSG);
+        }
+        if(CommonUtil.isEmpty(main.getRedCardOpend()) || main.getRedCardOpend().intValue() == UnionMainConstant.RED_CARD_NON_OPEN){
+            throw new BusinessException(SAVE, "", "联盟未开启红卡");
         }
         if(StringUtil.isEmpty(preferentialIllustration)){
             throw new ParamException(SAVE, "项目说明为空", "项目说明不能为空");
         }
-        if(StringUtil.getStringLength(preferentialIllustration) > 10){
-            throw new ParamException(SAVE, "项目说明长度超过10字", "项目说明长度不可超过10字");
+        if(StringUtil.getStringLength(preferentialIllustration) > UnionMemberPreferentialManagerConstant.ILLUSTRANTION_MAX_LENGTH){
+            throw new ParamException(SAVE, "项目说明长度超过20字", "项目说明长度不可超过20字");
         }
         UnionMemberPreferentialManager manager = getManagerByUnionId(unionId,busId);
         if(manager == null){
             UnionMember member = unionMemberService.getByUnionIdAndBusId(unionId, busId);
             manager = new UnionMemberPreferentialManager();
-            manager.setDelStatus(0);
+            manager.setDelStatus(UnionMemberPreferentialManagerConstant.DEL_STATUS_NO);
             manager.setCreatetime(new Date());
             manager.setLastModifyTime(new Date());
             manager.setMemberId(member.getId());
-            manager.setVerifyStatus(2);
+            manager.setVerifyStatus(UnionMemberPreferentialManagerConstant.VERIFY_PASS_STATUS);
             manager.setUnionId(unionId);
             manager.setPreferentialIllustration(preferentialIllustration);
             this.insert(manager);

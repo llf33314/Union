@@ -383,7 +383,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     public int getUnionMemberCount(Integer applyBusId) {
         EntityWrapper entityWrapper = new EntityWrapper<UnionMember>();
         entityWrapper.eq("bus_id",applyBusId);
-        entityWrapper.eq("del_status",0);
+        entityWrapper.eq("del_status",UnionMemberConstant.DEL_STATUS_NO);
         return this.selectCount(entityWrapper);
     }
 
@@ -406,16 +406,16 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         if(unionMember == null ){
             throw new BusinessException(UPDATE_OUTSTATUS_ID, "", "盟员不存在");
         }
-        if(unionMember.getDelStatus() == 1){
+        if(unionMember.getDelStatus() == UnionMemberConstant.DEL_STATUS_YES){
             throw new BusinessException(UPDATE_OUTSTATUS_ID, "", "已退出联盟");
         }
-        if(unionMember.getOutStaus() == 0){
+        if(unionMember.getOutStaus() == UnionMemberConstant.OUT_STATUS_NORMAL){
             throw new BusinessException(UPDATE_OUTSTATUS_ID, "", "未申请退盟");
         }
-        if(unionMember.getOutStaus() == 2){
+        if(unionMember.getOutStaus() == UnionMemberConstant.OUT_STATUS_PERIOD){
             throw new BusinessException(UPDATE_OUTSTATUS_ID, "", "已处退盟过渡期");
         }
-        if(unionMember.getIsNuionOwner() == 1){
+        if(unionMember.getIsNuionOwner() == UnionMemberConstant.IS_UNION_OWNER_YES){
             throw new BusinessException(UPDATE_OUTSTATUS_ID, "", "不可审核盟主");
         }
         UnionApplyInfo unionApplyInfo = null;
@@ -429,7 +429,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 unionApplyInfo.setSellDivideProportion(0d);
                 unionApplyInfoService.updateById(unionApplyInfo);
             }
-            unionMember.setOutStaus(2);
+            unionMember.setOutStaus(UnionMemberConstant.OUT_STATUS_PERIOD);
             unionMember.setConfirm(new Date());
             unionMember.setConfirmOutTime(DateUtil.addDays(unionMember.getConfirm(), 15));
             this.updateById(unionMember);
@@ -581,7 +581,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         UnionMember updateMember = new UnionMember();
         updateMember.setId(member.getId());
         updateMember.setOutReason(outReason);
-        updateMember.setOutStaus(1);
+        updateMember.setOutStaus(UnionMemberConstant.OUT_STATUS_UNCHECKED);
         updateMember.setApplyOutTime(new Date());
         this.updateById(updateMember);
         member = this.selectById(member.getId());

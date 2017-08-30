@@ -13,4 +13,9 @@ public interface UnionVerifyMemberConstant {
 	 * 删除状态：删除
 	 */
 	public static final int DEL_STATUS_YES = 1;
+
+	/**
+	 * 管理者姓名字数限制
+	 */
+	int NAME_MAX_LENGTH = 10;
 }

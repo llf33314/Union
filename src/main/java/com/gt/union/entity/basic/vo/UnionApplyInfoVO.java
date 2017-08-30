@@ -76,7 +76,7 @@ public class UnionApplyInfoVO {
 	/**
 	 * 积分抵扣率
 	 */
-	@ApiModelProperty( value = "积分抵扣率 (0-30%]", required = true)
+	@ApiModelProperty( value = "积分抵扣率 (0-30%]，联盟设置了开启积分时，必填")
 	private Double integralProportion;
 
 
@@ -91,14 +91,14 @@ public class UnionApplyInfoVO {
 	 * 地址经度
 	 */
 	@ApiModelProperty( value = "地址经度，选择腾讯地图后得出", required = true)
-	@NotBlank(message = "请地图所在位置")
+	@NotBlank(message = "请选择地图所在位置")
 	private String addressLongitude;
 
 	/**
 	 * 地址纬度
 	 */
 	@ApiModelProperty( value = "地址纬度，选择腾讯地图后得出", required = true)
-	@NotBlank(message = "请地图所在位置")
+	@NotBlank(message = "请选择地图所在位置")
 	private String addressLatitude;
 
 	/**

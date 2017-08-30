@@ -37,12 +37,6 @@ public class UnionVerifyMemberServiceImpl extends ServiceImpl<UnionVerifyMemberM
 	private static final String LIST = "UnionVerifyMemberServiceImpl.list()";
 
 	@Autowired
-	private IUnionBrokerageWithdrawalsRecordService unionBrokerageWithdrawalsRecordService;
-
-	@Autowired
-	private IUnionBrokeragePayRecordService unionBrokeragePayRecordService;
-
-	@Autowired
 	private RedisCacheUtil redisCacheUtil;
 
 
@@ -53,25 +47,25 @@ public class UnionVerifyMemberServiceImpl extends ServiceImpl<UnionVerifyMemberM
 		}
 		UnionVerifyMember unionVerifyMember = new UnionVerifyMember();
 		unionVerifyMember.setId(id);
-		unionVerifyMember.setDelStatus(1);
+		unionVerifyMember.setDelStatus(UnionVerifyMemberConstant.DEL_STATUS_YES);
 		this.updateById(unionVerifyMember);
 	}
 
 	@Override
 	public void save(UnionVerifyMember unionVerifyMember) throws Exception {
 		EntityWrapper<UnionVerifyMember> memberEntityWrapper = new EntityWrapper<UnionVerifyMember>();
-		memberEntityWrapper.eq("del_status",0);
+		memberEntityWrapper.eq("del_status",UnionVerifyMemberConstant.DEL_STATUS_NO);
 		memberEntityWrapper.eq("phone",unionVerifyMember.getPhone());
 		int count = this.selectCount(memberEntityWrapper);
 		if(count > 0){
 			throw new ParamException(SAVE, "", "您输入的手机号码已存在，请重新输入");
 		}
 
-		if (StringUtil.getStringLength(unionVerifyMember.getMemberName()) > 10) {
+		if (StringUtil.getStringLength(unionVerifyMember.getMemberName()) > UnionVerifyMemberConstant.NAME_MAX_LENGTH) {
 		    throw new BusinessException(SAVE, "", "姓名字数不能超过10个字");
         }
 		EntityWrapper<UnionVerifyMember> memberWrapper = new EntityWrapper<UnionVerifyMember>();
-		memberWrapper.eq("del_status",0);
+		memberWrapper.eq("del_status",UnionVerifyMemberConstant.DEL_STATUS_NO);
 		memberWrapper.eq("bus_id",unionVerifyMember.getBusId());
 		memberWrapper.eq("member_name",unionVerifyMember.getMemberName());
 		count = this.selectCount(memberEntityWrapper);
@@ -86,7 +80,7 @@ public class UnionVerifyMemberServiceImpl extends ServiceImpl<UnionVerifyMemberM
 			throw new BusinessException(SAVE, "", "验证码有误");
 		}
 		UnionVerifyMember member = new UnionVerifyMember();
-		member.setDelStatus(0);
+		member.setDelStatus(UnionVerifyMemberConstant.DEL_STATUS_NO);
 		member.setCreatetime(new Date());
 		member.setBusId(unionVerifyMember.getBusId());
 		member.setMemberName(unionVerifyMember.getMemberName());
