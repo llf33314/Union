@@ -44,5 +44,11 @@ public interface DictService {
 	 */
 	public List<Map> getCreateUnionDict();
 
+	/**
+	 * 获取创建联盟套餐
+	 * @return
+	 */
+	public List<Map> getUnionCreatePackage();
+
 
 }

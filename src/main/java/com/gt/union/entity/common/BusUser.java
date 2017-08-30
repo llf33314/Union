@@ -46,6 +46,13 @@ public class BusUser implements Serializable{
 	 */
 	private Integer pid;
 
+	/**
+	 * 用户状态  不等于0表示冻结了
+	 */
+	private Integer status;
+
+
+
 	public Integer getId() {
 		return id;
 	}
@@ -92,5 +99,13 @@ public class BusUser implements Serializable{
 
 	public void setPid(Integer pid) {
 		this.pid = pid;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 }

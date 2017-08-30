@@ -332,7 +332,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
 	@Override
 	public Map<String, Object> instance(Integer busId) throws Exception {
-		//TODO 获取创建联盟的信息
 		Map<String,Object> data = new HashMap<String,Object>();
 	    if (busId == null) {
 	        throw new ParamException(INSTANCE, "参数busId为空", ExceptionConstant.PARAM_ERROR);
@@ -340,13 +339,16 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
 		// 1、判断商家是否已是盟主
 		if (this.unionRootService.isUnionOwner(busId)) {
-			throw new BusinessException(INSTANCE, "busId=" + busId, "您已是联盟盟主，不可创建");
+			throw new BusinessException(INSTANCE, "已是盟主", "您已是联盟盟主，不可创建");
 		}
 
 		//2、判断是否有创建联盟的权限
 		BusUser user = busUserService.getBusUserById(busId);
 	    if(user == null){
 			throw new BusinessException(INSTANCE, "参数user为空", "账号不存在");
+		}
+		if(!unionRootService.checkBusUserValid(user)){
+			throw new BusinessException(INSTANCE, "参数user为空", CommonConstant.UNION_BUS_OVERDUE_MSG);
 		}
 		List<Map> createDict = dictService.getCreateUnionDict();//创建联盟的权限
 	    boolean flag = false;
@@ -364,71 +366,36 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		//3、根据等级判断是否需要付费
 		String itemValue = info.get("item_value").toString();//根据等级获取创建联盟的权限
 		String[] arrs = itemValue.split(",");
-
-		//4、需要付费，判断是否已经付费
-		UnionCreateInfoRecord record = unionCreateInfoRecordService.getByBusId(busId);
-		if(record == null){
-			data.put("pay",1);//去支付
-		}
-		if(CommonUtil.isNotEmpty(record.getUnionId())){
-			if(DateTimeKit.laterThanNow(record.getPeriodValidity())){
-				throw new BusinessException(INSTANCE, "联盟未过期", "联盟未过期，不可创建");
+		String isPay = arrs[0];
+		if(isPay.equals("0")){//不需要付费
+			data.put("save",1);//去创建联盟
+		}else{
+			//4、需要付费，判断是否已经付费
+			UnionCreateInfoRecord record = unionCreateInfoRecordService.getByBusId(busId);
+			if(record == null){
+				data.put("pay",1);//去支付
+				List<Map> list = dictService.getUnionCreatePackage();
+				data.put("payItems", list);
 			}
-			data.put("pay",1);//去支付
+			if(DateTimeKit.laterThanNow(record.getPeriodValidity())){//未过期
+				if(CommonUtil.isNotEmpty(record.getUnionId())){
+					throw new BusinessException(INSTANCE, "联盟未过期", "联盟未过期，不可创建");
+				}else{
+					data.put("save",1);//去创建联盟
+				}
+			}else {//过期了
+				if(CommonUtil.isNotEmpty(record.getUnionId())){
+					data.put("pay",1);//去支付
+					List<Map> list = dictService.getUnionCreatePackage();
+					data.put("payItems", list);
+				}else{
+					data.put("save",1);//去创建联盟
+				}
+			}
 		}
-		data.put("save",1);//去创建联盟
 		return data;
 	}
 
-    /**
-     * 创建或保存联盟时校验权限
-     * @param busId
-     * @throws Exception
-     */
-	private Map checkBeforeInstance(Integer busId) throws Exception {
-		//TODO 创建联盟时校验
-		// 1、判断商家是否已是盟主
-		if (this.unionRootService.isUnionOwner(busId)) {
-			throw new BusinessException(INSTANCE, "busId=" + busId, "您已是联盟盟主，不可创建");
-		}
-		// 2、判断商家是否有盟主权限
-		BusUser user = busUserService.getBusUserById(busId);
-		if(user == null){
-			throw new BusinessException(INSTANCE, "参数user为空", "账号不存在");
-		}
-		List<Map> createDict = dictService.getCreateUnionDict();
-		boolean flag = false;
-		Map info = null;
-		for(Map map : createDict){
-			if(CommonUtil.toInteger(map.get("item_key")).equals(user.getLevel())){
-				info = map;
-				flag = true;
-				break;
-			}
-		}
-		if(!flag){
-			throw new BusinessException(INSTANCE, "没有创建权限", "您没有创建联盟的权限");
-		}
-		//3、判断是否需要付费
-
-		//4、需要付费的，
-
-        // （1）判断商家是否有盟主权限
-        if (!this.unionRootService.hasUnionOwnerAuthority(busId)) {
-            throw new BusinessException(INSTANCE, "busId=" + busId, "当前登录商家帐号不具有盟主权限");
-        }
-
-        // （2）判断商家是否创建过联盟
-        if (!this.unionRootService.hasCreatedUnion(busId)) {
-            throw new BusinessException(INSTANCE, "busId=" + busId, "不可创建");
-        }
-
-        // （3）判断商家是否已是盟主
-        if (!this.unionRootService.isUnionOwner(busId)) {
-            throw new BusinessException(INSTANCE, "busId=" + busId, "不可创建");
-        }
-        return info;
-    }
 
     @Override
 	@Transactional(rollbackFor = Exception.class)
@@ -436,9 +403,9 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         if (busId == null) {
             throw new ParamException(SAVE, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
-		// 1、判断商家是否已是盟主
-		if (this.unionRootService.isUnionOwner(busId)) {
-			throw new BusinessException(SAVE, "busId=" + busId, "您已是联盟盟主，不可创建");
+		Map result = instance(busId);
+        if(CommonUtil.isEmpty(result.get("save"))){
+			throw new BusinessException(SAVE, "", "不可创建联盟");
 		}
 		if(CommonUtil.isNotEmpty(vo.getIsIntegral()) && vo.getIsIntegral() == UnionMainConstant.IS_INTEGRAL_YES){
         	if(CommonUtil.isEmpty(vo.getIntegralProportion())){

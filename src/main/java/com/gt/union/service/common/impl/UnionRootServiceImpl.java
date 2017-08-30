@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.gt.union.api.client.dict.DictService;
 import com.gt.union.api.client.user.BusUserService;
 import com.gt.union.common.constant.BusUserConstant;
+import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionCreateInfoRecordConstant;
 import com.gt.union.common.constant.basic.UnionMemberConstant;
@@ -91,6 +92,9 @@ public class UnionRootServiceImpl implements IUnionRootService {
     public boolean checkBusUserValid(BusUser busUser) throws Exception {
         if (busUser == null) {
             throw new ParamException(CHECK_BUSUSER_VALID_BUSID, "无法通过busId获取busUser对象", ExceptionConstant.PARAM_ERROR);
+        }
+        if(!busUser.getStatus().equals(0)){
+            throw new ParamException(CHECK_BUSUSER_VALID_BUSID, "商家账号被冻结", CommonConstant.UNION_USER_FREEZE_MSG);
         }
         return DateTimeKit.getNow().compareTo(busUser.getEndTime()) < 0 ? true : false;
     }

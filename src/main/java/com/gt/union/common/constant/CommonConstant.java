@@ -106,6 +106,11 @@ public class CommonConstant {
 	public static final String UNION_OWNER_NON_AUTHORITY_MSG = "您没有盟主权限";
 
 	/**
+	 * 账号被冻结
+	 */
+	public static final String UNION_USER_FREEZE_MSG = "该用户已被冻结";
+
+	/**
 	 * wxmp项目的密钥
 	 */
 	public static final String WXMP_SIGN_KEY = PropertiesUtil.getWxmpSignKey();
