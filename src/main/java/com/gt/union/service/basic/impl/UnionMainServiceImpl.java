@@ -25,6 +25,7 @@ import com.gt.union.entity.common.BusUser;
 import com.gt.union.mapper.basic.UnionMainMapper;
 import com.gt.union.service.basic.*;
 import com.gt.union.service.brokerage.IUnionBrokerageWithdrawalsRecordService;
+import com.gt.union.service.brokerage.IUnionIncomeExpenseRecordService;
 import com.gt.union.service.card.IUnionBusMemberCardService;
 import com.gt.union.service.common.IUnionRootService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -95,6 +96,9 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	@Autowired
 	private AddressService addressService;
 
+	@Autowired
+    private IUnionIncomeExpenseRecordService unionIncomeExpenseRecordService;
+
 	@Override
 	public Map<String, Object> indexByBusId(Integer busId) throws Exception {
 		Map<String,Object> data = new HashMap<String,Object>();
@@ -161,7 +165,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 			double integral = unionBusMemberCardService.getUnionMemberIntegral(currentUnion.getId());
 			data.put("integral",integral);
 		}
-		double ableWithDrawalsSum = unionBrokerageWithdrawalsRecordService.getUnionBrokerageAbleToWithdrawalsSum(busId,currentUnion.getId());//联盟可提现佣金总和
+		double ableWithDrawalsSum = this.unionIncomeExpenseRecordService.getProfitMoneyByUnionIdAndBusId(currentUnion.getId(), busId);//联盟可提现佣金总和
 		data.put("ableWithDrawalsSum",ableWithDrawalsSum);
 		data.put("isUnionOwner",isUnionOwner);
 		UnionTransferRecord record = unionTransferRecordService.get(currentUnion.getId(),busId);//转盟记录

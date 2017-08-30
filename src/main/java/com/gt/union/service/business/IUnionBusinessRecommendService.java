@@ -111,4 +111,40 @@ public interface IUnionBusinessRecommendService extends IService<UnionBusinessRe
      */
     Map<String, Object> getStatisticData(Integer unionId, Integer busId) throws Exception;
 
+
+    /**
+     * 根据商家id统计已被接受的推荐商机佣金
+     * @param fromBusId
+     * @param isConfirm
+     * @return
+     * @throws Exception
+     */
+	Double sumBusinessPriceByFromBusIdAndIsConfirm(Integer fromBusId, Integer isConfirm) throws Exception;
+
+    /**
+     * 根据商机id统计已被接受，但由于接受方退盟而变成坏账状态的推荐商机佣金
+     * @param fromBusId
+     * @return
+     * @throws Exception
+     */
+	Double sumBusinessPriceByFromBusIdInBadDebt(Integer fromBusId) throws Exception;
+
+    /**
+     * 根据推荐商家的id，分页获取坏账明细
+     * @param page
+     * @param fromBusId
+     * @return
+     * @throws Exception
+     */
+	Page pageMapByFromBusIdInBadDebt(Page page, Integer fromBusId) throws Exception;
+
+    /**
+     * 根据联盟id和推荐商家的id，分页获取坏账明细
+     * @param page
+     * @param unionId
+     * @param fromBusId
+     * @return
+     * @throws Exception
+     */
+	Page pageMapByUnionIdAndFromBusIdInBadDebt(Page page, Integer unionId, Integer fromBusId) throws Exception;
 }

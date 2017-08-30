@@ -26,7 +26,7 @@ public class PhoneMessageReceiver {
     private Logger logger = LoggerFactory.getLogger(PhoneMessageReceiver.class);
 
     @Autowired
-    private ConnectionFactory connectionFactory;
+    private ConnectionFactory amqpConnectionFactory;
 
     @Autowired
     private DirectExchange directExchange;
@@ -46,7 +46,7 @@ public class PhoneMessageReceiver {
 
     @Bean
     public SimpleMessageListenerContainer phoneMessageContainer() {
-        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(connectionFactory);
+        SimpleMessageListenerContainer container = new SimpleMessageListenerContainer(amqpConnectionFactory);
         container.setQueues(queuePhoneMessage());
         container.setExposeListenerChannel(true);
         container.setMaxConcurrentConsumers(1);
@@ -57,12 +57,9 @@ public class PhoneMessageReceiver {
             @Override
             public void onMessage(Message message, Channel channel) throws Exception {
                 String msg = new String(message.getBody());
-                logger.info(AmqpConfig.UNION_ROUTINGKEY_PHONE_MESSAGE + " receive:" + msg);
-
                 PhoneMessage phoneMessage = JSON.parseObject(msg, PhoneMessage.class);
                 Map<String, Object> map = new HashMap<>();
                 map.put("reqdata", phoneMessage);
-                logger.info(AmqpConfig.UNION_ROUTINGKEY_PHONE_MESSAGE + " sendSms:" + JSON.toJSONString(map));
                 smsService.sendSms(map);
                 channel.basicAck(message.getMessageProperties().getDeliveryTag(), false); //确认消息成功消费
             }
