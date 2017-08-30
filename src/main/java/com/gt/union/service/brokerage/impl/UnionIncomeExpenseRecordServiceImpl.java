@@ -103,8 +103,8 @@ public class UnionIncomeExpenseRecordServiceImpl extends ServiceImpl<UnionIncome
             throw new ParamException(GET_PROFIT_MONEY_UNIONID_BUSID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
 
-        Double incomeMoney = this.getProfitMoneyByUnionIdAndBusId(unionId, busId);
-        Double expenseMoney = this.getProfitMoneyByUnionIdAndBusId(unionId, busId);
+        Double incomeMoney = this.sumMoneyByUnionIdAndBusIdAndType(unionId, busId, UnionIncomeExpenseRecordConstant.TYPE_INCOME);
+        Double expenseMoney = this.sumMoneyByUnionIdAndBusIdAndType(unionId, busId, UnionIncomeExpenseRecordConstant.TYPE_EXPENSE);
         return BigDecimalUtil.subtract(incomeMoney, expenseMoney).doubleValue();
     }
 }
