@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
+import com.gt.union.common.constant.basic.UnionMainConstant;
+import com.gt.union.common.constant.basic.UnionMemberConstant;
 import com.gt.union.common.constant.basic.UnionMemberPreferentialManagerConstant;
 import com.gt.union.common.constant.basic.UnionMemberPreferentialServiceConstant;
 import com.gt.union.common.exception.BusinessException;
@@ -119,18 +121,21 @@ public class UnionMemberPreferentialServiceServiceImpl extends ServiceImpl<Union
         if(!unionRootService.checkUnionMainValid(main)){
             throw new BusinessException(SAVE, "", CommonConstant.UNION_OVERDUE_MSG);
         }
-        if(CommonUtil.isEmpty(main.getRedCardOpend()) || main.getRedCardOpend().intValue() == 0){
+        if(!unionRootService.hasUnionMemberAuthority(unionId,busId)){
+            throw new BusinessException(SAVE, "", CommonConstant.UNION_MEMBER_NON_AUTHORITY_MSG);
+        }
+        if(CommonUtil.isEmpty(main.getRedCardOpend()) || main.getRedCardOpend().intValue() == UnionMainConstant.RED_CARD_NON_OPEN){
             throw new BusinessException(SAVE, "", "联盟未开启红卡，不可保存");
         }
         if (StringUtil.isEmpty(serviceName)) {
             throw new ParamException(SAVE, "优惠项目名称为空", "优惠项目名称不能为空");
         }
-        if(StringUtil.getStringLength(serviceName) > 50){
-            throw new ParamException(SAVE, "优惠项目名称长度超过50字", "优惠项目名称长度不可超过50字");
+        if(StringUtil.getStringLength(serviceName) > UnionMemberPreferentialServiceConstant.SERVICE_NAME_MAX_LENGTH){
+            throw new ParamException(SAVE, "优惠项目名称长度超过10字", "优惠项目名称长度不可超过10字");
         }
         UnionMember member = unionMemberService.getByUnionIdAndBusId(unionId, busId);
         EntityWrapper entityWrapper = new EntityWrapper<UnionMemberPreferentialService>();
-        entityWrapper.eq("del_status",0);
+        entityWrapper.eq("del_status",UnionMemberPreferentialServiceConstant.DEL_STATUS_NO);
         entityWrapper.eq("union_member_id",member.getId());
         int serviceCount = this.selectCount(entityWrapper);
         if(serviceCount == CommonConstant.MAX_PREFERENIAL_COUNT){
@@ -139,23 +144,23 @@ public class UnionMemberPreferentialServiceServiceImpl extends ServiceImpl<Union
         UnionMemberPreferentialManager manager = unionMemberPreferentialManagerService.getManagerByUnionId(unionId,busId);
         UnionMemberPreferentialService service = new UnionMemberPreferentialService();
         service.setCreatetime(new Date());
-        service.setDelStatus(0);
+        service.setDelStatus(UnionMemberPreferentialManagerConstant.DEL_STATUS_NO);
         service.setServiceName(serviceName);
         service.setUnionMemberId(member.getId());
-        if(member.getIsNuionOwner() == 1){//盟主
-            service.setVerifyStatus(2);
+        if(member.getIsNuionOwner() == UnionMemberConstant.IS_UNION_OWNER_YES){//盟主
+            service.setVerifyStatus(UnionMemberPreferentialServiceConstant.VERIFY_STATUS_PASS);
         }else {
-            service.setVerifyStatus(0);
+            service.setVerifyStatus(UnionMemberPreferentialServiceConstant.VERIFY_STATUS_UNCOMMIT);
         }
         if(CommonUtil.isEmpty(manager)){
             manager = new UnionMemberPreferentialManager();
             manager.setCreatetime(new Date());
             manager.setMemberId(member.getId());
             manager.setUnionId(unionId);
-            manager.setVerifyStatus(2);
+            manager.setVerifyStatus(UnionMemberPreferentialManagerConstant.VERIFY_PASS_STATUS);
             manager.setPreferentialIllustration("");
             manager.setLastModifyTime(new Date());
-            manager.setDelStatus(0);
+            manager.setDelStatus(UnionMemberPreferentialManagerConstant.DEL_STATUS_NO);
             unionMemberPreferentialManagerService.insert(manager);
         }
         service.setManagerId(manager.getId());
@@ -171,9 +176,6 @@ public class UnionMemberPreferentialServiceServiceImpl extends ServiceImpl<Union
             throw new ParamException(DELETE, "参数ids为空", ExceptionConstant.PARAM_ERROR);
         }
         UnionMain main = unionMainService.getById(unionId);
-        if(!unionRootService.checkUnionMainValid(main)){
-            throw new BusinessException(SAVE, "", CommonConstant.UNION_OVERDUE_MSG);
-        }
         if(CommonUtil.isEmpty(main.getRedCardOpend()) || main.getRedCardOpend().intValue() == 0){
             throw new BusinessException(SAVE, "", "联盟未开启红卡，不可删除");
         }
@@ -208,7 +210,7 @@ public class UnionMemberPreferentialServiceServiceImpl extends ServiceImpl<Union
         if(records.size()>0){
             for(UnionConsumeServiceRecord record : records){
                 UnionMemberPreferentialService service = new UnionMemberPreferentialService();
-                service.setDelStatus(1);
+                service.setDelStatus(UnionMemberPreferentialServiceConstant.DEL_STATUS_NO);
                 service.setId(record.getServiceId());
                 upList.add(service);
                 Iterator<Integer> it = serviceIds.iterator();
@@ -248,23 +250,20 @@ public class UnionMemberPreferentialServiceServiceImpl extends ServiceImpl<Union
             throw new ParamException(ADD_SERVICE_VERIFY, "参数id为空", ExceptionConstant.PARAM_ERROR);
         }
         UnionMain main = unionMainService.getById(unionId);
-        if(!unionRootService.checkUnionMainValid(main)){
-            throw new BusinessException(SAVE, "", CommonConstant.UNION_OVERDUE_MSG);
-        }
-        if(CommonUtil.isEmpty(main.getRedCardOpend()) || main.getRedCardOpend().intValue() == 0){
-            throw new BusinessException(SAVE, "", "联盟未开启红卡，不可保存");
+        if(CommonUtil.isEmpty(main.getRedCardOpend()) || main.getRedCardOpend().intValue() == UnionMainConstant.RED_CARD_NON_OPEN){
+            throw new BusinessException(SAVE, "", "联盟未开启红卡");
         }
         EntityWrapper entityWrapper = new EntityWrapper<UnionMemberPreferentialService>();
-        entityWrapper.eq("del_status",0);
+        entityWrapper.eq("del_status",UnionMemberPreferentialServiceConstant.DEL_STATUS_NO);
         entityWrapper.eq("id",id);
         UnionMemberPreferentialService service = this.selectOne(entityWrapper);
         if(CommonUtil.isEmpty(service)){
            throw new BusinessException(ADD_SERVICE_VERIFY,"优惠项目不存在","优惠项目不存在");
         }
-        if(service.getVerifyStatus() != 0){
+        if(service.getVerifyStatus() != UnionMemberPreferentialServiceConstant.VERIFY_STATUS_UNCOMMIT){
             throw new BusinessException(ADD_SERVICE_VERIFY,"优惠项目已提交","优惠项目已提交");
         }
-        service.setVerifyStatus(1);
+        service.setVerifyStatus(UnionMemberPreferentialServiceConstant.VERIFY_STATUS_UNCHECK);
         this.updateById(service);
     }
 
@@ -286,11 +285,11 @@ public class UnionMemberPreferentialServiceServiceImpl extends ServiceImpl<Union
         if(!unionRootService.checkUnionMainValid(main)){
             throw new BusinessException(SAVE, "", CommonConstant.UNION_OVERDUE_MSG);
         }
-        if(CommonUtil.isEmpty(main.getRedCardOpend()) || main.getRedCardOpend().intValue() == 0){
-            throw new BusinessException(SAVE, "", "联盟未开启红卡，不可保存");
-        }
         if(!this.unionRootService.isUnionOwner(unionId,busId)){
             throw new BusinessException(VERIFY, "您不是盟主，没有权限审核", CommonConstant.UNION_OWNER_NON_AUTHORITY_MSG);
+        }
+        if(CommonUtil.isEmpty(main.getRedCardOpend()) || main.getRedCardOpend().intValue() == UnionMainConstant.RED_CARD_NON_OPEN){
+            throw new BusinessException(SAVE, "", "联盟未开启红卡");
         }
         String[] list = ids.split(",");
         if(list.length == 0){
@@ -315,19 +314,18 @@ public class UnionMemberPreferentialServiceServiceImpl extends ServiceImpl<Union
 
     @Transactional(rollbackFor = Exception.class)
     private void verifyBatch(List<Integer> serviceIds, Integer verifyStatus)throws Exception{
-        List<UnionConsumeServiceRecord> records = unionConsumeServiceRecordService.getListGrouyByServiceId(serviceIds);
         List<UnionMemberPreferentialService> services = this.selectBatchIds(serviceIds);
         for(UnionMemberPreferentialService service : services){
             if(CommonUtil.isEmpty(service)){
                 throw new BusinessException(VERIFY, "优惠项目不存在","优惠项目不存在");
             }
-            if(service.getDelStatus() == 1){
+            if(service.getDelStatus() == UnionMemberPreferentialServiceConstant.DEL_STATUS_NO){
                 throw new BusinessException(VERIFY, "优惠项目不存在","优惠项目不存在");
             }
-            if(service.getVerifyStatus() == 0){
+            if(service.getVerifyStatus() == UnionMemberPreferentialServiceConstant.VERIFY_STATUS_UNCOMMIT){
                 throw new BusinessException(VERIFY, "优惠项目未提交","优惠项目未提交");
             }
-            if(service.getVerifyStatus() != 1){
+            if(service.getVerifyStatus() != UnionMemberPreferentialServiceConstant.VERIFY_STATUS_UNCHECK){
                 throw new BusinessException(VERIFY, "优惠项目已审核","优惠项目已审核");
             }
             service.setVerifyStatus(verifyStatus);

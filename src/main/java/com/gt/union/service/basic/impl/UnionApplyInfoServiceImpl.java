@@ -9,6 +9,7 @@ import com.gt.union.api.client.address.AddressService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionApplyConstant;
+import com.gt.union.common.constant.basic.UnionMainConstant;
 import com.gt.union.common.constant.basic.UnionMemberConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
@@ -69,6 +70,16 @@ public class UnionApplyInfoServiceImpl extends ServiceImpl<UnionApplyInfoMapper,
 		}
 		if(!unionRootService.hasUnionMemberAuthority(vo.getUnionId(),busId)){
 			throw new BusinessException(UPDATE_ID, "" , CommonConstant.UNION_MEMBER_NON_AUTHORITY_MSG);
+		}
+		UnionMain main = unionMainService.getById(vo.getUnionId());
+		if(main.getIsIntegral() == UnionMainConstant.IS_INTEGRAL_YES){
+			if(CommonUtil.isEmpty(vo.getIntegralProportion())){
+				throw new BusinessException(UPDATE_ID, "", "请设置积分抵扣率");
+			}
+			double integral = new BigDecimal((vo.getIntegralProportion())).doubleValue();
+			if(integral <= 0 || integral > 30){
+				throw new BusinessException(UPDATE_ID, "", "积分抵扣率有误");
+			}
 		}
 		UnionApplyInfo info = new UnionApplyInfo();
 		info.setId(vo.getId());

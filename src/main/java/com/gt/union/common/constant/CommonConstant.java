@@ -68,7 +68,7 @@ public class CommonConstant {
 	/**
 	 * 联盟已过期
 	 */
-	public static final String UNION_OVERDUE_MSG = "联盟已失效";
+	public static final String UNION_OVERDUE_MSG = "联盟已无效";
 
     /**
      * 商家帐号已过期

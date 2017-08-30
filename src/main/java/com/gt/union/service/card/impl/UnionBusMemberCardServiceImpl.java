@@ -6,6 +6,9 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.api.entity.UnionDiscountResult;
 import com.gt.union.common.constant.ExceptionConstant;
+import com.gt.union.common.constant.basic.UnionMemberConstant;
+import com.gt.union.common.constant.card.UnionBusMemberCardConstant;
+import com.gt.union.common.constant.card.UnionCardInfoConstant;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.ListUtil;
@@ -58,8 +61,8 @@ public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCar
 				StringBuilder sbSqlSegment = new StringBuilder();
 				sbSqlSegment.append(" WHERE bus_id IN (SELECT bus_id from t_union_member WHERE union_id = ")
 						.append(unionId)
-						.append(" AND del_status = ").append(0).append(")")
-						.append(" AND del_status = ").append(0);
+						.append(" AND del_status = ").append(UnionMemberConstant.DEL_STATUS_NO).append(")")
+						.append(" AND del_status = ").append(UnionBusMemberCardConstant.DEL_STATUS_NO);
 				return sbSqlSegment.toString();
 			};
 		};
@@ -89,8 +92,8 @@ public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCar
 						.append(" WHERE")
 						.append(" t1.bus_id = ").append(busId)
 						.append(" AND t2.union_id = ").append(unionId)
-						.append(" AND t1.del_status = ").append(0)
-						.append(" AND t2.del_status = ").append(0);
+						.append(" AND t1.del_status = ").append(UnionBusMemberCardConstant.DEL_STATUS_NO)
+						.append(" AND t2.del_status = ").append(UnionCardInfoConstant.DEL_STATUS_NO);
 				if (StringUtil.isNotEmpty(phone)) {
 					sbSqlSegment.append(" AND t1.phone LIKE '%").append(phone.trim()).append("%' ");
 				}
@@ -124,8 +127,8 @@ public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCar
 						.append(" WHERE")
 						.append(" t1.bus_id = ").append(busId)
 						.append(" AND t2.union_id = ").append(unionId)
-						.append(" AND t1.del_status = ").append(0)
-						.append(" AND t2.del_status = ").append(0);
+						.append(" AND t1.del_status = ").append(UnionBusMemberCardConstant.DEL_STATUS_NO)
+						.append(" AND t2.del_status = ").append(UnionCardInfoConstant.DEL_STATUS_NO);
 				if (StringUtil.isNotEmpty(phone)) {
 					sbSqlSegment.append(" AND t1.phone LIKE '%").append(phone.trim()).append("%' ");
 				}
@@ -138,7 +141,7 @@ public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCar
 
 		};
 		StringBuilder sbSqlSelect = new StringBuilder("");
-		sbSqlSelect.append(" t1.id, t1.cardNo, t1.phone, t1.integral, DATE_FORMAT(t2.updatetime, '%Y-%m-%d %T') updatetime, t2.card_type, DATE_FORMAT(t2.card_term_time, '%Y-%m-%d %T') cardTermTime");
+		sbSqlSelect.append(" t1.id, t1.cardNo, t1.phone, t1.integral, DATE_FORMAT(t2.updasdfserhrturyurty6thdfrSCＡｆｇｂｔｈｅｓｒtetime, '%Y-%m-%d %T') updatetime, t2.card_type, DATE_FORMAT(t2.card_term_time, '%Y-%m-%d %T') cardTermTime");
 		wrapper.setSqlSelect(sbSqlSelect.toString());
 		return this.selectMaps(wrapper);
 	}
@@ -162,7 +165,7 @@ public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCar
 			return result;
 		}
 		EntityWrapper entityWrapper = new EntityWrapper<UnionBusMemberCard>();
-		entityWrapper.eq("del_status",0);
+		entityWrapper.eq("del_status",UnionBusMemberCardConstant.DEL_STATUS_NO);
 		entityWrapper.eq("id", memberCard.getUnionMemberCardId());
 		UnionBusMemberCard card = this.selectOne(entityWrapper);
 		List<UnionMain> sameUnions = unionMainService.getSameUnionBus(list, memberCard.getBusId());

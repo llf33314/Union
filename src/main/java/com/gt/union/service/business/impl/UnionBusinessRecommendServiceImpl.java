@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.amqp.entity.PhoneMessage;
 import com.gt.union.amqp.sender.PhoneMessageSender;
+import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionApplyConstant;
 import com.gt.union.common.constant.basic.UnionMainConstant;
@@ -89,7 +90,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	public void save(UnionBusinessRecommendVO vo) throws Exception{
 		//判断联盟是否有效
 		if (!this.unionRootService.checkUnionMainValid(vo.getUnionId())) {
-			throw new BusinessException(SAVE, "", "联盟已无效");
+			throw new BusinessException(SAVE, "", CommonConstant.UNION_OVERDUE_MSG);
 		}
 		UnionMember fromUnionMember = this.unionMemberService.getByUnionIdAndBusId(vo.getUnionId(), vo.getBusId());
 		if (fromUnionMember == null) {
@@ -97,13 +98,16 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
         }
 		//判断推荐商家是否是联盟的有效成员
 		if (!this.unionRootService.hasUnionMemberAuthority(vo.getUnionId(), vo.getBusId())) {
-		    throw new BusinessException(SAVE, "", "推荐商家不是该联盟的有效成员");
+		    throw new BusinessException(SAVE, "", CommonConstant.UNION_MEMBER_NON_AUTHORITY_MSG);
         }
         //判断被推荐商家是否是联盟的有效成员
 		UnionMember toUnionMember = this.unionMemberService.selectById(vo.getToMemberId());
 		if(toUnionMember == null || this.unionRootService.hasUnionMemberAuthority(toUnionMember)
                 || this.unionRootService.checkBusUserValid(toUnionMember.getBusId())){
 			throw new BusinessException(SAVE, "", "您推荐的盟员是无效盟员");
+		}
+		if(!unionRootService.checkBusUserValid(toUnionMember.getBusId())){
+			throw new BusinessException(SAVE, "", "您推荐的盟员账号已过期");
 		}
 		//保存推荐主表信息
 		UnionBusinessRecommend recommend = new UnionBusinessRecommend();
@@ -215,7 +219,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
         }
         // （2）判断当前商家是否是商机的接收者
         if (unionBusinessRecommend.getToBusId() != busId) {
-            throw new BusinessException(UPDATE_ID_ISACCEPTANCE, "", "当前登录的商家帐号不是该商机的接收者");
+            throw new BusinessException(UPDATE_ID_ISACCEPTANCE, "", ExceptionConstant.OPERATE_FAIL);
         }
         // （3）判断商机是否是未处理状态
         if (unionBusinessRecommend.getIsAcceptance() != UnionBusinessRecommendConstant.IS_ACCEPTANCE_UNCHECK) {
@@ -279,6 +283,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
                     .append(unionBusinessRecommendInfo.getUserPhone()).append("，")
                     .append(unionBusinessRecommendInfo.getBusinessMsg());
             PhoneMessage phoneMessage = new PhoneMessage(unionBusinessRecommend.getToBusId(), phone, sbContent.toString());
+			this.phoneMessageSender.sendMsg(phoneMessage);
         }
     }
 
@@ -307,6 +312,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
                     .append(unionBusinessRecommendInfo.getUserPhone()).append("，")
                     .append(unionBusinessRecommendInfo.getBusinessMsg());
             PhoneMessage phoneMessage = new PhoneMessage(unionBusinessRecommend.getToBusId(), phone, sbContent.toString());
+			this.phoneMessageSender.sendMsg(phoneMessage);
         }
     }
 
@@ -648,19 +654,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
         return resultMap;
     }
 
-	@Override
-	public Map<String, Object> getRecommendMsgInfo(String redisKey) throws Exception{
-		if(StringUtil.isEmpty(redisKey)){
-			throw new ParamException(RECOMMEND_MSG, "参数redisKey为空", "参数redisKey为空");
-		}
-		Object data = redisCacheUtil.get(redisKey);
-		if(data == null){
-			throw new ParamException(RECOMMEND_MSG, "", "redis失效");
-		}
-		Map<String,Object> result = JSON.parseObject(data.toString(), Map.class);
-		return null;
-	}
-
+    
 	//根据联盟id、推荐商家id和是否给予佣金状态isConfirm获取总佣金收入信息
     private Double getBrokerageIncome(Integer unionId, Integer busId, Integer isConfirm) {
         if (unionId != null && busId != null && isConfirm != null) {

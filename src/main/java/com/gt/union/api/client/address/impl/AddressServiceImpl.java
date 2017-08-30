@@ -39,7 +39,7 @@ public class AddressServiceImpl implements AddressService {
 
 	@Override
 	public List<Map> getByCityCode(Map<String, Object> param) {
-		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/shopapi/6F6D9AD2/79B4DE7C/queryBasisCityIds.do";
+		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/shopapi/6F6D9AD2/79B4DE7C/queryBasisByCodes.do";
 		try {
 			Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param),url, Map.class, CommonConstant.WXMP_SIGN_KEY);
 			if(CommonUtil.isEmpty(result)){

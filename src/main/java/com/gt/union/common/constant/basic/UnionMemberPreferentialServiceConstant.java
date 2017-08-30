@@ -34,4 +34,9 @@ public interface UnionMemberPreferentialServiceConstant {
      * 审核状态：审核不通过
      */
     public static final int VERIFY_STATUS_FAIL = 3;
+
+    /**
+     * 优惠项目最大字数限制
+     */
+    int SERVICE_NAME_MAX_LENGTH = 10;
 }

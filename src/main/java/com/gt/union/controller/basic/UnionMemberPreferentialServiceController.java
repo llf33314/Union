@@ -11,6 +11,7 @@ import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.basic.IUnionMemberPreferentialServiceService;
+import com.gt.union.service.common.IUnionRootService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
@@ -41,6 +42,8 @@ public class UnionMemberPreferentialServiceController {
 	@Autowired
 	private IUnionMemberPreferentialServiceService unionMemberPreferentialServiceService;
 
+	@Autowired
+	private IUnionRootService unionRootService;
 
 	@ApiOperation(value = "查询我的优惠项目", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/unionId/{unionId}/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -94,6 +97,12 @@ public class UnionMemberPreferentialServiceController {
 			if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
 				throw new BusinessException(SAVE, "", CommonConstant.UNION_BUS_PARENT_MSG);
 			}
+			if(!unionRootService.checkUnionMainValid(unionId)){
+				throw new BusinessException(SAVE, "", CommonConstant.UNION_OVERDUE_MSG);
+			}
+			if(!unionRootService.hasUnionMemberAuthority(unionId,busUser.getId())){
+				throw new BusinessException(SAVE, "", CommonConstant.UNION_MEMBER_NON_AUTHORITY_MSG);
+			}
 			unionMemberPreferentialServiceService.delete(unionId, ids);
 			return GTJsonResult.instanceSuccessMsg().toString();
 		} catch (BaseException e) {
@@ -114,6 +123,12 @@ public class UnionMemberPreferentialServiceController {
 			BusUser busUser = SessionUtils.getLoginUser(request);
 			if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
 				throw new BusinessException(SAVE, "", CommonConstant.UNION_BUS_PARENT_MSG);
+			}
+			if(!unionRootService.checkUnionMainValid(unionId)){
+				throw new BusinessException(SAVE, "", CommonConstant.UNION_OVERDUE_MSG);
+			}
+			if(!unionRootService.hasUnionMemberAuthority(unionId,busUser.getId())){
+				throw new BusinessException(SAVE, "", CommonConstant.UNION_MEMBER_NON_AUTHORITY_MSG);
 			}
 			unionMemberPreferentialServiceService.addServiceVerify(unionId, id);
 			return GTJsonResult.instanceSuccessMsg().toString();
@@ -136,6 +151,9 @@ public class UnionMemberPreferentialServiceController {
 						 ) {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
+			if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){
+				throw new BusinessException(VERIFY, "", CommonConstant.UNION_BUS_PARENT_MSG);
+			}
 			unionMemberPreferentialServiceService.verify(unionId, busUser.getId(), ids, verifyStatus);
 			return GTJsonResult.instanceSuccessMsg().toString();
 		} catch (BaseException e) {

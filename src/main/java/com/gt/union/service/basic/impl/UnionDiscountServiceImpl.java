@@ -3,6 +3,7 @@ package com.gt.union.service.basic.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionDiscountConstant;
 import com.gt.union.common.exception.ParamException;
@@ -10,6 +11,8 @@ import com.gt.union.common.util.DoubleUtil;
 import com.gt.union.entity.basic.UnionDiscount;
 import com.gt.union.mapper.basic.UnionDiscountMapper;
 import com.gt.union.service.basic.IUnionDiscountService;
+import com.gt.union.service.common.IUnionRootService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -28,6 +31,9 @@ public class UnionDiscountServiceImpl extends ServiceImpl<UnionDiscountMapper, U
     private static final String UPDATE_UNIONID_TOBUSID_DISCOUNT = "UnionDiscountServiceImpl.updateByUnionIdAndToBusIdAndDiscount()";
     private static final String IS_EXIST = "UnionDiscountServiceImpl.isExist()";
 
+    @Autowired
+    private IUnionRootService unionRootService;
+
     @Override
     public void updateByUnionIdAndToBusIdAndDiscount(Integer unionId, Integer fromBusId, Integer toBusId, Double discount) throws Exception {
         if (unionId == null) {
@@ -39,6 +45,15 @@ public class UnionDiscountServiceImpl extends ServiceImpl<UnionDiscountMapper, U
         if (toBusId == null) {
             throw new ParamException(UPDATE_UNIONID_TOBUSID_DISCOUNT, "参数toBusId为空", ExceptionConstant.PARAM_ERROR);
         }
+        if(!unionRootService.checkUnionMainValid(unionId)){
+            throw new ParamException(UPDATE_UNIONID_TOBUSID_DISCOUNT, "", CommonConstant.UNION_OVERDUE_MSG);
+        }
+        if(!unionRootService.hasUnionMemberAuthority(unionId,fromBusId)){
+            throw new ParamException(UPDATE_UNIONID_TOBUSID_DISCOUNT, "", CommonConstant.UNION_MEMBER_NON_AUTHORITY_MSG);
+        }
+        if(!unionRootService.hasUnionMemberAuthority(unionId,toBusId)){
+            throw new ParamException(UPDATE_UNIONID_TOBUSID_DISCOUNT, "", "该盟员已退盟或处于退盟过渡期");
+        }
         if (discount == null) {
             throw new ParamException(UPDATE_UNIONID_TOBUSID_DISCOUNT, "参数discount为空", ExceptionConstant.PARAM_ERROR);
         } else {
@@ -49,6 +64,8 @@ public class UnionDiscountServiceImpl extends ServiceImpl<UnionDiscountMapper, U
                 throw new ParamException(UPDATE_UNIONID_TOBUSID_DISCOUNT, "参数discount的有效小数点长度不能超过2位", ExceptionConstant.PARAM_ERROR);
             }
         }
+
+
         EntityWrapper entityWrapper = new EntityWrapper();
         entityWrapper.eq("del_status", UnionDiscountConstant.DEL_STATUS_NO)
                 .eq("union_id", unionId)

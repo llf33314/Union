@@ -38,4 +38,44 @@ public interface UnionMainConstant {
      * 加盟方式：允许申请和推荐
      */
     public static final int JOIN_TYPE_APPLY_RECOMMEND = 2;
+
+    /**
+     * 开启红卡
+     */
+    int RED_CARD_OPEN = 1;
+
+    /**
+     * 未开启红卡
+     */
+    int RED_CARD_NON_OPEN = 0;
+
+    /**
+     * 开启黑卡收费
+     */
+    int BLACK_CARD_OPEN = 1;
+
+    /**
+     * 未开启黑卡收费
+     */
+    int BLACK_CARD_NON_OPEN = 0;
+
+    /**
+     * 老会员收费
+     */
+    int OLD_CARD_CHARGE = 1;
+
+    /**
+     * 老会员不收费
+     */
+    int OLD_CARD_NON_CHARGE = 0;
+
+    /**
+     * 开启积分
+     */
+    int IS_INTEGRAL_YES = 1;
+
+    /**
+     * 未开启积分
+     */
+    int IS_INTEGRAL_NO = 0;
 }
