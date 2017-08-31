@@ -8,6 +8,7 @@ import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.PropertiesUtil;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.basic.vo.UnionMainCreateInfoVO;
@@ -19,11 +20,15 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -48,6 +53,9 @@ public class UnionMainController {
     private static final String INSTANCE = "UnionMainController.instance()";
     private static final String SAVE = "UnionMainController.save()";
     private Logger logger = Logger.getLogger(UnionMainController.class);
+
+    @Value("${wxmp.url}")
+    private String wxmpUrl;
 
     @Autowired
     private IUnionMainService unionMainService;
@@ -210,7 +218,7 @@ public class UnionMainController {
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
                 throw new BusinessException(SAVE, "", CommonConstant.UNION_BUS_PARENT_MSG);
             }
-            unionMainService.payCreateUnion(user.getId(), infoItemKey);
+            //unionMainService.payCreateUnion(user.getId(), infoItemKey);
             return GTJsonResult.instanceSuccessMsg().toString();
         }catch (BaseException e){
             logger.error("", e);
@@ -220,6 +228,38 @@ public class UnionMainController {
             return GTJsonResult.instanceErrorMsg(SAVE, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
 
+    }
+
+    /**
+     * 创建联盟支付成功回调地址
+     * @param request
+     * @param response
+     * @throws UnsupportedEncodingException
+     */
+    @RequestMapping(value = "/79B4DE7C/paymentSuccess", method = RequestMethod.GET)
+    public void payCreateUnionSuccess(HttpServletRequest request, HttpServletResponse response) {
+        try {
+
+
+        } catch (Exception e) {
+            logger.error("生成购买联盟服务支付二维码错误：" + e);
+        }
+    }
+
+
+    @ApiOperation(value = "购买联盟服务支付二维码", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/qrCode/{infoItemKey}", method = RequestMethod.GET)
+    public void createUnionQRCode(HttpServletRequest request, HttpServletResponse response, @ApiParam(name="infoItemKey", value = "购买联盟服务的信息", required = true) @PathVariable("infoItemKey") String infoItemKey) {
+        try {
+            BusUser user = SessionUtils.getLoginUser(request);
+            if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
+                throw new BusinessException(SAVE, "", CommonConstant.UNION_BUS_PARENT_MSG);
+            }
+            Map<String,Object> data = unionMainService.createUnionQRCode(user.getId(), infoItemKey);
+            request.getRequestDispatcher(wxmpUrl + "/pay/B02A45A5/79B4DE7C/createPayQR.do").forward(request,response);
+        } catch (Exception e) {
+            logger.error("生成购买联盟服务支付二维码错误：" + e);
+        }
     }
 
 }

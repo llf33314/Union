@@ -105,4 +105,53 @@ public class RedisKeyUtil {
         return "memberCard:" + memberId + "busId:" + busId;
     }
 
+    /**
+     * 获取创建联盟支付参数key
+     * @param time
+     * @return
+     */
+    public static final String getCreateUnionPayParamKey(String time){
+        return "createUnion:" + time;
+    }
+
+    /**
+     * 获取创建联盟支付状态key
+     * @param time
+     * @return
+     */
+    public static final String getCreateUnionPayStatusKey(String time){
+        return "createUnion:status:" + time;
+    }
+
+    /**
+     * 获取升级联盟卡支付参数key
+     * @param time
+     * @return
+     */
+    public static final String getUpdateCardPayParamKey(String time){
+        return "updateCard:" + time;
+    }
+
+    /**
+     * 获取升级联盟卡支付状态key
+     * @param status
+     * @return
+     */
+    public static final String getUpdateCardPayStatusKey(String status){
+        return "updateCard:status:" + status;
+    }
+
+    /**
+     * 根据商家id获取公众号信息key
+     * @param busId
+     * @return
+     */
+    public static final String getWxPublicUserBusIdKey(Integer busId){
+        return getWxPublicUserBusIdKey(String.valueOf(busId));
+    }
+
+    public static final String getWxPublicUserBusIdKey(String busId){
+        return "wxPublicUser:" + busId;
+    }
+
 }

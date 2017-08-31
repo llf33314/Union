@@ -64,6 +64,34 @@ public class CommonConstant {
 	 */
 	public final static String CREATE_UNION_UN_PAY_PRODUCTID_CODE="00006200";
 
+	/**
+	 * 扫码支付订单状态 001:等待用户扫码
+	 */
+	public final static String USER_ORDER_STATUS_001="001";
+
+	/**
+	 * 扫码支付订单状态 002:确认扫码
+	 */
+	public final static String USER_ORDER_STATUS_002="002";
+
+
+	/**
+	 * 扫码支付订单状态 003:完成订单
+	 */
+	public final static String USER_ORDER_STATUS_003="003";
+
+
+	/**
+	 * 扫码支付订单状态 004:订单超时
+	 */
+	public final static String USER_ORDER_STATUS_004="004";
+
+
+	/**
+	 * 扫码支付订单状态 005:订单支付失败
+	 */
+	public final static String USER_ORDER_STATUS_005="005";
+
     /**
      * 开发者联系电话
      */

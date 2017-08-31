@@ -63,18 +63,7 @@ public class UnionRootServiceImpl implements IUnionRootService {
         if (busId == null) {
             throw new ParamException(GET_BUSUSER_BUSID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
-        String busUserKey = RedisKeyUtil.getBusUserKey(busId);
-        if (this.redisCacheUtil.exists(busUserKey)) {//（1）通过busId获取缓存中的busUser对象，如果存在，则直接返回
-            Object obj = this.redisCacheUtil.get(busUserKey);
-            return JSON.parseObject(obj.toString(), BusUser.class);
-        }
-
-        //（2）如果缓存中不存在busUser对象，则调用接口获取
         BusUser busUser = busUserService.getBusUserById(busId);
-        // （3）不为空时重新存入缓存
-        if (busUser != null) {
-            this.redisCacheUtil.set(busUserKey, JSON.toJSONString(busUser));
-        }
         return busUser;
     }
 

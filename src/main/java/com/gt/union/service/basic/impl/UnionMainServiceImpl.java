@@ -9,7 +9,6 @@ import com.gt.union.api.client.address.AddressService;
 import com.gt.union.api.client.dict.DictService;
 import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.user.BusUserService;
-import com.gt.union.api.entity.PayParam;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionApplyConstant;
@@ -29,10 +28,12 @@ import com.gt.union.service.brokerage.IUnionIncomeExpenseRecordService;
 import com.gt.union.service.card.IUnionBusMemberCardService;
 import com.gt.union.service.common.IUnionRootService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -53,6 +54,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	private static final String INSTANCE = "UnionMainServiceImpl.instance()";
 	private static final String SAVE = "UnionMainServiceImpl.save()";
 	private static final String GET_BUSID = "UnionMainServiceImpl.getByBusId()";
+	private static final String PAY_CREATE_UNION = "UnionMainServiceImpl.payCreateUnion()";
 
 	@Autowired
 	private IUnionRootService unionRootService;
@@ -88,9 +90,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	private IUnionTransferRecordService unionTransferRecordService;
 
 	@Autowired
-	private WxPayService wxPayService;
-
-	@Autowired
 	private IUnionCreateInfoRecordService unionCreateInfoRecordService;
 
 	@Autowired
@@ -98,6 +97,12 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
 	@Autowired
     private IUnionIncomeExpenseRecordService unionIncomeExpenseRecordService;
+
+	@Value("${union.url}")
+	private String unionUrl;
+
+	@Value("${wx.duofen.busId}")
+	private Integer duofenBusId;
 
 	@Override
 	public Map<String, Object> indexByBusId(Integer busId) throws Exception {
@@ -674,12 +679,44 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		return list;
 	}
 
-    @Override
-    public void payCreateUnion(Integer busId, String infoItemKey) throws Exception{
-    	//TODO  权限校验   支付创建联盟服务
-        Map<String,Object> obj = new HashMap<String,Object>();
-		PayParam payParam = new PayParam();
-		obj.put("reqdata",payParam);
-		wxPayService.pay(obj);
-    }
+	@Override
+	public Map<String, Object> createUnionQRCode(Integer busId, String infoItemKey) throws Exception{
+    	Map<String, Object> data = new HashMap<String, Object>();
+		List<Map> list = dictService.getUnionCreatePackage();
+		Double pay = 0d;
+		boolean flag = false;
+		for(Map map : list){
+			if(map.get("item_key").equals(infoItemKey)){
+				String itemValue = map.get("item_value").toString();
+				String value = itemValue.split(",")[1];
+				pay = Double.valueOf(value).doubleValue();
+				flag = true;
+				break;
+			}
+		}
+		if(!flag){
+			throw new ParamException(PAY_CREATE_UNION, "支付类型有误", ExceptionConstant.PARAM_ERROR);
+		}
+		String orderNo = CommonConstant.CREATE_UNION_PAY_ORDER_CODE + System.currentTimeMillis();
+		Map publicUser = busUserService.getWxPublicUserByBusId(duofenBusId);
+		data.put("totalFee",pay);
+		data.put("busId", duofenBusId);
+		data.put("sourceType", 1);//是否墨盒支付
+		data.put("payWay",0);//系统判断支付方式
+		data.put("isreturn",0);//0：不需要同步跳转
+		data.put("model", CommonConstant.PAY_MODEL);
+		data.put("notifyUrl", unionUrl + "");
+		data.put("orderNum", orderNo);//订单号
+		data.put("payBusId",busId);//支付的商家id
+		data.put("isSendMessage",0);//不推送
+		data.put("appid",publicUser.get("appid"));//appid
+		data.put("dec", URLEncoder.encode("多粉-创建联盟","UTF-8"));
+		String only=DateTimeKit.getDateTime(new Date(), DateTimeKit.yyyyMMddHHmmss);
+		String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
+		String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
+		redisCacheUtil.set(paramKey,JSON.toJSONString(data), 300l);//5分钟
+		redisCacheUtil.set(statusKey,CommonConstant.USER_ORDER_STATUS_001,300l);//等待扫码状态
+		redisCacheUtil.set( orderNo, only, 300l);
+		return data;
+	}
 }

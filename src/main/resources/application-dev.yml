@@ -125,3 +125,10 @@ wxmp:
    company: "多粉平台"
    #url: http://deeptel.com.cn/
   #url: http://192.168.3.41:83
+
+union:
+  url: http://union.yifriend.net:7884
+
+wx:
+  duofen:
+    busId: 33
