@@ -1,6 +1,9 @@
 package com.gt.union.controller.basic;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.gt.api.util.HttpClienUtils;
 import com.gt.union.common.annotation.SysLogAnnotation;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
@@ -8,6 +11,7 @@ import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.HttpClienUtil;
 import com.gt.union.common.util.PropertiesUtil;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.basic.UnionMain;
@@ -236,27 +240,39 @@ public class UnionMainController {
      * @param response
      * @throws UnsupportedEncodingException
      */
-    @RequestMapping(value = "/79B4DE7C/paymentSuccess", method = RequestMethod.GET)
-    public void payCreateUnionSuccess(HttpServletRequest request, HttpServletResponse response) {
+    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{only}", method = RequestMethod.POST)
+    public void payCreateUnionSuccess(HttpServletRequest request, HttpServletResponse response,@PathVariable(name = "only", required = true) String only) {
         try {
-
+            logger.info("only------------------"+only);
 
         } catch (Exception e) {
-            logger.error("生成购买联盟服务支付二维码错误：" + e);
+            logger.error("创建联盟支付成功后，产生错误：" + e);
         }
     }
 
 
-    @ApiOperation(value = "购买联盟服务支付二维码", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/qrCode/{infoItemKey}", method = RequestMethod.GET)
-    public void createUnionQRCode(HttpServletRequest request, HttpServletResponse response, @ApiParam(name="infoItemKey", value = "购买联盟服务的信息", required = true) @PathVariable("infoItemKey") String infoItemKey) {
+    @RequestMapping(value = "/qrCode/{key}", method = RequestMethod.GET)
+    public void createUnionQRCode(HttpServletRequest request, HttpServletResponse response, @ApiParam(name="key", value = "购买联盟服务的信息", required = true) @PathVariable("key") String key) {
         try {
             BusUser user = SessionUtils.getLoginUser(request);
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
                 throw new BusinessException(SAVE, "", CommonConstant.UNION_BUS_PARENT_MSG);
             }
-            Map<String,Object> data = unionMainService.createUnionQRCode(user.getId(), infoItemKey);
-            request.getRequestDispatcher(wxmpUrl + "/pay/B02A45A5/79B4DE7C/createPayQR.do").forward(request,response);
+            Map<String,Object> data = unionMainService.createUnionQRCode(user.getId(), key);
+            StringBuilder sb = new StringBuilder("?");
+            sb.append("totalFee="+data.get("totalFee"));
+            sb.append("&model="+data.get("model"));
+            sb.append("&busId="+data.get("busId"));
+            sb.append("&appidType="+data.get("appidType"));
+            sb.append("&appid=" + data.get("appid"));
+            sb.append("&orderNum="+data.get("orderNum"));
+            sb.append("&desc="+data.get("desc"));
+            sb.append("&isreturn="+data.get("isreturn"));
+            sb.append("&notifyUrl="+data.get("notifyUrl"));
+            sb.append("&isSendMessage="+data.get("isSendMessage"));
+            sb.append("&payWay="+data.get("payWay"));
+            sb.append("&sourceType="+data.get("sourceType"));
+            response.sendRedirect(wxmpUrl + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
         } catch (Exception e) {
             logger.error("生成购买联盟服务支付二维码错误：" + e);
         }
