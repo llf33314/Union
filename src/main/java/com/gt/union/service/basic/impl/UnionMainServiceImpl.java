@@ -786,7 +786,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 				break;
 			}
 		}
-		int month = CommonUtil.toInteger(new BigDecimal(years).multiply(new BigDecimal(12)).doubleValue());
+		int month = CommonUtil.toInteger(years * 12);
 		infoRecord.setPeriodValidity(DateTimeKit.addMonths(month));
 		unionCreateInfoRecordService.insert(infoRecord);
 		redisCacheUtil.set(statusKey, CommonConstant.USER_ORDER_STATUS_003, 60l);//支付成功
