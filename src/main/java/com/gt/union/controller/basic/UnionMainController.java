@@ -245,7 +245,7 @@ public class UnionMainController {
      * @param response
      * @param recordId
      */
-    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{recordId}", method = RequestMethod.POST)
+    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{recordId}")
     public void payCreateUnionSuccess(HttpServletRequest request, HttpServletResponse response,@PathVariable(name = "recordId", required = true) Integer recordId) {
         try {
             logger.info("创建联盟支付成功，订单recordId------------------"+recordId);
