@@ -283,7 +283,7 @@ public class UnionMainController {
             Map<String, Object> result = new HashMap<String, Object>();
             result.put("url",wxmpUrl + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
             result.put("only",data.get("only"));
-            return GTJsonResult.instanceSuccessMsg().toString();
+            return GTJsonResult.instanceSuccessMsg(result).toString();
         } catch (Exception e) {
             logger.error("生成购买联盟服务支付二维码错误：" + e);
             return GTJsonResult.instanceErrorMsg(CREATE_UNION_QRCODE, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
