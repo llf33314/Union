@@ -720,7 +720,8 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		data.put("payBusId",busId);//支付的商家id
 		data.put("isSendMessage",0);//不推送
 		data.put("appid",publicUser.get("appid"));//appid
-		data.put("dec", URLEncoder.encode("多粉-创建联盟","UTF-8"));
+		data.put("desc", URLEncoder.encode("多粉-创建联盟","UTF-8"));
+		data.put("appidType",0);//公众号
 		String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
 		String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
 
