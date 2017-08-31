@@ -698,6 +698,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		if(!flag){
 			throw new ParamException(PAY_CREATE_UNION, "支付类型有误", ExceptionConstant.PARAM_ERROR);
 		}
+		pay = 0.01d;
 		String orderNo = CommonConstant.CREATE_UNION_PAY_ORDER_CODE + System.currentTimeMillis();
 		String only=DateTimeKit.getDateTime(new Date(), DateTimeKit.yyyyMMddHHmmss);
 		Map publicUser = busUserService.getWxPublicUserByBusId(duofenBusId);
@@ -720,7 +721,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		data.put("payBusId",busId);//支付的商家id
 		data.put("isSendMessage",0);//不推送
 		data.put("appid",publicUser.get("appid"));//appid
-		data.put("desc", URLEncoder.encode("多粉-创建联盟","UTF-8"));
+		data.put("desc", "多粉-创建联盟");
 		data.put("appidType",0);//公众号
 		String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
 		String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
