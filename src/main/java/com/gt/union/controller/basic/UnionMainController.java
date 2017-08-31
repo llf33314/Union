@@ -243,13 +243,15 @@ public class UnionMainController {
      * 创建联盟支付成功回调地址
      * @param request
      * @param response
-     * @param recordId
+     * @param recordEncrypt
+     * @param only
      */
-    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{recordId}")
-    public void payCreateUnionSuccess(HttpServletRequest request, HttpServletResponse response,@PathVariable(name = "recordId", required = true) Integer recordId) {
+    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{recordEncrypt}/{only}")
+    public void payCreateUnionSuccess(HttpServletRequest request, HttpServletResponse response,@PathVariable(name = "recordEncrypt", required = true) String recordEncrypt, @PathVariable(name = "only", required = true) String only) {
         try {
-            logger.info("创建联盟支付成功，订单recordId------------------"+recordId);
-            unionMainService.payCreateUnionSuccess(recordId);
+            logger.info("创建联盟支付成功，订单recordEncrypt------------------"+recordEncrypt);
+            logger.info("创建联盟支付成功，only------------------"+only);
+            unionMainService.payCreateUnionSuccess(recordEncrypt, only);
         } catch (Exception e) {
             logger.error("创建联盟支付成功后，产生错误：" + e);
         }
@@ -278,7 +280,10 @@ public class UnionMainController {
             sb.append("&isSendMessage="+data.get("isSendMessage"));
             sb.append("&payWay="+data.get("payWay"));
             sb.append("&sourceType="+data.get("sourceType"));
-            return GTJsonResult.instanceSuccessMsg(wxmpUrl + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString()).toString();
+            Map<String, Object> result = new HashMap<String, Object>();
+            result.put("url",wxmpUrl + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
+            result.put("only",data.get("only"));
+            return GTJsonResult.instanceSuccessMsg().toString();
         } catch (Exception e) {
             logger.error("生成购买联盟服务支付二维码错误：" + e);
             return GTJsonResult.instanceErrorMsg(CREATE_UNION_QRCODE, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
@@ -295,10 +300,13 @@ public class UnionMainController {
             Object status = redisCacheUtil.get(statusKey);
             if(CommonUtil.isEmpty(status)){//订单超时
                 status = CommonConstant.USER_ORDER_STATUS_004;
+            }
+            if(CommonConstant.USER_ORDER_STATUS_003.equals(status)){//订单支付成功
                 redisCacheUtil.remove(statusKey);
                 redisCacheUtil.remove(paramKey);
             }
-            if(status.equals(CommonConstant.USER_ORDER_STATUS_003)){//订单支付成功
+
+            if(CommonConstant.USER_ORDER_STATUS_005.equals(status)){//订单支付失败
                 redisCacheUtil.remove(statusKey);
                 redisCacheUtil.remove(paramKey);
             }

@@ -1,6 +1,7 @@
 package com.gt.union.service.basic.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -11,10 +12,7 @@ import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.user.BusUserService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
-import com.gt.union.common.constant.basic.UnionApplyConstant;
-import com.gt.union.common.constant.basic.UnionEstablishRecordConstant;
-import com.gt.union.common.constant.basic.UnionMainConstant;
-import com.gt.union.common.constant.basic.UnionMemberConstant;
+import com.gt.union.common.constant.basic.*;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
@@ -28,6 +26,7 @@ import com.gt.union.service.brokerage.IUnionBrokerageWithdrawalsRecordService;
 import com.gt.union.service.brokerage.IUnionIncomeExpenseRecordService;
 import com.gt.union.service.card.IUnionBusMemberCardService;
 import com.gt.union.service.common.IUnionRootService;
+import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -56,6 +55,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	private static final String SAVE = "UnionMainServiceImpl.save()";
 	private static final String GET_BUSID = "UnionMainServiceImpl.getByBusId()";
 	private static final String PAY_CREATE_UNION = "UnionMainServiceImpl.payCreateUnion()";
+	private static final String PAY_CREATE_UNION_SUCCESS = "UnionMainServiceImpl.payCreateUnionSuccess()";
 
 	@Autowired
 	private IUnionRootService unionRootService;
@@ -104,6 +104,9 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
 	@Value("${wx.duofen.busId}")
 	private Integer duofenBusId;
+
+	@Value("${union.encryptKey}")
+	private String encryptKey;
 
 	@Override
 	public Map<String, Object> indexByBusId(Integer busId) throws Exception {
@@ -680,6 +683,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		return list;
 	}
 
+	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public Map<String, Object> createUnionQRCode(Integer busId, String infoItemKey) throws Exception{
     	Map<String, Object> data = new HashMap<String, Object>();
@@ -717,23 +721,76 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		data.put("isreturn",0);//0：不需要同步跳转
 		data.put("model", CommonConstant.PAY_MODEL);
 		//data.put("notifyUrl", unionUrl + "/unionMain/79B4DE7C/paymentSuccess/"+record.getId());
-		data.put("notifyUrl", "http://union.duofee.com" + "/unionMain/79B4DE7C/paymentSuccess/"+record.getId());
+		String encrypt = EncryptUtil.encrypt(encryptKey, record.getId().toString());
+		encrypt = URLEncoder.encode(encrypt,"UTF-8");
+		data.put("notifyUrl", "http://union.duofee.com" + "/unionMain/79B4DE7C/paymentSuccess/"+encrypt + "/" + only);
 		data.put("orderNum", orderNo);//订单号
 		data.put("payBusId",busId);//支付的商家id
 		data.put("isSendMessage",0);//不推送
 		data.put("appid",publicUser.get("appid"));//appid
 		data.put("desc", "多粉-创建联盟");
 		data.put("appidType",0);//公众号
+		data.put("only", only);
+		data.put("infoItemKey",infoItemKey);
 		String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
 		String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
-
-		redisCacheUtil.set(paramKey,JSON.toJSONString(data), 300l);//5分钟
+		redisCacheUtil.set(paramKey,JSON.toJSONString(data), 360l);//5分钟
 		redisCacheUtil.set(statusKey,CommonConstant.USER_ORDER_STATUS_001,300l);//等待扫码状态
 		return data;
 	}
 
+	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public void payCreateUnionSuccess(Integer recordId) throws Exception{
-
+	public void payCreateUnionSuccess(String recordEncrypt, String only) throws Exception{
+		String data = EncryptUtil.decrypt(encryptKey,recordEncrypt);
+		Integer recordId = CommonUtil.toInteger(data);
+		UnionEstablishRecord record = unionEstablishRecordService.selectById(recordId);
+		if(record == null){
+			throw new BusinessException(PAY_CREATE_UNION_SUCCESS, "record==null", "创建联盟支付记录为空");
+		}
+		//根据订单
+		String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
+		Object obj = redisCacheUtil.get(paramKey);
+		Map<String,Object> result = JSONObject.parseObject(obj.toString(),Map.class);
+		String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
+		record.setOrderStatus(UnionEstablishRecordConstant.ORDER_PAY_SUCCESS);
+		record.setCreateUnionStatus(UnionEstablishRecordConstant.CREATE_UNION_STATUS_YES);
+		record.setFinishTime(new Date());
+		unionEstablishRecordService.updateById(record);
+		Integer busId = CommonUtil.toInteger(result.get("payBusId"));
+		UnionMain main = this.getByBusId(busId);
+		UnionCreateInfoRecord unionCreateInfoRecord = unionCreateInfoRecordService.getByBusId(busId);
+		if(unionCreateInfoRecord != null){
+			unionCreateInfoRecord.setDelStatus(UnionCreateInfoRecordConstant.DEL_STATUS_YES);
+			unionCreateInfoRecordService.updateById(unionCreateInfoRecord);
+		}
+		UnionCreateInfoRecord infoRecord = new UnionCreateInfoRecord();
+		infoRecord.setCreateStatus(UnionCreateInfoRecordConstant.DEL_STATUS_NO);
+		infoRecord.setBusId(record.getBusId());
+		infoRecord.setBusId(busId);
+		infoRecord.setCreatetime(new Date());
+		if(CommonUtil.isEmpty(main)){
+			infoRecord.setCreateStatus(UnionCreateInfoRecordConstant.CREATE_STATUS_NO);
+		}else {
+			infoRecord.setCreateStatus(UnionCreateInfoRecordConstant.CREATE_STATUS_YES);
+			infoRecord.setUnionId(main.getId());
+		}
+		Object infoItemKey = result.get("infoItemKey");
+		List<Map> list = dictService.getUnionCreatePackage();
+		Double years = 0d;
+		for(Map map : list){
+			if(map.get("item_key").equals(infoItemKey)){
+				String itemValue = map.get("item_value").toString();
+				String value = itemValue.split(",")[1];
+				years = Double.valueOf(value).doubleValue();
+				break;
+			}
+		}
+		int month = CommonUtil.toInteger(new BigDecimal(years).multiply(new BigDecimal(12)).doubleValue());
+		infoRecord.setPeriodValidity(DateTimeKit.addMonths(month));
+		unionCreateInfoRecordService.insert(infoRecord);
+		redisCacheUtil.set(statusKey, CommonConstant.USER_ORDER_STATUS_003, 60l);//支付成功
 	}
+
+
 }
