@@ -86,7 +86,7 @@ domain:
   df: duofriend.com
 #mq config
 mq:
-  uri: 192.168.2.12:8080
+  uri: 61.146.93.20
   user: guest
   password: yf26609632
 
@@ -128,7 +128,7 @@ wxmp:
 
 union:
   url: http://union.yifriend.net:7884
-
+  encryptKey: CFCCBD99C12B62E52952EA90A931A01F
 wx:
   duofen:
     busId: 33
