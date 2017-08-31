@@ -716,7 +716,8 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		data.put("payWay",0);//系统判断支付方式
 		data.put("isreturn",0);//0：不需要同步跳转
 		data.put("model", CommonConstant.PAY_MODEL);
-		data.put("notifyUrl", unionUrl + "/unionMain/79B4DE7C/paymentSuccess/"+record.getId());
+		//data.put("notifyUrl", unionUrl + "/unionMain/79B4DE7C/paymentSuccess/"+record.getId());
+		data.put("notifyUrl", "http://union.duofee.com" + "/unionMain/79B4DE7C/paymentSuccess/"+record.getId());
 		data.put("orderNum", orderNo);//订单号
 		data.put("payBusId",busId);//支付的商家id
 		data.put("isSendMessage",0);//不推送
