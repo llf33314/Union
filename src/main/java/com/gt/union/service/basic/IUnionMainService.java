@@ -113,4 +113,10 @@ public interface IUnionMainService extends IService<UnionMain> {
      * @return
      */
 	Map<String,Object> createUnionQRCode(Integer busId, String infoItemKey) throws Exception;
+
+    /**
+     * 创建联盟支付成功
+     * @param recordId
+     */
+	void payCreateUnionSuccess(Integer recordId) throws Exception;
 }

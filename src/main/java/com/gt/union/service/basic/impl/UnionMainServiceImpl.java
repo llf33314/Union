@@ -689,7 +689,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		for(Map map : list){
 			if(map.get("item_key").equals(infoItemKey)){
 				String itemValue = map.get("item_value").toString();
-				String value = itemValue.split(",")[1];
+				String value = itemValue.split(",")[0];
 				pay = Double.valueOf(value).doubleValue();
 				flag = true;
 				break;
@@ -701,20 +701,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		String orderNo = CommonConstant.CREATE_UNION_PAY_ORDER_CODE + System.currentTimeMillis();
 		String only=DateTimeKit.getDateTime(new Date(), DateTimeKit.yyyyMMddHHmmss);
 		Map publicUser = busUserService.getWxPublicUserByBusId(duofenBusId);
-		data.put("totalFee",pay);
-		data.put("busId", duofenBusId);
-		data.put("sourceType", 1);//是否墨盒支付
-		data.put("payWay",0);//系统判断支付方式
-		data.put("isreturn",0);//0：不需要同步跳转
-		data.put("model", CommonConstant.PAY_MODEL);
-		data.put("notifyUrl", unionUrl + "/unionMain/79B4DE7C/paymentSuccess/"+only);
-		data.put("orderNum", orderNo);//订单号
-		data.put("payBusId",busId);//支付的商家id
-		data.put("isSendMessage",0);//不推送
-		data.put("appid",publicUser.get("appid"));//appid
-		data.put("dec", URLEncoder.encode("多粉-创建联盟","UTF-8"));
-		String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
-		String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
 		UnionEstablishRecord record = new UnionEstablishRecord();
 		record.setBusId(busId);
 		record.setCreateUnionStatus(UnionEstablishRecordConstant.CREATE_UNION_STATUS_NO);
@@ -723,8 +709,28 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		record.setOrderStatus(UnionEstablishRecordConstant.ORDER_UNPAY);
 		record.setOrderMoney(pay);
 		unionEstablishRecordService.insert(record);
+		data.put("totalFee",pay);
+		data.put("busId", duofenBusId);
+		data.put("sourceType", 1);//是否墨盒支付
+		data.put("payWay",0);//系统判断支付方式
+		data.put("isreturn",0);//0：不需要同步跳转
+		data.put("model", CommonConstant.PAY_MODEL);
+		data.put("notifyUrl", unionUrl + "/unionMain/79B4DE7C/paymentSuccess/"+record.getId());
+		data.put("orderNum", orderNo);//订单号
+		data.put("payBusId",busId);//支付的商家id
+		data.put("isSendMessage",0);//不推送
+		data.put("appid",publicUser.get("appid"));//appid
+		data.put("dec", URLEncoder.encode("多粉-创建联盟","UTF-8"));
+		String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
+		String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
+
 		redisCacheUtil.set(paramKey,JSON.toJSONString(data), 300l);//5分钟
 		redisCacheUtil.set(statusKey,CommonConstant.USER_ORDER_STATUS_001,300l);//等待扫码状态
 		return data;
+	}
+
+	@Override
+	public void payCreateUnionSuccess(Integer recordId) throws Exception{
+
 	}
 }
