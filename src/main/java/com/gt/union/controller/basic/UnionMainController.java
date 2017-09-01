@@ -1,14 +1,16 @@
 package com.gt.union.controller.basic;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.gt.api.util.HttpClienUtils;
 import com.gt.union.common.annotation.SysLogAnnotation;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
-import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.SessionUtils;
+import com.gt.union.common.util.*;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.basic.vo.UnionMainCreateInfoVO;
 import com.gt.union.entity.basic.vo.UnionMainInfoVO;
@@ -19,11 +21,18 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 import javax.validation.Valid;
+import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -47,13 +56,21 @@ public class UnionMainController {
     private static final String UPDATE_ID = "UnionMainController.updateById()";
     private static final String INSTANCE = "UnionMainController.instance()";
     private static final String SAVE = "UnionMainController.save()";
+    private static final String CREATE_UNION_QRCODE = "UnionMainController.createUnionQRCode()";
+    private static final String GET_STATUS = "UnionMainController.getStatus()";
     private Logger logger = Logger.getLogger(UnionMainController.class);
+
+    @Value("${wxmp.url}")
+    private String wxmpUrl;
 
     @Autowired
     private IUnionMainService unionMainService;
 
 	@Autowired
 	private IUnionValidateService unionValidateService;
+
+	@Autowired
+	private RedisCacheUtil redisCacheUtil;
 
     @ApiOperation(value = "首页查询我的联盟信息", produces = "application/json;charset=UTF-8")
     @SysLogAnnotation(op_function = "1", description = "首页查询我的联盟信息")
@@ -210,7 +227,7 @@ public class UnionMainController {
             if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
                 throw new BusinessException(SAVE, "", CommonConstant.UNION_BUS_PARENT_MSG);
             }
-            unionMainService.payCreateUnion(user.getId(), infoItemKey);
+            //unionMainService.payCreateUnion(user.getId(), infoItemKey);
             return GTJsonResult.instanceSuccessMsg().toString();
         }catch (BaseException e){
             logger.error("", e);
@@ -220,6 +237,84 @@ public class UnionMainController {
             return GTJsonResult.instanceErrorMsg(SAVE, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
 
+    }
+
+    /**
+     * 创建联盟支付成功回调地址
+     * @param request
+     * @param response
+     * @param recordEncrypt
+     * @param only
+     */
+    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{recordEncrypt}/{only}")
+    public void payCreateUnionSuccess(HttpServletRequest request, HttpServletResponse response,@PathVariable(name = "recordEncrypt", required = true) String recordEncrypt, @PathVariable(name = "only", required = true) String only) {
+        try {
+            logger.info("创建联盟支付成功，订单recordEncrypt------------------"+recordEncrypt);
+            logger.info("创建联盟支付成功，only------------------"+only);
+            unionMainService.payCreateUnionSuccess(recordEncrypt, only);
+        } catch (Exception e) {
+            logger.error("创建联盟支付成功后，产生错误：" + e);
+        }
+    }
+
+    @ApiOperation(value = "生成创建联盟支付订单二维码", produces = "application/json;charset=UTF-8")
+    @SysLogAnnotation(op_function = "2", description = "生成创建联盟支付订单")
+    @RequestMapping(value = "/qrCode/{key}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public String createUnionQRCode(HttpServletRequest request, HttpServletResponse response, @ApiParam(name="key", value = "购买联盟服务的信息", required = true) @PathVariable("key") String key) {
+        try {
+            BusUser user = SessionUtils.getLoginUser(request);
+            if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
+                throw new BusinessException(CREATE_UNION_QRCODE, "", CommonConstant.UNION_BUS_PARENT_MSG);
+            }
+            Map<String,Object> data = unionMainService.createUnionQRCode(user.getId(), key);
+            StringBuilder sb = new StringBuilder("?");
+            sb.append("totalFee="+data.get("totalFee"));
+            sb.append("&model="+data.get("model"));
+            sb.append("&busId="+data.get("busId"));
+            sb.append("&appidType="+data.get("appidType"));
+            sb.append("&appid=" + data.get("appid"));
+            sb.append("&orderNum="+data.get("orderNum"));
+            sb.append("&desc="+data.get("desc"));
+            sb.append("&isreturn="+data.get("isreturn"));
+            sb.append("&notifyUrl="+data.get("notifyUrl"));
+            sb.append("&isSendMessage="+data.get("isSendMessage"));
+            sb.append("&payWay="+data.get("payWay"));
+            sb.append("&sourceType="+data.get("sourceType"));
+            Map<String, Object> result = new HashMap<String, Object>();
+            result.put("url",wxmpUrl + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
+            result.put("only",data.get("only"));
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (Exception e) {
+            logger.error("生成购买联盟服务支付二维码错误：" + e);
+            return GTJsonResult.instanceErrorMsg(CREATE_UNION_QRCODE, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
+    }
+
+    @ApiOperation(value = "获取创建联盟支付状态", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value="status/{only}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public String getStatus(HttpServletRequest request, HttpServletResponse response, @PathVariable("only")String only) throws Exception{
+        logger.info("获取创建联盟支付订单状态：" + only);
+        try {
+            String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
+            String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
+            Object status = redisCacheUtil.get(statusKey);
+            if(CommonUtil.isEmpty(status)){//订单超时
+                status = CommonConstant.USER_ORDER_STATUS_004;
+            }
+            if(CommonConstant.USER_ORDER_STATUS_003.equals(status)){//订单支付成功
+                redisCacheUtil.remove(statusKey);
+                redisCacheUtil.remove(paramKey);
+            }
+
+            if(CommonConstant.USER_ORDER_STATUS_005.equals(status)){//订单支付失败
+                redisCacheUtil.remove(statusKey);
+                redisCacheUtil.remove(paramKey);
+            }
+            return GTJsonResult.instanceSuccessMsg(status).toString();
+        } catch (Exception e) {
+            logger.error("获取创建联盟支付订单状态错误：" + e);
+            return GTJsonResult.instanceErrorMsg(GET_STATUS, e.getMessage(), ExceptionConstant.SYS_ERROR).toString();
+        }
     }
 
 }

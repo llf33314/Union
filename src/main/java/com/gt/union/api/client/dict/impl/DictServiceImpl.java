@@ -57,6 +57,11 @@ public class DictServiceImpl implements DictService {
 	 */
 	private static String DEFAULT_DISCOUNT_TYPE = "1187";
 
+	/**
+	 * 创建联盟套餐
+	 */
+	private static String UNION_CREATE_PACKAGE_TYPE = "E001";
+
 
 	public Double getDefaultDiscount(){
 		return getItemDoubleValue(DEFAULT_DISCOUNT_TYPE);
@@ -87,6 +92,10 @@ public class DictServiceImpl implements DictService {
 		return getItemList(CREATE_UNION_TYPE);
 	}
 
+	@Override
+	public List<Map> getUnionCreatePackage() {
+		return getItemList(UNION_CREATE_PACKAGE_TYPE);
+	}
 	/**
 	 * 获取单个值
 	 * @param itemKey

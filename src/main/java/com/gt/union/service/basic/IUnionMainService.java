@@ -105,10 +105,19 @@ public interface IUnionMainService extends IService<UnionMain> {
      */
     List<UnionMain> listMyValidUnion(Integer busId);
 
+
     /**
-     * 支付购买联盟服务
-     * @param busId   商家id
-     * @param infoItemKey   服务类型
+     * 创建联盟支付的二维码信息
+     * @param busId  用户信息
+     * @param infoItemKey   支付类型
+     * @return
      */
-    void payCreateUnion(Integer busId, String infoItemKey) throws Exception;
+	Map<String,Object> createUnionQRCode(Integer busId, String infoItemKey) throws Exception;
+
+    /**
+     * 创建联盟成功回调
+     * @param recordEncrypt recirdId密文
+     * @param only  时间戳
+     */
+    void payCreateUnionSuccess(String recordEncrypt, String only) throws Exception;
 }

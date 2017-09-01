@@ -286,6 +286,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             throw new BusinessException(TRANSFER_UNION_OWNER, "", CommonConstant.UNION_MEMBER_NON_AUTHORITY_MSG);
         }
 
+        //3、
 
     }
 

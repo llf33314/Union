@@ -8,12 +8,14 @@ import com.gt.union.api.client.address.AddressService;
 import com.gt.union.api.client.dict.DictService;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.api.client.sms.impl.SmsServiceImpl;
+import com.gt.union.api.client.user.BusUserService;
 import com.gt.union.common.util.DateTimeKit;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.entity.basic.UnionCreateInfoRecord;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.basic.UnionMember;
 import com.gt.union.entity.basic.UnionTransferRecord;
+import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.basic.*;
 import com.gt.union.service.card.IUnionBusMemberCardService;
 import com.gt.union.service.common.IUnionRootService;
@@ -52,13 +54,15 @@ public class MyUnitTest {
 	@Autowired
 	private AddressService addressService;
 
+	@Autowired
+	private BusUserService busUserService;
+
 	@Test
 	public void test1() throws Exception {
 
-		Map<String,Object> param = new HashMap<String,Object>();
-		param.put("reqdata","440000,441300,441302");
-		List list = addressService.getByCityCode(param);
-		System.out.println(list);
+		Map data = busUserService.getWxPublicUserByBusId(33);
+//		BusUser data = busUserService.getBusUserById(33);
+		System.out.println(data);
 	}
 
 }

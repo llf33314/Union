@@ -1,6 +1,7 @@
 package com.gt.union.service.basic.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -9,12 +10,9 @@ import com.gt.union.api.client.address.AddressService;
 import com.gt.union.api.client.dict.DictService;
 import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.user.BusUserService;
-import com.gt.union.api.entity.PayParam;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
-import com.gt.union.common.constant.basic.UnionApplyConstant;
-import com.gt.union.common.constant.basic.UnionMainConstant;
-import com.gt.union.common.constant.basic.UnionMemberConstant;
+import com.gt.union.common.constant.basic.*;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
@@ -28,11 +26,14 @@ import com.gt.union.service.brokerage.IUnionBrokerageWithdrawalsRecordService;
 import com.gt.union.service.brokerage.IUnionIncomeExpenseRecordService;
 import com.gt.union.service.card.IUnionBusMemberCardService;
 import com.gt.union.service.common.IUnionRootService;
+import com.sun.org.apache.regexp.internal.RE;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -53,6 +54,8 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	private static final String INSTANCE = "UnionMainServiceImpl.instance()";
 	private static final String SAVE = "UnionMainServiceImpl.save()";
 	private static final String GET_BUSID = "UnionMainServiceImpl.getByBusId()";
+	private static final String PAY_CREATE_UNION = "UnionMainServiceImpl.payCreateUnion()";
+	private static final String PAY_CREATE_UNION_SUCCESS = "UnionMainServiceImpl.payCreateUnionSuccess()";
 
 	@Autowired
 	private IUnionRootService unionRootService;
@@ -64,7 +67,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	private IUnionBusMemberCardService unionBusMemberCardService;
 
 	@Autowired
-	private IUnionBrokerageWithdrawalsRecordService unionBrokerageWithdrawalsRecordService;
+	private IUnionEstablishRecordService unionEstablishRecordService;
 
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
@@ -88,9 +91,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	private IUnionTransferRecordService unionTransferRecordService;
 
 	@Autowired
-	private WxPayService wxPayService;
-
-	@Autowired
 	private IUnionCreateInfoRecordService unionCreateInfoRecordService;
 
 	@Autowired
@@ -98,6 +98,15 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
 	@Autowired
     private IUnionIncomeExpenseRecordService unionIncomeExpenseRecordService;
+
+	@Value("${union.url}")
+	private String unionUrl;
+
+	@Value("${wx.duofen.busId}")
+	private Integer duofenBusId;
+
+	@Value("${union.encryptKey}")
+	private String encryptKey;
 
 	@Override
 	public Map<String, Object> indexByBusId(Integer busId) throws Exception {
@@ -332,7 +341,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
 	@Override
 	public Map<String, Object> instance(Integer busId) throws Exception {
-		//TODO 获取创建联盟的信息
 		Map<String,Object> data = new HashMap<String,Object>();
 	    if (busId == null) {
 	        throw new ParamException(INSTANCE, "参数busId为空", ExceptionConstant.PARAM_ERROR);
@@ -340,13 +348,16 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
 		// 1、判断商家是否已是盟主
 		if (this.unionRootService.isUnionOwner(busId)) {
-			throw new BusinessException(INSTANCE, "busId=" + busId, "您已是联盟盟主，不可创建");
+			throw new BusinessException(INSTANCE, "已是盟主", "您已是联盟盟主，不可创建");
 		}
 
 		//2、判断是否有创建联盟的权限
 		BusUser user = busUserService.getBusUserById(busId);
 	    if(user == null){
 			throw new BusinessException(INSTANCE, "参数user为空", "账号不存在");
+		}
+		if(!unionRootService.checkBusUserValid(user)){
+			throw new BusinessException(INSTANCE, "参数user为空", CommonConstant.UNION_BUS_OVERDUE_MSG);
 		}
 		List<Map> createDict = dictService.getCreateUnionDict();//创建联盟的权限
 	    boolean flag = false;
@@ -364,71 +375,36 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		//3、根据等级判断是否需要付费
 		String itemValue = info.get("item_value").toString();//根据等级获取创建联盟的权限
 		String[] arrs = itemValue.split(",");
-
-		//4、需要付费，判断是否已经付费
-		UnionCreateInfoRecord record = unionCreateInfoRecordService.getByBusId(busId);
-		if(record == null){
-			data.put("pay",1);//去支付
-		}
-		if(CommonUtil.isNotEmpty(record.getUnionId())){
-			if(DateTimeKit.laterThanNow(record.getPeriodValidity())){
-				throw new BusinessException(INSTANCE, "联盟未过期", "联盟未过期，不可创建");
+		String isPay = arrs[0];
+		if(isPay.equals("0")){//不需要付费
+			data.put("save",1);//去创建联盟
+		}else{
+			//4、需要付费，判断是否已经付费
+			UnionCreateInfoRecord record = unionCreateInfoRecordService.getByBusId(busId);
+			if(record == null){
+				data.put("pay",1);//去支付
+				List<Map> list = dictService.getUnionCreatePackage();
+				data.put("payItems", list);
 			}
-			data.put("pay",1);//去支付
+			if(DateTimeKit.laterThanNow(record.getPeriodValidity())){//未过期
+				if(CommonUtil.isNotEmpty(record.getUnionId())){
+					throw new BusinessException(INSTANCE, "联盟未过期", "联盟未过期，不可创建");
+				}else{
+					data.put("save",1);//去创建联盟
+				}
+			}else {//过期了
+				if(CommonUtil.isNotEmpty(record.getUnionId())){
+					data.put("pay",1);//去支付
+					List<Map> list = dictService.getUnionCreatePackage();
+					data.put("payItems", list);
+				}else{
+					data.put("save",1);//去创建联盟
+				}
+			}
 		}
-		data.put("save",1);//去创建联盟
 		return data;
 	}
 
-    /**
-     * 创建或保存联盟时校验权限
-     * @param busId
-     * @throws Exception
-     */
-	private Map checkBeforeInstance(Integer busId) throws Exception {
-		//TODO 创建联盟时校验
-		// 1、判断商家是否已是盟主
-		if (this.unionRootService.isUnionOwner(busId)) {
-			throw new BusinessException(INSTANCE, "busId=" + busId, "您已是联盟盟主，不可创建");
-		}
-		// 2、判断商家是否有盟主权限
-		BusUser user = busUserService.getBusUserById(busId);
-		if(user == null){
-			throw new BusinessException(INSTANCE, "参数user为空", "账号不存在");
-		}
-		List<Map> createDict = dictService.getCreateUnionDict();
-		boolean flag = false;
-		Map info = null;
-		for(Map map : createDict){
-			if(CommonUtil.toInteger(map.get("item_key")).equals(user.getLevel())){
-				info = map;
-				flag = true;
-				break;
-			}
-		}
-		if(!flag){
-			throw new BusinessException(INSTANCE, "没有创建权限", "您没有创建联盟的权限");
-		}
-		//3、判断是否需要付费
-
-		//4、需要付费的，
-
-        // （1）判断商家是否有盟主权限
-        if (!this.unionRootService.hasUnionOwnerAuthority(busId)) {
-            throw new BusinessException(INSTANCE, "busId=" + busId, "当前登录商家帐号不具有盟主权限");
-        }
-
-        // （2）判断商家是否创建过联盟
-        if (!this.unionRootService.hasCreatedUnion(busId)) {
-            throw new BusinessException(INSTANCE, "busId=" + busId, "不可创建");
-        }
-
-        // （3）判断商家是否已是盟主
-        if (!this.unionRootService.isUnionOwner(busId)) {
-            throw new BusinessException(INSTANCE, "busId=" + busId, "不可创建");
-        }
-        return info;
-    }
 
     @Override
 	@Transactional(rollbackFor = Exception.class)
@@ -436,9 +412,9 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         if (busId == null) {
             throw new ParamException(SAVE, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
-		// 1、判断商家是否已是盟主
-		if (this.unionRootService.isUnionOwner(busId)) {
-			throw new BusinessException(SAVE, "busId=" + busId, "您已是联盟盟主，不可创建");
+		Map result = instance(busId);
+        if(CommonUtil.isEmpty(result.get("save"))){
+			throw new BusinessException(SAVE, "", "不可创建联盟");
 		}
 		if(CommonUtil.isNotEmpty(vo.getIsIntegral()) && vo.getIsIntegral() == UnionMainConstant.IS_INTEGRAL_YES){
         	if(CommonUtil.isEmpty(vo.getIntegralProportion())){
@@ -707,12 +683,114 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		return list;
 	}
 
-    @Override
-    public void payCreateUnion(Integer busId, String infoItemKey) throws Exception{
-    	//TODO  权限校验   支付创建联盟服务
-        Map<String,Object> obj = new HashMap<String,Object>();
-		PayParam payParam = new PayParam();
-		obj.put("reqdata",payParam);
-		wxPayService.pay(obj);
-    }
+	@Transactional(rollbackFor = Exception.class)
+	@Override
+	public Map<String, Object> createUnionQRCode(Integer busId, String infoItemKey) throws Exception{
+    	Map<String, Object> data = new HashMap<String, Object>();
+		List<Map> list = dictService.getUnionCreatePackage();
+		Double pay = 0d;
+		boolean flag = false;
+		for(Map map : list){
+			if(map.get("item_key").equals(infoItemKey)){
+				String itemValue = map.get("item_value").toString();
+				String value = itemValue.split(",")[0];
+				pay = Double.valueOf(value).doubleValue();
+				flag = true;
+				break;
+			}
+		}
+		if(!flag){
+			throw new ParamException(PAY_CREATE_UNION, "支付类型有误", ExceptionConstant.PARAM_ERROR);
+		}
+		pay = 0.01d;
+		String orderNo = CommonConstant.CREATE_UNION_PAY_ORDER_CODE + System.currentTimeMillis();
+		String only=DateTimeKit.getDateTime(new Date(), DateTimeKit.yyyyMMddHHmmss);
+		Map publicUser = busUserService.getWxPublicUserByBusId(duofenBusId);
+		UnionEstablishRecord record = new UnionEstablishRecord();
+		record.setBusId(busId);
+		record.setCreateUnionStatus(UnionEstablishRecordConstant.CREATE_UNION_STATUS_NO);
+		record.setOrderDesc("多粉-创建联盟付款");
+		record.setSysOrderNo(orderNo);
+		record.setOrderStatus(UnionEstablishRecordConstant.ORDER_UNPAY);
+		record.setOrderMoney(pay);
+		unionEstablishRecordService.insert(record);
+		data.put("totalFee",pay);
+		data.put("busId", duofenBusId);
+		data.put("sourceType", 1);//是否墨盒支付
+		data.put("payWay",0);//系统判断支付方式
+		data.put("isreturn",0);//0：不需要同步跳转
+		data.put("model", CommonConstant.PAY_MODEL);
+		//data.put("notifyUrl", unionUrl + "/unionMain/79B4DE7C/paymentSuccess/"+record.getId());
+		String encrypt = EncryptUtil.encrypt(encryptKey, record.getId().toString());
+		encrypt = URLEncoder.encode(encrypt,"UTF-8");
+		data.put("notifyUrl", "http://union.duofee.com" + "/unionMain/79B4DE7C/paymentSuccess/"+encrypt + "/" + only);
+		data.put("orderNum", orderNo);//订单号
+		data.put("payBusId",busId);//支付的商家id
+		data.put("isSendMessage",0);//不推送
+		data.put("appid",publicUser.get("appid"));//appid
+		data.put("desc", "多粉-创建联盟");
+		data.put("appidType",0);//公众号
+		data.put("only", only);
+		data.put("infoItemKey",infoItemKey);
+		String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
+		String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
+		redisCacheUtil.set(paramKey,JSON.toJSONString(data), 360l);//5分钟
+		redisCacheUtil.set(statusKey,CommonConstant.USER_ORDER_STATUS_001,300l);//等待扫码状态
+		return data;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@Override
+	public void payCreateUnionSuccess(String recordEncrypt, String only) throws Exception{
+		String data = EncryptUtil.decrypt(encryptKey,recordEncrypt);
+		Integer recordId = CommonUtil.toInteger(data);
+		UnionEstablishRecord record = unionEstablishRecordService.selectById(recordId);
+		if(record == null){
+			throw new BusinessException(PAY_CREATE_UNION_SUCCESS, "record==null", "创建联盟支付记录为空");
+		}
+		//根据订单
+		String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
+		Object obj = redisCacheUtil.get(paramKey);
+		Map<String,Object> result = JSONObject.parseObject(obj.toString(),Map.class);
+		String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
+		record.setOrderStatus(UnionEstablishRecordConstant.ORDER_PAY_SUCCESS);
+		record.setCreateUnionStatus(UnionEstablishRecordConstant.CREATE_UNION_STATUS_YES);
+		record.setFinishTime(new Date());
+		unionEstablishRecordService.updateById(record);
+		Integer busId = CommonUtil.toInteger(result.get("payBusId"));
+		UnionMain main = this.getByBusId(busId);
+		UnionCreateInfoRecord unionCreateInfoRecord = unionCreateInfoRecordService.getByBusId(busId);
+		if(unionCreateInfoRecord != null){
+			unionCreateInfoRecord.setDelStatus(UnionCreateInfoRecordConstant.DEL_STATUS_YES);
+			unionCreateInfoRecordService.updateById(unionCreateInfoRecord);
+		}
+		UnionCreateInfoRecord infoRecord = new UnionCreateInfoRecord();
+		infoRecord.setCreateStatus(UnionCreateInfoRecordConstant.DEL_STATUS_NO);
+		infoRecord.setBusId(record.getBusId());
+		infoRecord.setBusId(busId);
+		infoRecord.setCreatetime(new Date());
+		if(CommonUtil.isEmpty(main)){
+			infoRecord.setCreateStatus(UnionCreateInfoRecordConstant.CREATE_STATUS_NO);
+		}else {
+			infoRecord.setCreateStatus(UnionCreateInfoRecordConstant.CREATE_STATUS_YES);
+			infoRecord.setUnionId(main.getId());
+		}
+		Object infoItemKey = result.get("infoItemKey");
+		List<Map> list = dictService.getUnionCreatePackage();
+		Double years = 0d;
+		for(Map map : list){
+			if(map.get("item_key").equals(infoItemKey)){
+				String itemValue = map.get("item_value").toString();
+				String value = itemValue.split(",")[1];
+				years = Double.valueOf(value).doubleValue();
+				break;
+			}
+		}
+		int month = (int)(new BigDecimal(years).multiply(new BigDecimal(12)).doubleValue());
+		infoRecord.setPeriodValidity(DateTimeKit.addMonths(month));
+		unionCreateInfoRecordService.insert(infoRecord);
+		redisCacheUtil.set(statusKey, CommonConstant.USER_ORDER_STATUS_003, 60l);//支付成功
+	}
+
+
 }
