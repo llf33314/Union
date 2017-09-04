@@ -1,5 +1,6 @@
 package com.gt.union.api.server.consume;
 
+import com.gt.api.dto.ResponseUtils;
 import com.gt.union.api.entity.param.RequestApiParam;
 import com.gt.union.api.entity.param.UnionConsumeParam;
 import com.gt.union.api.entity.result.UnionConsumeResult;
@@ -29,9 +30,6 @@ import java.io.IOException;
 @RequestMapping("/api/consume/8A5DA52E")
 public class UnionConsumeApiController extends ApiBaseController{
 
-	private static final String CONSUME_BY_UNIONCARD = "UnionApplyInfoController.consumeByUnionCard()";
-	private static final String UNION_REFUND = "UnionApplyInfoController.unionRefund()";
-
 	private Logger logger = Logger.getLogger(UnionCardApiController.class);
 
 	@Autowired
@@ -39,37 +37,37 @@ public class UnionConsumeApiController extends ApiBaseController{
 
 	@ApiOperation( value = "使用联盟卡核销", produces = "application/json;charset=UTF-8" )
 	@RequestMapping(value = "/unionConsume", method= RequestMethod.POST)
-	public GTJsonResult<UnionConsumeResult> consumeByUnionCard(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<UnionConsumeParam> requestApiParam) throws IOException {
+	public ResponseUtils consumeByUnionCard(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<UnionConsumeParam> requestApiParam) throws IOException {
 		try {
 			boolean verification=super.verification(request, response, requestApiParam);
 			UnionConsumeResult data = unionConsumeServiceRecordService.consumeByUnionCard(requestApiParam.getReqdata());
-			return GTJsonResult.instanceSuccessMsg(data);
+			return ResponseUtils.createBySuccess();
 		} catch (BaseException e) {
 			logger.error("", e);
 			UnionConsumeResult data = new UnionConsumeResult(false,e.getErrorMsg());
-			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), data);
+			return ResponseUtils.createByErrorMessage(e.getErrorMsg());
 		}catch (Exception e) {
 			logger.error("", e);
 			UnionConsumeResult data = new UnionConsumeResult();
-			return GTJsonResult.instanceErrorMsg(CONSUME_BY_UNIONCARD, e.getMessage(), data);
+			return ResponseUtils.createByError();
 		}
 	}
 
 	@ApiOperation( value = "使用联盟卡核销后退款", produces = "application/json;charset=UTF-8" )
 	@RequestMapping(value = "/unionRefund", method= RequestMethod.POST)
-	public GTJsonResult<UnionRefundResult> unionRefund(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<UnionRefundParam> requestApiParam) throws IOException {
+	public ResponseUtils unionRefund(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<UnionRefundParam> requestApiParam) throws IOException {
 		try {
 			boolean verification=super.verification(request, response, requestApiParam);
 			UnionRefundResult data = unionConsumeServiceRecordService.unionRefund(requestApiParam.getReqdata());
-			return GTJsonResult.instanceSuccessMsg(data);
+			return ResponseUtils.createBySuccess();
 		} catch (BaseException e) {
 			logger.error("", e);
 			UnionRefundResult data = new UnionRefundResult(false,e.getErrorMsg());
-			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), data);
+			return ResponseUtils.createByErrorMessage(e.getErrorMsg());
 		}catch (Exception e) {
 			logger.error("", e);
 			UnionRefundResult data = new UnionRefundResult(false ,"失败");
-			return GTJsonResult.instanceErrorMsg(UNION_REFUND, e.getMessage(), data);
+			return ResponseUtils.createByError();
 		}
 	}
 

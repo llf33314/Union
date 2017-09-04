@@ -1,13 +1,13 @@
 package com.gt.union.controller.business;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.gt.union.common.annotation.SysLogAnnotation;
+import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.exception.BaseException;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
-import com.gt.union.common.util.BigDecimalUtil;
-import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.SessionUtils;
+import com.gt.union.common.util.*;
 import com.gt.union.entity.business.vo.UnionBusinessRecommendVO;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.business.IUnionBusinessRecommendService;
@@ -16,10 +16,12 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -51,6 +53,8 @@ public class UnionBusinessRecommendController {
 	private static final String SUM_BUSINESSPRICE_FROMBUSID_BADDEBT = "UnionBusinessRecommendController.sumBusinessPriceByFromBusIdInBadDebt()";
 	private static final String PAGE_MAP_FROMBUSID_BADDEBT = "UnionBusinessRecommendController.pageMapByFromBusIdInBadDebt()";
 	private static final String PAGE_MAP_UNIONID_FROMBUSID_BADDEBT = "UnionBusinessRecommendController.pageMapByUnionIdAndFromBusIdInBadDebt()";
+	private static final String PAY_BUSINESS_RECOMMEND_QRCODE = "UnionBusinessRecommendController.payBusinessRecommendQRCode()";
+	private static final String GET_STATUS = "UnionBusinessRecommendController.getStatus()";
 
 	private Logger logger = Logger.getLogger(UnionBusinessRecommendController.class);
 
@@ -59,6 +63,12 @@ public class UnionBusinessRecommendController {
 
 	@Autowired
     private IUnionValidateService unionValidateService;
+
+	@Autowired
+	private RedisCacheUtil redisCacheUtil;
+
+	@Value("${wxmp.url}")
+	private String wxmpUrl;
 
 	@ApiOperation(value = "查询我的商机信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/toBusId", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -365,4 +375,78 @@ public class UnionBusinessRecommendController {
             return GTJsonResult.instanceErrorMsg(PAGE_MAP_UNIONID_FROMBUSID_BADDEBT, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
     }
+
+
+
+	@RequestMapping(value = "/79B4DE7C/paymentSuccess/{recommendEncrypt}/{only}")
+	public void payUnionBusinessRecommendSuccess(HttpServletRequest request, HttpServletResponse response,@PathVariable(name = "recommendEncrypt", required = true) String recommendEncrypt, @PathVariable(name = "only", required = true) String only) {
+		try {
+			logger.info("商机佣金支付成功，订单recommendEncrypt------------------"+recommendEncrypt);
+			logger.info("商机佣金支付成功，only------------------"+only);
+			unionBusinessRecommendService.payUnionBusinessRecommendSuccess(recommendEncrypt, only);
+		} catch (Exception e) {
+			logger.error("商机佣金支付成功后，产生错误：" + e);
+		}
+	}
+
+	@ApiOperation(value = "生成商机推荐支付订单二维码", produces = "application/json;charset=UTF-8")
+	@SysLogAnnotation(op_function = "2", description = "生成商机推荐支付二维码")
+	@RequestMapping(value = "/qrCode/{ids}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public String payBusinessRecommendQRCode(HttpServletRequest request, HttpServletResponse response, @ApiParam(name="ids", value = "商机ids", required = true) @PathVariable("ids") String ids) {
+		try {
+			BusUser user = SessionUtils.getLoginUser(request);
+			if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
+				throw new BusinessException(PAY_BUSINESS_RECOMMEND_QRCODE, "", CommonConstant.UNION_BUS_PARENT_MSG);
+			}
+			Map<String,Object> data = unionBusinessRecommendService.payBusinessRecommendQRCode(user.getId(), ids);
+			StringBuilder sb = new StringBuilder("?");
+			sb.append("totalFee="+data.get("totalFee"));
+			sb.append("&model="+data.get("model"));
+			sb.append("&busId="+data.get("busId"));
+			sb.append("&appidType="+data.get("appidType"));
+			sb.append("&appid=" + data.get("appid"));
+			sb.append("&orderNum="+data.get("orderNum"));
+			sb.append("&desc="+data.get("desc"));
+			sb.append("&isreturn="+data.get("isreturn"));
+			sb.append("&notifyUrl="+data.get("notifyUrl"));
+			sb.append("&isSendMessage="+data.get("isSendMessage"));
+			sb.append("&payWay="+data.get("payWay"));
+			sb.append("&sourceType="+data.get("sourceType"));
+			Map<String, Object> result = new HashMap<String, Object>();
+			result.put("url",wxmpUrl + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
+			result.put("only",data.get("only"));
+			return GTJsonResult.instanceSuccessMsg(result).toString();
+		} catch (Exception e) {
+			logger.error("生成商机推荐支付订单二维码错误：" + e);
+			return GTJsonResult.instanceErrorMsg(PAY_BUSINESS_RECOMMEND_QRCODE, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+		}
+	}
+
+	@ApiOperation(value = "获取商机佣金支付状态", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value="status/{only}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String getStatus(HttpServletRequest request, HttpServletResponse response, @PathVariable("only")String only) throws Exception{
+		logger.info("获取商机佣金支付状态：" + only);
+		try {
+			String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
+			String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
+			Object status = redisCacheUtil.get(statusKey);
+			if(CommonUtil.isEmpty(status)){//订单超时
+				status = CommonConstant.USER_ORDER_STATUS_004;
+			}
+			if(CommonConstant.USER_ORDER_STATUS_003.equals(status)){//订单支付成功
+				redisCacheUtil.remove(statusKey);
+				redisCacheUtil.remove(paramKey);
+			}
+
+			if(CommonConstant.USER_ORDER_STATUS_005.equals(status)){//订单支付失败
+				redisCacheUtil.remove(statusKey);
+				redisCacheUtil.remove(paramKey);
+			}
+			return GTJsonResult.instanceSuccessMsg(status).toString();
+		} catch (Exception e) {
+			logger.error("获取商机佣金支付错误：" + e);
+			return GTJsonResult.instanceErrorMsg(GET_STATUS, e.getMessage(), ExceptionConstant.SYS_ERROR).toString();
+		}
+	}
+
 }

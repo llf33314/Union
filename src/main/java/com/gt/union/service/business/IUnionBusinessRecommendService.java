@@ -157,4 +157,19 @@ public interface IUnionBusinessRecommendService extends IService<UnionBusinessRe
      * @throws Exception
      */
 	Page pageMapByUnionIdAndFromBusIdInBadDebt(Page page, Integer unionId, Integer fromBusId) throws Exception;
+
+	/**
+	 * 生成支付商机佣金信息
+	 * @param busId	商家id
+	 * @param ids	商机ids
+	 * @return
+	 */
+	Map<String,Object> payBusinessRecommendQRCode(Integer busId, String ids) throws Exception;
+
+	/**
+	 * 商机佣金支付成功
+	 * @param recordEncrypt
+	 * @param only
+	 */
+	void payUnionBusinessRecommendSuccess(String recordEncrypt, String only) throws Exception;
 }

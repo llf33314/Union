@@ -1,16 +1,20 @@
 package com.gt.union.service.business.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.amqp.entity.PhoneMessage;
 import com.gt.union.amqp.sender.PhoneMessageSender;
+import com.gt.union.api.client.user.BusUserService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionApplyConstant;
 import com.gt.union.common.constant.basic.UnionMainConstant;
 import com.gt.union.common.constant.basic.UnionMemberConstant;
+import com.gt.union.common.constant.business.UnionBrokeragePayRecordConstant;
 import com.gt.union.common.constant.business.UnionBusinessRecommendConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
@@ -19,6 +23,7 @@ import com.gt.union.entity.basic.UnionApplyInfo;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.basic.UnionMember;
 import com.gt.union.entity.business.UnionBrokerage;
+import com.gt.union.entity.business.UnionBrokeragePayRecord;
 import com.gt.union.entity.business.UnionBusinessRecommend;
 import com.gt.union.entity.business.UnionBusinessRecommendInfo;
 import com.gt.union.entity.business.vo.UnionBusinessRecommendVO;
@@ -26,16 +31,19 @@ import com.gt.union.mapper.business.UnionBusinessRecommendMapper;
 import com.gt.union.service.basic.IUnionApplyInfoService;
 import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.basic.IUnionMemberService;
+import com.gt.union.service.business.IUnionBrokeragePayRecordService;
 import com.gt.union.service.business.IUnionBrokerageService;
 import com.gt.union.service.business.IUnionBusinessRecommendInfoService;
 import com.gt.union.service.business.IUnionBusinessRecommendService;
 import com.gt.union.service.common.IUnionRootService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -63,6 +71,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
     private static final String SUM_BUSINESSPRICE_FROMBUSID_BADDEBT = "UnionBusinessRecommendServiceImpl.sumBusinessPriceByFromBusIdInBadDebt()";
     private static final String PAGE_MAP_FROMBUSID_BADDEBT = "UnionBusinessRecommendServiceImpl.pageMapByFromBusIdInBadDebt()";
     private static final String PAGE_MAP_UNIONID_FROMBUSID_BADDEBT = "UnionBusinessRecommendServiceImpl.pageMapByUnionIdAndFromBusIdInBadDebt()";
+    private static final String PAY_BUSINESS_RECOMMEND_QRCODE = "UnionBusinessRecommendServiceImpl.payBusinessRecommendQRCode()";
 
 	@Autowired
 	private IUnionBusinessRecommendInfoService unionBusinessRecommendInfoService;
@@ -87,6 +96,21 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 
 	@Autowired
 	private PhoneMessageSender phoneMessageSender;
+
+	@Autowired
+	private BusUserService busUserService;
+
+	@Autowired
+	private IUnionBrokeragePayRecordService unionBrokeragePayRecordService;
+
+	@Value("${union.url}")
+	private String unionUrl;
+
+	@Value("${wx.duofen.busId}")
+	private Integer duofenBusId;
+
+	@Value("${union.encryptKey}")
+	private String encryptKey;
 
 	@Override
     @Transactional(propagation = Propagation.REQUIRED)
@@ -221,16 +245,16 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
             throw new ParamException(UPDATE_ID_ISACCEPTANCE, "id=" + id, ExceptionConstant.PARAM_ERROR);
         }
         // （2）判断当前商家是否是商机的接收者
-        if (unionBusinessRecommend.getToBusId() != busId) {
+        if (!unionBusinessRecommend.getToBusId().equals(busId)) {
             throw new BusinessException(UPDATE_ID_ISACCEPTANCE, "", ExceptionConstant.OPERATE_FAIL);
         }
         // （3）判断商机是否是未处理状态
         if (unionBusinessRecommend.getIsAcceptance() != UnionBusinessRecommendConstant.IS_ACCEPTANCE_UNCHECK) {
             throw new BusinessException(UPDATE_ID_ISACCEPTANCE, "",  "当前商机已处理");
         }
-        switch (isAcceptance) {
-            case UnionBusinessRecommendConstant.IS_ACCEPTANCE_ACCEPT:
-                // （4-1）接受商机
+		switch (isAcceptance) {
+			case UnionBusinessRecommendConstant.IS_ACCEPTANCE_ACCEPT:
+				// （4-1）接受商机
                 unionBusinessRecommend.setAcceptancePrice(acceptancePrice);
                 this.acceptRecommend(unionBusinessRecommend);
                 break;
@@ -820,7 +844,96 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
         return this.selectMapsPage(page, wrapper);
     }
 
-    //根据联盟id、推荐商家id和是否给予佣金状态isConfirm获取总佣金收入信息
+	@Override
+	public Map<String, Object> payBusinessRecommendQRCode(Integer busId, String ids) throws Exception{
+		Map<String, Object> data = new HashMap<String, Object>();
+    	if(StringUtil.isEmpty(ids)){
+			throw new ParamException(PAY_BUSINESS_RECOMMEND_QRCODE, ids, ExceptionConstant.PARAM_ERROR);
+		}
+		String[] arrs = ids.split(",");
+		if(arrs.length == 0){
+			throw new ParamException(PAY_BUSINESS_RECOMMEND_QRCODE, ids, ExceptionConstant.PARAM_ERROR);
+		}
+		EntityWrapper wrapper = new EntityWrapper<>();
+		wrapper.eq("del_status", UnionBusinessRecommendConstant.DEL_STATUS_NO);
+		wrapper.in("id", arrs);
+		List<UnionBusinessRecommend> list = this.selectList(wrapper);
+		if(ListUtil.isEmpty(list)){
+			throw new BusinessException(PAY_BUSINESS_RECOMMEND_QRCODE, "商机佣金list为空", ExceptionConstant.PARAM_ERROR);
+		}
+		double totalFee = 0;
+		Map publicUser = busUserService.getWxPublicUserByBusId(duofenBusId);
+		for(UnionBusinessRecommend recommend : list){
+			if(CommonUtil.isEmpty(recommend.getIsAcceptance()) || recommend.getIsAcceptance() != UnionBusinessRecommendConstant.IS_ACCEPTANCE_ACCEPT){
+				throw new BusinessException(PAY_BUSINESS_RECOMMEND_QRCODE, "存在佣金未接受的", "不可支付未接受的商机");
+			}
+			if(CommonUtil.isEmpty(recommend.getIsConfirm()) || recommend.getIsConfirm() == UnionBusinessRecommendConstant.IS_CONFIRM_CONFIRM){
+				throw new BusinessException(PAY_BUSINESS_RECOMMEND_QRCODE, "存在已支付的商机", "不可支付已支付的商机");
+			}
+			if(!recommend.getToBusId().equals(busId)){
+				throw new BusinessException(PAY_BUSINESS_RECOMMEND_QRCODE, "", ExceptionConstant.OPERATE_FAIL);
+			}
+			totalFee = new BigDecimal(recommend.getBusinessPrice()).add(new BigDecimal(totalFee)).doubleValue();
+		}
+		if(totalFee <= 0){
+			throw new BusinessException(PAY_BUSINESS_RECOMMEND_QRCODE, "支付金额小于或等于0", "支付金额有误");
+		}
+		String orderNo = UnionBrokeragePayRecordConstant.orderPrefix + System.currentTimeMillis();
+		String only=DateTimeKit.getDateTime(new Date(), DateTimeKit.yyyyMMddHHmmss);
+		data.put("totalFee",totalFee);
+		data.put("busId", duofenBusId);
+		data.put("sourceType", 1);//是否墨盒支付
+		data.put("payWay",1);//系统判断支付方式
+		data.put("isreturn",0);//0：不需要同步跳转
+		data.put("model", CommonConstant.PAY_MODEL);
+		String encrypt = EncryptUtil.encrypt(encryptKey, ids);
+		encrypt = URLEncoder.encode(encrypt,"UTF-8");
+		data.put("notifyUrl", unionUrl + "/unionBusinessRecommend/79B4DE7C/paymentSuccess/"+encrypt + "/" + only);
+		data.put("orderNum", orderNo);//订单号
+		data.put("payBusId",busId);//支付的商家id
+		data.put("isSendMessage",0);//不推送
+		data.put("appid",publicUser.get("appid"));//appid
+		data.put("desc", "联盟商机推荐");
+		data.put("appidType",0);//公众号
+		data.put("only", only);
+		String paramKey = RedisKeyUtil.getRecommendPayParamKey(only);
+		String statusKey = RedisKeyUtil.getRecommendPayStatusKey(only);
+		redisCacheUtil.set(paramKey, JSON.toJSONString(data), 360l);//5分钟
+		redisCacheUtil.set(statusKey,CommonConstant.USER_ORDER_STATUS_001,300l);//等待扫码状态
+		return data;
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@Override
+	public void payUnionBusinessRecommendSuccess(String recordEncrypt, String only) throws Exception{
+		//解密参数
+		String ids = EncryptUtil.decrypt(encryptKey,recordEncrypt);
+		String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
+		Object obj = redisCacheUtil.get(paramKey);
+		Map<String,Object> result = JSONObject.parseObject(obj.toString(),Map.class);
+		String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
+		String[] arrs = ids.split(",");
+		EntityWrapper wrapper = new EntityWrapper<>();
+		wrapper.eq("del_status", UnionBusinessRecommendConstant.DEL_STATUS_NO);
+		wrapper.in("id", arrs);
+		List<UnionBusinessRecommend> list = this.selectList(wrapper);
+		List<UnionBusinessRecommend> recommends = new ArrayList<UnionBusinessRecommend>();
+		for(UnionBusinessRecommend recommend : list){
+			UnionBusinessRecommend unionBusinessRecommend = new UnionBusinessRecommend();
+			unionBusinessRecommend.setId(recommend.getId());
+			unionBusinessRecommend.setIsConfirm(UnionBusinessRecommendConstant.IS_CONFIRM_CONFIRM);
+			recommends.add(unionBusinessRecommend);
+		}
+		//添加订单记录
+		String orderNo = result.get("orderNum").toString();
+		unionBrokeragePayRecordService.insertBatchByRecommends(list, orderNo);
+		//修改商机推荐记录
+		this.updateBatchById(recommends);
+		redisCacheUtil.remove(paramKey);
+		redisCacheUtil.set(statusKey, CommonConstant.USER_ORDER_STATUS_003, 60l);//支付成功
+	}
+
+	//根据联盟id、推荐商家id和是否给予佣金状态isConfirm获取总佣金收入信息
     private Double getBrokerageIncome(Integer unionId, Integer busId, Integer isConfirm) {
         if (unionId != null && busId != null && isConfirm != null) {
             EntityWrapper entityWrapper = new EntityWrapper();

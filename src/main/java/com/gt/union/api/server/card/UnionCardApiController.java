@@ -1,5 +1,6 @@
 package com.gt.union.api.server.card;
 
+import com.gt.api.dto.ResponseUtils;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.api.entity.param.BindCardParam;
 import com.gt.union.api.entity.param.RequestApiParam;
@@ -34,10 +35,6 @@ import java.util.Map;
 @RequestMapping("/api/card/8A5DA52E")
 public class UnionCardApiController extends ApiBaseController{
 
-	private static final String GET_CONSUME_UNION_DISCOUNT = "UnionApplyInfoController.getConsumeUnionDiscount()";
-	private static final String GET_PHONE_CODE = "UnionApplyInfoController.getPhoneCode()";
-	private static final String BIND_UNION_CARD = "UnionApplyInfoController.bindUnionCard()";
-
 	private Logger logger = Logger.getLogger(UnionCardApiController.class);
 
 	@Autowired
@@ -54,20 +51,20 @@ public class UnionCardApiController extends ApiBaseController{
 
 	@ApiOperation(value = "线上--根据商家和粉丝获取联盟卡折扣，session的member不能为空", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/consumeUnionDiscount", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public GTJsonResult<UnionDiscountResult> getConsumeUnionDiscount(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<Integer> requestApiParam){
+	public ResponseUtils<UnionDiscountResult> getConsumeUnionDiscount(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<Integer> requestApiParam){
 		try {
 			boolean verification=super.verification(request, response, requestApiParam);
 			Member member = SessionUtils.getLoginMember(request);
 			UnionDiscountResult data = unionBusMemberCardService.getConsumeUnionDiscount(member.getId(), requestApiParam.getReqdata());
-			return GTJsonResult.instanceSuccessMsg(data);
+			return ResponseUtils.createBySuccess(data);
 		} catch (BaseException e) {
 			logger.error("", e);
 			UnionDiscountResult data = new UnionDiscountResult(UnionDiscountResult.UNION_DISCOUNT_CODE_NON);
-			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), data);
+			return ResponseUtils.createByErrorMessage(e.getErrorMsg());
 		}catch (Exception e) {
 			logger.error("", e);
 			UnionDiscountResult data = new UnionDiscountResult(UnionDiscountResult.UNION_DISCOUNT_CODE_NON);
-			return GTJsonResult.instanceErrorMsg(GET_CONSUME_UNION_DISCOUNT, e.getMessage(), data);
+			return ResponseUtils.createByError();
 		}
 	}
 
@@ -80,7 +77,7 @@ public class UnionCardApiController extends ApiBaseController{
 	 */
 	@ApiOperation(value = "绑定联盟卡，获取手机验证码，session的member不能为空", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/phoneCode", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public GTJsonResult<UnionPhoneCodeResult> getPhoneCode(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<String> requestApiParam) {
+	public ResponseUtils getPhoneCode(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<String> requestApiParam) {
 		try {
 			boolean verification=super.verification(request, response, requestApiParam);
 			Member member = SessionUtils.getLoginMember(request);
@@ -97,20 +94,17 @@ public class UnionCardApiController extends ApiBaseController{
 			if(smsService.sendSms(param) == 1){
 				String phoneKey = RedisKeyUtil.getMemberPhoneCodeKey(member.getId());
 				redisCacheUtil.set(phoneKey,code,300l);//5分钟
-				UnionPhoneCodeResult result = new UnionPhoneCodeResult(true, "发送成功");
-				return GTJsonResult.instanceSuccessMsg(result);
+				return ResponseUtils.createBySuccess(phoneKey);
 			} else {
-				UnionPhoneCodeResult result = new UnionPhoneCodeResult(false, "发送失败");
-				return GTJsonResult.instanceErrorMsg(GET_PHONE_CODE,"发送短信验证码失败", result);
+				return ResponseUtils.createByErrorMessage("发送失败");
 			}
 		} catch (BusinessException e) {
 			e.printStackTrace();
 			UnionPhoneCodeResult result = new UnionPhoneCodeResult(false, e.getMessage());
-			return GTJsonResult.instanceErrorMsg(GET_PHONE_CODE,e.getMessage(), result);
+			return ResponseUtils.createByErrorMessage(e.getErrorMsg());
 		}catch (Exception e) {
 			e.printStackTrace();
-			UnionPhoneCodeResult result = new UnionPhoneCodeResult(false, "发送失败");
-			return GTJsonResult.instanceErrorMsg(GET_PHONE_CODE,e.getMessage(), result);
+			return ResponseUtils.createByError();
 		}
 	}
 
@@ -123,21 +117,19 @@ public class UnionCardApiController extends ApiBaseController{
 	 */
 	@ApiOperation( value = "根据手机号获取联盟卡,并绑定联盟卡，session的member不能为空", produces = "application/json;charset=UTF-8" )
 	@RequestMapping(value = "/uionCardBind", method=RequestMethod.POST)
-	public GTJsonResult<UnionBindCardResult> bindUnionCard(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<BindCardParam> requestApiParam) throws IOException {
+	public ResponseUtils bindUnionCard(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<BindCardParam> requestApiParam) throws IOException {
 		try {
 			boolean verification=super.verification(request, response, requestApiParam);
 			// 获取会员信息
 			Member member = SessionUtils.getLoginMember(request);
 			UnionBindCardResult data = unionBusMemberCardService.bindUnionCard(member.getBusid(), member.getId(), requestApiParam.getReqdata().getPhone(), requestApiParam.getReqdata().getCode());
-			return GTJsonResult.instanceSuccessMsg(data);
+			return ResponseUtils.createBySuccess(data);
 		} catch (BaseException e) {
 			logger.error("", e);
-			UnionBindCardResult data = new UnionBindCardResult(false,e.getErrorMsg());
-			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), data);
+			return ResponseUtils.createByErrorMessage(e.getErrorMsg());
 		}catch (Exception e) {
 			logger.error("", e);
-			UnionBindCardResult data = new UnionBindCardResult();
-			return GTJsonResult.instanceErrorMsg(BIND_UNION_CARD, e.getMessage(), data);
+			return ResponseUtils.createByError();
 		}
 	}
 

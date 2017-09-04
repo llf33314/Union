@@ -150,17 +150,45 @@ public class RedisKeyUtil {
         return getWxPublicUserBusIdKey(String.valueOf(busId));
     }
 
+    /**
+     * 根据商机id获取公众号信箱key
+     * @param busId
+     * @return
+     */
     public static final String getWxPublicUserBusIdKey(String busId){
         return "wxPublicUser:" + busId;
     }
 
 
+    /**
+     * 根据粉丝id获取手机验证码key
+     * @param memberId
+     * @return
+     */
     public static final String getMemberPhoneCodeKey(Integer memberId){
         return getMemberPhoneCodeKey(String.valueOf(memberId));
     }
 
     public static final String getMemberPhoneCodeKey(String memberId){
         return "member:phone:" + memberId;
+    }
+
+    /**
+     * 获取支付商机推荐佣金参数key
+     * @param only
+     * @return
+     */
+    public static final String getRecommendPayParamKey(String only){
+        return "recommend:" + only;
+    }
+
+    /**
+     * 获取支付商机推荐佣金状态key
+     * @param only
+     * @return
+     */
+    public static final String getRecommendPayStatusKey(String only){
+        return "recommend:status:" + only;
     }
 
 }

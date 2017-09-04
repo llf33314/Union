@@ -2,6 +2,9 @@ package com.gt.union.service.business;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.entity.business.UnionBrokeragePayRecord;
+import com.gt.union.entity.business.UnionBusinessRecommend;
+
+import java.util.List;
 
 /**
  * <p>
@@ -22,5 +25,10 @@ public interface IUnionBrokeragePayRecordService extends IService<UnionBrokerage
 	public double getBrokeragePayRecordSum(Integer busId, Integer unionId);
 
 
-	
+	/**
+	 * 根据推荐商家列表添加佣金支付记录
+	 * @param list
+	 * @param orderNo
+	 */
+	void insertBatchByRecommends(List<UnionBusinessRecommend> list, String orderNo);
 }

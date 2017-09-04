@@ -694,6 +694,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public Map<String, Object> createUnionQRCode(Integer busId, String infoItemKey) throws Exception{
+    	//TODO 支付联盟服务二维码
     	Map<String, Object> data = new HashMap<String, Object>();
 		List<Map> list = dictService.getUnionCreatePackage();
 		Double pay = 0d;
@@ -729,9 +730,9 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		data.put("isreturn",0);//0：不需要同步跳转
 		data.put("model", CommonConstant.PAY_MODEL);
 		//data.put("notifyUrl", unionUrl + "/unionMain/79B4DE7C/paymentSuccess/"+record.getId());
-		String encrypt = EncryptUtil.encrypt(encryptKey, record.getId().toString());
+		String encrypt = EncryptUtil.encrypt(encryptKey, orderNo);
 		encrypt = URLEncoder.encode(encrypt,"UTF-8");
-		data.put("notifyUrl", "http://union.duofee.com" + "/unionMain/79B4DE7C/paymentSuccess/"+encrypt + "/" + only);
+		data.put("notifyUrl", unionUrl + "/unionMain/79B4DE7C/paymentSuccess/"+encrypt + "/" + only);
 		data.put("orderNum", orderNo);//订单号
 		data.put("payBusId",busId);//支付的商家id
 		data.put("isSendMessage",0);//不推送
@@ -750,23 +751,25 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public void payCreateUnionSuccess(String recordEncrypt, String only) throws Exception{
-		String data = EncryptUtil.decrypt(encryptKey,recordEncrypt);
-		Integer recordId = CommonUtil.toInteger(data);
-		UnionEstablishRecord record = unionEstablishRecordService.selectById(recordId);
-		if(record == null){
-			throw new BusinessException(PAY_CREATE_UNION_SUCCESS, "record==null", "创建联盟支付记录为空");
-		}
-		//根据订单
+    	//解密订单号
+		String orderNo = EncryptUtil.decrypt(encryptKey,recordEncrypt);
 		String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
 		Object obj = redisCacheUtil.get(paramKey);
 		Map<String,Object> result = JSONObject.parseObject(obj.toString(),Map.class);
 		String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
-		//修改订单状态
+		//添加支付订单
+		Integer busId = CommonUtil.toInteger(result.get("payBusId"));
+		UnionEstablishRecord record = new UnionEstablishRecord();
+		record.setBusId(busId);
+		record.setCreateUnionStatus(UnionEstablishRecordConstant.CREATE_UNION_STATUS_NO);
+		record.setOrderDesc("多粉-创建联盟付款");
+		record.setSysOrderNo(orderNo);
+		record.setOrderStatus(UnionEstablishRecordConstant.ORDER_UNPAY);
+		record.setOrderMoney(CommonUtil.toDouble(result.get("totalFee")));
 		record.setOrderStatus(UnionEstablishRecordConstant.ORDER_PAY_SUCCESS);
 		record.setCreateUnionStatus(UnionEstablishRecordConstant.CREATE_UNION_STATUS_YES);
 		record.setFinishTime(new Date());
-		unionEstablishRecordService.updateById(record);
-		Integer busId = CommonUtil.toInteger(result.get("payBusId"));
+		unionEstablishRecordService.insert(record);
 		UnionMain main = this.getByBusId(busId);//是否盟主
 		//修改之前的创建记录信息（delStatus = 1）
 		UnionCreateInfoRecord unionCreateInfoRecord = unionCreateInfoRecordService.getByBusId(busId);
@@ -799,6 +802,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		int month = (int)(new BigDecimal(years).multiply(new BigDecimal(12)).doubleValue());
 		infoRecord.setPeriodValidity(DateTimeKit.addMonths(month));
 		unionCreateInfoRecordService.insert(infoRecord);
+		redisCacheUtil.remove(paramKey);
 		redisCacheUtil.set(statusKey, CommonConstant.USER_ORDER_STATUS_003, 60l);//支付成功
 	}
 
