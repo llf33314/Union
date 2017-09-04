@@ -11,10 +11,7 @@ import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -40,12 +37,13 @@ public class UnionIncomeExpenseRecordController {
     private IUnionIncomeExpenseRecordService unionIncomeExpenseRecordService;
 
     @ApiOperation(value = "获取佣金总收入或总支出", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/type/{type}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/type/{type}/sum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String sumMoneyByBusIdAndType(HttpServletRequest request
-        , @ApiParam(name = "type", value = "收支类型：1为收入，2为支出", required = true) @PathVariable("type") Integer type) {
+        , @ApiParam(name = "type", value = "收支类型：1为收入，2为支出", required = true) @PathVariable("type") Integer type
+        , @ApiParam(name = "source", value = "收支来源：1：商机推荐 2：售卡分成 3：提现", required = false) @RequestParam Integer source) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
-            Double moneySum = this.unionIncomeExpenseRecordService.sumMoneyByBusIdAndType(busUser.getId(), type);
+            Double moneySum = this.unionIncomeExpenseRecordService.sumMoneyByBusIdAndType(busUser.getId(), type, source);
             return GTJsonResult.instanceSuccessMsg(moneySum).toString();
         } catch (BaseException e) {
             logger.error("", e);
@@ -57,7 +55,7 @@ public class UnionIncomeExpenseRecordController {
     }
 
     @ApiOperation(value = "获取在某联盟的佣金总收入或总支出", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/unionId/{unionId}/type/{type}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/type/{type}/sum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String sumMoneyByUnionIdAndBusIdAndType(HttpServletRequest request
             , @ApiParam(name = "unionId", value = "联盟id", required = true) @PathVariable("unionId") Integer unionId
             , @ApiParam(name = "type", value = "收支类型：1为收入，2为支出", required = true) @PathVariable("type") Integer type) {

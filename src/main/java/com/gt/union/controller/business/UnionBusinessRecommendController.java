@@ -47,6 +47,7 @@ public class UnionBusinessRecommendController {
 	private static final String UPDATE_ID_ISACCEPTANCE = "UnionBusinessRecommendController.updateByIdAndIsAcceptance()";
 	private static final String SAVE = "UnionBusinessRecommendController.save()";
 	private static final String SUM_BUSINESSPRICE_FROMBUSID_ISCONFIRM = "UnionBusinessRecommendController.sumBusinessPriceByFromBusIdAndIsConfirm()";
+	private static final String SUM_BUSINESSPRICE_UNIONID_FROMBUSID_ISCONFIRM = "UnionBusinessRecommendController.sumBusinessPriceByUnionIdAndFromBusIdAndIsConfirm()";
 	private static final String SUM_BUSINESSPRICE_FROMBUSID_BADDEBT = "UnionBusinessRecommendController.sumBusinessPriceByFromBusIdInBadDebt()";
 	private static final String PAGE_MAP_FROMBUSID_BADDEBT = "UnionBusinessRecommendController.pageMapByFromBusIdInBadDebt()";
 	private static final String PAGE_MAP_UNIONID_FROMBUSID_BADDEBT = "UnionBusinessRecommendController.pageMapByUnionIdAndFromBusIdInBadDebt()";
@@ -295,6 +296,24 @@ public class UnionBusinessRecommendController {
         } catch (Exception e) {
 	        logger.error("", e);
 	        return GTJsonResult.instanceErrorMsg(SUM_BUSINESSPRICE_FROMBUSID_ISCONFIRM, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+        }
+    }
+
+    @ApiOperation(value = "统计我的所有已被接受的，目前未支付或已支付的，指定联盟的商机佣金总额", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/isConfirm/{isConfirm}/sum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String sumBusinessPriceByUnionIdAndFromBusIdAndIsConfirm(HttpServletRequest request
+            , @ApiParam(name = "unionId", value = "联盟id", required = true) @PathVariable("unionId") Integer unionId
+            , @ApiParam(name = "isConfirm", value = "是否已支付：0未支付，1已支付", required = true) @PathVariable("isConfirm") Integer isConfirm) {
+        try {
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            Double businessPriceSum = this.unionBusinessRecommendService.sumBusinessPriceByUnionIdAndFromBusIdAndIsConfirm(unionId, busUser.getId(), isConfirm);
+            return GTJsonResult.instanceSuccessMsg(businessPriceSum).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(SUM_BUSINESSPRICE_UNIONID_FROMBUSID_ISCONFIRM, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
         }
     }
 

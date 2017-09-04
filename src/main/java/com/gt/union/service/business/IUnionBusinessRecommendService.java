@@ -121,6 +121,16 @@ public interface IUnionBusinessRecommendService extends IService<UnionBusinessRe
      */
 	Double sumBusinessPriceByFromBusIdAndIsConfirm(Integer fromBusId, Integer isConfirm) throws Exception;
 
+	/**
+	 * 根据商家id统计已被接受的推荐商机佣金
+     * @param unionId
+	 * @param fromBusId
+	 * @param isConfirm
+	 * @return
+	 * @throws Exception
+	 */
+	Double sumBusinessPriceByUnionIdAndFromBusIdAndIsConfirm(Integer unionId, Integer fromBusId, Integer isConfirm) throws Exception;
+
     /**
      * 根据商机id统计已被接受，但由于接受方退盟而变成坏账状态的推荐商机佣金
      * @param fromBusId
