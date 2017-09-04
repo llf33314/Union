@@ -13,13 +13,14 @@ import com.gt.union.entity.brokerage.UnionIncomeExpenseRecord;
  */
 public interface IUnionIncomeExpenseRecordService extends IService<UnionIncomeExpenseRecord> {
     /**
-     * 根据商家id和收支类型，统计收支金额（该商家的总收入金额或总支出金额）
+     * 根据商家id和收支类型，统计收支金额（该商家的总收入金额或总支出金额），支持收支来源过滤
      * @param busId
      * @param type
+     * @param source
      * @return
      * @throws Exception
      */
-	Double sumMoneyByBusIdAndType(Integer busId, Integer type) throws Exception;
+	Double sumMoneyByBusIdAndType(Integer busId, Integer type, Integer source) throws Exception;
 
     /**
      * 根据商家id获取收支盈利金额（总收入金额-总收支金额）

@@ -1,6 +1,5 @@
 package com.gt.union.service.business.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -59,8 +58,8 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
     private static final String LIST_PAYDETAILPARTICULAR_UNIONID_FROMBUSID_TOBUSID = "UnionBusinessRecommendServiceImpl.listPayDetailParticularByUnionIdAndFromBusIdAndToBusId()";
     private static final String LIST_PAYDETAIL_FROMBUSID = "UnionBusinessRecommendServiceImpl.listPayDetailByFromBusId()";
     private static final String GET_STATISTIC_DATA = "UnionBusinessRecommendServiceImpl.getStatisticData()";
-    private static final String RECOMMEND_MSG = "UnionBusinessRecommendServiceImpl.getRecommendMsgInfo()";
     private static final String SUM_BUSINESSPRICE_FROMBUSID_ISCONFIRM = "UnionBusinessRecommendServiceImpl.sumBusinessPriceByFromBusIdAndIsConfirm()";
+    private static final String SUM_BUSINESSPRICE_UNIONID_FROMBUSID_ISCONFIRM = "UnionBusinessRecommendServiceImpl.sumBusinessPriceByUnionIdAndFromBusIdAndIsConfirm()";
     private static final String SUM_BUSINESSPRICE_FROMBUSID_BADDEBT = "UnionBusinessRecommendServiceImpl.sumBusinessPriceByFromBusIdInBadDebt()";
     private static final String PAGE_MAP_FROMBUSID_BADDEBT = "UnionBusinessRecommendServiceImpl.pageMapByFromBusIdInBadDebt()";
     private static final String PAGE_MAP_UNIONID_FROMBUSID_BADDEBT = "UnionBusinessRecommendServiceImpl.pageMapByUnionIdAndFromBusIdInBadDebt()";
@@ -371,6 +370,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
                 .append(" , m.id unionId ")
                 .append(" , m.union_name unionName ")
                 .append(" , r.is_acceptance isAcceptance ");
+
         wrapper.setSqlSelect(sbSqlSelect.toString());
         return this.selectMapsPage(page, wrapper);
 	}
@@ -673,6 +673,36 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
             public String getSqlSegment() {
                 return new StringBuffer(" r")
                         .append(" WHERE r.del_status = ").append(UnionBusinessRecommendConstant.DEL_STATUS_NO)
+                        .append("  AND r.is_acceptance = ").append(UnionBusinessRecommendConstant.IS_ACCEPTANCE_ACCEPT)
+                        .append("  AND r.is_confirm = ").append(isConfirm)
+                        .append("  AND r.from_bus_id = ").append(fromBusId)
+                        .toString();
+            }
+        };
+        wrapper.setSqlSelect(" SUM(r.business_price) businessPriceSum ");
+        Map<String, Object> map = this.selectMap(wrapper);
+
+        return map != null && map.get("businessPriceSum") != null ? Double.valueOf(map.get("businessPriceSum").toString()) : null;
+    }
+
+    @Override
+    public Double sumBusinessPriceByUnionIdAndFromBusIdAndIsConfirm(final Integer unionId, final Integer fromBusId, final Integer isConfirm) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(SUM_BUSINESSPRICE_UNIONID_FROMBUSID_ISCONFIRM, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
+        }
+        if (fromBusId == null) {
+            throw new ParamException(SUM_BUSINESSPRICE_UNIONID_FROMBUSID_ISCONFIRM, "参数fromBusId为空", ExceptionConstant.PARAM_ERROR);
+        }
+        if (isConfirm == null) {
+            throw new ParamException(SUM_BUSINESSPRICE_UNIONID_FROMBUSID_ISCONFIRM, "参数isConfirm为空", ExceptionConstant.PARAM_ERROR);
+        }
+
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                return new StringBuffer(" r")
+                        .append(" WHERE r.del_status = ").append(UnionBusinessRecommendConstant.DEL_STATUS_NO)
+                        .append("  AND r.union_id = ").append(unionId)
                         .append("  AND r.is_acceptance = ").append(UnionBusinessRecommendConstant.IS_ACCEPTANCE_ACCEPT)
                         .append("  AND r.is_confirm = ").append(isConfirm)
                         .append("  AND r.from_bus_id = ").append(fromBusId)

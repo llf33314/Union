@@ -30,7 +30,7 @@ public class UnionIncomeExpenseRecordServiceImpl extends ServiceImpl<UnionIncome
     private static final String GET_PROFIT_MONEY_UNIONID_BUSID = "UnionIncomeExpenseRecordServiceImpl.getProfitMoneyByUnionIdAndBusId()";
 
     @Override
-    public Double sumMoneyByBusIdAndType(final Integer busId, final Integer type) throws Exception {
+    public Double sumMoneyByBusIdAndType(final Integer busId, final Integer type, final Integer source) throws Exception {
         if (busId == null) {
             throw new ParamException(SUM_MONEY_BUSID_TYPE, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
@@ -41,11 +41,15 @@ public class UnionIncomeExpenseRecordServiceImpl extends ServiceImpl<UnionIncome
         Wrapper wrapper = new Wrapper() {
             @Override
             public String getSqlSegment() {
-                return new StringBuilder(" r")
+                StringBuilder sbSqlSegment = new StringBuilder(" r")
                         .append(" WHERE r.del_status = ").append(UnionIncomeExpenseRecordConstant.DEL_STATUS_NO)
                         .append("  AND r.bus_id = ").append(busId)
-                        .append("  AND r.type = ").append(type)
-                        .toString();
+                        .append("  AND r.type = ").append(type);
+                if (source != null) {
+                    sbSqlSegment.append(" AND r.source = ").append(source);
+                }
+
+                return sbSqlSegment.toString();
             }
         };
         wrapper.setSqlSelect(" SUM(IFNULL(r.money, 0)) moneySum");
@@ -60,8 +64,8 @@ public class UnionIncomeExpenseRecordServiceImpl extends ServiceImpl<UnionIncome
             throw new ParamException(GET_PROFIT_MONEY_BUSID, "参数busId为空", ExceptionConstant.PARAM_ERROR);
         }
 
-        Double incomeMoney = this.sumMoneyByBusIdAndType(busId, UnionIncomeExpenseRecordConstant.TYPE_INCOME);
-        Double expenseMoney = this.sumMoneyByBusIdAndType(busId, UnionIncomeExpenseRecordConstant.TYPE_EXPENSE);
+        Double incomeMoney = this.sumMoneyByBusIdAndType(busId, UnionIncomeExpenseRecordConstant.TYPE_INCOME, null);
+        Double expenseMoney = this.sumMoneyByBusIdAndType(busId, UnionIncomeExpenseRecordConstant.TYPE_EXPENSE, null);
         return BigDecimalUtil.subtract(incomeMoney, expenseMoney).doubleValue();
     }
 
