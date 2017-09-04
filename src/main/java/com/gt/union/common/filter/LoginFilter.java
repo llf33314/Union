@@ -70,15 +70,9 @@ public class LoginFilter implements Filter {
 		BusUser busUser = SessionUtils.getLoginUser(req);
 		String url = ((HttpServletRequest) request).getRequestURI();//获取请求路径
 		if(url.indexOf("79B4DE7C")>-1){//移动端
-			Member member= SessionUtils.getLoginMember(req);
-			if(CommonUtil.isNotEmpty(member) && member.isPass()){//商家已过期，清空会员登录session
-				req.getSession().removeAttribute("member");
-				String upGradeUrl=PropertiesUtil.getWxmpUrl() + "/jsp/merchants/user/warning.jsp";
-				response.setCharacterEncoding("UTF-8");
-				response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录",upGradeUrl)));
-			}else{
-				chain.doFilter(request, response);
-			}
+			chain.doFilter(request, response);
+		}else if(url.split("8A5DA52E").length > 1){//API接口
+			chain.doFilter(request, response);
 		}else if(passSuffixs(url)||passUrl(url)){
 			chain.doFilter(request, response);
 		}else if (busUser == null) {// 判断到商家没有登录,就跳转到登陆页面
@@ -91,26 +85,6 @@ public class LoginFilter implements Filter {
 			chain.doFilter(request, response);
 //			response.setCharacterEncoding("UTF-8");
 //			response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录",PropertiesUtil.getWxmpUrl()+"/user/tologin.do")));
-		}else if(busUser != null && busUser.getPid() == 0){//商家主账号过期,跳转到充值页面
-			if(DateTimeKit.getNow().compareTo(busUser.getEndTime()) < 0){
-				String upGradeUrl=PropertiesUtil.getWxmpUrl() + "/jsp/merchants/user/pastPage.jsp";
-				res.sendRedirect(upGradeUrl);
-			}else {
-				chain.doFilter(request, response);
-			}
-		}else if(busUser != null && busUser.getPid() != 0) {//TODO 登录的是子账户，但是主账号过期了跳转到充值页面
-
-			/*if (busUser.getDays() < 0) {
-				if (url.equals("/trading/upGrade.do")) {
-					chain.doFilter(request, response);
-				} else {
-					String upGradeUrl = PropertiesUtil.getWxmpUrl() + "/jsp/merchants/user/pastPage.jsp";
-					res.sendRedirect(upGradeUrl);
-				}
-			} else {
-				chain.doFilter(request, response);
-			}*/
-			chain.doFilter(request, response);
 		}else {
 			// 已经登陆,继续此次请求
 			chain.doFilter(request, response);

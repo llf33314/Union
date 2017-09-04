@@ -1,4 +1,4 @@
-package com.gt.union.api.entity;
+package com.gt.union.api.entity.param;
 
 public class PayParam {
 

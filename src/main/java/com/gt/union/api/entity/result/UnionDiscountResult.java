@@ -1,4 +1,4 @@
-package com.gt.union.api.entity;
+package com.gt.union.api.entity.result;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

@@ -11,9 +11,6 @@ public class CommonConstant {
 	/** 商家账户在session key*/
 	public static String SESSION_BUSINESS_KEY = "business_key" ;
 
-	/*****商家主账号id key****/
-	public static String SESSION_BUSUSER_ID_KEY = "bususer_key";
-
 	/*****粉丝session key****/
 	public static String SESSION_MEMBER = "member";
 	/**
@@ -56,15 +53,6 @@ public class CommonConstant {
 	 */
 	public static final String CREATE_UNION_PAY_ORDER_CODE = "000060000";
 
-	/**
-	 * 创建联盟支付产品号前缀字典代码
-	 */
-	public final static String CREATE_UNION_PAY_PRODUCTID_CODE="00006100";
-
-	/**
-	 * 创建无付款联盟代码前缀
-	 */
-	public final static String CREATE_UNION_UN_PAY_PRODUCTID_CODE="00006200";
 
 	/**
 	 * 扫码支付订单状态 001:等待用户扫码

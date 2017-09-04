@@ -2,8 +2,8 @@ package com.gt.union.service.card;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
-import com.gt.union.api.entity.UnionBindCardResult;
-import com.gt.union.api.entity.UnionDiscountResult;
+import com.gt.union.api.entity.result.UnionBindCardResult;
+import com.gt.union.api.entity.result.UnionDiscountResult;
 import com.gt.union.entity.card.UnionBusMemberCard;
 
 import java.util.List;

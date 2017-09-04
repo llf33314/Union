@@ -51,4 +51,17 @@ public class StringUtil {
 		String str = "阿斯利いaa";
 		System.out.println(getStringLength(str));
 	}
+
+	/**
+	 * 格式化字符串
+	 *
+	 * @param format
+	 * @param args
+	 * @return
+	 */
+	public static String format(String format, Object... args) {
+		String str = null;
+		str = String.format(format, args);
+		return str;
+	}
 }

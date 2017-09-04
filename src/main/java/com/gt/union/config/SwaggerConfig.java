@@ -23,9 +23,20 @@ public class SwaggerConfig {
             .groupName("controller")
             .apiInfo(apiInfo())
             .select()
-            .apis(RequestHandlerSelectors.withMethodAnnotation(ApiOperation.class))
+            .apis(RequestHandlerSelectors.basePackage("com.gt.union.controller" ) )
             .paths(PathSelectors.regex("/.*")) //可通过"或"来匹配多个模块
             .build();
+    }
+
+    @Bean
+    public Docket apiControllerConfig() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("api.controller")
+                .apiInfo(apiControllerInfo())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.gt.union.api.server" ) )
+                .paths(PathSelectors.regex("/.*")) //可通过"或"来匹配多个模块
+                .build();
     }
 
     private ApiInfo apiInfo() {
@@ -33,5 +44,12 @@ public class SwaggerConfig {
             .description("基于Swagger2实现")
             .version("1.0.0")
             .build();
+    }
+
+    private ApiInfo apiControllerInfo() {
+        return new ApiInfoBuilder().title("UNION对外服务Restful接口，签名秘钥key(SR36E9KIYDLIU1VB6WX20HCW494QL97T)")
+                .description("基于Swagger2实现")
+                .version("1.0.0")
+                .build();
     }
 }

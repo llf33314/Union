@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.gt.union.api.entity.UnionBindCardResult;
-import com.gt.union.api.entity.UnionDiscountResult;
+import com.gt.union.api.entity.result.UnionBindCardResult;
+import com.gt.union.api.entity.result.UnionDiscountResult;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionMemberConstant;
 import com.gt.union.common.constant.card.UnionBusMemberCardConstant;
@@ -13,15 +13,12 @@ import com.gt.union.common.constant.card.UnionCardInfoConstant;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
 import com.gt.union.entity.basic.UnionMain;
-import com.gt.union.entity.basic.UnionMember;
 import com.gt.union.entity.card.UnionBusMemberCard;
 import com.gt.union.entity.card.UnionMemberCard;
 import com.gt.union.mapper.card.UnionBusMemberCardMapper;
 import com.gt.union.service.basic.IUnionMainService;
-import com.gt.union.service.basic.IUnionMemberService;
 import com.gt.union.service.card.IUnionBusMemberCardService;
 import com.gt.union.service.card.IUnionMemberCardService;
-import com.gt.union.service.common.IUnionRootService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -191,7 +188,7 @@ public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCar
 		Object obj = redisCacheUtil.get(phoneKey);
 		if(obj == null){
 			UnionBindCardResult result = new UnionBindCardResult();
-			result.setMessage("验证码有误");
+			result.setMessage("验证码已失效");
 			result.setSuccess(false);
 			return result;
 		}
@@ -203,6 +200,7 @@ public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCar
 		UnionBindCardResult result = new UnionBindCardResult();
 		result.setSuccess(true);
 		result.setMessage("绑定成功");
+		redisCacheUtil.remove(phoneKey);
 		return result;
 	}
 }

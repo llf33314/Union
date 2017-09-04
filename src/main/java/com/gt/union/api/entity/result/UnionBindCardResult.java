@@ -1,6 +1,7 @@
-package com.gt.union.api.entity;
+package com.gt.union.api.entity.result;
 
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
@@ -10,8 +11,10 @@ import lombok.Data;
 @Data
 public class UnionBindCardResult {
 
+	@ApiModelProperty(value = "提示信息")
 	private String message;
 
+	@ApiModelProperty(value = "绑定状态 true：成功 false：失败")
 	private boolean success;
 
 	public UnionBindCardResult(boolean success, String message){

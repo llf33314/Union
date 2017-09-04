@@ -1,25 +1,24 @@
-package com.gt.union.api.entity;
+package com.gt.union.api.entity.result;
 
-import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
 
 /**
- * Created by Administrator on 2017/9/2 0002.
+ * Created by Administrator on 2017/9/4 0004.
  */
-@ApiModel( value = "UnionPhoneCodeResult", description = "获取绑定联盟卡验证码" )
-@Data
-public class UnionPhoneCodeResult {
+public class UnionRefundResult {
 
-
-	@ApiModelProperty(value = "发送状态 true：成功 false：失败")
+	@ApiModelProperty(value = "退还状态 true：成功 false：失败")
 	private boolean success;
 
 	@ApiModelProperty(value = "提示信息")
 	private String message;
 
+	public UnionRefundResult(){
+		this.success = false;
+		this.message = "退还失败";
+	}
 
-	public UnionPhoneCodeResult(boolean success, String message){
+	public UnionRefundResult(boolean success, String message){
 		this.success = success;
 		this.message = message;
 	}
