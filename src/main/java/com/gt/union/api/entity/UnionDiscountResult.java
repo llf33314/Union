@@ -13,6 +13,10 @@ import java.io.Serializable;
 @Data
 public class UnionDiscountResult implements Serializable{
 
+	public static int UNION_DISCOUNT_CODE_NON = -1;//不显示
+	public static int UNION_DISCOUNT_CODE_BIND = 0;//需绑定联盟卡
+	public static int UNION_DISCOUNT_CODE_SUCCESS = 1;//返回折扣
+
 	/**
 	 * 状态码信息
 	 */
@@ -23,7 +27,7 @@ public class UnionDiscountResult implements Serializable{
 	 * 是否默认折扣
 	 */
 	@ApiModelProperty( value = "是否默认折扣 false：否 true：是")
-	private Boolean defaultDiscount;
+	private Boolean ifDefault;
 
 	/**
 	 * 升级的联盟卡id
@@ -38,6 +42,14 @@ public class UnionDiscountResult implements Serializable{
 	private Double discount;
 
 
+	public UnionDiscountResult(){
+
+	}
+
+	public UnionDiscountResult(int code){
+		this.code = code;
+	}
+
 	public Integer getCode() {
 		return code;
 	}
@@ -46,12 +58,12 @@ public class UnionDiscountResult implements Serializable{
 		this.code = code;
 	}
 
-	public boolean isDefaultDiscount() {
-		return defaultDiscount;
+	public Boolean getIfDefault() {
+		return ifDefault;
 	}
 
-	public void setDefaultDiscount(boolean defaultDiscount) {
-		this.defaultDiscount = defaultDiscount;
+	public void setIfDefault(Boolean ifDefault) {
+		this.ifDefault = ifDefault;
 	}
 
 	public Integer getCardId() {

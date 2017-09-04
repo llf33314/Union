@@ -9,6 +9,7 @@ import com.gt.union.api.client.dict.DictService;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.api.client.sms.impl.SmsServiceImpl;
 import com.gt.union.api.client.user.BusUserService;
+import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.DateTimeKit;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.entity.basic.UnionCreateInfoRecord;
@@ -57,12 +58,15 @@ public class MyUnitTest {
 	@Autowired
 	private BusUserService busUserService;
 
+	@Autowired
+	private IUnionTransferRecordService unionTransferRecordService;
+
 	@Test
 	public void test1() throws Exception {
-
-		Map data = busUserService.getWxPublicUserByBusId(33);
-//		BusUser data = busUserService.getBusUserById(33);
-		System.out.println(data);
+		unionTransferRecordService.updateBatch(15);
 	}
 
+	public static void main(String[] args) {
+
+	}
 }

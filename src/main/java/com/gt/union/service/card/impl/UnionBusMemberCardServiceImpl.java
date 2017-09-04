@@ -4,15 +4,14 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.api.entity.UnionBindCardResult;
 import com.gt.union.api.entity.UnionDiscountResult;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionMemberConstant;
 import com.gt.union.common.constant.card.UnionBusMemberCardConstant;
 import com.gt.union.common.constant.card.UnionCardInfoConstant;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.StringUtil;
+import com.gt.union.common.util.*;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.basic.UnionMember;
 import com.gt.union.entity.card.UnionBusMemberCard;
@@ -40,18 +39,16 @@ import java.util.*;
 public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCardMapper, UnionBusMemberCard> implements IUnionBusMemberCardService {
     private static final String GET_UNION_MEMBER_INTEGRAL = "UnionBusMemberCardServiceImpl.getUnionMemberIntegral()";
     private static final String SELECT_UNION_BUS_MEMBER_CARD_LIST = "UnionBusMemberCardServiceImpl.selectUnionBusMemberCardList()";
+    private static final String BING_UNION_CARD = "UnionBusMemberCardServiceImpl.bindUnionCard()";
 
     @Autowired
     private IUnionMainService unionMainService;
 
     @Autowired
-    private IUnionRootService unionRootService;
-
-    @Autowired
     private IUnionMemberCardService unionMemberCardService;
 
-    @Autowired
-    private IUnionMemberService unionMemberService;
+	@Autowired
+    private RedisCacheUtil redisCacheUtil;
 
 	@Override
 	public double getUnionMemberIntegral(final Integer unionId) {
@@ -141,7 +138,7 @@ public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCar
 
 		};
 		StringBuilder sbSqlSelect = new StringBuilder("");
-		sbSqlSelect.append(" t1.id, t1.cardNo, t1.phone, t1.integral, DATE_FORMAT(t2.updasdfserhrturyurty6thdfrSCＡｆｇｂｔｈｅｓｒtetime, '%Y-%m-%d %T') updatetime, t2.card_type, DATE_FORMAT(t2.card_term_time, '%Y-%m-%d %T') cardTermTime");
+		sbSqlSelect.append(" t1.id, t1.cardNo, t1.phone, t1.integral, DATE_FORMAT(t2.updatetime, '%Y-%m-%d %T') updatetime, t2.card_type, DATE_FORMAT(t2.card_term_time, '%Y-%m-%d %T') cardTermTime");
 		wrapper.setSqlSelect(sbSqlSelect.toString());
 		return this.selectMaps(wrapper);
 	}
@@ -173,6 +170,39 @@ public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCar
 			result.setCode(-1);
 			return result;
 		}
+		return result;
+	}
+
+	@Override
+	public UnionBindCardResult bindUnionCard(Integer busid, Integer memberId, String phone, String code) throws Exception{
+		if(busid == null){
+			throw new ParamException(BING_UNION_CARD, "参数busid为空", ExceptionConstant.PARAM_ERROR);
+		}
+		if(memberId == null){
+			throw new ParamException(BING_UNION_CARD, "参数memberId为空", ExceptionConstant.PARAM_ERROR);
+		}
+		if(StringUtil.isEmpty(phone)){
+			throw new ParamException(BING_UNION_CARD, "参数phone为空", ExceptionConstant.PARAM_ERROR);
+		}
+		if(StringUtil.isEmpty(code)){
+			throw new ParamException(BING_UNION_CARD, "参数code为空", ExceptionConstant.PARAM_ERROR);
+		}
+		String phoneKey = RedisKeyUtil.getMemberPhoneCodeKey(memberId);
+		Object obj = redisCacheUtil.get(phoneKey);
+		if(obj == null){
+			UnionBindCardResult result = new UnionBindCardResult();
+			result.setMessage("验证码有误");
+			result.setSuccess(false);
+			return result;
+		}
+		if(!code.equals(obj.toString())) {
+			UnionBindCardResult result = new UnionBindCardResult();
+			result.setSuccess(false);
+			result.setMessage("验证码有误");
+		}
+		UnionBindCardResult result = new UnionBindCardResult();
+		result.setSuccess(true);
+		result.setMessage("绑定成功");
 		return result;
 	}
 }

@@ -1,10 +1,13 @@
 package com.gt.union.service.basic.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.UnionTransferRecordConstant;
 import com.gt.union.common.exception.ParamException;
+import com.gt.union.entity.basic.UnionCreateInfoRecord;
+import com.gt.union.entity.basic.UnionEstablishRecord;
 import com.gt.union.entity.basic.UnionTransferRecord;
 import com.gt.union.mapper.basic.UnionTransferRecordMapper;
 import com.gt.union.service.basic.IUnionTransferRecordService;
@@ -62,4 +65,19 @@ public class UnionTransferRecordServiceImpl extends ServiceImpl<UnionTransferRec
 
         this.save(unionTransferRecord);
     }
+
+	@Override
+	public void updateBatch(final Integer unionId) {
+		Wrapper wrapper = new Wrapper(){
+			@Override
+			public String getSqlSegment() {
+				StringBuilder sbSqlSegment = new StringBuilder("");
+				sbSqlSegment.append("set del_status = ").append(UnionTransferRecordConstant.DEL_STATUS_YES)
+						.append(" where union_id = ").append(unionId);
+				return sbSqlSegment.toString();
+			}
+		};
+		UnionTransferRecord record = new UnionTransferRecord();
+		this.update(record,wrapper);
+	}
 }

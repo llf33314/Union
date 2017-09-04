@@ -75,6 +75,15 @@ public class GTJsonResult<T> implements Serializable {
         return gtJsonResult;
     }
 
+    public static <T> GTJsonResult<T> instanceErrorMsg(String errorLocation, String errorCausedBy, T data) {
+        GTJsonResult gtJsonResult = new GTJsonResult();
+        gtJsonResult.setErrorLocation(errorLocation);
+        gtJsonResult.setErrorCausedBy(errorCausedBy);
+        gtJsonResult.setData(data);
+        return gtJsonResult;
+    }
+
+
     /**
      * ------------ getter && setter ------------
      */

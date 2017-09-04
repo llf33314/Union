@@ -106,7 +106,7 @@ public class UnionRootServiceImpl implements IUnionRootService {
         }
         //（2）其他版本，如升级版、高级版需要判断是否购买了盟主服务
         UnionCreateInfoRecord unionCreateInfoRecord = this.unionCreateInfoRecordService.getByBusId(busId);
-        return (unionCreateInfoRecord != null && (new Date()).compareTo(unionCreateInfoRecord.getPeriodValidity()) < 0) ? true : false;
+        return unionCreateInfoRecord != null && (new Date()).compareTo(unionCreateInfoRecord.getPeriodValidity()) < 0 ? true : false;
     }
 
     @Override
@@ -213,10 +213,14 @@ public class UnionRootServiceImpl implements IUnionRootService {
      * @return
      */
     private Map<Integer,Object> getFreeUnionMainAuthority(){
-        //TODO 字典数据  缓存起来
         List<Map> list = dictService.getCreateUnionDict();
         Map<Integer,Object> data = new HashMap<Integer,Object>();
-        data.put(BusUserConstant.LEVEL_EXTREME, 1);
+        for (Map map : list){
+            String payment = map.get("item_value").toString().split(",")[0];
+            if(payment.equals("")){
+                data.put(CommonUtil.toInteger(map.get("item_key")),1);
+            }
+        }
         return data;
     }
 

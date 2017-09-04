@@ -2,6 +2,7 @@ package com.gt.union.service.card;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
+import com.gt.union.api.entity.UnionBindCardResult;
 import com.gt.union.api.entity.UnionDiscountResult;
 import com.gt.union.entity.card.UnionBusMemberCard;
 
@@ -55,4 +56,14 @@ public interface IUnionBusMemberCardService extends IService<UnionBusMemberCard>
 	 * @return
 	 */
 	UnionDiscountResult getConsumeUnionDiscount(Integer memberId, Integer busId) throws Exception;
+
+	/**
+	 * 绑定联盟卡
+	 * @param busid	商家id
+	 * @param memberId	用户id
+	 * @param phone	电话
+	 * @param code	验证码
+	 * @return
+	 */
+	UnionBindCardResult bindUnionCard(Integer busid, Integer memberId, String phone, String code) throws Exception;
 }

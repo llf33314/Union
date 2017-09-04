@@ -47,6 +47,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     private static final String LIST_UNIONID_LIST_ALL = "UnionMemberServiceImpl.listByUnionIdList()";
     private static final String APPLY_OUT_UNION = "UnionMemberServiceImpl.applyOutUnion()";
     private static final String CANCEL_UNION_OWNER = "UnionMemberServiceImpl.cancelUnionOwner()";
+    private static final String ACCEPT_UNION_OWNER = "UnionMemberServiceImpl.acceptUnionOwner()";
 
     @Autowired
     private RedisCacheUtil redisCacheUtil;
@@ -267,27 +268,46 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         return this.selectMap(wrapper);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public void acceptUnionOwner(Integer busId, Integer unionId) throws Exception {
-        //TODO  接受盟主权限转移
         if (busId == null) {
-            throw new ParamException(TRANSFER_UNION_OWNER, "参数originalOwnerBusId为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(ACCEPT_UNION_OWNER, "参数originalOwnerBusId为空", ExceptionConstant.PARAM_ERROR);
         }
         if (unionId == null) {
-            throw new ParamException(TRANSFER_UNION_OWNER, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
+            throw new ParamException(ACCEPT_UNION_OWNER, "参数unionId为空", ExceptionConstant.PARAM_ERROR);
         }
         //1、判断联盟是否有效
         if(!unionRootService.checkUnionMainValid(unionId)){
-            throw new BusinessException(TRANSFER_UNION_OWNER, "", CommonConstant.UNION_OVERDUE_MSG);
+            throw new BusinessException(ACCEPT_UNION_OWNER, "", CommonConstant.UNION_OVERDUE_MSG);
         }
 
         // 2、判断盟员是否拥有该联盟权限，即是否仍在该联盟中
         if (!this.unionRootService.hasUnionMemberAuthority(unionId,busId)) {
-            throw new BusinessException(TRANSFER_UNION_OWNER, "", CommonConstant.UNION_MEMBER_NON_AUTHORITY_MSG);
+            throw new BusinessException(ACCEPT_UNION_OWNER, "", CommonConstant.UNION_MEMBER_NON_AUTHORITY_MSG);
         }
 
-        //3、
+        //3、判断该盟员是否有盟主权限
+        if(!unionRootService.hasUnionOwnerAuthority(busId)){
+            throw new BusinessException(ACCEPT_UNION_OWNER, "", "您没有盟主权限，不可接受转盟");
+        }
 
+        //4、判断是否已是盟主
+        if (!this.unionRootService.isUnionOwner(busId)) {
+            throw new BusinessException(ACCEPT_UNION_OWNER, "", "您已是某联盟的盟主，无法同时成为多个联盟的盟主");
+        }
+        EntityWrapper wrapper = new EntityWrapper<>();
+        wrapper.eq("union_id", unionId);
+        wrapper.eq("del_status", UnionTransferRecordConstant.DEL_STATUS_NO);
+        wrapper.eq("confirm_status", UnionTransferRecordConstant.CONFIRM_STATUS_UNCHECK);
+        wrapper.eq("to_bus_id", busId);
+        UnionTransferRecord record = unionTransferRecordService.selectOne(wrapper);
+        if(record == null){
+            throw new BusinessException(ACCEPT_UNION_OWNER, "", "您没有可处理的盟主转移");
+        }
+        record.setConfirmStatus(UnionTransferRecordConstant.CONFIRM_STATUS_OK);
+        unionTransferRecordService.updateById(record);
+        unionTransferRecordService.updateBatch(unionId);
     }
 
     @Override
@@ -321,7 +341,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         // （2）判断盟员是否拥有该联盟权限，即是否仍在该联盟中
         Integer newOwnerBusId = unionMember.getBusId();
         if (!this.unionRootService.hasUnionMemberAuthority(unionMember)) {
-            throw new BusinessException(TRANSFER_UNION_OWNER, "", "盟员正处于退盟过渡期");
+            throw new BusinessException(TRANSFER_UNION_OWNER, "", "该盟员已退盟或正处于退盟过渡期");
         }
 
         // （3）判断盟员是否具有成为盟主的权限
@@ -331,7 +351,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
 
         // （4）判断盟员是否已经是盟主
         if (!this.unionRootService.isUnionOwner(newOwnerBusId)) {
-            throw new BusinessException(TRANSFER_UNION_OWNER, "", "盟员已经是某联盟的盟主，无法同时成为多个联盟的盟主");
+            throw new BusinessException(TRANSFER_UNION_OWNER, "", "盟员已是某联盟的盟主，无法同时成为多个联盟的盟主");
         }
 
         // （5）判断是否已经存在转移申请，若有，则直接返回操作成功，否则，新增转移申请记录
@@ -344,6 +364,8 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             unionTransferRecord.setToBusId(newOwnerBusId);
             unionTransferRecord.setConfirmStatus(UnionTransferRecordConstant.CONFIRM_STATUS_UNCHECK);
             this.unionTransferRecordService.save(unionTransferRecord);
+        }else {
+            throw new BusinessException(TRANSFER_UNION_OWNER, "", "已转移给该盟员，请等待盟员确认");
         }
     }
 
@@ -388,6 +410,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         return this.selectCount(entityWrapper);
     }
 
+    @Transactional(rollbackFor = Exception.class)
     @Override
     public Map<String, Object> updateOutStatusById(Integer id, Integer unionId, Integer busId, Integer verifyStatus) throws Exception{
         Map<String,Object> data = new HashMap<String,Object>();

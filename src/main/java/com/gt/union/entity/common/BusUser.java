@@ -51,6 +51,11 @@ public class BusUser implements Serializable{
 	 */
 	private Integer status;
 
+	/**
+	 * 是否绑定公众号
+	 */
+	private Boolean is_binding;
+
 
 
 	public Integer getId() {
@@ -107,5 +112,13 @@ public class BusUser implements Serializable{
 
 	public void setStatus(Integer status) {
 		this.status = status;
+	}
+
+	public Boolean getIs_binding() {
+		return is_binding;
+	}
+
+	public void setIs_binding(Boolean is_binding) {
+		this.is_binding = is_binding;
 	}
 }

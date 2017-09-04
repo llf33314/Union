@@ -14,6 +14,8 @@ public class CommonConstant {
 	/*****商家主账号id key****/
 	public static String SESSION_BUSUSER_ID_KEY = "bususer_key";
 
+	/*****粉丝session key****/
+	public static String SESSION_MEMBER = "member";
 	/**
 	 * 最大加入联盟数
 	 */

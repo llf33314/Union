@@ -37,4 +37,10 @@ public interface IUnionTransferRecordService extends IService<UnionTransferRecor
      * @throws Exception
      */
 	public void save(UnionTransferRecord unionTransferRecord) throws Exception;
+
+	/**
+	 * 批量更新转移信息
+	 * @param unionId	联盟id
+	 */
+	void updateBatch(Integer unionId);
 }

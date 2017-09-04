@@ -154,4 +154,13 @@ public class RedisKeyUtil {
         return "wxPublicUser:" + busId;
     }
 
+
+    public static final String getMemberPhoneCodeKey(Integer memberId){
+        return getMemberPhoneCodeKey(String.valueOf(memberId));
+    }
+
+    public static final String getMemberPhoneCodeKey(String memberId){
+        return "member:phone:" + memberId;
+    }
+
 }

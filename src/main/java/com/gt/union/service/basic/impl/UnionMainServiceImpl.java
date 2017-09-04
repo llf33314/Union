@@ -498,7 +498,9 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		for(Map map : dicts){
 			if(map.get("item_key").equals(user.getLevel())){
 				String itemValue = map.get("item_value").toString();
-				//TODO 获取可加入的盟员数 商家等级对应的盟员数
+				String unionMember = itemValue.split(",")[1];
+				main.setUnionTotalMember(CommonUtil.toInteger(unionMember));
+				break;
 			}
 		}
 		main.setUnionSign(RandomKit.getRandomString(8,2));
@@ -567,8 +569,14 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 			}
 		}
         unionApplyInfoService.insert(info);
-
-        // （5）保存相关缓存信息
+		//（5）修改支付创建联盟记录信息状态
+		UnionCreateInfoRecord record = unionCreateInfoRecordService.getByBusId(busId);
+		if(CommonUtil.isNotEmpty(record)){
+			record.setUnionId(main.getId());
+			record.setCreateStatus(UnionCreateInfoRecordConstant.CREATE_STATUS_YES);
+			unionCreateInfoRecordService.updateById(record);
+		}
+        // （6）保存相关缓存信息
 		String unionMainKey = RedisKeyUtil.getUnionMainKey(main.getId());
 		this.redisCacheUtil.set(unionMainKey, JSON.toJSONString(main) );
 		String unionMainValidKey = RedisKeyUtil.getUnionMainValidKey(main.getId());
@@ -753,22 +761,24 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		Object obj = redisCacheUtil.get(paramKey);
 		Map<String,Object> result = JSONObject.parseObject(obj.toString(),Map.class);
 		String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
+		//修改订单状态
 		record.setOrderStatus(UnionEstablishRecordConstant.ORDER_PAY_SUCCESS);
 		record.setCreateUnionStatus(UnionEstablishRecordConstant.CREATE_UNION_STATUS_YES);
 		record.setFinishTime(new Date());
 		unionEstablishRecordService.updateById(record);
 		Integer busId = CommonUtil.toInteger(result.get("payBusId"));
-		UnionMain main = this.getByBusId(busId);
+		UnionMain main = this.getByBusId(busId);//是否盟主
+		//修改之前的创建记录信息（delStatus = 1）
 		UnionCreateInfoRecord unionCreateInfoRecord = unionCreateInfoRecordService.getByBusId(busId);
 		if(unionCreateInfoRecord != null){
 			unionCreateInfoRecord.setDelStatus(UnionCreateInfoRecordConstant.DEL_STATUS_YES);
 			unionCreateInfoRecordService.updateById(unionCreateInfoRecord);
 		}
+		//生成新的创建记录信息
 		UnionCreateInfoRecord infoRecord = new UnionCreateInfoRecord();
-		infoRecord.setCreateStatus(UnionCreateInfoRecordConstant.DEL_STATUS_NO);
-		infoRecord.setBusId(record.getBusId());
 		infoRecord.setBusId(busId);
 		infoRecord.setCreatetime(new Date());
+		infoRecord.setDelStatus(UnionCreateInfoRecordConstant.DEL_STATUS_NO);
 		if(CommonUtil.isEmpty(main)){
 			infoRecord.setCreateStatus(UnionCreateInfoRecordConstant.CREATE_STATUS_NO);
 		}else {
