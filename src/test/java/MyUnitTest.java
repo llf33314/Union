@@ -19,8 +19,10 @@ import com.gt.union.entity.basic.UnionCreateInfoRecord;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.basic.UnionMember;
 import com.gt.union.entity.basic.UnionTransferRecord;
+import com.gt.union.entity.business.UnionBusinessRecommend;
 import com.gt.union.entity.common.BusUser;
 import com.gt.union.service.basic.*;
+import com.gt.union.service.business.IUnionBusinessRecommendService;
 import com.gt.union.service.card.IUnionBusMemberCardService;
 import com.gt.union.service.common.IUnionRootService;
 import org.junit.Test;
@@ -64,21 +66,15 @@ public class MyUnitTest {
 	@Autowired
 	private IUnionTransferRecordService unionTransferRecordService;
 
+	@Autowired
+	private IUnionBusinessRecommendService unionBusinessRecommendService;
+
 	@Test
 	public void test1() throws Exception {
-		Map<String,Object> data = new HashMap<String,Object>();
-		Map<String,Object> param = new HashMap<String,Object>();
-		param.put("p1","value1");
-		param.put("p2","value2");
-		data.put("reqdata",param);
-		Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(data),"http://127.0.0.1:8080/api/8A5DA52E/phoneCode", Map.class, "UNION2017");
-		System.out.println(result);
+		unionBusinessRecommendService.payUnionBusinessRecommendSuccess("ao4D6a4Buwsy4aM9zjvGiD/NBI64kVkU", "20170905163736");
 	}
 
 	public static void main(String[] args) {
-		Map<String,Object> data = new HashMap<String,Object>();
-		data.put("reqdata","15986670850");
-		Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(data),"http://192.168.3.40:8080/api/8A5DA52E/phoneCode", Map.class, "UNION2017");
-		System.out.println(result);
+		System.out.println(Double.valueOf("1.20"));
 	}
 }

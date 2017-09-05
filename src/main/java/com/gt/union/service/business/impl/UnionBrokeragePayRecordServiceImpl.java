@@ -2,12 +2,18 @@ package com.gt.union.service.business.impl;
 
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.common.constant.brokerage.UnionIncomeExpenseRecordConstant;
 import com.gt.union.common.constant.business.UnionBrokeragePayRecordConstant;
 import com.gt.union.common.util.CommonUtil;
+import com.gt.union.entity.brokerage.UnionIncomeExpenseRecord;
 import com.gt.union.entity.business.UnionBrokeragePayRecord;
 import com.gt.union.entity.business.UnionBusinessRecommend;
+import com.gt.union.entity.business.UnionPayRecommend;
 import com.gt.union.mapper.business.UnionBrokeragePayRecordMapper;
+import com.gt.union.service.brokerage.IUnionIncomeExpenseRecordService;
 import com.gt.union.service.business.IUnionBrokeragePayRecordService;
+import com.gt.union.service.business.IUnionPayRecommendService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
@@ -25,7 +31,12 @@ import java.util.Map;
  */
 @Service
 public class UnionBrokeragePayRecordServiceImpl extends ServiceImpl<UnionBrokeragePayRecordMapper, UnionBrokeragePayRecord> implements IUnionBrokeragePayRecordService {
-	private static final String GET_BROKERAGE_PAY_RECORD_SUM = "UnionBrokeragePayRecordServiceImpl.getBrokeragePayRecordSum()";
+
+	@Autowired
+	private IUnionIncomeExpenseRecordService unionIncomeExpenseRecordService;
+
+	@Autowired
+	private IUnionPayRecommendService unionPayRecommendService;
 
 	@Override
 	public double getBrokeragePayRecordSum(final Integer busId,final Integer unionId) {
@@ -52,7 +63,10 @@ public class UnionBrokeragePayRecordServiceImpl extends ServiceImpl<UnionBrokera
 	@Override
 	public void insertBatchByRecommends(List<UnionBusinessRecommend> list, String orderNo) {
 		List<UnionBrokeragePayRecord> records = new ArrayList<UnionBrokeragePayRecord>();
+		List<UnionIncomeExpenseRecord> incomeExpenseRecords = new ArrayList<UnionIncomeExpenseRecord>();
+		List<UnionPayRecommend> payRecommends = new ArrayList<UnionPayRecommend>();
 		for(UnionBusinessRecommend recommend : list){
+			//添加佣金支付记录
 			UnionBrokeragePayRecord record = new UnionBrokeragePayRecord();
 			record.setCreatetime(new Date());
 			record.setDelStatus(UnionBrokeragePayRecordConstant.DEL_STATUS_NO);
@@ -64,7 +78,30 @@ public class UnionBrokeragePayRecordServiceImpl extends ServiceImpl<UnionBrokera
 			record.setType(UnionBrokeragePayRecordConstant.PAY_TYPE_WX);
 			record.setMoney(recommend.getBusinessPrice());
 			records.add(record);
+
+			//添加收入支出记录
+			UnionIncomeExpenseRecord unionIncomeExpenseRecord = new UnionIncomeExpenseRecord();
+			unionIncomeExpenseRecord.setMoney(recommend.getBusinessPrice());
+			unionIncomeExpenseRecord.setCreatetime(new Date());
+			unionIncomeExpenseRecord.setSource(UnionIncomeExpenseRecordConstant.SOURCE_BUSINESS_RECOMMEND);
+			unionIncomeExpenseRecord.setType(UnionIncomeExpenseRecordConstant.TYPE_INCOME);
+			unionIncomeExpenseRecord.setUnionId(recommend.getUnionId());
+			unionIncomeExpenseRecord.setBusId(recommend.getFromBusId());
+			unionIncomeExpenseRecord.setBusinessRecommendId(recommend.getId());
+			incomeExpenseRecords.add(unionIncomeExpenseRecord);
+
+			//添加商机佣金支付管理记录
+			UnionPayRecommend unionPayRecommend = new UnionPayRecommend();
+			unionPayRecommend.setRecommendId(recommend.getId());
+			payRecommends.add(unionPayRecommend);
 		}
 		this.insertBatch(records);
+
+		unionIncomeExpenseRecordService.insertBatch(incomeExpenseRecords);
+
+		for(int i = 0; i < records.size(); i++){
+			payRecommends.get(i).setPayRecordId(records.get(i).getId());
+		}
+		unionPayRecommendService.insertBatch(payRecommends);
 	}
 }

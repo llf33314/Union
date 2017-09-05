@@ -7,6 +7,7 @@ import com.gt.union.api.client.user.BusUserService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.brokerage.UnionIncomeExpenseRecordConstant;
+import com.gt.union.common.constant.business.UnionBrokeragePayRecordConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.entity.brokerage.UnionBrokerageWithdrawalsRecord;
@@ -82,7 +83,7 @@ public class WxPayServiceImpl implements WxPayService {
         Map<String,Object> data = busUserService.getWxPublicUserByBusId(duofenBusId);
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("appid", data.get("appid"));
-        params.put("partner_trade_no", "LMYJ" + System.currentTimeMillis());
+        params.put("partner_trade_no", UnionBrokeragePayRecordConstant.orderPrefix + System.currentTimeMillis());
         params.put("openid", openid);
         params.put("desc", "联盟佣金提现");
         params.put("model", CommonConstant.ENTERPRISE_PAY_MODEL);

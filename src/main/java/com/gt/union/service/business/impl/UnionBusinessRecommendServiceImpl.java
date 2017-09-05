@@ -908,10 +908,10 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 	public void payUnionBusinessRecommendSuccess(String recordEncrypt, String only) throws Exception{
 		//解密参数
 		String ids = EncryptUtil.decrypt(encryptKey,recordEncrypt);
-		String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
+		String paramKey = RedisKeyUtil.getRecommendPayParamKey(only);
 		Object obj = redisCacheUtil.get(paramKey);
 		Map<String,Object> result = JSONObject.parseObject(obj.toString(),Map.class);
-		String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
+		String statusKey = RedisKeyUtil.getRecommendPayStatusKey(only);
 		String[] arrs = ids.split(",");
 		EntityWrapper wrapper = new EntityWrapper<>();
 		wrapper.eq("del_status", UnionBusinessRecommendConstant.DEL_STATUS_NO);
@@ -920,6 +920,7 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 		updateBatchByList(list);
 		//添加订单记录
 		String orderNo = result.get("orderNum").toString();
+		//添加佣金支付记录、收支记录
 		unionBrokeragePayRecordService.insertBatchByRecommends(list, orderNo);
 
 		redisCacheUtil.remove(paramKey);
