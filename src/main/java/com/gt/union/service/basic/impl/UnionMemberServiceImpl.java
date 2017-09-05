@@ -178,11 +178,12 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
 
         };
         StringBuilder sbSqlSelect = new StringBuilder("");
-        sbSqlSelect.append(" DATE_FORMAT(m.apply_out_time, '%Y-%m-%d %T') applyOutTime ")
-                .append(", m.out_reason outReason ")
-                .append(", DATE_FORMAT(m.confirm_out_time, '%Y-%m-%d %T') confirmOutTime ")
-                .append(", DATEDIFF(now(), m.confirm_out_time) remainOutTime ")
-                .append(", i.enterprise_name enterpriseName ");
+        sbSqlSelect.append(" m.id id") //盟员id
+                .append(", DATE_FORMAT(m.apply_out_time, '%Y-%m-%d %T') applyOutTime ") //申请时间
+                .append(", m.out_reason outReason ") //退盟理由
+                .append(", DATE_FORMAT(m.confirm_out_time, '%Y-%m-%d %T') confirmOutTime ") //确认退出时间
+                .append(", DATEDIFF(now(), m.confirm_out_time) remainOutTime ") //剩余天数
+                .append(", i.enterprise_name enterpriseName "); //盟员名称
         wrapper.setSqlSelect(sbSqlSelect.toString());
 
         return this.selectMapsPage(page, wrapper);
