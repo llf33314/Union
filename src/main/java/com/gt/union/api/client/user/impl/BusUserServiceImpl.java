@@ -10,6 +10,7 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.util.*;
 import com.gt.union.entity.common.BusUser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -25,6 +26,9 @@ public class BusUserServiceImpl implements BusUserService {
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
 
+	@Value("${wxmp.url}")
+	private String wxmpUrl;
+
 	@Override
 	public BusUser getBusUserById(Integer id) {
 		String busUserKey = RedisKeyUtil.getBusUserKey(id);
@@ -35,7 +39,7 @@ public class BusUserServiceImpl implements BusUserService {
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("userId",id);
 		BusUser busUser = null;
-		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/busUserApi/getBusUserApi.do";
+		String url = wxmpUrl + "/8A5DA52E/busUserApi/getBusUserApi.do";
 		try{
 			String result = SignHttpUtils.WxmppostByHttp(url, param, CommonConstant.WXMP_SIGN_KEY);
 			if(StringUtil.isEmpty(result)){
@@ -60,7 +64,7 @@ public class BusUserServiceImpl implements BusUserService {
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("name",name);
 		BusUser busUser = null;
-		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/busUserApi/getBusUserApi.do";
+		String url = wxmpUrl + "/8A5DA52E/busUserApi/getBusUserApi.do";
 		try{
 			String result = SignHttpUtils.WxmppostByHttp(url, param, CommonConstant.WXMP_SIGN_KEY);
 			if(StringUtil.isEmpty(result)){
@@ -86,7 +90,7 @@ public class BusUserServiceImpl implements BusUserService {
 		}
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("reqdata",busId);
-		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/wxpublicapi/6F6D9AD2/79B4DE7C/selectByUserId.do";
+		String url = wxmpUrl + "/8A5DA52E/wxpublicapi/6F6D9AD2/79B4DE7C/selectByUserId.do";
 		Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param),url, Map.class, CommonConstant.WXMP_SIGN_KEY);
 		if(CommonUtil.isEmpty(result)){
 			return null;

@@ -7,6 +7,8 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.amqp.entity.PhoneMessage;
 import com.gt.union.amqp.sender.PhoneMessageSender;
+import com.gt.union.api.client.dict.DictService;
+import com.gt.union.api.client.user.BusUserService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.constant.basic.*;
@@ -17,6 +19,7 @@ import com.gt.union.entity.basic.UnionApplyInfo;
 import com.gt.union.entity.basic.UnionMain;
 import com.gt.union.entity.basic.UnionMember;
 import com.gt.union.entity.basic.UnionTransferRecord;
+import com.gt.union.entity.common.BusUser;
 import com.gt.union.mapper.basic.UnionMemberMapper;
 import com.gt.union.service.basic.*;
 import com.gt.union.service.common.IUnionRootService;
@@ -66,6 +69,12 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
 
     @Autowired
     private PhoneMessageSender phoneMessageSender;
+
+    @Autowired
+    private DictService dictService;
+
+    @Autowired
+    private BusUserService busUserService;
 
     @Override
     public Page listMapByUnionIdInPage(Page page, final Integer unionId, final String enterpriseName) throws Exception {
@@ -288,15 +297,16 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             throw new BusinessException(ACCEPT_UNION_OWNER, "", CommonConstant.UNION_MEMBER_NON_AUTHORITY_MSG);
         }
 
-        //3、判断该盟员是否有盟主权限
+        //3、判断是否已是盟主
+        if (!this.unionRootService.isUnionOwner(busId)) {
+            throw new BusinessException(ACCEPT_UNION_OWNER, "", "您已是某联盟的盟主，无法同时成为多个联盟的盟主");
+        }
+
+        //4、判断该盟员是否有盟主权限
         if(!unionRootService.hasUnionOwnerAuthority(busId)){
             throw new BusinessException(ACCEPT_UNION_OWNER, "", "您没有盟主权限，不可接受转盟");
         }
 
-        //4、判断是否已是盟主
-        if (!this.unionRootService.isUnionOwner(busId)) {
-            throw new BusinessException(ACCEPT_UNION_OWNER, "", "您已是某联盟的盟主，无法同时成为多个联盟的盟主");
-        }
         EntityWrapper wrapper = new EntityWrapper<>();
         wrapper.eq("union_id", unionId);
         wrapper.eq("del_status", UnionTransferRecordConstant.DEL_STATUS_NO);
@@ -307,8 +317,35 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             throw new BusinessException(ACCEPT_UNION_OWNER, "", "您没有可处理的盟主转移");
         }
         record.setConfirmStatus(UnionTransferRecordConstant.CONFIRM_STATUS_OK);
-        unionTransferRecordService.updateById(record);
-        unionTransferRecordService.updateBatch(unionId);
+        unionTransferRecordService.updateById(record);//修改转盟状态
+        unionTransferRecordService.updateBatch(unionId);//修改其他盟员的转盟状态
+
+
+        UnionMain main = unionMainService.getById(unionId);
+        BusUser user = busUserService.getBusUserById(busId);
+        //修改盟员身份
+        UnionMember member = this.getByUnionIdAndBusId(unionId, busId);//盟员
+        UnionMember ownerMember = this.getByUnionIdAndBusId(unionId, main.getBusId());//盟主
+        member.setIsNuionOwner(UnionMemberConstant.IS_UNION_OWNER_YES);
+        ownerMember.setIsNuionOwner(UnionMemberConstant.IS_UNION_OWNER_NO);
+        List<Map> list = dictService.getCreateUnionDict();
+        int userNum = 0;//我的盟员数
+        for(Map map : list){
+            if(map.get("item_key").equals(user.getLevel())){
+                userNum = CommonUtil.toInteger(map.get("item_value").toString().split(",")[1]);
+            }
+        }
+        if(userNum > main.getUnionMemberNum()){
+            main.setUnionTotalMember(userNum);
+        }
+
+
+        String memberKey = RedisKeyUtil.getUnionMemberBusIdKey(unionId,busId);
+        String ownerMemberKey = RedisKeyUtil.getUnionMemberBusIdKey(unionId,main.getBusId());
+        String unionKey = RedisKeyUtil.getUnionMainKey(unionId);
+        redisCacheUtil.remove(unionKey);
+        redisCacheUtil.remove(memberKey);
+        redisCacheUtil.remove(ownerMemberKey);
     }
 
     @Override

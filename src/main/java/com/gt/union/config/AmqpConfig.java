@@ -15,8 +15,18 @@ import org.springframework.context.annotation.Scope;
  */
 @Configuration
 public class AmqpConfig {
-    public static final String UNION_EXCHANGE = "union_exchange";
-    public static final String UNION_ROUTINGKEY_PHONE_MESSAGE = "union_routingKey_phone_message";
+    public static String UNION_EXCHANGE;
+    public static String UNION_ROUTINGKEY_PHONE_MESSAGE;
+
+    @Value("${exchange.union.exchange}")
+    public void setUnionExchange(String exchange) {
+        UNION_EXCHANGE = exchange;
+    }
+
+    @Value("${exchange.union.exchange}")
+    public void setUnionRoutingkeyPhoneMessage(String message) {
+        UNION_ROUTINGKEY_PHONE_MESSAGE = message;
+    }
 
     @Value("${mq.uri}")
     private String address;

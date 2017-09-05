@@ -94,13 +94,12 @@ public class UnionCardApiController extends ApiBaseController{
 			if(smsService.sendSms(param) == 1){
 				String phoneKey = RedisKeyUtil.getMemberPhoneCodeKey(member.getId());
 				redisCacheUtil.set(phoneKey,code,300l);//5分钟
-				return ResponseUtils.createBySuccess(phoneKey);
+				return ResponseUtils.createBySuccess();
 			} else {
 				return ResponseUtils.createByErrorMessage("发送失败");
 			}
 		} catch (BusinessException e) {
 			e.printStackTrace();
-			UnionPhoneCodeResult result = new UnionPhoneCodeResult(false, e.getMessage());
 			return ResponseUtils.createByErrorMessage(e.getErrorMsg());
 		}catch (Exception e) {
 			e.printStackTrace();

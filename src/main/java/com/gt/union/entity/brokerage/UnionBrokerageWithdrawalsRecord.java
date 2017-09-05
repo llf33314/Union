@@ -61,6 +61,11 @@ public class UnionBrokerageWithdrawalsRecord extends Model<UnionBrokerageWithdra
 	@TableField("record_type")
 	private Integer recordType;
 
+	/**
+	 * 佣金管理平台用户id
+	 */
+	@TableField("union_verify_member")
+	private Integer unionVerifyMember;
 
 	public Integer getId() {
 		return id;
@@ -124,6 +129,14 @@ public class UnionBrokerageWithdrawalsRecord extends Model<UnionBrokerageWithdra
 
 	public void setRecordType(Integer recordType) {
 		this.recordType = recordType;
+	}
+
+	public Integer getUnionVerifyMember() {
+		return unionVerifyMember;
+	}
+
+	public void setUnionVerifyMember(Integer unionVerifyMember) {
+		this.unionVerifyMember = unionVerifyMember;
 	}
 
 	@Override

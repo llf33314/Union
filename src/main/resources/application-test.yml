@@ -1,7 +1,7 @@
 server:
   display-name: union
   context-path: /
-  port: 8081
+  port: 8080
 
 # logback配置
 logging:
@@ -21,11 +21,11 @@ spring:
     maxActive: 20
     # 配置获取连接等待超时的时间
     maxWait: 60000
-    # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒
-    timeBetweenEvictionRunsMillis: 60000
+    # 配置间隔多久才进行一次检测，检测需要关闭的空闲连接，单位是毫秒 5分钟
+    timeBetweenEvictionRunsMillis: 300000
     # 配置一个连接在池中最小生存的时间，单位是毫秒
-    minEvictableIdleTimeMillis: 300000
-    validationQuery: SELECT 1 FROM DUAL
+    minEvictableIdleTimeMillis: 30000 30秒
+    validationQuery: select 'x'
     testWhileIdle: true
     testOnBorrow: false
     testOnReturn: false
@@ -37,7 +37,18 @@ spring:
     # 通过connectProperties属性来打开mergeSql功能；慢SQL记录
     connectionProperties: druid.stat.mergeSql=true;druid.stat.slowSqlMillis=5000
     # 合并多个DruidDataSource的监控数据
-    useGlobalDataSourceStat: false
+    useGlobalDataSourceStat: true
+    # P白(allow)/黑(deny)名单 (存在共同时，deny优先于allow) : 如果满足deny的话提示:Sorry, you are not permitted to view this page.
+    allow: 192.168.3.11
+    login-username: admin
+    login-password: admin
+    reset-enable: false
+    url-pattern: /druid/*
+    # Spring监控配置，说明请参考Druid Github Wiki，配置_Druid和Spring关联监控配置
+    # 如果spring.datasource.druid.aop-patterns要代理的类没有定义interface请设置spring.aop.proxy-target-class=true
+    # Spring监控AOP切入点，如x.y.z.service.*,配置多个英文逗号分隔
+    aop-patterns: com.gt.union.service.*
+
   # redis配置
   redis:
       host: 113.106.202.51
@@ -62,66 +73,53 @@ mybatis:
 ######################## 全局配置 ########################
 
 
-#图片存放路径
-res:
-  image:
-    path: G:\git_workplace\MedicalSys\src\main\resources\static\upload
+
 #访问资源URL
 resource:
-  url:
-    prefix: http://192.168.3.41:9998/upload/
-#本项目访问路径
-article:
   url:
     prefix: http://192.168.3.41:9998/upload/
 socket:
   url: http://192.168.2.12:8080:8881
 #企业短信通-密码
-sms:
-  pwd: sd18923646688
-  content:
-   url: http://192.168.2.12:8080/common/%s/%s/79B4DE7C/orderconfirm.do
+
 #域名
 domain:
   df: duofriend.com
 #mq config
 mq:
-  uri: 192.168.2.12:8080
-  user: guest
-  password: yf26609632
+  uri: 192.168.3.59:5672
+  user: admin
+  password: admin
 
 #队列转换器
 exchange:
-  gt:
-    exchange: message
+  union:
+    exchange: union_exchange
 #队列名称
 queueName:
-  gt:
-    queueName: message
+  union:
+    queueName: union_routingKey_phone_message
 
-#图片资源ftp ip
-static:
-  source:
-    ftp:
-      ip: 120.25.154.127
-      port: 21
-      user: gt123456
-      password: gt1234561
-#图片资源ftp用户名
 
 #redis:
 redisNamePrefix: "Union:"
 
 
 redisSession:
-  domainName: .yifriend.net
+  domainName: .deeptel.com
   cookiePath: /
-  cookieName: JSESSIONID
+  cookieName: WXMPJSESSIONID
 
 #数据请求地址
 wxmp:
-   url: http://hz1.yifriend.net
+   url: https://deeptel.com.cn
    signkey: WXMP2017
    company: "多粉平台"
-   #url: http://deeptel.com.cn/
-  #url: http://192.168.3.41:83
+
+union:
+  url: https://union.deeptel.com
+  encryptKey: CFCCBD99C12B62E52952EA90A931A01F
+  signkey: SR36E9KIYDLIU1VB6WX20HCW494QL97T
+wx:
+  duofen:
+    busId: 33

@@ -33,7 +33,7 @@ public class UnionConsumeParam implements Serializable {
 	@ApiModelProperty( value = "线上或线下使用联盟卡 1：线下 2：线上", required = true)
 	private Integer type;
 
-	@ApiModelProperty( value = "未使用联盟卡打折前的价格", required = true)
+	@ApiModelProperty( value = "使用联盟卡打折前的价格", required = true)
 	private Double totalMoney;
 
 	@ApiModelProperty( value = "使用联盟卡打折后的价格", required = true)

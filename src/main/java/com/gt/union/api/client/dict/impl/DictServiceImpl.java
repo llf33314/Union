@@ -8,6 +8,7 @@ import com.gt.union.api.client.dict.DictService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -62,6 +63,9 @@ public class DictServiceImpl implements DictService {
 	 */
 	private static String UNION_CREATE_PACKAGE_TYPE = "E001";
 
+	@Value("${wxmp.url}")
+	private String wxmpUrl;
+
 
 	public Double getDefaultDiscount(){
 		return getItemDoubleValue(DEFAULT_DISCOUNT_TYPE);
@@ -112,7 +116,7 @@ public class DictServiceImpl implements DictService {
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("style",itemKey);
 		Double exchange = null;
-		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/dictApi/getDictApi.do";
+		String url = wxmpUrl + "/8A5DA52E/dictApi/getDictApi.do";
 		try{
 			String result = SignHttpUtils.WxmppostByHttp(url, param, CommonConstant.WXMP_SIGN_KEY);
 			if(StringUtil.isEmpty(result)){
@@ -152,7 +156,7 @@ public class DictServiceImpl implements DictService {
 		}
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("style",itemKey);
-		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/dictApi/getDictApi.do";
+		String url = wxmpUrl + "/8A5DA52E/dictApi/getDictApi.do";
 		try{
 			String result = SignHttpUtils.WxmppostByHttp(url, param, CommonConstant.WXMP_SIGN_KEY);
 			if(StringUtil.isEmpty(result)){

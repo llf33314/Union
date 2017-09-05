@@ -917,6 +917,16 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 		wrapper.eq("del_status", UnionBusinessRecommendConstant.DEL_STATUS_NO);
 		wrapper.in("id", arrs);
 		List<UnionBusinessRecommend> list = this.selectList(wrapper);
+		updateBatchByList(list);
+		//添加订单记录
+		String orderNo = result.get("orderNum").toString();
+		unionBrokeragePayRecordService.insertBatchByRecommends(list, orderNo);
+
+		redisCacheUtil.remove(paramKey);
+		redisCacheUtil.set(statusKey, CommonConstant.USER_ORDER_STATUS_003, 60l);//支付成功
+	}
+
+	private void updateBatchByList(List<UnionBusinessRecommend> list){
 		List<UnionBusinessRecommend> recommends = new ArrayList<UnionBusinessRecommend>();
 		for(UnionBusinessRecommend recommend : list){
 			UnionBusinessRecommend unionBusinessRecommend = new UnionBusinessRecommend();
@@ -924,13 +934,8 @@ public class UnionBusinessRecommendServiceImpl extends ServiceImpl<UnionBusiness
 			unionBusinessRecommend.setIsConfirm(UnionBusinessRecommendConstant.IS_CONFIRM_CONFIRM);
 			recommends.add(unionBusinessRecommend);
 		}
-		//添加订单记录
-		String orderNo = result.get("orderNum").toString();
-		unionBrokeragePayRecordService.insertBatchByRecommends(list, orderNo);
 		//修改商机推荐记录
 		this.updateBatchById(recommends);
-		redisCacheUtil.remove(paramKey);
-		redisCacheUtil.set(statusKey, CommonConstant.USER_ORDER_STATUS_003, 60l);//支付成功
 	}
 
 	//根据联盟id、推荐商家id和是否给予佣金状态isConfirm获取总佣金收入信息

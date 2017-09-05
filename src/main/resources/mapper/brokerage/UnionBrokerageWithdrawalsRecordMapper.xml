@@ -12,6 +12,7 @@
 		<result column="member_id" property="memberId" />
 		<result column="union_id" property="unionId" />
 		<result column="record_type" property="recordType" />
+		<result column="union_verify_member" property="unionVerifyMember" />
 	</resultMap>
 
 </mapper>

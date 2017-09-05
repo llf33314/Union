@@ -58,7 +58,7 @@ public class MybatisGenerator {
     //brokerage
     /*public static final String[] generateTables = new String[]{"t_union_brokerage_withdrawals_record", "t_union_verify_member"};*/
 
-    public static final String[] generateTables = new String[]{"t_union_member_card"};
+    public static final String[] generateTables = new String[]{"t_union_brokerage_withdrawals_record"};
 
     public static final String author = "linweicong";
 

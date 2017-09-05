@@ -694,7 +694,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public Map<String, Object> createUnionQRCode(Integer busId, String infoItemKey) throws Exception{
-    	//TODO 支付联盟服务二维码
     	Map<String, Object> data = new HashMap<String, Object>();
 		List<Map> list = dictService.getUnionCreatePackage();
 		Double pay = 0d;
@@ -711,7 +710,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 		if(!flag){
 			throw new ParamException(PAY_CREATE_UNION, "支付类型有误", ExceptionConstant.PARAM_ERROR);
 		}
-		pay = 0.01d;
 		String orderNo = CommonConstant.CREATE_UNION_PAY_ORDER_CODE + System.currentTimeMillis();
 		String only=DateTimeKit.getDateTime(new Date(), DateTimeKit.yyyyMMddHHmmss);
 		Map publicUser = busUserService.getWxPublicUserByBusId(duofenBusId);

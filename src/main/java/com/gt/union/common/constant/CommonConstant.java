@@ -13,6 +13,9 @@ public class CommonConstant {
 
 	/*****粉丝session key****/
 	public static String SESSION_MEMBER = "member";
+
+	/*****佣金平台管理员session key****/
+	public static String VERIFY_MEMBER = "verify_member";
 	/**
 	 * 最大加入联盟数
 	 */
@@ -32,6 +35,11 @@ public class CommonConstant {
 	 * 联盟支付model
 	 */
 	public static int PAY_MODEL = 36;
+
+	/**
+	 * 联盟提现model
+	 */
+	public static int ENTERPRISE_PAY_MODEL = 13;
 
 	/**
 	 * 省级

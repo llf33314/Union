@@ -39,7 +39,7 @@ spring:
     # 合并多个DruidDataSource的监控数据
     useGlobalDataSourceStat: true
     # P白(allow)/黑(deny)名单 (存在共同时，deny优先于allow) : 如果满足deny的话提示:Sorry, you are not permitted to view this page.
-    allow: 127.0.0.1
+    allow: 192.168.3.11
     login-username: admin
     login-password: admin
     reset-enable: false
@@ -73,25 +73,15 @@ mybatis:
 ######################## 全局配置 ########################
 
 
-#图片存放路径
-res:
-  image:
-    path: G:\git_workplace\MedicalSys\src\main\resources\static\upload
+
 #访问资源URL
 resource:
-  url:
-    prefix: http://192.168.3.41:9998/upload/
-#本项目访问路径
-article:
   url:
     prefix: http://192.168.3.41:9998/upload/
 socket:
   url: http://192.168.2.12:8080:8881
 #企业短信通-密码
-sms:
-  pwd: sd18923646688
-  content:
-   url: http://192.168.2.12:8080/common/%s/%s/79B4DE7C/orderconfirm.do
+
 #域名
 domain:
   df: duofriend.com
@@ -103,22 +93,13 @@ mq:
 
 #队列转换器
 exchange:
-  gt:
-    exchange: message
+  union:
+    exchange: union_exchange
 #队列名称
 queueName:
-  gt:
-    queueName: message
+  union:
+    queueName: union_routingKey_phone_message
 
-#图片资源ftp ip
-static:
-  source:
-    ftp:
-      ip: 120.25.154.127
-      port: 21
-      user: gt123456
-      password: gt1234561
-#图片资源ftp用户名
 
 #redis:
 redisNamePrefix: "Union:"
@@ -127,7 +108,7 @@ redisNamePrefix: "Union:"
 redisSession:
   domainName: .yifriend.net
   cookiePath: /
-  cookieName: JSESSIONID
+  cookieName: WXMPJSESSIONID
 
 #数据请求地址
 wxmp:

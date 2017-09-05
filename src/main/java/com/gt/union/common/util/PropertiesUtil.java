@@ -23,13 +23,9 @@ public class PropertiesUtil {
 
 	private static String mqPassWord;
 
-	private static String staticSourceFtpIp;
+	private static String mqExchange;
 
-	private static String staticSourceFtpPort;
-
-	private static String staticSourceFtpPwd;
-
-	private static String staticSourceFtpUser;
+	private static String mqQueueName;
 
 	private static String redisIp;
 
@@ -40,8 +36,6 @@ public class PropertiesUtil {
 	private static String redisNamePrefix;
 
 	private static String wxmpUrl;
-
-	private static String articleUrl;
 
 	private static String domainDf;
 
@@ -91,35 +85,20 @@ public class PropertiesUtil {
 	}
 
 	/**
-	 * 获取ftp上传ip地址
-	 * @return staticSourceFtpIp
+	 * 获取mq转换器
+	 * @return
 	 */
-	public static String getStaticSourceFtpIp() {
-		return staticSourceFtpIp;
+	public static String getMqExchange() {
+		return mqExchange;
 	}
 
-	/**
-	 * 获取ftp上传端口
-	 * @return staticSourceFtpPort
-	 */
-	public static String getStaticSourceFtpPort() {
-		return staticSourceFtpPort;
-	}
 
 	/**
-	 * 获取ftp上传密码
-	 * @return staticSourceFtpPwd
+	 * 获取mq对列名称
+	 * @return
 	 */
-	public static String getStaticSourceFtpPwd() {
-		return staticSourceFtpPwd;
-	}
-
-	/**
-	 * 获取ftp上传用户
-	 * @return staticSourceFtpUser
-	 */
-	public static String getStaticSourceFtpUser() {
-		return staticSourceFtpUser;
+	public static String getMqQueueName() {
+		return mqQueueName;
 	}
 
 	/**
@@ -160,14 +139,6 @@ public class PropertiesUtil {
 	 */
 	public static String getWxmpUrl() {
 		return wxmpUrl;
-	}
-
-	/**
-	 * 获取本项目访问路径
-	 * @return
-	 */
-	public static String getArticleUrl(){
-		return articleUrl;
 	}
 
 	/**
@@ -215,26 +186,6 @@ public class PropertiesUtil {
 		this.mqPassWord = mqPassWord;
 	}
 
-	@Value("${static.source.ftp.ip}")
-	public void setStaticSourceFtpIp(String staticSourceFtpIp) {
-		this.staticSourceFtpIp = staticSourceFtpIp;
-	}
-
-	@Value("${static.source.ftp.port}")
-	public void setStaticSourceFtpPort(String staticSourceFtpPort) {
-		this.staticSourceFtpPort = staticSourceFtpPort;
-	}
-
-	@Value("${static.source.ftp.password}")
-	public void setStaticSourceFtpPwd(String staticSourceFtpPwd) {
-		this.staticSourceFtpPwd = staticSourceFtpPwd;
-	}
-
-	@Value("${static.source.ftp.user}")
-	public void setStaticSourceFtpUser(String staticSourceFtpUser) {
-		this.staticSourceFtpUser = staticSourceFtpUser;
-	}
-
 	@Value("${spring.redis.host}")
 	public void setRedisIp(String redisIp) {
 		this.redisIp = redisIp;
@@ -260,11 +211,6 @@ public class PropertiesUtil {
 		this.wxmpUrl = wxmpUrl;
 	}
 
-	@Value("${article.url.prefix}")
-	public void setArticleUrl(String articleUrl){
-		this.articleUrl = articleUrl;
-	}
-
 	@Value("${domain.df}")
 	public void setDomain(String domainDf){
 		this.domainDf = domainDf;
@@ -278,5 +224,15 @@ public class PropertiesUtil {
 	@Value("${wxmp.company}")
 	public void setWxmpCompany(String wxmpCompany) {
 		this.wxmpCompany = wxmpCompany;
+	}
+
+	@Value("${queueName.union.queueName}")
+	public static void setMqQueueName(String mqQueueName) {
+		PropertiesUtil.mqQueueName = mqQueueName;
+	}
+
+	@Value("${exchange.union.exchange}")
+	public static void setMqExchange(String mqExchange) {
+		PropertiesUtil.mqExchange = mqExchange;
 	}
 }

@@ -18,7 +18,6 @@ public class InitListener implements ServletContextListener {
 	@Override
 	public void contextInitialized(ServletContextEvent contextEvent) {
 		contextEvent.getServletContext().setAttribute("resourceUrl", PropertiesUtil.getResourceUrl());
-		contextEvent.getServletContext().setAttribute("articleUrl",PropertiesUtil.getArticleUrl());
 		CommonUtil.setApplicationContext(WebApplicationContextUtils.getRequiredWebApplicationContext(contextEvent.getServletContext()));
 	}
 
