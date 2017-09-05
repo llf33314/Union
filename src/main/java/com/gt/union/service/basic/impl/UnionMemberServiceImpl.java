@@ -182,7 +182,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 .append(", DATE_FORMAT(m.apply_out_time, '%Y-%m-%d %T') applyOutTime ") //申请时间
                 .append(", m.out_reason outReason ") //退盟理由
                 .append(", DATE_FORMAT(m.confirm_out_time, '%Y-%m-%d %T') confirmOutTime ") //确认退出时间
-                .append(", DATEDIFF(now(), m.confirm_out_time) remainOutTime ") //剩余天数
+                .append(", DATEDIFF(m.confirm_out_time, now()) remainOutTime ") //剩余天数
                 .append(", i.enterprise_name enterpriseName "); //盟员名称
         wrapper.setSqlSelect(sbSqlSelect.toString());
 
