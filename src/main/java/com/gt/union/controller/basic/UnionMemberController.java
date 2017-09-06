@@ -99,17 +99,17 @@ public class UnionMemberController {
     }
 
     @ApiOperation(value = "根据联盟id、退盟状态outStatus和是否盟主isNuionOwner获取盟员列表信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/unionId/{unionId}/outStatus/{outStatus}/isNuionOwner/{isNuionOwner}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/outStatus/{outStatus}/isUnionOwner/{isUnionOwner}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listByUnionIdAndOutStatusAndIsNuionOwner(HttpServletRequest request, Page page
             , @ApiParam(name = "unionId", value = "联盟id", required = true)
             @PathVariable("unionId") Integer unionId
             , @ApiParam(name = "outStatus", value = "退盟状态，0代表正常，1代表未处理，2代表过渡期", required = true)
             @PathVariable("outStatus") Integer outStatus
-            , @ApiParam(name = "isNuionOwner", value = "是否盟主，0代表不是，1代表是", required = true)
-            @PathVariable("isNuionOwner") Integer isNuionOwner) {
+            , @ApiParam(name = "isUnionOwner", value = "是否盟主，0代表不是，1代表是", required = true)
+            @PathVariable("isUnionOwner") Integer isUnionOwner) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
-            Page result = this.unionMemberService.listByUnionIdAndOutStatusAndIsNuionOwner(page, unionId, busUser.getId(), outStatus, isNuionOwner);
+            Page result = this.unionMemberService.listByUnionIdAndOutStatusAndIsUnionOwner(page, unionId, busUser.getId(), outStatus, isUnionOwner);
             return GTJsonResult.instanceSuccessMsg(result).toString();
         } catch (BaseException e) {
             logger.error("", e);

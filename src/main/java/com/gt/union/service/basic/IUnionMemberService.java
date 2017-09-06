@@ -50,12 +50,12 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @param unionId
      * @param busId
      * @param outStatus
-     * @param isNuionOwner
+     * @param isUnionOwner
      * @return
      * @throws Exception
      */
-    Page listByUnionIdAndOutStatusAndIsNuionOwner(Page page, final Integer unionId, final Integer busId
-            , final Integer outStatus, final Integer isNuionOwner) throws Exception;
+    Page listByUnionIdAndOutStatusAndIsUnionOwner(Page page, final Integer unionId, final Integer busId
+            , final Integer outStatus, final Integer isUnionOwner) throws Exception;
 
     /**
      * 根据盟员id获取详细信息
