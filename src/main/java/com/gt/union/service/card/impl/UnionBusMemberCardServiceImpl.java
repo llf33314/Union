@@ -221,7 +221,7 @@ public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCar
 		if(p.matcher(no).find()){//包含字母--扫码枪扫码所得
 			//解密
 			try{
-				checkCardNo = EncryptUtil.decrypt("CFCCBD99C12B62E52952EA90A931A01F", no);
+				no = EncryptUtil.decrypt("CFCCBD99C12B62E52952EA90A931A01F", no);
 			}catch (Exception e){
 
 			}
