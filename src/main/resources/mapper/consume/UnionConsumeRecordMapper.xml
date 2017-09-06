@@ -22,6 +22,7 @@
 		<result column="mode_order_id" property="modeOrderId" />
 		<result column="is_give_integral" property="isGiveIntegral" />
 		<result column="consume_type" property="consumeType" />
+		<result column="shop_id" property="shopId" />
 	</resultMap>
 
 </mapper>

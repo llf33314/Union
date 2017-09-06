@@ -84,6 +84,7 @@ public class UnionMainController {
             }
             Map<String, Object> data = unionMainService.indexByBusId(busId);
             data.put("userType", (user.getPid() != null && user.getPid() != 0) ? 1 : 2);//1：子账号  2：主账号
+            data.put("busId", busId);
             return GTJsonResult.instanceSuccessMsg(data).toString();
         } catch (BaseException e) {
             logger.error("", e);
@@ -107,6 +108,7 @@ public class UnionMainController {
             }
             Map<String, Object> data = unionMainService.indexById(id, busId);
             data.put("userType", (user.getPid() != null && user.getPid() != 0) ? 1 : 2);//1：子账号  2：主账号
+            data.put("busId", busId);
             return GTJsonResult.instanceSuccessMsg(data).toString();
         } catch (BaseException e) {
             logger.error("", e);

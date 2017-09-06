@@ -109,6 +109,12 @@ public class UnionConsumeRecord extends Model<UnionConsumeRecord> {
 	@TableField("consume_type")
 	private Integer consumeType;
 
+	/**
+	 * 门店id
+	 */
+	@TableField("shop_id")
+	private Integer shopId;
+
 
 	public Integer getId() {
 		return id;
@@ -252,6 +258,14 @@ public class UnionConsumeRecord extends Model<UnionConsumeRecord> {
 
 	public void setConsumeType(Integer consumeType) {
 		this.consumeType = consumeType;
+	}
+
+	public Integer getShopId() {
+		return shopId;
+	}
+
+	public void setShopId(Integer shopId) {
+		this.shopId = shopId;
 	}
 
 	@Override

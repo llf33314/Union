@@ -22,7 +22,9 @@ import com.gt.union.service.card.IUnionMemberCardService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.net.URLDecoder;
 import java.util.*;
+import java.util.regex.Pattern;
 
 /**
  * <p>
@@ -37,6 +39,7 @@ public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCar
     private static final String GET_UNION_MEMBER_INTEGRAL = "UnionBusMemberCardServiceImpl.getUnionMemberIntegral()";
     private static final String SELECT_UNION_BUS_MEMBER_CARD_LIST = "UnionBusMemberCardServiceImpl.selectUnionBusMemberCardList()";
     private static final String BING_UNION_CARD = "UnionBusMemberCardServiceImpl.bindUnionCard()";
+    private static final String GET_UNION_CARD_INFO = "UnionBusMemberCardServiceImpl.getUnionCardInfo()";
 
     @Autowired
     private IUnionMainService unionMainService;
@@ -46,6 +49,8 @@ public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCar
 
 	@Autowired
     private RedisCacheUtil redisCacheUtil;
+
+
 
 	@Override
 	public double getUnionMemberIntegral(final Integer unionId) {
@@ -202,5 +207,29 @@ public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCar
 		result.setMessage("绑定成功");
 		redisCacheUtil.remove(phoneKey);
 		return result;
+	}
+
+	@Override
+	public Map<String, Object> getUnionCardInfo(String no, Integer busId) throws Exception{
+		if(StringUtil.isEmpty(no)){
+			throw new ParamException(GET_UNION_CARD_INFO, "参数no为空", ExceptionConstant.PARAM_ERROR);
+		}
+		if(busId == null){
+			throw new ParamException(GET_UNION_CARD_INFO, "参数busid为空", ExceptionConstant.PARAM_ERROR);
+		}
+		Pattern p = Pattern.compile("[a-zA-z]");
+		if(p.matcher(no).find()){//包含字母--扫码枪扫码所得
+			//解密
+			try{
+				checkCardNo = EncryptUtil.decrypt("CFCCBD99C12B62E52952EA90A931A01F", no);
+			}catch (Exception e){
+
+			}
+			no = URLDecoder.decode(no,"UTF-8");
+
+		}else {
+
+		}
+		return null;
 	}
 }

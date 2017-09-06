@@ -1,9 +1,12 @@
 package com.gt.union.controller.card;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ExceptionConstant;
 import com.gt.union.common.exception.BaseException;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
+import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.SessionUtils;
 import com.gt.union.entity.card.vo.UnionBusMemberCardVO;
 import com.gt.union.entity.common.BusUser;
@@ -15,6 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * <p>
@@ -28,6 +32,9 @@ import javax.servlet.http.HttpServletRequest;
 @RequestMapping("/unionBusMemberCard")
 public class UnionBusMemberCardController {
 	private static final String LIST_UNIONID = "UnionBusMemberCardController.listByUnionId()";
+	private static final String UNION_CARD_INFO = "UnionBusMemberCardController.unionCardInfo()";
+
+
 	private Logger logger = Logger.getLogger(UnionBusMemberCardController.class);
 
 	@Autowired
@@ -60,4 +67,22 @@ public class UnionBusMemberCardController {
 			return GTJsonResult.instanceErrorMsg(LIST_UNIONID, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
 		}
 	}
+
+	@ApiOperation(value = "根据联盟卡号、手机号、扫码枪扫出的号码", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/unionCardInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String unionCardInfo(HttpServletRequest request
+			,@ApiParam(name="no", value = "联盟卡号、手机号、扫码枪扫出的号码", required = true) @RequestParam("no") String no){
+		try{
+			BusUser user = SessionUtils.getLoginUser(request);
+			Map<String,Object> data = unionBusMemberCardService.getUnionCardInfo(no, user.getId());
+			return GTJsonResult.instanceSuccessMsg(data).toString();
+		}catch (BaseException e){
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+		}catch (Exception e){
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(LIST_UNIONID, e.getMessage(), ExceptionConstant.OPERATE_FAIL).toString();
+		}
+	}
+
 }

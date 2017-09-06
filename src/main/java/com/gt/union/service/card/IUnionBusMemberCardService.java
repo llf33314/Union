@@ -66,4 +66,12 @@ public interface IUnionBusMemberCardService extends IService<UnionBusMemberCard>
 	 * @return
 	 */
 	UnionBindCardResult bindUnionCard(Integer busid, Integer memberId, String phone, String code) throws Exception;
+
+	/**
+	 * 根据商家id和联盟卡号、手机号、扫码枪扫出的号码查询联盟卡信息
+	 * @param no	号码
+	 * @param busId	商家id
+	 * @return
+	 */
+	Map<String,Object> getUnionCardInfo(String no, Integer busId) throws Exception;
 }

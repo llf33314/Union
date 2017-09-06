@@ -22,40 +22,54 @@ public class UnionCardInfo extends Model<UnionCardInfo> {
 
     private static final long serialVersionUID = 1L;
 
-    /**
-     * 主键
-     */
+	/**
+	 * 主键
+	 */
 	@TableId(value="id", type= IdType.AUTO)
 	private Integer id;
-    /**
-     * 创建时间
-     */
+	/**
+	 * 创建时间
+	 */
 	private Date createtime;
-    /**
-     * 联盟卡id
-     */
+	/**
+	 * 更新时间
+	 */
+	private Date updatetime;
+	/**
+	 * 删除状态（0：未删除 1：删除）
+	 */
+	@TableField("del_status")
+	private Integer delStatus;
+	/**
+	 * 联盟卡id
+	 */
 	@TableField("union_card_id")
 	private Integer unionCardId;
-    /**
-     * 联盟id
-     */
+	/**
+	 * 联盟id
+	 */
 	@TableField("union_id")
 	private Integer unionId;
-    /**
-     * 联盟卡有效期
-     */
+	/**
+	 * 联盟卡有效期
+	 */
 	@TableField("card_term_time")
 	private Date cardTermTime;
-    /**
-     * 联盟卡类型（1：黑卡 2：红卡）
-     */
+	/**
+	 * 联盟卡类型（1：黑卡 2：红卡）
+	 */
 	@TableField("card_type")
 	private Integer cardType;
-    /**
-     * 卡的版本
-     */
+	/**
+	 * 卡的版本
+	 */
 	@TableField("card_version")
 	private Integer cardVersion;
+	/**
+	 * 商家id
+	 */
+	@TableField("bus_id")
+	private Integer busId;
 
 
 	public Integer getId() {
@@ -72,6 +86,22 @@ public class UnionCardInfo extends Model<UnionCardInfo> {
 
 	public void setCreatetime(Date createtime) {
 		this.createtime = createtime;
+	}
+
+	public Date getUpdatetime() {
+		return updatetime;
+	}
+
+	public void setUpdatetime(Date updatetime) {
+		this.updatetime = updatetime;
+	}
+
+	public Integer getDelStatus() {
+		return delStatus;
+	}
+
+	public void setDelStatus(Integer delStatus) {
+		this.delStatus = delStatus;
 	}
 
 	public Integer getUnionCardId() {
@@ -112,6 +142,14 @@ public class UnionCardInfo extends Model<UnionCardInfo> {
 
 	public void setCardVersion(Integer cardVersion) {
 		this.cardVersion = cardVersion;
+	}
+
+	public Integer getBusId() {
+		return busId;
+	}
+
+	public void setBusId(Integer busId) {
+		this.busId = busId;
 	}
 
 	@Override
