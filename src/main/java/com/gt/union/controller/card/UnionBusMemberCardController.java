@@ -74,7 +74,7 @@ public class UnionBusMemberCardController {
 			,@ApiParam(name="no", value = "联盟卡号、手机号、扫码枪扫出的号码", required = true) @RequestParam("no") String no){
 		try{
 			BusUser user = SessionUtils.getLoginUser(request);
-			Map<String,Object> data = unionBusMemberCardService.getUnionCardInfo(no, user.getId());
+			Map<String,Object> data = unionBusMemberCardService.getUnionCardInfo(no, user.getId());//解码后的no
 			return GTJsonResult.instanceSuccessMsg(data).toString();
 		}catch (BaseException e){
 			logger.error("", e);

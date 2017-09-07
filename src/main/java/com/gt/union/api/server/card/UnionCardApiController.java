@@ -6,12 +6,10 @@ import com.gt.union.api.entity.param.BindCardParam;
 import com.gt.union.api.entity.param.RequestApiParam;
 import com.gt.union.api.entity.result.UnionBindCardResult;
 import com.gt.union.api.entity.result.UnionDiscountResult;
-import com.gt.union.api.entity.result.UnionPhoneCodeResult;
 import com.gt.union.api.server.ApiBaseController;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
-import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.*;
 import com.gt.union.entity.common.Member;
 import com.gt.union.service.card.IUnionBusMemberCardService;
@@ -54,7 +52,10 @@ public class UnionCardApiController extends ApiBaseController{
 	public ResponseUtils<UnionDiscountResult> getConsumeUnionDiscount(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<Integer> requestApiParam){
 		try {
 			boolean verification=super.verification(request, response, requestApiParam);
-			Member member = SessionUtils.getLoginMember(request);
+			//Member member = SessionUtils.getLoginMember(request);
+			Member member = new Member();
+			member.setId(123);
+			member.setBusid(33);
 			UnionDiscountResult data = unionBusMemberCardService.getConsumeUnionDiscount(member.getId(), requestApiParam.getReqdata());
 			return ResponseUtils.createBySuccess(data);
 		} catch (BaseException e) {
@@ -80,7 +81,10 @@ public class UnionCardApiController extends ApiBaseController{
 	public ResponseUtils getPhoneCode(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<String> requestApiParam) {
 		try {
 			boolean verification=super.verification(request, response, requestApiParam);
-			Member member = SessionUtils.getLoginMember(request);
+			//Member member = SessionUtils.getLoginMember(request);
+			Member member = new Member();
+			member.setId(123);
+			member.setBusid(33);
 			//生成验证码
 			String code = RandomKit.getRandomString(6, 0);
 			HashMap<String, Object> smsParams = new HashMap<String,Object>();
@@ -115,12 +119,15 @@ public class UnionCardApiController extends ApiBaseController{
 	 * @throws IOException
 	 */
 	@ApiOperation( value = "根据手机号获取联盟卡,并绑定联盟卡，session的member不能为空", produces = "application/json;charset=UTF-8" )
-	@RequestMapping(value = "/uionCardBind", method=RequestMethod.POST)
+	@RequestMapping(value = "/uionCardBind", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public ResponseUtils bindUnionCard(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<BindCardParam> requestApiParam) throws IOException {
 		try {
 			boolean verification=super.verification(request, response, requestApiParam);
 			// 获取会员信息
-			Member member = SessionUtils.getLoginMember(request);
+//			Member member = SessionUtils.getLoginMember(request);
+			Member member = new Member();
+			member.setId(123);
+			member.setBusid(33);
 			UnionBindCardResult data = unionBusMemberCardService.bindUnionCard(member.getBusid(), member.getId(), requestApiParam.getReqdata().getPhone(), requestApiParam.getReqdata().getCode());
 			return ResponseUtils.createBySuccess(data);
 		} catch (BaseException e) {

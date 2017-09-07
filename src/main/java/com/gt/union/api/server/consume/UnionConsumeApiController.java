@@ -36,7 +36,7 @@ public class UnionConsumeApiController extends ApiBaseController{
 	private IUnionConsumeServiceRecordService unionConsumeServiceRecordService;
 
 	@ApiOperation( value = "使用联盟卡核销", produces = "application/json;charset=UTF-8" )
-	@RequestMapping(value = "/unionConsume", method= RequestMethod.POST)
+	@RequestMapping(value = "/unionConsume", method= RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public ResponseUtils consumeByUnionCard(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<UnionConsumeParam> requestApiParam) throws IOException {
 		try {
 			boolean verification=super.verification(request, response, requestApiParam);
@@ -44,17 +44,15 @@ public class UnionConsumeApiController extends ApiBaseController{
 			return ResponseUtils.createBySuccess();
 		} catch (BaseException e) {
 			logger.error("", e);
-			UnionConsumeResult data = new UnionConsumeResult(false,e.getErrorMsg());
 			return ResponseUtils.createByErrorMessage(e.getErrorMsg());
 		}catch (Exception e) {
 			logger.error("", e);
-			UnionConsumeResult data = new UnionConsumeResult();
 			return ResponseUtils.createByError();
 		}
 	}
 
 	@ApiOperation( value = "使用联盟卡核销后退款", produces = "application/json;charset=UTF-8" )
-	@RequestMapping(value = "/unionRefund", method= RequestMethod.POST)
+	@RequestMapping(value = "/unionRefund", method= RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public ResponseUtils unionRefund(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<UnionRefundParam> requestApiParam) throws IOException {
 		try {
 			boolean verification=super.verification(request, response, requestApiParam);
@@ -62,11 +60,9 @@ public class UnionConsumeApiController extends ApiBaseController{
 			return ResponseUtils.createBySuccess();
 		} catch (BaseException e) {
 			logger.error("", e);
-			UnionRefundResult data = new UnionRefundResult(false,e.getErrorMsg());
 			return ResponseUtils.createByErrorMessage(e.getErrorMsg());
 		}catch (Exception e) {
 			logger.error("", e);
-			UnionRefundResult data = new UnionRefundResult(false ,"失败");
 			return ResponseUtils.createByError();
 		}
 	}

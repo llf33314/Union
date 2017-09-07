@@ -20,6 +20,7 @@ import com.gt.union.service.basic.IUnionMainService;
 import com.gt.union.service.card.IUnionBusMemberCardService;
 import com.gt.union.service.card.IUnionMemberCardService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.net.URLDecoder;
@@ -49,6 +50,9 @@ public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCar
 
 	@Autowired
     private RedisCacheUtil redisCacheUtil;
+
+	@Value("${union.encryptKey}")
+	private String encryptKey;
 
 
 
@@ -221,15 +225,24 @@ public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCar
 		if(p.matcher(no).find()){//包含字母--扫码枪扫码所得
 			//解密
 			try{
-				no = EncryptUtil.decrypt("CFCCBD99C12B62E52952EA90A931A01F", no);
+				no = EncryptUtil.decrypt(encryptKey, no);//解码后得到联盟卡号
 			}catch (Exception e){
-
+				throw new ParamException(GET_UNION_CARD_INFO, "参数no错误", ExceptionConstant.PARAM_ERROR);
 			}
-			no = URLDecoder.decode(no,"UTF-8");
-
+			getUnionCardInfoByCardNo(no,busId);
 		}else {
 
 		}
+		return null;
+	}
+
+	@Override
+	public Map<String, Object> getUnionCardInfoByCardNo(String cardNo, Integer busId) {
+		return null;
+	}
+
+	@Override
+	public Map<String, Object> getUnionCardInfoByPhone(String phone, Integer busId) {
 		return null;
 	}
 }
