@@ -54,7 +54,7 @@ public class UnionCardApiController extends ApiBaseController{
 			boolean verification=super.verification(request, response, requestApiParam);
 			//Member member = SessionUtils.getLoginMember(request);
 			Member member = new Member();
-			member.setId(123);
+			member.setId(998);
 			member.setBusid(33);
 			UnionDiscountResult data = unionBusMemberCardService.getConsumeUnionDiscount(member.getId(), requestApiParam.getReqdata());
 			return ResponseUtils.createBySuccess(data);
@@ -83,7 +83,7 @@ public class UnionCardApiController extends ApiBaseController{
 			boolean verification=super.verification(request, response, requestApiParam);
 			//Member member = SessionUtils.getLoginMember(request);
 			Member member = new Member();
-			member.setId(123);
+			member.setId(998);
 			member.setBusid(33);
 			//生成验证码
 			String code = RandomKit.getRandomString(6, 0);
@@ -126,7 +126,7 @@ public class UnionCardApiController extends ApiBaseController{
 			// 获取会员信息
 //			Member member = SessionUtils.getLoginMember(request);
 			Member member = new Member();
-			member.setId(123);
+			member.setId(998);
 			member.setBusid(33);
 			UnionBindCardResult data = unionBusMemberCardService.bindUnionCard(member.getBusid(), member.getId(), requestApiParam.getReqdata().getPhone(), requestApiParam.getReqdata().getCode());
 			return ResponseUtils.createBySuccess(data);
