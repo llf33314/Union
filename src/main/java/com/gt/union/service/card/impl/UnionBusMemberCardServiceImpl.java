@@ -176,6 +176,10 @@ public class UnionBusMemberCardServiceImpl extends ServiceImpl<UnionBusMemberCar
 			result.setCode(-1);
 			return result;
 		}
+		result.setCardId(10);
+		result.setCode(1);
+		result.setIfDefault(false);
+		result.setDiscount(8d);
 		return result;
 	}
 
