@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gt.union.member.mapper.UnionMemberOutMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.gt.union.member.entity.UnionMemberOut">
+		<id column="id" property="id" />
+		<result column="createtime" property="createtime" />
+		<result column="del_status" property="delStatus" />
+		<result column="apply_out_time" property="applyOutTime" />
+		<result column="apply_out_reason" property="applyOutReason" />
+		<result column="confirm_out_time" property="confirmOutTime" />
+		<result column="actual_out_time" property="actualOutTime" />
+	</resultMap>
+
+</mapper>

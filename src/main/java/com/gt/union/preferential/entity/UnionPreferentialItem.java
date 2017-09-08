@@ -1,0 +1,108 @@
+package com.gt.union.preferential.entity;
+
+import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.IdType;
+
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * <p>
+ * 优惠服务项
+ * </p>
+ *
+ * @author linweicong
+ * @since 2017-09-07
+ */
+@TableName("t_union_preferential_item")
+public class UnionPreferentialItem extends Model<UnionPreferentialItem> {
+
+    private static final long serialVersionUID = 1L;
+
+    /**
+     * 主键
+     */
+	@TableId(value="id", type= IdType.AUTO)
+	private Integer id;
+    /**
+     * 创建时间
+     */
+	private Date createtime;
+    /**
+     * 删除状态（0：未删除 1：删除）
+     */
+	@TableField("del_status")
+	private Integer delStatus;
+    /**
+     * 优惠项目id
+     */
+	@TableField("project_id")
+	private Integer projectId;
+    /**
+     * 服务名称
+     */
+	private String name;
+    /**
+     * 审核状态（0：未提交 1：未审核 2：审核通过 3：审核不过）
+     */
+	@TableField("verify_status")
+	private Integer verifyStatus;
+
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Date getCreatetime() {
+		return createtime;
+	}
+
+	public void setCreatetime(Date createtime) {
+		this.createtime = createtime;
+	}
+
+	public Integer getDelStatus() {
+		return delStatus;
+	}
+
+	public void setDelStatus(Integer delStatus) {
+		this.delStatus = delStatus;
+	}
+
+	public Integer getProjectId() {
+		return projectId;
+	}
+
+	public void setProjectId(Integer projectId) {
+		this.projectId = projectId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public Integer getVerifyStatus() {
+		return verifyStatus;
+	}
+
+	public void setVerifyStatus(Integer verifyStatus) {
+		this.verifyStatus = verifyStatus;
+	}
+
+	@Override
+	protected Serializable pkVal() {
+		return this.id;
+	}
+
+}
