@@ -55,6 +55,11 @@ public class UnionVerifier extends Model<UnionVerifier> {
      */
 	private String name;
 
+	/**
+	 * 验证码
+	 */
+	private String code;
+
 
 	public Integer getId() {
 		return id;
@@ -110,6 +115,15 @@ public class UnionVerifier extends Model<UnionVerifier> {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 
 	@Override

@@ -41,21 +41,22 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
     @Override
     public void checkUnionMainValid(Integer id) throws Exception {
-        if (id == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // （1）如果缓存中已存在，说明有效，直接返回
-        String unionMainValidKey = RedisKeyUtil.getUnionMainValidKey(id);
-        if (this.redisCacheUtil.exists(unionMainValidKey)) {
-            return;
-        }
-        // （2）检查联盟有效性
         UnionMain unionMain = this.getUnionMainById(id);
+        checkUnionMainValid(unionMain);
+    }
+
+    @Override
+    public void checkUnionMainValid(UnionMain unionMain) throws Exception {
         if (unionMain == null) {
             throw new BusinessException("联盟不存在");
         }
+        // （1）如果缓存中已存在，说明有效，直接返回
+        String unionMainValidKey = RedisKeyUtil.getUnionMainValidKey(unionMain.getId());
+        if (this.redisCacheUtil.exists(unionMainValidKey)) {
+            return;
+        }
         // （3）检查盟主有效性
-        UnionMember unionOwner = this.unionMemberService.getUnionOwnerByUnionId(id);
+        UnionMember unionOwner = this.unionMemberService.getUnionOwnerByUnionId(unionMain.getId());
         if (unionOwner == null) {
             throw new BusinessException("联盟没有盟主");
         }

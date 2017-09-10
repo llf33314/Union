@@ -28,4 +28,9 @@ public interface CommonConstant {
      * 异常类型：系统异常
      */
     public static final String SYS_ERROR = "系统异常";
+
+    /**
+     * 主账号权限
+     */
+    String UNION_BUS_PARENT_MSG = "请使用主账号权限";
 }

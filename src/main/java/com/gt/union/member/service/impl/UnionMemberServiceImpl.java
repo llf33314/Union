@@ -106,4 +106,20 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 .eq("status", status);
         return this.selectCount(entityWrapper);
     }
+
+    @Override
+    public UnionMember getByUnionIdAndBusId(Integer unionId, Integer busId) throws Exception{
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<UnionMember>();
+        entityWrapper.eq("del_status",CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("bus_id", busId);
+        UnionMember unionMember = this.selectOne(entityWrapper);
+        return unionMember;
+    }
 }

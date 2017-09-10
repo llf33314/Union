@@ -12,5 +12,12 @@ import com.gt.union.main.entity.UnionMainCharge;
  * @since 2017-09-07
  */
 public interface IUnionMainChargeService extends IService<UnionMainCharge> {
-	
+
+    /**
+     * 根据联盟id和联盟卡类型获取联盟卡信息
+     * @param unionId   联盟卡
+     * @param redCardType   联盟卡类型
+     * @return
+     */
+    UnionMainCharge getByUnionIdAndType(Integer unionId, int redCardType);
 }

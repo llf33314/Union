@@ -72,4 +72,12 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @throws Exception
      */
     Integer countUnionMemberByUnionIdAndStatus(Integer unionId, Integer status) throws Exception;
+
+    /**
+     * 根据商家id和联盟id查询盟员信息
+     * @param unionId
+     * @param busId
+     * @return
+     */
+    UnionMember getByUnionIdAndBusId(Integer unionId, Integer busId) throws Exception;
 }

@@ -12,5 +12,11 @@ import com.gt.union.preferential.entity.UnionPreferentialProject;
  * @since 2017-09-07
  */
 public interface IUnionPreferentialProjectService extends IService<UnionPreferentialProject> {
-	
+
+    /**
+     *  根据盟员id获取优惠项目
+     * @param id
+     * @return
+     */
+    UnionPreferentialProject getByMemberId(Integer id);
 }
