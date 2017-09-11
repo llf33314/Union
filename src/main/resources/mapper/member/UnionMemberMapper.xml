@@ -6,6 +6,7 @@
 	<resultMap id="BaseResultMap" type="com.gt.union.member.entity.UnionMember">
 		<id column="id" property="id" />
 		<result column="del_status" property="delStatus" />
+		<result column="createtime" property="createtime" />
 		<result column="union_id" property="unionId" />
 		<result column="bus_id" property="busId" />
 		<result column="is_union_owner" property="isUnionOwner" />

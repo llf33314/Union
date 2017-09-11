@@ -1,4 +1,4 @@
-package com.gt.union.index.service;
+package com.gt.union.main.service;
 
 import java.util.Map;
 

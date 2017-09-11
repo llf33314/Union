@@ -15,9 +15,21 @@ public interface IUnionMainChargeService extends IService<UnionMainCharge> {
 
     /**
      * 根据联盟id和联盟卡类型获取联盟卡信息
-     * @param unionId   联盟卡
-     * @param redCardType   联盟卡类型
+     *
+     * @param unionId {not null} 联盟卡
+     * @param type    {not null} 联盟卡类型
      * @return
      */
-    UnionMainCharge getByUnionIdAndType(Integer unionId, int redCardType);
+    UnionMainCharge getByUnionIdAndType(Integer unionId, int type);
+
+    /**
+     * 根据联盟id、红黑卡类型和是否启用，获取联盟升级收费信息
+     *
+     * @param unionId     {not null} 联盟id
+     * @param type        {not null} 红黑卡类型
+     * @param isAvailable {not null} 是否启用
+     * @return
+     * @throws Exception
+     */
+    UnionMainCharge getByUnionIdAndTypeAndIsAvailable(Integer unionId, Integer type, Integer isAvailable) throws Exception;
 }

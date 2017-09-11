@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * <p>
@@ -26,6 +27,10 @@ public class UnionMember extends Model<UnionMember> {
      */
 	@TableId(value="id", type= IdType.AUTO)
 	private Integer id;
+	/**
+	 * 创建时间
+	 */
+	private Date createtime;
     /**
      * 删除状态（0：未删除 1：删除）
      */
@@ -137,6 +142,14 @@ public class UnionMember extends Model<UnionMember> {
 	public void setDelStatus(Integer delStatus) {
 		this.delStatus = delStatus;
 	}
+
+	public Date getCreatetime() {
+	    return createtime;
+    }
+
+    public void setCreatetime(Date createtime) {
+	    this.createtime = createtime;
+    }
 
 	public Integer getUnionId() {
 		return unionId;

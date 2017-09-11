@@ -97,7 +97,7 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
         if (busId == null) {
             throw new ParamException( CommonConstant.PARAM_ERROR);
         }
-        UnionMain main = unionMainService.getUnionMainById(unionId);
+        UnionMain main = unionMainService.getById(unionId);
         unionMainService.checkUnionMainValid(main);
         //TODO 添加优惠服务  检验盟员身份
        UnionMainCharge unionMainCharge =  unionMainChargeService.getByUnionIdAndType(main.getId(), ChargeConstant.RED_CARD_TYPE);
