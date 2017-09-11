@@ -89,6 +89,7 @@ public class UnionCardIntegralServiceImpl extends ServiceImpl<UnionCardIntegralM
 		EntityWrapper entityWrapper = new EntityWrapper<>();
     	entityWrapper.in("card_id", cardIds.toArray());
     	entityWrapper.eq("status", status);
+    	entityWrapper.groupBy("card_id");
     	entityWrapper.setSqlSelect("card_id as cardId, IFNULL(SUM(integral),0)AS integral");
 		return this.selectMaps(entityWrapper);
 	}

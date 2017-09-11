@@ -215,4 +215,15 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 .eq("bus_id", busId);
         return this.selectOne(entityWrapper);
     }
+
+	@Override
+	public List<UnionMember> getByUnionId(Integer unionId) throws Exception{
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<UnionMember>();
+        entityWrapper.eq("union_id", unionId);
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+		return this.selectList(entityWrapper);
+	}
 }

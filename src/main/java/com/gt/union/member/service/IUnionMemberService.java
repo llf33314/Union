@@ -106,4 +106,11 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @throws Exception
      */
     UnionMember getByMemberIdAndBusId(Integer memberId, Integer busId) throws Exception;
+
+    /**
+     * 根据联盟id查询盟员列表
+     * @param unionId
+     * @return
+     */
+	List<UnionMember> getByUnionId(Integer unionId) throws Exception;
 }
