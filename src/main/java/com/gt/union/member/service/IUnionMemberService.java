@@ -58,10 +58,12 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @param busId        {not null} 商家id
      * @param isUnionOwner {not null} 是否盟主
      * @param status       {not null} 盟员状态
+     * @param orStatus 或操作，盟员状态，为空时不参与查询
      * @return
      * @throws Exception
      */
-    List<UnionMember> listUnionMemberByBusIdAndIsUnionOwnerAndStatus(Integer busId, Integer isUnionOwner, Integer status) throws Exception;
+    List<UnionMember> listUnionMemberByBusIdAndIsUnionOwnerAndStatus(Integer busId, Integer isUnionOwner, Integer status
+            , Integer orStatus) throws Exception;
 
     /**
      * 根据联盟id和盟员状态统计盟员个数

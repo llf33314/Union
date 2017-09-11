@@ -80,18 +80,36 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         return this.selectOne(entityWrapper);
     }
 
+    /**
+     * 根据商家id、是否盟主、盟员状态，获取商家的盟员身份列表信息
+     *
+     * @param busId        {not null} 商家id
+     * @param isUnionOwner {not null} 是否盟主
+     * @param status       {not null} 盟员状态
+     * @param orStatus     或操作，盟员状态，为空时不参与查询
+     * @return
+     * @throws Exception
+     */
     @Override
     public List<UnionMember> listUnionMemberByBusIdAndIsUnionOwnerAndStatus(Integer busId, Integer isUnionOwner
-            , Integer status) throws Exception {
+            , Integer status, Integer orStatus) throws Exception {
         if (busId == null || isUnionOwner == null || status == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         EntityWrapper entityWrapper = new EntityWrapper();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("bus_id", busId)
-                .eq("is_union_owner", isUnionOwner)
-                .eq("status", status)
-                .orderBy("id", true);
+                .eq("is_union_owner", isUnionOwner);
+        if (orStatus != null) {
+            entityWrapper.andNew()
+                    .eq("status", status)
+                    .or()
+                    .eq("status", orStatus);
+        } else {
+            entityWrapper.eq("status", status);
+        }
+        entityWrapper.orderBy("id", true);
+
         return this.selectList(entityWrapper);
     }
 
@@ -108,7 +126,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    public UnionMember getByUnionIdAndBusId(Integer unionId, Integer busId) throws Exception{
+    public UnionMember getByUnionIdAndBusId(Integer unionId, Integer busId) throws Exception {
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -116,7 +134,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<UnionMember>();
-        entityWrapper.eq("del_status",CommonConstant.DEL_STATUS_NO)
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("union_id", unionId)
                 .eq("bus_id", busId);
         UnionMember unionMember = this.selectOne(entityWrapper);

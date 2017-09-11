@@ -1,6 +1,6 @@
-package com.gt.union.amqp.sender;
+package com.gt.union.common.amqp.sender;
 
-import com.gt.union.amqp.entity.PhoneMessage;
+import com.gt.union.common.amqp.entity.PhoneMessage;
 import com.gt.union.common.config.AmqpConfig;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.rabbit.support.CorrelationData;

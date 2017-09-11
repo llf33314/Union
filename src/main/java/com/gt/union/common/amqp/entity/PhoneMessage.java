@@ -1,4 +1,4 @@
-package com.gt.union.amqp.entity;
+package com.gt.union.common.amqp.entity;
 
 import com.alibaba.fastjson.JSON;
 import com.gt.union.common.constant.ConfigConstant;

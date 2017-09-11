@@ -12,5 +12,5 @@ import com.gt.union.main.entity.UnionMainTransfer;
  * @since 2017-09-07
  */
 public interface IUnionMainTransferService extends IService<UnionMainTransfer> {
-	
+
 }

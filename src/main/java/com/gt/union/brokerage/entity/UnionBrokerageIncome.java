@@ -48,7 +48,7 @@ public class UnionBrokerageIncome extends Model<UnionBrokerageIncome> {
     /**
      * 佣金金额
      */
-	private Double price;
+	private Double money;
     /**
      * 联盟卡id
      */
@@ -101,12 +101,12 @@ public class UnionBrokerageIncome extends Model<UnionBrokerageIncome> {
 		this.memberId = memberId;
 	}
 
-	public Double getPrice() {
-		return price;
+	public Double getMoney() {
+		return money;
 	}
 
-	public void setPrice(Double price) {
-		this.price = price;
+	public void setMoney(Double money) {
+		this.money = money;
 	}
 
 	public Integer getCardId() {
