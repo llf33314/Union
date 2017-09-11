@@ -2,6 +2,7 @@ package com.gt.union.card.service;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
+import com.gt.union.api.entity.result.UnionDiscountResult;
 import com.gt.union.card.entity.UnionCard;
 
 import java.util.Map;
@@ -34,4 +35,24 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 * @return
 	 */
 	Map<String,Object> getUnionCardInfo(String no, Integer busId) throws Exception;
+
+
+	/**
+	 * 根据联盟卡号和商家id获取联盟卡信息
+	 * @param cardNo	联盟卡号
+	 * @param busId		商家id
+	 * @return
+	 */
+	Map<String,Object> getUnionCardInfoByCardNo(String cardNo, Integer busId);
+
+	/**
+	 * 根据手机号和商家id获取联盟卡信息
+	 * @param phone		手机号
+	 * @param busId		商家id
+	 * @return
+	 */
+	Map<String,Object> getUnionCardInfoByPhone(String phone, Integer busId);
+
+
+	UnionDiscountResult getConsumeUnionDiscount(Integer id, Integer reqdata) throws Exception;
 }

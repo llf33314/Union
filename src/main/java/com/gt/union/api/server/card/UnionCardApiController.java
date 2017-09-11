@@ -4,8 +4,11 @@ import com.gt.api.dto.ResponseUtils;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.api.entity.param.BindCardParam;
 import com.gt.union.api.entity.param.RequestApiParam;
+import com.gt.union.api.entity.result.UnionBindCardResult;
 import com.gt.union.api.entity.result.UnionDiscountResult;
 import com.gt.union.api.server.ApiBaseController;
+import com.gt.union.card.service.IUnionCardBindingService;
+import com.gt.union.card.service.IUnionCardService;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.entity.Member;
 import com.gt.union.common.exception.BaseException;
@@ -38,8 +41,6 @@ public class UnionCardApiController extends ApiBaseController {
 
 	private Logger logger = Logger.getLogger(UnionCardApiController.class);
 
-	//@Autowired
-	//private IUnionBusMemberCardService unionBusMemberCardService;
 
 	@Value("${wxmp.company}")
 	private String company;
@@ -50,6 +51,12 @@ public class UnionCardApiController extends ApiBaseController {
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
 
+	@Autowired
+	private IUnionCardBindingService unionCardBindingService;
+
+	@Autowired
+	private IUnionCardService unionCardService;
+
 	@ApiOperation(value = "线上--根据商家和粉丝获取联盟卡折扣，session的member不能为空", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/consumeUnionDiscount", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public ResponseUtils<UnionDiscountResult> getConsumeUnionDiscount(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<Integer> requestApiParam){
@@ -57,12 +64,11 @@ public class UnionCardApiController extends ApiBaseController {
 			boolean verification=super.verification(request, response, requestApiParam);
 			//TODO
 			//Member member = SessionUtils.getLoginMember(request);
-			/*Member member = new Member();
+			Member member = new Member();
 			member.setId(998);
-			member.setBusid(33);
-			UnionDiscountResult data = unionBusMemberCardService.getConsumeUnionDiscount(member.getId(), requestApiParam.getReqdata());
-			return ResponseUtils.createBySuccess(data);*/
-			return null;
+			member.setBusid(42);
+			UnionDiscountResult data = unionCardService.getConsumeUnionDiscount(member.getId(), requestApiParam.getReqdata());
+			return ResponseUtils.createBySuccess(data);
 		} catch (BaseException e) {
 			logger.error("", e);
 			UnionDiscountResult data = new UnionDiscountResult(UnionDiscountResult.UNION_DISCOUNT_CODE_NON);
@@ -88,8 +94,8 @@ public class UnionCardApiController extends ApiBaseController {
 			boolean verification=super.verification(request, response, requestApiParam);
 			//Member member = SessionUtils.getLoginMember(request);
 			Member member = new Member();
-			member.setId(998);
-			member.setBusid(33);
+			member.setId(1225352);
+			member.setBusid(42);
 			//生成验证码
 			String code = RandomKit.getRandomString(6, 0);
 			HashMap<String, Object> smsParams = new HashMap<String,Object>();
@@ -131,12 +137,10 @@ public class UnionCardApiController extends ApiBaseController {
 			// 获取会员信息
 //			Member member = SessionUtils.getLoginMember(request);
 			Member member = new Member();
-			member.setId(998);
-			member.setBusid(33);
-			//TODO
-			//UnionBindCardResult data = unionBusMemberCardService.bindUnionCard(member.getBusid(), member.getId(), requestApiParam.getReqdata().getPhone(), requestApiParam.getReqdata().getCode());
-			//return ResponseUtils.createBySuccess(data);
-            return null;
+			member.setId(1225352);
+			member.setBusid(42);
+			UnionBindCardResult data = unionCardBindingService.bindUnionCard(member.getBusid(), member.getId(), requestApiParam.getReqdata().getPhone(), requestApiParam.getReqdata().getCode());
+			return ResponseUtils.createBySuccess(data);
 		} catch (BaseException e) {
 			logger.error("", e);
 			return ResponseUtils.createByErrorMessage(e.getErrorMsg());
