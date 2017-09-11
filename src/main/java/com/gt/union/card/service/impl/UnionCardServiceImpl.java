@@ -148,6 +148,10 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 			result.setCode(-2);
 			return result;
 		}
+		//1、判断商家加入的联盟
+		//2、判断手机号是否升级过联盟卡
+		//3、判断粉丝是否绑定联盟卡
+		//4、
 		/*List<UnionMain> list = unionMainService.listMyValidUnion(busId);//查询我加入的有效联盟
 		if(ListUtil.isEmpty(list)){
 			result.setCode(-1);

@@ -53,6 +53,12 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 */
 	Map<String,Object> getUnionCardInfoByPhone(String phone, Integer busId);
 
-
-	UnionDiscountResult getConsumeUnionDiscount(Integer id, Integer reqdata) throws Exception;
+	/**
+	 * 用户id和商家id获取联盟折扣
+	 * @param memberId
+	 * @param busId
+	 * @return
+	 * @throws Exception
+	 */
+	UnionDiscountResult getConsumeUnionDiscount(Integer memberId, Integer busId) throws Exception;
 }
