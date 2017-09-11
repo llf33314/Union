@@ -122,4 +122,15 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         UnionMember unionMember = this.selectOne(entityWrapper);
         return unionMember;
     }
+
+	@Override
+	public List<UnionMember> getByUnionId(Integer unionId) throws Exception{
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<UnionMember>();
+        entityWrapper.eq("union_id", unionId);
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+		return this.selectList(entityWrapper);
+	}
 }

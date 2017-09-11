@@ -8,6 +8,9 @@ import com.gt.union.card.service.IUnionCardIntegralService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.ListUtil;
+import com.gt.union.member.entity.UnionMember;
+import com.gt.union.member.service.IUnionMemberService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,12 +27,15 @@ import java.util.Map;
 @Service
 public class UnionCardIntegralServiceImpl extends ServiceImpl<UnionCardIntegralMapper, UnionCardIntegral> implements IUnionCardIntegralService {
 
+	@Autowired
+	private IUnionMemberService unionMemberService;
+
     @Override
     public Double sumCardIntegralByUnionIdAndStatus(Integer unionId, Integer status) throws Exception {
         if (unionId == null || status == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        //TODO
+		List<UnionMember> list = unionMemberService.getByUnionId(unionId);
 
         return null;
     }
@@ -42,6 +48,7 @@ public class UnionCardIntegralServiceImpl extends ServiceImpl<UnionCardIntegralM
 		EntityWrapper entityWrapper = new EntityWrapper<>();
     	entityWrapper.in("card_id", cardIds.toArray());
     	entityWrapper.eq("status", status);
+    	entityWrapper.groupBy("card_id");
     	entityWrapper.setSqlSelect("card_id as cardId, IFNULL(SUM(integral),0)AS integral");
 		return this.selectMaps(entityWrapper);
 	}
