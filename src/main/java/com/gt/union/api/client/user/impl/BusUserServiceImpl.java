@@ -2,8 +2,6 @@ package com.gt.union.api.client.user.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.gt.api.util.HttpClienUtils;
-import com.gt.api.util.sign.SignHttpUtils;
 import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;

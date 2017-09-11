@@ -2,10 +2,14 @@ package com.gt.union.main.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.exception.ParamException;
 import com.gt.union.main.entity.UnionMainDict;
 import com.gt.union.main.mapper.UnionMainDictMapper;
 import com.gt.union.main.service.IUnionMainDictService;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -26,5 +30,22 @@ public class UnionMainDictServiceImpl extends ServiceImpl<UnionMainDictMapper, U
         entityWrapper.eq("union_id", unionId);
         List<UnionMainDict> list = this.selectList(entityWrapper);
         return list;
+    }
+
+    /**
+     * 根据联盟id删除联盟申请填写信息设置
+     *
+     * @param unionId {not null} 联盟id
+     * @throws Exception
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void deleteByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("union_id", unionId);
+        this.delete(entityWrapper);
     }
 }

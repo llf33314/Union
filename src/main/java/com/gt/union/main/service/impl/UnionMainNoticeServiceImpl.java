@@ -7,7 +7,7 @@ import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.StringUtil;
-import com.gt.union.main.constant.NoticeConstant;
+import com.gt.union.main.constant.MainConstant;
 import com.gt.union.main.entity.UnionMainNotice;
 import com.gt.union.main.mapper.UnionMainNoticeMapper;
 import com.gt.union.main.service.IUnionMainNoticeService;
@@ -46,7 +46,7 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
 		if(StringUtil.isEmpty(content)){
 			throw new ParamException("联盟公告不能为空");
 		}
-		if(StringUtil.getStringLength(content) > NoticeConstant.NOTICE_MAX_LENGTH){
+		if(StringUtil.getStringLength(content) > MainConstant.NOTICE_MAX_LENGTH){
 			throw new BusinessException("公告内容不可超过50字");
 		}
 		UnionMainNotice notice = getByUnionId(unionId);

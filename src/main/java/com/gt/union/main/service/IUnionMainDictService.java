@@ -17,8 +17,17 @@ public interface IUnionMainDictService extends IService<UnionMainDict> {
 
     /**
      * 根据联盟id获取设置的推荐申请信息
+     *
      * @param unionId
      * @return
      */
     List<UnionMainDict> list(Integer unionId);
+
+    /**
+     * 根据联盟id删除联盟申请填写信息设置
+     *
+     * @param unionId {not null} 联盟id
+     * @throws Exception
+     */
+    void deleteByUnionId(Integer unionId) throws Exception;
 }
