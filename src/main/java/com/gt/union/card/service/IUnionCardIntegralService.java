@@ -21,4 +21,13 @@ public interface IUnionCardIntegralService extends IService<UnionCardIntegral> {
      * @throws Exception
      */
     Double sumCardIntegralByUnionIdAndStatus(Integer unionId, Integer status) throws Exception;
+
+    /**
+     * 根据联盟id，获取联盟剩余有效的积分数，即收入积分-支出积分
+     *
+     * @param unionId {not null} 联盟id
+     * @return
+     * @throws Exception
+     */
+    Double getCardIntegralProfitByUnionId(Integer unionId) throws Exception;
 }

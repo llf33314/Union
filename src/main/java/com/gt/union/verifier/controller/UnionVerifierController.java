@@ -1,7 +1,7 @@
 package com.gt.union.verifier.controller;
 
 import com.baomidou.mybatisplus.plugins.Page;
-import com.gt.union.amqp.entity.PhoneMessage;
+import com.gt.union.common.amqp.entity.PhoneMessage;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.common.annotation.SysLogAnnotation;
 import com.gt.union.common.constant.CommonConstant;

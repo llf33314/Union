@@ -9,7 +9,7 @@
 		<result column="del_status" property="delStatus" />
 		<result column="type" property="type" />
 		<result column="member_id" property="memberId" />
-		<result column="price" property="price" />
+		<result column="money" property="money" />
 		<result column="card_id" property="cardId" />
 		<result column="opportunity_id" property="opportunityId" />
 	</resultMap>

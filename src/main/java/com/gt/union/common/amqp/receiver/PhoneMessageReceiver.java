@@ -1,7 +1,7 @@
-package com.gt.union.amqp.receiver;
+package com.gt.union.common.amqp.receiver;
 
 import com.alibaba.fastjson.JSON;
-import com.gt.union.amqp.entity.PhoneMessage;
+import com.gt.union.common.amqp.entity.PhoneMessage;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.common.config.AmqpConfig;
 import com.rabbitmq.client.Channel;
