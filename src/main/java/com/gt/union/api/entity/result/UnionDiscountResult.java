@@ -13,9 +13,9 @@ import java.io.Serializable;
 @Data
 public class UnionDiscountResult implements Serializable{
 
-	public static int UNION_DISCOUNT_CODE_NON = -1;//不显示
-	public static int UNION_DISCOUNT_CODE_SUCCESS = 1;//返回折扣
-	public static int UNION_DISCOUNT_CODE_BIND = 0;//需绑定联盟卡
+	public final static int UNION_DISCOUNT_CODE_NON = -1;//不显示
+	public final static int UNION_DISCOUNT_CODE_SUCCESS = 1;//返回折扣
+	public final static int UNION_DISCOUNT_CODE_BIND = 0;//需绑定联盟卡
 
 	/**
 	 * 状态码信息

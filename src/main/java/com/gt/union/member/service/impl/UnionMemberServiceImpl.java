@@ -151,4 +151,19 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
 		return this.selectList(entityWrapper);
 	}
+
+	@Override
+	public List<UnionMember> listValidByBusId(Integer busId) throws Exception{
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<UnionMember>();
+        entityWrapper.eq("bus_id", busId);
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+        entityWrapper.andNew()
+                .eq("status", MemberConstant.STATUS_IN)
+                .or()
+                .eq("status", MemberConstant.STATUS_APPLY_OUT);
+        return this.selectList(entityWrapper);
+	}
 }

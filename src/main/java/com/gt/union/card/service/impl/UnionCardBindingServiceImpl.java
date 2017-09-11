@@ -1,7 +1,9 @@
 package com.gt.union.card.service.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.api.entity.result.UnionBindCardResult;
+import com.gt.union.card.entity.UnionCard;
 import com.gt.union.card.entity.UnionCardBinding;
 import com.gt.union.card.mapper.UnionCardBindingMapper;
 import com.gt.union.card.service.IUnionCardBindingService;
@@ -14,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -68,4 +71,5 @@ public class UnionCardBindingServiceImpl extends ServiceImpl<UnionCardBindingMap
 		redisCacheUtil.remove(phoneKey);
 		return result;
 	}
+
 }

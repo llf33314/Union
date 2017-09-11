@@ -89,4 +89,11 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @return
      */
 	List<UnionMember> getByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 根据商家id查询商家加入的有效盟员信息列表
+     * @param busId
+     * @return
+     */
+	List<UnionMember> listValidByBusId(Integer busId) throws Exception;
 }

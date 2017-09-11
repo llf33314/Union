@@ -102,9 +102,22 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         EntityWrapper entityWrapper = new EntityWrapper();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .exists(new StringBuilder("SELECT m.id FROM t_union_member m")
-                        .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append(" WHERE m.bus_id = ").append(busId)
                         .append("  AND m.status != ").append(MemberConstant.STATUS_APPLY_IN)
-                        .append("  AND m.bus_id = ").append(busId)
+                        .append("  AND m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .toString());
+        return this.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionMain> listValidUnionMainByBusId(Integer busId) throws Exception {
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .exists(new StringBuilder("SELECT m.id FROM t_union_member m")
+                        .append(" WHERE m.bus_id = ").append(busId)
+                        .append("  AND ( m.status = ").append(MemberConstant.STATUS_IN)
+                        .append(" OR ").append("m.status = ").append(MemberConstant.STATUS_APPLY_OUT).append(" )")
+                        .append("  AND m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
                         .toString());
         return this.selectList(entityWrapper);
     }

@@ -50,6 +50,14 @@ public interface IUnionMainService extends IService<UnionMain> {
     List<UnionMain> listUnionMainByBusId(Integer busId) throws Exception;
 
     /**
+     * 查询商家加入有效的联盟
+     * @param busId
+     * @return
+     * @throws Exception
+     */
+    List<UnionMain> listValidUnionMainByBusId(Integer busId) throws Exception;
+
+    /**
      * 根据商家id，分页获取具有盟员身份的联盟信息，即创建的联盟+加入的联盟
      *
      * @param page {not null} 分页对象

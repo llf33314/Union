@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.gt.union.mapper.UnionCardBindingMapper">
+<mapper namespace="com.gt.union.card.mapper.UnionCardBindingMapper">
 
 	<!-- 通用查询映射结果 -->
 	<resultMap id="BaseResultMap" type="com.gt.union.card.entity.UnionCardBinding">
 		<id column="id" property="id" />
 		<result column="createtime" property="createtime" />
 		<result column="del_status" property="delStatus" />
-		<result column="card_id" property="cardId" />
+		<result column="root_id" property="rootId" />
 		<result column="third_member_id" property="thirdMemberId" />
 	</resultMap>
 

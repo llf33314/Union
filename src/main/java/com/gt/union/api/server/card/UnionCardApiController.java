@@ -67,7 +67,8 @@ public class UnionCardApiController extends ApiBaseController {
 			Member member = new Member();
 			member.setId(998);
 			member.setBusid(42);
-			UnionDiscountResult data = unionCardService.getConsumeUnionDiscount(member.getId(), requestApiParam.getReqdata());
+			member.setPhone("15986670850");
+			UnionDiscountResult data = unionCardService.getConsumeUnionDiscount(member.getId(), member.getPhone(), requestApiParam.getReqdata());
 			return ResponseUtils.createBySuccess(data);
 		} catch (BaseException e) {
 			logger.error("", e);

@@ -2,7 +2,10 @@ package com.gt.union.card.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.api.entity.result.UnionBindCardResult;
+import com.gt.union.card.entity.UnionCard;
 import com.gt.union.card.entity.UnionCardBinding;
+
+import java.util.List;
 
 /**
  * <p>
@@ -15,4 +18,5 @@ import com.gt.union.card.entity.UnionCardBinding;
 public interface IUnionCardBindingService extends IService<UnionCardBinding> {
 
 	UnionBindCardResult bindUnionCard(Integer busid, Integer id, String phone, String code) throws Exception;
+
 }

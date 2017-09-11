@@ -36,10 +36,10 @@ public class UnionCardBinding extends Model<UnionCardBinding> {
 	@TableField("del_status")
 	private Integer delStatus;
     /**
-     * 联盟卡id
+     * 联盟卡主表id
      */
-	@TableField("card_id")
-	private Integer cardId;
+	@TableField("root_id")
+	private Integer rootId;
     /**
      * 第三方用户id
      */
@@ -71,12 +71,12 @@ public class UnionCardBinding extends Model<UnionCardBinding> {
 		this.delStatus = delStatus;
 	}
 
-	public Integer getCardId() {
-		return cardId;
+	public Integer getRootId() {
+		return rootId;
 	}
 
-	public void setCardId(Integer cardId) {
-		this.cardId = cardId;
+	public void setRootId(Integer rootId) {
+		this.rootId = rootId;
 	}
 
 	public Integer getThirdMemberId() {

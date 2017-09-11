@@ -27,11 +27,20 @@ public class MyUnitTest {
 	@Autowired
 	private IUnionCardService unionCardService;
 
+	@Autowired
+	private SmsService smsService;
+
 	@Test
 	public void test1() throws Exception {
-		Page page = new Page<>();
-		Page result = unionCardService.selectListByUnionId(page,1, 33, null, null);
-		System.out.println(result.getRecords());
+		HashMap<String, Object> smsParams = new HashMap<String,Object>();
+		smsParams.put("mobiles", "15986670850");
+		smsParams.put("content", "绑定联盟卡，验证码:" + 123);
+		smsParams.put("company", "谷通");
+		smsParams.put("busId", 33);
+		smsParams.put("model", 13);
+		Map<String,Object> param = new HashMap<String,Object>();
+		param.put("reqdata",smsParams);
+		smsService.sendSms(param);
 
 	}
 

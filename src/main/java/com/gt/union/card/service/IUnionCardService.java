@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.api.entity.result.UnionDiscountResult;
 import com.gt.union.card.entity.UnionCard;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -56,9 +57,25 @@ public interface IUnionCardService extends IService<UnionCard> {
 	/**
 	 * 用户id和商家id获取联盟折扣
 	 * @param memberId
-	 * @param busId
-	 * @return
+	 * @param phone
+	 *@param busId  @return
 	 * @throws Exception
 	 */
-	UnionDiscountResult getConsumeUnionDiscount(Integer memberId, Integer busId) throws Exception;
+	UnionDiscountResult getConsumeUnionDiscount(Integer memberId, String phone, Integer busId) throws Exception;
+
+	/**
+	 * 根据unionCardRootid和盟员ids查询
+	 * @param unionCardRootId 联盟卡主表id
+	 * @param memberids		盟员ids
+	 * @return
+	 */
+	List<UnionCard> getByCardRootIdAndMemberIds(Integer unionCardRootId, List<Integer> memberids) throws Exception;
+
+	/**
+	 * 根据用户id和盟员Ids查询用户绑定的联盟卡信息列表
+	 * @param memberId	用户id
+	 * @param memberids	盟员Ids
+	 * @return
+	 */
+	List<UnionCard> getByBusMemberIdAndMemberIds(Integer memberId, List<Integer> memberids);
 }
