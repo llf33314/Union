@@ -60,7 +60,7 @@ public class UnionCardBindingServiceImpl extends ServiceImpl<UnionCardBindingMap
 			result.setMessage("验证码有误");
 		}
 		UnionCardBinding unionCardBinding = new UnionCardBinding();
-		unionCardBinding.setCardId(1);
+		//unionCardBinding.setCardId(1);
 		unionCardBinding.setCreatetime(new Date());
 		unionCardBinding.setDelStatus(CommonConstant.DEL_STATUS_NO);
 		unionCardBinding.setThirdMemberId(memberId);

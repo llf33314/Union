@@ -75,20 +75,6 @@ public class SwaggerConfig {
                 .build();
     }
 
-    @Bean
-    public Docket indexGroupConfig() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("index")
-                .apiInfo(new ApiInfoBuilder()
-                        .title("Restful文档接口服务平台-首页相关")
-                        .description("基于Swagger2实现")
-                        .version("1.0.0")
-                        .build())
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("com.gt.union.index.controller"))
-                .paths(PathSelectors.regex("/.*")) //可通过"或"来匹配多个模块
-                .build();
-    }
 
     @Bean
     public Docket mainGroupConfig() {

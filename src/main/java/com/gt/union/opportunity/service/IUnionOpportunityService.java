@@ -45,5 +45,5 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
 	 * @param isAccept	处理状态
 	 * @param acceptPrice	受理价格
 	 */
-	void updateByIdAndIsAccept(Integer busId, Integer id, Integer isAccept, Double acceptPrice);
+	void updateByIdAndIsAccept(Integer busId, Integer id, Integer isAccept, Double acceptPrice) throws Exception;
 }

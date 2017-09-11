@@ -4,13 +4,14 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.card.constant.CardConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.StringUtil;
-import com.gt.union.main.constant.ChargeConstant;
+import com.gt.union.main.constant.MainConstant;
 import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.entity.UnionMainCharge;
 import com.gt.union.main.service.IUnionMainChargeService;
@@ -100,8 +101,8 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
         UnionMain main = unionMainService.getById(unionId);
         unionMainService.checkUnionMainValid(main);
         //TODO 添加优惠服务  检验盟员身份
-       UnionMainCharge unionMainCharge =  unionMainChargeService.getByUnionIdAndType(main.getId(), ChargeConstant.RED_CARD_TYPE);
-       if(unionMainCharge == null || unionMainCharge.getIsAvailable().equals(ChargeConstant.AVAILABLE_NO)){
+       UnionMainCharge unionMainCharge =  unionMainChargeService.getByUnionIdAndType(main.getId(), MainConstant.CHARGE_TYPE_RED);
+       if(unionMainCharge == null || unionMainCharge.getIsAvailable().equals(MainConstant.CHARGE_IS_AVAILABLE_NO)){
            throw new BusinessException("联盟未开启红卡，不可添加优惠项目");
        }
         if (StringUtil.isEmpty(name)) {

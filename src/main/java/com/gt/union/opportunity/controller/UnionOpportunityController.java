@@ -104,7 +104,7 @@ public class UnionOpportunityController {
 		}
 	}
 
-	@ApiOperation(value = "查询我的佣金收入信息", produces = "application/json;charset=UTF-8")
+	/*@ApiOperation(value = "查询我的佣金收入信息", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/brokerage/fromBusId", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String listBrokerageByFromBusId(HttpServletRequest request, Page page
 			, @ApiParam(name = "toBusId", value = "佣金消费盟员id", required = false)
@@ -233,7 +233,7 @@ public class UnionOpportunityController {
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(GET_STATISTIC_DATA, "", CommonConstant.OPERATE_ERROR).toString();
 		}
-	}
+	}*/
 
 	@ApiOperation(value = "商机审核", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/{id}/isAcceptance/{isAcceptance}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
@@ -258,7 +258,7 @@ public class UnionOpportunityController {
 		}
 	}
 
-	@ApiOperation(value = "添加商机推荐", produces = "application/json;charset=UTF-8")
+	/*@ApiOperation(value = "添加商机推荐", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String save(HttpServletRequest request
 			, @ApiParam(name = "unionBusinessRecommendFormVO", value = "推荐的商机信息", required = true)
@@ -437,5 +437,5 @@ public class UnionOpportunityController {
 			logger.error("获取商机佣金支付错误：" + e);
 			return GTJsonResult.instanceErrorMsg(GET_STATUS, e.getMessage(), ExceptionConstant.SYS_ERROR).toString();
 		}
-	}
+	}*/
 }

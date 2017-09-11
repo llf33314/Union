@@ -183,7 +183,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 				if(ListUtil.isEmpty(cards)){//没有绑定过联盟卡
 					result.setCode(UnionDiscountResult.UNION_DISCOUNT_CODE_BIND);
 				} else {
-					for()
+					//for()
 				}
 			} else {//升级过联盟卡，给予使用，返回折扣（有可能在某个联盟中退盟了的，需要进一步判断）
 				List<UnionCard> cards = this.getByCardRootIdAndMemberIds(unionCardRoot.getId(), memberids);
@@ -198,7 +198,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 			}
 		}
 		//3、判断粉丝是否绑定联盟卡
-		unionCardBindingService.getBy
+		//unionCardBindingService.getBy
 		//4、
 		result.setCardId(10);
 		result.setCode(1);
