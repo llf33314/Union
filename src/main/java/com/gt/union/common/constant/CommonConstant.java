@@ -32,5 +32,10 @@ public interface CommonConstant {
     /**
      * 主账号权限
      */
-    String UNION_BUS_PARENT_MSG = "请使用主账号权限";
+    public static final String UNION_BUS_PARENT_MSG = "请使用主账号权限";
+
+    /**
+     * 商家帐号已过期
+     */
+    public static final String UNION_BUS_OVERDUE_MSG = "商家帐号已过期";
 }
