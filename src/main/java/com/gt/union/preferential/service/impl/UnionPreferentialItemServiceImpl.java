@@ -117,7 +117,7 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
         entityWrapper.eq("del_status",0);
         entityWrapper.eq("union_member_id",member.getId());
         int serviceCount = this.selectCount(entityWrapper);
-        if(serviceCount == CommonConstant.MAX_PREFERENIAL_COUNT){
+       /* if(serviceCount == CommonConstant.MAX_PREFERENIAL_COUNT){
             throw new BusinessException("优惠项目已达上限");
         }
         UnionPreferentialProject project= unionPreferentialProjectService.getByMemberId(member.getId());
@@ -141,7 +141,7 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
             unionPreferentialProjectService.insert(project);
         }
         item.setProjectId(project.getId());
-        this.insert(item);
+        this.insert(item);*/
     }
 
     @Override
