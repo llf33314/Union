@@ -14,4 +14,5 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/unionMainPermit")
 public class UnionMainPermitController {
+    //TODO 购买盟主服务相关
 }

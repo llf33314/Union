@@ -49,4 +49,8 @@ public interface CommonConstant {
      */
     public static final int COMMON_YES = 1;
 
+    /**
+     * 联盟默认有效期
+     */
+    public static final String UNION_VALIDITY_DEFAULT = "2020-09-01 14:00:00";
 }
