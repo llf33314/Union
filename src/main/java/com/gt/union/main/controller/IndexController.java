@@ -54,7 +54,7 @@ public class IndexController {
         } catch (BaseException e) {
             logger.error("", e);
             this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("", e);
             this.unionLogErrorService.saveIfNotNull(e);
@@ -84,7 +84,7 @@ public class IndexController {
         } catch (BaseException e) {
             logger.error("", e);
             this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("", e);
             this.unionLogErrorService.saveIfNotNull(e);

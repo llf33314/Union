@@ -10,14 +10,20 @@ import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.DateTimeKit;
+import com.gt.union.common.util.DateUtil;
+import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.entity.UnionMainCreate;
 import com.gt.union.main.entity.UnionMainPermit;
 import com.gt.union.main.mapper.UnionMainCreateMapper;
 import com.gt.union.main.service.IUnionMainCreateService;
 import com.gt.union.main.service.IUnionMainPermitService;
+import com.gt.union.main.vo.UnionMainCreateVO;
+import com.gt.union.main.vo.UnionMainVO;
 import com.gt.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.HashMap;
 import java.util.List;
@@ -70,7 +76,15 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        Map<String, Object> data = new HashMap<String, Object>();
+        return checkInstancePermit(busId);
+    }
+
+    //检查盟主服务许可
+    private Map<String, Object> checkInstancePermit(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        Map<String, Object> result = new HashMap<String, Object>();
         // 1、判断商家是否已是盟主
         if (this.unionMemberService.isUnionOwner(busId)) {
             throw new BusinessException("您已是联盟盟主，不可创建");
@@ -101,30 +115,84 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         String[] arrs = itemValue.split(",");
         String isPay = arrs[0];
         if (isPay.equals("0")) {//不需要付费
-            data.put("save", 1);//去创建联盟
+            result.put("save", CommonConstant.COMMON_YES);//去创建联盟
         } else {
             //4、需要付费，判断是否已经付费
             UnionMainPermit unionMainPermit = this.unionMainPermitService.getByBusId(busId);
             if (unionMainPermit == null) {
-                data.put("pay", 1);//去支付
+                result.put("pay", CommonConstant.COMMON_YES);//去支付
                 List<Map> list = this.dictService.getUnionCreatePackage();
-                data.put("payItems", list);
-                return data;
+                result.put("payItems", list);
+                return result;
             }
             if (DateTimeKit.laterThanNow(unionMainPermit.getValidity())) {//未过期
                 UnionMainCreate unionMainCreate = this.getByBusIdAndPermitId(busId, unionMainPermit.getId());
                 if (unionMainCreate != null) {
                     throw new BusinessException("联盟未过期，不可创建");
                 } else {
-                    data.put("save", 1);//去创建联盟
+                    result.put("save", CommonConstant.COMMON_YES);//去创建联盟
+                    result.put("isUsePermit", CommonConstant.COMMON_YES);
+                    result.put("permitId", unionMainPermit.getId());
                 }
             } else {//过期了
-                data.put("pay", 1);//去支付
+                result.put("pay", CommonConstant.COMMON_YES);//去支付
                 List<Map> list = dictService.getUnionCreatePackage();
-                data.put("payItems", list);
+                result.put("payItems", list);
             }
         }
-        return data;
+        return result;
+    }
+
+    /**
+     * 根据商家id和表单信息，保存新建的联盟信息
+     *
+     * @param busId             {not null} 商家id
+     * @param unionMainCreateVO {not null} 新建的联盟id
+     * @throws Exception
+     */
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void saveInstanceByBusIdAndVo(Integer busId, UnionMainCreateVO unionMainCreateVO) throws Exception {
+        if (busId == null || unionMainCreateVO == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)判断是否具有盟主服务许可
+        Map<String, Object> instancePermitMap = checkInstancePermit(busId);
+        if (instancePermitMap.get("save") == null || !instancePermitMap.get("save").toString().equals(CommonConstant.COMMON_YES)) {
+            throw new BusinessException("没有盟主服务许可或许可已过期");
+        }
+        // (2)判断盟主服务许可ID是否可用，以及是否已用
+        Object isUsePermit = instancePermitMap.get("isUsePermit");
+        UnionMainPermit unionMainPermit = null;
+        if (isUsePermit != null && isUsePermit.toString().equals(CommonConstant.COMMON_YES)) {
+            if (isUsePermit == null) {
+                throw new BusinessException("没有盟主服务许可");
+            }
+            Integer permitId = unionMainCreateVO.getPermitId();
+            unionMainPermit = this.unionMainPermitService.getByBusIdAndId(busId, permitId);
+            if (unionMainPermit == null) {
+                throw new BusinessException("没有盟主服务许可ID或已无效");
+            }
+            if (!DateTimeKit.laterThanNow(unionMainPermit.getValidity())) {
+                throw new BusinessException("盟主服务许可已过期");
+            }
+            UnionMainCreate unionMainCreate = this.getByBusIdAndPermitId(busId, permitId);
+            if (unionMainCreate != null) {
+                throw new BusinessException("盟主服务许可已使用过，无法再次使用");
+            }
+        }
+        // (3)保存的联盟信息
+        UnionMain saveUnionMain = new UnionMain();
+        UnionMainVO unionMainVO = unionMainCreateVO.getUnionMainVO();
+        saveUnionMain.setCreatetime(DateUtil.getCurrentDate()); //创建时间
+        saveUnionMain.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
+        saveUnionMain.setName(unionMainVO.getUnionName()); //联盟名称
+        String unionImg = unionMainVO.getUnionImg();
+        if(unionImg.indexOf("/upload/") > -1){
+            saveUnionMain.setImg(unionImg.split("/upload/")[1]); //联盟图标
+        }
+        saveUnionMain.setJoinType(unionMainVO.getJoinType()); //联盟加盟方式
+
     }
 
     /**

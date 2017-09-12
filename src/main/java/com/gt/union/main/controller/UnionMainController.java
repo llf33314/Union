@@ -61,7 +61,7 @@ public class UnionMainController {
         } catch (BaseException e) {
             logger.error("", e);
             this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("", e);
             this.unionLogErrorService.saveIfNotNull(e);
@@ -83,7 +83,7 @@ public class UnionMainController {
         } catch (BaseException e) {
             logger.error("", e);
             this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("", e);
             this.unionLogErrorService.saveIfNotNull(e);
@@ -104,11 +104,12 @@ public class UnionMainController {
             if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
                 busId = busUser.getPid();
             }
+            this.unionMainService.updateByMemberIdAndBusIdAndVO(memberId, busId, unionMainVO);
             return GTJsonResult.instanceSuccessMsg().toString();
         } catch (BaseException e) {
             logger.error("", e);
             this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(e.getMessage()).toString();
+            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("", e);
             this.unionLogErrorService.saveIfNotNull(e);

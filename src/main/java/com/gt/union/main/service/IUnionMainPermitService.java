@@ -29,4 +29,14 @@ public interface IUnionMainPermitService extends IService<UnionMainPermit> {
      * @throws Exception
      */
     UnionMainPermit getByBusId(Integer busId) throws Exception;
+
+    /**
+     * 根据商家id和许可id获取联盟服务许可信息
+     *
+     * @param busId {not null} 商家id
+     * @param id    {not null} 联盟许可id
+     * @return
+     * @throws Exception
+     */
+    UnionMainPermit getByBusIdAndId(Integer busId, Integer id) throws Exception;
 }

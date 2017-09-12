@@ -2,6 +2,7 @@ package com.gt.union.main.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.main.entity.UnionMainCreate;
+import com.gt.union.main.vo.UnionMainCreateVO;
 
 import java.util.Map;
 
@@ -31,6 +32,15 @@ public interface IUnionMainCreateService extends IService<UnionMainCreate> {
      * @throws Exception
      */
     Map<String, Object> instanceByBusId(Integer busId) throws Exception;
+
+    /**
+     * 根据商家id和表单信息，保存新建的联盟信息
+     *
+     * @param busId             {not null} 商家id
+     * @param unionMainCreateVO {not null} 新建的联盟id
+     * @throws Exception
+     */
+    void saveInstanceByBusIdAndVo(Integer busId, UnionMainCreateVO unionMainCreateVO) throws Exception;
 
     /**
      * 根据商家id和服务许可id，获取联盟创建信息

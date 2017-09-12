@@ -38,4 +38,15 @@ public interface CommonConstant {
      * 商家帐号已过期
      */
     public static final String UNION_BUS_OVERDUE_MSG = "商家帐号已过期";
+
+    /**
+     * 通用是否：否
+     */
+    public static final int COMMON_NO = 0;
+
+    /**
+     * 通用是否：是
+     */
+    public static final int COMMON_YES = 1;
+
 }
