@@ -1,5 +1,6 @@
 package com.gt.union.api.server.card;
 
+import com.gt.api.bean.session.Member;
 import com.gt.api.dto.ResponseUtils;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.api.entity.param.BindCardParam;
@@ -10,7 +11,6 @@ import com.gt.union.api.server.ApiBaseController;
 import com.gt.union.card.service.IUnionCardBindingService;
 import com.gt.union.card.service.IUnionCardService;
 import com.gt.union.common.constant.ConfigConstant;
-import com.gt.union.common.entity.Member;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.util.RandomKit;

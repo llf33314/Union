@@ -5,6 +5,7 @@ import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.card.service.IUnionCardService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.util.RandomKit;
+import com.gt.union.common.util.RedisCacheUtil;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,17 +31,13 @@ public class MyUnitTest {
 	@Autowired
 	private SmsService smsService;
 
+	@Autowired
+	private RedisCacheUtil redisCacheUtil;
+
 	@Test
 	public void test1() throws Exception {
-		HashMap<String, Object> smsParams = new HashMap<String,Object>();
-		smsParams.put("mobiles", "15986670850");
-		smsParams.put("content", "绑定联盟卡，验证码:" + 123);
-		smsParams.put("company", "谷通");
-		smsParams.put("busId", 33);
-		smsParams.put("model", 13);
-		Map<String,Object> param = new HashMap<String,Object>();
-		param.put("reqdata",smsParams);
-		smsService.sendSms(param);
+		redisCacheUtil.set("aafa","hsadfas",50l);
+		System.out.println(redisCacheUtil.get("aafa"));
 
 	}
 

@@ -57,4 +57,15 @@ public interface BusUserConstant {
      * 帐号类型：子帐号
      */
     public static final int ACCOUNT_TYPE_SUB = 2;
+
+
+    /**
+     * 账号被冻结
+     */
+    public static final String UNION_USER_FREEZE_MSG = "该用户已被冻结";
+
+    /**
+     * 商家帐号已过期
+     */
+    public static final String UNION_BUS_OVERDUE_MSG = "商家帐号已过期";
 }

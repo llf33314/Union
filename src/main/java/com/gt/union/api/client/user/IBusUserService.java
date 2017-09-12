@@ -1,6 +1,6 @@
 package com.gt.union.api.client.user;
 
-import com.gt.union.common.entity.BusUser;
+import com.gt.api.bean.session.BusUser;
 
 import java.util.Map;
 

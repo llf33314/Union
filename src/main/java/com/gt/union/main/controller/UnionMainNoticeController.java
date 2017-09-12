@@ -1,12 +1,12 @@
 package com.gt.union.main.controller;
 
+import com.gt.api.bean.session.BusUser;
+import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.CommonConstant;
-import com.gt.union.common.entity.BusUser;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.SessionUtils;
 import com.gt.union.main.entity.UnionMainNotice;
 import com.gt.union.main.service.IUnionMainNoticeService;
 import io.swagger.annotations.ApiOperation;

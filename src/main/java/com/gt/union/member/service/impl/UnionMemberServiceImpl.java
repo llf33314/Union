@@ -72,6 +72,22 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
+    public boolean hasUnionMemberAuthority(Integer memberId) throws Exception {
+        if (memberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("id", memberId)
+                .andNew()
+                .eq("status", MemberConstant.STATUS_IN)
+                .or()
+                .eq("status", MemberConstant.STATUS_APPLY_OUT);
+        UnionMember unionMember = this.selectOne(entityWrapper);
+        return unionMember != null ? true : false;
+    }
+
+    @Override
     public UnionMember getUnionOwnerByUnionId(Integer unionId) throws Exception {
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -217,7 +233,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
 	@Override
-	public List<UnionMember> getByUnionId(Integer unionId) throws Exception{
+	public List<UnionMember> listByUnionId(Integer unionId) throws Exception{
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -240,5 +256,13 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 .or()
                 .eq("status", MemberConstant.STATUS_APPLY_OUT);
         return this.selectList(entityWrapper);
+	}
+
+	@Override
+	public UnionMember getById(Integer memberId) {
+        EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<UnionMember>();
+        entityWrapper.eq("id", memberId);
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+        return this.selectOne(entityWrapper);
 	}
 }

@@ -1,12 +1,12 @@
 package com.gt.union.card.controller;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.gt.api.bean.session.BusUser;
+import com.gt.api.util.SessionUtils;
 import com.gt.union.card.service.IUnionCardService;
 import com.gt.union.common.constant.CommonConstant;
-import com.gt.union.common.entity.BusUser;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
-import com.gt.union.common.util.SessionUtils;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
