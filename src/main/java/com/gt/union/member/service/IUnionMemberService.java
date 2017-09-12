@@ -45,6 +45,15 @@ public interface IUnionMemberService extends IService<UnionMember> {
     public boolean hasUnionMemberAuthority(Integer unionId, Integer busId) throws Exception;
 
     /**
+     * 判断商家是否具有联盟的盟员权限，未加盟、已退盟以及退盟过渡期不具有
+     *
+     * @param memberId {not null} 盟员id
+     * @return
+     * @throws Exception
+     */
+    public boolean hasUnionMemberAuthority(Integer memberId) throws Exception;
+
+    /**
      * 根据联盟id获取该联盟盟主的盟员信息
      *
      * @param unionId {not null} 联盟id
@@ -112,7 +121,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @param unionId
      * @return
      */
-	List<UnionMember> getByUnionId(Integer unionId) throws Exception;
+	List<UnionMember> listByUnionId(Integer unionId) throws Exception;
 
     /**
      * 根据商家id查询商家加入的有效盟员信息列表
@@ -120,4 +129,11 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @return
      */
 	List<UnionMember> listValidByBusId(Integer busId) throws Exception;
+
+    /**
+     * 根据id获取盟员信息
+     * @param memberId
+     * @return
+     */
+	UnionMember getById(Integer memberId);
 }

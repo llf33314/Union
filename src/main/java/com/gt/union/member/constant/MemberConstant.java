@@ -33,4 +33,30 @@ public interface MemberConstant {
      * 盟员状态：退盟过渡期
      */
     public static final int STATUS_OUTING = 4;
+
+    /**
+     * 最大加入联盟数
+     */
+    public static int MAX_UNION_APPLY = 3;
+
+
+    /**
+     * 没有盟主权限
+     */
+    public static final String UNION_OWNER_NON_AUTHORITY_MSG = "您没有盟主权限";
+
+    /**
+     * 联盟成员数上限
+     */
+    public static final String UNION_NUM_MAX_MSG = "联盟成员数已达上限";
+
+    /**
+     * 加入的联盟数上限
+     */
+    public static final String UNION_MEMBER_NUM_MAX_MSG = "您加入的联盟已达上限";
+
+    /**
+     * 没有权限操作
+     */
+    public static final String UNION_MEMBER_NON_AUTHORITY_MSG = "您没有权限";
 }

@@ -12,5 +12,12 @@ import com.gt.union.brokerage.entity.UnionBrokerageRatio;
  * @since 2017-09-07
  */
 public interface IUnionBrokerageRatioService extends IService<UnionBrokerageRatio> {
-	
+
+	/**
+	 * 查询佣金设置比例
+	 * @param fromMemberId
+	 * @param toMemberId
+	 * @return
+	 */
+	UnionBrokerageRatio getByFromMemberIdAndToMemberId(Integer fromMemberId, Integer toMemberId) throws Exception;
 }

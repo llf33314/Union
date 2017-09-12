@@ -1,7 +1,7 @@
 package com.gt.union.common.filter;
 
-import com.gt.union.common.entity.BusUser;
-import com.gt.union.common.util.SessionUtils;
+import com.gt.api.bean.session.BusUser;
+import com.gt.api.util.SessionUtils;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;

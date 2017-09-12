@@ -2,7 +2,6 @@ package com.gt.union.main.controller;
 
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
-import com.gt.union.common.entity.BusUser;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.SessionUtils;

@@ -7,7 +7,6 @@ import com.gt.api.util.sign.SignHttpUtils;
 import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
-import com.gt.union.common.entity.BusUser;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
 import org.springframework.beans.factory.annotation.Autowired;

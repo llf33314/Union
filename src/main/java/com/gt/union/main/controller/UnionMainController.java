@@ -1,10 +1,10 @@
 package com.gt.union.main.controller;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.gt.api.bean.session.BusUser;
 import com.gt.union.common.annotation.SysLogAnnotation;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
-import com.gt.union.common.entity.BusUser;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.service.IUnionValidateService;

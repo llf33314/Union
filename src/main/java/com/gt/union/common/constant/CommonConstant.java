@@ -33,4 +33,6 @@ public interface CommonConstant {
      * 主账号权限
      */
     String UNION_BUS_PARENT_MSG = "请使用主账号权限";
+
+
 }
