@@ -1,5 +1,7 @@
 package com.gt.union.api.client.user;
 
+import com.gt.api.bean.session.BusUser;
+
 import java.util.Map;
 
 /**

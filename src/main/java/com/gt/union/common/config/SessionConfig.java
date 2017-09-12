@@ -2,6 +2,7 @@ package com.gt.union.common.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 
@@ -17,6 +18,17 @@ public class SessionConfig {
     @Value( "${redisSession.domainName}" )
     private String domainName;
 
+    @Value("${spring.redis2.host}")
+    private String host;
+    @Value("${spring.redis2.port}")
+    private int port;
+    @Value("${spring.redis2.timeout}")
+    private int timeout;
+    @Value("${spring.redis2.database}")
+    private int database;
+    @Value("${spring.redis2.password}")
+    private String password;
+
     @Bean
     public DefaultCookieSerializer defaultCookieSerializer(){
         DefaultCookieSerializer defaultCookieSerializer = new DefaultCookieSerializer();
@@ -24,5 +36,16 @@ public class SessionConfig {
         defaultCookieSerializer.setCookieName(cookieName);
         defaultCookieSerializer.setCookiePath(cookiePath);
         return defaultCookieSerializer;
+    }
+
+    @Bean
+    public JedisConnectionFactory connectionFactory() {
+        JedisConnectionFactory factory = new JedisConnectionFactory();
+        factory.setHostName(host);
+        factory.setPort(port);
+        factory.setTimeout(timeout); //设置连接超时时间
+        factory.setDatabase(database);
+        factory.setPassword(password);
+        return factory;
     }
 }

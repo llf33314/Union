@@ -5,9 +5,12 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.api.entity.result.UnionBindCardResult;
 import com.gt.union.card.entity.UnionCard;
 import com.gt.union.card.entity.UnionCardBinding;
+import com.gt.union.card.entity.UnionCardRoot;
 import com.gt.union.card.mapper.UnionCardBindingMapper;
 import com.gt.union.card.service.IUnionCardBindingService;
+import com.gt.union.card.service.IUnionCardRootService;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.RedisKeyUtil;
@@ -32,35 +35,29 @@ public class UnionCardBindingServiceImpl extends ServiceImpl<UnionCardBindingMap
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
 
+	@Autowired
+	private IUnionCardRootService unionCardRootService;
+
 	@Override
 	public UnionBindCardResult bindUnionCard(Integer busid, Integer memberId, String phone, String code) throws Exception{
-		if(busid == null){
+		if(busid == null || memberId == null || StringUtil.isEmpty(phone) || StringUtil.isEmpty(code)){
 			throw new ParamException(CommonConstant.PARAM_ERROR);
-		}
-		if(memberId == null){
-			throw new ParamException(CommonConstant.PARAM_ERROR);
-		}
-		if(StringUtil.isEmpty(phone)){
-			throw new ParamException(CommonConstant.PARAM_ERROR);
-		}
-		if(StringUtil.isEmpty(code)){
-			throw new ParamException( CommonConstant.PARAM_ERROR);
 		}
 		String phoneKey = RedisKeyUtil.getMemberPhoneCodeKey(memberId);
 		Object obj = redisCacheUtil.get(phoneKey);
 		if(obj == null){
-			UnionBindCardResult result = new UnionBindCardResult();
-			result.setMessage("验证码已失效");
-			result.setSuccess(false);
-			return result;
+			throw new ParamException("验证码失效");
 		}
 		if(!code.equals(obj.toString())) {
-			UnionBindCardResult result = new UnionBindCardResult();
-			result.setSuccess(false);
-			result.setMessage("验证码有误");
+			throw new ParamException("验证码错误");
+
+		}
+		UnionCardRoot root = unionCardRootService.getByPhone(phone);
+		if(root == null){
+			throw new BusinessException("该手机号未升级联盟卡");
 		}
 		UnionCardBinding unionCardBinding = new UnionCardBinding();
-		//unionCardBinding.setCardId(1);
+		unionCardBinding.setRootId(root.getId());
 		unionCardBinding.setCreatetime(new Date());
 		unionCardBinding.setDelStatus(CommonConstant.DEL_STATUS_NO);
 		unionCardBinding.setThirdMemberId(memberId);
