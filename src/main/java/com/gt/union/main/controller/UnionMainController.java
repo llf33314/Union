@@ -48,7 +48,7 @@ public class UnionMainController {
     private IUnionValidateService unionValidateService;
 
     @ApiOperation(value = "获取我的所有联盟的信息，包括我创建的、以及我加入的", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/myUnion/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listByBusId(HttpServletRequest request) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
@@ -70,7 +70,7 @@ public class UnionMainController {
     }
 
     @ApiOperation(value = "分页获取我的所有联盟的信息，包括我创建的、以及我加入的", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/myUnion/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String PageByBusId(HttpServletRequest request, Page page) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
@@ -95,8 +95,10 @@ public class UnionMainController {
     @SysLogAnnotation(op_function = "3", description = "更新联盟信息，要求盟主权限")
     @RequestMapping(value = "/memberId/{memberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String method(HttpServletRequest request
-            , @ApiParam(name = "memberId", value = "盟员id", required = true) @PathVariable("memberId") Integer memberId
-            , @ApiParam(name = "unionMainVO", value = "更新信息实体", required = true) @RequestBody @Valid UnionMainVO unionMainVO, BindingResult bindingResult) {
+            , @ApiParam(name = "memberId", value = "盟员id", required = true)
+                         @PathVariable("memberId") Integer memberId
+            , @ApiParam(name = "unionMainVO", value = "更新信息实体", required = true)
+                         @RequestBody @Valid UnionMainVO unionMainVO, BindingResult bindingResult) {
         try {
             this.unionValidateService.checkBindingResult(bindingResult);
             BusUser busUser = SessionUtils.getLoginUser(request);

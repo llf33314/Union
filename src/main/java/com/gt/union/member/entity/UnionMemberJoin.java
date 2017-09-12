@@ -53,8 +53,8 @@ public class UnionMemberJoin extends Model<UnionMemberJoin> {
     /**
      * 是否同意推荐(0：不同意 1：同意)
      */
-	@TableField("is_recommand_agree")
-	private Integer isRecommandAgree;
+	@TableField("is_recommend_agree")
+	private Integer isRecommendAgree;
     /**
      * 入盟类型（1：申请 2：推荐）
      */
@@ -109,12 +109,12 @@ public class UnionMemberJoin extends Model<UnionMemberJoin> {
 		this.reason = reason;
 	}
 
-	public Integer getIsRecommandAgree() {
-		return isRecommandAgree;
+	public Integer getIsRecommendAgree() {
+		return isRecommendAgree;
 	}
 
-	public void setIsRecommandAgree(Integer isRecommandAgree) {
-		this.isRecommandAgree = isRecommandAgree;
+	public void setIsRecommendAgree(Integer isRecommendAgree) {
+		this.isRecommendAgree = isRecommendAgree;
 	}
 
 	public Integer getType() {

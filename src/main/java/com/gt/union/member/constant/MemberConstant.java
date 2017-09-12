@@ -39,6 +39,15 @@ public interface MemberConstant {
      */
     public static int MAX_UNION_APPLY = 3;
 
+    /**
+     * 加盟类型：申请
+     */
+    public static int JOIN_TYPE_JOIN = 1;
+
+    /**
+     * 加盟类型：推荐
+     */
+    public static int JOIN_TYPE_RECOMMEND = 2;
 
     /**
      * 没有盟主权限

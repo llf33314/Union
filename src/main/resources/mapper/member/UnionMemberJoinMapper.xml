@@ -10,7 +10,7 @@
 		<result column="apply_member_id" property="applyMemberId" />
 		<result column="recommend_member_id" property="recommendMemberId" />
 		<result column="reason" property="reason" />
-		<result column="is_recommand_agree" property="isRecommandAgree" />
+		<result column="is_recommend_agree" property="isRecommendAgree" />
 		<result column="type" property="type" />
 	</resultMap>
 

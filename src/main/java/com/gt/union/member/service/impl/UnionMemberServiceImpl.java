@@ -87,6 +87,32 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         return unionMember != null ? true : false;
     }
 
+    /**
+     * 根据商家id和盟员id，检查商家信息和盟员信息是否匹配
+     *
+     * @param busId    {not null} 商家id
+     * @param memberId {not null} 盟员id
+     * @throws Exception
+     */
+    @Override
+    public boolean isUnionMemberValid(Integer busId, Integer memberId) throws Exception {
+        if (busId == null || memberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("id", memberId)
+                .eq("bus_id", busId)
+                .andNew()
+                .eq("status", MemberConstant.STATUS_IN)
+                .or()
+                .eq("status", MemberConstant.STATUS_APPLY_OUT)
+                .or()
+                .eq("status", MemberConstant.STATUS_OUTING);
+        UnionMember unionMember = this.selectOne(entityWrapper);
+        return unionMember != null ? true : false;
+    }
+
     @Override
     public UnionMember getUnionOwnerByUnionId(Integer unionId) throws Exception {
         if (unionId == null) {
