@@ -7,6 +7,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import java.util.List;
 
@@ -56,6 +57,7 @@ public class UnionMainVO {
     /**
      * 联盟升级收费实体
      */
+    @Valid
     private UnionMainChargeVO unionMainChargeVO;
 
     /**

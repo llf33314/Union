@@ -1,6 +1,9 @@
 package com.gt.union.log.service.impl;
 
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.common.exception.BaseException;
+import com.gt.union.common.exception.BusinessException;
+import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.DateUtil;
 import com.gt.union.log.constant.LogConstant;
 import com.gt.union.log.entity.UnionLogError;
@@ -27,10 +30,15 @@ public class UnionLogErrorServiceImpl extends ServiceImpl<UnionLogErrorMapper, U
                 StackTraceElement element = elements[0];
                 String className = element.getClassName();
                 String methodName = element.getMethodName();
-                StringBuilder sbMessage = new StringBuilder(e.getMessage()).append(LogConstant.lineSeperator);
+                String errorMessage = e.getMessage();
+                if (e instanceof ParamException || e instanceof BusinessException || e instanceof BaseException) {
+                    errorMessage = ((BaseException) e).getErrorMsg();
+                }
+                StringBuilder sbDetailMessage = new StringBuilder(errorMessage)
+                        .append(LogConstant.lineSeperator);
                 for (int i = 0; i < elements.length; i++) {
                     element = elements[i];
-                    sbMessage.append("    at ").append(element.getClassName())
+                    sbDetailMessage.append("    at ").append(element.getClassName())
                             .append(".").append(element.getMethodName())
                             .append("(").append(element.getFileName())
                             .append(":").append(element.getLineNumber())
@@ -40,8 +48,8 @@ public class UnionLogErrorServiceImpl extends ServiceImpl<UnionLogErrorMapper, U
                 unionLogError.setCreatetime(DateUtil.getCurrentDate());
                 unionLogError.setClassName(className);
                 unionLogError.setMethodName(methodName);
-                unionLogError.setError(e.getMessage());
-                unionLogError.setDetail(sbMessage.toString().getBytes());
+                unionLogError.setError(errorMessage);
+                unionLogError.setDetail(sbDetailMessage.toString().getBytes());
                 this.insert(unionLogError);
             }
         } catch (Exception e1) {

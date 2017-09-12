@@ -283,6 +283,11 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         if (ListUtil.isNotEmpty(unionMainDictList)) {
             this.unionMainDictService.insertBatch(unionMainDictList);
         }
+        // (10)删除缓存
+        String infoDictKey = RedisKeyUtil.getUnionInfoDictKey(unionId);
+        redisCacheUtil.remove(infoDictKey);
+        String unionMainKey = RedisKeyUtil.getUnionMainKey(unionId);
+        this.redisCacheUtil.remove(unionMainKey );
     }
 
 }

@@ -93,8 +93,8 @@ public class UnionMember extends Model<UnionMember> {
     /**
      * 地址省份code
      */
-	@TableField("address_provience_code")
-	private Integer addressProvienceCode;
+	@TableField("address_province_code")
+	private Integer addressProvinceCode;
     /**
      * 地址城市code
      */
@@ -239,12 +239,12 @@ public class UnionMember extends Model<UnionMember> {
 		this.addressLatitude = addressLatitude;
 	}
 
-	public Integer getAddressProvienceCode() {
-		return addressProvienceCode;
+	public Integer getAddressProvinceCode() {
+		return addressProvinceCode;
 	}
 
-	public void setAddressProvienceCode(Integer addressProvienceCode) {
-		this.addressProvienceCode = addressProvienceCode;
+	public void setAddressProvinceCode(Integer addressProvinceCode) {
+		this.addressProvinceCode = addressProvinceCode;
 	}
 
 	public Integer getAddressCityCode() {

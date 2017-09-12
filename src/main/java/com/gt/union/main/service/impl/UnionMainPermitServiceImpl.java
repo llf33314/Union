@@ -63,6 +63,44 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
     }
 
     /**
+     * 根据商家id获取联盟服务许可
+     *
+     * @param busId {not null} 商家id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public UnionMainPermit getByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("bus_id", busId);
+        return this.selectOne(entityWrapper);
+    }
+
+    /**
+     * 根据商家id和许可id获取联盟服务许可信息
+     *
+     * @param busId {not null} 商家id
+     * @param id    {not null} 联盟许可id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public UnionMainPermit getByBusIdAndId(Integer busId, Integer id) throws Exception {
+        if (busId == null || id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("bus_id", busId)
+                .eq("id", id);
+        return this.selectOne(entityWrapper);
+    }
+
+    /**
      * 获取免费的盟主权限
      *
      * @return
