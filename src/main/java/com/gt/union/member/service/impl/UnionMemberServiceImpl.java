@@ -8,10 +8,15 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.StringUtil;
+import com.gt.union.main.constant.MainConstant;
+import com.gt.union.main.entity.UnionMain;
+import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.member.constant.MemberConstant;
 import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.mapper.UnionMemberMapper;
 import com.gt.union.member.service.IUnionMemberService;
+import com.gt.union.member.vo.UnionMemberVO;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -26,6 +31,8 @@ import java.util.List;
  */
 @Service
 public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, UnionMember> implements IUnionMemberService {
+    @Autowired
+    private IUnionMainService unionMainService;
 
     @Override
     public boolean isUnionOwner(Integer busId) throws Exception {
@@ -103,12 +110,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("id", memberId)
                 .eq("bus_id", busId)
-                .andNew()
-                .eq("status", MemberConstant.STATUS_IN)
-                .or()
-                .eq("status", MemberConstant.STATUS_APPLY_OUT)
-                .or()
-                .eq("status", MemberConstant.STATUS_OUTING);
+                .in("status", new Object[]{MemberConstant.STATUS_IN, MemberConstant.STATUS_APPLY_OUT, MemberConstant.STATUS_OUTING});
         UnionMember unionMember = this.selectOne(entityWrapper);
         return unionMember != null ? true : false;
     }
@@ -131,30 +133,21 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
      *
      * @param busId        {not null} 商家id
      * @param isUnionOwner {not null} 是否盟主
-     * @param status       {not null} 盟员状态
-     * @param orStatus     或操作，盟员状态，为空时不参与查询
+     * @param statusArray  {not null} 盟员状态
      * @return
      * @throws Exception
      */
     @Override
-    public List<UnionMember> listByBusIdAndIsUnionOwnerAndStatus(Integer busId, Integer isUnionOwner
-            , Integer status, Integer orStatus) throws Exception {
-        if (busId == null || isUnionOwner == null || status == null) {
+    public List<UnionMember> listByBusIdAndIsUnionOwnerAndStatus(Integer busId, Integer isUnionOwner, Object[] statusArray) throws Exception {
+        if (busId == null || isUnionOwner == null || statusArray == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         EntityWrapper entityWrapper = new EntityWrapper();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("bus_id", busId)
-                .eq("is_union_owner", isUnionOwner);
-        if (orStatus != null) {
-            entityWrapper.andNew()
-                    .eq("status", status)
-                    .or()
-                    .eq("status", orStatus);
-        } else {
-            entityWrapper.eq("status", status);
-        }
-        entityWrapper.orderBy("id", true);
+                .eq("is_union_owner", isUnionOwner)
+                .in("status", statusArray)
+                .orderBy("id", true);
 
         return this.selectList(entityWrapper);
     }
@@ -168,6 +161,44 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("union_id", unionId)
                 .eq("status", status);
+        return this.selectCount(entityWrapper);
+    }
+
+    /**
+     * 根据联盟id统计有效盟员数，即已加入的、申请退出的和退盟过渡期的
+     *
+     * @param unionId {not null} 联盟id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public Integer countValidMemberByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .in("status", new Object[]{MemberConstant.STATUS_IN, MemberConstant.STATUS_APPLY_OUT, MemberConstant.STATUS_OUTING});
+        return this.selectCount(entityWrapper);
+    }
+
+    /**
+     * 根据商家id，统计盟员数
+     *
+     * @param busId {not null} 商家id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public Integer countValidMemberByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("bus_id", busId)
+                .in("status", new Object[]{MemberConstant.STATUS_IN, MemberConstant.STATUS_APPLY_OUT, MemberConstant.STATUS_OUTING});
         return this.selectCount(entityWrapper);
     }
 
@@ -202,7 +233,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         if (page == null || memberId == null || busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        final UnionMember unionMember = this.getByMemberIdAndBusId(memberId, busId);
+        final UnionMember unionMember = this.getByIdAndBusId(memberId, busId);
         if (unionMember == null) {
             throw new BusinessException("没有盟员权限");
         }
@@ -247,7 +278,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
      * @throws Exception
      */
     @Override
-    public UnionMember getByMemberIdAndBusId(Integer memberId, Integer busId) throws Exception {
+    public UnionMember getByIdAndBusId(Integer memberId, Integer busId) throws Exception {
         if (memberId == null || busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -258,19 +289,19 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         return this.selectOne(entityWrapper);
     }
 
-	@Override
-	public List<UnionMember> listByUnionId(Integer unionId) throws Exception{
+    @Override
+    public List<UnionMember> listByUnionId(Integer unionId) throws Exception {
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<UnionMember>();
         entityWrapper.eq("union_id", unionId);
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
-		return this.selectList(entityWrapper);
-	}
+        return this.selectList(entityWrapper);
+    }
 
-	@Override
-	public List<UnionMember> listValidByBusId(Integer busId) throws Exception{
+    @Override
+    public List<UnionMember> listValidByBusId(Integer busId) throws Exception {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -282,13 +313,13 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 .or()
                 .eq("status", MemberConstant.STATUS_APPLY_OUT);
         return this.selectList(entityWrapper);
-	}
+    }
 
-	@Override
-	public UnionMember getById(Integer memberId) {
+    @Override
+    public UnionMember getById(Integer memberId) {
         EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<UnionMember>();
-        entityWrapper.eq("id", memberId);
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+        entityWrapper.eq("id", memberId)
+                .eq("del_status", CommonConstant.DEL_STATUS_NO);
         return this.selectOne(entityWrapper);
 	}
 
@@ -303,5 +334,51 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 .or()
                 .eq("status", MemberConstant.STATUS_APPLY_OUT);
         return this.selectList(entityWrapper);
+    }
+    }
+
+    /**
+     * 根据盟员身份id、商家id和更新内容实体，更新盟员信息
+     *
+     * @param memberId      {not null} 盟员身份id
+     * @param busId         {not null} 商家id
+     * @param unionMemberVO {not null} 更新内容实体
+     * @throws Exception
+     */
+    @Override
+    public void updateByIdAndBusId(Integer memberId, Integer busId, UnionMemberVO unionMemberVO) throws Exception {
+        if (memberId == null || busId == null || unionMemberVO == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        if (!this.isUnionMemberValid(busId, memberId)) {
+            throw new BusinessException("不具有盟员身份或已过期");
+        }
+        UnionMember unionMember = this.getByIdAndBusId(memberId, busId);
+        UnionMain unionMain = this.unionMainService.getById(unionMember.getUnionId());
+        UnionMember updateUnionMember = new UnionMember();
+        updateUnionMember.setId(memberId); //盟员身份id
+        updateUnionMember.setEnterpriseName(unionMemberVO.getEnterpriseName()); //企业名称
+        updateUnionMember.setEnterpriseAddress(unionMemberVO.getEnterpriseAddress()); //企业地址
+        updateUnionMember.setDirectorName(unionMemberVO.getDirectorName()); //负责人名称
+        updateUnionMember.setDirectorPhone(unionMemberVO.getDirectorPhone()); //负责人联系电话
+        updateUnionMember.setDirectorEmail(unionMemberVO.getDirectorEmail()); //负责人邮箱
+        updateUnionMember.setAddressLongitude(unionMemberVO.getAddressLongitude()); //地址经度
+        updateUnionMember.setAddressLatitude(unionMemberVO.getAddressLatitude()); //地址纬度
+        updateUnionMember.setNotifyPhone(unionMemberVO.getNotifyPhone()); //短信通知手机号
+        updateUnionMember.setAddressProvinceCode(unionMemberVO.getAddressProvinceCode()); //地址省份编码
+        updateUnionMember.setAddressCityCode(unionMemberVO.getAddressCityCode()); //地址城市编码
+        updateUnionMember.setAddressDistrictCode(unionMemberVO.getAddressDistrictCode()); //地址区编码
+        if (unionMain.getIsIntegral() == MainConstant.IS_INTEGRAL_YES) { //开启积分后，积分兑换率必填
+            Double integralExchangePercent = unionMemberVO.getIntegralExchangePercent();
+            if (integralExchangePercent == null) {
+                throw new BusinessException("联盟已开启积分功能，积分兑换率必填");
+            }
+            if (integralExchangePercent < 0D || integralExchangePercent > 30D) {
+                throw new BusinessException("积分兑换率有误，请重新设置");
+            }
+            updateUnionMember.setIntegralExchangePercent(integralExchangePercent);
+        }
+
+        this.updateById(updateUnionMember);
     }
 }

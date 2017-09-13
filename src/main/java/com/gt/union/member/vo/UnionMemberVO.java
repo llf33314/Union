@@ -76,24 +76,24 @@ public class UnionMemberVO {
     private String notifyPhone;
 
     /**
-     * 地址省份code
+     * 地址省份编码
      */
     @NotBlank(message = "请选择省")
-    @ApiModelProperty(value = "地址省份code")
+    @ApiModelProperty(value = "地址省份编码")
     private String addressProvinceCode;
 
     /**
-     * 地址城市code
+     * 地址城市编码
      */
     @NotBlank(message = "请选择市")
-    @ApiModelProperty(value = "地址城市code")
+    @ApiModelProperty(value = "地址城市编码")
     private String addressCityCode;
 
     /**
-     * 地址区code
+     * 地址区编码
      */
     @NotBlank(message = "请选择区")
-    @ApiModelProperty(value = "地址区code")
+    @ApiModelProperty(value = "地址区编码")
     private String addressDistrictCode;
 
     /**

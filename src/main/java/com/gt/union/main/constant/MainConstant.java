@@ -49,4 +49,14 @@ public interface MainConstant {
      */
     public static final int NOTICE_MAX_LENGTH = 50;
 
+    /**
+     * 加盟方式：默认为申请
+     */
+    public static final int MAIN_JOIN_TYPE_DEFAULT = 1;
+
+    /**
+     * 加盟方式：申请、推荐
+     */
+    public static final int MAIN_JOIN_TYPE_BOTH = 2;
+
 }

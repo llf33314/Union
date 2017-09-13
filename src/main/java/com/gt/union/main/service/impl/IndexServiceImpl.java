@@ -99,7 +99,7 @@ public class IndexServiceImpl implements IIndexService {
         Map<String, Object> result = new HashMap<>();
         // (1)获取我(商家)的具有盟主身份的盟员信息列表，以及我创建的联盟信息
         List<UnionMember> unionOwnerList = this.unionMemberService.listByBusIdAndIsUnionOwnerAndStatus(busId
-                , MemberConstant.IS_UNION_OWNER_YES, MemberConstant.STATUS_IN, MemberConstant.STATUS_APPLY_OUT);
+                , MemberConstant.IS_UNION_OWNER_YES, new Object[]{MemberConstant.STATUS_IN, MemberConstant.STATUS_APPLY_OUT});
         UnionMember unionOwner = ListUtil.isNotEmpty(unionOwnerList) ? unionOwnerList.get(0) : null;
         UnionMain myCreateUnion = null;
         if (unionOwner != null) {
@@ -115,7 +115,7 @@ public class IndexServiceImpl implements IIndexService {
 
         // (2)获取我(商家)的具有非盟主身份的盟员信息列表，以及我加入的联盟信息
         List<UnionMember> unionNoOwnerList = this.unionMemberService.listByBusIdAndIsUnionOwnerAndStatus(busId
-                , MemberConstant.IS_UNION_OWNER_NO, MemberConstant.STATUS_IN, MemberConstant.STATUS_APPLY_OUT);
+                , MemberConstant.IS_UNION_OWNER_NO, new Object[]{MemberConstant.STATUS_IN, MemberConstant.STATUS_APPLY_OUT});
         List<Map<String, Object>> myJoinUnionList = null;
         if (ListUtil.isNotEmpty(unionNoOwnerList)) {
             for (UnionMember unionNoOwner : unionNoOwnerList) {
