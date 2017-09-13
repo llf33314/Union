@@ -114,6 +114,7 @@ public class UnionMemberJoinController {
             if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
                 throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
             }
+            this.unionMemberJoinService.saveTypeJoin(busUser.getId(), unionId, unionMemberJoinVO);
             return GTJsonResult.instanceSuccessMsg().toString();
         } catch (BaseException e) {
             logger.error("", e);
@@ -130,15 +131,16 @@ public class UnionMemberJoinController {
     @RequestMapping(value = "/memberId/{memberId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String method2(HttpServletRequest request
             , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
-                         @PathVariable("memberId") Integer memberId
+                          @PathVariable("memberId") Integer memberId
             , @ApiParam(name = "unionMemberJoinVO", value = "申请入盟信息实体", required = true)
-                         @RequestBody @Valid UnionMemberJoinVO unionMemberJoinVO, BindingResult bindingResult) {
+                          @RequestBody @Valid UnionMemberJoinVO unionMemberJoinVO, BindingResult bindingResult) {
         try {
             this.unionValidateService.checkBindingResult(bindingResult);
             BusUser busUser = SessionUtils.getLoginUser(request);
             if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
                 throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
             }
+            this.unionMemberJoinService.saveTypeRecommend(busUser.getId(), memberId, unionMemberJoinVO);
             return GTJsonResult.instanceSuccessMsg().toString();
         } catch (BaseException e) {
             logger.error("", e);

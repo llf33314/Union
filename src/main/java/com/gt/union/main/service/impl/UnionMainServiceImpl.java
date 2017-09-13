@@ -177,7 +177,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // (1)判断盟员身份
-        UnionMember unionMember = this.unionMemberService.getByMemberIdAndBusId(memberId, busId);
+        UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
         if (unionMember == null) {
             throw new BusinessException("没有盟员权限");
         }
@@ -287,7 +287,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         String infoDictKey = RedisKeyUtil.getUnionInfoDictKey(unionId);
         redisCacheUtil.remove(infoDictKey);
         String unionMainKey = RedisKeyUtil.getUnionMainKey(unionId);
-        this.redisCacheUtil.remove(unionMainKey );
+        this.redisCacheUtil.remove(unionMainKey);
     }
 
 }

@@ -3,6 +3,7 @@ package com.gt.union.member.service;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.member.entity.UnionMember;
+import com.gt.union.member.vo.UnionMemberVO;
 
 import java.util.List;
 
@@ -76,13 +77,11 @@ public interface IUnionMemberService extends IService<UnionMember> {
      *
      * @param busId        {not null} 商家id
      * @param isUnionOwner {not null} 是否盟主
-     * @param status       {not null} 盟员状态
-     * @param orStatus     或操作，盟员状态，为空时不参与查询
+     * @param statusArray  {not null} 盟员状态
      * @return
      * @throws Exception
      */
-    List<UnionMember> listByBusIdAndIsUnionOwnerAndStatus(Integer busId, Integer isUnionOwner, Integer status
-            , Integer orStatus) throws Exception;
+    List<UnionMember> listByBusIdAndIsUnionOwnerAndStatus(Integer busId, Integer isUnionOwner, Object[] statusArray) throws Exception;
 
     /**
      * 根据联盟id和盟员状态统计盟员个数
@@ -93,6 +92,24 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @throws Exception
      */
     Integer countByUnionIdAndStatus(Integer unionId, Integer status) throws Exception;
+
+    /**
+     * 根据联盟id统计有效盟员数，即已加入的、申请退出的和退盟过渡期的
+     *
+     * @param unionId {not null} 联盟id
+     * @return
+     * @throws Exception
+     */
+    Integer countValidMemberByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 根据商家id，统计盟员数
+     *
+     * @param busId {not null} 商家id
+     * @return
+     * @throws Exception
+     */
+    Integer countValidMemberByBusId(Integer busId) throws Exception;
 
     /**
      * 根据商家id和联盟id查询盟员信息
@@ -123,7 +140,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @return
      * @throws Exception
      */
-    UnionMember getByMemberIdAndBusId(Integer memberId, Integer busId) throws Exception;
+    UnionMember getByIdAndBusId(Integer memberId, Integer busId) throws Exception;
 
     /**
      * 根据联盟id查询盟员列表
@@ -148,4 +165,14 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @return
      */
     UnionMember getById(Integer memberId);
+
+    /**
+     * 根据盟员身份id、商家id和更新内容实体，更新盟员信息
+     *
+     * @param memberId      {not null} 盟员身份id
+     * @param busId         {not null} 商家id
+     * @param unionMemberVO {not null} 更新内容实体
+     * @throws Exception
+     */
+    void updateByIdAndBusId(Integer memberId, Integer busId, UnionMemberVO unionMemberVO) throws Exception;
 }

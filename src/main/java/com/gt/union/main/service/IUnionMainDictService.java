@@ -16,12 +16,12 @@ import java.util.List;
 public interface IUnionMainDictService extends IService<UnionMainDict> {
 
     /**
-     * 根据联盟id获取设置的推荐申请信息
+     * 根据联盟id，获取联盟申请填写信息设置
      *
-     * @param unionId
+     * @param unionId {not null} 联盟id
      * @return
      */
-    List<UnionMainDict> list(Integer unionId);
+    List<UnionMainDict> listByUnionId(Integer unionId) throws Exception;
 
     /**
      * 根据联盟id删除联盟申请填写信息设置

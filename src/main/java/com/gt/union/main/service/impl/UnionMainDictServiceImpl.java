@@ -24,12 +24,20 @@ import java.util.List;
 @Service
 public class UnionMainDictServiceImpl extends ServiceImpl<UnionMainDictMapper, UnionMainDict> implements IUnionMainDictService {
 
+    /**
+     * 根据联盟id，获取联盟申请填写信息设置
+     *
+     * @param unionId {not null} 联盟id
+     * @return
+     */
     @Override
-    public List<UnionMainDict> list(Integer unionId) {
+    public List<UnionMainDict> listByUnionId(Integer unionId) throws Exception{
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
         EntityWrapper entityWrapper = new EntityWrapper<UnionMainDict>();
         entityWrapper.eq("union_id", unionId);
-        List<UnionMainDict> list = this.selectList(entityWrapper);
-        return list;
+        return this.selectList(entityWrapper);
     }
 
     /**
