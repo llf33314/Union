@@ -41,6 +41,8 @@ public class UnionDiscountResult implements Serializable{
 	@ApiModelProperty( value = "联盟卡折扣")
 	private Double discount;
 
+	@ApiModelProperty( value = "联盟id")
+	private Integer unionId;
 
 	public UnionDiscountResult(){
 
@@ -80,5 +82,13 @@ public class UnionDiscountResult implements Serializable{
 
 	public void setDiscount(Double discount) {
 		this.discount = discount;
+	}
+
+	public Integer getUnionId() {
+		return unionId;
+	}
+
+	public void setUnionId(Integer unionId) {
+		this.unionId = unionId;
 	}
 }

@@ -1,13 +1,12 @@
 package com.gt.union.card.entity;
 
-import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.annotations.TableName;
-import com.baomidou.mybatisplus.enums.IdType;
-
-import java.io.Serializable;
 import java.util.Date;
+import com.baomidou.mybatisplus.enums.IdType;
+import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableName;
+import java.io.Serializable;
 
 /**
  * <p>
@@ -15,7 +14,7 @@ import java.util.Date;
  * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @since 2017-09-13
  */
 @TableName("t_union_card")
 public class UnionCard extends Model<UnionCard> {
@@ -54,6 +53,11 @@ public class UnionCard extends Model<UnionCard> {
      * 联盟卡类型（1：黑卡 2：红卡）
      */
 	private Integer type;
+    /**
+     * 用户id
+     */
+	@TableField("third_member_id")
+	private Integer thirdMemberId;
 
 
 	public Integer getId() {
@@ -110,6 +114,14 @@ public class UnionCard extends Model<UnionCard> {
 
 	public void setType(Integer type) {
 		this.type = type;
+	}
+
+	public Integer getThirdMemberId() {
+		return thirdMemberId;
+	}
+
+	public void setThirdMemberId(Integer thirdMemberId) {
+		this.thirdMemberId = thirdMemberId;
 	}
 
 	@Override

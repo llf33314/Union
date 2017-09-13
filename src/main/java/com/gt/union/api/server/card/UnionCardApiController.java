@@ -2,9 +2,12 @@ package com.gt.union.api.server.card;
 
 import com.gt.api.bean.session.Member;
 import com.gt.api.dto.ResponseUtils;
+import com.gt.api.util.SessionUtils;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.api.entity.param.BindCardParam;
 import com.gt.union.api.entity.param.RequestApiParam;
+import com.gt.union.api.entity.param.UnionCardDiscountParam;
+import com.gt.union.api.entity.param.UnionPhoneCodeParam;
 import com.gt.union.api.entity.result.UnionBindCardResult;
 import com.gt.union.api.entity.result.UnionDiscountResult;
 import com.gt.union.api.server.ApiBaseController;
@@ -59,16 +62,11 @@ public class UnionCardApiController extends ApiBaseController {
 
 	@ApiOperation(value = "线上--根据商家和粉丝获取联盟卡折扣，session的member不能为空", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/consumeUnionDiscount", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public ResponseUtils<UnionDiscountResult> getConsumeUnionDiscount(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<Integer> requestApiParam){
+	public ResponseUtils<UnionDiscountResult> getConsumeUnionDiscount(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<UnionCardDiscountParam> requestApiParam){
 		try {
+			UnionCardDiscountParam param = requestApiParam.getReqdata();
 			boolean verification=super.verification(request, response, requestApiParam);
-			//TODO
-			//Member member = SessionUtils.getLoginMember(request);
-			Member member = new Member();
-			member.setId(998);
-			member.setBusid(42);
-			member.setPhone("15986670850");
-			UnionDiscountResult data = unionCardService.getConsumeUnionDiscount(member.getId(), member.getPhone(), requestApiParam.getReqdata());
+			UnionDiscountResult data = unionCardService.getConsumeUnionDiscount(param.getMemberId(), param.getPhone(), param.getBusId());
 			return ResponseUtils.createBySuccess(data);
 		} catch (BaseException e) {
 			logger.error("", e);
@@ -90,25 +88,21 @@ public class UnionCardApiController extends ApiBaseController {
 	 */
 	@ApiOperation(value = "绑定联盟卡，获取手机验证码，session的member不能为空", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/phoneCode", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public ResponseUtils getPhoneCode(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<String> requestApiParam) {
+	public ResponseUtils getPhoneCode(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<UnionPhoneCodeParam> requestApiParam) {
 		try {
 			boolean verification=super.verification(request, response, requestApiParam);
-			//Member member = SessionUtils.getLoginMember(request);
-			Member member = new Member();
-			member.setId(1225352);
-			member.setBusid(42);
 			//生成验证码
 			String code = RandomKit.getRandomString(6, 0);
 			HashMap<String, Object> smsParams = new HashMap<String,Object>();
-			smsParams.put("mobiles", requestApiParam.getReqdata());
+			smsParams.put("mobiles", requestApiParam.getReqdata().getPhone());
 			smsParams.put("content", "绑定联盟卡，验证码:" + code);
 			smsParams.put("company", company);
-			smsParams.put("busId", member.getBusid());
+			smsParams.put("busId", requestApiParam.getReqdata().getBusId());
 			smsParams.put("model", ConfigConstant.SMS_UNION_MODEL);
 			Map<String,Object> param = new HashMap<String,Object>();
 			param.put("reqdata",smsParams);
 			if(smsService.sendSms(param) == 1){
-				String phoneKey = RedisKeyUtil.getMemberPhoneCodeKey(member.getId());
+				String phoneKey = RedisKeyUtil.getMemberPhoneCodeKey(requestApiParam.getReqdata().getMemberId());
 				redisCacheUtil.set(phoneKey,code,300l);//5分钟
 				return ResponseUtils.createBySuccess();
 			} else {
@@ -136,12 +130,8 @@ public class UnionCardApiController extends ApiBaseController {
 		try {
 			boolean verification=super.verification(request, response, requestApiParam);
 			// 获取会员信息
-//			Member member = SessionUtils.getLoginMember(request);
-			Member member = new Member();
-			member.setId(1225352);
-			member.setBusid(42);
-			UnionBindCardResult data = unionCardBindingService.bindUnionCard(member.getBusid(), member.getId(), requestApiParam.getReqdata().getPhone(), requestApiParam.getReqdata().getCode());
-			return ResponseUtils.createBySuccess(data);
+			UnionBindCardResult data = unionCardBindingService.bindUnionCard(requestApiParam.getReqdata().getBusId(), requestApiParam.getReqdata().getMemberId(), requestApiParam.getReqdata().getPhone(), requestApiParam.getReqdata().getCode());
+			return ResponseUtils.createBySuccess();
 		} catch (BaseException e) {
 			logger.error("", e);
 			return ResponseUtils.createByErrorMessage(e.getErrorMsg());

@@ -178,6 +178,14 @@ public interface IUnionMemberService extends IService<UnionMember> {
     UnionMember getById(Integer memberId);
 
     /**
+     * 根据联盟ids和盟员ids查询匹配的盟员列表
+     * @param unionIds      联盟ids
+     * @param memberIds     盟员ids
+     * @return
+     */
+	List<UnionMember> listByUnionIdsAndUnionMemberIds(List<Integer> unionIds, List<Integer> memberIds);
+
+    /**
      * 根据盟员身份id、商家id和更新内容实体，更新盟员信息
      *
      * @param memberId      {not null} 盟员身份id

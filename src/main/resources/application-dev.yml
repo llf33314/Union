@@ -61,6 +61,7 @@ spring:
         max-wait: -1
         max-idle: 8
         min-idle: 0
+  #redis session共享配置
   redis2:
       host: 113.106.202.51
       port: 6379

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.api.entity.result.UnionDiscountResult;
 import com.gt.union.card.entity.UnionCard;
 import com.gt.union.card.entity.UnionCardBinding;
@@ -19,16 +20,15 @@ import com.gt.union.common.util.*;
 import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.member.entity.UnionMember;
+import com.gt.union.member.entity.UnionMemberDiscount;
+import com.gt.union.member.service.IUnionMemberDiscountService;
 import com.gt.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Pattern;
 
 /**
@@ -56,6 +56,12 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 
 	@Autowired
 	private IUnionCardBindingService unionCardBindingService;
+
+	@Autowired
+	private IUnionMemberDiscountService unionMemberDiscountService;
+
+	@Autowired
+	private IDictService dictService;
 
 
 	@Value("${union.encryptKey}")
@@ -100,8 +106,11 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 		for(Map map : list){
 			cardIds.add(CommonUtil.toInteger(map.get("id")));
 		}
+		//收入的积分
 		List<Map<String,Object>> incomes = unionCardIntegralService.sumByCardIdsAndStatus(cardIds, 1);
+		//支出的积分
 		List<Map<String,Object>> expenditures = unionCardIntegralService.sumByCardIdsAndStatus(cardIds, 2);
+		//计算和
 		for(Map<String,Object> map : list){
 			map.put("integral", 0);
 			for(Map<String,Object> income : incomes){
@@ -161,51 +170,121 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 	public UnionDiscountResult getConsumeUnionDiscount(Integer memberId, String phone, Integer busId) throws Exception{
 		UnionDiscountResult result = new UnionDiscountResult();
 		if(CommonUtil.isEmpty(memberId) || CommonUtil.isEmpty(busId)){
-			result.setCode(-2);
+			result.setCode(UnionDiscountResult.UNION_DISCOUNT_CODE_NON);
 			return result;
 		}
 		//1、判断商家加入的有效联盟
 		List<UnionMember> members = unionMemberService.listValidByBusId(busId);
 		if(ListUtil.isEmpty(members)){
-			result.setCode(-1);
+			result.setCode(UnionDiscountResult.UNION_DISCOUNT_CODE_NON);
 			return result;
 		}
 		List<Integer> memberids = new ArrayList<Integer>();
 		for(UnionMember member : members){
 			memberids.add(member.getId());
 		}
+
 		//2、判断手机号是否升级过联盟卡
 		if(StringUtil.isNotEmpty(phone)){
 			UnionCardRoot unionCardRoot = unionCardRootService.getByPhone(phone);
 			if(unionCardRoot == null){//该手机号没有升级过联盟卡
-				//2.1 判断粉丝是否绑定联盟卡
-				List<UnionCard> cards = this.getByBusMemberIdAndMemberIds(memberId, memberids);
-				if(ListUtil.isEmpty(cards)){//没有绑定过联盟卡
-					result.setCode(UnionDiscountResult.UNION_DISCOUNT_CODE_BIND);
-				} else {
-					//for()
-				}
+				result.setCode(UnionDiscountResult.UNION_DISCOUNT_CODE_NON);
+				return result;
 			} else {//升级过联盟卡，给予使用，返回折扣（有可能在某个联盟中退盟了的，需要进一步判断）
-				List<UnionCard> cards = this.getByCardRootIdAndMemberIds(unionCardRoot.getId(), memberids);
-				if(ListUtil.isEmpty(cards)){//绑定联盟卡
-
-				}else {
-					Iterator<UnionCard> it = cards.iterator();
-					while (it.hasNext()){
-						UnionCard card = it.next();
-					}
-				}
+				return getByUnionCardRootAndMembers(unionCardRoot.getId(), members);
 			}
 		}
 		//3、判断粉丝是否绑定联盟卡
-		//unionCardBindingService.getBy
-		//4、
-		result.setCardId(10);
-		result.setCode(1);
-		result.setIfDefault(false);
-		result.setDiscount(8d);
+		UnionCardBinding binding = unionCardBindingService.getByMemberId(memberId);
+		if(binding == null){
+			//没有绑定 去绑定  存在两种情况1：根本没有升级过联盟卡  2：升级过，但是不是在商家下升的
+			result.setCode(UnionDiscountResult.UNION_DISCOUNT_CODE_BIND);
+			return result;
+		}else {
+			return getByUnionCardRootAndMembers(binding.getRootId(), members);
+		}
+	}
+
+	/**
+	 * 根据rootId和我的盟员列表
+	 * @param rootId
+	 * @param members
+	 * @return
+	 * @throws Exception
+	 */
+	private UnionDiscountResult getByUnionCardRootAndMembers(Integer rootId, List<UnionMember> members) throws Exception{
+		UnionDiscountResult result = new UnionDiscountResult();
+		//获取根据这个rootId升级的联盟卡列表
+		List<UnionCard> list = this.listByCardRootId(rootId);
+		if(ListUtil.isEmpty(list)){
+			result.setCode(UnionDiscountResult.UNION_DISCOUNT_CODE_NON);
+			return result;
+		}
+
+		//返回有效的联盟卡
+		list = getValidUnionCards(list);
+
+		if(ListUtil.isEmpty(list)){//没有有效的联盟卡 不可使用
+			result.setCode(UnionDiscountResult.UNION_DISCOUNT_CODE_NON);
+			return result;
+		}
+
+		//得到通过rootId升级的盟员列表
+		List<Integer> memberIds = new ArrayList<Integer>();
+		for(UnionCard card : list){
+			memberIds.add(card.getMemberId());
+		}
+
+		//当前消费商家加入的联盟列表
+		List<Integer> unionIds = new ArrayList<Integer>();
+		//我的盟员ids列表
+		List<Integer> fromMemberIds = new ArrayList<Integer>();
+		for(UnionMember member : members){
+			fromMemberIds.add(member.getId());
+			unionIds.add(member.getUnionId());
+		}
+
+		//查询当前消费商家所在联盟的其他盟员列表  如商家A加入甲乙联盟，则甲乙联盟的盟员就是和商家A同盟，再通过升级的联盟卡的盟员列表过滤
+		List<UnionMember> memberList = unionMemberService.listByUnionIdsAndUnionMemberIds(unionIds,memberIds);
+		if(ListUtil.isEmpty(memberList)){
+			result.setCode(UnionDiscountResult.UNION_DISCOUNT_CODE_NON);
+			return result;
+		}
+		//用该rootId升级过的盟员列表
+		List<Integer> toMemberIds = new ArrayList<Integer>();
+		for(UnionMember member : memberList){
+			toMemberIds.add(member.getId());
+		}
+
+		//查询我对盟员列表中的盟员最低折扣，如果存在相同的，取对方先加入联盟的，如果不存在最低这里，则取默认的。
+		//联盟卡取先加入联盟的
+		UnionMemberDiscount minDiscount = unionMemberDiscountService.getMinDiscountByMemberList(fromMemberIds, toMemberIds);
+		if(minDiscount == null){
+			Double defaultDiscount = dictService.getDefaultDiscount();
+			result.setDiscount(defaultDiscount);
+			result.setIfDefault(true);
+			Integer minMemberId = memberList.get(0).getId();
+			for(UnionMember member : memberList){
+				if(member.getId().intValue() < minMemberId.intValue()){
+					minMemberId = member.getId();
+				}
+			}
+			UnionCard card = this.getByUnionCardRootIdAndMemberId(rootId,minMemberId);
+			UnionMember member = unionMemberService.getById(minMemberId);
+			result.setCardId(card.getId());
+			result.setUnionId(member.getUnionId());
+		}else {
+			result.setDiscount(minDiscount.getDiscount());
+			result.setIfDefault(false);
+			UnionCard card = this.getByUnionCardRootIdAndMemberId(rootId,minDiscount.getToMemberId());
+			result.setCardId(card.getId());
+			UnionMember member = unionMemberService.getById(minDiscount.getToMemberId());
+			result.setUnionId(member.getUnionId());
+		}
+		result.setCode(UnionDiscountResult.UNION_DISCOUNT_CODE_SUCCESS);
 		return result;
 	}
+
 
 	/**
 	 * 根据这批联盟卡，返回一批有效的联盟卡
@@ -213,16 +292,25 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 	 * @return
 	 */
 	List<UnionCard> getValidUnionCards(List<UnionCard> list){
+		if(ListUtil.isNotEmpty(list)){
+			Iterator<UnionCard> it = list.iterator();
+			while (it.hasNext()){
+				UnionCard card = it.next();
+				//判断联盟卡的有效期是否有效
+				if(CommonUtil.isNotEmpty(card.getValidity()) && !DateTimeKit.laterThanNow(new Date())){
+					it.remove();
+				}
+			}
+		}
 		return list;
 	}
 
 	@Override
-	public List<UnionCard> getByCardRootIdAndMemberIds(Integer unionCardRootId, List<Integer> memberids) throws Exception{
-		if(unionCardRootId == null || ListUtil.isEmpty(memberids)){
+	public List<UnionCard> listByCardRootId(Integer unionCardRootId) throws Exception{
+		if(unionCardRootId == null){
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
 		EntityWrapper wrapper = new EntityWrapper<>();
-		wrapper.in("member_id", memberids.toArray());
 		wrapper.eq("root_id", unionCardRootId);
 		wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
 		return this.selectList(wrapper);
@@ -240,4 +328,23 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 
 		return this.selectList(wrapper);
 	}
+
+	@Override
+	public UnionCard getByUnionCardRootIdAndMemberId(Integer rootId, Integer memberId) {
+		EntityWrapper wrapper = new EntityWrapper<>();
+		wrapper.eq("root_id", rootId);
+		wrapper.eq("member_id", memberId);
+		wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+		return this.selectOne(wrapper);
+	}
+
+	@Override
+	public UnionCard getById(Integer cardId) {
+		EntityWrapper wrapper = new EntityWrapper<>();
+		wrapper.eq("id", cardId);
+		wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+		return this.selectOne(wrapper);
+	}
+
+
 }

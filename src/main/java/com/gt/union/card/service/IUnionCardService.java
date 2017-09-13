@@ -64,12 +64,11 @@ public interface IUnionCardService extends IService<UnionCard> {
 	UnionDiscountResult getConsumeUnionDiscount(Integer memberId, String phone, Integer busId) throws Exception;
 
 	/**
-	 * 根据unionCardRootid和盟员ids查询
+	 * 根据unionCardRootId查询
 	 * @param unionCardRootId 联盟卡主表id
-	 * @param memberids		盟员ids
 	 * @return
 	 */
-	List<UnionCard> getByCardRootIdAndMemberIds(Integer unionCardRootId, List<Integer> memberids) throws Exception;
+	List<UnionCard> listByCardRootId(Integer unionCardRootId) throws Exception;
 
 	/**
 	 * 根据用户id和盟员Ids查询用户绑定的联盟卡信息列表
@@ -78,4 +77,19 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 * @return
 	 */
 	List<UnionCard> getByBusMemberIdAndMemberIds(Integer memberId, List<Integer> memberids);
+
+	/**
+	 * 根据rootId和盟员id查询联盟卡
+	 * @param rootId
+	 * @param memberId
+	 * @return
+	 */
+	UnionCard getByUnionCardRootIdAndMemberId(Integer rootId, Integer memberId);
+
+	/**
+	 * 根据联盟卡id获取
+	 * @param cardId
+	 * @return
+	 */
+	UnionCard getById(Integer cardId);
 }

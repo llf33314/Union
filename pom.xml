@@ -176,6 +176,7 @@
             <artifactId>lfx_wxmp_entity</artifactId>
             <version>v1.0.0</version>
         </dependency>
+
     </dependencies>
 
     <build>

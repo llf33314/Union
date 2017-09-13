@@ -13,4 +13,14 @@ public interface CardConstant {
      * 积分状态：支出
      */
     public static final int INTEGRAL_STATUS_OUT = 2;
+
+    /**
+     * 消费
+     */
+    int INTEGRAL_TYPE_CONSUME = 1;
+
+    /**
+     * 赠送
+     */
+    int INTEGRAL_TYPE_GIVE = 2;
 }
