@@ -10,6 +10,8 @@ import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.StringUtil;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 /**
  * <p>
  * 联盟卡主信息 服务实现类
@@ -43,4 +45,18 @@ public class UnionCardRootServiceImpl extends ServiceImpl<UnionCardRootMapper, U
 		return this.selectOne(entityWrapper);
 	}
 
+
+	//生成联盟卡号  8位
+	private String generateCardNo(){
+		int machineId = 1;// 最大支持1-9个集群机器部署
+		int hashCodeV = UUID.randomUUID().toString().hashCode();
+		if (hashCodeV < 0) {// 有可能是负数
+			hashCodeV = -hashCodeV;
+		}
+		System.out.println(hashCodeV);
+		// 0 代表前面补充0
+		// 4 代表长度为4
+		// d 代表参数为正数型
+		return machineId + String.format("%010d", hashCodeV);
+	}
 }

@@ -17,6 +17,29 @@ import java.util.List;
  */
 public interface IUnionCardBindingService extends IService<UnionCardBinding> {
 
+	/**
+	 * 绑定联盟卡
+	 * @param busid		商家id
+	 * @param id		粉丝用户id
+	 * @param phone		电话号码
+	 * @param code		验证码
+	 * @return
+	 * @throws Exception
+	 */
 	UnionBindCardResult bindUnionCard(Integer busid, Integer id, String phone, String code) throws Exception;
 
+	/**
+	 * 根据联盟卡rootId和粉丝用户id查询绑定的联盟卡
+	 * @param rootId
+	 * @param memberId
+	 * @return
+	 */
+	UnionCardBinding getByCardRootIdAndMemberId(Integer rootId, Integer memberId);
+
+	/**
+	 * 根据粉丝用户id查询绑定的联盟卡
+	 * @param memberId
+	 * @return
+	 */
+	UnionCardBinding getByMemberId(Integer memberId);
 }

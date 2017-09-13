@@ -39,7 +39,7 @@ public class UnionConsumeParam implements Serializable {
 	@ApiModelProperty( value = "使用联盟卡打折后的价格", required = true)
 	private Double payMoney;
 
-	@ApiModelProperty( value = "支付方式：0：现金 1：微信 2：支付宝， 若有其他支付方式，请告知")
+	@ApiModelProperty( value = "支付方式：1：微信 2：支付宝 3：储值卡支付 4：现金 5：银行卡支付 6：到店支付 7：找人代付， 若有其他支付方式，请告知")
 	private Integer orderType;
 
 	@ApiModelProperty( value = "联盟id")
@@ -47,6 +47,9 @@ public class UnionConsumeParam implements Serializable {
 
 	@ApiModelProperty( value = "联盟卡id")
 	private Integer unionCardId;
+
+	@ApiModelProperty(value = "支付状态：1：未支付 2：已支付 3：已退款")
+	private Integer status;
 
 	public Integer getBusId() {
 		return busId;
@@ -134,5 +137,13 @@ public class UnionConsumeParam implements Serializable {
 
 	public void setUnionCardId(Integer unionCardId) {
 		this.unionCardId = unionCardId;
+	}
+
+	public Integer getStatus() {
+		return status;
+	}
+
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 }

@@ -7,19 +7,11 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * Created by Administrator on 2017/9/4 0004.
+ * Created by Administrator on 2017/9/13 0013.
  */
-@ApiModel( value = "BindCardParam", description = "绑定联盟卡参数实体" )
+@ApiModel( value = "UnionPhoneCodeParam", description = "其他模块线上获取验证码参数实体" )
 @Data
-public class BindCardParam implements Serializable {
-
-	private static final long serialVersionUID = 1L;
-
-	@ApiModelProperty( value = "电话号码",required = true)
-	private String phone;
-
-	@ApiModelProperty( value = "验证码",required = true)
-	private String code;
+public class UnionPhoneCodeParam implements Serializable {
 
 	@ApiModelProperty( value = "粉丝用户id", required = true)
 	private Integer memberId;
@@ -27,21 +19,8 @@ public class BindCardParam implements Serializable {
 	@ApiModelProperty( value = "商家id", required = true)
 	private Integer busId;
 
-	public String getPhone() {
-		return phone;
-	}
-
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
+	@ApiModelProperty( value = "粉丝用户的手机号", required = true)
+	private String phone;
 
 	public Integer getMemberId() {
 		return memberId;
@@ -57,5 +36,13 @@ public class BindCardParam implements Serializable {
 
 	public void setBusId(Integer busId) {
 		this.busId = busId;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
 	}
 }

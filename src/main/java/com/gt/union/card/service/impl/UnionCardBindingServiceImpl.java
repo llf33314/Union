@@ -52,21 +52,43 @@ public class UnionCardBindingServiceImpl extends ServiceImpl<UnionCardBindingMap
 			throw new ParamException("验证码错误");
 
 		}
+		//1、判断手机号是否升级了联盟卡
 		UnionCardRoot root = unionCardRootService.getByPhone(phone);
 		if(root == null){
 			throw new BusinessException("该手机号未升级联盟卡");
 		}
-		UnionCardBinding unionCardBinding = new UnionCardBinding();
-		unionCardBinding.setRootId(root.getId());
-		unionCardBinding.setCreatetime(new Date());
-		unionCardBinding.setDelStatus(CommonConstant.DEL_STATUS_NO);
-		unionCardBinding.setThirdMemberId(memberId);
-		this.insert(unionCardBinding);
+		UnionCardBinding unionCardBinding = this.getByMemberId(memberId);
+		if(unionCardBinding != null){
+			throw new BusinessException("您已绑定联盟卡");
+		}
+		UnionCardBinding cardBinding = new UnionCardBinding();
+		cardBinding.setRootId(root.getId());
+		cardBinding.setCreatetime(new Date());
+		cardBinding.setDelStatus(CommonConstant.DEL_STATUS_NO);
+		cardBinding.setThirdMemberId(memberId);
+		this.insert(cardBinding);
 		UnionBindCardResult result = new UnionBindCardResult();
 		result.setSuccess(true);
 		result.setMessage("绑定成功");
 		redisCacheUtil.remove(phoneKey);
 		return result;
+	}
+
+	@Override
+	public UnionCardBinding getByCardRootIdAndMemberId(Integer rootId, Integer memberId) {
+		EntityWrapper entityWrapper = new EntityWrapper<>();
+		entityWrapper.eq("root_id",rootId);
+		entityWrapper.eq("third_member_id",memberId);
+		entityWrapper.eq("del_status",CommonConstant.DEL_STATUS_NO);
+		return this.selectOne(entityWrapper);
+	}
+
+	@Override
+	public UnionCardBinding getByMemberId(Integer memberId) {
+		EntityWrapper entityWrapper = new EntityWrapper<>();
+		entityWrapper.eq("third_member_id",memberId);
+		entityWrapper.eq("del_status",CommonConstant.DEL_STATUS_NO);
+		return this.selectOne(entityWrapper);
 	}
 
 }
