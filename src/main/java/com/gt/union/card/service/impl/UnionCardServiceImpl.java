@@ -270,12 +270,16 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 				}
 			}
 			UnionCard card = this.getByUnionCardRootIdAndMemberId(rootId,minMemberId);
+			UnionMember member = unionMemberService.getById(minMemberId);
 			result.setCardId(card.getId());
+			result.setUnionId(member.getUnionId());
 		}else {
 			result.setDiscount(minDiscount.getDiscount());
 			result.setIfDefault(false);
 			UnionCard card = this.getByUnionCardRootIdAndMemberId(rootId,minDiscount.getToMemberId());
 			result.setCardId(card.getId());
+			UnionMember member = unionMemberService.getById(minDiscount.getToMemberId());
+			result.setUnionId(member.getUnionId());
 		}
 		result.setCode(UnionDiscountResult.UNION_DISCOUNT_CODE_SUCCESS);
 		return result;
