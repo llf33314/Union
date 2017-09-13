@@ -130,9 +130,8 @@ public class UnionCardApiController extends ApiBaseController {
 		try {
 			boolean verification=super.verification(request, response, requestApiParam);
 			// 获取会员信息
-			Member member = SessionUtils.getLoginMember(request);
-			UnionBindCardResult data = unionCardBindingService.bindUnionCard(member.getBusid(), member.getId(), requestApiParam.getReqdata().getPhone(), requestApiParam.getReqdata().getCode());
-			return ResponseUtils.createBySuccess(data);
+			UnionBindCardResult data = unionCardBindingService.bindUnionCard(requestApiParam.getReqdata().getBusId(), requestApiParam.getReqdata().getMemberId(), requestApiParam.getReqdata().getPhone(), requestApiParam.getReqdata().getCode());
+			return ResponseUtils.createBySuccess();
 		} catch (BaseException e) {
 			logger.error("", e);
 			return ResponseUtils.createByErrorMessage(e.getErrorMsg());
