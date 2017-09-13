@@ -25,9 +25,18 @@ public interface IUnionConsumeService extends IService<UnionConsume> {
 	UnionConsumeResult consumeByUnionCard(UnionConsumeParam reqdata) throws Exception;
 
 	/**
-	 * 联盟退款
-	 * @param reqdata
+	 * 线上联盟退款
+	 * @param orderNo	订单号
+	 * @param model		模型
 	 * @return
 	 */
-	UnionRefundResult unionRefund(UnionRefundParam reqdata);
+	UnionRefundResult unionRefund(String orderNo, Integer model ) throws Exception;
+
+	/**
+	 * 根据订单号和模型查询消费记录
+	 * @param orderNo	订单号
+	 * @param model		模型
+	 * @return
+	 */
+	UnionConsume getByOrderNoAndModel(String orderNo, Integer model);
 }

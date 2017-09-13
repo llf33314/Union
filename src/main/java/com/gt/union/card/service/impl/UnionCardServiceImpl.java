@@ -334,5 +334,13 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 		return this.selectOne(wrapper);
 	}
 
+	@Override
+	public UnionCard getById(Integer cardId) {
+		EntityWrapper wrapper = new EntityWrapper<>();
+		wrapper.eq("id", cardId);
+		wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+		return this.selectOne(wrapper);
+	}
+
 
 }

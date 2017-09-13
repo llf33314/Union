@@ -85,4 +85,11 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 * @return
 	 */
 	UnionCard getByUnionCardRootIdAndMemberId(Integer rootId, Integer memberId);
+
+	/**
+	 * 根据联盟卡id获取
+	 * @param cardId
+	 * @return
+	 */
+	UnionCard getById(Integer cardId);
 }

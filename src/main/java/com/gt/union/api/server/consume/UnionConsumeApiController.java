@@ -54,7 +54,7 @@ public class UnionConsumeApiController extends ApiBaseController{
 	public ResponseUtils unionRefund(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<UnionRefundParam> requestApiParam) throws IOException {
 		try {
 			boolean verification=super.verification(request, response, requestApiParam);
-			UnionRefundResult data = unionConsumeService.unionRefund(requestApiParam.getReqdata());
+			UnionRefundResult data = unionConsumeService.unionRefund(requestApiParam.getReqdata().getOrderNo(), requestApiParam.getReqdata().getModel());
 			return ResponseUtils.createBySuccess();
 		} catch (BaseException e) {
 			logger.error("", e);
