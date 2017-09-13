@@ -59,4 +59,18 @@ public interface MainConstant {
      */
     public static final int MAIN_JOIN_TYPE_BOTH = 2;
 
+    /**
+     * 转移记录的确认状态：确认中
+     */
+    public static final int TRANSFER_CONFIRM_STATUS_HANDLING = 1;
+
+    /**
+     * 转移记录的确认状态：已确认
+     */
+    public static final int TRANSFER_CONFIRM_STATUS_YES = 2;
+
+    /**
+     * 转移记录的确认状态：已拒绝
+     */
+    public static final int TRANSFER_CONFIRM_STATUS_NO = 3;
 }

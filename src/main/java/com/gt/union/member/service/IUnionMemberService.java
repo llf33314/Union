@@ -6,6 +6,7 @@ import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.vo.UnionMemberVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -121,7 +122,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     UnionMember getByUnionIdAndBusId(Integer unionId, Integer busId) throws Exception;
 
     /**
-     * 根据盟员id，分页获取所有与盟员同属一个联盟的盟员信息
+     * 根据盟员id和商家id，分页获取所有与该盟员同属一个联盟的盟员信息
      *
      * @param page                 {not null} 分页对象
      * @param memberId             {not null} 盟员id
@@ -131,6 +132,16 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @throws Exception
      */
     Page pageMapByMemberIdAndBusId(Page page, Integer memberId, Integer busId, String optionEnterpriseName) throws Exception;
+
+    /**
+     * 根据盟员id和商家id，获取所有与该盟员通属一个联盟的盟员信息
+     *
+     * @param memberId {not null} 盟员id
+     * @param busId    {not null} 商家id
+     * @return
+     * @throws Exception
+     */
+    List<Map<String, Object>> listMapByMemberIdAndBusId(Integer memberId, Integer busId) throws Exception;
 
     /**
      * 根据盟员id和商家id，获取盟员信息

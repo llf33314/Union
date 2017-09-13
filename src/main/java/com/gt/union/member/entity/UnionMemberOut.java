@@ -25,98 +25,98 @@ public class UnionMemberOut extends Model<UnionMemberOut> {
     /**
      * 主键
      */
-	@TableId(value="id", type= IdType.AUTO)
-	private Integer id;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
     /**
      * 创建时间
      */
-	private Date createtime;
+    private Date createtime;
     /**
      * 删除状态（0：未删除 1：删除）
      */
-	@TableField("del_status")
-	private Integer delStatus;
+    @TableField("del_status")
+    private Integer delStatus;
     /**
-     * 申请退盟时间
+     * 申请退盟的盟员id
      */
-	@TableField("apply_out_time")
-	private Date applyOutTime;
+    @TableId(value = "apply_member_id")
+    private Integer applyMemberId;
     /**
      * 退盟理由
      */
-	@TableField("apply_out_reason")
-	private String applyOutReason;
+    @TableField("apply_out_reason")
+    private String applyOutReason;
     /**
      * 盟主审核退盟时间
      */
-	@TableField("confirm_out_time")
-	private Date confirmOutTime;
+    @TableField("confirm_out_time")
+    private Date confirmOutTime;
     /**
      * 实际退盟时间
      */
-	@TableField("actual_out_time")
-	private Date actualOutTime;
+    @TableField("actual_out_time")
+    private Date actualOutTime;
 
 
-	public Integer getId() {
-		return id;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public Date getCreatetime() {
-		return createtime;
-	}
+    public Integer getApplyMemberId() {
+        return applyMemberId;
+    }
 
-	public void setCreatetime(Date createtime) {
-		this.createtime = createtime;
-	}
+    public void setApplyMemberId(Integer applyMemberId) {
+        this.applyMemberId = applyMemberId;
+    }
 
-	public Integer getDelStatus() {
-		return delStatus;
-	}
+    public Date getCreatetime() {
+        return createtime;
+    }
 
-	public void setDelStatus(Integer delStatus) {
-		this.delStatus = delStatus;
-	}
+    public void setCreatetime(Date createtime) {
+        this.createtime = createtime;
+    }
 
-	public Date getApplyOutTime() {
-		return applyOutTime;
-	}
+    public Integer getDelStatus() {
+        return delStatus;
+    }
 
-	public void setApplyOutTime(Date applyOutTime) {
-		this.applyOutTime = applyOutTime;
-	}
+    public void setDelStatus(Integer delStatus) {
+        this.delStatus = delStatus;
+    }
 
-	public String getApplyOutReason() {
-		return applyOutReason;
-	}
+    public String getApplyOutReason() {
+        return applyOutReason;
+    }
 
-	public void setApplyOutReason(String applyOutReason) {
-		this.applyOutReason = applyOutReason;
-	}
+    public void setApplyOutReason(String applyOutReason) {
+        this.applyOutReason = applyOutReason;
+    }
 
-	public Date getConfirmOutTime() {
-		return confirmOutTime;
-	}
+    public Date getConfirmOutTime() {
+        return confirmOutTime;
+    }
 
-	public void setConfirmOutTime(Date confirmOutTime) {
-		this.confirmOutTime = confirmOutTime;
-	}
+    public void setConfirmOutTime(Date confirmOutTime) {
+        this.confirmOutTime = confirmOutTime;
+    }
 
-	public Date getActualOutTime() {
-		return actualOutTime;
-	}
+    public Date getActualOutTime() {
+        return actualOutTime;
+    }
 
-	public void setActualOutTime(Date actualOutTime) {
-		this.actualOutTime = actualOutTime;
-	}
+    public void setActualOutTime(Date actualOutTime) {
+        this.actualOutTime = actualOutTime;
+    }
 
-	@Override
-	protected Serializable pkVal() {
-		return this.id;
-	}
+    @Override
+    protected Serializable pkVal() {
+        return this.id;
+    }
 
 }

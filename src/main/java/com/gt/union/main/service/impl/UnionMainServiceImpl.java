@@ -3,6 +3,8 @@ package com.gt.union.main.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.api.bean.session.BusUser;
+import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
@@ -31,6 +33,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -59,6 +62,9 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
     @Autowired
     private IUnionMainDictService unionMainDictService;
+
+    @Autowired
+    private IDictService dictService;
 
     @Override
     public void checkUnionMainValid(Integer id) throws Exception {
@@ -288,6 +294,32 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         redisCacheUtil.remove(infoDictKey);
         String unionMainKey = RedisKeyUtil.getUnionMainKey(unionId);
         this.redisCacheUtil.remove(unionMainKey);
+    }
+
+    /**
+     * 根据商家id，获取联盟成员总数上限
+     *
+     * @param busId {not null} 商家id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public Integer getLimitMemberByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        Integer result = Integer.valueOf(0);
+        List<Map> dictList = this.dictService.getCreateUnionDict();
+        BusUser busUser = this.busUserService.getBusUserById(busId);
+        for (Map dict : dictList) {
+            if (dict.get("item_key").equals(busUser.getLevel())) {
+                String itemValue = dict.get("item_value").toString();
+                String unionMember = itemValue.split(",")[1];
+                result = Integer.valueOf(unionMember); //联盟成员总数上限
+                break;
+            }
+        }
+        return result;
     }
 
 }

@@ -5,6 +5,7 @@ import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BaseException;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.log.service.IUnionLogErrorService;
 import com.gt.union.member.service.IUnionMemberDiscountService;
@@ -37,7 +38,7 @@ public class UnionMemberDiscountController {
     private IUnionMemberDiscountService unionMemberDiscountService;
 
     @ApiOperation(value = "更新盟员折扣", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/memberId/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/memberId/{memberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String method(HttpServletRequest request
             , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
                          @PathVariable("memberId") Integer memberId
@@ -47,11 +48,10 @@ public class UnionMemberDiscountController {
                          @RequestParam(value = "discount") Double discount) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
-            Integer busId = busUser.getId();
             if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                busId = busUser.getPid();
+                throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
             }
-            this.unionMemberDiscountService.updateOrSaveDiscountByBusIdAndMemberId(busId, memberId, tgtMemberId, discount);
+            this.unionMemberDiscountService.updateOrSaveDiscountByBusIdAndMemberId(busUser.getId(), memberId, tgtMemberId, discount);
             return GTJsonResult.instanceSuccessMsg().toString();
         } catch (BaseException e) {
             logger.error("", e);

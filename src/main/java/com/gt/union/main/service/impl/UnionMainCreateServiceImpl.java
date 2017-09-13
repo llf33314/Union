@@ -203,16 +203,8 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         }
         saveUnionMain.setJoinType(unionMainVO.getJoinType()); //联盟加盟方式
         saveUnionMain.setIsIntegral(unionMainVO.getIsIntegral()); //是否开启积分
-        List<Map> dictList = this.dictService.getCreateUnionDict();
-        BusUser busUser = this.busUserService.getBusUserById(busId);
-        for (Map dict : dictList) {
-            if (dict.get("item_key").equals(busUser.getLevel())) {
-                String itemValue = dict.get("item_value").toString();
-                String unionMember = itemValue.split(",")[1];
-                saveUnionMain.setLimitMember(Integer.valueOf(unionMember)); //联盟成员总数上限
-                break;
-            }
-        }
+        Integer limitMember = this.unionMainService.getLimitMemberByBusId(busId);
+        saveUnionMain.setLimitMember(limitMember); //联盟成员总数上限
         if (unionMainPermit != null) {
             saveUnionMain.setUnionValidity(unionMainPermit.getValidity()); //联盟有效期
         } else {

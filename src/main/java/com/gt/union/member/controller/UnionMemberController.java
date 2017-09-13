@@ -23,6 +23,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -72,11 +74,35 @@ public class UnionMemberController {
         }
     }
 
+    @ApiOperation(value = "根据盟员id获取所有与该盟员同属一个联盟的盟员信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/list/memberId/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String listMapByMemberId(HttpServletRequest request
+            , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
+                                    @PathVariable("memberId") Integer memberId) {
+        try {
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            Integer busId = busUser.getId();
+            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+                busId = busUser.getPid();
+            }
+            List<Map<String, Object>> result = this.unionMemberService.listMapByMemberIdAndBusId(memberId, busId);
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            this.unionLogErrorService.saveIfNotNull(e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            this.unionLogErrorService.saveIfNotNull(e);
+            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+        }
+    }
+
     @ApiOperation(value = "根据盟员身份id获取盟员信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{id}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getById(HttpServletRequest request
-            , @ApiParam(name = "id", value = "盟员身份id", required = true)
-                          @PathVariable("id") Integer memberId) {
+            , @ApiParam(name = "memberId", value = "盟员身份id", required = true)
+                          @PathVariable("memberId") Integer memberId) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
             Integer busId = busUser.getId();
