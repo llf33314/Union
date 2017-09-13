@@ -335,7 +335,6 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 .eq("status", MemberConstant.STATUS_APPLY_OUT);
         return this.selectList(entityWrapper);
     }
-    }
 
     /**
      * 根据盟员身份id、商家id和更新内容实体，更新盟员信息
