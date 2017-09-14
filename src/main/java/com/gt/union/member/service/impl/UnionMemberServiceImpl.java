@@ -20,6 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -86,10 +87,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         EntityWrapper entityWrapper = new EntityWrapper();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("id", memberId)
-                .andNew()
-                .eq("status", MemberConstant.STATUS_IN)
-                .or()
-                .eq("status", MemberConstant.STATUS_APPLY_OUT);
+                .in("status", new Object[]{MemberConstant.STATUS_IN, MemberConstant.STATUS_APPLY_OUT});
         UnionMember unionMember = this.selectOne(entityWrapper);
         return unionMember != null ? true : false;
     }
@@ -219,7 +217,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     /**
-     * 根据盟员id，分页获取所有与盟员同属一个联盟的盟员信息
+     * 根据盟员id和商家id，分页获取所有与该盟员同属一个联盟的盟员信息
      *
      * @param page                 {not null} 分页对象
      * @param memberId             {not null} 盟员id
@@ -267,6 +265,52 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 .append(", m.card_divide_percent cardDividePercent"); //售卡分成比例
         wrapper.setSqlSelect(sbSqlSelect.toString());
         return this.selectMapsPage(page, wrapper);
+    }
+
+    /**
+     * 根据盟员id和商家id，获取所有与该盟员通属一个联盟的盟员信息
+     *
+     * @param memberId {not null} 盟员id
+     * @param busId    {not null} 商家id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public List<Map<String, Object>> listMapByMemberIdAndBusId(final Integer memberId, final Integer busId) throws Exception {
+        if (memberId == null || busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        final UnionMember unionMember = this.getByIdAndBusId(memberId, busId);
+        if (unionMember == null) {
+            throw new BusinessException("没有盟员权限");
+        }
+
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                StringBuilder sbSqlSegment = new StringBuilder(" m")
+                        .append(" LEFT JOIN t_union_member_discount mdFromMe ON mdFromMe.from_member_id = ").append(memberId)
+                        .append("  AND mdFromMe.to_member_id = m.id")
+                        .append(" LEFT JOIN t_union_member_discount mdToMe ON mdToMe.from_member_id = m.id")
+                        .append("  AND mdToMe.to_member_id = ").append(memberId)
+                        .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND m.status != ").append(MemberConstant.STATUS_APPLY_IN)
+                        .append("  AND m.union_id = ").append(unionMember.getUnionId())
+                        .append("  AND mdFromMe.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND mdToMe.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append(" ORDER BY m.is_union_owner DESC, m.id ASC");
+                return sbSqlSegment.toString();
+            }
+        };
+        StringBuilder sbSqlSelect = new StringBuilder(" m.id memberId") //盟员id
+                .append(", m.is_union_owner isUnionOwner") //是否盟主
+                .append(", m.enterprise_name enterpriseName") //盟员名称
+                .append(", DATE_FORMAT(m.createtime, '%Y-%m-%d %T') createtime") //创建时间
+                .append(", mdFromMe.discount discountFromMe") //我给他的折扣
+                .append(", mdToMe.discount discountToMe") //他给我的折扣
+                .append(", m.card_divide_percent cardDividePercent"); //售卡分成比例
+        wrapper.setSqlSelect(sbSqlSelect.toString());
+        return this.selectMaps(wrapper);
     }
 
     /**

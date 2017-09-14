@@ -52,6 +52,7 @@ public interface IUnionMainService extends IService<UnionMain> {
 
     /**
      * 查询商家加入有效的联盟
+     *
      * @param busId
      * @return
      * @throws Exception
@@ -77,4 +78,13 @@ public interface IUnionMainService extends IService<UnionMain> {
      * @throws Exception
      */
     void updateByMemberIdAndBusIdAndVO(Integer memberId, Integer busId, UnionMainVO unionMainVO) throws Exception;
+
+    /**
+     * 根据商家id，获取联盟成员总数上限
+     *
+     * @param busId {not null} 商家id
+     * @return
+     * @throws Exception
+     */
+    Integer getLimitMemberByBusId(Integer busId) throws Exception;
 }

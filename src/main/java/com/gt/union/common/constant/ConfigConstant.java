@@ -7,7 +7,7 @@ import com.gt.union.common.util.PropertiesUtil;
  * @author Mr.Yu
  *
  */
-public class ConfigConstant {
+public interface ConfigConstant {
 	/** 商家账户在session key*/
 	public static String SESSION_BUSINESS_KEY = "business_key" ;
 

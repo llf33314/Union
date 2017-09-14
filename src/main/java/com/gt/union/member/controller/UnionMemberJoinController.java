@@ -74,10 +74,10 @@ public class UnionMemberJoinController {
     }
 
     @ApiOperation(value = "入盟审核", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "{id}/memberId/{memberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "{joinId}/memberId/{memberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String method(HttpServletRequest request
-            , @ApiParam(name = "id", value = "joinId，申请加入信息id", required = true)
-                         @PathVariable("id") Integer id
+            , @ApiParam(name = "joinId", value = "joinId，申请加入信息id", required = true)
+                         @PathVariable("joinId") Integer joinId
             , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
                          @PathVariable("memberId") Integer memberId
             , @ApiParam(name = "isOK", value = "是否同意入盟，1为是，0为否", required = true)
@@ -88,7 +88,7 @@ public class UnionMemberJoinController {
             if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
                 throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
             }
-            this.unionMemberJoinService.updateJoinStatus(busUser.getId(), memberId, id, isOK);
+            this.unionMemberJoinService.updateJoinStatus(busUser.getId(), memberId, joinId, isOK);
             return GTJsonResult.instanceSuccessMsg().toString();
         } catch (BaseException e) {
             logger.error("", e);
