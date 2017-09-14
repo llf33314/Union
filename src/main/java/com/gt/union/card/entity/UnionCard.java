@@ -53,11 +53,6 @@ public class UnionCard extends Model<UnionCard> {
      * 联盟卡类型（1：黑卡 2：红卡）
      */
 	private Integer type;
-    /**
-     * 用户id
-     */
-	@TableField("third_member_id")
-	private Integer thirdMemberId;
 
 
 	public Integer getId() {
@@ -114,14 +109,6 @@ public class UnionCard extends Model<UnionCard> {
 
 	public void setType(Integer type) {
 		this.type = type;
-	}
-
-	public Integer getThirdMemberId() {
-		return thirdMemberId;
-	}
-
-	public void setThirdMemberId(Integer thirdMemberId) {
-		this.thirdMemberId = thirdMemberId;
 	}
 
 	@Override
