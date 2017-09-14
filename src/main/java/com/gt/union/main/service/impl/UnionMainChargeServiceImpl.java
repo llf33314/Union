@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UnionMainChargeServiceImpl extends ServiceImpl<UnionMainChargeMapper, UnionMainCharge> implements IUnionMainChargeService {
+    //-------------------------------------------------- get ----------------------------------------------------------
 
     /**
      * 根据联盟id和联盟卡类型获取联盟卡信息
@@ -58,4 +59,10 @@ public class UnionMainChargeServiceImpl extends ServiceImpl<UnionMainChargeMappe
                 .eq("is_available", isAvailable);
         return this.selectOne(entityWrapper);
     }
+
+    //------------------------------------------ list(include page) ---------------------------------------------------
+    //------------------------------------------------- update --------------------------------------------------------
+    //------------------------------------------------- save ----------------------------------------------------------
+    //------------------------------------------------- count ---------------------------------------------------------
+    //------------------------------------------------ boolean --------------------------------------------------------
 }

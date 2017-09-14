@@ -45,6 +45,8 @@ public class UnionMemberJoinController {
     @Autowired
     private IUnionValidateService unionValidateService;
 
+    //-------------------------------------------------- get ----------------------------------------------------------
+
     @ApiOperation(value = "分页查询入盟申请列表", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/memberId/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageMapByBusIdAndMemberId(HttpServletRequest request, Page page
@@ -73,6 +75,8 @@ public class UnionMemberJoinController {
         }
     }
 
+    //-------------------------------------------------- put ----------------------------------------------------------
+
     @ApiOperation(value = "入盟审核", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "{joinId}/memberId/{memberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String method(HttpServletRequest request
@@ -100,6 +104,8 @@ public class UnionMemberJoinController {
             return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
         }
     }
+
+    //------------------------------------------------- post ----------------------------------------------------------
 
     @ApiOperation(value = "自由申请加入联盟", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")

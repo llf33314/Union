@@ -12,6 +12,7 @@ import com.gt.union.common.service.IUnionValidateService;
 import com.gt.union.log.service.IUnionLogErrorService;
 import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.service.IUnionMemberService;
+import com.gt.union.member.vo.CardDividePercentVO;
 import com.gt.union.member.vo.UnionMemberVO;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -47,6 +48,8 @@ public class UnionMemberController {
 
     @Autowired
     private IUnionValidateService unionValidateService;
+
+    //-------------------------------------------------- get ----------------------------------------------------------
 
     @ApiOperation(value = "根据盟员id分页获取所有与该盟员同属一个联盟的盟员信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/page/memberId/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -122,11 +125,13 @@ public class UnionMemberController {
         }
     }
 
+    //-------------------------------------------------- put ----------------------------------------------------------
+
     @ApiOperation(value = "更新盟员信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{id}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{memberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateById(HttpServletRequest request
-            , @ApiParam(name = "id", value = "盟员身份id", required = true)
-                             @PathVariable("id") Integer memberId
+            , @ApiParam(name = "memberId", value = "盟员身份id", required = true)
+                             @PathVariable("memberId") Integer memberId
             , @ApiParam(name = "unionMemberVO", value = "更新内容实体", required = true)
                              @RequestBody @Valid UnionMemberVO unionMemberVO, BindingResult bindingResult) {
         try {
@@ -147,4 +152,32 @@ public class UnionMemberController {
             return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
         }
     }
+
+    @ApiOperation(value = "批量更新售卡分成比例", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/memberId/{memberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    public String updateCardDividePercentById(HttpServletRequest request
+            , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
+                                              @PathVariable("memberId") Integer memberId
+            , @ApiParam(name = "cardDividePercentVO", value = "更新内容实体", required = true)
+                                              @RequestBody @Valid List<CardDividePercentVO> cardDividePercentVOList, BindingResult bindingResult) {
+        try {
+            this.unionValidateService.checkBindingResult(bindingResult);
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+                throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
+            }
+            this.unionMemberService.updateCardDividePercentByIdAndBusId(memberId, busUser.getId(), cardDividePercentVOList);
+            return GTJsonResult.instanceSuccessMsg().toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            this.unionLogErrorService.saveIfNotNull(e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            this.unionLogErrorService.saveIfNotNull(e);
+            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+        }
+    }
+
+    //------------------------------------------------- post ----------------------------------------------------------
 }

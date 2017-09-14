@@ -46,6 +46,46 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
     @Autowired
     private PhoneMessageSender phoneMessageSender;
 
+    //-------------------------------------------------- get ----------------------------------------------------------
+
+    /**
+     * 根据退盟申请id，获取退盟申请信息
+     *
+     * @param outId {not null} 退盟申请id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public UnionMemberOut getById(Integer outId) throws Exception {
+        if (outId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("id", outId);
+        return this.selectOne(entityWrapper);
+    }
+
+    /**
+     * 根据退盟申请的盟员身份id，获取退盟申请信息
+     *
+     * @param applyMemberId {not null} 退盟申请id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public UnionMemberOut getByApplyMemberId(Integer applyMemberId) throws Exception {
+        if (applyMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("apply_member_id", applyMemberId);
+        return this.selectOne(entityWrapper);
+    }
+
+    //------------------------------------------ list(include page) ---------------------------------------------------
+
     /**
      * 根据商家id和盟员身份id，分页获取申请退盟列表信息
      *
@@ -130,58 +170,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         return this.selectMapsPage(page, wrapper);
     }
 
-    /**
-     * 根据商家id、盟员身份id和退盟理由，保存申请退盟信息
-     *
-     * @param busId          {not null} 商家id
-     * @param memberId       {not null} 盟员身份id
-     * @param applyOutReason {not null} 退盟理由
-     * @throws Exception
-     */
-    @Override
-    @Transactional(propagation = Propagation.REQUIRED)
-    public void saveApplyOutByBusIdAndMemberId(Integer busId, Integer memberId, String applyOutReason) throws Exception {
-        if (busId == null || memberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
-            throw new BusinessException("不具有盟员身份或已过期");
-        }
-        UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
-        if (unionMember.getStatus() == MemberConstant.STATUS_APPLY_OUT || unionMember.getStatus() == MemberConstant.STATUS_OUTING) {
-            throw new BusinessException("已申请退盟或正在退盟过渡期");
-        }
-        UnionMain unionMain = this.unionMainService.getById(unionMember.getUnionId());
-        if (unionMain == null) {
-            throw new BusinessException("联盟不存在或已过期");
-        }
-        // (1)保存申请退盟信息
-        UnionMemberOut saveUnionMemberOut = new UnionMemberOut();
-        saveUnionMemberOut.setCreatetime(DateUtil.getCurrentDate()); //申请时间
-        saveUnionMemberOut.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
-        saveUnionMemberOut.setApplyMemberId(memberId); //申请退盟的盟员id
-        saveUnionMemberOut.setApplyOutReason(applyOutReason); //退盟理由
-        // (2)更新盟员状态为申请退盟状态
-        UnionMember updateUnionMember = new UnionMember();
-        updateUnionMember.setId(memberId);
-        updateUnionMember.setStatus(MemberConstant.STATUS_APPLY_OUT);
-        // (3)短信通知
-        UnionMember unionOwner = this.unionMemberService.getUnionOwnerByUnionId(unionMain.getId());
-        if (unionOwner == null) {
-            throw new BusinessException("盟主帐号不存在或已过期");
-        }
-        String content = new StringBuilder("\"")
-                .append(unionMember.getEnterpriseAddress())
-                .append("\"申请退出\"")
-                .append(unionMain.getName())
-                .append("\",请到退盟审核处查看并处理").toString();
-        String phone = StringUtil.isNotEmpty(unionOwner.getNotifyPhone()) ? unionOwner.getNotifyPhone() : unionOwner.getDirectorPhone();
-        PhoneMessage phoneMessage = new PhoneMessage(busId, phone, content);
-        // (4)事务操作
-        this.insert(saveUnionMemberOut);
-        this.unionMemberService.updateById(updateUnionMember);
-        this.phoneMessageSender.sendMsg(phoneMessage);
-    }
+    //------------------------------------------------- update --------------------------------------------------------
 
     /**
      * 根据商家id、盟员身份id和退盟申请id，审批退盟申请
@@ -296,39 +285,61 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
 
     }
 
-    /**
-     * 根据退盟申请id，获取退盟申请信息
-     *
-     * @param outId {not null} 退盟申请id
-     * @return
-     * @throws Exception
-     */
-    @Override
-    public UnionMemberOut getById(Integer outId) throws Exception {
-        if (outId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        EntityWrapper entityWrapper = new EntityWrapper();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", outId);
-        return this.selectOne(entityWrapper);
-    }
+    //------------------------------------------------- save ----------------------------------------------------------
 
     /**
-     * 根据退盟申请的盟员身份id，获取退盟申请信息
+     * 根据商家id、盟员身份id和退盟理由，保存申请退盟信息
      *
-     * @param applyMemberId {not null} 退盟申请id
-     * @return
+     * @param busId          {not null} 商家id
+     * @param memberId       {not null} 盟员身份id
+     * @param applyOutReason {not null} 退盟理由
      * @throws Exception
      */
     @Override
-    public UnionMemberOut getByApplyMemberId(Integer applyMemberId) throws Exception {
-        if (applyMemberId == null) {
+    @Transactional(propagation = Propagation.REQUIRED)
+    public void saveApplyOutByBusIdAndMemberId(Integer busId, Integer memberId, String applyOutReason) throws Exception {
+        if (busId == null || memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        EntityWrapper entityWrapper = new EntityWrapper();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("apply_member_id", applyMemberId);
-        return this.selectOne(entityWrapper);
+        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
+            throw new BusinessException("不具有盟员身份或已过期");
+        }
+        UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        if (unionMember.getStatus() == MemberConstant.STATUS_APPLY_OUT || unionMember.getStatus() == MemberConstant.STATUS_OUTING) {
+            throw new BusinessException("已申请退盟或正在退盟过渡期");
+        }
+        UnionMain unionMain = this.unionMainService.getById(unionMember.getUnionId());
+        if (unionMain == null) {
+            throw new BusinessException("联盟不存在或已过期");
+        }
+        // (1)保存申请退盟信息
+        UnionMemberOut saveUnionMemberOut = new UnionMemberOut();
+        saveUnionMemberOut.setCreatetime(DateUtil.getCurrentDate()); //申请时间
+        saveUnionMemberOut.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
+        saveUnionMemberOut.setApplyMemberId(memberId); //申请退盟的盟员id
+        saveUnionMemberOut.setApplyOutReason(applyOutReason); //退盟理由
+        // (2)更新盟员状态为申请退盟状态
+        UnionMember updateUnionMember = new UnionMember();
+        updateUnionMember.setId(memberId);
+        updateUnionMember.setStatus(MemberConstant.STATUS_APPLY_OUT);
+        // (3)短信通知
+        UnionMember unionOwner = this.unionMemberService.getUnionOwnerByUnionId(unionMain.getId());
+        if (unionOwner == null) {
+            throw new BusinessException("盟主帐号不存在或已过期");
+        }
+        String content = new StringBuilder("\"")
+                .append(unionMember.getEnterpriseAddress())
+                .append("\"申请退出\"")
+                .append(unionMain.getName())
+                .append("\",请到退盟审核处查看并处理").toString();
+        String phone = StringUtil.isNotEmpty(unionOwner.getNotifyPhone()) ? unionOwner.getNotifyPhone() : unionOwner.getDirectorPhone();
+        PhoneMessage phoneMessage = new PhoneMessage(busId, phone, content);
+        // (4)事务操作
+        this.insert(saveUnionMemberOut);
+        this.unionMemberService.updateById(updateUnionMember);
+        this.phoneMessageSender.sendMsg(phoneMessage);
     }
+
+    //------------------------------------------------- count ---------------------------------------------------------
+    //------------------------------------------------ boolean --------------------------------------------------------
 }

@@ -5,15 +5,16 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.main.constant.MainConstant;
 import com.gt.union.main.entity.UnionMainNotice;
 import com.gt.union.main.mapper.UnionMainNoticeMapper;
 import com.gt.union.main.service.IUnionMainNoticeService;
+import com.gt.union.member.entity.UnionMember;
+import com.gt.union.member.service.IUnionMemberService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.Date;
 
 /**
  * <p>
@@ -25,41 +26,70 @@ import java.util.Date;
  */
 @Service
 public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMapper, UnionMainNotice> implements IUnionMainNoticeService {
+    @Autowired
+    private IUnionMemberService unionMemberService;
 
-	@Override
-	public UnionMainNotice getByUnionId(Integer unionId) {
-		EntityWrapper wrapper = new EntityWrapper<UnionMainNotice>();
-		wrapper.eq("union_id", unionId);
-		wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
-		return this.selectOne(wrapper);
-	}
+    //-------------------------------------------------- get ----------------------------------------------------------
 
-	@Override
-	public UnionMainNotice saveByUnionId(Integer unionId, Integer busId, String content) throws Exception {
-		//TODO  添加联盟公告
-		if(unionId == null){
-			throw new ParamException(CommonConstant.PARAM_ERROR);
-		}
-		if(busId == null){
-			throw new ParamException(CommonConstant.PARAM_ERROR);
-		}
-		if(StringUtil.isEmpty(content)){
-			throw new ParamException("联盟公告不能为空");
-		}
-		if(StringUtil.getStringLength(content) > MainConstant.NOTICE_MAX_LENGTH){
-			throw new BusinessException("公告内容不可超过50字");
-		}
-		UnionMainNotice notice = getByUnionId(unionId);
-		notice.setModifytime(new Date());
-		notice.setContent(content);
-		if(CommonUtil.isEmpty(notice)){
-			notice.setDelStatus(CommonConstant.DEL_STATUS_NO);
-			notice.setUnionId(unionId);
-			notice.setCreatetime(new Date());
-			this.insert(notice);
-		}else{
-			this.updateById(notice);
-		}
-		return notice;
-	}
+    /**
+     * 根据联盟id，获取联盟公告
+     *
+     * @param unionId {not null} 联盟id
+     * @return
+     */
+    @Override
+    public UnionMainNotice getByUnionId(Integer unionId) {
+        EntityWrapper wrapper = new EntityWrapper<UnionMainNotice>();
+        wrapper.eq("union_id", unionId)
+                .eq("del_status", CommonConstant.DEL_STATUS_NO);
+        return this.selectOne(wrapper);
+    }
+
+    //------------------------------------------ list(include page) ---------------------------------------------------
+    //------------------------------------------------- update --------------------------------------------------------
+
+    /**
+     * 根据商家id、盟员身份id和联盟公告内容，更新保存联盟公告信息
+     *
+     * @param busId    {not null} 商家id
+     * @param memberId {not null} 盟员身份id
+     * @param content  {not null} 联盟公告内容
+     * @return
+     */
+    @Override
+    public void updateOrSaveByBusIdAndMemberId(Integer busId, Integer memberId, String content) throws Exception {
+        if (busId == null || memberId == null || content == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
+        }
+        if (StringUtil.isEmpty(content)) {
+            throw new BusinessException("联盟公告内容不能为空");
+        }
+        if (StringUtil.getStringLength(content) > MainConstant.NOTICE_MAX_LENGTH) {
+            throw new BusinessException("联盟公告内容不可超过50字");
+        }
+        UnionMember unionOwner = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        UnionMainNotice unionMainNotice = this.getByUnionId(unionOwner.getUnionId());
+        if (unionMainNotice != null) {
+            UnionMainNotice updateNotice = new UnionMainNotice();
+            updateNotice.setId(unionMainNotice.getId()); //联盟公告id
+            updateNotice.setModifytime(DateUtil.getCurrentDate()); //更新时间
+            updateNotice.setContent(content);  //公告内容
+            this.updateById(updateNotice);
+        } else {
+            UnionMainNotice saveNotice = new UnionMainNotice();
+            saveNotice.setCreatetime(DateUtil.getCurrentDate()); //创建时间
+            saveNotice.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
+            saveNotice.setUnionId(unionOwner.getUnionId()); //联盟id
+            saveNotice.setContent(content); //公告内容
+            this.insert(saveNotice);
+        }
+    }
+
+    //------------------------------------------------- save ----------------------------------------------------------
+    //------------------------------------------------- count ---------------------------------------------------------
+    //------------------------------------------------ boolean --------------------------------------------------------
+
 }

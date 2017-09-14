@@ -23,6 +23,8 @@ import java.util.List;
  */
 @Service
 public class UnionMainDictServiceImpl extends ServiceImpl<UnionMainDictMapper, UnionMainDict> implements IUnionMainDictService {
+    //-------------------------------------------------- get ----------------------------------------------------------
+    //------------------------------------------ list(include page) ---------------------------------------------------
 
     /**
      * 根据联盟id，获取联盟申请填写信息设置
@@ -31,7 +33,7 @@ public class UnionMainDictServiceImpl extends ServiceImpl<UnionMainDictMapper, U
      * @return
      */
     @Override
-    public List<UnionMainDict> listByUnionId(Integer unionId) throws Exception{
+    public List<UnionMainDict> listByUnionId(Integer unionId) throws Exception {
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -39,6 +41,8 @@ public class UnionMainDictServiceImpl extends ServiceImpl<UnionMainDictMapper, U
         entityWrapper.eq("union_id", unionId);
         return this.selectList(entityWrapper);
     }
+
+    //------------------------------------------------- update --------------------------------------------------------
 
     /**
      * 根据联盟id删除联盟申请填写信息设置
@@ -48,7 +52,7 @@ public class UnionMainDictServiceImpl extends ServiceImpl<UnionMainDictMapper, U
      */
     @Override
     @Transactional(propagation = Propagation.REQUIRED)
-    public void deleteByUnionId(Integer unionId) throws Exception {
+    public void removeByUnionId(Integer unionId) throws Exception {
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -56,4 +60,8 @@ public class UnionMainDictServiceImpl extends ServiceImpl<UnionMainDictMapper, U
         entityWrapper.eq("union_id", unionId);
         this.delete(entityWrapper);
     }
+
+    //------------------------------------------------- save ----------------------------------------------------------
+    //------------------------------------------------- count ---------------------------------------------------------
+    //------------------------------------------------ boolean --------------------------------------------------------
 }

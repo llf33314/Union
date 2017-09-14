@@ -48,8 +48,7 @@ public class UnionPreferentialItem extends Model<UnionPreferentialItem> {
     /**
      * 审核状态（0：未提交 1：未审核 2：审核通过 3：审核不过）
      */
-	@TableField("verify_status")
-	private Integer verifyStatus;
+	private Integer status;
 
 
 	public Integer getId() {
@@ -92,12 +91,12 @@ public class UnionPreferentialItem extends Model<UnionPreferentialItem> {
 		this.name = name;
 	}
 
-	public Integer getVerifyStatus() {
-		return verifyStatus;
+	public Integer getStatus() {
+		return status;
 	}
 
-	public void setVerifyStatus(Integer verifyStatus) {
-		this.verifyStatus = verifyStatus;
+	public void setStatus(Integer status) {
+		this.status = status;
 	}
 
 	@Override

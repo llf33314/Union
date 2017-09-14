@@ -16,21 +16,7 @@ import java.util.List;
  * @since 2017-09-07
  */
 public interface IUnionMainService extends IService<UnionMain> {
-    /**
-     * 根据id检查联盟的有效性
-     *
-     * @param id {not null} 联盟id
-     * @throws Exception
-     */
-    void checkUnionMainValid(Integer id) throws Exception;
-
-    /**
-     * 根据联盟检查联盟的有效性
-     *
-     * @param unionMain {not null} 联盟
-     * @throws Exception
-     */
-    void checkUnionMainValid(UnionMain unionMain) throws Exception;
+    //-------------------------------------------------- get ----------------------------------------------------------
 
     /**
      * 根据id获取联盟信息
@@ -40,6 +26,17 @@ public interface IUnionMainService extends IService<UnionMain> {
      * @throws Exception
      */
     UnionMain getById(Integer id) throws Exception;
+
+    /**
+     * 根据商家id，获取联盟成员总数上限
+     *
+     * @param busId {not null} 商家id
+     * @return
+     * @throws Exception
+     */
+    Integer getLimitMemberByBusId(Integer busId) throws Exception;
+
+    //------------------------------------------ list(include page) ---------------------------------------------------
 
     /**
      * 根据商家id，获取所有具有盟员身份的联盟信息，即创建的联盟+加入的联盟
@@ -69,6 +66,8 @@ public interface IUnionMainService extends IService<UnionMain> {
      */
     Page<UnionMain> PageByBusId(Page page, Integer busId) throws Exception;
 
+    //------------------------------------------------- update --------------------------------------------------------
+
     /**
      * 根据盟员id、商家id和VO对象，更新联盟信息
      *
@@ -79,12 +78,23 @@ public interface IUnionMainService extends IService<UnionMain> {
      */
     void updateByMemberIdAndBusIdAndVO(Integer memberId, Integer busId, UnionMainVO unionMainVO) throws Exception;
 
+    //------------------------------------------------- save ----------------------------------------------------------
+    //------------------------------------------------- count ---------------------------------------------------------
+    //------------------------------------------------ boolean --------------------------------------------------------
+
     /**
-     * 根据商家id，获取联盟成员总数上限
+     * 根据id检查联盟的有效性
      *
-     * @param busId {not null} 商家id
-     * @return
+     * @param id {not null} 联盟id
      * @throws Exception
      */
-    Integer getLimitMemberByBusId(Integer busId) throws Exception;
+    void checkUnionMainValid(Integer id) throws Exception;
+
+    /**
+     * 根据联盟检查联盟的有效性
+     *
+     * @param unionMain {not null} 联盟
+     * @throws Exception
+     */
+    void checkUnionMainValid(UnionMain unionMain) throws Exception;
 }

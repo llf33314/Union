@@ -17,10 +17,20 @@ public interface CardConstant {
     /**
      * 消费
      */
-    int INTEGRAL_TYPE_CONSUME = 1;
+    public static final int INTEGRAL_TYPE_CONSUME = 1;
 
     /**
      * 赠送
      */
-    int INTEGRAL_TYPE_GIVE = 2;
+    public static final int INTEGRAL_TYPE_GIVE = 2;
+
+    /**
+     * 联盟卡类型：黑卡
+     */
+    public static final int TYPE_BLACK = 1;
+
+    /**
+     * 联盟卡类型：红卡
+     */
+    public static final int TYPE_RED = 2;
 }

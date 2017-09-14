@@ -9,7 +9,7 @@
 		<result column="del_status" property="delStatus" />
 		<result column="project_id" property="projectId" />
 		<result column="name" property="name" />
-		<result column="verify_status" property="verifyStatus" />
+		<result column="status" property="status" />
 	</resultMap>
 
 </mapper>

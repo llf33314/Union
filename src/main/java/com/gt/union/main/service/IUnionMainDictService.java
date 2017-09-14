@@ -14,6 +14,8 @@ import java.util.List;
  * @since 2017-09-07
  */
 public interface IUnionMainDictService extends IService<UnionMainDict> {
+    //-------------------------------------------------- get ----------------------------------------------------------
+    //------------------------------------------ list(include page) ---------------------------------------------------
 
     /**
      * 根据联盟id，获取联盟申请填写信息设置
@@ -23,11 +25,18 @@ public interface IUnionMainDictService extends IService<UnionMainDict> {
      */
     List<UnionMainDict> listByUnionId(Integer unionId) throws Exception;
 
+    //------------------------------------------------- update --------------------------------------------------------
+
     /**
      * 根据联盟id删除联盟申请填写信息设置
      *
      * @param unionId {not null} 联盟id
      * @throws Exception
      */
-    void deleteByUnionId(Integer unionId) throws Exception;
+    void removeByUnionId(Integer unionId) throws Exception;
+
+    //------------------------------------------------- save ----------------------------------------------------------
+    //------------------------------------------------- count ---------------------------------------------------------
+    //------------------------------------------------ boolean --------------------------------------------------------
+
 }

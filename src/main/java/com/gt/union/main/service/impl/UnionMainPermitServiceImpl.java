@@ -36,31 +36,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
     @Autowired
     private IDictService dictService;
 
-    @Override
-    public boolean hasUnionMainPermit(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        BusUser busUser = this.busUserService.getBusUserById(busId);
-        if (busUser == null) {
-            throw new ParamException("商家帐号不存在");
-        }
-        busUser.setLevel(BusUserConstant.LEVEL_EXTREME);//TODO 开发用，待删
-        //（1）判断商家版本：至尊版、白金版、钻石版直接拥有盟主服务许可
-        Map<Integer, Object> data = getFreeUnionMainAuthority();
-        if (data.containsKey(busUser.getLevel())) {
-            return true;
-        }
-        //（2）其他版本，如升级版、高级版需要判断是否购买了盟主服务
-        EntityWrapper entityWrapper = new EntityWrapper();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("bus_id", busId);
-        UnionMainPermit unionMainPermit = this.selectOne(entityWrapper);
-        if (unionMainPermit != null && DateUtil.getCurrentDate().compareTo(unionMainPermit.getValidity()) < 0) {
-            return true;
-        }
-        return false;
-    }
+    //-------------------------------------------------- get ----------------------------------------------------------
 
     /**
      * 根据商家id获取联盟服务许可
@@ -116,4 +92,37 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         }
         return data;
     }
+
+    //------------------------------------------ list(include page) ---------------------------------------------------
+    //------------------------------------------------- update --------------------------------------------------------
+    //------------------------------------------------- save ----------------------------------------------------------
+    //------------------------------------------------- count ---------------------------------------------------------
+    //------------------------------------------------ boolean --------------------------------------------------------
+
+    @Override
+    public boolean hasUnionMainPermit(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        BusUser busUser = this.busUserService.getBusUserById(busId);
+        if (busUser == null) {
+            throw new ParamException("商家帐号不存在");
+        }
+        busUser.setLevel(BusUserConstant.LEVEL_EXTREME);//TODO 开发用，待删
+        //（1）判断商家版本：至尊版、白金版、钻石版直接拥有盟主服务许可
+        Map<Integer, Object> data = getFreeUnionMainAuthority();
+        if (data.containsKey(busUser.getLevel())) {
+            return true;
+        }
+        //（2）其他版本，如升级版、高级版需要判断是否购买了盟主服务
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("bus_id", busId);
+        UnionMainPermit unionMainPermit = this.selectOne(entityWrapper);
+        if (unionMainPermit != null && DateUtil.getCurrentDate().compareTo(unionMainPermit.getValidity()) < 0) {
+            return true;
+        }
+        return false;
+    }
+
 }

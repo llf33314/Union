@@ -40,7 +40,6 @@ import java.util.Map;
  */
 @Service
 public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMapper, UnionMainCreate> implements IUnionMainCreateService {
-
     @Autowired
     private IUnionMemberService unionMemberService;
 
@@ -62,17 +61,7 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
     @Autowired
     private IUnionMainDictService unionMainDictService;
 
-    @Override
-    public boolean hasCreateUnionMain(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        EntityWrapper entityWrapper = new EntityWrapper();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("bus_id", busId);
-        UnionMainCreate unionMainCreate = this.selectOne(entityWrapper);
-        return unionMainCreate != null ? true : false;
-    }
+    //-------------------------------------------------- get ----------------------------------------------------------
 
     /**
      * 根据商家id创建联盟
@@ -152,6 +141,10 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         }
         return result;
     }
+
+    //------------------------------------------ list(include page) ---------------------------------------------------
+    //------------------------------------------------- update --------------------------------------------------------
+    //------------------------------------------------- save ----------------------------------------------------------
 
     /**
      * 根据商家id和表单信息，保存新建的联盟信息
@@ -322,6 +315,34 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         saveUnionOwner.setUnionId(saveUnionMain.getId());
         this.unionMemberService.insert(saveUnionOwner);
     }
+
+    //------------------------------------------------- count ---------------------------------------------------------
+    //------------------------------------------------ boolean --------------------------------------------------------
+
+    /**
+     * 根据商家id判断是否创建过联盟
+     *
+     * @param busId {not null} 商家id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public boolean hasCreateUnionMain(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("bus_id", busId);
+        UnionMainCreate unionMainCreate = this.selectOne(entityWrapper);
+        return unionMainCreate != null ? true : false;
+    }
+
+
+
+
+
+
 
     /**
      * 根据商家id和服务许可id，获取联盟创建信息

@@ -48,6 +48,8 @@ public class UnionMainController {
     @Autowired
     private IUnionValidateService unionValidateService;
 
+    //-------------------------------------------------- get ----------------------------------------------------------
+
     @ApiOperation(value = "获取我的所有联盟的信息，包括我创建的、以及我加入的", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/myUnion/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listByBusId(HttpServletRequest request) {
@@ -92,6 +94,8 @@ public class UnionMainController {
         }
     }
 
+    //-------------------------------------------------- put ----------------------------------------------------------
+
     @ApiOperation(value = "更新联盟信息，要求盟主权限", produces = "application/json;charset=UTF-8")
     @SysLogAnnotation(op_function = "3", description = "更新联盟信息，要求盟主权限")
     @RequestMapping(value = "/memberId/{memberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
@@ -118,4 +122,6 @@ public class UnionMainController {
             return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
         }
     }
+
+    //------------------------------------------------- post ----------------------------------------------------------
 }

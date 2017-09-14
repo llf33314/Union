@@ -35,6 +35,11 @@ public interface MemberConstant {
     public static final int STATUS_OUTING = 4;
 
     /**
+     * 盟员状态：已加入+申请退盟+退盟过渡期
+     */
+    public static final Object[] STATUS_IN_APPLYOUT_OUTING = new Object[]{STATUS_IN, STATUS_APPLY_OUT, STATUS_OUTING};
+
+    /**
      * 最大加入联盟数
      */
     public static int MAX_UNION_APPLY = 3;

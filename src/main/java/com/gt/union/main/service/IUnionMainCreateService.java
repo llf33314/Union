@@ -15,14 +15,7 @@ import java.util.Map;
  * @since 2017-09-07
  */
 public interface IUnionMainCreateService extends IService<UnionMainCreate> {
-    /**
-     * 根据商家id判断是否创建过联盟
-     *
-     * @param busId {not null} 商家id
-     * @return
-     * @throws Exception
-     */
-    boolean hasCreateUnionMain(Integer busId) throws Exception;
+    //-------------------------------------------------- get ----------------------------------------------------------
 
     /**
      * 根据商家id创建联盟
@@ -34,15 +27,6 @@ public interface IUnionMainCreateService extends IService<UnionMainCreate> {
     Map<String, Object> instanceByBusId(Integer busId) throws Exception;
 
     /**
-     * 根据商家id和表单信息，保存新建的联盟信息
-     *
-     * @param busId             {not null} 商家id
-     * @param unionMainCreateVO {not null} 新建的联盟id
-     * @throws Exception
-     */
-    void saveInstanceByBusIdAndVo(Integer busId, UnionMainCreateVO unionMainCreateVO) throws Exception;
-
-    /**
      * 根据商家id和服务许可id，获取联盟创建信息
      *
      * @param busId    {not null} 商家id
@@ -51,4 +35,29 @@ public interface IUnionMainCreateService extends IService<UnionMainCreate> {
      * @throws Exception
      */
     UnionMainCreate getByBusIdAndPermitId(Integer busId, Integer permitId) throws Exception;
+
+    //------------------------------------------ list(include page) ---------------------------------------------------
+    //------------------------------------------------- update --------------------------------------------------------
+    //------------------------------------------------- save ----------------------------------------------------------
+
+    /**
+     * 根据商家id和表单信息，保存新建的联盟信息
+     *
+     * @param busId             {not null} 商家id
+     * @param unionMainCreateVO {not null} 新建的联盟id
+     * @throws Exception
+     */
+    void saveInstanceByBusIdAndVo(Integer busId, UnionMainCreateVO unionMainCreateVO) throws Exception;
+
+    //------------------------------------------------- count ---------------------------------------------------------
+    //------------------------------------------------ boolean --------------------------------------------------------
+
+    /**
+     * 根据商家id判断是否创建过联盟
+     *
+     * @param busId {not null} 商家id
+     * @return
+     * @throws Exception
+     */
+    boolean hasCreateUnionMain(Integer busId) throws Exception;
 }
