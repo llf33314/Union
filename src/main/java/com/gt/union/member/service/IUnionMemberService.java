@@ -228,16 +228,6 @@ public interface IUnionMemberService extends IService<UnionMember> {
      */
     boolean isUnionMemberValid(Integer busId, Integer memberId) throws Exception;
 
-	/**
-	 * 根据盟员身份id、商家id和更新内容实体，更新盟员信息
-	 *
-	 * @param memberId      {not null} 盟员身份id
-	 * @param busId         {not null} 商家id
-	 * @param unionMemberVO {not null} 更新内容实体
-	 * @throws Exception
-	 */
-    void updateByIdAndBusId(Integer memberId, Integer busId, UnionMemberVO unionMemberVO) throws Exception;
-
     /**
      * 判断盟员是否有效
      * @param unionMember

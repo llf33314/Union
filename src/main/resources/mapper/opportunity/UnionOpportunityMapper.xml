@@ -38,10 +38,10 @@
 			AND m.union_id = #{unionId}
 		</if>
 		<if test="clientName != null and clientName != '' " >
-			AND o.client_name = #{clientName}
+			AND o.client_name LIKE CONCAT(CONCAT('%', #{clientName}),'%')
 		</if>
 		<if test="clientPhone != null and clientPhone != '' " >
-			AND o.client_phone = #{clientPhone}
+			AND o.client_phone LIKE CONCAT(CONCAT('%', #{clientPhone}),'%')
 		</if>
 		<!-- 已结算 -->
 		<if test="incomeStatus == 1" >
@@ -73,10 +73,10 @@
 			AND m.union_id = #{unionId}
 		</if>
 		<if test="clientName != null and clientName != '' " >
-			AND o.client_name = #{clientName}
+			AND o.client_name LIKE CONCAT(CONCAT('%', #{clientName}),'%')
 		</if>
 		<if test="clientPhone != null and clientPhone != '' " >
-			AND o.client_phone = #{clientPhone}
+			AND o.client_phone = LIKE CONCAT(CONCAT('%', #{clientPhone}),'%')
 		</if>
 		<!-- 已结算 -->
 		<if test="incomeStatus == 1" >
@@ -98,7 +98,7 @@
 				#{member.id}
 			</foreach>
 			and is_accept = 2 and del_status = 0) o
-		LEFT JOIN t_union_member m on o.to_member_id = m.id and m.del_status = 0
+		LEFT JOIN t_union_member m on o.to_member_id = m.id
 		LEFT JOIN t_union_brokerage_income i on o.id = i.opportunity_id
 		LEFT JOIN t_union_main um on m.union_id = um.id GROUP BY o.from_member_id)
 		union
@@ -108,7 +108,7 @@
 				#{member.id}
 			</foreach>
 			and is_accept = 2 and del_status = 0) o
-		LEFT JOIN t_union_member m on o.from_member_id = m.id and m.del_status = 0
+		LEFT JOIN t_union_member m on o.from_member_id = m.id
 		LEFT JOIN t_union_brokerage_income i on o.id = i.opportunity_id
 		LEFT JOIN t_union_main um on m.union_id = um.id GROUP BY o.to_member_id)) a
 		<if test="unionId != null" >
