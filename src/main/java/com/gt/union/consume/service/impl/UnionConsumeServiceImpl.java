@@ -82,7 +82,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		if(unionConsumeParam.getOrderType() == null){
 			throw new ParamException("orderType为空");
 		}
-		UnionMember unionMember = unionMemberService.getByUnionIdAndBusId(unionConsumeParam.getUnionId(), unionConsumeParam.getBusId());
+		UnionMember unionMember = unionMemberService.getByBusIdAndUnionId(unionConsumeParam.getBusId(), unionConsumeParam.getUnionId());
 
         UnionConsume unionConsume = new UnionConsume();
         unionConsume.setCreatetime(new Date());

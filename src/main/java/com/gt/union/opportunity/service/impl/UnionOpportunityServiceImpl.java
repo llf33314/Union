@@ -441,7 +441,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
 		if (page == null || fromBusId == null) {
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
-		List<UnionMember> members = unionMemberService.listByBusId(fromBusId);
+		/*List<UnionMember> members = unionMemberService.listByBusId(fromBusId);
 		final List<Integer> memberIds = new ArrayList<Integer>();
 		for(UnionMember member : members){
 			memberIds.add(member.getId());
@@ -463,7 +463,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
 				vo.setStatus(1);
 			}
 		}
-		page.setRecords(list);
+		page.setRecords(list);*/
 		return page;
 	}
 

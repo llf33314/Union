@@ -53,7 +53,7 @@ public class UnionBrokerageRatioServiceImpl extends ServiceImpl<UnionBrokerageRa
 		if(page == null || busId == null || unionId == null){
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
-		UnionMember member = unionMemberService.getByUnionIdAndBusId(unionId,busId);
+		UnionMember member = unionMemberService.getByBusIdAndUnionId(busId,unionId);
 		List<UnionBrokerageRatioVO> list = unionBrokerageRatioMapper.pageBrokerageRatio(page, member.getId(), unionId);
 		for(UnionBrokerageRatioVO vo : list){
 			vo.setFromMemberId(member.getId());
@@ -68,9 +68,9 @@ public class UnionBrokerageRatioServiceImpl extends ServiceImpl<UnionBrokerageRa
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
 		//判断盟员身份
-		if (!this.unionMemberService.isUnionMemberValid(busId, fromMemberId)) {
+		/*if (!this.unionMemberService.isUnionMemberValid(busId, fromMemberId)) {
 			throw new BusinessException("不具有盟员身份或已过期");
-		}
+		}*/
 		if (ratio <= 0D || ratio >= 100D) {
 			throw new ParamException("商机佣金比必须大于0%，且小于100%");
 		}

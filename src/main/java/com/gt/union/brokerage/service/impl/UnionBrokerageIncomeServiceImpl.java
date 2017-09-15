@@ -127,7 +127,7 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
 		}
 		Double sum = 0d;
 		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
-		List<UnionMember> members = unionMemberService.listByBusId(busId);
+		/*List<UnionMember> members = unionMemberService.listByBusId(busId);
 		if(ListUtil.isEmpty(members)){
 			data.put("sum",sum);
 			data.put("list",list);
@@ -157,7 +157,7 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
 				sum = BigDecimalUtil.add(Double.valueOf(map.get("money").toString()),sum).doubleValue();
 				list.add(map);
 			}
-		}
+		}*/
 		data.put("list",list);
 		data.put("sum",sum);
 		return data;
@@ -169,13 +169,13 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
 		Double sum = 0d;
-		List<UnionMember> members = unionMemberService.listAllByBusId(busId);
+		/*List<UnionMember> members = unionMemberService.listAllByBusId(busId);
 		if(ListUtil.isEmpty(members)){
 			return sum;
 		}
 		Double incomeSum = this.withdrawalSumByMemberIds(members);//总收入
 		Double withdrawalSum = unionBrokerageWithdrawalService.withdrawalSumByMemberIds(members);
-		sum = BigDecimalUtil.subtract(incomeSum,withdrawalSum).doubleValue();
+		sum = BigDecimalUtil.subtract(incomeSum,withdrawalSum).doubleValue();*/
 		return sum;
 	}
 

@@ -655,6 +655,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         return this.selectCount(entityWrapper);
     }
 
+
     /**
      * 根据商家id，统计具有读权限的盟员身份数
      *
@@ -770,7 +771,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         }
     }
 
-    @Override
+   /* @Override
     public List<UnionMember> listValidByUnionIds(List<Integer> unionIds) {
         EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<UnionMember>();
         entityWrapper.in("union_id", unionIds.toArray());
@@ -787,5 +788,5 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         entityWrapper.in("status", new Object[]{MemberConstant.STATUS_IN, MemberConstant.STATUS_APPLY_OUT});
         entityWrapper.orderBy("is_union_owner desc, id asc");
         return this.selectList(entityWrapper);
-    }
+    }*/
 }
