@@ -129,7 +129,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
                         .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
                         .append("  AND m.union_id = t_union_main.id")
                         .append("  AND m.bus_id = ").append(busId)
-                        .append("  AND m.status in(").append(MemberConstant.STATUS_APPLY_IN)
+                        .append("  AND m.status in(").append(MemberConstant.STATUS_IN)
                         .append("    , ").append(MemberConstant.STATUS_APPLY_OUT)
                         .append("    , ").append(MemberConstant.STATUS_OUTING)
                         .append("    )")
@@ -155,7 +155,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
                         .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
                         .append("  AND m.union_id = t_union_main.id")
                         .append("  AND m.bus_id = ").append(busId)
-                        .append("  AND m.status in(").append(MemberConstant.STATUS_APPLY_IN)
+                        .append("  AND m.status in(").append(MemberConstant.STATUS_IN)
                         .append("    , ").append(MemberConstant.STATUS_APPLY_OUT)
                         .append("    )")
                         .toString());
@@ -181,7 +181,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
                         .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
                         .append("  AND m.union_id = t_union_main.id")
                         .append("  AND m.bus_id = ").append(busId)
-                        .append("  AND m.status in(").append(MemberConstant.STATUS_APPLY_IN)
+                        .append("  AND m.status in(").append(MemberConstant.STATUS_IN)
                         .append("    , ").append(MemberConstant.STATUS_APPLY_OUT)
                         .append("    , ").append(MemberConstant.STATUS_OUTING)
                         .append("    )")
@@ -208,7 +208,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
                         .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
                         .append("  AND m.union_id = t_union_main.id")
                         .append("  AND m.bus_id = ").append(busId)
-                        .append("  AND m.status in(").append(MemberConstant.STATUS_APPLY_IN)
+                        .append("  AND m.status in(").append(MemberConstant.STATUS_IN)
                         .append("    , ").append(MemberConstant.STATUS_APPLY_OUT)
                         .append("    )")
                         .toString());
@@ -393,11 +393,8 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         if (unionOwner == null) {
             throw new BusinessException("找不到盟主信息");
         }
-        Integer unionOwnerBusUserId = unionOwner.getBusId();
-        if (!this.busUserService.isBusUserValid(unionOwnerBusUserId)) {
-            throw new BusinessException("盟主信息不存在或已过期");
-        }
         // （4）检查盟主联盟服务许可
+        Integer unionOwnerBusUserId = unionOwner.getBusId();
         if (!this.unionMainPermitService.hasUnionMainPermit(unionOwnerBusUserId)) {
             throw new BusinessException("联盟的盟主没有盟主服务或盟主服务已过期");
         }

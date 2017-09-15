@@ -36,7 +36,7 @@ public interface IBusUserService {
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean isBusUserValid(Integer busId) throws Exception;
+	//public boolean isBusUserValid(Integer busId) throws Exception;
 
 	/**
 	 * 根据用户判断该用户是否有效
@@ -44,5 +44,5 @@ public interface IBusUserService {
 	 * @return
 	 * @throws Exception
 	 */
-	public boolean isBusUserValid(BusUser busUser) throws Exception;
+	//public boolean isBusUserValid(BusUser busUser) throws Exception;
 }

@@ -95,15 +95,15 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
             @Override
             public String getSqlSegment() {
                 StringBuilder sbSqlSegment = new StringBuilder(" mj")
-                        .append(" LEFT JOIN t_union_member ma ON m.id = mj.apply_member_id")
+                        .append(" LEFT JOIN t_union_member ma ON ma.id = mj.apply_member_id")
                         .append(" LEFT JOIN t_union_member mr ON mr.id = mj.recommend_member_id")
                         .append(" WHERE mj.del_status = ").append(CommonConstant.DEL_STATUS_NO)
                         .append("  AND (")
                         .append("    (mj.type = ").append(MemberConstant.JOIN_TYPE_JOIN)
-                        .append("      AND mj.recommend_member_id = null)")
+                        .append("      AND mj.recommend_member_id IS NULL)")
                         .append("    OR (mj.type = ").append(MemberConstant.JOIN_TYPE_RECOMMEND)
                         .append("      AND mj.is_recommend_agree = ").append(CommonConstant.COMMON_YES)
-                        .append("      AND mj.recommend_member_id != null)")
+                        .append("      AND mj.recommend_member_id IS NOT NULL)")
                         .append("  )")
                         .append("  AND ma.del_status = ").append(CommonConstant.DEL_STATUS_NO)
                         .append("  AND ma.status = ").append(MemberConstant.STATUS_APPLY_IN)
@@ -111,27 +111,28 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
                         .append("    SELECT m2.id FROM t_union_member m2")
                         .append("    WHERE m2.del_status = ").append(CommonConstant.DEL_STATUS_NO)
                         .append("      AND m2.id = ").append(unionMember.getId())
-                        .append("      AND m2.union_id = ma.union_id");
+                        .append("      AND m2.union_id = ma.union_id")
+                        .append("  )");
                 if (StringUtil.isNotEmpty(optionEnterpriseName)) {
-                    sbSqlSegment.append(" AND m.enterprise_name LIKE %").append(optionEnterpriseName).append("%");
+                    sbSqlSegment.append(" AND ma.enterprise_name LIKE %").append(optionEnterpriseName).append("%");
                 }
                 if (StringUtil.isNotEmpty(optionDirectorPhone)) {
-                    sbSqlSegment.append(" AND m.director_phone LIKE %").append(optionDirectorPhone).append("%");
+                    sbSqlSegment.append(" AND ma.director_phone LIKE %").append(optionDirectorPhone).append("%");
                 }
                 sbSqlSegment.append(" ORDER BY mj.id ASC");
                 return sbSqlSegment.toString();
             }
         };
         StringBuilder sbSqlSelect = new StringBuilder(" mj.id joinId") //申请加入申请id
-                .append(", m.enterprise_name joinEnterpriseName") //企业名称
-                .append(", m.director_name joinDirectorName") //负责人名称
-                .append(", m.director_phone joinDirectorPhone") //负责人电话
-                .append(", m.director_email joinDirectorEmail") //负责人邮箱
+                .append(", ma.enterprise_name joinEnterpriseName") //企业名称
+                .append(", ma.director_name joinDirectorName") //负责人名称
+                .append(", ma.director_phone joinDirectorPhone") //负责人电话
+                .append(", ma.director_email joinDirectorEmail") //负责人邮箱
                 .append(", mj.reason joinReason") //申请加入理由
                 .append(", DATE_FORMAT(mj.createtime, '%Y-%m-%d %T') joinTime") //申请加入时间
                 .append(", mr.enterprise_name recommendEnterpriseName"); //推荐人名称
         wrapper.setSqlSelect(sbSqlSelect.toString());
-        return this.selectPage(page, wrapper);
+        return this.selectMapsPage(page, wrapper);
     }
 
     //------------------------------------------------- update --------------------------------------------------------
@@ -302,9 +303,6 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         }
         if (busUserRecommended.getPid() != null && busUserRecommended.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException("请填写被推荐主体的主帐号");
-        }
-        if (this.busUserService.isBusUserValid(busUserRecommended)) {
-            throw new BusinessException("被推荐的帐号已过期");
         }
         //(6)判断被推荐的商家是否已经是盟员
         Integer recommendedBusId = busUserRecommended.getId();

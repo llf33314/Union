@@ -200,9 +200,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                         .append("  AND mdToMe.to_member_id = ").append(memberId)
                         .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
                         .append("  AND m.status != ").append(MemberConstant.STATUS_APPLY_IN)
-                        .append("  AND m.union_id = ").append(unionMember.getUnionId())
-                        .append("  AND mdFromMe.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND mdToMe.del_status = ").append(CommonConstant.DEL_STATUS_NO);
+                        .append("  AND m.union_id = ").append(unionMember.getUnionId());
                 if (StringUtil.isNotEmpty(optionEnterpriseName)) {
                     sbSqlSegment.append(" AND m.enterprise_name LIKE %").append(optionEnterpriseName).append("%");
                 }
@@ -257,8 +255,6 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                         .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
                         .append("  AND m.status != ").append(MemberConstant.STATUS_APPLY_IN)
                         .append("  AND m.union_id = ").append(unionMember.getUnionId())
-                        .append("  AND mdFromMe.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND mdToMe.del_status = ").append(CommonConstant.DEL_STATUS_NO)
                         .append(" ORDER BY m.is_union_owner DESC, m.id ASC");
                 return sbSqlSegment.toString();
             }
