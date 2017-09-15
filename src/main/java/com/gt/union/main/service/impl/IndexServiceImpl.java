@@ -17,6 +17,7 @@ import com.gt.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -115,7 +116,7 @@ public class IndexServiceImpl implements IIndexService {
 
         //(2)获取我(商家)的具有非盟主身份的盟员信息列表，以及我加入的联盟信息
         List<UnionMember> unionNotOwnerList = this.unionMemberService.listNotOwnerReadByBusId(busId);
-        List<Map<String, Object>> myJoinUnionList = null;
+        List<Map<String, Object>> myJoinUnionList = new ArrayList<>();
         if (ListUtil.isNotEmpty(unionNotOwnerList)) {
             for (UnionMember unionNoOwner : unionNotOwnerList) {
                 UnionMain myJoinUnion = this.unionMainService.getById(unionNoOwner.getUnionId());
