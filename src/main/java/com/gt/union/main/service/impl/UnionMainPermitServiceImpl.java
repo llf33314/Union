@@ -104,11 +104,14 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        BusUser busUser = this.busUserService.getBusUserById(busId);
+        /*BusUser busUser = this.busUserService.getBusUserById(busId);
         if (busUser == null) {
             throw new ParamException("商家帐号不存在");
-        }
-        busUser.setLevel(BusUserConstant.LEVEL_EXTREME);//TODO 开发用，待删
+        }*/
+        //TODO 开发用，待删
+        BusUser busUser = new BusUser();
+        busUser.setId(busId);
+        busUser.setLevel(BusUserConstant.LEVEL_EXTREME);
         //（1）判断商家版本：至尊版、白金版、钻石版直接拥有盟主服务许可
         Map<Integer, Object> data = getFreeUnionMainAuthority();
         if (data.containsKey(busUser.getLevel())) {

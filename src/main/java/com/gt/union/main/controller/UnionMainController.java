@@ -59,7 +59,7 @@ public class UnionMainController {
             if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
                 busId = busUser.getPid();
             }
-            List<UnionMain> result = this.unionMainService.listByBusId(busId);
+            List<UnionMain> result = this.unionMainService.listReadByBusId(busId);
             return GTJsonResult.instanceSuccessMsg(result).toString();
         } catch (BaseException e) {
             logger.error("", e);
@@ -81,7 +81,7 @@ public class UnionMainController {
             if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
                 busId = busUser.getPid();
             }
-            Page result = this.unionMainService.PageByBusId(page, busId);
+            Page result = this.unionMainService.pageReadByBusId(page, busId);
             return GTJsonResult.instanceSuccessMsg(result).toString();
         } catch (BaseException e) {
             logger.error("", e);

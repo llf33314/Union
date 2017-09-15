@@ -6,6 +6,7 @@ import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.vo.UnionMainVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -19,13 +20,13 @@ public interface IUnionMainService extends IService<UnionMain> {
     //-------------------------------------------------- get ----------------------------------------------------------
 
     /**
-     * 根据id获取联盟信息
+     * 根据联盟id，获取联盟信息
      *
-     * @param id {not null} 联盟id
+     * @param unionId {not null} 联盟id
      * @return
      * @throws Exception
      */
-    UnionMain getById(Integer id) throws Exception;
+    UnionMain getById(Integer unionId) throws Exception;
 
     /**
      * 根据商家id，获取联盟成员总数上限
@@ -39,32 +40,42 @@ public interface IUnionMainService extends IService<UnionMain> {
     //------------------------------------------ list(include page) ---------------------------------------------------
 
     /**
-     * 根据商家id，获取所有具有盟员身份的联盟信息，即创建的联盟+加入的联盟
+     * 根据商家id，获取所有具有读权限的盟员身份所在的联盟列表信息
      *
      * @param busId {not null} 商家id
      * @return
      * @throws Exception
      */
-    List<UnionMain> listByBusId(Integer busId) throws Exception;
+    List<UnionMain> listReadByBusId(Integer busId) throws Exception;
 
     /**
-     * 查询商家加入有效的联盟
+     * 根据商家id，获取所有具有写权限的盟员身份所在的联盟列表信息
      *
-     * @param busId
+     * @param busId {not null} 商家id
      * @return
      * @throws Exception
      */
-    List<UnionMain> listValidUnionMainByBusId(Integer busId) throws Exception;
+    List<UnionMain> listWriteByBusId(Integer busId) throws Exception;
 
     /**
-     * 根据商家id，分页获取具有盟员身份的联盟信息，即创建的联盟+加入的联盟
+     * 根据商家id，分页获取具有读权限的盟员身份所在的联盟列表信息
      *
      * @param page  {not null} 分页对象
      * @param busId {not null} 商家id
      * @return
      * @throws Exception
      */
-    Page<UnionMain> PageByBusId(Page page, Integer busId) throws Exception;
+    Page<UnionMain> pageReadByBusId(Page page, Integer busId) throws Exception;
+
+    /**
+     * 根据商家id，分页获取具有写权限的盟员身份所在的联盟列表信息
+     *
+     * @param page  {not null} 分页对象
+     * @param busId {not null} 商家id
+     * @return
+     * @throws Exception
+     */
+    Page<UnionMain> pageWriteByBusId(Page page, Integer busId) throws Exception;
 
     //------------------------------------------------- update --------------------------------------------------------
 
@@ -83,15 +94,15 @@ public interface IUnionMainService extends IService<UnionMain> {
     //------------------------------------------------ boolean --------------------------------------------------------
 
     /**
-     * 根据id检查联盟的有效性
+     * 根据联盟id，检查联盟的有效期
      *
-     * @param id {not null} 联盟id
+     * @param unionId {not null} 联盟id
      * @throws Exception
      */
-    void checkUnionMainValid(Integer id) throws Exception;
+    void checkUnionMainValid(Integer unionId) throws Exception;
 
     /**
-     * 根据联盟检查联盟的有效性
+     * 根据联盟检查联盟的有效期
      *
      * @param unionMain {not null} 联盟
      * @throws Exception

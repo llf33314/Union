@@ -71,7 +71,7 @@ public class LoginFilter implements Filter {
 			chain.doFilter(request, response);
 		}else if (busUser == null) {// 判断到商家没有登录,就跳转到登陆页面
 			busUser = new BusUser();
-			busUser.setId(33);
+			busUser.setId(15);
 			busUser.setEndTime(new Date());
 			busUser.setPid(0);
 			busUser.setLevel(4);

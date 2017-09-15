@@ -41,17 +41,17 @@ import java.util.List;
 @Service
 public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, UnionConsume> implements IUnionConsumeService {
 
-	@Autowired
-	private IUnionMemberService unionMemberService;
+    @Autowired
+    private IUnionMemberService unionMemberService;
 
-	@Autowired
-	private IUnionMainService unionMainService;
+    @Autowired
+    private IUnionMainService unionMainService;
 
-	@Autowired
-	private IDictService dictService;
+    @Autowired
+    private IDictService dictService;
 
-	@Autowired
-	private IUnionCardIntegralService unionCardIntegralService;
+    @Autowired
+    private IUnionCardIntegralService unionCardIntegralService;
 
 	@Autowired
 	private UnionConsumeMapper unionConsumeMapper;
@@ -84,72 +84,72 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		}
 		UnionMember unionMember = unionMemberService.getByUnionIdAndBusId(unionConsumeParam.getUnionId(), unionConsumeParam.getBusId());
 
-		UnionConsume unionConsume = new UnionConsume();
-		unionConsume.setCreatetime(new Date());
-		unionConsume.setDelStatus(CommonConstant.DEL_STATUS_NO);
-		unionConsume.setModel(unionConsumeParam.getModel());//行业模型
-		unionConsume.setModelDesc(unionConsumeParam.getModelDesc());//行业描述
-		unionConsume.setOrderNo(unionConsumeParam.getOrderNo());//订单号
-		unionConsume.setPayType(unionConsumeParam.getOrderType());//支付类型 (0：现金 1：微信 2：支付宝)
-		unionConsume.setType(1);//线上支付
-		unionConsume.setStatus(unionConsumeParam.getStatus());//支付状态
-		unionConsume.setConsumeMoney(unionConsumeParam.getTotalMoney());//联盟折扣打折前价格
-		unionConsume.setPayMoney(unionConsumeParam.getPayMoney());//折后支付价格
-		unionConsume.setCardId(unionConsumeParam.getUnionCardId());//联盟卡id
-		unionConsume.setIsIntegral(0);//是否赠送积分 0未赠送 1赠送
-		unionConsume.setMemberId(unionMember.getId());
-		this.insert(unionConsume);
-		//线上积分赠送积分
-		if(CommonUtil.isEmpty(unionConsumeParam.getGiveIntegralNow()) || unionConsumeParam.getGiveIntegralNow()){//立即正式
-			UnionMain main = unionMainService.getById(unionConsumeParam.getUnionId());
-			if(main.getIsIntegral() != null && main.getIsIntegral() == 1){//开启积分
-				double integral = dictService.getGiveIntegral();
-				double getIntegral = BigDecimalUtil.multiply(unionConsume.getPayMoney(), integral, 2).doubleValue();//获得的积分
-				UnionCardIntegral unionCardIntegral = new UnionCardIntegral();
-				unionCardIntegral.setCardId(unionConsumeParam.getUnionCardId());
-				unionCardIntegral.setCreatetime(new Date());
-				unionCardIntegral.setDelStatus(CommonConstant.DEL_STATUS_NO);
-				unionCardIntegral.setIntegral(getIntegral);
-				unionCardIntegral.setStatus(CardConstant.INTEGRAL_STATUS_IN);
-				unionCardIntegral.setType(CardConstant.INTEGRAL_TYPE_GIVE);
-				unionCardIntegralService.insert(unionCardIntegral);
-			}
-		}
-		UnionConsumeResult result = new UnionConsumeResult();
-		result.setMessage("核销成功");
-		result.setSuccess(true);
-		return result;
-	}
+        UnionConsume unionConsume = new UnionConsume();
+        unionConsume.setCreatetime(new Date());
+        unionConsume.setDelStatus(CommonConstant.DEL_STATUS_NO);
+        unionConsume.setModel(unionConsumeParam.getModel());//行业模型
+        unionConsume.setModelDesc(unionConsumeParam.getModelDesc());//行业描述
+        unionConsume.setOrderNo(unionConsumeParam.getOrderNo());//订单号
+        unionConsume.setPayType(unionConsumeParam.getOrderType());//支付类型 (0：现金 1：微信 2：支付宝)
+        unionConsume.setType(1);//线上支付
+        unionConsume.setStatus(unionConsumeParam.getStatus());//支付状态
+        unionConsume.setConsumeMoney(unionConsumeParam.getTotalMoney());//联盟折扣打折前价格
+        unionConsume.setPayMoney(unionConsumeParam.getPayMoney());//折后支付价格
+        unionConsume.setCardId(unionConsumeParam.getUnionCardId());//联盟卡id
+        unionConsume.setIsIntegral(0);//是否赠送积分 0未赠送 1赠送
+        unionConsume.setMemberId(unionMember.getId());
+        this.insert(unionConsume);
+        //线上积分赠送积分
+        if (CommonUtil.isEmpty(unionConsumeParam.getGiveIntegralNow()) || unionConsumeParam.getGiveIntegralNow()) {//立即正式
+            UnionMain main = unionMainService.getById(unionConsumeParam.getUnionId());
+            if (main.getIsIntegral() != null && main.getIsIntegral() == 1) {//开启积分
+                double integral = dictService.getGiveIntegral();
+                double getIntegral = BigDecimalUtil.multiply(unionConsume.getPayMoney(), integral, 2).doubleValue();//获得的积分
+                UnionCardIntegral unionCardIntegral = new UnionCardIntegral();
+                unionCardIntegral.setCardId(unionConsumeParam.getUnionCardId());
+                unionCardIntegral.setCreatetime(new Date());
+                unionCardIntegral.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                unionCardIntegral.setIntegral(getIntegral);
+                unionCardIntegral.setStatus(CardConstant.INTEGRAL_STATUS_IN);
+                unionCardIntegral.setType(CardConstant.INTEGRAL_TYPE_GIVE);
+                unionCardIntegralService.insert(unionCardIntegral);
+            }
+        }
+        UnionConsumeResult result = new UnionConsumeResult();
+        result.setMessage("核销成功");
+        result.setSuccess(true);
+        return result;
+    }
 
-	@Override
-	public UnionRefundResult unionRefund(String orderNo, Integer model) throws Exception{
-		UnionConsume unionConsume = this.getByOrderNoAndModel(orderNo,model);
-		UnionRefundResult result = new UnionRefundResult();
-		if(unionConsume == null){
-			throw new BusinessException("没有该订单信息的联盟消费记录");
-		}
-		if(unionConsume.getStatus() == ConsumeConstant.PAY_STATUS_NON){
-			throw new BusinessException("该订单未支付");
-		}else if(unionConsume.getStatus() == ConsumeConstant.PAY_STATUS_YES){//已支付
-			UnionConsume consume = new UnionConsume();
-			consume.setId(unionConsume.getId());
-			consume.setStatus(2);
-			this.updateById(consume);
-			result.setSuccess(true);
-		}else if(unionConsume.getStatus() == ConsumeConstant.PAY_STATUS_REFUND){//已退款
-			throw new BusinessException("该订单已退款");
-		}
-		return result;
-	}
+    @Override
+    public UnionRefundResult unionRefund(String orderNo, Integer model) throws Exception {
+        UnionConsume unionConsume = this.getByOrderNoAndModel(orderNo, model);
+        UnionRefundResult result = new UnionRefundResult();
+        if (unionConsume == null) {
+            throw new BusinessException("没有该订单信息的联盟消费记录");
+        }
+        if (unionConsume.getStatus() == ConsumeConstant.PAY_STATUS_NON) {
+            throw new BusinessException("该订单未支付");
+        } else if (unionConsume.getStatus() == ConsumeConstant.PAY_STATUS_YES) {//已支付
+            UnionConsume consume = new UnionConsume();
+            consume.setId(unionConsume.getId());
+            consume.setStatus(2);
+            this.updateById(consume);
+            result.setSuccess(true);
+        } else if (unionConsume.getStatus() == ConsumeConstant.PAY_STATUS_REFUND) {//已退款
+            throw new BusinessException("该订单已退款");
+        }
+        return result;
+    }
 
-	@Override
-	public UnionConsume getByOrderNoAndModel(String orderNo, Integer model) {
-		EntityWrapper wrapper = new EntityWrapper<>();
-		wrapper.eq("order_no",orderNo);
-		wrapper.eq("model",model);
-		wrapper.eq("del_status",CommonConstant.DEL_STATUS_NO);
-		return this.selectOne(wrapper);
-	}
+    @Override
+    public UnionConsume getByOrderNoAndModel(String orderNo, Integer model) {
+        EntityWrapper wrapper = new EntityWrapper<>();
+        wrapper.eq("order_no", orderNo);
+        wrapper.eq("model", model);
+        wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+        return this.selectOne(wrapper);
+    }
 
 	@Override
 	public Page listMy(Page page, Integer unionId, Integer busId, Integer memberId, String cardNo, String phone, String beginTime, String endTime) throws Exception{

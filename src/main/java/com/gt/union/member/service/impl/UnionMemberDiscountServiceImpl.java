@@ -7,6 +7,8 @@ import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.DoubleUtil;
+import com.gt.union.main.service.IUnionMainService;
+import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.entity.UnionMemberDiscount;
 import com.gt.union.member.mapper.UnionMemberDiscountMapper;
 import com.gt.union.member.service.IUnionMemberDiscountService;
@@ -28,6 +30,9 @@ import java.util.List;
 public class UnionMemberDiscountServiceImpl extends ServiceImpl<UnionMemberDiscountMapper, UnionMemberDiscount> implements IUnionMemberDiscountService {
     @Autowired
     private IUnionMemberService unionMemberService;
+
+    @Autowired
+    private IUnionMainService unionMainService;
 
     //-------------------------------------------------- get ----------------------------------------------------------
 
@@ -86,15 +91,25 @@ public class UnionMemberDiscountServiceImpl extends ServiceImpl<UnionMemberDisco
         if (busId == null || memberId == null || tgtMemberId == null || discount == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
-            throw new BusinessException("不具有盟员身份或已过期");
+        //(1)判断是否具有盟员权限
+        UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        if (unionMember == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(unionMember.getUnionId());
+        //(3)判断是否具有写权限
+        if (!this.unionMemberService.hasWriteAuthority(unionMember)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
+        }
+        //(4)校验更新内容
         if (discount < 0D || discount > 10D) {
             throw new ParamException("折扣必须大于0折，且小于10折");
         }
         if (!DoubleUtil.checkDecimalPrecision(discount, 2)) {
             throw new ParamException("折扣最多保留两位小数");
         }
+        //(5)更新操作
         UnionMemberDiscount unionMemberDiscount = this.getByFromMemberIdAndToMemberId(memberId, tgtMemberId);
         if (unionMemberDiscount != null) { //更新
             unionMemberDiscount.setModifytime(DateUtil.getCurrentDate()); //修改时间

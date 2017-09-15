@@ -93,9 +93,6 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         if (busUser == null) {
             throw new BusinessException("账号不存在");
         }
-        if (this.busUserService.isBusUserValid(busUser)) {
-            throw new BusinessException(CommonConstant.UNION_BUS_OVERDUE_MSG);
-        }
         List<Map> createDict = dictService.getCreateUnionDict();//创建联盟的权限
         boolean flag = false;
         Map info = null;

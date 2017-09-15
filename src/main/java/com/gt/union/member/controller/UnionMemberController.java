@@ -51,7 +51,7 @@ public class UnionMemberController {
 
     //-------------------------------------------------- get ----------------------------------------------------------
 
-    @ApiOperation(value = "根据盟员id分页获取所有与该盟员同属一个联盟的盟员信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "根据我的盟员身份id分页获取所有与我同属一个联盟的盟员信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/page/memberId/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageMapByMemberId(HttpServletRequest request, Page page
             , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
@@ -77,7 +77,7 @@ public class UnionMemberController {
         }
     }
 
-    @ApiOperation(value = "根据盟员id获取所有与该盟员同属一个联盟的盟员信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "根据我的盟员身份id获取所有与我同属一个联盟的盟员信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/list/memberId/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listMapByMemberId(HttpServletRequest request
             , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
@@ -101,7 +101,7 @@ public class UnionMemberController {
         }
     }
 
-    @ApiOperation(value = "根据盟员身份id获取盟员信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "根据我的盟员身份id获取对应的盟员信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getById(HttpServletRequest request
             , @ApiParam(name = "memberId", value = "盟员身份id", required = true)
@@ -113,6 +113,28 @@ public class UnionMemberController {
                 busId = busUser.getPid();
             }
             UnionMember result = this.unionMemberService.getByIdAndBusId(memberId, busId);
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            this.unionLogErrorService.saveIfNotNull(e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            this.unionLogErrorService.saveIfNotNull(e);
+            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+        }
+    }
+
+    @ApiOperation(value = "获取我的所有盟员身份，以及盟员身份所在的联盟信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String listReadMap(HttpServletRequest request) {
+        try {
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            Integer busId = busUser.getId();
+            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+                busId = busUser.getPid();
+            }
+            List<Map<String, Object>> result = this.unionMemberService.listReadMapByBusId(busId);
             return GTJsonResult.instanceSuccessMsg(result).toString();
         } catch (BaseException e) {
             logger.error("", e);

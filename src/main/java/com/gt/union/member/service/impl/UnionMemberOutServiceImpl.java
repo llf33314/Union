@@ -100,13 +100,22 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         if (page == null || busId == null || memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
-            throw new BusinessException("不具有盟员身份或已过期");
-        }
+        //(1)判断是否具有盟员权限
         final UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
-        if (unionMember.getIsUnionOwner() != MemberConstant.IS_UNION_OWNER_YES) {
-            throw new BusinessException("非盟主身份无法操作");
+        if (unionMember == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(unionMember.getUnionId());
+        //(3)判断是否具有读权限
+        if (!this.unionMemberService.hasReadAuthority(unionMember)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
+        }
+        //(4)判断盟主身份
+        if (!unionMember.getIsUnionOwner().equals(MemberConstant.IS_UNION_OWNER_YES)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
+        }
+        //(5)查询操作
         Wrapper wrapper = new Wrapper() {
             @Override
             public String getSqlSegment() {
@@ -141,13 +150,22 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         if (page == null || busId == null || memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
-            throw new BusinessException("不具有盟员身份或已过期");
-        }
+        //(1)判断是否具有盟员权限
         final UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
-        if (unionMember.getIsUnionOwner() != MemberConstant.IS_UNION_OWNER_YES) {
-            throw new BusinessException("非盟主身份无法操作");
+        if (unionMember == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(unionMember.getUnionId());
+        //(3)判断是否具有读权限
+        if (!this.unionMemberService.hasReadAuthority(unionMember)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
+        }
+        //(4)判断盟主权限
+        if (!unionMember.getIsUnionOwner().equals(MemberConstant.IS_UNION_OWNER_YES)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
+        }
+        //(5)查询操作
         Wrapper wrapper = new Wrapper() {
             @Override
             public String getSqlSegment() {
@@ -187,16 +205,22 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         if (busId == null || memberId == null || outId == null || isOK == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
-            throw new BusinessException("不具有盟员身份或已过期");
-        }
+        //(1)判断是否具有盟员权限
         UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
-        if (unionMember.getIsUnionOwner() != MemberConstant.IS_UNION_OWNER_YES) {
-            throw new BusinessException("非盟主身份无法操作");
+        if (unionMember == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
-        if (unionMember.getStatus() != MemberConstant.STATUS_APPLY_OUT) {
-            throw new BusinessException("退盟申请不存在或已处理");
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(unionMember.getUnionId());
+        //(3)判断是否具有写权限
+        if (!this.unionMemberService.hasWriteAuthority(unionMember)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
         }
+        //(4)判断盟主权限
+        if (!unionMember.getIsUnionOwner().equals(MemberConstant.IS_UNION_OWNER_YES)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
+        }
+        //(5)判断申请信息是否过期
         UnionMemberOut unionMemberOut = this.getById(outId);
         if (unionMemberOut == null) {
             throw new BusinessException("退盟申请不存在或已处理");
@@ -204,23 +228,23 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         UnionMemberOut updateUnionMemberOut = new UnionMemberOut();
         UnionMember updateUnionMember = new UnionMember();
         if (isOK == CommonConstant.COMMON_YES) { //同意退盟
-            // (1)退盟申请更新内容
+            //(6)退盟申请更新内容
             updateUnionMemberOut.setId(outId); //退盟申请id
             updateUnionMemberOut.setConfirmOutTime(DateUtil.getCurrentDate()); //盟主审核退盟时间
             updateUnionMemberOut.setActualOutTime(DateUtil.addDays(DateUtil.getCurrentDate(), 15)); //实际退盟时间
-            // (2)退盟的盟员要更新的内容
+            //(7)退盟的盟员要更新的内容
             updateUnionMember.setId(unionMemberOut.getApplyMemberId()); //申请退盟的盟员id
             updateUnionMember.setStatus(MemberConstant.STATUS_OUTING); //退盟过渡期
         } else {
-            // (1)退盟申请更新内容
+            //(6)退盟申请更新内容
             updateUnionMemberOut.setId(outId); //退盟申请id
             updateUnionMemberOut.setConfirmOutTime(DateUtil.getCurrentDate()); //盟主审核退盟时间
             updateUnionMemberOut.setDelStatus(CommonConstant.DEL_STATUS_YES); //废弃掉这条申请
-            // (2)退盟的盟员要更新的内容
+            //(7)退盟的盟员要更新的内容
             updateUnionMember.setId(unionMemberOut.getApplyMemberId()); //申请退盟的盟员id
             updateUnionMember.setStatus(MemberConstant.STATUS_IN); //返回正式盟员状态
         }
-        // (3)事务化操作
+        //(8)事务化操作
         this.updateById(updateUnionMemberOut);
         this.unionMemberService.updateById(updateUnionMember);
     }
@@ -239,20 +263,30 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         if (busId == null || memberId == null || tgtMemberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
-            throw new BusinessException("不具有盟员身份或已过期");
+        //(1)判断是否具有盟员权限
+        UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        if (unionMember == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
-        UnionMember unionOwner = this.unionMemberService.getByIdAndBusId(memberId, busId);
-        if (unionOwner.getIsUnionOwner() != MemberConstant.IS_UNION_OWNER_YES) {
-            throw new BusinessException("非盟主身份无法操作");
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(unionMember.getUnionId());
+        //(3)判断是否具有写权限
+        if (!this.unionMemberService.hasWriteAuthority(unionMember)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
         }
+        //(4)判断盟主权限
+        if (!unionMember.getIsUnionOwner().equals(MemberConstant.IS_UNION_OWNER_YES)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
+        }
+        //(5)检查操作的对象信息
         UnionMember tgtUnionMember = this.unionMemberService.getById(tgtMemberId);
         if (tgtUnionMember == null) {
             throw new BusinessException("要移出的对象不存在");
         }
-        if (!tgtUnionMember.getUnionId().equals(unionOwner.getUnionId())) {
+        if (!tgtUnionMember.getUnionId().equals(unionMember.getUnionId())) {
             throw new BusinessException("要移出的对象不在该联盟下");
         }
+        //(6)更新操作
         Integer tgtMemberStatus = tgtUnionMember.getStatus();
         switch (tgtMemberStatus) {
             case MemberConstant.STATUS_OUTING:
@@ -260,7 +294,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
             case MemberConstant.STATUS_APPLY_OUT: //已申请退盟，移出操作变成审核通过退盟操作
                 UnionMemberOut tgtUnionMemberOut = this.getByApplyMemberId(tgtMemberId);
                 if (tgtUnionMemberOut == null) {
-                    throw new BusinessException("要移出的对象已申请退盟，但找不到退盟信息");
+                    throw new BusinessException("要移出的对象已申请退盟，但找不到退盟申请信息");
                 }
                 this.updateByBusIdAndMemberIdAndOutId(busId, memberId, tgtUnionMemberOut.getId(), CommonConstant.COMMON_YES);
                 break;
@@ -301,10 +335,18 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         if (busId == null || memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
-            throw new BusinessException("不具有盟员身份或已过期");
-        }
+        //(1)判断是否具有盟员权限
         UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        if (unionMember == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
+        }
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(unionMember.getUnionId());
+        //(3)判断是否具有写权限
+        if (!this.unionMemberService.hasWriteAuthority(unionMember)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
+        }
+        //(4)判断当前状态
         if (unionMember.getStatus() == MemberConstant.STATUS_APPLY_OUT || unionMember.getStatus() == MemberConstant.STATUS_OUTING) {
             throw new BusinessException("已申请退盟或正在退盟过渡期");
         }
@@ -312,17 +354,17 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         if (unionMain == null) {
             throw new BusinessException("联盟不存在或已过期");
         }
-        // (1)保存申请退盟信息
+        //(5)要保存的退盟申请信息
         UnionMemberOut saveUnionMemberOut = new UnionMemberOut();
         saveUnionMemberOut.setCreatetime(DateUtil.getCurrentDate()); //申请时间
         saveUnionMemberOut.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
         saveUnionMemberOut.setApplyMemberId(memberId); //申请退盟的盟员id
         saveUnionMemberOut.setApplyOutReason(applyOutReason); //退盟理由
-        // (2)更新盟员状态为申请退盟状态
+        //(6)更新盟员状态为申请退盟状态
         UnionMember updateUnionMember = new UnionMember();
         updateUnionMember.setId(memberId);
         updateUnionMember.setStatus(MemberConstant.STATUS_APPLY_OUT);
-        // (3)短信通知
+        //(7)短信通知
         UnionMember unionOwner = this.unionMemberService.getUnionOwnerByUnionId(unionMain.getId());
         if (unionOwner == null) {
             throw new BusinessException("盟主帐号不存在或已过期");
@@ -334,7 +376,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
                 .append("\",请到退盟审核处查看并处理").toString();
         String phone = StringUtil.isNotEmpty(unionOwner.getNotifyPhone()) ? unionOwner.getNotifyPhone() : unionOwner.getDirectorPhone();
         PhoneMessage phoneMessage = new PhoneMessage(busId, phone, content);
-        // (4)事务操作
+        //(8)事务操作
         this.insert(saveUnionMemberOut);
         this.unionMemberService.updateById(updateUnionMember);
         this.phoneMessageSender.sendMsg(phoneMessage);

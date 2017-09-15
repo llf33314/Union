@@ -61,7 +61,7 @@ public class MybatisGenerator {
     /*public static final String[] generateTables = new String[]{"t_union_consume", "t_union_consume_item"};*/
 
     //log
-    public static final String[] generateTables = new String[]{"t_union_card_binding"};
+    public static final String[] generateTables = new String[]{"t_union_card_root"};
 
     //brokerage
     /*public static final String[] generateTables = new String[]{"t_union_brokerage_income", "t_union_brokerage_pay"
