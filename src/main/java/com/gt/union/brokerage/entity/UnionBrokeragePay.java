@@ -1,13 +1,12 @@
 package com.gt.union.brokerage.entity;
 
-import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.annotations.TableName;
-import com.baomidou.mybatisplus.enums.IdType;
-
-import java.io.Serializable;
 import java.util.Date;
+import com.baomidou.mybatisplus.enums.IdType;
+import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableName;
+import java.io.Serializable;
 
 /**
  * <p>
@@ -15,7 +14,7 @@ import java.util.Date;
  * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @since 2017-09-13
  */
 @TableName("t_union_brokerage_pay")
 public class UnionBrokeragePay extends Model<UnionBrokeragePay> {
@@ -72,7 +71,7 @@ public class UnionBrokeragePay extends Model<UnionBrokeragePay> {
      * 商机推荐id
      */
 	@TableField("opportunity_id")
-	private String opportunityId;
+	private Integer opportunityId;
     /**
      * 佣金平台管理员id
      */
@@ -160,11 +159,11 @@ public class UnionBrokeragePay extends Model<UnionBrokeragePay> {
 		this.wxOrderNo = wxOrderNo;
 	}
 
-	public String getOpportunityId() {
+	public Integer getOpportunityId() {
 		return opportunityId;
 	}
 
-	public void setOpportunityId(String opportunityId) {
+	public void setOpportunityId(Integer opportunityId) {
 		this.opportunityId = opportunityId;
 	}
 

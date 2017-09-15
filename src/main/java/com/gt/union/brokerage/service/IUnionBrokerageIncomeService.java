@@ -13,6 +13,13 @@ import com.gt.union.brokerage.entity.UnionBrokerageIncome;
  * @since 2017-09-07
  */
 public interface IUnionBrokerageIncomeService extends IService<UnionBrokerageIncome> {
+
+	/**
+	 * 根据商机id获取佣金收入
+	 * @param id
+	 * @return
+	 */
+	UnionBrokerageIncome getByUnionOpportunityId(Integer id);
     /**
      * 根据商家id和盟员身份id，分页获取同一个联盟下的售卡佣金分成列表信息，并根据售卡类型(精确匹配)、卡号(模糊匹配)进行匹配
      *

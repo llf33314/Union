@@ -2,6 +2,7 @@ package com.gt.union.brokerage.service.impl;
 
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.brokerage.constant.BrokerageConstant;
 import com.gt.union.brokerage.entity.UnionBrokerageIncome;
@@ -27,8 +28,17 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageIncomeMapper, UnionBrokerageIncome> implements IUnionBrokerageIncomeService {
-    @Autowired
-    private IUnionMemberService unionMemberService;
+
+	@Autowired
+	private IUnionMemberService unionMemberService;
+
+
+	@Override
+	public UnionBrokerageIncome getByUnionOpportunityId(Integer id) {
+		EntityWrapper wrapper = new EntityWrapper();
+		wrapper.eq("opportunity_id", id);
+		return this.selectOne(wrapper);
+	}
 
     @Autowired
     private IUnionMainService unionMainService;

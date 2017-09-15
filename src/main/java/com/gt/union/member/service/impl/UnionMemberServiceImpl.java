@@ -773,4 +773,41 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 return false;
         }
     }
+
+    @Override
+    public boolean hasUnionMemberAuthority(UnionMember unionMember) {
+        if(unionMember == null){
+            return false;
+        }
+        if(unionMember.getDelStatus().equals(CommonConstant.DEL_STATUS_YES)){
+            return false;
+        }
+        if(!(unionMember.getStatus().equals(MemberConstant.STATUS_IN) || unionMember.getStatus().equals(MemberConstant.STATUS_APPLY_OUT))){
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public List<UnionMember> listByBusId(Integer busId) {
+        EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<UnionMember>();
+        entityWrapper.eq("bus_id", busId);
+        entityWrapper.eq("del_status",CommonConstant.DEL_STATUS_NO);
+        return this.selectList(entityWrapper);
+    }
+
+	@Override
+	public List<UnionMember> listAllByBusId(Integer busId) {
+        EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<UnionMember>();
+        entityWrapper.eq("bus_id", busId);
+        return this.selectList(entityWrapper);
+	}
+
+    @Override
+    public List<UnionMember> getByUnionIdAndBusIdWidthOutDelStatus(Integer unionId, Integer busId) {
+        EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<UnionMember>();
+        entityWrapper.eq("bus_id", busId);
+        entityWrapper.eq("union_id", unionId);
+        return this.selectList(entityWrapper);
+    }
 }

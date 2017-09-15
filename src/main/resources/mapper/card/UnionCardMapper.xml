@@ -11,7 +11,6 @@
 		<result column="member_id" property="memberId" />
 		<result column="validity" property="validity" />
 		<result column="type" property="type" />
-		<result column="third_member_id" property="thirdMemberId" />
 	</resultMap>
 
 </mapper>
