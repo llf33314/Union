@@ -14,4 +14,18 @@
 		<result column="opportunity_id" property="opportunityId" />
 	</resultMap>
 
+
+	<!--  根据盟员列表ids查询收入佣金金额 -->
+    <select id="listIncomeByMemberIds" resultType="java.util.Map">
+		SELECT IFNULL(SUM(i.money), 0) money, i.member_id, um.`name` from
+		(SELECT money, member_id from t_union_brokerage_income WHERE member_id in
+			<foreach collection="members" item="member" open="(" close=")" separator=",">
+				#{member.id}
+			</foreach>
+		) i
+		LEFT JOIN t_union_member m on i.member_id = m.id
+		LEFT JOIN t_union_main um on um.id = m.union_id
+		GROUP BY m.id
+	</select>
+
 </mapper>

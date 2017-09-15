@@ -1,5 +1,6 @@
 package com.gt.union.consume.service;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.api.entity.param.UnionConsumeParam;
 import com.gt.union.api.entity.param.UnionRefundParam;
@@ -39,4 +40,32 @@ public interface IUnionConsumeService extends IService<UnionConsume> {
 	 * @return
 	 */
 	UnionConsume getByOrderNoAndModel(String orderNo, Integer model);
+
+	/**
+	 * 我的消费记录列表
+	 * @param page
+	 * @param unionId	联盟id
+	 * @param busId		商家id
+	 * @param memberId	来源盟员id
+	 * @param cardNo	联盟卡号
+	 * @param phone		联盟卡手机号
+	 * @param beginTime	消费起始时间
+	 * @param endTime	消费结束时间
+	 * @return
+	 */
+	Page listMy(Page page, Integer unionId, Integer busId, Integer memberId, String cardNo, String phone, String beginTime, String endTime) throws Exception;
+
+	/**
+	 * 他店消费记录列表
+	 * @param page
+	 * @param unionId	联盟id
+	 * @param busId		商家id
+	 * @param memberId	来源盟员id
+	 * @param cardNo	联盟卡号
+	 * @param phone		联盟卡手机号
+	 * @param beginTime	消费起始时间
+	 * @param endTime	消费结束时间
+	 * @return
+	 */
+	Page listOther(Page page, Integer unionId, Integer busId, Integer memberId, String cardNo, String phone, String beginTime, String endTime) throws Exception;
 }

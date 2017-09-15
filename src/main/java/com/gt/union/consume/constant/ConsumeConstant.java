@@ -1,4 +1,4 @@
-package com.gt.union.consume;
+package com.gt.union.consume.constant;
 
 /**
  * Created by Administrator on 2017/9/13 0013.

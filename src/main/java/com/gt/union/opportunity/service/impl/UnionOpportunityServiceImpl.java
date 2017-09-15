@@ -107,7 +107,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
 					sbSqlSegment.append(" AND m.union_id = ").append(unionId);
 				}
 				if (StringUtil.isNotEmpty(isAccept)) {
-					String[] isAcceptArray = isAccept.split(";");
+					String[] isAcceptArray = isAccept.split(",");
 					sbSqlSegment.append(" AND (");
 					for (int i = 0, length = isAcceptArray.length; i < length; i++) {
 						sbSqlSegment.append(i == 0 ? "" : " OR ").append(" o.is_accept = ").append(isAcceptArray[i]);
@@ -155,7 +155,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
 					sbSqlSegment.append(" AND m.union_id = ").append(unionId);
 				}
 				if (StringUtil.isNotEmpty(isAccept)) {
-					String[] isAcceptArray = isAccept.split(";");
+					String[] isAcceptArray = isAccept.split(",");
 					sbSqlSegment.append(" AND (");
 					for (int i = 0, length = isAcceptArray.length; i < length; i++) {
 						sbSqlSegment.append(i == 0 ? "" : " OR ").append(" o.is_accept = ").append(isAcceptArray[i]);
@@ -448,7 +448,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
 		//结算状态
 		Integer incomeStatus = 0;//表示结算、未结算一起
 		if(StringUtil.isNotEmpty(status)){
-			String[] arrs = status.split(";");
+			String[] arrs = status.split(",");
 			if(arrs.length == 1){
 				incomeStatus = Integer.valueOf(arrs[arrs.length]);
 			}
@@ -482,7 +482,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
 		//结算状态
 		Integer incomeStatus = 0;//表示结算、未结算一起
 		if(StringUtil.isNotEmpty(status)){
-			String[] arrs = status.split(";");
+			String[] arrs = status.split(",");
 			if(arrs.length == 1){
 				incomeStatus = Integer.valueOf(arrs[arrs.length]);
 			}
@@ -491,9 +491,9 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
 		List<UnionOpportunityBrokerageVO> list = unionOpportunityMapper.listBrokerageToMy(members, fromMemberId, unionId, incomeStatus, clientName, clientPhone, page);
 		for(UnionOpportunityBrokerageVO vo : list){
 			if(CommonUtil.isEmpty(vo.getIncomeId())){//未结算
-				vo.setStatus(2);
-			}else {//结算
 				vo.setStatus(1);
+			}else {//结算
+				vo.setStatus(2);
 			}
 		}
 		page.setRecords(list);
@@ -609,7 +609,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
 	}
 
 	@Override
-	public Double sumAcceptFromMyByUnionId(Integer unionId, Integer busId, Integer isAccept) throws Exception{
+	public Double sumAcceptFromMy(Integer unionId, Integer busId, Integer isAccept) throws Exception{
 		if (busId == null || isAccept == null) {
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}

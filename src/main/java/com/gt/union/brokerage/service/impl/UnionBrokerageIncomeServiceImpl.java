@@ -6,16 +6,25 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.brokerage.constant.BrokerageConstant;
 import com.gt.union.brokerage.entity.UnionBrokerageIncome;
+import com.gt.union.brokerage.entity.UnionBrokerageWithdrawal;
 import com.gt.union.brokerage.mapper.UnionBrokerageIncomeMapper;
 import com.gt.union.brokerage.service.IUnionBrokerageIncomeService;
+import com.gt.union.brokerage.service.IUnionBrokerageWithdrawalService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
+import com.gt.union.common.util.BigDecimalUtil;
+import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -30,6 +39,12 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
 
 	@Autowired
 	private IUnionMemberService unionMemberService;
+
+	@Autowired
+	private UnionBrokerageIncomeMapper unionBrokerageIncomeMapper;
+
+	@Autowired
+	private IUnionBrokerageWithdrawalService unionBrokerageWithdrawalService;
 
 
 	@Override
@@ -92,4 +107,81 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
         wrapper.setSqlSelect(sbSqlSelect.toString());
         return this.selectMapsPage(page, wrapper);
     }
+
+	@Override
+	public Map<String, Object> listAbleToWithdrawalBrokerage(Integer busId) throws Exception{
+    	Map<String,Object> data = new HashMap<String,Object>();
+		if (busId == null) {
+			throw new ParamException(CommonConstant.PARAM_ERROR);
+		}
+		Double sum = 0d;
+		List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+		List<UnionMember> members = unionMemberService.listByBusId(busId);
+		if(ListUtil.isEmpty(members)){
+			data.put("sum",sum);
+			data.put("list",list);
+			return null;
+		}
+		List<Map<String,Object>> incomes = unionBrokerageIncomeMapper.listIncomeByMemberIds(members);
+		if(ListUtil.isEmpty(incomes)){
+			data.put("list",list);
+			data.put("sum",sum);
+			return data;
+		}
+		List<UnionBrokerageWithdrawal> withdrawals = unionBrokerageWithdrawalService.listWithdrawalByMemberIds(members);
+		if(ListUtil.isEmpty(withdrawals)){
+			for(Map<String,Object> map : incomes){
+				list.add(map);
+				sum = BigDecimalUtil.add(Double.valueOf(map.get("money").toString()),sum).doubleValue();
+			}
+		}else {
+			//有提现
+			for(Map<String,Object> map : incomes){
+				for (UnionBrokerageWithdrawal withdrawal : withdrawals){
+					if(map.get("member_id").equals(withdrawal.getMemberId())){
+						map.put("money",BigDecimalUtil.subtract(Double.valueOf(map.get("money").toString()),withdrawal.getMoney()).doubleValue());
+						break;
+					}
+				}
+				sum = BigDecimalUtil.add(Double.valueOf(map.get("money").toString()),sum).doubleValue();
+				list.add(map);
+			}
+		}
+		data.put("list",list);
+		data.put("sum",sum);
+		return data;
+	}
+
+	@Override
+	public Double withdrawalSum(Integer busId) throws Exception{
+    	if(busId == null){
+			throw new ParamException(CommonConstant.PARAM_ERROR);
+		}
+		Double sum = 0d;
+		List<UnionMember> members = unionMemberService.listAllByBusId(busId);
+		if(ListUtil.isEmpty(members)){
+			return sum;
+		}
+		Double incomeSum = this.withdrawalSumByMemberIds(members);//总收入
+		Double withdrawalSum = unionBrokerageWithdrawalService.withdrawalSumByMemberIds(members);
+		sum = BigDecimalUtil.subtract(incomeSum,withdrawalSum).doubleValue();
+		return sum;
+	}
+
+	@Override
+	public Double withdrawalSumByMemberIds(List<UnionMember> members) {
+		List<Integer> ids = new ArrayList<Integer>();
+		for(UnionMember member : members){
+			ids.add(member.getId());
+		}
+    	EntityWrapper wrapper = new EntityWrapper<>();
+    	wrapper.in("member_id", ids.toArray());
+    	wrapper.setSqlSelect("IFNULL(SUM(money), 0) money");
+    	Map<String,Object> data = this.selectMap(wrapper);
+    	if(data == null){
+    		return 0d;
+		}
+		return Double.valueOf(data.get("money").toString());
+	}
 }
+

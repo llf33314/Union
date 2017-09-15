@@ -60,7 +60,8 @@ public class UnionCardController {
 	@ApiOperation(value = "根据联盟卡号、手机号、扫码枪扫出的号码", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/unionCardInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String unionCardInfo(HttpServletRequest request
-			,@ApiParam(name="no", value = "联盟卡号、手机号、扫码枪扫出的号码", required = true) @RequestParam("no") String no){
+			,@ApiParam(name="no", value = "联盟卡号、手机号、扫码枪扫出的号码", required = true) @RequestParam("no") String no
+			,@ApiParam(name="unionId", value = "联盟卡号、手机号、扫码枪扫出的号码", required = false) @RequestParam("unionId") Integer unionId){
 		try{
 			BusUser user = SessionUtils.getLoginUser(request);
 			Map<String,Object> data = unionCardService.getUnionCardInfo(no, user.getId());//解码后的no

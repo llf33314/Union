@@ -1,13 +1,12 @@
 package com.gt.union.card.entity;
 
-import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
-import com.baomidou.mybatisplus.annotations.TableName;
-import com.baomidou.mybatisplus.enums.IdType;
-
-import java.io.Serializable;
 import java.util.Date;
+import com.baomidou.mybatisplus.enums.IdType;
+import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableName;
+import java.io.Serializable;
 
 /**
  * <p>
@@ -15,7 +14,7 @@ import java.util.Date;
  * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @since 2017-09-15
  */
 @TableName("t_union_card_root")
 public class UnionCardRoot extends Model<UnionCardRoot> {
@@ -44,6 +43,10 @@ public class UnionCardRoot extends Model<UnionCardRoot> {
      * 卡号
      */
 	private String number;
+    /**
+     * 积分
+     */
+	private Double integral;
 
 
 	public Integer getId() {
@@ -84,6 +87,14 @@ public class UnionCardRoot extends Model<UnionCardRoot> {
 
 	public void setNumber(String number) {
 		this.number = number;
+	}
+
+	public Double getIntegral() {
+		return integral;
+	}
+
+	public void setIntegral(Double integral) {
+		this.integral = integral;
 	}
 
 	@Override

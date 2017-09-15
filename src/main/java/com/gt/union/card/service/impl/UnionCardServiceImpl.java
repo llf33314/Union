@@ -15,6 +15,8 @@ import com.gt.union.card.service.IUnionCardIntegralService;
 import com.gt.union.card.service.IUnionCardRootService;
 import com.gt.union.card.service.IUnionCardService;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.exception.BaseException;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
 import com.gt.union.main.entity.UnionMain;
@@ -62,6 +64,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 
 	@Autowired
 	private IDictService dictService;
+
 
 
 	@Value("${union.encryptKey}")
@@ -157,12 +160,47 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 	}
 
 	@Override
-	public Map<String, Object> getUnionCardInfoByCardNo(String cardNo, Integer busId) {
-		return null;
+	public Map<String, Object> getUnionCardInfoByCardNo(String cardNo, Integer busId) throws Exception{
+		Map<String,Object> data = new HashMap<String,Object>();
+		UnionCardRoot root = unionCardRootService.getByCardNo(cardNo);
+		if(root == null){
+			throw new BusinessException("该联盟卡号不存在");
+		}
+		List<UnionMember> members = unionMemberService.listOwnerValidByBusId(busId);
+		if(ListUtil.isEmpty(members)){
+			throw new BusinessException("您没有有效的联盟");
+		}
+		List<Integer> unionIds = new ArrayList<Integer>();
+		for(UnionMember member : members){
+			try{
+				unionMainService.checkUnionMainValid(member.getUnionId());
+			}catch (BaseException e){
+			}
+			unionIds.add(member.getUnionId());
+		}
+		if(ListUtil.isEmpty(unionIds)){
+			throw new BusinessException("您没有有效的联盟");
+		}
+		List<UnionMember> memberList = unionMemberService.listValidByUnionIds(unionIds);
+		List<Integer> memberIds = new ArrayList<Integer>();
+		for(UnionMember member : memberList){
+			memberIds.add(member.getId());
+		}
+		//查询用该rootId升级的联盟卡
+		List<UnionCard> cards = this.listByCardRootIdAndMemberIds(root.getId(),memberIds);
+		//得到有效的联盟卡列表
+		cards = getValidUnionCards(cards);
+		if(ListUtil.isEmpty(cards)){
+			throw new BusinessException("没有有效的联盟卡");
+		}
+		data.put("cardNo",cardNo);
+		data.put("integral",root.getIntegral());
+
+		return data;
 	}
 
 	@Override
-	public Map<String, Object> getUnionCardInfoByPhone(String phone, Integer busId) {
+	public Map<String, Object> getUnionCardInfoByPhone(String phone, Integer busId)throws Exception{
 		return null;
 	}
 
@@ -344,6 +382,15 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 		wrapper.eq("id", cardId);
 		wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
 		return this.selectOne(wrapper);
+	}
+
+	@Override
+	public List<UnionCard> listByCardRootIdAndMemberIds(Integer rootId, List<Integer> memberIds) {
+		EntityWrapper wrapper = new EntityWrapper<>();
+		wrapper.eq("root_id", rootId);
+		wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+		wrapper.in("member_id",memberIds.toArray());
+		return this.selectList(wrapper);
 	}
 
 

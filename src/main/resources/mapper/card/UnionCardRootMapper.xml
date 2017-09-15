@@ -9,6 +9,7 @@
 		<result column="del_status" property="delStatus" />
 		<result column="phone" property="phone" />
 		<result column="number" property="number" />
+		<result column="integral" property="integral" />
 	</resultMap>
 
 </mapper>

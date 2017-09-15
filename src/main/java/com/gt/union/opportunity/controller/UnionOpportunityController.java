@@ -60,7 +60,7 @@ public class UnionOpportunityController {
 	public String listToMy(HttpServletRequest request, Page page
 			, @ApiParam(name = "unionId", value = "所属联盟id", required = false)
 								@RequestParam(name = "unionId", required = false) Integer unionId
-			, @ApiParam(name = "isAccept", value = "商机状态，1为未处理，2为受理，3为拒绝，当勾选多个时用英文字符的分号拼接，如=1;2", required = false)
+			, @ApiParam(name = "isAccept", value = "商机状态，1为未处理，2为受理，3为拒绝，当勾选多个时用英文字符的分号拼接，如=1,2", required = false)
 								@RequestParam(name = "isAccept", required = false) String isAccept
 			, @ApiParam(name = "clientNname", value = "顾客姓名，模糊查询", required = false)
 								@RequestParam(name = "clientName", required = false) String clientName
@@ -88,7 +88,7 @@ public class UnionOpportunityController {
 	public String listFromMy(HttpServletRequest request, Page page
 			, @ApiParam(name = "unionId", value = "所属联盟id", required = false)
 								  @RequestParam(name = "unionId", required = false) Integer unionId
-			, @ApiParam(name = "isAccept", value = "商机状态，1为未处理，2为受理，3为拒绝，当勾选多个时用英文字符的分号拼接，如=1;2", required = false)
+			, @ApiParam(name = "isAccept", value = "商机状态，1为未处理，2为受理，3为拒绝，当勾选多个时用英文字符的分号拼接，如=1,2", required = false)
 								 @RequestParam(name = "isAccept", required = false) String isAccept
 			, @ApiParam(name = "clientNname", value = "顾客姓名，模糊查询", required = false)
 								 @RequestParam(name = "clientName", required = false) String clientName
@@ -118,7 +118,7 @@ public class UnionOpportunityController {
 										   @RequestParam(name = "toMemberId", required = false) Integer toMemberId
 			, @ApiParam(name = "unionId", value = "所属联盟id", required = false)
 										   @RequestParam(name = "unionId", required = false) Integer unionId
-			, @ApiParam(name = "status", value = "佣金结算状态，1：已结算 2：未结算，当勾选多个时用英文字符的分号拼接，如=1;2", required = false)
+			, @ApiParam(name = "status", value = "佣金结算状态，1：已结算 2：未结算，当勾选多个时用英文字符的分号拼接，如=1,2", required = false)
 										   @RequestParam(name = "status", required = false) String status
 			, @ApiParam(name = "clientName", value = "顾客姓名，模糊查询", required = false)
 										   @RequestParam(name = "clientName", required = false) String clientName
@@ -148,7 +148,7 @@ public class UnionOpportunityController {
 										 @RequestParam(name = "fromMemberId", required = false) Integer fromMemberId
 			, @ApiParam(name = "unionId", value = "所属联盟id", required = false)
 										 @RequestParam(name = "unionId", required = false) Integer unionId
-			, @ApiParam(name = "status", value = "佣金结算状态，0为未处理，1为受理，2为拒绝，当勾选多个时用英文字符的分号拼接，如=1;2", required = false)
+			, @ApiParam(name = "status", value = "佣金结算状态，1：未支付 2：已支付，当勾选多个时用英文字符的分号拼接，如=1,2", required = false)
 										 @RequestParam(name = "status", required = false) String status
 			, @ApiParam(name = "clientName", value = "顾客姓名，模糊查询", required = false)
 										 @RequestParam(name = "clientName", required = false) String clientName
@@ -221,9 +221,9 @@ public class UnionOpportunityController {
 	}
 
 	@ApiOperation(value = "获取商机统计数据", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/unionId/{unionId}/statisticData", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/statisticData", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String getStatisticData(HttpServletRequest request
-			, @ApiParam(name = "unionId", value = "联盟id", required = true) @PathVariable("unionId") Integer unionId) {
+			, @ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam("unionId") Integer unionId) {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
 			Integer busId = busUser.getId();
@@ -310,17 +310,17 @@ public class UnionOpportunityController {
 	}
 
 	@ApiOperation(value = "统计我的所有已被接受的，目前未支付或已支付的，指定联盟的商机佣金总额", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/unionId/{unionId}/isAccept/{isAccept}/sum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public String sumAcceptFromMyByUnionId(HttpServletRequest request
-			, @ApiParam(name = "unionId", value = "联盟id", required = true) @PathVariable("unionId") Integer unionId
-			, @ApiParam(name = "isAccept", value = "是否已支付：0未支付，1已支付", required = true) @PathVariable("isAccept") Integer isAccept) {
+	@RequestMapping(value = "/sumFromMy", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String sumAcceptFromMy(HttpServletRequest request
+			, @ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam("unionId") Integer unionId
+			, @ApiParam(name = "isAccept", value = "是否已支付：0未支付，1已支付", required = true) @RequestParam("isAccept") Integer isAccept) {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
 			Integer busId = busUser.getId();
 			if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){//子账号
 				busId = busUser.getPid();
 			}
-			Double businessPriceSum = this.unionOpportunityService.sumAcceptFromMyByUnionId(unionId, busId, isAccept);
+			Double businessPriceSum = this.unionOpportunityService.sumAcceptFromMy(unionId, busId, isAccept);
 			return GTJsonResult.instanceSuccessMsg(businessPriceSum).toString();
 		} catch (BaseException e) {
 			logger.error("", e);
@@ -365,9 +365,9 @@ public class UnionOpportunityController {
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
 		}
-	}
+	}*/
 
-	@ApiOperation(value = "分页获取我在某联盟的所有坏账明细", produces = "application/json;charset=UTF-8")
+	/*@ApiOperation(value = "分页获取我在某联盟的所有坏账明细", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/unionId/{unionId}/badDebt", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String pageMapByUnionIdAndFromBusIdInBadDebt(HttpServletRequest request, Page page
 			, @ApiParam(name = "unionId", value = "联盟id", required = true) @PathVariable("unionId") Integer unionId) {

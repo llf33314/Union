@@ -44,7 +44,7 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 * @param busId		商家id
 	 * @return
 	 */
-	Map<String,Object> getUnionCardInfoByCardNo(String cardNo, Integer busId);
+	Map<String,Object> getUnionCardInfoByCardNo(String cardNo, Integer busId) throws Exception;
 
 	/**
 	 * 根据手机号和商家id获取联盟卡信息
@@ -52,7 +52,7 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 * @param busId		商家id
 	 * @return
 	 */
-	Map<String,Object> getUnionCardInfoByPhone(String phone, Integer busId);
+	Map<String,Object> getUnionCardInfoByPhone(String phone, Integer busId) throws Exception;
 
 	/**
 	 * 用户id和商家id获取联盟折扣
@@ -92,4 +92,12 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 * @return
 	 */
 	UnionCard getById(Integer cardId);
+
+	/**
+	 * 根据rootId和盟员id列表查询联盟卡列表
+	 * @param rootId
+	 * @param memberIds
+	 * @return
+	 */
+	List<UnionCard> listByCardRootIdAndMemberIds(Integer rootId, List<Integer> memberIds);
 }

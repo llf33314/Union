@@ -19,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * <p>
@@ -51,7 +52,7 @@ public class UnionBrokerageIncomeController {
 	    try {
 	        BusUser busUser = SessionUtils.getLoginUser(request);
 	        Integer busId = busUser.getId();
-	        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+	        if (busUser.getPid() != null && busUser.getPid() == BusUserConstant.ACCOUNT_TYPE_UNVALID) {
 	            busId = busUser.getPid();
 	        }
 	        Page result = this.unionBrokerageIncomeService.pageCardMapByBusIdAndMemberId(page, busId, memberId, cardType, cardNumber);
@@ -66,4 +67,57 @@ public class UnionBrokerageIncomeController {
 	        return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
 	    }
 	}
+
+	@ApiOperation(value = "财务可提现详情", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/withdrawalDetail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String listAbleToWithdrawalBrokerage(HttpServletRequest request) {
+		try {
+			BusUser busUser = SessionUtils.getLoginUser(request);
+			Integer busId = busUser.getId();
+			if (busUser.getPid() != null && busUser.getPid() == BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+				busId = busUser.getPid();
+			}
+			Map<String,Object> data = this.unionBrokerageIncomeService.listAbleToWithdrawalBrokerage(busId);
+			return GTJsonResult.instanceSuccessMsg(data).toString();
+		} catch (BaseException e) {
+			logger.error("", e);
+			this.unionLogErrorService.saveIfNotNull(e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
+		} catch (Exception e) {
+			logger.error("", e);
+			this.unionLogErrorService.saveIfNotNull(e);
+			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+		}
+	}
+
+
+
+
+
+	/************************************************佣金平台************************************************************************/
+	@ApiOperation(value = "佣金平台可提现总额", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/withdrawalSum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String withdrawalSum(HttpServletRequest request) {
+		try {
+			BusUser busUser = SessionUtils.getLoginUser(request);
+			Integer busId = busUser.getId();
+			if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+				busId = busUser.getPid();
+			}
+			Double withdrawalSum = this.unionBrokerageIncomeService.withdrawalSum(busId);
+			return GTJsonResult.instanceSuccessMsg(withdrawalSum).toString();
+		} catch (BaseException e) {
+			logger.error("", e);
+			this.unionLogErrorService.saveIfNotNull(e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
+		} catch (Exception e) {
+			logger.error("", e);
+			this.unionLogErrorService.saveIfNotNull(e);
+			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+		}
+	}
+
+
+
+
 }

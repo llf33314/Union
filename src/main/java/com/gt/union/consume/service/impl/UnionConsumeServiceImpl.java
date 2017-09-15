@@ -1,26 +1,25 @@
 package com.gt.union.consume.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.api.entity.param.UnionConsumeParam;
-import com.gt.union.api.entity.param.UnionRefundParam;
 import com.gt.union.api.entity.result.UnionConsumeResult;
 import com.gt.union.api.entity.result.UnionRefundResult;
 import com.gt.union.card.constant.CardConstant;
-import com.gt.union.card.entity.UnionCard;
 import com.gt.union.card.entity.UnionCardIntegral;
 import com.gt.union.card.service.IUnionCardIntegralService;
-import com.gt.union.card.service.IUnionCardService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.CommonUtil;
-import com.gt.union.consume.ConsumeConstant;
+import com.gt.union.consume.constant.ConsumeConstant;
 import com.gt.union.consume.entity.UnionConsume;
 import com.gt.union.consume.mapper.UnionConsumeMapper;
 import com.gt.union.consume.service.IUnionConsumeService;
+import com.gt.union.consume.vo.UnionConsumeVO;
 import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.member.entity.UnionMember;
@@ -29,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * <p>
@@ -52,6 +52,9 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 
 	@Autowired
 	private IUnionCardIntegralService unionCardIntegralService;
+
+	@Autowired
+	private UnionConsumeMapper unionConsumeMapper;
 
 	@Override
 	public UnionConsumeResult consumeByUnionCard(UnionConsumeParam unionConsumeParam) throws Exception{
@@ -146,6 +149,26 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		wrapper.eq("model",model);
 		wrapper.eq("del_status",CommonConstant.DEL_STATUS_NO);
 		return this.selectOne(wrapper);
+	}
+
+	@Override
+	public Page listMy(Page page, Integer unionId, Integer busId, Integer memberId, String cardNo, String phone, String beginTime, String endTime) throws Exception{
+		if(page == null || busId == null){
+			throw new ParamException(CommonConstant.PARAM_ERROR);
+		}
+		List<UnionConsumeVO> list = unionConsumeMapper.listMy(page, unionId, busId, memberId, cardNo, phone, beginTime, endTime);
+		page.setRecords(list);
+		return page;
+	}
+
+	@Override
+	public Page listOther(Page page, Integer unionId, Integer busId, Integer memberId, String cardNo, String phone, String beginTime, String endTime) throws Exception{
+		if(page == null || busId == null){
+			throw new ParamException(CommonConstant.PARAM_ERROR);
+		}
+		List<UnionConsumeVO> list = unionConsumeMapper.listOther(page, unionId, busId, memberId, cardNo, phone, beginTime, endTime);
+		page.setRecords(list);
+		return page;
 	}
 
 }

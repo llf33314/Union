@@ -138,7 +138,7 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
 	 * @param isAccept	是否支付
 	 * @return
 	 */
-	Double sumAcceptFromMyByUnionId(Integer unionId, Integer busId, Integer isAccept) throws Exception;
+	Double sumAcceptFromMy(Integer unionId, Integer busId, Integer isAccept) throws Exception;
 
 	/**
 	 * 查询我的所有已被接受的，但对方已退盟的坏账佣金总和

@@ -2,6 +2,7 @@ package com.gt.union.member.service;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
+import com.gt.union.card.entity.UnionCard;
 import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.vo.CardDividePercentVO;
 import com.gt.union.member.vo.UnionMemberVO;
@@ -256,4 +257,19 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @return
      */
     List<UnionMember> getByUnionIdAndBusIdWidthOutDelStatus(Integer unionId, Integer busId);
+
+    /**
+     * /**
+     * 根据联盟ids查询盟员列表
+     * @param unionIds
+     * @return
+     */
+    List<UnionMember> listValidByUnionIds(List<Integer> unionIds);
+
+    /**
+     * 查询商家加入的联盟列表  盟主排在前面
+     * @param busId
+     * @return
+     */
+    List<UnionMember> listOwnerValidByBusId(Integer busId);
 }

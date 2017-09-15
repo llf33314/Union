@@ -23,4 +23,18 @@
 		<result column="shop_id" property="shopId" />
 	</resultMap>
 
+	<resultMap id="UnionConsumeResultMap" type="com.gt.union.consume.vo.UnionConsumeVO">
+
+	</resultMap>
+
+
+	<!-- 查询我店消费记录列表 -->
+    <select id="listMy" resultType="com.gt.union.consume.vo.UnionConsumeVO">
+
+
+	</select>
+
+	<!-- 查询他店消费记录列表 -->
+	<select id="listOther" resultType="com.gt.union.consume.vo.UnionConsumeVO"></select>
+
 </mapper>
