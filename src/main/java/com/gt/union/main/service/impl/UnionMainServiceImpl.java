@@ -9,10 +9,7 @@ import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.RedisCacheUtil;
-import com.gt.union.common.util.RedisKeyUtil;
-import com.gt.union.common.util.StringUtil;
+import com.gt.union.common.util.*;
 import com.gt.union.main.constant.MainConstant;
 import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.entity.UnionMainCharge;
@@ -69,20 +66,20 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
     //-------------------------------------------------- get ----------------------------------------------------------
 
     /**
-     * 根据id获取联盟信息
+     * 根据联盟id，获取联盟信息
      *
-     * @param id {not null} 联盟id
+     * @param unionId {not null} 联盟id
      * @return
      * @throws Exception
      */
     @Override
-    public UnionMain getById(Integer id) throws Exception {
-        if (id == null) {
+    public UnionMain getById(Integer unionId) throws Exception {
+        if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         EntityWrapper entityWrapper = new EntityWrapper();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", id);
+                .eq("id", unionId);
         return this.selectOne(entityWrapper);
     }
 
@@ -115,49 +112,58 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
     //------------------------------------------ list(include page) ---------------------------------------------------
 
     /**
-     * 根据商家id，获取所有具有盟员身份的联盟信息，即创建的联盟+加入的联盟
+     * 根据商家id，获取所有具有读权限的盟员身份所在的联盟列表信息
      *
      * @param busId {not null} 商家id
      * @return
      * @throws Exception
      */
     @Override
-    public List<UnionMain> listByBusId(Integer busId) throws Exception {
+    public List<UnionMain> listReadByBusId(Integer busId) throws Exception {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         EntityWrapper entityWrapper = new EntityWrapper();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .exists(new StringBuilder("SELECT m.id FROM t_union_member m")
-                        .append(" WHERE m.bus_id = ").append(busId)
-                        .append("  AND m.status != ").append(MemberConstant.STATUS_APPLY_IN)
-                        .append("  AND m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND m.union_id = t_union_main.id")
+                        .append("  AND m.bus_id = ").append(busId)
+                        .append("  AND m.status in(").append(MemberConstant.STATUS_APPLY_IN)
+                        .append("    , ").append(MemberConstant.STATUS_APPLY_OUT)
+                        .append("    , ").append(MemberConstant.STATUS_OUTING)
+                        .append("    )")
                         .toString());
         return this.selectList(entityWrapper);
     }
 
     /**
-     * 查询商家加入有效的联盟
+     * 根据商家id，获取所有具有写权限的盟员身份所在的联盟列表信息
      *
-     * @param busId
+     * @param busId {not null} 商家id
      * @return
      * @throws Exception
      */
     @Override
-    public List<UnionMain> listValidUnionMainByBusId(Integer busId) throws Exception {
+    public List<UnionMain> listWriteByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
         EntityWrapper entityWrapper = new EntityWrapper();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .exists(new StringBuilder("SELECT m.id FROM t_union_member m")
-                        .append(" WHERE m.bus_id = ").append(busId)
-                        .append("  AND ( m.status = ").append(MemberConstant.STATUS_IN)
-                        .append(" OR ").append("m.status = ").append(MemberConstant.STATUS_APPLY_OUT).append(" )")
-                        .append("  AND m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND m.union_id = t_union_main.id")
+                        .append("  AND m.bus_id = ").append(busId)
+                        .append("  AND m.status in(").append(MemberConstant.STATUS_APPLY_IN)
+                        .append("    , ").append(MemberConstant.STATUS_APPLY_OUT)
+                        .append("    )")
                         .toString());
         return this.selectList(entityWrapper);
     }
 
     /**
-     * 根据商家id，分页获取具有盟员身份的联盟信息，即创建的联盟+加入的联盟
+     * 根据商家id，分页获取具有读权限的盟员身份所在的联盟列表信息
      *
      * @param page  {not null} 分页对象
      * @param busId {not null} 商家id
@@ -165,7 +171,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
      * @throws Exception
      */
     @Override
-    public Page<UnionMain> PageByBusId(Page page, Integer busId) throws Exception {
+    public Page<UnionMain> pageReadByBusId(Page page, Integer busId) throws Exception {
         if (page == null || busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -173,8 +179,38 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .exists(new StringBuilder("SELECT m.id FROM t_union_member m")
                         .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND m.status != ").append(MemberConstant.STATUS_APPLY_IN)
+                        .append("  AND m.union_id = t_union_main.id")
                         .append("  AND m.bus_id = ").append(busId)
+                        .append("  AND m.status in(").append(MemberConstant.STATUS_APPLY_IN)
+                        .append("    , ").append(MemberConstant.STATUS_APPLY_OUT)
+                        .append("    , ").append(MemberConstant.STATUS_OUTING)
+                        .append("    )")
+                        .toString());
+        return this.selectPage(page, entityWrapper);
+    }
+
+    /**
+     * 根据商家id，分页获取具有写权限的盟员身份所在的联盟列表信息
+     *
+     * @param page  {not null} 分页对象
+     * @param busId {not null} 商家id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public Page<UnionMain> pageWriteByBusId(Page page, Integer busId) throws Exception {
+        if (page == null || busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .exists(new StringBuilder("SELECT m.id FROM t_union_member m")
+                        .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND m.union_id = t_union_main.id")
+                        .append("  AND m.bus_id = ").append(busId)
+                        .append("  AND m.status in(").append(MemberConstant.STATUS_APPLY_IN)
+                        .append("    , ").append(MemberConstant.STATUS_APPLY_OUT)
+                        .append("    )")
                         .toString());
         return this.selectPage(page, entityWrapper);
     }
@@ -195,27 +231,31 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         if (memberId == null || busId == null || unionMainVO == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)判断盟员身份
+        //(1)判断是否具有盟员权限
         UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
         if (unionMember == null) {
-            throw new BusinessException("没有盟员权限");
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
-        // (2)判断联盟有效性
+        //(2)检查联盟有效期
         Integer unionId = unionMember.getUnionId();
         this.checkUnionMainValid(unionId);
-        // (3)判断是否具有盟主权限
-        if (unionMember.getIsUnionOwner() != MemberConstant.IS_UNION_OWNER_YES) {
-            throw new BusinessException("没有盟主权限");
+        //(3)判断是否具有写权限
+        if (!this.unionMemberService.hasWriteAuthority(unionMember)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
         }
-        // (4)联盟积分开启后不能关闭
+        //(4)判断是否具有盟主权限
+        if (!unionMember.getIsUnionOwner().equals(MemberConstant.IS_UNION_OWNER_YES)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
+        }
+        //(5)联盟积分开启后不能关闭
         UnionMain unionMain = this.getById(unionId);
         if (unionMain == null) {
-            throw new BusinessException("联盟不存在");
+            throw new BusinessException("找不到联盟信息");
         }
-        if (MainConstant.IS_INTEGRAL_YES == unionMain.getIsIntegral() && MainConstant.IS_INTEGRAL_NO == unionMainVO.getIsIntegral()) {
+        if (unionMain.getIsIntegral().equals(MainConstant.IS_INTEGRAL_YES) && unionMainVO.getIsIntegral().equals(MainConstant.IS_INTEGRAL_NO)) {
             throw new BusinessException("积分开启后不可关闭");
         }
-        // (5)联盟更新信息
+        //(6)联盟更新信息
         UnionMain updateUnionMain = new UnionMain();
         updateUnionMain.setId(unionId); //联盟id
         updateUnionMain.setName(unionMainVO.getUnionName()); //联盟名称
@@ -227,10 +267,10 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         updateUnionMain.setIllustration(unionMainVO.getUnionIllustration()); //联盟说明
         updateUnionMain.setIsIntegral(unionMainVO.getIsIntegral()); //是否开启积分
 
-        // （6）联盟收费实体-黑卡
+        //(7)联盟收费实体-黑卡
         UnionMainCharge blackUnionMainCharge = this.unionMainChargeService.getByUnionIdAndType(unionId, MainConstant.CHARGE_TYPE_BLACK);
         if (blackUnionMainCharge == null) {
-            throw new BusinessException("联盟黑卡设置不存在");
+            throw new BusinessException("找不到联盟黑卡设置信息");
         }
         UnionMainChargeVO unionMainChargeVO = unionMainVO.getUnionMainChargeVO();
         UnionMainCharge updateBlackUnionMainCharge = new UnionMainCharge();
@@ -257,10 +297,10 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
             updateBlackUnionMainCharge.setIllustration(""); //黑卡说明
         }
 
-        // (7)联盟收费实体-红卡
+        //(8)联盟收费实体-红卡
         UnionMainCharge redUnionMainCharge = this.unionMainChargeService.getByUnionIdAndType(unionId, MainConstant.CHARGE_TYPE_RED);
         if (redUnionMainCharge == null) {
-            throw new BusinessException("联盟红卡设置不存在");
+            throw new BusinessException("找不到联盟红卡设置信息");
         }
         UnionMainCharge updateRedUnionMainCharge = new UnionMainCharge();
         updateRedUnionMainCharge.setId(redUnionMainCharge.getId());
@@ -285,7 +325,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
             updateRedUnionMainCharge.setValidityDay(0); //红卡有效期
             updateRedUnionMainCharge.setIllustration(""); //红卡说明
         }
-        // (8)黑卡价格不能高于红卡价格
+        //(9)黑卡价格不能高于红卡价格
         if (MainConstant.CHARGE_IS_AVAILABLE_YES == blackIsAvailable && MainConstant.CHARGE_IS_CHARGE_YES == blackIsCharge
                 && MainConstant.CHARGE_IS_AVAILABLE_YES == redIsAvailable && MainConstant.CHARGE_IS_CHARGE_YES == redIsCharge) {
             if (unionMainChargeVO.getBlackChargePrice() > unionMainChargeVO.getRedChargePrice()) {
@@ -293,7 +333,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
             }
         }
 
-        // (9)事务处理
+        //(10)事务处理
         this.updateById(unionMain);
         this.unionMainChargeService.updateById(updateBlackUnionMainCharge);
         this.unionMainChargeService.updateById(updateRedUnionMainCharge);
@@ -302,7 +342,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         if (ListUtil.isNotEmpty(unionMainDictList)) {
             this.unionMainDictService.insertBatch(unionMainDictList);
         }
-        // (10)删除缓存
+        //(11)删除缓存
         String infoDictKey = RedisKeyUtil.getUnionInfoDictKey(unionId);
         redisCacheUtil.remove(infoDictKey);
         String unionMainKey = RedisKeyUtil.getUnionMainKey(unionId);
@@ -314,19 +354,22 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
     //------------------------------------------------ boolean --------------------------------------------------------
 
     /**
-     * 根据id检查联盟的有效性
+     * 根据联盟id，检查联盟的有效期
      *
-     * @param id {not null} 联盟id
+     * @param unionId {not null} 联盟id
      * @throws Exception
      */
     @Override
-    public void checkUnionMainValid(Integer id) throws Exception {
-        UnionMain unionMain = this.getById(id);
+    public void checkUnionMainValid(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        UnionMain unionMain = this.getById(unionId);
         checkUnionMainValid(unionMain);
     }
 
     /**
-     * 根据联盟检查联盟的有效性
+     * 根据联盟检查联盟的有效期
      *
      * @param unionMain {not null} 联盟
      * @throws Exception
@@ -336,19 +379,23 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         if (unionMain == null) {
             throw new BusinessException("联盟不存在");
         }
-        // （1）如果缓存中已存在，说明有效，直接返回
+        //(1)如果缓存中已存在，说明有效，直接返回
         String unionMainValidKey = RedisKeyUtil.getUnionMainValidKey(unionMain.getId());
         if (this.redisCacheUtil.exists(unionMainValidKey)) {
             return;
         }
-        // （3）检查盟主有效性
+        //(2)检查联盟有效性
+        if (unionMain.getUnionValidity().compareTo(DateUtil.getCurrentDate()) < 0) {
+            throw new BusinessException("联盟有效期已过");
+        }
+        //(3)检查盟主有效性
         UnionMember unionOwner = this.unionMemberService.getUnionOwnerByUnionId(unionMain.getId());
         if (unionOwner == null) {
-            throw new BusinessException("联盟没有盟主");
+            throw new BusinessException("找不到盟主信息");
         }
         Integer unionOwnerBusUserId = unionOwner.getBusId();
         if (!this.busUserService.isBusUserValid(unionOwnerBusUserId)) {
-            throw new BusinessException("联盟的盟主信息不存在或已过期");
+            throw new BusinessException("盟主信息不存在或已过期");
         }
         // （4）检查盟主联盟服务许可
         if (!this.unionMainPermitService.hasUnionMainPermit(unionOwnerBusUserId)) {

@@ -11,6 +11,7 @@ import com.gt.union.main.constant.MainConstant;
 import com.gt.union.main.entity.UnionMainNotice;
 import com.gt.union.main.mapper.UnionMainNoticeMapper;
 import com.gt.union.main.service.IUnionMainNoticeService;
+import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,9 @@ import org.springframework.stereotype.Service;
 public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMapper, UnionMainNotice> implements IUnionMainNoticeService {
     @Autowired
     private IUnionMemberService unionMemberService;
+
+    @Autowired
+    private IUnionMainService unionMainService;
 
     //-------------------------------------------------- get ----------------------------------------------------------
 
@@ -61,15 +65,25 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
         if (busId == null || memberId == null || content == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
+        //(1)判断是否具有盟员权限
+        UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        if (unionMember == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(unionMember.getUnionId());
+        //(3)判断是否具有写权限
+        if (!this.unionMemberService.hasWriteAuthority(unionMember)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
+        }
+        //(4)校验更新内容
         if (StringUtil.isEmpty(content)) {
             throw new BusinessException("联盟公告内容不能为空");
         }
         if (StringUtil.getStringLength(content) > MainConstant.NOTICE_MAX_LENGTH) {
             throw new BusinessException("联盟公告内容不可超过50字");
         }
+        //(5)更新操作
         UnionMember unionOwner = this.unionMemberService.getByIdAndBusId(memberId, busId);
         UnionMainNotice unionMainNotice = this.getByUnionId(unionOwner.getUnionId());
         if (unionMainNotice != null) {

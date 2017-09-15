@@ -124,24 +124,6 @@ public interface IUnionPreferentialItemService extends IService<UnionPreferentia
      */
     void saveByBusIdAndMemberIdAndName(Integer busId, Integer memberId, String itemName) throws Exception;
 
-    /**
-     * 保存优惠服务项目
-     *
-     * @param unionId 联盟id
-     * @param busId   商家id
-     * @param name
-     */
-    void save(Integer unionId, Integer busId, String name) throws Exception;
-
-    /**
-     * 提交优惠服务项目审核
-     *
-     * @param unionId 联盟id
-     * @param busId   商家id
-     * @param id      优惠服务项目id
-     */
-    void addVerify(Integer unionId, Integer busId, Integer id) throws Exception;
-
     //------------------------------------------------- count ---------------------------------------------------------
     //------------------------------------------------ boolean --------------------------------------------------------
 }

@@ -8,6 +8,7 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.DateUtil;
+import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.member.constant.MemberConstant;
 import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.service.IUnionMemberService;
@@ -38,6 +39,9 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
 
     @Autowired
     private IUnionPreferentialItemService unionPreferentialItemService;
+
+    @Autowired
+    private IUnionMainService unionMainService;
 
     //-------------------------------------------------- get ----------------------------------------------------------
 
@@ -90,13 +94,18 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         if (busId == null || memberId == null || projectId == null || itemStatus == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
+        //(1)判断是否具有盟员权限
+        UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        if (unionMember == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
-        UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
-        if (unionMember.getIsUnionOwner() != MemberConstant.IS_UNION_OWNER_YES) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(unionMember.getUnionId());
+        //(3)判断是否具有读权限
+        if (!this.unionMemberService.hasReadAuthority(unionMember)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
         }
+        //(4)检查优惠项目参数，并查询
         UnionPreferentialProject project = this.getById(projectId);
         if (project == null) {
             throw new BusinessException("优惠项目不存在");
@@ -121,9 +130,18 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         if (busId == null || memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
-            throw new BusinessException("不具有盟员身份或已过期");
+        //(1)判断是否具有盟员权限
+        UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        if (unionMember == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(unionMember.getUnionId());
+        //(3)判断是否具有读权限
+        if (!this.unionMemberService.hasReadAuthority(unionMember)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
+        }
+        //(4)查询操作
         EntityWrapper entityWrapper = new EntityWrapper();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("member_id", memberId);
@@ -147,11 +165,19 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         if (page == null || busId == null || memberId == null || itemStatus == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
-            throw new BusinessException("不具有盟员身份或已过期");
-        }
+        //(1)判断是否具有盟员权限
         final UnionMember unionOwner = this.unionMemberService.getByIdAndBusId(memberId, busId);
-        if (unionOwner.getIsUnionOwner() != MemberConstant.IS_UNION_OWNER_YES) {
+        if (unionOwner == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
+        }
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(unionOwner.getUnionId());
+        //(3)判断是否具有读权限
+        if (!this.unionMemberService.hasReadAuthority(unionOwner)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
+        }
+        //(4)判断盟主权限
+        if (!unionOwner.getIsUnionOwner().equals(MemberConstant.IS_UNION_OWNER_YES)) {
             throw new BusinessException("非盟主身份无法操作");
         }
         Wrapper wrapper = new Wrapper() {
@@ -191,16 +217,23 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         if (projectId == null || busId == null || memberId == null || illustration == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)判断操作者盟员身份权限
-        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
-            throw new BusinessException("不具有盟员身份或已过期");
+        //(1)判断是否具有盟员权限
+        UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        if (unionMember == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
-        // (2)判断操作者是否是这个优惠项目的拥有者
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(unionMember.getUnionId());
+        //(3)判断是否具有写权限
+        if (!this.unionMemberService.hasWriteAuthority(unionMember)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
+        }
+        //(4)判断操作者是否是这个优惠项目的拥有者
         UnionPreferentialProject unionPreferentialProject = this.getById(projectId);
         if (!unionPreferentialProject.getMemberId().equals(memberId)) {
             throw new BusinessException("不是该优惠项目的拥有者，无法操作");
         }
-        // (3)更新信息
+        //(5)更新信息
         UnionPreferentialProject updateProject = new UnionPreferentialProject();
         updateProject.setId(projectId); //优惠项目id
         updateProject.setIllustration(illustration); //优惠项目说明
@@ -225,12 +258,20 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         if (busId == null || memberId == null || itemStatus == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
-            throw new BusinessException("不具有盟员身份或已过期");
-        }
+        //(1)判断是否具有盟员权限
         final UnionMember unionOwner = this.unionMemberService.getByIdAndBusId(memberId, busId);
-        if (unionOwner.getIsUnionOwner() != MemberConstant.IS_UNION_OWNER_YES) {
-            throw new BusinessException("非盟主身份无法操作");
+        if (unionOwner == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
+        }
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(unionOwner.getUnionId());
+        //(3)判断是否具有读权限
+        if (!this.unionMemberService.hasReadAuthority(unionOwner)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
+        }
+        //(4)判断盟主权限
+        if (!unionOwner.getIsUnionOwner().equals(MemberConstant.IS_UNION_OWNER_YES)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
         }
         Wrapper wrapper = new Wrapper() {
             @Override

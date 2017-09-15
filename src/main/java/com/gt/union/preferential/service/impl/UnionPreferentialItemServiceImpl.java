@@ -91,7 +91,7 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
      */
     @Override
     public Page listByUnionId(Page page, final Integer unionId, final Integer busId) throws Exception {
-        UnionMember member = unionMemberService.getByUnionIdAndBusId(unionId, busId);
+        UnionMember member = unionMemberService.getByBusIdAndUnionId(busId, unionId);
         final UnionPreferentialProject project = unionPreferentialProjectService.getByMemberId(member.getId());
         Wrapper wrapper = new Wrapper() {
             @Override
@@ -169,9 +169,18 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
         if (itemId == null || busId == null || memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
+        //(1)判断是否具有盟员权限
+        UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        if (unionMember == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(unionMember.getUnionId());
+        //(3)判断是否具有写权限
+        if (!this.unionMemberService.hasWriteAuthority(unionMember)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
+        }
+        //(4)检查优惠服务项信息是否过期
         UnionPreferentialItem item = this.getById(itemId);
         if (item == null) {
             throw new BusinessException("优惠服务项不存在");
@@ -186,6 +195,7 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
         if (item.getStatus() != PreferentialConstant.STATUS_UNCOMMITTED) {
             throw new BusinessException("优惠服务项已处理");
         }
+        //(5)更新操作
         UnionPreferentialItem updateItem = new UnionPreferentialItem();
         updateItem.setId(item.getId()); //优惠服务项id
         updateItem.setStatus(PreferentialConstant.STATUS_VERIFYING); //优惠服务项状态变成审核中
@@ -205,9 +215,18 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
         if (itemId == null || busId == null || memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
+        //(1)判断是否具有盟员权限
+        UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        if (unionMember == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(unionMember.getUnionId());
+        //(3)判断是否具有写权限
+        if (!this.unionMemberService.hasWriteAuthority(unionMember)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
+        }
+        //(4)检查优惠服务项信息是否过期
         UnionPreferentialItem item = this.getById(itemId);
         if (item == null) {
             throw new BusinessException("优惠服务项不存在");
@@ -219,6 +238,7 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
         if (!project.getMemberId().equals(memberId)) {
             throw new BusinessException("没有该优惠服务项的权限");
         }
+        //(5)更新操作
         UnionPreferentialItem updateItem = new UnionPreferentialItem();
         updateItem.setId(item.getId()); //优惠服务项id
         updateItem.setDelStatus(CommonConstant.DEL_STATUS_YES); //删除状态变成已删除
@@ -239,13 +259,22 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
         if (busId == null || memberId == null || itemIdList == null || isOK == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
+        //(1)判断是否具有盟员权限
+        UnionMember unionOwner = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        if (unionOwner == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
-        UnionMember unionOwner = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(unionOwner.getUnionId());
+        //(3)判断是否具有写权限
+        if (!this.unionMemberService.hasWriteAuthority(unionOwner)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
+        }
+        //(4)判断盟主权限
         if (unionOwner.getIsUnionOwner() != MemberConstant.IS_UNION_OWNER_YES) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
         }
+        //(5)检查优惠服务项信息是否过期
         Integer unionId = unionOwner.getUnionId();
         List<UnionPreferentialItem> updateItemList = new ArrayList<>();
         for (Integer itemId : itemIdList) {
@@ -264,6 +293,7 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
             if (!unionId.equals(unionMember.getUnionId())) {
                 throw new BusinessException("无法操作他人联盟的优惠服务项");
             }
+            //(6)更新操作
             UnionPreferentialItem updateItem = new UnionPreferentialItem();
             updateItem.setId(itemId); //优惠服务项id
             updateItem.setStatus(isOK == CommonConstant.COMMON_YES ? PreferentialConstant.STATUS_PASS : PreferentialConstant.STATUS_FAIL); //审核状态
@@ -314,9 +344,18 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
         if (busId == null || memberId == null || itemName == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
+        //(1)判断是否具有盟员权限
+        UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        if (unionMember == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(unionMember.getUnionId());
+        //(3)判断是否具有写权限
+        if (!this.unionMemberService.hasWriteAuthority(unionMember)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
+        }
+        //(4)更新或新增操作
         UnionPreferentialProject project = this.unionPreferentialProjectService.getByMemberId(memberId);
         Integer projectId = null;
         if (project != null) {
@@ -337,81 +376,6 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
         saveItem.setName(itemName); //优惠服务名称
         saveItem.setStatus(PreferentialConstant.STATUS_UNCOMMITTED); //状态
         this.insert(saveItem);
-    }
-
-    /**
-     * 保存优惠服务项目
-     *
-     * @param unionId 联盟id
-     * @param busId   商家id
-     * @param name
-     */
-    @Override
-    public void save(Integer unionId, Integer busId, String name) throws Exception {
-        if (unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        UnionMain main = unionMainService.getById(unionId);
-        unionMainService.checkUnionMainValid(main);
-        //TODO 添加优惠服务  检验盟员身份
-        UnionMainCharge unionMainCharge = unionMainChargeService.getByUnionIdAndType(main.getId(), MainConstant.CHARGE_TYPE_RED);
-        if (unionMainCharge == null || unionMainCharge.getIsAvailable().equals(MainConstant.CHARGE_IS_AVAILABLE_NO)) {
-            throw new BusinessException("联盟未开启红卡，不可添加优惠项目");
-        }
-        if (StringUtil.isEmpty(name)) {
-            throw new ParamException("优惠项目名称不能为空");
-        }
-        if (StringUtil.getStringLength(name) > 50) {
-            throw new ParamException("优惠项目名称长度不可超过50字");
-        }
-        UnionMember member = unionMemberService.getByUnionIdAndBusId(unionId, busId);
-        if (member == null) {
-            throw new BusinessException("您");
-        }
-        EntityWrapper entityWrapper = new EntityWrapper<UnionPreferentialItem>();
-        entityWrapper.eq("del_status", 0);
-        entityWrapper.eq("union_member_id", member.getId());
-        int serviceCount = this.selectCount(entityWrapper);
-        if (serviceCount == ConfigConstant.MAX_PREFERENIAL_COUNT) {
-            throw new BusinessException("优惠项目已达上限");
-        }
-        UnionPreferentialProject project = unionPreferentialProjectService.getByMemberId(member.getId());
-        UnionPreferentialItem item = new UnionPreferentialItem();
-        item.setCreatetime(new Date());
-        item.setDelStatus(CommonConstant.DEL_STATUS_NO);
-        item.setName(name);
-        item.setProjectId(project.getId());
-        if (member.getIsUnionOwner() == 1) {//盟主
-            item.setStatus(2);
-        } else {
-            item.setStatus(0);
-        }
-        if (CommonUtil.isEmpty(project)) {
-            project = new UnionPreferentialProject();
-            project.setCreatetime(new Date());
-            project.setMemberId(member.getId());
-            project.setIllustration("");
-            project.setModifytime(new Date());
-            project.setDelStatus(CommonConstant.DEL_STATUS_NO);
-            unionPreferentialProjectService.insert(project);
-        }
-        item.setProjectId(project.getId());
-        this.insert(item);
-    }
-
-    /**
-     * 提交优惠服务项目审核
-     *
-     * @param unionId 联盟id
-     * @param busId   商家id
-     * @param id      优惠服务项目id
-     */
-    @Override
-    public void addVerify(Integer unionId, Integer busId, Integer id) throws Exception {
-
     }
 
     //------------------------------------------------- count ---------------------------------------------------------

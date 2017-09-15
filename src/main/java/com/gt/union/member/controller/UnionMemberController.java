@@ -125,6 +125,28 @@ public class UnionMemberController {
         }
     }
 
+    @ApiOperation(value = "获取我的所有盟员身份，以及盟员身份所在的联盟信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String listReadMap(HttpServletRequest request) {
+        try {
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            Integer busId = busUser.getId();
+            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+                busId = busUser.getPid();
+            }
+            List<Map<String, Object>> result = this.unionMemberService.listReadMapByBusId(busId);
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            this.unionLogErrorService.saveIfNotNull(e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            this.unionLogErrorService.saveIfNotNull(e);
+            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+        }
+    }
+
     //-------------------------------------------------- put ----------------------------------------------------------
 
     @ApiOperation(value = "更新盟员信息", produces = "application/json;charset=UTF-8")

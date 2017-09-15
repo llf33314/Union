@@ -11,6 +11,7 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.StringUtil;
+import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,9 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
     @Autowired
     private IUnionMemberService unionMemberService;
 
+    @Autowired
+    private IUnionMainService unionMainService;
+
     /**
      * 根据商家id和盟员身份id，分页获取同一个联盟下的售卡佣金分成列表信息，并根据售卡类型(精确匹配)、卡号(模糊匹配)进行匹配
      *
@@ -46,11 +50,18 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
         if (page == null || busId == null || memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
-            throw new BusinessException("不具有盟员身份或已过期");
+        //(1)判断是否具有盟员权限
+        final UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        if (unionMember == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
-        UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
-        final Integer unionId = unionMember.getUnionId();
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(unionMember.getUnionId());
+        //(3)判断是否具有读权限
+        if (!this.unionMemberService.hasReadAuthority(unionMember)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
+        }
+        //查询操作
         Wrapper wrapper = new Wrapper() {
             @Override
             public String getSqlSegment() {
@@ -62,7 +73,7 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
                         .append(" WHERE bi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
                         .append("  AND bi.type = ").append(BrokerageConstant.SOURCE_TYPE_CARD)
                         .append("  AND bi.card_id IS NOT NULL")
-                        .append("  AND m.union_id = ").append(unionId);
+                        .append("  AND m.union_id = ").append(unionMember.getUnionId());
                 if (optionCardType != null) {
                     sbSqlSegment.append(" AND c.type = ").append(optionCardType);
                 }

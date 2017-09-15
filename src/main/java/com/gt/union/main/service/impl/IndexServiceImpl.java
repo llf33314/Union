@@ -99,10 +99,8 @@ public class IndexServiceImpl implements IIndexService {
      */
     private Map<String, Object> getCreateAndJoinUnionInfo(Integer busId) throws Exception {
         Map<String, Object> result = new HashMap<>();
-        // (1)获取我(商家)的具有盟主身份的盟员信息列表，以及我创建的联盟信息
-        List<UnionMember> unionOwnerList = this.unionMemberService.listByBusIdAndIsUnionOwnerAndStatus(busId
-                , MemberConstant.IS_UNION_OWNER_YES, new Object[]{MemberConstant.STATUS_IN, MemberConstant.STATUS_APPLY_OUT});
-        UnionMember unionOwner = ListUtil.isNotEmpty(unionOwnerList) ? unionOwnerList.get(0) : null;
+        //(1)获取我(商家)的具有盟主身份的盟员信息，以及我创建的联盟信息
+        UnionMember unionOwner = this.unionMemberService.getOwnerByBusId(busId);
         UnionMain myCreateUnion = null;
         if (unionOwner != null) {
             myCreateUnion = this.unionMainService.getById(unionOwner.getUnionId());
@@ -115,12 +113,11 @@ public class IndexServiceImpl implements IIndexService {
             result.put("myCreateUnionValidity", myCreateUnion.getUnionValidity()); //我创建的联盟有效期
         }
 
-        // (2)获取我(商家)的具有非盟主身份的盟员信息列表，以及我加入的联盟信息
-        List<UnionMember> unionNoOwnerList = this.unionMemberService.listByBusIdAndIsUnionOwnerAndStatus(busId
-                , MemberConstant.IS_UNION_OWNER_NO, new Object[]{MemberConstant.STATUS_IN, MemberConstant.STATUS_APPLY_OUT});
+        //(2)获取我(商家)的具有非盟主身份的盟员信息列表，以及我加入的联盟信息
+        List<UnionMember> unionNotOwnerList = this.unionMemberService.listNotOwnerReadByBusId(busId);
         List<Map<String, Object>> myJoinUnionList = null;
-        if (ListUtil.isNotEmpty(unionNoOwnerList)) {
-            for (UnionMember unionNoOwner : unionNoOwnerList) {
+        if (ListUtil.isNotEmpty(unionNotOwnerList)) {
+            for (UnionMember unionNoOwner : unionNotOwnerList) {
                 UnionMain myJoinUnion = this.unionMainService.getById(unionNoOwner.getUnionId());
                 if (myJoinUnion != null) {
                     Map<String, Object> myJoinUnionMap = new HashMap<>();
@@ -136,8 +133,8 @@ public class IndexServiceImpl implements IIndexService {
         result.put("myJoinUnionList", myJoinUnionList);
 
         UnionMember defaultCurrentUnionMember = unionOwner;
-        if (defaultCurrentUnionMember == null && ListUtil.isNotEmpty(unionNoOwnerList)) {
-            defaultCurrentUnionMember = unionNoOwnerList.get(0);
+        if (defaultCurrentUnionMember == null && ListUtil.isNotEmpty(unionNotOwnerList)) {
+            defaultCurrentUnionMember = unionNotOwnerList.get(0);
         }
         result.put("defaultCurrentUnionMember", defaultCurrentUnionMember); //当前盟员身份
         return result;
@@ -170,7 +167,7 @@ public class IndexServiceImpl implements IIndexService {
             result.put("currentUnionIllustration", currentUnionMain.getIllustration()); //当前联盟说明
             Integer currentUnionLimitMemberCount = currentUnionMain.getLimitMember();
             result.put("currentUnionLimitMemberCount", currentUnionLimitMemberCount); //当前联盟盟员总数上限
-            Integer currentUnionMemberCount = this.unionMemberService.countByUnionIdAndStatus(currentUnionId, MemberConstant.STATUS_APPLY_IN);
+            Integer currentUnionMemberCount = this.unionMemberService.countReadByUnionId(currentUnionId);
             result.put("currentUnionMemberCount", currentUnionMemberCount); //当前联盟已加入盟员数
             Integer currentUnionSurplusMemberCount = null;
             if (currentUnionLimitMemberCount != null && currentUnionMemberCount != null) {

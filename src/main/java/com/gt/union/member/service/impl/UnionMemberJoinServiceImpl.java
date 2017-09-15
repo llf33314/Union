@@ -75,13 +75,22 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         if (page == null || busId == null || memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
-            throw new BusinessException("不具有盟员身份或已过期");
+        //(1)判断是否具有盟员权限
+        final UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        if (unionMember == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
-        final UnionMember unionMember = this.unionMemberService.getById(memberId);
-        if (unionMember == null || unionMember.getIsUnionOwner() != MemberConstant.IS_UNION_OWNER_YES) {
-            throw new BusinessException("非盟主身份无法操作");
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(unionMember.getUnionId());
+        //(3)判断是否具有读权限
+        if (!this.unionMemberService.hasReadAuthority(unionMember)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
         }
+        //(4)判断盟主权限
+        if (!unionMember.getIsUnionOwner().equals(MemberConstant.IS_UNION_OWNER_YES)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
+        }
+        //(5)查询操作
         Wrapper wrapper = new Wrapper() {
             @Override
             public String getSqlSegment() {
@@ -142,13 +151,22 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         if (busId == null || memberId == null || joinId == null || isOK == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
-            throw new BusinessException("不具有盟员身份或已过期");
+        //(1)判断是否具有盟员权限
+        UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        if (unionMember == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
-        UnionMember unionMember = this.unionMemberService.getById(memberId);
-        if (unionMember == null || unionMember.getIsUnionOwner() != MemberConstant.IS_UNION_OWNER_YES) {
-            throw new BusinessException("非盟主身份无法操作");
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(unionMember.getUnionId());
+        //(3)判断是否具有写权限
+        if (!this.unionMemberService.hasWriteAuthority(unionMember)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
         }
+        //(4)判断盟主身份
+        if (!unionMember.getIsUnionOwner().equals(MemberConstant.IS_UNION_OWNER_YES)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
+        }
+        //(5)判断申请信息是否过期
         UnionMemberJoin unionMemberJoin = this.selectById(joinId);
         if (unionMemberJoin == null) {
             throw new BusinessException("入盟申请不存在或已处理");
@@ -163,11 +181,11 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         if (!unionJoiner.getStatus().equals(MemberConstant.JOIN_TYPE_JOIN)) {
             throw new BusinessException("申请人已加入联盟");
         }
-        // (1)入盟申请信息更新内容
+        //(6)入盟申请信息更新内容
         UnionMemberJoin updateUnionMemberJoin = new UnionMemberJoin();
         updateUnionMemberJoin.setId(unionMemberJoin.getId());
         updateUnionMemberJoin.setDelStatus(CommonConstant.DEL_STATUS_YES);
-        // (2)入盟申请盟员更新内容
+        //(7)入盟申请盟员更新内容
         UnionMember updateUnionJoiner = new UnionMember();
         updateUnionJoiner.setId(unionJoiner.getId());
         if (isOK == CommonConstant.COMMON_YES) {
@@ -175,7 +193,7 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         } else {
             updateUnionJoiner.setDelStatus(CommonConstant.DEL_STATUS_YES);
         }
-        //事务化操作
+        //(8)事务化操作
         this.updateById(updateUnionMemberJoin);
         this.unionMemberService.updateById(updateUnionJoiner);
     }
@@ -196,8 +214,8 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         if (busId == null || unionId == null || unionMemberJoinVO == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)判断是否已加入或申请加入了联盟
-        UnionMember unionMember = this.unionMemberService.getByUnionIdAndBusId(unionId, busId);
+        //(1)判断是否已加入或申请加入了联盟
+        UnionMember unionMember = this.unionMemberService.getByBusIdAndUnionId(busId, unionId);
         if (unionMember != null) {
             throw new BusinessException("已加入联盟或已申请加入联盟");
         }
@@ -205,26 +223,26 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         if (unionMain == null) {
             throw new BusinessException("联盟不存在或已过期");
         }
-        // (2)判断是否已达联盟成员总数上限
-        Integer validMemberCount = this.unionMemberService.countValidMemberByUnionId(unionId);
+        //(2)判断是否已达联盟成员总数上限
+        Integer validMemberCount = this.unionMemberService.countReadByUnionId(unionId);
         if (unionMain.getLimitMember() <= validMemberCount) {
             throw new ParamException("联盟成员数已达上限，无法加入");
         }
-        // (3)判断申请商家的有效盟员身份数是否低于有效盟员身份数上限
-        Integer applyValidMemberCount = this.unionMemberService.countValidMemberByBusId(busId);
+        //(3)判断申请商家的有效盟员身份数是否低于有效盟员身份数上限
+        Integer applyValidMemberCount = this.unionMemberService.countReadByBusId(busId);
         if (applyValidMemberCount >= ConfigConstant.MAX_UNION_APPLY) {
             throw new BusinessException("加盟数已达上限");
         }
-        // (4)判断联盟申请必填信息
+        //(4)判断联盟申请必填信息
         List<UnionMainDict> unionMainDictList = this.unionMainDictService.listByUnionId(unionId);
         checkVoByUnionDictList(unionMemberJoinVO, unionMainDictList);
-        // (5)申请信息
+        //(5)申请信息
         UnionMemberJoin saveUnionMemberJoin = new UnionMemberJoin();
         saveUnionMemberJoin.setCreatetime(DateUtil.getCurrentDate()); //申请时间
         saveUnionMemberJoin.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
         saveUnionMemberJoin.setType(MemberConstant.JOIN_TYPE_JOIN); //加盟类型
         saveUnionMemberJoin.setReason(unionMemberJoinVO.getReason()); //申请理由
-        // (6)申请加入的准盟员信息
+        //(6)申请加入的准盟员信息
         UnionMember saveUnionMember = new UnionMember();
         saveUnionMember.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
         saveUnionMember.setCreatetime(DateUtil.getCurrentDate()); //加入时间
@@ -236,7 +254,7 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         saveUnionMember.setDirectorName(unionMemberJoinVO.getDirectorName()); //负责人名称
         saveUnionMember.setDirectorPhone(unionMemberJoinVO.getDirectorPhone()); //负责人电话
         saveUnionMember.setDirectorEmail(unionMemberJoinVO.getDirectorEmail()); //负责人邮箱
-        // (7)事务化处理
+        //(7)事务化处理
         this.unionMemberService.insert(saveUnionMember); //保存准盟员信息
         saveUnionMemberJoin.setApplyMemberId(saveUnionMember.getId());
         this.insert(saveUnionMemberJoin); //保存申请信息
@@ -256,15 +274,18 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         if (busId == null || memberId == null || unionMemberJoinVO == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)判断商家的盟员身份信息
-        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
-            throw new BusinessException("不具有盟员身份或已过期");
-        }
-        UnionMember unionMemberRecommend = this.unionMemberService.getById(memberId); //推荐者
+        //(1)判断是否具有盟员权限
+        UnionMember unionMemberRecommend = this.unionMemberService.getByIdAndBusId(memberId, busId);
         if (unionMemberRecommend == null) {
-            throw new ParamException("无效的盟员身份id");
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
-        // (2)判断联盟是否设置为允许推荐加盟
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(unionMemberRecommend.getUnionId());
+        //(3)判断是否具有写权限
+        if (!this.unionMemberService.hasWriteAuthority(unionMemberRecommend)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
+        }
+        //(4)判断联盟是否设置为允许推荐加盟
         Integer unionId = unionMemberRecommend.getUnionId();
         UnionMain unionMain = this.unionMainService.getById(unionId); //推荐者所在联盟
         if (unionMain == null) {
@@ -273,7 +294,7 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         if (unionMain.getJoinType() != MainConstant.MAIN_JOIN_TYPE_BOTH) {
             throw new BusinessException("联盟被设置为不支持推荐入盟");
         }
-        // (3)判断被推荐的商家是否有效
+        //(5)判断被推荐的商家是否有效
         String enterpriseName = unionMemberJoinVO.getEnterpriseName();
         BusUser busUserRecommended = this.busUserService.getBusUserByName(enterpriseName);
         if (busUserRecommended == null) {
@@ -285,37 +306,37 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         if (this.busUserService.isBusUserValid(busUserRecommended)) {
             throw new BusinessException("被推荐的帐号已过期");
         }
-        // (4)判断被推荐的商家是否已经是盟员
+        //(6)判断被推荐的商家是否已经是盟员
         Integer recommendedBusId = busUserRecommended.getId();
-        UnionMember unionMemberRecommended = this.unionMemberService.getByUnionIdAndBusId(unionId, recommendedBusId);
+        UnionMember unionMemberRecommended = this.unionMemberService.getByBusIdAndUnionId(recommendedBusId, busId);
         if (unionMemberRecommended != null) {
             throw new BusinessException("被推荐的帐号已加入或已申请加入了该联盟");
         }
         // (5)判断是否已达联盟成员总数上限
-        Integer validMemberCount = this.unionMemberService.countValidMemberByUnionId(unionId);
+        Integer validMemberCount = this.unionMemberService.countReadByUnionId(unionId);
         if (unionMain.getLimitMember() <= validMemberCount) {
             throw new ParamException("联盟成员数已达上限，无法推荐");
         }
-        // (6)判断被推荐的商家的有效盟员身份数是否低于有效盟员身份数上限
-        Integer recommendedValidMemberCount = this.unionMemberService.countValidMemberByBusId(recommendedBusId);
+        //(7)判断被推荐的商家的有效盟员身份数是否低于有效盟员身份数上限
+        Integer recommendedValidMemberCount = this.unionMemberService.countReadByBusId(recommendedBusId);
         if (recommendedValidMemberCount >= ConfigConstant.MAX_UNION_APPLY) {
             throw new BusinessException("被推荐帐号的加盟数已达上限");
         }
-        // (7)判断联盟申请必填信息
+        //(8)判断联盟申请必填信息
         List<UnionMainDict> unionMainDictList = this.unionMainDictService.listByUnionId(unionId);
         checkVoByUnionDictList(unionMemberJoinVO, unionMainDictList);
-        // (8)根据推荐者是否是盟主，保存推荐信息。如果是盟主，则直接入盟成功
+        //(9)根据推荐者是否是盟主，保存推荐信息。如果是盟主，则直接入盟成功
         UnionMemberJoin saveUnionMemberJoin = new UnionMemberJoin();
         UnionMember saveUnionMember = new UnionMember();
         if (unionMemberRecommend.getIsUnionOwner() == MemberConstant.IS_UNION_OWNER_YES) { //盟主
-            // (9-1)申请信息
+            //(10)申请信息
             saveUnionMemberJoin.setCreatetime(DateUtil.getCurrentDate()); //申请时间
             saveUnionMemberJoin.setDelStatus(CommonConstant.DEL_STATUS_YES); //删除状态
             saveUnionMemberJoin.setType(MemberConstant.JOIN_TYPE_RECOMMEND); //加盟类型
             saveUnionMemberJoin.setRecommendMemberId(memberId); //推荐者id
             saveUnionMemberJoin.setIsRecommendAgree(CommonConstant.COMMON_YES); // 默认同意
             saveUnionMemberJoin.setReason(unionMemberJoinVO.getReason()); //推荐理由
-            // (9-2)申请加入的准盟员信息
+            //(11)申请加入的准盟员信息
             saveUnionMember.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
             saveUnionMember.setCreatetime(DateUtil.getCurrentDate()); //加入时间
             saveUnionMember.setUnionId(unionId); //联盟id
@@ -327,14 +348,14 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
             saveUnionMember.setDirectorPhone(unionMemberJoinVO.getDirectorPhone()); //负责人电话
             saveUnionMember.setDirectorEmail(unionMemberJoinVO.getDirectorEmail()); //负责人邮箱
         } else {
-            // (9-1)申请信息
+            //(10)申请信息
             saveUnionMemberJoin.setCreatetime(DateUtil.getCurrentDate()); //申请时间
             saveUnionMemberJoin.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
             saveUnionMemberJoin.setType(MemberConstant.JOIN_TYPE_RECOMMEND); //加盟类型
             saveUnionMemberJoin.setRecommendMemberId(memberId); //推荐者id
             saveUnionMemberJoin.setIsRecommendAgree(CommonConstant.COMMON_YES); // 默认同意
             saveUnionMemberJoin.setReason(unionMemberJoinVO.getReason()); //推荐理由
-            // (9-2)申请加入的准盟员信息
+            //(11)申请加入的准盟员信息
             saveUnionMember.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
             saveUnionMember.setCreatetime(DateUtil.getCurrentDate()); //加入时间
             saveUnionMember.setUnionId(unionId); //联盟id
@@ -346,7 +367,7 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
             saveUnionMember.setDirectorPhone(unionMemberJoinVO.getDirectorPhone()); //负责人电话
             saveUnionMember.setDirectorEmail(unionMemberJoinVO.getDirectorEmail()); //负责人邮箱
         }
-        // (10)事务化处理
+        //(12)事务化处理
         this.unionMemberService.insert(saveUnionMember); //保存准盟员信息
         saveUnionMemberJoin.setApplyMemberId(saveUnionMember.getId());
         this.insert(saveUnionMemberJoin); //保存推荐信息
