@@ -40,6 +40,16 @@ public interface CommonConstant {
     public static final String UNION_BUS_OVERDUE_MSG = "商家帐号已过期";
 
     /**
+     * 盟员身份无效
+     */
+    public static final String UNION_MEMBER_INVALID = "不具有盟员身份或已过期";
+
+    /**
+     * 需要盟主身份
+     */
+    public static final String UNION_MEMBER_NEED_OWNER = "非盟主身份无法操作";
+
+    /**
      * 通用是否：否
      */
     public static final int COMMON_NO = 0;

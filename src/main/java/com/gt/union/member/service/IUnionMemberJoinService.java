@@ -14,6 +14,9 @@ import com.gt.union.member.vo.UnionMemberJoinVO;
  * @since 2017-09-07
  */
 public interface IUnionMemberJoinService extends IService<UnionMemberJoin> {
+    //-------------------------------------------------- get ----------------------------------------------------------
+    //------------------------------------------ list(include page) ---------------------------------------------------
+
     /**
      * * 根据商家id和盟员id，分页获取入盟申请列表信息
      *
@@ -28,6 +31,8 @@ public interface IUnionMemberJoinService extends IService<UnionMemberJoin> {
     Page pageMapByBusIdAndMemberId(Page page, Integer busId, Integer memberId, String optionEnterpriseName
             , String optionDirectorPhone) throws Exception;
 
+    //------------------------------------------------- update --------------------------------------------------------
+
     /**
      * 入盟审核操作，同意入盟或不同意入盟
      *
@@ -38,6 +43,8 @@ public interface IUnionMemberJoinService extends IService<UnionMemberJoin> {
      * @throws Exception
      */
     void updateJoinStatus(Integer busId, Integer memberId, Integer joinId, Integer isOK) throws Exception;
+
+    //------------------------------------------------- save ----------------------------------------------------------
 
     /**
      * 保存自由加入联盟的申请信息
@@ -58,4 +65,7 @@ public interface IUnionMemberJoinService extends IService<UnionMemberJoin> {
      * @throws Exception
      */
     void saveTypeRecommend(Integer busId, Integer memberId, UnionMemberJoinVO unionMemberJoinVO) throws Exception;
+
+    //------------------------------------------------- count ---------------------------------------------------------
+    //------------------------------------------------ boolean --------------------------------------------------------
 }

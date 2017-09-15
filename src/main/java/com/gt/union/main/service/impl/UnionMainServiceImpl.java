@@ -66,39 +66,15 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
     @Autowired
     private IDictService dictService;
 
-    @Override
-    public void checkUnionMainValid(Integer id) throws Exception {
-        UnionMain unionMain = this.getById(id);
-        checkUnionMainValid(unionMain);
-    }
+    //-------------------------------------------------- get ----------------------------------------------------------
 
-    @Override
-    public void checkUnionMainValid(UnionMain unionMain) throws Exception {
-        if (unionMain == null) {
-            throw new BusinessException("联盟不存在");
-        }
-        // （1）如果缓存中已存在，说明有效，直接返回
-        String unionMainValidKey = RedisKeyUtil.getUnionMainValidKey(unionMain.getId());
-        if (this.redisCacheUtil.exists(unionMainValidKey)) {
-            return;
-        }
-        // （3）检查盟主有效性
-        UnionMember unionOwner = this.unionMemberService.getUnionOwnerByUnionId(unionMain.getId());
-        if (unionOwner == null) {
-            throw new BusinessException("联盟没有盟主");
-        }
-        Integer unionOwnerBusUserId = unionOwner.getBusId();
-        if (!this.busUserService.isBusUserValid(unionOwnerBusUserId)) {
-            throw new BusinessException("联盟的盟主信息不存在或已过期");
-        }
-        // （4）检查盟主联盟服务许可
-        if (!this.unionMainPermitService.hasUnionMainPermit(unionOwnerBusUserId)) {
-            throw new BusinessException("联盟的盟主没有盟主服务或盟主服务已过期");
-        }
-        // （5）重新存入缓存
-        this.redisCacheUtil.set(unionMainValidKey, "1");
-    }
-
+    /**
+     * 根据id获取联盟信息
+     *
+     * @param id {not null} 联盟id
+     * @return
+     * @throws Exception
+     */
     @Override
     public UnionMain getById(Integer id) throws Exception {
         if (id == null) {
@@ -109,6 +85,34 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
                 .eq("id", id);
         return this.selectOne(entityWrapper);
     }
+
+    /**
+     * 根据商家id，获取联盟成员总数上限
+     *
+     * @param busId {not null} 商家id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public Integer getLimitMemberByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        Integer result = Integer.valueOf(0);
+        List<Map> dictList = this.dictService.getCreateUnionDict();
+        BusUser busUser = this.busUserService.getBusUserById(busId);
+        for (Map dict : dictList) {
+            if (dict.get("item_key").equals(busUser.getLevel())) {
+                String itemValue = dict.get("item_value").toString();
+                String unionMember = itemValue.split(",")[1];
+                result = Integer.valueOf(unionMember); //联盟成员总数上限
+                break;
+            }
+        }
+        return result;
+    }
+
+    //------------------------------------------ list(include page) ---------------------------------------------------
 
     /**
      * 根据商家id，获取所有具有盟员身份的联盟信息，即创建的联盟+加入的联盟
@@ -132,6 +136,13 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         return this.selectList(entityWrapper);
     }
 
+    /**
+     * 查询商家加入有效的联盟
+     *
+     * @param busId
+     * @return
+     * @throws Exception
+     */
     @Override
     public List<UnionMain> listValidUnionMainByBusId(Integer busId) throws Exception {
         EntityWrapper entityWrapper = new EntityWrapper();
@@ -167,6 +178,8 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
                         .toString());
         return this.selectPage(page, entityWrapper);
     }
+
+    //------------------------------------------------- update --------------------------------------------------------
 
     /**
      * 根据盟员id、商家id和VO对象，更新联盟信息
@@ -284,7 +297,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         this.updateById(unionMain);
         this.unionMainChargeService.updateById(updateBlackUnionMainCharge);
         this.unionMainChargeService.updateById(updateRedUnionMainCharge);
-        this.unionMainDictService.deleteByUnionId(unionId);
+        this.unionMainDictService.removeByUnionId(unionId);
         List<UnionMainDict> unionMainDictList = unionMainVO.getUnionMainDictList();
         if (ListUtil.isNotEmpty(unionMainDictList)) {
             this.unionMainDictService.insertBatch(unionMainDictList);
@@ -296,30 +309,52 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         this.redisCacheUtil.remove(unionMainKey);
     }
 
+    //------------------------------------------------- save ----------------------------------------------------------
+    //------------------------------------------------- count ---------------------------------------------------------
+    //------------------------------------------------ boolean --------------------------------------------------------
+
     /**
-     * 根据商家id，获取联盟成员总数上限
+     * 根据id检查联盟的有效性
      *
-     * @param busId {not null} 商家id
-     * @return
+     * @param id {not null} 联盟id
      * @throws Exception
      */
     @Override
-    public Integer getLimitMemberByBusId(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        Integer result = Integer.valueOf(0);
-        List<Map> dictList = this.dictService.getCreateUnionDict();
-        BusUser busUser = this.busUserService.getBusUserById(busId);
-        for (Map dict : dictList) {
-            if (dict.get("item_key").equals(busUser.getLevel())) {
-                String itemValue = dict.get("item_value").toString();
-                String unionMember = itemValue.split(",")[1];
-                result = Integer.valueOf(unionMember); //联盟成员总数上限
-                break;
-            }
-        }
-        return result;
+    public void checkUnionMainValid(Integer id) throws Exception {
+        UnionMain unionMain = this.getById(id);
+        checkUnionMainValid(unionMain);
     }
 
+    /**
+     * 根据联盟检查联盟的有效性
+     *
+     * @param unionMain {not null} 联盟
+     * @throws Exception
+     */
+    @Override
+    public void checkUnionMainValid(UnionMain unionMain) throws Exception {
+        if (unionMain == null) {
+            throw new BusinessException("联盟不存在");
+        }
+        // （1）如果缓存中已存在，说明有效，直接返回
+        String unionMainValidKey = RedisKeyUtil.getUnionMainValidKey(unionMain.getId());
+        if (this.redisCacheUtil.exists(unionMainValidKey)) {
+            return;
+        }
+        // （3）检查盟主有效性
+        UnionMember unionOwner = this.unionMemberService.getUnionOwnerByUnionId(unionMain.getId());
+        if (unionOwner == null) {
+            throw new BusinessException("联盟没有盟主");
+        }
+        Integer unionOwnerBusUserId = unionOwner.getBusId();
+        if (!this.busUserService.isBusUserValid(unionOwnerBusUserId)) {
+            throw new BusinessException("联盟的盟主信息不存在或已过期");
+        }
+        // （4）检查盟主联盟服务许可
+        if (!this.unionMainPermitService.hasUnionMainPermit(unionOwnerBusUserId)) {
+            throw new BusinessException("联盟的盟主没有盟主服务或盟主服务已过期");
+        }
+        // （5）重新存入缓存
+        this.redisCacheUtil.set(unionMainValidKey, "1");
+    }
 }

@@ -39,4 +39,13 @@ public interface BrokerageConstant {
      */
     int BROKERAGE_PAY_TYPE_ALIPAY = 2;
 
+    /**
+     * 来源类型：联盟卡
+     */
+    public static final int SOURCE_TYPE_CARD = 1;
+
+    /**
+     * 来源类型：商机
+     */
+    public static final int SOURCE_TYPE_OPPORTUNITY = 2;
 }

@@ -6,8 +6,8 @@ import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
-import com.gt.union.main.service.IIndexService;
 import com.gt.union.log.service.IUnionLogErrorService;
+import com.gt.union.main.service.IIndexService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
@@ -33,6 +33,8 @@ public class IndexController {
 
     @Autowired
     private IIndexService indexService;
+
+    //-------------------------------------------------- get ----------------------------------------------------------
 
     @ApiOperation(value = "商家联盟首页-默认未选定盟员身份", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/index", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -60,13 +62,12 @@ public class IndexController {
             this.unionLogErrorService.saveIfNotNull(e);
             return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
         }
-
     }
 
     @ApiOperation(value = "商家联盟首页-选定盟员身份", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/index/memberId/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String indexByUnionId(HttpServletRequest request
-            , @ApiParam(name = "memberId", value = "盟员id", required = true)@PathVariable("memberId") Integer memberId) {
+            , @ApiParam(name = "memberId", value = "盟员id", required = true) @PathVariable("memberId") Integer memberId) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
             Integer busId = busUser.getId();
@@ -90,6 +91,8 @@ public class IndexController {
             this.unionLogErrorService.saveIfNotNull(e);
             return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
         }
-
     }
+
+    //-------------------------------------------------- put ----------------------------------------------------------
+    //------------------------------------------------- post ----------------------------------------------------------
 }

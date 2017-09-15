@@ -13,6 +13,28 @@ import com.gt.union.member.entity.UnionMemberOut;
  * @since 2017-09-07
  */
 public interface IUnionMemberOutService extends IService<UnionMemberOut> {
+    //-------------------------------------------------- get ----------------------------------------------------------
+
+    /**
+     * 根据退盟申请id，获取退盟申请信息
+     *
+     * @param outId {not null} 退盟申请id
+     * @return
+     * @throws Exception
+     */
+    UnionMemberOut getById(Integer outId) throws Exception;
+
+    /**
+     * 根据退盟申请的盟员身份id，获取退盟申请信息
+     *
+     * @param applyMemberId {not null} 退盟申请id
+     * @return
+     * @throws Exception
+     */
+    UnionMemberOut getByApplyMemberId(Integer applyMemberId) throws Exception;
+
+    //------------------------------------------ list(include page) ---------------------------------------------------
+
     /**
      * 根据商家id和盟员身份id，分页获取申请退盟列表信息
      *
@@ -35,15 +57,7 @@ public interface IUnionMemberOutService extends IService<UnionMemberOut> {
      */
     Page pageOutingMapByBusIdAndMemberId(Page page, Integer busId, Integer memberId) throws Exception;
 
-    /**
-     * 根据商家id、盟员身份id和退盟理由，保存申请退盟信息
-     *
-     * @param busId          {not null} 商家id
-     * @param memberId       {not null} 盟员身份id
-     * @param applyOutReason {not null} 退盟理由
-     * @throws Exception
-     */
-    void saveApplyOutByBusIdAndMemberId(Integer busId, Integer memberId, String applyOutReason) throws Exception;
+    //------------------------------------------------- update --------------------------------------------------------
 
     /**
      * 根据商家id、盟员身份id和退盟申请id，审批退盟申请
@@ -66,21 +80,18 @@ public interface IUnionMemberOutService extends IService<UnionMemberOut> {
      */
     void updateByBusIdAndMemberIdAndTgtMemberId(Integer busId, Integer memberId, Integer tgtMemberId) throws Exception;
 
-    /**
-     * 根据退盟申请id，获取退盟申请信息
-     *
-     * @param outId {not null} 退盟申请id
-     * @return
-     * @throws Exception
-     */
-    UnionMemberOut getById(Integer outId) throws Exception;
+    //------------------------------------------------- save ----------------------------------------------------------
 
     /**
-     * 根据退盟申请的盟员身份id，获取退盟申请信息
+     * 根据商家id、盟员身份id和退盟理由，保存申请退盟信息
      *
-     * @param applyMemberId {not null} 退盟申请id
-     * @return
+     * @param busId          {not null} 商家id
+     * @param memberId       {not null} 盟员身份id
+     * @param applyOutReason {not null} 退盟理由
      * @throws Exception
      */
-    UnionMemberOut getByApplyMemberId(Integer applyMemberId) throws Exception;
+    void saveApplyOutByBusIdAndMemberId(Integer busId, Integer memberId, String applyOutReason) throws Exception;
+
+    //------------------------------------------------- count ---------------------------------------------------------
+    //------------------------------------------------ boolean --------------------------------------------------------
 }

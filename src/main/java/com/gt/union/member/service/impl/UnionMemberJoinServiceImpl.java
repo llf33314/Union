@@ -55,6 +55,9 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
     @Autowired
     private IBusUserService busUserService;
 
+    //-------------------------------------------------- get ----------------------------------------------------------
+    //------------------------------------------ list(include page) ---------------------------------------------------
+
     /**
      * * 根据商家id和盟员id，分页获取入盟申请列表信息
      *
@@ -122,6 +125,8 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         return this.selectPage(page, wrapper);
     }
 
+    //------------------------------------------------- update --------------------------------------------------------
+
     /**
      * 入盟审核操作，同意入盟或不同意入盟
      *
@@ -174,6 +179,8 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         this.updateById(updateUnionMemberJoin);
         this.unionMemberService.updateById(updateUnionJoiner);
     }
+
+    //------------------------------------------------- save ----------------------------------------------------------
 
     /**
      * 保存自由加入联盟的申请信息
@@ -278,7 +285,7 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         if (this.busUserService.isBusUserValid(busUserRecommended)) {
             throw new BusinessException("被推荐的帐号已过期");
         }
-         // (4)判断被推荐的商家是否已经是盟员
+        // (4)判断被推荐的商家是否已经是盟员
         Integer recommendedBusId = busUserRecommended.getId();
         UnionMember unionMemberRecommended = this.unionMemberService.getByUnionIdAndBusId(unionId, recommendedBusId);
         if (unionMemberRecommended != null) {
@@ -344,6 +351,9 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         saveUnionMemberJoin.setApplyMemberId(saveUnionMember.getId());
         this.insert(saveUnionMemberJoin); //保存推荐信息
     }
+
+    //------------------------------------------------- count ---------------------------------------------------------
+    //------------------------------------------------ boolean --------------------------------------------------------
 
     //根据联盟申请填写信息设置检查vo
     private void checkVoByUnionDictList(UnionMemberJoinVO unionMemberJoinVO, List<UnionMainDict> unionMainDictList) throws Exception {

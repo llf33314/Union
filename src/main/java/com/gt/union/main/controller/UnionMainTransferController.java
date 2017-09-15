@@ -37,6 +37,9 @@ public class UnionMainTransferController {
     @Autowired
     private IUnionMainTransferService unionMainTransferService;
 
+    //-------------------------------------------------- get ----------------------------------------------------------
+    //-------------------------------------------------- put ----------------------------------------------------------
+
     @ApiOperation(value = "转移盟主服务权限", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/memberId/{memberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String saveByFromMemberIdAndToMemberId(HttpServletRequest request
@@ -88,4 +91,6 @@ public class UnionMainTransferController {
             return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
         }
     }
+
+    //------------------------------------------------- post ----------------------------------------------------------
 }

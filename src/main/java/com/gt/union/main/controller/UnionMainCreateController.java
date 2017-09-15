@@ -44,6 +44,8 @@ public class UnionMainCreateController {
     @Autowired
     private IUnionMainCreateService unionMainCreateService;
 
+    //-------------------------------------------------- get ----------------------------------------------------------
+
     @ApiOperation(value = "请求创建联盟，创建联盟两步走的第一步", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/instance", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String instance(HttpServletRequest request) {
@@ -64,6 +66,9 @@ public class UnionMainCreateController {
             return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
         }
     }
+
+    //-------------------------------------------------- put ----------------------------------------------------------
+    //------------------------------------------------- post ----------------------------------------------------------
 
     @ApiOperation(value = "保存创建联盟，创建联盟两步走的第二步", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/instance", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")

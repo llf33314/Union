@@ -12,6 +12,7 @@ import com.gt.union.main.entity.UnionMainCharge;
  * @since 2017-09-07
  */
 public interface IUnionMainChargeService extends IService<UnionMainCharge> {
+    //-------------------------------------------------- get ----------------------------------------------------------
 
     /**
      * 根据联盟id和联盟卡类型获取联盟卡信息
@@ -32,4 +33,10 @@ public interface IUnionMainChargeService extends IService<UnionMainCharge> {
      * @throws Exception
      */
     UnionMainCharge getByUnionIdAndTypeAndIsAvailable(Integer unionId, Integer type, Integer isAvailable) throws Exception;
+
+    //------------------------------------------ list(include page) ---------------------------------------------------
+    //------------------------------------------------- update --------------------------------------------------------
+    //------------------------------------------------- save ----------------------------------------------------------
+    //------------------------------------------------- count ---------------------------------------------------------
+    //------------------------------------------------ boolean --------------------------------------------------------
 }

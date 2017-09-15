@@ -12,14 +12,7 @@ import com.gt.union.main.entity.UnionMainPermit;
  * @since 2017-09-07
  */
 public interface IUnionMainPermitService extends IService<UnionMainPermit> {
-    /**
-     * 根据商家id判断是否拥有盟主服务许可
-     *
-     * @param busId {not null} 商家id
-     * @return
-     * @throws Exception
-     */
-    boolean hasUnionMainPermit(Integer busId) throws Exception;
+    //-------------------------------------------------- get ----------------------------------------------------------
 
     /**
      * 根据商家id获取联盟服务许可
@@ -39,4 +32,19 @@ public interface IUnionMainPermitService extends IService<UnionMainPermit> {
      * @throws Exception
      */
     UnionMainPermit getByBusIdAndId(Integer busId, Integer id) throws Exception;
+
+    //------------------------------------------ list(include page) ---------------------------------------------------
+    //------------------------------------------------- update --------------------------------------------------------
+    //------------------------------------------------- save ----------------------------------------------------------
+    //------------------------------------------------- count ---------------------------------------------------------
+    //------------------------------------------------ boolean --------------------------------------------------------
+
+    /**
+     * 根据商家id判断是否拥有盟主服务许可
+     *
+     * @param busId {not null} 商家id
+     * @return
+     * @throws Exception
+     */
+    boolean hasUnionMainPermit(Integer busId) throws Exception;
 }

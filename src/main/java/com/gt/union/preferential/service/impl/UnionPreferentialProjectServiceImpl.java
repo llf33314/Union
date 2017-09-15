@@ -1,13 +1,27 @@
 package com.gt.union.preferential.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.mapper.Wrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.CommonConstant;
-import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.exception.BusinessException;
+import com.gt.union.common.exception.ParamException;
+import com.gt.union.common.util.DateUtil;
+import com.gt.union.member.constant.MemberConstant;
+import com.gt.union.member.entity.UnionMember;
+import com.gt.union.member.service.IUnionMemberService;
+import com.gt.union.preferential.entity.UnionPreferentialItem;
 import com.gt.union.preferential.entity.UnionPreferentialProject;
 import com.gt.union.preferential.mapper.UnionPreferentialProjectMapper;
+import com.gt.union.preferential.service.IUnionPreferentialItemService;
 import com.gt.union.preferential.service.IUnionPreferentialProjectService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -19,13 +33,223 @@ import org.springframework.stereotype.Service;
  */
 @Service
 public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPreferentialProjectMapper, UnionPreferentialProject> implements IUnionPreferentialProjectService {
+    @Autowired
+    private IUnionMemberService unionMemberService;
 
+    @Autowired
+    private IUnionPreferentialItemService unionPreferentialItemService;
+
+    //-------------------------------------------------- get ----------------------------------------------------------
+
+    /**
+     * 根据盟员id获取优惠项目
+     *
+     * @param id
+     * @return
+     */
     @Override
     public UnionPreferentialProject getByMemberId(Integer id) {
         EntityWrapper entityWrapper = new EntityWrapper<UnionPreferentialProject>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
-        entityWrapper.eq("member_id",id);
+        entityWrapper.eq("member_id", id);
         UnionPreferentialProject project = this.selectOne(entityWrapper);
         return project;
     }
+
+    /**
+     * 根据优惠项目id获取对象
+     *
+     * @param projectId {not null} 优惠项目id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public UnionPreferentialProject getById(Integer projectId) throws Exception {
+        if (projectId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("id", projectId);
+        return this.selectOne(entityWrapper);
+    }
+
+    /**
+     * 根据商家id、盟员身份id、优惠项目id和优惠服务状态，获取详情信息
+     *
+     * @param busId      {not null} 商家id
+     * @param memberId   {not null} 盟员身份id
+     * @param projectId  {not null} 优惠项目id
+     * @param itemStatus {not null} 优惠服务状态
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public Map<String, Object> getDetailByBusIdAndMemberIdAndProjectIdAndItemStatus(Integer busId, Integer memberId
+            , Integer projectId, Integer itemStatus) throws Exception {
+        if (busId == null || memberId == null || projectId == null || itemStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
+        }
+        UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        if (unionMember.getIsUnionOwner() != MemberConstant.IS_UNION_OWNER_YES) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
+        }
+        UnionPreferentialProject project = this.getById(projectId);
+        if (project == null) {
+            throw new BusinessException("优惠项目不存在");
+        }
+        List<UnionPreferentialItem> itemList = this.unionPreferentialItemService.listByProjectIdAndStatus(projectId, itemStatus);
+        Map<String, Object> result = new HashMap<>();
+        result.put("project", project);
+        result.put("itemList", itemList);
+        return result;
+    }
+
+    /**
+     * 根据商家id和盟员身份id，获取优惠项目信息
+     *
+     * @param busId    {not null} 商家id
+     * @param memberId {not null} 盟员身份id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public UnionPreferentialProject getByBusIdAndMemberId(Integer busId, Integer memberId) throws Exception {
+        if (busId == null || memberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
+            throw new BusinessException("不具有盟员身份或已过期");
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("member_id", memberId);
+        return this.selectOne(entityWrapper);
+    }
+
+    //------------------------------------------ list(include page) ---------------------------------------------------
+
+    /**
+     * 根据商家id、盟员身份id和优惠服务项状态，分页查询优惠项目列表信息
+     *
+     * @param page       {not null} 分页对象
+     * @param busId      {not null} 商家id
+     * @param memberId   {not null} 盟员身份id
+     * @param itemStatus {not null} 优惠服务项状态
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public Page pageMapByBusIdAndMemberIdAndItemStatus(Page page, Integer busId, Integer memberId, final Integer itemStatus) throws Exception {
+        if (page == null || busId == null || memberId == null || itemStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
+            throw new BusinessException("不具有盟员身份或已过期");
+        }
+        final UnionMember unionOwner = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        if (unionOwner.getIsUnionOwner() != MemberConstant.IS_UNION_OWNER_YES) {
+            throw new BusinessException("非盟主身份无法操作");
+        }
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                StringBuilder sbSqlSegment = new StringBuilder(" pp")
+                        .append(" LEFT JOIN t_union_preferential_item pi ON pi.project_id = pp.id")
+                        .append(" LEFT JOIN t_union_member m ON m.id = pp.member_id")
+                        .append(" WHERE pp.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND pi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND pi.status = ").append(itemStatus)
+                        .append("  AND m.union_id = ").append(unionOwner.getUnionId())
+                        .append(" ORDER BY pp.id ASC");
+                return sbSqlSegment.toString();
+            }
+        };
+        StringBuilder sbSqlSelect = new StringBuilder(" pp.id projectId") //优惠项目id
+                .append(", pp.illustration projectIllustration") //优惠项目说明
+                .append(", m.enterprise_name enterpriseName"); //优惠项目所属盟员的名称
+        wrapper.setSqlSelect(sbSqlSelect.toString());
+        return this.selectMapsPage(page, wrapper);
+    }
+
+    //------------------------------------------------- update --------------------------------------------------------
+
+    /**
+     * 根据优惠项目id、商家id和盟员身份id，更新优惠项目说明
+     *
+     * @param projectId    {not null} 优惠项目id
+     * @param busId        {not null} 商家id
+     * @param memberId     {not null} 盟员身份id
+     * @param illustration {not null} 优惠项目说明
+     * @throws Exception
+     */
+    @Override
+    public void updateIllustrationByIdAndBusIdAndMemberId(Integer projectId, Integer busId, Integer memberId, String illustration) throws Exception {
+        if (projectId == null || busId == null || memberId == null || illustration == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)判断操作者盟员身份权限
+        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
+            throw new BusinessException("不具有盟员身份或已过期");
+        }
+        // (2)判断操作者是否是这个优惠项目的拥有者
+        UnionPreferentialProject unionPreferentialProject = this.getById(projectId);
+        if (!unionPreferentialProject.getMemberId().equals(memberId)) {
+            throw new BusinessException("不是该优惠项目的拥有者，无法操作");
+        }
+        // (3)更新信息
+        UnionPreferentialProject updateProject = new UnionPreferentialProject();
+        updateProject.setId(projectId); //优惠项目id
+        updateProject.setIllustration(illustration); //优惠项目说明
+        updateProject.setModifytime(DateUtil.getCurrentDate()); //优惠项目更新时间
+        this.updateById(updateProject);
+    }
+
+    //------------------------------------------------- save ----------------------------------------------------------
+    //------------------------------------------------- count ---------------------------------------------------------
+
+    /**
+     * 根据商家id、盟员身份id和优惠服务项状态，统计优惠服务数
+     *
+     * @param busId      {not null} 商家id
+     * @param memberId   {not null} 盟员身份id
+     * @param itemStatus {not null} 优惠服务状态
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public Integer countByBusInAndMemberIdAndItemStatus(Integer busId, Integer memberId, final Integer itemStatus) throws Exception {
+        if (busId == null || memberId == null || itemStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        if (!this.unionMemberService.isUnionMemberValid(busId, memberId)) {
+            throw new BusinessException("不具有盟员身份或已过期");
+        }
+        final UnionMember unionOwner = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        if (unionOwner.getIsUnionOwner() != MemberConstant.IS_UNION_OWNER_YES) {
+            throw new BusinessException("非盟主身份无法操作");
+        }
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                StringBuilder sbSqlSegment = new StringBuilder(" pp")
+                        .append(" LEFT JOIN t_union_preferential_item pi ON pi.project_id = pp.id")
+                        .append(" LEFT JOIN t_union_member m ON m.id = pp.member_id")
+                        .append(" WHERE pp.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND pi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND pi.status = ").append(itemStatus)
+                        .append("  AND m.union_id = ").append(unionOwner.getUnionId())
+                        .append(" ORDER BY pp.id ASC");
+                return sbSqlSegment.toString();
+            }
+        };
+        StringBuilder sbSqlSelect = new StringBuilder(" pp.id projectId"); //优惠项目id
+        wrapper.setSqlSelect(sbSqlSelect.toString());
+        return this.selectCount(wrapper);
+    }
+
+    //------------------------------------------------ boolean --------------------------------------------------------
 }

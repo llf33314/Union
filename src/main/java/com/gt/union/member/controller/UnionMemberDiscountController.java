@@ -37,6 +37,9 @@ public class UnionMemberDiscountController {
     @Autowired
     private IUnionMemberDiscountService unionMemberDiscountService;
 
+    //-------------------------------------------------- get ----------------------------------------------------------
+    //-------------------------------------------------- put ----------------------------------------------------------
+
     @ApiOperation(value = "更新盟员折扣", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/memberId/{memberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String method(HttpServletRequest request
@@ -63,4 +66,6 @@ public class UnionMemberDiscountController {
             return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
         }
     }
+
+    //------------------------------------------------- post ----------------------------------------------------------
 }

@@ -3,7 +3,6 @@ package com.gt.union.member.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.CommonConstant;
-import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.DateUtil;
@@ -27,19 +26,51 @@ import java.util.List;
  */
 @Service
 public class UnionMemberDiscountServiceImpl extends ServiceImpl<UnionMemberDiscountMapper, UnionMemberDiscount> implements IUnionMemberDiscountService {
-
-	@Override
-	public UnionMemberDiscount getMinDiscountByMemberList(List<Integer> members, List<Integer> memberList) {
-		EntityWrapper wrapper = new EntityWrapper<UnionMemberDiscount>();
-		wrapper.in("from_member_id", members.toArray());
-		wrapper.in("to_member_id", memberList.toArray());
-		wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
-		wrapper.orderBy("to_member_id", true);
-		wrapper.setSqlSelect("id, DATE_FORMAT(createtime, '%Y-%m-%d %T') createtime, del_status, from_member_id, to_member_id, min(discount) as discount, DATE_FORMAT(modifytime, '%Y-%m-%d %T') modifytime ");
-		return this.selectOne(wrapper);
-	}
     @Autowired
     private IUnionMemberService unionMemberService;
+
+    //-------------------------------------------------- get ----------------------------------------------------------
+
+    /**
+     * 查询最低折扣
+     *
+     * @param members    我的盟员身份列表
+     * @param memberList 和我有盟员关系的其他盟员列表
+     * @return
+     */
+    @Override
+    public UnionMemberDiscount getMinDiscountByMemberList(List<Integer> members, List<Integer> memberList) {
+        EntityWrapper wrapper = new EntityWrapper<UnionMemberDiscount>();
+        wrapper.in("from_member_id", members.toArray());
+        wrapper.in("to_member_id", memberList.toArray());
+        wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+        wrapper.orderBy("to_member_id", true);
+        wrapper.setSqlSelect("id, DATE_FORMAT(createtime, '%Y-%m-%d %T') createtime, del_status, from_member_id, to_member_id, min(discount) as discount, DATE_FORMAT(modifytime, '%Y-%m-%d %T') modifytime ");
+        return this.selectOne(wrapper);
+    }
+
+    /**
+     * 根据设置折扣盟员id和受惠折扣盟员id，获取折扣信息
+     *
+     * @param fromMemberId {not null} 设置折扣盟员id
+     * @param toMemberId   {not null} 受惠折扣盟员id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public UnionMemberDiscount getByFromMemberIdAndToMemberId(Integer fromMemberId, Integer toMemberId) throws Exception {
+        if (fromMemberId == null || toMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("from_member_id", fromMemberId)
+                .eq("to_member_id", toMemberId);
+        return this.selectOne(entityWrapper);
+    }
+
+    //------------------------------------------ list(include page) ---------------------------------------------------
+    //------------------------------------------------- update --------------------------------------------------------
 
     /**
      * 根据商家id、商家盟员身份id、被设置折扣的盟员身份id以及设置的折扣信息，更新或保存折扣信息
@@ -81,23 +112,7 @@ public class UnionMemberDiscountServiceImpl extends ServiceImpl<UnionMemberDisco
         }
     }
 
-    /**
-     * 根据设置折扣盟员id和受惠折扣盟员id，获取折扣信息
-     *
-     * @param fromMemberId {not null} 设置折扣盟员id
-     * @param toMemberId   {not null} 受惠折扣盟员id
-     * @return
-     * @throws Exception
-     */
-    @Override
-    public UnionMemberDiscount getByFromMemberIdAndToMemberId(Integer fromMemberId, Integer toMemberId) throws Exception {
-        if (fromMemberId == null || toMemberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        EntityWrapper entityWrapper = new EntityWrapper();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("from_member_id", fromMemberId)
-                .eq("to_member_id", toMemberId);
-        return this.selectOne(entityWrapper);
-    }
+    //------------------------------------------------- save ----------------------------------------------------------
+    //------------------------------------------------- count ---------------------------------------------------------
+    //------------------------------------------------ boolean --------------------------------------------------------
 }
