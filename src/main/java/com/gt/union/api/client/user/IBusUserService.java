@@ -1,8 +1,7 @@
 package com.gt.union.api.client.user;
 
 import com.gt.api.bean.session.BusUser;
-
-import java.util.Map;
+import com.gt.api.bean.session.WxPublicUsers;
 
 /**
  * 商家信息 服务类
@@ -29,7 +28,7 @@ public interface IBusUserService {
 	 * @param busId
 	 * @return
 	 */
-	public Map<String,Object> getWxPublicUserByBusId(Integer busId);
+	public WxPublicUsers getWxPublicUserByBusId(Integer busId);
 
 	/**
 	 * 根据用户id判断该用户是否有效

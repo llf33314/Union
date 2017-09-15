@@ -194,4 +194,33 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @throws Exception
      */
     void updateByIdAndBusId(Integer memberId, Integer busId, UnionMemberVO unionMemberVO) throws Exception;
+
+    /**
+     * 判断盟员是否有效
+     * @param unionMember
+     * @return
+     */
+    boolean hasUnionMemberAuthority(UnionMember unionMember);
+
+    /**
+     * 根据商家id查询加入的盟员列表
+     * @param busId
+     * @return
+     */
+	List<UnionMember> listByBusId(Integer busId);
+
+    /**
+     * 根据商家id查询所有加入的盟员列表
+     * @param busId
+     * @return
+     */
+	List<UnionMember> listAllByBusId(Integer busId);
+
+    /**
+     * 没有删除状态查询盟员信息
+     * @param unionId
+     * @param busId
+     * @return
+     */
+    List<UnionMember> getByUnionIdAndBusIdWidthOutDelStatus(Integer unionId, Integer busId);
 }

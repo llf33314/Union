@@ -3,6 +3,7 @@ package com.gt.union.api.client.user.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.gt.api.bean.session.BusUser;
+import com.gt.api.bean.session.WxPublicUsers;
 import com.gt.api.util.HttpClienUtils;
 import com.gt.api.util.sign.SignHttpUtils;
 import com.gt.union.api.client.user.IBusUserService;
@@ -83,11 +84,11 @@ public class BusUserServiceImpl implements IBusUserService {
 	}
 
 	@Override
-	public Map<String, Object> getWxPublicUserByBusId(Integer busId) {
+	public WxPublicUsers getWxPublicUserByBusId(Integer busId) {
 		String wxUserKey = RedisKeyUtil.getWxPublicUserBusIdKey(busId);
 		if (this.redisCacheUtil.exists(wxUserKey)) {//（1）通过busId获取缓存中的busUser对象，如果存在，则直接返回
 			Object obj = this.redisCacheUtil.get(wxUserKey);
-			return JSON.parseObject(obj.toString(),Map.class);
+			return JSON.parseObject(obj.toString(),WxPublicUsers.class);
 		}
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("reqdata",busId);
@@ -99,11 +100,11 @@ public class BusUserServiceImpl implements IBusUserService {
 		if(CommonUtil.toInteger(result.get("code")) != 0){
 			return null;
 		}
-		Map<String,Object> data = JSONObject.parseObject(result.get("data").toString(),Map.class);
-		if(CommonUtil.isNotEmpty(data)){
-			redisCacheUtil.set(wxUserKey,JSON.toJSONString(data));
+		WxPublicUsers publicUsers = JSONObject.parseObject(result.get("data").toString(),WxPublicUsers.class);
+		if(CommonUtil.isNotEmpty(publicUsers)){
+			redisCacheUtil.set(wxUserKey,JSON.toJSONString(publicUsers));
 		}
-		return data;
+		return publicUsers;
 	}
 
 	@Override

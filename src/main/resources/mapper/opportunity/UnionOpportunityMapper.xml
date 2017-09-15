@@ -19,4 +19,121 @@
 		<result column="business_msg" property="businessMsg" />
 	</resultMap>
 
+	<!-- 查询我的佣金收入列表 -->
+    <select id="listBrokerageFromMy" resultType="com.gt.union.opportunity.vo.UnionOpportunityBrokerageVO">
+		SELECT o.id id, o.client_name clientName, o.client_phone clientPhone, o.business_msg businessMsg, um.name unionName, o.accept_price acceptPrice,
+		o.brokerage_price brokeragePrice, o.type type, i.id incomeId, o.modifytime confirmTime
+		FROM (SELECT * FROM t_union_opportunity WHERE is_accept = 2 AND del_status = 0 AND from_member_id IN
+		<foreach collection="members" item="member" open="(" close=")"
+				 separator=",">
+			#{member.id}
+		</foreach> ) o LEFT JOIN t_union_member m ON o.to_member_id = m.id
+		LEFT JOIN t_union_main um ON m.union_id = um.id
+		LEFT JOIN t_union_brokerage_income i ON i.opportunity_id = o.id
+		WHERE 1 = 1
+		<if test="toMemberId != null" >
+			AND o.to_member_id = #{toMemberId}
+		</if>
+		<if test="unionId != null" >
+			AND m.union_id = #{unionId}
+		</if>
+		<if test="clientName != null and clientName != '' " >
+			AND o.client_name = #{clientName}
+		</if>
+		<if test="clientPhone != null and clientPhone != '' " >
+			AND o.client_phone = #{clientPhone}
+		</if>
+		<!-- 已结算 -->
+		<if test="incomeStatus == 1" >
+			AND i.id IS NOT NULL
+		</if>
+		<!-- 未结算 -->
+		<if test="incomeStatus == 2" >
+			AND i.id IS NULL
+		</if>
+		GROUP BY i.id ASC
+	</select>
+
+	<!-- 查询我需要支付的佣金列表 -->
+	<select id="listBrokerageToMy" resultType="com.gt.union.opportunity.vo.UnionOpportunityBrokerageVO">
+		SELECT o.id id, o.client_name clientName, o.client_phone clientPhone, o.business_msg businessMsg, um.name unionName, o.accept_price acceptPrice,
+		o.brokerage_price brokeragePrice, o.type type, i.id incomeId, o.modifytime confirmTime
+		FROM (SELECT * FROM t_union_opportunity WHERE is_accept = 2 AND del_status = 0 AND  to_member_id IN
+		<foreach collection="members" item="member" open="(" close=")"
+				 separator=",">
+			#{member.id}
+		</foreach> ) o LEFT JOIN t_union_member m ON o.to_member_id = m.id
+		LEFT JOIN t_union_main um ON m.union_id = um.id
+		LEFT JOIN t_union_brokerage_income i ON i.opportunity_id = o.id
+		WHERE 1 = 1
+		<if test="fromMemberId != null" >
+			AND o.from_member_id = #{fromMemberId}
+		</if>
+		<if test="unionId != null" >
+			AND m.union_id = #{unionId}
+		</if>
+		<if test="clientName != null and clientName != '' " >
+			AND o.client_name = #{clientName}
+		</if>
+		<if test="clientPhone != null and clientPhone != '' " >
+			AND o.client_phone = #{clientPhone}
+		</if>
+		<!-- 已结算 -->
+		<if test="incomeStatus == 1" >
+			AND i.id IS NOT NULL
+		</if>
+		<!-- 未结算 -->
+		<if test="incomeStatus == 2" >
+			AND i.id IS NULL
+		</if>
+		GROUP BY i.id ASC
+	</select>
+
+	<!-- 查询佣金支付明细列表 -->
+	<select id="listPayDetail" resultType="java.util.Map">
+		SELECT memberId, enterprise_name as enterpriseName, name as unionName, unionId, SUM(money) as money from (
+		(SELECT o.to_member_id as memberId, m.enterprise_name, m.bus_id, um.name, um.id unionId, IFNULL(SUM(i.money), 0) money  from
+		(SELECT * from t_union_opportunity WHERE from_member_id in
+			<foreach collection="members" item="member" open="(" close=")" separator=",">
+				#{member.id}
+			</foreach>
+			and is_accept = 2 and del_status = 0) o
+		LEFT JOIN t_union_member m on o.to_member_id = m.id and m.del_status = 0
+		LEFT JOIN t_union_brokerage_income i on o.id = i.opportunity_id
+		LEFT JOIN t_union_main um on m.union_id = um.id GROUP BY o.from_member_id)
+		union
+		(SELECT o.from_member_id as memberId, m.enterprise_name, m.bus_id, um.name, um.id unionId, IFNULL(SUM(0-i.money), 0) money  from
+		(SELECT * from t_union_opportunity WHERE to_member_id in
+			<foreach collection="members" item="member" open="(" close=")" separator=",">
+				#{member.id}
+			</foreach>
+			and is_accept = 2 and del_status = 0) o
+		LEFT JOIN t_union_member m on o.from_member_id = m.id and m.del_status = 0
+		LEFT JOIN t_union_brokerage_income i on o.id = i.opportunity_id
+		LEFT JOIN t_union_main um on m.union_id = um.id GROUP BY o.to_member_id)) a
+		<if test="unionId != null" >
+			WHERE a.union_id = #{unionId}
+		</if>
+		GROUP BY a.bus_id,a.unionId
+	</select>
+
+	<!-- 查询在联盟下我与某盟员的佣金来往明细 -->
+	<select id="listPayDetailParticularByUnionIdAndMemberId" resultType="java.util.Map">
+		SELECT o.modifytime as confirmTime, o.client_name as clientName, o.client_phone clientPhone, if(from_member_id = #{myMemberId},o.brokerage_price,0 - o.brokerage_price) as  money
+		from t_union_opportunity o WHERE o.is_accept = 2 and (o.from_member_id = #{myMemberId} and o.to_member_id = #{memberId}) or (o.from_member_id = #{memberId} and o.to_member_id = #{myMemberId})
+		and EXISTS (SELECT * from t_union_brokerage_income i WHERE o.id = i.opportunity_id )
+	</select>
+
+	<!-- 获取时间范围内盟员收入的佣金之和 -->
+	<select id="getBrokerageComeInDay" resultType="java.lang.Double">
+		SELECT IFNULL(SUM(o.brokerage_price), 0) money from t_union_opportunity o WHERE o.from_member_id = #{memberId} AND o.del_status = 0 and o.is_accept = 2
+		AND EXISTS (SELECT i.id from t_union_brokerage_income i WHERE o.id = i.opportunity_id and i.createtime BETWEEN #{strDateBegin} AND #{strDateEnd})
+	</select>
+
+	<!-- 获取时间范围内盟员支出的佣金之和 -->
+	<select id="getBrokerageExpanseInDay" resultType="java.lang.Double">
+		SELECT IFNULL(SUM(o.brokerage_price), 0) money from t_union_opportunity o WHERE o.to_member_id = #{memberId} AND o.del_status = 0 and o.is_accept = 2
+		AND EXISTS (SELECT i.id from t_union_brokerage_income i WHERE o.id = i.opportunity_id and i.createtime BETWEEN #{strDateBegin} AND #{strDateEnd})
+	</select>
+
 </mapper>

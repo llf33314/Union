@@ -12,5 +12,11 @@ import com.gt.union.brokerage.entity.UnionBrokerageIncome;
  * @since 2017-09-07
  */
 public interface IUnionBrokerageIncomeService extends IService<UnionBrokerageIncome> {
-	
+
+	/**
+	 * 根据商机id获取佣金收入
+	 * @param id
+	 * @return
+	 */
+	UnionBrokerageIncome getByUnionOpportunityId(Integer id);
 }

@@ -3,19 +3,31 @@ package com.gt.union.opportunity.controller;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
+import com.gt.union.common.annotation.SysLogAnnotation;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BaseException;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
-import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.service.IUnionValidateService;
+import com.gt.union.common.util.*;
 import com.gt.union.opportunity.service.IUnionOpportunityService;
+import com.gt.union.opportunity.vo.UnionOpportunityVO;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -40,7 +52,10 @@ public class UnionOpportunityController {
 	@Autowired
 	private IUnionOpportunityService unionOpportunityService;
 
-	@ApiOperation(value = "查询我的商机信息", produces = "application/json;charset=UTF-8")
+	@Autowired
+	private IUnionValidateService unionValidateService;
+
+	@ApiOperation(value = "查询推荐给我的商机信息", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/toMy", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String listToMy(HttpServletRequest request, Page page
 			, @ApiParam(name = "unionId", value = "所属联盟id", required = false)
@@ -96,105 +111,100 @@ public class UnionOpportunityController {
 		}
 	}
 
-	/*@ApiOperation(value = "查询我的佣金收入信息", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/brokerage/fromBusId", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public String listBrokerageByFromBusId(HttpServletRequest request, Page page
-			, @ApiParam(name = "toBusId", value = "佣金消费盟员id", required = false)
-										   @RequestParam(name = "toBusId", required = false) Integer toBusId
+	@ApiOperation(value = "查询我的佣金收入信息", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/brokerage/fromMy", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String listBrokeragefromMy(HttpServletRequest request, Page page
+			, @ApiParam(name = "toMemberId", value = "被推荐的盟员id", required = false)
+										   @RequestParam(name = "toMemberId", required = false) Integer toMemberId
 			, @ApiParam(name = "unionId", value = "所属联盟id", required = false)
 										   @RequestParam(name = "unionId", required = false) Integer unionId
-			, @ApiParam(name = "isConfirm", value = "佣金结算状态，0为未处理，1为受理，2为拒绝，当勾选多个时用英文字符的分号拼接，如=1;2", required = false)
-										   @RequestParam(name = "isConfirm", required = false) String isConfirm
-			, @ApiParam(name = "userName", value = "顾客姓名，模糊查询", required = false)
-										   @RequestParam(name = "userName", required = false) String userName
-			, @ApiParam(name = "userPhone", value = "顾客电话，模糊查询", required = false)
-										   @RequestParam(name = "userPhone", required = false) String userPhone ) {
+			, @ApiParam(name = "status", value = "佣金结算状态，1：已结算 2：未结算，当勾选多个时用英文字符的分号拼接，如=1;2", required = false)
+										   @RequestParam(name = "status", required = false) String status
+			, @ApiParam(name = "clientName", value = "顾客姓名，模糊查询", required = false)
+										   @RequestParam(name = "clientName", required = false) String clientName
+			, @ApiParam(name = "clientPhone", value = "顾客电话，模糊查询", required = false)
+										   @RequestParam(name = "clientPhone", required = false) String clientPhone ) {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
 			Integer fromBusId = busUser.getId();
 			if (busUser.getPid() != null && busUser.getPid() != 0) {
 				fromBusId = busUser.getPid();
 			}
-			Page result = this.unionBusinessRecommendService.listBrokerageByFromBusId(page, fromBusId, toBusId, unionId, isConfirm, userName, userPhone);
+			Page result = this.unionOpportunityService.listBrokerageFromMy(page, fromBusId, toMemberId, unionId, status, clientName, clientPhone);
 			return GTJsonResult.instanceSuccessMsg(result).toString();
 		} catch (BaseException e) {
 			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
 		} catch (Exception e) {
 			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(LIST_BROKERAGE_FROMBUSID, e.getMessage(), CommonConstant.OPERATE_ERROR).toString();
+			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
 		}
 	}
 
 	@ApiOperation(value = "查询我需支付的佣金信息", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/brokerage/toBusId", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/brokerage/toMy", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String listBrokerageByToBusId(HttpServletRequest request, Page page
-			, @ApiParam(name = "fromBusId", value = "佣金消费盟员id", required = false)
-										 @RequestParam(name = "fromBusId", required = false) Integer fromBusId
+			, @ApiParam(name = "fromMemberId", value = "推荐的盟员id", required = false)
+										 @RequestParam(name = "fromMemberId", required = false) Integer fromMemberId
 			, @ApiParam(name = "unionId", value = "所属联盟id", required = false)
 										 @RequestParam(name = "unionId", required = false) Integer unionId
-			, @ApiParam(name = "isConfirm", value = "佣金结算状态，0为未处理，1为受理，2为拒绝，当勾选多个时用英文字符的分号拼接，如=1;2", required = false)
-										 @RequestParam(name = "isConfirm", required = false) String isConfirm
-			, @ApiParam(name = "userName", value = "顾客姓名，模糊查询", required = false)
-										 @RequestParam(name = "userName", required = false) String userName
-			, @ApiParam(name = "userPhone", value = "顾客电话，模糊查询", required = false)
-										 @RequestParam(name = "userPhone", required = false) String userPhone ) {
+			, @ApiParam(name = "status", value = "佣金结算状态，0为未处理，1为受理，2为拒绝，当勾选多个时用英文字符的分号拼接，如=1;2", required = false)
+										 @RequestParam(name = "status", required = false) String status
+			, @ApiParam(name = "clientName", value = "顾客姓名，模糊查询", required = false)
+										 @RequestParam(name = "clientName", required = false) String clientName
+			, @ApiParam(name = "clientPhone", value = "顾客电话，模糊查询", required = false)
+										 @RequestParam(name = "clientPhone", required = false) String clientPhone ) {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
 			Integer toBusId = busUser.getId();
 			if (busUser.getPid() != null && busUser.getPid() != 0) {
 				toBusId = busUser.getPid();
 			}
-			Page result = this.unionBusinessRecommendService.listBrokerageByToBusId(page, toBusId, fromBusId, unionId, isConfirm, userName, userPhone);
+			Page result = this.unionOpportunityService.listBrokerageToMy(page, toBusId, fromMemberId, unionId, status, clientName, clientPhone);
 			return GTJsonResult.instanceSuccessMsg(result).toString();
 		} catch (BaseException e) {
 			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
 		} catch (Exception e) {
 			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(LIST_BROKERAGE_TOBUSID, e.getMessage(), CommonConstant.OPERATE_ERROR).toString();
+			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
 		}
 	}
 
 	@ApiOperation(value = "查询支付明细信息", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/payDetail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public String listPayDetailByFromBusId(HttpServletRequest request, Page page
+	public String listPayDetail(HttpServletRequest request, Page page
 			, @ApiParam(name = "unionId", value = "联盟id", required = false) @RequestParam(name = "unionId",  required = false) Integer unionId) {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
-			Integer fromBusId = busUser.getId();
+			Integer busId = busUser.getId();
 			if (busUser.getPid() != null && busUser.getPid() != 0) {
-				fromBusId = busUser.getPid();
+				busId = busUser.getPid();
 			}
-			Page result = this.unionBusinessRecommendService.listPayDetailByFromBusId(page, fromBusId, unionId);
+			Page result = this.unionOpportunityService.listPayDetail(page, busId, unionId);
 			return GTJsonResult.instanceSuccessMsg(result).toString();
 		} catch (BaseException e) {
 			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
 		} catch (Exception e) {
 			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(LIST_PAYDETAIL_FROMBUSID, e.getMessage(), CommonConstant.OPERATE_ERROR).toString();
+			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
 		}
 	}
 
 	@ApiOperation(value = "查询支付明细详情信息", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/payDetailParticular/toBusId/{toBusId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public String listPayDetailParticularByUnionIdAndFromBusIdAndToBusId(HttpServletRequest request
-			, @ApiParam(name = "toBusId", value = "佣金消费盟员id", required = true) @PathVariable("toBusId") Integer toBusId
-			, @ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId) {
+	@RequestMapping(value = "/payDetailParticular", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String listPayDetailParticularByUnionIdAndMemberId(HttpServletRequest request
+			, @ApiParam(name = "memberId", value = "佣金来往的盟员id", required = true) @RequestParam(name = "memberId",  required = true) Integer memberId
+			, @ApiParam(name = "myMemberId", value = "我的盟员id", required = true) @RequestParam(name = "myMemberId",  required = true) Integer myMemberId
+			) {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
-			Integer fromBusId = busUser.getId();
-			if (busUser.getPid() != null && busUser.getPid() != 0) {
-				fromBusId = busUser.getPid();
-			}
-			List<Map<String, Object>> dataList = this.unionBusinessRecommendService.listPayDetailParticularByUnionIdAndFromBusIdAndToBusId(unionId, fromBusId, toBusId);
+			List<Map<String, Object>> dataList = this.unionOpportunityService.listPayDetailParticularByUnionIdAndMemberId(memberId, myMemberId);
 			BigDecimal businessPriceSum = BigDecimal.valueOf(0.0);
 			if (ListUtil.isNotEmpty(dataList)) {
-				for (int i = 0, size = dataList.size(); i < size && dataList.get(i) != null; i++) {
-					Object businessPriceObj = dataList.get(i).get("businessPrice");
-					Double businessPrice = businessPriceObj == null ? Double.valueOf(0.0) : Double.valueOf(businessPriceObj.toString());
-					businessPriceSum = BigDecimalUtil.add(businessPriceSum, businessPrice);
+				for(Map<String, Object> map : dataList){
+					businessPriceSum = BigDecimalUtil.add(businessPriceSum, Double.valueOf(map.get("money").toString()));
 				}
 			}
 			Map<String, Object> resultMap = new HashMap<>();
@@ -203,10 +213,10 @@ public class UnionOpportunityController {
 			return GTJsonResult.instanceSuccessMsg(resultMap).toString();
 		} catch (BaseException e) {
 			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
 		} catch (Exception e) {
 			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(LIST_PAYDETAILPARTICULAR_UNIONID_FROMBUSID_TOBUSID, e.getMessage(), CommonConstant.OPERATE_ERROR).toString();
+			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
 		}
 	}
 
@@ -216,16 +226,20 @@ public class UnionOpportunityController {
 			, @ApiParam(name = "unionId", value = "联盟id", required = true) @PathVariable("unionId") Integer unionId) {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
-			Map<String, Object> result = this.unionBusinessRecommendService.getStatisticData(unionId, busUser.getId());
+			Integer busId = busUser.getId();
+			if (busUser.getPid() != null && busUser.getPid() != 0) {
+				busId = busUser.getPid();
+			}
+			Map<String, Object> result = this.unionOpportunityService.getStatisticData(unionId, busId);
 			return GTJsonResult.instanceSuccessMsg(result).toString();
 		} catch (BaseException e) {
 			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
 		} catch (Exception e) {
 			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(GET_STATISTIC_DATA, "", CommonConstant.OPERATE_ERROR).toString();
+			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
 		}
-	}*/
+	}
 
 	@ApiOperation(value = "商机审核", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/{id}/isAcceptance/{isAcceptance}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
@@ -250,11 +264,11 @@ public class UnionOpportunityController {
 		}
 	}
 
-	/*@ApiOperation(value = "添加商机推荐", produces = "application/json;charset=UTF-8")
+	@ApiOperation(value = "添加商机推荐", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String save(HttpServletRequest request
-			, @ApiParam(name = "unionBusinessRecommendFormVO", value = "推荐的商机信息", required = true)
-					   @RequestBody @Valid UnionBusinessRecommendVO vo, BindingResult bindingResult){
+			, @ApiParam(name = "unionOpportunityVO", value = "推荐的商机信息", required = true)
+					   @RequestBody @Valid UnionOpportunityVO vo, BindingResult bindingResult){
 		try{
 			this.unionValidateService.checkBindingResult(bindingResult);
 			BusUser user = SessionUtils.getLoginUser(request);
@@ -263,81 +277,93 @@ public class UnionOpportunityController {
 				busId = user.getPid();
 			}
 			vo.setBusId(busId);
-			unionBusinessRecommendService.save(vo);
+			unionOpportunityService.save(vo);
 			return GTJsonResult.instanceSuccessMsg().toString();
 		}catch (BaseException e){
 			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+			return GTJsonResult.instanceErrorMsg( e.getErrorMsg()).toString();
 		}catch (Exception e){
 			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(SAVE, e.getMessage(), CommonConstant.OPERATE_ERROR).toString();
+			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
 		}
 	}
 
 	@ApiOperation(value = "统计我的所有已被接受的，目前未支付或已支付的商机佣金总额", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/isConfirm/{isConfirm}/sum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public String sumBusinessPriceByFromBusIdAndIsConfirm(HttpServletRequest request
-			, @ApiParam(name = "isConfirm", value = "是否已支付：0未支付，1已支付", required = true) @PathVariable("isConfirm") Integer isConfirm) {
+	@RequestMapping(value = "/isAccept/{isAccept}/sum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String sumAcceptFromMy(HttpServletRequest request
+			, @ApiParam(name = "isAccept", value = "是否已支付：0未支付，1已支付", required = true) @PathVariable("isAccept") Integer isAccept) {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
-			Double businessPriceSum = this.unionBusinessRecommendService.sumBusinessPriceByFromBusIdAndIsConfirm(busUser.getId(), isConfirm);
+			Integer busId = busUser.getId();
+			if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){//子账号
+				busId = busUser.getPid();
+			}
+			Double businessPriceSum = this.unionOpportunityService.sumAcceptFromMy(busId, isAccept);
 			return GTJsonResult.instanceSuccessMsg(businessPriceSum).toString();
 		} catch (BaseException e) {
 			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
 		} catch (Exception e) {
 			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(SUM_BUSINESSPRICE_FROMBUSID_ISCONFIRM, e.getMessage(), CommonConstant.OPERATE_ERROR).toString();
+			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
 		}
 	}
 
 	@ApiOperation(value = "统计我的所有已被接受的，目前未支付或已支付的，指定联盟的商机佣金总额", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/unionId/{unionId}/isConfirm/{isConfirm}/sum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public String sumBusinessPriceByUnionIdAndFromBusIdAndIsConfirm(HttpServletRequest request
+	@RequestMapping(value = "/unionId/{unionId}/isAccept/{isAccept}/sum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String sumAcceptFromMyByUnionId(HttpServletRequest request
 			, @ApiParam(name = "unionId", value = "联盟id", required = true) @PathVariable("unionId") Integer unionId
-			, @ApiParam(name = "isConfirm", value = "是否已支付：0未支付，1已支付", required = true) @PathVariable("isConfirm") Integer isConfirm) {
+			, @ApiParam(name = "isAccept", value = "是否已支付：0未支付，1已支付", required = true) @PathVariable("isAccept") Integer isAccept) {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
-			Double businessPriceSum = this.unionBusinessRecommendService.sumBusinessPriceByUnionIdAndFromBusIdAndIsConfirm(unionId, busUser.getId(), isConfirm);
+			Integer busId = busUser.getId();
+			if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){//子账号
+				busId = busUser.getPid();
+			}
+			Double businessPriceSum = this.unionOpportunityService.sumAcceptFromMyByUnionId(unionId, busId, isAccept);
 			return GTJsonResult.instanceSuccessMsg(businessPriceSum).toString();
 		} catch (BaseException e) {
 			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
 		} catch (Exception e) {
 			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(SUM_BUSINESSPRICE_UNIONID_FROMBUSID_ISCONFIRM, e.getMessage(), CommonConstant.OPERATE_ERROR).toString();
+			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
 		}
 	}
 
-	@ApiOperation(value = "统计我的所有已被接受的，但由于接收方退盟造成的坏账状态下的商机佣金总额", produces = "application/json;charset=UTF-8")
+	@ApiOperation(value = "统计我的所有已被接受的，但由于接收方退盟造成的坏账状态下的商机未支付佣金总额", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/badDebt/sum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public String sumBusinessPriceByFromBusIdInBadDebt(HttpServletRequest request) {
+	public String sumFromMyInBadDebt(HttpServletRequest request) {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
-			Double businessPriceSum = this.unionBusinessRecommendService.sumBusinessPriceByFromBusIdInBadDebt(busUser.getId());
+			Integer busId = busUser.getId();
+			if(CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0){//子账号
+				busId = busUser.getPid();
+			}
+			Double businessPriceSum = this.unionOpportunityService.sumFromMyInBadDebt(busId);
 			return GTJsonResult.instanceSuccessMsg(businessPriceSum).toString();
 		} catch (BaseException e) {
 			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
 		} catch (Exception e) {
 			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(SUM_BUSINESSPRICE_FROMBUSID_BADDEBT, e.getMessage(), CommonConstant.OPERATE_ERROR).toString();
+			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
 		}
 	}
 
-	@ApiOperation(value = "分页获取我的所有坏账明细", produces = "application/json;charset=UTF-8")
+	/*@ApiOperation(value = "分页获取我的所有坏账明细", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/badDebt", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String pageMapByFromBusIdInBadDebt(HttpServletRequest request, Page page) {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
-			Page result = this.unionBusinessRecommendService.pageMapByFromBusIdInBadDebt(page, busUser.getId());
+			Page result = this.unionOpportunityService.pageMapByFromBusIdInBadDebt(page, busUser.getId());
 			return GTJsonResult.instanceSuccessMsg(result).toString();
 		} catch (BaseException e) {
 			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
 		} catch (Exception e) {
 			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(PAGE_MAP_FROMBUSID_BADDEBT, e.getMessage(), CommonConstant.OPERATE_ERROR).toString();
+			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
 		}
 	}
 
@@ -347,25 +373,25 @@ public class UnionOpportunityController {
 			, @ApiParam(name = "unionId", value = "联盟id", required = true) @PathVariable("unionId") Integer unionId) {
 		try {
 			BusUser busUser = SessionUtils.getLoginUser(request);
-			Page result = this.unionBusinessRecommendService.pageMapByUnionIdAndFromBusIdInBadDebt(page, unionId, busUser.getId());
+			Page result = this.unionOpportunityService.pageMapByUnionIdAndFromBusIdInBadDebt(page, unionId, busUser.getId());
 			return GTJsonResult.instanceSuccessMsg(result).toString();
 		} catch (BaseException e) {
 			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(e.getErrorLocation(), e.getErrorCausedBy(), e.getErrorMsg()).toString();
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
 		} catch (Exception e) {
 			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(PAGE_MAP_UNIONID_FROMBUSID_BADDEBT, e.getMessage(), CommonConstant.OPERATE_ERROR).toString();
+			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
 		}
-	}
+	}*/
 
 
 
-	@RequestMapping(value = "/79B4DE7C/paymentSuccess/{recommendEncrypt}/{only}")
-	public void payUnionBusinessRecommendSuccess(HttpServletRequest request, HttpServletResponse response,@PathVariable(name = "recommendEncrypt", required = true) String recommendEncrypt, @PathVariable(name = "only", required = true) String only) {
+	@RequestMapping(value = "/79B4DE7C/paymentSuccess/{Encrypt}/{only}")
+	public void payOpportunitySuccess(HttpServletRequest request, HttpServletResponse response,@PathVariable(name = "Encrypt", required = true) String encrypt, @PathVariable(name = "only", required = true) String only) {
 		try {
-			logger.info("商机佣金支付成功，订单recommendEncrypt------------------"+recommendEncrypt);
+			logger.info("商机佣金支付成功，Encrypt------------------"+encrypt);
 			logger.info("商机佣金支付成功，only------------------"+only);
-			unionBusinessRecommendService.payUnionBusinessRecommendSuccess(recommendEncrypt, only);
+			unionOpportunityService.payOpportunitySuccess(encrypt, only);
 		} catch (Exception e) {
 			logger.error("商机佣金支付成功后，产生错误：" + e);
 		}
@@ -374,13 +400,13 @@ public class UnionOpportunityController {
 	@ApiOperation(value = "生成商机推荐支付订单二维码", produces = "application/json;charset=UTF-8")
 	@SysLogAnnotation(op_function = "2", description = "生成商机推荐支付二维码")
 	@RequestMapping(value = "/qrCode/{ids}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public String payBusinessRecommendQRCode(HttpServletRequest request, HttpServletResponse response, @ApiParam(name="ids", value = "商机ids", required = true) @PathVariable("ids") String ids) {
+	public String payOpportunityQRCode(HttpServletRequest request, HttpServletResponse response, @ApiParam(name="ids", value = "商机ids，使用“,”隔开", required = true) @PathVariable("ids") String ids) {
 		try {
 			BusUser user = SessionUtils.getLoginUser(request);
 			if(CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0){
-				throw new BusinessException(PAY_BUSINESS_RECOMMEND_QRCODE, "", CommonConstant.UNION_BUS_PARENT_MSG);
+				throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
 			}
-			Map<String,Object> data = unionBusinessRecommendService.payBusinessRecommendQRCode(user.getId(), ids);
+			Map<String,Object> data = unionOpportunityService.payOpportunityQRCode(user.getId(), ids);
 			StringBuilder sb = new StringBuilder("?");
 			sb.append("totalFee="+data.get("totalFee"));
 			sb.append("&model="+data.get("model"));
@@ -400,7 +426,7 @@ public class UnionOpportunityController {
 			return GTJsonResult.instanceSuccessMsg(result).toString();
 		} catch (Exception e) {
 			logger.error("生成商机推荐支付订单二维码错误：" + e);
-			return GTJsonResult.instanceErrorMsg(PAY_BUSINESS_RECOMMEND_QRCODE, e.getMessage(), CommonConstant.OPERATE_ERROR).toString();
+			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
 		}
 	}
 
@@ -413,21 +439,21 @@ public class UnionOpportunityController {
 			String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
 			Object status = redisCacheUtil.get(statusKey);
 			if(CommonUtil.isEmpty(status)){//订单超时
-				status = CommonConstant.USER_ORDER_STATUS_004;
+				status = ConfigConstant.USER_ORDER_STATUS_004;
 			}
-			if(CommonConstant.USER_ORDER_STATUS_003.equals(status)){//订单支付成功
+			if(ConfigConstant.USER_ORDER_STATUS_003.equals(status)){//订单支付成功
 				redisCacheUtil.remove(statusKey);
 				redisCacheUtil.remove(paramKey);
 			}
 
-			if(CommonConstant.USER_ORDER_STATUS_005.equals(status)){//订单支付失败
+			if(ConfigConstant.USER_ORDER_STATUS_005.equals(status)){//订单支付失败
 				redisCacheUtil.remove(statusKey);
 				redisCacheUtil.remove(paramKey);
 			}
 			return GTJsonResult.instanceSuccessMsg(status).toString();
 		} catch (Exception e) {
 			logger.error("获取商机佣金支付错误：" + e);
-			return GTJsonResult.instanceErrorMsg(GET_STATUS, e.getMessage(), ExceptionConstant.SYS_ERROR).toString();
+			return GTJsonResult.instanceErrorMsg(CommonConstant.SYS_ERROR).toString();
 		}
-	}*/
+	}
 }
