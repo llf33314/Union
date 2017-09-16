@@ -21,22 +21,13 @@ public interface IUnionMemberService extends IService<UnionMember> {
     //-------------------------------------------------- get ----------------------------------------------------------
 
     /**
-     * 根据联盟ids和盟员ids查询匹配的盟员列表 //TODO 待改
-     *
-     * @param unionIds  联盟ids
-     * @param memberIds 盟员ids
-     * @return
-     */
-    List<UnionMember> listByUnionIdsAndUnionMemberIds(List<Integer> unionIds, List<Integer> memberIds);
-
-    /**
      * 根据联盟id获取该联盟盟主的盟员信息
      *
      * @param unionId {not null} 联盟id
      * @return
      * @throws Exception
      */
-    UnionMember getUnionOwnerByUnionId(Integer unionId) throws Exception;
+    UnionMember getOwnerByUnionId(Integer unionId) throws Exception;
 
     /**
      * 根据商家id，获取具有盟主权限的盟员身份信息
@@ -87,17 +78,17 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @return
      * @throws Exception
      */
-    Page pageMapByMemberIdAndBusId(Page page, Integer memberId, Integer busId, String optionEnterpriseName) throws Exception;
+    Page pageMapByIdAndBusId(Page page, Integer memberId, Integer busId, String optionEnterpriseName) throws Exception;
 
     /**
-     * 根据盟员id和商家id，获取所有与该盟员通属一个联盟的盟员信息
+     * 根据盟员id和商家id，获取所有与该盟员同属一个联盟的盟员信息
      *
      * @param memberId {not null} 盟员id
      * @param busId    {not null} 商家id
      * @return
      * @throws Exception
      */
-    List<Map<String, Object>> listMapByMemberIdAndBusId(Integer memberId, Integer busId) throws Exception;
+    List<Map<String, Object>> listMapByIdAndBusId(Integer memberId, Integer busId) throws Exception;
 
     /**
      * 根据商家id，获取商家所有具有读权限的盟员身份列表信息
@@ -136,15 +127,6 @@ public interface IUnionMemberService extends IService<UnionMember> {
     List<Map<String, Object>> listReadMapByBusId(Integer busId) throws Exception;
 
     /**
-     * 根据商家id，获取商家所有具有写权限的盟员身份列表信息，以及对应所在的联盟信息
-     *
-     * @param busId {not null} 商家id
-     * @return
-     * @throws Exception
-     */
-    List<Map<String, Object>> listWriteMapByBusId(Integer busId) throws Exception;
-
-    /**
      * 根据联盟id，获取该联盟下所有具有读权限的盟员身份列表信息
      *
      * @param unionId {not null} 联盟id
@@ -154,33 +136,13 @@ public interface IUnionMemberService extends IService<UnionMember> {
     List<UnionMember> listReadByUnionId(Integer unionId) throws Exception;
 
     /**
-     * 根据联盟id，获取该联盟下所有具有写权限的盟员身份列表信息
+     * 根据盟员id列表，获取盟员列表信息
      *
-     * @param unionId {not null} 联盟id
+     * @param memberIdList 盟员id列表
      * @return
      * @throws Exception
      */
-    List<UnionMember> listWriteByUnionId(Integer unionId) throws Exception;
-
-    /**
-     * 根据盟员身份id和商家id，获取同一个联盟下的其他的具有读权限的盟员身份列表信息
-     *
-     * @param memberId {not null} 盟员身份id
-     * @param busId    {not null} 商家id
-     * @return
-     * @throws Exception
-     */
-    List<UnionMember> listOtherReadByIdAndBusId(Integer memberId, Integer busId) throws Exception;
-
-    /**
-     * 根据盟员身份id和商家id，获取同一个联盟下的其他的具有写权限的盟员身份列表信息
-     *
-     * @param memberId {not null} 盟员身份id
-     * @param busId    {not null} 商家id
-     * @return
-     * @throws Exception
-     */
-    List<UnionMember> listOtherWriteByIdAndBusId(Integer memberId, Integer busId) throws Exception;
+    List<UnionMember> listByIds(List<Integer> memberIdList) throws Exception;
 
     //------------------------------------------------- update --------------------------------------------------------
 
@@ -233,15 +195,6 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @throws Exception
      */
     Integer countReadByBusId(Integer busId) throws Exception;
-
-    /**
-     * 根据商家id，统计具有写权限的盟员身份数
-     *
-     * @param busId {not null} 商家id
-     * @return
-     * @throws Exception
-     */
-    Integer countWriteByBusId(Integer busId) throws Exception;
 
     //------------------------------------------------ boolean --------------------------------------------------------
 
