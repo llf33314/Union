@@ -61,10 +61,10 @@ public class UnionCardController {
 	@RequestMapping(value = "/unionCardInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String unionCardInfo(HttpServletRequest request
 			,@ApiParam(name="no", value = "联盟卡号、手机号、扫码枪扫出的号码", required = true) @RequestParam("no") String no
-			,@ApiParam(name="unionId", value = "联盟卡号、手机号、扫码枪扫出的号码", required = false) @RequestParam("unionId") Integer unionId){
+			,@ApiParam(name="unionId", value = "联盟id，选择联盟时传入", required = false) @RequestParam("unionId") Integer unionId){
 		try{
 			BusUser user = SessionUtils.getLoginUser(request);
-			Map<String,Object> data = unionCardService.getUnionCardInfo(no, user.getId());//解码后的no
+			Map<String,Object> data = unionCardService.getUnionCardInfo(no, user.getId(), unionId);//解码后的no
 			return GTJsonResult.instanceSuccessMsg(data).toString();
 		}catch (BaseException e){
 			logger.error("", e);

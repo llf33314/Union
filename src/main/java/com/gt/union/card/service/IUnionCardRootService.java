@@ -26,4 +26,11 @@ public interface IUnionCardRootService extends IService<UnionCardRoot> {
 	 * @return
 	 */
 	UnionCardRoot getByCardNo(String cardNo) throws Exception;
+
+	/**
+	 *
+	 * @param rootId
+	 * @return
+	 */
+	UnionCardRoot getById(Integer rootId);
 }

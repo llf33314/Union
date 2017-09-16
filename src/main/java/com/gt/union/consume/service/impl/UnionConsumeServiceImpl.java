@@ -8,8 +8,12 @@ import com.gt.union.api.entity.param.UnionConsumeParam;
 import com.gt.union.api.entity.result.UnionConsumeResult;
 import com.gt.union.api.entity.result.UnionRefundResult;
 import com.gt.union.card.constant.CardConstant;
+import com.gt.union.card.entity.UnionCard;
 import com.gt.union.card.entity.UnionCardIntegral;
+import com.gt.union.card.entity.UnionCardRoot;
 import com.gt.union.card.service.IUnionCardIntegralService;
+import com.gt.union.card.service.IUnionCardRootService;
+import com.gt.union.card.service.IUnionCardService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
@@ -56,6 +60,12 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 	@Autowired
 	private UnionConsumeMapper unionConsumeMapper;
 
+	@Autowired
+	private IUnionCardRootService unionCardRootService;
+
+	@Autowired
+	private IUnionCardService unionCardService;
+
 	@Override
 	public UnionConsumeResult consumeByUnionCard(UnionConsumeParam unionConsumeParam) throws Exception{
 		if(unionConsumeParam.getUnionCardId() == null){
@@ -100,7 +110,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
         unionConsume.setMemberId(unionMember.getId());
         this.insert(unionConsume);
         //线上积分赠送积分
-        if (CommonUtil.isEmpty(unionConsumeParam.getGiveIntegralNow()) || unionConsumeParam.getGiveIntegralNow()) {//立即正式
+        if (CommonUtil.isEmpty(unionConsumeParam.getGiveIntegralNow()) || unionConsumeParam.getGiveIntegralNow()) {//立即赠送
             UnionMain main = unionMainService.getById(unionConsumeParam.getUnionId());
             if (main.getIsIntegral() != null && main.getIsIntegral() == 1) {//开启积分
                 double integral = dictService.getGiveIntegral();
@@ -113,6 +123,15 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
                 unionCardIntegral.setStatus(CardConstant.INTEGRAL_STATUS_IN);
                 unionCardIntegral.setType(CardConstant.INTEGRAL_TYPE_GIVE);
                 unionCardIntegralService.insert(unionCardIntegral);
+
+				UnionCard card = unionCardService.getById(unionConsumeParam.getUnionCardId());
+				UnionCardRoot root = unionCardRootService.getById(card.getRootId());
+
+
+				UnionCardRoot unionCardRoot = new UnionCardRoot();
+				unionCardRoot.setId(root.getId());
+				unionCardRoot.setIntegral(CommonUtil.isEmpty(root.getIntegral()) ? getIntegral : BigDecimalUtil.add(root.getIntegral(),getIntegral).doubleValue());
+				unionCardRootService.updateById(unionCardRoot);
             }
         }
         UnionConsumeResult result = new UnionConsumeResult();

@@ -33,26 +33,29 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 * 获取联盟卡信息
 	 * @param no
 	 * @param busId
+	 * @param unionId
 	 * @return
 	 */
-	Map<String,Object> getUnionCardInfo(String no, Integer busId) throws Exception;
+	Map<String,Object> getUnionCardInfo(String no, Integer busId, Integer unionId) throws Exception;
 
 
 	/**
 	 * 根据联盟卡号和商家id获取联盟卡信息
-	 * @param cardNo	联盟卡号
-	 * @param busId		商家id
+	 * @param cardNo    联盟卡号
+	 * @param busId        商家id
+	 * @param unionId
 	 * @return
 	 */
-	Map<String,Object> getUnionCardInfoByCardNo(String cardNo, Integer busId) throws Exception;
+	Map<String,Object> getUnionCardInfoByCardNo(String cardNo, Integer busId, Integer unionId) throws Exception;
 
 	/**
 	 * 根据手机号和商家id获取联盟卡信息
-	 * @param phone		手机号
-	 * @param busId		商家id
+	 * @param phone        手机号
+	 * @param busId        商家id
+	 * @param unionId
 	 * @return
 	 */
-	Map<String,Object> getUnionCardInfoByPhone(String phone, Integer busId) throws Exception;
+	Map<String,Object> getUnionCardInfoByPhone(String phone, Integer busId, Integer unionId) throws Exception;
 
 	/**
 	 * 用户id和商家id获取联盟折扣

@@ -15,7 +15,6 @@ import com.gt.union.card.service.IUnionCardIntegralService;
 import com.gt.union.card.service.IUnionCardRootService;
 import com.gt.union.card.service.IUnionCardService;
 import com.gt.union.common.constant.CommonConstant;
-import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
@@ -132,7 +131,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     }
 
     @Override
-    public Map<String, Object> getUnionCardInfo(String no, Integer busId) throws Exception {
+    public Map<String, Object> getUnionCardInfo(String no, Integer busId, Integer unionId) throws Exception {
         if (StringUtil.isEmpty(no)) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -147,25 +146,30 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             } catch (Exception e) {
                 throw new ParamException(CommonConstant.PARAM_ERROR);
             }
-            return getUnionCardInfoByCardNo(no, busId);
+            return getUnionCardInfoByCardNo(no, busId, unionId);
         } else {
             //手机号或联盟卡号
             //卡号使用8位
             if (no.length() == 8) {//卡号
-                return getUnionCardInfoByCardNo(no, busId);
+                return getUnionCardInfoByCardNo(no, busId, unionId);
             } else {//手机号
-                return getUnionCardInfoByPhone(no, busId);
+                return getUnionCardInfoByPhone(no, busId, unionId);
             }
         }
     }
 
 	@Override
-	public Map<String, Object> getUnionCardInfoByCardNo(String cardNo, Integer busId) throws Exception{
+	public Map<String, Object> getUnionCardInfoByCardNo(String cardNo, Integer busId, Integer unionId) throws Exception{
 		Map<String,Object> data = new HashMap<String,Object>();
 		UnionCardRoot root = unionCardRootService.getByCardNo(cardNo);
 		if(root == null){
 			throw new BusinessException("该联盟卡号不存在");
 		}
+		if(unionId == null){
+
+        }else {
+
+        }
 		/*List<UnionMember> members = unionMemberService.listOwnerValidByBusId(busId);
 		if(ListUtil.isEmpty(members)){
 			throw new BusinessException("您没有有效的联盟");
@@ -174,9 +178,9 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 		for(UnionMember member : members){
 			try{
 				unionMainService.checkUnionMainValid(member.getUnionId());
+				unionIds.add(member.getUnionId());
 			}catch (BaseException e){
 			}
-			unionIds.add(member.getUnionId());
 		}
 		if(ListUtil.isEmpty(unionIds)){
 			throw new BusinessException("您没有有效的联盟");
@@ -200,7 +204,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 	}
 
     @Override
-    public Map<String, Object> getUnionCardInfoByPhone(String phone, Integer busId) {
+    public Map<String, Object> getUnionCardInfoByPhone(String phone, Integer busId, Integer unionId) {
         return null;
     }
 

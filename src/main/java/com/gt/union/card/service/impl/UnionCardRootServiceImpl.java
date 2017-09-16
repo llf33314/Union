@@ -45,6 +45,14 @@ public class UnionCardRootServiceImpl extends ServiceImpl<UnionCardRootMapper, U
 		return this.selectOne(entityWrapper);
 	}
 
+	@Override
+	public UnionCardRoot getById(Integer rootId) {
+		EntityWrapper entityWrapper = new EntityWrapper<>();
+		entityWrapper.eq("id", rootId);
+		entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+		return this.selectOne(entityWrapper);
+	}
+
 
 	//生成联盟卡号  8位
 	private String generateCardNo(){
