@@ -365,7 +365,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         updateUnionMember.setId(memberId);
         updateUnionMember.setStatus(MemberConstant.STATUS_APPLY_OUT);
         //(7)短信通知
-        UnionMember unionOwner = this.unionMemberService.getUnionOwnerByUnionId(unionMain.getId());
+        UnionMember unionOwner = this.unionMemberService.getOwnerByUnionId(unionMain.getId());
         if (unionOwner == null) {
             throw new BusinessException("盟主帐号不存在或已过期");
         }

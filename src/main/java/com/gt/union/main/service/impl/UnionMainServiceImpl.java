@@ -29,8 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -112,6 +111,53 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
     //------------------------------------------ list(include page) ---------------------------------------------------
 
     /**
+     * 根据联盟id集合，获取联盟列表信息
+     *
+     * @param unionIdList 联盟id集合，为空时返回NULL
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public List<UnionMain> listByIds(List<Integer> unionIdList) throws Exception {
+        List<UnionMain> result = new ArrayList<>();
+
+        if (ListUtil.isNotEmpty(unionIdList)) {
+            EntityWrapper entityWrapper = new EntityWrapper();
+            entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                    .in("id", unionIdList);
+            result = this.selectList(entityWrapper);
+        }
+
+        return result;
+    }
+
+    /**
+     * 交集，判断标准是联盟id
+     *
+     * @param unionMainList
+     * @param unionMainList2
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public List<UnionMain> intersection(List<UnionMain> unionMainList, List<UnionMain> unionMainList2) throws Exception {
+        List<UnionMain> result = new ArrayList<>();
+        if (ListUtil.isEmpty(unionMainList) || ListUtil.isEmpty(unionMainList2)) {
+            return result;
+        }
+        Set<Integer> unionIdSet = new HashSet<>();
+        for (UnionMain unionMain : unionMainList) {
+            unionIdSet.add(unionMain.getId());
+        }
+        for (UnionMain unionMain2 : unionMainList2) {
+            if (unionIdSet.contains(unionMain2.getId())) {
+                result.add(unionMain2);
+            }
+        }
+        return result;
+    }
+
+    /**
      * 根据商家id，获取所有具有读权限的盟员身份所在的联盟列表信息
      *
      * @param busId {not null} 商家id
@@ -132,31 +178,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
                         .append("  AND m.status in(").append(MemberConstant.STATUS_IN)
                         .append("    , ").append(MemberConstant.STATUS_APPLY_OUT)
                         .append("    , ").append(MemberConstant.STATUS_OUTING)
-                        .append("    )")
-                        .toString());
-        return this.selectList(entityWrapper);
-    }
-
-    /**
-     * 根据商家id，获取所有具有写权限的盟员身份所在的联盟列表信息
-     *
-     * @param busId {not null} 商家id
-     * @return
-     * @throws Exception
-     */
-    @Override
-    public List<UnionMain> listWriteByBusId(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        EntityWrapper entityWrapper = new EntityWrapper();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .exists(new StringBuilder("SELECT m.id FROM t_union_member m")
-                        .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND m.union_id = t_union_main.id")
-                        .append("  AND m.bus_id = ").append(busId)
-                        .append("  AND m.status in(").append(MemberConstant.STATUS_IN)
-                        .append("    , ").append(MemberConstant.STATUS_APPLY_OUT)
                         .append("    )")
                         .toString());
         return this.selectList(entityWrapper);
@@ -184,32 +205,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
                         .append("  AND m.status in(").append(MemberConstant.STATUS_IN)
                         .append("    , ").append(MemberConstant.STATUS_APPLY_OUT)
                         .append("    , ").append(MemberConstant.STATUS_OUTING)
-                        .append("    )")
-                        .toString());
-        return this.selectPage(page, entityWrapper);
-    }
-
-    /**
-     * 根据商家id，分页获取具有写权限的盟员身份所在的联盟列表信息
-     *
-     * @param page  {not null} 分页对象
-     * @param busId {not null} 商家id
-     * @return
-     * @throws Exception
-     */
-    @Override
-    public Page<UnionMain> pageWriteByBusId(Page page, Integer busId) throws Exception {
-        if (page == null || busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        EntityWrapper entityWrapper = new EntityWrapper();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .exists(new StringBuilder("SELECT m.id FROM t_union_member m")
-                        .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND m.union_id = t_union_main.id")
-                        .append("  AND m.bus_id = ").append(busId)
-                        .append("  AND m.status in(").append(MemberConstant.STATUS_IN)
-                        .append("    , ").append(MemberConstant.STATUS_APPLY_OUT)
                         .append("    )")
                         .toString());
         return this.selectPage(page, entityWrapper);
@@ -345,8 +340,8 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         //(11)删除缓存
         String infoDictKey = RedisKeyUtil.getUnionInfoDictKey(unionId);
         redisCacheUtil.remove(infoDictKey);
-        String unionMainKey = RedisKeyUtil.getUnionMainKey(unionId);
-        this.redisCacheUtil.remove(unionMainKey);
+        //String unionMainKey = RedisKeyUtil.getUnionMainKey(unionId);
+        //this.redisCacheUtil.remove(unionMainKey);
     }
 
     //------------------------------------------------- save ----------------------------------------------------------
@@ -386,17 +381,17 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         }
         //(2)检查联盟有效性
         if (unionMain.getUnionValidity().compareTo(DateUtil.getCurrentDate()) < 0) {
-            throw new BusinessException("联盟有效期已过");
+            throw new BusinessException("联盟已过期");
         }
         //(3)检查盟主有效性
-        UnionMember unionOwner = this.unionMemberService.getUnionOwnerByUnionId(unionMain.getId());
+        UnionMember unionOwner = this.unionMemberService.getOwnerByUnionId(unionMain.getId());
         if (unionOwner == null) {
             throw new BusinessException("找不到盟主信息");
         }
         // （4）检查盟主联盟服务许可
         Integer unionOwnerBusUserId = unionOwner.getBusId();
         if (!this.unionMainPermitService.hasUnionMainPermit(unionOwnerBusUserId)) {
-            throw new BusinessException("联盟的盟主没有盟主服务或盟主服务已过期");
+            throw new BusinessException("盟主没有盟主服务许可或已过期");
         }
         // （5）重新存入缓存
         this.redisCacheUtil.set(unionMainValidKey, "1");

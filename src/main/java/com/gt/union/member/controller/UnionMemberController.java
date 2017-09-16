@@ -64,7 +64,7 @@ public class UnionMemberController {
             if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
                 busId = busUser.getPid();
             }
-            Page result = this.unionMemberService.pageMapByMemberIdAndBusId(page, memberId, busId, enterpriseName);
+            Page result = this.unionMemberService.pageMapByIdAndBusId(page, memberId, busId, enterpriseName);
             return GTJsonResult.instanceSuccessMsg(result).toString();
         } catch (BaseException e) {
             logger.error("", e);
@@ -88,7 +88,7 @@ public class UnionMemberController {
             if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
                 busId = busUser.getPid();
             }
-            List<Map<String, Object>> result = this.unionMemberService.listMapByMemberIdAndBusId(memberId, busId);
+            List<Map<String, Object>> result = this.unionMemberService.listMapByIdAndBusId(memberId, busId);
             return GTJsonResult.instanceSuccessMsg(result).toString();
         } catch (BaseException e) {
             logger.error("", e);

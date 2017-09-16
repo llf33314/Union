@@ -24,6 +24,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -51,7 +53,7 @@ public class UnionMainController {
     //-------------------------------------------------- get ----------------------------------------------------------
 
     @ApiOperation(value = "获取我的所有联盟的信息，包括我创建的、以及我加入的", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/myUnion/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listByBusId(HttpServletRequest request) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
@@ -73,7 +75,7 @@ public class UnionMainController {
     }
 
     @ApiOperation(value = "分页获取我的所有联盟的信息，包括我创建的、以及我加入的", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/myUnion/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String PageByBusId(HttpServletRequest request, Page page) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);

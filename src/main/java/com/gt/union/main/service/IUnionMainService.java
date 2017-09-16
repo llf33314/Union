@@ -6,7 +6,6 @@ import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.vo.UnionMainVO;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -40,6 +39,24 @@ public interface IUnionMainService extends IService<UnionMain> {
     //------------------------------------------ list(include page) ---------------------------------------------------
 
     /**
+     * 根据联盟id集合，获取联盟列表信息
+     *
+     * @param unionIdList 联盟id集合
+     * @return
+     * @throws Exception
+     */
+    List<UnionMain> listByIds(List<Integer> unionIdList) throws Exception;
+
+    /**
+     * 交集，判断标准是联盟id
+     * @param unionMainList
+     * @param unionMainList2
+     * @return
+     * @throws Exception
+     */
+    List<UnionMain> intersection(List<UnionMain> unionMainList, List<UnionMain> unionMainList2) throws Exception;
+
+    /**
      * 根据商家id，获取所有具有读权限的盟员身份所在的联盟列表信息
      *
      * @param busId {not null} 商家id
@@ -47,15 +64,6 @@ public interface IUnionMainService extends IService<UnionMain> {
      * @throws Exception
      */
     List<UnionMain> listReadByBusId(Integer busId) throws Exception;
-
-    /**
-     * 根据商家id，获取所有具有写权限的盟员身份所在的联盟列表信息
-     *
-     * @param busId {not null} 商家id
-     * @return
-     * @throws Exception
-     */
-    List<UnionMain> listWriteByBusId(Integer busId) throws Exception;
 
     /**
      * 根据商家id，分页获取具有读权限的盟员身份所在的联盟列表信息
@@ -66,16 +74,6 @@ public interface IUnionMainService extends IService<UnionMain> {
      * @throws Exception
      */
     Page<UnionMain> pageReadByBusId(Page page, Integer busId) throws Exception;
-
-    /**
-     * 根据商家id，分页获取具有写权限的盟员身份所在的联盟列表信息
-     *
-     * @param page  {not null} 分页对象
-     * @param busId {not null} 商家id
-     * @return
-     * @throws Exception
-     */
-    Page<UnionMain> pageWriteByBusId(Page page, Integer busId) throws Exception;
 
     //------------------------------------------------- update --------------------------------------------------------
 

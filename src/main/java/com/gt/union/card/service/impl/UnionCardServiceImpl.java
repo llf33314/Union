@@ -290,7 +290,8 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         }
 
         //查询当前消费商家所在联盟的其他盟员列表  如商家A加入甲乙联盟，则甲乙联盟的盟员就是和商家A同盟，再通过升级的联盟卡的盟员列表过滤
-        List<UnionMember> memberList = unionMemberService.listByUnionIdsAndUnionMemberIds(unionIds, memberIds);
+        //List<UnionMember> memberList = unionMemberService.listByUnionIdsAndUnionMemberIds(unionIds, memberIds);
+        List<UnionMember> memberList = null;
         if (ListUtil.isEmpty(memberList)) {
             result.setCode(UnionDiscountResult.UNION_DISCOUNT_CODE_NON);
             return result;

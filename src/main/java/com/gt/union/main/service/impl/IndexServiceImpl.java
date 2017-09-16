@@ -158,7 +158,7 @@ public class IndexServiceImpl implements IIndexService {
         if (currentUnionMember.getIsUnionOwner() == MemberConstant.IS_UNION_OWNER_YES) {
             currentUnionOwner = currentUnionMember;
         } else {
-            currentUnionOwner = this.unionMemberService.getUnionOwnerByUnionId(currentUnionId);
+            currentUnionOwner = this.unionMemberService.getOwnerByUnionId(currentUnionId);
         }
         // (1)拼接当前联盟信息
         if (currentUnionMain != null) {
