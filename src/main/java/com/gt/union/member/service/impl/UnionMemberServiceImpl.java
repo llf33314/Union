@@ -778,7 +778,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
         entityWrapper.in("status", new Object[]{MemberConstant.STATUS_IN, MemberConstant.STATUS_APPLY_OUT});
         return this.selectList(entityWrapper);
-    }
+    }*/
 
     @Override
     public List<UnionMember> listOwnerValidByBusId(Integer busId) {
@@ -788,5 +788,5 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         entityWrapper.in("status", new Object[]{MemberConstant.STATUS_IN, MemberConstant.STATUS_APPLY_OUT});
         entityWrapper.orderBy("is_union_owner desc, id asc");
         return this.selectList(entityWrapper);
-    }*/
+    }
 }

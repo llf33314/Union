@@ -15,6 +15,7 @@ import com.gt.union.card.service.IUnionCardIntegralService;
 import com.gt.union.card.service.IUnionCardRootService;
 import com.gt.union.card.service.IUnionCardService;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
@@ -166,25 +167,26 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 			throw new BusinessException("该联盟卡号不存在");
 		}
 		if(unionId == null){
-
+            List<UnionMember> members = unionMemberService.listOwnerValidByBusId(busId);
+            if(ListUtil.isEmpty(members)){
+                throw new BusinessException("您没有有效的联盟");
+            }
+            List<Integer> unionIds = new ArrayList<Integer>();
+            for(UnionMember member : members){
+                try{
+                    unionMainService.checkUnionMainValid(member.getUnionId());
+                    unionIds.add(member.getUnionId());
+                }catch (BaseException e){
+                }
+            }
+            if(ListUtil.isEmpty(unionIds)){
+                throw new BusinessException("您没有有效的联盟");
+            }
+            unionId = unionIds.get(0);
         }else {
 
         }
-		/*List<UnionMember> members = unionMemberService.listOwnerValidByBusId(busId);
-		if(ListUtil.isEmpty(members)){
-			throw new BusinessException("您没有有效的联盟");
-		}
-		List<Integer> unionIds = new ArrayList<Integer>();
-		for(UnionMember member : members){
-			try{
-				unionMainService.checkUnionMainValid(member.getUnionId());
-				unionIds.add(member.getUnionId());
-			}catch (BaseException e){
-			}
-		}
-		if(ListUtil.isEmpty(unionIds)){
-			throw new BusinessException("您没有有效的联盟");
-		}
+		/*
 		List<UnionMember> memberList = unionMemberService.listValidByUnionIds(unionIds);
 		List<Integer> memberIds = new ArrayList<Integer>();
 		for(UnionMember member : memberList){

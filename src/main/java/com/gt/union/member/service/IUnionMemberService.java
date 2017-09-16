@@ -271,4 +271,11 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @throws Exception
      */
     boolean hasWriteAuthority(UnionMember unionMember) throws Exception;
+
+    /**
+     * 根据商家id查询有效的盟员列表 根据盟主的信息排在前面
+     * @param busId
+     * @return
+     */
+    List<UnionMember> listOwnerValidByBusId(Integer busId);
 }
