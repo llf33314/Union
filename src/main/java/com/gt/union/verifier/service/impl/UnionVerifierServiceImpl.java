@@ -90,5 +90,13 @@ public class UnionVerifierServiceImpl extends ServiceImpl<UnionVerifierMapper, U
         return this.selectPage(page,entityWrapper);
     }
 
+	@Override
+	public UnionVerifier getByPhone(String phone) {
+        EntityWrapper<UnionVerifier> wrapper = new EntityWrapper<UnionVerifier>();
+        wrapper.eq("del_status",0);
+        wrapper.eq("phone",phone);
+		return this.selectOne(wrapper);
+	}
+
 
 }

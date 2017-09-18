@@ -21,7 +21,7 @@ public interface IUnionVerifierService extends IService<UnionVerifier> {
 
     /**
      * 保存佣金平台管理员
-     * @param UnionVerifier
+     * @param unionVerifier
      */
     void save(UnionVerifier unionVerifier) throws Exception;
 
@@ -32,4 +32,11 @@ public interface IUnionVerifierService extends IService<UnionVerifier> {
      * @return
      */
     Page list(Page<UnionVerifier> page, Integer busId) throws Exception;
+
+    /**
+     * 根据手机号查询
+     * @param phone
+     * @return
+     */
+	UnionVerifier getByPhone(String phone);
 }

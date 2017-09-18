@@ -184,8 +184,16 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             }
             unionId = unionIds.get(0);
         }else {
-
+            unionMainService.checkUnionMainValid(unionId);
+            UnionMember member = unionMemberService.getByBusIdAndUnionId(busId,unionId);
+            if(unionMemberService.hasWriteAuthority(member)){
+                throw new BusinessException("您没有联盟权限");
+            }
         }
+        //TODO 根据联盟id查询具有写权限的盟员列表
+
+        //unionMemberService.list
+
 		/*
 		List<UnionMember> memberList = unionMemberService.listValidByUnionIds(unionIds);
 		List<Integer> memberIds = new ArrayList<Integer>();
@@ -199,6 +207,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 		if(ListUtil.isEmpty(cards)){
 			throw new BusinessException("没有有效的联盟卡");
 		}
+		data.put("cardId",);
 		data.put("cardNo",cardNo);
 		data.put("integral",root.getIntegral());*/
 
