@@ -29,6 +29,67 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
     UnionOpportunity getById(Integer opportunityId) throws Exception;
 
     //------------------------------------------ list(include page) ---------------------------------------------------
+
+    /**
+     * 根据商家id，分页查询商家推荐的商机列表信息
+     *
+     * @param page        {not null} 分页对象
+     * @param busId       {not null} 商家id
+     * @param unionId     可选项，联盟id
+     * @param isAccept    可选项，受理状态，当勾选多个时用英文字符的逗号拼接，如=1,2
+     * @param clientName  可选项，顾客姓名，模糊查询
+     * @param clientPhone 可选项，顾客电话，模糊查询
+     * @return
+     * @throws Exception
+     */
+    Page pageFromMeMapByBusId(Page page, Integer busId, Integer unionId, String isAccept, String clientName, String clientPhone) throws Exception;
+
+    /**
+     * 根据商家id，分页查询推荐给商家的商机列表信息
+     *
+     * @param page        {not null} 分页对象
+     * @param busId       {not null} 商家id
+     * @param unionId     可选项，联盟id
+     * @param isAccept    可选项，受理状态，当勾选多个时用英文字符的逗号拼接，如=1,2
+     * @param clientName  可选项，顾客姓名，模糊查询
+     * @param clientPhone 可选项，顾客电话，模糊查询
+     * @return
+     * @throws Exception
+     */
+    Page pageToMeMapByBusId(Page page, Integer busId, Integer unionId, String isAccept, String clientName, String clientPhone) throws Exception;
+
+    /**
+     * 根据商家id，获取商家因商机推荐而得到的佣金收入列表信息
+     *
+     * @param page        {not null} 分页对象
+     * @param busId       {not null} 商家id
+     * @param unionId     可选项 联盟id
+     * @param toMemberId  可选项 接受商机的盟员身份id
+     * @param isClose     可选项 是否已结算，0为否，1为是
+     * @param clientName  可选项 客户姓名
+     * @param clientPhone 可选项 客户电话
+     * @return
+     * @throws Exception
+     */
+    Page pageIncomeByBusId(Page page, Integer busId, Integer unionId, Integer toMemberId, Integer isClose
+            , String clientName, String clientPhone) throws Exception;
+
+    /**
+     * 根据商家id，获取商家因接受商机推荐而支付的佣金列表信息
+     *
+     * @param page         {not null} 分页对象
+     * @param busId        {not null} 商家id
+     * @param unionId      可选项 联盟id
+     * @param fromMemberId 可选项 推荐商机的盟员身份id
+     * @param isClose      可选项 是否已结算，0为否，1为是
+     * @param clientName   可选项 客户姓名
+     * @param clientPhone  可选项 客户电话
+     * @return
+     * @throws Exception
+     */
+    Page pageExpenseByBusId(Page page, Integer busId, Integer unionId, Integer fromMemberId, Integer isClose
+            , String clientName, String clientPhone) throws Exception;
+
     //------------------------------------------------- update --------------------------------------------------------
 
     /**
@@ -67,33 +128,6 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
 
 
     /**
-     * 查询推荐给我的商机
-     *
-     * @param page
-     * @param busId       商家id
-     * @param unionId     联盟id
-     * @param isAccept    处理状态
-     * @param clientName  客户名称
-     * @param clientPhone 客户电话
-     * @return
-     */
-    Page listToMy(Page page, Integer busId, Integer unionId, String isAccept, String clientName, String clientPhone) throws Exception;
-
-    /**
-     * 查询我推荐的商机
-     *
-     * @param page
-     * @param busId       商家id
-     * @param unionId     联盟id
-     * @param isAccept    处理状态
-     * @param clientName  客户名称
-     * @param clientPhone 客户电话
-     * @return
-     */
-    Page listFromMy(Page page, Integer busId, Integer unionId, String isAccept, String clientName, String clientPhone) throws Exception;
-
-
-    /**
      * 二维码支付佣金  生成支付信息
      *
      * @param busId
@@ -109,34 +143,6 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      * @param only
      */
     void payOpportunitySuccess(String encrypt, String only) throws Exception;
-
-    /**
-     * 查询我推荐的已处理的商机列表
-     *
-     * @param page
-     * @param fromBusId   本商家的id
-     * @param toMemberId  被推荐的盟员id
-     * @param unionId     联盟id
-     * @param status      是否结算  1：已结算 2：未结算
-     * @param clientName  客户名称
-     * @param clientPhone 客户电话
-     * @return
-     */
-    Page listBrokerageFromMy(Page page, Integer fromBusId, Integer toMemberId, Integer unionId, String status, String clientName, String clientPhone) throws Exception;
-
-    /**
-     * 查询推荐给我的已处理的商机列表
-     *
-     * @param page
-     * @param toBusId      本商家的id
-     * @param fromMemberId 推荐的盟员id
-     * @param unionId      联盟id
-     * @param status       是否结算  1：已结算 2：未结算
-     * @param clientName   客户名称
-     * @param clientPhone  客户电话
-     * @return
-     */
-    Page listBrokerageToMy(Page page, Integer toBusId, Integer fromMemberId, Integer unionId, String status, String clientName, String clientPhone) throws Exception;
 
     /**
      * 查询我的商机佣金支付明细
