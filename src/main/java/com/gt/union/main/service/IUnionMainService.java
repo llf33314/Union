@@ -6,6 +6,7 @@ import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.vo.UnionMainVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -64,6 +65,15 @@ public interface IUnionMainService extends IService<UnionMain> {
      * @throws Exception
      */
     List<UnionMain> listReadByBusId(Integer busId) throws Exception;
+
+    /**
+     * 根据商家id，获取所有具有写权限的盟员身份所在的联盟列表信息
+     *
+     * @param busId {not null} 商家id
+     * @return
+     * @throws Exception
+     */
+    List<UnionMain> listWriteByBusId(Integer busId) throws Exception;
 
     /**
      * 根据商家id，分页获取具有读权限的盟员身份所在的联盟列表信息

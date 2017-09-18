@@ -184,6 +184,31 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
     }
 
     /**
+     * 根据商家id，获取所有具有写权限的盟员身份所在的联盟列表信息
+     *
+     * @param busId {not null} 商家id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public List<UnionMain> listWriteByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .exists(new StringBuilder("SELECT m.id FROM t_union_member m")
+                        .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND m.union_id = t_union_main.id")
+                        .append("  AND m.bus_id = ").append(busId)
+                        .append("  AND m.status in(").append(MemberConstant.STATUS_IN)
+                        .append("    , ").append(MemberConstant.STATUS_APPLY_OUT)
+                        .append("    )")
+                        .toString());
+        return this.selectList(entityWrapper);
+    }
+
+    /**
      * 根据商家id，分页获取具有读权限的盟员身份所在的联盟列表信息
      *
      * @param page  {not null} 分页对象
