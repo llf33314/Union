@@ -23,6 +23,7 @@ import com.gt.union.consume.constant.ConsumeConstant;
 import com.gt.union.consume.entity.UnionConsume;
 import com.gt.union.consume.mapper.UnionConsumeMapper;
 import com.gt.union.consume.service.IUnionConsumeService;
+import com.gt.union.consume.vo.UnionConsumeParamVO;
 import com.gt.union.consume.vo.UnionConsumeVO;
 import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.service.IUnionMainService;
@@ -176,6 +177,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
 		List<UnionConsumeVO> list = unionConsumeMapper.listMy(page, unionId, busId, memberId, cardNo, phone, beginTime, endTime);
+		//TODO 门店信息
 		page.setRecords(list);
 		return page;
 	}
@@ -186,8 +188,21 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
 		List<UnionConsumeVO> list = unionConsumeMapper.listOther(page, unionId, busId, memberId, cardNo, phone, beginTime, endTime);
+		//TODO 门店信息
 		page.setRecords(list);
 		return page;
+	}
+
+	@Override
+	public void consumeByCard(Integer busId, UnionConsumeParamVO vo)  throws Exception{
+		if(vo == null || busId == null){
+			throw new ParamException(CommonConstant.PARAM_ERROR);
+		}
+
+		UnionConsume consume = new UnionConsume();
+		consume.setStatus(ConsumeConstant.PAY_STATUS_YES);
+//		consume.set
+
 	}
 
 }

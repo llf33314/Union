@@ -7,6 +7,7 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.consume.service.IUnionConsumeService;
+import com.gt.union.consume.vo.UnionConsumeParamVO;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.slf4j.Logger;
@@ -15,6 +16,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * <p>
@@ -92,6 +94,34 @@ public class UnionConsumeController {
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg( e.getErrorMsg()).toString();
 		} catch (Exception e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+		}
+	}
+
+
+	/**
+	 *
+	 * @param request
+	 * @param vo
+	 * @return
+	 */
+	@ApiOperation(value = "根据联盟卡核销", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public String consumeByCard(HttpServletRequest request
+			,@ApiParam(name="unionConsumeParamVO", value = "联盟卡核销参数", required = true) @RequestBody UnionConsumeParamVO vo ){
+		try{
+			BusUser user = SessionUtils.getLoginUser(request);
+			Integer busId = user.getId();
+			if(user.getPid() != null && user.getPid() != 0){
+				busId = user.getPid();
+			}
+			unionConsumeService.consumeByCard(busId, vo);
+			return GTJsonResult.instanceSuccessMsg().toString();
+		}catch (BaseException e){
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
+		}catch (Exception e){
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
 		}

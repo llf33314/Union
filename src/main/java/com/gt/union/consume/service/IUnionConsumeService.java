@@ -7,6 +7,7 @@ import com.gt.union.api.entity.param.UnionRefundParam;
 import com.gt.union.api.entity.result.UnionConsumeResult;
 import com.gt.union.api.entity.result.UnionRefundResult;
 import com.gt.union.consume.entity.UnionConsume;
+import com.gt.union.consume.vo.UnionConsumeParamVO;
 
 /**
  * <p>
@@ -68,4 +69,11 @@ public interface IUnionConsumeService extends IService<UnionConsume> {
 	 * @return
 	 */
 	Page listOther(Page page, Integer unionId, Integer busId, Integer memberId, String cardNo, String phone, String beginTime, String endTime) throws Exception;
+
+	/**
+	 * 联盟卡核销
+	 * @param busId		商家id
+	 * @param vo		核销参数
+	 */
+	void consumeByCard(Integer busId, UnionConsumeParamVO vo) throws Exception;
 }

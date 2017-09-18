@@ -344,7 +344,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             while (it.hasNext()) {
                 UnionCard card = it.next();
                 //判断联盟卡的有效期是否有效
-                if (CommonUtil.isNotEmpty(card.getValidity()) && !DateTimeKit.laterThanNow(new Date())) {
+                if (CommonUtil.isNotEmpty(card.getValidity()) && !DateTimeKit.laterThanNow(card.getValidity())) {
                     it.remove();
                 }
             }
