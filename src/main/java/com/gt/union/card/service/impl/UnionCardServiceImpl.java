@@ -167,7 +167,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 			throw new BusinessException("该联盟卡号不存在");
 		}
 		if(unionId == null){
-            List<UnionMember> members = unionMemberService.listOwnerValidByBusId(busId);
+            List<UnionMember> members = unionMemberService.listWriteByBusId(busId);
             if(ListUtil.isEmpty(members)){
                 throw new BusinessException("您没有有效的联盟");
             }
