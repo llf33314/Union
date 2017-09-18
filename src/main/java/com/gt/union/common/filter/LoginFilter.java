@@ -27,9 +27,9 @@ public class LoginFilter implements Filter {
 	public static final List<String> suffixs=new ArrayList<String>();
 
 	static {
-		//过滤路径
-		urls.put("/unionBrokerage/toLogin.do", "/unionBrokerage/toLogin.do");
-		urls.put("/unionBrokerage/login.do", "/unionBrokerage/login.do");
+		//过滤佣金平台路径
+		urls.put("/unionH5Brokerage/toLogin.do", "/unionH5Brokerage/toLogin.do");
+		urls.put("/unionH5Brokerage/login.do", "/unionH5Brokerage/login.do");
 
 		//文件类型
 		suffixs.add("js");
