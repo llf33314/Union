@@ -41,11 +41,14 @@ public class UnionMainNoticeController {
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getByUnionId(@ApiParam(name = "unionId", value = "联盟id", required = true) @PathVariable("unionId") Integer unionId) {
         try {
-            UnionMainNotice notice = unionMainNoticeService.getByUnionId(unionId);
-            return GTJsonResult.instanceSuccessMsg(notice).toString();
+            UnionMainNotice result = this.unionMainNoticeService.getByUnionId(unionId);
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("", e);
-            return GTJsonResult.instanceErrorMsg("获取联盟公告失败").toString();
+            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
         }
     }
 

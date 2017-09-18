@@ -25,84 +25,84 @@ public class UnionBrokerageWithdrawal extends Model<UnionBrokerageWithdrawal> {
     /**
      * 主键
      */
-	@TableId(value="id", type= IdType.AUTO)
-	private Integer id;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
     /**
      * 提现时间
      */
-	private Date createtime;
+    private Date createtime;
     /**
      * 删除状态（0：未删除 1：删除）
      */
-	@TableField("del_status")
-	private Integer delStatus;
+    @TableField("del_status")
+    private Integer delStatus;
     /**
-     * 提现盟员id
+     * 提现商家id
      */
-	@TableField("member_id")
-	private Integer memberId;
+    @TableField("bus_id")
+    private Integer busId;
     /**
      * 提现金额
      */
-	private Double money;
+    private Double money;
     /**
      * 佣金管理平台用户id
      */
-	@TableField("verifier_id")
-	private Integer verifierId;
+    @TableField("verifier_id")
+    private Integer verifierId;
 
 
-	public Integer getId() {
-		return id;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public Date getCreatetime() {
-		return createtime;
-	}
+    public Date getCreatetime() {
+        return createtime;
+    }
 
-	public void setCreatetime(Date createtime) {
-		this.createtime = createtime;
-	}
+    public void setCreatetime(Date createtime) {
+        this.createtime = createtime;
+    }
 
-	public Integer getDelStatus() {
-		return delStatus;
-	}
+    public Integer getDelStatus() {
+        return delStatus;
+    }
 
-	public void setDelStatus(Integer delStatus) {
-		this.delStatus = delStatus;
-	}
+    public void setDelStatus(Integer delStatus) {
+        this.delStatus = delStatus;
+    }
 
-	public Integer getMemberId() {
-		return memberId;
-	}
+    public Integer getBusId() {
+        return busId;
+    }
 
-	public void setMemberId(Integer memberId) {
-		this.memberId = memberId;
-	}
+    public void setBusId(Integer busId) {
+        this.busId = busId;
+    }
 
-	public Double getMoney() {
-		return money;
-	}
+    public Double getMoney() {
+        return money;
+    }
 
-	public void setMoney(Double money) {
-		this.money = money;
-	}
+    public void setMoney(Double money) {
+        this.money = money;
+    }
 
-	public Integer getVerifierId() {
-		return verifierId;
-	}
+    public Integer getVerifierId() {
+        return verifierId;
+    }
 
-	public void setVerifierId(Integer verifierId) {
-		this.verifierId = verifierId;
-	}
+    public void setVerifierId(Integer verifierId) {
+        this.verifierId = verifierId;
+    }
 
-	@Override
-	protected Serializable pkVal() {
-		return this.id;
-	}
+    @Override
+    protected Serializable pkVal() {
+        return this.id;
+    }
 
 }

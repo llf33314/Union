@@ -1,9 +1,9 @@
-package com.gt.union.brokerage.controller;
+package com.gt.union.opportunity.controller;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
-import com.gt.union.brokerage.service.IUnionBrokerageRatioService;
+import com.gt.union.opportunity.service.IUnionOpportunityBrokerageRatioService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
@@ -27,13 +27,13 @@ import javax.servlet.http.HttpServletRequest;
  * @since 2017-09-07
  */
 @RestController
-@RequestMapping("/unionBrokerageRatio")
-public class UnionBrokerageRatioController {
+@RequestMapping("/unionOpportunityBrokerageRatio")
+public class UnionOpportunityBrokerageRatioController {
 
-	private Logger logger = Logger.getLogger(UnionBrokerageRatioController.class);
+	private Logger logger = Logger.getLogger(UnionOpportunityBrokerageRatioController.class);
 
 	@Autowired
-	private IUnionBrokerageRatioService unionBrokerageRatioService;
+	private IUnionOpportunityBrokerageRatioService unionBrokerageRatioService;
 
 	@ApiOperation(value = "商机佣金比列表", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")

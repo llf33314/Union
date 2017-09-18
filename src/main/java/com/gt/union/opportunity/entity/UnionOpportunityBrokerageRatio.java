@@ -1,4 +1,4 @@
-package com.gt.union.brokerage.entity;
+package com.gt.union.opportunity.entity;
 
 import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;
@@ -17,8 +17,8 @@ import java.util.Date;
  * @author linweicong
  * @since 2017-09-07
  */
-@TableName("t_union_brokerage_ratio")
-public class UnionBrokerageRatio extends Model<UnionBrokerageRatio> {
+@TableName("t_union_opportunity_brokerage_ratio")
+public class UnionOpportunityBrokerageRatio extends Model<UnionOpportunityBrokerageRatio> {
 
     private static final long serialVersionUID = 1L;
 

@@ -19,8 +19,9 @@ public interface IUnionMainNoticeService extends IService<UnionMainNotice> {
      *
      * @param unionId {not null} 联盟id
      * @return
+     * @throws Exception
      */
-    UnionMainNotice getByUnionId(Integer unionId);
+    UnionMainNotice getByUnionId(Integer unionId) throws Exception;
 
     //------------------------------------------ list(include page) ---------------------------------------------------
     //------------------------------------------------- update --------------------------------------------------------
@@ -28,9 +29,9 @@ public interface IUnionMainNoticeService extends IService<UnionMainNotice> {
     /**
      * 根据商家id、盟员身份id和联盟公告内容，更新保存联盟公告信息
      *
-     * @param busId {not null} 商家id
-     * @param memberId   {not null} 盟员身份id
-     * @param content {not null} 联盟公告内容
+     * @param busId    {not null} 商家id
+     * @param memberId {not null} 盟员身份id
+     * @param content  {not null} 联盟公告内容
      * @return UnionMainNotice
      */
     void updateOrSaveByBusIdAndMemberId(Integer busId, Integer memberId, String content) throws Exception;

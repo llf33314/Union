@@ -102,7 +102,7 @@ public class UnionMainController {
     @SysLogAnnotation(op_function = "3", description = "更新联盟信息，要求盟主权限")
     @RequestMapping(value = "/memberId/{memberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String method(HttpServletRequest request
-            , @ApiParam(name = "memberId", value = "盟员id", required = true)
+            , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
                          @PathVariable("memberId") Integer memberId
             , @ApiParam(name = "unionMainVO", value = "更新信息实体", required = true)
                          @RequestBody @Valid UnionMainVO unionMainVO, BindingResult bindingResult) {
