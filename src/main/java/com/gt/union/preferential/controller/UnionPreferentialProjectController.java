@@ -83,8 +83,8 @@ public class UnionPreferentialProjectController {
                 busId = busUser.getPid();
             }
             Page pageData = this.unionPreferentialProjectService.pageMapByBusIdAndMemberIdAndItemStatus(page, busId, memberId, status);
-            Integer unCommittedCount = this.unionPreferentialProjectService.countByBusInAndMemberIdAndItemStatus(busId
-                    , memberId, PreferentialConstant.STATUS_UNCOMMITTED);
+            /*Integer unCommittedCount = this.unionPreferentialProjectService.countByBusInAndMemberIdAndItemStatus(busId
+                    , memberId, PreferentialConstant.STATUS_UNCOMMITTED);*/
             Integer verifyingCount = this.unionPreferentialProjectService.countByBusInAndMemberIdAndItemStatus(busId
                     , memberId, PreferentialConstant.STATUS_VERIFYING);
             Integer passCount = this.unionPreferentialProjectService.countByBusInAndMemberIdAndItemStatus(busId
@@ -93,7 +93,7 @@ public class UnionPreferentialProjectController {
                     , memberId, PreferentialConstant.STATUS_FAIL);
             Map<String, Object> result = new HashMap<>();
             result.put("pageData", pageData);
-            result.put("unCommittedCount", unCommittedCount);
+            //result.put("unCommittedCount", unCommittedCount);
             result.put("verifyingCount", verifyingCount);
             result.put("passCount", passCount);
             result.put("failCount", failCount);

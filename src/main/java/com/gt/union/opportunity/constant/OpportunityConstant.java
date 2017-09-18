@@ -6,19 +6,19 @@ package com.gt.union.opportunity.constant;
 public interface OpportunityConstant {
 
 	/**
-	 * 未处理
+	 * 受理中
 	 */
-	int ACCEPT_CONFIRM_NON = 1;
+	int ACCEPT_NON = 1;
 
 	/**
-	 * 已处理
+	 * 已接受
 	 */
-	int ACCEPT_CONFIRM_YES = 2;
+	int ACCEPT_YES = 2;
 
 	/**
 	 * 已拒绝
 	 */
-	int ACCEPT_CONFIRM_NO = 3;
+	int ACCEPT_NO = 3;
 
 	/**
 	 * 未支付
@@ -33,12 +33,12 @@ public interface OpportunityConstant {
 	/**
 	 * 线上
 	 */
-	int OPPORTUNITY_TYPE_ONLINE = 1;
+	int TYPE_ONLINE = 1;
 
 	/**
 	 * 线下
 	 */
-	int OPPORTUNITY_TYPE_OFFLINE = 2;
+	int TYPE_OFFLINE = 2;
 
 	/**
 	 * 佣金支付订单前缀

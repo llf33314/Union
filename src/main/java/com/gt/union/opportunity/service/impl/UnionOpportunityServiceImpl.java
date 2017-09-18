@@ -11,10 +11,8 @@ import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.brokerage.constant.BrokerageConstant;
 import com.gt.union.brokerage.entity.UnionBrokerageIncome;
 import com.gt.union.brokerage.entity.UnionBrokeragePay;
-import com.gt.union.brokerage.entity.UnionBrokerageRatio;
 import com.gt.union.brokerage.service.IUnionBrokerageIncomeService;
 import com.gt.union.brokerage.service.IUnionBrokeragePayService;
-import com.gt.union.brokerage.service.IUnionBrokerageRatioService;
 import com.gt.union.common.amqp.entity.PhoneMessage;
 import com.gt.union.common.amqp.sender.PhoneMessageSender;
 import com.gt.union.common.constant.CommonConstant;
@@ -29,7 +27,9 @@ import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.service.IUnionMemberService;
 import com.gt.union.opportunity.constant.OpportunityConstant;
 import com.gt.union.opportunity.entity.UnionOpportunity;
+import com.gt.union.opportunity.entity.UnionOpportunityBrokerageRatio;
 import com.gt.union.opportunity.mapper.UnionOpportunityMapper;
+import com.gt.union.opportunity.service.IUnionOpportunityBrokerageRatioService;
 import com.gt.union.opportunity.service.IUnionOpportunityService;
 import com.gt.union.opportunity.vo.UnionOpportunityBrokerageVO;
 import com.gt.union.opportunity.vo.UnionOpportunityVO;
@@ -66,7 +66,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
     private PhoneMessageSender phoneMessageSender;
 
     @Autowired
-    private IUnionBrokerageRatioService unionBrokerageRatioService;
+    private IUnionOpportunityBrokerageRatioService unionOpportunityBrokerageRatioService;
 
     @Autowired
     private IBusUserService busUserService;
@@ -77,9 +77,6 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
     @Autowired
     private IUnionBrokeragePayService unionBrokeragePayService;
 
-    @Autowired
-    private UnionOpportunityMapper unionOpportunityMapper;
-
     @Value("${union.url}")
     private String unionUrl;
 
@@ -89,103 +86,243 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
     @Value("${union.encryptKey}")
     private String encryptKey;
 
-	@Override
-	public Page listToMy(Page page, final Integer busId, final Integer unionId, final String isAccept, final String clientName, final String clientPhone) throws Exception{
-		if (page == null || busId == null) {
-			throw new ParamException(CommonConstant.PARAM_ERROR);
-		}
-		Wrapper wrapper = new Wrapper() {
-			@Override
-			public String getSqlSegment() {
-				StringBuilder sbSqlSegment = new StringBuilder(" o");
-				sbSqlSegment.append(" LEFT JOIN t_union_member m ON o.to_member_id = m.id ")
-						.append(" LEFT JOIN t_union_main um ON um.id = m.union_id ")
-						.append(" WHERE m.bus_id = ").append(busId)
-						.append("    AND o.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-						.append("    AND m.del_status = ").append(CommonConstant.DEL_STATUS_NO);
-				if (unionId != null) {
-					sbSqlSegment.append(" AND m.union_id = ").append(unionId);
-				}
-				if (StringUtil.isNotEmpty(isAccept)) {
-					String[] isAcceptArray = isAccept.split(",");
-					sbSqlSegment.append(" AND (");
-					for (int i = 0, length = isAcceptArray.length; i < length; i++) {
-						sbSqlSegment.append(i == 0 ? "" : " OR ").append(" o.is_accept = ").append(isAcceptArray[i]);
-					}
-					sbSqlSegment.append(" ) ");
-				}
-				if (StringUtil.isNotEmpty(clientName)) {
-					sbSqlSegment.append(" AND o.client_name LIKE '%").append(clientName).append("%' ");
-				}
-				if (StringUtil.isNotEmpty(clientPhone)) {
-					sbSqlSegment.append(" AND o.client_phone LIKE '%").append(clientPhone).append("%' ");
-				}
-				sbSqlSegment.append(" ORDER BY o.is_accept ASC, o.id DESC ");
-				return sbSqlSegment.toString();
-			}
-		};
-		StringBuilder sbSqlSelect = new StringBuilder(" o.id opportunityId ")
-				.append(" , o.client_name clientName ")
-				.append(" , o.client_phone clientPhone ")
-				.append(" , o.business_msg businessMsg ")
-				.append(" , m.enterprise_name enterpriseName ")
-				.append(" , um.id unionId ")
-				.append(" , um.name name ")
-				.append(" , o.is_accept isAccept ");
-		wrapper.setSqlSelect(sbSqlSelect.toString());
+    //-------------------------------------------------- get ----------------------------------------------------------
 
-        return this.selectMapsPage(page, wrapper);
+    /**
+     * 根据商机推荐id，获取商机推荐信息
+     *
+     * @param opportunityId {not null} 商家推荐id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public UnionOpportunity getById(Integer opportunityId) throws Exception {
+        if (opportunityId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("id", opportunityId);
+        return this.selectOne(entityWrapper);
     }
 
-	@Override
-	public Page listFromMy(Page page, final Integer busId, final Integer unionId, final String isAccept, final String clientName, final String clientPhone) throws Exception{
-		if (page == null || busId == null) {
-			throw new ParamException(CommonConstant.PARAM_ERROR);
-		}
-		Wrapper wrapper = new Wrapper() {
-			@Override
-			public String getSqlSegment() {
-				StringBuilder sbSqlSegment = new StringBuilder(" o");
-				sbSqlSegment.append(" LEFT JOIN t_union_member m ON o.from_member_id = m.id ")
-						.append(" LEFT JOIN t_union_main um ON um.id = m.union_id ")
-						.append(" WHERE m.bus_id = ").append(busId)
-						.append("    AND o.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-						.append("    AND m.del_status = ").append(CommonConstant.DEL_STATUS_NO);
-				if (unionId != null) {
-					sbSqlSegment.append(" AND m.union_id = ").append(unionId);
-				}
-				if (StringUtil.isNotEmpty(isAccept)) {
-					String[] isAcceptArray = isAccept.split(",");
-					sbSqlSegment.append(" AND (");
-					for (int i = 0, length = isAcceptArray.length; i < length; i++) {
-						sbSqlSegment.append(i == 0 ? "" : " OR ").append(" o.is_accept = ").append(isAcceptArray[i]);
-					}
-					sbSqlSegment.append(" ) ");
-				}
-				if (StringUtil.isNotEmpty(clientName)) {
-					sbSqlSegment.append(" AND o.client_name LIKE '%").append(clientName).append("%' ");
-				}
-				if (StringUtil.isNotEmpty(clientPhone)) {
-					sbSqlSegment.append(" AND o.client_phone LIKE '%").append(clientPhone).append("%' ");
-				}
-				sbSqlSegment.append(" ORDER BY o.is_accept ASC, o.id DESC ");
-				return sbSqlSegment.toString();
-			}
-		};
-		StringBuilder sbSqlSelect = new StringBuilder(" o.id opportunityId ")
-				.append(" , o.client_name clientName ")
-				.append(" , o.client_phone clientPhone ")
-				.append(" , o.business_msg businessMsg ")
-				.append(" , m.enterprise_name enterpriseName ")
-				.append(" , um.id unionId ")
-				.append(" , um.name name ")
-				.append(" , o.is_accept isAccept ");
-		wrapper.setSqlSelect(sbSqlSelect.toString());
+    //------------------------------------------ list(include page) ---------------------------------------------------
+    //------------------------------------------------- update --------------------------------------------------------
+
+    /**
+     * 接受商机：根据商机推荐id、商家id和受理金额，更新商机推荐信息
+     *
+     * @param opportunityId {not null} 商机推荐id
+     * @param busId         {not null} 商家id
+     * @param acceptPrice   {not null} 受理金额
+     * @throws Exception
+     */
+    @Override
+    public void updateAcceptYesByIdAndBusId(Integer opportunityId, Integer busId, Double acceptPrice) throws Exception {
+        if (opportunityId == null || busId == null || acceptPrice == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        //(1)检查推荐商机的状态
+        UnionOpportunity opportunity = this.getById(opportunityId);
+        if (opportunity == null) {
+            throw new BusinessException("推荐商机不存在或已处理");
+        }
+        if (!opportunity.getIsAccept().equals(OpportunityConstant.ACCEPT_NON)) {
+            throw new BusinessException("推荐商机已处理");
+        }
+        //(2)判断是否是商机推荐的接受者
+        UnionMember unionMember = this.unionMemberService.getByIdAndBusId(opportunity.getToMemberId(), busId);
+        if (unionMember == null) {
+            throw new BusinessException("不是该推荐商机的接受者");
+        }
+        //(3)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(unionMember.getUnionId());
+        //(4)判断是否具有写权限
+        if (!this.unionMemberService.hasWriteAuthority(unionMember)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
+        }
+        //(5)判断是否设置了商机佣金比例
+        UnionOpportunityBrokerageRatio ratio = this.unionOpportunityBrokerageRatioService.getByFromMemberIdAndToMemberId(
+                opportunity.getFromMemberId(), opportunity.getToMemberId());
+        if (ratio == null) {
+            throw new BusinessException("未对该商机的推荐方设置商机佣金比");
+        }
+
+    }
+
+    /**
+     * 拒绝商机：根据商机推荐id和商家id，更新商机推荐信息
+     *
+     * @param opportunityId
+     * @param busId
+     * @throws Exception
+     */
+    @Override
+    public void updateAcceptNoByIdAndBusId(Integer opportunityId, Integer busId) throws Exception {
+
+    }
+
+    //------------------------------------------------- save ----------------------------------------------------------
+
+    /**
+     * 根据商家id和盟员身份id，保存商机推荐信息
+     *
+     * @param busId    {not null} 商家id
+     * @param memberId {not null} 盟员身份id
+     * @param vo
+     * @throws Exception
+     */
+    @Override
+    public void saveByBusIdAndMemberId(Integer busId, Integer memberId, UnionOpportunityVO vo) throws Exception {
+        if (busId == null || memberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        //(1)判断是否具有盟员权限
+        UnionMember fromMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        if (fromMember == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
+        }
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(fromMember.getUnionId());
+        //(3)判断是否具有写权限
+        if (!this.unionMemberService.hasWriteAuthority(fromMember)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
+        }
+        //(4)判断接收商家状态
+        UnionMember toMember = this.unionMemberService.getById(vo.getToMemberId());
+        if (toMember == null) {
+            throw new BusinessException("您推荐的盟员不存在或已过期");
+        }
+        if (!fromMember.getUnionId().equals(toMember.getUnionId())) {
+            throw new BusinessException("无法向其他联盟的人推荐商机");
+        }
+        if (this.unionMemberService.hasWriteAuthority(toMember)) {
+            throw new BusinessException("您推荐的盟员不是正式盟员或正处在退盟过渡期");
+        }
+        //(5)商家保存信息
+        UnionOpportunity saveOpportunity = new UnionOpportunity();
+        saveOpportunity.setCreatetime(DateUtil.getCurrentDate()); //创建时间
+        saveOpportunity.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
+        saveOpportunity.setType(OpportunityConstant.TYPE_OFFLINE); //推荐类型：线下
+        saveOpportunity.setFromMemberId(memberId); //推荐盟员身份id
+        saveOpportunity.setToMemberId(vo.getToMemberId()); //接收盟员身份id
+        saveOpportunity.setIsAccept(OpportunityConstant.ACCEPT_NON); //是否受理
+        saveOpportunity.setClientName(vo.getClientName()); //客户姓名
+        saveOpportunity.setClientPhone(vo.getClientPhone()); //客户电话
+        saveOpportunity.setBusinessMsg(vo.getBusinessMsg()); //业务备注
+        //(6)短信通知信息
+        UnionMain unionMain = this.unionMainService.getById(fromMember.getUnionId());
+        String phone = StringUtil.isNotEmpty(toMember.getNotifyPhone()) ? toMember.getNotifyPhone() : toMember.getDirectorPhone();
+        StringBuilder sbContent = new StringBuilder("\"").append(unionMain.getName()).append("\"的盟员\"")
+                .append(fromMember.getEnterpriseName()).append("\"为你推荐了客户，请到商机消息处查看。客户信息：")
+                .append(vo.getClientName()).append("，").append(vo.getClientPhone()).append("，").append(vo.getBusinessMsg());
+        PhoneMessage phoneMessage = new PhoneMessage(busId, phone, sbContent.toString());
+        //(7)执行保存操作
+        this.insert(saveOpportunity);
+        this.phoneMessageSender.sendMsg(phoneMessage);
+    }
+
+    //------------------------------------------------- count ---------------------------------------------------------
+    //------------------------------------------------ boolean --------------------------------------------------------
+
+
+    @Override
+    public Page listToMy(Page page, final Integer busId, final Integer unionId, final String isAccept, final String clientName, final String clientPhone) throws Exception {
+        if (page == null || busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                StringBuilder sbSqlSegment = new StringBuilder(" o");
+                sbSqlSegment.append(" LEFT JOIN t_union_member m ON o.to_member_id = m.id ")
+                        .append(" LEFT JOIN t_union_main um ON um.id = m.union_id ")
+                        .append(" WHERE m.bus_id = ").append(busId)
+                        .append("    AND o.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("    AND m.del_status = ").append(CommonConstant.DEL_STATUS_NO);
+                if (unionId != null) {
+                    sbSqlSegment.append(" AND m.union_id = ").append(unionId);
+                }
+                if (StringUtil.isNotEmpty(isAccept)) {
+                    String[] isAcceptArray = isAccept.split(",");
+                    sbSqlSegment.append(" AND (");
+                    for (int i = 0, length = isAcceptArray.length; i < length; i++) {
+                        sbSqlSegment.append(i == 0 ? "" : " OR ").append(" o.is_accept = ").append(isAcceptArray[i]);
+                    }
+                    sbSqlSegment.append(" ) ");
+                }
+                if (StringUtil.isNotEmpty(clientName)) {
+                    sbSqlSegment.append(" AND o.client_name LIKE '%").append(clientName).append("%' ");
+                }
+                if (StringUtil.isNotEmpty(clientPhone)) {
+                    sbSqlSegment.append(" AND o.client_phone LIKE '%").append(clientPhone).append("%' ");
+                }
+                sbSqlSegment.append(" ORDER BY o.is_accept ASC, o.id DESC ");
+                return sbSqlSegment.toString();
+            }
+        };
+        StringBuilder sbSqlSelect = new StringBuilder(" o.id opportunityId ")
+                .append(" , o.client_name clientName ")
+                .append(" , o.client_phone clientPhone ")
+                .append(" , o.business_msg businessMsg ")
+                .append(" , m.enterprise_name enterpriseName ")
+                .append(" , um.id unionId ")
+                .append(" , um.name name ")
+                .append(" , o.is_accept isAccept ");
+        wrapper.setSqlSelect(sbSqlSelect.toString());
 
         return this.selectMapsPage(page, wrapper);
     }
 
     @Override
+    public Page listFromMy(Page page, final Integer busId, final Integer unionId, final String isAccept, final String clientName, final String clientPhone) throws Exception {
+        if (page == null || busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                StringBuilder sbSqlSegment = new StringBuilder(" o");
+                sbSqlSegment.append(" LEFT JOIN t_union_member m ON o.from_member_id = m.id ")
+                        .append(" LEFT JOIN t_union_main um ON um.id = m.union_id ")
+                        .append(" WHERE m.bus_id = ").append(busId)
+                        .append("    AND o.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("    AND m.del_status = ").append(CommonConstant.DEL_STATUS_NO);
+                if (unionId != null) {
+                    sbSqlSegment.append(" AND m.union_id = ").append(unionId);
+                }
+                if (StringUtil.isNotEmpty(isAccept)) {
+                    String[] isAcceptArray = isAccept.split(",");
+                    sbSqlSegment.append(" AND (");
+                    for (int i = 0, length = isAcceptArray.length; i < length; i++) {
+                        sbSqlSegment.append(i == 0 ? "" : " OR ").append(" o.is_accept = ").append(isAcceptArray[i]);
+                    }
+                    sbSqlSegment.append(" ) ");
+                }
+                if (StringUtil.isNotEmpty(clientName)) {
+                    sbSqlSegment.append(" AND o.client_name LIKE '%").append(clientName).append("%' ");
+                }
+                if (StringUtil.isNotEmpty(clientPhone)) {
+                    sbSqlSegment.append(" AND o.client_phone LIKE '%").append(clientPhone).append("%' ");
+                }
+                sbSqlSegment.append(" ORDER BY o.is_accept ASC, o.id DESC ");
+                return sbSqlSegment.toString();
+            }
+        };
+        StringBuilder sbSqlSelect = new StringBuilder(" o.id opportunityId ")
+                .append(" , o.client_name clientName ")
+                .append(" , o.client_phone clientPhone ")
+                .append(" , o.business_msg businessMsg ")
+                .append(" , m.enterprise_name enterpriseName ")
+                .append(" , um.id unionId ")
+                .append(" , um.name name ")
+                .append(" , o.is_accept isAccept ");
+        wrapper.setSqlSelect(sbSqlSelect.toString());
+
+        return this.selectMapsPage(page, wrapper);
+    }
+
+    //@Override
     public void updateByIdAndIsAccept(Integer busId, Integer id, Integer isAccept, Double acceptPrice) throws Exception {
         if (busId == null || id == null || isAccept == null || acceptPrice == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -211,11 +348,11 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         this.unionMainService.checkUnionMainValid(member.getUnionId());
 
         // （3）判断商机是否是未处理状态
-        if (!unionOpportunity.getIsAccept().equals(OpportunityConstant.ACCEPT_CONFIRM_NON)) {
+        if (!unionOpportunity.getIsAccept().equals(OpportunityConstant.ACCEPT_NON)) {
             throw new BusinessException("当前商机已处理");
         }
 
-        switch (isAccept) {
+        /*switch (isAccept) {
             case OpportunityConstant.ACCEPT_CONFIRM_YES:
                 // （4-1）接受商机
                 unionOpportunity.setAcceptPrice(acceptPrice);
@@ -227,51 +364,8 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 break;
             default:
                 throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
+        }*/
     }
-
-    @Transactional
-    @Override
-    public void save(UnionOpportunityVO vo) throws Exception {
-        //判断联盟是否有效
-        this.unionMainService.checkUnionMainValid(vo.getUnionId());
-
-        UnionMember fromUnionMember = this.unionMemberService.getByBusIdAndUnionId(vo.getBusId(), vo.getUnionId());
-        if (fromUnionMember == null) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
-        }
-        //判断推荐商家是否是联盟的有效成员
-        //if (!this.unionMemberService.hasUnionMemberAuthority(fromUnionMember)) {
-        //throw new BusinessException(MemberConstant.UNION_MEMBER_NON_AUTHORITY_MSG);
-        //}
-        //判断被推荐商家是否是联盟的有效成员
-        UnionMember toUnionMember = this.unionMemberService.selectById(vo.getToMemberId());
-        //if(toUnionMember == null || this.unionMemberService.hasUnionMemberAuthority(toUnionMember)
-        //|| this.busUserService.isBusUserValid(toUnionMember.getBusId())){
-        //throw new BusinessException("您推荐的盟员是无效盟员");
-        //}
-        //保存推荐主表信息
-        UnionOpportunity opportunity = new UnionOpportunity();
-        opportunity.setCreatetime(new Date());
-        opportunity.setDelStatus(CommonConstant.DEL_STATUS_NO);
-        opportunity.setIsAccept(OpportunityConstant.ACCEPT_CONFIRM_NON);
-        opportunity.setFromMemberId(fromUnionMember.getId());
-        opportunity.setToMemberId(toUnionMember.getId());
-        opportunity.setBusinessMsg(vo.getBusinessMsg());
-        opportunity.setClientName(vo.getClientName());
-        opportunity.setClientPhone(vo.getClientPhone());
-        opportunity.setType(OpportunityConstant.OPPORTUNITY_TYPE_OFFLINE);//线下
-        this.insert(opportunity);
-        //发送短信通过
-        UnionMain unionMain = this.unionMainService.getById(vo.getUnionId());
-        String phone = StringUtil.isNotEmpty(toUnionMember.getNotifyPhone()) ? toUnionMember.getNotifyPhone() : toUnionMember.getDirectorPhone();
-        StringBuilder sbContent = new StringBuilder("\"").append(unionMain.getName()).append("\"的盟员\"")
-                .append(fromUnionMember.getEnterpriseName()).append("\"为你推荐了客户，请到商机消息处查看。客户信息：")
-                .append(opportunity.getClientName()).append("，").append(opportunity.getClientPhone()).append("，").append(opportunity.getBusinessMsg());
-        PhoneMessage phoneMessage = new PhoneMessage(vo.getBusId(), phone, sbContent.toString());
-        this.phoneMessageSender.sendMsg(phoneMessage);
-    }
-
 
     /**
      * 拒绝商机
@@ -287,7 +381,8 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         //throw new BusinessException("该商机的推荐方信息已无效");
         //}
         // （3）判断该商机的接收方是否对推荐方设置了商机佣金比
-        UnionBrokerageRatio unionBrokerageRatio = this.unionBrokerageRatioService.getByFromMemberIdAndToMemberId(unionOpportunity.getFromMemberId(), unionOpportunity.getToMemberId());
+        //UnionOpportunityBrokerageRatio unionBrokerageRatio = this.unionBrokerageRatioService.getByFromMemberIdAndToMemberId(unionOpportunity.getFromMemberId(), unionOpportunity.getToMemberId());
+        UnionOpportunityBrokerageRatio unionBrokerageRatio = null;
         if (unionBrokerageRatio == null) {
             throw new BusinessException("未对该商机的推荐方设置商机佣金比");
         }
@@ -296,7 +391,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         UnionOpportunity opportunity = new UnionOpportunity();
         opportunity.setId(unionOpportunity.getId());
         opportunity.setAcceptPrice(unionOpportunity.getAcceptPrice());
-        opportunity.setIsAccept(OpportunityConstant.ACCEPT_CONFIRM_YES);
+        opportunity.setIsAccept(OpportunityConstant.ACCEPT_YES);
         opportunity.setBrokeragePrice(BigDecimalUtil.multiply(unionOpportunity.getAcceptPrice(), unionBrokerageRatio.getRatio()).doubleValue());
         this.updateById(opportunity);
 
@@ -337,7 +432,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         // （4）保存更新信息
         UnionOpportunity opportunity = new UnionOpportunity();
         opportunity.setId(unionOpportunity.getId());
-        opportunity.setIsAccept(OpportunityConstant.ACCEPT_CONFIRM_NO);
+        opportunity.setIsAccept(OpportunityConstant.ACCEPT_NO);
         this.updateById(opportunity);
 
         //接受的盟员
@@ -378,7 +473,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         double totalFee = 0;
         WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(duofenBusId);
         for (UnionOpportunity opportunity : list) {
-            if (CommonUtil.isEmpty(opportunity.getIsAccept()) || opportunity.getIsAccept() != OpportunityConstant.ACCEPT_CONFIRM_NON) {
+            if (CommonUtil.isEmpty(opportunity.getIsAccept()) || opportunity.getIsAccept() != OpportunityConstant.ACCEPT_NON) {
                 throw new BusinessException("不可支付未接受的商机");
             }
             UnionBrokerageIncome brokerageIncome = unionBrokerageIncomeService.getByUnionOpportunityId(opportunity.getId());
@@ -436,13 +531,13 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_003, 60l);//支付成功
     }
 
-	@Override
-	public Page listBrokerageFromMy(Page page, final Integer fromBusId, final Integer toMemberId, final Integer unionId, final String status, final String clientName, final String clientPhone) throws Exception{
-		if (page == null || fromBusId == null) {
-			throw new ParamException(CommonConstant.PARAM_ERROR);
-		}
-		/*List<UnionMember> members = unionMemberService.listByBusId(fromBusId);
-		final List<Integer> memberIds = new ArrayList<Integer>();
+    @Override
+    public Page listBrokerageFromMy(Page page, final Integer fromBusId, final Integer toMemberId, final Integer unionId, final String status, final String clientName, final String clientPhone) throws Exception {
+        if (page == null || fromBusId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        /*List<UnionMember> members = unionMemberService.listByBusId(fromBusId);
+        final List<Integer> memberIds = new ArrayList<Integer>();
 		for(UnionMember member : members){
 			memberIds.add(member.getId());
 		}
@@ -464,42 +559,43 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
 			}
 		}
 		page.setRecords(list);*/
-		return page;
-	}
+        return page;
+    }
 
-	@Override
-	public Page listBrokerageToMy(Page page, Integer toBusId, Integer fromMemberId, Integer unionId, String status, String clientName, String clientPhone) throws Exception{
-		if (page == null || toBusId == null) {
-			throw new ParamException(CommonConstant.PARAM_ERROR);
-		}
-		List<UnionMember> members = unionMemberService.listReadByBusId(toBusId);
-		if(ListUtil.isEmpty(members)){
-			return page;
-		}
-		final List<Integer> memberIds = new ArrayList<Integer>();
-		for(UnionMember member : members){
-			memberIds.add(member.getId());
-		}
-		//结算状态
-		Integer incomeStatus = 0;//表示结算、未结算一起
-		if(StringUtil.isNotEmpty(status)){
-			String[] arrs = status.split(",");
-			if(arrs.length == 1){
-				incomeStatus = Integer.valueOf(arrs[arrs.length]);
-			}
-		}
+    @Override
+    public Page listBrokerageToMy(Page page, Integer toBusId, Integer fromMemberId, Integer unionId, String status, String clientName, String clientPhone) throws Exception {
+        if (page == null || toBusId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionMember> members = unionMemberService.listReadByBusId(toBusId);
+        if (ListUtil.isEmpty(members)) {
+            return page;
+        }
+        final List<Integer> memberIds = new ArrayList<Integer>();
+        for (UnionMember member : members) {
+            memberIds.add(member.getId());
+        }
+        //结算状态
+        Integer incomeStatus = 0;//表示结算、未结算一起
+        if (StringUtil.isNotEmpty(status)) {
+            String[] arrs = status.split(",");
+            if (arrs.length == 1) {
+                incomeStatus = Integer.valueOf(arrs[arrs.length]);
+            }
+        }
 
-		List<UnionOpportunityBrokerageVO> list = unionOpportunityMapper.listBrokerageToMy(members, fromMemberId, unionId, incomeStatus, clientName, clientPhone, page);
-		for(UnionOpportunityBrokerageVO vo : list){
-			if(CommonUtil.isEmpty(vo.getIncomeId())){//未结算
-				vo.setStatus(1);
-			}else {//结算
-				vo.setStatus(2);
-			}
-		}
-		page.setRecords(list);
-		return page;
-	}
+        //List<UnionOpportunityBrokerageVO> list = unionOpportunityMapper.listBrokerageToMy(members, fromMemberId, unionId, incomeStatus, clientName, clientPhone, page);
+        List<UnionOpportunityBrokerageVO> list = null;
+        for (UnionOpportunityBrokerageVO vo : list) {
+            if (CommonUtil.isEmpty(vo.getIncomeId())) {//未结算
+                vo.setStatus(1);
+            } else {//结算
+                vo.setStatus(2);
+            }
+        }
+        page.setRecords(list);
+        return page;
+    }
 
     @Override
     public Page listPayDetail(Page page, Integer busId, Integer unionId) throws Exception {
@@ -510,7 +606,8 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         if (ListUtil.isEmpty(members)) {
             return page;
         }
-        List<Map<String, Object>> list = unionOpportunityMapper.listPayDetail(members, unionId, page);
+        //List<Map<String, Object>> list = unionOpportunityMapper.listPayDetail(members, unionId, page);
+        List<Map<String, Object>> list = null;
         page.setRecords(list);
         return page;
     }
@@ -520,7 +617,8 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         if (memberId == null || myMemberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<Map<String, Object>> list = unionOpportunityMapper.listPayDetailParticularByUnionIdAndMemberId(memberId, myMemberId);
+        //List<Map<String, Object>> list = unionOpportunityMapper.listPayDetailParticularByUnionIdAndMemberId(memberId, myMemberId);
+        List<Map<String, Object>> list = null;
         return list;
     }
 
@@ -594,7 +692,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         }
         EntityWrapper wrapper = new EntityWrapper();
         wrapper.in("from_member_id", memberIds.toArray());
-        wrapper.eq("is_accept", OpportunityConstant.ACCEPT_CONFIRM_YES);
+        wrapper.eq("is_accept", OpportunityConstant.ACCEPT_YES);
         wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
         if (isAccept == 0) {//未支付
             wrapper.notExists("select i.id from t_union_brokerage_income i where t_union_opportunity.id = i.opportunity_id");
@@ -609,11 +707,11 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
 
     }
 
-	@Override
-	public Double sumAcceptFromMy(Integer unionId, Integer busId, Integer isAccept) throws Exception{
-		if (busId == null || isAccept == null) {
-			throw new ParamException(CommonConstant.PARAM_ERROR);
-		}
+    @Override
+    public Double sumAcceptFromMy(Integer unionId, Integer busId, Integer isAccept) throws Exception {
+        if (busId == null || isAccept == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
 
         //List<UnionMember> members = unionMemberService.getByUnionIdAndBusIdWidthOutDelStatus(unionId,busId);
         List<UnionMember> members = null;
@@ -626,7 +724,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         }
         EntityWrapper wrapper = new EntityWrapper();
         wrapper.in("from_member_id", memberIds.toArray());
-        wrapper.eq("is_accept", OpportunityConstant.ACCEPT_CONFIRM_YES);
+        wrapper.eq("is_accept", OpportunityConstant.ACCEPT_YES);
         wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
         if (isAccept == 0) {//未支付
             wrapper.notExists("select i.id from t_union_brokerage_income i where t_union_opportunity.id = i.opportunity_id");
@@ -655,7 +753,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         }
         EntityWrapper wrapper = new EntityWrapper();
         wrapper.in("from_member_id", memberIds.toArray());
-        wrapper.eq("is_accept", OpportunityConstant.ACCEPT_CONFIRM_YES);
+        wrapper.eq("is_accept", OpportunityConstant.ACCEPT_YES);
         wrapper.eq("del_status", CommonConstant.DEL_STATUS_YES);
         wrapper.notExists("select i.id from t_union_brokerage_income i where t_union_opportunity.id = i.opportunity_id");
         wrapper.setSqlSelect("IFNULL(SUM(brokerage_price), 0) money");
@@ -686,10 +784,12 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         if (memberId != null || StringUtil.isNotEmpty(strDateBegin) || StringUtil.isNotEmpty(strDateEnd)) {
             Map<String, Double> resultMap = new HashMap<>();
             //已结算的佣金收入
-            Double incomeBrokerage = unionOpportunityMapper.getBrokerageComeInDay(memberId, strDateBegin, strDateEnd);
+            //Double incomeBrokerage = unionOpportunityMapper.getBrokerageComeInDay(memberId, strDateBegin, strDateEnd);
+            Double incomeBrokerage = null;
             resultMap.put("incomeBrokerage", incomeBrokerage);
             //已结算的支出佣金
-            Double expanseBrokerage = unionOpportunityMapper.getBrokerageExpanseInDay(memberId, strDateBegin, strDateEnd);
+            //Double expanseBrokerage = unionOpportunityMapper.getBrokerageExpanseInDay(memberId, strDateBegin, strDateEnd);
+            Double expanseBrokerage = null;
             resultMap.put("expanseBrokerage", expanseBrokerage);
             return resultMap;
         }
@@ -712,7 +812,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 case 1:
                     EntityWrapper wrapper = new EntityWrapper();
                     wrapper.eq("to_member_id", memberId);
-                    wrapper.eq("is_accept", OpportunityConstant.ACCEPT_CONFIRM_YES);
+                    wrapper.eq("is_accept", OpportunityConstant.ACCEPT_YES);
                     wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
                     wrapper.notExists("select id from t_union_brokerage_income i where t_union_opportunity.id = i.opportunity_id");
                     wrapper.setSqlSelect("IFNULL(SUM(t_union_opportunity.brokerage_price), 0) money");
@@ -726,7 +826,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 case 2:
                     EntityWrapper entityWrapper = new EntityWrapper();
                     entityWrapper.eq("to_member_id", memberId);
-                    entityWrapper.eq("is_accept", OpportunityConstant.ACCEPT_CONFIRM_YES);
+                    entityWrapper.eq("is_accept", OpportunityConstant.ACCEPT_YES);
                     entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
                     entityWrapper.exists("select id from t_union_brokerage_income i where t_union_opportunity.id = i.opportunity_id");
                     entityWrapper.setSqlSelect("IFNULL(SUM(t_union_opportunity.brokerage_price), 0) money");
@@ -758,7 +858,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 case 1:
                     EntityWrapper wrapper = new EntityWrapper();
                     wrapper.eq("from_member_id", memberId);
-                    wrapper.eq("is_accept", OpportunityConstant.ACCEPT_CONFIRM_YES);
+                    wrapper.eq("is_accept", OpportunityConstant.ACCEPT_YES);
                     wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
                     wrapper.notExists("select id from t_union_brokerage_income i where t_union_opportunity.id = i.opportunity_id");
                     wrapper.setSqlSelect("IFNULL(SUM(t_union_opportunity.brokerage_price), 0) money");
@@ -772,7 +872,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 case 2:
                     EntityWrapper entityWrapper = new EntityWrapper();
                     entityWrapper.eq("from_member_id", memberId);
-                    entityWrapper.eq("is_accept", OpportunityConstant.ACCEPT_CONFIRM_YES);
+                    entityWrapper.eq("is_accept", OpportunityConstant.ACCEPT_YES);
                     entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
                     entityWrapper.exists("select id from t_union_brokerage_income i where t_union_opportunity.id = i.opportunity_id");
                     entityWrapper.setSqlSelect("IFNULL(SUM(t_union_opportunity.brokerage_price), 0) money");
@@ -803,7 +903,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
             UnionBrokerageIncome brokerageIncome = new UnionBrokerageIncome();
             brokerageIncome.setCreatetime(new Date());
             brokerageIncome.setDelStatus(CommonConstant.DEL_STATUS_NO);
-            brokerageIncome.setMemberId(opportunity.getFromMemberId());
+            //brokerageIncome.setMemberId(opportunity.getFromMemberId());
             brokerageIncome.setOpportunityId(opportunity.getId());
             brokerageIncome.setMoney(opportunity.getBrokeragePrice());
             brokerageIncome.setType(BrokerageConstant.TYPE_INCOME);
@@ -812,8 +912,8 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
             UnionBrokeragePay pay = new UnionBrokeragePay();
             pay.setCreatetime(new Date());
             pay.setDelStatus(CommonConstant.DEL_STATUS_NO);
-            pay.setFromMemberId(opportunity.getToMemberId());
-            pay.setToMemberId(opportunity.getFromMemberId());
+            //pay.setFromMemberId(opportunity.getToMemberId());
+            //pay.setToMemberId(opportunity.getFromMemberId());
             pay.setMoney(opportunity.getBrokeragePrice());
             pay.setOrderNo(orderNo);
             pay.setOpportunityId(opportunity.getId());

@@ -40,6 +40,7 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
      *
      * @param unionId {not null} 联盟id
      * @return
+     * @throws Exception
      */
     @Override
     public UnionMainNotice getByUnionId(Integer unionId) {

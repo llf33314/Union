@@ -1,9 +1,9 @@
-package com.gt.union.brokerage.mapper;
+package com.gt.union.opportunity.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.brokerage.vo.UnionBrokerageRatioVO;
-import com.gt.union.brokerage.entity.UnionBrokerageRatio;
+import com.gt.union.opportunity.entity.UnionOpportunityBrokerageRatio;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  * @author linweicong
  * @since 2017-09-07
  */
-public interface UnionBrokerageRatioMapper extends BaseMapper<UnionBrokerageRatio> {
+public interface UnionOpportunityBrokerageRatioMapper extends BaseMapper<UnionOpportunityBrokerageRatio> {
 
 	/**
 	 * 根据盟员id和联盟id查询盟员的佣金比列表

@@ -67,7 +67,7 @@ public class IndexController {
     @ApiOperation(value = "商家联盟首页-选定盟员身份", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/index/memberId/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String indexByUnionId(HttpServletRequest request
-            , @ApiParam(name = "memberId", value = "盟员id", required = true) @PathVariable("memberId") Integer memberId) {
+            , @ApiParam(name = "memberId", value = "选定的盟员身份id", required = true) @PathVariable("memberId") Integer memberId) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
             Integer busId = busUser.getId();

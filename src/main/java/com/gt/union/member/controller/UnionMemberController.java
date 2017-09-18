@@ -51,8 +51,8 @@ public class UnionMemberController {
 
     //-------------------------------------------------- get ----------------------------------------------------------
 
-    @ApiOperation(value = "根据我的盟员身份id分页获取所有与我同属一个联盟的盟员信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/page/memberId/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "根据我的盟员身份id分页获取所有与我同属一个联盟的盟员相关信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/pageMap/memberId/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageMapByMemberId(HttpServletRequest request, Page page
             , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
                                     @PathVariable("memberId") Integer memberId
@@ -77,8 +77,8 @@ public class UnionMemberController {
         }
     }
 
-    @ApiOperation(value = "根据我的盟员身份id获取所有与我同属一个联盟的盟员信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/list/memberId/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "根据我的盟员身份id获取所有与我同属一个联盟的盟员相关信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/listMap/memberId/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listMapByMemberId(HttpServletRequest request
             , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
                                     @PathVariable("memberId") Integer memberId) {
@@ -126,7 +126,7 @@ public class UnionMemberController {
     }
 
     @ApiOperation(value = "获取我的所有盟员身份，以及盟员身份所在的联盟信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/listMap", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listReadMap(HttpServletRequest request) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
@@ -176,7 +176,7 @@ public class UnionMemberController {
     }
 
     @ApiOperation(value = "批量更新售卡分成比例", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/memberId/{memberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/cardDividePercent/memberId/{memberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateCardDividePercentById(HttpServletRequest request
             , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
                                               @PathVariable("memberId") Integer memberId

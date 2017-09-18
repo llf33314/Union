@@ -50,7 +50,7 @@ public class UnionMemberJoinController {
     @ApiOperation(value = "分页查询入盟申请列表", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/memberId/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageMapByBusIdAndMemberId(HttpServletRequest request, Page page
-            , @ApiParam(name = "memberId", value = "当前操作人的盟员身份id", required = true)
+            , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
                                             @PathVariable("memberId") Integer memberId
             , @ApiParam(name = "enterpriseName", value = "企业名称,模糊匹配")
                                             @RequestParam(name = "enterpriseName", required = false) String enterpriseName

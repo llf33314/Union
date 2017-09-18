@@ -1,6 +1,5 @@
 package com.gt.union.main.service.impl;
 
-import com.gt.union.brokerage.service.IUnionIncomeExpenseService;
 import com.gt.union.card.service.IUnionCardIntegralService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.ParamException;
@@ -36,8 +35,8 @@ public class IndexServiceImpl implements IIndexService {
     @Autowired
     private IUnionCardIntegralService unionCardIntegralService;
 
-    @Autowired
-    private IUnionIncomeExpenseService unionIncomeExpenseService;
+    //@Autowired
+    //private IUnionIncomeExpenseService unionIncomeExpenseService;
 
     @Autowired
     private IUnionMainChargeService unionMainChargeService;
@@ -56,10 +55,12 @@ public class IndexServiceImpl implements IIndexService {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+        //(1)获取我创建及加入的联盟信息，以及对应所拥有的盟员身份信息
         Map<String, Object> result = getCreateAndJoinUnionInfo(busId);
 
-        //当前盟员相关信息
+        //（2）当前盟员相关信息
         UnionMember defaultCurrentUnionMember = (UnionMember) result.get("defaultCurrentUnionMember");
+        result.remove("defaultCurrentUnionMember");
         if (defaultCurrentUnionMember != null) {
             result = getCurrentMemberInfo(result, defaultCurrentUnionMember);
         }
@@ -80,9 +81,11 @@ public class IndexServiceImpl implements IIndexService {
         if (memberId == null || busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+        //(1)获取我创建及加入的联盟信息，以及对应所拥有的盟员身份信息
         Map<String, Object> result = getCreateAndJoinUnionInfo(busId);
+        result.remove("defaultCurrentUnionMember");
 
-        //当前盟员相关信息
+        //(2)当前盟员相关信息
         UnionMember currentUnionMember = this.unionMemberService.selectById(memberId);
         if (currentUnionMember != null) {
             result = getCurrentMemberInfo(result, currentUnionMember);
@@ -185,8 +188,8 @@ public class IndexServiceImpl implements IIndexService {
                 Double currentUnionIntegralSum = this.unionCardIntegralService.getCardIntegralProfitByUnionId(currentUnionId);
                 result.put("currentUnionIntegralSum", currentUnionIntegralSum); //当前联盟总积分数
             }
-            Double currentUnionMoneyProfit = this.unionIncomeExpenseService.getMoneyProfitByUnionIdAndBusId(currentUnionId, currentBusId);
-            result.put("currentUnionMoneyProfit", currentUnionMoneyProfit); //商家联盟净收入，即可提现金额
+            //Double currentUnionMoneyProfit = this.unionIncomeExpenseService.getMoneyProfitByUnionIdAndBusId(currentUnionId, currentBusId);
+            //result.put("currentUnionMoneyProfit", currentUnionMoneyProfit); //商家联盟净收入，即可提现金额
 
             //TODO 盟主权限转移记录
         }

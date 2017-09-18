@@ -8,8 +8,8 @@
 		<result column="del_status" property="delStatus" />
 		<result column="createtime" property="createtime" />
 		<result column="money" property="money" />
-		<result column="from_member_id" property="fromMemberId" />
-		<result column="to_member_id" property="toMemberId" />
+		<result column="from_bus_id" property="fromBusId" />
+		<result column="to_bus_id" property="toBusId" />
 		<result column="status" property="status" />
 		<result column="type" property="type" />
 		<result column="order_no" property="orderNo" />
