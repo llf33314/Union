@@ -69,6 +69,16 @@ public interface IUnionMemberService extends IService<UnionMember> {
     //------------------------------------------ list(include page) ---------------------------------------------------
 
     /**
+     * 根据盟员身份id列表，分页获取盟员身份列表信息
+     *
+     * @param page         {not null} 分页对象
+     * @param memberIdList {not null} 盟员身份id列表
+     * @return
+     * @throws Exception
+     */
+    Page pageByMemberIdList(Page page, List<Integer> memberIdList) throws Exception;
+
+    /**
      * 根据盟员id和商家id，分页获取所有与该盟员同属一个联盟的盟员信息
      *
      * @param page                 {not null} 分页对象
@@ -79,6 +89,16 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @throws Exception
      */
     Page pageMapByIdAndBusId(Page page, Integer memberId, Integer busId, String optionEnterpriseName) throws Exception;
+
+    /**
+     * 根据盟员身份对象，分页获取与盟员之间的商机佣金比例设置列表信息
+     *
+     * @param page        {not null} 分页对象
+     * @param unionMember {not null} 盟员身份对象
+     * @return
+     * @throws Exception
+     */
+    Page pageOpportunityBrokerageRatioMapByMember(Page page, final UnionMember unionMember) throws Exception;
 
     /**
      * 根据盟员id和商家id，获取所有与该盟员同属一个联盟的盟员信息
@@ -143,6 +163,15 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @throws Exception
      */
     List<UnionMember> listReadByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 根据联盟id，获取该联盟下所有具有写权限的盟员身份列表信息
+     *
+     * @param unionId {not null} 联盟id
+     * @return
+     * @throws Exception
+     */
+    List<UnionMember> listWriteByUnionId(Integer unionId) throws Exception;
 
     /**
      * 根据盟员id列表，获取盟员列表信息

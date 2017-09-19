@@ -13,6 +13,7 @@ import com.gt.union.opportunity.entity.UnionOpportunityBrokerageRatio;
  * @since 2017-09-07
  */
 public interface IUnionOpportunityBrokerageRatioService extends IService<UnionOpportunityBrokerageRatio> {
+    //-------------------------------------------------- get ----------------------------------------------------------
 
     /**
      * 根据商机佣金比例的设置者盟员身份id和受惠者盟员身份id，获取商机佣金比例设置信息
@@ -24,24 +25,34 @@ public interface IUnionOpportunityBrokerageRatioService extends IService<UnionOp
      */
     UnionOpportunityBrokerageRatio getByFromMemberIdAndToMemberId(Integer fromMemberId, Integer toMemberId) throws Exception;
 
-    /**
-     * 根据商家id查询佣金比列表
-     *
-     * @param page
-     * @param busId   商家id
-     * @param unionId 联盟id
-     * @return
-     */
-    Page pageBrokerageRatio(Page page, Integer busId, Integer unionId) throws Exception;
+    //------------------------------------------ list(include page) ---------------------------------------------------
 
     /**
-     * 设置商机佣金比
+     * 根据商家id和盟员身份id，分页查询商机佣金比设置列表信息
      *
-     * @param fromMemberId 设置的盟员id
-     * @param busId        商家id
-     * @param toMemberId   被设置的盟员id
-     * @param ratio
+     * @param page     {not null} 分页对象
+     * @param busId    {not null} 商家id
+     * @param memberId {not null} 盟员身份id
      * @return
+     * @throws Exception
      */
-    void saveOrUpdateBrokerageRatio(Integer fromMemberId, Integer busId, Integer toMemberId, Double ratio) throws Exception;
+    Page pageMapByBusIdAndMemberId(Page page, Integer busId, Integer memberId) throws Exception;
+
+    //------------------------------------------------- update --------------------------------------------------------
+
+    /**
+     * 根据商家id、设置方盟员身份id、受惠方盟员身份id和商机佣金比例，更新或保存设置
+     *
+     * @param busId        {not null} 商家id
+     * @param fromMemberId {not null} 设置方盟员身份id
+     * @param toMemberId   {not null} 受惠方盟员身份id
+     * @param ratio        {not null} 商机佣金比例
+     * @throws Exception
+     */
+    void updateOrSaveByBusIdAndFromMemberIdAndToMemberIdAndRatio(Integer busId, Integer fromMemberId, Integer toMemberId, Double ratio) throws Exception;
+
+    //------------------------------------------------- save ----------------------------------------------------------
+    //------------------------------------------------- count ---------------------------------------------------------
+    //------------------------------------------------ boolean --------------------------------------------------------
+
 }

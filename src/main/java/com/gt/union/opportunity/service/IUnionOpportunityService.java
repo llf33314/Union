@@ -59,7 +59,7 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
     Page pageToMeMapByBusId(Page page, Integer busId, Integer unionId, String isAccept, String clientName, String clientPhone) throws Exception;
 
     /**
-     * 根据商家id，获取商家因商机推荐而得到的佣金收入列表信息
+     * 根据商家id，分页获取商家因商机推荐而得到的佣金收入列表信息
      *
      * @param page        {not null} 分页对象
      * @param busId       {not null} 商家id
@@ -75,7 +75,7 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
             , String clientName, String clientPhone) throws Exception;
 
     /**
-     * 根据商家id，获取商家因接受商机推荐而支付的佣金列表信息
+     * 根据商家id，分页获取商家因接受商机推荐而支付的佣金列表信息
      *
      * @param page         {not null} 分页对象
      * @param busId        {not null} 商家id
@@ -89,6 +89,35 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      */
     Page pageExpenseByBusId(Page page, Integer busId, Integer unionId, Integer fromMemberId, Integer isClose
             , String clientName, String clientPhone) throws Exception;
+
+    /**
+     * 根据商家id，分页获取商机佣金支付往来列表信息
+     *
+     * @param page         {not null} 分页对象
+     * @param busId        {not null} 商家id
+     * @param userMemberId 可选项 商家盟员身份id
+     * @return
+     * @throws Exception
+     */
+    Page pageContactByBusId(Page page, Integer busId, Integer userMemberId) throws Exception;
+
+    /**
+     * 根据推荐方的盟员身份id，获取所有已推荐的，且已支付的商机推荐列表信息
+     *
+     * @param fromMemberId {not null} 推荐方的盟员身份id
+     * @return
+     * @throws Exception
+     */
+    List<UnionOpportunity> listPaidByFromMemberId(Integer fromMemberId) throws Exception;
+
+    /**
+     * 根据接收方的盟员身份id，获取所有已接受，且已支付的商机推荐列表信息
+     *
+     * @param toMemberId {not null} 接收方的盟员身份id
+     * @return
+     * @throws Exception
+     */
+    List<UnionOpportunity> listPaidByToMemberId(Integer toMemberId) throws Exception;
 
     //------------------------------------------------- update --------------------------------------------------------
 
@@ -124,6 +153,37 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
     void saveByBusIdAndMemberId(Integer busId, Integer memberId, UnionOpportunityVO vo) throws Exception;
 
     //------------------------------------------------- count ---------------------------------------------------------
+
+    /**
+     * 根据商家id和接收方盟员身份id，统计商家推荐的、已接受状态的、且已支付的商机佣金总和
+     *
+     * @param busId      {not null} 商家id
+     * @param toMemberId {not null} 接收方盟员身份id
+     * @return
+     * @throws Exception
+     */
+    Double sumPaidBrokeragePriceByBusIdAndToMemberId(Integer busId, Integer toMemberId) throws Exception;
+
+    /**
+     * 根据商家id和推荐方盟员身份id，统计商家接收的、已接受状态的、且已支付的商机佣金总和
+     *
+     * @param busId        {not null} 商家id
+     * @param fromMemberId {not null} 推荐方盟员身份id
+     * @return
+     * @throws Exception
+     */
+    Double sumPaidBrokeragePriceByBusIdAndFromMemberId(Integer busId, Integer fromMemberId) throws Exception;
+
+    /**
+     * 根据推荐方盟员身份id和接收方盟员身份id，统计推荐方推荐的、已接受状态的、且已支付的商机佣金总和
+     *
+     * @param fromMemberId {not null} 推荐方盟员身份id
+     * @param toMemberId   {not null} 接收方盟员身份id
+     * @return
+     * @throws Exception
+     */
+    Double sumPaidBrokeragePriceByFromMemberIdAndToMemberId(Integer fromMemberId, Integer toMemberId) throws Exception;
+
     //------------------------------------------------ boolean --------------------------------------------------------
 
 
@@ -144,15 +204,6 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      */
     void payOpportunitySuccess(String encrypt, String only) throws Exception;
 
-    /**
-     * 查询我的商机佣金支付明细
-     *
-     * @param page
-     * @param busId
-     * @param unionId
-     * @return
-     */
-    Page listPayDetail(Page page, Integer busId, Integer unionId) throws Exception;
 
     /**
      * 查询在联盟下我与某盟员的佣金来往明细
@@ -172,30 +223,4 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      */
     Map<String, Object> getStatisticData(Integer unionId, Integer busId) throws Exception;
 
-    /**
-     * 统计我的所有已被接受的，目前未支付或已支付的商机佣金总额
-     *
-     * @param busId    商家id
-     * @param isAccept 是否支付
-     * @return
-     */
-    Double sumAcceptFromMy(Integer busId, Integer isAccept) throws Exception;
-
-    /**
-     * 统计我的所有已被接受的，目前未支付或已支付的商机佣金总额  带联盟的
-     *
-     * @param unionId  商家id
-     * @param busId    商家id
-     * @param isAccept 是否支付
-     * @return
-     */
-    Double sumAcceptFromMy(Integer unionId, Integer busId, Integer isAccept) throws Exception;
-
-    /**
-     * 查询我的所有已被接受的，但对方已退盟的坏账佣金总和
-     *
-     * @param busId
-     * @return
-     */
-    Double sumFromMyInBadDebt(Integer busId) throws Exception;
 }

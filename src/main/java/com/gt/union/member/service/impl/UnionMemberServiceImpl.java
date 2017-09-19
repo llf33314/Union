@@ -144,6 +144,26 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     //------------------------------------------ list(include page) ---------------------------------------------------
 
     /**
+     * 根据盟员身份id列表，分页获取盟员身份列表信息
+     *
+     * @param page         {not null} 分页对象
+     * @param memberIdList {not null} 盟员身份id列表
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public Page pageByMemberIdList(Page page, List<Integer> memberIdList) throws Exception {
+        if (page == null || memberIdList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .in("id", memberIdList)
+                .orderBy("is_union_owner DESC,union_id ASC, id", true);
+        return this.selectPage(page, entityWrapper);
+    }
+
+    /**
      * 根据盟员id和商家id，分页获取所有与该盟员同属一个联盟的盟员信息
      *
      * @param page                 {not null} 分页对象
@@ -195,6 +215,44 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 .append(", mdFromMe.discount discountFromMe") //我给他的折扣
                 .append(", mdToMe.discount discountToMe") //他给我的折扣
                 .append(", m.card_divide_percent cardDividePercent"); //售卡分成比例
+        wrapper.setSqlSelect(sbSqlSelect.toString());
+        return this.selectMapsPage(page, wrapper);
+    }
+
+    /**
+     * 根据盟员身份对象，分页获取与盟员之间的商机佣金比例设置列表信息
+     *
+     * @param page        {not null} 分页对象
+     * @param unionMember {not null} 盟员身份对象
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public Page pageOpportunityBrokerageRatioMapByMember(Page page, final UnionMember unionMember) throws Exception {
+        if (page == null || unionMember == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                StringBuilder sbSqlSegment = new StringBuilder(" toM")
+                        .append(" LEFT JOIN t_union_opportunity_brokerage_ratio rFromMe")
+                        .append("  ON rFromMe.from_member_id = ").append(unionMember.getId())
+                        .append("  AND rFromMe.to_member_id=toM.id")
+                        .append(" LEFT JOIN t_union_opportunity_brokerage_ratio rToMe")
+                        .append("  ON rToMe.to_member_id =").append(unionMember.getId())
+                        .append("  AND rToMe.from_member_id = toM.id")
+                        .append(" WHERE toM.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND toM.union_id = ").append(unionMember.getUnionId())
+                        .append("  AND toM.status in (").append(MemberConstant.STATUS_IN)
+                        .append("    ,").append(MemberConstant.STATUS_APPLY_OUT).append(")");
+                return sbSqlSegment.toString();
+            }
+        };
+        StringBuilder sbSqlSelect = new StringBuilder(" toM.id toMemberId") //受惠方盟员身份id
+                .append(", toM.enterprise_name toEnterpriseName") //受惠方盟员身份名称
+                .append(", rFromMe.ratio ratioFromMe") //我给TA的商机佣金比例
+                .append(", rToMe.ratio ratioToMe"); //TA给我的商机佣金比例
         wrapper.setSqlSelect(sbSqlSelect.toString());
         return this.selectMapsPage(page, wrapper);
     }
@@ -399,6 +457,27 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 .in("status", new Object[]{MemberConstant.STATUS_IN
                         , MemberConstant.STATUS_APPLY_OUT
                         , MemberConstant.STATUS_OUTING})
+                .orderBy("id", true);
+        return this.selectList(entityWrapper);
+    }
+
+    /**
+     * 根据联盟id，获取该联盟下所有具有写权限的盟员身份列表信息
+     *
+     * @param unionId {not null} 联盟id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public List<UnionMember> listWriteByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .in("status", new Object[]{MemberConstant.STATUS_IN
+                        , MemberConstant.STATUS_APPLY_OUT})
                 .orderBy("id", true);
         return this.selectList(entityWrapper);
     }
