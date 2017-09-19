@@ -3,6 +3,7 @@ package com.gt.union.common.filter;
 import com.alibaba.fastjson.JSON;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
+import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.PropertiesUtil;
@@ -80,28 +81,32 @@ public class LoginFilter implements Filter {
 			chain.doFilter(request, response);
 		}else if(url.indexOf("unionH5Brokerage") > -1){
 			String busId = req.getParameter("busId");
-			String uuid = req.getParameter("uuid");
-			if(StringUtil.isEmpty(busId) || StringUtil.isEmpty(uuid)){
+			String sign = req.getParameter("sign");
+			if(StringUtil.isEmpty(busId) || StringUtil.isEmpty(sign)){
 				response.setCharacterEncoding("UTF-8");
 				//TODO 佣金平台手机端重定向地址
 				response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", PropertiesUtil.getUnionUrl()+"/unionH5Brokerage/index")));
+				return;
 			}
 			if(busUser != null){
 				if(!busUser.getId().equals(busId)){
 					response.setCharacterEncoding("UTF-8");
 					//TODO 佣金平台手机端重定向地址
 					response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", PropertiesUtil.getUnionUrl()+"/unionH5Brokerage/index")));
+					return;
 				}
 				Object obj = redisCacheUtil.get("h5Brokerage:" + busId);
 				if(CommonUtil.isEmpty(obj)){
 					response.setCharacterEncoding("UTF-8");
 					//TODO 佣金平台手机端重定向地址
 					response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", PropertiesUtil.getUnionUrl()+"/unionH5Brokerage/index")));
+					return;
 				}
-				if(!uuid.equals(obj)){
+				if(!sign.equals(obj)){
 					response.setCharacterEncoding("UTF-8");
 					//TODO 佣金平台手机端重定向地址
 					response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", PropertiesUtil.getUnionUrl()+"/unionH5Brokerage/index")));
+					return;
 				}
 			}
 			chain.doFilter(request, response);
