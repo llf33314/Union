@@ -51,6 +51,12 @@ public class UnionBrokerageWithdrawal extends Model<UnionBrokerageWithdrawal> {
     @TableField("verifier_id")
     private Integer verifierId;
 
+    /**
+     * 用户粉丝id
+     */
+    @TableField("third_member_id")
+    private Integer thirdMemberId;
+
 
     public Integer getId() {
         return id;
@@ -98,6 +104,14 @@ public class UnionBrokerageWithdrawal extends Model<UnionBrokerageWithdrawal> {
 
     public void setVerifierId(Integer verifierId) {
         this.verifierId = verifierId;
+    }
+
+    public Integer getThirdMemberId() {
+        return thirdMemberId;
+    }
+
+    public void setThirdMemberId(Integer thirdMemberId) {
+        this.thirdMemberId = thirdMemberId;
     }
 
     @Override

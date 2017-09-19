@@ -97,7 +97,7 @@ public class UnionVerifierController {
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String save(HttpServletRequest request
             , @ApiParam(name="unionVerifyMember", value = "平台管理员信息", required = true)
-                       @Valid @RequestBody UnionVerifier unionVerifyMember, BindingResult result){
+                       @Valid @RequestBody UnionVerifier verifier, BindingResult result){
         try{
             ParamValidatorUtil.checkBindingResult(result);
             BusUser user = SessionUtils.getLoginUser(request);
@@ -105,8 +105,8 @@ public class UnionVerifierController {
             if(user.getPid() != null && user.getPid() != 0){
                 throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
             }
-            unionVerifyMember.setBusId(busId);
-            unionVerifierService.save(unionVerifyMember);
+            verifier.setBusId(busId);
+            unionVerifierService.save(verifier);
             return GTJsonResult.instanceSuccessMsg().toString();
         }catch (BaseException e){
             logger.error("", e);
@@ -137,7 +137,7 @@ public class UnionVerifierController {
                 if(smsService.sendSms(param) == 0){
                     return GTJsonResult.instanceErrorMsg("发送失败").toString();
                 }
-                redisCacheUtil.set("verifyMember:"+phone , code, 300l);
+                redisCacheUtil.set("verifier:"+phone , code, 300l);
                 return GTJsonResult.instanceSuccessMsg(code).toString();
             }
             return GTJsonResult.instanceErrorMsg("手机号不能为空").toString();

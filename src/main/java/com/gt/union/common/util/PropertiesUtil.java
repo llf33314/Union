@@ -43,6 +43,12 @@ public class PropertiesUtil {
 
 	private static String wxmpCompany;
 
+	private static String unionUrl;
+
+	private static String memberUrl;
+
+	private static String memberSignKey;
+
 
 	/**
 	 * 获取资源访问地址
@@ -234,5 +240,44 @@ public class PropertiesUtil {
 	@Value("${exchange.union.exchange}")
 	public static void setMqExchange(String mqExchange) {
 		PropertiesUtil.mqExchange = mqExchange;
+	}
+
+	/**
+	 * 联盟路径
+	 * @return
+	 */
+	public static String getUnionUrl() {
+		return unionUrl;
+	}
+
+	@Value("${union.url}")
+	public static void setUnionUrl(String unionUrl) {
+		PropertiesUtil.unionUrl = unionUrl;
+	}
+
+	/**
+	 * 会员请求路径
+	 * @return
+	 */
+	public static String getMemberUrl() {
+		return memberUrl;
+	}
+
+	@Value("${member.url}")
+	public static void setMemberUrl(String memberUrl) {
+		PropertiesUtil.memberUrl = memberUrl;
+	}
+
+	/**
+	 * 会员请求签名
+	 * @return
+	 */
+	public static String getMemberSignKey() {
+		return memberSignKey;
+	}
+
+	@Value("${member.signkey}")
+	public static void setMemberSignKey(String memberSignKey) {
+		PropertiesUtil.memberSignKey = memberSignKey;
 	}
 }

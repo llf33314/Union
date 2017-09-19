@@ -58,4 +58,19 @@ public interface IUnionBrokerageIncomeService extends IService<UnionBrokerageInc
 	 * @return
 	 */
 	Double withdrawalSumByMemberIds(List<UnionMember> members);
+
+	/**
+	 * 获取我获得的总佣金之和（已支付的）
+	 * @param busId
+	 * @return
+	 */
+	double getSumInComeUnionBrokerage(Integer busId);
+
+	/**
+	 * 根据佣金所得类型获取该类型佣金总和
+	 * @param busId		商家id
+	 * @param type		类型 1：售卡 2：商机
+	 * @return
+	 */
+	double getSumInComeUnionBrokerageByType(Integer busId, int type);
 }

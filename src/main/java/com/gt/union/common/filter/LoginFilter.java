@@ -1,7 +1,14 @@
 package com.gt.union.common.filter;
 
+import com.alibaba.fastjson.JSON;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
+import com.gt.union.common.response.GTJsonResult;
+import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.PropertiesUtil;
+import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.StringUtil;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -17,6 +24,8 @@ import java.util.*;
 @WebFilter(filterName = "loginFilter", urlPatterns = "/*")
 public class LoginFilter implements Filter {
 
+	@Autowired
+	private RedisCacheUtil redisCacheUtil;
 
 	//不需要登录就可访问的url
 	public static final Map<String, String> urls=new HashMap<String, String>();
@@ -28,8 +37,8 @@ public class LoginFilter implements Filter {
 
 	static {
 		//过滤佣金平台路径
-		urls.put("/unionH5Brokerage/toLogin.do", "/unionH5Brokerage/toLogin.do");
-		urls.put("/unionH5Brokerage/login.do", "/unionH5Brokerage/login.do");
+		urls.put("/unionH5Brokerage/index", "/unionH5Brokerage/index");
+		urls.put("/unionH5Brokerage/index.do", "/unionH5Brokerage/index.do");
 
 		//文件类型
 		suffixs.add("js");
@@ -68,6 +77,33 @@ public class LoginFilter implements Filter {
 		}else if(url.split("8A5DA52E").length > 1){//API接口
 			chain.doFilter(request, response);
 		}else if(passSuffixs(url)||passUrl(url)){
+			chain.doFilter(request, response);
+		}else if(url.indexOf("unionH5Brokerage") > -1){
+			String busId = req.getParameter("busId");
+			String uuid = req.getParameter("uuid");
+			if(StringUtil.isEmpty(busId) || StringUtil.isEmpty(uuid)){
+				response.setCharacterEncoding("UTF-8");
+				//TODO 佣金平台手机端重定向地址
+				response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", PropertiesUtil.getUnionUrl()+"/unionH5Brokerage/index")));
+			}
+			if(busUser != null){
+				if(!busUser.getId().equals(busId)){
+					response.setCharacterEncoding("UTF-8");
+					//TODO 佣金平台手机端重定向地址
+					response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", PropertiesUtil.getUnionUrl()+"/unionH5Brokerage/index")));
+				}
+				Object obj = redisCacheUtil.get("h5Brokerage:" + busId);
+				if(CommonUtil.isEmpty(obj)){
+					response.setCharacterEncoding("UTF-8");
+					//TODO 佣金平台手机端重定向地址
+					response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", PropertiesUtil.getUnionUrl()+"/unionH5Brokerage/index")));
+				}
+				if(!uuid.equals(obj)){
+					response.setCharacterEncoding("UTF-8");
+					//TODO 佣金平台手机端重定向地址
+					response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", PropertiesUtil.getUnionUrl()+"/unionH5Brokerage/index")));
+				}
+			}
 			chain.doFilter(request, response);
 		}else if (busUser == null) {// 判断到商家没有登录,就跳转到登陆页面
 			busUser = new BusUser();

@@ -1,5 +1,6 @@
 package com.gt.union.brokerage.service;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.brokerage.entity.UnionBrokerageWithdrawal;
 import com.gt.union.member.entity.UnionMember;
@@ -29,4 +30,20 @@ public interface IUnionBrokerageWithdrawalService extends IService<UnionBrokerag
 	 * @return
 	 */
 	Double withdrawalSumByMemberIds(List<UnionMember> members);
+
+	/**
+	 * 获取我已提现的佣金总和
+	 * @param busId
+	 * @return
+	 */
+	double getSumWithdrawalsUnionBrokerage(Integer busId);
+
+	/**
+	 * 获取提现记录列表
+	 * @param page
+	 * @param busId
+	 * @return
+	 */
+	Page listWithdrawals(Page page, Integer busId);
+
 }

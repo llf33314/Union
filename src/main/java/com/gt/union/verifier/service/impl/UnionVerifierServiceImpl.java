@@ -38,7 +38,7 @@ public class UnionVerifierServiceImpl extends ServiceImpl<UnionVerifierMapper, U
         }
         UnionVerifier unionVerifier = new UnionVerifier();
         unionVerifier.setId(id);
-        unionVerifier.setDelStatus(1);
+        unionVerifier.setDelStatus(CommonConstant.DEL_STATUS_YES);
         this.updateById(unionVerifier);
     }
 
@@ -63,7 +63,7 @@ public class UnionVerifierServiceImpl extends ServiceImpl<UnionVerifierMapper, U
         if(count > 0){
             throw new ParamException("您输入的姓名已存在，请重新输入");
         }
-        Object obj = redisCacheUtil.get("verifyMember:"+unionVerifier.getPhone());
+        Object obj = redisCacheUtil.get("verifier:"+unionVerifier.getPhone());
         if(CommonUtil.isEmpty(obj)){
             throw new BusinessException("验证码已失效");
         }
@@ -71,12 +71,13 @@ public class UnionVerifierServiceImpl extends ServiceImpl<UnionVerifierMapper, U
             throw new BusinessException("验证码有误");
         }
         UnionVerifier verifier = new UnionVerifier();
-        verifier.setDelStatus(0);
+        verifier.setDelStatus(CommonConstant.DEL_STATUS_NO);
         verifier.setCreatetime(new Date());
         verifier.setBusId(unionVerifier.getBusId());
         verifier.setName(unionVerifier.getName());
         verifier.setPhone(unionVerifier.getPhone());
         this.insert(verifier);
+        redisCacheUtil.remove("verifier:"+unionVerifier.getPhone());
     }
 
     @Override

@@ -18,13 +18,12 @@ public interface WxPayService {
 
     /**
      * 提现接口
-     * @param busid 商家id
+     * @param busId 商家id
      * @param memberId  粉丝id
      * @param openid
-     * @param unionId
-     *@param fee   提现金额  @return
-     * @param unionVerifyMember   @throws Exception
+     * @param fee   提现金额  @return
+     * @param verifierId
+     * @throws Exception
      */
-    //TODO
-    //int enterprisePayment(Integer busid, Integer memberId, String openid, Integer unionId, Double fee, UnionVerifyMember unionVerifyMember) throws Exception;
+    int enterprisePayment(Integer busId, Integer memberId, String openid, Double fee, Integer verifierId) throws Exception;
 }
