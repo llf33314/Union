@@ -36,6 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import sun.plugin.com.event.COMEventHandler;
 
 import java.math.BigDecimal;
 import java.net.URLEncoder;
@@ -103,6 +104,20 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("id", opportunityId);
         return this.selectOne(entityWrapper);
+    }
+
+    /**
+     * 根据商家id和目标盟员身份id，获取所有商家与目标盟员之间的商机推荐支付往来列表记录
+     *
+     * @param busId        {not null} 商家id
+     * @param tgtMemberId  {not null} 目标盟员身份id
+     * @param userMemberId 可选项 商家的盟员身份id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public Map<String, Object> getContactDetailByBusIdAndTgtMemberId(Integer busId, Integer tgtMemberId, Integer userMemberId) throws Exception {
+        return null;
     }
 
     //------------------------------------------ list(include page) ---------------------------------------------------
@@ -511,20 +526,6 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         return this.selectList(entityWrapper);
     }
 
-    /**
-     * 根据商家id和目标盟员身份id，获取所有商家与目标盟员之间的商机推荐支付往来列表记录
-     *
-     * @param busId        {not null} 商家id
-     * @param tgtMemberId  {not null} 目标商家盟员id
-     * @param userMemberId 可选项 商家盟员身份id
-     * @return
-     * @throws Exception
-     */
-    @Override
-    public List<Map<String, Object>> listContactDetailByBusIdAndTgtMemberId(Integer busId, Integer tgtMemberId, Integer userMemberId) throws Exception {
-        return null;
-    }
-
     //------------------------------------------------- update --------------------------------------------------------
 
     /**
@@ -709,7 +710,24 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
      * @throws Exception
      */
     @Override
-    public Double sumPaidBrokeragePriceByBusIdAndToMemberId(Integer busId, Integer toMemberId) throws Exception {
+    public Double sumPaidBrokeragePriceByBusIdAndToMemberId(Integer busId, final Integer toMemberId) throws Exception {
+        if (busId == null || toMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                StringBuilder sbSqlSegment = new StringBuilder(" o")
+                        .append(" WHERE o.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND o.is_accept = ").append(OpportunityConstant.ACCEPT_YES)
+                        .append("  AND o.to_member_id = ").append(toMemberId)
+                        .append("  AND exists(")
+                        .append("    SELECT * FROM t_union_brokerage_income bi")
+                        .append("      AND bi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("");
+                return null;
+            }
+        };
         return null;
     }
 

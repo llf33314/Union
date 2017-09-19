@@ -28,6 +28,17 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      */
     UnionOpportunity getById(Integer opportunityId) throws Exception;
 
+    /**
+     * 根据商家id和目标盟员身份id，获取所有商家与目标盟员之间的商机推荐支付往来列表记录
+     *
+     * @param busId        {not null} 商家id
+     * @param tgtMemberId  {not null} 目标盟员身份id
+     * @param userMemberId 可选项 商家的盟员身份id
+     * @return
+     * @throws Exception
+     */
+    Map<String, Object> getContactDetailByBusIdAndTgtMemberId(Integer busId, Integer tgtMemberId, Integer userMemberId) throws Exception;
+
     //------------------------------------------ list(include page) ---------------------------------------------------
 
     /**

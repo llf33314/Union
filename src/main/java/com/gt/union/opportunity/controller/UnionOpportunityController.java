@@ -276,11 +276,11 @@ public class UnionOpportunityController {
             if (busUser.getPid() != null && busUser.getPid() != 0) {
                 busId = busUser.getPid();
             }
-            Page result = this.unionOpportunityService.listPayDetail(page, busId, unionId);
-            return GTJsonResult.instanceSuccessMsg(result).toString();
-        } catch (BaseException e) {
-            logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
+            //Page result = this.unionOpportunityService.listPayDetail(page, busId, unionId);
+            return GTJsonResult.instanceSuccessMsg().toString();
+//        } catch (BaseException e) {
+//            logger.error("", e);
+//            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
@@ -346,11 +346,11 @@ public class UnionOpportunityController {
             if (CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0) {//子账号
                 busId = busUser.getPid();
             }
-            Double businessPriceSum = this.unionOpportunityService.sumAcceptFromMy(busId, isAccept);
-            return GTJsonResult.instanceSuccessMsg(businessPriceSum).toString();
-        } catch (BaseException e) {
-            logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
+            //Double businessPriceSum = this.unionOpportunityService.sumAcceptFromMy(busId, isAccept);
+            return GTJsonResult.instanceSuccessMsg().toString();
+//        } catch (BaseException e) {
+//            logger.error("", e);
+//            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
@@ -368,11 +368,11 @@ public class UnionOpportunityController {
             if (CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0) {//子账号
                 busId = busUser.getPid();
             }
-            Double businessPriceSum = this.unionOpportunityService.sumAcceptFromMy(unionId, busId, isAccept);
-            return GTJsonResult.instanceSuccessMsg(businessPriceSum).toString();
-        } catch (BaseException e) {
-            logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
+            //Double businessPriceSum = this.unionOpportunityService.sumAcceptFromMy(unionId, busId, isAccept);
+            return GTJsonResult.instanceSuccessMsg().toString();
+//        } catch (BaseException e) {
+//            logger.error("", e);
+//            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
@@ -388,11 +388,11 @@ public class UnionOpportunityController {
             if (CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0) {//子账号
                 busId = busUser.getPid();
             }
-            Double businessPriceSum = this.unionOpportunityService.sumFromMyInBadDebt(busId);
-            return GTJsonResult.instanceSuccessMsg(businessPriceSum).toString();
-        } catch (BaseException e) {
-            logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
+            //Double businessPriceSum = this.unionOpportunityService.sumFromMyInBadDebt(busId);
+            return GTJsonResult.instanceSuccessMsg().toString();
+//        } catch (BaseException e) {
+//            logger.error("", e);
+//            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("", e);
             return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
