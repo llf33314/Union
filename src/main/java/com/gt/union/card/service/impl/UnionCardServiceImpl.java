@@ -167,22 +167,11 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 			throw new BusinessException("该联盟卡号不存在");
 		}
 		if(unionId == null){
-            List<UnionMember> members = unionMemberService.listWriteByBusId(busId);
+            List<UnionMember> members = unionMemberService.listWriteWithValidUnionByBusId(busId);
             if(ListUtil.isEmpty(members)){
                 throw new BusinessException("您没有有效的联盟");
             }
-            List<Integer> unionIds = new ArrayList<Integer>();
-            for(UnionMember member : members){
-                try{
-                    unionMainService.checkUnionMainValid(member.getUnionId());
-                    unionIds.add(member.getUnionId());
-                }catch (BaseException e){
-                }
-            }
-            if(ListUtil.isEmpty(unionIds)){
-                throw new BusinessException("您没有有效的联盟");
-            }
-            unionId = unionIds.get(0);
+            unionId = members.get(0).getUnionId();
         }else {
             unionMainService.checkUnionMainValid(unionId);
             UnionMember member = unionMemberService.getByBusIdAndUnionId(busId,unionId);
@@ -191,7 +180,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             }
         }
         //TODO 根据联盟id查询具有写权限的盟员列表
-
+      //  unionMemberService.listReadByUnionId()
         //unionMemberService.list
 
 		/*

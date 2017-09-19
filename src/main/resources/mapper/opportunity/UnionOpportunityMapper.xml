@@ -17,6 +17,7 @@
 		<result column="client_name" property="clientName" />
 		<result column="client_phone" property="clientPhone" />
 		<result column="business_msg" property="businessMsg" />
+		<result column="is_urge_brokerage" property="isUrgeBrokerage" />
 	</resultMap>
 
 	<!-- 查询我的佣金收入列表 -->

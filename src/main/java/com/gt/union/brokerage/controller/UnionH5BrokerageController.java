@@ -3,14 +3,22 @@ package com.gt.union.brokerage.controller;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.Member;
+import com.gt.api.dto.ResponseUtils;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.api.client.pay.WxPayService;
+import com.gt.union.api.entity.param.RequestApiParam;
+import com.gt.union.api.entity.param.UnionPhoneCodeParam;
 import com.gt.union.brokerage.service.IUnionH5BrokerageService;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
+import com.gt.union.common.controller.MemberAuthorizeOrLoginController;
 import com.gt.union.common.exception.BaseException;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.RandomKit;
+import com.gt.union.common.util.RedisKeyUtil;
 import com.gt.union.verifier.entity.UnionVerifier;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -28,7 +36,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/unionH5Brokerage")
-public class UnionH5BrokerageController {
+public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController{
 
 	private Logger logger = Logger.getLogger(UnionH5BrokerageController.class);
 
@@ -95,12 +103,15 @@ public class UnionH5BrokerageController {
 			double sumPay = unionH5BrokerageService.getSumInComeUnionBrokerage(busUser.getId());//我收入的总佣金（已支付）
 			double sumWithdrawals = unionH5BrokerageService.getSumWithdrawalsUnionBrokerage(busUser.getId());//我已提现的总佣金（已支付）
 			double ableGet = BigDecimalUtil.subtract(sumPay,sumWithdrawals).doubleValue();//可提现
-			double unPay = unionH5BrokerageService.getSumUnPayUnionBrokerage(busUser.getId(),null);//联盟中我未支付给别人之和
+			double unPay = unionH5BrokerageService.getSumUnPayUnionBrokerage(null,busUser.getId());//联盟中我未支付给别人之和
 			Map<String,Object> data = new HashMap<String,Object>();
 			data.put("sumPay",sumPay);
 			data.put("ableGet",ableGet);
 			data.put("unPay",unPay);
 			return GTJsonResult.instanceSuccessMsg(data).toString();
+		}  catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
 		} catch (Exception e) {
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg().toString();
@@ -131,6 +142,9 @@ public class UnionH5BrokerageController {
 			data.put("sumWithdrawals",sumWithdrawals);//已提现金额总和
 			data.put("sumUnCome",sumUnCome);//未收的佣金之和
 			return GTJsonResult.instanceSuccessMsg(data).toString();
+		}  catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
 		} catch (Exception e) {
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg().toString();
@@ -185,6 +199,9 @@ public class UnionH5BrokerageController {
 			BusUser user = SessionUtils.getLoginUser(request);
 			Page result = unionH5BrokerageService.listUnPayUnionBrokerage(page, user.getId(),unionId );
 			return GTJsonResult.instanceSuccessMsg(result).toString();
+		}  catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
 		} catch (Exception e){
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
@@ -198,6 +215,9 @@ public class UnionH5BrokerageController {
 			BusUser user = SessionUtils.getLoginUser(request);
 			double unPaySum = unionH5BrokerageService.getSumUnPayUnionBrokerage(unionId, user.getId());
 			return GTJsonResult.instanceSuccessMsg(unPaySum).toString();
+		}  catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
 		} catch (Exception e){
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
@@ -212,6 +232,9 @@ public class UnionH5BrokerageController {
 			BusUser user = SessionUtils.getLoginUser(request);
 			Page result = unionH5BrokerageService.listPayUnionBrokerage(page, user.getId(),unionId );
 			return GTJsonResult.instanceSuccessMsg(result).toString();
+		}  catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
 		} catch (Exception e){
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
@@ -225,6 +248,9 @@ public class UnionH5BrokerageController {
 			BusUser user = SessionUtils.getLoginUser(request);
 			double paySum = unionH5BrokerageService.getSumPayUnionBrokerage(unionId, user.getId());
 			return GTJsonResult.instanceSuccessMsg(paySum).toString();
+		}  catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
 		} catch (Exception e){
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
@@ -239,6 +265,9 @@ public class UnionH5BrokerageController {
 			BusUser user = SessionUtils.getLoginUser(request);
 			Page result = unionH5BrokerageService.listUnComeUnionBrokerage(page, user.getId(),unionId );
 			return GTJsonResult.instanceSuccessMsg(result).toString();
+		}  catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
 		} catch (Exception e){
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
@@ -252,6 +281,9 @@ public class UnionH5BrokerageController {
 			BusUser user = SessionUtils.getLoginUser(request);
 			double unComeSum = unionH5BrokerageService.getUnComeUnionBrokerage(user.getId(), unionId);
 			return GTJsonResult.instanceSuccessMsg(unComeSum).toString();
+		}  catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
 		} catch (Exception e){
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
@@ -266,6 +298,9 @@ public class UnionH5BrokerageController {
 			BusUser user = SessionUtils.getLoginUser(request);
 			Page result = unionH5BrokerageService.listOpportunityPayToMe(page, user.getId(),unionId);
 			return GTJsonResult.instanceSuccessMsg(result).toString();
+		}  catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
 		} catch (Exception e){
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
@@ -280,6 +315,9 @@ public class UnionH5BrokerageController {
 			BusUser user = SessionUtils.getLoginUser(request);
 			double opportunitySum = unionH5BrokerageService.getOpportunitySumToMe(user.getId(), unionId);
 			return GTJsonResult.instanceSuccessMsg(opportunitySum).toString();
+		}  catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
 		} catch (Exception e){
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
@@ -294,6 +332,9 @@ public class UnionH5BrokerageController {
 			BusUser user = SessionUtils.getLoginUser(request);
 			Page result = unionH5BrokerageService.listCardDivide(page, user.getId(),unionId);
 			return GTJsonResult.instanceSuccessMsg(result).toString();
+		}  catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
 		} catch (Exception e){
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
@@ -308,10 +349,80 @@ public class UnionH5BrokerageController {
 			BusUser user = SessionUtils.getLoginUser(request);
 			double cardDivideSum = unionH5BrokerageService.getCardDivideSum(user.getId(), unionId);
 			return GTJsonResult.instanceSuccessMsg(cardDivideSum).toString();
+		}  catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
 		} catch (Exception e){
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
 		}
 	}
+
+
+	/**
+	 * 催促佣金
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@ApiOperation(value = "催促佣金", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/urge/{id}", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public String urge(HttpServletRequest request, HttpServletResponse response, @ApiParam(name = "id", value = "商机id", required = true) @PathVariable(value = "id", required = true) Integer id) {
+		try {
+			BusUser user = SessionUtils.getLoginUser(request);
+			unionH5BrokerageService.urgeOpportunity(user.getId(),id);
+			return GTJsonResult.instanceSuccessMsg().toString();
+		} catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+		}
+	}
+
+
+	@ApiOperation(value = "支付佣金", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/onePay/{id}", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public String payOne(HttpServletRequest request, HttpServletResponse response, @ApiParam(name = "id", value = "商机id", required = true) @PathVariable(value = "id", required = true) Integer id) {
+		try {
+			BusUser user = SessionUtils.getLoginUser(request);
+			Member member = SessionUtils.getLoginMember(request);
+			if(member == null){
+				authorizeMember(request,user.getId(),0,"",true);
+			}
+			//unionH5BrokerageService.payOpportunity(user.getId(),id);
+			return GTJsonResult.instanceSuccessMsg().toString();
+		} catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+		}
+	}
+
+
+	@ApiOperation(value = "一键支付佣金", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/allPay", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public String payAll(HttpServletRequest request, HttpServletResponse response) {
+		try {
+			BusUser user = SessionUtils.getLoginUser(request);
+			Member member = SessionUtils.getLoginMember(request);
+			if(member == null){
+				authorizeMember(request,user.getId(),0,"",true);
+			}
+			//unionH5BrokerageService.payAllOpportunity(user.getId());
+			return GTJsonResult.instanceSuccessMsg().toString();
+		} catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+		}
+	}
+
+
 
 }

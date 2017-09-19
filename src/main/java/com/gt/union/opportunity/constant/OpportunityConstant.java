@@ -44,4 +44,14 @@ public interface OpportunityConstant {
 	 * 佣金支付订单前缀
 	 */
 	String ORDER_PREFIX = "LMYJ";
+
+	/**
+	 * 佣金已催促
+	 */
+	int URGE_YES = 1;
+
+	/**
+	 * 佣金未催促
+	 */
+	int URGE_NO = 0;
 }
