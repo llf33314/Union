@@ -134,4 +134,11 @@ public interface IUnionH5BrokerageService {
 	 * @return
 	 */
 	double getCardDivideSum(Integer busId, Integer unionId) throws Exception;
+
+	/**
+	 * 催促佣金
+	 * @param busId
+	 * @param id
+	 */
+	void urgeOpportunity(Integer busId, Integer id) throws Exception;
 }

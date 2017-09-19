@@ -85,6 +85,9 @@ public class UnionOpportunity extends Model<UnionOpportunity> {
 	@TableField("business_msg")
 	private String businessMsg;
 
+	@TableField("is_urge_brokerage")
+	private Integer isUrgeBrokerage;
+
 
 	public Integer getId() {
 		return id;
@@ -188,6 +191,14 @@ public class UnionOpportunity extends Model<UnionOpportunity> {
 
 	public void setBusinessMsg(String businessMsg) {
 		this.businessMsg = businessMsg;
+	}
+
+	public Integer getIsUrgeBrokerage() {
+		return isUrgeBrokerage;
+	}
+
+	public void setIsUrgeBrokerage(Integer isUrgeBrokerage) {
+		this.isUrgeBrokerage = isUrgeBrokerage;
 	}
 
 	@Override

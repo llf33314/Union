@@ -108,7 +108,7 @@ public class UnionCardApiController extends ApiBaseController {
 			} else {
 				return ResponseUtils.createByErrorMessage("发送失败");
 			}
-		} catch (BusinessException e) {
+		} catch (BaseException e) {
 			e.printStackTrace();
 			return ResponseUtils.createByErrorMessage(e.getErrorMsg());
 		}catch (Exception e) {

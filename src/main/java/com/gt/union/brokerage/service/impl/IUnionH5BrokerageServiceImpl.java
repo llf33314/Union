@@ -2,26 +2,32 @@ package com.gt.union.brokerage.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.sign.SignBean;
+import com.gt.api.dto.ResponseUtils;
 import com.gt.api.util.SessionUtils;
 import com.gt.api.util.sign.SignHttpUtils;
 import com.gt.api.util.sign.SignUtils;
+import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.brokerage.mapper.UnionH5BrokerageMapper;
 import com.gt.union.brokerage.service.IUnionBrokerageIncomeService;
 import com.gt.union.brokerage.service.IUnionBrokerageWithdrawalService;
 import com.gt.union.brokerage.service.IUnionH5BrokerageService;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.RedisCacheUtil;
-import com.gt.union.common.util.StringUtil;
+import com.gt.union.common.util.*;
+import com.gt.union.main.entity.UnionMain;
+import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.service.IUnionMemberService;
+import com.gt.union.opportunity.constant.OpportunityConstant;
+import com.gt.union.opportunity.entity.UnionOpportunity;
+import com.gt.union.opportunity.service.IUnionOpportunityService;
 import com.gt.union.verifier.entity.UnionVerifier;
 import com.gt.union.verifier.service.IUnionVerifierService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +55,12 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 	@Value(("${wxmp.url}"))
 	private String wxmpUrl;
 
+	@Value("${wxmp.company}")
+	private String company;
+
+	@Autowired
+	private SmsService smsService;
+
 	@Autowired
 	private IBusUserService busUserService;
 
@@ -66,6 +78,12 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 
 	@Autowired
 	private IUnionMemberService unionMemberService;
+
+	@Autowired
+	private IUnionOpportunityService unionOpportunityService;
+
+	@Autowired
+	private IUnionMainService unionMainService;
 
 	@Override
 	public void checkLogin(Integer type, String username, String userpwd, String phone, String code, HttpServletRequest request) throws Exception{
@@ -371,6 +389,50 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 			return 0;
 		}
 		return unionH5BrokerageMapper.getCardDivideSum(members, busId);
+	}
+
+	@Override
+	public void urgeOpportunity(Integer busId, Integer id) throws Exception{
+		if(busId == null || id == null){
+			throw new ParamException(CommonConstant.PARAM_ERROR);
+		}
+		UnionOpportunity opportunity = unionOpportunityService.getById(id);
+		if(opportunity == null){
+			throw new BusinessException("商机不存在");
+		}
+		if(opportunity.getIsAccept() != OpportunityConstant.ACCEPT_YES){
+			throw new BusinessException("商机未接受");
+		}
+		if(opportunity.getIsUrgeBrokerage() == OpportunityConstant.URGE_YES){
+			throw new BusinessException("商机已催促");
+		}
+		UnionMember fromMember = unionMemberService.getById(opportunity.getToMemberId());
+		if(fromMember == null){
+			throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
+		}
+		if(!fromMember.getBusId().equals(busId)){
+			throw new BusinessException("该商机不属于您");
+		}
+		UnionMember toMember = unionMemberService.getById(opportunity.getToMemberId());
+		if(toMember == null){
+			throw new BusinessException("盟员不存在");
+		}
+		UnionMain main = unionMainService.getById(toMember.getId());
+		HashMap<String, Object> smsParams = new HashMap<String,Object>();
+		smsParams.put("mobiles", StringUtil.isEmpty(toMember.getNotifyPhone()) ? toMember.getDirectorPhone() : toMember.getNotifyPhone());
+		smsParams.put("content", "您尚未支付\"" + main.getName()+ "\"的\"" + fromMember.getEnterpriseName() + "\"" +opportunity.getBrokeragePrice() + "元的商机推荐佣金，请尽快支付，谢谢");
+		smsParams.put("company", company);
+		smsParams.put("busId", busId);
+		smsParams.put("model", ConfigConstant.SMS_UNION_MODEL);
+		Map<String,Object> param = new HashMap<String,Object>();
+		param.put("reqdata",smsParams);
+		if(smsService.sendSms(param) != 1){
+			throw new BusinessException("发送失败");
+		}
+		UnionOpportunity unionOpportunity = new UnionOpportunity();
+		unionOpportunity.setId(opportunity.getId());
+		unionOpportunity.setIsUrgeBrokerage(OpportunityConstant.URGE_YES);
+		unionOpportunityService.updateById(unionOpportunity);
 	}
 
 

@@ -17,8 +17,8 @@
 
     <!-- 根据商家id获取未收入的佣金列表 -->
     <select id="listUnComeUnionBrokerage" resultType="java.util.Map">
-      SELECT o.id, o.brokerage_price money, o.modifytime time, m.enterprise_name name, um.`name` unionName from
-      (SELECT id, modifytime, brokerage_price,from_member_id, to_member_id from t_union_opportunity
+      SELECT o.id, o.brokerage_price money, o.modifytime time, o.is_urge_brokerage isUrge, m.enterprise_name name, um.`name` unionName from
+      (SELECT id, modifytime, brokerage_price,from_member_id, to_member_id, is_urge_brokerage from t_union_opportunity
       WHERE is_accept = 2 AND del_status = 0 AND from_member_id in
         <foreach collection="members" item="member" open="(" close=")"
                  separator=",">
