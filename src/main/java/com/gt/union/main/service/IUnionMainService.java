@@ -85,6 +85,16 @@ public interface IUnionMainService extends IService<UnionMain> {
      */
     Page<UnionMain> pageReadByBusId(Page page, Integer busId) throws Exception;
 
+    /**
+     * 根据商家id，分页获取商家尚未加入的联盟列表信息
+     *
+     * @param page  {not null} 分页对象
+     * @param busId {not null} 商家id
+     * @return
+     * @throws Exception
+     */
+    Page<UnionMain> pageOtherUnionByBusId(Page page, Integer busId) throws Exception;
+
     //------------------------------------------------- update --------------------------------------------------------
 
     /**

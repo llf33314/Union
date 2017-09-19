@@ -24,8 +24,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -52,8 +50,30 @@ public class UnionMainController {
 
     //-------------------------------------------------- get ----------------------------------------------------------
 
+    @ApiOperation(value = "分页获取我尚未加入的联盟列表信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/page/otherUnion", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String list(HttpServletRequest request, Page page) {
+        try {
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            Integer busId = busUser.getId();
+            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+                busId = busUser.getPid();
+            }
+            Page<UnionMain> result = this.unionMainService.pageOtherUnionByBusId(page, busId);
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            this.unionLogErrorService.saveIfNotNull(e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            this.unionLogErrorService.saveIfNotNull(e);
+            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+        }
+    }
+
     @ApiOperation(value = "获取我的所有联盟的信息，包括我创建的、以及我加入的", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/list/myUnion", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listByBusId(HttpServletRequest request) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
@@ -75,7 +95,7 @@ public class UnionMainController {
     }
 
     @ApiOperation(value = "分页获取我的所有联盟的信息，包括我创建的、以及我加入的", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/page/myUnion", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String PageByBusId(HttpServletRequest request, Page page) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);

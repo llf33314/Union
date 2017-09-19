@@ -235,6 +235,29 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         return this.selectPage(page, entityWrapper);
     }
 
+    /**
+     * 根据商家id，分页获取商家尚未加入的联盟列表信息
+     *
+     * @param page  {not null} 分页对象
+     * @param busId {not null} 商家id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public Page<UnionMain> pageOtherUnionByBusId(Page page, Integer busId) throws Exception {
+        if (page == null || busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .notExists(new StringBuilder(" SELECT m.id FROM t_union_member m")
+                        .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND m.union_id = t_union_main.id")
+                        .append("  AND m.bus_id = ").append(busId)
+                        .toString());
+        return this.selectPage(page, entityWrapper);
+    }
+
     //------------------------------------------------- update --------------------------------------------------------
 
     /**

@@ -122,6 +122,16 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
     List<UnionOpportunity> listPaidByFromMemberId(Integer fromMemberId) throws Exception;
 
     /**
+     * 根据商家id和推荐方的盟员身份id，获取所有推荐给商家的，已接受状态的，且已支付的商机推荐列表信息
+     *
+     * @param busId        {not null} 商家id
+     * @param fromMemberId {not null} 推荐方的盟员身份id
+     * @return
+     * @throws Exception
+     */
+    List<UnionOpportunity> listPaidByBusIdAndFromMemberId(Integer busId, Integer fromMemberId) throws Exception;
+
+    /**
      * 根据接收方的盟员身份id，获取所有已接受，且已支付的商机推荐列表信息
      *
      * @param toMemberId {not null} 接收方的盟员身份id
@@ -129,6 +139,26 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      * @throws Exception
      */
     List<UnionOpportunity> listPaidByToMemberId(Integer toMemberId) throws Exception;
+
+    /**
+     * 根据商家id和接收方的盟员身份id，获取所有商家推荐的，已接受状态，且已支付的商机推荐列表信息
+     *
+     * @param busId      {not null} 商家id
+     * @param toMemberId {not null} 接收方的盟员身份id
+     * @return
+     * @throws Exception
+     */
+    List<UnionOpportunity> listPaidByBusIdAndToMemberId(Integer busId, Integer toMemberId) throws Exception;
+
+    /**
+     * 根据推荐方的盟员身份id和接收方的盟员身份id，获取所有已接受的，且已支付的商机推荐列表信息
+     *
+     * @param fromMemberId {not null} 推荐方的盟员身份id
+     * @param toMemberId   {not null} 接收方的盟员身份id
+     * @return
+     * @throws Exception
+     */
+    List<UnionOpportunity> listPaidByFromMemberIdAndToMemberId(Integer fromMemberId, Integer toMemberId) throws Exception;
 
     //------------------------------------------------- update --------------------------------------------------------
 
@@ -214,16 +244,6 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      * @param only
      */
     void payOpportunitySuccess(String encrypt, String only) throws Exception;
-
-
-    /**
-     * 查询在联盟下我与某盟员的佣金来往明细
-     *
-     * @param memberId   盟员id
-     * @param myMemberId 我的盟员id
-     * @return
-     */
-    List<Map<String, Object>> listPayDetailParticularByUnionIdAndMemberId(Integer memberId, Integer myMemberId) throws Exception;
 
     /**
      * 获取商机统计信息

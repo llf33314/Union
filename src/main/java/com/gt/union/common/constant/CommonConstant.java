@@ -72,5 +72,5 @@ public interface CommonConstant {
     /**
      * 联盟默认有效期
      */
-    String UNION_VALIDITY_DEFAULT = "2020-09-01 14:00:00";
+    String UNION_VALIDITY_DEFAULT = "2030-09-01 14:00:00";
 }

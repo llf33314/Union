@@ -101,6 +101,16 @@ public interface IUnionMemberService extends IService<UnionMember> {
     Page pageOpportunityBrokerageRatioMapByMember(Page page, final UnionMember unionMember) throws Exception;
 
     /**
+     * 根据盟主信息，分页获取本联盟中所有未提交优惠项目的盟员信息，未提交是指：不存在被审核通过的优惠服务项
+     *
+     * @param page        {not null} 分页对象
+     * @param ownerMember {not null} 盟主身份
+     * @return
+     * @throws Exception
+     */
+    Page pagePreferentialUnCommitByUnionOwner(Page page, UnionMember ownerMember) throws Exception;
+
+    /**
      * 根据盟员id和商家id，获取所有与该盟员同属一个联盟的盟员信息
      *
      * @param memberId {not null} 盟员id
@@ -233,6 +243,15 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @throws Exception
      */
     Integer countReadByBusId(Integer busId) throws Exception;
+
+    /**
+     * 根据盟主身份，统计本联盟中所有未提交优惠项目的盟员数，未提交是指：不存在被审核通过的优惠服务项
+     *
+     * @param ownerMember {not null} 盟主身份
+     * @return
+     * @throws Exception
+     */
+    Integer countPreferentialUnCommitByUnionOwner(UnionMember ownerMember) throws Exception;
 
     //------------------------------------------------ boolean --------------------------------------------------------
 

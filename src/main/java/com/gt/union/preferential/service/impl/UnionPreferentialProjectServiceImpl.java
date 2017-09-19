@@ -12,6 +12,7 @@ import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.member.constant.MemberConstant;
 import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.service.IUnionMemberService;
+import com.gt.union.preferential.constant.PreferentialConstant;
 import com.gt.union.preferential.entity.UnionPreferentialItem;
 import com.gt.union.preferential.entity.UnionPreferentialProject;
 import com.gt.union.preferential.mapper.UnionPreferentialProjectMapper;
@@ -180,25 +181,32 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         if (!unionOwner.getIsUnionOwner().equals(MemberConstant.IS_UNION_OWNER_YES)) {
             throw new BusinessException("非盟主身份无法操作");
         }
-        Wrapper wrapper = new Wrapper() {
-            @Override
-            public String getSqlSegment() {
-                StringBuilder sbSqlSegment = new StringBuilder(" pp")
-                        .append(" LEFT JOIN t_union_preferential_item pi ON pi.project_id = pp.id")
-                        .append(" LEFT JOIN t_union_member m ON m.id = pp.member_id")
-                        .append(" WHERE pp.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND pi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND pi.status = ").append(itemStatus)
-                        .append("  AND m.union_id = ").append(unionOwner.getUnionId())
-                        .append(" ORDER BY pp.id ASC");
-                return sbSqlSegment.toString();
-            }
-        };
-        StringBuilder sbSqlSelect = new StringBuilder(" pp.id projectId") //优惠项目id
-                .append(", pp.illustration projectIllustration") //优惠项目说明
-                .append(", m.enterprise_name enterpriseName"); //优惠项目所属盟员的名称
-        wrapper.setSqlSelect(sbSqlSelect.toString());
-        return this.selectMapsPage(page, wrapper);
+        if (itemStatus != PreferentialConstant.STATUS_UNCOMMITTED) {
+            //(5-1)审核中、审核通过、审核不通过
+            Wrapper wrapper = new Wrapper() {
+                @Override
+                public String getSqlSegment() {
+                    StringBuilder sbSqlSegment = new StringBuilder(" pp")
+                            .append(" LEFT JOIN t_union_preferential_item pi ON pi.project_id = pp.id")
+                            .append(" LEFT JOIN t_union_member m ON m.id = pp.member_id")
+                            .append(" WHERE pp.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                            .append("  AND pi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                            .append("  AND pi.status = ").append(itemStatus)
+                            .append("  AND m.union_id = ").append(unionOwner.getUnionId())
+                            .append(" ORDER BY pp.id ASC");
+                    return sbSqlSegment.toString();
+                }
+            };
+            StringBuilder sbSqlSelect = new StringBuilder(" pp.id projectId") //优惠项目id
+                    .append(", pp.illustration projectIllustration") //优惠项目说明
+                    .append(", m.enterprise_name enterpriseName") //优惠项目所属盟员的名称
+                    .append(", m.id memberId"); //优惠项目所属盟员身份id
+            wrapper.setSqlSelect(sbSqlSelect.toString());
+            return this.selectMapsPage(page, wrapper);
+        } else {
+            //(5-2)未提交
+            return this.unionMemberService.pagePreferentialUnCommitByUnionOwner(page, unionOwner);
+        }
     }
 
     //------------------------------------------------- update --------------------------------------------------------
@@ -273,23 +281,35 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         if (!unionOwner.getIsUnionOwner().equals(MemberConstant.IS_UNION_OWNER_YES)) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
         }
-        Wrapper wrapper = new Wrapper() {
-            @Override
-            public String getSqlSegment() {
-                StringBuilder sbSqlSegment = new StringBuilder(" pp")
-                        .append(" LEFT JOIN t_union_preferential_item pi ON pi.project_id = pp.id")
-                        .append(" LEFT JOIN t_union_member m ON m.id = pp.member_id")
-                        .append(" WHERE pp.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND pi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND pi.status = ").append(itemStatus)
-                        .append("  AND m.union_id = ").append(unionOwner.getUnionId())
-                        .append(" ORDER BY pp.id ASC");
-                return sbSqlSegment.toString();
-            }
-        };
-        StringBuilder sbSqlSelect = new StringBuilder(" pp.id projectId"); //优惠项目id
-        wrapper.setSqlSelect(sbSqlSelect.toString());
-        return this.selectCount(wrapper);
+        if (itemStatus != PreferentialConstant.STATUS_UNCOMMITTED) {
+            //(5-1)审核中、审核通过、审核不通过
+            Wrapper wrapper = new Wrapper() {
+                @Override
+                public String getSqlSegment() {
+                    StringBuilder sbSqlSegment = new StringBuilder(" pp")
+                            .append(" WHERE pp.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                            .append(" AND exists(")
+                            .append("  SELECT pi.id FROM t_union_preferential_item pi")
+                            .append("  WHERE pi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                            .append("    AND pi.status = ").append(itemStatus)
+                            .append("    AND pi.project_id = pp.id")
+                            .append(" )")
+                            .append(" AND exists(")
+                            .append("  SELECT m.id FROM t_union_member m")
+                            .append("  WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                            .append("    AND m.id = pp.member_id")
+                            .append("    AND m.union_id = ").append(unionOwner.getUnionId())
+                            .append(" )");
+                    return sbSqlSegment.toString();
+                }
+            };
+            StringBuilder sbSqlSelect = new StringBuilder(" pp.id projectId"); //优惠项目id
+            wrapper.setSqlSelect(sbSqlSelect.toString());
+            return this.selectCount(wrapper);
+        } else {
+            //(5-2) 未提交
+            return this.unionMemberService.countPreferentialUnCommitByUnionOwner(unionOwner);
+        }
     }
 
     //------------------------------------------------ boolean --------------------------------------------------------

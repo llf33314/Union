@@ -19,6 +19,7 @@ import com.gt.union.member.mapper.UnionMemberMapper;
 import com.gt.union.member.service.IUnionMemberService;
 import com.gt.union.member.vo.CardDividePercentVO;
 import com.gt.union.member.vo.UnionMemberVO;
+import com.gt.union.preferential.constant.PreferentialConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -255,6 +256,39 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 .append(", rToMe.ratio ratioToMe"); //TA给我的商机佣金比例
         wrapper.setSqlSelect(sbSqlSelect.toString());
         return this.selectMapsPage(page, wrapper);
+    }
+
+    /**
+     * 盟主分页获取本联盟中所有未提交优惠项目的盟员信息，未提交是指：不存在被审核通过的优惠服务项
+     *
+     * @param page        {not null} 分页对象
+     * @param ownerMember {not null} 盟主身份
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public Page pagePreferentialUnCommitByUnionOwner(Page page, UnionMember ownerMember) throws Exception {
+        if (page == null || ownerMember == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        if (!ownerMember.getIsUnionOwner().equals(MemberConstant.IS_UNION_OWNER_YES)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .ne("status", MemberConstant.STATUS_APPLY_IN)
+                .eq("union_id", ownerMember.getUnionId())
+                .notExists(new StringBuilder(" SELECT pi.id FROM t_union_preferential_item pi")
+                        .append(" WHERE pi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND pi.status = ").append(PreferentialConstant.STATUS_PASS)
+                        .append("  AND exists(")
+                        .append("    SELECT pp.id FROM t_union_preferential_project pp")
+                        .append("    WHERE pp.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("      AND pp.id = pi.project_id")
+                        .append("      AND pp.member_id = t_union_member.id")
+                        .append("  )")
+                        .toString());
+        return this.selectPage(page, entityWrapper);
     }
 
     /**
@@ -682,6 +716,38 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 .in("status", new Object[]{MemberConstant.STATUS_IN
                         , MemberConstant.STATUS_APPLY_OUT
                         , MemberConstant.STATUS_OUTING});
+        return this.selectCount(entityWrapper);
+    }
+
+    /**
+     * 根据盟主身份，统计本联盟中所有未提交优惠项目的盟员数，未提交是指：不存在被审核通过的优惠服务项
+     *
+     * @param ownerMember {not null} 盟主身份
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public Integer countPreferentialUnCommitByUnionOwner(UnionMember ownerMember) throws Exception {
+        if (ownerMember == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        if (!ownerMember.getIsUnionOwner().equals(MemberConstant.IS_UNION_OWNER_YES)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .ne("status", MemberConstant.STATUS_APPLY_IN)
+                .eq("union_id", ownerMember.getUnionId())
+                .notExists(new StringBuilder(" SELECT pi.id FROM t_union_preferential_item pi")
+                        .append(" WHERE pi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND pi.status = ").append(PreferentialConstant.STATUS_PASS)
+                        .append("  AND exists(")
+                        .append("    SELECT pp.id FROM t_union_preferential_project pp")
+                        .append("    WHERE pp.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("      AND pp.id = pi.project_id")
+                        .append("      AND pp.member_id = t_union_member.id")
+                        .append("  )")
+                        .toString());
         return this.selectCount(entityWrapper);
     }
 
