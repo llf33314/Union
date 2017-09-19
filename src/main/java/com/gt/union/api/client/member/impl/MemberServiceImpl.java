@@ -1,0 +1,50 @@
+package com.gt.union.api.client.member.impl;
+
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
+import com.gt.api.util.sign.SignHttpUtils;
+import com.gt.union.api.client.member.MemberService;
+import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.StringUtil;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by Administrator on 2017/9/18 0018.
+ */
+@Service
+public class MemberServiceImpl implements MemberService {
+
+	@Value("${member.url}")
+	private String memberUrl;
+
+	@Value("${member.signkey}")
+	private String memberSignkey;
+
+
+	@Override
+	public List<Map> listByBusIdAndMemberIds(Integer busId, String memberIds) {
+		String url = memberUrl + "memberAPI/member/findMemberByids";
+		Map<String,Object> param = new HashMap<String,Object>();
+		param.put("busId",busId);
+		param.put("ids",memberIds);
+		try {
+			String data = SignHttpUtils.postByHttp(url,param,memberSignkey);
+			if(StringUtil.isEmpty(data)){
+				return null;
+			}
+			Map map = JSONObject.parseObject(data,Map.class);
+			if(CommonUtil.isNotEmpty(map.get("data"))){
+				return JSONArray.parseArray(map.get("data").toString(),Map.class);
+			}else {
+				return null;
+			}
+		}catch (Exception e){
+			return null;
+		}
+	}
+}

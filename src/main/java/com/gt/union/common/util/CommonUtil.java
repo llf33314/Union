@@ -3,6 +3,7 @@ package com.gt.union.common.util;
 import org.apache.log4j.Logger;
 import org.springframework.context.ApplicationContext;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collection;
 import java.util.Map;
 
@@ -138,4 +139,17 @@ public class CommonUtil {
 	}
 
 
+	/**
+	 * 判断浏览器
+	 * @return 1:微信浏览器,99:其他浏览器
+	 */
+	public static Integer judgeBrowser(HttpServletRequest request){
+		String ua = request.getHeader("user-agent")
+				.toLowerCase();
+		if (ua.indexOf("micromessenger") > 0) {// 微信-1
+			return 1;
+		}else{//其他 -99
+			return 99;
+		}
+	}
 }

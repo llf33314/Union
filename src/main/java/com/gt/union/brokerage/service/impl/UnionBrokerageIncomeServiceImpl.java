@@ -14,6 +14,7 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.BigDecimalUtil;
+import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.main.service.IUnionMainService;
@@ -193,6 +194,31 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
     		return 0d;
 		}
 		return Double.valueOf(data.get("money").toString());
+	}
+
+	@Override
+	public double getSumInComeUnionBrokerage(Integer busId) {
+		EntityWrapper wrapper = new EntityWrapper<>();
+		wrapper.eq("bus_id", busId);
+		wrapper.setSqlSelect("IFNULL(SUM(money), 0) money");
+		Map<String,Object> data = this.selectMap(wrapper);
+		if(CommonUtil.isEmpty(data)){
+			return 0;
+		}
+		return CommonUtil.toDouble(data.get("money"));
+	}
+
+	@Override
+	public double getSumInComeUnionBrokerageByType(Integer busId, int type) {
+		EntityWrapper wrapper = new EntityWrapper<>();
+		wrapper.eq("bus_id", busId);
+		wrapper.eq("type", type);
+		wrapper.setSqlSelect("IFNULL(SUM(money), 0) money");
+		Map<String,Object> data = this.selectMap(wrapper);
+		if(CommonUtil.isEmpty(data)){
+			return 0;
+		}
+		return CommonUtil.toDouble(data.get("money"));
 	}
 }
 
