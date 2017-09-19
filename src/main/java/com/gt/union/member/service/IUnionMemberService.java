@@ -109,6 +109,15 @@ public interface IUnionMemberService extends IService<UnionMember> {
     List<UnionMember> listWriteByBusId(Integer busId) throws Exception;
 
     /**
+     * 根据商家id，获取所有具有写权限，且所在联盟是有效的盟员身份列表信息
+     *
+     * @param busId {not null} 商家id
+     * @return
+     * @throws Exception
+     */
+    List<UnionMember> listWriteWithValidUnionByBusId(Integer busId) throws Exception;
+
+    /**
      * 根据商家id，获取商家所有具有读权限、且不是盟主的盟员身份列表信息
      *
      * @param busId {not null}

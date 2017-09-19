@@ -6,7 +6,6 @@ import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.vo.UnionMainVO;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -50,6 +49,7 @@ public interface IUnionMainService extends IService<UnionMain> {
 
     /**
      * 交集，判断标准是联盟id
+     *
      * @param unionMainList
      * @param unionMainList2
      * @return
@@ -116,4 +116,22 @@ public interface IUnionMainService extends IService<UnionMain> {
      * @throws Exception
      */
     void checkUnionMainValid(UnionMain unionMain) throws Exception;
+
+    /**
+     * 根据联盟id，判断联盟是否有效
+     *
+     * @param unionId {not null} 联盟id
+     * @return
+     * @throws Exception
+     */
+    boolean isUnionMainValid(Integer unionId) throws Exception;
+
+    /**
+     * 根据联盟判断联盟是否有效
+     *
+     * @param unionMain {not null} 联盟
+     * @return
+     * @throws Exception
+     */
+    boolean isUnionMainValid(UnionMain unionMain) throws Exception;
 }

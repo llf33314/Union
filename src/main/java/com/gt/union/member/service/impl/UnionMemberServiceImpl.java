@@ -294,6 +294,34 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     /**
+     * 根据商家id，获取所有具有写权限，且所在联盟是有效的盟员身份列表信息
+     *
+     * @param busId {not null} 商家id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public List<UnionMember> listWriteWithValidUnionByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionMember> result = new ArrayList<>();
+        //(1)获取所有具有写权限的盟员身份列表信息
+        List<UnionMember> writeMemberList = this.listWriteByBusId(busId);
+        if (ListUtil.isEmpty(writeMemberList)) {
+            return null;
+        }
+        //(2)判断盟员身份所在的联盟是否有效
+        for (int i = 0, size = writeMemberList.size(); i < size; i++) {
+            UnionMember writeMember = writeMemberList.get(i);
+            if (this.unionMainService.isUnionMainValid(writeMember.getUnionId())) {
+                result.add(writeMember);
+            }
+        }
+        return result;
+    }
+
+    /**
      * 根据商家id，获取商家所有具有读权限、且不是盟主的盟员身份列表信息
      *
      * @param busId {not null}

@@ -421,4 +421,56 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         // （5）重新存入缓存
         this.redisCacheUtil.set(unionMainValidKey, "1");
     }
+
+    /**
+     * 根据联盟id，判断联盟是否有效
+     *
+     * @param unionId {not null} 联盟id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public boolean isUnionMainValid(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        UnionMain unionMain = this.getById(unionId);
+        return isUnionMainValid(unionMain);
+    }
+
+    /**
+     * 根据联盟判断联盟是否有效
+     *
+     * @param unionMain {not null} 联盟
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public boolean isUnionMainValid(UnionMain unionMain) throws Exception {
+        if (unionMain == null) {
+            throw new BusinessException("联盟不存在");
+        }
+        //(1)如果缓存中已存在，说明有效，直接返回
+        String unionMainValidKey = RedisKeyUtil.getUnionMainValidKey(unionMain.getId());
+        if (this.redisCacheUtil.exists(unionMainValidKey)) {
+            return true;
+        }
+        //(2)检查联盟有效性
+        if (unionMain.getUnionValidity().compareTo(DateUtil.getCurrentDate()) < 0) {
+            return false;
+        }
+        //(3)检查盟主有效性
+        UnionMember unionOwner = this.unionMemberService.getOwnerByUnionId(unionMain.getId());
+        if (unionOwner == null) {
+            return false;
+        }
+        // （4）检查盟主联盟服务许可
+        Integer unionOwnerBusUserId = unionOwner.getBusId();
+        if (!this.unionMainPermitService.hasUnionMainPermit(unionOwnerBusUserId)) {
+            return false;
+        }
+        // （5）重新存入缓存
+        this.redisCacheUtil.set(unionMainValidKey, "1");
+        return true;
+    }
 }
