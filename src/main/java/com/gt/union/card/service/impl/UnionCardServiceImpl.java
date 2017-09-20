@@ -9,6 +9,7 @@ import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.api.entity.result.UnionDiscountResult;
+import com.gt.union.card.constant.CardConstant;
 import com.gt.union.card.entity.UnionCard;
 import com.gt.union.card.entity.UnionCardBinding;
 import com.gt.union.card.entity.UnionCardRoot;
@@ -466,10 +467,19 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         if(ListUtil.isEmpty(members)){
             throw new BusinessException("您没有有效的联盟");
         }
-        List<Map<String,Object>> list = this.listByPhoneAndMembers(phone,members);
+        List<UnionCard> list = this.listByPhoneAndMembers(phone,members);
         if(ListUtil.isEmpty(list)){
             sendMsg(phone,busId);
+            return;
+        }else if(list.size() < members.size()){
+            sendMsg(phone,busId);
+            return;
         }else if(list.size() == members.size()){
+            checkCardList(members,list);
+        }else {
+            throw new BusinessException(CommonConstant.SYS_ERROR);
+        }
+        if(list.size() == members.size()){
             throw new BusinessException("该手机号已办理联盟卡");
         }else {
             sendMsg(phone,busId);
@@ -494,9 +504,49 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         }
     }
 
+    /**
+     * 判断是否还可以升级联盟卡
+     * @param members
+     * @param list
+     * @throws Exception
+     */
+    private void checkCardList(List<UnionMember> members, List<UnionCard> list) throws Exception{
+        Iterator<UnionCard> it = list.iterator();
+        //如果还可以再升级，则移除card
+        Iterator<UnionMember> im = members.iterator();
+        while (it.hasNext()){
+            UnionCard card = it.next();
+            Map<Integer,Integer> map = new HashMap<>();
+            while (im.hasNext()){
+                UnionMember member = im.next();
+                if(member.getId().equals(card.getMemberId())){
+                    map.put(member.getId(), member.getUnionId());
+                    break;
+                }
+            }
+            Integer unionId = map.get(card.getMemberId());
+            if(card.getType() == CardConstant.TYPE_BLACK){//黑卡
+                //如果是免费的，则判断旧会员是否需要收费，需要，则可以升级
+                if(card.getIsOld() == CardConstant.IS_OLD_YES){
+                    UnionMainCharge blackCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_BLACK, MainConstant.CHARGE_IS_AVAILABLE_YES);
+                    if(blackCharge.getIsOldCharge() == MainConstant.CHARGE_OLD_IS_YES){//旧会员收费
+                        it.remove();
+                        break;
+                    }
+                }
+                //如果是收费的，判断是否有开启红卡，开启了则可以升级
+                UnionMainCharge redCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_RED, MainConstant.CHARGE_IS_AVAILABLE_YES);
+                if(redCharge != null){//开启了红卡
+                    it.remove();
+                    break;
+                }
+            }
+        }
+    }
+
     @Override
-    public List<Map<String, Object>> listByPhoneAndMembers(String phone, List<UnionMember> members) {
-        List<Map<String,Object>> list = unionCardMapper.listByPhoneAndMembers(phone,members);
+    public List<UnionCard> listByPhoneAndMembers(String phone, List<UnionMember> members) {
+        List<UnionCard> list = unionCardMapper.listByPhoneAndMembers(phone,members);
         return list;
     }
 
@@ -517,58 +567,120 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         if(ListUtil.isEmpty(members)){
             throw new BusinessException("您没有有效的联盟");
         }
-        List<Integer> unionIds = new ArrayList<Integer>();
-        for(UnionMember member : members){
-            unionIds.add(member.getUnionId());
+        if(unionId != null){
+            Iterator<UnionMember> im = members.iterator();
+            while (im.hasNext()){
+                UnionMember member = im.next();
+                if(!member.getUnionId().equals(unionId)){
+                    im.remove();
+                }
+            }
         }
-        List<UnionMain> mains = unionMainService.listByIds(unionIds);
-        if(ListUtil.isEmpty(mains)){
-            throw new BusinessException("您没有有效的联盟");
+        List<UnionCard> list = this.listByPhoneAndMembers(phone,members);
+        if(ListUtil.isEmpty(list)){
+            Map<String,Object> data = getUnionInfo(members, list, phone);
+            WxPublicUsers users = busUserService.getWxPublicUserByBusId(busId);
+            if(users != null){
+                data.put("follow",1);
+            }
+            return data;
+        } else if(list.size() <= members.size()){
+            Map<String,Object> data = getUnionInfo(members, list, phone);
+            WxPublicUsers users = busUserService.getWxPublicUserByBusId(busId);
+            if(users != null){
+                data.put("follow",1);
+            }
+            return data;
+        } else {
+            throw new BusinessException(CommonConstant.SYS_ERROR);
         }
-        if(members.size() != mains.size()){
-            throw new BusinessException(CommonConstant.OPERATE_ERROR);
+    }
+
+    /**
+     *
+     * @param members   盟员列表
+     * @param list      联盟卡列表
+     * @return
+     * @throws Exception
+     */
+    private Map<String, Object> getUnionInfo(List<UnionMember> members, List<UnionCard> list, String phone) throws Exception{
+        checkCardList(members,list);//可以升级的联盟列表
+        if(members.size() == list.size()){
+            throw new BusinessException("该手机号已办理联盟卡");
         }
-        List<UnionMain> unions = new ArrayList<UnionMain>();
-        for(UnionMember member : members){
-            for(UnionMain main : mains){
-                if(member.getUnionId().equals(main.getId())){
+        Iterator<UnionMember> im = members.iterator();
+        Iterator<UnionCard> it = list.iterator();
+        while (im.hasNext()){
+            UnionMember member = im.next();
+            while (it.hasNext()){
+                UnionCard card = it.next();
+                if(member.getId().equals(card.getMemberId())){
+                    im.remove();
+                    break;
+                }
+            }
+        }
+        if(ListUtil.isEmpty(members)){//没有可升级的联盟
+            throw new BusinessException("该手机号已办理联盟卡");
+        }
+        UnionMember member = members.get(0);
+        List<UnionMain> unions = new ArrayList<UnionMain>();//封装联盟列表
+        List<UnionMain> mains = unionMainService.listWriteByBusId(member.getBusId());
+        Iterator<UnionMain> iu = mains.iterator();
+        while (iu.hasNext()){
+            UnionMain main = iu.next();
+            for(UnionMember unionMember : members){
+                if(main.getId().equals(unionMember.getUnionId())){
                     unions.add(main);
                 }
             }
         }
-        if(unionId != null){
-            Iterator<UnionMember> it = members.iterator();
-            while (it.hasNext()){
-                UnionMember member = it.next();
-                if(!member.getUnionId().equals(unionId)){
-                    it.remove();
+        Map<String, Object> data = new HashMap<String, Object>();
+        Integer unionId = member.getUnionId();
+        UnionCard card = this.getByPhoneAndMemberId(phone,member.getId());//该盟员下升级的联盟卡
+        if(card == null){
+            UnionMainCharge redCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_RED, MainConstant.CHARGE_IS_AVAILABLE_YES);
+            UnionMainCharge blackCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_BLACK, MainConstant.CHARGE_IS_AVAILABLE_YES);
+            if(redCharge != null){
+                Map<String, Object> red = new HashMap<String, Object>();
+                red.put("price",redCharge.getChargePrice());
+                red.put("termTime",DateTimeKit.format(DateTimeKit.addDays(redCharge.getValidityDay()),"yyyy-MM-dd"));
+                data.put("red",red);
+            }
+            if(blackCharge != null){
+                Map<String, Object> black = new HashMap<String, Object>();
+                black.put("price",blackCharge.getChargePrice());
+                black.put("termTime",blackCharge.getValidityDay() == null ? null : DateTimeKit.format(DateTimeKit.addDays(blackCharge.getValidityDay()),"yyyy-MM-dd"));
+                data.put("black",black);
+            }
+        }else {
+            if(card.getType() == CardConstant.TYPE_BLACK){//黑卡
+                //如果是免费的，则判断旧会员是否需要收费，需要，则可以升级
+                if(card.getIsOld() == CardConstant.IS_OLD_YES){
+                    UnionMainCharge blackCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_BLACK, MainConstant.CHARGE_IS_AVAILABLE_YES);
+                    if(blackCharge.getIsOldCharge() == MainConstant.CHARGE_OLD_IS_YES){//旧会员收费
+                        Map<String, Object> black = new HashMap<String, Object>();
+                        black.put("price",blackCharge.getChargePrice());
+                        black.put("termTime",blackCharge.getValidityDay() == null ? null : DateTimeKit.format(DateTimeKit.addDays(blackCharge.getValidityDay()),"yyyy-MM-dd"));
+                        data.put("black",black);
+                    }
+                }
+                //如果是收费的，判断是否有开启红卡，开启了则可以升级
+                UnionMainCharge redCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_RED, MainConstant.CHARGE_IS_AVAILABLE_YES);
+                if(redCharge != null){//开启了红卡
+                    Map<String, Object> red = new HashMap<String, Object>();
+                    red.put("price",redCharge.getChargePrice());
+                    red.put("termTime",DateTimeKit.format(DateTimeKit.addDays(redCharge.getValidityDay()),"yyyy-MM-dd"));
+                    data.put("red",red);
                 }
             }
+
         }
-        if(ListUtil.isEmpty(members)){
-            throw new BusinessException("您没有有效的联盟");
-        }
-        List<Map<String,Object>> list = this.listByPhoneAndMembers(phone,members);
-        if(ListUtil.isEmpty(list)){
-            Map<String,Object> data = getUnionInfo(members);
-            data.put("unions",unions);
-            WxPublicUsers users = busUserService.getWxPublicUserByBusId(busId);
-            if(users != null){
-                data.put("follow",1);
-            }
-            return data;
-        } else if(list.size() == members.size()){
-            throw new BusinessException("该手机号已办理联盟卡");
-        } else {
-            Map<String,Object> data = getUnionInfo(members);
-            data.put("unions",unions);
-            WxPublicUsers users = busUserService.getWxPublicUserByBusId(busId);
-            if(users != null){
-                data.put("follow",1);
-            }
-            return data;
-        }
+        data.put("unions",unions);
+        data.put("unionId",unionId);
+        return data;
     }
+
 
     @Override
     public Map<String, Object> bindCard(UnionCardBindParamVO vo) throws Exception{
@@ -612,20 +724,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         return this.selectOne(wrapper);
     }
 
-    private Map<String, Object> getUnionInfo(List<UnionMember> members) throws Exception{
-        Map<String, Object> data = new HashMap<String, Object>();
-        Integer unionId = members.get(0).getUnionId();
-        data.put("unionId",unionId);
-        UnionMainCharge redCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_RED, MainConstant.CHARGE_IS_AVAILABLE_YES);
-        UnionMainCharge blackCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_BLACK, MainConstant.CHARGE_IS_AVAILABLE_YES);
-        if(redCharge != null){
-            data.put("red",redCharge);
-        }
-        if(blackCharge != null){
-            data.put("black",blackCharge);
-        }
-        return data;
-    }
+
 
 
 }

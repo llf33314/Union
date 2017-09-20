@@ -107,25 +107,33 @@ public class BusUserServiceImpl implements IBusUserService {
         return publicUsers;
     }
 
-    /*@Override
-    public boolean isBusUserValid(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
+	@Override
+	public String getWxPublicUserQRCode(Integer publicId, Integer busId) {
+        String codeKey = RedisKeyUtil.getWxPublicUserQRCodeKey(publicId, busId);
+        if (this.redisCacheUtil.exists(codeKey)) {//（1）通过busId获取缓存中的busUser对象，如果存在，则直接返回
+            Object obj = this.redisCacheUtil.get(codeKey);
+            return JSON.parseObject(obj.toString(), String.class);
         }
-        BusUser busUser = this.getBusUserById(busId);
-        return isBusUserValid(busUser);
-    }
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("publicId", publicId);
+        data.put("model", ConfigConstant.WXPUBLIC_QRCODE_MODEL);
+        data.put("externalId", busId);
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("reqdata", data);
+        String url = wxmpUrl + "/8A5DA52E/wxpublicapi/6F6D9AD2/79B4DE7C/newqrcodeCreateFinal.do";
+        Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param), url, Map.class, ConfigConstant.WXMP_SIGN_KEY);
+        if (CommonUtil.isEmpty(result)) {
+            return null;
+        }
+        if (CommonUtil.toInteger(result.get("code")) != 0) {
+            return null;
+        }
+        String qrurl = JSONObject.parseObject(result.get("data").toString(), String.class);
+        if (CommonUtil.isNotEmpty(qrurl)) {
+            redisCacheUtil.set(codeKey, JSON.toJSONString(qrurl));
+        }
+		return qrurl;
+	}
 
-    @Override
-    public boolean isBusUserValid(BusUser busUser) throws Exception {
-        return true;
-        //TODO
-        *//*if (busUser == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        if (!busUser.getStatus().equals(0)) {
-            throw new ParamException("该用户已被冻结");
-        }
-        return DateTimeKit.getNow().compareTo(busUser.getEndTime()) < 0 ? true : false;*//*
-    }*/
+
 }

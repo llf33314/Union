@@ -31,18 +31,11 @@ public interface IBusUserService {
 	public WxPublicUsers getWxPublicUserByBusId(Integer busId);
 
 	/**
-	 * 根据用户id判断该用户是否有效
+	 *	获取公众号关注二维码永久链接
+	 * @param publicId
 	 * @param busId
 	 * @return
-	 * @throws Exception
 	 */
-	//public boolean isBusUserValid(Integer busId) throws Exception;
+	String getWxPublicUserQRCode(Integer publicId, Integer busId);
 
-	/**
-	 * 根据用户判断该用户是否有效
-	 * @param busUser
-	 * @return
-	 * @throws Exception
-	 */
-	//public boolean isBusUserValid(BusUser busUser) throws Exception;
 }

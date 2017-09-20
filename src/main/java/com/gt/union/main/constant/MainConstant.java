@@ -45,6 +45,16 @@ public interface MainConstant {
     int CHARGE_IS_CHARGE_YES = 1;
 
     /**
+     * 旧会员是否收费：是
+     */
+    int CHARGE_OLD_IS_YES = 1;
+
+    /**
+     * 旧会员是否收费：否
+     */
+    int CHARGE_OLD_IS_NO = 0;
+
+    /**
      * 公告长度
      */
     int NOTICE_MAX_LENGTH = 50;

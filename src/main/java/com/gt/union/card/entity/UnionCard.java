@@ -54,6 +54,12 @@ public class UnionCard extends Model<UnionCard> {
      */
 	private Integer type;
 
+	/**
+	 * 是否旧会员
+	 */
+	@TableField("is_old")
+	private Integer isOld;
+
 
 	public Integer getId() {
 		return id;
@@ -109,6 +115,14 @@ public class UnionCard extends Model<UnionCard> {
 
 	public void setType(Integer type) {
 		this.type = type;
+	}
+
+	public Integer getIsOld() {
+		return isOld;
+	}
+
+	public void setIsOld(Integer isOld) {
+		this.isOld = isOld;
 	}
 
 	@Override
