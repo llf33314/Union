@@ -11,7 +11,9 @@ import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.service.IUnionValidateService;
-import com.gt.union.common.util.*;
+import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.RedisKeyUtil;
 import com.gt.union.log.service.IUnionLogErrorService;
 import com.gt.union.opportunity.service.IUnionOpportunityService;
 import com.gt.union.opportunity.vo.UnionOpportunityVO;
@@ -28,9 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
-import java.math.BigDecimal;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -188,6 +188,81 @@ public class UnionOpportunityController {
         }
     }
 
+    @ApiOperation(value = "分页查询商机佣金支付往来列表信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/contact/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String pageContact(HttpServletRequest request, Page page
+            , @ApiParam(name = "memberId", value = "操作人的盟员身份id")
+                              @RequestParam(name = "memberId", required = false) Integer memberId) {
+        try {
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            Integer busId = busUser.getId();
+            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+                busId = busUser.getPid();
+            }
+            Page result = this.unionOpportunityService.pageContactByBusId(page, busId, memberId);
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            this.unionLogErrorService.saveIfNotNull(e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            this.unionLogErrorService.saveIfNotNull(e);
+            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+        }
+    }
+
+    @ApiOperation(value = "查询商机佣金支付往来详情信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/contact/detail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String getContactDetailByTgtMemberId(HttpServletRequest request
+            , @ApiParam(name = "tgtMemberId", value = "与操作人有商机佣金来往的盟员身份id", required = true)
+                                                @RequestParam(name = "tgtMemberId") Integer tgtMemberId
+            , @ApiParam(name = "memberId", value = "操作人的盟员身份id")
+                                                @RequestParam(name = "memberId") Integer memberId
+    ) {
+        try {
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            Integer busId = busUser.getId();
+            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+                busId = busUser.getPid();
+            }
+            Map<String, Object> result = this.unionOpportunityService.getContactDetailByBusIdAndTgtMemberId(busId, tgtMemberId, memberId);
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            this.unionLogErrorService.saveIfNotNull(e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            this.unionLogErrorService.saveIfNotNull(e);
+            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+        }
+    }
+
+    @ApiOperation(value = "获取商机统计数据", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/memberId/{memberId}/statistics", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String getStatisticData(HttpServletRequest request
+            , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
+                                   @PathVariable("memberId") Integer memberId) {
+        try {
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            Integer busId = busUser.getId();
+            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+                busId = busUser.getPid();
+            }
+            Map<String, Object> result = this.unionOpportunityService.getStatisticsByBusIdAndMemberId(busId, memberId);
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            this.unionLogErrorService.saveIfNotNull(e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            this.unionLogErrorService.saveIfNotNull(e);
+            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+        }
+    }
+
     //-------------------------------------------------- put ----------------------------------------------------------
 
     @ApiOperation(value = "接受商家推荐", produces = "application/json;charset=UTF-8")
@@ -265,174 +340,7 @@ public class UnionOpportunityController {
         }
     }
 
-
-    @ApiOperation(value = "查询支付明细信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/payDetail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String listPayDetail(HttpServletRequest request, Page page
-            , @ApiParam(name = "unionId", value = "联盟id", required = false) @RequestParam(name = "unionId", required = false) Integer unionId) {
-        try {
-            BusUser busUser = SessionUtils.getLoginUser(request);
-            Integer busId = busUser.getId();
-            if (busUser.getPid() != null && busUser.getPid() != 0) {
-                busId = busUser.getPid();
-            }
-            //Page result = this.unionOpportunityService.listPayDetail(page, busId, unionId);
-            return GTJsonResult.instanceSuccessMsg().toString();
-//        } catch (BaseException e) {
-//            logger.error("", e);
-//            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-        } catch (Exception e) {
-            logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
-        }
-    }
-
-    @ApiOperation(value = "查询支付明细详情信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/payDetailParticular", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String listPayDetailParticularByUnionIdAndMemberId(HttpServletRequest request
-            , @ApiParam(name = "memberId", value = "佣金来往的盟员id", required = true) @RequestParam(name = "memberId", required = true) Integer memberId
-            , @ApiParam(name = "myMemberId", value = "我的盟员id", required = true) @RequestParam(name = "myMemberId", required = true) Integer myMemberId
-    ) {
-        try {
-            BusUser busUser = SessionUtils.getLoginUser(request);
-            List<Map<String, Object>> dataList = this.unionOpportunityService.listPayDetailParticularByUnionIdAndMemberId(memberId, myMemberId);
-            BigDecimal businessPriceSum = BigDecimal.valueOf(0.0);
-            if (ListUtil.isNotEmpty(dataList)) {
-                for (Map<String, Object> map : dataList) {
-                    businessPriceSum = BigDecimalUtil.add(businessPriceSum, Double.valueOf(map.get("money").toString()));
-                }
-            }
-            Map<String, Object> resultMap = new HashMap<>();
-            resultMap.put("data", dataList);
-            resultMap.put("businessPriceSum", businessPriceSum);
-            return GTJsonResult.instanceSuccessMsg(resultMap).toString();
-        } catch (BaseException e) {
-            logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-        } catch (Exception e) {
-            logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
-        }
-    }
-
-    @ApiOperation(value = "获取商机统计数据", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/statisticData", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getStatisticData(HttpServletRequest request
-            , @ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam("unionId") Integer unionId) {
-        try {
-            BusUser busUser = SessionUtils.getLoginUser(request);
-            Integer busId = busUser.getId();
-            if (busUser.getPid() != null && busUser.getPid() != 0) {
-                busId = busUser.getPid();
-            }
-            Map<String, Object> result = this.unionOpportunityService.getStatisticData(unionId, busId);
-            return GTJsonResult.instanceSuccessMsg(result).toString();
-        } catch (BaseException e) {
-            logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-        } catch (Exception e) {
-            logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
-        }
-    }
-
-    @ApiOperation(value = "统计我的所有已被接受的，目前未支付或已支付的商机佣金总额", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/isAccept/{isAccept}/sum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String sumAcceptFromMy(HttpServletRequest request
-            , @ApiParam(name = "isAccept", value = "是否已支付：0未支付，1已支付", required = true) @PathVariable("isAccept") Integer isAccept) {
-        try {
-            BusUser busUser = SessionUtils.getLoginUser(request);
-            Integer busId = busUser.getId();
-            if (CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0) {//子账号
-                busId = busUser.getPid();
-            }
-            //Double businessPriceSum = this.unionOpportunityService.sumAcceptFromMy(busId, isAccept);
-            return GTJsonResult.instanceSuccessMsg().toString();
-//        } catch (BaseException e) {
-//            logger.error("", e);
-//            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-        } catch (Exception e) {
-            logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
-        }
-    }
-
-    @ApiOperation(value = "统计我的所有已被接受的，目前未支付或已支付的，指定联盟的商机佣金总额", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/sumFromMy", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String sumAcceptFromMy(HttpServletRequest request
-            , @ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam("unionId") Integer unionId
-            , @ApiParam(name = "isAccept", value = "是否已支付：0未支付，1已支付", required = true) @RequestParam("isAccept") Integer isAccept) {
-        try {
-            BusUser busUser = SessionUtils.getLoginUser(request);
-            Integer busId = busUser.getId();
-            if (CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0) {//子账号
-                busId = busUser.getPid();
-            }
-            //Double businessPriceSum = this.unionOpportunityService.sumAcceptFromMy(unionId, busId, isAccept);
-            return GTJsonResult.instanceSuccessMsg().toString();
-//        } catch (BaseException e) {
-//            logger.error("", e);
-//            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-        } catch (Exception e) {
-            logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
-        }
-    }
-
-    @ApiOperation(value = "统计我的所有已被接受的，但由于接收方退盟造成的坏账状态下的商机未支付佣金总额", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/badDebt/sum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String sumFromMyInBadDebt(HttpServletRequest request) {
-        try {
-            BusUser busUser = SessionUtils.getLoginUser(request);
-            Integer busId = busUser.getId();
-            if (CommonUtil.isNotEmpty(busUser.getPid()) && busUser.getPid() != 0) {//子账号
-                busId = busUser.getPid();
-            }
-            //Double businessPriceSum = this.unionOpportunityService.sumFromMyInBadDebt(busId);
-            return GTJsonResult.instanceSuccessMsg().toString();
-//        } catch (BaseException e) {
-//            logger.error("", e);
-//            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-        } catch (Exception e) {
-            logger.error("", e);
-            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
-        }
-    }
-
-	/*@ApiOperation(value = "分页获取我的所有坏账明细", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/badDebt", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public String pageMapByFromBusIdInBadDebt(HttpServletRequest request, Page page) {
-		try {
-			BusUser busUser = SessionUtils.getLoginUser(request);
-			Page result = this.unionOpportunityService.pageMapByFromBusIdInBadDebt(page, busUser.getId());
-			return GTJsonResult.instanceSuccessMsg(result).toString();
-		} catch (BaseException e) {
-			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-		} catch (Exception e) {
-			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
-		}
-	}*/
-
-	/*@ApiOperation(value = "分页获取我在某联盟的所有坏账明细", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/unionId/{unionId}/badDebt", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public String pageMapByUnionIdAndFromBusIdInBadDebt(HttpServletRequest request, Page page
-			, @ApiParam(name = "unionId", value = "联盟id", required = true) @PathVariable("unionId") Integer unionId) {
-		try {
-			BusUser busUser = SessionUtils.getLoginUser(request);
-			Page result = this.unionOpportunityService.pageMapByUnionIdAndFromBusIdInBadDebt(page, unionId, busUser.getId());
-			return GTJsonResult.instanceSuccessMsg(result).toString();
-		} catch (BaseException e) {
-			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-		} catch (Exception e) {
-			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
-		}
-	}*/
-
-
+    //------------------------------------------------- money ----------------------------------------------------------
     @RequestMapping(value = "/79B4DE7C/paymentSuccess/{Encrypt}/{only}")
     public void payOpportunitySuccess(HttpServletRequest request, HttpServletResponse response, @PathVariable(name = "Encrypt", required = true) String encrypt, @PathVariable(name = "only", required = true) String only) {
         try {

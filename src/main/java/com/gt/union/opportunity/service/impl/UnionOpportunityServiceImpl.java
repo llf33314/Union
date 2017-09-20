@@ -36,7 +36,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import sun.plugin.com.event.COMEventHandler;
 
 import java.math.BigDecimal;
 import java.net.URLEncoder;
@@ -117,6 +116,201 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
      */
     @Override
     public Map<String, Object> getContactDetailByBusIdAndTgtMemberId(Integer busId, Integer tgtMemberId, Integer userMemberId) throws Exception {
+        if (busId == null || tgtMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        Map<String, Object> result = new HashMap<>();
+        //(1)目标盟员姓名
+        UnionMember tgtMember = this.unionMemberService.getById(tgtMemberId);
+        if (tgtMember == null) {
+            throw new BusinessException("找不到目标盟员信息");
+        }
+        result.put("tgtMemberEnterpriseName", tgtMember.getEnterpriseName()); //目标盟员姓名
+        //(2)目标盟员所在联盟名称
+        UnionMain unionMain = this.unionMainService.getById(tgtMember.getUnionId());
+        if (unionMain == null) {
+            throw new BusinessException("找不到目标盟员所在的联盟信息");
+        }
+        result.put("tgtUnionName", unionMain.getName()); //目标盟员所在联盟名称
+        //(3)商机推荐支付往来信息
+        List<Map<String, Object>> contactList = new ArrayList<>();
+        BigDecimal contactMoneySum = null;
+        if (userMemberId != null) {
+            //(4-1)我推荐的商机
+            List<UnionOpportunity> opportunityFromMeList = this.listPaidByFromMemberIdAndToMemberId(userMemberId, tgtMemberId);
+            if (ListUtil.isNotEmpty(opportunityFromMeList)) {
+                for (UnionOpportunity opportunity : opportunityFromMeList) {
+                    Map<String, Object> contactMap = new HashMap<>();
+                    contactMap.put("lastModifyTime", DateUtil.getDateString(opportunity.getModifytime(), DateUtil.DATETIME_PATTERN)); //最后修改时间
+                    contactMap.put("clientName", opportunity.getClientName()); //客户姓名
+                    contactMap.put("clientPhone", opportunity.getClientPhone()); //客户电话
+                    contactMap.put("brokeragePrice", opportunity.getBrokeragePrice()); //佣金收入：正数
+                    contactList.add(contactMap);
+                    contactMoneySum = BigDecimalUtil.add(contactMoneySum, opportunity.getBrokeragePrice()); //统计佣金往来总额
+                }
+            }
+            //(4-2)我接受的商机
+            List<UnionOpportunity> opportunityToMeList = this.listPaidByFromMemberIdAndToMemberId(tgtMemberId, userMemberId);
+            if (ListUtil.isNotEmpty(opportunityToMeList)) {
+                for (UnionOpportunity opportunity : opportunityToMeList) {
+                    Map<String, Object> contactMap = new HashMap<>();
+                    contactMap.put("lastModifyTime", DateUtil.getDateString(opportunity.getModifytime(), DateUtil.DATETIME_PATTERN)); //最后修改时间
+                    contactMap.put("clientName", opportunity.getClientName()); //客户姓名
+                    contactMap.put("clientPhone", opportunity.getClientPhone()); //客户电话
+                    contactMap.put("brokeragePrice", BigDecimalUtil.subtract(0D, opportunity.getBrokeragePrice()).doubleValue()); //佣金支出：负数
+                    contactList.add(contactMap);
+                    contactMoneySum = BigDecimalUtil.subtract(contactMoneySum, opportunity.getBrokeragePrice()); //统计佣金往来总额
+                }
+            }
+        }
+        result.put("contactList", contactList);
+        result.put("contactMoneySum", contactMoneySum);
+        return result;
+    }
+
+    /**
+     * 根据商家id和盟员身份id，获取商机佣金统计数据
+     *
+     * @param busId    {not null} 商家id
+     * @param memberId {not null} 盟员身份id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public Map<String, Object> getStatisticsByBusIdAndMemberId(Integer busId, Integer memberId) throws Exception {
+        if (busId == null || memberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        //(1)判断是否具有盟员权限
+        UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        if (unionMember == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
+        }
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(unionMember.getUnionId());
+        //(3)判断是否具有读权限
+        if (!this.unionMemberService.hasReadAuthority(unionMember)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
+        }
+        Map<String, Object> resultMap = new HashMap<>();
+        //未结算佣金收入，即已被接受但未支付的推荐佣金收入
+        Double unPaidBrokerageIncome = this.sumBrokeragePriceByFromMemberIdAndIsPaid(memberId, CommonConstant.COMMON_NO);
+        resultMap.put("unPaidBrokerageIncome", unPaidBrokerageIncome);
+        //已结算佣金收入，即已被接受且已支付的推荐佣金收入
+        Double paidBrokerageIncome = this.sumBrokeragePriceByFromMemberIdAndIsPaid(memberId, CommonConstant.COMMON_YES);
+        resultMap.put("paidBrokerageIncome", paidBrokerageIncome);
+        //总佣金收入
+        BigDecimal brokerageIncomeSum = BigDecimalUtil.add(unPaidBrokerageIncome, paidBrokerageIncome);
+        resultMap.put("brokerageIncomeSum", brokerageIncomeSum);
+        //收入百分比
+        if (brokerageIncomeSum.doubleValue() != 0.0D) {
+            //未结算佣金收入占总佣金收入的百分比
+            BigDecimal bdUnPaidBrokerageIncomePercent = BigDecimalUtil.divide(unPaidBrokerageIncome, brokerageIncomeSum, 4);
+            String unPaidBrokerageIncomePercent = DoubleUtil.formatPercent(bdUnPaidBrokerageIncomePercent.doubleValue());
+            resultMap.put("unPaidBrokerageIncomePercent", unPaidBrokerageIncomePercent);
+            //已结算佣金收入占总佣金收入的百分比
+            BigDecimal bdPaidBrokerageIncomePercent = BigDecimalUtil.subtract(Double.valueOf(1.00), bdUnPaidBrokerageIncomePercent, 4);
+            String paidBrokerageIncomePercent = DoubleUtil.formatPercent(bdPaidBrokerageIncomePercent.doubleValue());
+            resultMap.put("paidBrokerageIncomePercent", paidBrokerageIncomePercent);
+        }
+
+        //未结算支出佣金，即已接受但未支付的商机推荐佣金支出
+        Double unPaidBrokerageExpense = this.sumBrokeragePriceByToMemberIdAndIsPaid(memberId, CommonConstant.COMMON_NO);
+        resultMap.put("unPaidBrokerageExpense", unPaidBrokerageExpense);
+        //已结算支出佣金，即已接受且已支付的商机推荐佣金支出
+        Double paidBrokerageExpense = this.sumBrokeragePriceByToMemberIdAndIsPaid(memberId, CommonConstant.COMMON_YES);
+        resultMap.put("paidBrokerageExpense", paidBrokerageExpense);
+        //总支出佣金
+        BigDecimal brokerageExpenseSum = BigDecimalUtil.add(unPaidBrokerageExpense, paidBrokerageExpense);
+        resultMap.put("brokerageExpenseSum", brokerageExpenseSum);
+        //支出百分比
+        if (brokerageExpenseSum.doubleValue() != 0.0D) {
+            //未结算支出佣金占总支出佣金的百分比
+            BigDecimal bdUnPaidBrokerageExpensePercent = BigDecimalUtil.divide(unPaidBrokerageExpense, brokerageExpenseSum, 4);
+            String unPaidBrokerageExpensePercent = DoubleUtil.formatPercent(bdUnPaidBrokerageExpensePercent.doubleValue());
+            resultMap.put("unPaidBrokerageExpensePercent", unPaidBrokerageExpensePercent);
+            //已结算支出佣金占总支出佣金的百分比
+            BigDecimal bdPaidBrokerageExpensePercent = BigDecimalUtil.subtract(Double.valueOf(1.00), bdUnPaidBrokerageExpensePercent, 4);
+            String paidBrokerageExpensePercent = DoubleUtil.formatPercent(bdPaidBrokerageExpensePercent.doubleValue());
+            resultMap.put("paidBrokerageExpensePercent", paidBrokerageExpensePercent);
+        }
+
+        //获取一周统计数据
+        List<Map<String, Map<String, Double>>> brokerageInWeek = new ArrayList<>();
+        int mondayOffset = 0 - ((Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 2 + 7) % 7);//例如今天是星期四，则mondayOffSet=-3
+        Date mondayInThisWeek = DateUtil.addDays(DateUtil.getCurrentDate(), mondayOffset);
+        for (; mondayOffset <= 0; mondayOffset++) {
+            String strDate = DateUtil.getDateString(mondayInThisWeek, DateUtil.DATE_PATTERN);
+            String strDateBegin = strDate + " 00:00:00";
+            String strDateEnd = strDate + " 23:59:59";
+            Map<String, Double> brokerageInDayMap = getPaidBrokerageBetweenDay(memberId, strDateBegin, strDateEnd);
+            String strWeek = DateUtil.getWeek(mondayInThisWeek);
+            Map<String, Map<String, Double>> weekMap = new HashMap<>();
+            weekMap.put(strWeek, brokerageInDayMap);
+            brokerageInWeek.add(weekMap);
+            mondayInThisWeek = DateUtil.addDays(mondayInThisWeek, 1);
+        }
+        resultMap.put("brokerageInWeek", brokerageInWeek);
+        return resultMap;
+    }
+
+    /**
+     * 根据盟员身份id、开始时间和结束时间，获取已支付的商机佣金收入和支出信息
+     *
+     * @param memberId     {not null} 盟员身份id
+     * @param strDateBegin {not null} 开始时间
+     * @param strDateEnd   {not null} 结束时间
+     * @return
+     */
+    private Map<String, Double> getPaidBrokerageBetweenDay(final Integer memberId, String strDateBegin, String strDateEnd) {
+        if (memberId != null || StringUtil.isNotEmpty(strDateBegin) || StringUtil.isNotEmpty(strDateEnd)) {
+            Map<String, Double> resultMap = new HashMap<>();
+            //已结算的收入佣金
+            Wrapper incomeWrapper = new Wrapper() {
+                @Override
+                public String getSqlSegment() {
+                    StringBuilder sbSqlSegment = new StringBuilder(" o")
+                            .append(" WHERE o.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                            .append("  AND o.is_accept = ").append(OpportunityConstant.ACCEPT_YES)
+                            .append("  AND o.from_member_id = ").append(memberId)
+                            .append("  AND exists(")
+                            .append("    SELECT bi.id FROM t_union_brokerage_income bi")
+                            .append("    WHERE bi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                            .append("      AND bi.type = ").append(BrokerageConstant.SOURCE_TYPE_OPPORTUNITY)
+                            .append("      AND bi.opportunity_id = t_union_opportunity.id")
+                            .append("  )");
+                    return sbSqlSegment.toString();
+                }
+            };
+            incomeWrapper.setSqlSelect(" IFNULL(SUM(o.brokerage_price), 0) brokeragePriceSum");
+            Map<String, Object> incomeMap = this.selectMap(incomeWrapper);
+            Object objIncomeBrokerageSum = incomeMap != null ? incomeMap.get("brokeragePriceSum") : null;
+            Double incomeBrokerageSum = Double.valueOf(objIncomeBrokerageSum != null ? objIncomeBrokerageSum.toString() : "0");
+            resultMap.put("paidBrokerageIncome", incomeBrokerageSum);
+            //已结算的支出佣金
+            Wrapper expenseWrapper = new Wrapper() {
+                @Override
+                public String getSqlSegment() {
+                    StringBuilder sbSqlSegment = new StringBuilder(" o")
+                            .append(" WHERE o.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                            .append("  AND o.is_accept = ").append(OpportunityConstant.ACCEPT_YES)
+                            .append("  AND o.to_member_id = ").append(memberId)
+                            .append("  AND exists(")
+                            .append("    SELECT bi.id FROM t_union_brokerage_income bi")
+                            .append("    WHERE bi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                            .append("      AND bi.type = ").append(BrokerageConstant.SOURCE_TYPE_OPPORTUNITY)
+                            .append("      AND bi.opportunity_id = t_union_opportunity.id")
+                            .append("  )");
+                    return sbSqlSegment.toString();
+                }
+            };
+            expenseWrapper.setSqlSelect(" IFNULL(SUM(o.brokerage_price), 0) brokeragePriceSum");
+            Map<String, Object> expenseMap = this.selectMap(expenseWrapper);
+            Object objExpenseBrokerageSum = expenseMap != null ? expenseMap.get("brokeragePriceSum") : null;
+            Double expenseBrokerageSum = Double.valueOf(objExpenseBrokerageSum != null ? objExpenseBrokerageSum.toString() : "0");
+            resultMap.put("paidBrokerageExpense", expenseBrokerageSum);
+            return resultMap;
+        }
         return null;
     }
 
@@ -305,8 +499,8 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 .append(", o.accept_price acceptPrice") //受理金额
                 .append(", o.brokerage_price brokeragePrice") //佣金金额
                 .append(", o.type opportunityType") //商机推荐类型
-                .append(", CASE IFNULL(bi.opportunity_id, 0) WHEN 0 THEN ").append(OpportunityConstant.BROKERAGE_PAY_NO)
-                .append(" ELSE ").append(OpportunityConstant.BROKERAGE_PAY_YES).append(" END isClose") //是否已结算
+                .append(", CASE IFNULL(bi.opportunity_id, 0) WHEN 0 THEN ").append(CommonConstant.COMMON_NO)
+                .append(" ELSE ").append(CommonConstant.COMMON_YES).append(" END isClose") //是否已结算
                 .append(", o.modifytime lastModifyTime"); //最后更新的时间
         wrapper.setSqlSelect(sbSqlSelect.toString());
         return this.selectMapsPage(page, wrapper);
@@ -378,8 +572,8 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 .append(", o.accept_price acceptPrice") //受理金额
                 .append(", o.brokerage_price brokeragePrice") //佣金金额
                 .append(", o.type opportunityType") //商机推荐类型
-                .append(", CASE IFNULL(bi.opportunity_id, 0) WHEN 0 THEN ").append(OpportunityConstant.BROKERAGE_PAY_NO)
-                .append(" ELSE ").append(OpportunityConstant.BROKERAGE_PAY_YES).append(" END isClose") //是否已结算
+                .append(", CASE IFNULL(bi.opportunity_id, 0) WHEN 0 THEN ").append(CommonConstant.COMMON_NO)
+                .append(" ELSE ").append(CommonConstant.COMMON_YES).append(" END isClose") //是否已结算
                 .append(", o.modifytime lastModifyTime"); //最后更新的时间
         wrapper.setSqlSelect(sbSqlSelect.toString());
         return this.selectMapsPage(page, wrapper);
@@ -503,6 +697,37 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
     }
 
     /**
+     * 根据商家id和推荐方的盟员身份id，获取所有推荐给商家的，已接受状态的，且已支付的商机推荐列表信息
+     *
+     * @param busId        {not null} 商家id
+     * @param fromMemberId {not null} 推荐方的盟员身份id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public List<UnionOpportunity> listPaidByBusIdAndFromMemberId(Integer busId, Integer fromMemberId) throws Exception {
+        if (busId == null || fromMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("is_accept", OpportunityConstant.ACCEPT_YES)
+                .eq("from_member_id", fromMemberId)
+                .exists(new StringBuilder(" SELECT bi.id FROM t_union_brokerage_income bi")
+                        .append(" WHERE bi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND bi.type = ").append(BrokerageConstant.SOURCE_TYPE_OPPORTUNITY)
+                        .append("  AND bi.opportunity_id = t_union_opportunity.id")
+                        .toString())
+                .exists(new StringBuilder(" SELECT * FROM t_union_member m")
+                        .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND m.status != ").append(MemberConstant.STATUS_APPLY_IN)
+                        .append("  AND m.bus_id = ").append(busId)
+                        .append("  AND m.id = t_union_opportunity.to_member_id")
+                        .toString());
+        return this.selectList(entityWrapper);
+    }
+
+    /**
      * 根据接收方的盟员身份id，获取所有已接受，且已支付的商机推荐列表信息
      *
      * @param toMemberId {not null} 接收方的盟员身份id
@@ -517,6 +742,63 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         EntityWrapper entityWrapper = new EntityWrapper();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("is_accept", OpportunityConstant.ACCEPT_YES)
+                .eq("to_member_id", toMemberId)
+                .exists(new StringBuilder(" SELECT bi.id FROM t_union_brokerage_income bi")
+                        .append(" WHERE bi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND bi.type = ").append(BrokerageConstant.SOURCE_TYPE_OPPORTUNITY)
+                        .append("  AND bi.opportunity_id = t_union_opportunity.id")
+                        .toString());
+        return this.selectList(entityWrapper);
+    }
+
+    /**
+     * 根据商家id和接收方的盟员身份id，获取所有商家推荐的，已接受状态，且已支付的商机推荐列表信息
+     *
+     * @param busId      {not null} 商家id
+     * @param toMemberId {not null} 接收方的盟员身份id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public List<UnionOpportunity> listPaidByBusIdAndToMemberId(Integer busId, Integer toMemberId) throws Exception {
+        if (busId == null || toMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("is_accept", OpportunityConstant.ACCEPT_YES)
+                .eq("to_member_id", toMemberId)
+                .exists(new StringBuilder(" SELECT bi.id FROM t_union_brokerage_income bi")
+                        .append(" WHERE bi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND bi.type = ").append(BrokerageConstant.SOURCE_TYPE_OPPORTUNITY)
+                        .append("  AND bi.opportunity_id = t_union_opportunity.id")
+                        .toString())
+                .exists(new StringBuilder(" SELECT m.id FROM t_union_member m")
+                        .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND m.status != ").append(MemberConstant.STATUS_APPLY_IN)
+                        .append("  AND m.bus_id = ").append(busId)
+                        .append("  AND m.id = t_union_opportunity.from_member_id")
+                        .toString());
+        return this.selectList(entityWrapper);
+    }
+
+    /**
+     * 根据推荐方的盟员身份id和接收方的盟员身份id，获取所有已接受的，且已支付的商机推荐列表信息
+     *
+     * @param fromMemberId {not null} 推荐方的盟员身份id
+     * @param toMemberId   {not null} 接收方的盟员身份id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public List<UnionOpportunity> listPaidByFromMemberIdAndToMemberId(Integer fromMemberId, Integer toMemberId) throws Exception {
+        if (fromMemberId == null || toMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("is_accept", OpportunityConstant.ACCEPT_YES)
+                .eq("from_member_id", fromMemberId)
                 .eq("to_member_id", toMemberId)
                 .exists(new StringBuilder(" SELECT bi.id FROM t_union_brokerage_income bi")
                         .append(" WHERE bi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
@@ -710,7 +992,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
      * @throws Exception
      */
     @Override
-    public Double sumPaidBrokeragePriceByBusIdAndToMemberId(Integer busId, final Integer toMemberId) throws Exception {
+    public Double sumPaidBrokeragePriceByBusIdAndToMemberId(final Integer busId, final Integer toMemberId) throws Exception {
         if (busId == null || toMemberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -722,13 +1004,26 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                         .append("  AND o.is_accept = ").append(OpportunityConstant.ACCEPT_YES)
                         .append("  AND o.to_member_id = ").append(toMemberId)
                         .append("  AND exists(")
-                        .append("    SELECT * FROM t_union_brokerage_income bi")
-                        .append("      AND bi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("");
-                return null;
+                        .append("    SELECT bi.id FROM t_union_brokerage_income bi")
+                        .append("    WHERE bi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("      AND bi.type = ").append(BrokerageConstant.SOURCE_TYPE_OPPORTUNITY)
+                        .append("      AND bi.opportunity_id = o.id")
+                        .append("  )")
+                        .append("  AND exists(")
+                        .append("    SELECT m.id FROM t_union_member m")
+                        .append("    WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("      AND m.status !=").append(MemberConstant.STATUS_APPLY_IN)
+                        .append("      AND m.id = o.from_member_id")
+                        .append("      AND m.bus_id = ").append(busId)
+                        .append("  )");
+                return sbSqlSegment.toString();
             }
         };
-        return null;
+        wrapper.setSqlSelect(" IFNULL(SUM(o.brokerage_price), 0) brokeragePriceSum");
+        Map<String, Object> map = this.selectMap(wrapper);
+        Object objBrokeragePriceSum = map != null ? map.get("brokeragePriceSum") : null;
+        Double brokeragePriceSum = Double.valueOf(objBrokeragePriceSum != null ? objBrokeragePriceSum.toString() : "0");
+        return brokeragePriceSum;
     }
 
     /**
@@ -740,8 +1035,38 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
      * @throws Exception
      */
     @Override
-    public Double sumPaidBrokeragePriceByBusIdAndFromMemberId(Integer busId, Integer fromMemberId) throws Exception {
-        return null;
+    public Double sumPaidBrokeragePriceByBusIdAndFromMemberId(final Integer busId, final Integer fromMemberId) throws Exception {
+        if (busId == null || fromMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                StringBuilder sbSqlSegment = new StringBuilder(" o")
+                        .append(" WHERE o.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND o.is_accept = ").append(OpportunityConstant.ACCEPT_YES)
+                        .append("  AND o.from_member_id = ").append(fromMemberId)
+                        .append("  AND exists(")
+                        .append("    SELECT bi.id FROM t_union_brokerage_income bi")
+                        .append("    WHERE bi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("      AND bi.type = ").append(BrokerageConstant.SOURCE_TYPE_OPPORTUNITY)
+                        .append("      AND bi.opportunity_id = o.id")
+                        .append("  )")
+                        .append("  AND exists(")
+                        .append("    SELECT m.id FROM t_union_member m")
+                        .append("    WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("      AND m.status !=").append(MemberConstant.STATUS_APPLY_IN)
+                        .append("      AND m.id = o.to_member_id")
+                        .append("      AND m.bus_id = ").append(busId)
+                        .append("  )");
+                return sbSqlSegment.toString();
+            }
+        };
+        wrapper.setSqlSelect(" IFNULL(SUM(o.brokerage_price), 0) brokeragePriceSum");
+        Map<String, Object> map = this.selectMap(wrapper);
+        Object objBrokeragePriceSum = map != null ? map.get("brokeragePriceSum") : null;
+        Double brokeragePriceSum = Double.valueOf(objBrokeragePriceSum != null ? objBrokeragePriceSum.toString() : "0");
+        return brokeragePriceSum;
     }
 
     /**
@@ -753,12 +1078,110 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
      * @throws Exception
      */
     @Override
-    public Double sumPaidBrokeragePriceByFromMemberIdAndToMemberId(Integer fromMemberId, Integer toMemberId) throws Exception {
-        return null;
+    public Double sumPaidBrokeragePriceByFromMemberIdAndToMemberId(final Integer fromMemberId, final Integer toMemberId) throws Exception {
+        if (fromMemberId == null || toMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                StringBuilder sbSqlSegment = new StringBuilder(" o")
+                        .append(" WHERE o.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND o.is_accept = ").append(OpportunityConstant.ACCEPT_YES)
+                        .append("  AND o.from_member_id = ").append(fromMemberId)
+                        .append("  AND o.to_member_id = ").append(toMemberId)
+                        .append("  AND exists(")
+                        .append("    SELECT bi.id FROM t_union_brokerage_income bi")
+                        .append("    WHERE bi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("      AND bi.type = ").append(BrokerageConstant.SOURCE_TYPE_OPPORTUNITY)
+                        .append("      AND bi.opportunity_id = o.id")
+                        .append("  )");
+                return sbSqlSegment.toString();
+            }
+        };
+        wrapper.setSqlSelect(" IFNULL(SUM(o.brokerage_price), 0) brokeragePriceSum");
+        Map<String, Object> map = this.selectMap(wrapper);
+        Object objBrokeragePriceSum = map != null ? map.get("brokeragePriceSum") : null;
+        Double brokeragePriceSum = Double.valueOf(objBrokeragePriceSum != null ? objBrokeragePriceSum.toString() : "0");
+        return brokeragePriceSum;
+    }
+
+    /**
+     * 根据商机推荐方的盟员身份id，统计已被接受的、已支付或未支付的佣金之和，即佣金收入
+     *
+     * @param fromMemberId {not null} 商机推荐方的盟员身份id
+     * @param isPaid       {not null} 是否已支付，1为是，0为否
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public Double sumBrokeragePriceByFromMemberIdAndIsPaid(final Integer fromMemberId, final Integer isPaid) throws Exception {
+        if (fromMemberId == null || isPaid == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                StringBuilder sbSqlSegment = new StringBuilder(" o")
+                        .append(" WHERE o.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND o.is_accept = ").append(OpportunityConstant.ACCEPT_YES)
+                        .append("  AND o.from_member_id = ").append(fromMemberId)
+                        .append("  AND ").append(isPaid == CommonConstant.COMMON_YES ? "exists(" : "not exists(")
+                        .append("    SELECT * FROM t_union_brokerage_income bi")
+                        .append("    WHERE bi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("      AND bi.type = ").append(BrokerageConstant.SOURCE_TYPE_OPPORTUNITY)
+                        .append("      AND bi.opportunity_id = o.id")
+                        .append("  )");
+                return sbSqlSegment.toString();
+            }
+        };
+        wrapper.setSqlSelect("IFNULL(SUM(o.brokerage_price), 0) brokeragePriceSum");
+        Map<String, Object> map = this.selectMap(wrapper);
+        Object objBrokeragePriceSum = map != null ? map.get("brokeragePriceSum") : null;
+        Double brokeragePriceSum = Double.valueOf(objBrokeragePriceSum != null ? objBrokeragePriceSum.toString() : "0");
+        return brokeragePriceSum;
+    }
+
+    /**
+     * 根据商机接受方的盟员身份id，统计已接受的、已支付或未支付的佣金之和，即佣金支出
+     *
+     * @param toMemberId {not null} 商机接受方的盟员身份id
+     * @param isPaid     {not null} 是否已支付，1为是，0为否
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public Double sumBrokeragePriceByToMemberIdAndIsPaid(final Integer toMemberId, final Integer isPaid) throws Exception {
+        if (toMemberId == null || isPaid == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                StringBuilder sbSqlSegment = new StringBuilder(" o")
+                        .append(" WHERE o.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND o.is_accept = ").append(OpportunityConstant.ACCEPT_YES)
+                        .append("  AND o.to_member_id = ").append(toMemberId)
+                        .append("  AND ").append(isPaid == CommonConstant.COMMON_YES ? "exists(" : "not exists(")
+                        .append("    SELECT * FROM t_union_brokerage_income bi")
+                        .append("    WHERE bi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("      AND bi.type = ").append(BrokerageConstant.SOURCE_TYPE_OPPORTUNITY)
+                        .append("      AND bi.opportunity_id = o.id")
+                        .append("  )");
+                return sbSqlSegment.toString();
+            }
+        };
+        wrapper.setSqlSelect("IFNULL(SUM(o.brokerage_price), 0) brokeragePriceSum");
+        Map<String, Object> map = this.selectMap(wrapper);
+        Object objBrokeragePriceSum = map != null ? map.get("brokeragePriceSum") : null;
+        Double brokeragePriceSum = Double.valueOf(objBrokeragePriceSum != null ? objBrokeragePriceSum.toString() : "0");
+        return brokeragePriceSum;
     }
 
     //------------------------------------------------ boolean --------------------------------------------------------
 
+
+    //------------------------------------------------ money --------------------------------------------------------
     @Override
     public Map<String, Object> payOpportunityQRCode(Integer busId, String ids) throws Exception {
         Map<String, Object> data = new HashMap<String, Object>();
@@ -837,200 +1260,6 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_003, 60l);//支付成功
     }
 
-    @Override
-    public List<Map<String, Object>> listPayDetailParticularByUnionIdAndMemberId(Integer memberId, Integer myMemberId) throws Exception {
-        if (memberId == null || myMemberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        //List<Map<String, Object>> list = unionOpportunityMapper.listPayDetailParticularByUnionIdAndMemberId(memberId, myMemberId);
-        List<Map<String, Object>> list = null;
-        return list;
-    }
-
-    @Override
-    public Map<String, Object> getStatisticData(Integer unionId, Integer busId) throws Exception {
-        if (unionId == null || busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        Map<String, Object> resultMap = new HashMap<>();
-        UnionMember member = unionMemberService.getByBusIdAndUnionId(busId, unionId);
-        //未结算佣金收入
-        Double uncheckBrokerageIncome = getBrokerageIncome(member.getId(), OpportunityConstant.BROKERAGE_PAY_NO);
-        resultMap.put("uncheckBrokerageIncome", uncheckBrokerageIncome);
-        //已结算佣金收入
-        Double confirmBrokerageIncome = getBrokerageIncome(member.getId(), OpportunityConstant.BROKERAGE_PAY_YES);
-        resultMap.put("confirmBrokerageIncome", confirmBrokerageIncome);
-        //总佣金收入
-        BigDecimal brokerageIncomeSum = BigDecimalUtil.add(uncheckBrokerageIncome, confirmBrokerageIncome);
-        resultMap.put("brokerageIncomeSum", brokerageIncomeSum);
-        //收入百分比
-        if (brokerageIncomeSum.doubleValue() != 0.0D) {
-            //未结算佣金收入占总佣金收入的百分比
-            BigDecimal bdUncheckBrokerageIncomePercent = BigDecimalUtil.divide(uncheckBrokerageIncome, brokerageIncomeSum, 4);
-            String uncheckBrokerageIncomePercent = DoubleUtil.formatPercent(bdUncheckBrokerageIncomePercent.doubleValue());
-            resultMap.put("uncheckBrokerageIncomePercent", uncheckBrokerageIncomePercent);
-            //已结算佣金收入占总佣金收入的百分比
-            BigDecimal bdConfirmBrokerageIncomePercent = BigDecimalUtil.subtract(Double.valueOf(1.00), bdUncheckBrokerageIncomePercent, 4);
-            String confirmBrokerageIncomePercent = DoubleUtil.formatPercent(bdConfirmBrokerageIncomePercent.doubleValue());
-            resultMap.put("confirmBrokerageIncomePercent", confirmBrokerageIncomePercent);
-        }
-
-        //未结算支出佣金
-        Double uncheckBrokerageExpense = getBrokerageExpense(member.getId(), OpportunityConstant.BROKERAGE_PAY_NO);
-        resultMap.put("uncheckBrokerageExpense", uncheckBrokerageExpense);
-        //已结算支出佣金
-        Double confirmBrokerageExpense = getBrokerageExpense(member.getId(), OpportunityConstant.BROKERAGE_PAY_YES);
-        resultMap.put("confirmBrokerageExpense", confirmBrokerageExpense);
-        //总支出佣金
-        BigDecimal brokerageExpenseSum = BigDecimalUtil.add(uncheckBrokerageExpense, confirmBrokerageExpense);
-        resultMap.put("brokerageExpenseSum", brokerageExpenseSum);
-        //支出百分比
-        if (brokerageExpenseSum.doubleValue() != 0.0D) {
-            //未结算支出佣金占总支出佣金的百分比
-            BigDecimal bdUncheckBrokerageExpensePercent = BigDecimalUtil.divide(uncheckBrokerageExpense, brokerageExpenseSum, 4);
-            String uncheckBrokerageExpensePercent = DoubleUtil.formatPercent(bdUncheckBrokerageExpensePercent.doubleValue());
-            resultMap.put("uncheckBrokerageExpensePercent", uncheckBrokerageExpensePercent);
-            //已结算支出佣金占总支出佣金的百分比
-            BigDecimal bdConfirmBrokerageExpensePercent = BigDecimalUtil.subtract(Double.valueOf(1.00), bdUncheckBrokerageExpensePercent, 4);
-            String confirmBrokerageExpensePercent = DoubleUtil.formatPercent(bdConfirmBrokerageExpensePercent.doubleValue());
-            resultMap.put("confirmBrokerageExpensePercent", confirmBrokerageExpensePercent);
-        }
-
-        //获取一周统计数据
-        List<Map<String, Map<String, Double>>> brokerageInWeek = getBrokerageInWeek(member.getId());
-        resultMap.put("brokerageInWeek", brokerageInWeek);
-        return resultMap;
-    }
-
-    //获取一周统计数据
-    private List<Map<String, Map<String, Double>>> getBrokerageInWeek(Integer memberId) {
-        List<Map<String, Map<String, Double>>> resultList = new ArrayList<>();
-        int mondayOffset = 0 - ((Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 2 + 7) % 7);//例如今天是星期四，则mondayOffSet=-3
-        Date mondayInThisWeek = DateUtil.addDays(DateUtil.getCurrentDate(), mondayOffset);
-        for (; mondayOffset <= 0; mondayOffset++) {
-            String strDate = DateUtil.getDateString(mondayInThisWeek, DateUtil.DATE_PATTERN);
-            String strDateBegin = strDate + " 00:00:00";
-            String strDateEnd = strDate + " 23:59:59";
-            Map<String, Double> brokerageInDayMap = getBrokerageInDay(memberId, strDateBegin, strDateEnd);
-            String strWeek = DateUtil.getWeek(mondayInThisWeek);
-            Map<String, Map<String, Double>> weekMap = new HashMap<>();
-            weekMap.put(strWeek, brokerageInDayMap);
-            resultList.add(weekMap);
-            mondayInThisWeek = DateUtil.addDays(mondayInThisWeek, 1);
-        }
-        return resultList;
-    }
-
-    private Map<String, Double> getBrokerageInDay(Integer memberId, String strDateBegin, String strDateEnd) {
-        if (memberId != null || StringUtil.isNotEmpty(strDateBegin) || StringUtil.isNotEmpty(strDateEnd)) {
-            Map<String, Double> resultMap = new HashMap<>();
-            //已结算的佣金收入
-            //Double incomeBrokerage = unionOpportunityMapper.getBrokerageComeInDay(memberId, strDateBegin, strDateEnd);
-            Double incomeBrokerage = null;
-            resultMap.put("incomeBrokerage", incomeBrokerage);
-            //已结算的支出佣金
-            //Double expanseBrokerage = unionOpportunityMapper.getBrokerageExpanseInDay(memberId, strDateBegin, strDateEnd);
-            Double expanseBrokerage = null;
-            resultMap.put("expanseBrokerage", expanseBrokerage);
-            return resultMap;
-        }
-        return null;
-    }
-
-
-    /**
-     * 获取我应付的佣金
-     *
-     * @param memberId           盟员id
-     * @param brokeragePayStatus 结算状态 1：未结算  2：已结算
-     * @return
-     */
-    private Double getBrokerageExpense(Integer memberId, int brokeragePayStatus) {
-        Double money = 0d;
-        if (memberId != null) {
-            switch (brokeragePayStatus) {
-                //未结算
-                case 1:
-                    EntityWrapper wrapper = new EntityWrapper();
-                    wrapper.eq("to_member_id", memberId);
-                    wrapper.eq("is_accept", OpportunityConstant.ACCEPT_YES);
-                    wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
-                    wrapper.notExists("select id from t_union_brokerage_income i where t_union_opportunity.id = i.opportunity_id");
-                    wrapper.setSqlSelect("IFNULL(SUM(t_union_opportunity.brokerage_price), 0) money");
-                    Map<String, Object> map = this.selectMap(wrapper);
-                    if (map == null) {
-                        break;
-                    }
-                    money = Double.valueOf(map.get("money").toString());
-                    break;
-                //已结算
-                case 2:
-                    EntityWrapper entityWrapper = new EntityWrapper();
-                    entityWrapper.eq("to_member_id", memberId);
-                    entityWrapper.eq("is_accept", OpportunityConstant.ACCEPT_YES);
-                    entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
-                    entityWrapper.exists("select id from t_union_brokerage_income i where t_union_opportunity.id = i.opportunity_id");
-                    entityWrapper.setSqlSelect("IFNULL(SUM(t_union_opportunity.brokerage_price), 0) money");
-                    Map<String, Object> data = this.selectMap(entityWrapper);
-                    if (data == null) {
-                        break;
-                    }
-                    money = Double.valueOf(data.get("money").toString());
-                    break;
-                default:
-                    break;
-            }
-        }
-        return money;
-    }
-
-    /**
-     * 获取我应收的佣金
-     *
-     * @param memberId           盟员id
-     * @param brokeragePayStatus 结算状态 1：未结算  2：已结算
-     * @return
-     */
-    private Double getBrokerageIncome(Integer memberId, int brokeragePayStatus) {
-        Double money = 0d;
-        if (memberId != null) {
-            switch (brokeragePayStatus) {
-                //未结算
-                case 1:
-                    EntityWrapper wrapper = new EntityWrapper();
-                    wrapper.eq("from_member_id", memberId);
-                    wrapper.eq("is_accept", OpportunityConstant.ACCEPT_YES);
-                    wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
-                    wrapper.notExists("select id from t_union_brokerage_income i where t_union_opportunity.id = i.opportunity_id");
-                    wrapper.setSqlSelect("IFNULL(SUM(t_union_opportunity.brokerage_price), 0) money");
-                    Map<String, Object> map = this.selectMap(wrapper);
-                    if (map == null) {
-                        break;
-                    }
-                    money = Double.valueOf(map.get("money").toString());
-                    break;
-                //已结算
-                case 2:
-                    EntityWrapper entityWrapper = new EntityWrapper();
-                    entityWrapper.eq("from_member_id", memberId);
-                    entityWrapper.eq("is_accept", OpportunityConstant.ACCEPT_YES);
-                    entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
-                    entityWrapper.exists("select id from t_union_brokerage_income i where t_union_opportunity.id = i.opportunity_id");
-                    entityWrapper.setSqlSelect("IFNULL(SUM(t_union_opportunity.brokerage_price), 0) money");
-                    Map<String, Object> data = this.selectMap(entityWrapper);
-                    if (data == null) {
-                        break;
-                    }
-                    money = Double.valueOf(data.get("money").toString());
-                    break;
-                default:
-                    break;
-            }
-        }
-        return money;
-
-    }
-
     /**
      * 插入佣金收入列表
      *
@@ -1064,6 +1293,5 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         }
         unionBrokerageIncomeService.insertBatch(incomes);
         unionBrokeragePayService.insertBatch(pays);
-
     }
 }

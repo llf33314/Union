@@ -39,6 +39,16 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      */
     Map<String, Object> getContactDetailByBusIdAndTgtMemberId(Integer busId, Integer tgtMemberId, Integer userMemberId) throws Exception;
 
+    /**
+     * 根据商家id和盟员身份id，获取商机佣金统计数据
+     *
+     * @param busId    {not null} 商家id
+     * @param memberId {not null} 盟员身份id
+     * @return
+     * @throws Exception
+     */
+    Map<String, Object> getStatisticsByBusIdAndMemberId(Integer busId, Integer memberId) throws Exception;
+
     //------------------------------------------ list(include page) ---------------------------------------------------
 
     /**
@@ -122,6 +132,16 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
     List<UnionOpportunity> listPaidByFromMemberId(Integer fromMemberId) throws Exception;
 
     /**
+     * 根据商家id和推荐方的盟员身份id，获取所有推荐给商家的，已接受状态的，且已支付的商机推荐列表信息
+     *
+     * @param busId        {not null} 商家id
+     * @param fromMemberId {not null} 推荐方的盟员身份id
+     * @return
+     * @throws Exception
+     */
+    List<UnionOpportunity> listPaidByBusIdAndFromMemberId(Integer busId, Integer fromMemberId) throws Exception;
+
+    /**
      * 根据接收方的盟员身份id，获取所有已接受，且已支付的商机推荐列表信息
      *
      * @param toMemberId {not null} 接收方的盟员身份id
@@ -129,6 +149,26 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      * @throws Exception
      */
     List<UnionOpportunity> listPaidByToMemberId(Integer toMemberId) throws Exception;
+
+    /**
+     * 根据商家id和接收方的盟员身份id，获取所有商家推荐的，已接受状态，且已支付的商机推荐列表信息
+     *
+     * @param busId      {not null} 商家id
+     * @param toMemberId {not null} 接收方的盟员身份id
+     * @return
+     * @throws Exception
+     */
+    List<UnionOpportunity> listPaidByBusIdAndToMemberId(Integer busId, Integer toMemberId) throws Exception;
+
+    /**
+     * 根据推荐方的盟员身份id和接收方的盟员身份id，获取所有已接受的，且已支付的商机推荐列表信息
+     *
+     * @param fromMemberId {not null} 推荐方的盟员身份id
+     * @param toMemberId   {not null} 接收方的盟员身份id
+     * @return
+     * @throws Exception
+     */
+    List<UnionOpportunity> listPaidByFromMemberIdAndToMemberId(Integer fromMemberId, Integer toMemberId) throws Exception;
 
     //------------------------------------------------- update --------------------------------------------------------
 
@@ -195,9 +235,30 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      */
     Double sumPaidBrokeragePriceByFromMemberIdAndToMemberId(Integer fromMemberId, Integer toMemberId) throws Exception;
 
+    /**
+     * 根据商机推荐方的盟员身份id，统计已被接受的、已支付或未支付的佣金之和，即佣金收入
+     *
+     * @param fromMemberId {not null} 商机推荐方的盟员身份id
+     * @param isPaid       {not null} 是否已支付，1为是，0为否
+     * @return
+     * @throws Exception
+     */
+    Double sumBrokeragePriceByFromMemberIdAndIsPaid(Integer fromMemberId, Integer isPaid) throws Exception;
+
+    /**
+     * 根据商机接受方的盟员身份id，统计已接受的、已支付或未支付的佣金之和，即佣金支出
+     *
+     * @param toMemberId {not null} 商机接受方的盟员身份id
+     * @param isPaid     {not null} 是否已支付，1为是，0为否
+     * @return
+     * @throws Exception
+     */
+    Double sumBrokeragePriceByToMemberIdAndIsPaid(Integer toMemberId, Integer isPaid) throws Exception;
+
     //------------------------------------------------ boolean --------------------------------------------------------
 
 
+    //------------------------------------------------ money --------------------------------------------------------
     /**
      * 二维码支付佣金  生成支付信息
      *
@@ -214,24 +275,4 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      * @param only
      */
     void payOpportunitySuccess(String encrypt, String only) throws Exception;
-
-
-    /**
-     * 查询在联盟下我与某盟员的佣金来往明细
-     *
-     * @param memberId   盟员id
-     * @param myMemberId 我的盟员id
-     * @return
-     */
-    List<Map<String, Object>> listPayDetailParticularByUnionIdAndMemberId(Integer memberId, Integer myMemberId) throws Exception;
-
-    /**
-     * 获取商机统计信息
-     *
-     * @param unionId
-     * @param busId
-     * @return
-     */
-    Map<String, Object> getStatisticData(Integer unionId, Integer busId) throws Exception;
-
 }

@@ -7,20 +7,20 @@ public interface PreferentialConstant {
     /**
      * 审核状态：未提交
      */
-    public static final int STATUS_UNCOMMITTED = 1;
+    int STATUS_UNCOMMITTED = 1;
 
     /**
      * 审核状态：审核中
      */
-    public static final int STATUS_VERIFYING = 2;
+    int STATUS_VERIFYING = 2;
 
     /**
      * 审核状态：审核通过
      */
-    public static final int STATUS_PASS = 3;
+    int STATUS_PASS = 3;
 
     /**
      * 审核状态：审核不通过
      */
-    public static final int STATUS_FAIL = 4;
+    int STATUS_FAIL = 4;
 }

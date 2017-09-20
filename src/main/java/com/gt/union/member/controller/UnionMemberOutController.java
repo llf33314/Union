@@ -118,7 +118,7 @@ public class UnionMemberOutController {
     }
 
     @ApiOperation(value = "盟主直接移出盟员", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/memberId/{memberId}/", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/memberId/{memberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateByMemberIdAndTgtMemberId(HttpServletRequest request
             , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
                                                  @PathVariable("memberId") Integer memberId
