@@ -187,12 +187,14 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
                 @Override
                 public String getSqlSegment() {
                     StringBuilder sbSqlSegment = new StringBuilder(" pp")
-                            .append(" LEFT JOIN t_union_preferential_item pi ON pi.project_id = pp.id")
                             .append(" LEFT JOIN t_union_member m ON m.id = pp.member_id")
                             .append(" WHERE pp.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                            .append("  AND pi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                            .append("  AND pi.status = ").append(itemStatus)
                             .append("  AND m.union_id = ").append(unionOwner.getUnionId())
+                            .append("  AND exists(")
+                            .append("    SELECT pi.id FROM t_union_preferential_item pi")
+                            .append("    WHERE pi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                            .append("      AND pi.status = ").append(itemStatus)
+                            .append("  )")
                             .append(" ORDER BY pp.id ASC");
                     return sbSqlSegment.toString();
                 }

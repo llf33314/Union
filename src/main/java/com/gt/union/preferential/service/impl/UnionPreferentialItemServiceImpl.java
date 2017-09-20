@@ -5,15 +5,9 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.CommonConstant;
-import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.DateUtil;
-import com.gt.union.common.util.StringUtil;
-import com.gt.union.main.constant.MainConstant;
-import com.gt.union.main.entity.UnionMain;
-import com.gt.union.main.entity.UnionMainCharge;
 import com.gt.union.main.service.IUnionMainChargeService;
 import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.member.constant.MemberConstant;
@@ -31,7 +25,6 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -199,6 +192,7 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
         UnionPreferentialItem updateItem = new UnionPreferentialItem();
         updateItem.setId(item.getId()); //优惠服务项id
         updateItem.setStatus(PreferentialConstant.STATUS_VERIFYING); //优惠服务项状态变成审核中
+        updateItem.setModifytime(DateUtil.getCurrentDate()); //修改时间
         this.updateById(updateItem);
     }
 
@@ -242,6 +236,7 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
         UnionPreferentialItem updateItem = new UnionPreferentialItem();
         updateItem.setId(item.getId()); //优惠服务项id
         updateItem.setDelStatus(CommonConstant.DEL_STATUS_YES); //删除状态变成已删除
+        updateItem.setModifytime(DateUtil.getCurrentDate()); //修改时间
         this.updateById(updateItem);
     }
 
@@ -297,6 +292,7 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
             UnionPreferentialItem updateItem = new UnionPreferentialItem();
             updateItem.setId(itemId); //优惠服务项id
             updateItem.setStatus(isOK == CommonConstant.COMMON_YES ? PreferentialConstant.STATUS_PASS : PreferentialConstant.STATUS_FAIL); //审核状态
+            updateItem.setModifytime(DateUtil.getCurrentDate()); //修改时间
             updateItemList.add(updateItem);
         }
         this.updateBatchById(updateItemList);
@@ -375,6 +371,7 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
         saveItem.setProjectId(projectId); //优惠项目id
         saveItem.setName(itemName); //优惠服务名称
         saveItem.setStatus(PreferentialConstant.STATUS_UNCOMMITTED); //状态
+        saveItem.setModifytime(DateUtil.getCurrentDate()); //默认修改时间
         this.insert(saveItem);
     }
 

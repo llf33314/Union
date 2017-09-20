@@ -39,6 +39,16 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      */
     Map<String, Object> getContactDetailByBusIdAndTgtMemberId(Integer busId, Integer tgtMemberId, Integer userMemberId) throws Exception;
 
+    /**
+     * 根据商家id和盟员身份id，获取商机佣金统计数据
+     *
+     * @param busId    {not null} 商家id
+     * @param memberId {not null} 盟员身份id
+     * @return
+     * @throws Exception
+     */
+    Map<String, Object> getStatisticsByBusIdAndMemberId(Integer busId, Integer memberId) throws Exception;
+
     //------------------------------------------ list(include page) ---------------------------------------------------
 
     /**
@@ -225,9 +235,30 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      */
     Double sumPaidBrokeragePriceByFromMemberIdAndToMemberId(Integer fromMemberId, Integer toMemberId) throws Exception;
 
+    /**
+     * 根据商机推荐方的盟员身份id，统计已被接受的、已支付或未支付的佣金之和，即佣金收入
+     *
+     * @param fromMemberId {not null} 商机推荐方的盟员身份id
+     * @param isPaid       {not null} 是否已支付，1为是，0为否
+     * @return
+     * @throws Exception
+     */
+    Double sumBrokeragePriceByFromMemberIdAndIsPaid(Integer fromMemberId, Integer isPaid) throws Exception;
+
+    /**
+     * 根据商机接受方的盟员身份id，统计已接受的、已支付或未支付的佣金之和，即佣金支出
+     *
+     * @param toMemberId {not null} 商机接受方的盟员身份id
+     * @param isPaid     {not null} 是否已支付，1为是，0为否
+     * @return
+     * @throws Exception
+     */
+    Double sumBrokeragePriceByToMemberIdAndIsPaid(Integer toMemberId, Integer isPaid) throws Exception;
+
     //------------------------------------------------ boolean --------------------------------------------------------
 
 
+    //------------------------------------------------ money --------------------------------------------------------
     /**
      * 二维码支付佣金  生成支付信息
      *
@@ -244,14 +275,4 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      * @param only
      */
     void payOpportunitySuccess(String encrypt, String only) throws Exception;
-
-    /**
-     * 获取商机统计信息
-     *
-     * @param unionId
-     * @param busId
-     * @return
-     */
-    Map<String, Object> getStatisticData(Integer unionId, Integer busId) throws Exception;
-
 }

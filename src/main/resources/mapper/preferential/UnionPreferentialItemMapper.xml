@@ -10,6 +10,7 @@
 		<result column="project_id" property="projectId" />
 		<result column="name" property="name" />
 		<result column="status" property="status" />
+		<result column="modifytime" property="modifytime" />
 	</resultMap>
 
 </mapper>

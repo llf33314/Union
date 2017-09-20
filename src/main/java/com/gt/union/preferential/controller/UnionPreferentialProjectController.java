@@ -109,6 +109,34 @@ public class UnionPreferentialProjectController {
         }
     }
 
+    @ApiOperation(value = "根据审核状态，分页查询优惠项目列表信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{projectId}/memberId/{memberId}/status/{status}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String getDetailByMemberIdAndProjectIdAndItemStatus(HttpServletRequest request, Page page
+            , @ApiParam(name = "projectId", value = "优惠项目id", required = true)
+                                                               @PathVariable("projectId") Integer projectId
+            , @ApiParam(name = "memberId", value = "操作者的盟员身份id", required = true)
+                                                               @PathVariable("memberId") Integer memberId
+            , @ApiParam(name = "status", value = "优惠服务项审核状态，2是审核中，3是审核通过，4是审核不通过", required = true)
+                                                               @PathVariable("status") Integer status) {
+        try {
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            Integer busId = busUser.getId();
+            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+                busId = busUser.getPid();
+            }
+            Map<String, Object> result = this.unionPreferentialProjectService.getDetailByBusIdAndMemberIdAndProjectIdAndItemStatus(busId, memberId, projectId, status);
+            return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            this.unionLogErrorService.saveIfNotNull(e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
+        } catch (Exception e) {
+            logger.error("", e);
+            this.unionLogErrorService.saveIfNotNull(e);
+            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+        }
+    }
+
     //-------------------------------------------------- put ----------------------------------------------------------
 
     @ApiOperation(value = "更新优惠项目说明", produces = "application/json;charset=UTF-8")

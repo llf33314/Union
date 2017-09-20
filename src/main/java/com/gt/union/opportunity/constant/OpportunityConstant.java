@@ -21,16 +21,6 @@ public interface OpportunityConstant {
 	int ACCEPT_NO = 3;
 
 	/**
-	 * 未支付
-	 */
-	int BROKERAGE_PAY_NO = 1;
-
-	/**
-	 * 已支付
-	 */
-	int BROKERAGE_PAY_YES = 2;
-
-	/**
 	 * 线上
 	 */
 	int TYPE_ONLINE = 1;
