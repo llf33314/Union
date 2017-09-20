@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.preferential.entity.UnionPreferentialProject;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -57,6 +58,17 @@ public interface IUnionPreferentialProjectService extends IService<UnionPreferen
      */
     UnionPreferentialProject getByBusIdAndMemberId(Integer busId, Integer memberId) throws Exception;
 
+    /**
+     * 根据商家id和盟员身份id，获取优惠项目信息
+     *
+     * @param page     {not null} 分页对象
+     * @param busId    {not null} 商家id
+     * @param memberId {not null} 盟员身份id
+     * @return
+     * @throws Exception
+     */
+    Map<String, Object> getPageMapByBusIdAndMemberId(Page page, Integer busId, Integer memberId) throws Exception;
+
     //------------------------------------------ list(include page) ---------------------------------------------------
 
     /**
@@ -70,6 +82,14 @@ public interface IUnionPreferentialProjectService extends IService<UnionPreferen
      * @throws Exception
      */
     Page pageMapByBusIdAndMemberIdAndItemStatus(Page page, Integer busId, Integer memberId, Integer itemStatus) throws Exception;
+
+    /**
+     * 获取所有过期的优惠项目列表信息，即项目所属盟员已退盟
+     *
+     * @return
+     * @throws Exception
+     */
+    List<UnionPreferentialProject> listExpired() throws Exception;
 
     //------------------------------------------------- update --------------------------------------------------------
 

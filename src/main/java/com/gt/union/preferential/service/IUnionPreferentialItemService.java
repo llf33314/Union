@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.preferential.entity.UnionPreferentialItem;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -30,14 +29,14 @@ public interface IUnionPreferentialItemService extends IService<UnionPreferentia
     //------------------------------------------ list(include page) ---------------------------------------------------
 
     /**
-     * 查询我的优惠服务
+     * 根据优惠项目id，分页获取优惠服务列表信息
      *
-     * @param page
-     * @param unionId 联盟id
-     * @param busId   商家id
+     * @param page      {not null} 分页对象
+     * @param projectId {not null} 优惠项目id
      * @return
+     * @throws Exception
      */
-    Page listByUnionId(Page page, Integer unionId, Integer busId) throws Exception;
+    Page pageByProjectId(Page page, Integer projectId) throws Exception;
 
     /**
      * 根据优惠项目id和优惠服务状态，获取优惠服务项列表信息
@@ -50,14 +49,12 @@ public interface IUnionPreferentialItemService extends IService<UnionPreferentia
     List<UnionPreferentialItem> listByProjectIdAndStatus(Integer projectId, Integer status) throws Exception;
 
     /**
-     * 通过managerId和verifyStatus查询对应的优惠服务项信息
+     * 所有过期的优惠服务，即优惠项目已不存在
      *
-     * @param projectId    项目id
-     * @param verifyStatus 审核状态
      * @return
      * @throws Exception
      */
-    List<Map<String, Object>> listByProjectIdWidthStatus(Integer projectId, Integer verifyStatus) throws Exception;
+    List<UnionPreferentialItem> listExpired() throws Exception;
 
     //------------------------------------------------- update --------------------------------------------------------
 
@@ -91,26 +88,6 @@ public interface IUnionPreferentialItemService extends IService<UnionPreferentia
      * @throws Exception
      */
     void updateBatchByBusIdAndMemberId(Integer busId, Integer memberId, List<Integer> itemIdList, Integer isOK) throws Exception;
-
-    /**
-     * 删除优惠服务项目
-     *
-     * @param unionId 联盟id
-     * @param busId   商家id
-     * @param ids     服务项目ids
-     * @throws Exception
-     */
-    void delete(Integer unionId, Integer busId, String ids) throws Exception;
-
-    /**
-     * 审核优惠服务项目
-     *
-     * @param unionId      联盟id
-     * @param busId        商家id
-     * @param ids          服务项目ids
-     * @param verifyStatus 审核状态 2：通过 3：不通过
-     */
-    void verify(Integer unionId, Integer busId, String ids, Integer verifyStatus) throws Exception;
 
     //------------------------------------------------- save ----------------------------------------------------------
 

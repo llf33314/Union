@@ -10,7 +10,6 @@ import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.log.service.IUnionLogErrorService;
 import com.gt.union.preferential.constant.PreferentialConstant;
-import com.gt.union.preferential.entity.UnionPreferentialProject;
 import com.gt.union.preferential.service.IUnionPreferentialProjectService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -47,7 +46,7 @@ public class UnionPreferentialProjectController {
 
     @ApiOperation(value = "查询我的优惠项目", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/myProject/memberId/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getByMemberId(HttpServletRequest request
+    public String getByMemberId(HttpServletRequest request, Page page
             , @ApiParam(name = "memberId", value = "操作者的盟员身份id", required = true)
                                 @PathVariable("memberId") Integer memberId) {
         try {
@@ -56,7 +55,7 @@ public class UnionPreferentialProjectController {
             if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
                 busId = busUser.getPid();
             }
-            UnionPreferentialProject result = this.unionPreferentialProjectService.getByBusIdAndMemberId(busId, memberId);
+            Map<String, Object> result = this.unionPreferentialProjectService.getPageMapByBusIdAndMemberId(page, busId, memberId);
             return GTJsonResult.instanceSuccessMsg(result).toString();
         } catch (BaseException e) {
             logger.error("", e);
@@ -109,9 +108,9 @@ public class UnionPreferentialProjectController {
         }
     }
 
-    @ApiOperation(value = "根据审核状态，分页查询优惠项目列表信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "根据优惠项目id和审核状态，查询详情信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{projectId}/memberId/{memberId}/status/{status}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getDetailByMemberIdAndProjectIdAndItemStatus(HttpServletRequest request, Page page
+    public String getDetailByMemberIdAndProjectIdAndItemStatus(HttpServletRequest request
             , @ApiParam(name = "projectId", value = "优惠项目id", required = true)
                                                                @PathVariable("projectId") Integer projectId
             , @ApiParam(name = "memberId", value = "操作者的盟员身份id", required = true)

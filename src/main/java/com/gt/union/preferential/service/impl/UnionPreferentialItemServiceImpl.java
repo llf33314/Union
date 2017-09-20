@@ -1,7 +1,6 @@
 package com.gt.union.preferential.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.CommonConstant;
@@ -26,7 +25,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -72,35 +70,27 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
         return this.selectOne(entityWrapper);
     }
 
-    //------------------------------------------ list(include page) ---------------------------------------------------
-
     /**
-     * 查询我的优惠服务
+     * 根据优惠项目id，分页获取优惠服务列表信息
      *
-     * @param page
-     * @param unionId 联盟id
-     * @param busId   商家id
+     * @param page      {not null} 分页对象
+     * @param projectId {not null} 优惠项目id
      * @return
+     * @throws Exception
      */
     @Override
-    public Page listByUnionId(Page page, final Integer unionId, final Integer busId) throws Exception {
-        UnionMember member = unionMemberService.getByBusIdAndUnionId(busId, unionId);
-        final UnionPreferentialProject project = unionPreferentialProjectService.getByMemberId(member.getId());
-        Wrapper wrapper = new Wrapper() {
-            @Override
-            public String getSqlSegment() {
-                StringBuilder sbSqlSegment = new StringBuilder("");
-                sbSqlSegment.append(" WHERE project_id = ").append(project.getId())
-                        .append(" ORDER BY id DESC ");
-                return sbSqlSegment.toString();
-            }
-
-            ;
-
-        };
-        wrapper.setSqlSelect(" id, name, DATE_FORMAT(createtime, '%Y-%m-%d %T') createtime, verify_status verifyStatus ");
-        return this.selectMapsPage(page, wrapper);
+    public Page pageByProjectId(Page page, Integer projectId) throws Exception {
+        if (page == null || projectId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("project_id", projectId)
+                .orderBy("status ASC, id", true);
+        return this.selectPage(page, entityWrapper);
     }
+
+    //------------------------------------------ list(include page) ---------------------------------------------------
 
     /**
      * 根据优惠项目id和优惠服务状态，获取优惠服务项列表信息
@@ -123,28 +113,20 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
     }
 
     /**
-     * 通过managerId和verifyStatus查询对应的优惠服务项信息
+     * 所有过期的优惠服务，即优惠项目已不存在
      *
-     * @param projectId    项目id
-     * @param verifyStatus 审核状态
      * @return
      * @throws Exception
      */
     @Override
-    public List<Map<String, Object>> listByProjectIdWidthStatus(Integer projectId, Integer verifyStatus) throws Exception {
-        if (projectId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        if (verifyStatus == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
+    public List<UnionPreferentialItem> listExpired() throws Exception {
         EntityWrapper entityWrapper = new EntityWrapper();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("project_id", projectId)
-                .eq("verify_status", verifyStatus);
-        entityWrapper.setSqlSelect(" id, name, DATE_FORMAT(createtime, '%Y-%m-%d %T') createtime, verify_status verifyStatus ");
-        return this.selectMaps(entityWrapper);
+                .notExists(new StringBuilder(" SELECT pp.id FROM t_union_preferential_project pp")
+                        .append(" WHERE pp.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND pp.id = t_union_preferential_item.project_id")
+                        .toString());
+        return this.selectList(entityWrapper);
     }
 
     //------------------------------------------------- update --------------------------------------------------------
@@ -296,32 +278,6 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
             updateItemList.add(updateItem);
         }
         this.updateBatchById(updateItemList);
-    }
-
-    /**
-     * 删除优惠服务项目
-     *
-     * @param unionId 联盟id
-     * @param busId   商家id
-     * @param ids     服务项目ids
-     * @throws Exception
-     */
-    @Override
-    public void delete(Integer unionId, Integer busId, String ids) throws Exception {
-
-    }
-
-    /**
-     * 审核优惠服务项目
-     *
-     * @param unionId      联盟id
-     * @param busId        商家id
-     * @param ids          服务项目ids
-     * @param verifyStatus 审核状态 2：通过 3：不通过
-     */
-    @Override
-    public void verify(Integer unionId, Integer busId, String ids, Integer verifyStatus) throws Exception {
-
     }
 
     //------------------------------------------------- save ----------------------------------------------------------

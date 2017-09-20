@@ -139,7 +139,65 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         return result;
     }
 
+    /**
+     * 根据商家id和服务许可id，获取联盟创建信息
+     *
+     * @param busId    {not null} 商家id
+     * @param permitId {not null} 联盟服务许可
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public UnionMainCreate getByBusIdAndPermitId(Integer busId, Integer permitId) throws Exception {
+        if (busId == null || permitId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("bus_id", busId)
+                .eq("permit_id", permitId);
+        return this.selectOne(entityWrapper);
+    }
+
+    /**
+     * 通过盟主服务许可id，获取联盟创建信息
+     *
+     * @param permitId {not null} 盟主服务许可id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public UnionMainCreate getByPermitId(Integer permitId) throws Exception {
+        if (permitId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("permit_id", permitId)
+                .orderBy("id", false);
+        return this.selectOne(entityWrapper);
+    }
+
     //------------------------------------------ list(include page) ---------------------------------------------------
+
+    /**
+     * 获取所有过期的联盟创建列表记录，过期是指因盟主服务许可过期而导致的过期
+     *
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public List<UnionMainCreate> listExpired() throws Exception {
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .isNotNull("permit_id")
+                .notExists(new StringBuilder(" SELECT p.id FROM t_union_main_permit p")
+                        .append(" WHERE p.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND p.id = t_union_main_create.permit_id")
+                        .toString());
+        return this.selectList(entityWrapper);
+    }
+
     //------------------------------------------------- update --------------------------------------------------------
     //------------------------------------------------- save ----------------------------------------------------------
 
@@ -333,31 +391,5 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
                 .eq("bus_id", busId);
         UnionMainCreate unionMainCreate = this.selectOne(entityWrapper);
         return unionMainCreate != null ? true : false;
-    }
-
-
-
-
-
-
-
-    /**
-     * 根据商家id和服务许可id，获取联盟创建信息
-     *
-     * @param busId    {not null} 商家id
-     * @param permitId {not null} 联盟服务许可
-     * @return
-     * @throws Exception
-     */
-    @Override
-    public UnionMainCreate getByBusIdAndPermitId(Integer busId, Integer permitId) throws Exception {
-        if (busId == null || permitId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        EntityWrapper entityWrapper = new EntityWrapper();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("bus_id", busId)
-                .eq("permit_id", permitId);
-        return this.selectOne(entityWrapper);
     }
 }

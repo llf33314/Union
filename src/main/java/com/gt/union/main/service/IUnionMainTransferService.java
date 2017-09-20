@@ -3,6 +3,8 @@ package com.gt.union.main.service;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.main.entity.UnionMainTransfer;
 
+import java.util.List;
+
 /**
  * <p>
  * 联盟转移 服务类
@@ -39,6 +41,15 @@ public interface IUnionMainTransferService extends IService<UnionMainTransfer> {
     UnionMainTransfer getByIdAndToMemberIdAndConfirmStatus(Integer transferId, Integer toMemberId, Integer confirmStatus) throws Exception;
 
     //------------------------------------------ list(include page) ---------------------------------------------------
+
+    /**
+     * 获取所有过期的盟主权限转移申请，即转移者已不再是盟主身份
+     *
+     * @return
+     * @throws Exception
+     */
+    List<UnionMainTransfer> listExpired() throws Exception;
+
     //------------------------------------------------- update --------------------------------------------------------
 
     /**
