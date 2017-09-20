@@ -5,10 +5,7 @@ import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
-import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.PropertiesUtil;
-import com.gt.union.common.util.RedisCacheUtil;
-import com.gt.union.common.util.StringUtil;
+import com.gt.union.common.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.servlet.*;
@@ -24,7 +21,7 @@ import java.util.*;
  */
 @WebFilter(filterName = "loginFilter", urlPatterns = "/*")
 public class LoginFilter implements Filter {
-
+	private static int count;
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
 
@@ -61,6 +58,7 @@ public class LoginFilter implements Filter {
 
 	@Override
 	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
+		System.out.println(DateUtil.getCurrentDateString() + " : "+ (++count));
 		// 可通过servletRequest.getParameter获取相关参数进行判断，
 		// 如果通过则执行filterChain.doFilter(servletReqeust, servletResponse)，
 		// 否则可通过servletResponse直接返回相关提示信息或不返回

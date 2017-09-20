@@ -292,6 +292,47 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     /**
+     * 根据盟主信息，分页获取本联盟中所有其他盟员是否具有盟主权限转移的相关记录
+     *
+     * @param page        {not null} 分页对象
+     * @param ownerMember {not null} 盟主身份
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public Page pageTransferMapByUnionOwner(Page page, final UnionMember ownerMember) throws Exception {
+        if (page == null || ownerMember == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                StringBuilder sbSqlSegment = new StringBuilder(" m")
+                        .append(" LEFT JOIN t_union_main_transfer mt ON mt.to_member_id = m.id")
+                        .append("  AND (mt.id IS NULL ")
+                        .append("    OR (")
+                        .append("      mt.id IS NOT NULL")
+                        .append("      AND mt.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("      AND mt.confirm_status = ").append(MainConstant.TRANSFER_CONFIRM_STATUS_HANDLING)
+                        .append("    )")
+                        .append("  )")
+                        .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND m.status != ").append(MemberConstant.STATUS_APPLY_IN)
+                        .append("  AND m.id != ").append(ownerMember.getId())
+                        .append("  AND m.union_id = ").append(ownerMember.getUnionId())
+                        .append(" ORDER BY mt.id ASC");
+                return sbSqlSegment.toString();
+            }
+        };
+        StringBuilder sbSqlSelect = new StringBuilder(" m.id memberId") //盟员身份id
+                .append(", m.enterprise_name enterpriseName") //盟员名称
+                .append(", m.createtime createTime") //加入时间
+                .append(", mt.id transferId"); //盟主服务转移申请id
+        wrapper.setSqlSelect(sbSqlSelect.toString());
+        return this.selectMapsPage(page, wrapper);
+    }
+
+    /**
      * 根据盟员id和商家id，获取所有与该盟员通属一个联盟的盟员信息
      *
      * @param memberId {not null} 盟员id

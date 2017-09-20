@@ -1,5 +1,6 @@
 package com.gt.union.main.service;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.main.entity.UnionMainTransfer;
 
@@ -30,6 +31,15 @@ public interface IUnionMainTransferService extends IService<UnionMainTransfer> {
             , Integer toMemberId, Integer confirmStatus) throws Exception;
 
     /**
+     * 根据转移申请id，获取转移申请对象
+     *
+     * @param transferId {not null} 转移申请id
+     * @return
+     * @throws Exception
+     */
+    UnionMainTransfer getById(Integer transferId) throws Exception;
+
+    /**
      * 根据转移申请id、接受者盟员身份id和确认状态，获取转移申请信息
      *
      * @param transferId    {not null} 转移申请id
@@ -43,12 +53,32 @@ public interface IUnionMainTransferService extends IService<UnionMainTransfer> {
     //------------------------------------------ list(include page) ---------------------------------------------------
 
     /**
+     * 根据转移者的盟主身份id，获取盟主权限转移申请列表信息
+     *
+     * @param fromMemberId {not null} 转移者的盟主身份id
+     * @return
+     * @throws Exception
+     */
+    List<UnionMainTransfer> listByFromMemberId(Integer fromMemberId) throws Exception;
+
+    /**
      * 获取所有过期的盟主权限转移申请，即转移者已不再是盟主身份
      *
      * @return
      * @throws Exception
      */
     List<UnionMainTransfer> listExpired() throws Exception;
+
+    /**
+     * 根据商家id和转移者盟员身份id，分页获取盟主服务转移申请列表
+     *
+     * @param page         {not null} 分页对象
+     * @param busId        {not null} 商家id
+     * @param fromMemberId {not null} 转移者盟员身份id
+     * @return
+     * @throws Exception
+     */
+    Page pageMapByBusIdAndFromMemberId(Page page, Integer busId, Integer fromMemberId) throws Exception;
 
     //------------------------------------------------- update --------------------------------------------------------
 
@@ -62,6 +92,16 @@ public interface IUnionMainTransferService extends IService<UnionMainTransfer> {
      * @throws Exception
      */
     void updateStatusByTransferIdAndBusIdAndToMemberId(Integer transferId, Integer busId, Integer toMemberId, Integer isOK) throws Exception;
+
+    /**
+     * 根据转移申请id、商家id和转移者的盟员身份id， 撤回盟主服务转移申请
+     *
+     * @param transferId   {not null} 转移申请id
+     * @param busId        {not null} 商家id
+     * @param fromMemberId {not null} 转移者的盟员身份id
+     * @throws Exception
+     */
+    void revokeByIdAndBusIdAndFromMemberId(Integer transferId, Integer busId, Integer fromMemberId) throws Exception;
 
     //------------------------------------------------- save ----------------------------------------------------------
 

@@ -111,6 +111,16 @@ public interface IUnionMemberService extends IService<UnionMember> {
     Page pagePreferentialUnCommitByUnionOwner(Page page, UnionMember ownerMember) throws Exception;
 
     /**
+     * 根据盟主信息，分页获取本联盟中所有其他盟员是否具有盟主权限转移的相关记录
+     *
+     * @param page        {not null} 分页对象
+     * @param ownerMember {not null} 盟主身份
+     * @return
+     * @throws Exception
+     */
+    Page pageTransferMapByUnionOwner(Page page, UnionMember ownerMember) throws Exception;
+
+    /**
      * 根据盟员id和商家id，获取所有与该盟员同属一个联盟的盟员信息
      *
      * @param memberId {not null} 盟员id
