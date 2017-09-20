@@ -19,6 +19,8 @@ import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.RandomKit;
 import com.gt.union.common.util.RedisKeyUtil;
+import com.gt.union.main.entity.UnionMain;
+import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.verifier.entity.UnionVerifier;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -29,6 +31,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -46,17 +49,9 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	@Autowired
 	private WxPayService wxPayService;
 
-	/**
-	 * 佣金平台登录页面
-	 *
-	 * @param request
-	 * @param response
-	 * @return
-	 */
-	@RequestMapping(value = "index.do", method = RequestMethod.GET)
-	public void index(HttpServletRequest request, HttpServletResponse response, @RequestParam(name = "busId") Integer busId, @RequestParam(name = "usign") String uuid) {
-		//response.sendRedirect();
-	}
+	@Autowired
+	private IUnionMainService unionMainService;
+
 
 	/**
 	 * 佣金平台登录
@@ -75,9 +70,8 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 		logger.info("进入登录,用户名：" + username);
 		logger.info("进入登录,用手机号：" + phone);
 		try {
-			String url = "/index";
 			unionH5BrokerageService.checkLogin(type, username, userpwd, phone, code, request);
-			return GTJsonResult.instanceSuccessMsg(null, url).toString();
+			return GTJsonResult.instanceSuccessMsg().toString();
 		} catch (BaseException e){
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
@@ -423,6 +417,22 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 		}
 	}
 
+
+	@ApiOperation(value = "获取联盟列表", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/unionList", method=RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String payOne(HttpServletRequest request, HttpServletResponse response) {
+		try {
+			BusUser user = SessionUtils.getLoginUser(request);
+			List<UnionMain> list = unionMainService.listWriteByBusId(user.getId());
+			return GTJsonResult.instanceSuccessMsg(list).toString();
+		} catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+		}
+	}
 
 
 }
