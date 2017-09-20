@@ -191,4 +191,23 @@ public class RedisKeyUtil {
         return "recommend:status:" + only;
     }
 
+
+    /**
+     * 获取办理联盟卡验证码key
+     * @param phone
+     * @return
+     */
+    public static final String getBindCardPhoneKey(String phone){
+        return "card:" + phone;
+    }
+
+    /**
+     * 获取佣金平台管理员验证码key
+     * @param phone
+     * @return
+     */
+    public static final String getVerifyPhoneKey(String phone){
+        return "verifier:" + phone;
+    }
+
 }

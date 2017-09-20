@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.api.entity.result.UnionDiscountResult;
 import com.gt.union.card.entity.UnionCard;
+import com.gt.union.card.vo.UnionCardBindParamVO;
+import com.gt.union.member.entity.UnionMember;
 
 import java.util.List;
 import java.util.Map;
@@ -103,4 +105,53 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 * @return
 	 */
 	List<UnionCard> listByCardRootIdAndMemberIds(Integer rootId, List<Integer> memberIds);
+
+	/**
+	 *	根据以下信息获取最低折扣信息
+	 * @param rootId	联盟卡rootId
+	 * @param busId		消费的商家id
+	 * @param unionIds	联盟id列表
+	 * @return
+	 */
+	Map<String,Object> getByMinDiscountByCard(Integer rootId, Integer busId, List<Integer> unionIds) throws Exception;
+
+	/**
+	 * 根据商家id和手机号获取验证码，并验证手机号是否升级过联盟卡
+	 * @param busId
+	 * @param phone
+	 */
+	void getPhoneCode(Integer busId, String phone) throws Exception;
+
+	/**
+	 * 根据手机号和盟员列表查询升级的联盟卡列表信息
+	 * @param phone
+	 * @param members
+	 * @return
+	 */
+	List<Map<String,Object>> listByPhoneAndMembers(String phone, List<UnionMember> members);
+
+	/**
+	 * 获取可升级联盟卡的联盟信息
+	 * @param busId
+	 * @param phone
+	 * @param code
+	 * @param unionId
+	 * @return
+	 */
+	Map<String,Object> getUnionInfoByPhone(Integer busId, String phone, String code, Integer unionId) throws Exception;
+
+	/**
+	 * 升级联盟卡
+	 * @param vo
+	 * @return
+	 */
+	Map<String,Object> bindCard(UnionCardBindParamVO vo) throws Exception;
+
+	/**
+	 * 根据手机号和盟员id获取升级的联盟卡
+	 * @param phone
+	 * @param memberId
+	 * @return
+	 */
+	UnionCard getByPhoneAndMemberId(String phone, Integer memberId) throws Exception;
 }

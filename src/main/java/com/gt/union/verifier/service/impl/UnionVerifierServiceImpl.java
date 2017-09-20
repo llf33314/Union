@@ -8,6 +8,7 @@ import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.RedisKeyUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.verifier.entity.UnionVerifier;
 import com.gt.union.verifier.mapper.UnionVerifierMapper;
@@ -77,7 +78,8 @@ public class UnionVerifierServiceImpl extends ServiceImpl<UnionVerifierMapper, U
         verifier.setName(unionVerifier.getName());
         verifier.setPhone(unionVerifier.getPhone());
         this.insert(verifier);
-        redisCacheUtil.remove("verifier:"+unionVerifier.getPhone());
+        String phoneKey = RedisKeyUtil.getVerifyPhoneKey(unionVerifier.getPhone());
+        redisCacheUtil.remove(phoneKey);
     }
 
     @Override
