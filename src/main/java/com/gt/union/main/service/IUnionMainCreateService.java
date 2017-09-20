@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.main.entity.UnionMainCreate;
 import com.gt.union.main.vo.UnionMainCreateVO;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -36,7 +37,25 @@ public interface IUnionMainCreateService extends IService<UnionMainCreate> {
      */
     UnionMainCreate getByBusIdAndPermitId(Integer busId, Integer permitId) throws Exception;
 
+    /**
+     * 通过盟主服务许可id，获取联盟创建信息
+     *
+     * @param permitId {not null} 盟主服务许可id
+     * @return
+     * @throws Exception
+     */
+    UnionMainCreate getByPermitId(Integer permitId) throws Exception;
+
     //------------------------------------------ list(include page) ---------------------------------------------------
+
+    /**
+     * 获取所有过期的联盟创建列表记录，过期是指因盟主服务许可过期而导致的过期
+     *
+     * @return
+     * @throws Exception
+     */
+    List<UnionMainCreate> listExpired() throws Exception;
+
     //------------------------------------------------- update --------------------------------------------------------
     //------------------------------------------------- save ----------------------------------------------------------
 

@@ -94,6 +94,21 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
     }
 
     //------------------------------------------ list(include page) ---------------------------------------------------
+
+    /**
+     * 获取所有已过期的、但为未删除状态的盟主服务许哭列表信息
+     *
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public List<UnionMainPermit> listExpired() throws Exception {
+        EntityWrapper entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .lt("validity", DateUtil.getCurrentDate());
+        return this.selectList(entityWrapper);
+    }
+
     //------------------------------------------------- update --------------------------------------------------------
     //------------------------------------------------- save ----------------------------------------------------------
     //------------------------------------------------- count ---------------------------------------------------------
@@ -120,7 +135,8 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         //（2）其他版本，如升级版、高级版需要判断是否购买了盟主服务
         EntityWrapper entityWrapper = new EntityWrapper();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("bus_id", busId);
+                .eq("bus_id", busId)
+                .orderBy("id", false);
         UnionMainPermit unionMainPermit = this.selectOne(entityWrapper);
         if (unionMainPermit != null && DateUtil.getCurrentDate().compareTo(unionMainPermit.getValidity()) < 0) {
             return true;

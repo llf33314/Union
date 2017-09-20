@@ -149,6 +149,48 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         return this.selectOne(entityWrapper);
     }
 
+    /**
+     * 根据商家id和盟员身份id，获取优惠项目信息
+     *
+     * @param page     {not null} 分页对象
+     * @param busId    {not null} 商家id
+     * @param memberId {not null} 盟员身份id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public Map<String, Object> getPageMapByBusIdAndMemberId(Page page, Integer busId, Integer memberId) throws Exception {
+        if (page == null || busId == null || memberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        Map<String, Object> result = new HashMap<>();
+        //(1)判断是否具有盟员权限
+        UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        if (unionMember == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
+        }
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(unionMember.getUnionId());
+        //(3)判断是否具有读权限
+        if (!this.unionMemberService.hasReadAuthority(unionMember)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
+        }
+        //(4)查询优惠项目
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("member_id", memberId);
+        UnionPreferentialProject project = this.selectOne(entityWrapper);
+        result.put("project", project);
+        //(5)查询优惠服务
+        if (project == null) {
+            result.put("pageItem", page);
+        } else {
+            Page pageItem = this.unionPreferentialItemService.pageByProjectId(page, project.getId());
+            result.put("pageItem", pageItem);
+        }
+        return result;
+    }
+
     //------------------------------------------ list(include page) ---------------------------------------------------
 
     /**
@@ -209,6 +251,24 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
             //(5-2)未提交
             return this.unionMemberService.pagePreferentialUnCommitByUnionOwner(page, unionOwner);
         }
+    }
+
+    /**
+     * 获取所有过期的优惠项目列表信息，即项目所属盟员已退盟
+     *
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public List<UnionPreferentialProject> listExpired() throws Exception {
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .notExists(new StringBuilder(" SELECT m.id FROM t_union_member m")
+                        .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND m.status != ").append(MemberConstant.STATUS_APPLY_IN)
+                        .append("  AND m.id = t_union_preferential_project.member_id")
+                        .toString());
+        return this.selectList(entityWrapper);
     }
 
     //------------------------------------------------- update --------------------------------------------------------
