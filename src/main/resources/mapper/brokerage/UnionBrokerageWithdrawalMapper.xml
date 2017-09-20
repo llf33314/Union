@@ -15,7 +15,7 @@
 
 
 	<select id="listWithdrawals" resultType="com.gt.union.brokerage.vo.UnionBrokerageWithDrawalsVO">
-		SELECT createtime AS time, money third_member_id AS memberId FROM t_union_brokerage_withdrawal WHERE bus_id = #{busId} order by id desc
+		SELECT createtime AS time, money, third_member_id AS memberId FROM t_union_brokerage_withdrawal WHERE bus_id = #{busId} order by id desc
 	</select>
 
 </mapper>

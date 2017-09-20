@@ -13,4 +13,47 @@
 		<result column="type" property="type" />
 	</resultMap>
 
+
+	<!-- 根据rootId和联盟id列表查询升级的联盟卡列表 -->
+    <select id="listByRootIdAndUnionIds" resultType="com.gt.union.card.entity.UnionCard">
+		SELECT * from t_union_card WHERE member_id in
+		(SELECT id from t_union_member WHERE union_id in
+		<foreach collection="unionIds" item="unionId" open="(" close=")"
+				 separator=",">
+			#{unionId}
+		</foreach>
+		 and del_status = 0 and `status` in (2,3)) and root_id = #{rootId} and del_status = 0 and validity &gt;= NOW()
+	</select>
+
+	<!--获取最低折扣的联盟卡-->
+	<select id="getByMinDiscountByCardList" resultType="java.util.Map">
+		SELECT * from (SELECT d.discount, d.to_member_id, d.from_member_id , c.id, c.member_id from
+		(SELECT * from t_union_card WHERE member_id in
+		<foreach collection="list" item="card" open="(" close=")"
+				 separator=",">
+			#{card.memberId}
+		</foreach>
+		) c
+		LEFT JOIN t_union_member_discount d on d.to_member_id = c.member_id and d.from_member_id in (SELECT id from t_union_member WHERE union_id in
+		<foreach collection="unionIds" item="unionId" open="(" close=")"
+				 separator=",">
+			#{unionId}
+		</foreach>
+		and bus_id = #{busId} and del_status = 0 and `status` in (2,3)) and d.del_status = 0
+		LEFT JOIN t_union_member m on d.from_member_id = m.id
+		ORDER BY d.discount asc, m.is_union_owner desc, m.id asc) t
+		GROUP BY t.from_member_id LIMIT 1
+	</select>
+
+	<!-- 根据手机号和盟员列表查询升级的联盟卡列表信息 -->
+	<select id="listByPhoneAndMembers" resultType="java.util.Map">
+		SELECT * from t_union_card WHERE EXISTS (SELECT * from t_union_card_root r WHERE r.phone = #{phone} AND r.id = t_union_card.root_id AND del_status = 0)
+		AND member_id in
+		<foreach collection="members" item="member" open="(" close=")"
+				 separator=",">
+			#{member.id}
+		</foreach>
+		AND del_status = 0 AND validity &gt; NOW()
+	</select>
+
 </mapper>

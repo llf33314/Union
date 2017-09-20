@@ -10,10 +10,7 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
-import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.ParamValidatorUtil;
-import com.gt.union.common.util.RandomKit;
-import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.*;
 import com.gt.union.verifier.entity.UnionVerifier;
 import com.gt.union.verifier.service.IUnionVerifierService;
 import io.swagger.annotations.ApiOperation;
@@ -137,7 +134,8 @@ public class UnionVerifierController {
                 if(smsService.sendSms(param) == 0){
                     return GTJsonResult.instanceErrorMsg("发送失败").toString();
                 }
-                redisCacheUtil.set("verifier:"+phone , code, 300l);
+                String phoneKey = RedisKeyUtil.getVerifyPhoneKey(phone);
+                redisCacheUtil.set(phoneKey , code, 300l);
                 return GTJsonResult.instanceSuccessMsg(code).toString();
             }
             return GTJsonResult.instanceErrorMsg("手机号不能为空").toString();

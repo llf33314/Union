@@ -4,7 +4,10 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.api.bean.session.WxPublicUsers;
 import com.gt.union.api.client.dict.IDictService;
+import com.gt.union.api.client.sms.SmsService;
+import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.api.entity.result.UnionDiscountResult;
 import com.gt.union.card.entity.UnionCard;
 import com.gt.union.card.entity.UnionCardBinding;
@@ -14,11 +17,16 @@ import com.gt.union.card.service.IUnionCardBindingService;
 import com.gt.union.card.service.IUnionCardIntegralService;
 import com.gt.union.card.service.IUnionCardRootService;
 import com.gt.union.card.service.IUnionCardService;
+import com.gt.union.card.vo.UnionCardBindParamVO;
 import com.gt.union.common.constant.CommonConstant;
-import com.gt.union.common.exception.BaseException;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
+import com.gt.union.main.constant.MainConstant;
+import com.gt.union.main.entity.UnionMain;
+import com.gt.union.main.entity.UnionMainCharge;
+import com.gt.union.main.service.IUnionMainChargeService;
 import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.entity.UnionMemberDiscount;
@@ -64,9 +72,26 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     @Autowired
     private IDictService dictService;
 
+    @Autowired
+    private UnionCardMapper unionCardMapper;
 
     @Value("${union.encryptKey}")
     private String encryptKey;
+
+    @Value("${wxmp.company}")
+    private String company;
+
+    @Autowired
+    private SmsService smsService;
+
+    @Autowired
+    private RedisCacheUtil redisCacheUtil;
+
+    @Autowired
+    private IUnionMainChargeService unionMainChargeService;
+
+    @Autowired
+    private IBusUserService busUserService;
 
     @Override
     public Page selectListByUnionId(Page page, final Integer unionId, final Integer busId, final String cardNo, final String phone) throws Exception {
@@ -166,21 +191,35 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 		if(root == null){
 			throw new BusinessException("该联盟卡号不存在");
 		}
+		List<Integer> unionIds = new ArrayList<Integer>();
 		if(unionId == null){
             List<UnionMember> members = unionMemberService.listWriteWithValidUnionByBusId(busId);
             if(ListUtil.isEmpty(members)){
                 throw new BusinessException("您没有有效的联盟");
             }
-            unionId = members.get(0).getUnionId();
+            for(UnionMember member : members){
+                unionIds.add(member.getUnionId());
+            }
         }else {
             unionMainService.checkUnionMainValid(unionId);
             UnionMember member = unionMemberService.getByBusIdAndUnionId(busId,unionId);
             if(unionMemberService.hasWriteAuthority(member)){
                 throw new BusinessException("您没有联盟权限");
             }
+            unionIds.add(unionId);
+        }
+        if(ListUtil.isEmpty(unionIds)){
+            throw new BusinessException("您没有有效的联盟");
+        }
+        Double discount = dictService.getDefaultDiscount();
+        Map<String,Object> result = this.getByMinDiscountByCard(root.getId(), busId, unionIds);
+        if(CommonUtil.isEmpty(result)){
+            throw new BusinessException("没有可用的联盟卡");
+        }
+        if(CommonUtil.isEmpty(result.get("discount"))){//没有设置联盟卡
+
         }
         //TODO 根据联盟id查询具有写权限的盟员列表
-      //  unionMemberService.listReadByUnionId()
         //unionMemberService.list
 
 		/*
@@ -399,6 +438,194 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 		wrapper.in("member_id",memberIds.toArray());
 		return this.selectList(wrapper);
 	}
+
+    @Override
+    public Map<String, Object> getByMinDiscountByCard(Integer rootId, final Integer busId, List<Integer> unionIds) throws Exception{
+        List<UnionCard> list = unionCardMapper.listByRootIdAndUnionIds(rootId, unionIds);
+        if(ListUtil.isEmpty(list)){
+            throw new BusinessException("没有可用的联盟卡");
+        }
+        Map<String,Object> data = unionCardMapper.getByMinDiscountByCardList(list, busId, unionIds);
+        if(CommonUtil.isEmpty(data)){
+            throw new BusinessException("没有可用的联盟卡");
+        }
+        if(CommonUtil.isEmpty(data.get("discount"))){//没有设置联盟折扣
+
+        }else {
+            return data;
+        }
+        return null;
+    }
+
+    @Override
+    public void getPhoneCode(Integer busId, String phone) throws Exception{
+        if(busId == null || StringUtil.isEmpty(phone)){
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionMember> members = unionMemberService.listWriteWithValidUnionByBusId(busId);
+        if(ListUtil.isEmpty(members)){
+            throw new BusinessException("您没有有效的联盟");
+        }
+        List<Map<String,Object>> list = this.listByPhoneAndMembers(phone,members);
+        if(ListUtil.isEmpty(list)){
+            sendMsg(phone,busId);
+        }else if(list.size() == members.size()){
+            throw new BusinessException("该手机号已办理联盟卡");
+        }else {
+            sendMsg(phone,busId);
+        }
+    }
+
+    private void sendMsg(String phone, Integer busId) throws Exception{
+        String code = RandomKit.getRandomString(6, 0);
+        HashMap<String, Object> smsParams = new HashMap<String,Object>();
+        smsParams.put("mobiles", phone);
+        smsParams.put("content", "办理联盟卡，验证码:" + code);
+        smsParams.put("company", company);
+        smsParams.put("busId", busId);
+        smsParams.put("model", ConfigConstant.SMS_UNION_MODEL);
+        Map<String,Object> param = new HashMap<String,Object>();
+        param.put("reqdata",smsParams);
+        if(smsService.sendSms(param) == 1){
+            String phoneKey = RedisKeyUtil.getBindCardPhoneKey(phone);
+            redisCacheUtil.set(phoneKey,code,300l);//5分钟
+        } else {
+            throw new BusinessException("发送失败");
+        }
+    }
+
+    @Override
+    public List<Map<String, Object>> listByPhoneAndMembers(String phone, List<UnionMember> members) {
+        List<Map<String,Object>> list = unionCardMapper.listByPhoneAndMembers(phone,members);
+        return list;
+    }
+
+    @Override
+    public Map<String, Object> getUnionInfoByPhone(Integer busId, String phone, String code, Integer unionId) throws Exception{
+        if(busId == null || StringUtil.isEmpty(phone) || StringUtil.isEmpty(code) ){
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        String phoneKey = RedisKeyUtil.getBindCardPhoneKey(phone);
+        Object obj = redisCacheUtil.get(phoneKey);
+        if(CommonUtil.isEmpty(obj)){
+            throw new BusinessException("验证码失效");
+        }
+        if(!code.equals(obj)){
+            throw new BusinessException("验证码有误");
+        }
+        List<UnionMember> members = unionMemberService.listWriteWithValidUnionByBusId(busId);
+        if(ListUtil.isEmpty(members)){
+            throw new BusinessException("您没有有效的联盟");
+        }
+        List<Integer> unionIds = new ArrayList<Integer>();
+        for(UnionMember member : members){
+            unionIds.add(member.getUnionId());
+        }
+        List<UnionMain> mains = unionMainService.listByIds(unionIds);
+        if(ListUtil.isEmpty(mains)){
+            throw new BusinessException("您没有有效的联盟");
+        }
+        if(members.size() != mains.size()){
+            throw new BusinessException(CommonConstant.OPERATE_ERROR);
+        }
+        List<UnionMain> unions = new ArrayList<UnionMain>();
+        for(UnionMember member : members){
+            for(UnionMain main : mains){
+                if(member.getUnionId().equals(main.getId())){
+                    unions.add(main);
+                }
+            }
+        }
+        if(unionId != null){
+            Iterator<UnionMember> it = members.iterator();
+            while (it.hasNext()){
+                UnionMember member = it.next();
+                if(!member.getUnionId().equals(unionId)){
+                    it.remove();
+                }
+            }
+        }
+        if(ListUtil.isEmpty(members)){
+            throw new BusinessException("您没有有效的联盟");
+        }
+        List<Map<String,Object>> list = this.listByPhoneAndMembers(phone,members);
+        if(ListUtil.isEmpty(list)){
+            Map<String,Object> data = getUnionInfo(members);
+            data.put("unions",unions);
+            WxPublicUsers users = busUserService.getWxPublicUserByBusId(busId);
+            if(users != null){
+                data.put("follow",1);
+            }
+            return data;
+        } else if(list.size() == members.size()){
+            throw new BusinessException("该手机号已办理联盟卡");
+        } else {
+            Map<String,Object> data = getUnionInfo(members);
+            data.put("unions",unions);
+            WxPublicUsers users = busUserService.getWxPublicUserByBusId(busId);
+            if(users != null){
+                data.put("follow",1);
+            }
+            return data;
+        }
+    }
+
+    @Override
+    public Map<String, Object> bindCard(UnionCardBindParamVO vo) throws Exception{
+        if(CommonUtil.isNotEmpty(vo.getFollow()) && vo.getFollow()){
+            if(CommonUtil.isEmpty(vo.getMemberId())){
+                throw new BusinessException("请选择粉丝");
+            }
+        }
+        vo.getPhone();
+
+        UnionMember member = unionMemberService.getByBusIdAndUnionId(vo.getBusId(),vo.getUnionId());
+        if(member == null){
+            throw new BusinessException("您没有该联盟权限");
+        }
+        if(!unionMemberService.hasWriteAuthority(member)){
+            throw new BusinessException("您没有该联盟权限");
+        }
+        UnionCard card = this.getByPhoneAndMemberId(vo.getPhone(),member.getId());
+        if(card != null && DateTimeKit.laterThanNow(card.getValidity())){
+            throw new BusinessException("该手机号已办理联盟卡");
+        }
+        UnionMainCharge charge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(vo.getUnionId(), vo.getCardType(), MainConstant.CHARGE_IS_AVAILABLE_YES);
+        if(charge == null){
+            throw new BusinessException("联盟未开启该联盟卡类型");
+        }
+        //if(charge.getChargePrice())
+        return null;
+    }
+
+    @Override
+    public UnionCard getByPhoneAndMemberId(String phone, Integer memberId) throws Exception{
+        UnionCardRoot root = unionCardRootService.getByPhone(phone);
+        if(root == null){
+            return null;
+        }
+        EntityWrapper wrapper = new EntityWrapper<>();
+        wrapper.eq("root_id",root.getId());
+        wrapper.eq("del_status",CommonConstant.DEL_STATUS_NO);
+        wrapper.eq("member_id",memberId);
+
+        return this.selectOne(wrapper);
+    }
+
+    private Map<String, Object> getUnionInfo(List<UnionMember> members) throws Exception{
+        Map<String, Object> data = new HashMap<String, Object>();
+        Integer unionId = members.get(0).getUnionId();
+        data.put("unionId",unionId);
+        UnionMainCharge redCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_RED, MainConstant.CHARGE_IS_AVAILABLE_YES);
+        UnionMainCharge blackCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_BLACK, MainConstant.CHARGE_IS_AVAILABLE_YES);
+        if(redCharge != null){
+            data.put("red",redCharge);
+        }
+        if(blackCharge != null){
+            data.put("black",blackCharge);
+        }
+        return data;
+    }
 
 
 }

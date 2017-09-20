@@ -55,7 +55,7 @@ public class UnionCardBindingServiceImpl extends ServiceImpl<UnionCardBindingMap
 		//1、判断手机号是否升级了联盟卡
 		UnionCardRoot root = unionCardRootService.getByPhone(phone);
 		if(root == null){
-			throw new BusinessException("该手机号未升级联盟卡");
+			throw new BusinessException("该手机号未办理联盟卡");
 		}
 		UnionCardBinding unionCardBinding = this.getByMemberId(memberId);
 		if(unionCardBinding != null){
