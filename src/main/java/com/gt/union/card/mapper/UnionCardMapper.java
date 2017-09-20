@@ -41,5 +41,5 @@ public interface UnionCardMapper extends BaseMapper<UnionCard> {
 	 * @param members
 	 * @return
 	 */
-	List<Map<String,Object>> listByPhoneAndMembers(@Param("phone") String phone, @Param("members") List<UnionMember> members);
+	List<UnionCard> listByPhoneAndMembers(@Param("phone") String phone, @Param("members") List<UnionMember> members);
 }

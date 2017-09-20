@@ -11,6 +11,7 @@
 		<result column="member_id" property="memberId" />
 		<result column="validity" property="validity" />
 		<result column="type" property="type" />
+		<result column="is_old" property="isOld" />
 	</resultMap>
 
 
@@ -45,15 +46,18 @@
 		GROUP BY t.from_member_id LIMIT 1
 	</select>
 
+
 	<!-- 根据手机号和盟员列表查询升级的联盟卡列表信息 -->
-	<select id="listByPhoneAndMembers" resultType="java.util.Map">
-		SELECT * from t_union_card WHERE EXISTS (SELECT * from t_union_card_root r WHERE r.phone = #{phone} AND r.id = t_union_card.root_id AND del_status = 0)
+	<select id="listByPhoneAndMembers" resultType="com.gt.union.card.entity.UnionCard">
+		SELECT * from t_union_card WHERE EXISTS (SELECT id from t_union_card_root r WHERE r.phone = #{phone} AND r.id = t_union_card.root_id AND del_status = 0)
 		AND member_id in
 		<foreach collection="members" item="member" open="(" close=")"
 				 separator=",">
 			#{member.id}
 		</foreach>
 		AND del_status = 0 AND validity &gt; NOW()
+
 	</select>
+
 
 </mapper>

@@ -33,4 +33,14 @@ public interface CardConstant {
      * 联盟卡类型：红卡
      */
     public static final int TYPE_RED = 2;
+
+    /**
+     * 免费会员
+     */
+    int IS_OLD_YES = 1;
+
+    /**
+     * 付费会员
+     */
+    int IS_OLD_NO = 0;
 }

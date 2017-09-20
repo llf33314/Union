@@ -105,4 +105,10 @@ public interface ConfigConstant {
      * wxmp公司名称
      */
 	public static final String WXMP_COMPANY = PropertiesUtil.getWxmpCompany();
+
+	/**
+	 * 公众号二维码链接model
+	 */
+	int WXPUBLIC_QRCODE_MODEL = 10;
 }
+

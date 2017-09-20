@@ -2,8 +2,10 @@ package com.gt.union.card.controller;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
+import com.gt.api.bean.session.WxPublicUsers;
 import com.gt.api.dto.ResponseUtils;
 import com.gt.api.util.SessionUtils;
+import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.api.entity.param.RequestApiParam;
 import com.gt.union.api.entity.param.UnionPhoneCodeParam;
 import com.gt.union.card.service.IUnionCardService;
@@ -14,6 +16,7 @@ import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.RandomKit;
 import com.gt.union.common.util.RedisKeyUtil;
+import com.gt.union.common.util.StringUtil;
 import com.gt.union.consume.vo.UnionConsumeParamVO;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -45,6 +48,8 @@ public class UnionCardController {
 	@Autowired
 	private IUnionCardService unionCardService;
 
+	@Autowired
+	private IBusUserService busUserService;
 
 	@ApiOperation(value = "获取盟员的联盟卡列表", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -157,5 +162,33 @@ public class UnionCardController {
 			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
 		}
 	}
+
+
+
+	@ApiOperation(value = "开启关注公众号，获取二维码链接", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "wxUser/QRcode", method=RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String wxUserQRcode(HttpServletRequest request, HttpServletResponse response) {
+		try {
+			BusUser user = SessionUtils.getLoginUser(request);
+			Integer busId = user.getId();
+			if(user.getPid() != null && user.getPid() != 0){
+				busId = user.getPid();
+			}
+			WxPublicUsers wxPublicUsers = busUserService.getWxPublicUserByBusId(busId);
+			if(wxPublicUsers == null){
+				return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+			}
+			String url = busUserService.getWxPublicUserQRCode(wxPublicUsers.getId(), user.getId());
+			if(StringUtil.isEmpty(url)){
+				return GTJsonResult.instanceErrorMsg(CommonConstant.SYS_ERROR).toString();
+			}
+			return GTJsonResult.instanceSuccessMsg(url).toString();
+		} catch (Exception e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+		}
+	}
+
+
 
 }

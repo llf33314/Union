@@ -128,7 +128,7 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 * @param members
 	 * @return
 	 */
-	List<Map<String,Object>> listByPhoneAndMembers(String phone, List<UnionMember> members);
+	List<UnionCard> listByPhoneAndMembers(String phone, List<UnionMember> members);
 
 	/**
 	 * 获取可升级联盟卡的联盟信息

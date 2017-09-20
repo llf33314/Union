@@ -80,35 +80,11 @@ public class LoginFilter implements Filter {
 		}else if(passSuffixs(url)||passUrl(url)){
 			chain.doFilter(request, response);
 		}else if(url.indexOf("unionH5Brokerage") > -1){
-			/*String busId = req.getParameter("busId");
-			String sign = req.getParameter("sign");
-			if(StringUtil.isEmpty(busId) || StringUtil.isEmpty(sign)){
-				response.setCharacterEncoding("UTF-8");
-				response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", PropertiesUtil.getUnionUrl()+"/unionH5Brokerage/index")));
-				return;
-			}
-			if(busUser != null){
-				if(!busUser.getId().equals(busId)){
-					response.setCharacterEncoding("UTF-8");
-					response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", PropertiesUtil.getUnionUrl()+"/unionH5Brokerage/index")));
-					return;
-				}
-				Object obj = redisCacheUtil.get("h5Brokerage:" + busId);
-				if(CommonUtil.isEmpty(obj)){
-					response.setCharacterEncoding("UTF-8");
-					response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", PropertiesUtil.getUnionUrl()+"/unionH5Brokerage/index")));
-					return;
-				}
-				if(!sign.equals(obj)){
-					response.setCharacterEncoding("UTF-8");
-					response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", PropertiesUtil.getUnionUrl()+"/unionH5Brokerage/index")));
-					return;
-				}
-			}else {
-				response.setCharacterEncoding("UTF-8");
-				response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", PropertiesUtil.getUnionUrl()+"/unionH5Brokerage/index")));
-				return;
-			}*/
+//			if (busUser == null) {
+//				response.setCharacterEncoding("UTF-8");
+//				response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", PropertiesUtil.getUnionUrl()+"/unionH5Brokerage/login")));
+//				return;
+//			}
 			busUser = new BusUser();
 			busUser.setId(33);
 			busUser.setEndTime(new Date());

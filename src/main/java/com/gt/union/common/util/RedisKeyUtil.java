@@ -210,4 +210,23 @@ public class RedisKeyUtil {
         return "verifier:" + phone;
     }
 
+    /**
+     * 获取公众号二维码联盟key
+     * @param publicId
+     * @param busId
+     * @return
+     */
+	public static String getWxPublicUserQRCodeKey(Integer publicId, Integer busId) {
+	    return getWxPublicUserQRCodeKey(String.valueOf(publicId), String.valueOf(busId));
+	}
+
+    /**
+     * 获取公众号二维码联盟key
+     * @param publicId
+     * @param busId
+     * @return
+     */
+    public static String getWxPublicUserQRCodeKey(String publicId, String busId) {
+	    return "qrcode:" + publicId + ":" + busId;
+    }
 }
