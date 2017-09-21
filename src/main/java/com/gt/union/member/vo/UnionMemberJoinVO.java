@@ -16,6 +16,14 @@ import javax.validation.constraints.Pattern;
 @Data
 public class UnionMemberJoinVO {
     /**
+     * 商家名称
+     */
+    @ApiModelProperty(value = "商家名称", required = true)
+    @NotBlank(message = "商家名称内容不能为空")
+    @StringLengthValid(length = 10, message = "商家名称内容不可超过10字")
+    private String busUserName;
+
+    /**
      * 企业名称
      */
     @ApiModelProperty(value = "企业名称", required = true)
@@ -51,6 +59,14 @@ public class UnionMemberJoinVO {
     @ApiModelProperty(value = "申请理由或推荐理由")
     @StringLengthValid(length = 20, message = "申请或推荐理由不可超过20字")
     private String reason;
+
+    public String getBusUserName() {
+        return busUserName;
+    }
+
+    public void setBusUserName(String busUserName) {
+        this.busUserName = busUserName;
+    }
 
     public String getEnterpriseName() {
         return enterpriseName;
