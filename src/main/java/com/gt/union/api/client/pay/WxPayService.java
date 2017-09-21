@@ -26,4 +26,11 @@ public interface WxPayService {
      * @throws Exception
      */
     int enterprisePayment(Integer busId, Integer memberId, String openid, Double fee, Integer verifierId) throws Exception;
+
+	/**
+	 * 微信支付
+	 * @param data
+	 * @return
+	 */
+	String wxPay(Map<String, Object> data);
 }

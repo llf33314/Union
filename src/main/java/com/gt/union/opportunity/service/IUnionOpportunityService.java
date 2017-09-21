@@ -286,4 +286,11 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      * @param only
      */
     void payOpportunitySuccess(String encrypt, String only) throws Exception;
+
+    /**
+     * 支付成功后批量插入
+     * @param list
+     * @param orderNo
+     */
+    public void insertBatchByList(List<UnionOpportunity> list, String orderNo, Integer verifierId) throws Exception;
 }

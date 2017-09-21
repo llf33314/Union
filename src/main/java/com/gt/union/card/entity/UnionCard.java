@@ -55,10 +55,10 @@ public class UnionCard extends Model<UnionCard> {
 	private Integer type;
 
 	/**
-	 * 是否旧会员
+	 * 是否收费 1：是 0：否（旧会员）
 	 */
-	@TableField("is_old")
-	private Integer isOld;
+	@TableField("is_charge")
+	private Integer isCharge;
 
 
 	public Integer getId() {
@@ -117,12 +117,12 @@ public class UnionCard extends Model<UnionCard> {
 		this.type = type;
 	}
 
-	public Integer getIsOld() {
-		return isOld;
+	public Integer getIsCharge() {
+		return isCharge;
 	}
 
-	public void setIsOld(Integer isOld) {
-		this.isOld = isOld;
+	public void setIsCharge(Integer isCharge) {
+		this.isCharge = isCharge;
 	}
 
 	@Override

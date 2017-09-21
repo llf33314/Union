@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.brokerage.entity.UnionBrokerageWithdrawal;
 import com.gt.union.member.entity.UnionMember;
+import com.gt.union.opportunity.entity.UnionOpportunity;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -89,4 +90,11 @@ public interface UnionH5BrokerageMapper extends BaseMapper<UnionBrokerageWithdra
 	 * @return
 	 */
 	double getCardDivideSum(@Param("members") List<UnionMember> members, @Param("busId") Integer busId);
+
+	/**
+	 * 未支付的佣金列表
+	 * @param members
+	 * @return
+	 */
+	List<UnionOpportunity> listAllUnPayUnionBrokerage(@Param("members") List<UnionMember> members);
 }

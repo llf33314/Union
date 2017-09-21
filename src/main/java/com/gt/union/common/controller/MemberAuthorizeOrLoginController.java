@@ -45,20 +45,54 @@ public class MemberAuthorizeOrLoginController {
 	 *
 	 * @param request
 	 * @param busId		登录的商家id
-	 * @param uclogin	uc登录  1：uc登录 0：不登录
+	 * @param uclogin	uc登录  null：不用在uc登录 not null：在uc登录
 	 * @param reqUrl	请求的url，即授权登录后重定向的链接
-	 * @param isPay		是否是支付授权  是：true  否：false
 	 * @return
 	 * @throws Exception
 	 */
-	protected String authorizeMember(HttpServletRequest request, Integer busId, Integer uclogin, String reqUrl, boolean isPay) throws Exception {
+	protected String authorizeMember(HttpServletRequest request, Integer busId, Integer uclogin, String reqUrl) throws Exception {
 		logger.debug("进入--联盟手机端授权方法！");
 		Integer browser = CommonUtil.judgeBrowser(request);//判断浏览器
-		if(browser != 1 && uclogin == 1){
+		Map<String, Object> getWxPublicMap = new HashMap<>();
+		getWxPublicMap.put("busId", busId);//商家账号
+		//判断商家信息 1是否过期 2公众号是否变更过
+		String url = wxmpUrl + "/8A5DA52E/busUserApi/getWxPulbicMsg.do";
+		String wxpublic = SignHttpUtils.WxmppostByHttp(url, getWxPublicMap, PropertiesUtil.getWxmpSignKey());
+		if(StringUtil.isEmpty(wxpublic)){
+			throw new BusinessException("登录错误");
+		}
+		JSONObject json = JSONObject.parseObject(wxpublic);
+		Integer code = Integer.parseInt(json.get("code").toString());
+		if (code.equals(-1)) {
+			throw new BusinessException("登录错误");
+		} else if (code.equals(0)) {
+			Object guoqi = json.get("guoqi");
+			if (!CommonUtil.isEmpty(guoqi)) {//商家已过期
+				throw new BusinessException("账号已过期");
+			}
+		}
+		String otherRedisKey = "authority:"+System.currentTimeMillis();
+		redisCacheUtil.set(otherRedisKey, reqUrl, 300l);
+		Map<String, Object> queryMap = new HashMap<>();
+		queryMap.put("otherRedisKey", PropertiesUtil.redisNamePrefix() + otherRedisKey);
+		queryMap.put("browser", browser);
+		queryMap.put("busId", busId);
+		queryMap.put("uclogin", uclogin);
+		logger.info("queryMap=" + JSON.toJSONString(queryMap));
+		String params = URLEncoder.encode(JSON.toJSONString(queryMap), "utf-8");
+		return wxmpUrl + "/remoteUserAuthoriPhoneController/79B4DE7C/authorizeMember.do?queryBody=" + params;
+	}
+
+
+
+	protected String authorizeMemberWx(HttpServletRequest request, String reqUrl) throws Exception {
+		logger.debug("进入--联盟手机端微信授权方法！");
+		Integer browser = CommonUtil.judgeBrowser(request);//判断浏览器
+		if(browser != 1){
 			throw new BusinessException("请使用微信登录");
 		}
 		Map<String, Object> getWxPublicMap = new HashMap<>();
-		getWxPublicMap.put("busId", isPay ? duofenBusId : busId);//多粉
+		getWxPublicMap.put("busId", duofenBusId);//多粉
 		//判断商家信息 1是否过期 2公众号是否变更过
 		String url = wxmpUrl + "/8A5DA52E/busUserApi/getWxPulbicMsg.do";
 		String wxpublic = SignHttpUtils.WxmppostByHttp(url, getWxPublicMap, PropertiesUtil.getWxmpSignKey());
@@ -72,11 +106,7 @@ public class MemberAuthorizeOrLoginController {
 		} else if (code.equals(0)) {
 			Object guoqi = json.get("guoqi");
 			if (!CommonUtil.isEmpty(guoqi)) {//商家已过期
-				if(isPay){
-					throw new BusinessException("支付账号过期");
-				}else {
-					throw new BusinessException("账号已过期");
-				}
+				throw new BusinessException("账号已过期");
 			}
 		}
 		String otherRedisKey = "authority:"+System.currentTimeMillis();
@@ -84,10 +114,10 @@ public class MemberAuthorizeOrLoginController {
 		Map<String, Object> queryMap = new HashMap<>();
 		queryMap.put("otherRedisKey", PropertiesUtil.redisNamePrefix() + otherRedisKey);
 		queryMap.put("browser", browser);
-		queryMap.put("busId", isPay ? duofenBusId : busId);
-		queryMap.put("uclogin", uclogin);
+		queryMap.put("busId", duofenBusId);
 		logger.info("queryMap=" + JSON.toJSONString(queryMap));
 		String params = URLEncoder.encode(JSON.toJSONString(queryMap), "utf-8");
-		return "redirect:" + memberUrl + "/remoteUserAuthoriPhoneController/79B4DE7C/authorizeMember.do?queryBody=" + params;
+		return wxmpUrl + "/remoteUserAuthoriPhoneController/79B4DE7C/authorizeMember.do?queryBody=" + params;
 	}
+
 }

@@ -1,24 +1,18 @@
 package com.gt.union.brokerage.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.Member;
-import com.gt.api.dto.ResponseUtils;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.api.client.pay.WxPayService;
-import com.gt.union.api.entity.param.RequestApiParam;
-import com.gt.union.api.entity.param.UnionPhoneCodeParam;
 import com.gt.union.brokerage.service.IUnionH5BrokerageService;
 import com.gt.union.common.constant.CommonConstant;
-import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.controller.MemberAuthorizeOrLoginController;
 import com.gt.union.common.exception.BaseException;
-import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.RandomKit;
-import com.gt.union.common.util.RedisKeyUtil;
 import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.verifier.entity.UnionVerifier;
@@ -26,6 +20,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -51,6 +46,10 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 
 	@Autowired
 	private IUnionMainService unionMainService;
+
+
+	@Value("${wx.duofen.busId}")
+	private Integer duofenBusId;
 
 
 	/**
@@ -162,15 +161,21 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	@ApiOperation(value = "佣金提现", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/withdrawals", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String withdrawals(HttpServletRequest request,
-				  @ApiParam(name = "fee", value = "提现金额" ,required = true) @RequestParam(value = "fee", required = true) Double fee ){
+				  @ApiParam(name = "fee", value = "提现金额" ,required = true) @RequestParam(value = "fee", required = true) Double fee,
+				  @ApiParam(name = "url", value = "登录授权后回调的url" ,required = true) @RequestParam(value = "url", required = true) String url){
 		try{
 			BusUser user = SessionUtils.getLoginUser(request);
 			Member member = SessionUtils.getLoginMember(request);
 			if(CommonUtil.isEmpty(member)){
-				//TODO  粉丝用户授权
+				String redirectUrl = this.authorizeMemberWx(request,url);
+				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
+			}
+			if(!member.getBusid().equals(duofenBusId)){
+				String redirectUrl = this.authorizeMemberWx(request,url);
+				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 			}
 			UnionVerifier verifier = com.gt.union.common.util.SessionUtils.getVerifier(request);
-			int result = wxPayService.enterprisePayment(member.getBusid(), member.getId(), member.getOpenid(), fee, verifier.getId());
+			int result = wxPayService.enterprisePayment(member.getBusid(), member.getId(), member.getOpenid(), fee, verifier == null ? null : verifier.getId());
 			if(result == 1){
 				return GTJsonResult.instanceSuccessMsg().toString();
 			}else {
@@ -378,15 +383,21 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 
 	@ApiOperation(value = "支付佣金", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/onePay/{id}", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public String payOne(HttpServletRequest request, HttpServletResponse response, @ApiParam(name = "id", value = "商机id", required = true) @PathVariable(value = "id", required = true) Integer id) {
+	public String payOne(HttpServletRequest request, HttpServletResponse response, @ApiParam(name = "id", value = "商机id", required = true) @PathVariable(value = "id", required = true) Integer id
+							,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) {
 		try {
 			BusUser user = SessionUtils.getLoginUser(request);
 			Member member = SessionUtils.getLoginMember(request);
-			if(member == null){
-				authorizeMember(request,user.getId(),0,"",true);
+			if(CommonUtil.isEmpty(member)){
+				String redirectUrl = this.authorizeMemberWx(request,url);
+				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 			}
-			//unionH5BrokerageService.payOpportunity(user.getId(),id);
-			return GTJsonResult.instanceSuccessMsg().toString();
+			if(!member.getBusid().equals(duofenBusId)){
+				String redirectUrl = this.authorizeMemberWx(request,url);
+				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
+			}
+			String payUrl = unionH5BrokerageService.payOpportunity(user.getId(),id, url);
+			return GTJsonResult.instanceSuccessMsg("支付地址", payUrl).toString();
 		} catch (BaseException e) {
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
@@ -397,17 +408,40 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	}
 
 
+	@ApiOperation(value = "获取一键支付佣金金额", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/allPay", method=RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String getPayAll(HttpServletRequest request, HttpServletResponse response, @ApiParam(name = "unionId", value = "联盟id", required = false) @PathVariable(value = "unionId", required = false) Integer unionId) {
+		try {
+			BusUser user = SessionUtils.getLoginUser(request);
+			double money = unionH5BrokerageService.getPayAllOpportunitySum(user.getId(), unionId);
+			return GTJsonResult.instanceSuccessMsg(money).toString();
+		} catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+		}
+	}
+
 	@ApiOperation(value = "一键支付佣金", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/allPay", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public String payAll(HttpServletRequest request, HttpServletResponse response) {
+	public String payAll(HttpServletRequest request, HttpServletResponse response, @ApiParam(name = "unionId", value = "联盟id", required = false) @PathVariable(value = "unionId", required = false) Integer unionId
+							,@ApiParam(name = "fee", value = "支付金额", required = true) @PathVariable(value = "fee", required = true) Double fee
+							,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) {
 		try {
 			BusUser user = SessionUtils.getLoginUser(request);
 			Member member = SessionUtils.getLoginMember(request);
-			if(member == null){
-				authorizeMember(request,user.getId(),0,"",true);
+			if(CommonUtil.isEmpty(member)){
+				String redirectUrl = this.authorizeMemberWx(request,url);
+				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 			}
-			//unionH5BrokerageService.payAllOpportunity(user.getId());
-			return GTJsonResult.instanceSuccessMsg().toString();
+			if(!member.getBusid().equals(duofenBusId)){
+				String redirectUrl = this.authorizeMemberWx(request,url);
+				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
+			}
+			String payUrl = unionH5BrokerageService.payAllOpportunity(user.getId(), unionId, fee, url);
+			return GTJsonResult.instanceSuccessMsg("支付地址",payUrl).toString();
 		} catch (BaseException e) {
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
@@ -434,5 +468,55 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 		}
 	}
 
+
+	@RequestMapping(value = "/79B4DE7C/paymentOneSuccess/{Encrypt}", method = RequestMethod.POST)
+	public String paymentOneOpportunitySuccess(HttpServletRequest request, HttpServletResponse response
+			, @PathVariable(name = "Encrypt", required = true) String encrypt , @RequestParam("out_trade_no") String orderNo) {
+		Map<String,Object> data = new HashMap<String,Object>();
+		try {
+			logger.info("商机佣金支付成功，Encrypt------------------" + encrypt);
+			logger.info("商机佣金支付成功，orderNo------------------" + orderNo);
+			UnionVerifier verifier = com.gt.union.common.util.SessionUtils.getVerifier(request);
+			unionH5BrokerageService.paymentOneOpportunitySuccess(encrypt, orderNo, verifier == null ? null : verifier.getId());
+			data.put("code",0);
+			data.put("msg","成功");
+			return JSON.toJSONString(data);
+		} catch (BaseException e) {
+			logger.error("商机佣金支付成功后，产生错误：" + e);
+			data.put("code",-1);
+			data.put("msg",e.getErrorMsg());
+			return JSON.toJSONString(data);
+		} catch (Exception e) {
+			logger.error("商机佣金支付成功后，产生错误：" + e);
+			data.put("code",-1);
+			data.put("msg","失败");
+			return JSON.toJSONString(data);
+		}
+	}
+
+	@RequestMapping(value = "/79B4DE7C/paymentAllSuccess/{Encrypt}", method = RequestMethod.POST)
+	public String payAllOpportunitySuccess(HttpServletRequest request, HttpServletResponse response
+			, @PathVariable(name = "Encrypt", required = true) String encrypt, @RequestParam("out_trade_no") String orderNo) {
+		Map<String,Object> data = new HashMap<String,Object>();
+		try {
+			logger.info("商机佣金支付成功，Encrypt------------------" + encrypt);
+			logger.info("商机佣金支付成功，orderNo------------------" + orderNo);
+			UnionVerifier verifier = com.gt.union.common.util.SessionUtils.getVerifier(request);
+			unionH5BrokerageService.payAllOpportunitySuccess(encrypt, orderNo, verifier == null ? null : verifier.getId());
+			data.put("code",0);
+			data.put("msg","成功");
+			return JSON.toJSONString(data);
+		} catch (BaseException e) {
+			logger.error("商机佣金支付成功后，产生错误：" + e);
+			data.put("code",-1);
+			data.put("msg",e.getErrorMsg());
+			return JSON.toJSONString(data);
+		} catch (Exception e) {
+			logger.error("商机佣金支付成功后，产生错误：" + e);
+			data.put("code",-1);
+			data.put("msg","失败");
+			return JSON.toJSONString(data);
+		}
+	}
 
 }
