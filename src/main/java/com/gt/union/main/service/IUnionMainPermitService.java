@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.main.entity.UnionMainPermit;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -58,4 +59,28 @@ public interface IUnionMainPermitService extends IService<UnionMainPermit> {
      * @throws Exception
      */
     boolean hasUnionMainPermit(Integer busId) throws Exception;
+
+    /**
+     *
+     * @param orderNo
+     * @param pay
+     * @param busId
+     * @return
+     */
+	UnionMainPermit createPermit(String orderNo, Double pay, Integer busId);
+
+    /**
+     * 获取创建联盟的支付二维码
+     * @param busId
+     * @param key
+     * @return
+     */
+    Map<String,Object> createUnionQRCode(Integer busId, String key) throws Exception;
+
+    /**
+     * 创建联盟支付成功后回调
+     * @param recordEncrypt
+     * @param only
+     */
+    void payCreateUnionSuccess(String recordEncrypt, String only) throws Exception;
 }

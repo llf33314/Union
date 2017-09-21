@@ -42,4 +42,12 @@ public interface IUnionCardBindingService extends IService<UnionCardBinding> {
 	 * @return
 	 */
 	UnionCardBinding getByMemberId(Integer memberId);
+
+	/**
+	 * 插入联盟卡绑定
+	 * @param rootId
+	 * @param memberId
+	 * @return
+	 */
+	UnionCardBinding createUnionCardBinding(Integer rootId, Integer memberId);
 }

@@ -1,10 +1,14 @@
 package com.gt.union.card.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
+import com.gt.api.bean.session.Member;
 import com.gt.api.bean.session.WxPublicUsers;
 import com.gt.api.dto.ResponseUtils;
 import com.gt.api.util.SessionUtils;
+import com.gt.union.api.client.member.MemberService;
+import com.gt.union.api.client.socket.SocketService;
 import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.api.entity.param.RequestApiParam;
 import com.gt.union.api.entity.param.UnionPhoneCodeParam;
@@ -22,6 +26,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -50,6 +55,19 @@ public class UnionCardController {
 
 	@Autowired
 	private IBusUserService busUserService;
+
+	@Autowired
+	private SocketService socketService;
+
+	@Autowired
+	private MemberService memberService;
+
+	@Value("${socket.url}")
+	private String socketUrl;
+
+
+	@Value("${socket.key}")
+	private String socketKey;
 
 	@ApiOperation(value = "获取盟员的联盟卡列表", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -182,10 +200,36 @@ public class UnionCardController {
 			if(StringUtil.isEmpty(url)){
 				return GTJsonResult.instanceErrorMsg(CommonConstant.SYS_ERROR).toString();
 			}
+			Map<String,Object> data = new HashMap<String,Object>();
+			data.put("qrurl",url);
+			data.put("socketurl",socketUrl);
+			data.put("userId",socketKey + user.getId());
 			return GTJsonResult.instanceSuccessMsg(url).toString();
 		} catch (Exception e) {
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+		}
+	}
+
+
+	/**
+	 * 关注公众号回调
+	 * @param request
+	 * @param response
+	 * @param externalId
+	 * @param memberId
+	 */
+	@RequestMapping(value = "followCallback", produces = "application/json;charset=UTF-8")
+	public void followCallback(HttpServletRequest request, HttpServletResponse response, @RequestParam("externalId") Integer externalId, @RequestParam("memberId") Integer memberId) {
+		try {
+			Member member = memberService.getById(memberId);
+			Map<String,Object> data = new HashMap<String,Object>();
+			data.put("nickName", StringUtil.isEmpty(member.getNickname()) ? "未知用户" : member.getNickname());
+			data.put("memberId",member.getId());
+			data.put("headurl",member.getHeadimgurl());
+			socketService.socketSendMessage(socketKey + externalId, JSON.toJSONString(data),"");
+		} catch (Exception e) {
+			logger.error("", e);
 		}
 	}
 

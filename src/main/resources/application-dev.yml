@@ -143,3 +143,8 @@ wx:
 member:
   url: http://113.106.202.53:13885/
   signkey: MV8MMFQUMU1HJ6F2GNH40ZFJJ7Q8LNVM
+
+
+socket:
+  url:
+  key: Union_Key_

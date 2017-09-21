@@ -1,12 +1,15 @@
 package com.gt.union.main.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.api.bean.session.BusUser;
+import com.gt.api.bean.session.WxPublicUsers;
 import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
@@ -14,6 +17,7 @@ import com.gt.union.main.constant.MainConstant;
 import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.entity.UnionMainCharge;
 import com.gt.union.main.entity.UnionMainDict;
+import com.gt.union.main.entity.UnionMainPermit;
 import com.gt.union.main.mapper.UnionMainMapper;
 import com.gt.union.main.service.IUnionMainChargeService;
 import com.gt.union.main.service.IUnionMainDictService;
@@ -25,10 +29,12 @@ import com.gt.union.member.constant.MemberConstant;
 import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -61,6 +67,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
     @Autowired
     private IDictService dictService;
+
 
     //-------------------------------------------------- get ----------------------------------------------------------
 
@@ -496,4 +503,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         this.redisCacheUtil.set(unionMainValidKey, "1");
         return true;
     }
+
+
 }

@@ -6,6 +6,7 @@ import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.vo.UnionMainVO;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -144,4 +145,5 @@ public interface IUnionMainService extends IService<UnionMain> {
      * @throws Exception
      */
     boolean isUnionMainValid(UnionMain unionMain) throws Exception;
+
 }

@@ -10,6 +10,7 @@ import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.StringUtil;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.UUID;
 
 /**
@@ -51,6 +52,18 @@ public class UnionCardRootServiceImpl extends ServiceImpl<UnionCardRootMapper, U
 		entityWrapper.eq("id", rootId);
 		entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
 		return this.selectOne(entityWrapper);
+	}
+
+	@Override
+	public UnionCardRoot createUnionCardRoot(String phone) {
+		UnionCardRoot root = new UnionCardRoot();
+		root.setPhone(phone);
+		root.setDelStatus(CommonConstant.DEL_STATUS_NO);
+		root.setCreatetime(new Date());
+		root.setIntegral(0d);
+		root.setNumber(generateCardNo());
+		this.insert(root);
+		return root;
 	}
 
 

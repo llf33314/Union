@@ -1,5 +1,7 @@
 package com.gt.union.api.client.member;
 
+import com.gt.api.bean.session.Member;
+
 import java.util.List;
 import java.util.Map;
 
@@ -15,4 +17,11 @@ public interface MemberService {
 	 * @return
 	 */
 	List<Map> listByBusIdAndMemberIds(Integer busId, String memberIds);
+
+	/**
+	 * 根据粉丝用户id获取用户信息
+	 * @param memberId
+	 * @return
+	 */
+	Member getById(Integer memberId);
 }

@@ -33,4 +33,11 @@ public interface IUnionCardRootService extends IService<UnionCardRoot> {
 	 * @return
 	 */
 	UnionCardRoot getById(Integer rootId);
+
+	/**
+	 * 添加root
+	 * @param phone
+	 * @return
+	 */
+	UnionCardRoot createUnionCardRoot(String phone);
 }

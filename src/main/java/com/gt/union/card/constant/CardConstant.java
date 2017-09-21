@@ -43,4 +43,9 @@ public interface CardConstant {
      * 付费会员
      */
     int IS_OLD_NO = 0;
+
+    /**
+     * 免费卡的有效期
+     */
+    String CARD_FREE_VALIDITY = "2030-09-01 14:00:00";
 }

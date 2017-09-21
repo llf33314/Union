@@ -49,6 +49,9 @@ public class PropertiesUtil {
 
 	private static String memberSignKey;
 
+	private static Integer duofenBusId;
+
+	private static String encryptKey;
 
 	/**
 	 * 获取资源访问地址
@@ -279,5 +282,23 @@ public class PropertiesUtil {
 	@Value("${member.signkey}")
 	public static void setMemberSignKey(String memberSignKey) {
 		PropertiesUtil.memberSignKey = memberSignKey;
+	}
+
+	public static Integer getDuofenBusId() {
+		return duofenBusId;
+	}
+
+	@Value("${wx.duofen.busId}")
+	public static void setDuofenBusId(Integer duofenBusId) {
+		PropertiesUtil.duofenBusId = duofenBusId;
+	}
+
+	public static String getEncryptKey() {
+		return encryptKey;
+	}
+
+	@Value("${union.encryptKey}")
+	public static void setEncryptKey(String encryptKey) {
+		PropertiesUtil.encryptKey = encryptKey;
 	}
 }

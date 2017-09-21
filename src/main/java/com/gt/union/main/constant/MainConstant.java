@@ -83,4 +83,25 @@ public interface MainConstant {
      * 转移记录的确认状态：已拒绝
      */
     int TRANSFER_CONFIRM_STATUS_NO = 3;
+
+    /**
+     * 创建联盟支付：未支付
+     */
+    int PERMIT_ORDER_STATUS_UNPAY = 1;
+
+    /**
+     * 创建联盟支付：已支付
+     */
+    int PERMIT_ORDER_STATUS_SUCCESS = 2;
+
+    /**
+     * 创建联盟支付方式：微信
+     */
+    int PERMIT_PAY_TYPE_WX = 1;
+
+    /**
+     * 创建联盟支付方式：支付宝
+     */
+    int PERMIT_PAY_TYPE_ALI = 3;
+
 }

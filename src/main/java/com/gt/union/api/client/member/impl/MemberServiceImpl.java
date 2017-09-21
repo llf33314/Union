@@ -2,6 +2,7 @@ package com.gt.union.api.client.member.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.gt.api.bean.session.Member;
 import com.gt.api.util.sign.SignHttpUtils;
 import com.gt.union.api.client.member.MemberService;
 import com.gt.union.common.util.CommonUtil;
@@ -40,6 +41,27 @@ public class MemberServiceImpl implements MemberService {
 			Map map = JSONObject.parseObject(data,Map.class);
 			if(CommonUtil.isNotEmpty(map.get("data"))){
 				return JSONArray.parseArray(map.get("data").toString(),Map.class);
+			}else {
+				return null;
+			}
+		}catch (Exception e){
+			return null;
+		}
+	}
+
+	@Override
+	public Member getById(Integer memberId) {
+		String url = memberUrl + "memberAPI/member/findByMemberId";
+		Map<String,Object> param = new HashMap<String,Object>();
+		param.put("memberId",memberId);
+		try {
+			String data = SignHttpUtils.postByHttp(url,param,memberSignkey);
+			if(StringUtil.isEmpty(data)){
+				return null;
+			}
+			Map map = JSONObject.parseObject(data,Map.class);
+			if(CommonUtil.isNotEmpty(map.get("data"))){
+				return JSONObject.parseObject(map.get("data").toString(),Member.class);
 			}else {
 				return null;
 			}

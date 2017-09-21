@@ -1265,25 +1265,28 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
      *
      * @param list
      */
-    private void insertBatchByList(List<UnionOpportunity> list, String orderNo) {
+    private void insertBatchByList(List<UnionOpportunity> list, String orderNo) throws Exception{
         List<UnionBrokerageIncome> incomes = new ArrayList<UnionBrokerageIncome>();
         List<UnionBrokeragePay> pays = new ArrayList<UnionBrokeragePay>();
 
         for (UnionOpportunity opportunity : list) {
+            UnionMember fromMember = unionMemberService.getById(opportunity.getFromMemberId());
+            UnionMember toMember = unionMemberService.getById(opportunity.getToMemberId());
             UnionBrokerageIncome brokerageIncome = new UnionBrokerageIncome();
             brokerageIncome.setCreatetime(new Date());
             brokerageIncome.setDelStatus(CommonConstant.DEL_STATUS_NO);
-            //brokerageIncome.setMemberId(opportunity.getFromMemberId());
+            brokerageIncome.setBusId(fromMember.getBusId());
             brokerageIncome.setOpportunityId(opportunity.getId());
             brokerageIncome.setMoney(opportunity.getBrokeragePrice());
             brokerageIncome.setType(BrokerageConstant.TYPE_INCOME);
             incomes.add(brokerageIncome);
 
+
             UnionBrokeragePay pay = new UnionBrokeragePay();
             pay.setCreatetime(new Date());
             pay.setDelStatus(CommonConstant.DEL_STATUS_NO);
-            //pay.setFromMemberId(opportunity.getToMemberId());
-            //pay.setToMemberId(opportunity.getFromMemberId());
+            pay.setFromBusId(toMember.getBusId());
+            pay.setToBusId(fromMember.getBusId());
             pay.setMoney(opportunity.getBrokeragePrice());
             pay.setOrderNo(orderNo);
             pay.setOpportunityId(opportunity.getId());

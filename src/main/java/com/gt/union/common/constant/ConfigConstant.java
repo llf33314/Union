@@ -1,6 +1,7 @@
 package com.gt.union.common.constant;
 
 import com.gt.union.common.util.PropertiesUtil;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * 系统配置全局常量
@@ -110,5 +111,6 @@ public interface ConfigConstant {
 	 * 公众号二维码链接model
 	 */
 	int WXPUBLIC_QRCODE_MODEL = 10;
+
 }
 

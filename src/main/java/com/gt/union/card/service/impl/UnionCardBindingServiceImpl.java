@@ -91,4 +91,15 @@ public class UnionCardBindingServiceImpl extends ServiceImpl<UnionCardBindingMap
 		return this.selectOne(entityWrapper);
 	}
 
+	@Override
+	public UnionCardBinding createUnionCardBinding(Integer rootId, Integer memberId) {
+		UnionCardBinding binding = new UnionCardBinding();
+		binding.setRootId(rootId);
+		binding.setThirdMemberId(memberId);
+		binding.setDelStatus(CommonConstant.DEL_STATUS_NO);
+		binding.setCreatetime(new Date());
+		this.insert(binding);
+		return binding;
+	}
+
 }
