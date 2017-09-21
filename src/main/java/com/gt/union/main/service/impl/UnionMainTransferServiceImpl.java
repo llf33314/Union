@@ -1,11 +1,13 @@
 package com.gt.union.main.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.DateUtil;
+import com.gt.union.common.util.ListUtil;
 import com.gt.union.main.constant.MainConstant;
 import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.entity.UnionMainPermit;
@@ -71,6 +73,24 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
     }
 
     /**
+     * 根据转移申请id，获取转移申请对象
+     *
+     * @param transferId {not null} 转移申请id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public UnionMainTransfer getById(Integer transferId) throws Exception {
+        if (transferId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("id", transferId);
+        return this.selectOne(entityWrapper);
+    }
+
+    /**
      * 根据转移申请id、接受者盟员身份id和确认状态，获取转移申请信息
      *
      * @param transferId    {not null} 转移申请id
@@ -95,6 +115,25 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
     //------------------------------------------ list(include page) ---------------------------------------------------
 
     /**
+     * 根据转移者的盟主身份id，获取盟主权限转移申请列表信息
+     *
+     * @param fromMemberId {not null} 转移者的盟主身份id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public List<UnionMainTransfer> listByFromMemberId(Integer fromMemberId) throws Exception {
+        if (fromMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("from_member_id", fromMemberId)
+                .eq("confirm_status", MainConstant.TRANSFER_CONFIRM_STATUS_HANDLING);
+        return this.selectList(entityWrapper);
+    }
+
+    /**
      * 获取所有过期的盟主权限转移申请，即转移者已不再是盟主身份
      *
      * @return
@@ -112,6 +151,39 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
                         .append("  AND m.id = t_union_main_transfer.from_member_id")
                         .toString());
         return this.selectList(entityWrapper);
+    }
+
+    /**
+     * 根据商家id和转移者盟员身份id，分页获取盟主服务转移申请列表
+     *
+     * @param page         {not null} 分页对象
+     * @param busId        {not null} 商家id
+     * @param fromMemberId {not null} 转移者盟员身份id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public Page pageMapByBusIdAndFromMemberId(Page page, Integer busId, Integer fromMemberId) throws Exception {
+        if (page == null || busId == null || fromMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        //(1)判断是否具有盟员权限
+        UnionMember ownerMember = this.unionMemberService.getByIdAndBusId(fromMemberId, busId);
+        if (ownerMember == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
+        }
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(ownerMember.getUnionId());
+        //(3)判断是否具有读权限
+        if (!this.unionMemberService.hasReadAuthority(ownerMember)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
+        }
+        //(4)判断盟主权限
+        if (!ownerMember.getIsUnionOwner().equals(MemberConstant.IS_UNION_OWNER_YES)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
+        }
+
+        return this.unionMemberService.pageTransferMapByUnionOwner(page, ownerMember);
     }
 
     //------------------------------------------------- update --------------------------------------------------------
@@ -214,6 +286,52 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
         }
     }
 
+    /**
+     * 根据转移申请id、商家id和转移者的盟员身份id， 撤回盟主服务转移申请
+     *
+     * @param transferId   {not null} 转移申请id
+     * @param busId        {not null} 商家id
+     * @param fromMemberId {not null} 转移者的盟员身份id
+     * @throws Exception
+     */
+    @Override
+    public void revokeByIdAndBusIdAndFromMemberId(Integer transferId, Integer busId, Integer fromMemberId) throws Exception {
+        if (transferId == null || busId == null || fromMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        //(1)判断是否具有盟员权限
+        UnionMember ownerMember = this.unionMemberService.getByIdAndBusId(fromMemberId, busId);
+        if (ownerMember == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
+        }
+        //(2)检查联盟有效期
+        this.unionMainService.checkUnionMainValid(ownerMember.getUnionId());
+        //(3)判断是否具有写权限
+        if (!this.unionMemberService.hasWriteAuthority(ownerMember)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
+        }
+        //(4)判断盟主权限
+        if (!ownerMember.getIsUnionOwner().equals(MemberConstant.IS_UNION_OWNER_YES)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
+        }
+        //(5)判断转移申请状态
+        UnionMainTransfer transfer = this.getById(transferId);
+        if (transfer == null) {
+            throw new BusinessException("未找到盟主权限转移信息");
+        }
+        if (!transfer.getFromMemberId().equals(fromMemberId)) {
+            throw new BusinessException("无法撤回他人的盟主权限转移申请");
+        }
+        if (!transfer.getConfirmStatus().equals(MainConstant.TRANSFER_CONFIRM_STATUS_HANDLING)) {
+            throw new BusinessException("该盟主权限转移申请已处理，无法撤回");
+        }
+        //(6)将申请置为无效
+        UnionMainTransfer updateTransfer = new UnionMainTransfer();
+        updateTransfer.setId(transferId); //转移id
+        updateTransfer.setDelStatus(CommonConstant.DEL_STATUS_YES); //删除状态
+        this.updateById(updateTransfer);
+    }
+
     //------------------------------------------------- save ----------------------------------------------------------
 
     /**
@@ -244,8 +362,13 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
         if (!fromMember.getIsUnionOwner().equals(MemberConstant.IS_UNION_OWNER_YES)) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
         }
+        //(5)判断是否已转移记录
+        List<UnionMainTransfer> transferList = this.listByFromMemberId(fromMemberId);
+        if (ListUtil.isNotEmpty(transferList)) {
+            throw new BusinessException("已存在转移申请，请撤销申请后再提交");
+        }
         Integer unionId = fromMember.getUnionId();
-        //(5)判断目标对象是否在同一个联盟
+        //(6)判断目标对象是否在同一个联盟
         UnionMember toMember = this.unionMemberService.getById(toMemberId);
         if (toMember == null) {
             throw new BusinessException("目标对象不存在或已过期");
@@ -253,22 +376,22 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
         if (!toMember.getUnionId().equals(unionId)) {
             throw new BusinessException("不在同一个联盟，无法操作");
         }
-        //(6)判断目标对象的状态
+        //(7)判断目标对象的状态
         if (toMember.getStatus() == MemberConstant.STATUS_APPLY_IN) {
             throw new BusinessException("目标对象尚未入盟");
         }
         if (toMember.getStatus() == MemberConstant.STATUS_OUTING) {
             throw new BusinessException("目标对象正处于退盟过渡期");
         }
-        // (4)判断目标对象是否是盟主
+        //(8)判断目标对象是否是盟主
         if (this.unionMemberService.isUnionOwner(toMember.getBusId())) {
             throw new BusinessException("目标对象已经是另一个联盟的盟主");
         }
-        // (5)判断目标对象是否具有盟主服务许可
+        //(9)判断目标对象是否具有盟主服务许可
         if (!this.unionMainPermitService.hasUnionMainPermit(toMember.getBusId())) {
             throw new BusinessException("目标对象不具有盟主服务许可");
         }
-        // (6)判断是否已存在转移申请
+        //(10)判断是否已存在转移申请
         UnionMainTransfer unionMainTransfer = this.getByUnionIdAndFromMemberIdAndToMemberIdAndConfirmStatus(unionId
                 , fromMemberId, toMemberId, MainConstant.TRANSFER_CONFIRM_STATUS_HANDLING);
         if (unionMainTransfer == null) {

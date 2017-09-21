@@ -115,6 +115,7 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         Map<String, Object> result = new HashMap<>();
         result.put("project", project);
         result.put("itemList", itemList);
+        result.put("enterpriseName", unionMember.getEnterpriseName());
         return result;
     }
 
