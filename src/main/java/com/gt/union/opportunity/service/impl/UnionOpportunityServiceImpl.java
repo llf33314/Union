@@ -671,7 +671,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
             if (ListUtil.isNotEmpty(readMemberList)) {
                 for (UnionMember readMember : readMemberList) {
                     //(1-2)添加盟员身份id
-                    userMemberIdList.add(readMember.getBusId());
+                    userMemberIdList.add(readMember.getId());
                 }
             }
         }
