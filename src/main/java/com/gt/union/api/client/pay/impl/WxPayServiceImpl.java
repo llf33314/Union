@@ -119,7 +119,7 @@ public class WxPayServiceImpl implements WxPayService {
 	@Override
 	public String wxPay(Map<String, Object> data) {
         String obj = KeysUtil.encodeBytes(JSON.toJSONBytes(data));
-		return obj;
+        return wxmpUrl + "8A5DA52E/payApi/6F6D9AD2/79B4DE7C/payapi.do?obj="+obj;
 	}
 
 
