@@ -130,6 +130,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         };
         StringBuilder sbSqlSelect = new StringBuilder(" mo.id outId") //退盟申请id
                 .append(", m.enterprise_name outEnterpriseName") //退盟企业名称
+                .append(", mo.type outType") //退盟类型
                 .append(", DATE_FORMAT(mo.createtime, '%Y-%m-%d %T') applyOutTime") //申请退盟时间
                 .append(", mo.apply_out_reason applyOutReason"); //退盟理由
         wrapper.setSqlSelect(sbSqlSelect.toString());
@@ -180,6 +181,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         };
         StringBuilder sbSqlSelect = new StringBuilder(" mo.id outId") //退盟申请id
                 .append(", m.enterprise_name outEnterpriseName") //退盟企业名称
+                .append(", mo.type outType") //退盟类型
                 .append(", DATE_FORMAT(mo.createtime, '%Y-%m-%d %T') applyOutTime") //申请退盟时间
                 .append(", DATE_FORMAT(mo.confirm_out_time, '%Y-%m-%d %T') confirmOutTime") //盟主确认退盟时间
                 .append(", DATEDIFF(mo.actual_out_time, now()) remainDay") //剩余天数
@@ -304,6 +306,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
                 Date currentDate = DateUtil.getCurrentDate();
                 saveUnionMemberOut.setCreatetime(currentDate); //创建时间
                 saveUnionMemberOut.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
+                saveUnionMemberOut.setType(MemberConstant.OUT_TYPE_REMOVE); //退盟类型
                 saveUnionMemberOut.setApplyMemberId(tgtMemberId); //退盟盟员id
                 saveUnionMemberOut.setApplyOutReason("盟主移出"); //退盟理由
                 saveUnionMemberOut.setConfirmOutTime(currentDate); //盟主审核确认时间
@@ -358,6 +361,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         UnionMemberOut saveUnionMemberOut = new UnionMemberOut();
         saveUnionMemberOut.setCreatetime(DateUtil.getCurrentDate()); //申请时间
         saveUnionMemberOut.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
+        saveUnionMemberOut.setType(MemberConstant.OUT_TYPE_APPLY); //退盟类型
         saveUnionMemberOut.setApplyMemberId(memberId); //申请退盟的盟员id
         saveUnionMemberOut.setApplyOutReason(applyOutReason); //退盟理由
         //(6)更新盟员状态为申请退盟状态

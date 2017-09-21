@@ -123,12 +123,13 @@ public interface IUnionMemberService extends IService<UnionMember> {
     /**
      * 根据盟员id和商家id，获取所有与该盟员同属一个联盟的盟员信息
      *
-     * @param memberId {not null} 盟员id
-     * @param busId    {not null} 商家id
+     * @param memberId             {not null} 盟员id
+     * @param busId                {not null} 商家id
+     * @param optionEnterpriseName 可选项 盟员名称
      * @return
      * @throws Exception
      */
-    List<Map<String, Object>> listMapByIdAndBusId(Integer memberId, Integer busId) throws Exception;
+    List<Map<String, Object>> listMapByIdAndBusId(Integer memberId, Integer busId, String optionEnterpriseName) throws Exception;
 
     /**
      * 根据商家id，获取商家所有具有读权限的盟员身份列表信息
