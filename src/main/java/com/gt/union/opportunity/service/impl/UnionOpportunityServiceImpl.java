@@ -135,32 +135,37 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         //(3)商机推荐支付往来信息
         List<Map<String, Object>> contactList = new ArrayList<>();
         BigDecimal contactMoneySum = null;
-        if (userMemberId != null) {
-            //(4-1)我推荐的商机
-            List<UnionOpportunity> opportunityFromMeList = this.listPaidByFromMemberIdAndToMemberId(userMemberId, tgtMemberId);
-            if (ListUtil.isNotEmpty(opportunityFromMeList)) {
-                for (UnionOpportunity opportunity : opportunityFromMeList) {
-                    Map<String, Object> contactMap = new HashMap<>();
-                    contactMap.put("lastModifyTime", DateUtil.getDateString(opportunity.getModifytime(), DateUtil.DATETIME_PATTERN)); //最后修改时间
-                    contactMap.put("clientName", opportunity.getClientName()); //客户姓名
-                    contactMap.put("clientPhone", opportunity.getClientPhone()); //客户电话
-                    contactMap.put("brokeragePrice", opportunity.getBrokeragePrice()); //佣金收入：正数
-                    contactList.add(contactMap);
-                    contactMoneySum = BigDecimalUtil.add(contactMoneySum, opportunity.getBrokeragePrice()); //统计佣金往来总额
-                }
+        if (userMemberId == null) {
+            UnionMember userMember = this.unionMemberService.getByBusIdAndUnionId(busId, unionMain.getId());
+            if (userMember == null) {
+                throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
             }
-            //(4-2)我接受的商机
-            List<UnionOpportunity> opportunityToMeList = this.listPaidByFromMemberIdAndToMemberId(tgtMemberId, userMemberId);
-            if (ListUtil.isNotEmpty(opportunityToMeList)) {
-                for (UnionOpportunity opportunity : opportunityToMeList) {
-                    Map<String, Object> contactMap = new HashMap<>();
-                    contactMap.put("lastModifyTime", DateUtil.getDateString(opportunity.getModifytime(), DateUtil.DATETIME_PATTERN)); //最后修改时间
-                    contactMap.put("clientName", opportunity.getClientName()); //客户姓名
-                    contactMap.put("clientPhone", opportunity.getClientPhone()); //客户电话
-                    contactMap.put("brokeragePrice", BigDecimalUtil.subtract(0D, opportunity.getBrokeragePrice()).doubleValue()); //佣金支出：负数
-                    contactList.add(contactMap);
-                    contactMoneySum = BigDecimalUtil.subtract(contactMoneySum, opportunity.getBrokeragePrice()); //统计佣金往来总额
-                }
+            userMemberId = userMember.getId();
+        }
+        //(4-1)我推荐的商机
+        List<UnionOpportunity> opportunityFromMeList = this.listPaidByFromMemberIdAndToMemberId(userMemberId, tgtMemberId);
+        if (ListUtil.isNotEmpty(opportunityFromMeList)) {
+            for (UnionOpportunity opportunity : opportunityFromMeList) {
+                Map<String, Object> contactMap = new HashMap<>();
+                contactMap.put("lastModifyTime", DateUtil.getDateString(opportunity.getModifytime(), DateUtil.DATETIME_PATTERN)); //最后修改时间
+                contactMap.put("clientName", opportunity.getClientName()); //客户姓名
+                contactMap.put("clientPhone", opportunity.getClientPhone()); //客户电话
+                contactMap.put("brokeragePrice", opportunity.getBrokeragePrice()); //佣金收入：正数
+                contactList.add(contactMap);
+                contactMoneySum = BigDecimalUtil.add(contactMoneySum, opportunity.getBrokeragePrice()); //统计佣金往来总额
+            }
+        }
+        //(4-2)我接受的商机
+        List<UnionOpportunity> opportunityToMeList = this.listPaidByFromMemberIdAndToMemberId(tgtMemberId, userMemberId);
+        if (ListUtil.isNotEmpty(opportunityToMeList)) {
+            for (UnionOpportunity opportunity : opportunityToMeList) {
+                Map<String, Object> contactMap = new HashMap<>();
+                contactMap.put("lastModifyTime", DateUtil.getDateString(opportunity.getModifytime(), DateUtil.DATETIME_PATTERN)); //最后修改时间
+                contactMap.put("clientName", opportunity.getClientName()); //客户姓名
+                contactMap.put("clientPhone", opportunity.getClientPhone()); //客户电话
+                contactMap.put("brokeragePrice", BigDecimalUtil.subtract(0D, opportunity.getBrokeragePrice()).doubleValue()); //佣金支出：负数
+                contactList.add(contactMap);
+                contactMoneySum = BigDecimalUtil.subtract(contactMoneySum, opportunity.getBrokeragePrice()); //统计佣金往来总额
             }
         }
         result.put("contactList", contactList);

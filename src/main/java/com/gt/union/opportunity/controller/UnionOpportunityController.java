@@ -11,14 +11,13 @@ import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.service.IUnionValidateService;
-import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.RedisCacheUtil;
-import com.gt.union.common.util.RedisKeyUtil;
+import com.gt.union.common.util.*;
 import com.gt.union.log.service.IUnionLogErrorService;
 import com.gt.union.opportunity.service.IUnionOpportunityService;
 import com.gt.union.opportunity.vo.UnionOpportunityVO;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.poi.hssf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +29,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -218,7 +219,7 @@ public class UnionOpportunityController {
             , @ApiParam(name = "tgtMemberId", value = "与操作人有商机佣金来往的盟员身份id", required = true)
                                                 @RequestParam(name = "tgtMemberId") Integer tgtMemberId
             , @ApiParam(name = "memberId", value = "操作人的盟员身份id")
-                                                @RequestParam(name = "memberId") Integer memberId
+                                                @RequestParam(name = "memberId", required = false) Integer memberId
     ) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
@@ -236,6 +237,74 @@ public class UnionOpportunityController {
             logger.error("", e);
             this.unionLogErrorService.saveIfNotNull(e);
             return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+        }
+    }
+
+    @ApiOperation(value = "查询商机佣金支付往来详情信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/contact/exportDetail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public void exportContactDetailByTgtMemberId(HttpServletRequest request, HttpServletResponse response
+            , @ApiParam(name = "tgtMemberId", value = "与操作人有商机佣金来往的盟员身份id", required = true)
+                                                 @RequestParam(name = "tgtMemberId") Integer tgtMemberId
+            , @ApiParam(name = "memberId", value = "操作人的盟员身份id")
+                                                 @RequestParam(name = "memberId", required = false) Integer memberId) throws IOException {
+        try {
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            Integer busId = busUser.getId();
+            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+                busId = busUser.getPid();
+            }
+            Map<String, Object> resultMap = this.unionOpportunityService.getContactDetailByBusIdAndTgtMemberId(busId, tgtMemberId, memberId);
+            String[] titles = new String[]{"时间", "顾客姓名", "电话", "佣金（折）"};
+            HSSFWorkbook wb = ExportUtil.newHSSFWorkbook(titles);
+            HSSFSheet sheet = wb.getSheetAt(0);
+            if (resultMap != null && resultMap.get("contactList") != null) {
+                List<Map<String, Object>> contactList = (List<Map<String, Object>>) resultMap.get("contactList");
+                if (ListUtil.isNotEmpty(contactList)) {
+                    int rowIndex = 1;
+                    HSSFCellStyle centerCellStyle = ExportUtil.newHSSFCellStyle(wb, HSSFCellStyle.ALIGN_CENTER);
+                    for (Map<String, Object> map : contactList) {
+                        int cellIndex = 0;
+                        HSSFRow row = sheet.createRow(rowIndex++);
+                        HSSFCell lastModifyTimeCell = row.createCell(cellIndex++);
+                        //时间
+                        String tgtLastModifyTime = resultMap.get("lastModifyTime") != null ? resultMap.get("lastModifyTime").toString() : "";
+                        lastModifyTimeCell.setCellValue(tgtLastModifyTime);
+                        lastModifyTimeCell.setCellStyle(centerCellStyle);
+                        //顾客姓名
+                        HSSFCell clientNameCell = row.createCell(cellIndex++);
+                        String tgtClientName = resultMap.get("clientName") != null ? resultMap.get("clientName").toString() : "";
+                        clientNameCell.setCellValue(tgtClientName);
+                        clientNameCell.setCellStyle(centerCellStyle);
+                        //电话
+                        HSSFCell clientPhoneCell = row.createCell(cellIndex++);
+                        String tgtClientPhone = resultMap.get("clientPhone") != null ? resultMap.get("clientPhone").toString() : "";
+                        clientPhoneCell.setCellValue(tgtClientPhone);
+                        clientPhoneCell.setCellStyle(centerCellStyle);
+                        //佣金（折）
+                        HSSFCell brokeragePriceCell = row.createCell(cellIndex++);
+                        String tgtBrokeragePrice = resultMap.get("brokeragePrice") != null ? resultMap.get("brokeragePrice").toString() : "";
+                        brokeragePriceCell.setCellValue(tgtBrokeragePrice);
+                        brokeragePriceCell.setCellStyle(centerCellStyle);
+                    }
+                    //统计佣金往来总额
+                    HSSFRow rowSum = sheet.createRow(rowIndex++);
+                    //标题
+                    HSSFCell contactMoneySumTitleCell = rowSum.createCell(0);
+                    contactMoneySumTitleCell.setCellValue("合计：");
+                    contactMoneySumTitleCell.setCellStyle(centerCellStyle);
+                    //内容
+                    HSSFCell contactMoneySumCell = rowSum.createCell(1);
+                    String tgtContactMoneySum = resultMap.get("contactMoneySum") != null ? resultMap.get("contactMoneySum").toString() : "";
+                    contactMoneySumCell.setCellValue(tgtContactMoneySum);
+                    contactMoneySumCell.setCellStyle(centerCellStyle);
+                }
+            }
+            String filename = "佣金明细详情";
+            ExportUtil.responseExport(response, wb, filename);
+        } catch (Exception e) {
+            logger.error("", e);
+            this.unionLogErrorService.saveIfNotNull(e);
+            ExportUtil.responseExportError(response);
         }
     }
 
@@ -341,8 +410,10 @@ public class UnionOpportunityController {
     }
 
     //------------------------------------------------- money ----------------------------------------------------------
-    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{Encrypt}/{only}")
-    public void payOpportunitySuccess(HttpServletRequest request, HttpServletResponse response, @PathVariable(name = "Encrypt", required = true) String encrypt, @PathVariable(name = "only", required = true) String only) {
+    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{Encrypt}/{only}", method = RequestMethod.GET)
+    public void payOpportunitySuccess(HttpServletRequest request, HttpServletResponse response
+            , @PathVariable(name = "Encrypt", required = true) String encrypt
+            , @PathVariable(name = "only", required = true) String only) {
         try {
             logger.info("商机佣金支付成功，Encrypt------------------" + encrypt);
             logger.info("商机佣金支付成功，only------------------" + only);

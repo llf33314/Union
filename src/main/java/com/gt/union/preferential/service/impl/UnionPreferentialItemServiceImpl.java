@@ -132,16 +132,16 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
     //------------------------------------------------- update --------------------------------------------------------
 
     /**
-     * 根据优惠服务项id、商家id和盟员身份id，提交优惠服务项
+     * 根据优惠服务项id列表、商家id和盟员身份id，提交优惠服务项
      *
-     * @param itemId   {not null} 优惠服务项id
-     * @param busId    {not null} 商家id
-     * @param memberId {not null} 盟员身份id
+     * @param itemIdList {not null} 优惠服务项id列表
+     * @param busId      {not null} 商家id
+     * @param memberId   {not null} 盟员身份id
      * @throws Exception
      */
     @Override
-    public void submitByIdAndBusIdAndMemberId(Integer itemId, Integer busId, Integer memberId) throws Exception {
-        if (itemId == null || busId == null || memberId == null) {
+    public void submitBatchByIdsAndBusIdAndMemberId(List<Integer> itemIdList, Integer busId, Integer memberId) throws Exception {
+        if (itemIdList == null || busId == null || memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         //(1)判断是否具有盟员权限
@@ -156,39 +156,44 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
             throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
         }
         //(4)检查优惠服务项信息是否过期
-        UnionPreferentialItem item = this.getById(itemId);
-        if (item == null) {
-            throw new BusinessException("优惠服务项不存在");
+        List<UnionPreferentialItem> updateItemList = new ArrayList<>();
+        for (Integer itemId : itemIdList) {
+            UnionPreferentialItem item = this.getById(itemId);
+            if (item == null) {
+                throw new BusinessException("优惠服务项不存在");
+            }
+            UnionPreferentialProject project = this.unionPreferentialProjectService.getById(item.getProjectId());
+            if (project == null) {
+                throw new BusinessException("找不到对应的优惠项目");
+            }
+            if (!project.getMemberId().equals(memberId)) {
+                throw new BusinessException("没有该优惠服务项的权限");
+            }
+            if (item.getStatus() != PreferentialConstant.STATUS_UNCOMMITTED) {
+                throw new BusinessException("优惠服务项已处理");
+            }
+            //(5)更新对象
+            UnionPreferentialItem updateItem = new UnionPreferentialItem();
+            updateItem.setId(item.getId()); //优惠服务项id
+            updateItem.setStatus(PreferentialConstant.STATUS_VERIFYING); //优惠服务项状态变成审核中
+            updateItem.setModifytime(DateUtil.getCurrentDate()); //修改时间
+            updateItemList.add(updateItem);
         }
-        UnionPreferentialProject project = this.unionPreferentialProjectService.getById(item.getProjectId());
-        if (project == null) {
-            throw new BusinessException("找不到对应的优惠项目");
-        }
-        if (!project.getMemberId().equals(memberId)) {
-            throw new BusinessException("没有该优惠服务项的权限");
-        }
-        if (item.getStatus() != PreferentialConstant.STATUS_UNCOMMITTED) {
-            throw new BusinessException("优惠服务项已处理");
-        }
-        //(5)更新操作
-        UnionPreferentialItem updateItem = new UnionPreferentialItem();
-        updateItem.setId(item.getId()); //优惠服务项id
-        updateItem.setStatus(PreferentialConstant.STATUS_VERIFYING); //优惠服务项状态变成审核中
-        updateItem.setModifytime(DateUtil.getCurrentDate()); //修改时间
-        this.updateById(updateItem);
+        //更新操作
+        this.updateBatchById(updateItemList);
     }
 
     /**
-     * 根据优惠服务项id、商家id和盟员身份id，移除优惠服务项
+     * 根据优惠服务项id列表、商家id和盟员身份id，批量移除优惠服务项
      *
-     * @param itemId   {not null} 优惠服务项id
-     * @param busId    {not null} 商家id
-     * @param memberId {not null} 盟员身份id
+     * @param itemIdList {not null} 优惠服务项id列表
+     * @param busId      {not null} 商家id
+     * @param memberId   {not null} 盟员身份id
      * @throws Exception
      */
     @Override
-    public void removeByIdAndBusIdAndMemberId(Integer itemId, Integer busId, Integer memberId) throws Exception {
-        if (itemId == null || busId == null || memberId == null) {
+    public void removeBatchByIdsAndBusIdAndMemberId(List<Integer> itemIdList, Integer busId, Integer memberId) throws Exception {
+        if (itemIdList == null || busId == null || memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         //(1)判断是否具有盟员权限
@@ -203,23 +208,28 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
             throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
         }
         //(4)检查优惠服务项信息是否过期
-        UnionPreferentialItem item = this.getById(itemId);
-        if (item == null) {
-            throw new BusinessException("优惠服务项不存在");
+        List<UnionPreferentialItem> updateItemList = new ArrayList<>();
+        for (Integer itemId : itemIdList) {
+            UnionPreferentialItem item = this.getById(itemId);
+            if (item == null) {
+                throw new BusinessException("优惠服务项不存在");
+            }
+            UnionPreferentialProject project = this.unionPreferentialProjectService.getById(item.getProjectId());
+            if (project == null) {
+                throw new BusinessException("找不到对应的优惠项目");
+            }
+            if (!project.getMemberId().equals(memberId)) {
+                throw new BusinessException("没有该优惠服务项的权限");
+            }
+            //(5)更新对象
+            UnionPreferentialItem updateItem = new UnionPreferentialItem();
+            updateItem.setId(item.getId()); //优惠服务项id
+            updateItem.setDelStatus(CommonConstant.DEL_STATUS_YES); //删除状态变成已删除
+            updateItem.setModifytime(DateUtil.getCurrentDate()); //修改时间
+            updateItemList.add(updateItem);
         }
-        UnionPreferentialProject project = this.unionPreferentialProjectService.getById(item.getProjectId());
-        if (project == null) {
-            throw new BusinessException("找不到对应的优惠项目");
-        }
-        if (!project.getMemberId().equals(memberId)) {
-            throw new BusinessException("没有该优惠服务项的权限");
-        }
-        //(5)更新操作
-        UnionPreferentialItem updateItem = new UnionPreferentialItem();
-        updateItem.setId(item.getId()); //优惠服务项id
-        updateItem.setDelStatus(CommonConstant.DEL_STATUS_YES); //删除状态变成已删除
-        updateItem.setModifytime(DateUtil.getCurrentDate()); //修改时间
-        this.updateById(updateItem);
+        //(6)更新操作
+        this.updateBatchById(updateItemList);
     }
 
     /**

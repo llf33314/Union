@@ -64,6 +64,22 @@ public class ExportUtil {
     }
 
     /**
+     * 返回导出失败信息
+     *
+     * @param response
+     * @throws IOException
+     */
+    public static void responseExportError(HttpServletResponse response) throws IOException {
+        response.setContentType("text/html");
+        response.setHeader("Cache-Control", "no-cache");
+        response.setCharacterEncoding("UTF-8");
+        String result = GTJsonResult.instanceErrorMsg("导出失败").toString();
+        PrintWriter writer = response.getWriter();
+        writer.print(result);
+        writer.close();
+    }
+
+    /**
      * 根据标题头创建workbook对象
      *
      * @param titles
