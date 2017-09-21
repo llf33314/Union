@@ -71,7 +71,7 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
      * @throws Exception
      */
     @Override
-    public Page pageCardMapByBusIdAndMemberId(Page page, Integer busId, Integer memberId, final Integer optionCardType
+    public Page pageCardMapByBusIdAndMemberId(Page page, final Integer busId, Integer memberId, final Integer optionCardType
             , final String optionCardNumber) throws Exception {
         if (page == null || busId == null || memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -94,10 +94,10 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
                 StringBuilder sbSqlSegment = new StringBuilder(" bi")
                         .append(" LEFT JOIN t_union_card c ON c.id = bi.card_id")
                         .append(" LEFT JOIN t_union_card_root cr ON cr.id = c.root_id")
-                        .append(" LEFT JOIN t_union_member m ON m.id = bi.member_id")
-                        .append(" LEFT JOIN t_union_member m2 ON m2.id = c.member_id")
+                        .append(" LEFT JOIN t_union_member m ON m.id = c.member_id")
                         .append(" WHERE bi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
                         .append("  AND bi.type = ").append(BrokerageConstant.SOURCE_TYPE_CARD)
+						.append("  AND bi.bus_id = ").append(busId)
                         .append("  AND bi.card_id IS NOT NULL")
                         .append("  AND m.union_id = ").append(unionMember.getUnionId());
                 if (optionCardType != null) {
@@ -115,7 +115,7 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
                 .append(", cr.number cardNumber") //卡号
                 .append(", c.type cardType") //卡类型(红、黑卡)
                 .append(", bi.money incomeMoney") //佣金金额
-                .append(", m2.enterprise_name srcEnterpriseName"); //售卡出处
+                .append(", m.enterprise_name srcEnterpriseName"); //售卡出处
         wrapper.setSqlSelect(sbSqlSelect.toString());
         return this.selectMapsPage(page, wrapper);
     }

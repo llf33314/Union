@@ -57,7 +57,7 @@ public class UnionBrokerageIncomeController {
 	    try {
 	        BusUser busUser = SessionUtils.getLoginUser(request);
 	        Integer busId = busUser.getId();
-	        if (busUser.getPid() != null && busUser.getPid() == BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+	        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
 	            busId = busUser.getPid();
 	        }
 	        Page result = this.unionBrokerageIncomeService.pageCardMapByBusIdAndMemberId(page, busId, memberId, cardType, cardNumber);
