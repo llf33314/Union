@@ -1229,7 +1229,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         data.put("payBusId", busId);//支付的商家id
         data.put("isSendMessage", 0);//不推送
         data.put("appid", publicUser.getAppid());//appid
-        data.put("desc", "联盟商机推荐");
+        data.put("desc", "联盟商机佣金");
         data.put("appidType", 0);//公众号
         data.put("only", only);
         String paramKey = RedisKeyUtil.getRecommendPayParamKey(only);

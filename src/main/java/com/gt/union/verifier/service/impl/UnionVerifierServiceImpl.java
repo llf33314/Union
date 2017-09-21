@@ -83,13 +83,14 @@ public class UnionVerifierServiceImpl extends ServiceImpl<UnionVerifierMapper, U
     }
 
     @Override
-    public Page list(Page<UnionVerifier> page, Integer busId) throws Exception{
+    public Page list(Page page, Integer busId) throws Exception{
         if(busId == null){
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         EntityWrapper entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("bus_id",busId);
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+        entityWrapper.setSqlSelect("id AS id,bus_id AS busId,createtime,del_status AS delStatus,third_member_id AS thirdMemberId,phone,`name`");
         return this.selectPage(page,entityWrapper);
     }
 
