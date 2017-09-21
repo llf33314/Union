@@ -34,7 +34,7 @@ public class MemberServiceImpl implements MemberService {
 		param.put("busId",busId);
 		param.put("ids",memberIds);
 		try {
-			String data = SignHttpUtils.postByHttp(url,param,memberSignkey);
+			String data = SignHttpUtils.WxmppostByHttp(url,param,memberSignkey);
 			if(StringUtil.isEmpty(data)){
 				return null;
 			}

@@ -8,6 +8,10 @@ import com.gt.union.api.entity.result.UnionConsumeResult;
 import com.gt.union.api.entity.result.UnionRefundResult;
 import com.gt.union.consume.entity.UnionConsume;
 import com.gt.union.consume.vo.UnionConsumeParamVO;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+
+import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -76,4 +80,48 @@ public interface IUnionConsumeService extends IService<UnionConsume> {
 	 * @param vo		核销参数
 	 */
 	void consumeByCard(Integer busId, UnionConsumeParamVO vo) throws Exception;
+
+	/**
+	 * 导出本店消费记录列表
+	 * @param unionId
+	 * @param busId
+	 * @param memberId
+	 * @param cardNo
+	 * @param phone
+	 * @param beginTime
+	 * @param endTime
+	 * @return
+	 */
+	List<Map<String,Object>> listMyByUnionId(Integer unionId, Integer busId, Integer memberId, String cardNo, String phone, String beginTime, String endTime) throws Exception;
+
+	/**
+	 * 导出本店消费记录列表
+	 * @param titles
+	 * @param contentName
+	 * @param list
+	 * @return
+	 */
+	HSSFWorkbook exportConsumeFromDetail(String[] titles, String[] contentName, List<Map<String, Object>> list);
+
+	/**
+	 * 导出他店消费列表
+	 * @param unionId
+	 * @param busId
+	 * @param memberId
+	 * @param cardNo
+	 * @param phone
+	 * @param beginTime
+	 * @param endTime
+	 * @return
+	 */
+	List<Map<String,Object>> listOtherByUnionId(Integer unionId, Integer busId, Integer memberId, String cardNo, String phone, String beginTime, String endTime);
+
+	/**
+	 * 导出他店消费列表
+	 * @param titles
+	 * @param contentName
+	 * @param list
+	 * @return
+	 */
+	HSSFWorkbook exportConsumeToDetail(String[] titles, String[] contentName, List<Map<String, Object>> list);
 }

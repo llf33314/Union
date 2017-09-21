@@ -6,6 +6,7 @@ import com.gt.union.api.entity.result.UnionDiscountResult;
 import com.gt.union.card.entity.UnionCard;
 import com.gt.union.card.vo.UnionCardBindParamVO;
 import com.gt.union.member.entity.UnionMember;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import java.util.List;
 import java.util.Map;
@@ -154,4 +155,23 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 * @return
 	 */
 	UnionCard getByPhoneAndMemberId(String phone, Integer memberId) throws Exception;
+
+	/**
+	 * 导出联盟卡的数据列表
+	 * @param unionId
+	 * @param busId
+	 * @param cardNo
+	 * @param phone
+	 * @return
+	 */
+	List<Map<String,Object>> listByUnionId(Integer unionId, Integer busId, String cardNo, String phone) throws Exception;
+
+	/**
+	 * 导出联盟卡数据
+	 * @param titles
+	 * @param contentName
+	 * @param list
+	 * @return
+	 */
+	HSSFWorkbook exportCardList(String[] titles, String[] contentName, List<Map<String, Object>> list);
 }

@@ -92,6 +92,7 @@ public class UnionBrokerageWithdrawalServiceImpl extends ServiceImpl<UnionBroker
 					ids += vo.getMemberId() + ",";
 				}
 			}
+			size++;
 		}
 		if(StringUtil.isNotEmpty(ids)){
 			List<Map> members = memberService.listByBusIdAndMemberIds(busId,ids);

@@ -19,6 +19,8 @@ import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.DateTimeKit;
+import com.gt.union.common.util.StringUtil;
 import com.gt.union.consume.constant.ConsumeConstant;
 import com.gt.union.consume.entity.UnionConsume;
 import com.gt.union.consume.mapper.UnionConsumeMapper;
@@ -29,11 +31,13 @@ import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.service.IUnionMemberService;
+import org.apache.poi.hssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * <p>
@@ -205,4 +209,94 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 
 	}
 
+	@Override
+	public List<Map<String, Object>> listMyByUnionId(Integer unionId, Integer busId, Integer memberId, String cardNo, String phone, String beginTime, String endTime) throws Exception{
+		if(busId == null){
+			throw new ParamException(CommonConstant.PARAM_ERROR);
+		}
+		List<Map<String, Object>> list = unionConsumeMapper.listMyByUnionId(unionId, busId, memberId, cardNo, phone, beginTime, endTime);
+		return list;
+	}
+
+	@Override
+	public HSSFWorkbook exportConsumeFromDetail(String[] titles, String[] contentName, List<Map<String, Object>> list) {
+		HSSFWorkbook wb = new HSSFWorkbook();
+		HSSFCellStyle styleCenter = wb.createCellStyle();
+		HSSFSheet sheet = createHSSFSheet(titles, wb, styleCenter);
+		sheet.setColumnWidth(5, 100 * 150);
+		for (int i=0;i<list.size();i++) {
+			Map<String, Object> item = list.get(i);
+			HSSFRow row = sheet.createRow(i + 1);
+			for(int j=0;j<titles.length;j++){
+				String key = contentName[j];
+				String c = CommonUtil.isEmpty(item.get(key)) ? "" : item.get(key).toString();
+				if("createtime".equals(key)){//加入时间
+					c = DateTimeKit.format(DateTimeKit.parse(c,DateTimeKit.DEFAULT_DATETIME_FORMAT), "yyyy-MM-dd HH:mm");
+				}
+				HSSFCell cell = row.createCell(j);
+				cell.setCellValue(c);
+				cell.setCellStyle(styleCenter);
+			}
+
+		}
+		return wb;
+	}
+
+	@Override
+	public List<Map<String, Object>> listOtherByUnionId(Integer unionId, Integer busId, Integer memberId, String cardNo, String phone, String beginTime, String endTime) {
+		List<Map<String, Object>> list = unionConsumeMapper.listOtherByUnionId(unionId, busId, memberId, cardNo, phone, beginTime, endTime);
+		return list;
+	}
+
+	@Override
+	public HSSFWorkbook exportConsumeToDetail(String[] titles, String[] contentName, List<Map<String, Object>> list) {
+		HSSFWorkbook wb = new HSSFWorkbook();
+		HSSFCellStyle styleCenter = wb.createCellStyle();
+		HSSFSheet sheet = createHSSFSheet(titles, wb, styleCenter);
+		sheet.setColumnWidth(5, 100 * 150);
+		for (int i=0;i<list.size();i++) {
+			Map<String, Object> item = list.get(i);
+			HSSFRow row = sheet.createRow(i + 1);
+			for(int j=0;j<titles.length;j++){
+				String key = contentName[j];
+				String c = CommonUtil.isEmpty(item.get(key)) ? "" : item.get(key).toString();
+				if("createtime".equals(key)){//加入时间
+					c = DateTimeKit.format(DateTimeKit.parse(c,DateTimeKit.DEFAULT_DATETIME_FORMAT), "yyyy-MM-dd HH:mm");
+				}
+				HSSFCell cell = row.createCell(j);
+				cell.setCellValue(c);
+				cell.setCellStyle(styleCenter);
+			}
+		}
+		return wb;
+	}
+
+
+	/**
+	 * 创建sheet
+	 * @param titles
+	 * @param wb
+	 * @param styleCenter
+	 * @return
+	 */
+	private HSSFSheet createHSSFSheet(String[] titles, HSSFWorkbook wb, HSSFCellStyle styleCenter){
+		HSSFSheet sheet = wb.createSheet("sheet1");
+		HSSFRow rowTitle = sheet.createRow(0);
+		HSSFCellStyle styleTitle = wb.createCellStyle();
+		styleTitle.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+		HSSFFont fontTitle = wb.createFont();
+		fontTitle.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD);
+		fontTitle.setFontName("宋体");
+		fontTitle.setFontHeight((short) 200);
+		styleTitle.setFont(fontTitle);
+
+		HSSFCell cellTitle = null;
+		for(int i=0;i<titles.length;i++){
+			cellTitle = rowTitle.createCell(i);
+			cellTitle.setCellValue(titles[i]);
+			cellTitle.setCellStyle(styleTitle);
+		}
+		styleCenter.setAlignment(HSSFCellStyle.ALIGN_CENTER);
+		return sheet;
+	}
 }

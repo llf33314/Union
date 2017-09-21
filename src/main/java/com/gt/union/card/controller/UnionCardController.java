@@ -17,14 +17,19 @@ import com.gt.union.card.vo.UnionCardBindParamVO;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BaseException;
+import com.gt.union.common.exception.DataExportException;
 import com.gt.union.common.response.GTJsonResult;
+import com.gt.union.common.util.ExportUtil;
 import com.gt.union.common.util.RandomKit;
 import com.gt.union.common.util.RedisKeyUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.consume.vo.UnionConsumeParamVO;
+import com.gt.union.main.entity.UnionMain;
+import com.gt.union.main.service.IUnionMainService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
@@ -33,7 +38,10 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -62,6 +70,9 @@ public class UnionCardController {
 	@Autowired
 	private MemberService memberService;
 
+	@Autowired
+	private IUnionMainService unionMainService;
+
 	@Value("${socket.url}")
 	private String socketUrl;
 
@@ -89,6 +100,48 @@ public class UnionCardController {
 		}catch (Exception e){
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+		}
+	}
+
+	@ApiOperation(value = "导出盟员的联盟卡列表", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/export/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public void exportCardList(HttpServletRequest request, HttpServletResponse response
+			, @ApiParam(name="unionId", value = "联盟id", required = true) @PathVariable("unionId") Integer unionId
+			,@ApiParam(name="phone", value = "电话号码", required = false) @RequestParam(name = "phone", required = false) String phone
+			,@ApiParam(name="cardNo", value = "联盟卡号", required = false) @RequestParam(name = "cardNo", required = false) String cardNo) throws IOException {
+		try {
+			BusUser busUser = SessionUtils.getLoginUser(request);
+			Integer busId = busUser.getId();
+			if(busUser.getPid() != null && busUser.getPid() != 0){
+				busId = busUser.getPid();
+			}
+			List<Map<String,Object>> list = unionCardService.listByUnionId(unionId, busId, cardNo, phone);
+			String[] titles = new String[]{"联盟卡号", "联盟卡类型", "手机号","联盟积分","升级时间","有效期"};
+			String[] contentName = new String[]{"cardNo", "type", "phone", "integral", "createtime", "validity"};
+			UnionMain main = unionMainService.getById(unionId);
+			String filename = main.getName() + "的联盟卡列表";
+			HSSFWorkbook wb = unionCardService.exportCardList(titles, contentName, list);
+			ExportUtil.responseExport(response, wb, filename);
+		} catch (BaseException e){
+			response.setContentType("text/html");
+			response.setHeader("Cache-Control", "no-cache");
+			response.setCharacterEncoding("UTF-8");
+			String result = GTJsonResult.instanceErrorMsg("导出失败").toString();
+			PrintWriter writer = response.getWriter();
+			writer.print(result);
+			writer.close();
+			logger.error("",e);
+		} catch (DataExportException e){
+			logger.error("",e);
+		} catch (Exception e) {
+			response.setContentType("text/html");
+			response.setHeader("Cache-Control", "no-cache");
+			response.setCharacterEncoding("UTF-8");
+			String result = GTJsonResult.instanceErrorMsg("导出失败").toString();
+			PrintWriter writer = response.getWriter();
+			writer.print(result);
+			writer.close();
+			logger.error("",e);
 		}
 	}
 
