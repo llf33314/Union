@@ -142,7 +142,7 @@ wx:
     busId: 33
 
 member:
-  url: http://member.yifriend.net/
+  url: http://member.yifriend.net
   signkey: MV8MMFQUMU1HJ6F2GNH40ZFJJ7Q8LNVM
 
 

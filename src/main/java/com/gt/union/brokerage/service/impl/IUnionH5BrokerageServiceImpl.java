@@ -463,7 +463,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 	}
 
 	@Override
-	public String payAllOpportunity(Integer busId, Integer unionId, Double fee, String url) throws Exception{
+	public String payAllOpportunity(Integer busId, Integer unionId, Double fee, String url, Integer memberId) throws Exception{
 		if(busId == null){
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
@@ -484,6 +484,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		data.put("busId",duofenBusId);
 		data.put("appidType",0);//公众号
 		data.put("orderNum",orderNo);
+		data.put("memberId",memberId);
 		data.put("desc", "联盟商机佣金");
 		data.put("returnUrl",unionUrl + url);
 		data.put("notifyUrl",unionUrl + "/unionH5Brokerage/79B4DE7C/paymentAllSuccess/" + encrypt);
@@ -495,7 +496,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 	}
 
 	@Override
-	public String payOpportunity(Integer busId, Integer id, String url) throws Exception{
+	public String payOpportunity(Integer busId, Integer id, String url, Integer memberId) throws Exception{
 		if(busId == null){
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
@@ -522,9 +523,11 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		data.put("busId",duofenBusId);
 		data.put("appidType",0);//公众号
 		data.put("orderNum",orderNo);
+		data.put("memberId",memberId);
 		data.put("desc", "联盟商机佣金");
 		data.put("returnUrl",unionUrl + url);
-		data.put("notifyUrl",unionUrl + "/unionH5Brokerage/79B4DE7C/paymentOneSuccess/" + encrypt);
+		//data.put("notifyUrl",unionUrl + "/unionH5Brokerage/79B4DE7C/paymentOneSuccess/" + encrypt);
+		data.put("notifyUrl","http://union.duofee.com" + "/unionH5Brokerage/79B4DE7C/paymentOneSuccess/" + encrypt);
 		data.put("isSendMessage",0);//不需要推送
 		data.put("payWay",1);//微信支付
 		data.put("sourceType",1);

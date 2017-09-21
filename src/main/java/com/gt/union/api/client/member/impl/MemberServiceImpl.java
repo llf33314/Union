@@ -29,7 +29,7 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public List<Map> listByBusIdAndMemberIds(Integer busId, String memberIds) {
-		String url = memberUrl + "memberAPI/member/findMemberByids";
+		String url = memberUrl + "/memberAPI/member/findMemberByids";
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("busId",busId);
 		param.put("ids",memberIds);
@@ -51,7 +51,7 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public Member getById(Integer memberId) {
-		String url = memberUrl + "memberAPI/member/findByMemberId";
+		String url = memberUrl + "/memberAPI/member/findByMemberId";
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("memberId",memberId);
 		try {

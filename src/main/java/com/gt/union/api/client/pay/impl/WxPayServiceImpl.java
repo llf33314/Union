@@ -118,8 +118,14 @@ public class WxPayServiceImpl implements WxPayService {
 
 	@Override
 	public String wxPay(Map<String, Object> data) {
-        String obj = KeysUtil.encodeBytes(JSON.toJSONBytes(data));
-        return wxmpUrl + "8A5DA52E/payApi/6F6D9AD2/79B4DE7C/payapi.do?obj="+obj;
+        String obj = null;
+        try {
+            KeysUtil keysUtil = new KeysUtil();
+            obj = keysUtil.getEncString(JSON.toJSONString(data));
+        }catch (Exception e){
+
+        }
+        return wxmpUrl + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/payapi.do?obj="+obj;
 	}
 
 
