@@ -76,7 +76,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @return
      * @throws Exception
      */
-    Page pageByMemberIdList(Page page, List<Integer> memberIdList) throws Exception;
+    Page pageByIds(Page page, List<Integer> memberIdList) throws Exception;
 
     /**
      * 根据盟员id和商家id，分页获取所有与该盟员同属一个联盟的盟员信息

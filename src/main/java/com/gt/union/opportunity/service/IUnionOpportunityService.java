@@ -123,6 +123,16 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
     Page pageContactByBusId(Page page, Integer busId, Integer userMemberId) throws Exception;
 
     /**
+     * 根据商家id，获取所有商机佣金支付往来列表信息
+     *
+     * @param busId        {not null} 商家id
+     * @param userMemberId 可选项 商家盟员身份id
+     * @return
+     * @throws Exception
+     */
+    List<Map<String, Object>> listContactByBusId(Integer busId, Integer userMemberId) throws Exception;
+
+    /**
      * 根据推荐方的盟员身份id，获取所有已推荐的，且已支付的商机推荐列表信息
      *
      * @param fromMemberId {not null} 推荐方的盟员身份id
@@ -259,6 +269,7 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
 
 
     //------------------------------------------------ money --------------------------------------------------------
+
     /**
      * 二维码支付佣金  生成支付信息
      *

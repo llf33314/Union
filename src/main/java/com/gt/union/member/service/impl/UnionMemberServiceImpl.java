@@ -153,9 +153,13 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
      * @throws Exception
      */
     @Override
-    public Page pageByMemberIdList(Page page, List<Integer> memberIdList) throws Exception {
+    public Page pageByIds(Page page, List<Integer> memberIdList) throws Exception {
         if (page == null || memberIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        if (ListUtil.isEmpty(memberIdList)) {
+            page.setRecords(new ArrayList());
+            return page;
         }
         EntityWrapper entityWrapper = new EntityWrapper();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)

@@ -213,14 +213,60 @@ public class UnionOpportunityController {
         }
     }
 
+    @ApiOperation(value = "导出：商机佣金支付往来列表信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/contact/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public void exportContactByTgtMemberId(HttpServletRequest request, HttpServletResponse response
+            , @ApiParam(name = "memberId", value = "操作人的盟员身份id")
+                                           @RequestParam(name = "memberId", required = false) Integer memberId) throws IOException {
+        try {
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            Integer busId = busUser.getId();
+            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+                busId = busUser.getPid();
+            }
+            List<Map<String, Object>> resultList = this.unionOpportunityService.listContactByBusId(busId, memberId);
+            String[] titles = new String[]{"所属联盟", "盟员名称", "商机往来金额（元）"};
+            HSSFWorkbook wb = ExportUtil.newHSSFWorkbook(titles);
+            HSSFSheet sheet = wb.getSheetAt(0);
+            if (ListUtil.isNotEmpty(resultList)) {
+                int rowIndex = 1;
+                HSSFCellStyle centerCellStyle = ExportUtil.newHSSFCellStyle(wb, HSSFCellStyle.ALIGN_CENTER);
+                for (Map<String, Object> map : resultList) {
+                    int cellIndex = 0;
+                    HSSFRow row = sheet.createRow(rowIndex++);
+                    HSSFCell tgtUnionNameCell = row.createCell(cellIndex++);
+                    //所属联盟
+                    String tgtUnionName = map.get("tgtUnionName") != null ? map.get("tgtUnionName").toString() : "";
+                    tgtUnionNameCell.setCellValue(tgtUnionName);
+                    tgtUnionNameCell.setCellStyle(centerCellStyle);
+                    //盟员名称
+                    HSSFCell tgtMemberEnterpriseNameCell = row.createCell(cellIndex++);
+                    String tgtMemberEnterpriseName = map.get("tgtMemberEnterpriseName") != null ? map.get("tgtMemberEnterpriseName").toString() : "";
+                    tgtMemberEnterpriseNameCell.setCellValue(tgtMemberEnterpriseName);
+                    tgtMemberEnterpriseNameCell.setCellStyle(centerCellStyle);
+                    //商机往来金额（元）
+                    HSSFCell contactMoneyCell = row.createCell(cellIndex++);
+                    String tgtContactMoney = map.get("contactMoney") != null ? map.get("contactMoney").toString() : "";
+                    contactMoneyCell.setCellValue(tgtContactMoney);
+                    contactMoneyCell.setCellStyle(centerCellStyle);
+                }
+            }
+            String filename = "佣金往来明细";
+            ExportUtil.responseExport(response, wb, filename);
+        } catch (Exception e) {
+            logger.error("", e);
+            this.unionLogErrorService.saveIfNotNull(e);
+            ExportUtil.responseExportError(response);
+        }
+    }
+
     @ApiOperation(value = "查询商机佣金支付往来详情信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/contact/detail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getContactDetailByTgtMemberId(HttpServletRequest request
             , @ApiParam(name = "tgtMemberId", value = "与操作人有商机佣金来往的盟员身份id", required = true)
                                                 @RequestParam(name = "tgtMemberId") Integer tgtMemberId
             , @ApiParam(name = "memberId", value = "操作人的盟员身份id")
-                                                @RequestParam(name = "memberId", required = false) Integer memberId
-    ) {
+                                                @RequestParam(name = "memberId", required = false) Integer memberId) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
             Integer busId = busUser.getId();
@@ -240,7 +286,7 @@ public class UnionOpportunityController {
         }
     }
 
-    @ApiOperation(value = "查询商机佣金支付往来详情信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "导出：商机佣金支付往来详情信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/contact/exportDetail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public void exportContactDetailByTgtMemberId(HttpServletRequest request, HttpServletResponse response
             , @ApiParam(name = "tgtMemberId", value = "与操作人有商机佣金来往的盟员身份id", required = true)
