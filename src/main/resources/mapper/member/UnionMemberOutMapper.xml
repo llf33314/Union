@@ -7,6 +7,7 @@
         <id column="id" property="id"/>
         <result column="createtime" property="createtime"/>
         <result column="del_status" property="delStatus"/>
+        <result column="type" property="type"/>
         <result column="apply_member_id" property="applyMemberId"/>
         <result column="apply_out_reason" property="applyOutReason"/>
         <result column="confirm_out_time" property="confirmOutTime"/>

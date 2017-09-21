@@ -6,7 +6,6 @@ import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.vo.UnionMainVO;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -27,6 +26,16 @@ public interface IUnionMainService extends IService<UnionMain> {
      * @throws Exception
      */
     UnionMain getById(Integer unionId) throws Exception;
+
+    /**
+     * 根据商家id和盟员身份id，获取联盟对象
+     *
+     * @param busId    {not null} 商家id
+     * @param memberId {not null} 盟员身份id
+     * @return
+     * @throws Exception
+     */
+    UnionMain getByBusIdAndMemberId(Integer busId, Integer memberId) throws Exception;
 
     /**
      * 根据商家id，获取联盟成员总数上限

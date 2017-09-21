@@ -153,9 +153,13 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
      * @throws Exception
      */
     @Override
-    public Page pageByMemberIdList(Page page, List<Integer> memberIdList) throws Exception {
+    public Page pageByIds(Page page, List<Integer> memberIdList) throws Exception {
         if (page == null || memberIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        if (ListUtil.isEmpty(memberIdList)) {
+            page.setRecords(new ArrayList());
+            return page;
         }
         EntityWrapper entityWrapper = new EntityWrapper();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
@@ -212,7 +216,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         StringBuilder sbSqlSelect = new StringBuilder(" m.id memberId") //盟员id
                 .append(", m.is_union_owner isUnionOwner") //是否盟主
                 .append(", m.enterprise_name enterpriseName") //盟员名称
-                .append(", DATE_FORMAT(m.createtime, '%Y-%m-%d %T') createtime") //创建时间
+                .append(", DATE_FORMAT(m.createtime, '%Y-%m-%d %T') createTime") //创建时间
                 .append(", mdFromMe.discount discountFromMe") //我给他的折扣
                 .append(", mdToMe.discount discountToMe") //他给我的折扣
                 .append(", m.card_divide_percent cardDividePercent"); //售卡分成比例
@@ -335,13 +339,15 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     /**
      * 根据盟员id和商家id，获取所有与该盟员通属一个联盟的盟员信息
      *
-     * @param memberId {not null} 盟员id
-     * @param busId    {not null} 商家id
+     * @param memberId             {not null} 盟员id
+     * @param busId                {not null} 商家id
+     * @param optionEnterpriseName 可选项 盟员名称
      * @return
      * @throws Exception
      */
     @Override
-    public List<Map<String, Object>> listMapByIdAndBusId(final Integer memberId, final Integer busId) throws Exception {
+    public List<Map<String, Object>> listMapByIdAndBusId(final Integer memberId, final Integer busId
+            , final String optionEnterpriseName) throws Exception {
         if (memberId == null || busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -360,25 +366,28 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         Wrapper wrapper = new Wrapper() {
             @Override
             public String getSqlSegment() {
-                StringBuilder sbSqlSegment = new StringBuilder(" m")
+                StringBuilder sbSqlSegment = new StringBuilder(" m2")
                         .append(" LEFT JOIN t_union_member_discount mdFromMe ON mdFromMe.from_member_id = ").append(memberId)
-                        .append("  AND mdFromMe.to_member_id = m.id")
-                        .append(" LEFT JOIN t_union_member_discount mdToMe ON mdToMe.from_member_id = m.id")
+                        .append("  AND mdFromMe.to_member_id = m2.id")
+                        .append(" LEFT JOIN t_union_member_discount mdToMe ON mdToMe.from_member_id = m2.id")
                         .append("  AND mdToMe.to_member_id = ").append(memberId)
-                        .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND m.status != ").append(MemberConstant.STATUS_APPLY_IN)
-                        .append("  AND m.union_id = ").append(unionMember.getUnionId())
-                        .append(" ORDER BY m.is_union_owner DESC, m.id ASC");
+                        .append(" WHERE m2.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND m2.status != ").append(MemberConstant.STATUS_APPLY_IN)
+                        .append("  AND m2.union_id = ").append(unionMember.getUnionId());
+                if (StringUtil.isNotEmpty(optionEnterpriseName)) {
+                    sbSqlSegment.append(" AND m2.enterprise_name LIKE %").append(optionEnterpriseName).append("%");
+                }
+                sbSqlSegment.append(" ORDER BY m2.is_union_owner DESC, m2.id ASC");
                 return sbSqlSegment.toString();
             }
         };
-        StringBuilder sbSqlSelect = new StringBuilder(" m.id memberId") //盟员id
-                .append(", m.is_union_owner isUnionOwner") //是否盟主
-                .append(", m.enterprise_name enterpriseName") //盟员名称
-                .append(", DATE_FORMAT(m.createtime, '%Y-%m-%d %T') createtime") //创建时间
+        StringBuilder sbSqlSelect = new StringBuilder(" m2.id memberId") //盟员id
+                .append(", m2.is_union_owner isUnionOwner") //是否盟主
+                .append(", m2.enterprise_name enterpriseName") //盟员名称
+                .append(", DATE_FORMAT(m2.createtime, '%Y-%m-%d %T') createTime") //创建时间
                 .append(", mdFromMe.discount discountFromMe") //我给他的折扣
                 .append(", mdToMe.discount discountToMe") //他给我的折扣
-                .append(", m.card_divide_percent cardDividePercent"); //售卡分成比例
+                .append(", m2.card_divide_percent cardDividePercent"); //售卡分成比例
         wrapper.setSqlSelect(sbSqlSelect.toString());
         return this.selectMaps(wrapper);
     }

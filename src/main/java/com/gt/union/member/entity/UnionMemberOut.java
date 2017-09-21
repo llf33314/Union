@@ -37,6 +37,10 @@ public class UnionMemberOut extends Model<UnionMemberOut> {
     @TableField("del_status")
     private Integer delStatus;
     /**
+     * 退盟类型（1：自己申请退盟 2：盟主移出退盟）
+     */
+    private Integer type;
+    /**
      * 申请退盟的盟员id
      */
     @TableId(value = "apply_member_id")
@@ -88,6 +92,14 @@ public class UnionMemberOut extends Model<UnionMemberOut> {
 
     public void setDelStatus(Integer delStatus) {
         this.delStatus = delStatus;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     public String getApplyOutReason() {

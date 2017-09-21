@@ -135,32 +135,37 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         //(3)商机推荐支付往来信息
         List<Map<String, Object>> contactList = new ArrayList<>();
         BigDecimal contactMoneySum = null;
-        if (userMemberId != null) {
-            //(4-1)我推荐的商机
-            List<UnionOpportunity> opportunityFromMeList = this.listPaidByFromMemberIdAndToMemberId(userMemberId, tgtMemberId);
-            if (ListUtil.isNotEmpty(opportunityFromMeList)) {
-                for (UnionOpportunity opportunity : opportunityFromMeList) {
-                    Map<String, Object> contactMap = new HashMap<>();
-                    contactMap.put("lastModifyTime", DateUtil.getDateString(opportunity.getModifytime(), DateUtil.DATETIME_PATTERN)); //最后修改时间
-                    contactMap.put("clientName", opportunity.getClientName()); //客户姓名
-                    contactMap.put("clientPhone", opportunity.getClientPhone()); //客户电话
-                    contactMap.put("brokeragePrice", opportunity.getBrokeragePrice()); //佣金收入：正数
-                    contactList.add(contactMap);
-                    contactMoneySum = BigDecimalUtil.add(contactMoneySum, opportunity.getBrokeragePrice()); //统计佣金往来总额
-                }
+        if (userMemberId == null) {
+            UnionMember userMember = this.unionMemberService.getByBusIdAndUnionId(busId, unionMain.getId());
+            if (userMember == null) {
+                throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
             }
-            //(4-2)我接受的商机
-            List<UnionOpportunity> opportunityToMeList = this.listPaidByFromMemberIdAndToMemberId(tgtMemberId, userMemberId);
-            if (ListUtil.isNotEmpty(opportunityToMeList)) {
-                for (UnionOpportunity opportunity : opportunityToMeList) {
-                    Map<String, Object> contactMap = new HashMap<>();
-                    contactMap.put("lastModifyTime", DateUtil.getDateString(opportunity.getModifytime(), DateUtil.DATETIME_PATTERN)); //最后修改时间
-                    contactMap.put("clientName", opportunity.getClientName()); //客户姓名
-                    contactMap.put("clientPhone", opportunity.getClientPhone()); //客户电话
-                    contactMap.put("brokeragePrice", BigDecimalUtil.subtract(0D, opportunity.getBrokeragePrice()).doubleValue()); //佣金支出：负数
-                    contactList.add(contactMap);
-                    contactMoneySum = BigDecimalUtil.subtract(contactMoneySum, opportunity.getBrokeragePrice()); //统计佣金往来总额
-                }
+            userMemberId = userMember.getId();
+        }
+        //(4-1)我推荐的商机
+        List<UnionOpportunity> opportunityFromMeList = this.listPaidByFromMemberIdAndToMemberId(userMemberId, tgtMemberId);
+        if (ListUtil.isNotEmpty(opportunityFromMeList)) {
+            for (UnionOpportunity opportunity : opportunityFromMeList) {
+                Map<String, Object> contactMap = new HashMap<>();
+                contactMap.put("lastModifyTime", DateUtil.getDateString(opportunity.getModifytime(), DateUtil.DATETIME_PATTERN)); //最后修改时间
+                contactMap.put("clientName", opportunity.getClientName()); //客户姓名
+                contactMap.put("clientPhone", opportunity.getClientPhone()); //客户电话
+                contactMap.put("brokeragePrice", opportunity.getBrokeragePrice()); //佣金收入：正数
+                contactList.add(contactMap);
+                contactMoneySum = BigDecimalUtil.add(contactMoneySum, opportunity.getBrokeragePrice()); //统计佣金往来总额
+            }
+        }
+        //(4-2)我接受的商机
+        List<UnionOpportunity> opportunityToMeList = this.listPaidByFromMemberIdAndToMemberId(tgtMemberId, userMemberId);
+        if (ListUtil.isNotEmpty(opportunityToMeList)) {
+            for (UnionOpportunity opportunity : opportunityToMeList) {
+                Map<String, Object> contactMap = new HashMap<>();
+                contactMap.put("lastModifyTime", DateUtil.getDateString(opportunity.getModifytime(), DateUtil.DATETIME_PATTERN)); //最后修改时间
+                contactMap.put("clientName", opportunity.getClientName()); //客户姓名
+                contactMap.put("clientPhone", opportunity.getClientPhone()); //客户电话
+                contactMap.put("brokeragePrice", BigDecimalUtil.subtract(0D, opportunity.getBrokeragePrice()).doubleValue()); //佣金支出：负数
+                contactList.add(contactMap);
+                contactMoneySum = BigDecimalUtil.subtract(contactMoneySum, opportunity.getBrokeragePrice()); //统计佣金往来总额
             }
         }
         result.put("contactList", contactList);
@@ -593,33 +598,83 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         if (page == null || busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        //(1)获取商家具有读权限的盟员身份id列表
+        //(1)获取所有与商家有过商机推荐支付往来的盟员身份id列表
+        Set<Integer> tgtMemberIdSet = getContactMemberIdSet(busId, userMemberId);
+        //(2)根据目标盟员身份id列表，分页获取目标盟员身份列表信息
+        Page result = this.unionMemberService.pageByIds(page, ListUtil.toList(tgtMemberIdSet));
+        //(3)根据分页后的目标盟员列表信息，统计已支付的商机推荐佣金往来信息
+        List<UnionMember> tgtMemberList = result.getRecords();
+        if (ListUtil.isNotEmpty(tgtMemberList)) {
+            List<Map<String, Object>> records = new ArrayList<>();
+            records = getContactMapList(busId, userMemberId, tgtMemberList);
+            result.setRecords(records);
+        }
+        return result;
+    }
+
+    /**
+     * 根据商家id，获取所有商机佣金支付往来列表信息
+     *
+     * @param busId        {not null} 商家id
+     * @param userMemberId 可选项 商家盟员身份id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public List<Map<String, Object>> listContactByBusId(Integer busId, Integer userMemberId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<Map<String, Object>> result = new ArrayList<>();
+        //(1)获取所有与商家有过商机推荐支付往来的盟员身份id列表
+        Set<Integer> tgtMemberIdSet = getContactMemberIdSet(busId, userMemberId);
+        //(2)根据目标盟员身份id列表，获取所有目标盟员身份列表信息
+        List<UnionMember> tgtMemberList = this.unionMemberService.listByIds(ListUtil.toList(tgtMemberIdSet));
+        if (ListUtil.isNotEmpty(tgtMemberList)) {
+            //(3)获取往来信息
+            result = getContactMapList(busId, userMemberId, tgtMemberList);
+        }
+        return result;
+    }
+
+    /**
+     * 私有方法：获取商家的与其他盟员有佣金往来的盟员身份id列表
+     *
+     * @param busId        {not null} 商家id
+     * @param userMemberId 可选项 商家的盟员身份id
+     * @return
+     * @throws Exception
+     */
+    private Set<Integer> getContactMemberIdSet(Integer busId, Integer userMemberId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
         List<Integer> userMemberIdList = new ArrayList<>();
         if (userMemberId != null) {
-            //(2-1)判断是否具有盟员权限
+            //(1-1)判断是否具有盟员权限
             UnionMember userMember = this.unionMemberService.getByIdAndBusId(userMemberId, busId);
             if (userMember == null) {
                 throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
             }
-            //(2-2)检查联盟有效期
+            //(1-2)检查联盟有效期
             this.unionMainService.checkUnionMainValid(userMember.getUnionId());
-            //(2-3)判断是否具有读权限
+            //(1-3)判断是否具有读权限
             if (!this.unionMemberService.hasReadAuthority(userMember)) {
                 throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
             }
-            //(2-4)添加盟员身份id
+            //(1-4)添加盟员身份id
             userMemberIdList.add(userMemberId);
         } else {
-            //(2-1)获取商家具有读权限的盟员身份列表
+            //(1-1)获取商家具有读权限的盟员身份列表
             List<UnionMember> readMemberList = this.unionMemberService.listReadByBusId(busId);
             if (ListUtil.isNotEmpty(readMemberList)) {
                 for (UnionMember readMember : readMemberList) {
-                    //(2-2)添加盟员身份id
+                    //(1-2)添加盟员身份id
                     userMemberIdList.add(readMember.getBusId());
                 }
             }
         }
-        //(3)获取所有与商家有过商机推荐支付往来的盟员身份id列表
+        //(2)获取所有与商家有过商机推荐支付往来的盟员身份id列表
         Set<Integer> tgtMemberIdSet = new HashSet<>();
         if (ListUtil.isNotEmpty(userMemberIdList)) {
             for (Integer tempUserMemberId : userMemberIdList) {
@@ -639,12 +694,21 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 }
             }
         }
-        //(5)根据目标盟员身份id列表，分页获取目标盟员身份列表信息
-        Page result = this.unionMemberService.pageByMemberIdList(page, ListUtil.toList(tgtMemberIdSet));
-        //(6)根据分页后的目标盟员列表信息，统计已支付的商机推荐佣金往来信息
-        List<UnionMember> tgtMemberList = result.getRecords();
+        return tgtMemberIdSet;
+    }
+
+    /**
+     * 私有方法：获取商家的与其他盟员的佣金往来统计列表信息
+     *
+     * @param busId         {not null} 商家id
+     * @param userMemberId  {not null} 商家的盟员身份id
+     * @param tgtMemberList 可选项 其他与商家有佣金往来的盟员身份列表
+     * @return
+     * @throws Exception
+     */
+    private List<Map<String, Object>> getContactMapList(Integer busId, Integer userMemberId, List<UnionMember> tgtMemberList) throws Exception {
+        List<Map<String, Object>> resultList = new ArrayList<>();
         if (ListUtil.isNotEmpty(tgtMemberList)) {
-            List<Map<String, Object>> records = new ArrayList<>();
             for (UnionMember tgtMember : tgtMemberList) {
                 Map<String, Object> map = new HashMap<>();
                 map.put("tgtMemberId", tgtMember.getId()); //目标盟员id
@@ -665,11 +729,10 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 }
                 BigDecimal contactMoney = BigDecimalUtil.subtract(brokerageIncome, brokerageExpense);
                 map.put("contactMoney", contactMoney.doubleValue()); //往来金额
-                records.add(map);
+                resultList.add(map);
             }
-            result.setRecords(records);
         }
-        return result;
+        return resultList;
     }
 
     /**
@@ -1265,7 +1328,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
      *
      * @param list
      */
-    private void insertBatchByList(List<UnionOpportunity> list, String orderNo) throws Exception{
+    private void insertBatchByList(List<UnionOpportunity> list, String orderNo) throws Exception {
         List<UnionBrokerageIncome> incomes = new ArrayList<UnionBrokerageIncome>();
         List<UnionBrokeragePay> pays = new ArrayList<UnionBrokeragePay>();
 

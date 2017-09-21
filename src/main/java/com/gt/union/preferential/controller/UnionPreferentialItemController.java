@@ -42,19 +42,19 @@ public class UnionPreferentialItemController {
     //-------------------------------------------------- get ----------------------------------------------------------
     //-------------------------------------------------- put ----------------------------------------------------------
 
-    @ApiOperation(value = "提交优惠服务项", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{itemId}/status/2/memberId/{memberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "批量提交优惠服务项", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/batch/status/2/memberId/{memberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String submitByIdAndMemberId(HttpServletRequest request
-            , @ApiParam(name = "itemId", value = "优惠服务项id", required = true)
-                                        @PathVariable("itemId") Integer itemId
             , @ApiParam(name = "memberId", value = "操作者的盟员身份id", required = true)
-                                        @PathVariable("memberId") Integer memberId) {
+                                        @PathVariable("memberId") Integer memberId
+            , @ApiParam(name = "itemIdList", value = "批量提交的优惠服务项id列表", required = true)
+                                            @RequestBody @NotNull List<Integer> itemIdList) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
             if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
                 throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
             }
-            this.unionPreferentialItemService.submitByIdAndBusIdAndMemberId(itemId, busUser.getId(), memberId);
+            this.unionPreferentialItemService.submitBatchByIdsAndBusIdAndMemberId(itemIdList, busUser.getId(), memberId);
             return GTJsonResult.instanceSuccessMsg().toString();
         } catch (BaseException e) {
             logger.error("", e);
@@ -67,19 +67,19 @@ public class UnionPreferentialItemController {
         }
     }
 
-    @ApiOperation(value = "移除优惠服务项", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{itemId}/delStatus/1/memberId/{memberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "批量移除优惠服务项", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/batch/delStatus/1/memberId/{memberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String removeByIdAndMemberId(HttpServletRequest request
-            , @ApiParam(name = "itemId", value = "优惠服务项id", required = true)
-                                        @PathVariable("itemId") Integer itemId
             , @ApiParam(name = "memberId", value = "操作者的盟员身份id", required = true)
-                                        @PathVariable("memberId") Integer memberId) {
+                                        @PathVariable("memberId") Integer memberId
+            , @ApiParam(name = "itemIdList", value = "批量移除的优惠服务项id列表", required = true)
+                                        @RequestBody @NotNull List<Integer> itemIdList) {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
             if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
                 throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
             }
-            this.unionPreferentialItemService.removeByIdAndBusIdAndMemberId(itemId, busUser.getId(), memberId);
+            this.unionPreferentialItemService.removeBatchByIdsAndBusIdAndMemberId(itemIdList, busUser.getId(), memberId);
             return GTJsonResult.instanceSuccessMsg().toString();
         } catch (BaseException e) {
             logger.error("", e);

@@ -90,6 +90,33 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
     }
 
     /**
+     * 根据商家id和盟员身份id，获取联盟对象
+     *
+     * @param busId    {not null} 商家id
+     * @param memberId {not null} 盟员身份id
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public UnionMain getByBusIdAndMemberId(Integer busId, Integer memberId) throws Exception {
+        if (busId == null || memberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        //(1)判断是否具有盟员权限
+        UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        if (unionMember == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
+        }
+        //(2)检查联盟有效期
+        this.checkUnionMainValid(unionMember.getUnionId());
+        //(3)判断是否具有读权限
+        if (!this.unionMemberService.hasReadAuthority(unionMember)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
+        }
+        return this.getById(unionMember.getUnionId());
+    }
+
+    /**
      * 根据商家id，获取联盟成员总数上限
      *
      * @param busId {not null} 商家id

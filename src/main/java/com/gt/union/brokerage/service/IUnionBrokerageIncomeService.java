@@ -43,6 +43,21 @@ public interface IUnionBrokerageIncomeService extends IService<UnionBrokerageInc
             , String optionCardNumber, String optionBeginDate, String optionEndDate) throws Exception;
 
     /**
+     * 根据商家id和盟员身份id，获取同一个联盟下所有的售卡佣金分成列表信息，并根据售卡类型(精确匹配)、卡号(模糊匹配)进行匹配
+     *
+     * @param busId            {not null} 商家id
+     * @param memberId         {not null} 盟员身份id
+     * @param optionCardType   可选项 售卡类型
+     * @param optionCardNumber 可选项 卡号
+     * @param optionBeginDate        可选项 开始日期
+     * @param optionEndDate          可选项 结束日期
+     * @return
+     * @throws Exception
+     */
+    List<Map<String, Object>> listCardMapByBusIdAndMemberId(Integer busId, Integer memberId, Integer optionCardType
+            , String optionCardNumber, String optionBeginDate, String optionEndDate) throws Exception;
+
+    /**
      * 获取财务可提现佣金详情列表
      *
      * @param busId 商家id

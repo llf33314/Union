@@ -59,24 +59,24 @@ public interface IUnionPreferentialItemService extends IService<UnionPreferentia
     //------------------------------------------------- update --------------------------------------------------------
 
     /**
-     * 根据优惠服务项id、商家id和盟员身份id，提交优惠服务项
+     * 根据优惠服务项id列表、商家id和盟员身份id，提交优惠服务项
      *
-     * @param itemId   {not null} 优惠服务项id
-     * @param busId    {not null} 商家id
-     * @param memberId {not null} 盟员身份id
+     * @param itemIdList {not null} 优惠服务项id列表
+     * @param busId      {not null} 商家id
+     * @param memberId   {not null} 盟员身份id
      * @throws Exception
      */
-    void submitByIdAndBusIdAndMemberId(Integer itemId, Integer busId, Integer memberId) throws Exception;
+    void submitBatchByIdsAndBusIdAndMemberId(List<Integer> itemIdList, Integer busId, Integer memberId) throws Exception;
 
     /**
-     * 根据优惠服务项id、商家id和盟员身份id，移除优惠服务项
+     * 根据优惠服务项id列表、商家id和盟员身份id，批量移除优惠服务项
      *
-     * @param itemId   {not null} 优惠服务项id
-     * @param busId    {not null} 商家id
-     * @param memberId {not null} 盟员身份id
+     * @param itemIdList {not null} 优惠服务项id列表
+     * @param busId      {not null} 商家id
+     * @param memberId   {not null} 盟员身份id
      * @throws Exception
      */
-    void removeByIdAndBusIdAndMemberId(Integer itemId, Integer busId, Integer memberId) throws Exception;
+    void removeBatchByIdsAndBusIdAndMemberId(List<Integer> itemIdList, Integer busId, Integer memberId) throws Exception;
 
     /**
      * 根据商家id、盟员身份id、批量操作的优惠服务项id和是否审核通过，批量审核优惠服务项

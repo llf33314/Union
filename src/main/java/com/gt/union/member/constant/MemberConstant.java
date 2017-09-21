@@ -43,4 +43,14 @@ public interface MemberConstant {
      * 加盟类型：推荐
      */
     int JOIN_TYPE_RECOMMEND = 2;
+
+    /**
+     * 退盟类型：自己申请退盟
+     */
+    int OUT_TYPE_APPLY = 1;
+
+    /**
+     * 退盟类型：盟主移出退盟
+     */
+    int OUT_TYPE_REMOVE = 2;
 }
