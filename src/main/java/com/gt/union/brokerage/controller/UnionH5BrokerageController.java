@@ -413,7 +413,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 
 	@ApiOperation(value = "获取一键支付佣金金额", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/allPay", method=RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public String getPayAll(HttpServletRequest request, HttpServletResponse response, @ApiParam(name = "unionId", value = "联盟id", required = false) @PathVariable(value = "unionId", required = false) Integer unionId) {
+	public String getPayAll(HttpServletRequest request, HttpServletResponse response, @ApiParam(name = "unionId", value = "联盟id", required = false) @RequestParam(value = "unionId", required = false) Integer unionId) {
 		try {
 			BusUser user = SessionUtils.getLoginUser(request);
 			double money = unionH5BrokerageService.getPayAllOpportunitySum(user.getId(), unionId);
@@ -429,8 +429,8 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 
 	@ApiOperation(value = "一键支付佣金", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/allPay", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public String payAll(HttpServletRequest request, HttpServletResponse response, @ApiParam(name = "unionId", value = "联盟id", required = false) @PathVariable(value = "unionId", required = false) Integer unionId
-							,@ApiParam(name = "fee", value = "支付金额", required = true) @PathVariable(value = "fee", required = true) Double fee
+	public String payAll(HttpServletRequest request, HttpServletResponse response, @ApiParam(name = "unionId", value = "联盟id", required = false) @RequestParam(value = "unionId", required = false) Integer unionId
+							,@ApiParam(name = "fee", value = "支付金额", required = true) @RequestParam(value = "fee", required = true) Double fee
 							,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) {
 		try {
 			BusUser user = SessionUtils.getLoginUser(request);
