@@ -128,7 +128,7 @@ public class BusUserServiceImpl implements IBusUserService {
         if (CommonUtil.toInteger(result.get("code")) != 0) {
             return null;
         }
-        String qrurl = JSONObject.parseObject(result.get("data").toString(), String.class);
+        String qrurl = result.get("data").toString();
         if (CommonUtil.isNotEmpty(qrurl)) {
             redisCacheUtil.set(codeKey, JSON.toJSONString(qrurl));
         }
