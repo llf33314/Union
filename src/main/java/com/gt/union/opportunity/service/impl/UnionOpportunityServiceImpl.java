@@ -283,7 +283,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                             .append("    SELECT bi.id FROM t_union_brokerage_income bi")
                             .append("    WHERE bi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
                             .append("      AND bi.type = ").append(BrokerageConstant.SOURCE_TYPE_OPPORTUNITY)
-                            .append("      AND bi.opportunity_id = t_union_opportunity.id")
+                            .append("      AND bi.opportunity_id = o.id")
                             .append("  )");
                     return sbSqlSegment.toString();
                 }
@@ -305,7 +305,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                             .append("    SELECT bi.id FROM t_union_brokerage_income bi")
                             .append("    WHERE bi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
                             .append("      AND bi.type = ").append(BrokerageConstant.SOURCE_TYPE_OPPORTUNITY)
-                            .append("      AND bi.opportunity_id = t_union_opportunity.id")
+                            .append("      AND bi.opportunity_id = o.id")
                             .append("  )");
                     return sbSqlSegment.toString();
                 }
