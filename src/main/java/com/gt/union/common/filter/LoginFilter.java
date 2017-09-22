@@ -79,7 +79,7 @@ public class LoginFilter implements Filter {
 		}else if(url.indexOf("unionH5Brokerage") > -1){
 			if (busUser == null) {
 				response.setCharacterEncoding("UTF-8");
-				response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", PropertiesUtil.getUnionUrl()+"/unionH5Brokerage/login")));
+				response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", "/toLogin")));
 				return;
 			}else {
 				chain.doFilter(request, response);
