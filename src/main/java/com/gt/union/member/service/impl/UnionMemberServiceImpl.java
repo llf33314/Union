@@ -207,7 +207,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                         .append("  AND m.status != ").append(MemberConstant.STATUS_APPLY_IN)
                         .append("  AND m.union_id = ").append(unionMember.getUnionId());
                 if (StringUtil.isNotEmpty(optionEnterpriseName)) {
-                    sbSqlSegment.append(" AND m.enterprise_name LIKE %").append(optionEnterpriseName).append("%");
+                    sbSqlSegment.append(" AND m.enterprise_name LIKE '%").append(optionEnterpriseName).append("%'");
                 }
                 sbSqlSegment.append(" ORDER BY m.is_union_owner DESC, m.id ASC");
                 return sbSqlSegment.toString();
@@ -375,7 +375,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                         .append("  AND m2.status != ").append(MemberConstant.STATUS_APPLY_IN)
                         .append("  AND m2.union_id = ").append(unionMember.getUnionId());
                 if (StringUtil.isNotEmpty(optionEnterpriseName)) {
-                    sbSqlSegment.append(" AND m2.enterprise_name LIKE %").append(optionEnterpriseName).append("%");
+                    sbSqlSegment.append(" AND m2.enterprise_name LIKE '%").append(optionEnterpriseName).append("%'");
                 }
                 sbSqlSegment.append(" ORDER BY m2.is_union_owner DESC, m2.id ASC");
                 return sbSqlSegment.toString();
