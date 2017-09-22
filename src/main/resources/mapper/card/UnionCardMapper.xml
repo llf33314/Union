@@ -11,7 +11,7 @@
 		<result column="member_id" property="memberId" />
 		<result column="validity" property="validity" />
 		<result column="type" property="type" />
-		<result column="is_old" property="isOld" />
+		<result column="is_charge" property="isCharge" />
 	</resultMap>
 
 
@@ -57,6 +57,24 @@
 		</foreach>
 		AND del_status = 0 AND validity &gt; NOW()
 
+	</select>
+
+	<select id="countByMemberIdsAndType" resultType="java.lang.Integer">
+		SELECT count(id) from t_union_card WHERE EXISTS (SELECT id from t_union_card_root r WHERE r.phone = #{phone} AND r.id = t_union_card.root_id AND del_status = 0)
+		AND member_id in
+		<foreach collection="members" item="member" open="(" close=")"
+				 separator=",">
+			#{member.id}
+		</foreach>
+		<if test="type != null" >
+			AND type = #{type}
+		</if>
+		<if test="isCharge != null" >
+			AND is_charge = #{isCharge}
+		</if>
+		<if test="memberId != null" >
+			AND member_id != #{memberId}
+		</if>
 	</select>
 
 

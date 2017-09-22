@@ -1,5 +1,6 @@
 package com.gt.union.opportunity.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
@@ -456,16 +457,28 @@ public class UnionOpportunityController {
     }
 
     //------------------------------------------------- money ----------------------------------------------------------
-    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{Encrypt}/{only}", method = RequestMethod.GET)
-    public void payOpportunitySuccess(HttpServletRequest request, HttpServletResponse response
+    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{Encrypt}/{only}", method = RequestMethod.POST)
+    public String payOpportunitySuccess(HttpServletRequest request, HttpServletResponse response
             , @PathVariable(name = "Encrypt", required = true) String encrypt
             , @PathVariable(name = "only", required = true) String only) {
+        Map<String,Object> data = new HashMap<String,Object>();
         try {
             logger.info("商机佣金支付成功，Encrypt------------------" + encrypt);
             logger.info("商机佣金支付成功，only------------------" + only);
             unionOpportunityService.payOpportunitySuccess(encrypt, only);
+            data.put("code",0);
+            data.put("msg","成功");
+            return JSON.toJSONString(data);
+        } catch (BaseException e) {
+            logger.error("商机佣金支付成功后，产生错误：" + e);
+            data.put("code",-1);
+            data.put("msg",e.getErrorMsg());
+            return JSON.toJSONString(data);
         } catch (Exception e) {
             logger.error("商机佣金支付成功后，产生错误：" + e);
+            data.put("code",-1);
+            data.put("msg","失败");
+            return JSON.toJSONString(data);
         }
     }
 

@@ -33,13 +33,11 @@ import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.entity.UnionMemberDiscount;
 import com.gt.union.member.service.IUnionMemberDiscountService;
 import com.gt.union.member.service.IUnionMemberService;
-import io.swagger.models.auth.In;
 import org.apache.poi.hssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -478,7 +476,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 
     /**
      * 判断是否还可以升级联盟卡
-     * @param members
+     * @param members  我的盟员列表
      * @param list
      * @throws Exception
      */
@@ -491,88 +489,64 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             blackMap.put(member.getUnionId(),blackCharge);
             redMap.put(member.getUnionId(),redCharge);
         }
-        //定义没有升级过联盟卡的盟员id列表
-        if(ListUtil.isEmpty(list)){//在该盟员下没有有效的联盟卡
-            Iterator<UnionMember> im = members.iterator();
-            while (im.hasNext()){
-                UnionMember member = im.next();
-                UnionMainCharge blackCharge = blackMap.get(member.getUnionId());
-                if(blackCharge.getIsCharge() == MainConstant.CHARGE_IS_CHARGE_YES ){//黑卡收费
-                    List<UnionMember> memberList = unionMemberService.listWriteByUnionId(member.getUnionId());
-                    List<UnionCard> cards = this.listByPhoneAndMembers(phone,memberList);//该手机号在其他盟员升级的联盟卡列表
-                    if(ListUtil.isEmpty(cards)){//如果在其他盟员有升级过联盟卡，则可以不收费升级
-                        if(!isUnionCardChargePercent(member.getUnionId())){//是否设置了售卡佣金比例
-                            im.remove();
-                        }
+        Iterator<UnionMember> im = members.iterator();
+        while (im.hasNext()){
+            UnionMember member = im.next();
+            List<UnionMember> memberList = unionMemberService.listWriteByUnionId(member.getUnionId());//我加入该联盟的盟员列表
+            List<UnionCard> cards = this.listByPhoneAndMembers(phone,memberList);//该手机号在其他盟员升级的联盟卡列表
+            UnionMainCharge blackCharge = blackMap.get(member.getUnionId());
+            UnionMainCharge redCharge = redMap.get(member.getUnionId());
+            if(ListUtil.isEmpty(cards)){//没有升级过联盟卡，则需要判断售卡佣金比例
+                if(blackCharge.getIsCharge() == MainConstant.CHARGE_IS_CHARGE_YES ) {//黑卡收费
+                    if(!isUnionCardChargePercent(member.getUnionId())){//是否设置了售卡佣金比例
+                        im.remove();
                     }
                 }
-            }
-        }else {
-            List<Integer> memberIds = new ArrayList<Integer>();
-            List<UnionCard> unionCards = new ArrayList<UnionCard>();
-            for(UnionCard card : list){
-                unionCards.add(card);
-            }
-            //在该盟员上升级过联盟卡
-            Iterator<UnionMember> im = members.iterator();
-            while (im.hasNext()){
-                boolean flag = true;
-                UnionMember member = im.next();
-                Iterator<UnionCard> it = unionCards.iterator();
-                while (it.hasNext()){
-                    UnionCard card = it.next();
-                    //在该盟员下升级的联盟卡
-                    if(member.getId().equals(card.getMemberId())){
-                        flag = false;
+            }else {//升级过联盟卡
+                boolean flag = true;//标识设售卡佣金 false：需要设售卡佣金  true：不需要设售卡佣金
+                int i = 0;//是否在本盟员升级了联盟卡  1：是 0：否
+                for(UnionCard card : cards){
+                    if(card.getMemberId().equals(member.getId())) {//在本盟员下升级的
+                        i = 1;
                         if(card.getType() == CardConstant.TYPE_BLACK){//黑卡
-                            //如果是免费的，则判断旧会员是否需要收费，需要，则可以升级
-                            if(card.getIsOld() == CardConstant.IS_OLD_YES){
-                                UnionMainCharge blackCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(member.getUnionId(), MainConstant.CHARGE_TYPE_BLACK, MainConstant.CHARGE_IS_AVAILABLE_YES);
-                                //旧会员不收费，且没有开启红卡，不可升级
-                                UnionMainCharge redCharge = redMap.get(member.getUnionId());
-                                if((CommonUtil.isEmpty(blackCharge.getIsOldCharge()) || blackCharge.getIsOldCharge() == MainConstant.CHARGE_OLD_IS_NO) && redCharge == null){//没有开启了红卡，不可升级
+                            if(CommonUtil.isNotEmpty(card.getIsCharge()) && card.getIsCharge() == CardConstant.IS_CHARGE_YES){//如果是收费升级了黑卡,判断是否开启了红卡，开启了可以升级上
+                              if(redCharge == null){//未开启红卡，不可继续升级
+                                  flag = true;
+                                  im.remove();
+                                  break;
+                              }else {//如果开启了红卡，则要判断售卡佣金比例
+                                  int count = unionCardMapper.countByMemberIdsAndType(memberList, member.getId(), CardConstant.TYPE_RED, card.getIsCharge(), phone);
+                                  if(count == 0){//没有在其他盟员升级红卡
+                                      flag = false;//标识需要设售卡佣金
+                                  }
+                              }
+                            } else{//如果升级的是免费卡
+                                //判断旧会员不需要收费且没有开启红卡，不可以继续升级
+                                if(blackCharge.getIsOldCharge() == MainConstant.CHARGE_OLD_IS_NO && redCharge == null){
+                                    flag = true;
                                     im.remove();
                                     break;
-                                }
-                            }else {
-                                //如果是收费的黑卡，判断是否有开启红卡，开启了则可以升级
-                                UnionMainCharge redCharge = redMap.get(member.getUnionId());
-                                if(redCharge == null){//没有开启了红卡，不可升级
-                                    im.remove();
-                                    break;
+                                }else if(blackCharge.getIsOldCharge() == MainConstant.CHARGE_OLD_IS_YES && redCharge != null){//开启了旧会员收费获取开启了红卡
+                                    flag = false;//标识需要设售卡佣金
                                 }
                             }
-                        }else if(card.getType() == CardConstant.TYPE_RED){//升级的是红卡就不能再升了
+                        } else if(card.getType() == CardConstant.TYPE_RED){//红卡 //不可以再升级了
+                            flag = true;
                             im.remove();
                             break;
                         }
-                        it.remove();//不需要再和该卡判断
                     }
                 }
-                //没有在该盟员升级联盟卡
-                if(flag){
-                    memberIds.add(member.getId());
-                }
-            }
-            Iterator<UnionMember> itM = members.iterator();
-            while (itM.hasNext()){
-                UnionMember member = itM.next();
-                for(Integer memberId : memberIds){//没有在该盟员升级的
-                    if(member.getId().equals(memberId)){
-                        UnionMainCharge blackCharge = blackMap.get(member.getUnionId());
-                        UnionMainCharge redCharge = redMap.get(member.getUnionId());
-                        if(blackCharge.getIsCharge() == MainConstant.CHARGE_IS_CHARGE_YES || redCharge != null){//黑卡收费或红卡开启
-                            List<UnionMember> memberList = unionMemberService.listWriteByUnionId(member.getUnionId());
-                            List<UnionCard> cards = this.listByPhoneAndMembers(phone,memberList);//该手机号在其他盟员升级的联盟卡列表
-                            if(ListUtil.isEmpty(cards)){//如果在其他盟员有升级过联盟卡，则可以不收费升级
-                                if(!isUnionCardChargePercent(member.getUnionId())){//是否设置了售卡佣金比例
-                                    im.remove();
-                                }
-                            }
+                if(i == 1){
+                    if(!flag){//在我的盟员下继续升级，判断需要设置佣金比例
+                        Boolean percent = isUnionCardChargePercent(member.getUnionId());
+                        if(!percent){//没有设置售卡佣金比例
+                            im.remove();
+                            break;
                         }
-                        //找到未升级的盟员，不需要再找
-                        break;
                     }
+                }else if(i == 0){
+
                 }
             }
         }
@@ -717,7 +691,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         }else {//在该盟员下升级
             if(card.getType() == CardConstant.TYPE_BLACK){//黑卡
                 //如果是免费的，则判断旧会员是否需要收费，需要，则可以升级
-                if(card.getIsOld() == CardConstant.IS_OLD_YES){
+                if(card.getIsCharge() == CardConstant.IS_CHARGE_NO){
                     UnionMainCharge blackCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_BLACK, MainConstant.CHARGE_IS_AVAILABLE_YES);
                     if(blackCharge.getIsOldCharge() == MainConstant.CHARGE_OLD_IS_YES){//旧会员收费
                         Map<String, Object> black = new HashMap<String, Object>();
@@ -795,15 +769,15 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
      * @param cardType
      * @param memberId
      * @param validity
-     * @param isOld
+     * @param isCharge
      * @return
      */
-    private UnionCard createUnionCard(Integer rootId, Integer cardType, Integer memberId, Date validity, Integer isOld){
+    private UnionCard createUnionCard(Integer rootId, Integer cardType, Integer memberId, Date validity, Integer isCharge){
         UnionCard card = new UnionCard();
         card.setCreatetime(new Date());
         card.setType(cardType);
         card.setDelStatus(CommonConstant.DEL_STATUS_NO);
-        card.setIsOld(isOld);
+        card.setIsCharge(isCharge);
         card.setMemberId(memberId);
         card.setValidity(validity);
         card.setRootId(rootId);

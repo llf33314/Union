@@ -1,8 +1,10 @@
 package com.gt.union.api.client.pay.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.gt.api.bean.session.WxPublicUsers;
 import com.gt.api.util.HttpClienUtils;
+import com.gt.api.util.KeysUtil;
 import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.brokerage.entity.UnionBrokerageWithdrawal;
@@ -106,15 +108,25 @@ public class WxPayServiceImpl implements WxPayService {
             withdrawal.setDelStatus(CommonConstant.DEL_STATUS_NO);
             withdrawal.setMoney(fee);
             withdrawal.setThirdMemberId(memberId);
-            if(CommonUtil.isNotEmpty(verifierId)){
-                withdrawal.setVerifierId(verifierId);
-            }
+            withdrawal.setVerifierId(verifierId);
             unionBrokerageWithdrawalService.insert(withdrawal);
         }catch (Exception e){
             return 0;
         }
         return 1;
     }
+
+	@Override
+	public String wxPay(Map<String, Object> data) {
+        String obj = null;
+        try {
+            KeysUtil keysUtil = new KeysUtil();
+            obj = keysUtil.getEncString(JSON.toJSONString(data));
+        }catch (Exception e){
+
+        }
+        return wxmpUrl + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/payapi.do?obj="+obj;
+	}
 
 
 }

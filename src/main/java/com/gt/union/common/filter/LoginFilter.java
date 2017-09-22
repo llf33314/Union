@@ -100,6 +100,7 @@ public class LoginFilter implements Filter {
 			chain.doFilter(request, response);
 //			response.setCharacterEncoding("UTF-8");
 //			response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录",PropertiesUtil.getWxmpUrl()+"/user/tologin.do")));
+//			return;
 		}else {
 			// 已经登陆,继续此次请求
 			chain.doFilter(request, response);

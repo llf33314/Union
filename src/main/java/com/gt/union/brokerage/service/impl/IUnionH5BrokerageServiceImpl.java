@@ -1,19 +1,23 @@
 package com.gt.union.brokerage.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.sign.SignBean;
-import com.gt.api.dto.ResponseUtils;
 import com.gt.api.util.SessionUtils;
 import com.gt.api.util.sign.SignHttpUtils;
 import com.gt.api.util.sign.SignUtils;
+import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.api.client.user.IBusUserService;
+import com.gt.union.brokerage.constant.BrokerageConstant;
+import com.gt.union.brokerage.entity.UnionBrokerageIncome;
+import com.gt.union.brokerage.entity.UnionBrokeragePay;
 import com.gt.union.brokerage.mapper.UnionH5BrokerageMapper;
 import com.gt.union.brokerage.service.IUnionBrokerageIncomeService;
+import com.gt.union.brokerage.service.IUnionBrokeragePayService;
 import com.gt.union.brokerage.service.IUnionBrokerageWithdrawalService;
 import com.gt.union.brokerage.service.IUnionH5BrokerageService;
 import com.gt.union.common.constant.CommonConstant;
@@ -33,12 +37,11 @@ import com.gt.union.verifier.service.IUnionVerifierService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
+import java.net.URLEncoder;
+import java.util.*;
 
 /**
  * Created by Administrator on 2017/9/18 0018.
@@ -57,6 +60,12 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 
 	@Value("${wxmp.company}")
 	private String company;
+
+	@Value("${wx.duofen.busId}")
+	private Integer duofenBusId;
+
+	@Value("${union.url}")
+	private String unionUrl;
 
 	@Autowired
 	private SmsService smsService;
@@ -84,6 +93,15 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 
 	@Autowired
 	private IUnionMainService unionMainService;
+
+	@Autowired
+	private WxPayService payService;
+
+	@Autowired
+	private IUnionBrokeragePayService unionBrokeragePayService;
+
+	@Value("${union.encryptKey}")
+	private String encryptKey;
 
 	@Override
 	public void checkLogin(Integer type, String username, String userpwd, String phone, String code, HttpServletRequest request) throws Exception{
@@ -433,6 +451,155 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		unionOpportunity.setId(opportunity.getId());
 		unionOpportunity.setIsUrgeBrokerage(OpportunityConstant.URGE_YES);
 		unionOpportunityService.updateById(unionOpportunity);
+	}
+
+	@Override
+	public double getPayAllOpportunitySum(Integer busId, Integer unionId) throws Exception{
+		if(busId == null){
+			throw new ParamException(CommonConstant.PARAM_ERROR);
+		}
+		double money = this.getSumUnPayUnionBrokerage(unionId,busId);
+		return money;
+	}
+
+	@Override
+	public String payAllOpportunity(Integer busId, Integer unionId, Double fee, String url, Integer memberId) throws Exception{
+		if(busId == null){
+			throw new ParamException(CommonConstant.PARAM_ERROR);
+		}
+		double money = this.getSumUnPayUnionBrokerage(unionId,busId);
+		if (money <= 0 || fee.doubleValue() <= 0) {
+			throw new BusinessException("支付金额有误");
+		}
+		if(money != fee.doubleValue()){
+			throw new BusinessException("支付金额有误");
+		}
+		String orderNo = OpportunityConstant.ORDER_PREFIX + System.currentTimeMillis();
+		List<UnionOpportunity> list = this.listAllUnPayUnionBrokerage(busId,unionId);
+		String encrypt = EncryptUtil.encrypt(encryptKey, JSON.toJSONString(list));
+		encrypt = URLEncoder.encode(encrypt, "UTF-8");
+		Map<String,Object> data = new HashMap<String,Object>();
+		data.put("totalFee",money);
+		data.put("model", ConfigConstant.ENTERPRISE_PAY_MODEL);
+		data.put("busId",duofenBusId);
+		data.put("appidType",0);//公众号
+		data.put("orderNum",orderNo);
+		data.put("memberId",memberId);
+		data.put("desc", "联盟商机佣金");
+		data.put("returnUrl",unionUrl + url);
+		data.put("notifyUrl",unionUrl + "/unionH5Brokerage/79B4DE7C/paymentAllSuccess/" + encrypt);
+		data.put("isSendMessage",0);//不需要推送
+		data.put("payWay",1);//微信支付
+		data.put("sourceType",1);
+		String payUrl = payService.wxPay(data);
+		return payUrl;
+	}
+
+	@Override
+	public String payOpportunity(Integer busId, Integer id, String url, Integer memberId) throws Exception{
+		if(busId == null){
+			throw new ParamException(CommonConstant.PARAM_ERROR);
+		}
+		UnionOpportunity opportunity = unionOpportunityService.getById(id);
+		if(opportunity == null){
+			throw new BusinessException("该商机不存在");
+		}
+		if(opportunity.getIsAccept() != OpportunityConstant.ACCEPT_YES){
+			throw new BusinessException("该商机未受理");
+		}
+		UnionBrokerageIncome income = unionBrokerageIncomeService.getByUnionOpportunityId(id);
+		if(income != null){
+			throw new BusinessException("该商机已支付");
+		}
+		if(opportunity.getBrokeragePrice().doubleValue() <= 0){
+			throw new BusinessException("支付金额有误");
+		}
+		String orderNo = OpportunityConstant.ORDER_PREFIX + System.currentTimeMillis();
+		String encrypt = EncryptUtil.encrypt(encryptKey, String.valueOf(id));
+		encrypt = URLEncoder.encode(encrypt, "UTF-8");
+		Map<String,Object> data = new HashMap<String,Object>();
+		data.put("totalFee",opportunity.getBrokeragePrice());
+		data.put("model", ConfigConstant.ENTERPRISE_PAY_MODEL);
+		data.put("busId",duofenBusId);
+		data.put("appidType",0);//公众号
+		data.put("orderNum",orderNo);
+		data.put("memberId",memberId);
+		data.put("desc", "联盟商机佣金");
+		data.put("returnUrl",unionUrl + url);
+		//data.put("notifyUrl",unionUrl + "/unionH5Brokerage/79B4DE7C/paymentOneSuccess/" + encrypt);
+		data.put("notifyUrl","http://union.duofee.com" + "/unionH5Brokerage/79B4DE7C/paymentOneSuccess/" + encrypt);
+		data.put("isSendMessage",0);//不需要推送
+		data.put("payWay",1);//微信支付
+		data.put("sourceType",1);
+		String payUrl = payService.wxPay(data);
+		return payUrl;
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void paymentOneOpportunitySuccess(String encrypt, String orderNo, Integer verifierId) throws Exception{
+		String id = EncryptUtil.decrypt(encryptKey, encrypt);
+		Integer oppId = Integer.parseInt(id);
+		UnionOpportunity opportunity = unionOpportunityService.getById(oppId);
+		if(opportunity == null){
+			throw new BusinessException("商机不存在");
+		}
+		if(opportunity.getIsAccept() != OpportunityConstant.ACCEPT_YES){
+			throw new BusinessException("该商机未受理");
+		}
+		UnionBrokerageIncome brokerageIncome = unionBrokerageIncomeService.getByUnionOpportunityId(oppId);
+		if(brokerageIncome != null){
+			throw new BusinessException("该商机已支付");
+		}
+		UnionMember fromMember = unionMemberService.getById(opportunity.getFromMemberId());
+		UnionMember toMember = unionMemberService.getById(opportunity.getToMemberId());
+		//商家佣金收入
+		UnionBrokerageIncome income = new UnionBrokerageIncome();
+		income.setBusId(fromMember.getBusId());
+		income.setMoney(opportunity.getBrokeragePrice());
+		income.setOpportunityId(oppId);
+		income.setDelStatus(CommonConstant.DEL_STATUS_NO);
+		income.setCreatetime(new Date());
+		income.setType(BrokerageConstant.SOURCE_TYPE_OPPORTUNITY);
+		unionBrokerageIncomeService.insert(income);
+
+		//收支明细
+		UnionBrokeragePay pay = new UnionBrokeragePay();
+		pay.setToBusId(fromMember.getBusId());
+		pay.setFromBusId(toMember.getBusId());
+		pay.setDelStatus(CommonConstant.DEL_STATUS_NO);
+		pay.setCreatetime(new Date());
+		pay.setOrderNo(orderNo);
+		pay.setStatus(2);//支付成功
+		pay.setMoney(opportunity.getBrokeragePrice());
+		pay.setType(1);//微信支付
+		pay.setOpportunityId(opportunity.getId());
+		pay.setVerifierId(verifierId);
+		unionBrokeragePayService.insert(pay);
+	}
+
+	@Override
+	@Transactional(rollbackFor = Exception.class)
+	public void payAllOpportunitySuccess(String encrypt, String orderNo, Integer verifierId) throws Exception{
+		String data = EncryptUtil.decrypt(encryptKey, encrypt);
+		List<UnionOpportunity> list =JSONArray.parseArray(data,UnionOpportunity.class);
+		unionOpportunityService.insertBatchByList(list,orderNo,verifierId);
+	}
+
+	@Override
+	public List<UnionOpportunity> listAllUnPayUnionBrokerage(Integer busId, Integer unionId) throws Exception{
+		List<UnionMember> members = unionMemberService.listWriteWithValidUnionByBusId(busId);
+		if(unionId != null){
+			Iterator<UnionMember> it = members.iterator();
+			while (it.hasNext()){
+				UnionMember member = it.next();
+				if(!member.getUnionId().equals(unionId)){
+					it.remove();
+				}
+			}
+		}
+		List<UnionOpportunity> list = unionH5BrokerageMapper.listAllUnPayUnionBrokerage(members);
+		return list;
 	}
 
 

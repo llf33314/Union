@@ -32,6 +32,7 @@ import com.gt.union.opportunity.mapper.UnionOpportunityMapper;
 import com.gt.union.opportunity.service.IUnionOpportunityBrokerageRatioService;
 import com.gt.union.opportunity.service.IUnionOpportunityService;
 import com.gt.union.opportunity.vo.UnionOpportunityVO;
+import io.swagger.models.auth.In;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -1318,7 +1319,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         List<UnionOpportunity> list = this.selectList(wrapper);
         String orderNo = result.get("orderNum").toString();
         //插入佣金收入列表
-        insertBatchByList(list, orderNo);
+        this.insertBatchByList(list, orderNo, null);
         redisCacheUtil.remove(paramKey);
         redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_003, 60l);//支付成功
     }
@@ -1328,7 +1329,8 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
      *
      * @param list
      */
-    private void insertBatchByList(List<UnionOpportunity> list, String orderNo) throws Exception {
+    @Override
+    public void insertBatchByList(List<UnionOpportunity> list, String orderNo, Integer verifierId) throws Exception{
         List<UnionBrokerageIncome> incomes = new ArrayList<UnionBrokerageIncome>();
         List<UnionBrokeragePay> pays = new ArrayList<UnionBrokeragePay>();
 
@@ -1355,6 +1357,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
             pay.setOpportunityId(opportunity.getId());
             pay.setStatus(BrokerageConstant.BROKERAGE_PAY_STATUS_YES);
             pay.setType(BrokerageConstant.BROKERAGE_PAY_TYPE_WX);
+            pay.setVerifierId(verifierId);
             pays.add(pay);
         }
         unionBrokerageIncomeService.insertBatch(incomes);

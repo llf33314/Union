@@ -37,12 +37,12 @@ public interface CardConstant {
     /**
      * 免费会员
      */
-    int IS_OLD_YES = 1;
+    int IS_CHARGE_NO = 0;
 
     /**
      * 付费会员
      */
-    int IS_OLD_NO = 0;
+    int IS_CHARGE_YES = 1;
 
     /**
      * 免费卡的有效期

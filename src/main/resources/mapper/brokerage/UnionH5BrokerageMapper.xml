@@ -138,5 +138,19 @@
 
     </select>
 
+    <!--查询未支付的佣金列表 不分页-->
+    <select id="listAllUnPayUnionBrokerage" resultType="com.gt.union.opportunity.entity.UnionOpportunity">
+        SELECT o.* from t_union_opportunity o LEFT JOIN (SELECT id,union_id from t_union_member WHERE id in
+        <foreach collection="members" item="member" open="(" close=")"
+                 separator=",">
+            #{member.unionId}
+        </foreach>
+        ) m on o.to_member_id = m.id
+        LEFT JOIN t_union_member m2 on m2.id = o.from_member_id
+        WHERE o.del_status = 0 and o.is_accept = 2 and o.to_member_id = m.id AND m2.del_status = 0 and m2.`status` in (2,3)
+        and NOT EXISTS (SELECT id from t_union_brokerage_income i WHERE o.id = i.opportunity_id)
+
+    </select>
+
 
 </mapper>

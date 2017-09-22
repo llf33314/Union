@@ -1,8 +1,10 @@
 package com.gt.union.brokerage.service;
 
 import com.baomidou.mybatisplus.plugins.Page;
+import com.gt.union.opportunity.entity.UnionOpportunity;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * Created by Administrator on 2017/9/18 0018.
@@ -141,4 +143,56 @@ public interface IUnionH5BrokerageService {
 	 * @param id
 	 */
 	void urgeOpportunity(Integer busId, Integer id) throws Exception;
+
+	/**
+	 * 支付所有佣金
+	 * @param busId
+	 * @param unionId
+	 */
+	double getPayAllOpportunitySum(Integer busId, Integer unionId) throws Exception;
+
+	/**
+	 * 返回支付的地址
+	 * @param busId
+	 * @param unionId
+	 * @param fee
+	 * @param url
+	 * @param memberId
+	 * @return
+	 */
+	String payAllOpportunity(Integer busId, Integer unionId, Double fee, String url, Integer memberId) throws Exception;
+
+	/**
+	 * 支付单个佣金
+	 * @param busId
+	 * @param id
+	 * @param url
+	 * @param memberId
+	 * @return
+	 */
+	String payOpportunity(Integer busId, Integer id, String url, Integer memberId) throws Exception;
+
+	/**
+	 * 单个商机佣金支付成功回调
+	 *  @param encrypt
+	 * @param orderNo
+	 * @param verifierId
+	 */
+	void paymentOneOpportunitySuccess(String encrypt, String orderNo, Integer verifierId) throws Exception;
+
+	/**
+	 * 多个商机佣金支付成功回调
+	 * @param encrypt
+	 * @param orderNo
+	 * @param verifierId
+	 */
+	void payAllOpportunitySuccess(String encrypt, String orderNo, Integer verifierId) throws Exception;
+
+	/**
+	 * 查询未支付的佣金列表
+	 * @param busId
+	 * @param unionId
+	 * @return
+	 */
+	List<UnionOpportunity> listAllUnPayUnionBrokerage(Integer busId, Integer unionId) throws Exception;
 }
