@@ -390,7 +390,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 							,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) {
 		try {
 			BusUser user = SessionUtils.getLoginUser(request);
-			/*Member member = SessionUtils.getLoginMember(request);
+			Member member = SessionUtils.getLoginMember(request);
 			if(CommonUtil.isEmpty(member)){
 				String redirectUrl = this.authorizeMemberWx(request,unionUrl + url);
 				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
@@ -398,7 +398,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 			if(!member.getBusid().equals(duofenBusId)){
 				String redirectUrl = this.authorizeMemberWx(request,unionUrl + url);
 				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
-			}*/
+			}
 			String payUrl = unionH5BrokerageService.payOpportunity(user.getId(),id, url, 998);
 			return GTJsonResult.instanceSuccessMsg("支付地址", payUrl).toString();
 		} catch (BaseException e) {

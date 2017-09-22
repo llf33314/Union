@@ -3,6 +3,7 @@ package com.gt.union.common.controller;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.gt.api.util.sign.SignHttpUtils;
+import com.gt.union.api.client.redis.RedisService;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.CommonUtil;
@@ -40,6 +41,9 @@ public class MemberAuthorizeOrLoginController {
 
 	@Value("${wx.duofen.busId}")
 	private Integer duofenBusId;
+
+	@Autowired
+	private RedisService redisService;
 
 	/**
 	 *
@@ -110,7 +114,7 @@ public class MemberAuthorizeOrLoginController {
 			}
 		}
 		String otherRedisKey = "authority:"+System.currentTimeMillis();
-		redisCacheUtil.set(otherRedisKey, reqUrl, 300l);
+		redisService.setValue(otherRedisKey, reqUrl, 300);
 		Map<String, Object> queryMap = new HashMap<>();
 		queryMap.put("otherRedisKey", PropertiesUtil.redisNamePrefix() + otherRedisKey);
 		queryMap.put("browser", browser);
