@@ -19,10 +19,7 @@ import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.DataExportException;
 import com.gt.union.common.response.GTJsonResult;
-import com.gt.union.common.util.ExportUtil;
-import com.gt.union.common.util.RandomKit;
-import com.gt.union.common.util.RedisKeyUtil;
-import com.gt.union.common.util.StringUtil;
+import com.gt.union.common.util.*;
 import com.gt.union.consume.vo.UnionConsumeParamVO;
 import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.service.IUnionMainService;
@@ -269,19 +266,16 @@ public class UnionCardController {
 	 * 关注公众号回调
 	 * @param request
 	 * @param response
-	 * @param externalId
-	 * @param memberId
 	 */
-	@RequestMapping(value = "/79B4DE7C/followCallback")
-	public void followCallback(HttpServletRequest request, HttpServletResponse response, @RequestBody Map<String,Object>  params) {
+	@RequestMapping(value = "79B4DE7C/followCallback", produces = "application/json;charset=UTF-8")
+	public void followCallback(HttpServletRequest request, HttpServletResponse response, @RequestBody Map<String,Object> param) {
 		try {
-			System.out.println(params);
-			/*Member member = memberService.getById(memberId);
+			Member member = memberService.getById(CommonUtil.toInteger(param.get("memberId")));
 			Map<String,Object> data = new HashMap<String,Object>();
 			data.put("nickName", StringUtil.isEmpty(member.getNickname()) ? "未知用户" : member.getNickname());
 			data.put("memberId",member.getId());
 			data.put("headurl",member.getHeadimgurl());
-			socketService.socketSendMessage(socketKey + externalId, JSON.toJSONString(data),"");*/
+			socketService.socketSendMessage(socketKey + CommonUtil.toInteger(param.get("externalId")), JSON.toJSONString(data),"");
 		} catch (Exception e) {
 			logger.error("", e);
 		}

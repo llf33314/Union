@@ -55,7 +55,7 @@ public class MemberServiceImpl implements MemberService {
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("memberId",memberId);
 		try {
-			String data = SignHttpUtils.postByHttp(url,param,memberSignkey);
+			String data = SignHttpUtils.WxmppostByHttp(url,param,memberSignkey);
 			if(StringUtil.isEmpty(data)){
 				return null;
 			}
