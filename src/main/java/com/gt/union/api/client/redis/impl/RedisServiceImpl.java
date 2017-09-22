@@ -1,19 +1,12 @@
 package com.gt.union.api.client.redis.impl;
 
-import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.gt.api.util.sign.SignHttpUtils;
 import com.gt.union.api.client.redis.RedisService;
 import com.gt.union.common.constant.ConfigConstant;
-import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.RedisKeyUtil;
-import com.gt.union.common.util.StringUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**

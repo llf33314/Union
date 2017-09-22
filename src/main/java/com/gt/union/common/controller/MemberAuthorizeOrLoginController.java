@@ -36,7 +36,7 @@ public class MemberAuthorizeOrLoginController {
 	@Value("${member.url}")
 	private String memberUrl;
 
-	@Value("${wxmp.url}}")
+	@Value("${wxmp.url}")
 	private String wxmpUrl;
 
 	@Value("${wx.duofen.busId}")
@@ -92,9 +92,9 @@ public class MemberAuthorizeOrLoginController {
 	protected String authorizeMemberWx(HttpServletRequest request, String reqUrl) throws Exception {
 		logger.debug("进入--联盟手机端微信授权方法！");
 		Integer browser = CommonUtil.judgeBrowser(request);//判断浏览器
-		if(browser != 1){
-			throw new BusinessException("请使用微信登录");
-		}
+//		if(browser != 1){
+//			throw new BusinessException("请使用微信登录");
+//		}
 		Map<String, Object> getWxPublicMap = new HashMap<>();
 		getWxPublicMap.put("busId", duofenBusId);//多粉
 		//判断商家信息 1是否过期 2公众号是否变更过
@@ -113,11 +113,11 @@ public class MemberAuthorizeOrLoginController {
 				throw new BusinessException("账号已过期");
 			}
 		}
-		String otherRedisKey = "authority:"+System.currentTimeMillis();
+		String otherRedisKey = PropertiesUtil.redisNamePrefix() + "authority:"+System.currentTimeMillis();
 		redisService.setValue(otherRedisKey, reqUrl, 300);
 		Map<String, Object> queryMap = new HashMap<>();
-		queryMap.put("otherRedisKey", PropertiesUtil.redisNamePrefix() + otherRedisKey);
-		queryMap.put("browser", browser);
+		queryMap.put("otherRedisKey", otherRedisKey);
+		queryMap.put("browser", 1);
 		queryMap.put("busId", duofenBusId);
 		logger.info("queryMap=" + JSON.toJSONString(queryMap));
 		String params = URLEncoder.encode(JSON.toJSONString(queryMap), "utf-8");

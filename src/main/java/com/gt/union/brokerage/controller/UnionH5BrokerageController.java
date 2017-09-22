@@ -63,8 +63,8 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	 * @return
 	 */
 	@ApiOperation(value = "佣金平台登录", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/login/type/{type}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public String login(HttpServletRequest request, HttpServletResponse response, @ApiParam(name="type", value = "登录类型 1：商家账号 2：手机和验证码", required = true) @PathVariable("type") Integer type
+	@RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public String login(HttpServletRequest request, HttpServletResponse response, @ApiParam(name="type", value = "登录类型 1：商家账号 2：手机和验证码", required = true) @RequestParam("type") Integer type
 									,@ApiParam(name="username", value = "商家账号", required = false) @RequestParam(name = "username", required = false) String username
 									,@ApiParam(name="userpwd", value = "商家账号密码", required = false) @RequestParam(name = "userpwd", required = false) String userpwd
 									,@ApiParam(name="phone", value = "手机号", required = false) @RequestParam(name = "phone", required = false) String phone
@@ -392,14 +392,14 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 			BusUser user = SessionUtils.getLoginUser(request);
 			Member member = SessionUtils.getLoginMember(request);
 			if(CommonUtil.isEmpty(member)){
-				String redirectUrl = this.authorizeMemberWx(request,unionUrl + url);
+				String redirectUrl = this.authorizeMemberWx(request,"http://union.duofee.com" + url);
 				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 			}
 			if(!member.getBusid().equals(duofenBusId)){
 				String redirectUrl = this.authorizeMemberWx(request,unionUrl + url);
 				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 			}
-			String payUrl = unionH5BrokerageService.payOpportunity(user.getId(),id, url, 998);
+			String payUrl = unionH5BrokerageService.payOpportunity(user.getId(),id, url, member.getId());
 			return GTJsonResult.instanceSuccessMsg("支付地址", payUrl).toString();
 		} catch (BaseException e) {
 			logger.error("", e);

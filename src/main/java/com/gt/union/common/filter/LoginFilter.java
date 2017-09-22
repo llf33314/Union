@@ -35,8 +35,7 @@ public class LoginFilter implements Filter {
 
 	static {
 		//过滤佣金平台路径
-//		urls.put("/unionH5Brokerage/index", "/unionH5Brokerage/index");
-//		urls.put("/unionH5Brokerage/index.do", "/unionH5Brokerage/index.do");
+		urls.put("/unionH5Brokerage/login", "/unionH5Brokerage/login");
 
 		//文件类型
 		suffixs.add("js");
@@ -78,29 +77,17 @@ public class LoginFilter implements Filter {
 		}else if(passSuffixs(url)||passUrl(url)){
 			chain.doFilter(request, response);
 		}else if(url.indexOf("unionH5Brokerage") > -1){
-//			if (busUser == null) {
-//				response.setCharacterEncoding("UTF-8");
-//				response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", PropertiesUtil.getUnionUrl()+"/unionH5Brokerage/login")));
-//				return;
-//			}
-			busUser = new BusUser();
-			busUser.setId(33);
-			busUser.setEndTime(new Date());
-			busUser.setPid(0);
-			busUser.setLevel(4);
-			SessionUtils.setLoginUser(req,busUser);
-			chain.doFilter(request, response);
+			if (busUser == null) {
+				response.setCharacterEncoding("UTF-8");
+				response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", PropertiesUtil.getUnionUrl()+"/unionH5Brokerage/login")));
+				return;
+			}else {
+				chain.doFilter(request, response);
+			}
 		}else if (busUser == null) {// 判断到商家没有登录,就跳转到登陆页面
-			busUser = new BusUser();
-			busUser.setId(33);
-			busUser.setEndTime(new Date());
-			busUser.setPid(0);
-			busUser.setLevel(4);
-			SessionUtils.setLoginUser(req,busUser);
-			chain.doFilter(request, response);
-//			response.setCharacterEncoding("UTF-8");
-//			response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录",PropertiesUtil.getWxmpUrl()+"/user/tologin.do")));
-//			return;
+			response.setCharacterEncoding("UTF-8");
+			response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录",PropertiesUtil.getWxmpUrl()+"/user/tologin.do")));
+			return;
 		}else {
 			// 已经登陆,继续此次请求
 			chain.doFilter(request, response);

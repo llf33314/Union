@@ -435,7 +435,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		if(toMember == null){
 			throw new BusinessException("盟员不存在");
 		}
-		UnionMain main = unionMainService.getById(toMember.getId());
+		UnionMain main = unionMainService.getById(toMember.getUnionId());
 		HashMap<String, Object> smsParams = new HashMap<String,Object>();
 		smsParams.put("mobiles", StringUtil.isEmpty(toMember.getNotifyPhone()) ? toMember.getDirectorPhone() : toMember.getNotifyPhone());
 		smsParams.put("content", "您尚未支付\"" + main.getName()+ "\"的\"" + fromMember.getEnterpriseName() + "\"" +opportunity.getBrokeragePrice() + "元的商机推荐佣金，请尽快支付，谢谢");
