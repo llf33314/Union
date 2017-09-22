@@ -273,14 +273,15 @@ public class UnionCardController {
 	 * @param memberId
 	 */
 	@RequestMapping(value = "79B4DE7C/followCallback", produces = "application/json;charset=UTF-8")
-	public void followCallback(HttpServletRequest request, HttpServletResponse response, @RequestParam("externalId") Integer externalId, @RequestParam("memberId") Integer memberId) {
+	public void followCallback(HttpServletRequest request, HttpServletResponse response, @RequestBody Map<String,Object> param) {
 		try {
-			Member member = memberService.getById(memberId);
+			System.out.println(param);
+			/*Member member = memberService.getById(memberId);
 			Map<String,Object> data = new HashMap<String,Object>();
 			data.put("nickName", StringUtil.isEmpty(member.getNickname()) ? "未知用户" : member.getNickname());
 			data.put("memberId",member.getId());
 			data.put("headurl",member.getHeadimgurl());
-			socketService.socketSendMessage(socketKey + externalId, JSON.toJSONString(data),"");
+			socketService.socketSendMessage(socketKey + externalId, JSON.toJSONString(data),"");*/
 		} catch (Exception e) {
 			logger.error("", e);
 		}
