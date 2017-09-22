@@ -272,7 +272,7 @@ public class UnionCardController {
 	 * @param externalId
 	 * @param memberId
 	 */
-	@RequestMapping(value = "followCallback", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "79B4DE7C/followCallback", produces = "application/json;charset=UTF-8")
 	public void followCallback(HttpServletRequest request, HttpServletResponse response, @RequestParam("externalId") Integer externalId, @RequestParam("memberId") Integer memberId) {
 		try {
 			Member member = memberService.getById(memberId);
