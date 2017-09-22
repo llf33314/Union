@@ -471,7 +471,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                         .append("    WHERE m3.del_status = ").append(CommonConstant.DEL_STATUS_NO)
                         .append("      AND m3.status != ").append(MemberConstant.STATUS_APPLY_IN)
                         .append("      AND m3.bus_id = ").append(busId)
-                        .append("      AND m3.id = o.from_bus_id")
+                        .append("      AND m3.id = o.from_member_id")
                         .append("  )");
                 if (unionId != null) {
                     sbSqlSegment.append(" AND m2.id = ").append(unionId);
@@ -545,7 +545,8 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                         .append("    WHERE m3.del_status = ").append(CommonConstant.DEL_STATUS_NO)
                         .append("      AND m3.status != ").append(MemberConstant.STATUS_APPLY_IN)
                         .append("      AND m3.bus_id = ").append(busId)
-                        .append("      AND m3.id = o.to_member_id");
+                        .append("      AND m3.id = o.to_member_id")
+                        .append("  )");
                 if (unionId != null) {
                     sbSqlSegment.append(" AND m2.id = ").append(unionId);
                 }
