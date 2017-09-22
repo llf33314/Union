@@ -6,13 +6,15 @@ import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.Member;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.api.client.pay.WxPayService;
+import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.brokerage.service.IUnionH5BrokerageService;
+import com.gt.union.common.amqp.entity.PhoneMessage;
+import com.gt.union.common.annotation.SysLogAnnotation;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.controller.MemberAuthorizeOrLoginController;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.response.GTJsonResult;
-import com.gt.union.common.util.BigDecimalUtil;
-import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.*;
 import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.verifier.entity.UnionVerifier;
@@ -47,12 +49,18 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	@Autowired
 	private IUnionMainService unionMainService;
 
+	@Autowired
+	private SmsService smsService;
+
 
 	@Value("${wx.duofen.busId}")
 	private Integer duofenBusId;
 
 	@Value("${union.url}")
 	private String unionUrl;
+
+	@Autowired
+	private RedisCacheUtil redisCacheUtil;
 
 
 	/**
@@ -80,6 +88,37 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 		} catch (Exception e) {
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg().toString();
+		}
+	}
+
+
+	@ApiOperation(value = "获取佣金平台手机登录验证码", notes = "获取佣金平台手机登录验证码", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/phone/{phone}", produces = "application/json;charset=UTF-8",method = RequestMethod.GET)
+	public String getCodeByPhone(HttpServletRequest request, HttpServletResponse response
+			, @ApiParam(name="phone", value = "手机号", required = true) @PathVariable String phone) {
+		try {
+			BusUser user = SessionUtils.getLoginUser(request);
+			//生成验证码
+			String code = RandomKit.getRandomString(6, 0);
+			Integer busId = user.getId();
+			if (user.getPid() != null && user.getPid() != 0) {
+				busId = user.getPid();
+			}
+			if (CommonUtil.isNotEmpty(phone)) {
+				PhoneMessage phoneMessage = new PhoneMessage(busId,phone,"佣金平台手机登录验证码:" + code);
+				Map param = new HashMap<String,Object>();
+				param.put("reqdata",phoneMessage);
+				if(smsService.sendSms(param) == 0){
+					return GTJsonResult.instanceErrorMsg("发送失败").toString();
+				}
+				String phoneKey = RedisKeyUtil.getBrokeragePhoneKey(phone);
+				redisCacheUtil.set(phoneKey , code, 300l);
+				return GTJsonResult.instanceSuccessMsg(code).toString();
+			}
+			return GTJsonResult.instanceErrorMsg("手机号不能为空").toString();
+		} catch (Exception e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
 		}
 	}
 

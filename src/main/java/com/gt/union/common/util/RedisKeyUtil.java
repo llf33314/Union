@@ -229,4 +229,13 @@ public class RedisKeyUtil {
     public static String getWxPublicUserQRCodeKey(String publicId, String busId) {
 	    return "qrcode:" + publicId + ":" + busId;
     }
+
+    /**
+     * 佣金平台手机号验证码key
+     * @param phone
+     * @return
+     */
+	public static String getBrokeragePhoneKey(String phone) {
+        return "h5brokerage:" + phone;
+	}
 }

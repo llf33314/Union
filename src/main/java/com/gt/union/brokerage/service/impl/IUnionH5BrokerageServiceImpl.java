@@ -150,7 +150,8 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 			if(StringUtil.isEmpty(phone) || StringUtil.isEmpty(code)){
 				throw new ParamException(CommonConstant.PARAM_ERROR);
 			}
-			Object obj = redisCacheUtil.get("h5brokerage"+phone);
+			String phoneKey = RedisKeyUtil.getBrokeragePhoneKey(phone);
+			Object obj = redisCacheUtil.get(phoneKey);
 			if(obj == null){
 				throw new BusinessException("验证码失效");
 			}
@@ -164,7 +165,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 			BusUser user = busUserService.getBusUserById(unionVerifier.getBusId());
 			SessionUtils.setLoginUser(request,user);
 			com.gt.union.common.util.SessionUtils.setUnionVerifier(request,unionVerifier);
-			redisCacheUtil.remove("h5brokerage"+phone);
+			redisCacheUtil.remove(phoneKey);
 		}
 	}
 
