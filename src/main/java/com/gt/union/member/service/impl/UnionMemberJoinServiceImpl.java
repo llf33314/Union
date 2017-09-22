@@ -114,10 +114,10 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
                         .append("      AND m2.union_id = ma.union_id")
                         .append("  )");
                 if (StringUtil.isNotEmpty(optionEnterpriseName)) {
-                    sbSqlSegment.append(" AND ma.enterprise_name LIKE %").append(optionEnterpriseName).append("%");
+                    sbSqlSegment.append(" AND ma.enterprise_name LIKE '%").append(optionEnterpriseName).append("%'");
                 }
                 if (StringUtil.isNotEmpty(optionDirectorPhone)) {
-                    sbSqlSegment.append(" AND ma.director_phone LIKE %").append(optionDirectorPhone).append("%");
+                    sbSqlSegment.append(" AND ma.director_phone LIKE '%").append(optionDirectorPhone).append("%'");
                 }
                 sbSqlSegment.append(" ORDER BY mj.id ASC");
                 return sbSqlSegment.toString();

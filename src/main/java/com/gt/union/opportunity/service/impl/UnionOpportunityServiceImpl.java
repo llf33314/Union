@@ -361,10 +361,10 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                     sbSqlSegment.append(" AND o.is_accept IN (").append(isAccept).append(")");
                 }
                 if (StringUtil.isNotEmpty(clientName)) {
-                    sbSqlSegment.append(" AND o.client_name LIKE %").append(clientName).append("%");
+                    sbSqlSegment.append(" AND o.client_name LIKE '%").append(clientName).append("%'");
                 }
                 if (StringUtil.isNotEmpty(clientPhone)) {
-                    sbSqlSegment.append(" AND o.client_phone LIKE %").append(clientPhone).append("%");
+                    sbSqlSegment.append(" AND o.client_phone LIKE '%").append(clientPhone).append("%'");
                 }
                 return sbSqlSegment.toString();
             }
@@ -419,10 +419,10 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                     sbSqlSegment.append(" AND o.is_accept IN (").append(isAccept).append(")");
                 }
                 if (StringUtil.isNotEmpty(clientName)) {
-                    sbSqlSegment.append(" AND o.client_name LIKE %").append(clientName).append("%");
+                    sbSqlSegment.append(" AND o.client_name LIKE '%").append(clientName).append("%'");
                 }
                 if (StringUtil.isNotEmpty(clientPhone)) {
-                    sbSqlSegment.append(" AND o.client_phone LIKE %").append(clientPhone).append("%");
+                    sbSqlSegment.append(" AND o.client_phone LIKE '%").append(clientPhone).append("%'");
                 }
                 return sbSqlSegment.toString();
             }
@@ -487,10 +487,10 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                     }
                 }
                 if (StringUtil.isNotEmpty(clientName)) {
-                    sbSqlSegment.append(" AND o.client_name LIKE %").append(clientName).append("%");
+                    sbSqlSegment.append(" AND o.client_name LIKE '%").append(clientName).append("%'");
                 }
                 if (StringUtil.isNotEmpty(clientPhone)) {
-                    sbSqlSegment.append(" AND o.client_phone LIKE %").append(clientPhone).append("%");
+                    sbSqlSegment.append(" AND o.client_phone LIKE '%").append(clientPhone).append("%'");
                 }
                 sbSqlSegment.append(" ORDER BY bi.opportunity_id ASC");
                 return sbSqlSegment.toString();
@@ -561,10 +561,10 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                     }
                 }
                 if (StringUtil.isNotEmpty(clientName)) {
-                    sbSqlSegment.append(" AND o.client_name LIKE %").append(clientName).append("%");
+                    sbSqlSegment.append(" AND o.client_name LIKE '%").append(clientName).append("%'");
                 }
                 if (StringUtil.isNotEmpty(clientPhone)) {
-                    sbSqlSegment.append(" AND o.client_phone LIKE %").append(clientPhone).append("%");
+                    sbSqlSegment.append(" AND o.client_phone LIKE '%").append(clientPhone).append("%'");
                 }
                 sbSqlSegment.append(" ORDER BY bi.opportunity_id ASC");
                 return sbSqlSegment.toString();
