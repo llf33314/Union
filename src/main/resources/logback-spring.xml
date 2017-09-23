@@ -3,7 +3,8 @@
     <!-- 内容输出格式 -->
     <property name="PATTERN" value="%-12(%d{yyyy-MM-dd HH:mm:ss.SSS}) |-%-5level [%thread] %c [%L] -| %msg%n" />
     <!-- 日志文件默认位置,正式中可能需要改成绝对路径！！！ -->
-    <property name="LOG_PATH" value="../logs/"/>
+    <!--<property name="LOG_PATH" value="../logs/"/>-->
+    <property name="LOG_PATH" value="/home/server/log/tomcat/union/"/>
 
     <!--console输出-->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">

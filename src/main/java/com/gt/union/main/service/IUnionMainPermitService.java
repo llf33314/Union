@@ -1,6 +1,7 @@
 package com.gt.union.main.service;
 
 import com.baomidou.mybatisplus.service.IService;
+import com.gt.api.bean.session.BusUser;
 import com.gt.union.main.entity.UnionMainPermit;
 
 import java.util.List;
@@ -71,11 +72,11 @@ public interface IUnionMainPermitService extends IService<UnionMainPermit> {
 
     /**
      * 获取创建联盟的支付二维码
-     * @param busId
-     * @param key
+     * @param user
+     * @param chargeId
      * @return
      */
-    Map<String,Object> createUnionQRCode(Integer busId, String key) throws Exception;
+    Map<String,Object> createUnionQRCode(BusUser user, Integer chargeId) throws Exception;
 
     /**
      * 创建联盟支付成功后回调

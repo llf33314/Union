@@ -238,4 +238,12 @@ public class RedisKeyUtil {
 	public static String getBrokeragePhoneKey(String phone) {
         return "h5brokerage:" + phone;
 	}
+
+	public static String getCardH5LoginPhoneKey(String phone) {
+        return "cardh5:login:" + phone;
+	}
+
+    public static String getCardH5BindPhoneKey(String phone) {
+        return "cardh5:bind:" + phone;
+    }
 }

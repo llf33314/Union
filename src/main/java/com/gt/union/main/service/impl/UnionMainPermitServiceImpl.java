@@ -8,15 +8,17 @@ import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.WxPublicUsers;
 import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.api.client.user.IBusUserService;
-import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
 import com.gt.union.main.constant.MainConstant;
 import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.entity.UnionMainPermit;
+import com.gt.union.main.entity.UnionMainPermitCharge;
 import com.gt.union.main.mapper.UnionMainPermitMapper;
+import com.gt.union.main.service.IUnionMainPermitChargeService;
 import com.gt.union.main.service.IUnionMainPermitService;
 import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.member.entity.UnionMember;
@@ -56,6 +58,9 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
 
     @Autowired
     private IUnionMemberService unionMemberService;
+
+    @Autowired
+    private IUnionMainPermitChargeService unionMainPermitChargeService;
 
     //-------------------------------------------------- get ----------------------------------------------------------
 
@@ -176,16 +181,18 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
 	}
 
     @Override
-    public Map<String, Object> createUnionQRCode(Integer busId, String key) throws Exception{
+    public Map<String, Object> createUnionQRCode(BusUser user, Integer chargeId) throws Exception{
         Map<String, Object> data = new HashMap<String, Object>();
         List<Map> list = dictService.getUnionCreatePackage();
-        Double pay = 0d;
         boolean flag = false;
         for(Map map : list){
-            if(map.get("item_key").equals(key)){
+            if(map.get("item_key").equals(chargeId)){
                 String itemValue = map.get("item_value").toString();
-                String value = itemValue.split(",")[0];
-                pay = Double.valueOf(value).doubleValue();
+                String[] arrs = itemValue.split(",");
+                String isUnionOwnerService = arrs[0];//是否有创建盟主的服务权限 1：是 0：否
+                if (isUnionOwnerService.equals("0")) {
+                    throw new BusinessException("您没有创建联盟的权限");
+                }
                 flag = true;
                 break;
             }
@@ -193,10 +200,15 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         if(!flag){
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+        UnionMainPermitCharge charge = unionMainPermitChargeService.getById(chargeId);
+        if(charge == null){
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        Double pay = charge.getMoney();
         String orderNo = ConfigConstant.CREATE_UNION_PAY_ORDER_CODE + System.currentTimeMillis();
         String only= DateTimeKit.getDateTime(new Date(), DateTimeKit.yyyyMMddHHmmss);
         WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(PropertiesUtil.getDuofenBusId());
-        UnionMainPermit permit = createPermit(orderNo,pay,busId);
+        UnionMainPermit permit = createPermit(orderNo,pay, user.getId());
         data.put("totalFee",pay);
         data.put("busId", PropertiesUtil.getDuofenBusId());
         data.put("sourceType", 1);//是否墨盒支付
@@ -207,13 +219,13 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         encrypt = URLEncoder.encode(encrypt,"UTF-8");
         data.put("notifyUrl", PropertiesUtil.getUnionUrl() + "/unionMainPermit/79B4DE7C/paymentSuccess/"+encrypt + "/" + only);
         data.put("orderNum", orderNo);//订单号
-        data.put("payBusId",busId);//支付的商家id
+        data.put("payBusId", user);//支付的商家id
         data.put("isSendMessage",0);//不推送
         data.put("appid",publicUser.getAppid());//appid
         data.put("desc", "多粉-创建联盟");
         data.put("appidType",0);//公众号
         data.put("only", only);
-        data.put("infoItemKey",key);
+        data.put("infoItemKey", chargeId);
         String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
         String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
         redisCacheUtil.set(paramKey, JSON.toJSONString(data), 360l);//5分钟
@@ -237,17 +249,9 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         wrapper.eq("del_status",CommonConstant.DEL_STATUS_NO);
         UnionMainPermit permit = this.selectOne(wrapper);
         Object infoItemKey = result.get("infoItemKey");
-        List<Map> list = dictService.getUnionCreatePackage();
-        Double years = 0d;
-        for(Map map : list){
-            if(map.get("item_key").equals(infoItemKey)){
-                String itemValue = map.get("item_value").toString();
-                String value = itemValue.split(",")[1];
-                years = Double.valueOf(value).doubleValue();
-                break;
-            }
-        }
-        int month = (int)(new BigDecimal(years).multiply(new BigDecimal(12)).doubleValue());
+        Integer chargeId = CommonUtil.toInteger(infoItemKey);
+        UnionMainPermitCharge charge = unionMainPermitChargeService.getById(chargeId);
+        int month = (int)(new BigDecimal(charge.getYear()).multiply(new BigDecimal(12)).doubleValue());
 
         //更新有效期,支付状态
         UnionMainPermit unionMainPermit = new UnionMainPermit();

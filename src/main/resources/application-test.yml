@@ -12,7 +12,7 @@ spring:
   datasource:
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://113.106.202.51:3306/gt_union_ceshi?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false
+    url: jdbc:mysql://113.106.202.51:3306/gt_union_ceshi20170907?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false
     username: root
     password: gt123456
     # 初始化大小、最大、最小
@@ -55,7 +55,19 @@ spring:
       port: 6379
       password: gt@123456
       timeout: 0
-      database: 2
+      database: 0
+      pool:
+        max-active: 8
+        max-wait: -1
+        max-idle: 8
+        min-idle: 0
+  #redis session共享配置
+  redis2:
+      host: 113.106.202.51
+      port: 6379
+      password: gt@123456
+      timeout: 0
+      database: 3
       pool:
         max-active: 8
         max-wait: -1
@@ -67,7 +79,7 @@ spring:
 # mybatis设置
 mybatis:
   mapper-locations: classpath:mapper/*/*Mapper.xml
-  type-aliases-package: com.gt.union.entity
+  type-aliases-package: com.gt.union.*.entity
 
 
 ######################## 全局配置 ########################
@@ -77,19 +89,24 @@ mybatis:
 #访问资源URL
 resource:
   url:
-    prefix: http://192.168.3.41:9998/upload/
+    prefix: http://maint.deeptel.com.cn/upload/
 socket:
-  url: http://192.168.2.12:8080:8881
+  url: https://socket.deeptel.com.cn
+  key: "Union_Key_"
 #企业短信通-密码
 
 #域名
 domain:
   df: duofriend.com
 #mq config
+#mq:
+#  uri: 192.168.3.59:5672
+#  user: admin
+#  password: admin
 mq:
-  uri: 192.168.3.59:5672
-  user: admin
-  password: admin
+  uri: 183.47.242.4
+  user: guest
+  password: yf26609632
 
 #队列转换器
 exchange:
@@ -106,7 +123,7 @@ redisNamePrefix: "Union:"
 
 
 redisSession:
-  domainName: .deeptel.com
+  domainName: .deeptel.com.cn
   cookiePath: /
   cookieName: WXMPJSESSIONID
 
@@ -117,9 +134,15 @@ wxmp:
    company: "多粉平台"
 
 union:
-  url: https://union.deeptel.com
+  url: https://union.deeptel.com.cn
   encryptKey: CFCCBD99C12B62E52952EA90A931A01F
   signkey: SR36E9KIYDLIU1VB6WX20HCW494QL97T
 wx:
   duofen:
     busId: 33
+
+member:
+  url: http://member.yifriend.net
+  signkey: MV8MMFQUMU1HJ6F2GNH40ZFJJ7Q8LNVM
+
+

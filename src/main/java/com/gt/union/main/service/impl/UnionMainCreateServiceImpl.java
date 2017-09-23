@@ -61,6 +61,9 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
     @Autowired
     private IUnionMainDictService unionMainDictService;
 
+    @Autowired
+    private IUnionMainPermitChargeService unionMainPermitChargeService;
+
     //-------------------------------------------------- get ----------------------------------------------------------
 
     /**
@@ -103,21 +106,26 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
                 break;
             }
         }
+        //没有联盟权限
         if (!flag) {
             throw new BusinessException("您没有创建联盟的权限");
         }
         //3、根据等级判断是否需要付费
         String itemValue = info.get("item_value").toString();//根据等级获取创建联盟的权限
         String[] arrs = itemValue.split(",");
-        String isPay = arrs[0];
+        String isUnionOwnerService = arrs[0];//是否有创建盟主的服务权限 1：是 0：否
+        String isPay = arrs[1];//创建联盟是否需要付费  1：需要  0：不需要
+        if (isUnionOwnerService.equals("0")) {
+            throw new BusinessException("您没有创建联盟的权限");
+        }
         if (isPay.equals("0")) {//不需要付费
             result.put("save", CommonConstant.COMMON_YES);//去创建联盟
         } else {
             //4、需要付费，判断是否已经付费
             UnionMainPermit unionMainPermit = this.unionMainPermitService.getByBusId(busId);
-            if (unionMainPermit == null) {
+            if (unionMainPermit == null) {//没有支付
                 result.put("pay", CommonConstant.COMMON_YES);//去支付
-                List<Map> list = this.dictService.getUnionCreatePackage();
+                List<UnionMainPermitCharge> list =unionMainPermitChargeService.listBusLevel(busUser.getLevel());
                 result.put("payItems", list);
                 return result;
             }
@@ -132,7 +140,7 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
                 }
             } else {//过期了
                 result.put("pay", CommonConstant.COMMON_YES);//去支付
-                List<Map> list = dictService.getUnionCreatePackage();
+                List<UnionMainPermitCharge> list =unionMainPermitChargeService.listBusLevel(busUser.getLevel());
                 result.put("payItems", list);
             }
         }
