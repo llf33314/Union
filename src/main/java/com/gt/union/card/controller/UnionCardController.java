@@ -14,6 +14,7 @@ import com.gt.union.api.entity.param.RequestApiParam;
 import com.gt.union.api.entity.param.UnionPhoneCodeParam;
 import com.gt.union.card.service.IUnionCardService;
 import com.gt.union.card.vo.UnionCardBindParamVO;
+import com.gt.union.common.annotation.SysLogAnnotation;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BaseException;
@@ -73,6 +74,8 @@ public class UnionCardController {
 	@Value("${socket.url}")
 	private String socketUrl;
 
+	@Autowired
+	private RedisCacheUtil redisCacheUtil;
 
 	@Value("${socket.key}")
 	private String socketKey;
@@ -232,7 +235,6 @@ public class UnionCardController {
 	}
 
 
-
 	@ApiOperation(value = "开启关注公众号，获取二维码链接", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "wxUser/QRcode", method=RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String wxUserQRcode(HttpServletRequest request, HttpServletResponse response) {
@@ -281,6 +283,33 @@ public class UnionCardController {
 		}
 	}
 
+
+	@ApiOperation(value = "获取办理联盟卡支付状态", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value="status/{only}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String getStatus(HttpServletRequest request, HttpServletResponse response, @PathVariable("only")String only) throws Exception{
+		logger.info("获取办理联盟卡支付订单状态：" + only);
+		try {
+			String statusKey = RedisKeyUtil.getBindCardPayStatusKey(only);
+			String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
+			Object status = redisCacheUtil.get(statusKey);
+			if(CommonUtil.isEmpty(status)){//订单超时
+				status = ConfigConstant.USER_ORDER_STATUS_004;
+			}
+			if(ConfigConstant.USER_ORDER_STATUS_003.equals(status)){//订单支付成功
+				redisCacheUtil.remove(statusKey);
+				redisCacheUtil.remove(paramKey);
+			}
+
+			if(ConfigConstant.USER_ORDER_STATUS_005.equals(status)){//订单支付失败
+				redisCacheUtil.remove(statusKey);
+				redisCacheUtil.remove(paramKey);
+			}
+			return GTJsonResult.instanceSuccessMsg(status).toString();
+		} catch (Exception e) {
+			logger.error("获取办理联盟卡支付订单状态错误：" + e);
+			return GTJsonResult.instanceErrorMsg(CommonConstant.SYS_ERROR).toString();
+		}
+	}
 
 	@ApiOperation(value = "生成办理联盟卡支付订单二维码", produces = "application/json;charset=UTF-8")
 	@SysLogAnnotation(op_function = "2", description = "生成办理联盟卡支付订单")

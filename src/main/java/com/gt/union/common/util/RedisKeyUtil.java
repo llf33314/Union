@@ -239,11 +239,40 @@ public class RedisKeyUtil {
         return "h5brokerage:" + phone;
 	}
 
+    /**
+     * 获取手机端手机登录验证码key
+     * @param phone
+     * @return
+     */
 	public static String getCardH5LoginPhoneKey(String phone) {
         return "cardh5:login:" + phone;
 	}
 
+    /**
+     * 获取手机端绑定手机号key
+     * @param phone
+     * @return
+     */
     public static String getCardH5BindPhoneKey(String phone) {
         return "cardh5:bind:" + phone;
+    }
+
+    /**
+     * 获取前台支付办理联盟卡状态key
+     * @param only
+     * @return
+     */
+    public static String getBindCardPayStatusKey(String only) {
+        return "card:bind:status:" + only;
+    }
+
+    /**
+     *
+     * 获取前台支付办理联盟卡参数key
+     * @param only
+     * @return
+     */
+    public static String getBindCardPayParamKey(String only) {
+        return "card:bind:param:" + only;
     }
 }

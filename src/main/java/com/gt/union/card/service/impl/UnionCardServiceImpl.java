@@ -1,5 +1,6 @@
 package com.gt.union.card.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -37,6 +38,7 @@ import org.apache.poi.hssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -443,7 +445,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         if(ListUtil.isEmpty(members)){
             throw new BusinessException("您没有有效的联盟");
         }
-        List<UnionCard> list = this.listByPhoneAndMembers(phone,members);//该手机号没升级过联盟卡
+        List<UnionCard> list = this.listByPhoneAndMembers(phone,members);
         checkCardList(members,list, phone);
         if(members.size() > 0){
             sendMsg(phone,busId);
@@ -480,7 +482,9 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
      * @param list
      * @throws Exception
      */
-    private void checkCardList(List<UnionMember> members, List<UnionCard> list, String phone) throws Exception{
+    private List<Map<Integer,List<Map<String,Object>>>> checkCardList(List<UnionMember> members, List<UnionCard> list, String phone) throws Exception{
+        List<Map<Integer,List<Map<String,Object>>>> result = new ArrayList<Map<Integer,List<Map<String,Object>>>>();
+        //定义收费规则
         Map<Integer,UnionMainCharge> blackMap = new HashMap<Integer,UnionMainCharge>();
         Map<Integer,UnionMainCharge> redMap = new HashMap<Integer,UnionMainCharge>();
         for(UnionMember member : members){
@@ -490,83 +494,157 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             redMap.put(member.getUnionId(),redCharge);
         }
         Iterator<UnionMember> im = members.iterator();
-        while (im.hasNext()){
+        int flag = 0;//标志是否升级了联盟卡
+        while (im.hasNext()) {
             UnionMember member = im.next();
+            Boolean percent = isUnionCardChargePercent(member.getUnionId());
             List<UnionMember> memberList = unionMemberService.listWriteByUnionId(member.getUnionId());//我加入该联盟的盟员列表
-            List<UnionCard> cards = this.listByPhoneAndMembers(phone,memberList);//该手机号在其他盟员升级的联盟卡列表
-            UnionMainCharge blackCharge = blackMap.get(member.getUnionId());
-            UnionMainCharge redCharge = redMap.get(member.getUnionId());
-            if(ListUtil.isEmpty(cards)){//没有升级过联盟卡，则需要判断售卡佣金比例
-                if(blackCharge.getIsCharge() == MainConstant.CHARGE_IS_CHARGE_YES ) {//黑卡收费
-                    if(!isUnionCardChargePercent(member.getUnionId())){//是否设置了售卡佣金比例
-                        im.remove();
-                    }
-                }
-            }else {//升级过联盟卡
-                boolean flag = true;//标识设售卡佣金 false：需要设售卡佣金  true：不需要设售卡佣金
-                for(UnionCard card : cards){
-                    if(card.getMemberId().equals(member.getId())) {//在本盟员下升级的
-                        if(card.getType() == CardConstant.TYPE_BLACK){//黑卡
-                            if(CommonUtil.isNotEmpty(card.getIsCharge()) && card.getIsCharge() == CardConstant.IS_CHARGE_YES){//如果是收费升级了黑卡,判断是否开启了红卡，开启了可以升级上
-                              if(redCharge == null){//未开启红卡，不可继续升级
-                                  flag = true;
-                                  im.remove();
-                                  break;
-                              }else {//如果开启了红卡，则要判断售卡佣金比例
-                                  int count = unionCardMapper.countByMemberIdsAndType(memberList, member.getId(), CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, phone, MainConstant.CHARGE_IS_AVAILABLE_YES);
-                                  if(count == 0){//没有在其他盟员升级红卡
-                                      flag = false;//标识需要设售卡佣金
-                                  }
-                              }
-                            } else{//如果升级的是免费卡
-                                //判断旧会员不需要收费且没有开启红卡，不可以继续升级
-                                if(blackCharge.getIsOldCharge() == MainConstant.CHARGE_OLD_IS_NO && redCharge == null){
-                                    flag = true;
-                                    im.remove();
-                                    break;
-                                }else if(blackCharge.getIsOldCharge() == MainConstant.CHARGE_OLD_IS_YES && (redCharge != null || blackCharge.getIsCharge() == MainConstant.CHARGE_IS_CHARGE_YES)){//开启了旧会员收费,如果获取开启了红
-                                    //TODO 联盟卡收费
-                                    if(blackCharge.getIsCharge() == MainConstant.CHARGE_IS_CHARGE_YES){//开启黑卡收费
-                                        int count = unionCardMapper.countByMemberIdsAndType(memberList, member.getId(), CardConstant.TYPE_BLACK, MainConstant.CHARGE_IS_CHARGE_YES, phone, MainConstant.CHARGE_IS_AVAILABLE_YES);
-                                        if(count > 0){//在其他盟员升级收费黑卡
-                                            flag = true;
-                                        }else{
-                                            flag = false;//标识需要设售卡佣金
-                                        }
-                                    }
-                                    if(redCharge != null){//开启红卡收费
-                                        //在其他盟员升级过红卡
-                                        int count = unionCardMapper.countByMemberIdsAndType(memberList, member.getId(), CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, phone, MainConstant.CHARGE_IS_AVAILABLE_YES);
-                                        if(count > 0){//在其他盟员升级红卡
-                                            flag = true;
-                                        }else{
-                                            if(!flag){
-                                                flag = false;//标识需要设售卡佣金
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        } else if(card.getType() == CardConstant.TYPE_RED){//红卡 //不可以再升级了
-                            flag = true;
-                            im.remove();
-                            break;
-                        }
-                    }
+            Iterator<UnionMember> itm = memberList.iterator();
+            //得到其他盟员列表
+            while (itm.hasNext()) {
+                UnionMember unionMember = itm.next();
+                if (unionMember.getId().equals(member.getId())) {
+                    itm.remove();
                     break;
                 }
-                if(!flag){//在我的盟员下继续升级，判断需要设置佣金比例
-                    Boolean percent = isUnionCardChargePercent(member.getUnionId());
-                    if(!percent){//没有设置售卡佣金比例
-                        im.remove();
+            }
+            UnionCard unionCard = this.getByPhoneAndMemberId(phone, member.getId(),true);//本盟员升级的联盟卡
+            UnionMainCharge blackCharge = blackMap.get(member.getUnionId());
+            UnionMainCharge redCharge = redMap.get(member.getUnionId());
+            List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+            if (unionCard == null) {//本盟员下升级了联盟卡
+                if(unionCard.getType() == CardConstant.TYPE_BLACK){//黑卡
+                    if(unionCard.getIsCharge() == CardConstant.IS_CHARGE_YES){//收费黑卡
+                        if (redCharge != null) {//开启红卡
+                            int count = unionCardMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, phone, MainConstant.CHARGE_IS_AVAILABLE_YES);
+                            if (count > 0) {
+                                Map<String, Object> map = new HashMap<String, Object>();
+                                Map<String, Object> red = new HashMap<String, Object>();
+                                red.put("price", 0);
+                                red.put("termTime", DateTimeKit.format(DateTimeKit.addDays(redCharge.getValidityDay()), "yyyy-MM-dd"));//收费的，有效期
+                                map.put("red", red);
+                                dataList.add(map);
+                            } else {
+                                if (percent) {
+                                    Map<String, Object> map = new HashMap<String, Object>();
+                                    Map<String, Object> red = new HashMap<String, Object>();
+                                    red.put("price", redCharge.getChargePrice());
+                                    red.put("termTime", DateTimeKit.format(DateTimeKit.addDays(redCharge.getValidityDay()), "yyyy-MM-dd"));//收费的，有效期
+                                    map.put("red", red);
+                                    dataList.add(map);
+                                }
+                            }
+                        }
+                    }else {//免费黑卡
+                        //黑卡收费
+                        if (blackCharge.getIsCharge() == MainConstant.CHARGE_IS_CHARGE_YES) {
+                            int count = unionCardMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_BLACK, MainConstant.CHARGE_IS_CHARGE_YES, phone, MainConstant.CHARGE_IS_AVAILABLE_YES);
+                            if(count > 0){
+                                Map<String, Object> map = new HashMap<String, Object>();
+                                Map<String, Object> black = new HashMap<String, Object>();
+                                black.put("price", 0);
+                                black.put("termTime", DateTimeKit.format(DateTimeKit.addDays(blackCharge.getValidityDay()), "yyyy-MM-dd"));//收费的，有效期
+                                map.put("black", black);
+                                dataList.add(map);
+                            }else {
+                                if (percent) {
+                                    Map<String, Object> map = new HashMap<String, Object>();
+                                    Map<String, Object> black = new HashMap<String, Object>();
+                                    black.put("price", blackCharge.getChargePrice());
+                                    black.put("termTime", DateTimeKit.format(DateTimeKit.addDays(blackCharge.getValidityDay()), "yyyy-MM-dd"));//收费的，有效期
+                                    map.put("black", black);
+                                    dataList.add(map);
+                                }
+                            }
+                        }
+                        //开启红卡
+                        if (redCharge != null) {
+                            int count = unionCardMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, phone, MainConstant.CHARGE_IS_AVAILABLE_YES);
+                            if (count > 0) {
+                                Map<String, Object> map = new HashMap<String, Object>();
+                                Map<String, Object> red = new HashMap<String, Object>();
+                                red.put("price", 0);
+                                red.put("termTime", DateTimeKit.format(DateTimeKit.addDays(redCharge.getValidityDay()), "yyyy-MM-dd"));//收费的，有效期
+                                map.put("red", red);
+                                dataList.add(map);
+                            } else {
+                                if (percent) {
+                                    Map<String, Object> map = new HashMap<String, Object>();
+                                    Map<String, Object> red = new HashMap<String, Object>();
+                                    red.put("price", redCharge.getChargePrice());
+                                    red.put("termTime", DateTimeKit.format(DateTimeKit.addDays(redCharge.getValidityDay()), "yyyy-MM-dd"));//收费的，有效期
+                                    map.put("red", red);
+                                    dataList.add(map);
+                                }
+                            }
+                        }
+                    }
+                }
+                if( flag == 0){
+                    flag = 1;
+                }
+            } else {//不在本盟员下升级了联盟卡
+                if (blackCharge.getIsCharge() == MainConstant.CHARGE_IS_CHARGE_YES) {//黑卡收费
+                    int count = unionCardMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_BLACK, MainConstant.CHARGE_IS_CHARGE_YES, phone, MainConstant.CHARGE_IS_AVAILABLE_YES);
+                    if(count > 0){
+                        Map<String, Object> map = new HashMap<String, Object>();
+                        Map<String, Object> black = new HashMap<String, Object>();
+                        black.put("price", 0);
+                        black.put("termTime", DateTimeKit.format(DateTimeKit.addDays(blackCharge.getValidityDay()), "yyyy-MM-dd"));//收费的，有效期
+                        map.put("black", black);
+                        dataList.add(map);
+                    }else {
+                        if (percent) {
+                            Map<String, Object> map = new HashMap<String, Object>();
+                            Map<String, Object> black = new HashMap<String, Object>();
+                            black.put("price", blackCharge.getChargePrice());
+                            black.put("termTime", DateTimeKit.format(DateTimeKit.addDays(blackCharge.getValidityDay()), "yyyy-MM-dd"));//收费的，有效期
+                            map.put("black", black);
+                            dataList.add(map);
+                        }
+                    }
+                }else {
+                    Map<String, Object> map = new HashMap<String, Object>();
+                    Map<String, Object> black = new HashMap<String, Object>();
+                    black.put("price", blackCharge.getChargePrice());
+                    map.put("black", black);
+                    dataList.add(map);
+                }
+                if (redCharge != null) {//开启红卡
+                    int count = unionCardMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, phone, MainConstant.CHARGE_IS_AVAILABLE_YES);
+                    if (count > 0) {
+                        Map<String, Object> map = new HashMap<String, Object>();
+                        Map<String, Object> red = new HashMap<String, Object>();
+                        red.put("price", 0);
+                        red.put("termTime", DateTimeKit.format(DateTimeKit.addDays(redCharge.getValidityDay()), "yyyy-MM-dd"));//收费的，有效期
+                        map.put("red", red);
+                        dataList.add(map);
+                    } else {
+                        if (percent) {
+                            Map<String, Object> map = new HashMap<String, Object>();
+                            Map<String, Object> red = new HashMap<String, Object>();
+                            red.put("price", redCharge.getChargePrice());
+                            red.put("termTime", DateTimeKit.format(DateTimeKit.addDays(redCharge.getValidityDay()), "yyyy-MM-dd"));//收费的，有效期
+                            map.put("red", red);
+                            dataList.add(map);
+                        }
                     }
                 }
             }
+            if(ListUtil.isEmpty(dataList)){
+                Map<Integer,List<Map<String,Object>>> data = new HashMap<Integer,List<Map<String,Object>>>();
+                data.put(member.getId(),dataList);
+                result.add(data);
+            }
         }
-        if(ListUtil.isEmpty(members)){
-            throw new BusinessException("您没有有效的联盟");
+        if(ListUtil.isEmpty(result)){
+            if(flag == 1){
+                throw new BusinessException("该手机号已办联盟卡");
+            }else {
+                throw new BusinessException("您没有有效的联盟");
+            }
         }
-
+        return result;
 
     }
 
@@ -646,11 +724,17 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
      * @throws Exception
      */
     private Map<String, Object> getUnionInfo(List<UnionMember> members, List<UnionCard> list, String phone, Integer unionId, Integer busId) throws Exception{
-        checkCardList(members,list,phone);//可以升级的联盟列表
-
-        UnionMember member = members.get(0);//可办卡的联盟
+        List<Map<Integer,List<Map<String,Object>>>> dataList = checkCardList(members,list,phone);//可以升级的联盟列表
+        Iterator<UnionMember> it = members.iterator();
+        while (it.hasNext()){
+            UnionMember member = it.next();
+            for(Map<Integer,List<Map<String,Object>>> map : dataList){
+                if(!map.containsKey(member.getId())){//不存在
+                    it.remove();
+                }
+            }
+        }
         List<UnionMain> unions = new ArrayList<UnionMain>();//封装联盟列表
-
         List<UnionMain> mains = unionMainService.listWriteByBusId(busId);
         for(UnionMember unionMember : members){
             for(UnionMain main : mains){
@@ -660,66 +744,23 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 }
             }
         }
+        UnionMember member = members.get(0);
         if(unionId == null){
             unionId = member.getUnionId();
         }
         Map<String, Object> data = new HashMap<String, Object>();
-        UnionCard card = this.getByPhoneAndMemberId(phone,member.getId());//该盟员下升级的联盟卡 不一定有效期内
-        if(card == null){
-            List<UnionMember> memberList = unionMemberService.listWriteByUnionId(member.getUnionId());
-            List<UnionCard> cards = this.listByPhoneAndMembers(phone,memberList);//该手机号在其他盟员升级的联盟卡列表
-            if(ListUtil.isEmpty(cards)){
-                UnionMainCharge redCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_RED, MainConstant.CHARGE_IS_AVAILABLE_YES);
-                UnionMainCharge blackCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_BLACK, MainConstant.CHARGE_IS_AVAILABLE_YES);
-                if(redCharge != null){
-                    Map<String, Object> red = new HashMap<String, Object>();
-                    red.put("price",redCharge.getChargePrice());
-                    red.put("termTime",DateTimeKit.format(DateTimeKit.addDays(redCharge.getValidityDay()),"yyyy-MM-dd"));
-                    data.put("red",red);
-                }
-                if(blackCharge != null){
-                    Map<String, Object> black = new HashMap<String, Object>();
-                    black.put("price",blackCharge.getChargePrice());
-                    black.put("termTime",blackCharge.getIsCharge() == 1 ? DateTimeKit.format(DateTimeKit.addDays(blackCharge.getValidityDay()),"yyyy-MM-dd") : null);//收费的，有效期
-                    data.put("black",black);
-                }
-            }else {//在其他盟员升级了 且在有效期
-                UnionMainCharge redCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_RED, MainConstant.CHARGE_IS_AVAILABLE_YES);
-                UnionMainCharge blackCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_BLACK, MainConstant.CHARGE_IS_AVAILABLE_YES);
-                if(redCharge != null){
-                    Map<String, Object> red = new HashMap<String, Object>();
-                    red.put("price",null);
-                    red.put("termTime",DateTimeKit.format(DateTimeKit.addDays(redCharge.getValidityDay()),"yyyy-MM-dd"));
-                    data.put("red",red);
-                }
-                if(blackCharge != null){
-                    Map<String, Object> black = new HashMap<String, Object>();
-                    black.put("price",null);
-                    black.put("termTime",blackCharge.getIsCharge() == 1 ? DateTimeKit.format(DateTimeKit.addDays(blackCharge.getValidityDay()),"yyyy-MM-dd") : null);//收费的，有效期
-                    data.put("black",black);
-                }
-
-            }
-        }else {//在该盟员下升级
-            if(card.getType() == CardConstant.TYPE_BLACK){//黑卡
-                //如果是免费的，则判断旧会员是否需要收费，需要，则可以升级
-                if(card.getIsCharge() == CardConstant.IS_CHARGE_NO){
-                    UnionMainCharge blackCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_BLACK, MainConstant.CHARGE_IS_AVAILABLE_YES);
-                    if(blackCharge.getIsOldCharge() == MainConstant.CHARGE_OLD_IS_YES){//旧会员收费
-                        Map<String, Object> black = new HashMap<String, Object>();
-                        black.put("price",blackCharge.getChargePrice());
-                        black.put("termTime",blackCharge.getValidityDay() == null ? null : DateTimeKit.format(DateTimeKit.addDays(blackCharge.getValidityDay()),"yyyy-MM-dd"));
-                        data.put("black",black);
+        for(Map<Integer,List<Map<String,Object>>> arr : dataList){
+            if(arr.containsKey(member.getId())){
+                List<Map<String,Object>> chargeList = arr.get(member.getId());
+                for(Map<String,Object> map : chargeList){
+                    if(CommonUtil.isNotEmpty(map.get("red"))){
+                        data.put("red", map.get("red"));
+                    }
+                    if(CommonUtil.isNotEmpty(map.get("black"))){
+                        data.put("black", map.get("black"));
                     }
                 }
-                //如果是收费的，判断是否有开启红卡，开启了则可以升级
-                UnionMainCharge redCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_RED, MainConstant.CHARGE_IS_AVAILABLE_YES);
-                if(redCharge != null){//开启了红卡
-                    Map<String, Object> red = new HashMap<String, Object>();
-                    red.put("price",redCharge.getChargePrice());
-                    red.put("termTime",DateTimeKit.format(DateTimeKit.addDays(redCharge.getValidityDay()),"yyyy-MM-dd"));
-                    data.put("red",red);
-                }
+                break;
             }
         }
         data.put("unions",unions);//可以升级的联盟列表
@@ -729,6 +770,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Map<String, Object> bindCard(UnionCardBindParamVO vo) throws Exception{
         if(CommonUtil.isNotEmpty(vo.getFollow()) && vo.getFollow()){
             if(CommonUtil.isEmpty(vo.getMemberId())){
@@ -736,7 +778,8 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             }
         }
         vo.getPhone();
-
+        //检验联盟有效期
+        unionMainService.checkUnionMainValid(vo.getUnionId());
         UnionMember member = unionMemberService.getByBusIdAndUnionId(vo.getBusId(),vo.getUnionId());
         if(member == null){
             throw new BusinessException("您没有该联盟权限");
@@ -744,35 +787,61 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         if(!unionMemberService.hasWriteAuthority(member)){
             throw new BusinessException("您没有该联盟权限");
         }
-        UnionCard card = this.getByPhoneAndMemberId(vo.getPhone(),member.getId());
-        if(card != null && DateTimeKit.laterThanNow(card.getValidity())){
+        UnionCard card = this.getByPhoneAndMemberId(vo.getPhone(),member.getId(), true);
+        if(card != null && card.getType().equals(vo.getCardType())){
             throw new BusinessException("该手机号已办理联盟卡");
         }
         UnionMainCharge charge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(vo.getUnionId(), vo.getCardType(), MainConstant.CHARGE_IS_AVAILABLE_YES);
         if(charge == null){
             throw new BusinessException("联盟未开启该联盟卡类型");
         }
-        if(vo.getCardType() == CardConstant.TYPE_BLACK){//黑卡
-            if(CommonUtil.isEmpty(charge.getChargePrice())){//不收费，直接办理
-                UnionCardRoot root = unionCardRootService.getByPhone(vo.getPhone());
-                if(root == null){
-                    root = unionCardRootService.createUnionCardRoot(vo.getPhone());
-                }
-                UnionCard unionCard = createUnionCard(root.getId(), vo.getCardType(), member.getId(), DateTimeKit.parse(CardConstant.CARD_FREE_VALIDITY,"yyyy-MM-dd HH:mm:ss"), 1);
+        Double price = charge.getChargePrice();//收费价格
+        Map<String, Object> data = new HashMap<String, Object>();
+        if(CommonUtil.isEmpty(price) || price == 0){//不收费，直接办理
+            UnionCard unionCard = this.getByPhoneAndMemberId(vo.getPhone(),member.getId(), false);
+            if(unionCard == null){
+               UnionCardRoot root = unionCardRootService.getByPhone(vo.getPhone());
+               Integer rootId = null;
+               if(root == null){
+                   UnionCardRoot unionCardRoot = unionCardRootService.createUnionCardRoot(vo.getPhone());
+                   rootId = unionCardRoot.getId();
+               }else {
+                   rootId = root.getId();
+               }
+                Date time = (charge.getValidityDay() == null || charge.getValidityDay() == 0) ? DateTimeKit.parse(CardConstant.CARD_FREE_VALIDITY,"yyyy-MM-dd HH:mm:ss" ): DateTimeKit.addDate(new Date(),charge.getValidityDay());
+                this.createUnionCard(rootId,vo.getCardType(),member.getId(),time,0);
                 if(CommonUtil.isNotEmpty(vo.getMemberId())){
-                    UnionCardBinding binding = unionCardBindingService.getByCardRootIdAndMemberId(root.getId(),vo.getMemberId());
+                    UnionCardBinding binding = unionCardBindingService.getByCardRootIdAndMemberId(rootId,vo.getMemberId());
                     if(binding == null){
-                        UnionCardBinding unionCardBinding = unionCardBindingService.createUnionCardBinding(root.getId(), vo.getMemberId());
+                        unionCardBindingService.createUnionCardBinding(rootId,vo.getMemberId());
+                    }
+                }
+            }else {
+                Integer rootId = unionCard.getRootId();
+                Date time = (charge.getValidityDay() == null || charge.getValidityDay() == 0) ? DateTimeKit.parse(CardConstant.CARD_FREE_VALIDITY,"yyyy-MM-dd HH:mm:ss" ): DateTimeKit.addDate(new Date(),charge.getValidityDay());
+                UnionCard upCard =  new UnionCard();
+                upCard.setId(unionCard.getId());
+                unionCard.setValidity(time);
+                unionCard.setIsCharge(CardConstant.IS_CHARGE_NO);
+                this.updateById(upCard);
+                if(CommonUtil.isNotEmpty(vo.getMemberId())){
+                    UnionCardBinding binding = unionCardBindingService.getByCardRootIdAndMemberId(rootId,vo.getMemberId());
+                    if(binding == null){
+                        unionCardBindingService.createUnionCardBinding(rootId,vo.getMemberId());
                     }
                 }
             }
-            return null;
+        }else {//收费
+            String only = String.valueOf(System.currentTimeMillis());
+            String statusKey = RedisKeyUtil.getBindCardPayStatusKey(only);
+            String paramKey = RedisKeyUtil.getBindCardPayParamKey(only);
+            Map<String,Object> param = new HashMap<String,Object>();
+            param.put("cardBindParam",vo);
+            data.put("qrurl","");
+            redisCacheUtil.set(paramKey, JSON.toJSONString(param), 360l);//5分钟
+            redisCacheUtil.set(statusKey,ConfigConstant.USER_ORDER_STATUS_001,300l);//等待扫码状态
         }
-        if(CommonUtil.isNotEmpty(charge.getChargePrice())){//不收费，直接办理
-            //扫码
-            //RedisKeyUtil.getBindCardStatusKey()
-        }
-        return null;
+        return data;
     }
 
     /**
@@ -798,7 +867,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     }
 
     @Override
-    public UnionCard getByPhoneAndMemberId(String phone, Integer memberId) throws Exception{
+    public UnionCard getByPhoneAndMemberId(String phone, Integer memberId, Boolean isValidity) throws Exception{
         UnionCardRoot root = unionCardRootService.getByPhone(phone);
         if(root == null){
             return null;
@@ -807,7 +876,9 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         wrapper.eq("root_id",root.getId());
         wrapper.eq("del_status",CommonConstant.DEL_STATUS_NO);
         wrapper.eq("member_id",memberId);
-
+        if(isValidity){
+            wrapper.gt("validity",new Date());
+        }
         return this.selectOne(wrapper);
     }
 

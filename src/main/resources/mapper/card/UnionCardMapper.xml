@@ -72,9 +72,6 @@
 		<if test="isCharge != null" >
 			AND is_charge = #{isCharge}
 		</if>
-		<if test="memberId != null" >
-			AND member_id != #{memberId}
-		</if>
 		<if test="isAvailable != null" >
 			AND is_available != #{isAvailable}
 		</if>

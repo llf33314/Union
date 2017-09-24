@@ -152,9 +152,10 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 * 根据手机号和盟员id获取升级的联盟卡
 	 * @param phone
 	 * @param memberId
+	 * @param isValidity  是否过期
 	 * @return
 	 */
-	UnionCard getByPhoneAndMemberId(String phone, Integer memberId) throws Exception;
+	UnionCard getByPhoneAndMemberId(String phone, Integer memberId, Boolean isValidity) throws Exception;
 
 	/**
 	 * 导出联盟卡的数据列表
