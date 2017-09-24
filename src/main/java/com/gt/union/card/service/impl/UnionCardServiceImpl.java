@@ -525,16 +525,24 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                                     im.remove();
                                     break;
                                 }else if(blackCharge.getIsOldCharge() == MainConstant.CHARGE_OLD_IS_YES && (redCharge != null || blackCharge.getIsCharge() == MainConstant.CHARGE_IS_CHARGE_YES)){//开启了旧会员收费,如果获取开启了红
-                                    if(blackCharge.getIsCharge() == MainConstant.CHARGE_IS_CHARGE_YES){//黑卡收费
+                                    //TODO 联盟卡收费
+                                    if(blackCharge.getIsCharge() == MainConstant.CHARGE_IS_CHARGE_YES){//开启黑卡收费
                                         int count = unionCardMapper.countByMemberIdsAndType(memberList, member.getId(), CardConstant.TYPE_BLACK, MainConstant.CHARGE_IS_CHARGE_YES, phone, MainConstant.CHARGE_IS_AVAILABLE_YES);
-                                        if(count == 0){//没有在其他盟员升级收费黑卡
+                                        if(count > 0){//在其他盟员升级收费黑卡
+                                            flag = true;
+                                        }else{
                                             flag = false;//标识需要设售卡佣金
                                         }
                                     }
-                                    if(redCharge != null){//红卡收费
+                                    if(redCharge != null){//开启红卡收费
+                                        //在其他盟员升级过红卡
                                         int count = unionCardMapper.countByMemberIdsAndType(memberList, member.getId(), CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, phone, MainConstant.CHARGE_IS_AVAILABLE_YES);
-                                        if(count == 0){//没有在其他盟员升级红卡
-                                            flag = false;//标识需要设售卡佣金
+                                        if(count > 0){//在其他盟员升级红卡
+                                            flag = true;
+                                        }else{
+                                            if(!flag){
+                                                flag = false;//标识需要设售卡佣金
+                                            }
                                         }
                                     }
                                 }
@@ -656,11 +664,11 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             unionId = member.getUnionId();
         }
         Map<String, Object> data = new HashMap<String, Object>();
-        UnionCard card = this.getByPhoneAndMemberId(phone,member.getId());//该盟员下升级的联盟卡
+        UnionCard card = this.getByPhoneAndMemberId(phone,member.getId());//该盟员下升级的联盟卡 不一定有效期内
         if(card == null){
             List<UnionMember> memberList = unionMemberService.listWriteByUnionId(member.getUnionId());
             List<UnionCard> cards = this.listByPhoneAndMembers(phone,memberList);//该手机号在其他盟员升级的联盟卡列表
-            if(ListUtil.isEmpty(cards)){//在其他盟员升级了
+            if(ListUtil.isEmpty(cards)){
                 UnionMainCharge redCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_RED, MainConstant.CHARGE_IS_AVAILABLE_YES);
                 UnionMainCharge blackCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_BLACK, MainConstant.CHARGE_IS_AVAILABLE_YES);
                 if(redCharge != null){
@@ -675,8 +683,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                     black.put("termTime",blackCharge.getIsCharge() == 1 ? DateTimeKit.format(DateTimeKit.addDays(blackCharge.getValidityDay()),"yyyy-MM-dd") : null);//收费的，有效期
                     data.put("black",black);
                 }
-            }else {
-                //都免费升级
+            }else {//在其他盟员升级了 且在有效期
                 UnionMainCharge redCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_RED, MainConstant.CHARGE_IS_AVAILABLE_YES);
                 UnionMainCharge blackCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_BLACK, MainConstant.CHARGE_IS_AVAILABLE_YES);
                 if(redCharge != null){
