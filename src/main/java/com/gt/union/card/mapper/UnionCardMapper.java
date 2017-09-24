@@ -49,7 +49,8 @@ public interface UnionCardMapper extends BaseMapper<UnionCard> {
 	 * @param memberId
 	 * @param type
 	 * @param isCharge
+	 * @param chargeIsChargeYes
 	 * @return
 	 */
-	int countByMemberIdsAndType(@Param("members") List<UnionMember> memberList, @Param("memberId") Integer memberId, @Param("type") Integer type, @Param("isCharge") Integer isCharge, @Param("phone") String phone);
+	int countByMemberIdsAndType(@Param("members") List<UnionMember> memberList, @Param("memberId") Integer memberId, @Param("type") Integer type, @Param("isCharge") Integer isCharge, @Param("phone") String phone, @Param("isAvailable")  int isAvailable);
 }

@@ -75,7 +75,9 @@
 		<if test="memberId != null" >
 			AND member_id != #{memberId}
 		</if>
+		<if test="isAvailable != null" >
+			AND is_available != #{isAvailable}
+		</if>
+		AND del_status = 0 AND validity &gt; NOW()
 	</select>
-
-
 </mapper>

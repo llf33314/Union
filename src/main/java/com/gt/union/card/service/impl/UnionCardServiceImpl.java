@@ -504,10 +504,8 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 }
             }else {//升级过联盟卡
                 boolean flag = true;//标识设售卡佣金 false：需要设售卡佣金  true：不需要设售卡佣金
-                int i = 0;//是否在本盟员升级了联盟卡  1：是 0：否
                 for(UnionCard card : cards){
                     if(card.getMemberId().equals(member.getId())) {//在本盟员下升级的
-                        i = 1;
                         if(card.getType() == CardConstant.TYPE_BLACK){//黑卡
                             if(CommonUtil.isNotEmpty(card.getIsCharge()) && card.getIsCharge() == CardConstant.IS_CHARGE_YES){//如果是收费升级了黑卡,判断是否开启了红卡，开启了可以升级上
                               if(redCharge == null){//未开启红卡，不可继续升级
@@ -515,7 +513,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                                   im.remove();
                                   break;
                               }else {//如果开启了红卡，则要判断售卡佣金比例
-                                  int count = unionCardMapper.countByMemberIdsAndType(memberList, member.getId(), CardConstant.TYPE_RED, card.getIsCharge(), phone);
+                                  int count = unionCardMapper.countByMemberIdsAndType(memberList, member.getId(), CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, phone, MainConstant.CHARGE_IS_AVAILABLE_YES);
                                   if(count == 0){//没有在其他盟员升级红卡
                                       flag = false;//标识需要设售卡佣金
                                   }
@@ -526,8 +524,19 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                                     flag = true;
                                     im.remove();
                                     break;
-                                }else if(blackCharge.getIsOldCharge() == MainConstant.CHARGE_OLD_IS_YES && redCharge != null){//开启了旧会员收费获取开启了红卡
-                                    flag = false;//标识需要设售卡佣金
+                                }else if(blackCharge.getIsOldCharge() == MainConstant.CHARGE_OLD_IS_YES && (redCharge != null || blackCharge.getIsCharge() == MainConstant.CHARGE_IS_CHARGE_YES)){//开启了旧会员收费,如果获取开启了红
+                                    if(blackCharge.getIsCharge() == MainConstant.CHARGE_IS_CHARGE_YES){//黑卡收费
+                                        int count = unionCardMapper.countByMemberIdsAndType(memberList, member.getId(), CardConstant.TYPE_BLACK, MainConstant.CHARGE_IS_CHARGE_YES, phone, MainConstant.CHARGE_IS_AVAILABLE_YES);
+                                        if(count == 0){//没有在其他盟员升级收费黑卡
+                                            flag = false;//标识需要设售卡佣金
+                                        }
+                                    }
+                                    if(redCharge != null){//红卡收费
+                                        int count = unionCardMapper.countByMemberIdsAndType(memberList, member.getId(), CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, phone, MainConstant.CHARGE_IS_AVAILABLE_YES);
+                                        if(count == 0){//没有在其他盟员升级红卡
+                                            flag = false;//标识需要设售卡佣金
+                                        }
+                                    }
                                 }
                             }
                         } else if(card.getType() == CardConstant.TYPE_RED){//红卡 //不可以再升级了
@@ -536,17 +545,13 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                             break;
                         }
                     }
+                    break;
                 }
-                if(i == 1){
-                    if(!flag){//在我的盟员下继续升级，判断需要设置佣金比例
-                        Boolean percent = isUnionCardChargePercent(member.getUnionId());
-                        if(!percent){//没有设置售卡佣金比例
-                            im.remove();
-                            break;
-                        }
+                if(!flag){//在我的盟员下继续升级，判断需要设置佣金比例
+                    Boolean percent = isUnionCardChargePercent(member.getUnionId());
+                    if(!percent){//没有设置售卡佣金比例
+                        im.remove();
                     }
-                }else if(i == 0){
-
                 }
             }
         }
