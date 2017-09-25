@@ -12,5 +12,6 @@ import com.gt.union.card.entity.UnionCardUpgradePay;
  * @since 2017-09-07
  */
 public interface IUnionCardUpgradePayService extends IService<UnionCardUpgradePay> {
-	
+
+	UnionCardUpgradePay createCardUpgreadePay(String orderNo, int payStatus, int payType, Double payMoney, String orderDesc);
 }

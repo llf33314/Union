@@ -184,4 +184,22 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 * @return
 	 */
 	Map<String,Object> getUnionCardIndex(Integer busId, Member member);
+
+	/**
+	 * 前台生成办理联盟卡支付二维码信息
+	 * @param busId
+	 * @param phone
+	 * @param memberId
+	 * @param unionId
+	 * @param cardType
+	 * @return
+	 */
+	Map<String,Object> createQRCode(Integer busId, String phone, Integer memberId, Integer unionId, Integer cardType) throws Exception;
+
+	/**
+	 * 办理联盟卡成功回调
+	 * @param encrypt
+	 * @param only
+	 */
+	void payBindCardSuccess(String encrypt, String only) throws Exception;
 }

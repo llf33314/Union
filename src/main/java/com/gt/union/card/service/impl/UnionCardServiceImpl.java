@@ -1,6 +1,7 @@
 package com.gt.union.card.service.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -11,15 +12,13 @@ import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.api.entity.result.UnionDiscountResult;
+import com.gt.union.brokerage.constant.BrokerageConstant;
+import com.gt.union.brokerage.entity.UnionBrokerageIncome;
+import com.gt.union.brokerage.service.IUnionBrokerageIncomeService;
 import com.gt.union.card.constant.CardConstant;
-import com.gt.union.card.entity.UnionCard;
-import com.gt.union.card.entity.UnionCardBinding;
-import com.gt.union.card.entity.UnionCardRoot;
+import com.gt.union.card.entity.*;
 import com.gt.union.card.mapper.UnionCardMapper;
-import com.gt.union.card.service.IUnionCardBindingService;
-import com.gt.union.card.service.IUnionCardIntegralService;
-import com.gt.union.card.service.IUnionCardRootService;
-import com.gt.union.card.service.IUnionCardService;
+import com.gt.union.card.service.*;
 import com.gt.union.card.vo.UnionCardBindParamVO;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
@@ -41,6 +40,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URLEncoder;
 import java.util.*;
 import java.util.regex.Pattern;
 
@@ -57,9 +57,6 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 
     @Autowired
     private IUnionMemberService unionMemberService;
-
-    @Autowired
-    private IUnionCardIntegralService unionCardIntegralService;
 
     @Autowired
     private IUnionMainService unionMainService;
@@ -99,6 +96,15 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 
     @Autowired
     private IBusUserService busUserService;
+
+    @Autowired
+    private IUnionCardUpgradePayService unionCardUpgradePayService;
+
+    @Autowired
+    private IUnionCardUpgradeService unionCardUpgradeService;
+
+    @Autowired
+    private IUnionBrokerageIncomeService unionBrokerageIncomeService;
 
     @Override
     public Page selectListByUnionId(Page page, final Integer unionId, final Integer busId, final String cardNo, final String phone) throws Exception {
@@ -839,19 +845,12 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 }
             }
         }else {//收费
-            String only = String.valueOf(System.currentTimeMillis());
-            String statusKey = RedisKeyUtil.getBindCardPayStatusKey(only);
-            String paramKey = RedisKeyUtil.getBindCardPayParamKey(only);
-            Map<String,Object> param = new HashMap<String,Object>();
             StringBuilder sb = new StringBuilder("?");
             sb.append("&phone=").append(vo.getPhone())
                     .append("&memberId=").append(vo.getMemberId())
                     .append("&unionId=").append(vo.getUnionId())
                     .append("&cardtype=").append(vo.getCardType());
-            param.put("cardBindParam",vo);
             data.put("qrurl",unionUrl + "/qrCode"+sb.toString());
-            redisCacheUtil.set(paramKey, JSON.toJSONString(param), 360l);//5分钟
-            redisCacheUtil.set(statusKey,ConfigConstant.USER_ORDER_STATUS_001,300l);//等待扫码状态
         }
         return data;
     }
@@ -931,6 +930,131 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     }
 
     @Override
+    public Map<String, Object> getUnionCardIndex(Integer busId, Member member) {
+        return null;
+    }
+
+    @Override
+    public Map<String, Object> createQRCode(Integer busId, String phone, Integer memberId, Integer unionId, Integer cardType) throws Exception{
+        UnionMainCharge charge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, cardType, MainConstant.CHARGE_IS_AVAILABLE_YES);
+        Double price = charge.getChargePrice();//收费价格
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("totalFee",price);
+        data.put("busId", PropertiesUtil.getDuofenBusId());
+        data.put("sourceType", 1);//是否墨盒支付
+        data.put("payWay",0);//系统判断支付方式
+        data.put("isreturn",0);//0：不需要同步跳转
+        data.put("model", ConfigConstant.PAY_MODEL);
+        String only = String.valueOf(System.currentTimeMillis());
+        String orderNo = CardConstant.ORDER_PREFIX + only;
+        String encrypt = EncryptUtil.encrypt(PropertiesUtil.getEncryptKey(), orderNo);
+        encrypt = URLEncoder.encode(encrypt,"UTF-8");
+        WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(PropertiesUtil.getDuofenBusId());
+        data.put("notifyUrl", PropertiesUtil.getUnionUrl() + "/unionCard/79B4DE7C/paymentSuccess/"+encrypt + "/" + only);
+        data.put("orderNum", orderNo);//订单号
+        data.put("payBusId", busId);//支付的商家id
+        data.put("isSendMessage",0);//不推送
+        data.put("appid",publicUser.getAppid());//appid
+        data.put("desc", "办理联盟卡");
+        data.put("appidType",0);//公众号
+        data.put("only", only);
+        data.put("unionId",unionId);
+        data.put("phone",phone);
+        data.put("memberId",memberId);
+        data.put("cardType",cardType);
+        String statusKey = RedisKeyUtil.getBindCardPayStatusKey(only);
+        String paramKey = RedisKeyUtil.getBindCardPayParamKey(only);
+        redisCacheUtil.set(paramKey, JSON.toJSONString(data), 360l);//5分钟
+        redisCacheUtil.set(statusKey,ConfigConstant.USER_ORDER_STATUS_001,300l);//等待扫码状态
+        return data;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void payBindCardSuccess(String encrypt, String only) throws Exception{
+        //解密订单号
+        String orderNo = EncryptUtil.decrypt(PropertiesUtil.getEncryptKey(),encrypt);
+        String statusKey = RedisKeyUtil.getBindCardPayStatusKey(only);
+        String paramKey = RedisKeyUtil.getBindCardPayParamKey(only);
+        Object obj = redisCacheUtil.get(paramKey);
+        Map<String,Object> result = JSONObject.parseObject(obj.toString(),Map.class);
+        Double payMoney = CommonUtil.toDouble(result.get("totalFee"));
+        Integer unionId = CommonUtil.toInteger(result.get("unionId"));
+        Integer cardType = CommonUtil.toInteger(result.get("cardType"));
+        Integer payBusId = CommonUtil.toInteger(result.get("payBusId"));
+        Integer memberId = CommonUtil.toInteger(CommonUtil.isEmpty(result.get("memberId"))?0 : result.get("memberId"));
+        String phone = CommonUtil.toString(result.get("phone"));
+        String orderDesc = CommonUtil.toString(result.get("desc"));
+        UnionCardUpgradePay pay = unionCardUpgradePayService.createCardUpgreadePay(orderNo, 2, 1, payMoney, orderDesc);
+        UnionMember member = unionMemberService.getByBusIdAndUnionId(payBusId,unionId);
+        UnionCard unionCard = this.getByPhoneAndMemberId(phone,member.getId(), false);
+        UnionMainCharge charge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, cardType, MainConstant.CHARGE_IS_AVAILABLE_YES);
+        Integer rootId = null;
+        Integer cardId = null;
+        Date validity = null;
+        if(unionCard == null){
+            UnionCardRoot root = unionCardRootService.getByPhone(phone);
+            if(root == null){
+                UnionCardRoot unionCardRoot = unionCardRootService.createUnionCardRoot(phone);
+                rootId = unionCardRoot.getId();
+            }else {
+                rootId = root.getId();
+            }
+            Date time = (charge.getValidityDay() == null || charge.getValidityDay() == 0) ? DateTimeKit.parse(CardConstant.CARD_FREE_VALIDITY,"yyyy-MM-dd HH:mm:ss" ): DateTimeKit.addDate(new Date(),charge.getValidityDay());
+            UnionCard card = this.createUnionCard(rootId,cardType,member.getId(),time,0);
+            if(memberId != 0){
+                UnionCardBinding binding = unionCardBindingService.getByCardRootIdAndMemberId(rootId,memberId);
+                if(binding == null){
+                    unionCardBindingService.createUnionCardBinding(rootId,memberId);
+                }
+            }
+            cardId = card.getId();
+            validity = card.getValidity();
+        }else {
+            rootId = unionCard.getRootId();
+            cardId = unionCard.getId();
+            Date time = (charge.getValidityDay() == null || charge.getValidityDay() == 0) ? DateTimeKit.parse(CardConstant.CARD_FREE_VALIDITY,"yyyy-MM-dd HH:mm:ss" ): DateTimeKit.addDate(new Date(),charge.getValidityDay());
+            UnionCard upCard =  new UnionCard();
+            upCard.setId(unionCard.getId());
+            //收费黑卡升红卡
+            if(unionCard.getType() == CardConstant.TYPE_BLACK && unionCard.getIsCharge() == CardConstant.IS_CHARGE_YES && cardType == CardConstant.TYPE_RED){
+                unionCard.setValidity(DateTimeKit.addDays(unionCard.getValidity(),charge.getValidityDay()));
+            }else {
+                unionCard.setValidity(time);
+            }
+            unionCard.setIsCharge(CardConstant.IS_CHARGE_NO);
+            this.updateById(upCard);
+            validity = upCard.getValidity();
+        }
+        //绑定联盟卡和粉丝信息
+        if(memberId != 0){
+            UnionCardBinding binding = unionCardBindingService.getByCardRootIdAndMemberId(rootId,memberId);
+            if(binding == null){
+                unionCardBindingService.createUnionCardBinding(rootId,memberId);
+            }
+        }
+        UnionCardUpgrade upgrade = unionCardUpgradeService.createCardUpgrade(cardId, member.getId(), cardType, validity, pay.getId());
+        List<UnionMember> list = unionMemberService.listWriteByUnionId(member.getUnionId());
+        //添加售卡分成
+        List<UnionBrokerageIncome> incomes = new ArrayList<UnionBrokerageIncome>();
+        for(UnionMember unionMember : list){
+            Double money = BigDecimalUtil.multiply(payMoney,unionMember.getCardDividePercent()).doubleValue();
+            UnionBrokerageIncome income = new UnionBrokerageIncome();
+            income.setType(BrokerageConstant.SOURCE_TYPE_CARD);
+            income.setCreatetime(new Date());
+            income.setDelStatus(CommonConstant.DEL_STATUS_NO);
+            income.setBusId(unionMember.getBusId());
+            income.setCardId(cardId);
+            income.setMoney(money);
+            incomes.add(income);
+        }
+        unionBrokerageIncomeService.insertBatch(incomes);
+        redisCacheUtil.remove(paramKey);
+        redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_003, 60l);//支付成功
+
+    }
+
+    @Override
     public HSSFWorkbook exportCardList(String[] titles, String[] contentName, List<Map<String, Object>> list) {
         HSSFWorkbook wb = new HSSFWorkbook();
         HSSFCellStyle styleCenter = wb.createCellStyle();
@@ -969,12 +1093,8 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         return wb;
     }
 
-	@Override
-	public Map<String, Object> getUnionCardIndex(Integer busId, Member member) {
-		return null;
-	}
 
-	/**
+    /**
      * 创建sheet
      * @param titles
      * @param wb

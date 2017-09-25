@@ -80,6 +80,9 @@ public class UnionCardController {
 	@Value("${socket.key}")
 	private String socketKey;
 
+	@Value("${wxmp.url}")
+	private String wxmpUrl;
+
 	@ApiOperation(value = "获取盟员的联盟卡列表", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String listByUnionId(Page page, HttpServletRequest request
@@ -313,38 +316,64 @@ public class UnionCardController {
 
 	@ApiOperation(value = "生成办理联盟卡支付订单二维码", produces = "application/json;charset=UTF-8")
 	@SysLogAnnotation(op_function = "2", description = "生成办理联盟卡支付订单")
-	@RequestMapping(value = "/qrCode", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/qrCode", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String createUnionQRCode(HttpServletRequest request, HttpServletResponse response, @ApiParam(name="phone", value = "手机号", required = true) @RequestParam("phone") String phone,
 									@ApiParam(name="memberId", value = "关注后的用户id", required = false) @RequestParam( name= "memberId", required = false) Integer memberId,
 									@ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam("unionId") Integer unionId,
 									@ApiParam(name="cardType", value = "联盟卡类型 1：黑卡 2：红卡", required = true) @RequestParam("cardType") Integer cardType
 									) {
 		try {
-//			BusUser user = SessionUtils.getLoginUser(request);
-//			Map<String,Object> data = unionCardService.createQRCode(user, id);
-//			StringBuilder sb = new StringBuilder("?");
-//			sb.append("totalFee="+data.get("totalFee"));
-//			sb.append("&model="+data.get("model"));
-//			sb.append("&busId="+data.get("busId"));
-//			sb.append("&appidType="+data.get("appidType"));
-//			sb.append("&appid=" + data.get("appid"));
-//			sb.append("&orderNum="+data.get("orderNum"));
-//			sb.append("&desc="+data.get("desc"));
-//			sb.append("&isreturn="+data.get("isreturn"));
-//			sb.append("&notifyUrl="+data.get("notifyUrl"));
-//			sb.append("&isSendMessage="+data.get("isSendMessage"));
-//			sb.append("&payWay="+data.get("payWay"));
-//			sb.append("&sourceType="+data.get("sourceType"));
-//			Map<String, Object> result = new HashMap<String, Object>();
-//			result.put("url",wxmpUrl + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
-//			result.put("only",data.get("only"));
-//			return GTJsonResult.instanceSuccessMsg(result).toString();
-			return "";
+			BusUser user = SessionUtils.getLoginUser(request);
+			Integer busId = user.getId();
+			if(user.getPid() != null && user.getPid() != 0){
+				busId = user.getPid();
+			}
+			Map<String,Object> data = unionCardService.createQRCode(busId, phone, memberId,unionId, cardType);
+			StringBuilder sb = new StringBuilder("?");
+			sb.append("totalFee="+data.get("totalFee"));
+			sb.append("&model="+data.get("model"));
+			sb.append("&busId="+data.get("busId"));
+			sb.append("&appidType="+data.get("appidType"));
+			sb.append("&appid=" + data.get("appid"));
+			sb.append("&orderNum="+data.get("orderNum"));
+			sb.append("&desc="+data.get("desc"));
+			sb.append("&isreturn="+data.get("isreturn"));
+			sb.append("&notifyUrl="+data.get("notifyUrl"));
+			sb.append("&isSendMessage="+data.get("isSendMessage"));
+			sb.append("&payWay="+data.get("payWay"));
+			sb.append("&sourceType="+data.get("sourceType"));
+			Map<String, Object> result = new HashMap<String, Object>();
+			result.put("url",wxmpUrl + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
+			result.put("only",data.get("only"));
+			return GTJsonResult.instanceSuccessMsg(result).toString();
 		} catch (Exception e) {
 			logger.error("生成办理联盟卡支付订单二维码错误：" + e);
 			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
 		}
 	}
 
+
+	@RequestMapping(value = "/79B4DE7C/paymentSuccess/{encrypt}/{only}")
+	public String payCreateUnionSuccess(HttpServletRequest request, HttpServletResponse response, @PathVariable(name = "encrypt", required = true) String encrypt, @PathVariable(name = "only", required = true) String only) {
+		Map<String,Object> data = new HashMap<String,Object>();
+		try {
+			logger.info("前台办理联盟卡支付成功，订单encrypt------------------"+encrypt);
+			logger.info("前台办理联盟卡支付成功，only------------------"+only);
+			unionCardService.payBindCardSuccess(encrypt, only);
+			data.put("code",0);
+			data.put("msg","成功");
+			return JSON.toJSONString(data);
+		} catch (BaseException e) {
+			logger.error("办理联盟卡支付成功后，产生错误：" + e);
+			data.put("code",-1);
+			data.put("msg",e.getErrorMsg());
+			return JSON.toJSONString(data);
+		} catch (Exception e) {
+			logger.error("办理联盟卡支付成功后，产生错误：" + e);
+			data.put("code",-1);
+			data.put("msg","失败");
+			return JSON.toJSONString(data);
+		}
+	}
 
 }

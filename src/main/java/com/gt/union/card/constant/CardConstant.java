@@ -48,4 +48,10 @@ public interface CardConstant {
      * 免费卡的有效期
      */
     String CARD_FREE_VALIDITY = "2030-09-01 14:00:00";
+
+    /**
+     * 联盟卡
+     */
+    String ORDER_PREFIX = "LMY";
+
 }
