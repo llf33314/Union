@@ -88,9 +88,6 @@ public class WxPayServiceImpl implements WxPayService {
         params.put("desc", "联盟佣金提现");
         params.put("model", ConfigConstant.ENTERPRISE_PAY_MODEL);
         params.put("busId", busId);
-        params.put("mchid", wxPublicUsers.getMchId());
-        params.put("withdrawalsBusId", busId);
-        params.put("memberId", memberId);
         params.put("amount", fee);
         Map<String,Object> data = new HashMap<String,Object>();
         data.put("reqdata",params);
