@@ -1,0 +1,20 @@
+package com.gt.union.common.config;
+
+import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
+/**
+ * Created by Administrator on 2017/9/25 0025.
+ */
+@Configuration
+public class DefaultView extends WebMvcConfigurerAdapter {
+	@Override
+	public void addViewControllers( ViewControllerRegistry registry ) {
+		registry.addViewController( "/" ).setViewName( "forward:/index.html" );
+		registry.addViewController( "/brokerage" ).setViewName( "forward:/brokerageIndex.html" );
+		registry.setOrder( Ordered.HIGHEST_PRECEDENCE );
+		super.addViewControllers( registry );
+	}
+}
