@@ -243,18 +243,30 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
 
         //获取一周统计数据
         List<Map<String, Map<String, Double>>> brokerageInWeek = new ArrayList<>();
-        int mondayOffset = 0 - ((Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 2 + 7) % 7);//例如今天是星期四，则mondayOffSet=-3
-        Date mondayInThisWeek = DateUtil.addDays(DateUtil.getCurrentDate(), mondayOffset);
-        for (; mondayOffset <= 0; mondayOffset++) {
-            String strDate = DateUtil.getDateString(mondayInThisWeek, DateUtil.DATE_PATTERN);
-            String strDateBegin = strDate + " 00:00:00";
-            String strDateEnd = strDate + " 23:59:59";
-            Map<String, Double> brokerageInDayMap = getPaidBrokerageBetweenDay(memberId, strDateBegin, strDateEnd);
-            String strWeek = DateUtil.getWeek(mondayInThisWeek);
-            Map<String, Map<String, Double>> weekMap = new HashMap<>();
-            weekMap.put(strWeek, brokerageInDayMap);
-            brokerageInWeek.add(weekMap);
-            mondayInThisWeek = DateUtil.addDays(mondayInThisWeek, 1);
+        int mondayOffset = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 2 + 7) % 7;//例如今天是星期四，则mondayOffSet=3
+        Date mondayInThisWeek = DateUtil.addDays(DateUtil.getCurrentDate(), 0 - mondayOffset);
+        Date tempDate;
+        for (int i = 0; i <= mondayOffset; i++) { //获取周一到今天的统计数据
+            tempDate = DateUtil.addDays(mondayInThisWeek, i);
+            String day = DateUtil.getDateString(tempDate, DateUtil.DATE_PATTERN);
+            String dayBegin = day + " 00:00:00";
+            String dayEnd = day + " 23:59:59";
+            Map<String, Double> brokerageInDayMap = getPaidBrokerageBetweenDay(memberId, dayBegin, dayEnd);
+            String enDayInWeek = DateUtil.getEnDayInWeek(tempDate);
+            Map<String, Map<String, Double>> dayMap = new HashMap<>();
+            dayMap.put(enDayInWeek, brokerageInDayMap);
+            brokerageInWeek.add(dayMap);
+        }
+        for (int j = mondayOffset + 1; j < 7; j++) { //补充今天到周日的统计数据
+            tempDate = DateUtil.addDays(mondayInThisWeek, j);
+            String day = DateUtil.getDateString(tempDate, DateUtil.DATE_PATTERN);
+            String enDayInWeek = DateUtil.getEnDayInWeek(tempDate);
+            Map<String, Double> brokerageInDayMap = new HashMap<>();
+            brokerageInDayMap.put("paidBrokerageIncome", Double.valueOf(0D));
+            brokerageInDayMap.put("paidBrokerageExpense", Double.valueOf(0D));
+            Map<String, Map<String, Double>> dayMap = new HashMap<>();
+            dayMap.put(enDayInWeek, brokerageInDayMap);
+            brokerageInWeek.add(dayMap);
         }
         resultMap.put("brokerageInWeek", brokerageInWeek);
         return resultMap;
@@ -268,7 +280,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
      * @param strDateEnd   {not null} 结束时间
      * @return
      */
-    private Map<String, Double> getPaidBrokerageBetweenDay(final Integer memberId, String strDateBegin, String strDateEnd) {
+    private Map<String, Double> getPaidBrokerageBetweenDay(final Integer memberId, final String strDateBegin, final String strDateEnd) {
         if (memberId != null || StringUtil.isNotEmpty(strDateBegin) || StringUtil.isNotEmpty(strDateEnd)) {
             Map<String, Double> resultMap = new HashMap<>();
             //已结算的收入佣金
@@ -284,6 +296,8 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                             .append("    WHERE bi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
                             .append("      AND bi.type = ").append(BrokerageConstant.SOURCE_TYPE_OPPORTUNITY)
                             .append("      AND bi.opportunity_id = o.id")
+                            .append("      AND bi.createtime >= '").append(strDateBegin).append("'")
+                            .append("      AND bi.createtime < '").append(strDateEnd).append("'")
                             .append("  )");
                     return sbSqlSegment.toString();
                 }
@@ -306,6 +320,8 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                             .append("    WHERE bi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
                             .append("      AND bi.type = ").append(BrokerageConstant.SOURCE_TYPE_OPPORTUNITY)
                             .append("      AND bi.opportunity_id = o.id")
+                            .append("      AND bi.createtime >= '").append(strDateBegin).append("'")
+                            .append("      AND bi.createtime < '").append(strDateEnd).append("'")
                             .append("  )");
                     return sbSqlSegment.toString();
                 }

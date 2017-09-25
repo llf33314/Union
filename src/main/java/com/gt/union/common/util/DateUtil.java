@@ -71,24 +71,16 @@ public class DateUtil {
     }
 
     /**
-     * 获取当前时间的星期几形式
-     * @return
-     */
-    public static final String getCurrentWeek(){
-        return getWeek(getCurrentDate());
-    }
-
-    /**
-     * 获取指定时间的星期几形式
+     * 获取指定时间的星期几形式，中文
      * @param date
      * @return
      */
-    public static final String getWeek(Date date) {
+    public static final String getChDayInWeek(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         switch (calendar.get(Calendar.DAY_OF_WEEK)) {
             case 1:
-                return "星期日";
+                return "星期天";
             case 2:
                 return "星期一";
             case 3:
@@ -101,6 +93,34 @@ public class DateUtil {
                 return "星期五";
             case 7:
                 return "星期六";
+            default:
+                return "";
+        }
+    }
+
+    /**
+     * 获取指定时间的星期几形式，英文
+     * @param date
+     * @return
+     */
+    public static final String getEnDayInWeek(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        switch (calendar.get(Calendar.DAY_OF_WEEK)) {
+            case 1:
+                return "Sunday";
+            case 2:
+                return "Monday";
+            case 3:
+                return "Tuesday";
+            case 4:
+                return "Wednesday";
+            case 5:
+                return "Thursday";
+            case 6:
+                return "Friday";
+            case 7:
+                return "Saturday";
             default:
                 return "";
         }
