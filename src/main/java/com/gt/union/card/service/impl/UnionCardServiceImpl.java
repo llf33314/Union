@@ -85,6 +85,9 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     @Value("${wxmp.company}")
     private String company;
 
+    @Value("${union.url}")
+    private String unionUrl;
+
     @Autowired
     private SmsService smsService;
 
@@ -790,7 +793,10 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         }
         UnionCard card = this.getByPhoneAndMemberId(vo.getPhone(),member.getId(), true);
         if(card != null && card.getType().equals(vo.getCardType())){
-            throw new BusinessException("该手机号已办理联盟卡");
+            UnionMainCharge blackCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(vo.getUnionId(), CardConstant.TYPE_BLACK, MainConstant.CHARGE_IS_AVAILABLE_YES);
+            if(!(card.getIsCharge() == CardConstant.IS_CHARGE_NO && blackCharge.getIsOldCharge() == MainConstant.CHARGE_OLD_IS_YES && card.getType() == CardConstant.TYPE_BLACK)){
+                throw new BusinessException("该手机号已办理联盟卡");
+            }
         }
         UnionMainCharge charge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(vo.getUnionId(), vo.getCardType(), MainConstant.CHARGE_IS_AVAILABLE_YES);
         if(charge == null){
@@ -837,8 +843,13 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             String statusKey = RedisKeyUtil.getBindCardPayStatusKey(only);
             String paramKey = RedisKeyUtil.getBindCardPayParamKey(only);
             Map<String,Object> param = new HashMap<String,Object>();
+            StringBuilder sb = new StringBuilder("?");
+            sb.append("&phone=").append(vo.getPhone())
+                    .append("&memberId=").append(vo.getMemberId())
+                    .append("&unionId=").append(vo.getUnionId())
+                    .append("&cardtype=").append(vo.getCardType());
             param.put("cardBindParam",vo);
-            data.put("qrurl","");
+            data.put("qrurl",unionUrl + "/qrCode"+sb.toString());
             redisCacheUtil.set(paramKey, JSON.toJSONString(param), 360l);//5分钟
             redisCacheUtil.set(statusKey,ConfigConstant.USER_ORDER_STATUS_001,300l);//等待扫码状态
         }

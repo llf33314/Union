@@ -71,7 +71,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	 * @return
 	 */
 	@ApiOperation(value = "佣金平台登录", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/79B4DE7C/login", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String login(HttpServletRequest request, HttpServletResponse response, @ApiParam(name="type", value = "登录类型 1：商家账号 2：手机和验证码", required = true) @RequestParam("type") Integer type
 									,@ApiParam(name="username", value = "商家账号", required = false) @RequestParam(name = "username", required = false) String username
 									,@ApiParam(name="userpwd", value = "商家账号密码", required = false) @RequestParam(name = "userpwd", required = false) String userpwd
@@ -93,7 +93,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 
 
 	@ApiOperation(value = "获取佣金平台手机登录验证码", notes = "获取佣金平台手机登录验证码", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/phone/{phone}", produces = "application/json;charset=UTF-8",method = RequestMethod.GET)
+	@RequestMapping(value = "/79B4DE7C/phone/{phone}", produces = "application/json;charset=UTF-8",method = RequestMethod.GET)
 	public String getCodeByPhone(HttpServletRequest request, HttpServletResponse response
 			, @ApiParam(name="phone", value = "手机号", required = true) @PathVariable String phone) {
 		try {

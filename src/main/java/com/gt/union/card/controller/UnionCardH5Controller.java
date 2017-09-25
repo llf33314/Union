@@ -74,7 +74,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 	}
 
 	@ApiOperation(value = "获取联盟卡手机登录验证码", notes = "获取联盟卡手机登录验证码", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/login/{phone}", produces = "application/json;charset=UTF-8",method = RequestMethod.GET)
+	@RequestMapping(value = "/79B4DE7C/login/{phone}", produces = "application/json;charset=UTF-8",method = RequestMethod.GET)
 	public String getCodeByLoginPhone(HttpServletRequest request, HttpServletResponse response
 			, @ApiParam(name="phone", value = "手机号", required = true) @PathVariable String phone) {
 		try {
