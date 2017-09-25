@@ -97,15 +97,10 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	public String getCodeByPhone(HttpServletRequest request, HttpServletResponse response
 			, @ApiParam(name="phone", value = "手机号", required = true) @PathVariable String phone) {
 		try {
-			BusUser user = SessionUtils.getLoginUser(request);
 			//生成验证码
 			String code = RandomKit.getRandomString(6, 0);
-			Integer busId = user.getId();
-			if (user.getPid() != null && user.getPid() != 0) {
-				busId = user.getPid();
-			}
 			if (CommonUtil.isNotEmpty(phone)) {
-				PhoneMessage phoneMessage = new PhoneMessage(busId,phone,"佣金平台手机登录验证码:" + code);
+				PhoneMessage phoneMessage = new PhoneMessage(0,phone,"佣金平台手机登录验证码:" + code);
 				Map param = new HashMap<String,Object>();
 				param.put("reqdata",phoneMessage);
 				if(smsService.sendSms(param) == 0){
