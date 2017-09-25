@@ -92,8 +92,10 @@ public class WxPayServiceImpl implements WxPayService {
         params.put("withdrawalsBusId", busId);
         params.put("memberId", memberId);
         params.put("amount", fee);
+        Map<String,Object> data = new HashMap<String,Object>();
+        data.put("reqdata",params);
         try {
-            Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(params),url, Map.class, ConfigConstant.WXMP_SIGN_KEY);
+            Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(data),url, Map.class, ConfigConstant.WXMP_SIGN_KEY);
             if(CommonUtil.isEmpty(result)){
                 return 0;
             }
