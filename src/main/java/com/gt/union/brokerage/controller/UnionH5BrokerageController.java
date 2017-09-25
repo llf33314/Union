@@ -202,17 +202,17 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 				  @ApiParam(name = "url", value = "登录授权后回调的url" ,required = true) @RequestParam(value = "url", required = true) String url){
 		try{
 			BusUser user = SessionUtils.getLoginUser(request);
-			Member member = SessionUtils.getLoginMember(request);
-			if(CommonUtil.isEmpty(member)){
-				String redirectUrl = this.authorizeMemberWx(request,unionUrl + url);
-				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
-			}
-			if(!member.getBusid().equals(duofenBusId)){
-				String redirectUrl = this.authorizeMemberWx(request,unionUrl + url);
-				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
-			}
+//			Member member = SessionUtils.getLoginMember(request);
+//			if(CommonUtil.isEmpty(member)){
+//				String redirectUrl = this.authorizeMemberWx(request,unionUrl + url);
+//				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
+//			}
+//			if(!member.getBusid().equals(duofenBusId)){
+//				String redirectUrl = this.authorizeMemberWx(request,unionUrl + url);
+//				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
+//			}
 			UnionVerifier verifier = com.gt.union.common.util.SessionUtils.getVerifier(request);
-			int result = wxPayService.enterprisePayment(member.getBusid(), member.getId(), member.getOpenid(), fee, verifier == null ? null : verifier.getId());
+			int result = wxPayService.enterprisePayment(33, 998, "obeLSs_hPo9uvWTHvp4b9MAKmwRk", fee, verifier == null ? null : verifier.getId());
 			if(result == 1){
 				return GTJsonResult.instanceSuccessMsg().toString();
 			}else {
@@ -424,16 +424,16 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 							,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) {
 		try {
 			BusUser user = SessionUtils.getLoginUser(request);
-			Member member = SessionUtils.getLoginMember(request);
-			if(CommonUtil.isEmpty(member)){
-				String redirectUrl = this.authorizeMemberWx(request,unionUrl + url);
-				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
-			}
-			if(!member.getBusid().equals(duofenBusId)){
-				String redirectUrl = this.authorizeMemberWx(request,unionUrl + url);
-				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
-			}
-			String payUrl = unionH5BrokerageService.payOpportunity(user.getId(),id, url, member.getId());
+//			Member member = SessionUtils.getLoginMember(request);
+//			if(CommonUtil.isEmpty(member)){
+//				String redirectUrl = this.authorizeMemberWx(request,unionUrl + url);
+//				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
+//			}
+//			if(!member.getBusid().equals(duofenBusId)){
+//				String redirectUrl = this.authorizeMemberWx(request,unionUrl + url);
+//				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
+//			}
+			String payUrl = unionH5BrokerageService.payOpportunity(user.getId(),id, url, 998);
 			return GTJsonResult.instanceSuccessMsg(payUrl).toString();
 		} catch (BaseException e) {
 			logger.error("", e);
@@ -468,16 +468,16 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 							,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) {
 		try {
 			BusUser user = SessionUtils.getLoginUser(request);
-			Member member = SessionUtils.getLoginMember(request);
-			if(CommonUtil.isEmpty(member)){
-				String redirectUrl = this.authorizeMemberWx(request,unionUrl + url);
-				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
-			}
-			if(!member.getBusid().equals(duofenBusId)){
-				String redirectUrl = this.authorizeMemberWx(request,unionUrl + url);
-				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
-			}
-			String payUrl = unionH5BrokerageService.payAllOpportunity(user.getId(), unionId, fee, url, member.getId());
+//			Member member = SessionUtils.getLoginMember(request);
+//			if(CommonUtil.isEmpty(member)){
+//				String redirectUrl = this.authorizeMemberWx(request,unionUrl + url);
+//				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
+//			}
+//			if(!member.getBusid().equals(duofenBusId)){
+//				String redirectUrl = this.authorizeMemberWx(request,unionUrl + url);
+//				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
+//			}
+			String payUrl = unionH5BrokerageService.payAllOpportunity(user.getId(), unionId, fee, url, 998);
 			return GTJsonResult.instanceSuccessMsg(payUrl).toString();
 		} catch (BaseException e) {
 			logger.error("", e);
