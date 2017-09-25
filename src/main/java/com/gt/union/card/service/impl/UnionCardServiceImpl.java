@@ -34,6 +34,11 @@ import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.entity.UnionMemberDiscount;
 import com.gt.union.member.service.IUnionMemberDiscountService;
 import com.gt.union.member.service.IUnionMemberService;
+import com.gt.union.preferential.constant.PreferentialConstant;
+import com.gt.union.preferential.entity.UnionPreferentialItem;
+import com.gt.union.preferential.entity.UnionPreferentialProject;
+import com.gt.union.preferential.service.IUnionPreferentialItemService;
+import com.gt.union.preferential.service.IUnionPreferentialProjectService;
 import org.apache.poi.hssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -106,6 +111,12 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     @Autowired
     private IUnionBrokerageIncomeService unionBrokerageIncomeService;
 
+    @Autowired
+    private IUnionPreferentialItemService unionPreferentialItemService;
+
+    @Autowired
+    private IUnionPreferentialProjectService unionPreferentialProjectService;
+
     @Override
     public Page selectListByUnionId(Page page, final Integer unionId, final Integer busId, final String cardNo, final String phone) throws Exception {
         if (unionId == null) {
@@ -175,49 +186,37 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 
 	@Override
 	public Map<String, Object> getUnionCardInfoByCardNo(String cardNo, Integer busId, Integer unionId) throws Exception{
-		Map<String,Object> data = new HashMap<String,Object>();
 		UnionCardRoot root = unionCardRootService.getByCardNo(cardNo);
 		if(root == null){
-			throw new BusinessException("该联盟卡号不存在");
+			throw new BusinessException("该联盟卡不存在");
 		}
         List<UnionMember> members = unionMemberService.listWriteWithValidUnionByBusId(busId);
         if(ListUtil.isEmpty(members)){
             throw new BusinessException("您没有有效的联盟");
         }
 
-        Double discount = dictService.getDefaultDiscount();
         Map<String,Object> result = this.getByMinDiscountByCard(root.getId(), busId, members ,unionId);
         if(CommonUtil.isEmpty(result)){
             throw new BusinessException("没有可用的联盟卡");
         }
-        if(CommonUtil.isEmpty(result.get("discount"))){//没有设置联盟卡
-
-        }
-        //TODO 根据联盟id查询具有写权限的盟员列表
-        //unionMemberService.list
-
-		/*
-		List<UnionMember> memberList = unionMemberService.listValidByUnionIds(unionIds);
-		List<Integer> memberIds = new ArrayList<Integer>();
-		for(UnionMember member : memberList){
-			memberIds.add(member.getId());
-		}
-		//查询用该rootId升级的联盟卡
-		List<UnionCard> cards = this.listByCardRootIdAndMemberIds(root.getId(),memberIds);
-		//得到有效的联盟卡列表
-		cards = getValidUnionCards(cards);
-		if(ListUtil.isEmpty(cards)){
-			throw new BusinessException("没有有效的联盟卡");
-		}
-		data.put("cardId",);
-		data.put("cardNo",cardNo);
-		data.put("integral",root.getIntegral());*/
-
-		return data;
+		return result;
 	}
 
     @Override
-    public Map<String, Object> getUnionCardInfoByPhone(String phone, Integer busId, Integer unionId) {
+    public Map<String, Object> getUnionCardInfoByPhone(String phone, Integer busId, Integer unionId) throws Exception{
+        UnionCardRoot root = unionCardRootService.getByPhone(phone);
+        if(root == null){
+            throw new BusinessException("该联盟卡不存在");
+        }
+        List<UnionMember> members = unionMemberService.listWriteWithValidUnionByBusId(busId);
+        if(ListUtil.isEmpty(members)){
+            throw new BusinessException("您没有有效的联盟");
+        }
+
+        Map<String,Object> result = this.getByMinDiscountByCard(root.getId(), busId, members ,unionId);
+        if(CommonUtil.isEmpty(result)){
+            throw new BusinessException("没有可用的联盟卡");
+        }
         return null;
     }
 
@@ -439,35 +438,64 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 }
                 Map<String,Object> discountMap = unionCardMapper.getByMinDiscountByCardList(list, unionMember.getId());//获取设置最低折扣
                 if(discountMap == null){
-
+                    discountMap = unionCardMapper.getByEarliestByCardList(list);
+                    discountMap.put("fromMemberId",unionMember.getId());
+                    discountMap.put("discount",dictService.getDefaultDiscount());
+                    discountMap.put("unionId",unionMember.getUnionId());
                 }else{
-                    discountList.add(discountMap);
+                    discountMap.put("unionId",unionMember.getUnionId());
                 }
+                discountList.add(discountMap);
             }else {
                 it.remove();
             }
         }
         if(ListUtil.isEmpty(members)){
-
+            throw new BusinessException("您没有有效的联盟");
         }
-        for(UnionMember unionMember : members){
-            List<UnionMember> memberList = unionMemberService.listWriteByUnionId(unionMember.getUnionId());
-            List<Integer> memberIds = new ArrayList<Integer>();
-            for(UnionMember member : memberList){
-                memberIds.add(member.getId());
+        Map<String,Object> disMap = discountList.get(0);
+        Integer memberId = null;
+        if(unionId == null){
+            Double discount = CommonUtil.toDouble(discountList.get(0).get("discount"));
+            int flag = 0;
+            for(int i = 0; i < discountList.size(); i++){
+                Map<String,Object> map = discountList.get(i);
+                if(discount > CommonUtil.toDouble(map.get("discount"))){
+                    discount = CommonUtil.toDouble(map.get("discount"));
+                    disMap = map;
+                    flag = i;
+                }
             }
-            List<UnionCard> list = this.listByCardRootIdAndMemberIds(rootId, memberIds);
-            if(ListUtil.isEmpty(list)){
-
+            if(flag != 0){
+                Map<String,Object> m1 = discountList.get(0);
+                Map<String,Object> m2 = discountList.get(flag);
+                discountList.set(0,m2);
+                discountList.set(flag,m1);
             }
-            for(UnionMain main : mains){
-                if(unionMember.getUnionId().equals(main.getId())){
-                    unions.add(main);
-                    break;
+        }else {
+            for(Map<String,Object> map : discountList){
+                if(CommonUtil.toInteger(map.get("")).equals(unionId)){
+                    disMap = map;
                 }
             }
         }
-
+        UnionCardRoot root = unionCardRootService.getById(CommonUtil.toInteger(disMap.get("rootId")));
+        data.put("enterpriseName",disMap.get("enterpriseName"));
+        data.put("discount",disMap.get("discount"));
+        data.put("cardNo",root.getNumber());
+        data.put("integral",root.getIntegral());
+        data.put("validity",CommonUtil.toInteger(disMap.get("isCharge")) == 1 ? DateTimeKit.daysBetween(DateTimeKit.parseDate(disMap.get("validity").toString(), "yyyy-MM-dd HH:mm:ss"),new Date()) : null);
+        UnionMainCharge redCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId,MainConstant.CHARGE_TYPE_RED,MainConstant.CHARGE_IS_AVAILABLE_YES);
+        memberId = CommonUtil.toInteger(disMap.get("from_member_id"));
+        if(redCharge != null){
+            UnionPreferentialProject project = unionPreferentialProjectService.getByMemberId(memberId);
+            List<UnionPreferentialItem> items = unionPreferentialItemService.listByProjectIdAndStatus(project.getId(), PreferentialConstant.STATUS_PASS);
+            data.put("items",items);
+            data.put("illustration",CommonUtil.isEmpty(redCharge.getIllustration()) ? "" : redCharge.getIllustration());
+        }
+        data.put("unionId",unionId);
+        data.put("memberId",memberId);
+        data.put("unions",unions);
         return data;
     }
 

@@ -51,4 +51,11 @@ public interface UnionCardMapper extends BaseMapper<UnionCard> {
 	 * @return
 	 */
 	int countByMemberIdsAndType(@Param("members") List<UnionMember> memberList, @Param("type") Integer type, @Param("isCharge") Integer isCharge, @Param("phone") String phone, @Param("isAvailable")  int isAvailable);
+
+	/**
+	 * 根据联盟卡列表查询最早办理的联盟卡
+	 * @param list
+	 * @return
+	 */
+	Map<String,Object> getByEarliestByCardList(@Param("list") List<UnionCard> list);
 }
