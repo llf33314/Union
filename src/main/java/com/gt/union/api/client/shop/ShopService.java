@@ -15,4 +15,11 @@ public interface ShopService {
 	 * @return
 	 */
 	List<WsWxShopInfoExtend> listByBusId(Integer busId);
+
+	/**
+	 * 根据多个门店id查询门店信息
+	 * @param list
+	 * @return
+	 */
+	List<WsWxShopInfoExtend> listByIds(List<Integer> list);
 }

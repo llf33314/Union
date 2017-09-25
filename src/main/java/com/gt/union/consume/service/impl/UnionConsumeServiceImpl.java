@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.api.client.dict.IDictService;
+import com.gt.union.api.client.shop.ShopService;
 import com.gt.union.api.entity.param.UnionConsumeParam;
 import com.gt.union.api.entity.result.UnionConsumeResult;
 import com.gt.union.api.entity.result.UnionRefundResult;
@@ -17,10 +18,7 @@ import com.gt.union.card.service.IUnionCardService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.BigDecimalUtil;
-import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.DateTimeKit;
-import com.gt.union.common.util.StringUtil;
+import com.gt.union.common.util.*;
 import com.gt.union.consume.constant.ConsumeConstant;
 import com.gt.union.consume.entity.UnionConsume;
 import com.gt.union.consume.mapper.UnionConsumeMapper;
@@ -31,10 +29,12 @@ import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.service.IUnionMemberService;
+import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
 import org.apache.poi.hssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -70,6 +70,9 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 
 	@Autowired
 	private IUnionCardService unionCardService;
+
+	@Autowired
+	private ShopService shopService;
 
 	@Override
 	public UnionConsumeResult consumeByUnionCard(UnionConsumeParam unionConsumeParam) throws Exception{
@@ -181,7 +184,25 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
 		List<UnionConsumeVO> list = unionConsumeMapper.listMy(page, unionId, busId, memberId, cardNo, phone, beginTime, endTime);
-		//TODO 门店信息
+		List<Integer> shopIds = new ArrayList<Integer>();
+		for(UnionConsumeVO vo : list){
+			if(CommonUtil.isNotEmpty(vo.getShopId())){
+				shopIds.add(vo.getShopId());
+			}
+		}
+		List<WsWxShopInfoExtend> shops = shopService.listByIds(shopIds);
+		if(ListUtil.isNotEmpty(shops)){
+			for(UnionConsumeVO vo : list){
+				if(CommonUtil.isNotEmpty(vo.getShopId())){
+					for(WsWxShopInfoExtend info : shops){
+						if(info.getId().equals(vo.getShopId())){
+							vo.setShopName(info.getBusinessName());
+							break;
+						}
+					}
+				}
+			}
+		}
 		page.setRecords(list);
 		return page;
 	}
@@ -192,7 +213,25 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
 		List<UnionConsumeVO> list = unionConsumeMapper.listOther(page, unionId, busId, memberId, cardNo, phone, beginTime, endTime);
-		//TODO 门店信息
+		List<Integer> shopIds = new ArrayList<Integer>();
+		for(UnionConsumeVO vo : list){
+			if(CommonUtil.isNotEmpty(vo.getShopId())){
+				shopIds.add(vo.getShopId());
+			}
+		}
+		List<WsWxShopInfoExtend> shops = shopService.listByIds(shopIds);
+		if(ListUtil.isNotEmpty(shops)){
+			for(UnionConsumeVO vo : list){
+				if(CommonUtil.isNotEmpty(vo.getShopId())){
+					for(WsWxShopInfoExtend info : shops){
+						if(info.getId().equals(vo.getShopId())){
+							vo.setShopName(info.getBusinessName());
+							break;
+						}
+					}
+				}
+			}
+		}
 		page.setRecords(list);
 		return page;
 	}

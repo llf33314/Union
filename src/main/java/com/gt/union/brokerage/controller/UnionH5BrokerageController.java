@@ -426,7 +426,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 			BusUser user = SessionUtils.getLoginUser(request);
 			Member member = SessionUtils.getLoginMember(request);
 			if(CommonUtil.isEmpty(member)){
-				String redirectUrl = this.authorizeMemberWx(request,"http://union.duofee.com" + url);
+				String redirectUrl = this.authorizeMemberWx(request,unionUrl + url);
 				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 			}
 			if(!member.getBusid().equals(duofenBusId)){
@@ -434,7 +434,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 			}
 			String payUrl = unionH5BrokerageService.payOpportunity(user.getId(),id, url, member.getId());
-			return GTJsonResult.instanceSuccessMsg("支付地址", payUrl).toString();
+			return GTJsonResult.instanceSuccessMsg(payUrl).toString();
 		} catch (BaseException e) {
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
@@ -478,7 +478,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 			}
 			String payUrl = unionH5BrokerageService.payAllOpportunity(user.getId(), unionId, fee, url, member.getId());
-			return GTJsonResult.instanceSuccessMsg("支付地址",payUrl).toString();
+			return GTJsonResult.instanceSuccessMsg(payUrl).toString();
 		} catch (BaseException e) {
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();

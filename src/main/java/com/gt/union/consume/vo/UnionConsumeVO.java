@@ -56,6 +56,16 @@ public class UnionConsumeVO {
 	 */
 	private Date createtime;
 
+	/**
+	 * 门店id
+	 */
+	private Integer shopId;
+
+	/**
+	 * 门店名称
+	 */
+	private String shopName;
+
 
 	public String getMemberName() {
 		return memberName;
@@ -127,5 +137,21 @@ public class UnionConsumeVO {
 
 	public void setCreatetime(Date createtime) {
 		this.createtime = createtime;
+	}
+
+	public Integer getShopId() {
+		return shopId;
+	}
+
+	public void setShopId(Integer shopId) {
+		this.shopId = shopId;
+	}
+
+	public String getShopName() {
+		return shopName;
+	}
+
+	public void setShopName(String shopName) {
+		this.shopName = shopName;
 	}
 }

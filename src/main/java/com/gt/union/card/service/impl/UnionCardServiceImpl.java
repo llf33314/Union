@@ -180,28 +180,13 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 		if(root == null){
 			throw new BusinessException("该联盟卡号不存在");
 		}
-		List<Integer> unionIds = new ArrayList<Integer>();
-		if(unionId == null){
-            List<UnionMember> members = unionMemberService.listWriteWithValidUnionByBusId(busId);
-            if(ListUtil.isEmpty(members)){
-                throw new BusinessException("您没有有效的联盟");
-            }
-            for(UnionMember member : members){
-                unionIds.add(member.getUnionId());
-            }
-        }else {
-            unionMainService.checkUnionMainValid(unionId);
-            UnionMember member = unionMemberService.getByBusIdAndUnionId(busId,unionId);
-            if(unionMemberService.hasWriteAuthority(member)){
-                throw new BusinessException("您没有联盟权限");
-            }
-            unionIds.add(unionId);
-        }
-        if(ListUtil.isEmpty(unionIds)){
+        List<UnionMember> members = unionMemberService.listWriteWithValidUnionByBusId(busId);
+        if(ListUtil.isEmpty(members)){
             throw new BusinessException("您没有有效的联盟");
         }
+
         Double discount = dictService.getDefaultDiscount();
-        Map<String,Object> result = this.getByMinDiscountByCard(root.getId(), busId, unionIds);
+        Map<String,Object> result = this.getByMinDiscountByCard(root.getId(), busId, members ,unionId);
         if(CommonUtil.isEmpty(result)){
             throw new BusinessException("没有可用的联盟卡");
         }
@@ -424,26 +409,66 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 		EntityWrapper wrapper = new EntityWrapper<>();
 		wrapper.eq("root_id", rootId);
 		wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
-		wrapper.in("member_id",memberIds.toArray());
+        wrapper.gt("validity",new Date());
+        wrapper.in("member_id",memberIds.toArray());
 		return this.selectList(wrapper);
 	}
 
     @Override
-    public Map<String, Object> getByMinDiscountByCard(Integer rootId, final Integer busId, List<Integer> unionIds) throws Exception{
-        List<UnionCard> list = unionCardMapper.listByRootIdAndUnionIds(rootId, unionIds);
-        if(ListUtil.isEmpty(list)){
-            throw new BusinessException("没有可用的联盟卡");
-        }
-        Map<String,Object> data = unionCardMapper.getByMinDiscountByCardList(list, busId, unionIds);
-        if(CommonUtil.isEmpty(data)){
-            throw new BusinessException("没有可用的联盟卡");
-        }
-        if(CommonUtil.isEmpty(data.get("discount"))){//没有设置联盟折扣
+    public Map<String, Object> getByMinDiscountByCard(Integer rootId, final Integer busId, List<UnionMember> members, Integer unionId) throws Exception{
+        Map<String,Object> data = new HashMap<String,Object>();
+        List<UnionMain> unions = new ArrayList<UnionMain>();//封装联盟列表
+        List<Map<String,Object>> discountList = new ArrayList<Map<String,Object>>();//联盟卡折扣列表
+        List<UnionMain> mains = unionMainService.listWriteByBusId(busId);
+        Iterator<UnionMember> it = members.iterator();
+        while (it.hasNext()){
+            UnionMember unionMember = it.next();
+            List<UnionMember> memberList = unionMemberService.listWriteByUnionId(unionMember.getUnionId());
+            List<Integer> memberIds = new ArrayList<Integer>();
+            for(UnionMember member : memberList){
+                memberIds.add(member.getId());
+            }
+            //得到该联盟下的有效联盟卡
+            List<UnionCard> list = this.listByCardRootIdAndMemberIds(rootId, memberIds);
+            if(ListUtil.isNotEmpty(list)){
+                for(UnionMain main : mains){
+                    if(unionMember.getUnionId().equals(main.getId())){
+                        unions.add(main);
+                        break;
+                    }
+                }
+                Map<String,Object> discountMap = unionCardMapper.getByMinDiscountByCardList(list, unionMember.getId());//获取设置最低折扣
+                if(discountMap == null){
 
-        }else {
-            return data;
+                }else{
+                    discountList.add(discountMap);
+                }
+            }else {
+                it.remove();
+            }
         }
-        return null;
+        if(ListUtil.isEmpty(members)){
+
+        }
+        for(UnionMember unionMember : members){
+            List<UnionMember> memberList = unionMemberService.listWriteByUnionId(unionMember.getUnionId());
+            List<Integer> memberIds = new ArrayList<Integer>();
+            for(UnionMember member : memberList){
+                memberIds.add(member.getId());
+            }
+            List<UnionCard> list = this.listByCardRootIdAndMemberIds(rootId, memberIds);
+            if(ListUtil.isEmpty(list)){
+
+            }
+            for(UnionMain main : mains){
+                if(unionMember.getUnionId().equals(main.getId())){
+                    unions.add(main);
+                    break;
+                }
+            }
+        }
+
+        return data;
     }
 
     @Override
@@ -455,17 +480,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         if(ListUtil.isEmpty(members)){
             throw new BusinessException("您没有有效的联盟");
         }
-        List<UnionCard> list = this.listByPhoneAndMembers(phone,members);
-        checkCardList(members,list, phone);
-        if(members.size() > 0){
-            sendMsg(phone,busId);
-        } else if(members.size() <= 0 && list.size() > 0){
-            throw new BusinessException("该手机号已办理联盟卡");
-        } else if(members.size() <= 0 && list.size() == 0){
-            throw new BusinessException("您没有有效的联盟");
-        } else {
-            throw new BusinessException(CommonConstant.SYS_ERROR);
-        }
+        checkCardList(members, phone);
     }
 
     private void sendMsg(String phone, Integer busId) throws Exception{
@@ -489,10 +504,9 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     /**
      * 判断是否还可以升级联盟卡
      * @param members  我的盟员列表
-     * @param list
      * @throws Exception
      */
-    private List<Map<Integer,List<Map<String,Object>>>> checkCardList(List<UnionMember> members, List<UnionCard> list, String phone) throws Exception{
+    private List<Map<Integer,List<Map<String,Object>>>> checkCardList(List<UnionMember> members, String phone) throws Exception{
         List<Map<Integer,List<Map<String,Object>>>> result = new ArrayList<Map<Integer,List<Map<String,Object>>>>();
         //定义收费规则
         Map<Integer,UnionMainCharge> blackMap = new HashMap<Integer,UnionMainCharge>();
@@ -705,17 +719,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         if(ListUtil.isEmpty(members)){
             throw new BusinessException("您没有有效的联盟");
         }
-        if(unionId != null){
-            Iterator<UnionMember> im = members.iterator();
-            while (im.hasNext()){
-                UnionMember member = im.next();
-                if(!member.getUnionId().equals(unionId)){
-                    im.remove();
-                }
-            }
-        }
-        List<UnionCard> list = this.listByPhoneAndMembers(phone,members);
-        Map<String,Object> data = getUnionInfo(members, list, phone, unionId, busId);
+        Map<String,Object> data = getUnionInfo(members, phone, unionId, busId);
         WxPublicUsers users = busUserService.getWxPublicUserByBusId(busId);
         if(users != null){
             data.put("follow",1);
@@ -729,13 +733,13 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     /**
      *
      * @param members   有效的盟员列表
-     * @param list      升级的联盟卡列表
      * @return
      * @throws Exception
      */
-    private Map<String, Object> getUnionInfo(List<UnionMember> members, List<UnionCard> list, String phone, Integer unionId, Integer busId) throws Exception{
-        List<Map<Integer,List<Map<String,Object>>>> dataList = checkCardList(members,list,phone);//可以升级的联盟列表
+    private Map<String, Object> getUnionInfo(List<UnionMember> members, String phone, Integer unionId, Integer busId) throws Exception{
+        List<Map<Integer,List<Map<String,Object>>>> dataList = checkCardList(members,phone);//可以升级的联盟列表
         Iterator<UnionMember> it = members.iterator();
+        //得到有效的盟员列表
         while (it.hasNext()){
             UnionMember member = it.next();
             for(Map<Integer,List<Map<String,Object>>> map : dataList){
