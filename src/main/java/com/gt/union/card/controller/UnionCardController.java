@@ -318,27 +318,28 @@ public class UnionCardController {
 									@ApiParam(name="memberId", value = "关注后的用户id", required = false) @RequestParam( name= "memberId", required = false) Integer memberId,
 									@ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam("unionId") Integer unionId,
 									@ApiParam(name="cardType", value = "联盟卡类型 1：黑卡 2：红卡", required = true) @RequestParam("cardType") Integer cardType
-									@ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam("unionId") Integer unionId) {
+									) {
 		try {
-			BusUser user = SessionUtils.getLoginUser(request);
-			Map<String,Object> data = unionCardService.createQRCode(user, id);
-			StringBuilder sb = new StringBuilder("?");
-			sb.append("totalFee="+data.get("totalFee"));
-			sb.append("&model="+data.get("model"));
-			sb.append("&busId="+data.get("busId"));
-			sb.append("&appidType="+data.get("appidType"));
-			sb.append("&appid=" + data.get("appid"));
-			sb.append("&orderNum="+data.get("orderNum"));
-			sb.append("&desc="+data.get("desc"));
-			sb.append("&isreturn="+data.get("isreturn"));
-			sb.append("&notifyUrl="+data.get("notifyUrl"));
-			sb.append("&isSendMessage="+data.get("isSendMessage"));
-			sb.append("&payWay="+data.get("payWay"));
-			sb.append("&sourceType="+data.get("sourceType"));
-			Map<String, Object> result = new HashMap<String, Object>();
-			result.put("url",wxmpUrl + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
-			result.put("only",data.get("only"));
-			return GTJsonResult.instanceSuccessMsg(result).toString();
+//			BusUser user = SessionUtils.getLoginUser(request);
+//			Map<String,Object> data = unionCardService.createQRCode(user, id);
+//			StringBuilder sb = new StringBuilder("?");
+//			sb.append("totalFee="+data.get("totalFee"));
+//			sb.append("&model="+data.get("model"));
+//			sb.append("&busId="+data.get("busId"));
+//			sb.append("&appidType="+data.get("appidType"));
+//			sb.append("&appid=" + data.get("appid"));
+//			sb.append("&orderNum="+data.get("orderNum"));
+//			sb.append("&desc="+data.get("desc"));
+//			sb.append("&isreturn="+data.get("isreturn"));
+//			sb.append("&notifyUrl="+data.get("notifyUrl"));
+//			sb.append("&isSendMessage="+data.get("isSendMessage"));
+//			sb.append("&payWay="+data.get("payWay"));
+//			sb.append("&sourceType="+data.get("sourceType"));
+//			Map<String, Object> result = new HashMap<String, Object>();
+//			result.put("url",wxmpUrl + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
+//			result.put("only",data.get("only"));
+//			return GTJsonResult.instanceSuccessMsg(result).toString();
+			return "";
 		} catch (Exception e) {
 			logger.error("生成办理联盟卡支付订单二维码错误：" + e);
 			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();

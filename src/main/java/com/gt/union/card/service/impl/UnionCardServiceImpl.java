@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.api.bean.session.Member;
 import com.gt.api.bean.session.WxPublicUsers;
 import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.api.client.sms.SmsService;
@@ -957,7 +958,12 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         return wb;
     }
 
-    /**
+	@Override
+	public Map<String, Object> getUnionCardIndex(Integer busId, Member member) {
+		return null;
+	}
+
+	/**
      * 创建sheet
      * @param titles
      * @param wb

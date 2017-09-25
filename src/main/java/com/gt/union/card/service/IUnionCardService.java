@@ -2,6 +2,7 @@ package com.gt.union.card.service;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
+import com.gt.api.bean.session.Member;
 import com.gt.union.api.entity.result.UnionDiscountResult;
 import com.gt.union.card.entity.UnionCard;
 import com.gt.union.card.vo.UnionCardBindParamVO;
@@ -175,4 +176,12 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 * @return
 	 */
 	HSSFWorkbook exportCardList(String[] titles, String[] contentName, List<Map<String, Object>> list);
+
+	/**
+	 * 手机端获取联盟卡信息
+	 * @param busId
+	 * @param member
+	 * @return
+	 */
+	Map<String,Object> getUnionCardIndex(Integer busId, Member member);
 }
