@@ -110,12 +110,13 @@ public interface IUnionCardService extends IService<UnionCard> {
 
 	/**
 	 *	根据以下信息获取最低折扣信息
-	 * @param rootId	联盟卡rootId
-	 * @param busId		消费的商家id
-	 * @param unionIds	联盟id列表
+	 * @param rootId    联盟卡rootId
+	 * @param busId        消费的商家id
+	 * @param members    联盟id列表
+	 * @param unionId
 	 * @return
 	 */
-	Map<String,Object> getByMinDiscountByCard(Integer rootId, Integer busId, List<Integer> unionIds) throws Exception;
+	Map<String,Object> getByMinDiscountByCard(Integer rootId, Integer busId, List<UnionMember> members, Integer unionId) throws Exception;
 
 	/**
 	 * 根据商家id和手机号获取验证码，并验证手机号是否升级过联盟卡
@@ -184,4 +185,22 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 * @return
 	 */
 	Map<String,Object> getUnionCardIndex(Integer busId, Member member);
+
+	/**
+	 * 前台生成办理联盟卡支付二维码信息
+	 * @param busId
+	 * @param phone
+	 * @param memberId
+	 * @param unionId
+	 * @param cardType
+	 * @return
+	 */
+	Map<String,Object> createQRCode(Integer busId, String phone, Integer memberId, Integer unionId, Integer cardType) throws Exception;
+
+	/**
+	 * 办理联盟卡成功回调
+	 * @param encrypt
+	 * @param only
+	 */
+	void payBindCardSuccess(String encrypt, String only) throws Exception;
 }

@@ -41,7 +41,7 @@
 
 	<!-- 查询我店消费记录列表 -->
     <select id="listMy" resultType="com.gt.union.consume.vo.UnionConsumeVO">
-		SELECT m.enterprise_name memberName, um.name unionName, r.number cardNo, r.phone phone, con.consume_money consumeMoney, con.pay_money payMoney, con.status status, con.createtime createtime, it.name
+		SELECT m.enterprise_name memberName, um.name unionName, r.number cardNo, r.phone phone, con.consume_money consumeMoney, con.pay_money payMoney, con.status status, con.createtime createtime, it.name, con.shop_id shopId
 		from (SELECT * from t_union_consume WHERE member_id in
 		(SELECT id from t_union_member WHERE bus_id = #{busId} AND del_status = 0 and status in (2,3,4))
 		<if test="unionId != null" >
@@ -75,7 +75,7 @@
 
 	<!-- 查询他店消费记录列表 -->
 	<select id="listOther" resultType="com.gt.union.consume.vo.UnionConsumeVO">
-		SELECT m.enterprise_name memberName, um.name unionName, r.number cardNo, r.phone phone, con.consume_money consumeMoney, con.pay_money payMoney, con.status status, con.createtime createtime, it.name
+		SELECT m.enterprise_name memberName, um.name unionName, r.number cardNo, r.phone phone, con.consume_money consumeMoney, con.pay_money payMoney, con.status status, con.createtime createtime, it.name, con.shop_id shopId
 		from (SELECT * from t_union_consume WHERE card_id in (SELECT id from t_union_card WHERE member_id in (SELECT id from t_union_member WHERE bus_id = #{busId} AND del_status = 0 and status in (2,3,4))
 		<if test="unionId != null" >
 			AND union_id = #{unionId}

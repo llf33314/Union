@@ -29,11 +29,10 @@ public interface UnionCardMapper extends BaseMapper<UnionCard> {
 	/**
 	 *
 	 * @param list 联盟卡列表
-	 * @param busId
-	 * @param unionIds
+	 * @param memberId
 	 * @return
 	 */
-	Map<String,Object> getByMinDiscountByCardList(@Param("list") List<UnionCard> list, @Param("busId") Integer busId, @Param("unionIds") List<Integer> unionIds);
+	Map<String,Object> getByMinDiscountByCardList(@Param("list") List<UnionCard> list, @Param("memberId") Integer memberId);
 
 	/**
 	 * 根据手机号和盟员列表查询升级的联盟卡列表信息

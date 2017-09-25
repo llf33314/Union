@@ -45,4 +45,25 @@ public class ShopServiceImpl implements ShopService {
 			return null;
 		}
 	}
+
+	@Override
+	public List<WsWxShopInfoExtend> listByIds(List<Integer> list) {
+		String url = wxmpUrl + "/8A5DA52E/shopapi/6F6D9AD2/79B4DE7C/findByIds.do";
+		try {
+			RequestUtils req = new RequestUtils<Integer>();
+			req.setReqdata(list);
+			Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(req),url, Map.class, ConfigConstant.WXMP_SIGN_KEY);
+			if(CommonUtil.isEmpty(result)){
+				return null;
+			}
+			Object data = result.get("data");
+			if(CommonUtil.isEmpty(data)){
+				return null;
+			}
+			List<WsWxShopInfoExtend> shops = JSONArray.parseArray(data.toString(), WsWxShopInfoExtend.class);
+			return shops;
+		}catch (Exception e){
+			return null;
+		}
+	}
 }

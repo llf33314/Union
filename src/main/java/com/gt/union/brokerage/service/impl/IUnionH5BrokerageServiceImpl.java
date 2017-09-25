@@ -422,9 +422,6 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		if(opportunity.getIsAccept() != OpportunityConstant.ACCEPT_YES){
 			throw new BusinessException("商机未接受");
 		}
-		if(opportunity.getIsUrgeBrokerage() == OpportunityConstant.URGE_YES){
-			throw new BusinessException("商机已催促");
-		}
 		UnionMember fromMember = unionMemberService.getById(opportunity.getFromMemberId());
 		if(fromMember == null){
 			throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);

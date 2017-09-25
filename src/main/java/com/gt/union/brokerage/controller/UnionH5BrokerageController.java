@@ -71,7 +71,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	 * @return
 	 */
 	@ApiOperation(value = "佣金平台登录", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/79B4DE7C/login", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String login(HttpServletRequest request, HttpServletResponse response, @ApiParam(name="type", value = "登录类型 1：商家账号 2：手机和验证码", required = true) @RequestParam("type") Integer type
 									,@ApiParam(name="username", value = "商家账号", required = false) @RequestParam(name = "username", required = false) String username
 									,@ApiParam(name="userpwd", value = "商家账号密码", required = false) @RequestParam(name = "userpwd", required = false) String userpwd
@@ -93,19 +93,14 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 
 
 	@ApiOperation(value = "获取佣金平台手机登录验证码", notes = "获取佣金平台手机登录验证码", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/phone/{phone}", produces = "application/json;charset=UTF-8",method = RequestMethod.GET)
+	@RequestMapping(value = "/79B4DE7C/phone/{phone}", produces = "application/json;charset=UTF-8",method = RequestMethod.GET)
 	public String getCodeByPhone(HttpServletRequest request, HttpServletResponse response
 			, @ApiParam(name="phone", value = "手机号", required = true) @PathVariable String phone) {
 		try {
-			BusUser user = SessionUtils.getLoginUser(request);
 			//生成验证码
 			String code = RandomKit.getRandomString(6, 0);
-			Integer busId = user.getId();
-			if (user.getPid() != null && user.getPid() != 0) {
-				busId = user.getPid();
-			}
 			if (CommonUtil.isNotEmpty(phone)) {
-				PhoneMessage phoneMessage = new PhoneMessage(busId,phone,"佣金平台手机登录验证码:" + code);
+				PhoneMessage phoneMessage = new PhoneMessage(0,phone,"佣金平台手机登录验证码:" + code);
 				Map param = new HashMap<String,Object>();
 				param.put("reqdata",phoneMessage);
 				if(smsService.sendSms(param) == 0){
@@ -431,7 +426,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 			BusUser user = SessionUtils.getLoginUser(request);
 			Member member = SessionUtils.getLoginMember(request);
 			if(CommonUtil.isEmpty(member)){
-				String redirectUrl = this.authorizeMemberWx(request,"http://union.duofee.com" + url);
+				String redirectUrl = this.authorizeMemberWx(request,unionUrl + url);
 				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 			}
 			if(!member.getBusid().equals(duofenBusId)){
@@ -439,7 +434,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 			}
 			String payUrl = unionH5BrokerageService.payOpportunity(user.getId(),id, url, member.getId());
-			return GTJsonResult.instanceSuccessMsg("支付地址", payUrl).toString();
+			return GTJsonResult.instanceSuccessMsg(payUrl).toString();
 		} catch (BaseException e) {
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
@@ -483,7 +478,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 			}
 			String payUrl = unionH5BrokerageService.payAllOpportunity(user.getId(), unionId, fee, url, member.getId());
-			return GTJsonResult.instanceSuccessMsg("支付地址",payUrl).toString();
+			return GTJsonResult.instanceSuccessMsg(payUrl).toString();
 		} catch (BaseException e) {
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
