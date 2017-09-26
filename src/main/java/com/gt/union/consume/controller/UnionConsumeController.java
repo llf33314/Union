@@ -248,12 +248,13 @@ public class UnionConsumeController {
 	}
 
 
-	@ApiOperation(value = "根据联盟卡核销", produces = "application/json;charset=UTF-8")
+	@ApiOperation(value = "根据联盟卡核销，单核销优惠项目，或者使用现金支付时调取", produces = "application/json;charset=UTF-8")
 	@SysLogAnnotation(op_function = "3", description = "根据联盟卡核销")
 	@RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String consumeByCard(HttpServletRequest request
 			, @ApiParam(name="unionConsumeParamVO", value = "联盟卡核销参数", required = true) @RequestBody @Valid UnionConsumeParamVO vo , BindingResult bindingResult){
 		try{
+			unionValidateService.checkBindingResult(bindingResult);
 			BusUser user = SessionUtils.getLoginUser(request);
 			Integer busId = user.getId();
 			if(user.getPid() != null && user.getPid() != 0){
@@ -296,11 +297,12 @@ public class UnionConsumeController {
 		}
 	}
 
-	@ApiOperation(value = "生成消费核销支付订单二维码", produces = "application/json;charset=UTF-8")
+	@ApiOperation(value = "扫码支付时调用，生成消费核销支付订单二维码", produces = "application/json;charset=UTF-8")
 	@SysLogAnnotation(op_function = "2", description = "生成消费核销支付二维码")
 	@RequestMapping(value = "/qrCode", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public String payOpportunityQRCode(HttpServletRequest request, HttpServletResponse response, @ApiParam(name="unionConsumeParamVO", value = "联盟卡核销参数", required = true) @RequestBody UnionConsumeParamVO vo) {
+	public String payOpportunityQRCode(HttpServletRequest request, HttpServletResponse response, @ApiParam(name="unionConsumeParamVO", value = "联盟卡核销参数", required = true) @RequestBody @Valid UnionConsumeParamVO vo, BindingResult bindingResult) {
 		try {
+			unionValidateService.checkBindingResult(bindingResult);
 			BusUser user = SessionUtils.getLoginUser(request);
 			if (CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0) {
 				throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);

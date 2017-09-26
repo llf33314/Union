@@ -26,7 +26,9 @@ import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
 import com.gt.union.consume.constant.ConsumeConstant;
 import com.gt.union.consume.entity.UnionConsume;
+import com.gt.union.consume.entity.UnionConsumeItem;
 import com.gt.union.consume.mapper.UnionConsumeMapper;
+import com.gt.union.consume.service.IUnionConsumeItemService;
 import com.gt.union.consume.service.IUnionConsumeService;
 import com.gt.union.consume.vo.UnionConsumeParamVO;
 import com.gt.union.consume.vo.UnionConsumeVO;
@@ -41,6 +43,7 @@ import org.apache.poi.hssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URLEncoder;
 import java.util.*;
@@ -65,9 +68,6 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
     @Autowired
     private IDictService dictService;
 
-    @Autowired
-    private IUnionCardIntegralService unionCardIntegralService;
-
 	@Autowired
 	private UnionConsumeMapper unionConsumeMapper;
 
@@ -91,6 +91,12 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 
 	@Value("${wx.duofen.busId}")
 	private Integer duofenBusId;
+
+	@Autowired
+	private IUnionConsumeItemService unionConsumeItemService;
+
+	@Autowired
+	private IUnionCardIntegralService unionCardIntegralService;
 
 	@Override
 	public UnionConsumeResult consumeByUnionCard(UnionConsumeParam unionConsumeParam) throws Exception{
@@ -261,15 +267,97 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 	}
 
 	@Override
+	@Transactional(rollbackFor = Exception.class)
 	public void consumeByCard(Integer busId, UnionConsumeParamVO vo)  throws Exception{
 		if(vo == null || busId == null){
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
+		String orderNo = ConsumeConstant.ORDER_PREFIX + System.currentTimeMillis();
+		consumeSuccess(vo, orderNo);
+	}
 
+	private void consumeSuccess( UnionConsumeParamVO vo, String orderNo){
+		//核销优惠项目或者现金支付时调用该接口
 		UnionConsume consume = new UnionConsume();
 		consume.setStatus(ConsumeConstant.PAY_STATUS_YES);
-//		consume.set
+		consume.setDelStatus(CommonConstant.DEL_STATUS_NO);
+		consume.setMemberId(vo.getMemberId());
+		consume.setStatus(ConsumeConstant.PAY_STATUS_YES);
+		consume.setCreatetime(new Date());
+		consume.setCardId(vo.getCardId());
+		consume.setConsumeMoney(vo.getConsumeMoney());
+		consume.setPayMoney(vo.getPayMoney());
+		consume.setShopId(vo.getShopId());
+		consume.setPayType(vo.getPayType());
+		consume.setType(ConsumeConstant.CONSUME_TYPE_OFFLINE);
+		consume.setModel(ConsumeConstant.MODEL_TYPE_DEFAULT);
+		consume.setModelDesc(ConsumeConstant.MODEL_DESC_DEFAULT);
+		consume.setOrderNo(orderNo);
+		this.insert(consume);
 
+		if(ListUtil.isNotEmpty(vo.getItems())){
+			List<Integer> items = vo.getItems();
+			List<UnionConsumeItem> consumeItems = new ArrayList<UnionConsumeItem>();
+			for(Integer itemId : items){
+				UnionConsumeItem item = new UnionConsumeItem();
+				item.setConsumeId(consume.getId());
+				item.setCreatetime(new Date());
+				item.setPreferentialItemId(itemId);
+				item.setDelStatus(CommonConstant.DEL_STATUS_NO);
+				consumeItems.add(item);
+			}
+			unionConsumeItemService.insertBatch(consumeItems);
+		}
+
+		if(vo.isUseIntegral()){//是否使用了积分
+			UnionCard card = unionCardService.getById(vo.getCardId());
+			UnionCardRoot root = unionCardRootService.getById(card.getRootId());
+			Double giveIntegral = dictService.getGiveIntegral();
+
+			//收入
+			UnionCardIntegral incomeIntegral = new UnionCardIntegral();
+			incomeIntegral.setCardId(card.getId());
+			incomeIntegral.setDelStatus(CommonConstant.DEL_STATUS_NO);
+			incomeIntegral.setCreatetime(new Date());
+			incomeIntegral.setType(CardConstant.CARD_INTEGRAL_TYPE_GIVE);
+			incomeIntegral.setStatus(CardConstant.CARD_INTEGRAL_STATUS_INCOME);
+			Double integral = BigDecimalUtil.multiply(vo.getPayMoney(),giveIntegral).doubleValue();//赠送的积分
+			incomeIntegral.setIntegral(integral);
+			unionCardIntegralService.insert(incomeIntegral);
+			//支出
+			UnionCardIntegral outcomeIntegral = new UnionCardIntegral();
+			outcomeIntegral.setCardId(card.getId());
+			outcomeIntegral.setDelStatus(CommonConstant.DEL_STATUS_NO);
+			outcomeIntegral.setCreatetime(new Date());
+			outcomeIntegral.setType(CardConstant.CARD_INTEGRAL_TYPE_GIVE);
+			outcomeIntegral.setStatus(CardConstant.CARD_INTEGRAL_STATUS_INCOME);
+			outcomeIntegral.setIntegral(vo.getConsumeIntegral());
+			unionCardIntegralService.insert(outcomeIntegral);
+
+			Double subIntegral = BigDecimalUtil.subtract(integral,vo.getConsumeIntegral()).doubleValue();//赠送的积分-消费的积分
+			UnionCardRoot cardRoot = new UnionCardRoot();
+			cardRoot.setId(root.getId());
+			cardRoot.setIntegral(root.getIntegral() == null ? (0 + subIntegral) : (root.getIntegral() + subIntegral));
+			unionCardRootService.updateById(cardRoot);
+		}
+
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@Override
+	public void payConsumeSuccess(String encrypt, String only) throws Exception{
+		//解密参数
+		String orderNo = EncryptUtil.decrypt(encrypt, encrypt);
+		String paramKey = RedisKeyUtil.getConsumePayParamKey(only);
+		Object obj = redisCacheUtil.get(paramKey);
+		Map<String, Object> result = JSONObject.parseObject(obj.toString(), Map.class);
+		UnionConsumeParamVO vo = (UnionConsumeParamVO)result.get("unionConsumeParamVO");
+		String statusKey = RedisKeyUtil.getConsumePayStatusKey(only);
+
+		consumeSuccess(vo, orderNo);
+
+		redisCacheUtil.remove(paramKey);
+		redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_003, 60l);//支付成功
 	}
 
 	@Override
@@ -334,24 +422,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		return wb;
 	}
 
-	@Override
-	public void payConsumeSuccess(String encrypt, String only) throws Exception{
-		//解密参数
-		String orderNo = EncryptUtil.decrypt(encrypt, encrypt);
-		String paramKey = RedisKeyUtil.getConsumePayParamKey(only);
-		Object obj = redisCacheUtil.get(paramKey);
-		Map<String, Object> result = JSONObject.parseObject(obj.toString(), Map.class);
-		UnionConsumeParamVO vo = (UnionConsumeParamVO)result.get("unionConsumeParamVO");
-		String statusKey = RedisKeyUtil.getConsumePayStatusKey(only);
-		Integer busId = CommonUtil.toInteger(result.get("payBusId"));
-		UnionMember member = unionMemberService.getByBusIdAndUnionId(busId,vo.getUnionId());
-		UnionConsume consume = new UnionConsume();
-		consume.setMemberId(member.getId());
-		consume.setCreatetime(new Date());
-		consume.setDelStatus(CommonConstant.DEL_STATUS_NO);
-		redisCacheUtil.remove(paramKey);
-		redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_003, 60l);//支付成功
-	}
+
 
 	@Override
 	public Map<String, Object> payConsumeQRCode(Integer busId, UnionConsumeParamVO vo) throws Exception{

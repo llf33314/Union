@@ -54,6 +54,25 @@ public interface CardConstant {
      */
     String ORDER_PREFIX = "LMY";
 
+    /**
+     * 消费积分
+     */
+    int CARD_INTEGRAL_TYPE_CONSUME = 1;
+
+    /**
+     * 赠送积分
+     */
+    int CARD_INTEGRAL_TYPE_GIVE = 2;
+
+    /**
+     * 积分收入状态
+     */
+    int CARD_INTEGRAL_STATUS_INCOME = 1;
+
+    /**
+     * 积分支出状态
+     */
+    int CARD_INTEGRAL_STATUS_EXPENSE = 2;
 
 
     /******************************************联盟卡手机端路由列表************************************************/

@@ -452,7 +452,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             }
         }
         if(ListUtil.isEmpty(members)){
-            throw new BusinessException("您没有有效的联盟");
+            throw new BusinessException("没有有效的联盟卡");
         }
         Map<String,Object> disMap = discountList.get(0);
         Integer memberId = null;
@@ -492,14 +492,16 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         data.put("discount",disMap.get("discount"));
         data.put("cardNo",root.getNumber());
         data.put("integral",root.getIntegral());
-        data.put("validity",CommonUtil.toInteger(disMap.get("isCharge")) == 1 ? DateTimeKit.daysBetween(DateTimeKit.parseDate(disMap.get("validity").toString(), "yyyy-MM-dd HH:mm:ss"),new Date()) : null);
+        data.put("validity",CommonUtil.toInteger(disMap.get("isCharge")) == 1 ? DateTimeKit.daysBetween(DateTimeKit.parseDate(disMap.get("validity").toString(), "yyyy/MM/dd HH:mm:ss"),new Date()) : null);
         UnionMainCharge redCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId,MainConstant.CHARGE_TYPE_RED,MainConstant.CHARGE_IS_AVAILABLE_YES);
-        memberId = CommonUtil.toInteger(disMap.get("from_member_id"));
+        memberId = CommonUtil.toInteger(disMap.get("fromMemberId"));
         if(redCharge != null){
             UnionPreferentialProject project = unionPreferentialProjectService.getByMemberId(memberId);
-            List<UnionPreferentialItem> items = unionPreferentialItemService.listByProjectIdAndStatus(project.getId(), PreferentialConstant.STATUS_PASS);
-            data.put("items",items);
-            data.put("illustration",CommonUtil.isEmpty(redCharge.getIllustration()) ? "" : redCharge.getIllustration());
+            if(project != null){
+                List<UnionPreferentialItem> items = unionPreferentialItemService.listByProjectIdAndStatus(project.getId(), PreferentialConstant.STATUS_PASS);
+                data.put("items",items);
+                data.put("illustration",CommonUtil.isEmpty(redCharge.getIllustration()) ? "" : redCharge.getIllustration());
+            }
         }
         data.put("unionId",unionId);
         data.put("memberId",memberId);

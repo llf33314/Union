@@ -19,6 +19,11 @@ public class UnionConsumeParamVO implements Serializable{
 	@ApiModelProperty( value = "联盟卡id" ,required = true)
 	private Integer cardId;
 
+
+	@NotNull(message = "您不是盟员")
+	@ApiModelProperty( value = "盟员id" ,required = true)
+	private Integer memberId;
+
 	@NotNull(message = "请选择联盟")
 	@ApiModelProperty( value = "联盟id" ,required = true)
 	private Integer unionId;
@@ -32,16 +37,19 @@ public class UnionConsumeParamVO implements Serializable{
 	@ApiModelProperty( value = "消费金额" ,required = false)
 	private Double consumeMoney;
 
+	@ApiModelProperty( value = "实付金额" ,required = false)
+	private Double payMoney;
+
 	@ApiModelProperty( value = "是否使用积分抵扣" ,required = false)
 	private boolean useIntegral;
 
 	@ApiModelProperty( value = "消耗的积分" ,required = false)
-	private Integer consumeIntegral;
+	private Double consumeIntegral;
 
 	@ApiModelProperty( value = "优惠项目列表" ,required = false)
 	private List<Integer> items;
 
-	@ApiModelProperty( value = "支付方式" ,required = false)
+	@ApiModelProperty( value = "支付方式 0：现金 1：微信 2：支付宝" ,required = false)
 	private Integer payType;
 
 	public Integer getCardId() {
@@ -92,11 +100,11 @@ public class UnionConsumeParamVO implements Serializable{
 		this.useIntegral = useIntegral;
 	}
 
-	public Integer getConsumeIntegral() {
+	public Double getConsumeIntegral() {
 		return consumeIntegral;
 	}
 
-	public void setConsumeIntegral(Integer consumeIntegral) {
+	public void setConsumeIntegral(Double consumeIntegral) {
 		this.consumeIntegral = consumeIntegral;
 	}
 
@@ -114,5 +122,21 @@ public class UnionConsumeParamVO implements Serializable{
 
 	public void setPayType(Integer payType) {
 		this.payType = payType;
+	}
+
+	public Integer getMemberId() {
+		return memberId;
+	}
+
+	public void setMemberId(Integer memberId) {
+		this.memberId = memberId;
+	}
+
+	public Double getPayMoney() {
+		return payMoney;
+	}
+
+	public void setPayMoney(Double payMoney) {
+		this.payMoney = payMoney;
 	}
 }
