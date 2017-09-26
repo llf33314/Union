@@ -72,7 +72,7 @@ public class UnionConsumeController {
 	@RequestMapping(value = "/my", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String listMyByUnionId(HttpServletRequest request, Page page
 			, @ApiParam(name = "unionId", value = "联盟id", required = false)
-								  @PathVariable("unionId") Integer unionId
+								  @RequestParam("unionId") Integer unionId
 			, @ApiParam(name = "memberId", value = "来源", required = false)
 								  @RequestParam(name = "memberId", required = false) Integer memberId
 			, @ApiParam(name = "cardNo", value = "联盟卡号，模糊查询", required = false)
