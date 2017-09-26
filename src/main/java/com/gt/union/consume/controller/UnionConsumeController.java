@@ -147,7 +147,7 @@ public class UnionConsumeController {
 	@ApiOperation(value = "导出本店消费记录列表", notes = "导出本店消费记录列表", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/consumeFromDetail", method = RequestMethod.GET)
 	public void exportConsumeFromDetail(HttpServletRequest request, HttpServletResponse response,
-										@ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = true) Integer unionId
+										@ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam(name = "unionId", required = false) Integer unionId
 			,@ApiParam(name = "cardNo", value = "联盟卡号", required = false) @RequestParam(name = "cardNo", required = false) String cardNo
 			,@ApiParam(name = "phone", value = "手机号", required = false) @RequestParam(name = "phone", required = false) String phone
 			,@ApiParam(name = "memberId", value = "来往的商家id", required = false) @RequestParam(name = "memberId", required = false) Integer memberId
