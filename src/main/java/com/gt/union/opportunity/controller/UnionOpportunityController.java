@@ -518,7 +518,7 @@ public class UnionOpportunityController {
         }
     }
 
-    @ApiOperation(value = "获取商机佣金支付状态", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "获取商机佣金支付状态，用定时器请求，004：订单超时 003：支付成功 005：支付失败", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "status/{only}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getStatus(HttpServletRequest request, HttpServletResponse response, @PathVariable("only") String only) throws Exception {
         logger.info("获取商机佣金支付状态：" + only);

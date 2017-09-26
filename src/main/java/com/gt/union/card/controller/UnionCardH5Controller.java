@@ -1,9 +1,11 @@
 package com.gt.union.card.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.Member;
 import com.gt.api.util.SessionUtils;
+import com.gt.union.api.client.member.MemberService;
 import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.card.service.IUnionCardService;
@@ -62,6 +64,9 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 
 	@Autowired
 	private WxPayService wxPayService;
+
+	@Autowired
+	private MemberService memberService;
 
 	@ApiOperation(value = "联盟卡首页", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/index/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -177,8 +182,15 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			, @ApiParam(name="code", value = "验证码", required = true) @RequestParam("code") String code
 			, @ApiParam(name="busId", value = "商家id", required = true) @RequestParam("busId") Integer busId) {
 		try {
-
+			Member member = memberService.findByPhoneAndBusId(phone,busId);
+			if(member == null){
+				throw new BusinessException("用户不存在");
+			}
+			request.getSession().setAttribute(SessionUtils.SESSION_MEMBER, JSONObject.toJSONString(member));
 			return GTJsonResult.instanceErrorMsg().toString();
+		} catch (BaseException e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
 		} catch (Exception e) {
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();

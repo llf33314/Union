@@ -72,6 +72,23 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public Member findByPhoneAndBusId(String phone, Integer busId) {
-		return null;
+		String url = memberUrl + "/memberAPI/member/findByMemberId";
+		Map<String,Object> param = new HashMap<String,Object>();
+		param.put("phone",phone);
+		param.put("busId",busId);
+		try {
+			String data = SignHttpUtils.WxmppostByHttp(url,param,memberSignkey);
+			if(StringUtil.isEmpty(data)){
+				return null;
+			}
+			Map map = JSONObject.parseObject(data,Map.class);
+			if(CommonUtil.isNotEmpty(map.get("data"))){
+				return JSONObject.parseObject(map.get("data").toString(),Member.class);
+			}else {
+				return null;
+			}
+		}catch (Exception e){
+			return null;
+		}
 	}
 }
