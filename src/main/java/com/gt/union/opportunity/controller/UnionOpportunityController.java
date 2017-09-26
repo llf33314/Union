@@ -509,6 +509,9 @@ public class UnionOpportunityController {
             result.put("url", wxmpUrl + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
             result.put("only", data.get("only"));
             return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("生成商机推荐支付订单二维码错误：" + e);
             return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();

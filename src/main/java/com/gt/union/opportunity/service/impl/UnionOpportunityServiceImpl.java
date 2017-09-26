@@ -1283,7 +1283,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         double totalFee = 0;
         WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(duofenBusId);
         for (UnionOpportunity opportunity : list) {
-            if (CommonUtil.isEmpty(opportunity.getIsAccept()) || opportunity.getIsAccept() != OpportunityConstant.ACCEPT_NON) {
+            if (CommonUtil.isEmpty(opportunity.getIsAccept()) || opportunity.getIsAccept() != OpportunityConstant.ACCEPT_YES) {
                 throw new BusinessException("不可支付未接受的商机");
             }
             UnionBrokerageIncome brokerageIncome = unionBrokerageIncomeService.getByUnionOpportunityId(opportunity.getId());

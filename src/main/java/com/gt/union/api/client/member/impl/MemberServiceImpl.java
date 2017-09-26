@@ -69,4 +69,9 @@ public class MemberServiceImpl implements MemberService {
 			return null;
 		}
 	}
+
+	@Override
+	public Member findByPhoneAndBusId(String phone, Integer busId) {
+		return null;
+	}
 }

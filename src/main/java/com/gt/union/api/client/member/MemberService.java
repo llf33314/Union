@@ -24,4 +24,12 @@ public interface MemberService {
 	 * @return
 	 */
 	Member getById(Integer memberId);
+
+	/**
+	 * 根据手机号和商家id获取用户信息
+	 * @param phone
+	 * @param busId
+	 * @return
+	 */
+	Member findByPhoneAndBusId(String phone, Integer busId);
 }

@@ -70,6 +70,9 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 		try {
 			Member member = SessionUtils.getLoginMember(request);
 			if(CommonUtil.isEmpty(member)){
+				if(CommonUtil.judgeBrowser(request) == 1){//微信
+
+				}
 				String redirectUrl = this.authorizeMember(request, busId, 1, unionUrl + url);
 				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 			}
@@ -150,7 +153,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			//生成验证码
 			String code = RandomKit.getRandomString(6, 0);
 			if (CommonUtil.isNotEmpty(phone)) {
-				PhoneMessage phoneMessage = new PhoneMessage(busId,phone,"联盟卡手机登录验证码:" + code);
+				PhoneMessage phoneMessage = new PhoneMessage(busId,phone,"联盟卡手机绑定验证码:" + code);
 				Map param = new HashMap<String,Object>();
 				param.put("reqdata",phoneMessage);
 				if(smsService.sendSms(param) == 0){
@@ -161,6 +164,21 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 				return GTJsonResult.instanceSuccessMsg().toString();
 			}
 			return GTJsonResult.instanceErrorMsg("手机号不能为空").toString();
+		} catch (Exception e) {
+			logger.error("", e);
+			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+		}
+	}
+
+	@ApiOperation(value = "手机号、验证码登录", notes = "手机号、验证码登录", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/login/{phone}", produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+	public String loginPhone(HttpServletRequest request, HttpServletResponse response
+			, @ApiParam(name="phone", value = "手机号", required = true) @PathVariable String phone
+			, @ApiParam(name="code", value = "验证码", required = true) @RequestParam("code") String code
+			, @ApiParam(name="busId", value = "商家id", required = true) @RequestParam("busId") Integer busId) {
+		try {
+
+			return GTJsonResult.instanceErrorMsg().toString();
 		} catch (Exception e) {
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
