@@ -473,11 +473,18 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 discountList.set(0,m2);
                 discountList.set(flag,m1);
             }
+            unionId = CommonUtil.toInteger(disMap.get("unionId"));
         }else {
             for(Map<String,Object> map : discountList){
-                if(CommonUtil.toInteger(map.get("")).equals(unionId)){
+                if(CommonUtil.toInteger(map.get("unionId")).equals(unionId)){
                     disMap = map;
                 }
+            }
+        }
+        UnionMain currentUnionMain = null;
+        for(UnionMain main : unions){
+            if(main.getId().equals(unionId)){
+                currentUnionMain = main;
             }
         }
         UnionCardRoot root = unionCardRootService.getById(CommonUtil.toInteger(disMap.get("rootId")));
@@ -497,6 +504,20 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         data.put("unionId",unionId);
         data.put("memberId",memberId);
         data.put("unions",unions);
+        int isIntegral = currentUnionMain.getIsIntegral();
+        data.put("isIntegral",isIntegral);
+        if(isIntegral == 1){//开启积分
+            for(UnionMember unionMember : members){
+                if(unionMember.getUnionId().equals(unionId)){
+                    if(CommonUtil.isNotEmpty(unionMember.getIntegralExchangePercent()) && unionMember.getIntegralExchangePercent() > 0){
+                        data.put("integralPercent",unionMember.getIntegralExchangePercent());
+                        data.put("exchangeIntegral",dictService.getExchangeIntegral());
+                    }else {
+                        data.put("isIntegral",0);
+                    }
+                }
+            }
+        }
         return data;
     }
 
@@ -977,7 +998,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     }
 
     @Override
-    public Map<String, Object> createQRCode(Integer busId, String phone, Integer memberId, Integer unionId, Integer cardType) throws Exception{
+    public Map<String, Object> createQRCode(Integer busId, String phone, Integer memberId, Integer unionId, Integer cardType, Integer isReturn, String returnUrl) throws Exception{
         UnionMainCharge charge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, cardType, MainConstant.CHARGE_IS_AVAILABLE_YES);
         Double price = charge.getChargePrice();//收费价格
         Map<String, Object> data = new HashMap<String, Object>();
@@ -985,7 +1006,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         data.put("busId", PropertiesUtil.getDuofenBusId());
         data.put("sourceType", 1);//是否墨盒支付
         data.put("payWay",0);//系统判断支付方式
-        data.put("isreturn",0);//0：不需要同步跳转
+        data.put("isreturn",isReturn);//0：不需要同步跳转 1:同步跳转
         data.put("model", ConfigConstant.PAY_MODEL);
         String only = String.valueOf(System.currentTimeMillis());
         String orderNo = CardConstant.ORDER_PREFIX + only;
@@ -993,6 +1014,9 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         encrypt = URLEncoder.encode(encrypt,"UTF-8");
         WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(PropertiesUtil.getDuofenBusId());
         data.put("notifyUrl", PropertiesUtil.getUnionUrl() + "/unionCard/79B4DE7C/paymentSuccess/"+encrypt + "/" + only);
+        if(isReturn == 1){
+            data.put("returnUrl", returnUrl);
+        }
         data.put("orderNum", orderNo);//订单号
         data.put("payBusId", busId);//支付的商家id
         data.put("isSendMessage",0);//不推送

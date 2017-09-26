@@ -5,6 +5,7 @@ import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 import javax.validation.constraints.NotNull;
+import java.io.Serializable;
 import java.util.List;
 
 /**
@@ -12,7 +13,7 @@ import java.util.List;
  */
 @ApiModel( value = "UnionConsumeParamVO", description = "联盟卡核销参数实体" )
 @Data
-public class UnionConsumeParamVO {
+public class UnionConsumeParamVO implements Serializable{
 
 	@NotNull(message = "请使用联盟卡")
 	@ApiModelProperty( value = "联盟卡id" ,required = true)

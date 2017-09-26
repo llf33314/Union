@@ -484,7 +484,7 @@ public class UnionOpportunityController {
 
     @ApiOperation(value = "生成商机推荐支付订单二维码", produces = "application/json;charset=UTF-8")
     @SysLogAnnotation(op_function = "2", description = "生成商机推荐支付二维码")
-    @RequestMapping(value = "/qrCode/{ids}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/qrCode/{ids}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String payOpportunityQRCode(HttpServletRequest request, HttpServletResponse response, @ApiParam(name = "ids", value = "商机ids，使用“,”隔开", required = true) @PathVariable("ids") String ids) {
         try {
             BusUser user = SessionUtils.getLoginUser(request);

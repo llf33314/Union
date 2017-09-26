@@ -19,4 +19,9 @@ public interface ConsumeConstant {
 	 * 已退款
 	 */
 	int PAY_STATUS_REFUND = 3;
+
+	/**
+	 * 联盟核销订单号前缀
+	 */
+	String ORDER_PREFIX = "LMHX";
 }

@@ -1,10 +1,14 @@
 package com.gt.union.consume.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.api.bean.session.WxPublicUsers;
 import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.api.client.shop.ShopService;
+import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.api.entity.param.UnionConsumeParam;
 import com.gt.union.api.entity.result.UnionConsumeResult;
 import com.gt.union.api.entity.result.UnionRefundResult;
@@ -16,6 +20,7 @@ import com.gt.union.card.service.IUnionCardIntegralService;
 import com.gt.union.card.service.IUnionCardRootService;
 import com.gt.union.card.service.IUnionCardService;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
@@ -29,15 +34,16 @@ import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.service.IUnionMemberService;
+import com.gt.union.opportunity.constant.OpportunityConstant;
+import com.gt.union.opportunity.entity.UnionOpportunity;
 import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
 import org.apache.poi.hssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.net.URLEncoder;
+import java.util.*;
 
 /**
  * <p>
@@ -73,6 +79,18 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 
 	@Autowired
 	private ShopService shopService;
+
+	@Autowired
+	private IBusUserService busUserService;
+
+	@Autowired
+	private RedisCacheUtil redisCacheUtil;
+
+	@Value("${union.url}")
+	private String unionUrl;
+
+	@Value("${wx.duofen.busId}")
+	private Integer duofenBusId;
 
 	@Override
 	public UnionConsumeResult consumeByUnionCard(UnionConsumeParam unionConsumeParam) throws Exception{
@@ -308,6 +326,56 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 			}
 		}
 		return wb;
+	}
+
+	@Override
+	public void payConsumeSuccess(String encrypt, String only) throws Exception{
+		//解密参数
+		String orderNo = EncryptUtil.decrypt(encrypt, encrypt);
+		String paramKey = RedisKeyUtil.getConsumePayParamKey(only);
+		Object obj = redisCacheUtil.get(paramKey);
+		Map<String, Object> result = JSONObject.parseObject(obj.toString(), Map.class);
+		UnionConsumeParamVO vo = (UnionConsumeParamVO)result.get("unionConsumeParamVO");
+		String statusKey = RedisKeyUtil.getConsumePayStatusKey(only);
+		Integer busId = CommonUtil.toInteger(result.get("payBusId"));
+		UnionMember member = unionMemberService.getByBusIdAndUnionId(busId,vo.getUnionId());
+		UnionConsume consume = new UnionConsume();
+		consume.setMemberId(member.getId());
+		consume.setCreatetime(new Date());
+		consume.setDelStatus(CommonConstant.DEL_STATUS_NO);
+		redisCacheUtil.remove(paramKey);
+		redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_003, 60l);//支付成功
+	}
+
+	@Override
+	public Map<String, Object> payConsumeQRCode(Integer busId, UnionConsumeParamVO vo) throws Exception{
+		Map<String, Object> data = new HashMap<String, Object>();
+		String orderNo = ConsumeConstant.ORDER_PREFIX + System.currentTimeMillis();
+		String only = DateTimeKit.getDateTime(new Date(), DateTimeKit.yyyyMMddHHmmss);
+		data.put("totalFee", vo.getConsumeMoney());
+		data.put("busId", duofenBusId);
+		data.put("sourceType", 1);//是否墨盒支付
+		data.put("payWay", 1);//系统判断支付方式
+		data.put("isreturn", 0);//0：不需要同步跳转
+		data.put("model", ConfigConstant.PAY_MODEL);
+		String encrypt = EncryptUtil.encrypt(PropertiesUtil.getEncryptKey(), orderNo);
+		encrypt = URLEncoder.encode(encrypt, "UTF-8");
+		WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(duofenBusId);
+		data.put("notifyUrl", unionUrl + "/unionConsume/79B4DE7C/paymentSuccess/" + encrypt + "/" + only);
+		data.put("orderNum", orderNo);//订单号
+		data.put("payBusId", busId);//支付的商家id
+		data.put("isSendMessage", 0);//不推送
+		data.put("appid", publicUser.getAppid());//appid
+		data.put("desc", "联盟消费核销");
+		data.put("appidType", 0);//公众号
+		data.put("only", only);
+
+		data.put("unionConsumeParamVO", vo);
+		String paramKey = RedisKeyUtil.getConsumePayStatusKey(only);
+		String statusKey = RedisKeyUtil.getConsumePayParamKey(only);
+		redisCacheUtil.set(paramKey, JSON.toJSONString(data), 360l);//5分钟
+		redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_001,300l);
+		return null;
 	}
 
 

@@ -195,7 +195,7 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 * @param cardType
 	 * @return
 	 */
-	Map<String,Object> createQRCode(Integer busId, String phone, Integer memberId, Integer unionId, Integer cardType) throws Exception;
+	Map<String,Object> createQRCode(Integer busId, String phone, Integer memberId, Integer unionId, Integer cardType, Integer isReturn, String returnUrl) throws Exception;
 
 	/**
 	 * 办理联盟卡成功回调

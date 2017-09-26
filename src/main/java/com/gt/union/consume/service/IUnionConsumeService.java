@@ -124,4 +124,20 @@ public interface IUnionConsumeService extends IService<UnionConsume> {
 	 * @return
 	 */
 	HSSFWorkbook exportConsumeToDetail(String[] titles, String[] contentName, List<Map<String, Object>> list);
+
+	/**
+	 * 消费核销扫码支付成功回调
+	 * @param encrypt
+	 * @param only
+	 */
+	void payConsumeSuccess(String encrypt, String only) throws Exception;
+
+	/**
+	 * 生成消费核销支付二维码
+	 * @param busId
+	 * @param vo
+	 * @return
+	 */
+	Map<String,Object> payConsumeQRCode(Integer busId, UnionConsumeParamVO vo) throws Exception;
+
 }

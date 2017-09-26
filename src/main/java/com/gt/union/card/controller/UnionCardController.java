@@ -38,6 +38,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -82,6 +84,9 @@ public class UnionCardController {
 
 	@Value("${wxmp.url}")
 	private String wxmpUrl;
+
+	@Value("${union.url}")
+	private String unionUrl;
 
 	@ApiOperation(value = "获取盟员的联盟卡列表", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -328,7 +333,7 @@ public class UnionCardController {
 			if(user.getPid() != null && user.getPid() != 0){
 				busId = user.getPid();
 			}
-			Map<String,Object> data = unionCardService.createQRCode(busId, phone, memberId,unionId, cardType);
+			Map<String,Object> data = unionCardService.createQRCode(busId, phone, memberId,unionId, cardType, 0, "");
 			StringBuilder sb = new StringBuilder("?");
 			sb.append("totalFee="+data.get("totalFee"));
 			sb.append("&model="+data.get("model"));
@@ -374,6 +379,18 @@ public class UnionCardController {
 			data.put("msg","失败");
 			return JSON.toJSONString(data);
 		}
+	}
+
+	@ApiOperation(value = "获取手机端二维码链接", notes = "获取手机端二维码链接", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/phone", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
+	public void cardNoImges(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
+		BusUser user = SessionUtils.getLoginUser(request);
+		Integer busId = user.getId();
+		if(user.getPid() != null && user.getPid() != 0){
+			busId = user.getPid();
+		}
+		String url = unionUrl + "phone?unionCard&busId=" + busId;
+		QRcodeKit.buildQRcode(url, 250, 250, response);
 	}
 
 }

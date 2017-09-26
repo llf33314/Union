@@ -86,6 +86,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 			}
 			Map<String,Object> data = this.unionCardService.getUnionCardIndex(busId, member);
+			data.put("phone",member.getPhone());
 			return GTJsonResult.instanceSuccessMsg(data).toString();
 		} catch (BaseException e) {
 			logger.error("", e);
@@ -255,7 +256,8 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			}
 			Map<String,Object> data = unionCardService.bindCard(vo);
 			if(CommonUtil.isNotEmpty(data.get("qrurl"))){
-				Map<String,Object> qrCodeData = unionCardService.createQRCode(busId, vo.getPhone(), member.getId(),vo.getUnionId(), vo.getCardType());
+				String returnUrl = unionUrl + url;
+				Map<String,Object> qrCodeData = unionCardService.createQRCode(busId, vo.getPhone(), member.getId(),vo.getUnionId(), vo.getCardType(), 1, returnUrl);
 				Map<String,Object> param = new HashMap<String,Object>();
 				param.put("totalFee", qrCodeData.get("totalFee"));
 				param.put("model", qrCodeData.get("model"));
@@ -266,7 +268,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 				param.put("memberId", member.getId());
 				param.put("desc", qrCodeData.get("desc"));
 				param.put("isreturn", qrCodeData.get("isreturn"));
-				param.put("returnUrl", unionUrl + url);
+				param.put("returnUrl", qrCodeData.get("returnUrl"));
 				param.put("notifyUrl", qrCodeData.get("notifyUrl"));
 				param.put("isSendMessage", qrCodeData.get("isSendMessage"));
 				param.put("payWay", qrCodeData.get("payWay"));
@@ -282,5 +284,6 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
 		}
 	}
+
 
 }
