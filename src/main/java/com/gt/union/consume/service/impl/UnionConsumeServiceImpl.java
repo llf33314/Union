@@ -201,6 +201,9 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		if(page == null || busId == null){
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
+		page.setSearchCount(false);
+		Integer count = unionConsumeMapper.listMyCount(unionId, busId, memberId, cardNo, phone, beginTime, endTime);
+		page.setTotal(count);
 		List<UnionConsumeVO> list = unionConsumeMapper.listMy(page, unionId, busId, memberId, cardNo, phone, beginTime, endTime);
 		List<Integer> shopIds = new ArrayList<Integer>();
 		for(UnionConsumeVO vo : list){
@@ -230,6 +233,9 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		if(page == null || busId == null){
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
+		page.setSearchCount(false);
+		Integer count = unionConsumeMapper.listOtherCount(unionId, busId, memberId, cardNo, phone, beginTime, endTime);
+		page.setTotal(count);
 		List<UnionConsumeVO> list = unionConsumeMapper.listOther(page, unionId, busId, memberId, cardNo, phone, beginTime, endTime);
 		List<Integer> shopIds = new ArrayList<Integer>();
 		for(UnionConsumeVO vo : list){
