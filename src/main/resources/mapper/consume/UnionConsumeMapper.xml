@@ -54,11 +54,11 @@
 		LEFT JOIN t_union_card card on card.id = con.card_id
 		LEFT JOIN t_union_card_root r on card.root_id = r.id
 		LEFT JOIN t_union_member m on m.id = card.member_id
+		LEFT JOIN t_union_main um on um.id = m.union_id
+		WHERE 1 = 1
 		<if test="memberId != null" >
 			AND m.id = #{memberId}
 		</if>
-		LEFT JOIN t_union_main um on um.id = m.union_id
-		WHERE 1 = 1
 		<if test="beginTime != null and beginTime != '' " >
 			AND con.createtime &gt;= #{beginTime}
 		</if>
@@ -121,11 +121,11 @@
 		LEFT JOIN t_union_card card on card.id = con.card_id
 		LEFT JOIN t_union_card_root r on card.root_id = r.id
 		LEFT JOIN t_union_member m on m.id = card.member_id
+		LEFT JOIN t_union_main um on um.id = m.union_id
+		WHERE 1 = 1
 		<if test="memberId != null" >
 			AND m.id = #{memberId}
 		</if>
-		LEFT JOIN t_union_main um on um.id = m.union_id
-		WHERE 1 = 1
 		<if test="beginTime != null and beginTime != '' " >
 			AND con.createtime &gt;= #{beginTime}
 		</if>
@@ -183,10 +183,10 @@
 		LEFT JOIN t_union_card card on card.id = con.card_id
 		LEFT JOIN t_union_card_root r on card.root_id = r.id
 		LEFT JOIN t_union_member m on m.id = card.member_id
+		WHERE 1 = 1
 		<if test="memberId != null" >
 			AND m.id = #{memberId}
 		</if>
-		WHERE 1 = 1
 		<if test="beginTime != null and beginTime != '' " >
 			AND con.createtime &gt;= #{beginTime}
 		</if>
