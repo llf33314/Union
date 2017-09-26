@@ -184,7 +184,7 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 * @param member
 	 * @return
 	 */
-	Map<String,Object> getUnionCardIndex(Integer busId, Member member);
+	Map<String, Object> getUnionCardIndex(Integer busId, Member member) throws Exception;
 
 	/**
 	 * 前台生成办理联盟卡支付二维码信息
@@ -203,4 +203,22 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 * @param only
 	 */
 	void payBindCardSuccess(String encrypt, String only) throws Exception;
+
+	/**
+	 * 绑定升级联盟卡手机号
+	 * @param member
+	 * @param busId
+	 * @param phone
+	 */
+	void bindCardPhone(Member member, Integer busId, String phone);
+
+	/**
+	 *
+	 * @param busId
+	 * @param member
+	 * @param unionId
+	 * @param memberId
+	 * @return
+	 */
+	Map<String,Object> getUnionInfoCardList(Integer busId, Member member, Integer unionId, Integer memberId) throws Exception;
 }

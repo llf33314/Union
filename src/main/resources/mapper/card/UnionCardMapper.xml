@@ -58,18 +58,15 @@
 	<select id="countByMemberIdsAndType" resultType="java.lang.Integer">
 		SELECT count(id) from t_union_card WHERE EXISTS (SELECT id from t_union_card_root r WHERE r.phone = #{phone} AND r.id = t_union_card.root_id AND del_status = 0)
 		AND member_id in
-		<foreach collection="members" item="member" open="(" close=")"
+		<foreach collection="members" item="memberId" open="(" close=")"
 				 separator=",">
-			#{member.id}
+			#{memberId}
 		</foreach>
 		<if test="type != null" >
 			AND type = #{type}
 		</if>
 		<if test="isCharge != null" >
 			AND is_charge = #{isCharge}
-		</if>
-		<if test="isAvailable != null" >
-			AND is_available != #{isAvailable}
 		</if>
 		AND del_status = 0 AND validity &gt; NOW()
 	</select>

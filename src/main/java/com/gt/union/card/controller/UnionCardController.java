@@ -354,7 +354,7 @@ public class UnionCardController {
 
 
 	@RequestMapping(value = "/79B4DE7C/paymentSuccess/{encrypt}/{only}")
-	public String payCreateUnionSuccess(HttpServletRequest request, HttpServletResponse response, @PathVariable(name = "encrypt", required = true) String encrypt, @PathVariable(name = "only", required = true) String only) {
+	public String payBindCardSuccess(HttpServletRequest request, HttpServletResponse response, @PathVariable(name = "encrypt", required = true) String encrypt, @PathVariable(name = "only", required = true) String only) {
 		Map<String,Object> data = new HashMap<String,Object>();
 		try {
 			logger.info("前台办理联盟卡支付成功，订单encrypt------------------"+encrypt);

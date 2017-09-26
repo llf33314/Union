@@ -8,6 +8,7 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.BigDecimalUtil;
+import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.main.constant.MainConstant;
@@ -873,5 +874,34 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             default:
                 return false;
         }
+    }
+
+    @Override
+    public List<Map<String, Object>> listMemberDiscountByMemberIds(final Integer unionId, final Integer memberId) {
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                StringBuilder sbSqlSegment = new StringBuilder(" m")
+                        .append(" LEFT JOIN t_union_member_discount d ON m.id = d.to_member_id ")
+                        .append(" WHERE m.union_id = ").append(unionId)
+                        .append("  AND m.status in (").append(MemberConstant.STATUS_IN).append(",")
+                        .append("   ").append(MemberConstant.STATUS_APPLY_OUT).append(" )")
+                        .append(" AND d.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append(" AND m.del_status = ").append(CommonConstant.DEL_STATUS_NO);
+                sbSqlSegment.append(" ORDER BY m.is_union_owner DESC, m.id ASC");
+                return sbSqlSegment.toString();
+            }
+        };
+        StringBuilder sbSqlSelect = new StringBuilder(" m.id memberId") //盟员id
+                .append(", m.is_union_owner isUnionOwner") //是否盟主
+                .append(", m.enterprise_name enterpriseName") //盟员名称
+                .append(", DATE_FORMAT(m.createtime, '%Y-%m-%d %T') createTime") //创建时间
+                .append(", m.enterprise_address enterpriseAddress") //企业地址
+                .append(", m.director_phone directorPhone") //负责人电话
+                .append(", m.address_longitude addressLongitude") //地址经度
+                .append(", m.address_latitude addressLatitude") //企业地址
+                .append(", d.discount discount"); //我给他的折扣
+        wrapper.setSqlSelect(sbSqlSelect.toString());
+        return this.selectMaps(wrapper);
     }
 }
