@@ -26,14 +26,6 @@ public interface IUnionCardIntegralService extends IService<UnionCardIntegral> {
     Double sumCardIntegralByUnionIdAndStatus(Integer unionId, Integer status) throws Exception;
 
     /**
-     * 根据联盟卡ids和收支状态获取联盟卡积分总和
-     * @param cardIds    联盟卡ids
-     * @param status    收支状态 1：收入 2：支出
-     * @return
-     */
-    List<Map<String,Object>> sumByCardIdsAndStatus(List<Integer> cardIds, Integer status) throws Exception;
-
-    /**
      * 根据联盟id，获取联盟剩余有效的积分数，即收入积分-支出积分
      *
      * @param unionId {not null} 联盟id

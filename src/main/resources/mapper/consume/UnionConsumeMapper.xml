@@ -80,8 +80,7 @@
 		from (SELECT * from t_union_consume WHERE card_id in (SELECT id from t_union_card WHERE member_id in (SELECT id from t_union_member WHERE bus_id = #{busId} AND del_status = 0 and status in (2,3,4)
 		<if test="unionId != null" >
 			AND union_id = #{unionId}
-		</if>)
-		)) con
+		</if>) and del_status = 0)) con
 		LEFT JOIN t_union_consume_item i on con.id = i.consume_id
 		LEFT JOIN t_union_preferential_item it on it.id = i.preferential_item_id
 		LEFT JOIN t_union_card card on card.id = con.card_id
@@ -146,7 +145,7 @@
 		from (SELECT * from t_union_consume WHERE card_id in (SELECT id from t_union_card WHERE member_id in (SELECT id from t_union_member WHERE bus_id = #{busId} AND del_status = 0 and status in (2,3,4)
 		<if test="unionId != null" >
 			AND union_id = #{unionId}
-		</if> )
+		</if> ) and del_status = 0
 		)) con
 		LEFT JOIN t_union_consume_item i on con.id = i.consume_id
 		LEFT JOIN t_union_preferential_item it on it.id = i.preferential_item_id
@@ -206,7 +205,7 @@
 		from (SELECT * from t_union_consume WHERE card_id in (SELECT id from t_union_card WHERE member_id in (SELECT id from t_union_member WHERE bus_id = #{busId} AND del_status = 0 and status in (2,3,4)
 		<if test="unionId != null" >
 			AND union_id = #{unionId}
-		</if> )
+		</if> ) and del_status = 0
 		)) con
 		LEFT JOIN t_union_card card on card.id = con.card_id
 		LEFT JOIN t_union_card_root r on card.root_id = r.id

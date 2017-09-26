@@ -81,16 +81,4 @@ public class UnionCardIntegralServiceImpl extends ServiceImpl<UnionCardIntegralM
         return BigDecimalUtil.subtract(inIntegralSum, outIntegralSum).doubleValue();
     }
 
-	@Override
-	public List<Map<String,Object>> sumByCardIdsAndStatus(List<Integer> cardIds, Integer status) throws Exception {
-    	if(ListUtil.isEmpty(cardIds) || status == null){
-			throw new ParamException(CommonConstant.PARAM_ERROR);
-		}
-		EntityWrapper entityWrapper = new EntityWrapper<>();
-    	entityWrapper.in("card_id", cardIds.toArray());
-    	entityWrapper.eq("status", status);
-    	entityWrapper.groupBy("card_id");
-    	entityWrapper.setSqlSelect("card_id as cardId, IFNULL(SUM(integral),0)AS integral");
-		return this.selectMaps(entityWrapper);
-	}
 }

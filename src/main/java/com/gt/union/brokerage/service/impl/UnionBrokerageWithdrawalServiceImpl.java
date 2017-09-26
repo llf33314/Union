@@ -8,6 +8,7 @@ import com.gt.union.brokerage.entity.UnionBrokerageWithdrawal;
 import com.gt.union.brokerage.mapper.UnionBrokerageWithdrawalMapper;
 import com.gt.union.brokerage.service.IUnionBrokerageWithdrawalService;
 import com.gt.union.brokerage.vo.UnionBrokerageWithDrawalsVO;
+import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.StringUtil;
@@ -43,6 +44,7 @@ public class UnionBrokerageWithdrawalServiceImpl extends ServiceImpl<UnionBroker
 			ids.add(member.getId());
 		}
 		EntityWrapper wrapper = new EntityWrapper<>();
+		wrapper.eq("del_status",CommonConstant.DEL_STATUS_NO);
 		wrapper.in("member_id", ids.toArray());
 		wrapper.groupBy("member_id");
 		wrapper.setSqlSelect("IFNULL(SUM(money), 0) money, member_id");
@@ -57,6 +59,7 @@ public class UnionBrokerageWithdrawalServiceImpl extends ServiceImpl<UnionBroker
 		}
 		EntityWrapper wrapper = new EntityWrapper<>();
 		wrapper.in("member_id", ids.toArray());
+		wrapper.eq("del_status",CommonConstant.DEL_STATUS_NO);
 		wrapper.setSqlSelect("IFNULL(SUM(money), 0) money");
 		Map<String,Object> data = this.selectMap(wrapper);
 		if(data == null){
@@ -69,6 +72,7 @@ public class UnionBrokerageWithdrawalServiceImpl extends ServiceImpl<UnionBroker
 	public double getSumWithdrawalsUnionBrokerage(Integer busId) {
 		EntityWrapper wrapper = new EntityWrapper<>();
 		wrapper.eq("bus_id",busId);
+		wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
 		wrapper.setSqlSelect("IFNULL(SUM(money), 0) money");
 		Map<String,Object> data = this.selectMap(wrapper);
 		if(data == null){

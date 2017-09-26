@@ -15,16 +15,6 @@
 	</resultMap>
 
 
-	<!-- 根据rootId和联盟id列表查询升级的联盟卡列表 -->
-    <select id="listByRootIdAndUnionIds" resultType="com.gt.union.card.entity.UnionCard">
-		SELECT * from t_union_card WHERE member_id in
-		(SELECT id from t_union_member WHERE union_id in
-		<foreach collection="unionIds" item="unionId" open="(" close=")"
-				 separator=",">
-			#{unionId}
-		</foreach>
-		 and del_status = 0 and `status` in (2,3)) and root_id = #{rootId} and del_status = 0 and validity &gt;= NOW()
-	</select>
 
 	<!--获取最低折扣的联盟卡-->
 	<select id="getByMinDiscountByCardList" resultType="java.util.Map">
@@ -33,11 +23,11 @@
 		<foreach collection="list" item="card" open="(" close=")"
 				 separator=",">
 			#{card.id}
-		</foreach>
+		</foreach> and del_status = 0
 		) c
 		LEFT JOIN t_union_member_discount d on d.to_member_id = c.member_id
 		LEFT JOIN t_union_member m on d.to_member_id = m.id
-		WHERE d.from_member_id = #{memberId} and d.del_status = 0
+		WHERE c.member_id = d.to_member_id and d.from_member_id = #{memberId} and d.del_status = 0 and m.del_status = 0 and m.`status` in (2,3)
 		ORDER BY d.discount asc, m.is_union_owner desc, c.createtime asc) t
 		GROUP BY t.fromMmemberId LIMIT 1
 	</select>
@@ -52,7 +42,6 @@
 			#{member.id}
 		</foreach>
 		AND del_status = 0 AND validity &gt; NOW()
-
 	</select>
 
 	<select id="countByMemberIdsAndType" resultType="java.lang.Integer">
@@ -79,8 +68,9 @@
 				 separator=",">
 			#{card.id}
 		</foreach>
-		) c
+		and del_status = 0) c
 		LEFT JOIN t_union_member m on m.id = c.member_id
+		where m.del_status = 0 and m.`status` in (2,3)
 		ORDER BY c.createtime asc) t
 	 	LIMIT 1
 	</select>

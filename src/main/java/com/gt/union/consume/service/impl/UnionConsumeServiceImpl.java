@@ -98,6 +98,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 	@Autowired
 	private IUnionCardIntegralService unionCardIntegralService;
 
+	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public UnionConsumeResult consumeByUnionCard(UnionConsumeParam unionConsumeParam) throws Exception{
 		if(unionConsumeParam.getUnionCardId() == null){
@@ -276,6 +277,11 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		consumeSuccess(vo, orderNo);
 	}
 
+	/**
+	 * 消费支付成功
+	 * @param vo
+	 * @param orderNo
+	 */
 	private void consumeSuccess( UnionConsumeParamVO vo, String orderNo){
 		//核销优惠项目或者现金支付时调用该接口
 		UnionConsume consume = new UnionConsume();
@@ -369,57 +375,11 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		return list;
 	}
 
-	@Override
-	public HSSFWorkbook exportConsumeFromDetail(String[] titles, String[] contentName, List<Map<String, Object>> list) {
-		HSSFWorkbook wb = new HSSFWorkbook();
-		HSSFCellStyle styleCenter = wb.createCellStyle();
-		HSSFSheet sheet = createHSSFSheet(titles, wb, styleCenter);
-		sheet.setColumnWidth(5, 100 * 150);
-		for (int i=0;i<list.size();i++) {
-			Map<String, Object> item = list.get(i);
-			HSSFRow row = sheet.createRow(i + 1);
-			for(int j=0;j<titles.length;j++){
-				String key = contentName[j];
-				String c = CommonUtil.isEmpty(item.get(key)) ? "" : item.get(key).toString();
-				if("createtime".equals(key)){//加入时间
-					c = DateTimeKit.format(DateTimeKit.parse(c,DateTimeKit.DEFAULT_DATETIME_FORMAT), "yyyy-MM-dd HH:mm");
-				}
-				HSSFCell cell = row.createCell(j);
-				cell.setCellValue(c);
-				cell.setCellStyle(styleCenter);
-			}
-
-		}
-		return wb;
-	}
 
 	@Override
 	public List<Map<String, Object>> listOtherByUnionId(Integer unionId, Integer busId, Integer memberId, String cardNo, String phone, String beginTime, String endTime) {
 		List<Map<String, Object>> list = unionConsumeMapper.listOtherByUnionId(unionId, busId, memberId, cardNo, phone, beginTime, endTime);
 		return list;
-	}
-
-	@Override
-	public HSSFWorkbook exportConsumeToDetail(String[] titles, String[] contentName, List<Map<String, Object>> list) {
-		HSSFWorkbook wb = new HSSFWorkbook();
-		HSSFCellStyle styleCenter = wb.createCellStyle();
-		HSSFSheet sheet = createHSSFSheet(titles, wb, styleCenter);
-		sheet.setColumnWidth(5, 100 * 150);
-		for (int i=0;i<list.size();i++) {
-			Map<String, Object> item = list.get(i);
-			HSSFRow row = sheet.createRow(i + 1);
-			for(int j=0;j<titles.length;j++){
-				String key = contentName[j];
-				String c = CommonUtil.isEmpty(item.get(key)) ? "" : item.get(key).toString();
-				if("createtime".equals(key)){//加入时间
-					c = DateTimeKit.format(DateTimeKit.parse(c,DateTimeKit.DEFAULT_DATETIME_FORMAT), "yyyy-MM-dd HH:mm");
-				}
-				HSSFCell cell = row.createCell(j);
-				cell.setCellValue(c);
-				cell.setCellStyle(styleCenter);
-			}
-		}
-		return wb;
 	}
 
 
@@ -452,9 +412,56 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		String statusKey = RedisKeyUtil.getConsumePayParamKey(only);
 		redisCacheUtil.set(paramKey, JSON.toJSONString(data), 360l);//5分钟
 		redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_001,300l);
-		return null;
+		return data;
 	}
 
+	@Override
+	public HSSFWorkbook exportConsumeFromDetail(String[] titles, String[] contentName, List<Map<String, Object>> list) {
+		HSSFWorkbook wb = new HSSFWorkbook();
+		HSSFCellStyle styleCenter = wb.createCellStyle();
+		HSSFSheet sheet = createHSSFSheet(titles, wb, styleCenter);
+		sheet.setColumnWidth(5, 100 * 150);
+		for (int i=0;i<list.size();i++) {
+			Map<String, Object> item = list.get(i);
+			HSSFRow row = sheet.createRow(i + 1);
+			for(int j=0;j<titles.length;j++){
+				String key = contentName[j];
+				String c = CommonUtil.isEmpty(item.get(key)) ? "" : item.get(key).toString();
+				if("createtime".equals(key)){//加入时间
+					c = DateTimeKit.format(DateTimeKit.parse(c,DateTimeKit.DEFAULT_DATETIME_FORMAT), "yyyy-MM-dd HH:mm");
+				}
+				HSSFCell cell = row.createCell(j);
+				cell.setCellValue(c);
+				cell.setCellStyle(styleCenter);
+			}
+
+		}
+		return wb;
+	}
+
+
+	@Override
+	public HSSFWorkbook exportConsumeToDetail(String[] titles, String[] contentName, List<Map<String, Object>> list) {
+		HSSFWorkbook wb = new HSSFWorkbook();
+		HSSFCellStyle styleCenter = wb.createCellStyle();
+		HSSFSheet sheet = createHSSFSheet(titles, wb, styleCenter);
+		sheet.setColumnWidth(5, 100 * 150);
+		for (int i=0;i<list.size();i++) {
+			Map<String, Object> item = list.get(i);
+			HSSFRow row = sheet.createRow(i + 1);
+			for(int j=0;j<titles.length;j++){
+				String key = contentName[j];
+				String c = CommonUtil.isEmpty(item.get(key)) ? "" : item.get(key).toString();
+				if("createtime".equals(key)){//加入时间
+					c = DateTimeKit.format(DateTimeKit.parse(c,DateTimeKit.DEFAULT_DATETIME_FORMAT), "yyyy-MM-dd HH:mm");
+				}
+				HSSFCell cell = row.createCell(j);
+				cell.setCellValue(c);
+				cell.setCellStyle(styleCenter);
+			}
+		}
+		return wb;
+	}
 
 	/**
 	 * 创建sheet
