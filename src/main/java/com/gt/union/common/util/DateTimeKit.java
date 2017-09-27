@@ -1,6 +1,6 @@
 package com.gt.union.common.util;
 
-import com.gt.union.common.exception.ParameterException;
+import com.gt.union.common.exception.ParamException;
 import org.springframework.util.StringUtils;
 
 import java.text.DateFormat;
@@ -953,7 +953,7 @@ public class DateTimeKit {
 	        	smdate=sdf.parse(sdf.format(smdate));  
 				bdate=sdf.parse(sdf.format(bdate));
 			} catch (ParseException e) {
-				throw new ParameterException("计算两个日期之间相差的天数  ");
+				throw new ParamException("计算两个日期之间相差的天数  ");
 			}  
 	        Calendar cal = Calendar.getInstance();    
 	        cal.setTime(smdate);    
@@ -1391,7 +1391,7 @@ public class DateTimeKit {
 	 */
 	public static void main(String[] args) throws ParseException {
 		//		20161216104457
-		Date date=DateTimeKit.parse("20161216104457", "yyyyMMddHHmmss");
+		Date date= DateTimeKit.parse("20161216104457", "yyyyMMddHHmmss");
 		System.out.println(date);
 		 SimpleDateFormat sdf=new SimpleDateFormat("yyyyMMddHHmmss");
 		    Date d=sdf.parse("20161216104457");

@@ -19,13 +19,14 @@
         <java.version>1.7</java.version>
         <swagger.version>2.6.1</swagger.version>
         <mysql.version>5.1.42</mysql.version>
-        <druid.version>1.0.31</druid.version>
+        <druid.version>1.1.2</druid.version>
         <mybatis.version>1.3.0</mybatis.version>
         <mybatis.plus.version>2.1-gamma</mybatis.plus.version>
         <pagehelper.version>5.0.3</pagehelper.version>
-        <fastjson.version>1.2.34</fastjson.version>
-        <cxf.version>3.1.11</cxf.version>
+        <fastjson.version>1.2.0</fastjson.version>
         <httpclient.version>4.5.3</httpclient.version>
+        <dev.lib.lombok>1.16.18</dev.lib.lombok>
+        <gt.common.api.version>1.3.11-SNAPSHOT</gt.common.api.version>
     </properties>
 
     <dependencies>
@@ -40,15 +41,21 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- 添加soring boot测试依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- 添加amqp消息队列支持 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-amqp</artifactId>
+        </dependency>
         <!--添加外置tomcat支持-->
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
             <artifactId>tomcat-embed-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tomcat.embed</groupId>
-            <artifactId>tomcat-embed-el</artifactId>
-            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.apache.tomcat.embed</groupId>
@@ -60,26 +67,11 @@
             <artifactId>tomcat-embed-websocket</artifactId>
             <scope>provided</scope>
         </dependency>
-        <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-jdbc</artifactId>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.tomcat</groupId>
-            <artifactId>tomcat-jsp-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
         <!--添加servlet支持-->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
             <version>${servlet-api.version}</version>
-        </dependency>
-        <!--添加spring boot starter thymeleaf支持-->
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-thymeleaf</artifactId>
         </dependency>
         <!--添加swagger支持-->
         <dependency>
@@ -99,9 +91,14 @@
             <version>${mysql.version}</version>
         </dependency>
         <!--添加druid支持-->
+        <!-- <dependency>
+             <groupId>com.alibaba</groupId>
+             <artifactId>druid</artifactId>
+             <version>${druid.version}</version>
+         </dependency>-->
         <dependency>
             <groupId>com.alibaba</groupId>
-            <artifactId>druid</artifactId>
+            <artifactId>druid-spring-boot-starter</artifactId>
             <version>${druid.version}</version>
         </dependency>
         <!--添加mybatis plus支持-->
@@ -128,30 +125,57 @@
         </dependency>
         <!--添加redis支持-->
         <dependency>
+            <groupId>org.springframework.session</groupId>
+            <artifactId>spring-session</artifactId>
+            <version>1.3.0.RELEASE</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-redis</artifactId>
         </dependency>
-        <!--添加cxf支持-->
         <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-frontend-jaxws</artifactId>
-            <version>${cxf.version}</version>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-redis</artifactId>
+            <version>1.4.5.RELEASE</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-rt-transports-http</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.cxf</groupId>
-            <artifactId>cxf-spring-boot-starter-jaxrs</artifactId>
-            <version>${cxf.version}</version>
-        </dependency>
+
         <!-- httpclient -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
             <version>${httpclient.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.zxing</groupId>
+            <artifactId>core</artifactId>
+            <version>3.3.0</version>
+        </dependency>
+        <!-- 添加导出excel支持 -->
+        <dependency>
+            <groupId>org.apache.poi</groupId>
+            <artifactId>poi-ooxml</artifactId>
+            <version>3.9</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${dev.lib.lombok}</version>
+        </dependency>
+
+        <!-- 谷通公用工具包 -->
+        <dependency>
+            <groupId>com.gt.api</groupId>
+            <artifactId>gt_api</artifactId>
+            <version>${gt.common.api.version}</version>
+        </dependency>
+
+        <!-- 谷通公用实体类 -->
+        <dependency>
+            <groupId>com.gt.wxmp</groupId>
+            <artifactId>lfx_wxmp_entity</artifactId>
+            <version>1.0.5</version>
         </dependency>
 
     </dependencies>
@@ -177,5 +201,4 @@
             </resource>
         </resources>
     </build>
-
 </project>

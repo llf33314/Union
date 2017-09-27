@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gt.union.brokerage.mapper.UnionBrokerageWithdrawalMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.gt.union.brokerage.entity.UnionBrokerageWithdrawal">
+		<id column="id" property="id" />
+		<result column="createtime" property="createtime" />
+		<result column="del_status" property="delStatus" />
+		<result column="bus_id" property="busId" />
+		<result column="money" property="money" />
+		<result column="verifier_id" property="verifierId" />
+		<result column="third_member_id" property="thirdMemberId" />
+	</resultMap>
+
+
+	<select id="listWithdrawals" resultType="com.gt.union.brokerage.vo.UnionBrokerageWithDrawalsVO">
+		SELECT createtime AS time, money, third_member_id AS memberId FROM t_union_brokerage_withdrawal WHERE bus_id = #{busId} and del_status = 0 order by id desc
+	</select>
+
+</mapper>

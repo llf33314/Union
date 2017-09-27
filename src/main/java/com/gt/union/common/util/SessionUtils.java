@@ -1,22 +1,28 @@
 package com.gt.union.common.util;
 
-import com.gt.union.common.constant.CommonConst;
-import com.gt.union.entity.common.BusUser;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.gt.api.bean.session.Member;
+import com.gt.union.common.constant.ConfigConstant;
+import com.gt.union.verifier.entity.UnionVerifier;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
 
 public class SessionUtils {
-	private static final org.apache.log4j.Logger log = Logger
-			.getLogger(SessionUtils.class);
+	private static final Logger log = Logger.getLogger(SessionUtils.class);
 
 
-	//获取用户bus_user   SESSION的值
-	public static BusUser getLoginUser(HttpServletRequest request) {
+	/**
+	 * 获取佣金平台管理员
+	 * @param request
+	 * @return
+	 */
+	public static UnionVerifier getVerifier(HttpServletRequest request) {
 		try {
-			Object obj = request.getSession().getAttribute(CommonConst.SESSION_BUSINESS_KEY);
+			Object obj = request.getSession().getAttribute(ConfigConstant.VERIFIER);
 			if(obj != null){
-				return (BusUser) obj;
+				return JSON.parseObject(obj.toString(),UnionVerifier.class);
 			}else{
 				return null;
 			}
@@ -25,18 +31,40 @@ public class SessionUtils {
 			e.printStackTrace();
 		}
 		return null;
-	};
-	//存入 用户bus_user  的值
-	@SuppressWarnings("unchecked")
-	public static void setLoginUser(HttpServletRequest request, BusUser busUser) {
+	}
+
+
+	/**
+	 * 存入佣金平台管理员
+	 * @param request
+	 * @param unionVerifier
+	 */
+	public static void setUnionVerifier(HttpServletRequest request, UnionVerifier unionVerifier) {
 		try {
-			request.getSession().setAttribute(
-					CommonConst.SESSION_BUSINESS_KEY, busUser);
+			if(CommonUtil.isNotEmpty(unionVerifier)){
+				request.getSession().setAttribute(ConfigConstant.VERIFIER, JSON.toJSONString(unionVerifier));
+			}
 		} catch (Exception e) {
 			log.info(e.getLocalizedMessage());
 			e.printStackTrace();
 		}
-	};
+	}
 
+	/**
+	 * 设置登录的用户信息
+	 * @param request
+	 * @param member
+	 */
+	public static void setLoginMember(HttpServletRequest request, Member member){
+		try {
+			if(CommonUtil.isNotEmpty(member)){
+				request.getSession().setAttribute(com.gt.api.util.SessionUtils.SESSION_MEMBER, JSONObject.toJSONString(member));
+			}
+		} catch (Exception e) {
+			log.info(e.getLocalizedMessage());
+			e.printStackTrace();
+		}
+
+	}
 
 }

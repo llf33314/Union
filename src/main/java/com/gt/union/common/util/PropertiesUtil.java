@@ -3,11 +3,6 @@ package com.gt.union.common.util;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.Properties;
-
 
 /**
  * Properties 读取工具
@@ -22,19 +17,17 @@ public class PropertiesUtil {
 
 	private static String socketUrl;
 
-	private static String mgUrl;
+	private static String socketKey;
+
+	private static String mqUrl;
 
 	private static String mqUser;
 
 	private static String mqPassWord;
 
-	private static String staticSourceFtpIp;
+	private static String mqExchange;
 
-	private static String staticSourceFtpPort;
-
-	private static String staticSourceFtpPwd;
-
-	private static String staticSourceFtpUser;
+	private static String mqQueueName;
 
 	private static String redisIp;
 
@@ -46,6 +39,23 @@ public class PropertiesUtil {
 
 	private static String wxmpUrl;
 
+	private static String domainDf;
+
+	private static String wxmpSignkey;
+
+	private static String wxmpCompany;
+
+	private static String unionUrl;
+
+	private static String unionSignKey;
+
+	private static String memberUrl;
+
+	private static String memberSignKey;
+
+	private static Integer duofenBusId;
+
+	private static String encryptKey;
 
 	/**
 	 * 获取资源访问地址
@@ -68,7 +78,7 @@ public class PropertiesUtil {
 	 * @return mgUrl
 	 */
 	public static String getMqUrl() {
-		return mgUrl;
+		return mqUrl;
 	}
 
 	/**
@@ -88,35 +98,20 @@ public class PropertiesUtil {
 	}
 
 	/**
-	 * 获取ftp上传ip地址
-	 * @return staticSourceFtpIp
+	 * 获取mq转换器
+	 * @return
 	 */
-	public static String getStaticSourceFtpIp() {
-		return staticSourceFtpIp;
+	public static String getMqExchange() {
+		return mqExchange;
 	}
 
-	/**
-	 * 获取ftp上传端口
-	 * @return staticSourceFtpPort
-	 */
-	public static String getStaticSourceFtpPort() {
-		return staticSourceFtpPort;
-	}
 
 	/**
-	 * 获取ftp上传密码
-	 * @return staticSourceFtpPwd
+	 * 获取mq对列名称
+	 * @return
 	 */
-	public static String getStaticSourceFtpPwd() {
-		return staticSourceFtpPwd;
-	}
-
-	/**
-	 * 获取ftp上传用户
-	 * @return staticSourceFtpUser
-	 */
-	public static String getStaticSourceFtpUser() {
-		return staticSourceFtpUser;
+	public static String getMqQueueName() {
+		return mqQueueName;
 	}
 
 	/**
@@ -159,6 +154,26 @@ public class PropertiesUtil {
 		return wxmpUrl;
 	}
 
+	/**
+	 * 获取多粉域名
+	 * @return
+	 */
+	public static String getDomainDf(){
+		return domainDf;
+	}
+
+	public static String getWxmpCompany() {
+		return wxmpCompany;
+	}
+
+	/**
+	 * 获取wxmp项目api密钥
+	 * @return
+	 */
+	public static String getWxmpSignKey() {
+		return wxmpSignkey;
+	}
+
 	@Value("${resource.url.prefix}")
 	public void setResourceUrl(String resourceUrl) {
 		this.resourceUrl = resourceUrl;
@@ -170,8 +185,8 @@ public class PropertiesUtil {
 	}
 
 	@Value("${mq.uri}")
-	public void setMgUrl(String mgUrl) {
-		this.mgUrl = mgUrl;
+	public void setMqUrl(String mqUrl) {
+		this.mqUrl = mqUrl;
 	}
 
 	@Value("${mq.user}")
@@ -184,38 +199,18 @@ public class PropertiesUtil {
 		this.mqPassWord = mqPassWord;
 	}
 
-	@Value("${static.source.ftp.ip}")
-	public void setStaticSourceFtpIp(String staticSourceFtpIp) {
-		this.staticSourceFtpIp = staticSourceFtpIp;
-	}
-
-	@Value("${static.source.ftp.port}")
-	public void setStaticSourceFtpPort(String staticSourceFtpPort) {
-		this.staticSourceFtpPort = staticSourceFtpPort;
-	}
-
-	@Value("${static.source.ftp.password}")
-	public void setStaticSourceFtpPwd(String staticSourceFtpPwd) {
-		this.staticSourceFtpPwd = staticSourceFtpPwd;
-	}
-
-	@Value("${static.source.ftp.user}")
-	public void setStaticSourceFtpUser(String staticSourceFtpUser) {
-		this.staticSourceFtpUser = staticSourceFtpUser;
-	}
-
-	@Value("${redis.ip}")
+	@Value("${spring.redis.host}")
 	public void setRedisIp(String redisIp) {
 		this.redisIp = redisIp;
 	}
 
-	@Value("${redis.port}")
+	@Value("${spring.redis.port}")
 	public void setRedisPort(Integer redisPort) {
 		this.redisPort = redisPort;
 	}
 
-	@Value("${redis.pwd}")
-	public void setRedisPort(String redisPwd) {
+	@Value("${spring.redis.password}")
+	public void setRedisPwd(String redisPwd) {
 		this.redisPwd = redisPwd;
 	}
 
@@ -224,11 +219,108 @@ public class PropertiesUtil {
 		this.redisNamePrefix = redisNamePrefix;
 	}
 
-
 	@Value("${wxmp.url}")
 	public void setWxmpUrl(String wxmpUrl) {
-		PropertiesUtil.wxmpUrl = wxmpUrl;
+		this.wxmpUrl = wxmpUrl;
 	}
 
+	@Value("${domain.df}")
+	public void setDomain(String domainDf){
+		this.domainDf = domainDf;
+	}
 
+	@Value("${wxmp.signkey}")
+	public void setWxmpSignKey(String wxmpSignKey) {
+		this.wxmpSignkey = wxmpSignKey;
+	}
+
+	@Value("${wxmp.company}")
+	public void setWxmpCompany(String wxmpCompany) {
+		this.wxmpCompany = wxmpCompany;
+	}
+
+	@Value("${queueName.union.queueName}")
+	public void setMqQueueName(String mqQueueName) {
+		this.mqQueueName = mqQueueName;
+	}
+
+	@Value("${exchange.union.exchange}")
+	public void setMqExchange(String mqExchange) {
+		this.mqExchange = mqExchange;
+	}
+
+	/**
+	 * 联盟路径
+	 * @return
+	 */
+	public static String getUnionUrl() {
+		return unionUrl;
+	}
+
+	@Value("${union.url}")
+	public void setUnionUrl(String unionUrl) {
+		this.unionUrl = unionUrl;
+	}
+
+	/**
+	 * 会员请求路径
+	 * @return
+	 */
+	public static String getMemberUrl() {
+		return memberUrl;
+	}
+
+	@Value("${member.url}")
+	public void setMemberUrl(String memberUrl) {
+		this.memberUrl = memberUrl;
+	}
+
+	/**
+	 * 会员请求签名
+	 * @return
+	 */
+	public static String getMemberSignKey() {
+		return memberSignKey;
+	}
+
+	@Value("${member.signkey}")
+	public void setMemberSignKey(String memberSignKey) {
+		this.memberSignKey = memberSignKey;
+	}
+
+	public static Integer getDuofenBusId() {
+		return duofenBusId;
+	}
+
+	@Value("${wx.duofen.busId}")
+	public void setDuofenBusId(Integer duofenBusId) {
+		this.duofenBusId = duofenBusId;
+	}
+
+	public static String getEncryptKey() {
+		return encryptKey;
+	}
+
+	@Value("${union.encryptKey}")
+	public void setEncryptKey(String encryptKey) {
+		this.encryptKey = encryptKey;
+	}
+
+	@Value("${socket.key}")
+	public static String getSocketKey() {
+		return socketKey;
+	}
+
+	public void setSocketKey(String socketKey) {
+		this.socketKey = socketKey;
+	}
+
+	public static String getUnionSignKey() {
+		return unionSignKey;
+	}
+
+	@Value("${union.signkey}")
+	public void setUnionSignKey(String unionSignKey) {
+		this.unionSignKey = unionSignKey;
+	}
 }

@@ -2,12 +2,13 @@
 <configuration>
     <!-- 内容输出格式 -->
     <property name="PATTERN" value="%-12(%d{yyyy-MM-dd HH:mm:ss.SSS}) |-%-5level [%thread] %c [%L] -| %msg%n" />
-    <!-- 默认配置路径 -->
-    <property name="LOG_HOME" value="logs/"/>
+    <!-- 日志文件默认位置,正式中可能需要改成绝对路径！！！ -->
+    <!--<property name="LOG_PATH" value="../logs/"/>-->
+    <property name="LOG_PATH" value="/home/server/log/tomcat/union/"/>
 
     <!--console输出-->
-    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
-        <encoder>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>${PATTERN}</pattern>
         </encoder>
     </appender>
@@ -15,40 +16,39 @@
     <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <!-- 文件名称 -->
-            <fileNamePattern>${LOG_HOME}/union.%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>${LOG_PATH}/union.%d{yyyy-MM-dd}.log</fileNamePattern>
             <!-- 文件最大保存历史数量 -->
-            <MaxHistory>100</MaxHistory>
+            <MaxHistory>50</MaxHistory>
         </rollingPolicy>
-        <layout class="ch.qos.logback.classic.PatternLayout">
+        <encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
             <pattern>${PATTERN}</pattern>
-        </layout>
+        </encoder>
     </appender>
 
     <!-- 开发环境 -->
     <springProfile name="dev">
         <logger name="com.gt.union" level="debug"/>
         <root level="info">
-            <appender-ref ref="CONSOLE" />
+            <appender-ref ref="STDOUT" />
+            <appender-ref ref="FILE" />
         </root>
     </springProfile>
 
     <!-- 测试环境 -->
     <springProfile name="test">
+        <logger name="com.gt.union" level="debug"/>
         <root level="info">
-            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="STDOUT"/>
             <appender-ref ref="FILE" />
         </root>
     </springProfile>
 
     <!--生产环境-->
     <springProfile name="prod">
-        <!--定义日志文件的存储地址 勿在 LogBack 的配置中使用相对路径-->
-        <property name="LOG_HOME" value="logs/prod/"/>
         <!-- 日志输出级别 -->
         <root level="info">
-            <appender-ref ref="CONSOLE"/>
+            <appender-ref ref="STDOUT"/>
             <appender-ref ref="FILE"/>
         </root>
-
     </springProfile>
 </configuration>
