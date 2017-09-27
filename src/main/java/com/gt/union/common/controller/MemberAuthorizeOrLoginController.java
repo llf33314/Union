@@ -2,6 +2,7 @@ package com.gt.union.common.controller;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import com.gt.api.bean.session.Member;
 import com.gt.api.util.sign.SignHttpUtils;
 import com.gt.union.api.client.redis.RedisService;
 import com.gt.union.common.constant.ConfigConstant;
@@ -84,9 +85,9 @@ public class MemberAuthorizeOrLoginController {
 	protected String authorizeMemberWx(HttpServletRequest request, String reqUrl) throws Exception {
 		logger.debug("进入--联盟手机端微信授权方法！");
 		Integer browser = CommonUtil.judgeBrowser(request);//判断浏览器
-//		if(browser != 1){
-//			throw new BusinessException("请使用微信登录");
-//		}
+		if(browser != 1){
+			throw new BusinessException("请使用微信登录");
+		}
 		Map<String, Object> getWxPublicMap = new HashMap<>();
 		getWxPublicMap.put("busId", ConfigConstant.WXMP_DUOFEN_BUSID);//多粉
 		//判断商家信息 1是否过期 2公众号是否变更过
@@ -116,4 +117,33 @@ public class MemberAuthorizeOrLoginController {
 		return ConfigConstant.WXMP_ROOT_URL + "/remoteUserAuthoriPhoneController/79B4DE7C/authorizeMember.do?queryBody=" + params;
 	}
 
+
+	/**
+	 * 获取是否需要登录
+	 * @param member
+	 * @param request
+	 * @param busId
+	 * @param url
+	 * @return
+	 * @throws Exception
+	 */
+	protected String getCardH5LoginReturnUrl(Member member, HttpServletRequest request, Integer busId, String url) throws Exception{
+		if(CommonUtil.isEmpty(member)){
+			if(CommonUtil.judgeBrowser(request) == 1){//微信
+				String redirectUrl = authorizeMember(request, busId, null, ConfigConstant.UNION_PHONE_ROOT_URL + url);
+				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
+			}else {//其他浏览器
+				return GTJsonResult.instanceErrorMsg("登录授权",ConfigConstant.UNION_PHONE_ROOT_URL + "toLogin").toString();
+			}
+		}
+		if(!member.getBusid().equals(busId)){
+			if(CommonUtil.judgeBrowser(request) == 1){//微信
+				String redirectUrl = authorizeMember(request, busId, null, ConfigConstant.UNION_PHONE_ROOT_URL + url);
+				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
+			}else {//其他浏览器
+				return GTJsonResult.instanceErrorMsg("登录授权",ConfigConstant.UNION_PHONE_ROOT_URL + "toLogin").toString();
+			}
+		}
+		return null;
+	}
 }

@@ -130,7 +130,7 @@ public interface ConfigConstant {
 	/**
 	 * 手机端根路径
 	 */
-	String UNION_PHONE_ROOT_URL = UNION_ROOT_URL + "/phone?";
+	String UNION_PHONE_ROOT_URL = UNION_ROOT_URL + "/phone/#/";
 
 	/**
 	 * 联盟加密秘钥
