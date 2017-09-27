@@ -524,8 +524,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		data.put("memberId",memberId);
 		data.put("desc", "联盟商机佣金");
 		data.put("returnUrl",unionUrl + url);
-		//data.put("notifyUrl",unionUrl + "/unionH5Brokerage/79B4DE7C/paymentOneSuccess/" + encrypt);
-		data.put("notifyUrl","http://union.duofee.com" + "/unionH5Brokerage/79B4DE7C/paymentOneSuccess/" + encrypt);
+		data.put("notifyUrl",unionUrl + "/unionH5Brokerage/79B4DE7C/paymentOneSuccess/" + encrypt);
 		data.put("isSendMessage",0);//不需要推送
 		data.put("payWay",1);//微信支付
 		data.put("sourceType",1);
@@ -568,9 +567,9 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		pay.setDelStatus(CommonConstant.DEL_STATUS_NO);
 		pay.setCreatetime(new Date());
 		pay.setOrderNo(orderNo);
-		pay.setStatus(2);//支付成功
+		pay.setStatus(BrokerageConstant.BROKERAGE_PAY_STATUS_YES);//支付成功
 		pay.setMoney(opportunity.getBrokeragePrice());
-		pay.setType(1);//微信支付
+		pay.setType(BrokerageConstant.BROKERAGE_PAY_TYPE_WX);//微信支付
 		pay.setOpportunityId(opportunity.getId());
 		pay.setVerifierId(verifierId);
 		unionBrokeragePayService.insert(pay);

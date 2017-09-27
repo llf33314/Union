@@ -292,4 +292,12 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @throws Exception
      */
     boolean hasWriteAuthority(UnionMember unionMember) throws Exception;
+
+    /**
+     * 根据盟员列表查询给他们的折扣
+     * @param unionId
+     * @param memberId
+     * @return
+     */
+    List<Map<String,Object>> listMemberDiscountByMemberIds(Integer unionId, Integer memberId);
 }

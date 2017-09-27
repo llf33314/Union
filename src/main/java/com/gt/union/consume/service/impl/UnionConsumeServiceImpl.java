@@ -1,10 +1,14 @@
 package com.gt.union.consume.service.impl;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.api.bean.session.WxPublicUsers;
 import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.api.client.shop.ShopService;
+import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.api.entity.param.UnionConsumeParam;
 import com.gt.union.api.entity.result.UnionConsumeResult;
 import com.gt.union.api.entity.result.UnionRefundResult;
@@ -16,12 +20,15 @@ import com.gt.union.card.service.IUnionCardIntegralService;
 import com.gt.union.card.service.IUnionCardRootService;
 import com.gt.union.card.service.IUnionCardService;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
 import com.gt.union.consume.constant.ConsumeConstant;
 import com.gt.union.consume.entity.UnionConsume;
+import com.gt.union.consume.entity.UnionConsumeItem;
 import com.gt.union.consume.mapper.UnionConsumeMapper;
+import com.gt.union.consume.service.IUnionConsumeItemService;
 import com.gt.union.consume.service.IUnionConsumeService;
 import com.gt.union.consume.vo.UnionConsumeParamVO;
 import com.gt.union.consume.vo.UnionConsumeVO;
@@ -29,15 +36,17 @@ import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.service.IUnionMemberService;
+import com.gt.union.opportunity.constant.OpportunityConstant;
+import com.gt.union.opportunity.entity.UnionOpportunity;
 import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
 import org.apache.poi.hssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.net.URLEncoder;
+import java.util.*;
 
 /**
  * <p>
@@ -59,9 +68,6 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
     @Autowired
     private IDictService dictService;
 
-    @Autowired
-    private IUnionCardIntegralService unionCardIntegralService;
-
 	@Autowired
 	private UnionConsumeMapper unionConsumeMapper;
 
@@ -74,6 +80,25 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 	@Autowired
 	private ShopService shopService;
 
+	@Autowired
+	private IBusUserService busUserService;
+
+	@Autowired
+	private RedisCacheUtil redisCacheUtil;
+
+	@Value("${union.url}")
+	private String unionUrl;
+
+	@Value("${wx.duofen.busId}")
+	private Integer duofenBusId;
+
+	@Autowired
+	private IUnionConsumeItemService unionConsumeItemService;
+
+	@Autowired
+	private IUnionCardIntegralService unionCardIntegralService;
+
+	@Transactional(rollbackFor = Exception.class)
 	@Override
 	public UnionConsumeResult consumeByUnionCard(UnionConsumeParam unionConsumeParam) throws Exception{
 		if(unionConsumeParam.getUnionCardId() == null){
@@ -183,6 +208,9 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		if(page == null || busId == null){
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
+		page.setSearchCount(false);
+		Integer count = unionConsumeMapper.listMyCount(unionId, busId, memberId, cardNo, phone, beginTime, endTime);
+		page.setTotal(count);
 		List<UnionConsumeVO> list = unionConsumeMapper.listMy(page, unionId, busId, memberId, cardNo, phone, beginTime, endTime);
 		List<Integer> shopIds = new ArrayList<Integer>();
 		for(UnionConsumeVO vo : list){
@@ -212,6 +240,9 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		if(page == null || busId == null){
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
+		page.setSearchCount(false);
+		Integer count = unionConsumeMapper.listOtherCount(unionId, busId, memberId, cardNo, phone, beginTime, endTime);
+		page.setTotal(count);
 		List<UnionConsumeVO> list = unionConsumeMapper.listOther(page, unionId, busId, memberId, cardNo, phone, beginTime, endTime);
 		List<Integer> shopIds = new ArrayList<Integer>();
 		for(UnionConsumeVO vo : list){
@@ -237,15 +268,102 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 	}
 
 	@Override
+	@Transactional(rollbackFor = Exception.class)
 	public void consumeByCard(Integer busId, UnionConsumeParamVO vo)  throws Exception{
 		if(vo == null || busId == null){
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
+		String orderNo = ConsumeConstant.ORDER_PREFIX + System.currentTimeMillis();
+		consumeSuccess(vo, orderNo);
+	}
 
+	/**
+	 * 消费支付成功
+	 * @param vo
+	 * @param orderNo
+	 */
+	private void consumeSuccess( UnionConsumeParamVO vo, String orderNo){
+		//核销优惠项目或者现金支付时调用该接口
 		UnionConsume consume = new UnionConsume();
 		consume.setStatus(ConsumeConstant.PAY_STATUS_YES);
-//		consume.set
+		consume.setDelStatus(CommonConstant.DEL_STATUS_NO);
+		consume.setMemberId(vo.getMemberId());
+		consume.setStatus(ConsumeConstant.PAY_STATUS_YES);
+		consume.setCreatetime(new Date());
+		consume.setCardId(vo.getCardId());
+		consume.setConsumeMoney(vo.getConsumeMoney());
+		consume.setPayMoney(vo.getPayMoney());
+		consume.setShopId(vo.getShopId());
+		consume.setPayType(vo.getPayType());
+		consume.setType(ConsumeConstant.CONSUME_TYPE_OFFLINE);
+		consume.setModel(ConsumeConstant.MODEL_TYPE_DEFAULT);
+		consume.setModelDesc(ConsumeConstant.MODEL_DESC_DEFAULT);
+		consume.setOrderNo(orderNo);
+		this.insert(consume);
 
+		if(ListUtil.isNotEmpty(vo.getItems())){
+			List<Integer> items = vo.getItems();
+			List<UnionConsumeItem> consumeItems = new ArrayList<UnionConsumeItem>();
+			for(Integer itemId : items){
+				UnionConsumeItem item = new UnionConsumeItem();
+				item.setConsumeId(consume.getId());
+				item.setCreatetime(new Date());
+				item.setPreferentialItemId(itemId);
+				item.setDelStatus(CommonConstant.DEL_STATUS_NO);
+				consumeItems.add(item);
+			}
+			unionConsumeItemService.insertBatch(consumeItems);
+		}
+
+		if(vo.isUseIntegral()){//是否使用了积分
+			UnionCard card = unionCardService.getById(vo.getCardId());
+			UnionCardRoot root = unionCardRootService.getById(card.getRootId());
+			Double giveIntegral = dictService.getGiveIntegral();
+
+			//收入
+			UnionCardIntegral incomeIntegral = new UnionCardIntegral();
+			incomeIntegral.setCardId(card.getId());
+			incomeIntegral.setDelStatus(CommonConstant.DEL_STATUS_NO);
+			incomeIntegral.setCreatetime(new Date());
+			incomeIntegral.setType(CardConstant.CARD_INTEGRAL_TYPE_GIVE);
+			incomeIntegral.setStatus(CardConstant.CARD_INTEGRAL_STATUS_INCOME);
+			Double integral = BigDecimalUtil.multiply(vo.getPayMoney(),giveIntegral).doubleValue();//赠送的积分
+			incomeIntegral.setIntegral(integral);
+			unionCardIntegralService.insert(incomeIntegral);
+			//支出
+			UnionCardIntegral outcomeIntegral = new UnionCardIntegral();
+			outcomeIntegral.setCardId(card.getId());
+			outcomeIntegral.setDelStatus(CommonConstant.DEL_STATUS_NO);
+			outcomeIntegral.setCreatetime(new Date());
+			outcomeIntegral.setType(CardConstant.CARD_INTEGRAL_TYPE_GIVE);
+			outcomeIntegral.setStatus(CardConstant.CARD_INTEGRAL_STATUS_INCOME);
+			outcomeIntegral.setIntegral(vo.getConsumeIntegral());
+			unionCardIntegralService.insert(outcomeIntegral);
+
+			Double subIntegral = BigDecimalUtil.subtract(integral,vo.getConsumeIntegral()).doubleValue();//赠送的积分-消费的积分
+			UnionCardRoot cardRoot = new UnionCardRoot();
+			cardRoot.setId(root.getId());
+			cardRoot.setIntegral(root.getIntegral() == null ? (0 + subIntegral) : (root.getIntegral() + subIntegral));
+			unionCardRootService.updateById(cardRoot);
+		}
+
+	}
+
+	@Transactional(rollbackFor = Exception.class)
+	@Override
+	public void payConsumeSuccess(String encrypt, String only) throws Exception{
+		//解密参数
+		String orderNo = EncryptUtil.decrypt(encrypt, encrypt);
+		String paramKey = RedisKeyUtil.getConsumePayParamKey(only);
+		Object obj = redisCacheUtil.get(paramKey);
+		Map<String, Object> result = JSONObject.parseObject(obj.toString(), Map.class);
+		UnionConsumeParamVO vo = (UnionConsumeParamVO)result.get("unionConsumeParamVO");
+		String statusKey = RedisKeyUtil.getConsumePayStatusKey(only);
+
+		consumeSuccess(vo, orderNo);
+
+		redisCacheUtil.remove(paramKey);
+		redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_003, 60l);//支付成功
 	}
 
 	@Override
@@ -255,6 +373,46 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		}
 		List<Map<String, Object>> list = unionConsumeMapper.listMyByUnionId(unionId, busId, memberId, cardNo, phone, beginTime, endTime);
 		return list;
+	}
+
+
+	@Override
+	public List<Map<String, Object>> listOtherByUnionId(Integer unionId, Integer busId, Integer memberId, String cardNo, String phone, String beginTime, String endTime) {
+		List<Map<String, Object>> list = unionConsumeMapper.listOtherByUnionId(unionId, busId, memberId, cardNo, phone, beginTime, endTime);
+		return list;
+	}
+
+
+
+	@Override
+	public Map<String, Object> payConsumeQRCode(Integer busId, UnionConsumeParamVO vo) throws Exception{
+		Map<String, Object> data = new HashMap<String, Object>();
+		String orderNo = ConsumeConstant.ORDER_PREFIX + System.currentTimeMillis();
+		String only = DateTimeKit.getDateTime(new Date(), DateTimeKit.yyyyMMddHHmmss);
+		data.put("totalFee", vo.getConsumeMoney());
+		data.put("busId", duofenBusId);
+		data.put("sourceType", 1);//是否墨盒支付
+		data.put("payWay", 1);//系统判断支付方式
+		data.put("isreturn", 0);//0：不需要同步跳转
+		data.put("model", ConfigConstant.PAY_MODEL);
+		String encrypt = EncryptUtil.encrypt(PropertiesUtil.getEncryptKey(), orderNo);
+		encrypt = URLEncoder.encode(encrypt, "UTF-8");
+		WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(duofenBusId);
+		data.put("notifyUrl", unionUrl + "/unionConsume/79B4DE7C/paymentSuccess/" + encrypt + "/" + only);
+		data.put("orderNum", orderNo);//订单号
+		data.put("payBusId", busId);//支付的商家id
+		data.put("isSendMessage", 0);//不推送
+		data.put("appid", publicUser.getAppid());//appid
+		data.put("desc", "联盟消费核销");
+		data.put("appidType", 0);//公众号
+		data.put("only", only);
+
+		data.put("unionConsumeParamVO", vo);
+		String paramKey = RedisKeyUtil.getConsumePayStatusKey(only);
+		String statusKey = RedisKeyUtil.getConsumePayParamKey(only);
+		redisCacheUtil.set(paramKey, JSON.toJSONString(data), 360l);//5分钟
+		redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_001,300l);
+		return data;
 	}
 
 	@Override
@@ -281,11 +439,6 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		return wb;
 	}
 
-	@Override
-	public List<Map<String, Object>> listOtherByUnionId(Integer unionId, Integer busId, Integer memberId, String cardNo, String phone, String beginTime, String endTime) {
-		List<Map<String, Object>> list = unionConsumeMapper.listOtherByUnionId(unionId, busId, memberId, cardNo, phone, beginTime, endTime);
-		return list;
-	}
 
 	@Override
 	public HSSFWorkbook exportConsumeToDetail(String[] titles, String[] contentName, List<Map<String, Object>> list) {
@@ -309,7 +462,6 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		}
 		return wb;
 	}
-
 
 	/**
 	 * 创建sheet

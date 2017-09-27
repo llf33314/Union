@@ -42,6 +42,7 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
     public UnionBrokerageIncome getByUnionOpportunityId(Integer id) {
         EntityWrapper wrapper = new EntityWrapper();
         wrapper.eq("opportunity_id", id);
+        wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
         return this.selectOne(wrapper);
     }
 
@@ -185,86 +186,12 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
         return this.selectMaps(wrapper);
     }
 
-    @Override
-    public Map<String, Object> listAbleToWithdrawalBrokerage(Integer busId) throws Exception {
-        Map<String, Object> data = new HashMap<String, Object>();
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        Double sum = 0d;
-        List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-        /*List<UnionMember> members = unionMemberService.listByBusId(busId);
-        if(ListUtil.isEmpty(members)){
-			data.put("sum",sum);
-			data.put("list",list);
-			return null;
-		}
-		List<Map<String,Object>> incomes = unionBrokerageIncomeMapper.listIncomeByMemberIds(members);
-		if(ListUtil.isEmpty(incomes)){
-			data.put("list",list);
-			data.put("sum",sum);
-			return data;
-		}
-		List<UnionBrokerageWithdrawal> withdrawals = unionBrokerageWithdrawalService.listWithdrawalByMemberIds(members);
-		if(ListUtil.isEmpty(withdrawals)){
-			for(Map<String,Object> map : incomes){
-				list.add(map);
-				sum = BigDecimalUtil.add(Double.valueOf(map.get("money").toString()),sum).doubleValue();
-			}
-		}else {
-			//有提现
-			for(Map<String,Object> map : incomes){
-				for (UnionBrokerageWithdrawal withdrawal : withdrawals){
-					if(map.get("member_id").equals(withdrawal.getMemberId())){
-						map.put("money",BigDecimalUtil.subtract(Double.valueOf(map.get("money").toString()),withdrawal.getMoney()).doubleValue());
-						break;
-					}
-				}
-				sum = BigDecimalUtil.add(Double.valueOf(map.get("money").toString()),sum).doubleValue();
-				list.add(map);
-			}
-		}*/
-        data.put("list", list);
-        data.put("sum", sum);
-        return data;
-    }
-
-    @Override
-    public Double withdrawalSum(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        Double sum = 0d;
-        /*List<UnionMember> members = unionMemberService.listAllByBusId(busId);
-		if(ListUtil.isEmpty(members)){
-			return sum;
-		}
-		Double incomeSum = this.withdrawalSumByMemberIds(members);//总收入
-		Double withdrawalSum = unionBrokerageWithdrawalService.withdrawalSumByMemberIds(members);
-		sum = BigDecimalUtil.subtract(incomeSum,withdrawalSum).doubleValue();*/
-        return sum;
-    }
-
-    @Override
-    public Double withdrawalSumByMemberIds(List<UnionMember> members) {
-        List<Integer> ids = new ArrayList<Integer>();
-        for (UnionMember member : members) {
-            ids.add(member.getId());
-        }
-        EntityWrapper wrapper = new EntityWrapper<>();
-        wrapper.in("member_id", ids.toArray());
-        wrapper.setSqlSelect("IFNULL(SUM(money), 0) money");
-        Map<String, Object> data = this.selectMap(wrapper);
-        if (data == null) {
-            return 0d;
-        }
-        return Double.valueOf(data.get("money").toString());
-    }
 
     @Override
     public double getSumInComeUnionBrokerage(Integer busId) {
         EntityWrapper wrapper = new EntityWrapper<>();
         wrapper.eq("bus_id", busId);
+        wrapper.eq("del_status",CommonConstant.DEL_STATUS_NO);
         wrapper.setSqlSelect("IFNULL(SUM(money), 0) money");
         Map<String, Object> data = this.selectMap(wrapper);
         if (CommonUtil.isEmpty(data)) {
@@ -278,6 +205,7 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
         EntityWrapper wrapper = new EntityWrapper<>();
         wrapper.eq("bus_id", busId);
         wrapper.eq("type", type);
+        wrapper.eq("del_status",CommonConstant.DEL_STATUS_NO);
         wrapper.setSqlSelect("IFNULL(SUM(money), 0) money");
         Map<String, Object> data = this.selectMap(wrapper);
         if (CommonUtil.isEmpty(data)) {

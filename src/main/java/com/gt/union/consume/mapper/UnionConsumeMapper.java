@@ -72,4 +72,30 @@ public interface UnionConsumeMapper extends BaseMapper<UnionConsume> {
 	 * @return
 	 */
 	List<Map<String,Object>> listOtherByUnionId(@Param("unionId") Integer unionId, @Param("busId") Integer busId, @Param("memberId") Integer memberId, @Param("cardNo") String cardNo, @Param("phone") String phone, @Param("beginTime") String beginTime, @Param("endTime") String endTime);
+
+	/**
+	 * 计算本店消费记录总数
+	 * @param unionId
+	 * @param busId
+	 * @param memberId
+	 * @param cardNo
+	 * @param phone
+	 * @param beginTime
+	 * @param endTime
+	 * @return
+	 */
+	Integer listMyCount(@Param("unionId") Integer unionId, @Param("busId") Integer busId, @Param("memberId") Integer memberId, @Param("cardNo") String cardNo, @Param("phone") String phone, @Param("beginTime") String beginTime, @Param("endTime") String endTime);
+
+	/**
+	 * 计算他说店消费记录总数
+	 * @param unionId
+	 * @param busId
+	 * @param memberId
+	 * @param cardNo
+	 * @param phone
+	 * @param beginTime
+	 * @param endTime
+	 * @return
+	 */
+	Integer listOtherCount(@Param("unionId") Integer unionId, @Param("busId") Integer busId, @Param("memberId") Integer memberId, @Param("cardNo") String cardNo, @Param("phone") String phone, @Param("beginTime") String beginTime, @Param("endTime") String endTime);
 }

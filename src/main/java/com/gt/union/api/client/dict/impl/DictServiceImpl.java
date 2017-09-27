@@ -45,7 +45,7 @@ public class DictServiceImpl implements IDictService {
 	/**
 	 * 联盟积分抵扣规则 多少积分抵扣多少元
 	 */
-	private static String EXCHANGE_INTEGARL_TYPE = "1185";
+	private static String EXCHANGE_INTEGRAL_TYPE = "1185";
 
 
 	/**
@@ -78,7 +78,7 @@ public class DictServiceImpl implements IDictService {
 
 	@Override
 	public Double getExchangeIntegral() {
-		return getItemDoubleValue(EXCHANGE_INTEGARL_TYPE);
+		return getItemDoubleValue(EXCHANGE_INTEGRAL_TYPE);
 	}
 
 	@Override

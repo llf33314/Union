@@ -69,4 +69,48 @@ public class MemberServiceImpl implements MemberService {
 			return null;
 		}
 	}
+
+	@Override
+	public Member findByPhoneAndBusId(String phone, Integer busId) {
+		String url = memberUrl + "/memberAPI/member/findByMemberId";
+		Map<String,Object> param = new HashMap<String,Object>();
+		param.put("phone",phone);
+		param.put("busId",busId);
+		try {
+			String data = SignHttpUtils.WxmppostByHttp(url,param,memberSignkey);
+			if(StringUtil.isEmpty(data)){
+				return null;
+			}
+			Map map = JSONObject.parseObject(data,Map.class);
+			if(CommonUtil.isNotEmpty(map.get("data"))){
+				return JSONObject.parseObject(map.get("data").toString(),Member.class);
+			}else {
+				return null;
+			}
+		}catch (Exception e){
+			return null;
+		}
+	}
+
+	@Override
+	public int bindMemberPhone(Integer busId, Integer memberId, String phone) {
+		String url = memberUrl + "/memberAPI/member/updateMemberPhoneByMemberId";
+		Map<String,Object> param = new HashMap<String,Object>();
+		param.put("phone",phone);
+		param.put("busId",busId);
+		param.put("memberId",memberId);
+		try {
+			String data = SignHttpUtils.WxmppostByHttp(url,param,memberSignkey);
+			if(StringUtil.isEmpty(data)){
+				return 0;
+			}
+			Map map = JSONObject.parseObject(data,Map.class);
+			if(CommonUtil.isEmpty(map.get("data"))){
+				return 0;
+			}
+		}catch (Exception e){
+			return 0;
+		}
+		return 1;
+	}
 }

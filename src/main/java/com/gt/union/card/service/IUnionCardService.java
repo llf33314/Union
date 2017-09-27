@@ -71,13 +71,6 @@ public interface IUnionCardService extends IService<UnionCard> {
 	UnionDiscountResult getConsumeUnionDiscount(Integer memberId, String phone, Integer busId) throws Exception;
 
 	/**
-	 * 根据unionCardRootId查询
-	 * @param unionCardRootId 联盟卡主表id
-	 * @return
-	 */
-	List<UnionCard> listByCardRootId(Integer unionCardRootId) throws Exception;
-
-	/**
 	 * 根据用户id和盟员Ids查询用户绑定的联盟卡信息列表
 	 * @param memberId	用户id
 	 * @param memberids	盟员Ids
@@ -184,7 +177,7 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 * @param member
 	 * @return
 	 */
-	Map<String,Object> getUnionCardIndex(Integer busId, Member member);
+	Map<String, Object> getUnionCardIndex(Integer busId, Member member) throws Exception;
 
 	/**
 	 * 前台生成办理联盟卡支付二维码信息
@@ -195,7 +188,7 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 * @param cardType
 	 * @return
 	 */
-	Map<String,Object> createQRCode(Integer busId, String phone, Integer memberId, Integer unionId, Integer cardType) throws Exception;
+	Map<String,Object> createQRCode(Integer busId, String phone, Integer memberId, Integer unionId, Integer cardType, Integer isReturn, String returnUrl) throws Exception;
 
 	/**
 	 * 办理联盟卡成功回调
@@ -203,4 +196,22 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 * @param only
 	 */
 	void payBindCardSuccess(String encrypt, String only) throws Exception;
+
+	/**
+	 * 绑定升级联盟卡手机号
+	 * @param member
+	 * @param busId
+	 * @param phone
+	 */
+	void bindCardPhone(Member member, Integer busId, String phone) throws Exception;
+
+	/**
+	 *
+	 * @param busId
+	 * @param member
+	 * @param unionId
+	 * @param memberId
+	 * @return
+	 */
+	Map<String,Object> getUnionInfoCardList(Integer busId, Member member, Integer unionId, Integer memberId) throws Exception;
 }

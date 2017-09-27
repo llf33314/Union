@@ -484,7 +484,7 @@ public class UnionOpportunityController {
 
     @ApiOperation(value = "生成商机推荐支付订单二维码", produces = "application/json;charset=UTF-8")
     @SysLogAnnotation(op_function = "2", description = "生成商机推荐支付二维码")
-    @RequestMapping(value = "/qrCode/{ids}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/qrCode/{ids}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String payOpportunityQRCode(HttpServletRequest request, HttpServletResponse response, @ApiParam(name = "ids", value = "商机ids，使用“,”隔开", required = true) @PathVariable("ids") String ids) {
         try {
             BusUser user = SessionUtils.getLoginUser(request);
@@ -509,13 +509,16 @@ public class UnionOpportunityController {
             result.put("url", wxmpUrl + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
             result.put("only", data.get("only"));
             return GTJsonResult.instanceSuccessMsg(result).toString();
+        } catch (BaseException e) {
+            logger.error("", e);
+            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
         } catch (Exception e) {
             logger.error("生成商机推荐支付订单二维码错误：" + e);
             return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
         }
     }
 
-    @ApiOperation(value = "获取商机佣金支付状态", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "获取商机佣金支付状态，用定时器请求，004：订单超时 003：支付成功 005：支付失败", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "status/{only}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getStatus(HttpServletRequest request, HttpServletResponse response, @PathVariable("only") String only) throws Exception {
         logger.info("获取商机佣金支付状态：" + only);

@@ -19,15 +19,7 @@ import java.util.Map;
 public interface UnionCardMapper extends BaseMapper<UnionCard> {
 
 	/**
-	 * 根据rootId和联盟id列表查询升级的联盟卡列表
-	 * @param rootId
-	 * @param unionIds
-	 * @return
-	 */
-	List<UnionCard> listByRootIdAndUnionIds(@Param("rootId") Integer rootId, @Param("unionIds") List<Integer> unionIds);
-
-	/**
-	 *
+	 * 获取该盟员（memberId）给这些联盟卡（list）的盟员设置最低的折扣
 	 * @param list 联盟卡列表
 	 * @param memberId
 	 * @return
@@ -47,10 +39,9 @@ public interface UnionCardMapper extends BaseMapper<UnionCard> {
 	 * @param memberList
 	 * @param type
 	 * @param isCharge
-	 * @param isAvailable
 	 * @return
 	 */
-	int countByMemberIdsAndType(@Param("members") List<UnionMember> memberList, @Param("type") Integer type, @Param("isCharge") Integer isCharge, @Param("phone") String phone, @Param("isAvailable")  int isAvailable);
+	int countByMemberIdsAndType(@Param("members") List<Integer> memberList, @Param("type") Integer type, @Param("isCharge") Integer isCharge, @Param("phone") String phone);
 
 	/**
 	 * 根据联盟卡列表查询最早办理的联盟卡

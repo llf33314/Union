@@ -57,29 +57,6 @@ public interface IUnionBrokerageIncomeService extends IService<UnionBrokerageInc
     List<Map<String, Object>> listCardMapByBusIdAndMemberId(Integer busId, Integer memberId, Integer optionCardType
             , String optionCardNumber, String optionBeginDate, String optionEndDate) throws Exception;
 
-    /**
-     * 获取财务可提现佣金详情列表
-     *
-     * @param busId 商家id
-     * @return
-     */
-    Map<String, Object> listAbleToWithdrawalBrokerage(Integer busId) throws Exception;
-
-    /**
-     * 该商家可提现金额总和
-     *
-     * @param busId 商家id
-     * @return
-     */
-    Double withdrawalSum(Integer busId) throws Exception;
-
-    /**
-     * 通过盟员id列表查询收入总和
-     *
-     * @param members
-     * @return
-     */
-    Double withdrawalSumByMemberIds(List<UnionMember> members);
 
     /**
      * 获取我获得的总佣金之和（已支付的）

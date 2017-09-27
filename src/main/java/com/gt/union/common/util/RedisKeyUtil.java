@@ -258,7 +258,7 @@ public class RedisKeyUtil {
     }
 
     /**
-     * 获取前台支付办理联盟卡状态key
+     * 获取支付办理联盟卡状态key
      * @param only
      * @return
      */
@@ -268,11 +268,29 @@ public class RedisKeyUtil {
 
     /**
      *
-     * 获取前台支付办理联盟卡参数key
+     * 获取支付办理联盟卡参数key
      * @param only
      * @return
      */
     public static String getBindCardPayParamKey(String only) {
         return "card:bind:param:" + only;
+    }
+
+    /**
+     * 获取消费核销状态key
+     * @param only
+     * @return
+     */
+    public static String getConsumePayStatusKey(String only) {
+        return "consume:status:" + only;
+    }
+
+    /**
+     * 获取消费核销参数key
+     * @param only
+     * @return
+     */
+    public static String getConsumePayParamKey(String only) {
+        return "consume:param:" + only;
     }
 }

@@ -74,7 +74,6 @@ public class UnionCardRootServiceImpl extends ServiceImpl<UnionCardRootMapper, U
 		if (hashCodeV < 0) {// 有可能是负数
 			hashCodeV = -hashCodeV;
 		}
-		System.out.println(hashCodeV);
 		// 0 代表前面补充0
 		// 4 代表长度为4
 		// d 代表参数为正数型
