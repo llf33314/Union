@@ -61,7 +61,7 @@ public class LoginFilter implements Filter {
         }
         //(3)判断是否已有登录信息
         BusUser busUser = SessionUtils.getLoginUser(req);
-        busUser = justForDev(req, busUser); //TODO 正式中请注释掉
+//        busUser = justForDev(req, busUser); //TODO 正式中请注释掉
         if (busUser == null) {
             if(url.indexOf("cardH5") > -1){
                 response.setCharacterEncoding("UTF-8");
