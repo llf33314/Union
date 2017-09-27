@@ -66,10 +66,11 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 						,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) {
 		try {
 			Member member = SessionUtils.getLoginMember(request);
-			String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
-			if(StringUtil.isNotEmpty(returnLoginUrl)){
-				return returnLoginUrl;
-			}
+			member = memberService.getById(998);
+//			String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
+//			if(StringUtil.isNotEmpty(returnLoginUrl)){
+//				return returnLoginUrl;
+//			}
 			Map<String,Object> data = this.unionCardService.getUnionCardIndex(busId, member);
 			data.put("phone",member.getPhone());
 			return GTJsonResult.instanceSuccessMsg(data).toString();
@@ -87,7 +88,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 	public String unionInfoCardList(HttpServletRequest request, @ApiParam(name = "busId", value = "商家id", required = true) @PathVariable("busId") Integer busId
 			,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url
 			,@ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam("unionId") Integer unionId
-			,@ApiParam(name = "memberId", value = "联盟id", required = true) @RequestParam("memberId") Integer memberId) {
+			,@ApiParam(name = "memberId", value = "盟员id", required = true) @RequestParam("memberId") Integer memberId) {
 		try {
 			Member member = SessionUtils.getLoginMember(request);
 			member = memberService.getById(998);

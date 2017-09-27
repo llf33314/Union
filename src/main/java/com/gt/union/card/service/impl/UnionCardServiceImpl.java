@@ -1071,7 +1071,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 members.set(i,secondMap);
             }
         }
-        Map<String,Object> data = members.get(0);
+        Map<String,Object> data = new HashMap<String,Object>();
 
         String phone = member.getPhone();
         if(StringUtil.isEmpty(phone)){
