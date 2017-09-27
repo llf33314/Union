@@ -236,13 +236,13 @@ public class PropertiesUtil {
 	}
 
 	@Value("${queueName.union.queueName}")
-	public static void setMqQueueName(String mqQueueName) {
-		PropertiesUtil.mqQueueName = mqQueueName;
+	public void setMqQueueName(String mqQueueName) {
+		this.mqQueueName = mqQueueName;
 	}
 
 	@Value("${exchange.union.exchange}")
-	public static void setMqExchange(String mqExchange) {
-		PropertiesUtil.mqExchange = mqExchange;
+	public void setMqExchange(String mqExchange) {
+		this.mqExchange = mqExchange;
 	}
 
 	/**
@@ -254,8 +254,8 @@ public class PropertiesUtil {
 	}
 
 	@Value("${union.url}")
-	public static void setUnionUrl(String unionUrl) {
-		PropertiesUtil.unionUrl = unionUrl;
+	public void setUnionUrl(String unionUrl) {
+		this.unionUrl = unionUrl;
 	}
 
 	/**
@@ -267,8 +267,8 @@ public class PropertiesUtil {
 	}
 
 	@Value("${member.url}")
-	public static void setMemberUrl(String memberUrl) {
-		PropertiesUtil.memberUrl = memberUrl;
+	public void setMemberUrl(String memberUrl) {
+		this.memberUrl = memberUrl;
 	}
 
 	/**
@@ -280,8 +280,8 @@ public class PropertiesUtil {
 	}
 
 	@Value("${member.signkey}")
-	public static void setMemberSignKey(String memberSignKey) {
-		PropertiesUtil.memberSignKey = memberSignKey;
+	public void setMemberSignKey(String memberSignKey) {
+		this.memberSignKey = memberSignKey;
 	}
 
 	public static Integer getDuofenBusId() {
@@ -289,8 +289,8 @@ public class PropertiesUtil {
 	}
 
 	@Value("${wx.duofen.busId}")
-	public static void setDuofenBusId(Integer duofenBusId) {
-		PropertiesUtil.duofenBusId = duofenBusId;
+	public void setDuofenBusId(Integer duofenBusId) {
+		this.duofenBusId = duofenBusId;
 	}
 
 	public static String getEncryptKey() {
@@ -298,7 +298,7 @@ public class PropertiesUtil {
 	}
 
 	@Value("${union.encryptKey}")
-	public static void setEncryptKey(String encryptKey) {
-		PropertiesUtil.encryptKey = encryptKey;
+	public void setEncryptKey(String encryptKey) {
+		this.encryptKey = encryptKey;
 	}
 }

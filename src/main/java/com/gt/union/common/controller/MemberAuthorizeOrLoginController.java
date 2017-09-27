@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.gt.api.util.sign.SignHttpUtils;
 import com.gt.union.api.client.redis.RedisService;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.CommonUtil;
@@ -36,9 +37,6 @@ public class MemberAuthorizeOrLoginController {
 	@Value("${member.url}")
 	private String memberUrl;
 
-	@Value("${wxmp.url}")
-	private String wxmpUrl;
-
 	@Value("${wx.duofen.busId}")
 	private Integer duofenBusId;
 
@@ -60,7 +58,7 @@ public class MemberAuthorizeOrLoginController {
 		Map<String, Object> getWxPublicMap = new HashMap<>();
 		getWxPublicMap.put("busId", busId);//商家账号
 		//判断商家信息 1是否过期 2公众号是否变更过
-		String url = wxmpUrl + "/8A5DA52E/busUserApi/getWxPulbicMsg.do";
+		String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/busUserApi/getWxPulbicMsg.do";
 		String wxpublic = SignHttpUtils.WxmppostByHttp(url, getWxPublicMap, PropertiesUtil.getWxmpSignKey());
 		if(StringUtil.isEmpty(wxpublic)){
 			throw new BusinessException("登录错误");
@@ -84,7 +82,7 @@ public class MemberAuthorizeOrLoginController {
 		queryMap.put("uclogin", uclogin);
 		logger.info("queryMap=" + JSON.toJSONString(queryMap));
 		String params = URLEncoder.encode(JSON.toJSONString(queryMap), "utf-8");
-		return wxmpUrl + "/remoteUserAuthoriPhoneController/79B4DE7C/authorizeMember.do?queryBody=" + params;
+		return ConfigConstant.WXMP_ROOT_URL + "/remoteUserAuthoriPhoneController/79B4DE7C/authorizeMember.do?queryBody=" + params;
 	}
 
 
@@ -98,7 +96,7 @@ public class MemberAuthorizeOrLoginController {
 		Map<String, Object> getWxPublicMap = new HashMap<>();
 		getWxPublicMap.put("busId", duofenBusId);//多粉
 		//判断商家信息 1是否过期 2公众号是否变更过
-		String url = wxmpUrl + "/8A5DA52E/busUserApi/getWxPulbicMsg.do";
+		String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/busUserApi/getWxPulbicMsg.do";
 		String wxpublic = SignHttpUtils.WxmppostByHttp(url, getWxPublicMap, PropertiesUtil.getWxmpSignKey());
 		if(StringUtil.isEmpty(wxpublic)){
 			throw new BusinessException("微信登录错误");
@@ -121,7 +119,7 @@ public class MemberAuthorizeOrLoginController {
 		queryMap.put("busId", duofenBusId);
 		logger.info("queryMap=" + JSON.toJSONString(queryMap));
 		String params = URLEncoder.encode(JSON.toJSONString(queryMap), "utf-8");
-		return wxmpUrl + "/remoteUserAuthoriPhoneController/79B4DE7C/authorizeMember.do?queryBody=" + params;
+		return ConfigConstant.WXMP_ROOT_URL + "/remoteUserAuthoriPhoneController/79B4DE7C/authorizeMember.do?queryBody=" + params;
 	}
 
 }

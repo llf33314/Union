@@ -55,17 +55,11 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 	@Value("${wxmp.signkey}")
 	private String wxmpKey;
 
-	@Value(("${wxmp.url}"))
-	private String wxmpUrl;
-
 	@Value("${wxmp.company}")
 	private String company;
 
 	@Value("${wx.duofen.busId}")
 	private Integer duofenBusId;
-
-	@Value("${union.url}")
-	private String unionUrl;
 
 	@Autowired
 	private SmsService smsService;
@@ -131,7 +125,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 			obj.put("login_name",username);
 			obj.put("password",userpwd);
 			obj.put("sign",objSing);
-			String url = wxmpUrl + "/ErpMenus/79B4DE7C/UnionErplogin.do";
+			String url = ConfigConstant.WXMP_ROOT_URL + "/ErpMenus/79B4DE7C/UnionErplogin.do";
 			String result = SignHttpUtils.WxmppostByHttp(url,obj,wxmpKey);
 			if(StringUtil.isEmpty(result)){
 				throw new BusinessException("登录错误");
@@ -484,8 +478,8 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		data.put("orderNum",orderNo);
 		data.put("memberId",memberId);
 		data.put("desc", "联盟商机佣金");
-		data.put("returnUrl",unionUrl + url);
-		data.put("notifyUrl",unionUrl + "/unionH5Brokerage/79B4DE7C/paymentAllSuccess/" + encrypt);
+		data.put("returnUrl",ConfigConstant.UNION_PHONE_ROOT_URL + url);
+		data.put("notifyUrl",ConfigConstant.UNION_ROOT_URL + "/unionH5Brokerage/79B4DE7C/paymentAllSuccess/" + encrypt);
 		data.put("isSendMessage",0);//不需要推送
 		data.put("payWay",1);//微信支付
 		data.put("sourceType",1);
@@ -523,8 +517,8 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		data.put("orderNum",orderNo);
 		data.put("memberId",memberId);
 		data.put("desc", "联盟商机佣金");
-		data.put("returnUrl",unionUrl + url);
-		data.put("notifyUrl",unionUrl + "/unionH5Brokerage/79B4DE7C/paymentOneSuccess/" + encrypt);
+		data.put("returnUrl",ConfigConstant.UNION_PHONE_ROOT_URL + url);
+		data.put("notifyUrl",ConfigConstant.UNION_ROOT_URL + "/unionH5Brokerage/79B4DE7C/paymentOneSuccess/" + encrypt);
 		data.put("isSendMessage",0);//不需要推送
 		data.put("payWay",1);//微信支付
 		data.put("sourceType",1);

@@ -86,9 +86,6 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
 
-	@Value("${union.url}")
-	private String unionUrl;
-
 	@Value("${wx.duofen.busId}")
 	private Integer duofenBusId;
 
@@ -398,7 +395,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		String encrypt = EncryptUtil.encrypt(PropertiesUtil.getEncryptKey(), orderNo);
 		encrypt = URLEncoder.encode(encrypt, "UTF-8");
 		WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(duofenBusId);
-		data.put("notifyUrl", unionUrl + "/unionConsume/79B4DE7C/paymentSuccess/" + encrypt + "/" + only);
+		data.put("notifyUrl", ConfigConstant.UNION_ROOT_URL + "/unionConsume/79B4DE7C/paymentSuccess/" + encrypt + "/" + only);
 		data.put("orderNum", orderNo);//订单号
 		data.put("payBusId", busId);//支付的商家id
 		data.put("isSendMessage", 0);//不推送

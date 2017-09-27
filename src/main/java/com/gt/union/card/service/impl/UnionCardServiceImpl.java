@@ -86,9 +86,6 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     @Value("${wxmp.company}")
     private String company;
 
-    @Value("${union.url}")
-    private String unionUrl;
-
     @Autowired
     private SmsService smsService;
 
@@ -818,7 +815,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                     .append("&memberId=").append(vo.getMemberId())
                     .append("&unionId=").append(vo.getUnionId())
                     .append("&cardtype=").append(vo.getCardType());
-            data.put("qrurl",unionUrl + "/qrCode"+sb.toString());
+            data.put("qrurl",ConfigConstant.UNION_ROOT_URL + "/qrCode"+sb.toString());
         }
         return data;
     }
@@ -943,7 +940,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         String encrypt = EncryptUtil.encrypt(PropertiesUtil.getEncryptKey(), orderNo);
         encrypt = URLEncoder.encode(encrypt,"UTF-8");
         WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(PropertiesUtil.getDuofenBusId());
-        data.put("notifyUrl", PropertiesUtil.getUnionUrl() + "/unionCard/79B4DE7C/paymentSuccess/"+encrypt + "/" + only);
+        data.put("notifyUrl", ConfigConstant.UNION_ROOT_URL + "/unionCard/79B4DE7C/paymentSuccess/"+encrypt + "/" + only);
         if(isReturn == 1){
             data.put("returnUrl", returnUrl);
         }

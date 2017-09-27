@@ -77,8 +77,6 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
     @Autowired
     private IUnionBrokeragePayService unionBrokeragePayService;
 
-    @Value("${union.url}")
-    private String unionUrl;
 
     @Value("${wx.duofen.busId}")
     private Integer duofenBusId;
@@ -1305,7 +1303,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         data.put("model", ConfigConstant.PAY_MODEL);
         String encrypt = EncryptUtil.encrypt(encryptKey, ids);
         encrypt = URLEncoder.encode(encrypt, "UTF-8");
-        data.put("notifyUrl", unionUrl + "/unionOpportunity/79B4DE7C/paymentSuccess/" + encrypt + "/" + only);
+        data.put("notifyUrl", ConfigConstant.UNION_ROOT_URL + "/unionOpportunity/79B4DE7C/paymentSuccess/" + encrypt + "/" + only);
         data.put("orderNum", orderNo);//订单号
         data.put("payBusId", busId);//支付的商家id
         data.put("isSendMessage", 0);//不推送

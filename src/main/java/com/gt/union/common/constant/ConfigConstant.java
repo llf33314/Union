@@ -9,38 +9,33 @@ import org.springframework.beans.factory.annotation.Value;
  *
  */
 public interface ConfigConstant {
-	/** 商家账户在session key*/
-	public static String SESSION_BUSINESS_KEY = "business_key" ;
-
-	/*****粉丝session key****/
-	public static String SESSION_MEMBER = "member";
 
 	/*****佣金平台管理员session key****/
-	public static String VERIFIER = "verifier";
+	String VERIFIER = "verifier";
 	/**
 	 * 最大加入联盟数
 	 */
-	public static int MAX_UNION_APPLY = 3;
+	int MAX_UNION_APPLY = 3;
 
 	/**
 	 * 最大优惠项目数
 	 */
-	public static int MAX_PREFERENIAL_COUNT = 5;
+	int MAX_PREFERENIAL_COUNT = 5;
 
 	/**
 	 * 短信model
 	 */
-	public static int SMS_UNION_MODEL = 33;
+	int SMS_UNION_MODEL = 33;
 
 	/**
 	 * 联盟支付model
 	 */
-	public static int PAY_MODEL = 36;
+	int PAY_MODEL = 36;
 
 	/**
 	 * 联盟提现model
 	 */
-	public static int ENTERPRISE_PAY_MODEL = 13;
+	int ENTERPRISE_PAY_MODEL = 13;
 
 	/**
 	 * 省级
@@ -60,52 +55,72 @@ public interface ConfigConstant {
 	/**
 	 * 创建联盟支付内部订单前缀
 	 */
-	public static final String CREATE_UNION_PAY_ORDER_CODE = "000060000";
+	String CREATE_UNION_PAY_ORDER_CODE = "000060000";
 
 
 	/**
 	 * 扫码支付订单状态 001:等待用户扫码
 	 */
-	public final static String USER_ORDER_STATUS_001="001";
+	String USER_ORDER_STATUS_001="001";
 
 	/**
 	 * 扫码支付订单状态 002:确认扫码
 	 */
-	public final static String USER_ORDER_STATUS_002="002";
+	String USER_ORDER_STATUS_002="002";
 
 
 	/**
 	 * 扫码支付订单状态 003:完成订单
 	 */
-	public final static String USER_ORDER_STATUS_003="003";
+	String USER_ORDER_STATUS_003="003";
 
 
 	/**
 	 * 扫码支付订单状态 004:订单超时
 	 */
-	public final static String USER_ORDER_STATUS_004="004";
+	String USER_ORDER_STATUS_004="004";
 
 
 	/**
 	 * 扫码支付订单状态 005:订单支付失败
 	 */
-	public final static String USER_ORDER_STATUS_005="005";
+	String USER_ORDER_STATUS_005="005";
 
     /**
      * 开发者联系电话
      */
-	public final static String DEVELOPER_PHONE = "15986670850";
-//	public final static String DEVELOPER_PHONE = "13923639694";
+	String DEVELOPER_PHONE = "15986670850";
+//	String DEVELOPER_PHONE = "13923639694";
 
 	/**
 	 * wxmp项目的密钥
 	 */
-	public static final String WXMP_SIGN_KEY = PropertiesUtil.getWxmpSignKey();
+	String WXMP_SIGN_KEY = PropertiesUtil.getWxmpSignKey();
 
     /**
      * wxmp公司名称
      */
-	public static final String WXMP_COMPANY = PropertiesUtil.getWxmpCompany();
+	String WXMP_COMPANY = PropertiesUtil.getWxmpCompany();
+
+	/**
+	 * wxmp根路径
+	 */
+	String WXMP_ROOT_URL = PropertiesUtil.getWxmpUrl();
+
+	/**
+	 * 联盟根路径
+	 */
+	String UNION_ROOT_URL = PropertiesUtil.getUnionUrl();
+
+	/**
+	 * 手机端根路径
+	 */
+	String UNION_PHONE_ROOT_URL = UNION_ROOT_URL + "/phone?";
+
+	/**
+	 * 联盟加密秘钥
+	 */
+	String UNION_ENCRYPTKEY = PropertiesUtil.getEncryptKey();
 
 	/**
 	 * 公众号二维码链接model

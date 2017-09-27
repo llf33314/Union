@@ -16,12 +16,10 @@ import java.util.Map;
 @Service
 public class SmsServiceImpl implements SmsService {
 
-	@Value("${wxmp.url}")
-	private String wxmpUrl;
 
 	@Override
 	public int sendSms(Map<String,Object> param) {
-		String url = wxmpUrl + "/8A5DA52E/smsapi/6F6D9AD2/79B4DE7C/sendSmsOld.do";
+		String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/smsapi/6F6D9AD2/79B4DE7C/sendSmsOld.do";
 		try {
 			Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param),url, Map.class, ConfigConstant.WXMP_SIGN_KEY);
 			if(CommonUtil.isEmpty(result)){

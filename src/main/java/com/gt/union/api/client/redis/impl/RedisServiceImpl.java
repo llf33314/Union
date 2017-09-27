@@ -15,8 +15,6 @@ import java.util.Map;
 @Service
 public class RedisServiceImpl implements RedisService {
 
-	@Value("${wxmp.url}")
-	private String wxmpUrl;
 
 	@Override
 	public void setValue(String redisKey, String redisValue, Integer second) {
@@ -24,7 +22,7 @@ public class RedisServiceImpl implements RedisService {
 		param.put("redisKey",redisKey);
 		param.put("redisValue",redisValue);
 		param.put("setime",second);
-		String url = wxmpUrl + "/8A5DA52E/redis/SetExApi.do";
+		String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/redis/SetExApi.do";
 		try{
 			String result = SignHttpUtils.WxmppostByHttp(url, param, ConfigConstant.WXMP_SIGN_KEY);
 		}catch (Exception e){

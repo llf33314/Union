@@ -1,5 +1,7 @@
 package com.gt.union.common.constant;
 
+import com.gt.union.common.util.PropertiesUtil;
+
 /**
  * Created by Administrator on 2017/9/8 0008.
  */
@@ -73,4 +75,6 @@ public interface CommonConstant {
      * 联盟默认有效期
      */
     String UNION_VALIDITY_DEFAULT = "2030-09-01 14:00:00";
+
+
 }
