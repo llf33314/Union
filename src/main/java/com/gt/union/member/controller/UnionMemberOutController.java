@@ -5,15 +5,11 @@ import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
-import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
-import com.gt.union.log.service.IUnionLogErrorService;
 import com.gt.union.member.service.IUnionMemberOutService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,10 +26,6 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/unionMemberOut")
 public class UnionMemberOutController {
-    private Logger logger = LoggerFactory.getLogger(UnionMemberOutController.class);
-
-    @Autowired
-    private IUnionLogErrorService unionLogErrorService;
 
     @Autowired
     private IUnionMemberOutService unionMemberOutService;
@@ -44,48 +36,28 @@ public class UnionMemberOutController {
     @RequestMapping(value = "/page/applyOut/memberId/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageApplyOutMapByMemberId(HttpServletRequest request, Page page
             , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
-                                            @PathVariable("memberId") Integer memberId) {
-        try {
-            BusUser busUser = SessionUtils.getLoginUser(request);
-            Integer busId = busUser.getId();
-            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                busId = busUser.getPid();
-            }
-            Page result = this.unionMemberOutService.pageApplyOutMapByBusIdAndMemberId(page, busId, memberId);
-            return GTJsonResult.instanceSuccessMsg(result).toString();
-        } catch (BaseException e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-        } catch (Exception e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+                                            @PathVariable("memberId") Integer memberId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
         }
+        Page result = this.unionMemberOutService.pageApplyOutMapByBusIdAndMemberId(page, busId, memberId);
+        return GTJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "分页获取退盟过渡期列表信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/page/outing/memberId/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageOutingMapByMemberId(HttpServletRequest request, Page page
             , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
-                                          @PathVariable("memberId") Integer memberId) {
-        try {
-            BusUser busUser = SessionUtils.getLoginUser(request);
-            Integer busId = busUser.getId();
-            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                busId = busUser.getPid();
-            }
-            Page result = this.unionMemberOutService.pageOutingMapByBusIdAndMemberId(page, busId, memberId);
-            return GTJsonResult.instanceSuccessMsg(result).toString();
-        } catch (BaseException e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-        } catch (Exception e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+                                          @PathVariable("memberId") Integer memberId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
         }
+        Page result = this.unionMemberOutService.pageOutingMapByBusIdAndMemberId(page, busId, memberId);
+        return GTJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- put ----------------------------------------------------------
@@ -98,23 +70,13 @@ public class UnionMemberOutController {
             , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
                                            @PathVariable("memberId") Integer memberId
             , @ApiParam(name = "isOK", value = "是否同意退盟，1为是，0为否", required = true)
-                                           @RequestParam(value = "isOK") Integer isOK) {
-        try {
-            BusUser busUser = SessionUtils.getLoginUser(request);
-            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
-            }
-            this.unionMemberOutService.updateByBusIdAndMemberIdAndOutId(busUser.getId(), memberId, outId, isOK);
-            return GTJsonResult.instanceSuccessMsg().toString();
-        } catch (BaseException e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-        } catch (Exception e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+                                           @RequestParam(value = "isOK") Integer isOK) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
+        this.unionMemberOutService.updateByBusIdAndMemberIdAndOutId(busUser.getId(), memberId, outId, isOK);
+        return GTJsonResult.instanceSuccessMsg().toString();
     }
 
     @ApiOperation(value = "盟主直接移出盟员", produces = "application/json;charset=UTF-8")
@@ -123,23 +85,13 @@ public class UnionMemberOutController {
             , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
                                                  @PathVariable("memberId") Integer memberId
             , @ApiParam(name = "tgtMemberId", value = "要移出的盟员身份id", required = true)
-                                                 @RequestParam(value = "tgtMemberId") Integer tgtMemberId) {
-        try {
-            BusUser busUser = SessionUtils.getLoginUser(request);
-            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
-            }
-            this.unionMemberOutService.updateByBusIdAndMemberIdAndTgtMemberId(busUser.getId(), memberId, tgtMemberId);
-            return GTJsonResult.instanceSuccessMsg().toString();
-        } catch (BaseException e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-        } catch (Exception e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+                                                 @RequestParam(value = "tgtMemberId") Integer tgtMemberId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
+        this.unionMemberOutService.updateByBusIdAndMemberIdAndTgtMemberId(busUser.getId(), memberId, tgtMemberId);
+        return GTJsonResult.instanceSuccessMsg().toString();
     }
 
     //------------------------------------------------- post ----------------------------------------------------------
@@ -150,22 +102,12 @@ public class UnionMemberOutController {
             , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
                          @PathVariable(value = "memberId") Integer memberId
             , @ApiParam(name = "applyOutReason", value = "退盟理由", required = true)
-                         @RequestParam(name = "outReason") String applyOutReason) {
-        try {
-            BusUser busUser = SessionUtils.getLoginUser(request);
-            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
-            }
-            this.unionMemberOutService.saveApplyOutByBusIdAndMemberId(busUser.getId(), memberId, applyOutReason);
-            return GTJsonResult.instanceSuccessMsg().toString();
-        } catch (BaseException e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-        } catch (Exception e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+                         @RequestParam(name = "outReason") String applyOutReason) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
+        this.unionMemberOutService.saveApplyOutByBusIdAndMemberId(busUser.getId(), memberId, applyOutReason);
+        return GTJsonResult.instanceSuccessMsg().toString();
     }
 }

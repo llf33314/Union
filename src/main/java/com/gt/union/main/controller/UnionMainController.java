@@ -6,18 +6,14 @@ import com.gt.api.util.SessionUtils;
 import com.gt.union.common.annotation.SysLogAnnotation;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
-import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.service.IUnionValidateService;
-import com.gt.union.log.service.IUnionLogErrorService;
 import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.main.vo.UnionMainVO;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
@@ -37,10 +33,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/unionMain")
 public class UnionMainController {
-    private Logger logger = LoggerFactory.getLogger(UnionMainController.class);
-
-    @Autowired
-    private IUnionLogErrorService unionLogErrorService;
 
     @Autowired
     private IUnionMainService unionMainService;
@@ -52,68 +44,38 @@ public class UnionMainController {
 
     @ApiOperation(value = "分页获取我尚未加入的联盟列表信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/page/otherUnion", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String list(HttpServletRequest request, Page page) {
-        try {
-            BusUser busUser = SessionUtils.getLoginUser(request);
-            Integer busId = busUser.getId();
-            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                busId = busUser.getPid();
-            }
-            Page<UnionMain> result = this.unionMainService.pageOtherUnionByBusId(page, busId);
-            return GTJsonResult.instanceSuccessMsg(result).toString();
-        } catch (BaseException e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-        } catch (Exception e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+    public String pageOther(HttpServletRequest request, Page page) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
         }
+        Page<UnionMain> result = this.unionMainService.pageOtherUnionByBusId(page, busId);
+        return GTJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "获取我的所有联盟的信息，包括我创建的、以及我加入的", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/list/myUnion", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String listByBusId(HttpServletRequest request) {
-        try {
-            BusUser busUser = SessionUtils.getLoginUser(request);
-            Integer busId = busUser.getId();
-            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                busId = busUser.getPid();
-            }
-            List<UnionMain> result = this.unionMainService.listReadByBusId(busId);
-            return GTJsonResult.instanceSuccessMsg(result).toString();
-        } catch (BaseException e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-        } catch (Exception e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+    public String listByBusId(HttpServletRequest request) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
         }
+        List<UnionMain> result = this.unionMainService.listReadByBusId(busId);
+        return GTJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "分页获取我的所有联盟的信息，包括我创建的、以及我加入的", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/page/myUnion", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String PageByBusId(HttpServletRequest request, Page page) {
-        try {
-            BusUser busUser = SessionUtils.getLoginUser(request);
-            Integer busId = busUser.getId();
-            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                busId = busUser.getPid();
-            }
-            Page result = this.unionMainService.pageReadByBusId(page, busId);
-            return GTJsonResult.instanceSuccessMsg(result).toString();
-        } catch (BaseException e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-        } catch (Exception e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+    public String PageByBusId(HttpServletRequest request, Page page) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
         }
+        Page result = this.unionMainService.pageReadByBusId(page, busId);
+        return GTJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- put ----------------------------------------------------------
@@ -125,24 +87,14 @@ public class UnionMainController {
             , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
                          @PathVariable("memberId") Integer memberId
             , @ApiParam(name = "unionMainVO", value = "更新信息实体", required = true)
-                         @RequestBody @Valid UnionMainVO unionMainVO, BindingResult bindingResult) {
-        try {
-            this.unionValidateService.checkBindingResult(bindingResult);
-            BusUser busUser = SessionUtils.getLoginUser(request);
-            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
-            }
-            this.unionMainService.updateByMemberIdAndBusIdAndVO(memberId, busUser.getId(), unionMainVO);
-            return GTJsonResult.instanceSuccessMsg().toString();
-        } catch (BaseException e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-        } catch (Exception e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+                         @RequestBody @Valid UnionMainVO unionMainVO, BindingResult bindingResult) throws Exception {
+        this.unionValidateService.checkBindingResult(bindingResult);
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
+        this.unionMainService.updateByMemberIdAndBusIdAndVO(memberId, busUser.getId(), unionMainVO);
+        return GTJsonResult.instanceSuccessMsg().toString();
     }
 
     //------------------------------------------------- post ----------------------------------------------------------

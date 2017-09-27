@@ -6,136 +6,157 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
-/**
- * redis缓存工具类  联盟使用的 所有的key已加 Union:前缀
- *
- * Created by Administrator on 2017/8/2 0002.
- */
 @Component
 public class RedisCacheUtil {
+    @Autowired
+    @Qualifier("redisTemplate")
+    private RedisTemplate redisTemplate;
 
-	@Autowired
-	@Qualifier( "redisTemplate" )
-	private RedisTemplate redisTemplate;
+    private String getRedisNamePrefix() {
+        return PropertiesUtil.redisNamePrefix();
+    }
 
-	private String getRedisNamePrefix(){
-		return PropertiesUtil.redisNamePrefix();
-	}
+    //-------------------------------------------------- get ----------------------------------------------------------
 
-	/**
-	 * 批量删除对应的value
-	 * @param keys 集合keys
-	 */
-	public void remove( final List<String> keys) {
-		for ( String key : keys ) {
-			remove( key );
-		}
-	}
+    /**
+     * 通过key获取对应的缓存内容
+     *
+     * @param key 键
+     * @return Object 值
+     */
+    public Object get(String key) {
+        Object result = null;
+        try {
+            ValueOperations<String, String> operations = this.redisTemplate.opsForValue();
+            String tgtKey = this.getRedisNamePrefix() + key;
+            result = operations.get(tgtKey);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 
-	/**
-	 * 批量删除key
-	 *
-	 * @param pattern pattern
-	 */
-	public void removePattern( final String pattern ) {
-		try{
-			Set< String > keys = redisTemplate.keys( pattern );
-			if ( keys.size() > 0 ) redisTemplate.delete( keys );
-		}catch (Exception e){
-			e.printStackTrace();
-		}
-	}
+    //-------------------------------------------------- set ----------------------------------------------------------
 
-	/**
-	 * 删除对应的value
-	 *
-	 * @param key key
-	 */
-	public void remove( final String key ) {
-		try{
-			if ( exists( key ) ) {
-				redisTemplate.delete( this.getRedisNamePrefix() +key );
-			}
-		}catch (Exception e){
-			e.printStackTrace();
-		}
-	}
+    /**
+     * 通过key和value设置缓存，默认2小时
+     *
+     * @param key   键
+     * @param value 值
+     * @return boolean 是否设置成功
+     */
+    public boolean set(String key, String value) {
+        boolean result = false;
+        try {
+            set(key, value, 7200L);
+            result = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 
-	/**
-	 * 判断缓存中是否有对应的value
-	 *
-	 * @param key key
-	 *
-	 * @return boolean
-	 */
-	public boolean exists( final String key ) {
-		try{
-			return redisTemplate.hasKey( this.getRedisNamePrefix() + key );
-		}catch (Exception e){
-			e.printStackTrace();
-			return false;
-		}
-	}
+    /**
+     * 通过key、value和过期时间设置缓存
+     *
+     * @param key        键
+     * @param value      值
+     * @param expireTime 过期时间
+     * @return boolean 是否设置成功
+     */
+    public boolean set(String key, String value, Long expireTime) {
+        boolean result = false;
+        try {
+            ValueOperations<String, String> operations = redisTemplate.opsForValue();
+            String tgtKey = this.getRedisNamePrefix() + key;
+            operations.set(tgtKey, value);
+            this.redisTemplate.expire(tgtKey, expireTime, TimeUnit.SECONDS);
+            result = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 
-	/**
-	 * 读取缓存
-	 *
-	 * @param key key
-	 *
-	 * @return Object
-	 */
-	public Object get( final String key ) {
-		Object result = null;
-		try {
-			ValueOperations< String,String > operations = redisTemplate.opsForValue();
-			result = operations.get( this.getRedisNamePrefix() + key );
-		}catch (Exception e){
-			e.printStackTrace();
-		}
-		return result;
-	}
+    //------------------------------------------------ remove ---------------------------------------------------------
 
-	/**
-	 * 写入缓存
-	 *
-	 * @param key   key
-	 * @param value value
-	 *
-	 * @return boolean
-	 */
-	public boolean set( final String key, String value ) {
-		boolean result = false;
-		try {
-			set(key, value, 7200L);
-			result = true;
-		} catch ( Exception e ) {
-			e.printStackTrace();
-		}
-		return result;
-	}
+    /**
+     * 通过key移除对应缓存内容
+     *
+     * @param key 键
+     * @return boolean 是否移除成功
+     */
+    public boolean remove(String key) {
+        boolean result = false;
+        try {
+            String tgtKey = this.getRedisNamePrefix() + key;
+            this.redisTemplate.delete(tgtKey);
+            result = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
 
-	/**
-	 * 写入缓存
-	 *
-	 * @param key   key
-	 * @param value value
-	 *
-	 * @return boolean
-	 */
-	public boolean set( final String key, String value, Long expireTime ) {
-		boolean result = false;
-		try {
-			ValueOperations< String,String > operations = redisTemplate.opsForValue();
-			operations.set(this.getRedisNamePrefix() + key, value );
-			redisTemplate.expire( this.getRedisNamePrefix() + key, expireTime, TimeUnit.SECONDS );
-			result = true;
-		} catch ( Exception e ) {
-			e.printStackTrace();
-		}
-		return result;
-	}
+    /**
+     * 通过key集合，移除对应缓存内容
+     *
+     * @param keys 键集合
+     * @return boolean 是否移除成功
+     */
+    public boolean remove(List<String> keys) {
+        Set<String> tgtKeys = new HashSet<>();
+        if (ListUtil.isNotEmpty(keys)) {
+            for (String key : keys) {
+                String tgtKey = this.getRedisNamePrefix() + key;
+                tgtKeys.add(tgtKey);
+            }
+        }
+        return this.remove(tgtKeys);
+    }
+
+    /**
+     * 私有方法: 根据目标key集合，移除对应缓存对象
+     *
+     * @param tgtKeys 目标键集合
+     * @return boolean 是否移除成功
+     */
+    private boolean remove(Set<String> tgtKeys) {
+        boolean result = false;
+        try {
+            if (tgtKeys.size() > 0) {
+                this.redisTemplate.delete(tgtKeys);
+            }
+            result = true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+    //------------------------------------------------ exists ---------------------------------------------------------
+
+    /**
+     * 根据key，判断是否存在对应的缓存内容
+     *
+     * @param key 键
+     * @return boolean 是否存在
+     */
+    public boolean exists(String key) {
+        boolean result = false;
+        try {
+            String tgtKey = this.getRedisNamePrefix() + key;
+            result = this.redisTemplate.hasKey(tgtKey);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return result;
+    }
+
+
 }

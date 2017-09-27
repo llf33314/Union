@@ -1,10 +1,7 @@
 package com.gt.union.common.util;
 
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Created by Administrator on 2017/7/24 0024.
@@ -43,6 +40,23 @@ public class ListUtil {
             Iterator<T> iterator = set.iterator();
             while (iterator.hasNext()) {
                 result.add(iterator.next());
+            }
+        }
+        return result;
+    }
+
+    /**
+     * list转set
+     *
+     * @param list
+     * @param <T>
+     * @return
+     */
+    public static final <T> Set<T> toSet(List<T> list) {
+        Set<T> result = new HashSet<>();
+        if (isNotEmpty(list)) {
+            for (T t : list) {
+                result.add(t);
             }
         }
         return result;

@@ -4,16 +4,13 @@ import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
-import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
-import com.gt.union.log.service.IUnionLogErrorService;
+import com.gt.union.common.service.IUnionValidateService;
 import com.gt.union.main.service.IUnionMainCreateService;
 import com.gt.union.main.vo.UnionMainCreateVO;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,35 +33,24 @@ import java.util.Map;
 @RestController
 @RequestMapping("/unionMainCreate")
 public class UnionMainCreateController {
-    private Logger logger = LoggerFactory.getLogger(UnionMainCreateController.class);
-
-    @Autowired
-    private IUnionLogErrorService unionLogErrorService;
 
     @Autowired
     private IUnionMainCreateService unionMainCreateService;
+
+    @Autowired
+    private IUnionValidateService unionValidateService;
 
     //-------------------------------------------------- get ----------------------------------------------------------
 
     @ApiOperation(value = "请求创建联盟，创建联盟两步走的第一步", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/instance", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String instance(HttpServletRequest request) {
-        try {
-            BusUser busUser = SessionUtils.getLoginUser(request);
-            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
-            }
-            Map<String, Object> result = this.unionMainCreateService.instanceByBusId(busUser.getId());
-            return GTJsonResult.instanceSuccessMsg(result).toString();
-        } catch (BaseException e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-        } catch (Exception e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+    public String instance(HttpServletRequest request) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
+        Map<String, Object> result = this.unionMainCreateService.instanceByBusId(busUser.getId());
+        return GTJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- put ----------------------------------------------------------
@@ -74,22 +60,13 @@ public class UnionMainCreateController {
     @RequestMapping(value = "/instance", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String saveInstance(HttpServletRequest request
             , @ApiParam(name = "unionMainCreateVO", value = "创建联盟实体", required = true)
-                               @RequestBody @Valid UnionMainCreateVO unionMainCreateVO, BindingResult bindingResult) {
-        try {
-            BusUser busUser = SessionUtils.getLoginUser(request);
-            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
-            }
-            this.unionMainCreateService.saveInstanceByBusIdAndVo(busUser.getId(), unionMainCreateVO);
-            return GTJsonResult.instanceSuccessMsg().toString();
-        } catch (BaseException e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-        } catch (Exception e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+                               @RequestBody @Valid UnionMainCreateVO unionMainCreateVO, BindingResult bindingResult) throws Exception {
+        this.unionValidateService.checkBindingResult(bindingResult);
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
+        this.unionMainCreateService.saveInstanceByBusIdAndVo(busUser.getId(), unionMainCreateVO);
+        return GTJsonResult.instanceSuccessMsg().toString();
     }
 }
