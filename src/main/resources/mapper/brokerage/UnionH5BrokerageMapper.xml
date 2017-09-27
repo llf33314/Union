@@ -68,7 +68,7 @@
                  separator=",">
             #{member.id}
         </foreach>
-        and EXISTS (SELECT id from t_union_brokerage_income i WHERE t_union_opportunity.id = i.opportunity_id and i.del_statu = 0)) o
+        and EXISTS (SELECT id from t_union_brokerage_income i WHERE t_union_opportunity.id = i.opportunity_id and i.del_status = 0)) o
         LEFT JOIN t_union_member m on o.from_member_id = m.id
         LEFT JOIN t_union_main um on um.id = m.union_id WHERE m.del_status = 0 and um.del_status = 0 and m.`status` in (2,3)
     </select>
