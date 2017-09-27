@@ -66,19 +66,10 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 						,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) {
 		try {
 			Member member = SessionUtils.getLoginMember(request);
-			member = memberService.getById(998);
-			request.getSession().setAttribute(SessionUtils.SESSION_MEMBER,member);
-			/*if(CommonUtil.isEmpty(member)){
-				if(CommonUtil.judgeBrowser(request) == 1){//微信
-
-				}
-				String redirectUrl = this.authorizeMember(request, busId, 1, ConfigConstant.UNION_PHONE_ROOT_URL + url);
-				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
+			String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
+			if(StringUtil.isNotEmpty(returnLoginUrl)){
+				return returnLoginUrl;
 			}
-			if(!member.getBusid().equals(busId)){
-				String redirectUrl = this.authorizeMember(request, busId, 1, ConfigConstant.UNION_PHONE_ROOT_URL + url);
-				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
-			}*/
 			Map<String,Object> data = this.unionCardService.getUnionCardIndex(busId, member);
 			data.put("phone",member.getPhone());
 			return GTJsonResult.instanceSuccessMsg(data).toString();
@@ -99,13 +90,9 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			,@ApiParam(name = "memberId", value = "联盟id", required = true) @RequestParam("memberId") Integer memberId) {
 		try {
 			Member member = SessionUtils.getLoginMember(request);
-			if(CommonUtil.isEmpty(member)){
-				String redirectUrl = this.authorizeMember(request, busId, 1, ConfigConstant.UNION_PHONE_ROOT_URL + url);
-				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
-			}
-			if(!member.getBusid().equals(busId)){
-				String redirectUrl = this.authorizeMember(request, busId, 1, ConfigConstant.UNION_PHONE_ROOT_URL + url);
-				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
+			String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
+			if(StringUtil.isNotEmpty(returnLoginUrl)){
+				return returnLoginUrl;
 			}
 			Map<String,Object> data = this.unionCardService.getUnionInfoCardList(busId, member, unionId, memberId);
 			return GTJsonResult.instanceSuccessMsg(data).toString();
@@ -201,13 +188,9 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) {
 		try {
 			Member member = SessionUtils.getLoginMember(request);
-			if(CommonUtil.isEmpty(member)){
-				String redirectUrl = this.authorizeMember(request, busId, 1, ConfigConstant.UNION_PHONE_ROOT_URL + url);
-				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
-			}
-			if(!member.getBusid().equals(busId)){
-				String redirectUrl = this.authorizeMember(request, busId, 1, ConfigConstant.UNION_PHONE_ROOT_URL + url);
-				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
+			String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
+			if(StringUtil.isNotEmpty(returnLoginUrl)){
+				return returnLoginUrl;
 			}
 			unionCardService.bindCardPhone(member,busId,phone);
 			return GTJsonResult.instanceSuccessMsg().toString();
@@ -237,13 +220,9 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 		try {
 			Member member = SessionUtils.getLoginMember(request);
 			Integer busId = vo.getBusId();
-			if(CommonUtil.isEmpty(member)){
-				String redirectUrl = this.authorizeMember(request, busId, 1, ConfigConstant.UNION_PHONE_ROOT_URL + url);
-				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
-			}
-			if(!member.getBusid().equals(busId)){
-				String redirectUrl = this.authorizeMember(request, busId, 1, ConfigConstant.UNION_PHONE_ROOT_URL + url);
-				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
+			String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
+			if(StringUtil.isNotEmpty(returnLoginUrl)){
+				return returnLoginUrl;
 			}
 			if(CommonUtil.isEmpty(member.getPhone())){
 				throw new BusinessException("请绑定手机号");

@@ -48,7 +48,7 @@ public class CustomWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter {
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
         registry.addViewController("/").setViewName("forward:/index.html");
-        registry.addViewController("/brokerage").setViewName("forward:/brokerageIndex.html");
+        registry.addViewController("/phone").setViewName("forward:/phone/index.html");
         registry.setOrder(Ordered.HIGHEST_PRECEDENCE);
         super.addViewControllers(registry);
     }

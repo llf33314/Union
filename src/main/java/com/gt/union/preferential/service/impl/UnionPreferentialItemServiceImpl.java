@@ -325,7 +325,7 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
             entityWrapper.eq("del_status",CommonConstant.DEL_STATUS_NO);
             entityWrapper.eq("project_id",project.getId());
             int serviceCount = this.selectCount(entityWrapper);
-            if(serviceCount == ConfigConstant.MAX_PREFERENIAL_COUNT){
+            if(serviceCount >= ConfigConstant.MAX_PREFERENIAL_COUNT){
                 throw new BusinessException("优惠项目已达上限");
             }
         }

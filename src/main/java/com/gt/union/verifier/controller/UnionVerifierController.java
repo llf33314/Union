@@ -136,7 +136,7 @@ public class UnionVerifierController {
                 }
                 String phoneKey = RedisKeyUtil.getVerifyPhoneKey(phone);
                 redisCacheUtil.set(phoneKey , code, 300l);
-                return GTJsonResult.instanceSuccessMsg(code).toString();
+                return GTJsonResult.instanceSuccessMsg().toString();
             }
             return GTJsonResult.instanceErrorMsg("手机号不能为空").toString();
         } catch (Exception e) {
