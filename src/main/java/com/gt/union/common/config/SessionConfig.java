@@ -8,14 +8,14 @@ import org.springframework.session.web.http.DefaultCookieSerializer;
 
 //这个类用配置redis服务器的连接
 //maxInactiveIntervalInSeconds为SpringSession的过期时间（单位：秒）
-@EnableRedisHttpSession(maxInactiveIntervalInSeconds= 1800)
+@EnableRedisHttpSession(maxInactiveIntervalInSeconds = 1800)
 public class SessionConfig {
 
-    @Value( "${redisSession.cookieName}" )
+    @Value("${redisSession.cookieName}")
     private String cookieName;
-    @Value( "${redisSession.cookiePath}" )
+    @Value("${redisSession.cookiePath}")
     private String cookiePath;
-    @Value( "${redisSession.domainName}" )
+    @Value("${redisSession.domainName}")
     private String domainName;
 
     @Value("${spring.redis2.host}")
@@ -30,7 +30,7 @@ public class SessionConfig {
     private String password;
 
     @Bean
-    public DefaultCookieSerializer defaultCookieSerializer(){
+    public DefaultCookieSerializer defaultCookieSerializer() {
         DefaultCookieSerializer defaultCookieSerializer = new DefaultCookieSerializer();
         defaultCookieSerializer.setDomainName(cookieName);
         defaultCookieSerializer.setCookieName(cookieName);
@@ -43,8 +43,8 @@ public class SessionConfig {
         JedisConnectionFactory factory = new JedisConnectionFactory();
         factory.setHostName(host);
         factory.setPort(port);
-        factory.setTimeout(timeout); //设置连接超时时间
         factory.setDatabase(database);
+        factory.setTimeout(timeout); //设置连接超时时间
         factory.setPassword(password);
         return factory;
     }

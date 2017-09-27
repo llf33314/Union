@@ -4,15 +4,11 @@ import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
-import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
-import com.gt.union.log.service.IUnionLogErrorService;
 import com.gt.union.preferential.service.IUnionPreferentialItemService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,10 +27,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/unionPreferentialItem")
 public class UnionPreferentialItemController {
-    private Logger logger = LoggerFactory.getLogger(UnionPreferentialItemController.class);
-
-    @Autowired
-    private IUnionLogErrorService unionLogErrorService;
 
     @Autowired
     private IUnionPreferentialItemService unionPreferentialItemService;
@@ -48,23 +40,13 @@ public class UnionPreferentialItemController {
             , @ApiParam(name = "memberId", value = "操作者的盟员身份id", required = true)
                                         @PathVariable("memberId") Integer memberId
             , @ApiParam(name = "itemIdList", value = "批量提交的优惠服务项id列表", required = true)
-                                            @RequestBody @NotNull List<Integer> itemIdList) {
-        try {
-            BusUser busUser = SessionUtils.getLoginUser(request);
-            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
-            }
-            this.unionPreferentialItemService.submitBatchByIdsAndBusIdAndMemberId(itemIdList, busUser.getId(), memberId);
-            return GTJsonResult.instanceSuccessMsg().toString();
-        } catch (BaseException e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-        } catch (Exception e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+                                        @RequestBody @NotNull List<Integer> itemIdList) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
+        this.unionPreferentialItemService.submitBatchByIdsAndBusIdAndMemberId(itemIdList, busUser.getId(), memberId);
+        return GTJsonResult.instanceSuccessMsg().toString();
     }
 
     @ApiOperation(value = "批量移除优惠服务项", produces = "application/json;charset=UTF-8")
@@ -73,23 +55,13 @@ public class UnionPreferentialItemController {
             , @ApiParam(name = "memberId", value = "操作者的盟员身份id", required = true)
                                         @PathVariable("memberId") Integer memberId
             , @ApiParam(name = "itemIdList", value = "批量移除的优惠服务项id列表", required = true)
-                                        @RequestBody @NotNull List<Integer> itemIdList) {
-        try {
-            BusUser busUser = SessionUtils.getLoginUser(request);
-            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
-            }
-            this.unionPreferentialItemService.removeBatchByIdsAndBusIdAndMemberId(itemIdList, busUser.getId(), memberId);
-            return GTJsonResult.instanceSuccessMsg().toString();
-        } catch (BaseException e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-        } catch (Exception e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+                                        @RequestBody @NotNull List<Integer> itemIdList) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
+        this.unionPreferentialItemService.removeBatchByIdsAndBusIdAndMemberId(itemIdList, busUser.getId(), memberId);
+        return GTJsonResult.instanceSuccessMsg().toString();
     }
 
     @ApiOperation(value = "批量审核优惠服务项", produces = "application/json;charset=UTF-8")
@@ -100,23 +72,13 @@ public class UnionPreferentialItemController {
             , @ApiParam(name = "itemIdList", value = "批量审核的优惠服务项id列表", required = true)
                                         @RequestBody @NotNull List<Integer> itemIdList
             , @ApiParam(name = "isOK", value = "是否通过，1为通过，0为不通过", required = true)
-                                        @RequestParam(value = "isOK") Integer isOK) {
-        try {
-            BusUser busUser = SessionUtils.getLoginUser(request);
-            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
-            }
-            this.unionPreferentialItemService.updateBatchByBusIdAndMemberId(busUser.getId(), memberId, itemIdList, isOK);
-            return GTJsonResult.instanceSuccessMsg().toString();
-        } catch (BaseException e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-        } catch (Exception e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+                                        @RequestParam(value = "isOK") Integer isOK) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
+        this.unionPreferentialItemService.updateBatchByBusIdAndMemberId(busUser.getId(), memberId, itemIdList, isOK);
+        return GTJsonResult.instanceSuccessMsg().toString();
     }
 
     //------------------------------------------------- post ----------------------------------------------------------
@@ -127,22 +89,12 @@ public class UnionPreferentialItemController {
             , @ApiParam(name = "memberId", value = "操作者的盟员身份id", required = true)
                                                 @PathVariable("memberId") Integer memberId
             , @ApiParam(name = "itemName", value = "优惠服务名称", required = true)
-                                                @RequestBody @NotNull String itemName) {
-        try {
-            BusUser busUser = SessionUtils.getLoginUser(request);
-            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
-            }
-            this.unionPreferentialItemService.saveByBusIdAndMemberIdAndName(busUser.getId(), memberId, itemName);
-            return GTJsonResult.instanceSuccessMsg().toString();
-        } catch (BaseException e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-        } catch (Exception e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+                                                @RequestBody @NotNull String itemName) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
+        this.unionPreferentialItemService.saveByBusIdAndMemberIdAndName(busUser.getId(), memberId, itemName);
+        return GTJsonResult.instanceSuccessMsg().toString();
     }
 }

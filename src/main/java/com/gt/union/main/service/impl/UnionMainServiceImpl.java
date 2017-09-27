@@ -419,11 +419,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         if (ListUtil.isNotEmpty(unionMainDictList)) {
             this.unionMainDictService.insertBatch(unionMainDictList);
         }
-        //(11)删除缓存
-        String infoDictKey = RedisKeyUtil.getUnionInfoDictKey(unionId);
-        redisCacheUtil.remove(infoDictKey);
-        //String unionMainKey = RedisKeyUtil.getUnionMainKey(unionId);
-        //this.redisCacheUtil.remove(unionMainKey);
     }
 
     //------------------------------------------------- save ----------------------------------------------------------
@@ -457,7 +452,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
             throw new BusinessException("联盟不存在");
         }
         //(1)如果缓存中已存在，说明有效，直接返回
-        String unionMainValidKey = RedisKeyUtil.getUnionMainValidKey(unionMain.getId());
+        String unionMainValidKey = RedisKeyUtil.getMainValidKey(unionMain.getId());
         if (this.redisCacheUtil.exists(unionMainValidKey)) {
             return;
         }
@@ -508,7 +503,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
             throw new BusinessException("联盟不存在");
         }
         //(1)如果缓存中已存在，说明有效，直接返回
-        String unionMainValidKey = RedisKeyUtil.getUnionMainValidKey(unionMain.getId());
+        String unionMainValidKey = RedisKeyUtil.getMainValidKey(unionMain.getId());
         if (this.redisCacheUtil.exists(unionMainValidKey)) {
             return true;
         }
