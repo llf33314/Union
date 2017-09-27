@@ -133,7 +133,7 @@ public class MemberAuthorizeOrLoginController {
 				String redirectUrl = authorizeMember(request, busId, null, ConfigConstant.UNION_PHONE_ROOT_URL + url);
 				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 			}else {//其他浏览器
-				return GTJsonResult.instanceErrorMsg("登录授权",ConfigConstant.UNION_PHONE_ROOT_URL + "toLogin").toString();
+				return GTJsonResult.instanceErrorMsg("登录授权",ConfigConstant.UNION_PHONE_ROOT_URL + "toUnionLogin").toString();
 			}
 		}
 		if(!member.getBusid().equals(busId)){
@@ -141,7 +141,7 @@ public class MemberAuthorizeOrLoginController {
 				String redirectUrl = authorizeMember(request, busId, null, ConfigConstant.UNION_PHONE_ROOT_URL + url);
 				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 			}else {//其他浏览器
-				return GTJsonResult.instanceErrorMsg("登录授权",ConfigConstant.UNION_PHONE_ROOT_URL + "toLogin").toString();
+				return GTJsonResult.instanceErrorMsg("登录授权",ConfigConstant.UNION_PHONE_ROOT_URL + "toUnionLogin").toString();
 			}
 		}
 		return null;

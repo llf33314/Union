@@ -3,6 +3,7 @@ package com.gt.union.common.filter;
 import com.alibaba.fastjson.JSON;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.PropertiesUtil;
@@ -23,11 +24,14 @@ import java.util.*;
 @WebFilter(filterName = "loginFilter", urlPatterns = "/*")
 public class LoginFilter implements Filter {
     private static int count;
-    @Autowired
-    private RedisCacheUtil redisCacheUtil;
 
     //不需要登录就可访问的url
     public static final Map<String, String> urls = new HashMap<String, String>();
+
+    /**
+     * 路由地址
+     */
+    public static final Map<String, String> routeUrls = new HashMap<String, String>();
 
 
     //可通过的文件类型
@@ -36,6 +40,17 @@ public class LoginFilter implements Filter {
     static {
         //过滤佣金平台路径
         urls.put("/unionH5Brokerage/login", "/unionH5Brokerage/login");
+
+        /*******************************路由列表*********************************/
+        /*手机端*/
+
+
+        /*后台*/
+        routeUrls.put("/my-union","/my-union");
+        routeUrls.put("/#/business","/#/business");
+        routeUrls.put("/#/front","/#/front");
+        routeUrls.put("/#/finance","/#/finance");
+        /*******************************路由列表*********************************/
 
         //文件类型
         suffixs.add("js");
@@ -77,33 +92,33 @@ public class LoginFilter implements Filter {
         } else if (passSuffixs(url) || passUrl(url)) {
             chain.doFilter(request, response);
         } else if (url.indexOf("unionH5Brokerage") > -1) {
-            busUser = new BusUser();
-            busUser.setId(33);
-            busUser.setEndTime(new Date());
-            busUser.setPid(0);
-            busUser.setLevel(4);
-            SessionUtils.setLoginUser(req,busUser);
-            chain.doFilter(request, response);
-           /* if (busUser == null) {
+//            busUser = new BusUser();
+//            busUser.setId(33);
+//            busUser.setEndTime(new Date());
+//            busUser.setPid(0);
+//            busUser.setLevel(4);
+//            SessionUtils.setLoginUser(req,busUser);
+//            chain.doFilter(request, response);
+            if (busUser == null) {
                 response.setCharacterEncoding("UTF-8");
-                response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", "/toLogin")));
+                response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", ConfigConstant.UNION_PHONE_ROOT_URL + "toLogin")));
                 return;
             } else {
                 chain.doFilter(request, response);
-            }*/
+            }
         } else if (url.indexOf("v2") > -1 || url.indexOf("swagger") > -1) { //TODO 正式中一定要注释掉
             chain.doFilter(request, response);
         } else if (busUser == null) {// 判断到商家没有登录,就跳转到登陆页面
-            busUser = new BusUser();
+           /* busUser = new BusUser();
             busUser.setId(33);
             busUser.setEndTime(new Date());
             busUser.setPid(0);
             busUser.setLevel(4);
             SessionUtils.setLoginUser(req,busUser);
-            chain.doFilter(request, response);
-            /*response.setCharacterEncoding("UTF-8");
+            chain.doFilter(request, response);*/
+            response.setCharacterEncoding("UTF-8");
             response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", ConfigConstant.WXMP_ROOT_URL + "/user/tologin.do")));
-            return;*/
+            return;
         } else {
             // 已经登陆,继续此次请求
             chain.doFilter(request, response);
