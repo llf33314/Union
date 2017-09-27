@@ -52,15 +52,6 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
 
-	@Value("${wxmp.signkey}")
-	private String wxmpKey;
-
-	@Value("${wxmp.company}")
-	private String company;
-
-	@Value("${wx.duofen.busId}")
-	private Integer duofenBusId;
-
 	@Autowired
 	private SmsService smsService;
 
@@ -94,9 +85,6 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 	@Autowired
 	private IUnionBrokeragePayService unionBrokeragePayService;
 
-	@Value("${union.encryptKey}")
-	private String encryptKey;
-
 	@Override
 	public void checkLogin(Integer type, String username, String userpwd, String phone, String code, HttpServletRequest request) throws Exception{
 		if(type == null){
@@ -116,7 +104,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 			Map<String,Object> param = new HashMap<String,Object>();
 			param.put("login_name",username);
 			param.put("password",userpwd);
-			SignBean sign = SignUtils.sign(wxmpKey , JSONObject.toJSONString(param));
+			SignBean sign = SignUtils.sign(ConfigConstant.WXMP_SIGNKEY , JSONObject.toJSONString(param));
 			if(CommonUtil.isEmpty(sign)){
 				throw new BusinessException("登录错误");
 			}
@@ -126,7 +114,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 			obj.put("password",userpwd);
 			obj.put("sign",objSing);
 			String url = ConfigConstant.WXMP_ROOT_URL + "/ErpMenus/79B4DE7C/UnionErplogin.do";
-			String result = SignHttpUtils.WxmppostByHttp(url,obj,wxmpKey);
+			String result = SignHttpUtils.WxmppostByHttp(url,obj,ConfigConstant.WXMP_SIGNKEY);
 			if(StringUtil.isEmpty(result)){
 				throw new BusinessException("登录错误");
 			}
@@ -431,7 +419,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		HashMap<String, Object> smsParams = new HashMap<String,Object>();
 		smsParams.put("mobiles", StringUtil.isEmpty(toMember.getNotifyPhone()) ? toMember.getDirectorPhone() : toMember.getNotifyPhone());
 		smsParams.put("content", "您尚未支付\"" + main.getName()+ "\"的\"" + fromMember.getEnterpriseName() + "\"" +opportunity.getBrokeragePrice() + "元的商机推荐佣金，请尽快支付，谢谢");
-		smsParams.put("company", company);
+		smsParams.put("company", ConfigConstant.WXMP_COMPANY);
 		smsParams.put("busId", busId);
 		smsParams.put("model", ConfigConstant.SMS_UNION_MODEL);
 		Map<String,Object> param = new HashMap<String,Object>();
@@ -468,12 +456,12 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		}
 		String orderNo = OpportunityConstant.ORDER_PREFIX + System.currentTimeMillis();
 		List<UnionOpportunity> list = this.listAllUnPayUnionBrokerage(busId,unionId);
-		String encrypt = EncryptUtil.encrypt(encryptKey, JSON.toJSONString(list));
+		String encrypt = EncryptUtil.encrypt(ConfigConstant.UNION_ENCRYPTKEY, JSON.toJSONString(list));
 		encrypt = URLEncoder.encode(encrypt, "UTF-8");
 		Map<String,Object> data = new HashMap<String,Object>();
 		data.put("totalFee",money);
 		data.put("model", ConfigConstant.ENTERPRISE_PAY_MODEL);
-		data.put("busId",duofenBusId);
+		data.put("busId",ConfigConstant.WXMP_DUOFEN_BUSID);
 		data.put("appidType",0);//公众号
 		data.put("orderNum",orderNo);
 		data.put("memberId",memberId);
@@ -507,12 +495,12 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 			throw new BusinessException("支付金额有误");
 		}
 		String orderNo = OpportunityConstant.ORDER_PREFIX + System.currentTimeMillis();
-		String encrypt = EncryptUtil.encrypt(encryptKey, String.valueOf(id));
+		String encrypt = EncryptUtil.encrypt(ConfigConstant.UNION_ENCRYPTKEY, String.valueOf(id));
 		encrypt = URLEncoder.encode(encrypt, "UTF-8");
 		Map<String,Object> data = new HashMap<String,Object>();
 		data.put("totalFee",opportunity.getBrokeragePrice());
 		data.put("model", ConfigConstant.ENTERPRISE_PAY_MODEL);
-		data.put("busId",duofenBusId);
+		data.put("busId",ConfigConstant.WXMP_DUOFEN_BUSID);
 		data.put("appidType",0);//公众号
 		data.put("orderNum",orderNo);
 		data.put("memberId",memberId);
@@ -529,7 +517,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public void paymentOneOpportunitySuccess(String encrypt, String orderNo, Integer verifierId) throws Exception{
-		String id = EncryptUtil.decrypt(encryptKey, encrypt);
+		String id = EncryptUtil.decrypt(ConfigConstant.UNION_ENCRYPTKEY, encrypt);
 		Integer oppId = Integer.parseInt(id);
 		UnionOpportunity opportunity = unionOpportunityService.getById(oppId);
 		if(opportunity == null){
@@ -572,7 +560,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public void payAllOpportunitySuccess(String encrypt, String orderNo, Integer verifierId) throws Exception{
-		String data = EncryptUtil.decrypt(encryptKey, encrypt);
+		String data = EncryptUtil.decrypt(ConfigConstant.UNION_ENCRYPTKEY, encrypt);
 		List<UnionOpportunity> list =JSONArray.parseArray(data,UnionOpportunity.class);
 		unionOpportunityService.insertBatchByList(list,orderNo,verifierId);
 	}

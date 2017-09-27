@@ -34,12 +34,6 @@ public class MemberAuthorizeOrLoginController {
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
 
-	@Value("${member.url}")
-	private String memberUrl;
-
-	@Value("${wx.duofen.busId}")
-	private Integer duofenBusId;
-
 	@Autowired
 	private RedisService redisService;
 
@@ -76,7 +70,7 @@ public class MemberAuthorizeOrLoginController {
 		String otherRedisKey = "authority:"+System.currentTimeMillis();
 		redisCacheUtil.set(otherRedisKey, reqUrl, 300l);
 		Map<String, Object> queryMap = new HashMap<>();
-		queryMap.put("otherRedisKey", PropertiesUtil.redisNamePrefix() + otherRedisKey);
+		queryMap.put("otherRedisKey", ConfigConstant.UNION_REDIS_NAME_PREFIX + otherRedisKey);
 		queryMap.put("browser", browser);
 		queryMap.put("busId", busId);
 		queryMap.put("uclogin", uclogin);
@@ -94,7 +88,7 @@ public class MemberAuthorizeOrLoginController {
 //			throw new BusinessException("请使用微信登录");
 //		}
 		Map<String, Object> getWxPublicMap = new HashMap<>();
-		getWxPublicMap.put("busId", duofenBusId);//多粉
+		getWxPublicMap.put("busId", ConfigConstant.WXMP_DUOFEN_BUSID);//多粉
 		//判断商家信息 1是否过期 2公众号是否变更过
 		String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/busUserApi/getWxPulbicMsg.do";
 		String wxpublic = SignHttpUtils.WxmppostByHttp(url, getWxPublicMap, PropertiesUtil.getWxmpSignKey());
@@ -111,12 +105,12 @@ public class MemberAuthorizeOrLoginController {
 				throw new BusinessException("账号已过期");
 			}
 		}
-		String otherRedisKey = PropertiesUtil.redisNamePrefix() + "authority:"+System.currentTimeMillis();
+		String otherRedisKey = ConfigConstant.UNION_REDIS_NAME_PREFIX + "authority:"+System.currentTimeMillis();
 		redisService.setValue(otherRedisKey, reqUrl, 300);
 		Map<String, Object> queryMap = new HashMap<>();
 		queryMap.put("otherRedisKey", otherRedisKey);
 		queryMap.put("browser", 1);
-		queryMap.put("busId", duofenBusId);
+		queryMap.put("busId", ConfigConstant.WXMP_DUOFEN_BUSID);
 		logger.info("queryMap=" + JSON.toJSONString(queryMap));
 		String params = URLEncoder.encode(JSON.toJSONString(queryMap), "utf-8");
 		return ConfigConstant.WXMP_ROOT_URL + "/remoteUserAuthoriPhoneController/79B4DE7C/authorizeMember.do?queryBody=" + params;

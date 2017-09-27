@@ -17,6 +17,8 @@ public class PropertiesUtil {
 
 	private static String socketUrl;
 
+	private static String socketKey;
+
 	private static String mqUrl;
 
 	private static String mqUser;
@@ -44,6 +46,8 @@ public class PropertiesUtil {
 	private static String wxmpCompany;
 
 	private static String unionUrl;
+
+	private static String unionSignKey;
 
 	private static String memberUrl;
 
@@ -300,5 +304,23 @@ public class PropertiesUtil {
 	@Value("${union.encryptKey}")
 	public void setEncryptKey(String encryptKey) {
 		this.encryptKey = encryptKey;
+	}
+
+	@Value("${socket.key}")
+	public static String getSocketKey() {
+		return socketKey;
+	}
+
+	public void setSocketKey(String socketKey) {
+		this.socketKey = socketKey;
+	}
+
+	public static String getUnionSignKey() {
+		return unionSignKey;
+	}
+
+	@Value("${union.signkey}")
+	public void setUnionSignKey(String unionSignKey) {
+		this.unionSignKey = unionSignKey;
 	}
 }

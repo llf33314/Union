@@ -108,9 +108,24 @@ public interface ConfigConstant {
 	String WXMP_ROOT_URL = PropertiesUtil.getWxmpUrl();
 
 	/**
+	 * wxmp请求密钥
+	 */
+	String WXMP_SIGNKEY = PropertiesUtil.getWxmpSignKey();
+
+	/**
+	 * wxmp多粉商家id  正式：2274
+	 */
+	Integer WXMP_DUOFEN_BUSID = PropertiesUtil.getDuofenBusId();
+
+	/**
 	 * 联盟根路径
 	 */
 	String UNION_ROOT_URL = PropertiesUtil.getUnionUrl();
+
+	/**
+	 * 联盟接口秘钥
+	 */
+	String UNION_SIGNKEY = PropertiesUtil.getUnionSignKey();
 
 	/**
 	 * 手机端根路径
@@ -121,6 +136,31 @@ public interface ConfigConstant {
 	 * 联盟加密秘钥
 	 */
 	String UNION_ENCRYPTKEY = PropertiesUtil.getEncryptKey();
+
+	/**
+	 * redis key前缀
+	 */
+	String UNION_REDIS_NAME_PREFIX = PropertiesUtil.redisNamePrefix();
+
+	/**
+	 * 会员请求密钥
+	 */
+	String MEMBER_SIGNKEY = PropertiesUtil.getMemberSignKey();
+
+	/**
+	 * 会员请求路径
+	 */
+	String MEMBER_ROOT_URL = PropertiesUtil.getMemberUrl();
+
+	/**
+	 * socket url
+	 */
+	String SOCKET_URL = PropertiesUtil.getSocketUrl();
+
+	/**
+	 * socket key
+	 */
+	String SOCKET_KEY = PropertiesUtil.getSocketKey();
 
 	/**
 	 * 公众号二维码链接model

@@ -16,10 +16,6 @@ import java.util.Map;
 @Service
 public class SocketServiceImpl implements SocketService{
 
-
-	@Value("${wxmp.signkey}")
-	private String wxmpSignkey;
-
 	@Override
 	public int socketSendMessage(String pushName,String message,String pushStyle) {
 		try {
@@ -32,7 +28,7 @@ public class SocketServiceImpl implements SocketService{
 			}
 			params.put("pushMsg", message);
 			params.put("pushName",pushName);
-			String result = SignHttpUtils.WxmppostByHttp(ConfigConstant.WXMP_ROOT_URL+"/8A5DA52E/socket/getSocketApi.do", params, wxmpSignkey);
+			String result = SignHttpUtils.WxmppostByHttp(ConfigConstant.WXMP_ROOT_URL+"/8A5DA52E/socket/getSocketApi.do", params, ConfigConstant.WXMP_SIGNKEY);
 		}catch (Exception e){
 			return 0;
 		}

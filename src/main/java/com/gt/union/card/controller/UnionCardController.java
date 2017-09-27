@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,14 +74,8 @@ public class UnionCardController {
 	@Autowired
 	private IUnionMainService unionMainService;
 
-	@Value("${socket.url}")
-	private String socketUrl;
-
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
-
-	@Value("${socket.key}")
-	private String socketKey;
 
 	@ApiOperation(value = "获取盟员的联盟卡列表", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -256,8 +251,8 @@ public class UnionCardController {
 			}
 			Map<String,Object> data = new HashMap<String,Object>();
 			data.put("qrurl",url);
-			data.put("socketurl",socketUrl);
-			data.put("userId",socketKey + user.getId());
+			data.put("socketurl",ConfigConstant.SOCKET_URL);
+			data.put("userId",ConfigConstant.SOCKET_KEY + user.getId());
 			return GTJsonResult.instanceSuccessMsg(url).toString();
 		} catch (Exception e) {
 			logger.error("", e);
@@ -279,7 +274,8 @@ public class UnionCardController {
 			data.put("nickName", StringUtil.isEmpty(member.getNickname()) ? "未知用户" : member.getNickname());
 			data.put("memberId",member.getId());
 			data.put("headurl",member.getHeadimgurl());
-			socketService.socketSendMessage(socketKey + CommonUtil.toInteger(param.get("externalId")), JSON.toJSONString(data),"");
+			data.put("time",DateTimeKit.format(new Date(),"yyyy-MM-dd HH:mm"));
+			socketService.socketSendMessage(ConfigConstant.SOCKET_KEY + CommonUtil.toInteger(param.get("externalId")), JSON.toJSONString(data),"");
 		} catch (Exception e) {
 			logger.error("", e);
 		}

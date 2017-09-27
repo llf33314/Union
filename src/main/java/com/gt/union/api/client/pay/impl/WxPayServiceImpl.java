@@ -41,9 +41,6 @@ public class WxPayServiceImpl implements WxPayService {
     @Autowired
     private IBusUserService busUserService;
 
-    @Value("${wx.duofen.busId}")
-    private Integer duofenBusId;
-
 
     @Override
     public int pay(Map<String,Object> param) {
@@ -78,7 +75,7 @@ public class WxPayServiceImpl implements WxPayService {
             throw new BusinessException("可提佣金不足");
         }
         String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/enterprisePayment.do";
-        WxPublicUsers wxPublicUsers = busUserService.getWxPublicUserByBusId(duofenBusId);
+        WxPublicUsers wxPublicUsers = busUserService.getWxPublicUserByBusId(ConfigConstant.WXMP_DUOFEN_BUSID);
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("appid", wxPublicUsers.getAppid());
         params.put("partner_trade_no", OpportunityConstant.ORDER_PREFIX + System.currentTimeMillis());

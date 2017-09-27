@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.gt.api.bean.session.Member;
 import com.gt.api.util.sign.SignHttpUtils;
 import com.gt.union.api.client.member.MemberService;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.StringUtil;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,21 +21,15 @@ import java.util.Map;
 @Service
 public class MemberServiceImpl implements MemberService {
 
-	@Value("${member.url}")
-	private String memberUrl;
-
-	@Value("${member.signkey}")
-	private String memberSignkey;
-
 
 	@Override
 	public List<Map> listByBusIdAndMemberIds(Integer busId, String memberIds) {
-		String url = memberUrl + "/memberAPI/member/findMemberByids";
+		String url = ConfigConstant.MEMBER_ROOT_URL + "/memberAPI/member/findMemberByids";
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("busId",busId);
 		param.put("ids",memberIds);
 		try {
-			String data = SignHttpUtils.WxmppostByHttp(url,param,memberSignkey);
+			String data = SignHttpUtils.WxmppostByHttp(url,param, ConfigConstant.MEMBER_SIGNKEY);
 			if(StringUtil.isEmpty(data)){
 				return null;
 			}
@@ -51,11 +46,11 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public Member getById(Integer memberId) {
-		String url = memberUrl + "/memberAPI/member/findByMemberId";
+		String url = ConfigConstant.MEMBER_ROOT_URL + "/memberAPI/member/findByMemberId";
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("memberId",memberId);
 		try {
-			String data = SignHttpUtils.WxmppostByHttp(url,param,memberSignkey);
+			String data = SignHttpUtils.WxmppostByHttp(url,param,ConfigConstant.MEMBER_SIGNKEY);
 			if(StringUtil.isEmpty(data)){
 				return null;
 			}
@@ -72,12 +67,12 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public Member findByPhoneAndBusId(String phone, Integer busId) {
-		String url = memberUrl + "/memberAPI/member/findByMemberId";
+		String url = ConfigConstant.MEMBER_ROOT_URL + "/memberAPI/member/findByMemberId";
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("phone",phone);
 		param.put("busId",busId);
 		try {
-			String data = SignHttpUtils.WxmppostByHttp(url,param,memberSignkey);
+			String data = SignHttpUtils.WxmppostByHttp(url,param,ConfigConstant.MEMBER_SIGNKEY);
 			if(StringUtil.isEmpty(data)){
 				return null;
 			}
@@ -94,13 +89,13 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public int bindMemberPhone(Integer busId, Integer memberId, String phone) {
-		String url = memberUrl + "/memberAPI/member/updateMemberPhoneByMemberId";
+		String url = ConfigConstant.MEMBER_ROOT_URL + "/memberAPI/member/updateMemberPhoneByMemberId";
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("phone",phone);
 		param.put("busId",busId);
 		param.put("memberId",memberId);
 		try {
-			String data = SignHttpUtils.WxmppostByHttp(url,param,memberSignkey);
+			String data = SignHttpUtils.WxmppostByHttp(url,param,ConfigConstant.MEMBER_SIGNKEY);
 			if(StringUtil.isEmpty(data)){
 				return 0;
 			}

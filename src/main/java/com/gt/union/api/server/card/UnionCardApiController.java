@@ -45,9 +45,6 @@ public class UnionCardApiController extends ApiBaseController {
 	private Logger logger = Logger.getLogger(UnionCardApiController.class);
 
 
-	@Value("${wxmp.company}")
-	private String company;
-
 	@Autowired
 	private SmsService smsService;
 
@@ -96,7 +93,7 @@ public class UnionCardApiController extends ApiBaseController {
 			HashMap<String, Object> smsParams = new HashMap<String,Object>();
 			smsParams.put("mobiles", requestApiParam.getReqdata().getPhone());
 			smsParams.put("content", "绑定联盟卡，验证码:" + code);
-			smsParams.put("company", company);
+			smsParams.put("company", ConfigConstant.WXMP_COMPANY);
 			smsParams.put("busId", requestApiParam.getReqdata().getBusId());
 			smsParams.put("model", ConfigConstant.SMS_UNION_MODEL);
 			Map<String,Object> param = new HashMap<String,Object>();

@@ -53,10 +53,6 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	@Autowired
 	private SmsService smsService;
 
-
-	@Value("${wx.duofen.busId}")
-	private Integer duofenBusId;
-
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
 
@@ -205,7 +201,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 				String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_ROOT_URL + url);
 				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 			}
-			if(!member.getBusid().equals(duofenBusId)){
+			if(!member.getBusid().equals(ConfigConstant.WXMP_DUOFEN_BUSID)){
 				String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_ROOT_URL + url);
 				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 			}
@@ -427,7 +423,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 				String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_ROOT_URL + url);
 				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 			}
-			if(!member.getBusid().equals(duofenBusId)){
+			if(!member.getBusid().equals(ConfigConstant.WXMP_DUOFEN_BUSID)){
 				String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_ROOT_URL + url);
 				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 			}
@@ -471,7 +467,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 				String redirectUrl = this.authorizeMemberWx(request, ConfigConstant.UNION_PHONE_ROOT_URL + url);
 				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 			}
-			if(!member.getBusid().equals(duofenBusId)){
+			if(!member.getBusid().equals(ConfigConstant.WXMP_DUOFEN_BUSID)){
 				String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_ROOT_URL + url);
 				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 			}

@@ -6,6 +6,7 @@ import com.gt.api.bean.sign.SignBean;
 import com.gt.api.bean.sign.SignEnum;
 import com.gt.api.util.sign.SignUtils;
 import com.gt.union.api.entity.param.RequestApiParam;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.util.StringUtil;
 import org.apache.log4j.Logger;
@@ -22,15 +23,13 @@ import javax.servlet.http.HttpServletResponse;
 @RestController
 @RequestMapping("/")
 public class ApiBaseController {
-	@Value("${union.signkey}")
-	private String apiSignKey;
 
 	private Logger logger = Logger.getLogger(this.getClass());
 
 	public boolean  verification(HttpServletRequest request, HttpServletResponse response, RequestApiParam<?> requestApiParam) throws Exception {
 		logger.info("*******************************************签名验证开启*******************************************");
 		// 设置返回编码和类型
-		String signKey = apiSignKey;
+		String signKey = ConfigConstant.UNION_SIGNKEY;
 		//获取header中的签名
 		String signStr = request.getHeader("sign");
 		if(StringUtil.isEmpty(signStr)){
