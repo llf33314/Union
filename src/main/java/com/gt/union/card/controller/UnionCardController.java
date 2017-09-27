@@ -40,6 +40,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,20 +74,8 @@ public class UnionCardController {
 	@Autowired
 	private IUnionMainService unionMainService;
 
-	@Value("${socket.url}")
-	private String socketUrl;
-
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
-
-	@Value("${socket.key}")
-	private String socketKey;
-
-	@Value("${wxmp.url}")
-	private String wxmpUrl;
-
-	@Value("${union.url}")
-	private String unionUrl;
 
 	@ApiOperation(value = "获取盟员的联盟卡列表", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -262,8 +251,8 @@ public class UnionCardController {
 			}
 			Map<String,Object> data = new HashMap<String,Object>();
 			data.put("qrurl",url);
-			data.put("socketurl",socketUrl);
-			data.put("userId",socketKey + user.getId());
+			data.put("socketurl",ConfigConstant.SOCKET_URL);
+			data.put("userId",ConfigConstant.SOCKET_KEY + user.getId());
 			return GTJsonResult.instanceSuccessMsg(url).toString();
 		} catch (Exception e) {
 			logger.error("", e);
@@ -285,7 +274,8 @@ public class UnionCardController {
 			data.put("nickName", StringUtil.isEmpty(member.getNickname()) ? "未知用户" : member.getNickname());
 			data.put("memberId",member.getId());
 			data.put("headurl",member.getHeadimgurl());
-			socketService.socketSendMessage(socketKey + CommonUtil.toInteger(param.get("externalId")), JSON.toJSONString(data),"");
+			data.put("time",DateTimeKit.format(new Date(),"yyyy-MM-dd HH:mm"));
+			socketService.socketSendMessage(ConfigConstant.SOCKET_KEY + CommonUtil.toInteger(param.get("externalId")), JSON.toJSONString(data),"");
 		} catch (Exception e) {
 			logger.error("", e);
 		}
@@ -348,7 +338,7 @@ public class UnionCardController {
 			sb.append("&payWay="+data.get("payWay"));
 			sb.append("&sourceType="+data.get("sourceType"));
 			Map<String, Object> result = new HashMap<String, Object>();
-			result.put("url",wxmpUrl + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
+			result.put("url",ConfigConstant.WXMP_ROOT_URL + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
 			result.put("only",data.get("only"));
 			return GTJsonResult.instanceSuccessMsg(result).toString();
 		} catch (Exception e) {
@@ -384,7 +374,7 @@ public class UnionCardController {
 	@ApiOperation(value = "获取手机端二维码图片链接", notes = "获取手机端二维码图片链接", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/phone", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
 	public String phoneQRCodeUrl(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
-		return GTJsonResult.instanceSuccessMsg(unionUrl + "/unionCard/phoneImg").toString();
+		return GTJsonResult.instanceSuccessMsg(ConfigConstant.UNION_ROOT_URL + "/unionCard/phoneImg").toString();
 	}
 
 
@@ -396,7 +386,7 @@ public class UnionCardController {
 		if(user.getPid() != null && user.getPid() != 0){
 			busId = user.getPid();
 		}
-		String url = unionUrl + "phone?unionCard&busId=" + busId;
+		String url = ConfigConstant.UNION_PHONE_ROOT_URL + "unionCard&busId=" + busId;
 		QRcodeKit.buildQRcode(url, 250, 250, response);
 	}
 

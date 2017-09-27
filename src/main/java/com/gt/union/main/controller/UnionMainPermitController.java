@@ -43,9 +43,6 @@ import java.util.Map;
 public class UnionMainPermitController {
 	private Logger logger = Logger.getLogger(UnionMainController.class);
 
-	@Value("${wxmp.url}")
-	private String wxmpUrl;
-
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
 
@@ -107,7 +104,7 @@ public class UnionMainPermitController {
 			sb.append("&payWay="+data.get("payWay"));
 			sb.append("&sourceType="+data.get("sourceType"));
 			Map<String, Object> result = new HashMap<String, Object>();
-			result.put("url",wxmpUrl + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
+			result.put("url",ConfigConstant.WXMP_ROOT_URL + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
 			result.put("only",data.get("only"));
 			return GTJsonResult.instanceSuccessMsg(result).toString();
 		} catch (Exception e) {

@@ -86,12 +86,6 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
 
-	@Value("${union.url}")
-	private String unionUrl;
-
-	@Value("${wx.duofen.busId}")
-	private Integer duofenBusId;
-
 	@Autowired
 	private IUnionConsumeItemService unionConsumeItemService;
 
@@ -390,15 +384,15 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		String orderNo = ConsumeConstant.ORDER_PREFIX + System.currentTimeMillis();
 		String only = DateTimeKit.getDateTime(new Date(), DateTimeKit.yyyyMMddHHmmss);
 		data.put("totalFee", vo.getConsumeMoney());
-		data.put("busId", duofenBusId);
+		data.put("busId", ConfigConstant.WXMP_DUOFEN_BUSID);
 		data.put("sourceType", 1);//是否墨盒支付
 		data.put("payWay", 1);//系统判断支付方式
 		data.put("isreturn", 0);//0：不需要同步跳转
 		data.put("model", ConfigConstant.PAY_MODEL);
 		String encrypt = EncryptUtil.encrypt(PropertiesUtil.getEncryptKey(), orderNo);
 		encrypt = URLEncoder.encode(encrypt, "UTF-8");
-		WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(duofenBusId);
-		data.put("notifyUrl", unionUrl + "/unionConsume/79B4DE7C/paymentSuccess/" + encrypt + "/" + only);
+		WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(ConfigConstant.WXMP_DUOFEN_BUSID);
+		data.put("notifyUrl", ConfigConstant.UNION_ROOT_URL + "/unionConsume/79B4DE7C/paymentSuccess/" + encrypt + "/" + only);
 		data.put("orderNum", orderNo);//订单号
 		data.put("payBusId", busId);//支付的商家id
 		data.put("isSendMessage", 0);//不推送

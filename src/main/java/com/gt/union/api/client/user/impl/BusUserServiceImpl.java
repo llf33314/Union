@@ -28,8 +28,6 @@ public class BusUserServiceImpl implements IBusUserService {
     @Autowired
     private RedisCacheUtil redisCacheUtil;
 
-    @Value("${wxmp.url}")
-    private String wxmpUrl;
 
     @Override
     public BusUser getBusUserById(Integer id) {
@@ -41,7 +39,7 @@ public class BusUserServiceImpl implements IBusUserService {
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("userId", id);
         BusUser busUser = null;
-        String url = wxmpUrl + "/8A5DA52E/busUserApi/getBusUserApi.do";
+        String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/busUserApi/getBusUserApi.do";
         try {
             String result = SignHttpUtils.WxmppostByHttp(url, param, ConfigConstant.WXMP_SIGN_KEY);
             if (StringUtil.isEmpty(result)) {
@@ -66,7 +64,7 @@ public class BusUserServiceImpl implements IBusUserService {
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("name", name);
         BusUser busUser = null;
-        String url = wxmpUrl + "/8A5DA52E/busUserApi/getBusUserApi.do";
+        String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/busUserApi/getBusUserApi.do";
         try {
             String result = SignHttpUtils.WxmppostByHttp(url, param, ConfigConstant.WXMP_SIGN_KEY);
             if (StringUtil.isEmpty(result)) {
@@ -92,7 +90,7 @@ public class BusUserServiceImpl implements IBusUserService {
         }
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("reqdata", busId);
-        String url = wxmpUrl + "/8A5DA52E/wxpublicapi/6F6D9AD2/79B4DE7C/selectByUserId.do";
+        String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/wxpublicapi/6F6D9AD2/79B4DE7C/selectByUserId.do";
         Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param), url, Map.class, ConfigConstant.WXMP_SIGN_KEY);
         if (CommonUtil.isEmpty(result)) {
             return null;
@@ -120,7 +118,7 @@ public class BusUserServiceImpl implements IBusUserService {
         data.put("externalId", busId);
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("reqdata", data);
-        String url = wxmpUrl + "/8A5DA52E/wxpublicapi/6F6D9AD2/79B4DE7C/newqrcodeCreateFinal.do";
+        String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/wxpublicapi/6F6D9AD2/79B4DE7C/newqrcodeCreateFinal.do";
         Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param), url, Map.class, ConfigConstant.WXMP_SIGN_KEY);
         if (CommonUtil.isEmpty(result)) {
             return null;

@@ -77,14 +77,6 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
     @Autowired
     private IUnionBrokeragePayService unionBrokeragePayService;
 
-    @Value("${union.url}")
-    private String unionUrl;
-
-    @Value("${wx.duofen.busId}")
-    private Integer duofenBusId;
-
-    @Value("${union.encryptKey}")
-    private String encryptKey;
 
     //-------------------------------------------------- get ----------------------------------------------------------
 
@@ -1281,7 +1273,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
             throw new BusinessException(CommonConstant.PARAM_ERROR);
         }
         double totalFee = 0;
-        WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(duofenBusId);
+        WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(ConfigConstant.WXMP_DUOFEN_BUSID);
         for (UnionOpportunity opportunity : list) {
             if (CommonUtil.isEmpty(opportunity.getIsAccept()) || opportunity.getIsAccept() != OpportunityConstant.ACCEPT_YES) {
                 throw new BusinessException("不可支付未接受的商机");
@@ -1298,14 +1290,14 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         String orderNo = OpportunityConstant.ORDER_PREFIX + System.currentTimeMillis();
         String only = DateTimeKit.getDateTime(new Date(), DateTimeKit.yyyyMMddHHmmss);
         data.put("totalFee", totalFee);
-        data.put("busId", duofenBusId);
+        data.put("busId", ConfigConstant.WXMP_DUOFEN_BUSID);
         data.put("sourceType", 1);//是否墨盒支付
         data.put("payWay", 1);//系统判断支付方式
         data.put("isreturn", 0);//0：不需要同步跳转
         data.put("model", ConfigConstant.PAY_MODEL);
-        String encrypt = EncryptUtil.encrypt(encryptKey, ids);
+        String encrypt = EncryptUtil.encrypt(ConfigConstant.UNION_ENCRYPTKEY, ids);
         encrypt = URLEncoder.encode(encrypt, "UTF-8");
-        data.put("notifyUrl", unionUrl + "/unionOpportunity/79B4DE7C/paymentSuccess/" + encrypt + "/" + only);
+        data.put("notifyUrl", ConfigConstant.UNION_ROOT_URL + "/unionOpportunity/79B4DE7C/paymentSuccess/" + encrypt + "/" + only);
         data.put("orderNum", orderNo);//订单号
         data.put("payBusId", busId);//支付的商家id
         data.put("isSendMessage", 0);//不推送
@@ -1324,7 +1316,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
     @Override
     public void payOpportunitySuccess(String encrypt, String only) throws Exception {
         //解密参数
-        String ids = EncryptUtil.decrypt(encryptKey, encrypt);
+        String ids = EncryptUtil.decrypt(ConfigConstant.UNION_ENCRYPTKEY, encrypt);
         String paramKey = RedisKeyUtil.getRecommendPayParamKey(only);
         Object obj = redisCacheUtil.get(paramKey);
         Map<String, Object> result = JSONObject.parseObject(obj.toString(), Map.class);

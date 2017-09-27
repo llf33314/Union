@@ -41,15 +41,10 @@ public class WxPayServiceImpl implements WxPayService {
     @Autowired
     private IBusUserService busUserService;
 
-    @Value("${wx.duofen.busId}")
-    private Integer duofenBusId;
-
-    @Value("${wxmp.url}")
-    private String wxmpUrl;
 
     @Override
     public int pay(Map<String,Object> param) {
-        String url = wxmpUrl + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/payapi.do";
+        String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/payapi.do";
         try {
             Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param),url, Map.class, ConfigConstant.WXMP_SIGN_KEY);
             if(CommonUtil.isEmpty(result)){
@@ -79,8 +74,8 @@ public class WxPayServiceImpl implements WxPayService {
         if(BigDecimalUtil.subtract(sumInCome,sumWithdrawal).doubleValue() < fee){
             throw new BusinessException("可提佣金不足");
         }
-        String url = wxmpUrl + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/enterprisePayment.do";
-        WxPublicUsers wxPublicUsers = busUserService.getWxPublicUserByBusId(duofenBusId);
+        String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/enterprisePayment.do";
+        WxPublicUsers wxPublicUsers = busUserService.getWxPublicUserByBusId(ConfigConstant.WXMP_DUOFEN_BUSID);
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("appid", wxPublicUsers.getAppid());
         params.put("partner_trade_no", OpportunityConstant.ORDER_PREFIX + System.currentTimeMillis());
@@ -124,7 +119,7 @@ public class WxPayServiceImpl implements WxPayService {
         }catch (Exception e){
 
         }
-        return wxmpUrl + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/payapi.do?obj="+obj;
+        return ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/payapi.do?obj="+obj;
 	}
 
 

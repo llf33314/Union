@@ -80,15 +80,6 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     @Autowired
     private UnionCardMapper unionCardMapper;
 
-    @Value("${union.encryptKey}")
-    private String encryptKey;
-
-    @Value("${wxmp.company}")
-    private String company;
-
-    @Value("${union.url}")
-    private String unionUrl;
-
     @Autowired
     private SmsService smsService;
 
@@ -171,7 +162,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         if (p.matcher(no).find()) {//包含字母--扫码枪扫码所得
             //解密
             try {
-                no = EncryptUtil.decrypt(encryptKey, no);//解码后得到联盟卡号
+                no = EncryptUtil.decrypt(ConfigConstant.UNION_ENCRYPTKEY, no);//解码后得到联盟卡号
             } catch (Exception e) {
                 throw new ParamException(CommonConstant.PARAM_ERROR);
             }
@@ -626,7 +617,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         HashMap<String, Object> smsParams = new HashMap<String,Object>();
         smsParams.put("mobiles", phone);
         smsParams.put("content", "办理联盟卡，验证码:" + code);
-        smsParams.put("company", company);
+        smsParams.put("company", ConfigConstant.WXMP_COMPANY);
         smsParams.put("busId", busId);
         smsParams.put("model", ConfigConstant.SMS_UNION_MODEL);
         Map<String,Object> param = new HashMap<String,Object>();
@@ -818,7 +809,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                     .append("&memberId=").append(vo.getMemberId())
                     .append("&unionId=").append(vo.getUnionId())
                     .append("&cardtype=").append(vo.getCardType());
-            data.put("qrurl",unionUrl + "/qrCode"+sb.toString());
+            data.put("qrurl",ConfigConstant.UNION_ROOT_URL + "/qrCode"+sb.toString());
         }
         return data;
     }
@@ -943,7 +934,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         String encrypt = EncryptUtil.encrypt(PropertiesUtil.getEncryptKey(), orderNo);
         encrypt = URLEncoder.encode(encrypt,"UTF-8");
         WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(PropertiesUtil.getDuofenBusId());
-        data.put("notifyUrl", PropertiesUtil.getUnionUrl() + "/unionCard/79B4DE7C/paymentSuccess/"+encrypt + "/" + only);
+        data.put("notifyUrl", ConfigConstant.UNION_ROOT_URL + "/unionCard/79B4DE7C/paymentSuccess/"+encrypt + "/" + only);
         if(isReturn == 1){
             data.put("returnUrl", returnUrl);
         }

@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.DateUtil;
@@ -317,8 +318,18 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
         if (!this.unionMemberService.hasWriteAuthority(unionMember)) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
         }
-        //(4)更新或新增操作
+        //(4)判断优惠项目数
         UnionPreferentialProject project = this.unionPreferentialProjectService.getByMemberId(memberId);
+        if(project != null){
+            EntityWrapper entityWrapper = new EntityWrapper<UnionPreferentialItem>();
+            entityWrapper.eq("del_status",CommonConstant.DEL_STATUS_NO);
+            entityWrapper.eq("project_id",project.getId());
+            int serviceCount = this.selectCount(entityWrapper);
+            if(serviceCount == ConfigConstant.MAX_PREFERENIAL_COUNT){
+                throw new BusinessException("优惠项目已达上限");
+            }
+        }
+        //(5)更新或新增操作
         Integer projectId = null;
         if (project != null) {
             projectId = project.getId();

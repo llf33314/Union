@@ -63,9 +63,6 @@ public class DictServiceImpl implements IDictService {
 	 */
 	private static String UNION_CREATE_PACKAGE_TYPE = "E001";
 
-	@Value("${wxmp.url}")
-	private String wxmpUrl;
-
 
 	public Double getDefaultDiscount(){
 		return getItemDoubleValue(DEFAULT_DISCOUNT_TYPE);
@@ -116,7 +113,7 @@ public class DictServiceImpl implements IDictService {
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("style",itemKey);
 		Double exchange = null;
-		String url = wxmpUrl + "/8A5DA52E/dictApi/getDictApi.do";
+		String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/dictApi/getDictApi.do";
 		try{
 			String result = SignHttpUtils.WxmppostByHttp(url, param, ConfigConstant.WXMP_SIGN_KEY);
 			if(StringUtil.isEmpty(result)){
@@ -156,7 +153,7 @@ public class DictServiceImpl implements IDictService {
 		}
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("style",itemKey);
-		String url = wxmpUrl + "/8A5DA52E/dictApi/getDictApi.do";
+		String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/dictApi/getDictApi.do";
 		try{
 			String result = SignHttpUtils.WxmppostByHttp(url, param, ConfigConstant.WXMP_SIGN_KEY);
 			if(StringUtil.isEmpty(result)){

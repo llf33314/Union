@@ -21,13 +21,10 @@ import java.util.Map;
 @Service
 public class ShopServiceImpl implements ShopService {
 
-	@Value("${wxmp.url}")
-	private String wxmpUrl;
-
 
 	@Override
 	public List<WsWxShopInfoExtend> listByBusId(Integer busId) {
-		String url = wxmpUrl + "/8A5DA52E/shopapi/6F6D9AD2/79B4DE7C/queryWxShopByBusId.do";
+		String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/shopapi/6F6D9AD2/79B4DE7C/queryWxShopByBusId.do";
 		try {
 			RequestUtils req = new RequestUtils<Integer>();
 			req.setReqdata(busId);
@@ -48,7 +45,7 @@ public class ShopServiceImpl implements ShopService {
 
 	@Override
 	public List<WsWxShopInfoExtend> listByIds(List<Integer> list) {
-		String url = wxmpUrl + "/8A5DA52E/shopapi/6F6D9AD2/79B4DE7C/findByIds.do";
+		String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/shopapi/6F6D9AD2/79B4DE7C/findByIds.do";
 		try {
 			RequestUtils req = new RequestUtils<Integer>();
 			req.setReqdata(list);
