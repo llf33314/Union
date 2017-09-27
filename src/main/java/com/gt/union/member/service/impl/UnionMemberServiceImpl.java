@@ -905,8 +905,9 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                         .append(" WHERE m.union_id = ").append(unionId)
                         .append("  AND m.status in (").append(MemberConstant.STATUS_IN).append(",")
                         .append("   ").append(MemberConstant.STATUS_APPLY_OUT).append(" )")
-                        .append(" AND d.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append(" AND m.del_status = ").append(CommonConstant.DEL_STATUS_NO);
+                        .append(" AND d.from_member_id = ").append(memberId)
+                        .append(" AND m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append(" AND d.del_status = ").append(CommonConstant.DEL_STATUS_NO);
                 sbSqlSegment.append(" ORDER BY m.is_union_owner DESC, m.id ASC");
                 return sbSqlSegment.toString();
             }
