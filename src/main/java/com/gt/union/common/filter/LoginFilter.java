@@ -92,7 +92,7 @@ public class LoginFilter implements Filter {
         }
         //(3)判断是否已有登录信息
         BusUser busUser = SessionUtils.getLoginUser(req);
-//        busUser = justForDev(req); //TODO 正式中请注释掉
+        busUser = justForDev(req); //TODO 正式中请注释掉
         if(routeUrls.containsKey(url)){//后台路由地址
             if(busUser == null){
                 String script = "<script type='text/javascript'>"

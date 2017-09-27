@@ -90,6 +90,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			,@ApiParam(name = "memberId", value = "联盟id", required = true) @RequestParam("memberId") Integer memberId) {
 		try {
 			Member member = SessionUtils.getLoginMember(request);
+			member = memberService.getById(998);
 			String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
 			if(StringUtil.isNotEmpty(returnLoginUrl)){
 				return returnLoginUrl;
@@ -188,6 +189,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) {
 		try {
 			Member member = SessionUtils.getLoginMember(request);
+			member = memberService.getById(998);
 			String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
 			if(StringUtil.isNotEmpty(returnLoginUrl)){
 				return returnLoginUrl;
@@ -219,6 +221,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			, @ApiParam(name="unionCardBindParamVO", value = "办理联盟卡参数", required = true) @RequestBody @Valid UnionCardBindParamVO vo, BindingResult bindingResult ) {
 		try {
 			Member member = SessionUtils.getLoginMember(request);
+			member = memberService.getById(998);
 			Integer busId = vo.getBusId();
 			String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
 			if(StringUtil.isNotEmpty(returnLoginUrl)){
