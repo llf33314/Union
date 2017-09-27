@@ -62,14 +62,6 @@ public interface IUnionMainTransferService extends IService<UnionMainTransfer> {
     List<UnionMainTransfer> listByFromMemberId(Integer fromMemberId) throws Exception;
 
     /**
-     * 获取所有过期的盟主权限转移申请，即转移者已不再是盟主身份
-     *
-     * @return
-     * @throws Exception
-     */
-    List<UnionMainTransfer> listExpired() throws Exception;
-
-    /**
      * 根据商家id和转移者盟员身份id，分页获取盟主服务转移申请列表
      *
      * @param page         {not null} 分页对象

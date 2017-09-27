@@ -203,6 +203,13 @@ public interface IUnionMemberService extends IService<UnionMember> {
      */
     List<UnionMember> listByIds(List<Integer> memberIdList) throws Exception;
 
+    /**
+     * 获取所有退盟过渡期时间已过，但状态还没置为无效的盟员信息列表
+     * @return
+     * @throws Exception
+     */
+    List<UnionMember> listExpired() throws Exception;
+
     //------------------------------------------------- update --------------------------------------------------------
 
     /**

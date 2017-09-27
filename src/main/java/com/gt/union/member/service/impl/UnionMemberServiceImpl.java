@@ -8,7 +8,7 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.BigDecimalUtil;
-import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.main.constant.MainConstant;
@@ -586,6 +586,25 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 .orderBy("is_union_owner DESC,id", true);
         result = this.selectList(entityWrapper);
         return result;
+    }
+
+    /**
+     * 获取所有退盟过渡期时间已过，但状态还没置为无效的盟员信息列表
+     *
+     * @return
+     * @throws Exception
+     */
+    @Override
+    public List<UnionMember> listExpired() throws Exception {
+        EntityWrapper entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("status", MemberConstant.STATUS_OUTING)
+                .exists(new StringBuilder("SELECT o.id FROM t_union_member_out o")
+                        .append(" WHERE o.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append("  AND o.apply_member_id = t_union_member.id")
+                        .append("  AND o.actual_out_time < '").append(DateUtil.getCurrentDateString()).append("'")
+                        .toString());
+        return this.selectList(entityWrapper);
     }
 
     //------------------------------------------------- update --------------------------------------------------------

@@ -134,26 +134,6 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
     }
 
     /**
-     * 获取所有过期的盟主权限转移申请，即转移者已不再是盟主身份
-     *
-     * @return
-     * @throws Exception
-     */
-    @Override
-    public List<UnionMainTransfer> listExpired() throws Exception {
-        EntityWrapper entityWrapper = new EntityWrapper();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("confirm_status", MainConstant.TRANSFER_CONFIRM_STATUS_HANDLING)
-                .notExists(new StringBuilder(" SELECT m.id FROM t_union_member m")
-                        .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND m.status != ").append(MemberConstant.STATUS_APPLY_IN)
-                        .append("  AND m.is_union_owner = ").append(MemberConstant.IS_UNION_OWNER_YES)
-                        .append("  AND m.id = t_union_main_transfer.from_member_id")
-                        .toString());
-        return this.selectList(entityWrapper);
-    }
-
-    /**
      * 根据商家id和转移者盟员身份id，分页获取盟主服务转移申请列表
      *
      * @param page         {not null} 分页对象

@@ -35,15 +35,10 @@ spring:
     # druid监控配置
       stat-view-servlet:
         url-pattern: /druid/*
-        allow: 127.0.0.1
-        deny:
-        login-username: admin
-        login-password: admin
         reset-enable: true
       web-stat-filter:
         url-pattern: /*
         exclusions: /druid/*,*.js,*.gif,*.jpg,*.png,*.css,*.ico
-        session-stat-enable: false
       aop-patterns: com.gt.union.*.service.*
 
   # redis配置
