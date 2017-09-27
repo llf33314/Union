@@ -170,8 +170,16 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			if(member == null){
 				throw new BusinessException("用户不存在");
 			}
-			request.getSession().setAttribute(SessionUtils.SESSION_MEMBER, JSONObject.toJSONString(member));
-			return GTJsonResult.instanceErrorMsg().toString();
+			String phoneKey = RedisKeyUtil.getCardH5LoginPhoneKey(phone);
+			Object obj = redisCacheUtil.get(phoneKey);
+			if(CommonUtil.isEmpty(obj)){
+				throw new BusinessException("验证码已失效");
+			}
+			if(!code.equals(obj)){
+				throw new BusinessException("验证码有误");
+			}
+			com.gt.union.common.util.SessionUtils.setLoginMember(request, member);
+			return GTJsonResult.instanceSuccessMsg().toString();
 		} catch (BaseException e) {
 			logger.error("", e);
 			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();

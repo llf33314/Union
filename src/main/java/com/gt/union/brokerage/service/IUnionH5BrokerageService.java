@@ -164,13 +164,12 @@ public interface IUnionH5BrokerageService {
 
 	/**
 	 * 支付单个佣金
-	 * @param busId
 	 * @param id
 	 * @param url
 	 * @param memberId
 	 * @return
 	 */
-	String payOpportunity(Integer busId, Integer id, String url, Integer memberId) throws Exception;
+	String payOpportunity(Integer id, String url, Integer memberId) throws Exception;
 
 	/**
 	 * 单个商机佣金支付成功回调

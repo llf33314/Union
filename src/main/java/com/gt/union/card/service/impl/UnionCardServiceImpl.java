@@ -1072,9 +1072,8 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             }
         }
         Map<String,Object> data = new HashMap<String,Object>();
-
         String phone = member.getPhone();
-        if(StringUtil.isEmpty(phone)){
+        if(StringUtil.isNotEmpty(phone)){
             UnionMember unionMember = unionMemberService.getById(memberId);
             List<Map<String,Object>> dataList = checkCardInfoByMemberAndPhone(unionMember, phone);
             if(!ListUtil.isEmpty(dataList)){
@@ -1106,6 +1105,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 cardDataList.add(redMap);
             }
             data.put("bind",1);//可办理
+            data.put("cards",cardDataList);
         }
         data.put("memberId",memberId);
         data.put("members",members);

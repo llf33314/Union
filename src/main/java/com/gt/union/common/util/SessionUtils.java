@@ -1,6 +1,8 @@
 package com.gt.union.common.util;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+import com.gt.api.bean.session.Member;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.verifier.entity.UnionVerifier;
 import org.apache.log4j.Logger;
@@ -48,5 +50,21 @@ public class SessionUtils {
 		}
 	}
 
+	/**
+	 * 设置登录的用户信息
+	 * @param request
+	 * @param member
+	 */
+	public static void setLoginMember(HttpServletRequest request, Member member){
+		try {
+			if(CommonUtil.isNotEmpty(member)){
+				request.getSession().setAttribute(com.gt.api.util.SessionUtils.SESSION_MEMBER, JSONObject.toJSONString(member));
+			}
+		} catch (Exception e) {
+			log.info(e.getLocalizedMessage());
+			e.printStackTrace();
+		}
+
+	}
 
 }

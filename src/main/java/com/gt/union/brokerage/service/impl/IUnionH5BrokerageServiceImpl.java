@@ -476,10 +476,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 	}
 
 	@Override
-	public String payOpportunity(Integer busId, Integer id, String url, Integer memberId) throws Exception{
-		if(busId == null){
-			throw new ParamException(CommonConstant.PARAM_ERROR);
-		}
+	public String payOpportunity(Integer id, String url, Integer memberId) throws Exception{
 		UnionOpportunity opportunity = unionOpportunityService.getById(id);
 		if(opportunity == null){
 			throw new BusinessException("该商机不存在");

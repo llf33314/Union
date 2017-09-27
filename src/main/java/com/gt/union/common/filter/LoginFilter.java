@@ -28,40 +28,9 @@ public class LoginFilter implements Filter {
 	//不需要过滤的文件类型
 	private final List<String> passSuffixList = new ArrayList<>();
 
-	/**
-	 * 后台路由地址
-	 */
-	public static final Map<String, String> routeUrls = new HashMap<String, String>();
-
-    /**
-     * 手机端路由地址
-     */
-	public static final Map<String, String> phoneRouteUrls = new HashMap<String, String>();
-
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-
-		/*******************************路由列表*********************************/
-        /*手机端*/
-        phoneRouteUrls.put("/phone/#/index","/phone");
-        phoneRouteUrls.put("/phone/#/toTxtract","/phone/#/toTxtract");
-        phoneRouteUrls.put("/phone/#/toPayList","/phone/#/toPayList");
-        phoneRouteUrls.put("/phone/#/toUnPayList","/phone/#/toUnPayList");
-        phoneRouteUrls.put("/phone/#/toTxtract/toDetailList","/phone/#/toTxtract/toDetailList");
-        phoneRouteUrls.put("/phone/#/toUnionLogin","/phone/#/toUnionLogin");
-        phoneRouteUrls.put("/phone/#/toUnionCard","/phone/#/toUnionCard");
-
-        /*后台*/
-		routeUrls.put("/#/my-union","/#/my-union");
-		routeUrls.put("/#/business","/#/business");
-		routeUrls.put("/#/front","/#/front");
-		routeUrls.put("/#/finance","/#/finance");
-		/*******************************路由列表*********************************/
-
-
-        passUrlMap.put("/unionH5Brokerage/login", "/unionH5Brokerage/login");
-
 
         passSuffixList.add(".js");
         passSuffixList.add(".css");
@@ -92,27 +61,21 @@ public class LoginFilter implements Filter {
         }
         //(3)判断是否已有登录信息
         BusUser busUser = SessionUtils.getLoginUser(req);
-        busUser = justForDev(req); //TODO 正式中请注释掉
-        if(routeUrls.containsKey(url)){//后台路由地址
-            if(busUser == null){
-                String script = "<script type='text/javascript'>"
-                        + "top.location.href='/user/toLogin.do';"
-                        + "</script>";
-                response.getWriter().write(script);
-                return;
-            }
-        }
-
-        if(phoneRouteUrls.containsKey(url)){//手机端路由地址
-            if(busUser == null){
-                res.sendRedirect("/phone/#/toLogin");
-                return;
-            }
-        }
+        busUser = justForDev(req, busUser); //TODO 正式中请注释掉
         if (busUser == null) {
-            response.setCharacterEncoding("UTF-8");
-            response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", ConfigConstant.WXMP_ROOT_URL + "/user/tologin.do")));
-            return;
+            if(url.indexOf("cardH5") > -1){
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", ConfigConstant.UNION_PHONE_ROOT_URL + "toUnionLogin")));
+                return;
+            }else if(url.indexOf("unionH5Brokerage") > -1){
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", ConfigConstant.UNION_PHONE_ROOT_URL + "/toLogin")));
+                return;
+            }else {
+                response.setCharacterEncoding("UTF-8");
+                response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", ConfigConstant.WXMP_ROOT_URL + "/user/tologin.do")));
+                return;
+            }
         }
         //(4)通过
         chain.doFilter(request, response);
@@ -124,8 +87,8 @@ public class LoginFilter implements Filter {
      * @param request
      * @return
      */
-    private BusUser justForDev(HttpServletRequest request) {
-        BusUser busUser = new BusUser();
+    private BusUser justForDev(HttpServletRequest request,BusUser busUser) {
+        busUser = new BusUser();
         busUser.setId(33);
         busUser.setEndTime(new Date());
         busUser.setPid(BusUserConstant.ACCOUNT_TYPE_UNVALID);

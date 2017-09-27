@@ -412,11 +412,10 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 
 
 	@ApiOperation(value = "支付佣金", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/onePay/{id}", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/79B4DE7C/onePay/{id}", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String payOne(HttpServletRequest request, HttpServletResponse response, @ApiParam(name = "id", value = "商机id", required = true) @PathVariable(value = "id", required = true) Integer id
 							,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) {
 		try {
-			BusUser user = SessionUtils.getLoginUser(request);
 			Member member = SessionUtils.getLoginMember(request);
 			if(CommonUtil.isEmpty(member)){
 				String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_ROOT_URL + url);
@@ -426,7 +425,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 				String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_ROOT_URL + url);
 				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 			}
-			String payUrl = unionH5BrokerageService.payOpportunity(user.getId(),id, url, member.getId());
+			String payUrl = unionH5BrokerageService.payOpportunity(id, url, member.getId());
 			return GTJsonResult.instanceSuccessMsg(payUrl).toString();
 		} catch (BaseException e) {
 			logger.error("", e);
