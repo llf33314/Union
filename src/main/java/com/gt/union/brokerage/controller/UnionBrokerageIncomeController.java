@@ -9,6 +9,7 @@ import com.gt.union.card.constant.CardConstant;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BaseException;
+import com.gt.union.common.exception.DataExportException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.ExportUtil;
@@ -27,6 +28,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 
@@ -67,8 +69,7 @@ public class UnionBrokerageIncomeController {
             , @ApiParam(name = "beginDate", value = "开始日期，大于或等于开始日期")
                                         @RequestParam(value = "beginDate", required = false) String beginDate
             , @ApiParam(name = "endDate", value = "结束日期，小于开始日期")
-                                        @RequestParam(value = "endDate", required = false) String endDate) {
-        try {
+                                        @RequestParam(value = "endDate", required = false) String endDate) throws Exception{
             BusUser busUser = SessionUtils.getLoginUser(request);
             Integer busId = busUser.getId();
             if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -77,15 +78,6 @@ public class UnionBrokerageIncomeController {
             Page result = this.unionBrokerageIncomeService.pageCardMapByBusIdAndMemberId(page, busId, memberId
                     , cardType, cardNumber, beginDate, endDate);
             return GTJsonResult.instanceSuccessMsg(result).toString();
-        } catch (BaseException e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-        } catch (Exception e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
-        }
     }
 
     @ApiOperation(value = "导出：获取同一联盟下所有售卡佣金分成列表信息", produces = "application/json;charset=UTF-8")
@@ -100,7 +92,7 @@ public class UnionBrokerageIncomeController {
             , @ApiParam(name = "beginDate", value = "开始日期，大于或等于开始日期")
                                         @RequestParam(value = "beginDate", required = false) String beginDate
             , @ApiParam(name = "endDate", value = "结束日期，小于开始日期")
-                                        @RequestParam(value = "endDate", required = false) String endDate) throws IOException {
+                                        @RequestParam(value = "endDate", required = false) String endDate) throws Exception{
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
             Integer busId = busUser.getId();
@@ -149,10 +141,29 @@ public class UnionBrokerageIncomeController {
             UnionMain unionMain = this.unionMainService.getByBusIdAndMemberId(busId, memberId);
             String filename = unionMain.getName() + "的售卡佣金分成记录";
             ExportUtil.responseExport(response, wb, filename);
-        } catch (Exception e) {
-            logger.error("", e);
+        } catch (BaseException e){
             this.unionLogErrorService.saveIfNotNull(e);
-            ExportUtil.responseExportError(response);
+            response.setContentType("text/html");
+            response.setHeader("Cache-Control", "no-cache");
+            response.setCharacterEncoding("UTF-8");
+            String result = GTJsonResult.instanceErrorMsg("导出失败").toString();
+            PrintWriter writer = response.getWriter();
+            writer.print(result);
+            writer.close();
+            logger.error("",e);
+        } catch (DataExportException e){
+            this.unionLogErrorService.saveIfNotNull(e);
+            logger.error("",e);
+        } catch (Exception e) {
+            this.unionLogErrorService.saveIfNotNull(e);
+            response.setContentType("text/html");
+            response.setHeader("Cache-Control", "no-cache");
+            response.setCharacterEncoding("UTF-8");
+            String result = GTJsonResult.instanceErrorMsg("导出失败").toString();
+            PrintWriter writer = response.getWriter();
+            writer.print(result);
+            writer.close();
+            logger.error("",e);
         }
     }
 
@@ -160,20 +171,14 @@ public class UnionBrokerageIncomeController {
     @ApiOperation(value = "佣金平台可提现总额", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/withdrawalSum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String withdrawalSum(HttpServletRequest request) {
-        try {
-            BusUser busUser = SessionUtils.getLoginUser(request);
-            Integer busId = busUser.getId();
-            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                busId = busUser.getPid();
-            }
-            double sumPay = unionBrokerageIncomeService.getSumInComeUnionBrokerage(busId); //收入的佣金总和
-            double sumWithdrawals = unionBrokerageWithdrawalService.getSumWithdrawalsUnionBrokerage(busId);//已提现的佣金总和
-            double ableGet = BigDecimalUtil.subtract(sumPay, sumWithdrawals).doubleValue();//可提现
-            return GTJsonResult.instanceSuccessMsg(ableGet).toString();
-        } catch (Exception e) {
-            logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
-            return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
         }
+        double sumPay = unionBrokerageIncomeService.getSumInComeUnionBrokerage(busId); //收入的佣金总和
+        double sumWithdrawals = unionBrokerageWithdrawalService.getSumWithdrawalsUnionBrokerage(busId);//已提现的佣金总和
+        double ableGet = BigDecimalUtil.subtract(sumPay, sumWithdrawals).doubleValue();//可提现
+        return GTJsonResult.instanceSuccessMsg(ableGet).toString();
     }
 }
