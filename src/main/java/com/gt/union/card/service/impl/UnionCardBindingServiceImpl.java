@@ -46,10 +46,10 @@ public class UnionCardBindingServiceImpl extends ServiceImpl<UnionCardBindingMap
 		String phoneKey = RedisKeyUtil.getMemberPhoneCodeKey(memberId);
 		Object obj = redisCacheUtil.get(phoneKey);
 		if(obj == null){
-			throw new ParamException("验证码失效");
+			throw new ParamException("验证码有误");
 		}
 		if(!code.equals(obj.toString())) {
-			throw new ParamException("验证码错误");
+			throw new ParamException("验证码有误");
 
 		}
 		//1、判断手机号是否升级了联盟卡

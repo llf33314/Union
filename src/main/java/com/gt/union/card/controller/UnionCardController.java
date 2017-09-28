@@ -328,7 +328,7 @@ public class UnionCardController {
 		if(user.getPid() != null && user.getPid() != 0){
 			busId = user.getPid();
 		}
-		String url = ConfigConstant.UNION_PHONE_ROOT_URL + "unionCard&busId=" + busId;
+		String url = ConfigConstant.UNION_PHONE_ROOT_URL + "toUnionCard?busId=" + busId;
 		QRcodeKit.buildQRcode(url, 250, 250, response);
 	}
 

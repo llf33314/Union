@@ -40,8 +40,6 @@ import com.gt.union.preferential.entity.UnionPreferentialItem;
 import com.gt.union.preferential.entity.UnionPreferentialProject;
 import com.gt.union.preferential.service.IUnionPreferentialItemService;
 import com.gt.union.preferential.service.IUnionPreferentialProjectService;
-import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
-import io.swagger.models.auth.In;
 import org.apache.poi.hssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -627,7 +625,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 it.remove();
             }
         }
-        if(members.size() <= 0){
+        if(ListUtil.isEmpty(members)){
             throw new BusinessException("您没有有效的联盟或该手机号已办理联盟卡");
         }
         String code = RandomKit.getRandomString(6, 0);
@@ -686,7 +684,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         String phoneKey = RedisKeyUtil.getBindCardPhoneKey(phone);
         Object obj = redisCacheUtil.get(phoneKey);
         if(CommonUtil.isEmpty(obj)){
-            throw new BusinessException("验证码失效");
+            throw new BusinessException("验证码有误");
         }
         if(!code.equals(obj)){
             throw new BusinessException("验证码有误");
@@ -727,7 +725,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 }
             }
         }
-        if(members.size() <= 0){
+        if(ListUtil.isEmpty(members)){
             throw new BusinessException("您没有有效的联盟或该手机号已办理联盟卡");
         }
         List<UnionMain> unions = new ArrayList<UnionMain>();//封装联盟列表
@@ -1059,14 +1057,26 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     }
 
     @Override
-    public void bindCardPhone(Member member, Integer busId, String phone) throws Exception{
+    public void bindCardPhone(Member member, Integer busId, String phone, String code) throws Exception{
         if(member == null || busId == null ||StringUtil.isEmpty(phone)){
             throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        if(StringUtil.isEmpty(code)){
+            throw new BusinessException("验证码为空");
+        }
+        String phoneKey = RedisKeyUtil.getCardH5BindPhoneKey(phone);
+        Object obj = redisCacheUtil.get(phoneKey);
+        if(CommonUtil.isEmpty(obj)){
+            throw new BusinessException("验证码有误");
+        }
+        if(!code.equals(obj)){
+            throw new BusinessException("验证码有误");
         }
         int status = memberService.bindMemberPhone(busId,member.getId(),phone);
         if(status == 0){
             throw new BusinessException("绑定失败");
         }
+        redisCacheUtil.remove(phoneKey);
     }
 
     @Override
