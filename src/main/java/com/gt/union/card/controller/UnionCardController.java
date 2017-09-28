@@ -5,13 +5,10 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.Member;
 import com.gt.api.bean.session.WxPublicUsers;
-import com.gt.api.dto.ResponseUtils;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.api.client.member.MemberService;
 import com.gt.union.api.client.socket.SocketService;
 import com.gt.union.api.client.user.IBusUserService;
-import com.gt.union.api.entity.param.RequestApiParam;
-import com.gt.union.api.entity.param.UnionPhoneCodeParam;
 import com.gt.union.card.service.IUnionCardService;
 import com.gt.union.card.vo.UnionCardBindParamVO;
 import com.gt.union.common.annotation.SysLogAnnotation;
@@ -21,7 +18,6 @@ import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.DataExportException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.*;
-import com.gt.union.consume.vo.UnionConsumeParamVO;
 import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.service.IUnionMainService;
 import io.swagger.annotations.ApiOperation;
@@ -29,7 +25,6 @@ import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -77,27 +72,20 @@ public class UnionCardController {
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
 
+
 	@ApiOperation(value = "获取盟员的联盟卡列表", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String listByUnionId(Page page, HttpServletRequest request
 			, @ApiParam(name="unionId", value = "联盟id", required = true) @PathVariable("unionId") Integer unionId
 			, @ApiParam(name="phone", value = "电话号码，模糊匹配", required = false) @RequestParam(name = "phone", required = false) String phone
-			, @ApiParam(name="cardNo", value = "联盟卡号，模糊匹配", required = false) @RequestParam(name = "cardNo", required = false) String cardNo){
-		try{
-			BusUser user = SessionUtils.getLoginUser(request);
-			Integer busId = user.getId();
-			if(user.getPid() != null && user.getPid() != 0){
-				busId = user.getPid();
-			}
-			Page result = unionCardService.selectListByUnionId(page, unionId, busId, cardNo, phone);
-			return GTJsonResult.instanceSuccessMsg(result).toString();
-		}catch (BaseException e){
-			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-		}catch (Exception e){
-			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+			, @ApiParam(name="cardNo", value = "联盟卡号，模糊匹配", required = false) @RequestParam(name = "cardNo", required = false) String cardNo) throws Exception{
+		BusUser user = SessionUtils.getLoginUser(request);
+		Integer busId = user.getId();
+		if(user.getPid() != null && user.getPid() != 0){
+			busId = user.getPid();
 		}
+		Page result = unionCardService.selectListByUnionId(page, unionId, busId, cardNo, phone);
+		return GTJsonResult.instanceSuccessMsg(result).toString();
 	}
 
 	@ApiOperation(value = "导出盟员的联盟卡列表", produces = "application/json;charset=UTF-8")
@@ -146,43 +134,27 @@ public class UnionCardController {
 	@RequestMapping(value = "/unionCardInfo", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String unionCardInfo(HttpServletRequest request
 			,@ApiParam(name="no", value = "联盟卡号、手机号、扫码枪扫出的号码", required = true) @RequestParam(name = "no") String no
-			,@ApiParam(name="unionId", value = "联盟id，选择联盟时传入", required = false) @RequestParam(name = "unionId", required = false) Integer unionId){
-		try{
-			BusUser user = SessionUtils.getLoginUser(request);
-			Integer busId = user.getId();
-			if(user.getPid() != null && user.getPid() != 0){
-				busId = user.getPid();
-			}
-			Map<String,Object> data = unionCardService.getUnionCardInfo(no, busId, unionId);//decode后的no
-			return GTJsonResult.instanceSuccessMsg(data).toString();
-		}catch (BaseException e){
-			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-		}catch (Exception e){
-			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+			,@ApiParam(name="unionId", value = "联盟id，选择联盟时传入", required = false) @RequestParam(name = "unionId", required = false) Integer unionId) throws Exception{
+		BusUser user = SessionUtils.getLoginUser(request);
+		Integer busId = user.getId();
+		if(user.getPid() != null && user.getPid() != 0){
+			busId = user.getPid();
 		}
+		Map<String,Object> data = unionCardService.getUnionCardInfo(no, busId, unionId);//decode后的no
+		return GTJsonResult.instanceSuccessMsg(data).toString();
 	}
 
 	@ApiOperation(value = "根据手机号获取验证码，并判断手机号的信息", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/phoneCode", method=RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String getPhoneCode(HttpServletRequest request, HttpServletResponse response,
-							   @ApiParam(name="phone", value = "手机号", required = true) @RequestParam(name = "phone") String phone) {
-		try {
-			BusUser user = SessionUtils.getLoginUser(request);
-			Integer busId = user.getId();
-			if(user.getPid() != null && user.getPid() != 0){
-				busId = user.getPid();
-			}
-			unionCardService.getPhoneCode(busId, phone);
-			return GTJsonResult.instanceSuccessMsg().toString();
-		} catch (BaseException e) {
-			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-		} catch (Exception e) {
-			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+							   @ApiParam(name="phone", value = "手机号", required = true) @RequestParam(name = "phone") String phone) throws Exception{
+		BusUser user = SessionUtils.getLoginUser(request);
+		Integer busId = user.getId();
+		if(user.getPid() != null && user.getPid() != 0){
+			busId = user.getPid();
 		}
+		unionCardService.getPhoneCode(busId, phone);
+		return GTJsonResult.instanceSuccessMsg().toString();
 	}
 
 	@ApiOperation(value = "根据手机号和验证码获取升级的联盟卡信息", produces = "application/json;charset=UTF-8")
@@ -190,30 +162,22 @@ public class UnionCardController {
 	public String getUnionInfoByPhone(HttpServletRequest request, HttpServletResponse response,
 								   @ApiParam(name="phone", value = "手机号", required = true) @RequestParam(name = "phone") String phone
 								   ,@ApiParam(name="code", value = "验证码", required = true) @RequestParam(name = "code") String code
-									,@ApiParam(name="unionId", value = "联盟id", required = false) @RequestParam(name = "unionId", required = false) Integer unionId) {
-		try {
-			BusUser user = SessionUtils.getLoginUser(request);
-			Integer busId = user.getId();
-			if(user.getPid() != null && user.getPid() != 0){
-				busId = user.getPid();
-			}
-			Map<String,Object> data = unionCardService.getUnionInfoByPhone(busId, phone, code, unionId);
-			return GTJsonResult.instanceSuccessMsg(data).toString();
-		} catch (BaseException e) {
-			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-		} catch (Exception e) {
-			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+									,@ApiParam(name="unionId", value = "联盟id", required = false) @RequestParam(name = "unionId", required = false) Integer unionId) throws Exception{
+		BusUser user = SessionUtils.getLoginUser(request);
+		Integer busId = user.getId();
+		if(user.getPid() != null && user.getPid() != 0){
+			busId = user.getPid();
 		}
+		Map<String,Object> data = unionCardService.getUnionInfoByPhone(busId, phone, code, unionId);
+		return GTJsonResult.instanceSuccessMsg(data).toString();
 	}
 
 
 	@ApiOperation(value = "办理联盟卡", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String bindCard(HttpServletRequest request, HttpServletResponse response
-			, @ApiParam(name="unionCardBindParamVO", value = "办理联盟卡参数", required = true) @RequestBody @Valid UnionCardBindParamVO vo, BindingResult bindingResult ) {
-		try {
+			, @ApiParam(name="unionCardBindParamVO", value = "办理联盟卡参数", required = true) @RequestBody @Valid UnionCardBindParamVO vo, BindingResult bindingResult ) throws Exception{
+			ParamValidatorUtil.checkBindingResult(bindingResult);
 			BusUser user = SessionUtils.getLoginUser(request);
 			Integer busId = user.getId();
 			if(user.getPid() != null && user.getPid() != 0){
@@ -222,42 +186,30 @@ public class UnionCardController {
 			vo.setBusId(busId);
 			Map<String,Object> data = unionCardService.bindCard(vo);
 			return GTJsonResult.instanceSuccessMsg(data).toString();
-		} catch (BaseException e) {
-			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-		} catch (Exception e) {
-			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
-		}
 	}
 
 
 	@ApiOperation(value = "开启关注公众号，获取二维码链接", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "wxUser/QRcode", method=RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public String wxUserQRcode(HttpServletRequest request, HttpServletResponse response) {
-		try {
-			BusUser user = SessionUtils.getLoginUser(request);
-			Integer busId = user.getId();
-			if(user.getPid() != null && user.getPid() != 0){
-				busId = user.getPid();
-			}
-			WxPublicUsers wxPublicUsers = busUserService.getWxPublicUserByBusId(busId);
-			if(wxPublicUsers == null){
-				return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
-			}
-			String url = busUserService.getWxPublicUserQRCode(wxPublicUsers.getId(), user.getId());
-			if(StringUtil.isEmpty(url)){
-				return GTJsonResult.instanceErrorMsg(CommonConstant.SYS_ERROR).toString();
-			}
-			Map<String,Object> data = new HashMap<String,Object>();
-			data.put("qrurl",url);
-			data.put("socketurl",ConfigConstant.SOCKET_URL);
-			data.put("userId",ConfigConstant.SOCKET_KEY + user.getId());
-			return GTJsonResult.instanceSuccessMsg(url).toString();
-		} catch (Exception e) {
-			logger.error("", e);
+	public String wxUserQRcode(HttpServletRequest request, HttpServletResponse response) throws Exception{
+		BusUser user = SessionUtils.getLoginUser(request);
+		Integer busId = user.getId();
+		if(user.getPid() != null && user.getPid() != 0){
+			busId = user.getPid();
+		}
+		WxPublicUsers wxPublicUsers = busUserService.getWxPublicUserByBusId(busId);
+		if(wxPublicUsers == null){
 			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
 		}
+		String url = busUserService.getWxPublicUserQRCode(wxPublicUsers.getId(), user.getId());
+		if(StringUtil.isEmpty(url)){
+			return GTJsonResult.instanceErrorMsg(CommonConstant.SYS_ERROR).toString();
+		}
+		Map<String,Object> data = new HashMap<String,Object>();
+		data.put("qrurl",url);
+		data.put("socketurl",ConfigConstant.SOCKET_URL);
+		data.put("userId",ConfigConstant.SOCKET_KEY + user.getId());
+		return GTJsonResult.instanceSuccessMsg(data).toString();
 	}
 
 
@@ -286,27 +238,22 @@ public class UnionCardController {
 	@RequestMapping(value="status/{only}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String getStatus(HttpServletRequest request, HttpServletResponse response, @PathVariable("only")String only) throws Exception{
 		logger.info("获取办理联盟卡支付订单状态：" + only);
-		try {
-			String statusKey = RedisKeyUtil.getBindCardPayStatusKey(only);
-			String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
-			Object status = redisCacheUtil.get(statusKey);
-			if(CommonUtil.isEmpty(status)){//订单超时
-				status = ConfigConstant.USER_ORDER_STATUS_004;
-			}
-			if(ConfigConstant.USER_ORDER_STATUS_003.equals(status)){//订单支付成功
-				redisCacheUtil.remove(statusKey);
-				redisCacheUtil.remove(paramKey);
-			}
-
-			if(ConfigConstant.USER_ORDER_STATUS_005.equals(status)){//订单支付失败
-				redisCacheUtil.remove(statusKey);
-				redisCacheUtil.remove(paramKey);
-			}
-			return GTJsonResult.instanceSuccessMsg(status).toString();
-		} catch (Exception e) {
-			logger.error("获取办理联盟卡支付订单状态错误：" + e);
-			return GTJsonResult.instanceErrorMsg(CommonConstant.SYS_ERROR).toString();
+		String statusKey = RedisKeyUtil.getBindCardPayStatusKey(only);
+		String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
+		Object status = redisCacheUtil.get(statusKey);
+		if(CommonUtil.isEmpty(status)){//订单超时
+			status = ConfigConstant.USER_ORDER_STATUS_004;
 		}
+		if(ConfigConstant.USER_ORDER_STATUS_003.equals(status)){//订单支付成功
+			redisCacheUtil.remove(statusKey);
+			redisCacheUtil.remove(paramKey);
+		}
+
+		if(ConfigConstant.USER_ORDER_STATUS_005.equals(status)){//订单支付失败
+			redisCacheUtil.remove(statusKey);
+			redisCacheUtil.remove(paramKey);
+		}
+		return GTJsonResult.instanceSuccessMsg(status).toString();
 	}
 
 	@ApiOperation(value = "生成办理联盟卡支付订单二维码", produces = "application/json;charset=UTF-8")
@@ -316,35 +263,30 @@ public class UnionCardController {
 									@ApiParam(name="memberId", value = "关注后的用户id", required = false) @RequestParam( name= "memberId", required = false) Integer memberId,
 									@ApiParam(name="unionId", value = "联盟id", required = true) @RequestParam("unionId") Integer unionId,
 									@ApiParam(name="cardType", value = "联盟卡类型 1：黑卡 2：红卡", required = true) @RequestParam("cardType") Integer cardType
-									) {
-		try {
-			BusUser user = SessionUtils.getLoginUser(request);
-			Integer busId = user.getId();
-			if(user.getPid() != null && user.getPid() != 0){
-				busId = user.getPid();
-			}
-			Map<String,Object> data = unionCardService.createQRCode(busId, phone, memberId,unionId, cardType, 0, "");
-			StringBuilder sb = new StringBuilder("?");
-			sb.append("totalFee="+data.get("totalFee"));
-			sb.append("&model="+data.get("model"));
-			sb.append("&busId="+data.get("busId"));
-			sb.append("&appidType="+data.get("appidType"));
-			sb.append("&appid=" + data.get("appid"));
-			sb.append("&orderNum="+data.get("orderNum"));
-			sb.append("&desc="+data.get("desc"));
-			sb.append("&isreturn="+data.get("isreturn"));
-			sb.append("&notifyUrl="+data.get("notifyUrl"));
-			sb.append("&isSendMessage="+data.get("isSendMessage"));
-			sb.append("&payWay="+data.get("payWay"));
-			sb.append("&sourceType="+data.get("sourceType"));
-			Map<String, Object> result = new HashMap<String, Object>();
-			result.put("url",ConfigConstant.WXMP_ROOT_URL + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
-			result.put("only",data.get("only"));
-			return GTJsonResult.instanceSuccessMsg(result).toString();
-		} catch (Exception e) {
-			logger.error("生成办理联盟卡支付订单二维码错误：" + e);
-			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+									) throws Exception{
+		BusUser user = SessionUtils.getLoginUser(request);
+		Integer busId = user.getId();
+		if(user.getPid() != null && user.getPid() != 0){
+			busId = user.getPid();
 		}
+		Map<String,Object> data = unionCardService.createQRCode(busId, phone, memberId,unionId, cardType, 0, "");
+		StringBuilder sb = new StringBuilder("?");
+		sb.append("totalFee="+data.get("totalFee"));
+		sb.append("&model="+data.get("model"));
+		sb.append("&busId="+data.get("busId"));
+		sb.append("&appidType="+data.get("appidType"));
+		sb.append("&appid=" + data.get("appid"));
+		sb.append("&orderNum="+data.get("orderNum"));
+		sb.append("&desc="+data.get("desc"));
+		sb.append("&isreturn="+data.get("isreturn"));
+		sb.append("&notifyUrl="+data.get("notifyUrl"));
+		sb.append("&isSendMessage="+data.get("isSendMessage"));
+		sb.append("&payWay="+data.get("payWay"));
+		sb.append("&sourceType="+data.get("sourceType"));
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("url",ConfigConstant.WXMP_ROOT_URL + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
+		result.put("only",data.get("only"));
+		return GTJsonResult.instanceSuccessMsg(result).toString();
 	}
 
 

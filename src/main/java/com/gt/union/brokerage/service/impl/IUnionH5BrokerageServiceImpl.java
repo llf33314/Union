@@ -171,21 +171,35 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		return unionBrokerageWithdrawalService.listWithdrawals(page,busId);
 	}
 
+	/**
+	 * 得到该联盟的我的盟员信息
+	 * @param members
+	 * @param unionId
+	 * @return
+	 */
+	private List<UnionMember> getMembers(List<UnionMember> members, Integer unionId){
+		List<UnionMember> list = new ArrayList<UnionMember>();
+		if(unionId != null){
+			for(UnionMember member : members){
+				if(member.getUnionId().equals(unionId)){
+					list.add(member);
+					break;
+				}
+			}
+		}else {
+			list = members;
+		}
+		return list;
+	}
+
+
 	@Override
 	public double getUnComeUnionBrokerage(Integer busId, Integer unionId) throws Exception{
 		List<UnionMember> members = unionMemberService.listWriteWithValidUnionByBusId(busId);
 		if(ListUtil.isEmpty(members)){
 			return 0;
 		}
-		if(unionId != null){
-			Iterator<UnionMember> it = members.iterator();
-			while (it.hasNext()){
-				UnionMember member = it.next();
-				if(!member.getUnionId().equals(unionId)){
-					it.remove();
-				}
-			}
-		}
+		members = getMembers(members,unionId);
 		if(ListUtil.isEmpty(members)){
 			return 0;
 		}
@@ -198,15 +212,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		if(ListUtil.isEmpty(members)){
 			return page;
 		}
-		if(unionId != null){
-			Iterator<UnionMember> it = members.iterator();
-			while (it.hasNext()){
-				UnionMember member = it.next();
-				if(!member.getUnionId().equals(unionId)){
-					it.remove();
-				}
-			}
-		}
+		members = getMembers(members,unionId);
 		if(ListUtil.isEmpty(members)){
 			return page;
 		}
@@ -215,21 +221,14 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		return page;
 	}
 
+
 	@Override
 	public double getSumUnPayUnionBrokerage(Integer unionId, Integer busId) throws Exception{
 		List<UnionMember> members = unionMemberService.listWriteWithValidUnionByBusId(busId);
 		if(ListUtil.isEmpty(members)){
 			return 0;
 		}
-		if(unionId != null){
-			Iterator<UnionMember> it = members.iterator();
-			while (it.hasNext()){
-				UnionMember member = it.next();
-				if(!member.getUnionId().equals(unionId)){
-					it.remove();
-				}
-			}
-		}
+		members = getMembers(members,unionId);
 		if(ListUtil.isEmpty(members)){
 			return 0;
 		}
@@ -243,15 +242,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		if(ListUtil.isEmpty(members)){
 			return page;
 		}
-		if(unionId != null){
-			Iterator<UnionMember> it = members.iterator();
-			while (it.hasNext()){
-				UnionMember member = it.next();
-				if(!member.getUnionId().equals(unionId)){
-					it.remove();
-				}
-			}
-		}
+		members = getMembers(members,unionId);
 		if(ListUtil.isEmpty(members)){
 			return page;
 		}
@@ -266,15 +257,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		if(ListUtil.isEmpty(members)){
 			return page;
 		}
-		if(unionId != null){
-			Iterator<UnionMember> it = members.iterator();
-			while (it.hasNext()){
-				UnionMember member = it.next();
-				if(!member.getUnionId().equals(unionId)){
-					it.remove();
-				}
-			}
-		}
+		members = getMembers(members,unionId);
 		if(ListUtil.isEmpty(members)){
 			return page;
 		}
@@ -289,15 +272,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		if(ListUtil.isEmpty(members)){
 			return 0;
 		}
-		if(unionId != null){
-			Iterator<UnionMember> it = members.iterator();
-			while (it.hasNext()){
-				UnionMember member = it.next();
-				if(!member.getUnionId().equals(unionId)){
-					it.remove();
-				}
-			}
-		}
+		members = getMembers(members,unionId);
 		if(ListUtil.isEmpty(members)){
 			return 0;
 		}
@@ -310,15 +285,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		if(ListUtil.isEmpty(members)){
 			return page;
 		}
-		if(unionId != null){
-			Iterator<UnionMember> it = members.iterator();
-			while (it.hasNext()){
-				UnionMember member = it.next();
-				if(!member.getUnionId().equals(unionId)){
-					it.remove();
-				}
-			}
-		}
+		members = getMembers(members,unionId);
 		if(ListUtil.isEmpty(members)){
 			return page;
 		}
@@ -333,15 +300,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		if(ListUtil.isEmpty(members)){
 			return 0;
 		}
-		if(unionId != null){
-			Iterator<UnionMember> it = members.iterator();
-			while (it.hasNext()){
-				UnionMember member = it.next();
-				if(!member.getUnionId().equals(unionId)){
-					it.remove();
-				}
-			}
-		}
+		members = getMembers(members,unionId);
 		if(ListUtil.isEmpty(members)){
 			return 0;
 		}
@@ -354,15 +313,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		if(ListUtil.isEmpty(members)){
 			return page;
 		}
-		if(unionId != null){
-			Iterator<UnionMember> it = members.iterator();
-			while (it.hasNext()){
-				UnionMember member = it.next();
-				if(!member.getUnionId().equals(unionId)){
-					it.remove();
-				}
-			}
-		}
+		members = getMembers(members,unionId);
 		if(ListUtil.isEmpty(members)){
 			return page;
 		}
@@ -377,15 +328,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		if(ListUtil.isEmpty(members)){
 			return 0;
 		}
-		if(unionId != null){
-			Iterator<UnionMember> it = members.iterator();
-			while (it.hasNext()){
-				UnionMember member = it.next();
-				if(!member.getUnionId().equals(unionId)){
-					it.remove();
-				}
-			}
-		}
+		members = getMembers(members,unionId);
 		if(ListUtil.isEmpty(members)){
 			return 0;
 		}
@@ -565,15 +508,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 	@Override
 	public List<UnionOpportunity> listAllUnPayUnionBrokerage(Integer busId, Integer unionId) throws Exception{
 		List<UnionMember> members = unionMemberService.listWriteWithValidUnionByBusId(busId);
-		if(unionId != null){
-			Iterator<UnionMember> it = members.iterator();
-			while (it.hasNext()){
-				UnionMember member = it.next();
-				if(!member.getUnionId().equals(unionId)){
-					it.remove();
-				}
-			}
-		}
+		members = getMembers(members,unionId);
 		List<UnionOpportunity> list = unionH5BrokerageMapper.listAllUnPayUnionBrokerage(members);
 		return list;
 	}

@@ -11,11 +11,7 @@ import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.DataExportException;
 import com.gt.union.common.response.GTJsonResult;
-import com.gt.union.common.service.IUnionValidateService;
-import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.ExportUtil;
-import com.gt.union.common.util.RedisCacheUtil;
-import com.gt.union.common.util.RedisKeyUtil;
+import com.gt.union.common.util.*;
 import com.gt.union.consume.service.IUnionConsumeService;
 import com.gt.union.consume.vo.UnionConsumeParamVO;
 import com.gt.union.main.entity.UnionMain;
@@ -26,7 +22,6 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
@@ -62,8 +57,6 @@ public class UnionConsumeController {
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
 
-	@Autowired
-	private IUnionValidateService unionValidateService;
 
 	@ApiOperation(value = "查询本店消费核销记录", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/my", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -251,7 +244,7 @@ public class UnionConsumeController {
 	public String consumeByCard(HttpServletRequest request
 			, @ApiParam(name="unionConsumeParamVO", value = "联盟卡核销参数", required = true) @RequestBody @Valid UnionConsumeParamVO vo , BindingResult bindingResult){
 		try{
-			unionValidateService.checkBindingResult(bindingResult);
+			ParamValidatorUtil.checkBindingResult(bindingResult);
 			BusUser user = SessionUtils.getLoginUser(request);
 			Integer busId = user.getId();
 			if(user.getPid() != null && user.getPid() != 0){
@@ -299,7 +292,7 @@ public class UnionConsumeController {
 	@RequestMapping(value = "/qrCode", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String payOpportunityQRCode(HttpServletRequest request, HttpServletResponse response, @ApiParam(name="unionConsumeParamVO", value = "联盟卡核销参数", required = true) @RequestBody @Valid UnionConsumeParamVO vo, BindingResult bindingResult) {
 		try {
-			unionValidateService.checkBindingResult(bindingResult);
+			ParamValidatorUtil.checkBindingResult(bindingResult);
 			BusUser user = SessionUtils.getLoginUser(request);
 			if (CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0) {
 				throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
