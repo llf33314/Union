@@ -202,8 +202,9 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 * @param member
 	 * @param busId
 	 * @param phone
+	 * @param code
 	 */
-	void bindCardPhone(Member member, Integer busId, String phone) throws Exception;
+	void bindCardPhone(Member member, Integer busId, String phone, String code) throws Exception;
 
 	/**
 	 *
@@ -214,4 +215,5 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 * @return
 	 */
 	Map<String,Object> getUnionInfoCardList(Integer busId, Member member, Integer unionId, Integer memberId) throws Exception;
+
 }

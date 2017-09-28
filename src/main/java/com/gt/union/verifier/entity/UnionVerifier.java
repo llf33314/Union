@@ -5,7 +5,13 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.gt.union.common.annotation.valid.StringLengthValid;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+import lombok.Data;
+import org.hibernate.validator.constraints.NotBlank;
 
+import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.Date;
 
@@ -18,6 +24,8 @@ import java.util.Date;
  * @since 2017-09-07
  */
 @TableName("t_union_verifier")
+@ApiModel(value = "UnionVerifier", description = "佣金平台管理员")
+@Data
 public class UnionVerifier extends Model<UnionVerifier> {
 
     private static final long serialVersionUID = 1L;
@@ -49,10 +57,16 @@ public class UnionVerifier extends Model<UnionVerifier> {
     /**
      * 电话号码
      */
+	@ApiModelProperty(value = "手机号", required = true)
+	@NotBlank(message = "手机号不能为空")
+	@Pattern(regexp = "^1[3|4|5|6|7|8][0-9][0-9]{8}$", message = "手机号有误")
 	private String phone;
     /**
      * 用户姓名
      */
+	@ApiModelProperty(value = "姓名", required = true)
+	@NotBlank(message = "姓名不能为空")
+	@StringLengthValid(length = 10, message = "姓名不可超过10字")
 	private String name;
 
 	/**

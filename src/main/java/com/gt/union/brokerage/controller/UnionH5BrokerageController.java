@@ -28,6 +28,8 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -383,6 +385,13 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 			data.put("msg","失败");
 			return JSON.toJSONString(data);
 		}
+	}
+
+	@ApiOperation(value = "获取佣金平台二维码图片链接", notes = "获取佣金平台二维码图片链接", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/79B4DE7C/indexQR", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
+	public void indexQR(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
+		String url = ConfigConstant.UNION_PHONE_ROOT_URL;
+		QRcodeKit.buildQRcode(url, 250, 250, response);
 	}
 
 }

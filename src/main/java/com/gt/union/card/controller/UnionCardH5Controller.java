@@ -8,6 +8,7 @@ import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.card.service.IUnionCardService;
 import com.gt.union.card.vo.UnionCardBindParamVO;
 import com.gt.union.common.amqp.entity.PhoneMessage;
+import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.controller.MemberAuthorizeOrLoginController;
 import com.gt.union.common.exception.BusinessException;
@@ -134,10 +135,10 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 		String phoneKey = RedisKeyUtil.getCardH5LoginPhoneKey(phone);
 		Object obj = redisCacheUtil.get(phoneKey);
 		if(CommonUtil.isEmpty(obj)){
-			throw new BusinessException("验证码已失效");
+			throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
 		}
 		if(!code.equals(obj)){
-			throw new BusinessException("验证码有误");
+			throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
 		}
 		com.gt.union.common.util.SessionUtils.setLoginMember(request, member);
 		return GTJsonResult.instanceSuccessMsg().toString();
@@ -149,14 +150,15 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 	public String bindCardPhone(HttpServletRequest request, HttpServletResponse response
 			,@ApiParam(name="phone", value = "手机号", required = true) @PathVariable String phone
 			,@ApiParam(name="busId", value = "商家id", required = true) @RequestParam("busId") Integer busId
-			,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) throws Exception{
+			,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url
+			,@ApiParam(name = "code", value = "验证码" ,required = true) @RequestParam(value = "code", required = true) String code) throws Exception{
 		Member member = SessionUtils.getLoginMember(request);
 		member = memberService.getById(998);
 		String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
 		if(StringUtil.isNotEmpty(returnLoginUrl)){
 			return returnLoginUrl;
 		}
-		unionCardService.bindCardPhone(member,busId,phone);
+		unionCardService.bindCardPhone(member,busId,phone, code);
 		return GTJsonResult.instanceSuccessMsg().toString();
 	}
 

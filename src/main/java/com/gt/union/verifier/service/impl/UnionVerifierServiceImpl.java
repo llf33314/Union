@@ -52,10 +52,6 @@ public class UnionVerifierServiceImpl extends ServiceImpl<UnionVerifierMapper, U
         if(count > 0){
             throw new ParamException("您输入的手机号码已存在，请重新输入");
         }
-
-        if (StringUtil.getStringLength(unionVerifier.getName()) > 10) {
-            throw new BusinessException( "姓名不能超过10个字");
-        }
         EntityWrapper<UnionVerifier> memberWrapper = new EntityWrapper<UnionVerifier>();
         memberWrapper.eq("del_status",0);
         memberWrapper.eq("bus_id",unionVerifier.getBusId());
@@ -64,12 +60,15 @@ public class UnionVerifierServiceImpl extends ServiceImpl<UnionVerifierMapper, U
         if(count > 0){
             throw new ParamException("您输入的姓名已存在，请重新输入");
         }
+        if(StringUtil.isEmpty(unionVerifier.getCode())){
+            throw new BusinessException("验证码不能为空");
+        }
         Object obj = redisCacheUtil.get("verifier:"+unionVerifier.getPhone());
         if(CommonUtil.isEmpty(obj)){
-            throw new BusinessException("验证码已失效");
+            throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
         }
         if(!unionVerifier.getCode().equals(obj)){
-            throw new BusinessException("验证码有误");
+            throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
         }
         UnionVerifier verifier = new UnionVerifier();
         verifier.setDelStatus(CommonConstant.DEL_STATUS_NO);

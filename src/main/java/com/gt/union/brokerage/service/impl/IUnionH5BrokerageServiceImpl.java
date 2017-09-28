@@ -135,10 +135,10 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 			String phoneKey = RedisKeyUtil.getBrokeragePhoneKey(phone);
 			Object obj = redisCacheUtil.get(phoneKey);
 			if(obj == null){
-				throw new BusinessException("验证码失效");
+				throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
 			}
 			if(!code.equals(JSON.toJSONString(obj))){
-				throw new BusinessException("验证码错误");
+				throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
 			}
 			UnionVerifier unionVerifier = unionVerifierService.getByPhone(phone);
 			if(unionVerifier == null){
