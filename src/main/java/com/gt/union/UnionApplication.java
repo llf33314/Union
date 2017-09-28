@@ -24,20 +24,6 @@ public class UnionApplication extends SpringBootServletInitializer {
         return springApplicationBuilder.sources(UnionApplication.class);
     }
 
-
-    @Bean
-    public HttpMessageConverters fastJsonHttpMessageConverters() {
-        FastJsonHttpMessageConverter fastConverter = new FastJsonHttpMessageConverter();
-        MappingJackson2HttpMessageConverter mappingJackson2HttpMessageConverter = new MappingJackson2HttpMessageConverter();
-        /*FastJsonConfig fastJsonConfig = new FastJsonConfig();
-        fastJsonConfig.setSerializerFeatures(SerializerFeature.PrettyFormat);
-        fastConverter.setFastJsonConfig(fastJsonConfig);
-        */
-        mappingJackson2HttpMessageConverter.setPrettyPrint(true);
-        HttpMessageConverter<?> converter = fastConverter;
-        return new HttpMessageConverters(mappingJackson2HttpMessageConverter);
-    }
-
     public static void main(String[] args) {
         SpringApplication.run(UnionApplication.class, args);
     }
