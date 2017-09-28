@@ -265,7 +265,7 @@ public class UnionConsumeController {
 
 	@ApiOperation(value = "扫码支付时调用，生成消费核销支付订单二维码", produces = "application/json;charset=UTF-8")
 	@SysLogAnnotation(op_function = "2", description = "生成消费核销支付二维码")
-	@RequestMapping(value = "/qrCode", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/qrCode", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String payOpportunityQRCode(HttpServletRequest request, HttpServletResponse response, @ApiParam(name="unionConsumeParamVO", value = "联盟卡核销参数", required = true) @RequestBody @Valid UnionConsumeParamVO vo, BindingResult bindingResult) throws Exception{
 		ParamValidatorUtil.checkBindingResult(bindingResult);
 		BusUser user = SessionUtils.getLoginUser(request);
