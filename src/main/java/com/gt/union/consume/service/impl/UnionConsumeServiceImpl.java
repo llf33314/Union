@@ -268,6 +268,13 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
 		String orderNo = ConsumeConstant.ORDER_PREFIX + System.currentTimeMillis();
+		UnionCard card = unionCardService.getById(vo.getCardId());
+		if(card == null){
+			throw new BusinessException("联盟卡不存在");
+		}
+		if(!DateTimeKit.laterThanNow(card.getValidity())){
+			throw new BusinessException("联盟卡已过期");
+		}
 		consumeSuccess(vo, orderNo);
 	}
 
@@ -380,6 +387,13 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 
 	@Override
 	public Map<String, Object> payConsumeQRCode(Integer busId, UnionConsumeParamVO vo) throws Exception{
+		UnionCard card = unionCardService.getById(vo.getCardId());
+		if(card == null){
+			throw new BusinessException("联盟卡不存在");
+		}
+		if(!DateTimeKit.laterThanNow(card.getValidity())){
+			throw new BusinessException("联盟卡已过期");
+		}
 		Map<String, Object> data = new HashMap<String, Object>();
 		String orderNo = ConsumeConstant.ORDER_PREFIX + System.currentTimeMillis();
 		String only = DateTimeKit.getDateTime(new Date(), DateTimeKit.yyyyMMddHHmmss);

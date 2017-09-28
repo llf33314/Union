@@ -919,7 +919,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 .append(", m.enterprise_address enterpriseAddress") //企业地址
                 .append(", m.director_phone directorPhone") //负责人电话
                 .append(", m.address_longitude addressLongitude") //地址经度
-                .append(", m.address_latitude addressLatitude") //企业地址
+                .append(", m.address_latitude addressLatitude") //地址维度
                 .append(", d.discount discount"); //我给他的折扣
         wrapper.setSqlSelect(sbSqlSelect.toString());
         return this.selectMaps(wrapper);

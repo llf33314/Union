@@ -72,22 +72,14 @@ public class UnionConsumeController {
 			, @ApiParam(name = "beginTime", value = "开始时间", required = false)
 								  @RequestParam(name = "beginTime", required = false) String beginTime
 			, @ApiParam(name = "endTime", value = "结束时间", required = false)
-								  @RequestParam(name = "endTime", required = false) String endTime){
-		try {
-			BusUser user = SessionUtils.getLoginUser(request);
-			Integer busId = user.getId();
-			if(user.getPid() != null && user.getPid() != 0){
-				busId = user.getPid();
-			}
-			Page result = this.unionConsumeService.listMy(page, unionId, busId, memberId, cardNo, phone, beginTime, endTime);
-			return GTJsonResult.instanceSuccessMsg(result).toString();
-		} catch (BaseException e) {
-			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-		} catch (Exception e) {
-			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+								  @RequestParam(name = "endTime", required = false) String endTime) throws Exception{
+		BusUser user = SessionUtils.getLoginUser(request);
+		Integer busId = user.getId();
+		if(user.getPid() != null && user.getPid() != 0){
+			busId = user.getPid();
 		}
+		Page result = this.unionConsumeService.listMy(page, unionId, busId, memberId, cardNo, phone, beginTime, endTime);
+		return GTJsonResult.instanceSuccessMsg(result).toString();
 	}
 
 	@ApiOperation(value = "查询它店消费核销记录", produces = "application/json;charset=UTF-8")
@@ -104,22 +96,14 @@ public class UnionConsumeController {
 			, @ApiParam(name = "beginTime", value = "开始时间", required = false)
 									 @RequestParam(name = "beginTime", required = false) String beginTime
 			, @ApiParam(name = "endTime", value = "结束时间", required = false)
-									 @RequestParam(name = "endTime", required = false) String endTime){
-		try {
-			BusUser user = SessionUtils.getLoginUser(request);
-			Integer busId = user.getId();
-			if(user.getPid() != null && user.getPid() != 0){
-				busId = user.getPid();
-			}
-			Page result = this.unionConsumeService.listOther(page, unionId, busId, memberId, cardNo, phone, beginTime, endTime);
-			return GTJsonResult.instanceSuccessMsg(result).toString();
-		} catch (BaseException e) {
-			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg( e.getErrorMsg()).toString();
-		} catch (Exception e) {
-			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+									 @RequestParam(name = "endTime", required = false) String endTime) throws Exception{
+		BusUser user = SessionUtils.getLoginUser(request);
+		Integer busId = user.getId();
+		if(user.getPid() != null && user.getPid() != 0){
+			busId = user.getPid();
 		}
+		Page result = this.unionConsumeService.listOther(page, unionId, busId, memberId, cardNo, phone, beginTime, endTime);
+		return GTJsonResult.instanceSuccessMsg(result).toString();
 	}
 
 	/**
@@ -242,23 +226,15 @@ public class UnionConsumeController {
 	@SysLogAnnotation(op_function = "3", description = "根据联盟卡核销")
 	@RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String consumeByCard(HttpServletRequest request
-			, @ApiParam(name="unionConsumeParamVO", value = "联盟卡核销参数", required = true) @RequestBody @Valid UnionConsumeParamVO vo , BindingResult bindingResult){
-		try{
-			ParamValidatorUtil.checkBindingResult(bindingResult);
-			BusUser user = SessionUtils.getLoginUser(request);
-			Integer busId = user.getId();
-			if(user.getPid() != null && user.getPid() != 0){
-				busId = user.getPid();
-			}
-			unionConsumeService.consumeByCard(busId, vo);
-			return GTJsonResult.instanceSuccessMsg().toString();
-		}catch (BaseException e){
-			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-		}catch (Exception e){
-			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+			, @ApiParam(name="unionConsumeParamVO", value = "联盟卡核销参数", required = true) @RequestBody @Valid UnionConsumeParamVO vo , BindingResult bindingResult) throws Exception{
+		ParamValidatorUtil.checkBindingResult(bindingResult);
+		BusUser user = SessionUtils.getLoginUser(request);
+		Integer busId = user.getId();
+		if(user.getPid() != null && user.getPid() != 0){
+			busId = user.getPid();
 		}
+		unionConsumeService.consumeByCard(busId, vo);
+		return GTJsonResult.instanceSuccessMsg().toString();
 	}
 
 	//------------------------------------------------- money ----------------------------------------------------------
@@ -290,65 +266,52 @@ public class UnionConsumeController {
 	@ApiOperation(value = "扫码支付时调用，生成消费核销支付订单二维码", produces = "application/json;charset=UTF-8")
 	@SysLogAnnotation(op_function = "2", description = "生成消费核销支付二维码")
 	@RequestMapping(value = "/qrCode", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public String payOpportunityQRCode(HttpServletRequest request, HttpServletResponse response, @ApiParam(name="unionConsumeParamVO", value = "联盟卡核销参数", required = true) @RequestBody @Valid UnionConsumeParamVO vo, BindingResult bindingResult) {
-		try {
-			ParamValidatorUtil.checkBindingResult(bindingResult);
-			BusUser user = SessionUtils.getLoginUser(request);
-			if (CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0) {
-				throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
-			}
-			Map<String, Object> data = unionConsumeService.payConsumeQRCode(user.getId(), vo);
-			StringBuilder sb = new StringBuilder("?");
-			sb.append("totalFee=" + data.get("totalFee"));
-			sb.append("&model=" + data.get("model"));
-			sb.append("&busId=" + data.get("busId"));
-			sb.append("&appidType=" + data.get("appidType"));
-			sb.append("&appid=" + data.get("appid"));
-			sb.append("&orderNum=" + data.get("orderNum"));
-			sb.append("&desc=" + data.get("desc"));
-			sb.append("&isreturn=" + data.get("isreturn"));
-			sb.append("&notifyUrl=" + data.get("notifyUrl"));
-			sb.append("&isSendMessage=" + data.get("isSendMessage"));
-			sb.append("&payWay=" + data.get("payWay"));
-			sb.append("&sourceType=" + data.get("sourceType"));
-			Map<String, Object> result = new HashMap<String, Object>();
-			result.put("url", ConfigConstant.WXMP_ROOT_URL + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
-			result.put("only", data.get("only"));
-			return GTJsonResult.instanceSuccessMsg(result).toString();
-		} catch (BaseException e) {
-			logger.error("", e);
-			return GTJsonResult.instanceErrorMsg(e.getErrorMsg()).toString();
-		} catch (Exception e) {
-			logger.error("生成消费核销支付订单二维码错误：" + e);
-			return GTJsonResult.instanceErrorMsg(CommonConstant.OPERATE_ERROR).toString();
+	public String payOpportunityQRCode(HttpServletRequest request, HttpServletResponse response, @ApiParam(name="unionConsumeParamVO", value = "联盟卡核销参数", required = true) @RequestBody @Valid UnionConsumeParamVO vo, BindingResult bindingResult) throws Exception{
+		ParamValidatorUtil.checkBindingResult(bindingResult);
+		BusUser user = SessionUtils.getLoginUser(request);
+		if (CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0) {
+			throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
 		}
+		Map<String, Object> data = unionConsumeService.payConsumeQRCode(user.getId(), vo);
+		StringBuilder sb = new StringBuilder("?");
+		sb.append("totalFee=" + data.get("totalFee"));
+		sb.append("&model=" + data.get("model"));
+		sb.append("&busId=" + data.get("busId"));
+		sb.append("&appidType=" + data.get("appidType"));
+		sb.append("&appid=" + data.get("appid"));
+		sb.append("&orderNum=" + data.get("orderNum"));
+		sb.append("&desc=" + data.get("desc"));
+		sb.append("&isreturn=" + data.get("isreturn"));
+		sb.append("&notifyUrl=" + data.get("notifyUrl"));
+		sb.append("&isSendMessage=" + data.get("isSendMessage"));
+		sb.append("&payWay=" + data.get("payWay"));
+		sb.append("&sourceType=" + data.get("sourceType"));
+		Map<String, Object> result = new HashMap<String, Object>();
+		result.put("url", ConfigConstant.WXMP_ROOT_URL + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
+		result.put("only", data.get("only"));
+		return GTJsonResult.instanceSuccessMsg(result).toString();
 	}
 
 	@ApiOperation(value = "获取消费核销支付状态，用定时器请求，004：订单超时 003：支付成功 005：支付失败", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "status/{only}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String getStatus(HttpServletRequest request, HttpServletResponse response, @PathVariable("only") String only) throws Exception {
 		logger.info("获取消费核销支付状态：" + only);
-		try {
-			String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
-			String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
-			Object status = redisCacheUtil.get(statusKey);
-			if (CommonUtil.isEmpty(status)) {//订单超时
-				status = ConfigConstant.USER_ORDER_STATUS_004;
-			}
-			if (ConfigConstant.USER_ORDER_STATUS_003.equals(status)) {//订单支付成功
-				redisCacheUtil.remove(statusKey);
-				redisCacheUtil.remove(paramKey);
-			}
-
-			if (ConfigConstant.USER_ORDER_STATUS_005.equals(status)) {//订单支付失败
-				redisCacheUtil.remove(statusKey);
-				redisCacheUtil.remove(paramKey);
-			}
-			return GTJsonResult.instanceSuccessMsg(status).toString();
-		} catch (Exception e) {
-			logger.error("获取消费核销支付错误：" + e);
-			return GTJsonResult.instanceErrorMsg(CommonConstant.SYS_ERROR).toString();
+		String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
+		String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
+		Object status = redisCacheUtil.get(statusKey);
+		if (CommonUtil.isEmpty(status)) {//订单超时
+			status = ConfigConstant.USER_ORDER_STATUS_004;
 		}
+		if (ConfigConstant.USER_ORDER_STATUS_003.equals(status)) {//订单支付成功
+			redisCacheUtil.remove(statusKey);
+			redisCacheUtil.remove(paramKey);
+		}
+
+		if (ConfigConstant.USER_ORDER_STATUS_005.equals(status)) {//订单支付失败
+			redisCacheUtil.remove(statusKey);
+			redisCacheUtil.remove(paramKey);
+		}
+		return GTJsonResult.instanceSuccessMsg(status).toString();
 	}
 
 }
