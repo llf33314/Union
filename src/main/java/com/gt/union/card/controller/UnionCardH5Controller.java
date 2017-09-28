@@ -8,6 +8,7 @@ import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.card.service.IUnionCardService;
 import com.gt.union.card.vo.UnionCardBindParamVO;
 import com.gt.union.common.amqp.entity.PhoneMessage;
+import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.controller.MemberAuthorizeOrLoginController;
 import com.gt.union.common.exception.BusinessException;
@@ -134,10 +135,10 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 		String phoneKey = RedisKeyUtil.getCardH5LoginPhoneKey(phone);
 		Object obj = redisCacheUtil.get(phoneKey);
 		if(CommonUtil.isEmpty(obj)){
-			throw new BusinessException("验证码有误");
+			throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
 		}
 		if(!code.equals(obj)){
-			throw new BusinessException("验证码有误");
+			throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
 		}
 		com.gt.union.common.util.SessionUtils.setLoginMember(request, member);
 		return GTJsonResult.instanceSuccessMsg().toString();

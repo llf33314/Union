@@ -684,10 +684,10 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         String phoneKey = RedisKeyUtil.getBindCardPhoneKey(phone);
         Object obj = redisCacheUtil.get(phoneKey);
         if(CommonUtil.isEmpty(obj)){
-            throw new BusinessException("验证码有误");
+            throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
         }
         if(!code.equals(obj)){
-            throw new BusinessException("验证码有误");
+            throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
         }
         List<UnionMember> members = unionMemberService.listWriteWithValidUnionByBusId(busId);
         if(ListUtil.isEmpty(members)){
@@ -1062,15 +1062,15 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         if(StringUtil.isEmpty(code)){
-            throw new BusinessException("验证码为空");
+            throw new BusinessException("验证码不能为空");
         }
         String phoneKey = RedisKeyUtil.getCardH5BindPhoneKey(phone);
         Object obj = redisCacheUtil.get(phoneKey);
         if(CommonUtil.isEmpty(obj)){
-            throw new BusinessException("验证码有误");
+            throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
         }
         if(!code.equals(obj)){
-            throw new BusinessException("验证码有误");
+            throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
         }
         int status = memberService.bindMemberPhone(busId,member.getId(),phone);
         if(status == 0){

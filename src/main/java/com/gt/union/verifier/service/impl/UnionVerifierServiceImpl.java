@@ -65,10 +65,10 @@ public class UnionVerifierServiceImpl extends ServiceImpl<UnionVerifierMapper, U
         }
         Object obj = redisCacheUtil.get("verifier:"+unionVerifier.getPhone());
         if(CommonUtil.isEmpty(obj)){
-            throw new BusinessException("验证码有误");
+            throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
         }
         if(!unionVerifier.getCode().equals(obj)){
-            throw new BusinessException("验证码有误");
+            throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
         }
         UnionVerifier verifier = new UnionVerifier();
         verifier.setDelStatus(CommonConstant.DEL_STATUS_NO);

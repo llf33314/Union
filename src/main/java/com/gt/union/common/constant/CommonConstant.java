@@ -76,5 +76,10 @@ public interface CommonConstant {
      */
     String UNION_VALIDITY_DEFAULT = "2030-09-01 14:00:00";
 
+    /**
+     * 验证码有误
+     */
+    String CODE_ERROR_MSG = "验证码有误";
+
 
 }
