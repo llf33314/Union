@@ -8,9 +8,9 @@ import com.gt.union.api.client.shop.ShopService;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -23,7 +23,7 @@ public class ShopServiceImpl implements ShopService {
 
 
 	@Override
-	public List<WsWxShopInfoExtend> listByBusId(Integer busId) {
+	public List<Map<String, Object>> listByBusId(Integer busId) {
 		String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/shopapi/6F6D9AD2/79B4DE7C/queryWxShopByBusId.do";
 		try {
 			RequestUtils req = new RequestUtils<Integer>();
@@ -37,7 +37,14 @@ public class ShopServiceImpl implements ShopService {
 				return null;
 			}
 			List<WsWxShopInfoExtend> list = JSONArray.parseArray(data.toString(), WsWxShopInfoExtend.class);
-			return list;
+			List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+			for(WsWxShopInfoExtend info : list){
+				Map<String,Object> map = new HashMap<String,Object>();
+				map.put("name",info.getBusinessName());
+				map.put("id",info.getId());
+				dataList.add(map);
+			}
+			return dataList;
 		}catch (Exception e){
 			return null;
 		}

@@ -10,6 +10,7 @@ import com.gt.api.bean.session.Member;
 import com.gt.api.bean.session.WxPublicUsers;
 import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.api.client.member.MemberService;
+import com.gt.union.api.client.shop.ShopService;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.api.entity.result.UnionDiscountResult;
@@ -39,6 +40,7 @@ import com.gt.union.preferential.entity.UnionPreferentialItem;
 import com.gt.union.preferential.entity.UnionPreferentialProject;
 import com.gt.union.preferential.service.IUnionPreferentialItemService;
 import com.gt.union.preferential.service.IUnionPreferentialProjectService;
+import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
 import org.apache.poi.hssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -106,6 +108,9 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 
     @Autowired
     private MemberService memberService;
+
+    @Autowired
+    private ShopService shopService;
 
     @Override
     public Page selectListByUnionId(Page page, final Integer unionId, final Integer busId, final String cardNo, final String phone) throws Exception {
@@ -436,6 +441,8 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 }
             }
         }
+        List<Map<String, Object>> shops = shopService.listByBusId(busId);
+        data.put("shops",shops);
         return data;
     }
 
