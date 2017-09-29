@@ -128,9 +128,14 @@ public interface ConfigConstant {
 	String UNION_SIGNKEY = PropertiesUtil.getUnionSignKey();
 
 	/**
-	 * 手机端根路径
+	 * 联盟卡手机端路径
 	 */
-	String UNION_PHONE_ROOT_URL = UNION_ROOT_URL + "/phone/#/";
+	String UNION_PHONE_CARD_ROOT_URL = UNION_ROOT_URL + "/cardPhone/#/";
+
+	/**
+	 * 联盟卡手机端路径
+	 */
+	String UNION_PHONE_BROKERAGE_ROOT_URL = UNION_ROOT_URL + "/brokeragePhone/#/";
 
 	/**
 	 * 联盟加密秘钥

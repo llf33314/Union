@@ -15,6 +15,7 @@ import com.gt.union.common.annotation.SysLogAnnotation;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BaseException;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.DataExportException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.*;
@@ -234,28 +235,6 @@ public class UnionCardController {
 	}
 
 
-	@ApiOperation(value = "获取办理联盟卡支付状态", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value="status/{only}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public String getStatus(HttpServletRequest request, HttpServletResponse response, @PathVariable("only")String only) throws Exception{
-		logger.info("获取办理联盟卡支付订单状态：" + only);
-		String statusKey = RedisKeyUtil.getBindCardPayStatusKey(only);
-		String paramKey = RedisKeyUtil.getBindCardPayParamKey(only);
-		Object status = redisCacheUtil.get(statusKey);
-		if(CommonUtil.isEmpty(status)){//订单超时
-			status = ConfigConstant.USER_ORDER_STATUS_004;
-		}
-		if(ConfigConstant.USER_ORDER_STATUS_003.equals(status)){//订单支付成功
-			redisCacheUtil.remove(statusKey);
-			redisCacheUtil.remove(paramKey);
-		}
-
-		if(ConfigConstant.USER_ORDER_STATUS_005.equals(status)){//订单支付失败
-			redisCacheUtil.remove(statusKey);
-			redisCacheUtil.remove(paramKey);
-		}
-		return GTJsonResult.instanceSuccessMsg(status).toString();
-	}
-
 	@ApiOperation(value = "生成办理联盟卡支付订单二维码", produces = "application/json;charset=UTF-8")
 	@SysLogAnnotation(op_function = "2", description = "生成办理联盟卡支付订单")
 	@RequestMapping(value = "/qrCode", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -290,17 +269,24 @@ public class UnionCardController {
 	}
 
 
-	@RequestMapping(value = "/79B4DE7C/paymentSuccess/{encrypt}/{only}")
-	public String payBindCardSuccess(HttpServletRequest request, HttpServletResponse response, @PathVariable(name = "encrypt", required = true) String encrypt, @PathVariable(name = "only", required = true) String only) {
+	@RequestMapping(value = "/79B4DE7C/paymentSuccess/{only}", method = RequestMethod.POST)
+	public String payBindCardSuccess(HttpServletRequest request, HttpServletResponse response, @PathVariable(name = "only", required = true) String only
+			,@RequestBody Map<String,Object> param) {
 		Map<String,Object> data = new HashMap<String,Object>();
 		String statusKey = RedisKeyUtil.getBindCardPayStatusKey(only);
+		logger.info("办理联盟卡成功回调参数" + JSON.toJSONString(param));
 		try {
-			logger.info("前台办理联盟卡支付成功，订单encrypt------------------"+encrypt);
-			logger.info("前台办理联盟卡支付成功，only------------------"+only);
-			unionCardService.payBindCardSuccess(encrypt, only);
-			data.put("code",0);
-			data.put("msg","成功");
-			return JSON.toJSONString(data);
+			if(param.get("result_code").equals("SUCCESS") && param.get("result_code").equals("SUCCESS")){
+				String orderNo = param.get("out_trade_no").toString();
+				logger.info("前台办理联盟卡支付成功，only------------------"+only);
+				logger.info("办理联盟卡支付成功，orderNo------------------" + orderNo);
+				unionCardService.payBindCardSuccess(orderNo, only);
+				data.put("code",0);
+				data.put("msg","成功");
+				return JSON.toJSONString(data);
+			}else {
+				throw new BusinessException("支付失败");
+			}
 		} catch (BaseException e) {
 			redisCacheUtil.set(statusKey,ConfigConstant.USER_ORDER_STATUS_005);
 			logger.error("办理联盟卡支付成功后，产生错误：" + e);
@@ -314,6 +300,28 @@ public class UnionCardController {
 			data.put("msg","失败");
 			return JSON.toJSONString(data);
 		}
+	}
+
+	@ApiOperation(value = "获取办理联盟卡支付状态", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value="status/{only}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String getStatus(HttpServletRequest request, HttpServletResponse response, @PathVariable("only")String only) throws Exception{
+		logger.info("获取办理联盟卡支付订单状态：" + only);
+		String statusKey = RedisKeyUtil.getBindCardPayStatusKey(only);
+		String paramKey = RedisKeyUtil.getBindCardPayParamKey(only);
+		Object status = redisCacheUtil.get(statusKey);
+		if(CommonUtil.isEmpty(status)){//订单超时
+			status = ConfigConstant.USER_ORDER_STATUS_004;
+		}
+		if(ConfigConstant.USER_ORDER_STATUS_003.equals(status)){//订单支付成功
+			redisCacheUtil.remove(statusKey);
+			redisCacheUtil.remove(paramKey);
+		}
+
+		if(ConfigConstant.USER_ORDER_STATUS_005.equals(status)){//订单支付失败
+			redisCacheUtil.remove(statusKey);
+			redisCacheUtil.remove(paramKey);
+		}
+		return GTJsonResult.instanceSuccessMsg(status).toString();
 	}
 
 	@ApiOperation(value = "获取手机端二维码图片链接", notes = "获取手机端二维码图片链接", produces = "application/json;charset=UTF-8")
@@ -331,7 +339,7 @@ public class UnionCardController {
 		if(user.getPid() != null && user.getPid() != 0){
 			busId = user.getPid();
 		}
-		String url = ConfigConstant.UNION_PHONE_ROOT_URL + "toUnionCard?busId=" + busId;
+		String url = ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionCard?busId=" + busId;
 		QRcodeKit.buildQRcode(url, 250, 250, response);
 	}
 

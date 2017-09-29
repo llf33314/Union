@@ -20,6 +20,8 @@ import com.gt.union.member.constant.MemberConstant;
 import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.service.IUnionMemberService;
 import com.gt.union.member.vo.UnionMemberVO;
+import com.gt.union.setting.entity.UnionSettingMainCharge;
+import com.gt.union.setting.service.IUnionSettingMainChargeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -62,7 +64,7 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
     private IUnionMainDictService unionMainDictService;
 
     @Autowired
-    private IUnionMainPermitChargeService unionMainPermitChargeService;
+    private IUnionSettingMainChargeService unionSettingMainChargeService;
 
     //-------------------------------------------------- get ----------------------------------------------------------
 
@@ -108,7 +110,7 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         }
         //没有联盟权限
         if (!flag) {
-            throw new BusinessException("您没有创建联盟的权限");
+            throw new BusinessException("您没有联盟权限");
         }
         //3、根据等级判断是否需要付费
         String itemValue = info.get("item_value").toString();//根据等级获取创建联盟的权限
@@ -118,6 +120,8 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         if (isUnionOwnerService.equals("0")) {
             throw new BusinessException("您没有创建联盟的权限");
         }
+        //4、
+
         if (isPay.equals("0")) {//不需要付费
             result.put("save", CommonConstant.COMMON_YES);//去创建联盟
         } else {
@@ -125,7 +129,7 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
             UnionMainPermit unionMainPermit = this.unionMainPermitService.getByBusId(busId);
             if (unionMainPermit == null) {//没有支付
                 result.put("pay", CommonConstant.COMMON_YES);//去支付
-                List<UnionMainPermitCharge> list =unionMainPermitChargeService.listBusLevel(busUser.getLevel());
+                List<UnionSettingMainCharge> list =unionSettingMainChargeService.listBusLevel(busUser.getLevel());
                 result.put("payItems", list);
                 return result;
             }
@@ -140,7 +144,7 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
                 }
             } else {//过期了
                 result.put("pay", CommonConstant.COMMON_YES);//去支付
-                List<UnionMainPermitCharge> list =unionMainPermitChargeService.listBusLevel(busUser.getLevel());
+                List<UnionSettingMainCharge> list =unionSettingMainChargeService.listBusLevel(busUser.getLevel());
                 result.put("payItems", list);
             }
         }
