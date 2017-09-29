@@ -78,7 +78,8 @@ public class MemberServiceImpl implements MemberService {
 			}
 			Map map = JSONObject.parseObject(data,Map.class);
 			if(CommonUtil.isNotEmpty(map.get("data"))){
-				return JSONObject.parseObject(map.get("data").toString(),Member.class);
+				List<Member> list = JSONArray.parseArray(map.get("data").toString(),Member.class);
+				return list.get(0);
 			}else {
 				return null;
 			}
