@@ -948,6 +948,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         String orderNo = CardConstant.ORDER_PREFIX + only;
         String encrypt = EncryptUtil.encrypt(PropertiesUtil.getEncryptKey(), orderNo);
         encrypt = URLEncoder.encode(encrypt,"UTF-8");
+        encrypt = URLEncoder.encode(encrypt,"UTF-8");
         WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(PropertiesUtil.getDuofenBusId());
         data.put("notifyUrl", ConfigConstant.UNION_ROOT_URL + "/unionCard/79B4DE7C/paymentSuccess/"+encrypt + "/" + only);
         if(isReturn == 1){
