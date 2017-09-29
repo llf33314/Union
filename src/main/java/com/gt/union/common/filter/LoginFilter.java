@@ -32,6 +32,8 @@ public class LoginFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
 
+        passUrlMap.put("/unionH5Brokerage/login","/unionH5Brokerage/login");
+
         passSuffixList.add(".js");
         passSuffixList.add(".css");
         passSuffixList.add(".gif");
