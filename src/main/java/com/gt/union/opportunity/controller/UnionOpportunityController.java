@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
+import com.gt.api.util.KeysUtil;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.annotation.SysLogAnnotation;
 import com.gt.union.common.constant.BusUserConstant;
@@ -340,11 +341,16 @@ public class UnionOpportunityController {
     }
 
     //------------------------------------------------- money ----------------------------------------------------------
-    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{encrypt}/{only}",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{obj}",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String payOpportunitySuccess(HttpServletRequest request, HttpServletResponse response
-            , @PathVariable(name = "encrypt", required = true) String encrypt
-            , @PathVariable(name = "only", required = true) String only, @RequestBody Map<String,Object> param) {
+            , @PathVariable(name = "obj", required = true) String obj
+            , @RequestBody Map<String,Object> param) throws Exception {
         Map<String, Object> data = new HashMap<String, Object>();
+        KeysUtil keysUtil=new KeysUtil();
+        String json = keysUtil.getDesString(obj);
+        Map map = JSONObject.parseObject(json,Map.class);
+        String only = map.get("only").toString();
+        String encrypt = map.get("encrypt").toString();
         String statusKey = RedisKeyUtil.getRecommendPayStatusKey(only);
         try {
             logger.info("商机佣金支付成功，Encrypt------------------" + encrypt);

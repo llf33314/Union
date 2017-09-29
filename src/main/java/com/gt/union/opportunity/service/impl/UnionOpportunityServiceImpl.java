@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.api.bean.session.WxPublicUsers;
+import com.gt.api.util.KeysUtil;
 import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.brokerage.constant.BrokerageConstant;
 import com.gt.union.brokerage.entity.UnionBrokerageIncome;
@@ -1296,10 +1297,12 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         data.put("isreturn", 0);//0：不需要同步跳转
         data.put("model", ConfigConstant.PAY_MODEL);
         String encrypt = EncryptUtil.encrypt(ConfigConstant.UNION_ENCRYPTKEY, ids);
-        encrypt = URLEncoder.encode(encrypt, "UTF-8");
-        encrypt = URLEncoder.encode(encrypt, "UTF-8");//两层编码
-        data.put("notifyUrl", ConfigConstant.UNION_ROOT_URL + "/unionOpportunity/79B4DE7C/paymentSuccess/" + encrypt + "/" + only);
-//        data.put("notifyUrl", ConfigConstant.UNION_ROOT_URL + "/unionOpportunity/79B4DE7C/paymentSuccess/" + only);
+        Map<String,Object> param = new HashMap<String,Object>();
+        param.put("encrypt",encrypt);
+        param.put("only",only);
+        KeysUtil keysUtil = new KeysUtil();
+        String obj = keysUtil.getEncString(JSON.toJSONString(data));
+        data.put("notifyUrl", ConfigConstant.UNION_ROOT_URL + "/unionOpportunity/79B4DE7C/paymentSuccess/" + obj);
         data.put("orderNum", orderNo);//订单号
         data.put("payBusId", busId);//支付的商家id
         data.put("isSendMessage", 0);//不推送
