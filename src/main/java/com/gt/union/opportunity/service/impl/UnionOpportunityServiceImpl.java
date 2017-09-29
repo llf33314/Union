@@ -1334,7 +1334,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         }
         EntityWrapper wrapper = new EntityWrapper<>();
         wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
-        wrapper.in("id", arrs);
+        wrapper.in("id", ids.toArray());
         List<UnionOpportunity> list = this.selectList(wrapper);
         //插入佣金收入列表
         this.insertBatchByList(list, orderNo, null);

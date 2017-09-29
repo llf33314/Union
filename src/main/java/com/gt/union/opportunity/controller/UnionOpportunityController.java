@@ -348,12 +348,16 @@ public class UnionOpportunityController {
         Map<String, Object> data = new HashMap<String, Object>();
         String statusKey = RedisKeyUtil.getRecommendPayStatusKey(only);
         try {
-            logger.info("商机佣金支付成功，param------------------" + JSON.toJSONString(param));
-            logger.info("商机佣金支付成功，only------------------" + only);
-            unionOpportunityService.payOpportunitySuccess(param.get("out_trade_no").toString(), only);
-            data.put("code", 0);
-            data.put("msg", "成功");
-            return JSON.toJSONString(data);
+            if(param.get("result_code").equals("SUCCESS") && param.get("result_code").equals("SUCCESS")){
+                logger.info("商机佣金支付成功，param------------------" + JSON.toJSONString(param));
+                logger.info("商机佣金支付成功，only------------------" + only);
+                unionOpportunityService.payOpportunitySuccess(param.get("out_trade_no").toString(), only);
+                data.put("code", 0);
+                data.put("msg", "成功");
+                return JSON.toJSONString(data);
+            }else {
+                throw new BusinessException("支付失败");
+            }
         } catch (BaseException e) {
             redisCacheUtil.set(statusKey,ConfigConstant.USER_ORDER_STATUS_005);
             logger.error("商机佣金支付成功后，产生错误：" + e);
