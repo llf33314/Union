@@ -3,7 +3,6 @@ package com.gt.union.brokerage.service;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.brokerage.entity.UnionBrokerageIncome;
-import com.gt.union.member.entity.UnionMember;
 
 import java.util.List;
 import java.util.Map;
@@ -74,4 +73,11 @@ public interface IUnionBrokerageIncomeService extends IService<UnionBrokerageInc
      * @return
      */
     double getSumInComeUnionBrokerageByType(Integer busId, int type);
+
+    /**
+     * 查询支付了的商机数量
+     * @param ids
+     * @return
+     */
+	int countByOpportunityIds(List<Integer> ids);
 }

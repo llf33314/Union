@@ -282,10 +282,10 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
     /**
      * 佣金扫码支付成功后回调
      *
-     * @param encrypt
+     * @param orderNo
      * @param only
      */
-    void payOpportunitySuccess(String encrypt, String only) throws Exception;
+    void payOpportunitySuccess(String orderNo, String only) throws Exception;
 
     /**
      * 支付成功后批量插入

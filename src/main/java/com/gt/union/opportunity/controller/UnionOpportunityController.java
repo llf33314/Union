@@ -341,23 +341,16 @@ public class UnionOpportunityController {
     }
 
     //------------------------------------------------- money ----------------------------------------------------------
-    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{encrypt}",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{only}",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String payOpportunitySuccess(HttpServletRequest request, HttpServletResponse response
-            , @PathVariable(name = "encrypt", required = true) String encrypt
+            , @PathVariable(name = "only", required = true) String only
             , @RequestBody Map<String,Object> param) throws Exception {
         Map<String, Object> data = new HashMap<String, Object>();
-//        KeysUtil keysUtil=new KeysUtil();
-//        String json = keysUtil.getDesString(obj);
-//        Map map = JSONObject.parseObject(json,Map.class);
-//        String only = map.get("only").toString();
-//        String encrypt = map.get("encrypt").toString();
-        String only = "asdfasda";
         String statusKey = RedisKeyUtil.getRecommendPayStatusKey(only);
         try {
-            logger.info("商机佣金支付成功，Encrypt------------------" + encrypt);
             logger.info("商机佣金支付成功，param------------------" + JSON.toJSONString(param));
             logger.info("商机佣金支付成功，only------------------" + only);
-            unionOpportunityService.payOpportunitySuccess(encrypt, only);
+            unionOpportunityService.payOpportunitySuccess(param.get("out_trade_no").toString(), only);
             data.put("code", 0);
             data.put("msg", "成功");
             return JSON.toJSONString(data);
