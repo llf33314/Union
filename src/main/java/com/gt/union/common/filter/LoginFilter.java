@@ -63,7 +63,7 @@ public class LoginFilter implements Filter {
         BusUser busUser = SessionUtils.getLoginUser(req);
 //        busUser = justForDev(req, busUser); //TODO 正式中请注释掉
         if (busUser == null) {
-            if(url.equals("cardPhone")){//
+            if(url.equals("/cardPhone/")){//
                 String cardPhoneUrl = ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin";
                 String script = "<script type='text/javascript'>"
                         + "location.href='"+ cardPhoneUrl +"';"
@@ -74,7 +74,7 @@ public class LoginFilter implements Filter {
                 response.setCharacterEncoding("UTF-8");
                 response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin")));
                 return;
-            }else if(url.equals("brokeragePhone")){
+            }else if(url.equals("/brokeragePhone/")){
                 String brokeragePhoneUrl = ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + "toLogin";
                 String script = "<script type='text/javascript'>"
                         + "location.href='"+ brokeragePhoneUrl +"';"
