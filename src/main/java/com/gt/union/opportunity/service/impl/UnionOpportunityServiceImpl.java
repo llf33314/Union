@@ -1297,12 +1297,12 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         data.put("isreturn", 0);//0：不需要同步跳转
         data.put("model", ConfigConstant.PAY_MODEL);
         String encrypt = EncryptUtil.encrypt(ConfigConstant.UNION_ENCRYPTKEY, ids);
-        Map<String,Object> param = new HashMap<String,Object>();
-        param.put("encrypt",encrypt);
-        param.put("only",only);
-        KeysUtil keysUtil = new KeysUtil();
-        String obj = keysUtil.getEncString(JSON.toJSONString(data));
-        data.put("notifyUrl", ConfigConstant.UNION_ROOT_URL + "/unionOpportunity/79B4DE7C/paymentSuccess/" + obj);
+//        Map<String,Object> param = new HashMap<String,Object>();
+//        param.put("ids",ids);
+//        param.put("only",only);
+//        KeysUtil keysUtil = new KeysUtil();
+//        String obj = keysUtil.getEncString(JSON.toJSONString(param));
+        data.put("notifyUrl", ConfigConstant.UNION_ROOT_URL + "/unionOpportunity/79B4DE7C/paymentSuccess/" + encrypt);
         data.put("orderNum", orderNo);//订单号
         data.put("payBusId", busId);//支付的商家id
         data.put("isSendMessage", 0);//不推送
