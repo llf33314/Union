@@ -340,9 +340,9 @@ public class UnionOpportunityController {
     }
 
     //------------------------------------------------- money ----------------------------------------------------------
-   /* @RequestMapping(value = "/79B4DE7C/paymentSuccess/{Encrypt}/{only}",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{encrypt}/{only}",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String payOpportunitySuccess(HttpServletRequest request, HttpServletResponse response
-            , @PathVariable(name = "Encrypt", required = true) String encrypt
+            , @PathVariable(name = "encrypt", required = true) String encrypt
             , @PathVariable(name = "only", required = true) String only, @RequestBody Map<String,Object> param) {
         Map<String, Object> data = new HashMap<String, Object>();
         String statusKey = RedisKeyUtil.getRecommendPayStatusKey(only);
@@ -367,35 +367,9 @@ public class UnionOpportunityController {
             data.put("msg", "失败");
             return JSON.toJSONString(data);
         }
-    }*/
-
-    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{only}",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public String payOpportunitySuccess(HttpServletRequest request, HttpServletResponse response
-            , @PathVariable(name = "only", required = true) String only, @RequestBody Map<String,Object> param) {
-        Map<String, Object> data = new HashMap<String, Object>();
-        String statusKey = RedisKeyUtil.getRecommendPayStatusKey(only);
-        try {
-//            logger.info("商机佣金支付成功，Encrypt------------------" + encrypt);
-            logger.info("商机佣金支付成功，param------------------" + JSON.toJSONString(param));
-            logger.info("商机佣金支付成功，only------------------" + only);
-            unionOpportunityService.payOpportunitySuccess(null, only);
-            data.put("code", 0);
-            data.put("msg", "成功");
-            return JSON.toJSONString(data);
-        } catch (BaseException e) {
-            redisCacheUtil.set(statusKey,ConfigConstant.USER_ORDER_STATUS_005);
-            logger.error("商机佣金支付成功后，产生错误：" + e);
-            data.put("code", -1);
-            data.put("msg", e.getErrorMsg());
-            return JSON.toJSONString(data);
-        } catch (Exception e) {
-            redisCacheUtil.set(statusKey,ConfigConstant.USER_ORDER_STATUS_005);
-            logger.error("商机佣金支付成功后，产生错误：" + e);
-            data.put("code", -1);
-            data.put("msg", "失败");
-            return JSON.toJSONString(data);
-        }
     }
+
+
 
     @ApiOperation(value = "生成商机推荐支付订单二维码", produces = "application/json;charset=UTF-8")
     @SysLogAnnotation(op_function = "2", description = "生成商机推荐支付二维码")
