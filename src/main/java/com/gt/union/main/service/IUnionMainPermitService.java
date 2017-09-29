@@ -80,8 +80,8 @@ public interface IUnionMainPermitService extends IService<UnionMainPermit> {
 
     /**
      * 创建联盟支付成功后回调
-     * @param recordEncrypt
+     * @param orderNo
      * @param only
      */
-    void payCreateUnionSuccess(String recordEncrypt, String only) throws Exception;
+    void payCreateUnionSuccess(String orderNo, String only) throws Exception;
 }

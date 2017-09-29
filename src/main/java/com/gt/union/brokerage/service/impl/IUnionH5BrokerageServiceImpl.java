@@ -416,7 +416,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		data.put("orderNum",orderNo);
 		data.put("memberId",memberId);
 		data.put("desc", "联盟商机佣金");
-		data.put("returnUrl",ConfigConstant.UNION_PHONE_ROOT_URL + url);
+		data.put("returnUrl",ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
 		data.put("notifyUrl",ConfigConstant.UNION_ROOT_URL + "/unionH5Brokerage/79B4DE7C/paymentAllSuccess/"+ busId + "/" + (unionId == null ? 0 : unionId));
 		data.put("isSendMessage",0);//不需要推送
 		data.put("payWay",1);//微信支付
@@ -456,7 +456,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		data.put("orderNum",orderNo);
 		data.put("memberId",memberId);
 		data.put("desc", "联盟商机佣金");
-		data.put("returnUrl",ConfigConstant.UNION_PHONE_ROOT_URL + url);
+		data.put("returnUrl",ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
 		data.put("notifyUrl",ConfigConstant.UNION_ROOT_URL + "/unionH5Brokerage/79B4DE7C/paymentOneSuccess/" + id);
 		data.put("isSendMessage",0);//不需要推送
 		data.put("payWay",1);//微信支付

@@ -60,7 +60,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 	public String indexList(HttpServletRequest request, @ApiParam(name = "busId", value = "商家id", required = true) @PathVariable("busId") Integer busId
 						,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) throws Exception{
 		Member member = SessionUtils.getLoginMember(request);
-		member = memberService.getById(997);
+//		member = memberService.getById(997);
 		String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
 		if(StringUtil.isNotEmpty(returnLoginUrl)){
 			return returnLoginUrl;
@@ -77,7 +77,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			,@ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam("unionId") Integer unionId
 			,@ApiParam(name = "memberId", value = "盟员id", required = true) @RequestParam("memberId") Integer memberId) throws Exception{
 		Member member = SessionUtils.getLoginMember(request);
-		member = memberService.getById(997);
+//		member = memberService.getById(997);
 		String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
 		if(StringUtil.isNotEmpty(returnLoginUrl)){
 			return returnLoginUrl;
@@ -153,7 +153,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url
 			,@ApiParam(name = "code", value = "验证码" ,required = true) @RequestParam(value = "code", required = true) String code) throws Exception{
 		Member member = SessionUtils.getLoginMember(request);
-		member = memberService.getById(997);
+//		member = memberService.getById(997);
 		String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
 		if(StringUtil.isNotEmpty(returnLoginUrl)){
 			return returnLoginUrl;
@@ -178,7 +178,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			, @ApiParam(name="unionCardBindParamVO", value = "办理联盟卡参数", required = true) @RequestBody @Valid UnionCardBindParamVO vo, BindingResult bindingResult ) throws Exception{
 			ParamValidatorUtil.checkBindingResult(bindingResult);
 			Member member = SessionUtils.getLoginMember(request);
-			member = memberService.getById(997);
+//			member = memberService.getById(997);
 			Integer busId = vo.getBusId();
 			String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
 			if(StringUtil.isNotEmpty(returnLoginUrl)){
@@ -189,7 +189,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			}
 			Map<String,Object> data = unionCardService.bindCard(vo);
 			if(CommonUtil.isNotEmpty(data.get("qrurl"))){
-				String returnUrl = ConfigConstant.UNION_PHONE_ROOT_URL + url;
+				String returnUrl = ConfigConstant.UNION_PHONE_CARD_ROOT_URL + url;
 				Map<String,Object> qrCodeData = unionCardService.createQRCode(busId, vo.getPhone(), member.getId(),vo.getUnionId(), vo.getCardType(), 1, returnUrl);
 				Map<String,Object> param = new HashMap<String,Object>();
 				param.put("totalFee", qrCodeData.get("totalFee"));

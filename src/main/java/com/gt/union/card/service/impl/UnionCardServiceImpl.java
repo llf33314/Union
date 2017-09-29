@@ -946,11 +946,8 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         data.put("model", ConfigConstant.PAY_MODEL);
         String only = String.valueOf(System.currentTimeMillis());
         String orderNo = CardConstant.ORDER_PREFIX + only;
-        String encrypt = EncryptUtil.encrypt(PropertiesUtil.getEncryptKey(), orderNo);
-        encrypt = URLEncoder.encode(encrypt,"UTF-8");
-        encrypt = URLEncoder.encode(encrypt,"UTF-8");
         WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(PropertiesUtil.getDuofenBusId());
-        data.put("notifyUrl", ConfigConstant.UNION_ROOT_URL + "/unionCard/79B4DE7C/paymentSuccess/"+encrypt + "/" + only);
+        data.put("notifyUrl", ConfigConstant.UNION_ROOT_URL + "/unionCard/79B4DE7C/paymentSuccess/" + only);
         if(isReturn == 1){
             data.put("returnUrl", returnUrl);
         }
@@ -974,9 +971,8 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void payBindCardSuccess(String encrypt, String only) throws Exception{
+    public void payBindCardSuccess(String orderNo, String only) throws Exception{
         //解密订单号
-        String orderNo = EncryptUtil.decrypt(PropertiesUtil.getEncryptKey(),encrypt);
         String statusKey = RedisKeyUtil.getBindCardPayStatusKey(only);
         String paramKey = RedisKeyUtil.getBindCardPayParamKey(only);
         Object obj = redisCacheUtil.get(paramKey);

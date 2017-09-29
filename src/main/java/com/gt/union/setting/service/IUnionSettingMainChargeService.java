@@ -1,7 +1,7 @@
-package com.gt.union.main.service;
+package com.gt.union.setting.service;
 
 import com.baomidou.mybatisplus.service.IService;
-import com.gt.union.main.entity.UnionMainPermitCharge;
+import com.gt.union.setting.entity.UnionSettingMainCharge;
 
 import java.util.List;
 
@@ -11,21 +11,20 @@ import java.util.List;
  * </p>
  *
  * @author linweicong
- * @since 2017-09-23
+ * @since 2017-09-29
  */
-public interface IUnionMainPermitChargeService extends IService<UnionMainPermitCharge> {
-
+public interface IUnionSettingMainChargeService extends IService<UnionSettingMainCharge> {
 	/**
 	 * 根据商家等级获取创建联盟套餐列表
 	 * @param level
 	 * @return
 	 */
-	List<UnionMainPermitCharge> listBusLevel(Integer level);
+	List<UnionSettingMainCharge> listBusLevel(Integer level);
 
 	/**
 	 * 根据id获取
 	 * @param chargeId
 	 * @return
 	 */
-	UnionMainPermitCharge getById(Integer chargeId);
+	UnionSettingMainCharge getById(Integer chargeId);
 }

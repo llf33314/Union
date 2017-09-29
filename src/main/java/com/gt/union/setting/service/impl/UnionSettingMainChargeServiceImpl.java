@@ -1,11 +1,11 @@
-package com.gt.union.main.service.impl;
+package com.gt.union.setting.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.CommonConstant;
-import com.gt.union.main.entity.UnionMainPermitCharge;
-import com.gt.union.main.mapper.UnionMainPermitChargeMapper;
-import com.gt.union.main.service.IUnionMainPermitChargeService;
+import com.gt.union.setting.entity.UnionSettingMainCharge;
+import com.gt.union.setting.mapper.UnionSettingMainChargeMapper;
+import com.gt.union.setting.service.IUnionSettingMainChargeService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -16,13 +16,13 @@ import java.util.List;
  * </p>
  *
  * @author linweicong
- * @since 2017-09-23
+ * @since 2017-09-29
  */
 @Service
-public class UnionMainPermitChargeServiceImpl extends ServiceImpl<UnionMainPermitChargeMapper, UnionMainPermitCharge> implements IUnionMainPermitChargeService {
+public class UnionSettingMainChargeServiceImpl extends ServiceImpl<UnionSettingMainChargeMapper, UnionSettingMainCharge> implements IUnionSettingMainChargeService {
 
 	@Override
-	public List<UnionMainPermitCharge> listBusLevel(Integer level) {
+	public List<UnionSettingMainCharge> listBusLevel(Integer level) {
 		EntityWrapper wrapper = new EntityWrapper<>();
 		wrapper.eq("level",level);
 		wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
@@ -30,10 +30,11 @@ public class UnionMainPermitChargeServiceImpl extends ServiceImpl<UnionMainPermi
 	}
 
 	@Override
-	public UnionMainPermitCharge getById(Integer chargeId) {
+	public UnionSettingMainCharge getById(Integer chargeId) {
 		EntityWrapper wrapper = new EntityWrapper<>();
 		wrapper.eq("id",chargeId);
 		wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
 		return this.selectOne(wrapper);
 	}
+	
 }

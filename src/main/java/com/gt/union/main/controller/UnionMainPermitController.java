@@ -17,10 +17,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
@@ -49,19 +46,25 @@ public class UnionMainPermitController {
     /**
      * 创建联盟支付成功回调地址
      *
-     * @param recordEncrypt
+     * @param param
      * @param only
      */
-    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{recordEncrypt}/{only}")
-    public String payCreateUnionSuccess(@PathVariable(name = "recordEncrypt") String recordEncrypt, @PathVariable(name = "only") String only) {
+    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{only}", method = RequestMethod.POST)
+    public String payCreateUnionSuccess(@PathVariable(name = "only") String only, @RequestBody Map<String,Object> param) {
         Map<String, Object> data = new HashMap<String, Object>();
         try {
-            logger.info("创建联盟支付成功，订单recordEncrypt------------------" + recordEncrypt);
-            logger.info("创建联盟支付成功，only------------------" + only);
-            unionMainPermitService.payCreateUnionSuccess(recordEncrypt, only);
-            data.put("code", 0);
-            data.put("msg", "成功");
-            return JSON.toJSONString(data);
+            logger.info("创建联盟支付成功回调参数" + JSON.toJSONString(param));
+            if(param.get("result_code").equals("SUCCESS") && param.get("result_code").equals("SUCCESS")){
+                String orderNo = param.get("out_trade_no").toString();
+                logger.info("创建联盟支付成功，订单orderNo------------------" + orderNo);
+                logger.info("创建联盟支付成功，only------------------" + only);
+                unionMainPermitService.payCreateUnionSuccess(orderNo, only);
+                data.put("code", 0);
+                data.put("msg", "成功");
+                return JSON.toJSONString(data);
+            }else {
+                throw new BusinessException("支付失败");
+            }
         } catch (BaseException e) {
             logger.error("创建联盟支付成功后，产生错误：" + e);
             data.put("code", -1);

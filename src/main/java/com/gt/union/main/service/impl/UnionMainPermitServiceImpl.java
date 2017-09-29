@@ -16,13 +16,13 @@ import com.gt.union.common.util.*;
 import com.gt.union.main.constant.MainConstant;
 import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.entity.UnionMainPermit;
-import com.gt.union.main.entity.UnionMainPermitCharge;
 import com.gt.union.main.mapper.UnionMainPermitMapper;
-import com.gt.union.main.service.IUnionMainPermitChargeService;
 import com.gt.union.main.service.IUnionMainPermitService;
 import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.service.IUnionMemberService;
+import com.gt.union.setting.entity.UnionSettingMainCharge;
+import com.gt.union.setting.service.IUnionSettingMainChargeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -60,7 +60,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
     private IUnionMemberService unionMemberService;
 
     @Autowired
-    private IUnionMainPermitChargeService unionMainPermitChargeService;
+    private IUnionSettingMainChargeService unionSettingMainChargeService;
 
     //-------------------------------------------------- get ----------------------------------------------------------
 
@@ -200,7 +200,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         if(!flag){
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        UnionMainPermitCharge charge = unionMainPermitChargeService.getById(chargeId);
+        UnionSettingMainCharge charge = unionSettingMainChargeService.getById(chargeId);
         if(charge == null){
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -236,13 +236,19 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void payCreateUnionSuccess(String recordEncrypt, String only) throws Exception{
-        //解密订单号
-        String orderNo = EncryptUtil.decrypt(PropertiesUtil.getEncryptKey(),recordEncrypt);
+    public void payCreateUnionSuccess(String orderNo, String only) throws Exception{
         String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
         Object obj = redisCacheUtil.get(paramKey);
         Map<String,Object> result = JSONObject.parseObject(obj.toString(),Map.class);
         String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
+        EntityWrapper entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("sys_order_no",orderNo);
+        entityWrapper.eq("del_status",CommonConstant.DEL_STATUS_NO);
+        entityWrapper.eq("order_status",MainConstant.PERMIT_ORDER_STATUS_SUCCESS);
+        UnionMainPermit mainPermit1 = this.selectOne(entityWrapper);
+        if(mainPermit1 != null){
+            throw new BusinessException("已支付该订单");
+        }
         //添加支付订单
         Integer busId = CommonUtil.toInteger(result.get("payBusId"));
         EntityWrapper wrapper = new EntityWrapper<>();
@@ -251,7 +257,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         UnionMainPermit permit = this.selectOne(wrapper);
         Object infoItemKey = result.get("infoItemKey");
         Integer chargeId = CommonUtil.toInteger(infoItemKey);
-        UnionMainPermitCharge charge = unionMainPermitChargeService.getById(chargeId);
+        UnionSettingMainCharge charge = unionSettingMainChargeService.getById(chargeId);
         int month = (int)(new BigDecimal(charge.getYear()).multiply(new BigDecimal(12)).doubleValue());
 
         //更新有效期,支付状态
