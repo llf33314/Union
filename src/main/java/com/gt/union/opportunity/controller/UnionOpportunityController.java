@@ -1,6 +1,7 @@
 package com.gt.union.opportunity.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
@@ -344,6 +345,7 @@ public class UnionOpportunityController {
             , @PathVariable(name = "Encrypt", required = true) String encrypt
             , @PathVariable(name = "only", required = true) String only, @RequestBody Map<String,Object> param) {
         Map<String, Object> data = new HashMap<String, Object>();
+        String statusKey = RedisKeyUtil.getRecommendPayStatusKey(only);
         try {
             logger.info("商机佣金支付成功，Encrypt------------------" + encrypt);
             logger.info("商机佣金支付成功，param------------------" + JSON.toJSONString(param));
@@ -353,11 +355,13 @@ public class UnionOpportunityController {
             data.put("msg", "成功");
             return JSON.toJSONString(data);
         } catch (BaseException e) {
+            redisCacheUtil.set(statusKey,ConfigConstant.USER_ORDER_STATUS_005);
             logger.error("商机佣金支付成功后，产生错误：" + e);
             data.put("code", -1);
             data.put("msg", e.getErrorMsg());
             return JSON.toJSONString(data);
         } catch (Exception e) {
+            redisCacheUtil.set(statusKey,ConfigConstant.USER_ORDER_STATUS_005);
             logger.error("商机佣金支付成功后，产生错误：" + e);
             data.put("code", -1);
             data.put("msg", "失败");
@@ -408,8 +412,8 @@ public class UnionOpportunityController {
     public String getStatus(@PathVariable("only") String only) throws Exception {
         logger.info("获取商机佣金支付状态：" + only);
         try {
-            String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
-            String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
+            String paramKey = RedisKeyUtil.getRecommendPayParamKey(only);
+            String statusKey = RedisKeyUtil.getRecommendPayStatusKey(only);
             Object status = redisCacheUtil.get(statusKey);
             if (CommonUtil.isEmpty(status)) {//订单超时
                 status = ConfigConstant.USER_ORDER_STATUS_004;
