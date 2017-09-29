@@ -1,5 +1,6 @@
 package com.gt.union.member.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.CommonConstant;
@@ -143,7 +144,8 @@ public class UnionMemberDiscountServiceImpl extends ServiceImpl<UnionMemberDisco
         //(1)cache
         String discountIdKey = RedisKeyUtil.getMemberDiscountIdKey(discountId);
         if (this.redisCacheUtil.exists(discountIdKey)) {
-            result = (UnionMemberDiscount) this.redisCacheUtil.get(discountIdKey);
+            String tempStr = this.redisCacheUtil.get(discountIdKey);
+            result = JSONArray.parseObject(tempStr, UnionMemberDiscount.class);
             return result;
         }
         //(2)db
@@ -168,7 +170,8 @@ public class UnionMemberDiscountServiceImpl extends ServiceImpl<UnionMemberDisco
         //(1)get in cache
         String fromMemberIdKey = RedisKeyUtil.getMemberDiscountFromMemberIdKey(fromMemberId);
         if (this.redisCacheUtil.exists(fromMemberIdKey)) {
-            result = (List<UnionMemberDiscount>) this.redisCacheUtil.get(fromMemberIdKey);
+            String tempStr = this.redisCacheUtil.get(fromMemberIdKey);
+            result = JSONArray.parseArray(tempStr, UnionMemberDiscount.class);
             return result;
         }
         //(2)get in db
@@ -189,7 +192,8 @@ public class UnionMemberDiscountServiceImpl extends ServiceImpl<UnionMemberDisco
         //(1)get in cache
         String toMemberIdKey = RedisKeyUtil.getMemberDiscountToMemberIdKey(toMemberId);
         if (this.redisCacheUtil.exists(toMemberIdKey)) {
-            result = (List<UnionMemberDiscount>) this.redisCacheUtil.get(toMemberIdKey);
+            String tempStr = this.redisCacheUtil.get(toMemberIdKey);
+            result = JSONArray.parseArray(tempStr, UnionMemberDiscount.class);
             return result;
         }
         //(2)get in db

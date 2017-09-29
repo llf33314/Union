@@ -1,5 +1,6 @@
 package com.gt.union.member.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -398,7 +399,8 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         //(1)cache
         String joinIdKey = RedisKeyUtil.getMemberJoinIdKey(joinId);
         if (this.redisCacheUtil.exists(joinIdKey)) {
-            result = (UnionMemberJoin) this.redisCacheUtil.get(joinIdKey);
+            String tempStr = this.redisCacheUtil.get(joinIdKey);
+            result = JSONArray.parseObject(tempStr, UnionMemberJoin.class);
             return result;
         }
         //(2)db
@@ -423,7 +425,8 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         //(1)get in cache
         String applyMemberIdKey = RedisKeyUtil.getMemberJoinApplyMemberIdKey(applyMemberId);
         if (this.redisCacheUtil.exists(applyMemberIdKey)) {
-            result = (List<UnionMemberJoin>) this.redisCacheUtil.get(applyMemberIdKey);
+            String tempStr = this.redisCacheUtil.get(applyMemberIdKey);
+            result = JSONArray.parseArray(tempStr, UnionMemberJoin.class);
             return result;
         }
         //(2)get in db
@@ -444,7 +447,8 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         //(1)get in cache
         String recommendMemberIdKey = RedisKeyUtil.getMemberJoinRecommendMemberIdKey(recommendMemberId);
         if (this.redisCacheUtil.exists(recommendMemberIdKey)) {
-            result = (List<UnionMemberJoin>) this.redisCacheUtil.get(recommendMemberIdKey);
+            String tempStr = this.redisCacheUtil.get(recommendMemberIdKey);
+            result = JSONArray.parseArray(tempStr, UnionMemberJoin.class);
             return result;
         }
         //(2)get in db

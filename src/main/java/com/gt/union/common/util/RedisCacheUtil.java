@@ -1,7 +1,6 @@
 package com.gt.union.common.util;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -31,13 +30,13 @@ public class RedisCacheUtil {
      * @param key 键
      * @return Object 值
      */
-    public Object get(String key) {
-        Object result = null;
+
+    public String get(String key) {
+        String result = null;
         try {
             ValueOperations<String, String> operations = this.redisTemplate.opsForValue();
             String tgtKey = this.getRedisNamePrefix() + key;
-            String value = operations.get(tgtKey);
-            result = JSONObject.parse(value);
+            result = operations.get(tgtKey);
         } catch (Exception e) {
             e.printStackTrace();
         }
