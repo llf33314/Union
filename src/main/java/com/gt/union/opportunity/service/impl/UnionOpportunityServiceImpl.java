@@ -1297,6 +1297,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         data.put("isreturn", 0);//0：不需要同步跳转
         data.put("model", ConfigConstant.PAY_MODEL);
         String encrypt = EncryptUtil.encrypt(ConfigConstant.UNION_ENCRYPTKEY, ids);
+        encrypt = URLEncoder.encode(encrypt, "UTF-8");
 //        Map<String,Object> param = new HashMap<String,Object>();
 //        param.put("ids",ids);
 //        param.put("only",only);
