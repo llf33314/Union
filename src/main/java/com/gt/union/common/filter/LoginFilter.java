@@ -63,9 +63,15 @@ public class LoginFilter implements Filter {
         BusUser busUser = SessionUtils.getLoginUser(req);
 //        busUser = justForDev(req, busUser); //TODO 正式中请注释掉
         if (busUser == null) {
-           if(url.indexOf("cardH5") > -1){
+            if(url.equals("/cardPhone/")){//
+                chain.doFilter(request, response);
+                return;
+            }else if(url.indexOf("cardH5") > -1){
                 response.setCharacterEncoding("UTF-8");
                 response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin")));
+                return;
+            }else if(url.equals("/brokeragePhone/")){
+                chain.doFilter(request, response);
                 return;
             }else if(url.indexOf("unionH5Brokerage") > -1){
                 response.setCharacterEncoding("UTF-8");
