@@ -399,8 +399,15 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		}
 		String orderNo = OpportunityConstant.ORDER_PREFIX + System.currentTimeMillis();
 		List<UnionOpportunity> list = this.listAllUnPayUnionBrokerage(busId,unionId);
-		String encrypt = EncryptUtil.encrypt(ConfigConstant.UNION_ENCRYPTKEY, JSON.toJSONString(list));
-		encrypt = URLEncoder.encode(encrypt, "UTF-8");
+
+		List<Integer> ids = new ArrayList<Integer>();
+		for(UnionOpportunity opportunity : list){
+			ids.add(opportunity.getId());
+		}
+		int count = unionBrokerageIncomeService.countByOpportunityIds(ids);
+		if(count > 0){
+			throw new BusinessException("商机已支付");
+		}
 		Map<String,Object> data = new HashMap<String,Object>();
 		data.put("totalFee",money);
 		data.put("model", ConfigConstant.ENTERPRISE_PAY_MODEL);
@@ -410,7 +417,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		data.put("memberId",memberId);
 		data.put("desc", "联盟商机佣金");
 		data.put("returnUrl",ConfigConstant.UNION_PHONE_ROOT_URL + url);
-		data.put("notifyUrl",ConfigConstant.UNION_ROOT_URL + "/unionH5Brokerage/79B4DE7C/paymentAllSuccess/" + encrypt);
+		data.put("notifyUrl",ConfigConstant.UNION_ROOT_URL + "/unionH5Brokerage/79B4DE7C/paymentAllSuccess/"+ busId + "/" + (unionId == null ? 0 : unionId));
 		data.put("isSendMessage",0);//不需要推送
 		data.put("payWay",1);//微信支付
 		data.put("sourceType",1);
@@ -434,9 +441,13 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		if(opportunity.getBrokeragePrice().doubleValue() <= 0){
 			throw new BusinessException("支付金额有误");
 		}
+		List<Integer> ids = new ArrayList<Integer>();
+		ids.add(id);
+		int count = unionBrokerageIncomeService.countByOpportunityIds(ids);
+		if(count > 0){
+			throw new BusinessException("商机已支付");
+		}
 		String orderNo = OpportunityConstant.ORDER_PREFIX + System.currentTimeMillis();
-		String encrypt = EncryptUtil.encrypt(ConfigConstant.UNION_ENCRYPTKEY, String.valueOf(id));
-		encrypt = URLEncoder.encode(encrypt, "UTF-8");
 		Map<String,Object> data = new HashMap<String,Object>();
 		data.put("totalFee",opportunity.getBrokeragePrice());
 		data.put("model", ConfigConstant.ENTERPRISE_PAY_MODEL);
@@ -446,7 +457,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		data.put("memberId",memberId);
 		data.put("desc", "联盟商机佣金");
 		data.put("returnUrl",ConfigConstant.UNION_PHONE_ROOT_URL + url);
-		data.put("notifyUrl",ConfigConstant.UNION_ROOT_URL + "/unionH5Brokerage/79B4DE7C/paymentOneSuccess/" + encrypt);
+		data.put("notifyUrl",ConfigConstant.UNION_ROOT_URL + "/unionH5Brokerage/79B4DE7C/paymentOneSuccess/" + id);
 		data.put("isSendMessage",0);//不需要推送
 		data.put("payWay",1);//微信支付
 		data.put("sourceType",1);
@@ -456,52 +467,27 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public void paymentOneOpportunitySuccess(String encrypt, String orderNo, Integer verifierId) throws Exception{
-		String id = EncryptUtil.decrypt(ConfigConstant.UNION_ENCRYPTKEY, encrypt);
-		Integer oppId = Integer.parseInt(id);
-		UnionOpportunity opportunity = unionOpportunityService.getById(oppId);
+	public void paymentOneOpportunitySuccess(Integer id, String orderNo, Integer verifierId) throws Exception{
+		UnionOpportunity opportunity = unionOpportunityService.getById(id);
 		if(opportunity == null){
 			throw new BusinessException("商机不存在");
 		}
 		if(opportunity.getIsAccept() != OpportunityConstant.ACCEPT_YES){
 			throw new BusinessException("该商机未受理");
 		}
-		UnionBrokerageIncome brokerageIncome = unionBrokerageIncomeService.getByUnionOpportunityId(oppId);
+		UnionBrokerageIncome brokerageIncome = unionBrokerageIncomeService.getByUnionOpportunityId(id);
 		if(brokerageIncome != null){
 			throw new BusinessException("该商机已支付");
 		}
-		UnionMember fromMember = unionMemberService.getById(opportunity.getFromMemberId());
-		UnionMember toMember = unionMemberService.getById(opportunity.getToMemberId());
-		//商家佣金收入
-		UnionBrokerageIncome income = new UnionBrokerageIncome();
-		income.setBusId(fromMember.getBusId());
-		income.setMoney(opportunity.getBrokeragePrice());
-		income.setOpportunityId(oppId);
-		income.setDelStatus(CommonConstant.DEL_STATUS_NO);
-		income.setCreatetime(new Date());
-		income.setType(BrokerageConstant.SOURCE_TYPE_OPPORTUNITY);
-		unionBrokerageIncomeService.insert(income);
-
-		//收支明细
-		UnionBrokeragePay pay = new UnionBrokeragePay();
-		pay.setToBusId(fromMember.getBusId());
-		pay.setFromBusId(toMember.getBusId());
-		pay.setDelStatus(CommonConstant.DEL_STATUS_NO);
-		pay.setCreatetime(new Date());
-		pay.setOrderNo(orderNo);
-		pay.setStatus(BrokerageConstant.BROKERAGE_PAY_STATUS_YES);//支付成功
-		pay.setMoney(opportunity.getBrokeragePrice());
-		pay.setType(BrokerageConstant.BROKERAGE_PAY_TYPE_WX);//微信支付
-		pay.setOpportunityId(opportunity.getId());
-		pay.setVerifierId(verifierId);
-		unionBrokeragePayService.insert(pay);
+		List<UnionOpportunity> list = new ArrayList<UnionOpportunity>();
+		list.add(opportunity);
+		unionOpportunityService.insertBatchByList(list,orderNo,verifierId);
 	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public void payAllOpportunitySuccess(String encrypt, String orderNo, Integer verifierId) throws Exception{
-		String data = EncryptUtil.decrypt(ConfigConstant.UNION_ENCRYPTKEY, encrypt);
-		List<UnionOpportunity> list =JSONArray.parseArray(data,UnionOpportunity.class);
+	public void payAllOpportunitySuccess(Integer busId, Integer unionId,  String orderNo, Integer verifierId) throws Exception{
+		List<UnionOpportunity> list = this.listAllUnPayUnionBrokerage(busId,unionId == 0 ? null : unionId);
 		unionOpportunityService.insertBatchByList(list,orderNo,verifierId);
 	}
 

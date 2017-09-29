@@ -239,7 +239,7 @@ public class UnionCardController {
 	public String getStatus(HttpServletRequest request, HttpServletResponse response, @PathVariable("only")String only) throws Exception{
 		logger.info("获取办理联盟卡支付订单状态：" + only);
 		String statusKey = RedisKeyUtil.getBindCardPayStatusKey(only);
-		String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
+		String paramKey = RedisKeyUtil.getBindCardPayParamKey(only);
 		Object status = redisCacheUtil.get(statusKey);
 		if(CommonUtil.isEmpty(status)){//订单超时
 			status = ConfigConstant.USER_ORDER_STATUS_004;
@@ -293,6 +293,7 @@ public class UnionCardController {
 	@RequestMapping(value = "/79B4DE7C/paymentSuccess/{encrypt}/{only}")
 	public String payBindCardSuccess(HttpServletRequest request, HttpServletResponse response, @PathVariable(name = "encrypt", required = true) String encrypt, @PathVariable(name = "only", required = true) String only) {
 		Map<String,Object> data = new HashMap<String,Object>();
+		String statusKey = RedisKeyUtil.getBindCardPayStatusKey(only);
 		try {
 			logger.info("前台办理联盟卡支付成功，订单encrypt------------------"+encrypt);
 			logger.info("前台办理联盟卡支付成功，only------------------"+only);
@@ -301,11 +302,13 @@ public class UnionCardController {
 			data.put("msg","成功");
 			return JSON.toJSONString(data);
 		} catch (BaseException e) {
+			redisCacheUtil.set(statusKey,ConfigConstant.USER_ORDER_STATUS_005);
 			logger.error("办理联盟卡支付成功后，产生错误：" + e);
 			data.put("code",-1);
 			data.put("msg",e.getErrorMsg());
 			return JSON.toJSONString(data);
 		} catch (Exception e) {
+			redisCacheUtil.set(statusKey,ConfigConstant.USER_ORDER_STATUS_005);
 			logger.error("办理联盟卡支付成功后，产生错误：" + e);
 			data.put("code",-1);
 			data.put("msg","失败");

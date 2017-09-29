@@ -173,19 +173,21 @@ public interface IUnionH5BrokerageService {
 
 	/**
 	 * 单个商机佣金支付成功回调
-	 *  @param encrypt
+	 *  @param id,
 	 * @param orderNo
 	 * @param verifierId
 	 */
-	void paymentOneOpportunitySuccess(String encrypt, String orderNo, Integer verifierId) throws Exception;
+	void paymentOneOpportunitySuccess(Integer id, String orderNo, Integer verifierId) throws Exception;
 
 	/**
 	 * 多个商机佣金支付成功回调
-	 * @param encrypt
+	 * @param busId
+	 * @param unionId
 	 * @param orderNo
 	 * @param verifierId
+	 * @throws Exception
 	 */
-	void payAllOpportunitySuccess(String encrypt, String orderNo, Integer verifierId) throws Exception;
+	void payAllOpportunitySuccess(Integer busId, Integer unionId, String orderNo, Integer verifierId) throws Exception;
 
 	/**
 	 * 查询未支付的佣金列表

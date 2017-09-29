@@ -14,6 +14,7 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.controller.MemberAuthorizeOrLoginController;
 import com.gt.union.common.exception.BaseException;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.*;
 import com.gt.union.main.entity.UnionMain;
@@ -335,19 +336,24 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	}
 
 
-	@RequestMapping(value = "/79B4DE7C/paymentOneSuccess/{Encrypt}", method = RequestMethod.POST)
+	@RequestMapping(value = "/79B4DE7C/paymentOneSuccess/{id}", method = RequestMethod.POST)
 	public String paymentOneOpportunitySuccess(HttpServletRequest request, HttpServletResponse response
-			, @PathVariable(name = "Encrypt", required = true) String encrypt , @RequestBody Map<String,Object> param) {
+			, @PathVariable(name = "id", required = true) Integer id , @RequestBody Map<String,Object> param) {
 		Map<String,Object> data = new HashMap<String,Object>();
 		try {
-			logger.info("商机佣金支付成功，Encrypt------------------" + encrypt);
 			logger.info("支付成功回调参数" + JSON.toJSONString(param));
-			logger.info("商机佣金支付成功，orderNo------------------" + param.get("out_trade_no"));
-			UnionVerifier verifier = com.gt.union.common.util.SessionUtils.getVerifier(request);
-			unionH5BrokerageService.paymentOneOpportunitySuccess(encrypt, param.get("out_trade_no").toString(), verifier == null ? null : verifier.getId());
-			data.put("code",0);
-			data.put("msg","成功");
-			return JSON.toJSONString(data);
+			if(param.get("result_code").equals("SUCCESS") && param.get("result_code").equals("SUCCESS")){
+				String orderNo = param.get("out_trade_no").toString();
+				logger.info("商机佣金支付成功，id------------------" + id);
+				logger.info("商机佣金支付成功，orderNo------------------" + orderNo);
+				UnionVerifier verifier = com.gt.union.common.util.SessionUtils.getVerifier(request);
+				unionH5BrokerageService.paymentOneOpportunitySuccess(id, orderNo, verifier == null ? null : verifier.getId());
+				data.put("code",0);
+				data.put("msg","成功");
+				return JSON.toJSONString(data);
+			} else {
+				throw new BusinessException("支付失败");
+			}
 		} catch (BaseException e) {
 			logger.error("商机佣金支付成功后，产生错误：" + e);
 			data.put("code",-1);
@@ -361,19 +367,24 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 		}
 	}
 
-	@RequestMapping(value = "/79B4DE7C/paymentAllSuccess/{Encrypt}", method = RequestMethod.POST)
+	@RequestMapping(value = "/79B4DE7C/paymentAllSuccess/{busId}/{unionId}", method = RequestMethod.POST)
 	public String payAllOpportunitySuccess(HttpServletRequest request, HttpServletResponse response
-			, @PathVariable(name = "Encrypt", required = true) String encrypt, @RequestBody Map<String,Object> param) {
+			, @PathVariable(name = "busId", required = true) Integer busId ,
+		   		@PathVariable(name = "busId", required = true) Integer unionId ,@RequestBody Map<String,Object> param) {
 		Map<String,Object> data = new HashMap<String,Object>();
 		try {
-			logger.info("商机佣金支付成功，Encrypt------------------" + encrypt);
-			logger.info("支付成功回调参数" + JSON.toJSONString(param));
-			logger.info("商机佣金支付成功，orderNo------------------" + param.get("out_trade_no"));
-			UnionVerifier verifier = com.gt.union.common.util.SessionUtils.getVerifier(request);
-			unionH5BrokerageService.payAllOpportunitySuccess(encrypt, param.get("out_trade_no").toString(), verifier == null ? null : verifier.getId());
-			data.put("code",0);
-			data.put("msg","成功");
-			return JSON.toJSONString(data);
+			logger.info("商机支付成功回调参数" + JSON.toJSONString(param));
+			if(param.get("result_code").equals("SUCCESS") && param.get("result_code").equals("SUCCESS")){
+				String orderNo = param.get("out_trade_no").toString();
+				logger.info("商机佣金支付成功，orderNo------------------" + orderNo);
+				UnionVerifier verifier = com.gt.union.common.util.SessionUtils.getVerifier(request);
+				unionH5BrokerageService.payAllOpportunitySuccess(busId, unionId, orderNo, verifier == null ? null : verifier.getId());
+				data.put("code",0);
+				data.put("msg","成功");
+				return JSON.toJSONString(data);
+			} else {
+				throw new BusinessException("支付失败");
+			}
 		} catch (BaseException e) {
 			logger.error("商机佣金支付成功后，产生错误：" + e);
 			data.put("code",-1);

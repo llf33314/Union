@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.api.bean.session.WxPublicUsers;
+import com.gt.api.util.KeysUtil;
 import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.brokerage.constant.BrokerageConstant;
 import com.gt.union.brokerage.entity.UnionBrokerageIncome;
@@ -1295,9 +1296,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         data.put("payWay", 1);//系统判断支付方式
         data.put("isreturn", 0);//0：不需要同步跳转
         data.put("model", ConfigConstant.PAY_MODEL);
-        String encrypt = EncryptUtil.encrypt(ConfigConstant.UNION_ENCRYPTKEY, ids);
-        encrypt = URLEncoder.encode(encrypt, "UTF-8");
-        data.put("notifyUrl", ConfigConstant.UNION_ROOT_URL + "/unionOpportunity/79B4DE7C/paymentSuccess/" + encrypt + "/" + only);
+        data.put("notifyUrl", ConfigConstant.UNION_ROOT_URL + "/unionOpportunity/79B4DE7C/paymentSuccess/" + only);
         data.put("orderNum", orderNo);//订单号
         data.put("payBusId", busId);//支付的商家id
         data.put("isSendMessage", 0);//不推送
@@ -1305,6 +1304,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         data.put("desc", "联盟商机佣金");
         data.put("appidType", 0);//公众号
         data.put("only", only);
+        data.put("data",ids);
         String paramKey = RedisKeyUtil.getRecommendPayParamKey(only);
         String statusKey = RedisKeyUtil.getRecommendPayStatusKey(only);
         redisCacheUtil.set(paramKey, JSON.toJSONString(data), 360l);//5分钟
@@ -1314,19 +1314,28 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
 
     @Transactional(rollbackFor = Exception.class)
     @Override
-    public void payOpportunitySuccess(String encrypt, String only) throws Exception {
+    public void payOpportunitySuccess(String orderNo, String only) throws Exception {
         //解密参数
-        String ids = EncryptUtil.decrypt(ConfigConstant.UNION_ENCRYPTKEY, encrypt);
         String paramKey = RedisKeyUtil.getRecommendPayParamKey(only);
         Object obj = redisCacheUtil.get(paramKey);
+        if(CommonUtil.isEmpty(obj)){
+            throw new BusinessException("支付失败");
+        }
         Map<String, Object> result = JSONObject.parseObject(obj.toString(), Map.class);
         String statusKey = RedisKeyUtil.getRecommendPayStatusKey(only);
-        String[] arrs = ids.split(",");
+        String[] arrs = result.get("data").toString().split(",");
+        List<Integer> ids = new ArrayList<Integer>();
+        for(String id : arrs){
+            ids.add(Integer.valueOf(id));
+        }
+        int count = unionBrokerageIncomeService.countByOpportunityIds(ids);
+        if(count > 0){
+            throw new BusinessException("商机已支付");
+        }
         EntityWrapper wrapper = new EntityWrapper<>();
         wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
-        wrapper.in("id", arrs);
+        wrapper.in("id", ids.toArray());
         List<UnionOpportunity> list = this.selectList(wrapper);
-        String orderNo = result.get("orderNum").toString();
         //插入佣金收入列表
         this.insertBatchByList(list, orderNo, null);
         redisCacheUtil.remove(paramKey);

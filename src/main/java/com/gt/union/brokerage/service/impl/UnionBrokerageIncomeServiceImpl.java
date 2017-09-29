@@ -19,10 +19,7 @@ import com.gt.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -212,6 +209,15 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
             return 0;
         }
         return CommonUtil.toDouble(data.get("money"));
+    }
+
+    @Override
+    public int countByOpportunityIds(List<Integer> ids) {
+        EntityWrapper wrapper = new EntityWrapper<>();
+        wrapper.in("id", ids.toArray());
+        wrapper.eq("type", BrokerageConstant.SOURCE_TYPE_OPPORTUNITY);
+        wrapper.eq("del_status",CommonConstant.DEL_STATUS_NO);
+        return this.selectCount(wrapper);
     }
 }
 
