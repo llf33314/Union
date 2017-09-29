@@ -28,6 +28,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -338,13 +339,14 @@ public class UnionOpportunityController {
     }
 
     //------------------------------------------------- money ----------------------------------------------------------
-    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{Encrypt}/{only}", method = RequestMethod.POST)
+    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{Encrypt}/{only}",method = RequestMethod.POST)
     public String payOpportunitySuccess(HttpServletRequest request, HttpServletResponse response
             , @PathVariable(name = "Encrypt", required = true) String encrypt
-            , @PathVariable(name = "only", required = true) String only) {
+            , @PathVariable(name = "only", required = true) String only, @RequestBody Map<String,Object> param) {
         Map<String, Object> data = new HashMap<String, Object>();
         try {
             logger.info("商机佣金支付成功，Encrypt------------------" + encrypt);
+            logger.info("商机佣金支付成功，param------------------" + JSON.toJSONString(param));
             logger.info("商机佣金支付成功，only------------------" + only);
             unionOpportunityService.payOpportunitySuccess(encrypt, only);
             data.put("code", 0);
