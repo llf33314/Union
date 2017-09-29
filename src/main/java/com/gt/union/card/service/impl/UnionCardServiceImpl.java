@@ -1081,7 +1081,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 
     @Override
     public Map<String, Object> getUnionInfoCardList(Integer busId, Member member, Integer unionId, Integer memberId) throws Exception{
-        List<Map<String,Object>> members = unionMemberService.listMemberDiscountByMemberIds(unionId, memberId);//获取我给联盟内盟员的折扣列表
+        List<Map<String,Object>> members = unionMemberService.listMapById(memberId);//获取我给联盟内盟员的折扣列表
         for(int i = 0; i < members.size(); i++){
             int flag = 0;//标识是否已经找到本商家了  是：1 否：0
             Map<String,Object> map = members.get(i);
