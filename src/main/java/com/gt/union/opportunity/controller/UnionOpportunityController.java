@@ -340,7 +340,7 @@ public class UnionOpportunityController {
     }
 
     //------------------------------------------------- money ----------------------------------------------------------
-    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{Encrypt}/{only}",method = RequestMethod.POST)
+    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{Encrypt}/{only}",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String payOpportunitySuccess(HttpServletRequest request, HttpServletResponse response
             , @PathVariable(name = "Encrypt", required = true) String encrypt
             , @PathVariable(name = "only", required = true) String only, @RequestBody Map<String,Object> param) {
