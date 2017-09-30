@@ -69,7 +69,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
             throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
         //(2)检查联盟有效期
-        this.unionMainService.checkUnionMainValid(unionOwner.getUnionId());
+        this.unionMainService.checkUnionValid(unionOwner.getUnionId());
         //(3)判断是否具有读权限
         if (!this.unionMemberService.hasReadAuthority(unionOwner)) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
@@ -111,7 +111,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
             throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
         //(2)检查联盟有效期
-        this.unionMainService.checkUnionMainValid(unionOwner.getUnionId());
+        this.unionMainService.checkUnionValid(unionOwner.getUnionId());
         //(3)判断是否具有读权限
         if (!this.unionMemberService.hasReadAuthority(unionOwner)) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
@@ -160,7 +160,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
             throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
         //(2)检查联盟有效期
-        this.unionMainService.checkUnionMainValid(member.getUnionId());
+        this.unionMainService.checkUnionValid(member.getUnionId());
         //(3)判断是否具有写权限
         if (!this.unionMemberService.hasWriteAuthority(member)) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
@@ -222,7 +222,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
             throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
         //(2)检查联盟有效期
-        this.unionMainService.checkUnionMainValid(unionOwner.getUnionId());
+        this.unionMainService.checkUnionValid(unionOwner.getUnionId());
         //(3)判断是否具有写权限
         if (!this.unionMemberService.hasWriteAuthority(unionOwner)) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
@@ -280,7 +280,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
             throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
         //(2)检查联盟有效期
-        this.unionMainService.checkUnionMainValid(unionOwner.getUnionId());
+        this.unionMainService.checkUnionValid(unionOwner.getUnionId());
         //(3)判断是否具有写权限
         if (!this.unionMemberService.hasWriteAuthority(unionOwner)) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);

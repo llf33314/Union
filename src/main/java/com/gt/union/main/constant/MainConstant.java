@@ -104,4 +104,33 @@ public interface MainConstant {
      */
     int PERMIT_PAY_TYPE_ALI = 3;
 
+    /**
+     * 缓存键：字典id
+     */
+    int REDIS_KEY_DICT_ID = 1;
+
+    /**
+     * 缓存键：字典所属的联盟id
+     */
+    int REDIS_KEY_DICT_UNION_ID = 2;
+
+    /**
+     * 缓存键：升级收费id
+     */
+    int REDIS_KEY_CHARGE_ID = 1;
+
+    /**
+     * 缓存键：升级收费所关联的联盟id
+     */
+    int REDIS_KEY_CHARGE_UNION_ID = 2;
+
+    /**
+     * 缓存键：公告id
+     */
+    int REDIS_KEY_NOTICE_ID = 1;
+
+    /**
+     * 缓存键：公告所属的联盟id
+     */
+    int REDIS_KEY_NOTICE_UNION_ID = 2;
 }
