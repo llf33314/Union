@@ -146,6 +146,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 
         };
         wrapper.setSqlSelect(" t1.id, DATE_FORMAT(t1.createtime, '%Y-%m-%d %T') createtime, t1.type, DATE_FORMAT(t1.validity, '%Y-%m-%d %T') validity, t2.phone, t2.number as cardNo, t2.integral");
+        wrapper.orderBy("ti.id",false);
         Page result = this.selectMapsPage(page, wrapper);
         return result;
     }
@@ -186,7 +187,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         }
         List<UnionMember> members = unionMemberService.listWriteWithValidUnionByBusId(busId);
         if (ListUtil.isEmpty(members)) {
-            throw new BusinessException("您没有有效的联盟");
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
         //获取最低折扣信息和联盟列表
         Map<String, Object> result = this.getByMinDiscountByCard(root.getId(), busId, members, unionId);
@@ -201,7 +202,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         }
         List<UnionMember> members = unionMemberService.listWriteWithValidUnionByBusId(busId);
         if (ListUtil.isEmpty(members)) {
-            throw new BusinessException("您没有有效的联盟");
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
 
         Map<String, Object> result = this.getByMinDiscountByCard(root.getId(), busId, members, unionId);
@@ -416,8 +417,8 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 }
                 data.put("unions", unions);
             }
-            List<Map<String, Object>> shops = shopService.listByBusId(busId);
-            data.put("shops", shops);
+           /* List<Map<String, Object>> shops = shopService.listByBusId(busId);
+            data.put("shops", shops);*/
         }
         //得到的盟员id
         Integer memberId = CommonUtil.toInteger(disMap.get("fromMemberId"));
@@ -430,13 +431,15 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         data.put("integral", root.getIntegral());
         data.put("validity", CommonUtil.toInteger(disMap.get("isCharge")) == 1 ? DateTimeKit.daysBetween(new Date(), DateTimeKit.parseDate(disMap.get("validity").toString(), "yyyy/MM/dd HH:mm:ss")) : null);
         List<UnionMainCharge> redChargeList = unionMainChargeService.listByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_RED, MainConstant.CHARGE_IS_AVAILABLE_YES);
-        UnionMainCharge redCharge = ListUtil.isNotEmpty(redChargeList) ? redChargeList.get(0) : null;
-        if (redCharge != null) {
-            UnionPreferentialProject project = unionPreferentialProjectService.getByMemberId(memberId);
-            if (project != null) {
-                List<UnionPreferentialItem> items = unionPreferentialItemService.listByProjectIdAndStatus(project.getId(), PreferentialConstant.STATUS_PASS);
-                data.put("items", items);
-                data.put("illustration", CommonUtil.isEmpty(redCharge.getIllustration()) ? "" : redCharge.getIllustration());
+        if(CommonUtil.toInteger(disMap.get("cardType")) == CardConstant.TYPE_RED){
+            UnionMainCharge redCharge = ListUtil.isNotEmpty(redChargeList) ? redChargeList.get(0) : null;
+            if (redCharge != null) {
+                UnionPreferentialProject project = unionPreferentialProjectService.getByMemberId(memberId);
+                if (project != null) {
+                    List<UnionPreferentialItem> items = unionPreferentialItemService.listByProjectIdAndStatus(project.getId(), PreferentialConstant.STATUS_PASS);
+                    data.put("items", items);
+                    data.put("illustration", CommonUtil.isEmpty(redCharge.getIllustration()) ? "" : redCharge.getIllustration());
+                }
             }
         }
         data.put("unionId", unionId);
@@ -620,7 +623,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         }
         List<UnionMember> members = unionMemberService.listWriteWithValidUnionByBusId(busId);
         if (ListUtil.isEmpty(members)) {
-            throw new BusinessException("您没有有效的联盟");
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
         Iterator<UnionMember> it = members.iterator();
         while (it.hasNext()) {
@@ -696,7 +699,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         }
         List<UnionMember> members = unionMemberService.listWriteWithValidUnionByBusId(busId);
         if (ListUtil.isEmpty(members)) {
-            throw new BusinessException("您没有有效的联盟");
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
         Map<String, Object> data = getUnionInfo(members, phone, unionId, busId);
         WxPublicUsers users = busUserService.getWxPublicUserByBusId(busId);
@@ -770,10 +773,10 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         unionMainService.checkUnionValid(vo.getUnionId());
         UnionMember member = unionMemberService.getByBusIdAndUnionId(vo.getBusId(), vo.getUnionId());
         if (member == null) {
-            throw new BusinessException("您没有该联盟权限");
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
         if (!unionMemberService.hasWriteAuthority(member)) {
-            throw new BusinessException("您没有该联盟权限");
+            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
         UnionCard card = this.getByPhoneAndMemberId(vo.getPhone(), member.getId(), true);
         if (card != null && card.getType().equals(vo.getCardType())) {

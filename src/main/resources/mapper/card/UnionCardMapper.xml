@@ -18,7 +18,7 @@
 
 	<!--获取最低折扣的联盟卡-->
 	<select id="getByMinDiscountByCardList" resultType="java.util.Map">
-		SELECT * from (SELECT d.discount, d.from_member_id fromMemberId, d.to_member_id toMemberId, c.id cardId, m.enterprise_name enterpriseName, c.root_id rootId, DATE_FORMAT(c.validity, '%Y-%m-%d %T') validity, c.is_charge isCharge from
+		SELECT * from (SELECT d.discount, d.from_member_id fromMemberId, d.to_member_id toMemberId, c.id cardId, m.enterprise_name enterpriseName, c.root_id rootId, c.type cardType, DATE_FORMAT(c.validity, '%Y-%m-%d %T') validity, c.is_charge isCharge from
 		(SELECT * from t_union_card WHERE id in
 		<foreach collection="list" item="card" open="(" close=")"
 				 separator=",">
@@ -62,7 +62,7 @@
 
 	<!-- 根据联盟卡列表查询最早办理的联盟卡 -->
 	<select id="getByEarliestByCardList" resultType="java.util.Map">
-	  SELECT * from (SELECT c.id cardId, m.enterprise_name enterpriseName, c.member_id toMemberId, c.root_id rootId, DATE_FORMAT(c.validity, '%Y-%m-%d %T') validity, c.is_charge isCharge from
+	  SELECT * from (SELECT c.id cardId, m.enterprise_name enterpriseName, c.member_id toMemberId, c.root_id rootId, c.type cardType, DATE_FORMAT(c.validity, '%Y-%m-%d %T') validity, c.is_charge isCharge from
 		(SELECT * from t_union_card WHERE id in
 		<foreach collection="list" item="card" open="(" close=")"
 				 separator=",">
