@@ -194,7 +194,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         data.put("infoItemKey", chargeId);
         String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
         String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
-        redisCacheUtil.set(paramKey, JSON.toJSONString(data), 360l);//5分钟
+        redisCacheUtil.set(paramKey, data, 360l);//5分钟
         redisCacheUtil.set(statusKey,ConfigConstant.USER_ORDER_STATUS_001,300l);//等待扫码状态
         return data;
     }
@@ -203,11 +203,11 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
     @Transactional(rollbackFor = Exception.class)
     public void payCreateUnionSuccess(String orderNo, String only) throws Exception{
         String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
-        Object obj = redisCacheUtil.get(paramKey);
+        String obj = redisCacheUtil.get(paramKey);
         if(CommonUtil.isEmpty(obj)){
             throw new BusinessException("订单不存在或超时");
         }
-        Map<String,Object> result = JSONObject.parseObject(obj.toString(),Map.class);
+        Map<String,Object> result = JSONObject.parseObject(obj,Map.class);
         String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
         //判断订单是否支付
         EntityWrapper entityWrapper = new EntityWrapper<>();

@@ -35,6 +35,9 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
     @Autowired
     private IUnionMemberService unionMemberService;
 
+    @Autowired
+    private IUnionMainService unionMainService;
+
     @Override
     public UnionBrokerageIncome getByUnionOpportunityId(Integer id) {
         EntityWrapper wrapper = new EntityWrapper();
@@ -42,9 +45,6 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
         wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
         return this.selectOne(wrapper);
     }
-
-    @Autowired
-    private IUnionMainService unionMainService;
 
     /**
      * 根据商家id和盟员身份id，分页获取同一个联盟下的售卡佣金分成列表信息，并根据售卡类型(精确匹配)、卡号(模糊匹配)进行匹配

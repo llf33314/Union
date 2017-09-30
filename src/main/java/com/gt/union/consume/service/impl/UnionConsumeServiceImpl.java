@@ -356,8 +356,8 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		//解密参数
 		String orderNo = EncryptUtil.decrypt(encrypt, encrypt);
 		String paramKey = RedisKeyUtil.getConsumePayParamKey(only);
-		Object obj = redisCacheUtil.get(paramKey);
-		Map<String, Object> result = JSONObject.parseObject(obj.toString(), Map.class);
+		String obj = redisCacheUtil.get(paramKey);
+		Map<String, Object> result = JSONObject.parseObject(obj, Map.class);
 		UnionConsumeParamVO vo = (UnionConsumeParamVO)result.get("unionConsumeParamVO");
 		String statusKey = RedisKeyUtil.getConsumePayStatusKey(only);
 
@@ -418,7 +418,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		data.put("unionConsumeParamVO", vo);
 		String paramKey = RedisKeyUtil.getConsumePayStatusKey(only);
 		String statusKey = RedisKeyUtil.getConsumePayParamKey(only);
-		redisCacheUtil.set(paramKey, JSON.toJSONString(data), 360l);//5分钟
+		redisCacheUtil.set(paramKey, data, 360l);//5分钟
 		redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_001,300l);
 		return data;
 	}

@@ -31,11 +31,6 @@ public class BusUserServiceImpl implements IBusUserService {
 
     @Override
     public BusUser getBusUserById(Integer id) {
-        String busUserKey = RedisKeyUtil.getBusUserKey(id);
-        if (this.redisCacheUtil.exists(busUserKey)) {//（1）通过busId获取缓存中的busUser对象，如果存在，则直接返回
-            Object obj = this.redisCacheUtil.get(busUserKey);
-            return JSON.parseObject(obj.toString(), BusUser.class);
-        }
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("userId", id);
         BusUser busUser = null;
@@ -50,9 +45,6 @@ public class BusUserServiceImpl implements IBusUserService {
                 return null;
             }
             busUser = JSON.parseObject(data.get("data").toString(), BusUser.class);
-            if (busUser != null) {
-                this.redisCacheUtil.set(busUserKey, JSON.toJSONString(busUser));
-            }
         } catch (Exception e) {
             return null;
         }
@@ -83,24 +75,21 @@ public class BusUserServiceImpl implements IBusUserService {
 
     @Override
     public WxPublicUsers getWxPublicUserByBusId(Integer busId) {
-        String wxUserKey = RedisKeyUtil.getWxPublicUserBusIdKey(busId);
-        if (this.redisCacheUtil.exists(wxUserKey)) {//（1）通过busId获取缓存中的busUser对象，如果存在，则直接返回
-            Object obj = this.redisCacheUtil.get(wxUserKey);
-            return JSON.parseObject(obj.toString(), WxPublicUsers.class);
-        }
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("reqdata", busId);
         String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/wxpublicapi/6F6D9AD2/79B4DE7C/selectByUserId.do";
-        Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param), url, Map.class, ConfigConstant.WXMP_SIGN_KEY);
-        if (CommonUtil.isEmpty(result)) {
+        WxPublicUsers publicUsers = null;
+        try{
+            Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param), url, Map.class, ConfigConstant.WXMP_SIGN_KEY);
+            if (CommonUtil.isEmpty(result)) {
+                return null;
+            }
+            if (CommonUtil.toInteger(result.get("code")) != 0) {
+                return null;
+            }
+            publicUsers = JSONObject.parseObject(result.get("data").toString(), WxPublicUsers.class);
+        }catch (Exception e){
             return null;
-        }
-        if (CommonUtil.toInteger(result.get("code")) != 0) {
-            return null;
-        }
-        WxPublicUsers publicUsers = JSONObject.parseObject(result.get("data").toString(), WxPublicUsers.class);
-        if (CommonUtil.isNotEmpty(publicUsers)) {
-            redisCacheUtil.set(wxUserKey, JSON.toJSONString(publicUsers));
         }
         return publicUsers;
     }
@@ -109,8 +98,10 @@ public class BusUserServiceImpl implements IBusUserService {
 	public String getWxPublicUserQRCode(Integer publicId, Integer busId) {
         String codeKey = RedisKeyUtil.getWxPublicUserQRCodeKey(publicId, busId);
         if (this.redisCacheUtil.exists(codeKey)) {//（1）通过busId获取缓存中的busUser对象，如果存在，则直接返回
-            Object obj = this.redisCacheUtil.get(codeKey);
-            return JSON.parseObject(obj.toString(), String.class);
+            String obj = this.redisCacheUtil.get(codeKey);
+            if(CommonUtil.isNotEmpty(obj)){
+                return JSON.parseObject(obj, String.class);
+            }
         }
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("publicId", publicId);
@@ -128,7 +119,7 @@ public class BusUserServiceImpl implements IBusUserService {
         }
         String qrurl = result.get("data").toString();
         if (CommonUtil.isNotEmpty(qrurl)) {
-            redisCacheUtil.set(codeKey, JSON.toJSONString(qrurl));
+            redisCacheUtil.set(codeKey, qrurl);
         }
 		return qrurl;
 	}

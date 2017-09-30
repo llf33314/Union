@@ -286,6 +286,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	public String payOne(HttpServletRequest request, HttpServletResponse response, @ApiParam(name = "id", value = "商机id", required = true) @PathVariable(value = "id", required = true) Integer id
 							,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) throws Exception{
 		Member member = SessionUtils.getLoginMember(request);
+		BusUser user = SessionUtils.getLoginUser(request);
 		if(CommonUtil.isEmpty(member)){
 			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
 			return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
@@ -294,7 +295,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
 			return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 		}
-		String payUrl = unionH5BrokerageService.payOpportunity(id, url, member.getId());
+		String payUrl = unionH5BrokerageService.payOpportunity(id, url, member.getId(), user.getId());
 		return GTJsonResult.instanceSuccessMsg(payUrl).toString();
 	}
 

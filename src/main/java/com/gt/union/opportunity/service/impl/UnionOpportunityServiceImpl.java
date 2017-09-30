@@ -1307,7 +1307,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         data.put("data",ids);
         String paramKey = RedisKeyUtil.getRecommendPayParamKey(only);
         String statusKey = RedisKeyUtil.getRecommendPayStatusKey(only);
-        redisCacheUtil.set(paramKey, JSON.toJSONString(data), 360l);//5分钟
+        redisCacheUtil.set(paramKey, data, 360l);//5分钟
         redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_001, 300l);//等待扫码状态
         return data;
     }
@@ -1317,11 +1317,11 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
     public void payOpportunitySuccess(String orderNo, String only) throws Exception {
         //解密参数
         String paramKey = RedisKeyUtil.getRecommendPayParamKey(only);
-        Object obj = redisCacheUtil.get(paramKey);
+        String obj = redisCacheUtil.get(paramKey);
         if(CommonUtil.isEmpty(obj)){
             throw new BusinessException("支付失败");
         }
-        Map<String, Object> result = JSONObject.parseObject(obj.toString(), Map.class);
+        Map<String, Object> result = JSONObject.parseObject(obj, Map.class);
         String statusKey = RedisKeyUtil.getRecommendPayStatusKey(only);
         String[] arrs = result.get("data").toString().split(",");
         List<Integer> ids = new ArrayList<Integer>();

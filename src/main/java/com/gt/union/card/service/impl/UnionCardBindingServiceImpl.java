@@ -1,5 +1,6 @@
 package com.gt.union.card.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.api.entity.result.UnionBindCardResult;
@@ -44,11 +45,11 @@ public class UnionCardBindingServiceImpl extends ServiceImpl<UnionCardBindingMap
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
 		String phoneKey = RedisKeyUtil.getMemberPhoneCodeKey(memberId);
-		Object obj = redisCacheUtil.get(phoneKey);
+		String obj = redisCacheUtil.get(phoneKey);
 		if(obj == null){
 			throw new ParamException(CommonConstant.CODE_ERROR_MSG);
 		}
-		if(!code.equals(obj.toString())) {
+		if(!code.equals(JSON.parse(obj))) {
 			throw new ParamException(CommonConstant.CODE_ERROR_MSG);
 
 		}

@@ -33,9 +33,6 @@ public class MemberAuthorizeOrLoginController {
 	private Logger logger = LoggerFactory.getLogger(MemberAuthorizeOrLoginController.class);
 
 	@Autowired
-	private RedisCacheUtil redisCacheUtil;
-
-	@Autowired
 	private RedisService redisService;
 
 	/**
@@ -69,7 +66,7 @@ public class MemberAuthorizeOrLoginController {
 			}
 		}
 		String otherRedisKey = "authority:"+System.currentTimeMillis();
-		redisCacheUtil.set(otherRedisKey, reqUrl, 300l);
+		redisService.setValue(otherRedisKey, reqUrl, 300);
 		Map<String, Object> queryMap = new HashMap<>();
 		queryMap.put("otherRedisKey", ConfigConstant.UNION_REDIS_NAME_PREFIX + otherRedisKey);
 		queryMap.put("browser", browser);
