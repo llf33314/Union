@@ -94,7 +94,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @return
      * @throws Exception
      */
-    Page pageOpportunityBrokerageRatioMapByMember(Page page, final UnionMember unionMember) throws Exception;
+    Page pageOpportunityRatioMapByMember(Page page, final UnionMember unionMember) throws Exception;
 
     /**
      * 根据盟主信息，分页获取本联盟中所有未提交优惠项目的盟员信息，未提交是指：不存在被审核通过的优惠服务项

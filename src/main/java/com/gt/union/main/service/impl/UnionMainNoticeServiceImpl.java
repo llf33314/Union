@@ -142,7 +142,8 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
         }
         //(2)db
         EntityWrapper<UnionMainNotice> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("id", noticeId);
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("id", noticeId);
         result = this.selectOne(entityWrapper);
         setCache(result, noticeId);
         return result;
@@ -167,7 +168,8 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
         }
         //(2)get in db
         EntityWrapper<UnionMainNotice> entityWrapper = new EntityWrapper();
-        entityWrapper.eq("union_id", unionId);
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId);
         result = this.selectList(entityWrapper);
         setCache(result, unionId, MainConstant.REDIS_KEY_NOTICE_UNION_ID);
         return result;

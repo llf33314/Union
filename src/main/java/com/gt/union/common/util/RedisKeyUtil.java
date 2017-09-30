@@ -167,6 +167,33 @@ public class RedisKeyUtil {
     }
 
     /*******************************************************************************************************************
+     ********************************************* main transfer module ************************************************
+     ******************************************************************************************************************/
+    public static final String getTransferIdKey(Integer transferId) {
+        return new StringBuilder("unionTransfer:").append(transferId).toString();
+    }
+
+    public static final List<String> getTransferIdKey(List<Integer> transferIdList) {
+        List<String> result = new ArrayList<>();
+        for (Integer transferId : transferIdList) {
+            result.add(getTransferIdKey(transferId));
+        }
+        return result;
+    }
+
+    public static final String getTransferUnionIdKey(Integer unionId) {
+        return new StringBuilder("unionTransfer:unionId").append(unionId).toString();
+    }
+
+    public static final String getTransferFromMemberIdKey(Integer fromMemberId) {
+        return new StringBuilder("unionTransfer:fromMemberId").append(fromMemberId).toString();
+    }
+
+    public static final String getTransferToMemberIdKey(Integer toMemberId) {
+        return new StringBuilder("unionTransfer:toMemberId").append(toMemberId).toString();
+    }
+
+    /*******************************************************************************************************************
      ********************************************* main notice module **************************************************
      ******************************************************************************************************************/
     public static final String getNoticeIdKey(Integer noticeId) {
@@ -183,6 +210,52 @@ public class RedisKeyUtil {
 
     public static final String getNoticeUnionIdKey(Integer unionId) {
         return new StringBuilder("unionNotice:unionId").append(unionId).toString();
+    }
+
+    /*******************************************************************************************************************
+     ********************************************* opportunity module **************************************************
+     ******************************************************************************************************************/
+    public static final String getOpportunityIdKey(Integer opportunityId) {
+        return new StringBuilder("opportunity:").append(opportunityId).toString();
+    }
+
+    public static final List<String> getOpportunityIdKey(List<Integer> opportunityIdList) {
+        List<String> result = new ArrayList<>();
+        for (Integer opportunityId : opportunityIdList) {
+            result.add(getOpportunityIdKey(opportunityId));
+        }
+        return result;
+    }
+
+    public static final String getOpportunityFromMemberIdKey(Integer fromMemberId) {
+        return new StringBuilder("opportunity:fromMemberId").append(fromMemberId).toString();
+    }
+
+    public static final String getOpportunityToMemberIdKey(Integer toMemberId) {
+        return new StringBuilder("opportunity:toMemberId").append(toMemberId).toString();
+    }
+
+    /*******************************************************************************************************************
+     ********************************************* opportunity brokerage ratio module **************************************************
+     ******************************************************************************************************************/
+    public static final String getRatioIdKey(Integer ratioId) {
+        return new StringBuilder("opportunityRatio:").append(ratioId).toString();
+    }
+
+    public static final List<String> getRatioIdKey(List<Integer> ratioIdList) {
+        List<String> result = new ArrayList<>();
+        for (Integer ratioId : ratioIdList) {
+            result.add(getRatioIdKey(ratioId));
+        }
+        return result;
+    }
+
+    public static final String getRatioFromMemberIdKey(Integer fromMemberId) {
+        return new StringBuilder("opportunityRatio:fromMemberId").append(fromMemberId).toString();
+    }
+
+    public static final String getRatioToMemberIdKey(Integer toMemberId) {
+        return new StringBuilder("opportunityRatio:toMemberId").append(toMemberId).toString();
     }
 
     /**

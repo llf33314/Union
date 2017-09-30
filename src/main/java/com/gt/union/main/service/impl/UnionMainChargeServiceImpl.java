@@ -37,43 +37,41 @@ public class UnionMainChargeServiceImpl extends ServiceImpl<UnionMainChargeMappe
      ****************************************** Domain Driven Design - get *********************************************
      ******************************************************************************************************************/
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - list ********************************************
-     ******************************************************************************************************************/
-
     @Override
-    public List<UnionMainCharge> listByUnionIdAndType(Integer unionId, Integer type) throws Exception {
+    public UnionMainCharge getByUnionIdAndType(Integer unionId, Integer type) throws Exception {
         if (unionId == null || type == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionMainCharge> result = new ArrayList<>();
         List<UnionMainCharge> chargeList = this.listByUnionId(unionId);
         if (ListUtil.isNotEmpty(chargeList)) {
             for (UnionMainCharge charge : chargeList) {
                 if (type.equals(charge.getType())) {
-                    result.add(charge);
+                    return charge;
                 }
             }
         }
-        return result;
+        return null;
     }
 
     @Override
-    public List<UnionMainCharge> listByUnionIdAndTypeAndIsAvailable(Integer unionId, Integer type, Integer isAvailable) throws Exception {
+    public UnionMainCharge getByUnionIdAndTypeAndIsAvailable(Integer unionId, Integer type, Integer isAvailable) throws Exception {
         if (unionId == null || type == null || isAvailable == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionMainCharge> result = new ArrayList<>();
         List<UnionMainCharge> chargeList = this.listByUnionId(unionId);
         if (ListUtil.isNotEmpty(chargeList)) {
             for (UnionMainCharge charge : chargeList) {
                 if (type.equals(charge.getType()) && isAvailable.equals(charge.getIsAvailable())) {
-                    result.add(charge);
+                    return charge;
                 }
             }
         }
-        return result;
+        return null;
     }
+
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - list ********************************************
+     ******************************************************************************************************************/
 
     /*******************************************************************************************************************
      ****************************************** Domain Driven Design - save ********************************************
@@ -114,7 +112,8 @@ public class UnionMainChargeServiceImpl extends ServiceImpl<UnionMainChargeMappe
         }
         //(2)db
         EntityWrapper<UnionMainCharge> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("id", chargeId);
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("id", chargeId);
         result = this.selectOne(entityWrapper);
         setCache(result, chargeId);
         return result;
@@ -139,7 +138,8 @@ public class UnionMainChargeServiceImpl extends ServiceImpl<UnionMainChargeMappe
         }
         //(2)get in db
         EntityWrapper<UnionMainCharge> entityWrapper = new EntityWrapper();
-        entityWrapper.eq("union_id", unionId);
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId);
         result = this.selectList(entityWrapper);
         setCache(result, unionId, MainConstant.REDIS_KEY_CHARGE_UNION_ID);
         return result;

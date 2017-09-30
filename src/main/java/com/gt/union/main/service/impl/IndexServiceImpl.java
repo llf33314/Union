@@ -147,9 +147,9 @@ public class IndexServiceImpl implements IIndexService {
                 currentUnionSurplusMemberCount = currentUnionLimitMemberCount.intValue() - currentUnionMemberCount.intValue();
             }
             result.put("currentUnionSurplusMemberCount", currentUnionSurplusMemberCount); //当前联盟剩余可加盟数
-            List<UnionMainCharge> unionMainChargeList = this.unionMainChargeService.listByUnionIdAndTypeAndIsAvailable(
+            UnionMainCharge unionMainCharge = this.unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(
                     currentUnionId, MainConstant.CHARGE_TYPE_RED, MainConstant.CHARGE_IS_AVAILABLE_YES);
-            result.put("isRedCardAvailable", ListUtil.isNotEmpty(unionMainChargeList) ? true : false); //当前联盟是否启用红卡
+            result.put("isRedCardAvailable", unionMainCharge != null ? true : false); //当前联盟是否启用红卡
 
             Integer currentUnionIsIntegral = currentUnionMain.getIsIntegral();
             result.put("currentUnionIsIntegral", currentUnionIsIntegral); //当前联盟是否启用积分

@@ -1,46 +1,48 @@
-package com.gt.union.main.service;
+package com.gt.union.opportunity.service;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
-import com.gt.union.main.entity.UnionMainCharge;
+import com.gt.union.opportunity.entity.UnionOpportunityRatio;
 
 import java.util.List;
 
 /**
  * <p>
- * 联盟升级收费 服务类
+ * 商机佣金比率 服务类
  * </p>
  *
  * @author linweicong
  * @since 2017-09-07
  */
-public interface IUnionMainChargeService extends IService<UnionMainCharge> {
+public interface IUnionOpportunityRatioService extends IService<UnionOpportunityRatio> {
     /*******************************************************************************************************************
      ****************************************** Domain Driven Design - get *********************************************
      ******************************************************************************************************************/
 
     /**
-     * 根据联盟id和联盟卡类型获取联盟卡信息
+     * 根据商机佣金比例的设置者盟员身份id和受惠者盟员身份id，获取商机佣金比例设置信息
      *
-     * @param unionId {not null} 联盟卡
-     * @param type    {not null} 联盟卡类型
-     * @return
-     */
-    UnionMainCharge getByUnionIdAndType(Integer unionId, Integer type) throws Exception;
-
-    /**
-     * 根据联盟id、红黑卡类型和是否启用，获取联盟升级收费信息
-     *
-     * @param unionId     {not null} 联盟id
-     * @param type        {not null} 红黑卡类型
-     * @param isAvailable {not null} 是否启用
+     * @param fromMemberId {not null} 设置者盟员身份id
+     * @param toMemberId   {not null} 受惠者盟员身份id
      * @return
      * @throws Exception
      */
-    UnionMainCharge getByUnionIdAndTypeAndIsAvailable(Integer unionId, Integer type, Integer isAvailable) throws Exception;
+    UnionOpportunityRatio getByFromMemberIdAndToMemberId(Integer fromMemberId, Integer toMemberId) throws Exception;
 
     /*******************************************************************************************************************
      ****************************************** Domain Driven Design - list ********************************************
      ******************************************************************************************************************/
+
+    /**
+     * 根据商家id和盟员身份id，分页查询商机佣金比设置列表信息
+     *
+     * @param page     {not null} 分页对象
+     * @param busId    {not null} 商家id
+     * @param memberId {not null} 盟员身份id
+     * @return
+     * @throws Exception
+     */
+    Page pageMapByBusIdAndMemberId(Page page, Integer busId, Integer memberId) throws Exception;
 
     /*******************************************************************************************************************
      ****************************************** Domain Driven Design - save ********************************************
@@ -54,6 +56,18 @@ public interface IUnionMainChargeService extends IService<UnionMainCharge> {
      ****************************************** Domain Driven Design - update ******************************************
      ******************************************************************************************************************/
 
+    /**
+     * 根据商家id、设置方盟员身份id、受惠方盟员身份id和商机佣金比例，更新或保存设置
+     *
+     * @param busId        {not null} 商家id
+     * @param fromMemberId {not null} 设置方盟员身份id
+     * @param toMemberId   {not null} 受惠方盟员身份id
+     * @param ratio        {not null} 商机佣金比例
+     * @throws Exception
+     */
+    void updateOrSaveByBusIdAndFromMemberIdAndToMemberIdAndRatio(Integer busId, Integer fromMemberId, Integer toMemberId, Double ratio) throws Exception;
+
+
     /*******************************************************************************************************************
      ****************************************** Domain Driven Design - count *******************************************
      ******************************************************************************************************************/
@@ -66,36 +80,38 @@ public interface IUnionMainChargeService extends IService<UnionMainCharge> {
      ****************************************** Object As a Service - get **********************************************
      ******************************************************************************************************************/
 
-    UnionMainCharge getById(Integer chargeId) throws Exception;
+    UnionOpportunityRatio getById(Integer ratioId) throws Exception;
 
     /*******************************************************************************************************************
      ****************************************** Object As a Service - list *********************************************
      ******************************************************************************************************************/
 
-    List<UnionMainCharge> listByUnionId(Integer unionId) throws Exception;
+    List<UnionOpportunityRatio> listByFromMemberId(Integer fromMemberId) throws Exception;
+
+    List<UnionOpportunityRatio> listByToMemberId(Integer toMemberId) throws Exception;
 
     /*******************************************************************************************************************
      ****************************************** Object As a Service - save *********************************************
      ******************************************************************************************************************/
 
-    void save(UnionMainCharge newCharge) throws Exception;
+    void save(UnionOpportunityRatio newRatio) throws Exception;
 
-    void saveBatch(List<UnionMainCharge> newChargeList) throws Exception;
+    void saveBatch(List<UnionOpportunityRatio> newRatioList) throws Exception;
 
     /*******************************************************************************************************************
      ****************************************** Object As a Service - remove *******************************************
      ******************************************************************************************************************/
 
-    void removeById(Integer chargeId) throws Exception;
+    void removeById(Integer ratioId) throws Exception;
 
-    void removeBatchById(List<Integer> chargeIdList) throws Exception;
+    void removeBatchById(List<Integer> ratioIdList) throws Exception;
 
     /*******************************************************************************************************************
      ****************************************** Object As a Service - update *******************************************
      ******************************************************************************************************************/
 
-    void update(UnionMainCharge updateCharge) throws Exception;
+    void update(UnionOpportunityRatio updateRatio) throws Exception;
 
-    void updateBatch(List<UnionMainCharge> updateChargeList) throws Exception;
+    void updateBatch(List<UnionOpportunityRatio> updateRatioList) throws Exception;
 
 }

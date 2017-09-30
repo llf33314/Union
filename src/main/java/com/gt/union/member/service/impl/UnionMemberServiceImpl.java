@@ -173,7 +173,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    public Page pageOpportunityBrokerageRatioMapByMember(Page page, final UnionMember unionMember) throws Exception {
+    public Page pageOpportunityRatioMapByMember(Page page, final UnionMember unionMember) throws Exception {
         if (page == null || unionMember == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }

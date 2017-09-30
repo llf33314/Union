@@ -75,9 +75,6 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     private IDictService dictService;
 
     @Autowired
-    private UnionCardMapper unionCardMapper;
-
-    @Autowired
     private SmsService smsService;
 
     @Autowired
@@ -376,9 +373,9 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         //得到该联盟下的有效联盟卡
         List<UnionCard> list = this.listByCardRootIdAndMemberIds(rootId, memberIds);
         if (ListUtil.isNotEmpty(list)) {
-            Map<String, Object> discountMap = unionCardMapper.getByMinDiscountByCardList(list, unionMember.getId());//获取设置最低折扣
+            Map<String, Object> discountMap = this.baseMapper.getByMinDiscountByCardList(list, unionMember.getId());//获取设置最低折扣
             if (discountMap == null) {
-                discountMap = unionCardMapper.getByEarliestByCardList(list);
+                discountMap = this.baseMapper.getByEarliestByCardList(list);
                 discountMap.put("fromMemberId", unionMember.getId());
                 discountMap.put("discount", dictService.getDefaultDiscount());
                 discountMap.put("unionId", unionMember.getUnionId());
@@ -429,8 +426,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         data.put("cardNo", root.getNumber());
         data.put("integral", root.getIntegral());
         data.put("validity", CommonUtil.toInteger(disMap.get("isCharge")) == 1 ? DateTimeKit.daysBetween(new Date(), DateTimeKit.parseDate(disMap.get("validity").toString(), "yyyy/MM/dd HH:mm:ss")) : null);
-        List<UnionMainCharge> redChargeList = unionMainChargeService.listByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_RED, MainConstant.CHARGE_IS_AVAILABLE_YES);
-        UnionMainCharge redCharge = ListUtil.isNotEmpty(redChargeList) ? redChargeList.get(0) : null;
+        UnionMainCharge redCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_RED, MainConstant.CHARGE_IS_AVAILABLE_YES);
         if (redCharge != null) {
             UnionPreferentialProject project = unionPreferentialProjectService.getByMemberId(memberId);
             if (project != null) {
@@ -477,16 +473,14 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             }
         }
         UnionCard unionCard = this.getByPhoneAndMemberId(phone, member.getId(), true);//本盟员升级的联盟卡
-        List<UnionMainCharge> blackChargeList = unionMainChargeService.listByUnionIdAndTypeAndIsAvailable(member.getUnionId(), MainConstant.CHARGE_TYPE_BLACK, MainConstant.CHARGE_IS_AVAILABLE_YES);
-        UnionMainCharge blackCharge = ListUtil.isNotEmpty(blackChargeList) ? blackChargeList.get(0) : null;
-        List<UnionMainCharge> redChargeList = unionMainChargeService.listByUnionIdAndTypeAndIsAvailable(member.getUnionId(), MainConstant.CHARGE_TYPE_RED, MainConstant.CHARGE_IS_AVAILABLE_YES);
-        UnionMainCharge redCharge = ListUtil.isNotEmpty(redChargeList) ? redChargeList.get(0) : null;
+        UnionMainCharge blackCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(member.getUnionId(), MainConstant.CHARGE_TYPE_BLACK, MainConstant.CHARGE_IS_AVAILABLE_YES);
+        UnionMainCharge redCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(member.getUnionId(), MainConstant.CHARGE_TYPE_RED, MainConstant.CHARGE_IS_AVAILABLE_YES);
         List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
         if (unionCard != null) {//本盟员下升级了联盟卡
             if (unionCard.getType() == CardConstant.TYPE_BLACK) {//黑卡
                 if (unionCard.getIsCharge() == CardConstant.IS_CHARGE_YES) {//收费黑卡
                     if (redCharge != null) {//开启红卡
-                        int count = unionCardMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, phone);
+                        int count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, phone);
                         if (count > 0) {
                             Map<String, Object> map = new HashMap<String, Object>();
                             Map<String, Object> red = new HashMap<String, Object>();
@@ -510,7 +504,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 } else {//免费黑卡
                     //黑卡收费
                     if (blackCharge.getIsCharge() == MainConstant.CHARGE_IS_CHARGE_YES && blackCharge.getIsOldCharge() == MainConstant.CHARGE_OLD_IS_YES) {
-                        int count = unionCardMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_BLACK, MainConstant.CHARGE_IS_CHARGE_YES, phone);
+                        int count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_BLACK, MainConstant.CHARGE_IS_CHARGE_YES, phone);
                         if (count > 0) {
                             Map<String, Object> map = new HashMap<String, Object>();
                             Map<String, Object> black = new HashMap<String, Object>();
@@ -533,7 +527,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                     }
                     //开启红卡
                     if (redCharge != null) {
-                        int count = unionCardMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, phone);
+                        int count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, phone);
                         if (count > 0) {
                             Map<String, Object> map = new HashMap<String, Object>();
                             Map<String, Object> red = new HashMap<String, Object>();
@@ -558,7 +552,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             }
         } else {//不在本盟员下升级了联盟卡
             if (blackCharge.getIsCharge() == MainConstant.CHARGE_IS_CHARGE_YES) {//黑卡收费
-                int count = unionCardMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_BLACK, MainConstant.CHARGE_IS_CHARGE_YES, phone);
+                int count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_BLACK, MainConstant.CHARGE_IS_CHARGE_YES, phone);
                 if (count > 0) {
                     Map<String, Object> map = new HashMap<String, Object>();
                     Map<String, Object> black = new HashMap<String, Object>();
@@ -587,7 +581,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 dataList.add(map);
             }
             if (redCharge != null) {//开启红卡
-                int count = unionCardMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, phone);
+                int count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, phone);
                 if (count > 0) {
                     Map<String, Object> map = new HashMap<String, Object>();
                     Map<String, Object> red = new HashMap<String, Object>();
@@ -677,7 +671,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 
     @Override
     public List<UnionCard> listByPhoneAndMembers(String phone, List<UnionMember> members) {
-        List<UnionCard> list = unionCardMapper.listByPhoneAndMembers(phone, members);
+        List<UnionCard> list = this.baseMapper.listByPhoneAndMembers(phone, members);
         return list;
     }
 
@@ -777,14 +771,12 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         }
         UnionCard card = this.getByPhoneAndMemberId(vo.getPhone(), member.getId(), true);
         if (card != null && card.getType().equals(vo.getCardType())) {
-            List<UnionMainCharge> blackChargeList = unionMainChargeService.listByUnionIdAndTypeAndIsAvailable(vo.getUnionId(), CardConstant.TYPE_BLACK, MainConstant.CHARGE_IS_AVAILABLE_YES);
-            UnionMainCharge blackCharge = ListUtil.isNotEmpty(blackChargeList) ? blackChargeList.get(0) : null;
+            UnionMainCharge blackCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(vo.getUnionId(), CardConstant.TYPE_BLACK, MainConstant.CHARGE_IS_AVAILABLE_YES);
             if (!(card.getIsCharge() == CardConstant.IS_CHARGE_NO && blackCharge.getIsOldCharge() == MainConstant.CHARGE_OLD_IS_YES && card.getType() == CardConstant.TYPE_BLACK)) {
                 throw new BusinessException("该手机号已办理联盟卡");
             }
         }
-        List<UnionMainCharge> chargeList = unionMainChargeService.listByUnionIdAndTypeAndIsAvailable(vo.getUnionId(), vo.getCardType(), MainConstant.CHARGE_IS_AVAILABLE_YES);
-        UnionMainCharge charge = ListUtil.isNotEmpty(chargeList) ? chargeList.get(0) : null;
+        UnionMainCharge charge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(vo.getUnionId(), vo.getCardType(), MainConstant.CHARGE_IS_AVAILABLE_YES);
         if (charge == null) {
             throw new BusinessException("联盟未开启该联盟卡类型");
         }
@@ -942,8 +934,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 
     @Override
     public Map<String, Object> createQRCode(Integer busId, String phone, Integer memberId, Integer unionId, Integer cardType, Integer isReturn, String returnUrl) throws Exception {
-        List<UnionMainCharge> chargeList = unionMainChargeService.listByUnionIdAndTypeAndIsAvailable(unionId, cardType, MainConstant.CHARGE_IS_AVAILABLE_YES);
-        UnionMainCharge charge = ListUtil.isNotEmpty(chargeList) ? chargeList.get(0) : null;
+        UnionMainCharge charge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, cardType, MainConstant.CHARGE_IS_AVAILABLE_YES);
         Double price = charge.getChargePrice();//收费价格
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("totalFee", price);
@@ -995,8 +986,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         UnionCardUpgradePay pay = unionCardUpgradePayService.createCardUpgreadePay(orderNo, 2, 1, payMoney, orderDesc);
         UnionMember member = unionMemberService.getByBusIdAndUnionId(payBusId, unionId);
         UnionCard unionCard = this.getByPhoneAndMemberId(phone, member.getId(), false);
-        List<UnionMainCharge> chargeList = unionMainChargeService.listByUnionIdAndTypeAndIsAvailable(unionId, cardType, MainConstant.CHARGE_IS_AVAILABLE_YES);
-        UnionMainCharge charge = ListUtil.isNotEmpty(chargeList) ? chargeList.get(0) : null;
+        UnionMainCharge charge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, cardType, MainConstant.CHARGE_IS_AVAILABLE_YES);
         Integer rootId = null;
         Integer cardId = null;
         Date validity = null;
@@ -1126,10 +1116,8 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             }
         } else {
             List<Map<String, Object>> cardDataList = new ArrayList<Map<String, Object>>();
-            List<UnionMainCharge> blackChargeList = unionMainChargeService.listByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_BLACK, MainConstant.CHARGE_IS_AVAILABLE_YES);
-            UnionMainCharge blackCharge = ListUtil.isNotEmpty(blackChargeList) ? blackChargeList.get(0) : null;
-            List<UnionMainCharge> redChargeList = unionMainChargeService.listByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_RED, MainConstant.CHARGE_IS_AVAILABLE_YES);
-            UnionMainCharge redCharge = ListUtil.isNotEmpty(redChargeList) ? redChargeList.get(0) : null;
+            UnionMainCharge blackCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_BLACK, MainConstant.CHARGE_IS_AVAILABLE_YES);
+            UnionMainCharge redCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_RED, MainConstant.CHARGE_IS_AVAILABLE_YES);
             //红卡
             Map<String, Object> black = new HashMap<String, Object>();
             Map<String, Object> blackMap = new HashMap<String, Object>();

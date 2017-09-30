@@ -17,16 +17,9 @@ import java.util.Map;
  * @since 2017-09-07
  */
 public interface IUnionOpportunityService extends IService<UnionOpportunity> {
-    //-------------------------------------------------- get ----------------------------------------------------------
-
-    /**
-     * 根据商机推荐id，获取商机推荐信息
-     *
-     * @param opportunityId {not null} 商家推荐id
-     * @return
-     * @throws Exception
-     */
-    UnionOpportunity getById(Integer opportunityId) throws Exception;
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - get *********************************************
+     ******************************************************************************************************************/
 
     /**
      * 根据商家id和目标盟员身份id，获取所有商家与目标盟员之间的商机推荐支付往来列表记录
@@ -49,7 +42,9 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      */
     Map<String, Object> getStatisticsByBusIdAndMemberId(Integer busId, Integer memberId) throws Exception;
 
-    //------------------------------------------ list(include page) ---------------------------------------------------
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - list ********************************************
+     ******************************************************************************************************************/
 
     /**
      * 根据商家id，分页查询商家推荐的商机列表信息
@@ -133,54 +128,79 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
     List<Map<String, Object>> listContactByBusId(Integer busId, Integer userMemberId) throws Exception;
 
     /**
-     * 根据推荐方的盟员身份id，获取所有已推荐的，且已支付的商机推荐列表信息
+     * 根据推荐方的盟员身份id，获取所有已推荐的，且已支付或为支付的商机推荐列表信息
      *
      * @param fromMemberId {not null} 推荐方的盟员身份id
+     * @param isPaid       {not null} 是否已支付
      * @return
      * @throws Exception
      */
-    List<UnionOpportunity> listPaidByFromMemberId(Integer fromMemberId) throws Exception;
+    List<UnionOpportunity> listByFromMemberIdAndIsPaid(Integer fromMemberId, Integer isPaid) throws Exception;
 
     /**
-     * 根据商家id和推荐方的盟员身份id，获取所有推荐给商家的，已接受状态的，且已支付的商机推荐列表信息
+     * 根据商家id和推荐方的盟员身份id，获取所有推荐给商家的，已接受状态的，且已支付或为支付的商机推荐列表信息
      *
      * @param busId        {not null} 商家id
      * @param fromMemberId {not null} 推荐方的盟员身份id
+     * @param isPaid       {not null} 是否已支付
      * @return
      * @throws Exception
      */
-    List<UnionOpportunity> listPaidByBusIdAndFromMemberId(Integer busId, Integer fromMemberId) throws Exception;
+    List<UnionOpportunity> listByBusIdAndFromMemberIdAndIsPaid(Integer busId, Integer fromMemberId, Integer isPaid) throws Exception;
 
     /**
-     * 根据接收方的盟员身份id，获取所有已接受，且已支付的商机推荐列表信息
+     * 根据接收方的盟员身份id，获取所有已接受，且已支付或未支付的商机推荐列表信息
      *
      * @param toMemberId {not null} 接收方的盟员身份id
+     * @param isPaid     {not null} 是否已支付
      * @return
      * @throws Exception
      */
-    List<UnionOpportunity> listPaidByToMemberId(Integer toMemberId) throws Exception;
+    List<UnionOpportunity> listByToMemberIdAndIsPaid(Integer toMemberId, Integer isPaid) throws Exception;
 
     /**
-     * 根据商家id和接收方的盟员身份id，获取所有商家推荐的，已接受状态，且已支付的商机推荐列表信息
+     * 根据商家id和接收方的盟员身份id，获取所有商家推荐的，已接受状态，且已支付或支付的商机推荐列表信息
      *
      * @param busId      {not null} 商家id
      * @param toMemberId {not null} 接收方的盟员身份id
+     * @param isPaid     {not null} 是否已支付
      * @return
      * @throws Exception
      */
-    List<UnionOpportunity> listPaidByBusIdAndToMemberId(Integer busId, Integer toMemberId) throws Exception;
+    List<UnionOpportunity> listByBusIdAndToMemberIdAndIsPaid(Integer busId, Integer toMemberId, Integer isPaid) throws Exception;
 
     /**
-     * 根据推荐方的盟员身份id和接收方的盟员身份id，获取所有已接受的，且已支付的商机推荐列表信息
+     * 根据推荐方的盟员身份id和接收方的盟员身份id，获取所有已接受的，且已支付或未支付的商机推荐列表信息
      *
      * @param fromMemberId {not null} 推荐方的盟员身份id
      * @param toMemberId   {not null} 接收方的盟员身份id
+     * @param isPaid       {not null} 是否已支付
      * @return
      * @throws Exception
      */
-    List<UnionOpportunity> listPaidByFromMemberIdAndToMemberId(Integer fromMemberId, Integer toMemberId) throws Exception;
+    List<UnionOpportunity> listByFromMemberIdAndToMemberIdAndIsPaid(Integer fromMemberId, Integer toMemberId, Integer isPaid) throws Exception;
 
-    //------------------------------------------------- update --------------------------------------------------------
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - save ********************************************
+     ******************************************************************************************************************/
+
+    /**
+     * 根据商家id和盟员身份id，保存商机推荐信息
+     *
+     * @param busId    {not null} 商家id
+     * @param memberId {not null} 盟员身份id
+     * @param vo
+     * @throws Exception
+     */
+    void saveByBusIdAndMemberId(Integer busId, Integer memberId, UnionOpportunityVO vo) throws Exception;
+
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - remove ******************************************
+     ******************************************************************************************************************/
+
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - update ******************************************
+     ******************************************************************************************************************/
 
     /**
      * 接受商机：根据商机推荐id、商家id和受理金额，更新商机推荐信息
@@ -201,49 +221,42 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      */
     void updateAcceptNoByIdAndBusId(Integer opportunityId, Integer busId) throws Exception;
 
-    //------------------------------------------------- save ----------------------------------------------------------
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - count *******************************************
+     ******************************************************************************************************************/
 
     /**
-     * 根据商家id和盟员身份id，保存商机推荐信息
-     *
-     * @param busId    {not null} 商家id
-     * @param memberId {not null} 盟员身份id
-     * @param vo
-     * @throws Exception
-     */
-    void saveByBusIdAndMemberId(Integer busId, Integer memberId, UnionOpportunityVO vo) throws Exception;
-
-    //------------------------------------------------- count ---------------------------------------------------------
-
-    /**
-     * 根据商家id和接收方盟员身份id，统计商家推荐的、已接受状态的、且已支付的商机佣金总和
+     * 根据商家id和接收方盟员身份id，统计商家推荐的、已接受状态的、且已支付或未支付的商机佣金总和
      *
      * @param busId      {not null} 商家id
      * @param toMemberId {not null} 接收方盟员身份id
+     * @param isPaid     {not null} 是否已支付
      * @return
      * @throws Exception
      */
-    Double sumPaidBrokeragePriceByBusIdAndToMemberId(Integer busId, Integer toMemberId) throws Exception;
+    Double sumBrokeragePriceByBusIdAndToMemberIdAndIsPaid(Integer busId, Integer toMemberId, Integer isPaid) throws Exception;
 
     /**
-     * 根据商家id和推荐方盟员身份id，统计商家接收的、已接受状态的、且已支付的商机佣金总和
+     * 根据商家id和推荐方盟员身份id，统计商家接收的、已接受状态的、且已支付或未支付的商机佣金总和
      *
      * @param busId        {not null} 商家id
      * @param fromMemberId {not null} 推荐方盟员身份id
+     * @param isPaid       {not null} 是否已支付
      * @return
      * @throws Exception
      */
-    Double sumPaidBrokeragePriceByBusIdAndFromMemberId(Integer busId, Integer fromMemberId) throws Exception;
+    Double sumBrokeragePriceByBusIdAndFromMemberIdAndIsPaid(Integer busId, Integer fromMemberId, Integer isPaid) throws Exception;
 
     /**
      * 根据推荐方盟员身份id和接收方盟员身份id，统计推荐方推荐的、已接受状态的、且已支付的商机佣金总和
      *
      * @param fromMemberId {not null} 推荐方盟员身份id
      * @param toMemberId   {not null} 接收方盟员身份id
+     * @param isPaid       {not null} 是否已支付
      * @return
      * @throws Exception
      */
-    Double sumPaidBrokeragePriceByFromMemberIdAndToMemberId(Integer fromMemberId, Integer toMemberId) throws Exception;
+    Double sumBrokeragePriceByFromMemberIdAndToMemberIdAndIsPaid(Integer fromMemberId, Integer toMemberId, Integer isPaid) throws Exception;
 
     /**
      * 根据商机推荐方的盟员身份id，统计已被接受的、已支付或未支付的佣金之和，即佣金收入
@@ -265,10 +278,13 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      */
     Double sumBrokeragePriceByToMemberIdAndIsPaid(Integer toMemberId, Integer isPaid) throws Exception;
 
-    //------------------------------------------------ boolean --------------------------------------------------------
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - boolean *****************************************
+     ******************************************************************************************************************/
 
-
-    //------------------------------------------------ money --------------------------------------------------------
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - other *******************************************
+     ******************************************************************************************************************/
 
     /**
      * 二维码支付佣金  生成支付信息
@@ -289,8 +305,47 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
 
     /**
      * 支付成功后批量插入
+     *
      * @param list
      * @param orderNo
      */
-    public void insertBatchByList(List<UnionOpportunity> list, String orderNo, Integer verifierId) throws Exception;
+    void insertBatchByList(List<UnionOpportunity> list, String orderNo, Integer verifierId) throws Exception;
+
+    /*******************************************************************************************************************
+     ****************************************** Object As a Service - get **********************************************
+     ******************************************************************************************************************/
+
+    UnionOpportunity getById(Integer opportunityId) throws Exception;
+
+    /*******************************************************************************************************************
+     ****************************************** Object As a Service - list *********************************************
+     ******************************************************************************************************************/
+
+    List<UnionOpportunity> listByFromMemberId(Integer fromMemberId) throws Exception;
+
+    List<UnionOpportunity> listByToMemberId(Integer toMemberId) throws Exception;
+
+    /*******************************************************************************************************************
+     ****************************************** Object As a Service - save *********************************************
+     ******************************************************************************************************************/
+
+    void save(UnionOpportunity newOpportunity) throws Exception;
+
+    void saveBatch(List<UnionOpportunity> newOpportunityList) throws Exception;
+
+    /*******************************************************************************************************************
+     ****************************************** Object As a Service - remove *******************************************
+     ******************************************************************************************************************/
+
+    void removeById(Integer opportunityId) throws Exception;
+
+    void removeBatchById(List<Integer> opportunityIdList) throws Exception;
+
+    /*******************************************************************************************************************
+     ****************************************** Object As a Service - update *******************************************
+     ******************************************************************************************************************/
+
+    void update(UnionOpportunity updateOpportunity) throws Exception;
+
+    void updateBatch(List<UnionOpportunity> updateOpportunityList) throws Exception;
 }

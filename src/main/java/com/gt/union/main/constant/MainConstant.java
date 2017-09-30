@@ -125,6 +125,26 @@ public interface MainConstant {
     int REDIS_KEY_CHARGE_UNION_ID = 2;
 
     /**
+     * 缓存键：盟主权限转移id
+     */
+    int REDIS_KEY_TRANSFER_ID = 1;
+
+    /**
+     * 缓存键：盟主权限转移所关联的联盟id
+     */
+    int REDIS_KEY_TRANSFER_UNION_ID = 2;
+
+    /**
+     * 缓存键：盟主权限转移，转移方的盟员身份id
+     */
+    int REDIS_KEY_TRANSFER_FROM_MEMBER_ID = 3;
+
+    /**
+     * 缓存键：盟主权限转移，接收方的盟员身份id
+     */
+    int REDIS_KEY_TRANSFER_TO_MEMBER_ID = 4;
+
+    /**
      * 缓存键：公告id
      */
     int REDIS_KEY_NOTICE_ID = 1;

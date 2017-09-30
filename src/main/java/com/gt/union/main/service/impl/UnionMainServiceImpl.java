@@ -271,13 +271,13 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         updateUnion.setIsIntegral(vo.getIsIntegral()); //是否开启积分
 
         //(7)联盟收费实体-黑卡
-        List<UnionMainCharge> blackChargeList = this.unionMainChargeService.listByUnionIdAndType(unionId, MainConstant.CHARGE_TYPE_BLACK);
-        if (ListUtil.isEmpty(blackChargeList)) {
+        UnionMainCharge blackCharge = this.unionMainChargeService.getByUnionIdAndType(unionId, MainConstant.CHARGE_TYPE_BLACK);
+        if (blackCharge == null) {
             throw new BusinessException("找不到联盟黑卡设置信息");
         }
         UnionMainChargeVO chargeVO = vo.getUnionMainChargeVO();
         UnionMainCharge updateBlackCharge = new UnionMainCharge();
-        updateBlackCharge.setId(blackChargeList.get(0).getId());
+        updateBlackCharge.setId(blackCharge.getId());
         Integer blackIsAvailable = chargeVO.getBlackIsAvailable();
         updateBlackCharge.setIsAvailable(blackIsAvailable); //黑卡是否启用
         Integer blackIsCharge = chargeVO.getBlackIsCharge();
@@ -301,12 +301,12 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         }
 
         //(8)联盟收费实体-红卡
-        List<UnionMainCharge> redChargeList = this.unionMainChargeService.listByUnionIdAndType(unionId, MainConstant.CHARGE_TYPE_RED);
-        if (ListUtil.isEmpty(redChargeList)) {
+        UnionMainCharge redCharge = this.unionMainChargeService.getByUnionIdAndType(unionId, MainConstant.CHARGE_TYPE_RED);
+        if (redCharge == null) {
             throw new BusinessException("找不到联盟红卡设置信息");
         }
         UnionMainCharge updateRedCharge = new UnionMainCharge();
-        updateRedCharge.setId(redChargeList.get(0).getId());
+        updateRedCharge.setId(redCharge.getId());
         Integer redIsAvailable = chargeVO.getRedIsAvailable();
         updateRedCharge.setIsAvailable(redIsAvailable); //红卡是否启用
         Integer redIsCharge = chargeVO.getRedIsCharge();
