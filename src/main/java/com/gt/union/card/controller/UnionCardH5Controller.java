@@ -1,5 +1,6 @@
 package com.gt.union.card.controller;
 
+import com.alibaba.fastjson.JSON;
 import com.gt.api.bean.session.Member;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.api.client.member.MemberService;
@@ -133,11 +134,11 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			throw new BusinessException("用户不存在");
 		}
 		String phoneKey = RedisKeyUtil.getCardH5LoginPhoneKey(phone);
-		Object obj = redisCacheUtil.get(phoneKey);
+		String obj = redisCacheUtil.get(phoneKey);
 		if(CommonUtil.isEmpty(obj)){
 			throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
 		}
-		if(!code.equals(obj)){
+		if(!code.equals(JSON.parse(obj))){
 			throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
 		}
 		com.gt.union.common.util.SessionUtils.setLoginMember(request, member);

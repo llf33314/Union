@@ -298,9 +298,11 @@ public class UnionConsumeController {
 		logger.info("获取消费核销支付状态：" + only);
 		String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
 		String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
-		Object status = redisCacheUtil.get(statusKey);
+		String status = redisCacheUtil.get(statusKey);
 		if (CommonUtil.isEmpty(status)) {//订单超时
 			status = ConfigConstant.USER_ORDER_STATUS_004;
+		}else {
+			status = JSON.parseObject(status,String.class);
 		}
 		if (ConfigConstant.USER_ORDER_STATUS_003.equals(status)) {//订单支付成功
 			redisCacheUtil.remove(statusKey);

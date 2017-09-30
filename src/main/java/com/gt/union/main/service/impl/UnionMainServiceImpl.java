@@ -434,7 +434,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         String unionIdKey = RedisKeyUtil.getUnionIdKey(unionId);
         if (this.redisCacheUtil.exists(unionIdKey)) {
             String tempStr = this.redisCacheUtil.get(unionIdKey);
-            result = JSONArray.parseObject(unionIdKey, UnionMain.class);
+            result = JSONArray.parseObject(tempStr, UnionMain.class);
             return result;
         }
         //(2)db

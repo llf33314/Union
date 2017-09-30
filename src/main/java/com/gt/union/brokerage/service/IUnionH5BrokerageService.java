@@ -167,9 +167,10 @@ public interface IUnionH5BrokerageService {
 	 * @param id
 	 * @param url
 	 * @param memberId
+	 * @param busId
 	 * @return
 	 */
-	String payOpportunity(Integer id, String url, Integer memberId) throws Exception;
+	String payOpportunity(Integer id, String url, Integer memberId, Integer busId) throws Exception;
 
 	/**
 	 * 单个商机佣金支付成功回调

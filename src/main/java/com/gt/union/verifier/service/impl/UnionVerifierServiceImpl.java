@@ -1,5 +1,6 @@
 package com.gt.union.verifier.service.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
@@ -63,11 +64,12 @@ public class UnionVerifierServiceImpl extends ServiceImpl<UnionVerifierMapper, U
         if(StringUtil.isEmpty(unionVerifier.getCode())){
             throw new BusinessException("验证码不能为空");
         }
-        Object obj = redisCacheUtil.get("verifier:"+unionVerifier.getPhone());
+        String phoneKey = RedisKeyUtil.getVerifyPhoneKey(unionVerifier.getPhone());
+        String obj = redisCacheUtil.get(phoneKey);
         if(CommonUtil.isEmpty(obj)){
             throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
         }
-        if(!unionVerifier.getCode().equals(obj)){
+        if(!unionVerifier.getCode().equals(JSON.parse(obj))){
             throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
         }
         UnionVerifier verifier = new UnionVerifier();
@@ -77,7 +79,7 @@ public class UnionVerifierServiceImpl extends ServiceImpl<UnionVerifierMapper, U
         verifier.setName(unionVerifier.getName());
         verifier.setPhone(unionVerifier.getPhone());
         this.insert(verifier);
-        String phoneKey = RedisKeyUtil.getVerifyPhoneKey(unionVerifier.getPhone());
+
         redisCacheUtil.remove(phoneKey);
     }
 

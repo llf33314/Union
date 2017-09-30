@@ -166,40 +166,9 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         return false;
     }
 
-	@Override
-	public UnionMainPermit createPermit(String orderNo, Double pay, Integer busId) {
-        UnionMainPermit permit = new UnionMainPermit();
-        permit.setBusId(busId);
-        permit.setOrderMoney(pay);
-        permit.setDelStatus(CommonConstant.DEL_STATUS_NO);
-        permit.setCreatetime(new Date());
-        permit.setOrderDesc("多粉-创建联盟付款");
-        permit.setSysOrderNo(orderNo);
-        permit.setOrderStatus(MainConstant.PERMIT_ORDER_STATUS_UNPAY);
-        this.insert(permit);
-		return permit;
-	}
-
     @Override
     public Map<String, Object> createUnionQRCode(BusUser user, Integer chargeId) throws Exception{
         Map<String, Object> data = new HashMap<String, Object>();
-        List<Map> list = dictService.getUnionCreatePackage();
-        boolean flag = false;
-        for(Map map : list){
-            if(map.get("item_key").equals(chargeId)){
-                String itemValue = map.get("item_value").toString();
-                String[] arrs = itemValue.split(",");
-                String isUnionOwnerService = arrs[0];//是否有创建盟主的服务权限 1：是 0：否
-                if (isUnionOwnerService.equals("0")) {
-                    throw new BusinessException("您没有创建联盟的权限");
-                }
-                flag = true;
-                break;
-            }
-        }
-        if(!flag){
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
         UnionSettingMainCharge charge = unionSettingMainChargeService.getById(chargeId);
         if(charge == null){
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -207,18 +176,14 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         Double pay = charge.getMoney();
         String orderNo = ConfigConstant.CREATE_UNION_PAY_ORDER_CODE + System.currentTimeMillis();
         String only= DateTimeKit.getDateTime(new Date(), DateTimeKit.yyyyMMddHHmmss);
-        WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(PropertiesUtil.getDuofenBusId());
-        UnionMainPermit permit = createPermit(orderNo,pay, user.getId());
+        WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(ConfigConstant.WXMP_DUOFEN_BUSID);
         data.put("totalFee",pay);
-        data.put("busId", PropertiesUtil.getDuofenBusId());
+        data.put("busId", ConfigConstant.WXMP_DUOFEN_BUSID);
         data.put("sourceType", 1);//是否墨盒支付
         data.put("payWay",0);//系统判断支付方式
         data.put("isreturn",0);//0：不需要同步跳转
         data.put("model", ConfigConstant.PAY_MODEL);
-        String encrypt = EncryptUtil.encrypt(PropertiesUtil.getEncryptKey(), orderNo);
-        encrypt = URLEncoder.encode(encrypt,"UTF-8");
-        encrypt = URLEncoder.encode(encrypt,"UTF-8");
-        data.put("notifyUrl", ConfigConstant.UNION_ROOT_URL + "/unionMainPermit/79B4DE7C/paymentSuccess/"+encrypt + "/" + only);
+        data.put("notifyUrl", ConfigConstant.UNION_ROOT_URL + "/unionMainPermit/79B4DE7C/paymentSuccess/" + only);
         data.put("orderNum", orderNo);//订单号
         data.put("payBusId", user);//支付的商家id
         data.put("isSendMessage",0);//不推送
@@ -229,7 +194,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         data.put("infoItemKey", chargeId);
         String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
         String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
-        redisCacheUtil.set(paramKey, JSON.toJSONString(data), 360l);//5分钟
+        redisCacheUtil.set(paramKey, data, 360l);//5分钟
         redisCacheUtil.set(statusKey,ConfigConstant.USER_ORDER_STATUS_001,300l);//等待扫码状态
         return data;
     }
@@ -238,40 +203,45 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
     @Transactional(rollbackFor = Exception.class)
     public void payCreateUnionSuccess(String orderNo, String only) throws Exception{
         String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
-        Object obj = redisCacheUtil.get(paramKey);
-        Map<String,Object> result = JSONObject.parseObject(obj.toString(),Map.class);
+        String obj = redisCacheUtil.get(paramKey);
+        if(CommonUtil.isEmpty(obj)){
+            throw new BusinessException("订单不存在或超时");
+        }
+        Map<String,Object> result = JSONObject.parseObject(obj,Map.class);
         String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
+        //判断订单是否支付
         EntityWrapper entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("sys_order_no",orderNo);
         entityWrapper.eq("del_status",CommonConstant.DEL_STATUS_NO);
         entityWrapper.eq("order_status",MainConstant.PERMIT_ORDER_STATUS_SUCCESS);
-        UnionMainPermit mainPermit1 = this.selectOne(entityWrapper);
-        if(mainPermit1 != null){
-            throw new BusinessException("已支付该订单");
+        UnionMainPermit mainPermit = this.selectOne(entityWrapper);
+        if(mainPermit != null){
+            throw new BusinessException("该订单已支付");
         }
         //添加支付订单
         Integer busId = CommonUtil.toInteger(result.get("payBusId"));
-        EntityWrapper wrapper = new EntityWrapper<>();
-        wrapper.eq("sys_order_no",orderNo);
-        wrapper.eq("del_status",CommonConstant.DEL_STATUS_NO);
-        UnionMainPermit permit = this.selectOne(wrapper);
-        Object infoItemKey = result.get("infoItemKey");
-        Integer chargeId = CommonUtil.toInteger(infoItemKey);
+        Integer chargeId = CommonUtil.toInteger(result.get("infoItemKey"));
         UnionSettingMainCharge charge = unionSettingMainChargeService.getById(chargeId);
         int month = (int)(new BigDecimal(charge.getYear()).multiply(new BigDecimal(12)).doubleValue());
-
-        //更新有效期,支付状态
+        Date validity = DateTimeKit.addMonths(month);//有效期
+        //判断该商家是否有许可  新增或更新许可
+        UnionMainPermit myPermit = this.getByBusId(busId);
+        if(myPermit != null){
+            UnionMainPermit unionMainPermit = new UnionMainPermit();
+            unionMainPermit.setId(mainPermit.getId());
+            unionMainPermit.setDelStatus(CommonConstant.DEL_STATUS_YES);
+            this.updateById(unionMainPermit);
+        }
         UnionMainPermit unionMainPermit = new UnionMainPermit();
-        unionMainPermit.setId(permit.getId());
-        unionMainPermit.setValidity(DateTimeKit.addMonths(month));
-        unionMainPermit.setOrderStatus(MainConstant.PERMIT_ORDER_STATUS_SUCCESS);
-        this.updateById(unionMainPermit);
-
-        //商家的许可
-        UnionMainPermit mainPermit = this.getByBusId(busId);
-        //设为没有该许可了
-        mainPermit.setDelStatus(CommonConstant.DEL_STATUS_YES);
-        this.updateById(mainPermit);
+        unionMainPermit.setBusId(busId);
+        unionMainPermit.setOrderMoney(0d);
+        unionMainPermit.setDelStatus(CommonConstant.DEL_STATUS_NO);
+        unionMainPermit.setCreatetime(new Date());
+        unionMainPermit.setOrderDesc(result.get("desc").toString());
+        unionMainPermit.setSysOrderNo(orderNo);
+        unionMainPermit.setOrderStatus(MainConstant.PERMIT_ORDER_STATUS_UNPAY);
+        unionMainPermit.setValidity(validity);
+        this.insert(unionMainPermit);
 
         UnionMember member = unionMemberService.getOwnerByBusId(busId);
         if(member != null){
@@ -280,7 +250,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
                 //将联盟有效期续期
                 UnionMain unionMain = new UnionMain();
                 unionMain.setId(main.getId());
-                unionMain.setUnionValidity(DateTimeKit.addMonths(month));
+                unionMain.setUnionValidity(validity);
                 unionMainService.updateById(unionMain);
             }
         }

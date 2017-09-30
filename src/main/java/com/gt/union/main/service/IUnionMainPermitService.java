@@ -62,15 +62,6 @@ public interface IUnionMainPermitService extends IService<UnionMainPermit> {
     boolean hasUnionMainPermit(Integer busId) throws Exception;
 
     /**
-     *
-     * @param orderNo
-     * @param pay
-     * @param busId
-     * @return
-     */
-	UnionMainPermit createPermit(String orderNo, Double pay, Integer busId);
-
-    /**
      * 获取创建联盟的支付二维码
      * @param user
      * @param chargeId

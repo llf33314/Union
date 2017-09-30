@@ -105,9 +105,9 @@ public class DictServiceImpl implements IDictService {
 	private Double getItemDoubleValue(String itemKey){
 		String key = RedisKeyUtil.getDictTypeKey(itemKey);
 		if(redisCacheUtil.exists(key)){
-			Object obj = redisCacheUtil.get(key);
+			String obj = redisCacheUtil.get(key);
 			if(CommonUtil.isNotEmpty(obj)){
-				return JSON.parseObject(obj.toString(),Double.class);
+				return JSON.parseObject(obj,Double.class);
 			}
 		}
 		Map<String,Object> param = new HashMap<String,Object>();
@@ -130,7 +130,7 @@ public class DictServiceImpl implements IDictService {
 			}
 			exchange = CommonUtil.toDouble(dict.get(0).get("item_value"));
 			if(CommonUtil.isNotEmpty(exchange)){
-				redisCacheUtil.set(key,JSON.toJSONString(exchange));
+				redisCacheUtil.set(key,exchange);
 			}
 		}catch (Exception e){
 			return null;
@@ -146,9 +146,9 @@ public class DictServiceImpl implements IDictService {
 	private List<Map> getItemList(String itemKey){
 		String key = RedisKeyUtil.getDictTypeKey(itemKey);
 		if(redisCacheUtil.exists(key)){
-			Object obj = redisCacheUtil.get(key);
+			String obj = redisCacheUtil.get(key);
 			if(CommonUtil.isNotEmpty(obj)){
-				return JSON.parseObject(obj.toString(),List.class);
+				return JSONArray.parseArray(obj,Map.class);
 			}
 		}
 		Map<String,Object> param = new HashMap<String,Object>();
@@ -166,7 +166,7 @@ public class DictServiceImpl implements IDictService {
 			Map item = JSON.parseObject(data.get("data").toString(),Map.class);
 			List list = JSONArray.parseArray(item.get("dictJSON").toString(),Map.class);
 			if(ListUtil.isNotEmpty(list)){
-				redisCacheUtil.set(key, JSON.toJSONString(list));
+				redisCacheUtil.set(key, list);
 			}
 			return list;
 		}catch (Exception e){
