@@ -89,7 +89,7 @@ public class UnionMemberDiscountServiceImpl extends ServiceImpl<UnionMemberDisco
             throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
         //(2)检查联盟有效期
-        this.unionMainService.checkUnionMainValid(member.getUnionId());
+        this.unionMainService.checkUnionValid(member.getUnionId());
         //(3)判断是否具有写权限
         if (!this.unionMemberService.hasWriteAuthority(member)) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);

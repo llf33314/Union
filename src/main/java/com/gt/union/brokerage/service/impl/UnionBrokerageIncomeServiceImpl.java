@@ -71,7 +71,7 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
             throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
         //(2)检查联盟有效期
-        this.unionMainService.checkUnionMainValid(unionMember.getUnionId());
+        this.unionMainService.checkUnionValid(unionMember.getUnionId());
         //(3)判断是否具有读权限
         if (!this.unionMemberService.hasReadAuthority(unionMember)) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
@@ -139,7 +139,7 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
             throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
         //(2)检查联盟有效期
-        this.unionMainService.checkUnionMainValid(unionMember.getUnionId());
+        this.unionMainService.checkUnionValid(unionMember.getUnionId());
         //(3)判断是否具有读权限
         if (!this.unionMemberService.hasReadAuthority(unionMember)) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);

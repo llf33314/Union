@@ -109,18 +109,80 @@ public class RedisKeyUtil {
         return new StringBuilder("memberDiscount:toMemberId:").append(toMemberId).toString();
     }
 
-    /**
-     * 获取封装的unionMainValid key
-     *
-     * @param unionId
-     * @return
-     */
-    public static final String getMainValidKey(Integer unionId) {
-        return getMainValidKey(String.valueOf(unionId));
+    /*******************************************************************************************************************
+     ********************************************* main module **************************************************
+     ******************************************************************************************************************/
+    public static final String getUnionIdKey(Integer unionId) {
+        return new StringBuilder("union:").append(unionId).toString();
     }
 
-    public static final String getMainValidKey(String unionId) {
-        return "main:" + unionId + ":valid";
+    public static final List<String> getUnionIdKey(List<Integer> unionIdList) {
+        List<String> result = new ArrayList<>();
+        for (Integer unionId : unionIdList) {
+            result.add(getUnionIdKey(unionId));
+        }
+        return result;
+    }
+
+    public static final String getUnionValidKey(Integer unionId) {
+        return new StringBuilder("union:").append(unionId).append("valid").toString();
+    }
+
+    /*******************************************************************************************************************
+     ********************************************* main dict module **************************************************
+     ******************************************************************************************************************/
+    public static final String getDictIdKey(Integer dictId) {
+        return new StringBuilder("unionDict:").append(dictId).toString();
+    }
+
+    public static final List<String> getDictIdKey(List<Integer> dictIdList) {
+        List<String> result = new ArrayList<>();
+        for (Integer dictId : dictIdList) {
+            result.add(getDictIdKey(dictId));
+        }
+        return result;
+    }
+
+    public static final String getDictUnionIdKey(Integer unionId) {
+        return new StringBuilder("unionDict:unionId").append(unionId).toString();
+    }
+
+    /*******************************************************************************************************************
+     ********************************************* main charge module **************************************************
+     ******************************************************************************************************************/
+    public static final String getChargeIdKey(Integer chargeId) {
+        return new StringBuilder("unionCharge:").append(chargeId).toString();
+    }
+
+    public static final List<String> getChargeIdKey(List<Integer> chargeIdList) {
+        List<String> result = new ArrayList<>();
+        for (Integer chargeId : chargeIdList) {
+            result.add(getChargeIdKey(chargeId));
+        }
+        return result;
+    }
+
+    public static final String getChargeUnionIdKey(Integer unionId) {
+        return new StringBuilder("unionCharge:unionId").append(unionId).toString();
+    }
+
+    /*******************************************************************************************************************
+     ********************************************* main notice module **************************************************
+     ******************************************************************************************************************/
+    public static final String getNoticeIdKey(Integer noticeId) {
+        return new StringBuilder("unionNotice:").append(noticeId).toString();
+    }
+
+    public static final List<String> getNoticeIdKey(List<Integer> noticeIdList) {
+        List<String> result = new ArrayList<>();
+        for (Integer noticeId : noticeIdList) {
+            result.add(getNoticeIdKey(noticeId));
+        }
+        return result;
+    }
+
+    public static final String getNoticeUnionIdKey(Integer unionId) {
+        return new StringBuilder("unionNotice:unionId").append(unionId).toString();
     }
 
     /**
