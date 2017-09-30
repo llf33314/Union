@@ -939,14 +939,14 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         Double price = charge.getChargePrice();//收费价格
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("totalFee",price);
-        data.put("busId", PropertiesUtil.getDuofenBusId());
+        data.put("busId", ConfigConstant.WXMP_DUOFEN_BUSID);
         data.put("sourceType", 1);//是否墨盒支付
         data.put("payWay",0);//系统判断支付方式
         data.put("isreturn",isReturn);//0：不需要同步跳转 1:同步跳转
         data.put("model", ConfigConstant.PAY_MODEL);
         String only = String.valueOf(System.currentTimeMillis());
         String orderNo = CardConstant.ORDER_PREFIX + only;
-        WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(PropertiesUtil.getDuofenBusId());
+        WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(ConfigConstant.WXMP_DUOFEN_BUSID);
         data.put("notifyUrl", ConfigConstant.UNION_ROOT_URL + "/unionCard/79B4DE7C/paymentSuccess/" + only);
         if(isReturn == 1){
             data.put("returnUrl", returnUrl);
