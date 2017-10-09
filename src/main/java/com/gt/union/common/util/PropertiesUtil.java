@@ -306,11 +306,11 @@ public class PropertiesUtil {
 		this.encryptKey = encryptKey;
 	}
 
-	@Value("${socket.key}")
 	public static String getSocketKey() {
 		return socketKey;
 	}
 
+	@Value("${socket.key}")
 	public void setSocketKey(String socketKey) {
 		this.socketKey = socketKey;
 	}
