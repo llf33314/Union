@@ -158,11 +158,11 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 		Member member = SessionUtils.getLoginMember(request);
 		if(CommonUtil.isEmpty(member)){
 			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
-			return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
+			return GTJsonResult.instanceSuccessMsg(null,redirectUrl).toString();
 		}
 		if(!member.getBusid().equals(ConfigConstant.WXMP_DUOFEN_BUSID)){
 			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
-			return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
+			return GTJsonResult.instanceSuccessMsg(null,redirectUrl).toString();
 		}
 		UnionVerifier verifier = com.gt.union.common.util.SessionUtils.getVerifier(request);
 		int result = wxPayService.enterprisePayment(user.getId(), member.getId(), member.getOpenid(), fee, verifier == null ? null : verifier.getId());
@@ -284,11 +284,11 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 		BusUser user = SessionUtils.getLoginUser(request);
 		if(CommonUtil.isEmpty(member)){
 			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
-			return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
+			return GTJsonResult.instanceSuccessMsg(null,redirectUrl).toString();
 		}
 		if(!member.getBusid().equals(ConfigConstant.WXMP_DUOFEN_BUSID)){
 			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
-			return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
+			return GTJsonResult.instanceSuccessMsg(null,redirectUrl).toString();
 		}
 		String payUrl = unionH5BrokerageService.payOpportunity(id, url, member.getId(), user.getId());
 		return GTJsonResult.instanceSuccessMsg(payUrl).toString();
@@ -312,11 +312,11 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 		Member member = SessionUtils.getLoginMember(request);
 		if(CommonUtil.isEmpty(member)){
 			String redirectUrl = this.authorizeMemberWx(request, ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
-			return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
+			return GTJsonResult.instanceSuccessMsg(null,redirectUrl).toString();
 		}
 		if(!member.getBusid().equals(ConfigConstant.WXMP_DUOFEN_BUSID)){
 			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
-			return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
+			return GTJsonResult.instanceSuccessMsg(null,redirectUrl).toString();
 		}
 		String payUrl = unionH5BrokerageService.payAllOpportunity(user.getId(), unionId, fee, url, member.getId());
 		return GTJsonResult.instanceSuccessMsg(payUrl).toString();

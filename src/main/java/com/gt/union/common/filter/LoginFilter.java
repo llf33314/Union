@@ -62,34 +62,41 @@ public class LoginFilter implements Filter {
             return;
         }
         //(3)判断是否已有登录信息
-        BusUser busUser = SessionUtils.getLoginUser(req);
-        busUser = justForDev(req, busUser); //TODO 正式中请注释掉
-        if (busUser == null) {
-            if(url.equals("/cardPhone/")){//
-                chain.doFilter(request, response);
-                return;
-            }else if(url.indexOf("cardH5") > -1){
-                response.setCharacterEncoding("UTF-8");
-                response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin")));
-                return;
-            }else if(url.equals("/brokeragePhone/")){
-                chain.doFilter(request, response);
-                return;
-            }else if(url.indexOf("unionH5Brokerage") > -1){
-                response.setCharacterEncoding("UTF-8");
-                response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + "toLogin")));
-                return;
-            }else if(url.equals("/unionMain/")){
-                String wxmpLoginUrl = ConfigConstant.WXMP_ROOT_URL + "/user/tologin.do";
-                String script = "<script type='text/javascript'>"
-                        + "location.href='"+ wxmpLoginUrl +"';"
-                        + "</script>";
-                response.getWriter().write(script);
-                return;
-            }else {
-                response.setCharacterEncoding("UTF-8");
-                response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", ConfigConstant.WXMP_ROOT_URL + "/user/tologin.do")));
-                return;
+//        busUser = justForDev(req, busUser); //TODO 正式中请注释掉
+        if(url.indexOf("unionH5Brokerage") > -1 || url.indexOf("brokeragePhone") > -1){
+            BusUser busUser = SessionUtils.getUnionBus(req);
+            if (busUser == null) {
+                if(url.equals("/brokeragePhone/")){
+                    chain.doFilter(request, response);
+                    return;
+                }else if(url.indexOf("unionH5Brokerage") > -1){
+                    response.setCharacterEncoding("UTF-8");
+                    response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceSuccessMsg(null, ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + "toLogin")));
+                    return;
+                }
+            }
+        }else {
+            BusUser busUser = SessionUtils.getLoginUser(req);
+            if (busUser == null) {
+                if(url.equals("/cardPhone/")){//
+                    chain.doFilter(request, response);
+                    return;
+                }else if(url.indexOf("cardH5") > -1){
+                    response.setCharacterEncoding("UTF-8");
+                    response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceSuccessMsg(null, ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin")));
+                    return;
+                }else if(url.equals("/unionMain/")){
+                    String wxmpLoginUrl = ConfigConstant.WXMP_ROOT_URL + "/user/tologin.do";
+                    String script = "<script type='text/javascript'>"
+                            + "location.href='"+ wxmpLoginUrl +"';"
+                            + "</script>";
+                    response.getWriter().write(script);
+                    return;
+                }else {
+                    response.setCharacterEncoding("UTF-8");
+                    response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceSuccessMsg("请重新登录", ConfigConstant.WXMP_ROOT_URL + "/user/tologin.do")));
+                    return;
+                }
             }
         }
         //(4)通过
