@@ -316,7 +316,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
-        if(!this.hasWriteAuthority(member)){
+        if (!this.hasWriteAuthority(member)) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
         Wrapper wrapper = new Wrapper() {
@@ -464,7 +464,9 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         if (ListUtil.isNotEmpty(memberIdList)) {
             for (Integer memberId : memberIdList) {
                 UnionMember member = this.getById(memberId);
-                result.add(member);
+                if (member != null) {
+                    result.add(member);
+                }
             }
             sortByIsUnionOwnerAndId(result);
         }
