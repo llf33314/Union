@@ -377,7 +377,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		UnionOpportunity unionOpportunity = new UnionOpportunity();
 		unionOpportunity.setId(opportunity.getId());
 		unionOpportunity.setIsUrgeBrokerage(OpportunityConstant.URGE_YES);
-		unionOpportunityService.updateById(unionOpportunity);
+		unionOpportunityService.update(unionOpportunity);
 	}
 
 	@Override
