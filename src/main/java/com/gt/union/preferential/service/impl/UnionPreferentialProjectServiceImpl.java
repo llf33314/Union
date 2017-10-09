@@ -1,5 +1,6 @@
 package com.gt.union.preferential.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.mapper.Wrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -8,6 +9,9 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.DateUtil;
+import com.gt.union.common.util.ListUtil;
+import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.RedisKeyUtil;
 import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.member.constant.MemberConstant;
 import com.gt.union.member.entity.UnionMember;
@@ -20,7 +24,9 @@ import com.gt.union.preferential.service.IUnionPreferentialItemService;
 import com.gt.union.preferential.service.IUnionPreferentialProjectService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -44,51 +50,25 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
     @Autowired
     private IUnionMainService unionMainService;
 
-    //-------------------------------------------------- get ----------------------------------------------------------
+    @Autowired
+    private RedisCacheUtil redisCacheUtil;
 
-    /**
-     * 根据盟员id获取优惠项目
-     *
-     * @param id
-     * @return
-     */
-    @Override
-    public UnionPreferentialProject getByMemberId(Integer id) {
-        EntityWrapper entityWrapper = new EntityWrapper<UnionPreferentialProject>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
-        entityWrapper.eq("member_id", id);
-        UnionPreferentialProject project = this.selectOne(entityWrapper);
-        return project;
-    }
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - get *********************************************
+     ******************************************************************************************************************/
 
-    /**
-     * 根据优惠项目id获取对象
-     *
-     * @param projectId {not null} 优惠项目id
-     * @return
-     * @throws Exception
-     */
     @Override
-    public UnionPreferentialProject getById(Integer projectId) throws Exception {
-        if (projectId == null) {
+    public UnionPreferentialProject getByMemberId(Integer memberId) throws Exception {
+        if (memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        EntityWrapper entityWrapper = new EntityWrapper();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", projectId);
-        return this.selectOne(entityWrapper);
+        List<UnionPreferentialProject> projectList = this.listByMemberId(memberId);
+        if (ListUtil.isNotEmpty(projectList)) {
+            return projectList.get(0);
+        }
+        return null;
     }
 
-    /**
-     * 根据商家id、盟员身份id、优惠项目id和优惠服务状态，获取详情信息
-     *
-     * @param busId      {not null} 商家id
-     * @param memberId   {not null} 盟员身份id
-     * @param projectId  {not null} 优惠项目id
-     * @param itemStatus {not null} 优惠服务状态
-     * @return
-     * @throws Exception
-     */
     @Override
     public Map<String, Object> getDetailByBusIdAndMemberIdAndProjectIdAndItemStatus(Integer busId, Integer memberId
             , Integer projectId, Integer itemStatus) throws Exception {
@@ -119,14 +99,6 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         return result;
     }
 
-    /**
-     * 根据商家id和盟员身份id，获取优惠项目信息
-     *
-     * @param busId    {not null} 商家id
-     * @param memberId {not null} 盟员身份id
-     * @return
-     * @throws Exception
-     */
     @Override
     public UnionPreferentialProject getByBusIdAndMemberId(Integer busId, Integer memberId) throws Exception {
         if (busId == null || memberId == null) {
@@ -144,21 +116,9 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
             throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
         }
         //(4)查询操作
-        EntityWrapper entityWrapper = new EntityWrapper();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("member_id", memberId);
-        return this.selectOne(entityWrapper);
+        return this.getByMemberId(memberId);
     }
 
-    /**
-     * 根据商家id和盟员身份id，获取优惠项目信息
-     *
-     * @param page     {not null} 分页对象
-     * @param busId    {not null} 商家id
-     * @param memberId {not null} 盟员身份id
-     * @return
-     * @throws Exception
-     */
     @Override
     public Map<String, Object> getPageMapByBusIdAndMemberId(Page page, Integer busId, Integer memberId) throws Exception {
         if (page == null || busId == null || memberId == null) {
@@ -177,10 +137,7 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
             throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
         }
         //(4)查询优惠项目
-        EntityWrapper entityWrapper = new EntityWrapper();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("member_id", memberId);
-        UnionPreferentialProject project = this.selectOne(entityWrapper);
+        UnionPreferentialProject project = this.getByMemberId(memberId);
         result.put("project", project);
         //(5)查询优惠服务
         if (project == null) {
@@ -192,18 +149,10 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         return result;
     }
 
-    //------------------------------------------ list(include page) ---------------------------------------------------
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - list ********************************************
+     ******************************************************************************************************************/
 
-    /**
-     * 根据商家id、盟员身份id和优惠服务项状态，分页查询优惠项目列表信息
-     *
-     * @param page       {not null} 分页对象
-     * @param busId      {not null} 商家id
-     * @param memberId   {not null} 盟员身份id
-     * @param itemStatus {not null} 优惠服务项状态
-     * @return
-     * @throws Exception
-     */
     @Override
     public Page pageMapByBusIdAndMemberIdAndItemStatus(Page page, Integer busId, Integer memberId, final Integer itemStatus) throws Exception {
         if (page == null || busId == null || memberId == null || itemStatus == null) {
@@ -254,12 +203,6 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         }
     }
 
-    /**
-     * 获取所有过期的优惠项目列表信息，即项目所属盟员已退盟
-     *
-     * @return
-     * @throws Exception
-     */
     @Override
     public List<UnionPreferentialProject> listExpired() throws Exception {
         EntityWrapper entityWrapper = new EntityWrapper();
@@ -272,17 +215,18 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         return this.selectList(entityWrapper);
     }
 
-    //------------------------------------------------- update --------------------------------------------------------
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - save ********************************************
+     ******************************************************************************************************************/
 
-    /**
-     * 根据优惠项目id、商家id和盟员身份id，更新优惠项目说明
-     *
-     * @param projectId    {not null} 优惠项目id
-     * @param busId        {not null} 商家id
-     * @param memberId     {not null} 盟员身份id
-     * @param illustration {not null} 优惠项目说明
-     * @throws Exception
-     */
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - remove ******************************************
+     ******************************************************************************************************************/
+
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - update ******************************************
+     ******************************************************************************************************************/
+
     @Override
     public void updateIllustrationByIdAndBusIdAndMemberId(Integer projectId, Integer busId, Integer memberId, String illustration) throws Exception {
         if (projectId == null || busId == null || memberId == null || illustration == null) {
@@ -309,21 +253,13 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         updateProject.setId(projectId); //优惠项目id
         updateProject.setIllustration(illustration); //优惠项目说明
         updateProject.setModifytime(DateUtil.getCurrentDate()); //优惠项目更新时间
-        this.updateById(updateProject);
+        this.update(updateProject);
     }
 
-    //------------------------------------------------- save ----------------------------------------------------------
-    //------------------------------------------------- count ---------------------------------------------------------
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - count *******************************************
+     ******************************************************************************************************************/
 
-    /**
-     * 根据商家id、盟员身份id和优惠服务项状态，统计优惠服务数
-     *
-     * @param busId      {not null} 商家id
-     * @param memberId   {not null} 盟员身份id
-     * @param itemStatus {not null} 优惠服务状态
-     * @return
-     * @throws Exception
-     */
     @Override
     public Integer countByBusInAndMemberIdAndItemStatus(Integer busId, Integer memberId, final Integer itemStatus) throws Exception {
         if (busId == null || memberId == null || itemStatus == null) {
@@ -375,5 +311,241 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         }
     }
 
-    //------------------------------------------------ boolean --------------------------------------------------------
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - boolean *****************************************
+     ******************************************************************************************************************/
+
+    /*******************************************************************************************************************
+     ****************************************** Object As a Service - get **********************************************
+     ******************************************************************************************************************/
+
+    @Override
+    public UnionPreferentialProject getById(Integer projectId) throws Exception {
+        if (projectId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        UnionPreferentialProject result;
+        //(1)cache
+        String projectIdKey = RedisKeyUtil.getProjectIdKey(projectId);
+        if (this.redisCacheUtil.exists(projectIdKey)) {
+            String tempStr = this.redisCacheUtil.get(projectIdKey);
+            result = JSONArray.parseObject(tempStr, UnionPreferentialProject.class);
+            return result;
+        }
+        //(2)db
+        EntityWrapper<UnionPreferentialProject> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("id", projectId);
+        result = this.selectOne(entityWrapper);
+        setCache(result, projectId);
+        return result;
+    }
+
+    /*******************************************************************************************************************
+     ****************************************** Object As a Service - list *********************************************
+     ******************************************************************************************************************/
+
+    @Override
+    public List<UnionPreferentialProject> listByMemberId(Integer memberId) throws Exception {
+        if (memberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionPreferentialProject> result;
+        //(1)get in cache
+        String memberIdKey = RedisKeyUtil.getProjectMemberIdKey(memberId);
+        if (this.redisCacheUtil.exists(memberIdKey)) {
+            String tempStr = this.redisCacheUtil.get(memberIdKey);
+            result = JSONArray.parseArray(tempStr, UnionPreferentialProject.class);
+            return result;
+        }
+        //(2)get in db
+        EntityWrapper<UnionPreferentialProject> entityWrapper = new EntityWrapper();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("member_id", memberId);
+        result = this.selectList(entityWrapper);
+        setCache(result, memberId, PreferentialConstant.REDIS_KEY_PROJECT_MEMBER_ID);
+        return result;
+    }
+
+    /*******************************************************************************************************************
+     ****************************************** Object As a Service - save *********************************************
+     ******************************************************************************************************************/
+
+    @Override
+    @Transactional
+    public void save(UnionPreferentialProject newProject) throws Exception {
+        if (newProject == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        this.insert(newProject);
+        this.removeCache(newProject);
+    }
+
+    @Override
+    @Transactional
+    public void saveBatch(List<UnionPreferentialProject> newProjectList) throws Exception {
+        if (newProjectList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        this.insertBatch(newProjectList);
+        this.removeCache(newProjectList);
+    }
+
+    /*******************************************************************************************************************
+     ****************************************** Object As a Service - remove *******************************************
+     ******************************************************************************************************************/
+
+    @Override
+    @Transactional
+    public void removeById(Integer projectId) throws Exception {
+        if (projectId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        //(1)remove cache
+        UnionPreferentialProject project = this.getById(projectId);
+        removeCache(project);
+        //(2)remove in db logically
+        UnionPreferentialProject removeOpportunity = new UnionPreferentialProject();
+        removeOpportunity.setId(projectId);
+        removeOpportunity.setDelStatus(CommonConstant.DEL_STATUS_YES);
+        this.updateById(removeOpportunity);
+    }
+
+    @Override
+    @Transactional
+    public void removeBatchById(List<Integer> projectIdList) throws Exception {
+        if (projectIdList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        //(1)remove cache
+        List<UnionPreferentialProject> projectList = new ArrayList<>();
+        for (Integer projectId : projectIdList) {
+            UnionPreferentialProject project = this.getById(projectId);
+            projectList.add(project);
+        }
+        removeCache(projectList);
+        //(2)remove in db logically
+        List<UnionPreferentialProject> removeProjectList = new ArrayList<>();
+        for (Integer projectId : projectIdList) {
+            UnionPreferentialProject removeProject = new UnionPreferentialProject();
+            removeProject.setId(projectId);
+            removeProject.setDelStatus(CommonConstant.DEL_STATUS_YES);
+            removeProjectList.add(removeProject);
+        }
+        this.updateBatchById(removeProjectList);
+    }
+
+    /*******************************************************************************************************************
+     ****************************************** Object As a Service - update *******************************************
+     ******************************************************************************************************************/
+
+    @Override
+    @Transactional
+    public void update(UnionPreferentialProject updateProject) throws Exception {
+        if (updateProject == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        //(1)remove cache
+        Integer projectId = updateProject.getId();
+        UnionPreferentialProject project = this.getById(projectId);
+        removeCache(project);
+        //(2)update db
+        this.updateById(updateProject);
+    }
+
+    @Override
+    @Transactional
+    public void updateBatch(List<UnionPreferentialProject> updateProjectList) throws Exception {
+        if (updateProjectList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        //(1)remove cache
+        List<Integer> projectIdList = new ArrayList<>();
+        for (UnionPreferentialProject updateProject : updateProjectList) {
+            projectIdList.add(updateProject.getId());
+        }
+        List<UnionPreferentialProject> projectList = new ArrayList<>();
+        for (Integer projectId : projectIdList) {
+            UnionPreferentialProject project = this.getById(projectId);
+            projectList.add(project);
+        }
+        removeCache(projectList);
+        //(2)update db
+        this.updateBatchById(updateProjectList);
+    }
+
+    /*******************************************************************************************************************
+     ****************************************** Object As a Service - cache support ************************************
+     ******************************************************************************************************************/
+
+    private void setCache(UnionPreferentialProject newProject, Integer projectId) {
+        if (projectId == null) {
+            return; //do nothing,just in case
+        }
+        String projectIdKey = RedisKeyUtil.getProjectIdKey(projectId);
+        this.redisCacheUtil.set(projectIdKey, newProject);
+    }
+
+    private void setCache(List<UnionPreferentialProject> newProjectList, Integer foreignId, int foreignIdType) {
+        if (foreignId == null) {
+            return; //do nothing,just in case
+        }
+        String foreignIdKey;
+        switch (foreignIdType) {
+            case PreferentialConstant.REDIS_KEY_PROJECT_MEMBER_ID:
+                foreignIdKey = RedisKeyUtil.getProjectMemberIdKey(foreignId);
+                this.redisCacheUtil.set(foreignIdKey, newProjectList);
+                break;
+            default:
+                break;
+        }
+    }
+
+    private void removeCache(UnionPreferentialProject project) {
+        if (project == null) {
+            return;
+        }
+        Integer projectId = project.getId();
+        String projectIdKey = RedisKeyUtil.getProjectIdKey(projectId);
+        this.redisCacheUtil.remove(projectIdKey);
+        Integer memberId = project.getMemberId();
+        if (memberId != null) {
+            String memberIdKey = RedisKeyUtil.getProjectMemberIdKey(memberId);
+            this.redisCacheUtil.remove(memberIdKey);
+        }
+    }
+
+    private void removeCache(List<UnionPreferentialProject> projectList) {
+        if (ListUtil.isEmpty(projectList)) {
+            return;
+        }
+        List<Integer> projectIdList = new ArrayList<>();
+        for (UnionPreferentialProject project : projectList) {
+            projectIdList.add(project.getId());
+        }
+        List<String> projectIdKeyList = RedisKeyUtil.getProjectIdKey(projectIdList);
+        this.redisCacheUtil.remove(projectIdKeyList);
+        List<String> memberIdKeyList = getForeignIdKeyList(projectList, PreferentialConstant.REDIS_KEY_PROJECT_MEMBER_ID);
+        if (ListUtil.isNotEmpty(memberIdKeyList)) {
+            this.redisCacheUtil.remove(memberIdKeyList);
+        }
+    }
+
+    private List<String> getForeignIdKeyList(List<UnionPreferentialProject> projectList, int foreignIdType) {
+        List<String> result = new ArrayList<>();
+        switch (foreignIdType) {
+            case PreferentialConstant.REDIS_KEY_PROJECT_MEMBER_ID:
+                for (UnionPreferentialProject project : projectList) {
+                    Integer memberId = project.getMemberId();
+                    if (memberId != null) {
+                        String memberIdKey = RedisKeyUtil.getProjectMemberIdKey(memberId);
+                        result.add(memberIdKey);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        return result;
+    }
 }

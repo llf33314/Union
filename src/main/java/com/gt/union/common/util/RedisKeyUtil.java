@@ -258,6 +258,44 @@ public class RedisKeyUtil {
         return new StringBuilder("opportunityRatio:toMemberId").append(toMemberId).toString();
     }
 
+    /*******************************************************************************************************************
+     ********************************************* preferential project module **************************************************
+     ******************************************************************************************************************/
+    public static final String getProjectIdKey(Integer projectId) {
+        return new StringBuilder("preferentialProject:").append(projectId).toString();
+    }
+
+    public static final List<String> getProjectIdKey(List<Integer> projectIdList) {
+        List<String> result = new ArrayList<>();
+        for (Integer projectId : projectIdList) {
+            result.add(getProjectIdKey(projectId));
+        }
+        return result;
+    }
+
+    public static final String getProjectMemberIdKey(Integer memberId) {
+        return new StringBuilder("preferentialProject:memberId").append(memberId).toString();
+    }
+
+    /*******************************************************************************************************************
+     ********************************************* preferential item module **************************************************
+     ******************************************************************************************************************/
+    public static final String getItemIdKey(Integer itemId) {
+        return new StringBuilder("preferentialItem:").append(itemId).toString();
+    }
+
+    public static final List<String> getItemIdKey(List<Integer> itemIdList) {
+        List<String> result = new ArrayList<>();
+        for (Integer itemId : itemIdList) {
+            result.add(getItemIdKey(itemId));
+        }
+        return result;
+    }
+
+    public static final String getItemProjectIdKey(Integer projectId) {
+        return new StringBuilder("preferentialItem:projectId").append(projectId).toString();
+    }
+
     /**
      * 字典类型
      *
