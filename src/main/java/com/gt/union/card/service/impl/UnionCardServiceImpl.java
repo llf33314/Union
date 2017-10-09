@@ -748,7 +748,17 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             unionId = member.getUnionId();
         }
         Map<String, Object> data = new HashMap<String, Object>();
-        data.put("cards", cardInfo.get(member.getId()));
+        List<Map<String, Object>> list = cardInfo.get(member.getId());
+        Map<String, Object> cards = new HashMap<String,Object>();
+        for(Map map : list){
+            if(map.containsKey("black")){
+                cards.put("black",map.get("black"));
+            }
+            if(map.containsKey("red")){
+                cards.put("red",map.get("red"));
+            }
+        }
+        data.put("cards", cards);
         data.put("unions", unions);//可以升级的联盟列表
         data.put("unionId", unionId);//当前的联盟
         return data;
