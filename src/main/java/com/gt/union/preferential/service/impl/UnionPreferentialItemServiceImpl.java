@@ -51,9 +51,6 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
     private IUnionMainService unionMainService;
 
     @Autowired
-    private IUnionMainChargeService unionMainChargeService;
-
-    @Autowired
     private RedisCacheUtil redisCacheUtil;
 
     /*******************************************************************************************************************
