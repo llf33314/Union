@@ -95,7 +95,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 		}
 		String phoneKey = RedisKeyUtil.getBrokeragePhoneKey(phone);
 		redisCacheUtil.set(phoneKey , code, 300l);
-		return GTJsonResult.instanceSuccessMsg(code).toString();
+		return GTJsonResult.instanceSuccessMsg().toString();
 	}
 
 	/**
@@ -282,7 +282,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 
 
 	@ApiOperation(value = "支付佣金", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/79B4DE7C/onePay/{id}", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/onePay/{id}", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String payOne(HttpServletRequest request, HttpServletResponse response, @ApiParam(name = "id", value = "商机id", required = true) @PathVariable(value = "id", required = true) Integer id
 							,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) throws Exception{
 		Member member = SessionUtils.getLoginMember(request);
@@ -402,7 +402,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	@ApiOperation(value = "获取佣金平台二维码图片链接", notes = "获取佣金平台二维码图片链接", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/79B4DE7C/indexQR", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
 	public void indexQR(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
-		String url = ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL;
+		String url = ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + "toLogin";
 		QRcodeKit.buildQRcode(url, 250, 250, response);
 	}
 
