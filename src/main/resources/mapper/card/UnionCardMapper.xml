@@ -33,24 +33,16 @@
 	</select>
 
 
-	<!-- 根据手机号和盟员列表查询升级的联盟卡列表信息 -->
-	<select id="listByPhoneAndMembers" resultType="com.gt.union.card.entity.UnionCard">
-		SELECT * from t_union_card WHERE EXISTS (SELECT id from t_union_card_root r WHERE r.phone = #{phone} AND r.id = t_union_card.root_id AND del_status = 0)
-		AND member_id in
-		<foreach collection="members" item="member" open="(" close=")"
-				 separator=",">
-			#{member.id}
-		</foreach>
-		AND del_status = 0 AND validity &gt; NOW()
-	</select>
-
 	<select id="countByMemberIdsAndType" resultType="java.lang.Integer">
-		SELECT count(id) from t_union_card WHERE EXISTS (SELECT id from t_union_card_root r WHERE r.phone = #{phone} AND r.id = t_union_card.root_id AND del_status = 0)
-		AND member_id in
+		SELECT count(id) from t_union_card WHERE
+		member_id in
 		<foreach collection="members" item="memberId" open="(" close=")"
 				 separator=",">
 			#{memberId}
 		</foreach>
+		<if test="rootId != null" >
+			AND root_id = #{rootId}
+		</if>
 		<if test="type != null" >
 			AND type = #{type}
 		</if>

@@ -27,21 +27,13 @@ public interface UnionCardMapper extends BaseMapper<UnionCard> {
 	Map<String,Object> getByMinDiscountByCardList(@Param("list") List<UnionCard> list, @Param("memberId") Integer memberId);
 
 	/**
-	 * 根据手机号和盟员列表查询升级的联盟卡列表信息
-	 * @param phone
-	 * @param members
-	 * @return
-	 */
-	List<UnionCard> listByPhoneAndMembers(@Param("phone") String phone, @Param("members") List<UnionMember> members);
-
-	/**
 	 * 查询升级联盟卡的数量
 	 * @param memberList
 	 * @param type
 	 * @param isCharge
 	 * @return
 	 */
-	int countByMemberIdsAndType(@Param("members") List<Integer> memberList, @Param("type") Integer type, @Param("isCharge") Integer isCharge, @Param("phone") String phone);
+	int countByMemberIdsAndType(@Param("members") List<Integer> memberList, @Param("type") Integer type, @Param("isCharge") Integer isCharge, @Param("rootId") Integer rootId);
 
 	/**
 	 * 根据联盟卡列表查询最早办理的联盟卡

@@ -46,18 +46,11 @@ public class UnionVerifierServiceImpl extends ServiceImpl<UnionVerifierMapper, U
 
     @Override
     public void save(UnionVerifier unionVerifier) throws Exception {
-        EntityWrapper<UnionVerifier> memberEntityWrapper = new EntityWrapper<UnionVerifier>();
-        memberEntityWrapper.eq("del_status",0);
-        memberEntityWrapper.eq("phone",unionVerifier.getPhone());
-        int count = this.selectCount(memberEntityWrapper);
-        if(count > 0){
+       UnionVerifier phoneVerify = this.getByPhone(unionVerifier.getPhone());
+        if(phoneVerify != null){
             throw new ParamException("您输入的手机号码已存在，请重新输入");
         }
-        EntityWrapper<UnionVerifier> memberWrapper = new EntityWrapper<UnionVerifier>();
-        memberWrapper.eq("del_status",0);
-        memberWrapper.eq("bus_id",unionVerifier.getBusId());
-        memberWrapper.eq("name",unionVerifier.getName());
-        count = this.selectCount(memberEntityWrapper);
+        int count = this.selectCountByBusIdAndName(unionVerifier.getBusId(),unionVerifier.getName());
         if(count > 0){
             throw new ParamException("您输入的姓名已存在，请重新输入");
         }
@@ -102,6 +95,15 @@ public class UnionVerifierServiceImpl extends ServiceImpl<UnionVerifierMapper, U
         wrapper.eq("phone",phone);
 		return this.selectOne(wrapper);
 	}
+
+    @Override
+    public int selectCountByBusIdAndName(Integer busId, String name) {
+        EntityWrapper<UnionVerifier> memberWrapper = new EntityWrapper<UnionVerifier>();
+        memberWrapper.eq("del_status",0);
+        memberWrapper.eq("bus_id",busId);
+        memberWrapper.eq("name",name);
+        return this.selectCount(memberWrapper);
+    }
 
 
 }

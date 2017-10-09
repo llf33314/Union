@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.service.IService;
 import com.gt.api.bean.session.Member;
 import com.gt.union.api.entity.result.UnionDiscountResult;
 import com.gt.union.card.entity.UnionCard;
+import com.gt.union.card.entity.UnionCardRoot;
 import com.gt.union.card.vo.UnionCardBindParamVO;
 import com.gt.union.member.entity.UnionMember;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
@@ -119,14 +120,6 @@ public interface IUnionCardService extends IService<UnionCard> {
 	void getPhoneCode(Integer busId, String phone) throws Exception;
 
 	/**
-	 * 根据手机号和盟员列表查询升级的联盟卡列表信息
-	 * @param phone
-	 * @param members
-	 * @return
-	 */
-	List<UnionCard> listByPhoneAndMembers(String phone, List<UnionMember> members);
-
-	/**
 	 * 获取可升级联盟卡的联盟信息
 	 * @param busId
 	 * @param phone
@@ -144,13 +137,13 @@ public interface IUnionCardService extends IService<UnionCard> {
 	Map<String,Object> bindCard(UnionCardBindParamVO vo) throws Exception;
 
 	/**
-	 * 根据手机号和盟员id获取升级的联盟卡
-	 * @param phone
+	 * 根据联盟主卡和盟员id获取升级的联盟卡
+	 * @param root
 	 * @param memberId
 	 * @param isValidity  是否过期
 	 * @return
 	 */
-	UnionCard getByPhoneAndMemberId(String phone, Integer memberId, Boolean isValidity) throws Exception;
+	UnionCard getByRootAndMemberId(UnionCardRoot root, Integer memberId, Boolean isValidity) throws Exception;
 
 	/**
 	 * 导出联盟卡的数据列表

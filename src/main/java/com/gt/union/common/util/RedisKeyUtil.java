@@ -493,4 +493,22 @@ public class RedisKeyUtil {
     public static String getConsumePayParamKey(String only) {
         return "consume:param:" + only;
     }
+
+    /**
+     * 根据手机号获取主联盟卡信息
+     * @param phone
+     * @return
+     */
+	public static String getUnionCardRootByPhoneKey(String phone) {
+        return "cardRoot:phone:" + phone;
+	}
+
+    /**
+     * 根据卡号获取主联盟卡信息
+     * @param cardNo
+     * @return
+     */
+    public static String getUnionCardRootByCardNoKey(String cardNo) {
+        return "cardRoot:cardNo:" + cardNo;
+    }
 }

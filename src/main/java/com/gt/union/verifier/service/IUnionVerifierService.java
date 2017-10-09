@@ -39,4 +39,12 @@ public interface IUnionVerifierService extends IService<UnionVerifier> {
      * @return
      */
 	UnionVerifier getByPhone(String phone);
+
+	/**
+	 * 根据商家id和名称查询佣金平台管理员个数
+	 * @param busId
+	 * @param name
+	 * @return
+	 */
+	int selectCountByBusIdAndName(Integer busId, String name);
 }

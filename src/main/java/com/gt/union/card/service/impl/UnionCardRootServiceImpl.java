@@ -1,5 +1,6 @@
 package com.gt.union.card.service.impl;
 
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.card.entity.UnionCardRoot;
@@ -7,7 +8,11 @@ import com.gt.union.card.mapper.UnionCardRootMapper;
 import com.gt.union.card.service.IUnionCardRootService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.ParamException;
+import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.RedisKeyUtil;
 import com.gt.union.common.util.StringUtil;
+import com.gt.union.opportunity.entity.UnionOpportunityRatio;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -24,15 +29,28 @@ import java.util.UUID;
 @Service
 public class UnionCardRootServiceImpl extends ServiceImpl<UnionCardRootMapper, UnionCardRoot> implements IUnionCardRootService {
 
+	@Autowired
+	private RedisCacheUtil redisCacheUtil;
+
 	@Override
 	public UnionCardRoot getByPhone(String phone) throws Exception{
 		if(StringUtil.isEmpty(phone)){
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
+		UnionCardRoot unionCardRoot = null;
+		String key = RedisKeyUtil.getUnionCardRootByPhoneKey(phone);
+
+		if(redisCacheUtil.exists(key)){
+			String tempStr = this.redisCacheUtil.get(key);
+			unionCardRoot = JSONArray.parseObject(tempStr, UnionCardRoot.class);
+			return unionCardRoot;
+		}
 		EntityWrapper entityWrapper = new EntityWrapper<>();
 		entityWrapper.eq("phone", phone);
 		entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
-		return this.selectOne(entityWrapper);
+		unionCardRoot = this.selectOne(entityWrapper);
+		redisCacheUtil.set(key,unionCardRoot);
+		return unionCardRoot;
 	}
 
 	@Override
@@ -40,10 +58,20 @@ public class UnionCardRootServiceImpl extends ServiceImpl<UnionCardRootMapper, U
 		if(StringUtil.isEmpty(cardNo)){
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
+		UnionCardRoot unionCardRoot = null;
+		String key = RedisKeyUtil.getUnionCardRootByCardNoKey(cardNo);
+
+		if(redisCacheUtil.exists(key)){
+			String tempStr = this.redisCacheUtil.get(key);
+			unionCardRoot = JSONArray.parseObject(tempStr, UnionCardRoot.class);
+			return unionCardRoot;
+		}
 		EntityWrapper entityWrapper = new EntityWrapper<>();
 		entityWrapper.eq("number", cardNo);
 		entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
-		return this.selectOne(entityWrapper);
+		unionCardRoot = this.selectOne(entityWrapper);
+		redisCacheUtil.set(key,unionCardRoot);
+		return unionCardRoot;
 	}
 
 	@Override

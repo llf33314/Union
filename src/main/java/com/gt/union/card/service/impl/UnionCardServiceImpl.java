@@ -475,7 +475,8 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 memberList.add(unionMember.getId());
             }
         }
-        UnionCard unionCard = this.getByPhoneAndMemberId(phone, member.getId(), true);//本盟员升级的联盟卡
+        UnionCardRoot root = unionCardRootService.getByPhone(phone);
+        UnionCard unionCard = this.getByRootAndMemberId(root, member.getId(), true);//本盟员升级的联盟卡
         UnionMainCharge blackCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(member.getUnionId(), MainConstant.CHARGE_TYPE_BLACK, MainConstant.CHARGE_IS_AVAILABLE_YES);
         UnionMainCharge redCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(member.getUnionId(), MainConstant.CHARGE_TYPE_RED, MainConstant.CHARGE_IS_AVAILABLE_YES);
         List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
@@ -483,7 +484,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             if (unionCard.getType() == CardConstant.TYPE_BLACK) {//黑卡
                 if (unionCard.getIsCharge() == CardConstant.IS_CHARGE_YES) {//收费黑卡
                     if (redCharge != null) {//开启红卡
-                        int count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, phone);
+                        int count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, root == null ? null : root.getId());
                         if (count > 0) {
                             Map<String, Object> map = new HashMap<String, Object>();
                             Map<String, Object> red = new HashMap<String, Object>();
@@ -507,7 +508,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 } else {//免费黑卡
                     //黑卡收费
                     if (blackCharge.getIsCharge() == MainConstant.CHARGE_IS_CHARGE_YES && blackCharge.getIsOldCharge() == MainConstant.CHARGE_OLD_IS_YES) {
-                        int count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_BLACK, MainConstant.CHARGE_IS_CHARGE_YES, phone);
+                        int count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_BLACK, MainConstant.CHARGE_IS_CHARGE_YES, root == null ? null : root.getId());
                         if (count > 0) {
                             Map<String, Object> map = new HashMap<String, Object>();
                             Map<String, Object> black = new HashMap<String, Object>();
@@ -530,7 +531,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                     }
                     //开启红卡
                     if (redCharge != null) {
-                        int count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, phone);
+                        int count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, root == null ? null : root.getId());
                         if (count > 0) {
                             Map<String, Object> map = new HashMap<String, Object>();
                             Map<String, Object> red = new HashMap<String, Object>();
@@ -555,7 +556,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             }
         } else {//不在本盟员下升级了联盟卡
             if (blackCharge.getIsCharge() == MainConstant.CHARGE_IS_CHARGE_YES) {//黑卡收费
-                int count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_BLACK, MainConstant.CHARGE_IS_CHARGE_YES, phone);
+                int count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_BLACK, MainConstant.CHARGE_IS_CHARGE_YES, root == null ? null : root.getId());
                 if (count > 0) {
                     Map<String, Object> map = new HashMap<String, Object>();
                     Map<String, Object> black = new HashMap<String, Object>();
@@ -584,7 +585,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 dataList.add(map);
             }
             if (redCharge != null) {//开启红卡
-                int count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, phone);
+                int count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, root == null ? null : root.getId());
                 if (count > 0) {
                     Map<String, Object> map = new HashMap<String, Object>();
                     Map<String, Object> red = new HashMap<String, Object>();
@@ -670,12 +671,6 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             return false;
         }
         return true;
-    }
-
-    @Override
-    public List<UnionCard> listByPhoneAndMembers(String phone, List<UnionMember> members) {
-        List<UnionCard> list = this.baseMapper.listByPhoneAndMembers(phone, members);
-        return list;
     }
 
     @Override
@@ -782,7 +777,8 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         if (!unionMemberService.hasWriteAuthority(member)) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
-        UnionCard card = this.getByPhoneAndMemberId(vo.getPhone(), member.getId(), true);
+        UnionCardRoot root = unionCardRootService.getByPhone(vo.getPhone());
+        UnionCard card = this.getByRootAndMemberId(root, member.getId(), true);
         if (card != null && card.getType().equals(vo.getCardType())) {
             UnionMainCharge blackCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(vo.getUnionId(), CardConstant.TYPE_BLACK, MainConstant.CHARGE_IS_AVAILABLE_YES);
             if (!(card.getIsCharge() == CardConstant.IS_CHARGE_NO && blackCharge.getIsOldCharge() == MainConstant.CHARGE_OLD_IS_YES && card.getType() == CardConstant.TYPE_BLACK)) {
@@ -796,9 +792,8 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         Double price = charge.getChargePrice();//收费价格
         Map<String, Object> data = new HashMap<String, Object>();
         if (CommonUtil.isEmpty(price) || price == 0) {//不收费，直接办理
-            UnionCard unionCard = this.getByPhoneAndMemberId(vo.getPhone(), member.getId(), false);
+            UnionCard unionCard = this.getByRootAndMemberId(root, member.getId(), false);
             if (unionCard == null) {
-                UnionCardRoot root = unionCardRootService.getByPhone(vo.getPhone());
                 Integer rootId = null;
                 if (root == null) {
                     UnionCardRoot unionCardRoot = unionCardRootService.createUnionCardRoot(vo.getPhone());
@@ -864,15 +859,14 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     }
 
     @Override
-    public UnionCard getByPhoneAndMemberId(String phone, Integer memberId, Boolean isValidity) throws Exception {
-        UnionCardRoot root = unionCardRootService.getByPhone(phone);
+    public UnionCard getByRootAndMemberId(UnionCardRoot root, Integer memberId, Boolean isValidity) throws Exception {
         if (root == null) {
             return null;
         }
         EntityWrapper wrapper = new EntityWrapper<>();
         wrapper.eq("root_id", root.getId());
-        wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
         wrapper.eq("member_id", memberId);
+        wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
         if (isValidity) {
             wrapper.gt("validity", new Date());
         }
@@ -998,13 +992,13 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         String orderDesc = CommonUtil.toString(result.get("desc"));
         UnionCardUpgradePay pay = unionCardUpgradePayService.createCardUpgreadePay(orderNo, 2, 1, payMoney, orderDesc);
         UnionMember member = unionMemberService.getByBusIdAndUnionId(payBusId, unionId);
-        UnionCard unionCard = this.getByPhoneAndMemberId(phone, member.getId(), false);
+        UnionCardRoot root = unionCardRootService.getByPhone(phone);
+        UnionCard unionCard = this.getByRootAndMemberId(root, member.getId(), false);
         UnionMainCharge charge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, cardType, MainConstant.CHARGE_IS_AVAILABLE_YES);
         Integer rootId = null;
         Integer cardId = null;
         Date validity = null;
         if (unionCard == null) {
-            UnionCardRoot root = unionCardRootService.getByPhone(phone);
             if (root == null) {
                 UnionCardRoot unionCardRoot = unionCardRootService.createUnionCardRoot(phone);
                 rootId = unionCardRoot.getId();
