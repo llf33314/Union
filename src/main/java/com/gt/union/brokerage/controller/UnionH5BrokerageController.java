@@ -9,8 +9,6 @@ import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.brokerage.service.IUnionH5BrokerageService;
 import com.gt.union.common.amqp.entity.PhoneMessage;
-import com.gt.union.common.annotation.SysLogAnnotation;
-import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.controller.MemberAuthorizeOrLoginController;
 import com.gt.union.common.exception.BaseException;
@@ -24,13 +22,11 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,7 +54,6 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
-
 
 	/**
 	 * 佣金平台登录
