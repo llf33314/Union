@@ -758,7 +758,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 cards.put("red",map.get("red"));
             }
         }
-        data.put("cards", cardInfo.get(member.getId()));
+        data.put("cards", cards);
         data.put("unions", unions);//可以升级的联盟列表
         data.put("unionId", unionId);//当前的联盟
         return data;
