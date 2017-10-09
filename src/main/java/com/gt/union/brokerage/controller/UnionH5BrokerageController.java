@@ -14,6 +14,7 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.controller.MemberAuthorizeOrLoginController;
 import com.gt.union.common.exception.BaseException;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.*;
 import com.gt.union.main.entity.UnionMain;
@@ -161,11 +162,11 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 		BusUser user = SessionUtils.getLoginUser(request);
 		Member member = SessionUtils.getLoginMember(request);
 		if(CommonUtil.isEmpty(member)){
-			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_ROOT_URL + url);
+			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
 			return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 		}
 		if(!member.getBusid().equals(ConfigConstant.WXMP_DUOFEN_BUSID)){
-			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_ROOT_URL + url);
+			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
 			return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 		}
 		UnionVerifier verifier = com.gt.union.common.util.SessionUtils.getVerifier(request);
@@ -285,15 +286,16 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	public String payOne(HttpServletRequest request, HttpServletResponse response, @ApiParam(name = "id", value = "商机id", required = true) @PathVariable(value = "id", required = true) Integer id
 							,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) throws Exception{
 		Member member = SessionUtils.getLoginMember(request);
+		BusUser user = SessionUtils.getLoginUser(request);
 		if(CommonUtil.isEmpty(member)){
-			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_ROOT_URL + url);
+			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
 			return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 		}
 		if(!member.getBusid().equals(ConfigConstant.WXMP_DUOFEN_BUSID)){
-			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_ROOT_URL + url);
+			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
 			return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 		}
-		String payUrl = unionH5BrokerageService.payOpportunity(id, url, member.getId());
+		String payUrl = unionH5BrokerageService.payOpportunity(id, url, member.getId(), user.getId());
 		return GTJsonResult.instanceSuccessMsg(payUrl).toString();
 	}
 
@@ -314,11 +316,11 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 		BusUser user = SessionUtils.getLoginUser(request);
 		Member member = SessionUtils.getLoginMember(request);
 		if(CommonUtil.isEmpty(member)){
-			String redirectUrl = this.authorizeMemberWx(request, ConfigConstant.UNION_PHONE_ROOT_URL + url);
+			String redirectUrl = this.authorizeMemberWx(request, ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
 			return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 		}
 		if(!member.getBusid().equals(ConfigConstant.WXMP_DUOFEN_BUSID)){
-			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_ROOT_URL + url);
+			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
 			return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 		}
 		String payUrl = unionH5BrokerageService.payAllOpportunity(user.getId(), unionId, fee, url, member.getId());
@@ -335,19 +337,24 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	}
 
 
-	@RequestMapping(value = "/79B4DE7C/paymentOneSuccess/{Encrypt}", method = RequestMethod.POST)
+	@RequestMapping(value = "/79B4DE7C/paymentOneSuccess/{id}", method = RequestMethod.POST)
 	public String paymentOneOpportunitySuccess(HttpServletRequest request, HttpServletResponse response
-			, @PathVariable(name = "Encrypt", required = true) String encrypt , @RequestBody Map<String,Object> param) {
+			, @PathVariable(name = "id", required = true) Integer id , @RequestBody Map<String,Object> param) {
 		Map<String,Object> data = new HashMap<String,Object>();
 		try {
-			logger.info("商机佣金支付成功，Encrypt------------------" + encrypt);
 			logger.info("支付成功回调参数" + JSON.toJSONString(param));
-			logger.info("商机佣金支付成功，orderNo------------------" + param.get("out_trade_no"));
-			UnionVerifier verifier = com.gt.union.common.util.SessionUtils.getVerifier(request);
-			unionH5BrokerageService.paymentOneOpportunitySuccess(encrypt, param.get("out_trade_no").toString(), verifier == null ? null : verifier.getId());
-			data.put("code",0);
-			data.put("msg","成功");
-			return JSON.toJSONString(data);
+			if(param.get("result_code").equals("SUCCESS") && param.get("result_code").equals("SUCCESS")){
+				String orderNo = param.get("out_trade_no").toString();
+				logger.info("商机佣金支付成功，id------------------" + id);
+				logger.info("商机佣金支付成功，orderNo------------------" + orderNo);
+				UnionVerifier verifier = com.gt.union.common.util.SessionUtils.getVerifier(request);
+				unionH5BrokerageService.paymentOneOpportunitySuccess(id, orderNo, verifier == null ? null : verifier.getId());
+				data.put("code",0);
+				data.put("msg","成功");
+				return JSON.toJSONString(data);
+			} else {
+				throw new BusinessException("支付失败");
+			}
 		} catch (BaseException e) {
 			logger.error("商机佣金支付成功后，产生错误：" + e);
 			data.put("code",-1);
@@ -361,19 +368,24 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 		}
 	}
 
-	@RequestMapping(value = "/79B4DE7C/paymentAllSuccess/{Encrypt}", method = RequestMethod.POST)
+	@RequestMapping(value = "/79B4DE7C/paymentAllSuccess/{busId}/{unionId}", method = RequestMethod.POST)
 	public String payAllOpportunitySuccess(HttpServletRequest request, HttpServletResponse response
-			, @PathVariable(name = "Encrypt", required = true) String encrypt, @RequestBody Map<String,Object> param) {
+			, @PathVariable(name = "busId", required = true) Integer busId ,
+		   		@PathVariable(name = "unionId", required = true) Integer unionId ,@RequestBody Map<String,Object> param) {
 		Map<String,Object> data = new HashMap<String,Object>();
 		try {
-			logger.info("商机佣金支付成功，Encrypt------------------" + encrypt);
-			logger.info("支付成功回调参数" + JSON.toJSONString(param));
-			logger.info("商机佣金支付成功，orderNo------------------" + param.get("out_trade_no"));
-			UnionVerifier verifier = com.gt.union.common.util.SessionUtils.getVerifier(request);
-			unionH5BrokerageService.payAllOpportunitySuccess(encrypt, param.get("out_trade_no").toString(), verifier == null ? null : verifier.getId());
-			data.put("code",0);
-			data.put("msg","成功");
-			return JSON.toJSONString(data);
+			logger.info("商机支付成功回调参数" + JSON.toJSONString(param));
+			if(param.get("result_code").equals("SUCCESS") && param.get("result_code").equals("SUCCESS")){
+				String orderNo = param.get("out_trade_no").toString();
+				logger.info("商机佣金支付成功，orderNo------------------" + orderNo);
+				UnionVerifier verifier = com.gt.union.common.util.SessionUtils.getVerifier(request);
+				unionH5BrokerageService.payAllOpportunitySuccess(busId, unionId, orderNo, verifier == null ? null : verifier.getId());
+				data.put("code",0);
+				data.put("msg","成功");
+				return JSON.toJSONString(data);
+			} else {
+				throw new BusinessException("支付失败");
+			}
 		} catch (BaseException e) {
 			logger.error("商机佣金支付成功后，产生错误：" + e);
 			data.put("code",-1);
@@ -390,7 +402,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	@ApiOperation(value = "获取佣金平台二维码图片链接", notes = "获取佣金平台二维码图片链接", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/79B4DE7C/indexQR", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
 	public void indexQR(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
-		String url = ConfigConstant.UNION_PHONE_ROOT_URL;
+		String url = ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL;
 		QRcodeKit.buildQRcode(url, 250, 250, response);
 	}
 

@@ -53,4 +53,58 @@ public interface MemberConstant {
      * 退盟类型：盟主移出退盟
      */
     int OUT_TYPE_REMOVE = 2;
+
+    /**
+     * 缓存键：盟员身份id
+     */
+    int REDIS_KEY_MEMBER_ID = 1;
+    /**
+     * 缓存键：盟员身份对应的商家id
+     */
+    int REDIS_KEY_MEMBER_BUS_ID = 2;
+
+    /**
+     * 缓存键：盟员身份所属联盟的id
+     */
+    int REDIS_KEY_MEMBER_UNION_ID = 3;
+
+    /**
+     * 缓存键：退盟申请id
+     */
+    int REDIS_KEY_OUT_ID = 1;
+
+    /**
+     * 缓存键：退盟申请人的盟员身份id
+     */
+    int REDIS_KEY_OUT_APPLY_MEMBER_ID = 2;
+
+    /**
+     * 缓存键：入盟申请id
+     */
+    int REDIS_KEY_JOIN_ID = 1;
+
+    /**
+     * 缓存键：入盟申请人的盟员身份id
+     */
+    int REDIS_KEY_JOIN_APPLY_MEMBER_ID = 2;
+
+    /**
+     * 缓存键：入盟申请推荐人的盟员身份id
+     */
+    int REDIS_KEY_JOIN_RECOMMEND_MEMBER_ID = 3;
+
+    /**
+     * 缓存键：折扣id
+     */
+    int REDIS_KEY_DISCOUNT_ID = 1;
+
+    /**
+     * 缓存键：折扣设置人的盟员身份id
+     */
+    int REDIS_KEY_DISCOUNT_FROM_MEMBER_ID = 2;
+
+    /**
+     * 缓存键：折扣受惠人的盟员身份id
+     */
+    int REDIS_KEY_DISCOUNT_TO_MEMBER_ID = 3;
 }

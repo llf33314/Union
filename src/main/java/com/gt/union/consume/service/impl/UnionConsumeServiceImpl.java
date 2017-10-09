@@ -119,6 +119,18 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		if(unionConsumeParam.getOrderType() == null){
 			throw new ParamException("orderType为空");
 		}
+		UnionConsumeResult result = new UnionConsumeResult();
+		UnionCard card = unionCardService.getById(unionConsumeParam.getUnionCardId());
+		if(card == null){
+			result.setMessage("联盟卡不存在");
+			result.setSuccess(false);
+			return result;
+		}
+		if(!DateTimeKit.laterThanNow(card.getValidity())){
+			result.setMessage("联盟卡过期");
+			result.setSuccess(false);
+			return result;
+		}
 		UnionMember unionMember = unionMemberService.getByBusIdAndUnionId(unionConsumeParam.getBusId(), unionConsumeParam.getUnionId());
 
         UnionConsume unionConsume = new UnionConsume();
@@ -151,7 +163,6 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
                 unionCardIntegral.setType(CardConstant.INTEGRAL_TYPE_GIVE);
                 unionCardIntegralService.insert(unionCardIntegral);
 
-				UnionCard card = unionCardService.getById(unionConsumeParam.getUnionCardId());
 				UnionCardRoot root = unionCardRootService.getById(card.getRootId());
 
 
@@ -161,7 +172,6 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 				unionCardRootService.updateById(unionCardRoot);
             }
         }
-        UnionConsumeResult result = new UnionConsumeResult();
         result.setMessage("核销成功");
         result.setSuccess(true);
         return result;
@@ -172,18 +182,23 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
         UnionConsume unionConsume = this.getByOrderNoAndModel(orderNo, model);
         UnionRefundResult result = new UnionRefundResult();
         if (unionConsume == null) {
-            throw new BusinessException("没有该订单信息的联盟消费记录");
+			result.setMessage("订单不存在");
+			result.setSuccess(false);
+			return result;
         }
         if (unionConsume.getStatus() == ConsumeConstant.PAY_STATUS_NON) {
-            throw new BusinessException("该订单未支付");
+			result.setMessage("未支付");
+			result.setSuccess(false);
         } else if (unionConsume.getStatus() == ConsumeConstant.PAY_STATUS_YES) {//已支付
             UnionConsume consume = new UnionConsume();
             consume.setId(unionConsume.getId());
             consume.setStatus(2);
             this.updateById(consume);
+			result.setMessage("退款成功");
             result.setSuccess(true);
         } else if (unionConsume.getStatus() == ConsumeConstant.PAY_STATUS_REFUND) {//已退款
-            throw new BusinessException("该订单已退款");
+			result.setMessage("已退款");
+			result.setSuccess(false);
         }
         return result;
     }
@@ -356,8 +371,8 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		//解密参数
 		String orderNo = EncryptUtil.decrypt(encrypt, encrypt);
 		String paramKey = RedisKeyUtil.getConsumePayParamKey(only);
-		Object obj = redisCacheUtil.get(paramKey);
-		Map<String, Object> result = JSONObject.parseObject(obj.toString(), Map.class);
+		String obj = redisCacheUtil.get(paramKey);
+		Map<String, Object> result = JSONObject.parseObject(obj, Map.class);
 		UnionConsumeParamVO vo = (UnionConsumeParamVO)result.get("unionConsumeParamVO");
 		String statusKey = RedisKeyUtil.getConsumePayStatusKey(only);
 
@@ -418,7 +433,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		data.put("unionConsumeParamVO", vo);
 		String paramKey = RedisKeyUtil.getConsumePayStatusKey(only);
 		String statusKey = RedisKeyUtil.getConsumePayParamKey(only);
-		redisCacheUtil.set(paramKey, JSON.toJSONString(data), 360l);//5分钟
+		redisCacheUtil.set(paramKey, data, 360l);//5分钟
 		redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_001,300l);
 		return data;
 	}

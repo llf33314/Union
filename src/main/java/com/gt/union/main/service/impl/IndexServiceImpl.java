@@ -35,21 +35,13 @@ public class IndexServiceImpl implements IIndexService {
     @Autowired
     private IUnionCardIntegralService unionCardIntegralService;
 
-    //@Autowired
-    //private IUnionIncomeExpenseService unionIncomeExpenseService;
-
     @Autowired
     private IUnionMainChargeService unionMainChargeService;
 
-    //-------------------------------------------------- get ----------------------------------------------------------
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - get *********************************************
+     ******************************************************************************************************************/
 
-    /**
-     * 商家联盟首页-默认未选定盟员身份
-     *
-     * @param busId {not null} 商家id
-     * @return
-     * @throws Exception
-     */
     @Override
     public Map<String, Object> index(Integer busId) throws Exception {
         if (busId == null) {
@@ -68,14 +60,6 @@ public class IndexServiceImpl implements IIndexService {
         return result;
     }
 
-    /**
-     * 商家联盟首页-选定盟员身份
-     *
-     * @param memberId {not null} 盟员id
-     * @param busId    {not null} 商家id
-     * @return
-     * @throws Exception
-     */
     @Override
     public Map<String, Object> indexByMemberId(Integer memberId, Integer busId) throws Exception {
         if (memberId == null || busId == null) {
@@ -94,13 +78,6 @@ public class IndexServiceImpl implements IIndexService {
         return result;
     }
 
-    /**
-     * 根据商家id，获取商家创建及加入的联盟和盟员身份信息
-     *
-     * @param busId
-     * @return
-     * @throws Exception
-     */
     private Map<String, Object> getCreateAndJoinUnionInfo(Integer busId) throws Exception {
         Map<String, Object> result = new HashMap<>();
         //(1)获取我(商家)的具有盟主身份的盟员信息，以及我创建的联盟信息
@@ -144,20 +121,12 @@ public class IndexServiceImpl implements IIndexService {
         return result;
     }
 
-    /**
-     * 拼接选定盟员的首页信息
-     *
-     * @param result             {not null} 结果信息
-     * @param currentUnionMember {not null} 当前盟员信息
-     * @return
-     */
     private Map<String, Object> getCurrentMemberInfo(Map<String, Object> result, UnionMember currentUnionMember) throws Exception {
-        Integer currentBusId = currentUnionMember.getBusId();
         Integer currentUnionId = currentUnionMember.getUnionId();
         result.put("currentUnionId", currentUnionId); //当前联盟id
 
         UnionMain currentUnionMain = this.unionMainService.getById(currentUnionId);
-        UnionMember currentUnionOwner = null;
+        UnionMember currentUnionOwner;
         if (currentUnionMember.getIsUnionOwner() == MemberConstant.IS_UNION_OWNER_YES) {
             currentUnionOwner = currentUnionMember;
         } else {
@@ -188,10 +157,6 @@ public class IndexServiceImpl implements IIndexService {
                 Double currentUnionIntegralSum = this.unionCardIntegralService.getCardIntegralProfitByUnionId(currentUnionId);
                 result.put("currentUnionIntegralSum", currentUnionIntegralSum); //当前联盟总积分数
             }
-            //Double currentUnionMoneyProfit = this.unionIncomeExpenseService.getMoneyProfitByUnionIdAndBusId(currentUnionId, currentBusId);
-            //result.put("currentUnionMoneyProfit", currentUnionMoneyProfit); //商家联盟净收入，即可提现金额
-
-            //TODO 盟主权限转移记录
         }
         // (2)拼接当前盟员信息
         result.put("currentUnionMemberId", currentUnionMember.getId()); //当前盟员id
@@ -206,9 +171,28 @@ public class IndexServiceImpl implements IIndexService {
         return result;
     }
 
-    //------------------------------------------ list(include page) ---------------------------------------------------
-    //------------------------------------------------- update --------------------------------------------------------
-    //------------------------------------------------- save ----------------------------------------------------------
-    //------------------------------------------------- count ---------------------------------------------------------
-    //------------------------------------------------ boolean --------------------------------------------------------
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - list ********************************************
+     ******************************************************************************************************************/
+
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - save ********************************************
+     ******************************************************************************************************************/
+
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - remove ******************************************
+     ******************************************************************************************************************/
+
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - update ******************************************
+     ******************************************************************************************************************/
+
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - count *******************************************
+     ******************************************************************************************************************/
+
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - boolean *****************************************
+     ******************************************************************************************************************/
+
 }

@@ -1,8 +1,10 @@
 package com.gt.union.opportunity.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
+import com.gt.api.util.KeysUtil;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.annotation.SysLogAnnotation;
 import com.gt.union.common.constant.BusUserConstant;
@@ -28,6 +30,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -338,30 +341,39 @@ public class UnionOpportunityController {
     }
 
     //------------------------------------------------- money ----------------------------------------------------------
-    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{Encrypt}/{only}", method = RequestMethod.POST)
+    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{only}",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String payOpportunitySuccess(HttpServletRequest request, HttpServletResponse response
-            , @PathVariable(name = "Encrypt", required = true) String encrypt
-            , @PathVariable(name = "only", required = true) String only) {
+            , @PathVariable(name = "only", required = true) String only
+            , @RequestBody Map<String,Object> param) throws Exception {
         Map<String, Object> data = new HashMap<String, Object>();
+        String statusKey = RedisKeyUtil.getRecommendPayStatusKey(only);
         try {
-            logger.info("商机佣金支付成功，Encrypt------------------" + encrypt);
-            logger.info("商机佣金支付成功，only------------------" + only);
-            unionOpportunityService.payOpportunitySuccess(encrypt, only);
-            data.put("code", 0);
-            data.put("msg", "成功");
-            return JSON.toJSONString(data);
+            if(param.get("result_code").equals("SUCCESS") && param.get("result_code").equals("SUCCESS")){
+                logger.info("商机佣金支付成功，param------------------" + JSON.toJSONString(param));
+                logger.info("商机佣金支付成功，only------------------" + only);
+                unionOpportunityService.payOpportunitySuccess(param.get("out_trade_no").toString(), only);
+                data.put("code", 0);
+                data.put("msg", "成功");
+                return JSON.toJSONString(data);
+            }else {
+                throw new BusinessException("支付失败");
+            }
         } catch (BaseException e) {
+            redisCacheUtil.set(statusKey,ConfigConstant.USER_ORDER_STATUS_005);
             logger.error("商机佣金支付成功后，产生错误：" + e);
             data.put("code", -1);
             data.put("msg", e.getErrorMsg());
             return JSON.toJSONString(data);
         } catch (Exception e) {
+            redisCacheUtil.set(statusKey,ConfigConstant.USER_ORDER_STATUS_005);
             logger.error("商机佣金支付成功后，产生错误：" + e);
             data.put("code", -1);
             data.put("msg", "失败");
             return JSON.toJSONString(data);
         }
     }
+
+
 
     @ApiOperation(value = "生成商机推荐支付订单二维码", produces = "application/json;charset=UTF-8")
     @SysLogAnnotation(op_function = "2", description = "生成商机推荐支付二维码")
@@ -406,11 +418,13 @@ public class UnionOpportunityController {
     public String getStatus(@PathVariable("only") String only) throws Exception {
         logger.info("获取商机佣金支付状态：" + only);
         try {
-            String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
-            String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
-            Object status = redisCacheUtil.get(statusKey);
+            String paramKey = RedisKeyUtil.getRecommendPayParamKey(only);
+            String statusKey = RedisKeyUtil.getRecommendPayStatusKey(only);
+            String status = redisCacheUtil.get(statusKey);
             if (CommonUtil.isEmpty(status)) {//订单超时
                 status = ConfigConstant.USER_ORDER_STATUS_004;
+            }else {
+                status = JSON.parseObject(status,String.class);
             }
             if (ConfigConstant.USER_ORDER_STATUS_003.equals(status)) {//订单支付成功
                 redisCacheUtil.remove(statusKey);

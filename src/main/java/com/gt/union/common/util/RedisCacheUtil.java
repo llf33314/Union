@@ -1,5 +1,6 @@
 package com.gt.union.common.util;
 
+import com.alibaba.fastjson.JSON;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -29,8 +30,9 @@ public class RedisCacheUtil {
      * @param key 键
      * @return Object 值
      */
-    public Object get(String key) {
-        Object result = null;
+
+    public String get(String key) {
+        String result = null;
         try {
             ValueOperations<String, String> operations = this.redisTemplate.opsForValue();
             String tgtKey = this.getRedisNamePrefix() + key;
@@ -50,7 +52,7 @@ public class RedisCacheUtil {
      * @param value 值
      * @return boolean 是否设置成功
      */
-    public boolean set(String key, String value) {
+    public boolean set(String key, Object value) {
         boolean result = false;
         try {
             set(key, value, 7200L);
@@ -69,12 +71,13 @@ public class RedisCacheUtil {
      * @param expireTime 过期时间
      * @return boolean 是否设置成功
      */
-    public boolean set(String key, String value, Long expireTime) {
+    public boolean set(String key, Object value, Long expireTime) {
         boolean result = false;
         try {
             ValueOperations<String, String> operations = redisTemplate.opsForValue();
             String tgtKey = this.getRedisNamePrefix() + key;
-            operations.set(tgtKey, value);
+            String tgtValue = JSON.toJSONString(value);
+            operations.set(tgtKey, tgtValue);
             this.redisTemplate.expire(tgtKey, expireTime, TimeUnit.SECONDS);
             result = true;
         } catch (Exception e) {
@@ -157,6 +160,5 @@ public class RedisCacheUtil {
         }
         return result;
     }
-
 
 }

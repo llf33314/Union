@@ -6,16 +6,17 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.ListUtil;
 import com.gt.union.main.entity.UnionMainNotice;
 import com.gt.union.main.service.IUnionMainNoticeService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
+import java.util.List;
 
 /**
  * <p>
@@ -38,7 +39,8 @@ public class UnionMainNoticeController {
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getByUnionId(@ApiParam(name = "unionId", value = "联盟id", required = true)
                                @PathVariable("unionId") Integer unionId) throws Exception {
-        UnionMainNotice result = this.unionMainNoticeService.getByUnionId(unionId);
+        List<UnionMainNotice> noticeList = this.unionMainNoticeService.listByUnionId(unionId);
+        UnionMainNotice result = ListUtil.isNotEmpty(noticeList) ? noticeList.get(0) : null;
         return GTJsonResult.instanceSuccessMsg(result).toString();
     }
 

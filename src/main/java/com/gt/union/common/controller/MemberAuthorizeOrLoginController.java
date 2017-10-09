@@ -33,9 +33,6 @@ public class MemberAuthorizeOrLoginController {
 	private Logger logger = LoggerFactory.getLogger(MemberAuthorizeOrLoginController.class);
 
 	@Autowired
-	private RedisCacheUtil redisCacheUtil;
-
-	@Autowired
 	private RedisService redisService;
 
 	/**
@@ -69,7 +66,7 @@ public class MemberAuthorizeOrLoginController {
 			}
 		}
 		String otherRedisKey = "authority:"+System.currentTimeMillis();
-		redisCacheUtil.set(otherRedisKey, reqUrl, 300l);
+		redisService.setValue(otherRedisKey, reqUrl, 300);
 		Map<String, Object> queryMap = new HashMap<>();
 		queryMap.put("otherRedisKey", ConfigConstant.UNION_REDIS_NAME_PREFIX + otherRedisKey);
 		queryMap.put("browser", browser);
@@ -130,18 +127,18 @@ public class MemberAuthorizeOrLoginController {
 	protected String getCardH5LoginReturnUrl(Member member, HttpServletRequest request, Integer busId, String url) throws Exception{
 		if(CommonUtil.isEmpty(member)){
 			if(CommonUtil.judgeBrowser(request) == 1){//微信
-				String redirectUrl = authorizeMember(request, busId, null, ConfigConstant.UNION_PHONE_ROOT_URL + url);
+				String redirectUrl = authorizeMember(request, busId, null, ConfigConstant.UNION_PHONE_CARD_ROOT_URL + url);
 				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 			}else {//其他浏览器
-				return GTJsonResult.instanceErrorMsg("登录授权",ConfigConstant.UNION_PHONE_ROOT_URL + "toUnionLogin").toString();
+				return GTJsonResult.instanceErrorMsg("登录授权",ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin").toString();
 			}
 		}
 		if(!member.getBusid().equals(busId)){
 			if(CommonUtil.judgeBrowser(request) == 1){//微信
-				String redirectUrl = authorizeMember(request, busId, null, ConfigConstant.UNION_PHONE_ROOT_URL + url);
+				String redirectUrl = authorizeMember(request, busId, null, ConfigConstant.UNION_PHONE_CARD_ROOT_URL + url);
 				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
 			}else {//其他浏览器
-				return GTJsonResult.instanceErrorMsg("登录授权",ConfigConstant.UNION_PHONE_ROOT_URL + "toUnionLogin").toString();
+				return GTJsonResult.instanceErrorMsg("登录授权",ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin").toString();
 			}
 		}
 		return null;

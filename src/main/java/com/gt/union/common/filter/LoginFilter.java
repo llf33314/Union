@@ -32,6 +32,8 @@ public class LoginFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
 
+        passUrlMap.put("/unionH5Brokerage/login","/unionH5Brokerage/login");
+
         passSuffixList.add(".js");
         passSuffixList.add(".css");
         passSuffixList.add(".gif");
@@ -63,13 +65,26 @@ public class LoginFilter implements Filter {
         BusUser busUser = SessionUtils.getLoginUser(req);
 //        busUser = justForDev(req, busUser); //TODO 正式中请注释掉
         if (busUser == null) {
-            if(url.indexOf("cardH5") > -1){
+            if(url.equals("/cardPhone/")){//
+                chain.doFilter(request, response);
+                return;
+            }else if(url.indexOf("cardH5") > -1){
                 response.setCharacterEncoding("UTF-8");
-                response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", ConfigConstant.UNION_PHONE_ROOT_URL + "toUnionLogin")));
+                response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin")));
+                return;
+            }else if(url.equals("/brokeragePhone/")){
+                chain.doFilter(request, response);
                 return;
             }else if(url.indexOf("unionH5Brokerage") > -1){
                 response.setCharacterEncoding("UTF-8");
-                response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", ConfigConstant.UNION_PHONE_ROOT_URL + "/toLogin")));
+                response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceErrorMsg("请重新登录", ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + "toLogin")));
+                return;
+            }else if(url.equals("/unionMain/")){
+                String wxmpLoginUrl = ConfigConstant.WXMP_ROOT_URL + "/user/tologin.do";
+                String script = "<script type='text/javascript'>"
+                        + "location.href='"+ wxmpLoginUrl +"';"
+                        + "</script>";
+                response.getWriter().write(script);
                 return;
             }else {
                 response.setCharacterEncoding("UTF-8");

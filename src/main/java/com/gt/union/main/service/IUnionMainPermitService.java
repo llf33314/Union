@@ -62,15 +62,6 @@ public interface IUnionMainPermitService extends IService<UnionMainPermit> {
     boolean hasUnionMainPermit(Integer busId) throws Exception;
 
     /**
-     *
-     * @param orderNo
-     * @param pay
-     * @param busId
-     * @return
-     */
-	UnionMainPermit createPermit(String orderNo, Double pay, Integer busId);
-
-    /**
      * 获取创建联盟的支付二维码
      * @param user
      * @param chargeId
@@ -80,8 +71,8 @@ public interface IUnionMainPermitService extends IService<UnionMainPermit> {
 
     /**
      * 创建联盟支付成功后回调
-     * @param recordEncrypt
+     * @param orderNo
      * @param only
      */
-    void payCreateUnionSuccess(String recordEncrypt, String only) throws Exception;
+    void payCreateUnionSuccess(String orderNo, String only) throws Exception;
 }

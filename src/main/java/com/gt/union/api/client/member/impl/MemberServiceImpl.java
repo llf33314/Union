@@ -67,7 +67,7 @@ public class MemberServiceImpl implements MemberService {
 
 	@Override
 	public Member findByPhoneAndBusId(String phone, Integer busId) {
-		String url = ConfigConstant.MEMBER_ROOT_URL + "/memberAPI/member/findByMemberId";
+		String url = ConfigConstant.MEMBER_ROOT_URL + "/memberAPI/member/findMemberByPhone";
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("phone",phone);
 		param.put("busId",busId);
@@ -78,7 +78,8 @@ public class MemberServiceImpl implements MemberService {
 			}
 			Map map = JSONObject.parseObject(data,Map.class);
 			if(CommonUtil.isNotEmpty(map.get("data"))){
-				return JSONObject.parseObject(map.get("data").toString(),Member.class);
+				List<Member> list = JSONArray.parseArray(map.get("data").toString(),Member.class);
+				return list.get(0);
 			}else {
 				return null;
 			}

@@ -7,7 +7,7 @@ import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
-import com.gt.union.opportunity.service.IUnionOpportunityBrokerageRatioService;
+import com.gt.union.opportunity.service.IUnionOpportunityRatioService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,17 +25,17 @@ import javax.validation.constraints.NotNull;
  * @since 2017-09-07
  */
 @RestController
-@RequestMapping("/unionOpportunityBrokerageRatio")
-public class UnionOpportunityBrokerageRatioController {
+@RequestMapping("/unionOpportunityRatio")
+public class UnionOpportunityRatioController {
 
     @Autowired
-    private IUnionOpportunityBrokerageRatioService unionBrokerageRatioService;
+    private IUnionOpportunityRatioService unionRatioService;
 
     //-------------------------------------------------- get ----------------------------------------------------------
 
     @ApiOperation(value = "根据盟员身份id，分页获取与盟友之间的商机佣金比例设置列表信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/pageMap/memberId/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String pageBrokerageRatio(HttpServletRequest request, Page page
+    public String pageRatio(HttpServletRequest request, Page page
             , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
                                      @PathVariable("memberId") Integer memberId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
@@ -43,7 +43,7 @@ public class UnionOpportunityBrokerageRatioController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-        Page result = this.unionBrokerageRatioService.pageMapByBusIdAndMemberId(page, busId, memberId);
+        Page result = this.unionRatioService.pageMapByBusIdAndMemberId(page, busId, memberId);
         return GTJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -51,7 +51,7 @@ public class UnionOpportunityBrokerageRatioController {
 
     @ApiOperation(value = "根据盟员身份id，以及受惠方的盟员身份id，设置商机佣金比例", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/memberId/{memberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public String saveOrUpdateBrokerageRatio(HttpServletRequest request
+    public String saveOrUpdateRatio(HttpServletRequest request
             , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
                                              @PathVariable("memberId") Integer memberId
             , @ApiParam(name = "toMemberId", value = "受惠方的盟员身份id", required = true)
@@ -62,7 +62,7 @@ public class UnionOpportunityBrokerageRatioController {
         if (busUser.getPid() != null && busUser.getPid() != 0) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        this.unionBrokerageRatioService.updateOrSaveByBusIdAndFromMemberIdAndToMemberIdAndRatio(busUser.getId(), memberId, toMemberId, ratio);
+        this.unionRatioService.updateOrSaveByBusIdAndFromMemberIdAndToMemberIdAndRatio(busUser.getId(), memberId, toMemberId, ratio);
         return GTJsonResult.instanceSuccessMsg().toString();
     }
 

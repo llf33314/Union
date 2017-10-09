@@ -18,7 +18,9 @@ import java.util.Map;
  * @since 2017-09-07
  */
 public interface IUnionMemberService extends IService<UnionMember> {
-    //-------------------------------------------------- get ----------------------------------------------------------
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - get *********************************************
+     ******************************************************************************************************************/
 
     /**
      * 根据联盟id获取该联盟盟主的盟员信息
@@ -49,14 +51,6 @@ public interface IUnionMemberService extends IService<UnionMember> {
     UnionMember getByIdAndBusId(Integer memberId, Integer busId) throws Exception;
 
     /**
-     * 根据id获取盟员信息
-     *
-     * @param memberId {not null} 盟员id
-     * @return
-     */
-    UnionMember getById(Integer memberId) throws Exception;
-
-    /**
      * 根据商家id和联盟id，获取商家在该联盟的盟员身份
      *
      * @param busId   {not null} 商家id
@@ -66,7 +60,9 @@ public interface IUnionMemberService extends IService<UnionMember> {
      */
     UnionMember getByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
 
-    //------------------------------------------ list(include page) ---------------------------------------------------
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - list ********************************************
+     ******************************************************************************************************************/
 
     /**
      * 根据盟员身份id列表，分页获取盟员身份列表信息
@@ -98,7 +94,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @return
      * @throws Exception
      */
-    Page pageOpportunityBrokerageRatioMapByMember(Page page, final UnionMember unionMember) throws Exception;
+    Page pageOpportunityRatioMapByMember(Page page, final UnionMember unionMember) throws Exception;
 
     /**
      * 根据盟主信息，分页获取本联盟中所有未提交优惠项目的盟员信息，未提交是指：不存在被审核通过的优惠服务项
@@ -121,7 +117,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     Page pageTransferMapByUnionOwner(Page page, UnionMember ownerMember) throws Exception;
 
     /**
-     * 根据盟员id和商家id，获取所有与该盟员同属一个联盟的盟员信息
+     * 根据盟员id和商家id，获取所有与该盟员同属一个联盟的盟员相关信息
      *
      * @param memberId             {not null} 盟员id
      * @param busId                {not null} 商家id
@@ -130,6 +126,15 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @throws Exception
      */
     List<Map<String, Object>> listMapByIdAndBusId(Integer memberId, Integer busId, String optionEnterpriseName) throws Exception;
+
+    /**
+     * 根据盟员id，获取所有与该盟员同属一个联盟的盟员相关信息
+     *
+     * @param memberId {not null} 盟员id
+     * @return
+     * @throws Exception
+     */
+    List<Map<String, Object>> listMapById(Integer memberId) throws Exception;
 
     /**
      * 根据商家id，获取商家所有具有读权限的盟员身份列表信息
@@ -148,6 +153,24 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @throws Exception
      */
     List<UnionMember> listWriteByBusId(Integer busId) throws Exception;
+
+    /**
+     * 根据联盟id，获取该联盟下所有具有读权限的盟员身份列表信息
+     *
+     * @param unionId {not null} 联盟id
+     * @return
+     * @throws Exception
+     */
+    List<UnionMember> listReadByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 根据联盟id，获取该联盟下所有具有写权限的盟员身份列表信息
+     *
+     * @param unionId {not null} 联盟id
+     * @return
+     * @throws Exception
+     */
+    List<UnionMember> listWriteByUnionId(Integer unionId) throws Exception;
 
     /**
      * 根据商家id，获取所有具有写权限，且所在联盟是有效的盟员身份列表信息
@@ -174,25 +197,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @return
      * @throws Exception
      */
-    List<Map<String, Object>> listReadMapByBusId(Integer busId) throws Exception;
-
-    /**
-     * 根据联盟id，获取该联盟下所有具有读权限的盟员身份列表信息
-     *
-     * @param unionId {not null} 联盟id
-     * @return
-     * @throws Exception
-     */
-    List<UnionMember> listReadByUnionId(Integer unionId) throws Exception;
-
-    /**
-     * 根据联盟id，获取该联盟下所有具有写权限的盟员身份列表信息
-     *
-     * @param unionId {not null} 联盟id
-     * @return
-     * @throws Exception
-     */
-    List<UnionMember> listWriteByUnionId(Integer unionId) throws Exception;
+    List<Map<String, Object>> listReadWithUnionByBusId(Integer busId) throws Exception;
 
     /**
      * 根据盟员id列表，获取盟员列表信息
@@ -205,22 +210,33 @@ public interface IUnionMemberService extends IService<UnionMember> {
 
     /**
      * 获取所有退盟过渡期时间已过，但状态还没置为无效的盟员信息列表
+     *
      * @return
      * @throws Exception
      */
     List<UnionMember> listExpired() throws Exception;
 
-    //------------------------------------------------- update --------------------------------------------------------
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - save ********************************************
+     ******************************************************************************************************************/
+
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - remove ******************************************
+     ******************************************************************************************************************/
+
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - update ******************************************
+     ******************************************************************************************************************/
 
     /**
      * 根据盟员身份id、商家id和更新内容实体，更新盟员信息
      *
-     * @param memberId      {not null} 盟员身份id
-     * @param busId         {not null} 商家id
-     * @param unionMemberVO {not null} 更新内容实体
+     * @param memberId {not null} 盟员身份id
+     * @param busId    {not null} 商家id
+     * @param memberVO {not null} 更新内容实体
      * @throws Exception
      */
-    void updateByIdAndBusId(Integer memberId, Integer busId, UnionMemberVO unionMemberVO) throws Exception;
+    void updateByIdAndBusId(Integer memberId, Integer busId, UnionMemberVO memberVO) throws Exception;
 
     /**
      * 根据盟员身份id、商家id和更新内容实体，更新盟员售卡分成信息
@@ -232,8 +248,9 @@ public interface IUnionMemberService extends IService<UnionMember> {
      */
     void updateCardDividePercentByIdAndBusId(Integer memberId, Integer busId, List<CardDividePercentVO> cardDividePercentVOList) throws Exception;
 
-    //------------------------------------------------- save ----------------------------------------------------------
-    //------------------------------------------------- count ---------------------------------------------------------
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - count *******************************************
+     ******************************************************************************************************************/
 
     /**
      * 根据联盟id，统计具有读权限的盟员数
@@ -271,7 +288,9 @@ public interface IUnionMemberService extends IService<UnionMember> {
      */
     Integer countPreferentialUnCommitByUnionOwner(UnionMember ownerMember) throws Exception;
 
-    //------------------------------------------------ boolean --------------------------------------------------------
+    /*******************************************************************************************************************
+     ****************************************** Domain Driven Design - boolean *****************************************
+     ******************************************************************************************************************/
 
     /**
      * 根据商家id判断该商家是否是某联盟的盟主
@@ -300,11 +319,42 @@ public interface IUnionMemberService extends IService<UnionMember> {
      */
     boolean hasWriteAuthority(UnionMember unionMember) throws Exception;
 
-    /**
-     * 根据盟员列表查询给他们的折扣
-     * @param unionId
-     * @param memberId
-     * @return
-     */
-    List<Map<String,Object>> listMemberDiscountByMemberIds(Integer unionId, Integer memberId);
+    /*******************************************************************************************************************
+     ****************************************** Object As a Service - get **********************************************
+     ******************************************************************************************************************/
+
+    UnionMember getById(Integer memberId) throws Exception;
+
+    /*******************************************************************************************************************
+     ****************************************** Object As a Service - list *********************************************
+     ******************************************************************************************************************/
+
+    List<UnionMember> listByBusId(Integer busId) throws Exception;
+
+    List<UnionMember> listByUnionId(Integer unionId) throws Exception;
+
+    /*******************************************************************************************************************
+     ****************************************** Object As a Service - save *********************************************
+     ******************************************************************************************************************/
+
+    void save(UnionMember newMember) throws Exception;
+
+    void saveBatch(List<UnionMember> newMemberList) throws Exception;
+
+    /*******************************************************************************************************************
+     ****************************************** Object As a Service - remove *******************************************
+     ******************************************************************************************************************/
+
+    void removeById(Integer memberId) throws Exception;
+
+    void removeBatchById(List<Integer> memberIdList) throws Exception;
+
+    /*******************************************************************************************************************
+     ****************************************** Object As a Service - update *******************************************
+     ******************************************************************************************************************/
+
+    void update(UnionMember updateMember) throws Exception;
+
+    void updateBatch(List<UnionMember> updateMemberList) throws Exception;
+
 }

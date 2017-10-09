@@ -1,4 +1,4 @@
-package com.gt.union.main.entity;
+package com.gt.union.setting.entity;
 
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
@@ -14,10 +14,10 @@ import java.io.Serializable;
  * </p>
  *
  * @author linweicong
- * @since 2017-09-23
+ * @since 2017-09-29
  */
-@TableName("t_union_main_permit_charge")
-public class UnionMainPermitCharge extends Model<UnionMainPermitCharge> {
+@TableName("t_union_setting_main_charge")
+public class UnionSettingMainCharge extends Model<UnionSettingMainCharge> {
 
     private static final long serialVersionUID = 1L;
 

@@ -19,10 +19,7 @@ import com.gt.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * <p>
@@ -38,6 +35,9 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
     @Autowired
     private IUnionMemberService unionMemberService;
 
+    @Autowired
+    private IUnionMainService unionMainService;
+
     @Override
     public UnionBrokerageIncome getByUnionOpportunityId(Integer id) {
         EntityWrapper wrapper = new EntityWrapper();
@@ -45,9 +45,6 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
         wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
         return this.selectOne(wrapper);
     }
-
-    @Autowired
-    private IUnionMainService unionMainService;
 
     /**
      * 根据商家id和盟员身份id，分页获取同一个联盟下的售卡佣金分成列表信息，并根据售卡类型(精确匹配)、卡号(模糊匹配)进行匹配
@@ -74,7 +71,7 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
             throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
         //(2)检查联盟有效期
-        this.unionMainService.checkUnionMainValid(unionMember.getUnionId());
+        this.unionMainService.checkUnionValid(unionMember.getUnionId());
         //(3)判断是否具有读权限
         if (!this.unionMemberService.hasReadAuthority(unionMember)) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
@@ -142,7 +139,7 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
             throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
         //(2)检查联盟有效期
-        this.unionMainService.checkUnionMainValid(unionMember.getUnionId());
+        this.unionMainService.checkUnionValid(unionMember.getUnionId());
         //(3)判断是否具有读权限
         if (!this.unionMemberService.hasReadAuthority(unionMember)) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
@@ -212,6 +209,15 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
             return 0;
         }
         return CommonUtil.toDouble(data.get("money"));
+    }
+
+    @Override
+    public int countByOpportunityIds(List<Integer> ids) {
+        EntityWrapper wrapper = new EntityWrapper<>();
+        wrapper.in("id", ids.toArray());
+        wrapper.eq("type", BrokerageConstant.SOURCE_TYPE_OPPORTUNITY);
+        wrapper.eq("del_status",CommonConstant.DEL_STATUS_NO);
+        return this.selectCount(wrapper);
     }
 }
 

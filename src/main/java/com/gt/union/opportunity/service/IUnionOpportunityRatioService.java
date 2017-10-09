@@ -1,36 +1,48 @@
-package com.gt.union.member.service;
+package com.gt.union.opportunity.service;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
-import com.gt.union.member.entity.UnionMemberDiscount;
+import com.gt.union.opportunity.entity.UnionOpportunityRatio;
 
 import java.util.List;
 
 /**
  * <p>
- * 盟员折扣 服务类
+ * 商机佣金比率 服务类
  * </p>
  *
  * @author linweicong
  * @since 2017-09-07
  */
-public interface IUnionMemberDiscountService extends IService<UnionMemberDiscount> {
+public interface IUnionOpportunityRatioService extends IService<UnionOpportunityRatio> {
     /*******************************************************************************************************************
      ****************************************** Domain Driven Design - get *********************************************
      ******************************************************************************************************************/
+
+    /**
+     * 根据商机佣金比例的设置者盟员身份id和受惠者盟员身份id，获取商机佣金比例设置信息
+     *
+     * @param fromMemberId {not null} 设置者盟员身份id
+     * @param toMemberId   {not null} 受惠者盟员身份id
+     * @return
+     * @throws Exception
+     */
+    UnionOpportunityRatio getByFromMemberIdAndToMemberId(Integer fromMemberId, Integer toMemberId) throws Exception;
 
     /*******************************************************************************************************************
      ****************************************** Domain Driven Design - list ********************************************
      ******************************************************************************************************************/
 
     /**
-     * 根据设置折扣盟员id和受惠折扣盟员id，获取折扣信息
+     * 根据商家id和盟员身份id，分页查询商机佣金比设置列表信息
      *
-     * @param fromMemberId {not null} 设置折扣盟员id
-     * @param toMemberId   {not null} 受惠折扣盟员id
+     * @param page     {not null} 分页对象
+     * @param busId    {not null} 商家id
+     * @param memberId {not null} 盟员身份id
      * @return
      * @throws Exception
      */
-    List<UnionMemberDiscount> listByFromMemberIdAndToMemberId(Integer fromMemberId, Integer toMemberId) throws Exception;
+    Page pageMapByBusIdAndMemberId(Page page, Integer busId, Integer memberId) throws Exception;
 
     /*******************************************************************************************************************
      ****************************************** Domain Driven Design - save ********************************************
@@ -45,15 +57,16 @@ public interface IUnionMemberDiscountService extends IService<UnionMemberDiscoun
      ******************************************************************************************************************/
 
     /**
-     * 根据商家id、商家盟员身份id、被设置折扣的盟员身份id以及设置的折扣信息，更新或保存折扣信息
+     * 根据商家id、设置方盟员身份id、受惠方盟员身份id和商机佣金比例，更新或保存设置
      *
-     * @param busId       {not null} 商家id
-     * @param memberId    {not null} 操作人的盟员身份id
-     * @param tgtMemberId {not null} 被设置的折扣信息
-     * @param discount
+     * @param busId        {not null} 商家id
+     * @param fromMemberId {not null} 设置方盟员身份id
+     * @param toMemberId   {not null} 受惠方盟员身份id
+     * @param ratio        {not null} 商机佣金比例
      * @throws Exception
      */
-    void updateOrSaveDiscountByBusIdAndMemberId(Integer busId, Integer memberId, Integer tgtMemberId, Double discount) throws Exception;
+    void updateOrSaveByBusIdAndFromMemberIdAndToMemberIdAndRatio(Integer busId, Integer fromMemberId, Integer toMemberId, Double ratio) throws Exception;
+
 
     /*******************************************************************************************************************
      ****************************************** Domain Driven Design - count *******************************************
@@ -67,38 +80,38 @@ public interface IUnionMemberDiscountService extends IService<UnionMemberDiscoun
      ****************************************** Object As a Service - get **********************************************
      ******************************************************************************************************************/
 
-    UnionMemberDiscount getById(Integer discountId) throws Exception;
+    UnionOpportunityRatio getById(Integer ratioId) throws Exception;
 
     /*******************************************************************************************************************
      ****************************************** Object As a Service - list *********************************************
      ******************************************************************************************************************/
 
-    List<UnionMemberDiscount> listByFromMemberId(Integer fromMemberId) throws Exception;
+    List<UnionOpportunityRatio> listByFromMemberId(Integer fromMemberId) throws Exception;
 
-    List<UnionMemberDiscount> listByToMemberId(Integer toMemberId) throws Exception;
+    List<UnionOpportunityRatio> listByToMemberId(Integer toMemberId) throws Exception;
 
     /*******************************************************************************************************************
      ****************************************** Object As a Service - save *********************************************
      ******************************************************************************************************************/
 
-    void save(UnionMemberDiscount newDiscount) throws Exception;
+    void save(UnionOpportunityRatio newRatio) throws Exception;
 
-    void saveBatch(List<UnionMemberDiscount> newDiscountList) throws Exception;
+    void saveBatch(List<UnionOpportunityRatio> newRatioList) throws Exception;
 
     /*******************************************************************************************************************
      ****************************************** Object As a Service - remove *******************************************
      ******************************************************************************************************************/
 
-    void removeById(Integer discountId) throws Exception;
+    void removeById(Integer ratioId) throws Exception;
 
-    void removeBatchById(List<Integer> discountIdList) throws Exception;
+    void removeBatchById(List<Integer> ratioIdList) throws Exception;
 
     /*******************************************************************************************************************
      ****************************************** Object As a Service - update *******************************************
      ******************************************************************************************************************/
 
-    void update(UnionMemberDiscount updateDiscount) throws Exception;
+    void update(UnionOpportunityRatio updateRatio) throws Exception;
 
-    void updateBatch(List<UnionMemberDiscount> updateDiscountList) throws Exception;
+    void updateBatch(List<UnionOpportunityRatio> updateRatioList) throws Exception;
 
 }

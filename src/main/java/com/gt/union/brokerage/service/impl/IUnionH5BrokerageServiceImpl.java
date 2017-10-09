@@ -1,7 +1,6 @@
 package com.gt.union.brokerage.service.impl;
 
 import com.alibaba.fastjson.JSON;
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
@@ -12,9 +11,7 @@ import com.gt.api.util.sign.SignUtils;
 import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.api.client.user.IBusUserService;
-import com.gt.union.brokerage.constant.BrokerageConstant;
 import com.gt.union.brokerage.entity.UnionBrokerageIncome;
-import com.gt.union.brokerage.entity.UnionBrokeragePay;
 import com.gt.union.brokerage.mapper.UnionH5BrokerageMapper;
 import com.gt.union.brokerage.service.IUnionBrokerageIncomeService;
 import com.gt.union.brokerage.service.IUnionBrokeragePayService;
@@ -35,12 +32,10 @@ import com.gt.union.opportunity.service.IUnionOpportunityService;
 import com.gt.union.verifier.entity.UnionVerifier;
 import com.gt.union.verifier.service.IUnionVerifierService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -81,9 +76,6 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 
 	@Autowired
 	private WxPayService payService;
-
-	@Autowired
-	private IUnionBrokeragePayService unionBrokeragePayService;
 
 	@Override
 	public void checkLogin(Integer type, String username, String userpwd, String phone, String code, HttpServletRequest request) throws Exception{
@@ -133,11 +125,11 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 				throw new ParamException(CommonConstant.PARAM_ERROR);
 			}
 			String phoneKey = RedisKeyUtil.getBrokeragePhoneKey(phone);
-			Object obj = redisCacheUtil.get(phoneKey);
+			String obj = redisCacheUtil.get(phoneKey);
 			if(obj == null){
 				throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
 			}
-			if(!code.equals(JSON.toJSONString(obj))){
+			if(!code.equals(JSON.parse(obj))){
 				throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
 			}
 			UnionVerifier unionVerifier = unionVerifierService.getByPhone(phone);
@@ -340,13 +332,16 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		if(busId == null || id == null){
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
+		//(1)判断商机是否存在
 		UnionOpportunity opportunity = unionOpportunityService.getById(id);
 		if(opportunity == null){
 			throw new BusinessException("商机不存在");
 		}
+		//(2)判断商机状态
 		if(opportunity.getIsAccept() != OpportunityConstant.ACCEPT_YES){
 			throw new BusinessException("商机未接受");
 		}
+		//(3)判断该商机是否我推荐的
 		UnionMember fromMember = unionMemberService.getById(opportunity.getFromMemberId());
 		if(fromMember == null){
 			throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
@@ -354,10 +349,19 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		if(!fromMember.getBusId().equals(busId)){
 			throw new BusinessException("该商机不属于您");
 		}
+		//(4)判断该商机被推荐的盟员是否存在
 		UnionMember toMember = unionMemberService.getById(opportunity.getToMemberId());
 		if(toMember == null){
 			throw new BusinessException("盟员不存在");
 		}
+		//(5)判断联盟是否有效
+		unionMainService.checkUnionValid(toMember.getUnionId());
+
+		//(6)判断我是否具有写权限
+		if(!unionMemberService.hasWriteAuthority(fromMember)){
+			throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
+		}
+
 		UnionMain main = unionMainService.getById(toMember.getUnionId());
 		HashMap<String, Object> smsParams = new HashMap<String,Object>();
 		smsParams.put("mobiles", StringUtil.isEmpty(toMember.getNotifyPhone()) ? toMember.getDirectorPhone() : toMember.getNotifyPhone());
@@ -390,6 +394,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		if(busId == null){
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
+		//(1)判断金额
 		double money = this.getSumUnPayUnionBrokerage(unionId,busId);
 		if (money <= 0 || fee.doubleValue() <= 0) {
 			throw new BusinessException("支付金额有误");
@@ -397,10 +402,35 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		if(money != fee.doubleValue()){
 			throw new BusinessException("支付金额有误");
 		}
+		//(2)判断我的盟员权限
+		List<UnionMember> members = unionMemberService.listWriteWithValidUnionByBusId(busId);
+		if(ListUtil.isEmpty(members)){
+			throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
+		}
+		if(unionId != null){
+			int flag = 0;
+			for(UnionMember member : members){
+				if(member.getUnionId().equals(unionId)){
+					flag = 1;
+					break;
+				}
+			}
+			if(flag == 0){
+				throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
+			}
+		}
 		String orderNo = OpportunityConstant.ORDER_PREFIX + System.currentTimeMillis();
+		//得到该支付佣金的商机列表
 		List<UnionOpportunity> list = this.listAllUnPayUnionBrokerage(busId,unionId);
-		String encrypt = EncryptUtil.encrypt(ConfigConstant.UNION_ENCRYPTKEY, JSON.toJSONString(list));
-		encrypt = URLEncoder.encode(encrypt, "UTF-8");
+
+		List<Integer> ids = new ArrayList<Integer>();
+		for(UnionOpportunity opportunity : list){
+			ids.add(opportunity.getId());
+		}
+		int count = unionBrokerageIncomeService.countByOpportunityIds(ids);
+		if(count > 0){
+			throw new BusinessException("商机已支付");
+		}
 		Map<String,Object> data = new HashMap<String,Object>();
 		data.put("totalFee",money);
 		data.put("model", ConfigConstant.ENTERPRISE_PAY_MODEL);
@@ -409,8 +439,8 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		data.put("orderNum",orderNo);
 		data.put("memberId",memberId);
 		data.put("desc", "联盟商机佣金");
-		data.put("returnUrl",ConfigConstant.UNION_PHONE_ROOT_URL + url);
-		data.put("notifyUrl",ConfigConstant.UNION_ROOT_URL + "/unionH5Brokerage/79B4DE7C/paymentAllSuccess/" + encrypt);
+		data.put("returnUrl",ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
+		data.put("notifyUrl",ConfigConstant.UNION_ROOT_URL + "/unionH5Brokerage/79B4DE7C/paymentAllSuccess/"+ busId + "/" + (unionId == null ? 0 : unionId));
 		data.put("isSendMessage",0);//不需要推送
 		data.put("payWay",1);//微信支付
 		data.put("sourceType",1);
@@ -419,24 +449,49 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 	}
 
 	@Override
-	public String payOpportunity(Integer id, String url, Integer memberId) throws Exception{
+	public String payOpportunity(Integer id, String url, Integer memberId, Integer busId) throws Exception{
 		UnionOpportunity opportunity = unionOpportunityService.getById(id);
+		//(1)判断佣金是否存在
 		if(opportunity == null){
 			throw new BusinessException("该商机不存在");
 		}
+		//(2)判断佣金是否被受理了
 		if(opportunity.getIsAccept() != OpportunityConstant.ACCEPT_YES){
 			throw new BusinessException("该商机未受理");
 		}
-		UnionBrokerageIncome income = unionBrokerageIncomeService.getByUnionOpportunityId(id);
-		if(income != null){
+		//(3)判断该商机是否已支付
+		List<Integer> ids = new ArrayList<Integer>();
+		ids.add(id);
+		int count = unionBrokerageIncomeService.countByOpportunityIds(ids);
+		if(count > 0){
 			throw new BusinessException("该商机已支付");
 		}
+		//(4)判断支付的金额
 		if(opportunity.getBrokeragePrice().doubleValue() <= 0){
 			throw new BusinessException("支付金额有误");
 		}
+		//(5)判断该商机被推荐的盟员是否存在
+		UnionMember fromMember = unionMemberService.getById(opportunity.getFromMemberId());
+		if(fromMember == null){
+			throw new BusinessException("盟员不存在");
+
+		}
+		//(6)判断该商机是否推荐给我的
+		UnionMember toMember = unionMemberService.getById(opportunity.getToMemberId());
+		if(toMember == null){
+			throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
+		}
+		if(!toMember.getBusId().equals(busId)){
+			throw new BusinessException("该商机不属于您");
+		}
+		//(7)判断联盟是否有效
+		unionMainService.checkUnionValid(toMember.getUnionId());
+
+		//(8)判断我是否具有写权限
+		if(!unionMemberService.hasWriteAuthority(toMember)){
+			throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
+		}
 		String orderNo = OpportunityConstant.ORDER_PREFIX + System.currentTimeMillis();
-		String encrypt = EncryptUtil.encrypt(ConfigConstant.UNION_ENCRYPTKEY, String.valueOf(id));
-		encrypt = URLEncoder.encode(encrypt, "UTF-8");
 		Map<String,Object> data = new HashMap<String,Object>();
 		data.put("totalFee",opportunity.getBrokeragePrice());
 		data.put("model", ConfigConstant.ENTERPRISE_PAY_MODEL);
@@ -445,8 +500,8 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		data.put("orderNum",orderNo);
 		data.put("memberId",memberId);
 		data.put("desc", "联盟商机佣金");
-		data.put("returnUrl",ConfigConstant.UNION_PHONE_ROOT_URL + url);
-		data.put("notifyUrl",ConfigConstant.UNION_ROOT_URL + "/unionH5Brokerage/79B4DE7C/paymentOneSuccess/" + encrypt);
+		data.put("returnUrl",ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
+		data.put("notifyUrl",ConfigConstant.UNION_ROOT_URL + "/unionH5Brokerage/79B4DE7C/paymentOneSuccess/" + id);
 		data.put("isSendMessage",0);//不需要推送
 		data.put("payWay",1);//微信支付
 		data.put("sourceType",1);
@@ -456,52 +511,27 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public void paymentOneOpportunitySuccess(String encrypt, String orderNo, Integer verifierId) throws Exception{
-		String id = EncryptUtil.decrypt(ConfigConstant.UNION_ENCRYPTKEY, encrypt);
-		Integer oppId = Integer.parseInt(id);
-		UnionOpportunity opportunity = unionOpportunityService.getById(oppId);
+	public void paymentOneOpportunitySuccess(Integer id, String orderNo, Integer verifierId) throws Exception{
+		UnionOpportunity opportunity = unionOpportunityService.getById(id);
 		if(opportunity == null){
 			throw new BusinessException("商机不存在");
 		}
 		if(opportunity.getIsAccept() != OpportunityConstant.ACCEPT_YES){
 			throw new BusinessException("该商机未受理");
 		}
-		UnionBrokerageIncome brokerageIncome = unionBrokerageIncomeService.getByUnionOpportunityId(oppId);
+		UnionBrokerageIncome brokerageIncome = unionBrokerageIncomeService.getByUnionOpportunityId(id);
 		if(brokerageIncome != null){
 			throw new BusinessException("该商机已支付");
 		}
-		UnionMember fromMember = unionMemberService.getById(opportunity.getFromMemberId());
-		UnionMember toMember = unionMemberService.getById(opportunity.getToMemberId());
-		//商家佣金收入
-		UnionBrokerageIncome income = new UnionBrokerageIncome();
-		income.setBusId(fromMember.getBusId());
-		income.setMoney(opportunity.getBrokeragePrice());
-		income.setOpportunityId(oppId);
-		income.setDelStatus(CommonConstant.DEL_STATUS_NO);
-		income.setCreatetime(new Date());
-		income.setType(BrokerageConstant.SOURCE_TYPE_OPPORTUNITY);
-		unionBrokerageIncomeService.insert(income);
-
-		//收支明细
-		UnionBrokeragePay pay = new UnionBrokeragePay();
-		pay.setToBusId(fromMember.getBusId());
-		pay.setFromBusId(toMember.getBusId());
-		pay.setDelStatus(CommonConstant.DEL_STATUS_NO);
-		pay.setCreatetime(new Date());
-		pay.setOrderNo(orderNo);
-		pay.setStatus(BrokerageConstant.BROKERAGE_PAY_STATUS_YES);//支付成功
-		pay.setMoney(opportunity.getBrokeragePrice());
-		pay.setType(BrokerageConstant.BROKERAGE_PAY_TYPE_WX);//微信支付
-		pay.setOpportunityId(opportunity.getId());
-		pay.setVerifierId(verifierId);
-		unionBrokeragePayService.insert(pay);
+		List<UnionOpportunity> list = new ArrayList<UnionOpportunity>();
+		list.add(opportunity);
+		unionOpportunityService.insertBatchByList(list,orderNo,verifierId);
 	}
 
 	@Override
 	@Transactional(rollbackFor = Exception.class)
-	public void payAllOpportunitySuccess(String encrypt, String orderNo, Integer verifierId) throws Exception{
-		String data = EncryptUtil.decrypt(ConfigConstant.UNION_ENCRYPTKEY, encrypt);
-		List<UnionOpportunity> list =JSONArray.parseArray(data,UnionOpportunity.class);
+	public void payAllOpportunitySuccess(Integer busId, Integer unionId,  String orderNo, Integer verifierId) throws Exception{
+		List<UnionOpportunity> list = this.listAllUnPayUnionBrokerage(busId,unionId == 0 ? null : unionId);
 		unionOpportunityService.insertBatchByList(list,orderNo,verifierId);
 	}
 
