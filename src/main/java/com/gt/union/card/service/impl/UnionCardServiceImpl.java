@@ -732,7 +732,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         List<UnionMain> unions = new ArrayList<UnionMain>();//封装联盟列表
         List<Integer> unionIds = new ArrayList<Integer>();
         for (UnionMember member : members) {
-            unionIds.add(member.getId());
+            unionIds.add(member.getUnionId());
         }
         List<UnionMain> mains = unionMainService.listByIds(unionIds);
         for (UnionMember unionMember : members) {
