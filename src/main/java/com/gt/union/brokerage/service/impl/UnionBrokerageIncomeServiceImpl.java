@@ -214,7 +214,7 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
     @Override
     public int countByOpportunityIds(List<Integer> ids) {
         EntityWrapper wrapper = new EntityWrapper<>();
-        wrapper.in("id", ids.toArray());
+        wrapper.in("opportunity_id", ids.toArray());
         wrapper.eq("type", BrokerageConstant.SOURCE_TYPE_OPPORTUNITY);
         wrapper.eq("del_status",CommonConstant.DEL_STATUS_NO);
         return this.selectCount(wrapper);
