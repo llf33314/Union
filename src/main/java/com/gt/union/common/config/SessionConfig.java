@@ -32,7 +32,7 @@ public class SessionConfig {
     @Bean
     public DefaultCookieSerializer defaultCookieSerializer() {
         DefaultCookieSerializer defaultCookieSerializer = new DefaultCookieSerializer();
-        defaultCookieSerializer.setDomainName(cookieName);
+        defaultCookieSerializer.setDomainName(domainName);
         defaultCookieSerializer.setCookieName(cookieName);
         defaultCookieSerializer.setCookiePath(cookiePath);
         return defaultCookieSerializer;
