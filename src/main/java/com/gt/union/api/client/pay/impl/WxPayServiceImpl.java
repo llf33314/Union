@@ -84,6 +84,7 @@ public class WxPayServiceImpl implements WxPayService {
         params.put("model", ConfigConstant.ENTERPRISE_PAY_MODEL);
         params.put("busId", busId);
         params.put("amount", fee);
+        params.put("paySource",0);
         Map<String,Object> data = new HashMap<String,Object>();
         data.put("reqdata",params);
         try {

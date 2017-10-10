@@ -8,6 +8,7 @@ import com.gt.api.bean.session.Member;
 import com.gt.api.bean.sign.SignBean;
 import com.gt.api.util.SessionUtils;
 import com.gt.api.util.sign.SignUtils;
+import com.gt.union.api.client.member.MemberService;
 import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.brokerage.service.IUnionH5BrokerageService;
