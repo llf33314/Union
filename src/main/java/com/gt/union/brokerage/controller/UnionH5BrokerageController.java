@@ -81,7 +81,11 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 			throw new BusinessException("登录错误");
 		}
 		String loginSign = JSON.toJSONString(sign);
-		return GTJsonResult.instanceSuccessMsg(loginSign).toString();
+		String url = ConfigConstant.WXMP_ROOT_URL + "/ErpMenus/79B4DE7C/UnionErplogin.do";
+		Map<String,Object> data = new HashMap<String,Object>();
+		data.put("sign",loginSign);
+		data.put("url",url);
+		return GTJsonResult.instanceSuccessMsg(data).toString();
 	}
 
 
