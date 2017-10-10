@@ -76,7 +76,7 @@ public class LoginFilter implements Filter {
             }
         }else {
             BusUser busUser = SessionUtils.getLoginUser(req);
-            busUser = justForDev(req, busUser); //TODO 正式中请注释掉
+//            busUser = justForDev(req, busUser); //TODO 正式中请注释掉
             if (busUser == null) {
                 if(url.equals("/cardPhone/")){//
                     chain.doFilter(request, response);
