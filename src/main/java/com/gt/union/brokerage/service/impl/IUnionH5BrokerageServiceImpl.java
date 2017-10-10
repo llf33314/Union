@@ -78,69 +78,26 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 	private WxPayService payService;
 
 	@Override
-	public void checkLogin(Integer type, String username, String userpwd, String phone, String code, HttpServletRequest request) throws Exception{
-		if(type == null){
+	public void checkLogin(String phone, String code, HttpServletRequest request) throws Exception{
+		if(StringUtil.isEmpty(phone) || StringUtil.isEmpty(code)){
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
-		if(type == 1){
-			if(StringUtil.isEmpty(username) || StringUtil.isEmpty(userpwd)){
-				throw new ParamException(CommonConstant.PARAM_ERROR);
-			}
-			BusUser user = busUserService.getBusUserByName(username);
-			if(user == null){
-				throw new BusinessException("登录错误");
-			}
-			if(user.getPid() != null && user.getPid() != 0){
-				throw new BusinessException("请使用主账号登录");
-			}
-			Map<String,Object> param = new HashMap<String,Object>();
-			param.put("login_name",username);
-			param.put("password",userpwd);
-			SignBean sign = SignUtils.sign(ConfigConstant.WXMP_SIGNKEY , JSONObject.toJSONString(param));
-			if(CommonUtil.isEmpty(sign)){
-				throw new BusinessException("登录错误");
-			}
-			JSONObject objSing = JSONObject.parseObject(JSON.toJSONString(sign));
-			JSONObject obj = new JSONObject();
-			obj.put("login_name",username);
-			obj.put("password",userpwd);
-			obj.put("sign",objSing);
-			String url = ConfigConstant.WXMP_ROOT_URL + "/ErpMenus/79B4DE7C/UnionErplogin.do";
-			String result = SignHttpUtils.WxmppostByHttp(url,obj,ConfigConstant.WXMP_SIGNKEY);
-			if(StringUtil.isEmpty(result)){
-				throw new BusinessException("登录错误");
-			}
-			JSONObject data = JSONObject.parseObject(result);
-			if(data.get("code").equals("1")){//验证错误
-				throw new BusinessException("登录错误");
-			}
-			if(data.get("code").equals("2")){//参数错误
-				throw new BusinessException("登录错误");
-			}
-
-
+		String phoneKey = RedisKeyUtil.getBrokeragePhoneKey(phone);
+		String obj = redisCacheUtil.get(phoneKey);
+		if(obj == null){
+			throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
 		}
-		if(type == 2){
-			if(StringUtil.isEmpty(phone) || StringUtil.isEmpty(code)){
-				throw new ParamException(CommonConstant.PARAM_ERROR);
-			}
-			String phoneKey = RedisKeyUtil.getBrokeragePhoneKey(phone);
-			String obj = redisCacheUtil.get(phoneKey);
-			if(obj == null){
-				throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
-			}
-			if(!code.equals(JSON.parse(obj))){
-				throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
-			}
-			UnionVerifier unionVerifier = unionVerifierService.getByPhone(phone);
-			if(unionVerifier == null){
-				throw new BusinessException("手机号不存在");
-			}
-			BusUser user = busUserService.getBusUserById(unionVerifier.getBusId());
-			SessionUtils.setLoginUser(request,user);
-			com.gt.union.common.util.SessionUtils.setUnionVerifier(request,unionVerifier);
-			redisCacheUtil.remove(phoneKey);
+		if(!code.equals(JSON.parse(obj))){
+			throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
 		}
+		UnionVerifier unionVerifier = unionVerifierService.getByPhone(phone);
+		if(unionVerifier == null){
+			throw new BusinessException("手机号不存在");
+		}
+		BusUser user = busUserService.getBusUserById(unionVerifier.getBusId());
+		SessionUtils.setUnionBus(request,user);
+		com.gt.union.common.util.SessionUtils.setUnionVerifier(request,unionVerifier);
+		redisCacheUtil.remove(phoneKey);
 	}
 
 	@Override

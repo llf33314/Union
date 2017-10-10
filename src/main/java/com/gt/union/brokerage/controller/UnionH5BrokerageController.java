@@ -69,8 +69,8 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	@ApiOperation(value = "获取佣金平台账号登录秘钥", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/loginSign", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String loginSign(HttpServletRequest request, HttpServletResponse response
-			,@ApiParam(name="username", value = "商家账号", required = false) @RequestParam(name = "username", required = false) String username
-			,@ApiParam(name="userpwd", value = "商家账号密码", required = false) @RequestParam(name = "userpwd", required = false) String userpwd
+			,@ApiParam(name="username", value = "商家账号", required = true) @RequestParam(name = "username", required = true) String username
+			,@ApiParam(name="userpwd", value = "商家账号密码", required = true) @RequestParam(name = "userpwd", required = true) String userpwd
 			) throws Exception{
 		logger.info("进入登录,用户名：" + username);
 		Map<String,Object> param = new HashMap<String,Object>();
@@ -97,14 +97,11 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	 */
 	@ApiOperation(value = "佣金平台登录", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/login", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-	public String login(HttpServletRequest request, HttpServletResponse response, @ApiParam(name="type", value = "登录类型 1：商家账号 2：手机和验证码", required = true) @RequestParam("type") Integer type
-									,@ApiParam(name="username", value = "商家账号", required = false) @RequestParam(name = "username", required = false) String username
-									,@ApiParam(name="userpwd", value = "商家账号密码", required = false) @RequestParam(name = "userpwd", required = false) String userpwd
-									,@ApiParam(name="phone", value = "手机号", required = false) @RequestParam(name = "phone", required = false) String phone
-									,@ApiParam(name="code", value = "手机验证码", required = false) @RequestParam(name = "code", required = false) String code) throws Exception{
-		logger.info("进入登录,用户名：" + username);
+	public String login(HttpServletRequest request, HttpServletResponse response
+									,@ApiParam(name="phone", value = "手机号", required = true) @RequestParam(name = "phone", required = true) String phone
+									,@ApiParam(name="code", value = "手机验证码", required = true) @RequestParam(name = "code", required = true) String code) throws Exception{
 		logger.info("进入登录,用手机号：" + phone);
-		unionH5BrokerageService.checkLogin(type, username, userpwd, phone, code, request);
+		unionH5BrokerageService.checkLogin(phone, code, request);
 		return GTJsonResult.instanceSuccessMsg().toString();
 	}
 
@@ -136,7 +133,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	@ApiOperation(value = "佣金平台首页", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/index", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String index(HttpServletRequest request, HttpServletResponse response) throws Exception{
-		BusUser busUser = SessionUtils.getLoginUser(request);
+		BusUser busUser = SessionUtils.getUnionBus(request);
 		double sumPay = unionH5BrokerageService.getSumInComeUnionBrokerage(busUser.getId());//我收入的总佣金（已支付）
 		double sumWithdrawals = unionH5BrokerageService.getSumWithdrawalsUnionBrokerage(busUser.getId());//我已提现的总佣金（已支付）
 		double ableGet = BigDecimalUtil.subtract(sumPay,sumWithdrawals).doubleValue();//可提现
@@ -157,7 +154,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	@ApiOperation(value = "我要提现页", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/withdrawals", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String withdrawals(HttpServletRequest request, HttpServletResponse response) throws Exception{
-		BusUser busUser = SessionUtils.getLoginUser(request);
+		BusUser busUser = SessionUtils.getUnionBus(request);
 		double sumPay = unionH5BrokerageService.getSumInComeUnionBrokerage(busUser.getId());//我收入的总佣金（已支付）
 		double divideSum = unionH5BrokerageService.getSumInComeUnionBrokerageByType(busUser.getId(), 1);//售卡所得佣金总和
 		double opportunitySum = unionH5BrokerageService.getSumInComeUnionBrokerageByType(busUser.getId(), 2);//商机所得佣金总和
@@ -177,7 +174,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	@ApiOperation(value = "获取提现记录列表", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/withdrawals/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String withdrawalsList(Page page, HttpServletRequest request){
-		BusUser user = SessionUtils.getLoginUser(request);
+		BusUser user = SessionUtils.getUnionBus(request);
 		Page result = unionH5BrokerageService.listWithdrawals(page, user.getId());
 		return GTJsonResult.instanceSuccessMsg(result).toString();
 	}
@@ -187,7 +184,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	public String withdrawals(HttpServletRequest request,
 				  @ApiParam(name = "fee", value = "提现金额" ,required = true) @RequestParam(value = "fee", required = true) Double fee,
 				  @ApiParam(name = "url", value = "登录授权后回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) throws Exception{
-		BusUser user = SessionUtils.getLoginUser(request);
+		BusUser user = SessionUtils.getUnionBus(request);
 		Member member = SessionUtils.getLoginMember(request);
 		if(CommonUtil.isEmpty(member)){
 			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
@@ -210,7 +207,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	@ApiOperation(value = "获取未支付给别人的佣金列表", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/unPay/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String unPayList(Page page, HttpServletRequest request, @ApiParam(name = "unionId", value = "联盟id，可以为空") @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception{
-		BusUser user = SessionUtils.getLoginUser(request);
+		BusUser user = SessionUtils.getUnionBus(request);
 		Page result = unionH5BrokerageService.listUnPayUnionBrokerage(page, user.getId(),unionId );
 		return GTJsonResult.instanceSuccessMsg(result).toString();
 	}
@@ -218,7 +215,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	@ApiOperation(value = "未支付给别人的佣金之和", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/unPaySum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String unPaySum(HttpServletRequest request, @ApiParam(name = "unionId", value = "联盟id，可以为空") @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception{
-		BusUser user = SessionUtils.getLoginUser(request);
+		BusUser user = SessionUtils.getUnionBus(request);
 		double unPaySum = unionH5BrokerageService.getSumUnPayUnionBrokerage(unionId, user.getId());
 		return GTJsonResult.instanceSuccessMsg(unPaySum).toString();
 	}
@@ -227,7 +224,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	@ApiOperation(value = "获取已支付给别人的佣金列表", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/pay/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String payList(Page page, HttpServletRequest request, @ApiParam(name = "unionId", value = "联盟id，可以为空") @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception{
-		BusUser user = SessionUtils.getLoginUser(request);
+		BusUser user = SessionUtils.getUnionBus(request);
 		Page result = unionH5BrokerageService.listPayUnionBrokerage(page, user.getId(),unionId );
 		return GTJsonResult.instanceSuccessMsg(result).toString();
 	}
@@ -235,7 +232,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	@ApiOperation(value = "已支付给别人的佣金之和", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/paySum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String paySum(HttpServletRequest request, @ApiParam(name = "unionId", value = "联盟id，可以为空") @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception{
-		BusUser user = SessionUtils.getLoginUser(request);
+		BusUser user = SessionUtils.getUnionBus(request);
 		double paySum = unionH5BrokerageService.getSumPayUnionBrokerage(unionId, user.getId());
 		return GTJsonResult.instanceSuccessMsg(paySum).toString();
 	}
@@ -244,7 +241,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	@ApiOperation(value = "未收取别人的佣金列表", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/unCome/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String unComeList(Page page, HttpServletRequest request, @ApiParam(name = "unionId", value = "联盟id，可以为空") @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception{
-		BusUser user = SessionUtils.getLoginUser(request);
+		BusUser user = SessionUtils.getUnionBus(request);
 		Page result = unionH5BrokerageService.listUnComeUnionBrokerage(page, user.getId(),unionId );
 		return GTJsonResult.instanceSuccessMsg(result).toString();
 	}
@@ -252,7 +249,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	@ApiOperation(value = "未收取别人的佣金之和", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/unComeSum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String unComeSum(HttpServletRequest request, @ApiParam(name = "unionId", value = "联盟id，可以为空") @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception{
-		BusUser user = SessionUtils.getLoginUser(request);
+		BusUser user = SessionUtils.getUnionBus(request);
 		double unComeSum = unionH5BrokerageService.getUnComeUnionBrokerage(user.getId(), unionId);
 		return GTJsonResult.instanceSuccessMsg(unComeSum).toString();
 	}
@@ -261,7 +258,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	@ApiOperation(value = "佣金明细推荐佣金列表", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/opportunity/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String opportunityList(Page page, HttpServletRequest request, @ApiParam(name = "unionId", value = "联盟id，可以为空") @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception{
-		BusUser user = SessionUtils.getLoginUser(request);
+		BusUser user = SessionUtils.getUnionBus(request);
 		Page result = unionH5BrokerageService.listOpportunityPayToMe(page, user.getId(),unionId);
 		return GTJsonResult.instanceSuccessMsg(result).toString();
 	}
@@ -270,7 +267,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	@ApiOperation(value = "佣金明细推荐佣金之和", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/opportunitySum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String opportunitySum(HttpServletRequest request, @ApiParam(name = "unionId", value = "联盟id，可以为空") @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception{
-		BusUser user = SessionUtils.getLoginUser(request);
+		BusUser user = SessionUtils.getUnionBus(request);
 		double opportunitySum = unionH5BrokerageService.getOpportunitySumToMe(user.getId(), unionId);
 		return GTJsonResult.instanceSuccessMsg(opportunitySum).toString();
 	}
@@ -279,7 +276,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	@ApiOperation(value = "佣金明细售卡佣金列表", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/cardDivide/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String cardDivideList(Page page, HttpServletRequest request, @ApiParam(name = "unionId", value = "联盟id，可以为空") @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception{
-		BusUser user = SessionUtils.getLoginUser(request);
+		BusUser user = SessionUtils.getUnionBus(request);
 		Page result = unionH5BrokerageService.listCardDivide(page, user.getId(),unionId);
 		return GTJsonResult.instanceSuccessMsg(result).toString();
 	}
@@ -288,7 +285,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	@ApiOperation(value = "佣金明细售卡佣金之和", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/cardDivideSum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String cardDivideSum(HttpServletRequest request, @ApiParam(name = "unionId", value = "联盟id，可以为空") @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception{
-		BusUser user = SessionUtils.getLoginUser(request);
+		BusUser user = SessionUtils.getUnionBus(request);
 		double cardDivideSum = unionH5BrokerageService.getCardDivideSum(user.getId(), unionId);
 		return GTJsonResult.instanceSuccessMsg(cardDivideSum).toString();
 	}
@@ -303,7 +300,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	@ApiOperation(value = "催促佣金", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/urge/{id}", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String urge(HttpServletRequest request, HttpServletResponse response, @ApiParam(name = "id", value = "商机id", required = true) @PathVariable(value = "id", required = true) Integer id) throws Exception{
-		BusUser user = SessionUtils.getLoginUser(request);
+		BusUser user = SessionUtils.getUnionBus(request);
 		unionH5BrokerageService.urgeOpportunity(user.getId(),id);
 		return GTJsonResult.instanceSuccessMsg().toString();
 	}
@@ -314,7 +311,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	public String payOne(HttpServletRequest request, HttpServletResponse response, @ApiParam(name = "id", value = "商机id", required = true) @PathVariable(value = "id", required = true) Integer id
 							,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) throws Exception{
 		Member member = SessionUtils.getLoginMember(request);
-		BusUser user = SessionUtils.getLoginUser(request);
+		BusUser user = SessionUtils.getUnionBus(request);
 		if(CommonUtil.isEmpty(member)){
 			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
 			return GTJsonResult.instanceSuccessMsg(null,redirectUrl).toString();
@@ -331,7 +328,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	@ApiOperation(value = "获取一键支付佣金金额", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/allPay", method=RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String getPayAll(HttpServletRequest request, HttpServletResponse response, @ApiParam(name = "unionId", value = "联盟id", required = false) @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception{
-		BusUser user = SessionUtils.getLoginUser(request);
+		BusUser user = SessionUtils.getUnionBus(request);
 		double money = unionH5BrokerageService.getPayAllOpportunitySum(user.getId(), unionId);
 		return GTJsonResult.instanceSuccessMsg(money).toString();
 	}
@@ -341,7 +338,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	public String payAll(HttpServletRequest request, HttpServletResponse response, @ApiParam(name = "unionId", value = "联盟id", required = false) @RequestParam(value = "unionId", required = false) Integer unionId
 							,@ApiParam(name = "fee", value = "支付金额", required = true) @RequestParam(value = "fee", required = true) Double fee
 							,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) throws Exception{
-		BusUser user = SessionUtils.getLoginUser(request);
+		BusUser user = SessionUtils.getUnionBus(request);
 		Member member = SessionUtils.getLoginMember(request);
 		if(CommonUtil.isEmpty(member)){
 			String redirectUrl = this.authorizeMemberWx(request, ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
@@ -359,7 +356,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	@ApiOperation(value = "获取联盟列表", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/unionList", method=RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String payOne(HttpServletRequest request, HttpServletResponse response) throws Exception{
-		BusUser user = SessionUtils.getLoginUser(request);
+		BusUser user = SessionUtils.getUnionBus(request);
 		List<UnionMain> list = unionMainService.listWriteByBusId(user.getId());
 		return GTJsonResult.instanceSuccessMsg(list).toString();
 	}
