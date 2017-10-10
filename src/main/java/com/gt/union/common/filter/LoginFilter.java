@@ -33,7 +33,7 @@ public class LoginFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
 
         passUrlMap.put("/unionH5Brokerage/login","/unionH5Brokerage/login");
-
+        passUrlMap.put("/unionH5Brokerage/loginSign","/unionH5Brokerage/loginSign");
         passSuffixList.add(".js");
         passSuffixList.add(".css");
         passSuffixList.add(".gif");
@@ -62,10 +62,9 @@ public class LoginFilter implements Filter {
             return;
         }
         //(3)判断是否已有登录信息
-//        busUser = justForDev(req, busUser); //TODO 正式中请注释掉
         if(url.indexOf("unionH5Brokerage") > -1 || url.indexOf("brokeragePhone") > -1){
-            BusUser busUser = SessionUtils.getUnionBus(req);
-            if (busUser == null) {
+            BusUser user = SessionUtils.getUnionBus(req);
+            if (user == null) {
                 if(url.equals("/brokeragePhone/")){
                     chain.doFilter(request, response);
                     return;
@@ -77,6 +76,7 @@ public class LoginFilter implements Filter {
             }
         }else {
             BusUser busUser = SessionUtils.getLoginUser(req);
+            busUser = justForDev(req, busUser); //TODO 正式中请注释掉
             if (busUser == null) {
                 if(url.equals("/cardPhone/")){//
                     chain.doFilter(request, response);
@@ -110,12 +110,14 @@ public class LoginFilter implements Filter {
      * @return
      */
     private BusUser justForDev(HttpServletRequest request,BusUser busUser) {
-        busUser = new BusUser();
-        busUser.setId(33);
-        busUser.setEndTime(new Date());
-        busUser.setPid(BusUserConstant.ACCOUNT_TYPE_UNVALID);
-        busUser.setLevel(BusUserConstant.LEVEL_EXTREME);
-        SessionUtils.setLoginUser(request, busUser);
+        if(busUser == null){
+            busUser = new BusUser();
+            busUser.setId(33);
+            busUser.setEndTime(new Date());
+            busUser.setPid(BusUserConstant.ACCOUNT_TYPE_UNVALID);
+            busUser.setLevel(BusUserConstant.LEVEL_EXTREME);
+            SessionUtils.setLoginUser(request, busUser);
+        }
         return busUser;
     }
 

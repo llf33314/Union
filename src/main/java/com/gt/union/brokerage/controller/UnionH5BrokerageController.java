@@ -67,7 +67,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	 * @return
 	 */
 	@ApiOperation(value = "获取佣金平台账号登录秘钥", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/loginSign", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/loginSign", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String loginSign(HttpServletRequest request, HttpServletResponse response
 			,@ApiParam(name="username", value = "商家账号", required = false) @RequestParam(name = "username", required = false) String username
 			,@ApiParam(name="userpwd", value = "商家账号密码", required = false) @RequestParam(name = "userpwd", required = false) String userpwd
@@ -80,10 +80,9 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 		if(CommonUtil.isEmpty(sign)){
 			throw new BusinessException("登录错误");
 		}
-		String loginSign = JSON.toJSONString(sign);
 		String url = ConfigConstant.WXMP_ROOT_URL + "/ErpMenus/79B4DE7C/UnionErplogin.do";
 		Map<String,Object> data = new HashMap<String,Object>();
-		data.put("sign",loginSign);
+		data.put("sign",JSONObject.parseObject(JSON.toJSONString(sign)));
 		data.put("url",url);
 		return GTJsonResult.instanceSuccessMsg(data).toString();
 	}
