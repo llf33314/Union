@@ -122,7 +122,7 @@ wxmp:
    company: "多粉平台"
 
 union:
-  url: http://union.duofee.com
+  url: http://union.yifriend.net:7884
   encryptKey: CFCCBD99C12B62E52952EA90A931A01F
   signkey: SR36E9KIYDLIU1VB6WX20HCW494QL97T
 wx:
