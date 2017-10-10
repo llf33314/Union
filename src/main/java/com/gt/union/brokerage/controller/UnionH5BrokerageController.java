@@ -1,10 +1,13 @@
 package com.gt.union.brokerage.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.Member;
+import com.gt.api.bean.sign.SignBean;
 import com.gt.api.util.SessionUtils;
+import com.gt.api.util.sign.SignUtils;
 import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.brokerage.service.IUnionH5BrokerageService;
@@ -54,6 +57,33 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
+
+
+	/**
+	 * 佣金平台登录
+	 *
+	 * @param request
+	 * @param response
+	 * @return
+	 */
+	@ApiOperation(value = "获取佣金平台账号登录秘钥", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/loginSign", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String loginSign(HttpServletRequest request, HttpServletResponse response
+			,@ApiParam(name="username", value = "商家账号", required = false) @RequestParam(name = "username", required = false) String username
+			,@ApiParam(name="userpwd", value = "商家账号密码", required = false) @RequestParam(name = "userpwd", required = false) String userpwd
+			) throws Exception{
+		logger.info("进入登录,用户名：" + username);
+		Map<String,Object> param = new HashMap<String,Object>();
+		param.put("login_name",username);
+		param.put("password",userpwd);
+		SignBean sign = SignUtils.sign(ConfigConstant.WXMP_SIGNKEY , JSONObject.toJSONString(param));
+		if(CommonUtil.isEmpty(sign)){
+			throw new BusinessException("登录错误");
+		}
+		String loginSign = JSON.toJSONString(sign);
+		return GTJsonResult.instanceSuccessMsg(loginSign).toString();
+	}
+
 
 	/**
 	 * 佣金平台登录
