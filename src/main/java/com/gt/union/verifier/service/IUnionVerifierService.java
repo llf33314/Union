@@ -3,6 +3,7 @@ package com.gt.union.verifier.service;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.verifier.entity.UnionVerifier;
+import com.gt.union.verifier.vo.UnionVerifierVO;
 
 /**
  * <p>
@@ -21,9 +22,9 @@ public interface IUnionVerifierService extends IService<UnionVerifier> {
 
     /**
      * 保存佣金平台管理员
-     * @param unionVerifier
-     */
-    void save(UnionVerifier unionVerifier) throws Exception;
+	 * @param unionVerifier
+	 */
+    void save(UnionVerifierVO unionVerifier) throws Exception;
 
     /**
      * 查询佣金平台管理员

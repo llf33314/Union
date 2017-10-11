@@ -13,6 +13,7 @@ import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.*;
 import com.gt.union.verifier.entity.UnionVerifier;
 import com.gt.union.verifier.service.IUnionVerifierService;
+import com.gt.union.verifier.vo.UnionVerifierVO;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
@@ -78,7 +79,7 @@ public class UnionVerifierController {
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String save(HttpServletRequest request
             , @ApiParam(name="unionVerifyMember", value = "平台管理员信息", required = true)
-                       @Valid @RequestBody UnionVerifier verifier, BindingResult result) throws Exception{
+                       @Valid @RequestBody UnionVerifierVO verifier, BindingResult result) throws Exception{
         ParamValidatorUtil.checkBindingResult(result);
         BusUser user = SessionUtils.getLoginUser(request);
         Integer busId = user.getId();

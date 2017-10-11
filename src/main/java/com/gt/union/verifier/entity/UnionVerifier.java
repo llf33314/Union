@@ -24,8 +24,6 @@ import java.util.Date;
  * @since 2017-09-07
  */
 @TableName("t_union_verifier")
-@ApiModel(value = "UnionVerifier", description = "佣金平台管理员")
-@Data
 public class UnionVerifier extends Model<UnionVerifier> {
 
     private static final long serialVersionUID = 1L;
@@ -57,22 +55,11 @@ public class UnionVerifier extends Model<UnionVerifier> {
     /**
      * 电话号码
      */
-	@ApiModelProperty(value = "手机号", required = true)
-	@NotBlank(message = "手机号不能为空")
-	@Pattern(regexp = "^1[3|4|5|6|7|8][0-9][0-9]{8}$", message = "手机号有误")
 	private String phone;
     /**
      * 用户姓名
      */
-	@ApiModelProperty(value = "姓名", required = true)
-	@NotBlank(message = "姓名不能为空")
-	@StringLengthValid(length = 10, message = "姓名不可超过10字")
 	private String name;
-
-	/**
-	 * 验证码
-	 */
-	private String code;
 
 
 	public Integer getId() {
@@ -131,14 +118,6 @@ public class UnionVerifier extends Model<UnionVerifier> {
 		this.name = name;
 	}
 
-
-	public String getCode() {
-		return code;
-	}
-
-	public void setCode(String code) {
-		this.code = code;
-	}
 
 	@Override
 	protected Serializable pkVal() {
