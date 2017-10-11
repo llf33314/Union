@@ -52,23 +52,6 @@ public class UnionMemberController {
 
     //-------------------------------------------------- get ----------------------------------------------------------
 
-    @ApiOperation(value = "/aaa", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/aaa", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String method(HttpServletRequest request) throws Exception {
-        BusUser busUser = SessionUtils.getLoginUser(request);
-        Integer busId = busUser.getId();
-        List<UnionMember> list = this.unionMemberService.listByBusId(busId);
-        return GTJsonResult.instanceSuccessMsg(list).toString();
-    }
-
-    @ApiOperation(value = "/bbb", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/bbb", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String method2(HttpServletRequest request) throws Exception {
-        BusUser busUser = SessionUtils.getLoginUser(request);
-        this.unionMemberService.removeById(1);
-        return GTJsonResult.instanceSuccessMsg().toString();
-    }
-
     @ApiOperation(value = "根据我的盟员身份id分页获取所有与我同属一个联盟的盟员相关信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/pageMap/memberId/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageMapByMemberId(HttpServletRequest request, Page page
@@ -104,12 +87,7 @@ public class UnionMemberController {
     public String getById(HttpServletRequest request
             , @ApiParam(name = "memberId", value = "盟员身份id", required = true)
                           @PathVariable("memberId") Integer memberId) throws Exception {
-        BusUser busUser = SessionUtils.getLoginUser(request);
-        Integer busId = busUser.getId();
-        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
-        }
-        UnionMember result = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        UnionMember result = this.unionMemberService.getById(memberId);
         return GTJsonResult.instanceSuccessMsg(result).toString();
     }
 
