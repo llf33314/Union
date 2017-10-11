@@ -401,6 +401,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		data.put("isSendMessage",0);//不需要推送
 		data.put("payWay",1);//微信支付
 		data.put("sourceType",1);
+		data.put("isreturn",1);//需要同步跳转
 		String payUrl = payService.wxPay(data);
 		return payUrl;
 	}
@@ -462,6 +463,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		data.put("isSendMessage",0);//不需要推送
 		data.put("payWay",1);//微信支付
 		data.put("sourceType",1);
+		data.put("isreturn",1);//需要同步跳转
 		String payUrl = payService.wxPay(data);
 		return payUrl;
 	}

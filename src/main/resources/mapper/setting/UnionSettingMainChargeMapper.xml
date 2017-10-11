@@ -11,6 +11,7 @@
 		<result column="money" property="money" />
 		<result column="level" property="level" />
 		<result column="number" property="number" />
+		<result column="desc" property="desc" />
 	</resultMap>
 
 </mapper>
