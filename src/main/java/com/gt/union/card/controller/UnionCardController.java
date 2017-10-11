@@ -228,6 +228,7 @@ public class UnionCardController {
 			data.put("memberId",member.getId());
 			data.put("headurl",member.getHeadimgurl());
 			data.put("time",DateTimeKit.format(new Date(),"yyyy-MM-dd HH:mm"));
+			logger.info("关注回调----------" + JSON.toJSONString(data));
 			socketService.socketSendMessage(ConfigConstant.SOCKET_KEY + CommonUtil.toInteger(param.get("externalId")), JSON.toJSONString(data),"");
 		} catch (Exception e) {
 			logger.error("", e);
