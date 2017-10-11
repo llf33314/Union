@@ -14,6 +14,7 @@ import com.gt.union.common.util.StringUtil;
 import com.gt.union.verifier.entity.UnionVerifier;
 import com.gt.union.verifier.mapper.UnionVerifierMapper;
 import com.gt.union.verifier.service.IUnionVerifierService;
+import com.gt.union.verifier.vo.UnionVerifierVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -45,7 +46,7 @@ public class UnionVerifierServiceImpl extends ServiceImpl<UnionVerifierMapper, U
     }
 
     @Override
-    public void save(UnionVerifier unionVerifier) throws Exception {
+    public void save(UnionVerifierVO unionVerifier) throws Exception {
        UnionVerifier phoneVerify = this.getByPhone(unionVerifier.getPhone());
         if(phoneVerify != null){
             throw new ParamException("您输入的手机号码已存在，请重新输入");
@@ -53,9 +54,6 @@ public class UnionVerifierServiceImpl extends ServiceImpl<UnionVerifierMapper, U
         int count = this.selectCountByBusIdAndName(unionVerifier.getBusId(),unionVerifier.getName());
         if(count > 0){
             throw new ParamException("您输入的姓名已存在，请重新输入");
-        }
-        if(StringUtil.isEmpty(unionVerifier.getCode())){
-            throw new BusinessException("验证码不能为空");
         }
         String phoneKey = RedisKeyUtil.getVerifyPhoneKey(unionVerifier.getPhone());
         String obj = redisCacheUtil.get(phoneKey);

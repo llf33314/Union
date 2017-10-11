@@ -43,6 +43,15 @@ public class UnionMainPermitController {
     private IUnionMainPermitService unionMainPermitService;
 
 
+
+
+    @ApiOperation(value = "获取升级套餐链接", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/feeTradeUrl", method = RequestMethod.GET)
+    public String feeTradeUrl() {
+        String url = ConfigConstant.WXMP_ROOT_URL + "/trading/index.do?setType=trading";
+        return GTJsonResult.instanceSuccessMsg(url).toString();
+    }
+
     /**
      * 创建联盟支付成功回调地址
      *

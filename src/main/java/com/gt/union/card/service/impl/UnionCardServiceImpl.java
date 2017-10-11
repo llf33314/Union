@@ -1043,7 +1043,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         //添加售卡分成
         List<UnionBrokerageIncome> incomes = new ArrayList<UnionBrokerageIncome>();
         for (UnionMember unionMember : list) {
-            Double money = BigDecimalUtil.multiply(payMoney, unionMember.getCardDividePercent()).doubleValue();
+            Double money = BigDecimalUtil.multiply(payMoney, BigDecimalUtil.divide(unionMember.getCardDividePercent(),100d)).doubleValue();
             UnionBrokerageIncome income = new UnionBrokerageIncome();
             income.setType(BrokerageConstant.SOURCE_TYPE_CARD);
             income.setCreatetime(new Date());

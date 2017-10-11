@@ -181,10 +181,10 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             @Override
             public String getSqlSegment() {
                 StringBuilder sbSqlSegment = new StringBuilder(" toM")
-                        .append(" LEFT JOIN t_union_opportunity_brokerage_ratio rFromMe")
+                        .append(" LEFT JOIN t_union_opportunity_ratio rFromMe")
                         .append("  ON rFromMe.from_member_id = ").append(unionMember.getId())
                         .append("  AND rFromMe.to_member_id=toM.id")
-                        .append(" LEFT JOIN t_union_opportunity_brokerage_ratio rToMe")
+                        .append(" LEFT JOIN t_union_opportunity_ratio rToMe")
                         .append("  ON rToMe.to_member_id =").append(unionMember.getId())
                         .append("  AND rToMe.from_member_id = toM.id")
                         .append(" WHERE toM.del_status = ").append(CommonConstant.DEL_STATUS_NO)

@@ -132,6 +132,7 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
                         result.put("pay", CommonConstant.COMMON_YES);//去支付
                         List<UnionSettingMainCharge> list =unionSettingMainChargeService.listBusLevel(busUser.getLevel());
                         result.put("payItems", list);
+                        result.put("number",list.get(0).getNumber());//联盟成员数
                         return result;
                     }else {
                         UnionMainCreate unionMainCreate = this.getByBusIdAndPermitId(busId, permit.getId());
@@ -155,6 +156,7 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
                     result.put("pay", CommonConstant.COMMON_YES);//去支付
                     List<UnionSettingMainCharge> list =unionSettingMainChargeService.listBusLevel(busUser.getLevel());
                     result.put("payItems", list);
+                    result.put("number",list.get(0).getNumber());//联盟成员数
                     return result;
                 }
             }
@@ -179,6 +181,7 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
                 result.put("pay", CommonConstant.COMMON_YES);//去支付
                 List<UnionSettingMainCharge> list =unionSettingMainChargeService.listBusLevel(busUser.getLevel());
                 result.put("payItems", list);
+                result.put("number",list.get(0).getNumber());//联盟成员数
                 return result;
             }
         }

@@ -51,6 +51,10 @@ public class UnionSettingMainCharge extends Model<UnionSettingMainCharge> {
      * 成员数
      */
 	private Integer number;
+	/**
+	 * 年限描述
+	 */
+	private String desc;
 
 
 	public Integer getId() {
@@ -107,6 +111,14 @@ public class UnionSettingMainCharge extends Model<UnionSettingMainCharge> {
 
 	public void setNumber(Integer number) {
 		this.number = number;
+	}
+
+	public String getDesc() {
+		return desc;
+	}
+
+	public void setDesc(String desc) {
+		this.desc = desc;
 	}
 
 	@Override
