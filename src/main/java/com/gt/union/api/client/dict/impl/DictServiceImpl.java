@@ -8,7 +8,6 @@ import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.util.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -63,6 +62,11 @@ public class DictServiceImpl implements IDictService {
 	 */
 	private static String UNION_CREATE_PACKAGE_TYPE = "E001";
 
+	/**
+	 * 商家会员等级
+	 */
+	private static String BUS_USER_LEVEL_DESC_TYPE = "1004";
+
 
 	public Double getDefaultDiscount(){
 		return getItemDoubleValue(DEFAULT_DISCOUNT_TYPE);
@@ -97,6 +101,20 @@ public class DictServiceImpl implements IDictService {
 	public List<Map> getUnionCreatePackage() {
 		return getItemList(UNION_CREATE_PACKAGE_TYPE);
 	}
+
+	@Override
+	public String getBusUserLevel(Integer level) {
+		List<Map> list = this.getItemList(BUS_USER_LEVEL_DESC_TYPE);
+		if(ListUtil.isNotEmpty(list)){
+			for(Map map : list){
+				if(map.get("item_key").toString().equals(String.valueOf(level))){
+					return map.get("item_value").toString();
+				}
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * 获取单个值
 	 * @param itemKey

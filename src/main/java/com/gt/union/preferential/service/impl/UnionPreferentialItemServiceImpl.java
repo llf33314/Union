@@ -191,7 +191,7 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
             if (!project.getMemberId().equals(memberId)) {
                 throw new BusinessException("没有该优惠服务项的权限");
             }
-            if (item.getStatus() != PreferentialConstant.STATUS_UNCOMMITTED) {
+            if (!(item.getStatus() == PreferentialConstant.STATUS_UNCOMMITTED || item.getStatus() == PreferentialConstant.STATUS_FAIL)) {
                 throw new BusinessException("优惠服务项已处理");
             }
             //(5)更新对象

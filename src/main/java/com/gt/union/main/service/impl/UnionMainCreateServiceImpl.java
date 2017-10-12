@@ -114,6 +114,7 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         String[] arrs = itemValue.split(",");
         String isUnionOwnerService = arrs[0];//是否有创建盟主的服务权限 1：是 0：否
         String isPay = arrs[1];//创建联盟是否需要付费  1：需要  0：不需要
+        String unionLevelDesc = arrs[2];//商家的联盟版本  盟主版、盟员版、无
         if (isUnionOwnerService.equals("0")) {
             throw new BusinessException("您没有创建联盟的权限");
         }
@@ -133,6 +134,9 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
                         List<UnionSettingMainCharge> list =unionSettingMainChargeService.listBusLevel(busUser.getLevel());
                         result.put("payItems", list);
                         result.put("number",list.get(0).getNumber());//联盟成员数
+                        String levelDesc = dictService.getBusUserLevel(busUser.getLevel());
+                        result.put("levelDesc", levelDesc);
+                        result.put("unionLevelDesc", unionLevelDesc);
                         return result;
                     }else {
                         UnionMainCreate unionMainCreate = this.getByBusIdAndPermitId(busId, permit.getId());
@@ -157,6 +161,9 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
                     List<UnionSettingMainCharge> list =unionSettingMainChargeService.listBusLevel(busUser.getLevel());
                     result.put("payItems", list);
                     result.put("number",list.get(0).getNumber());//联盟成员数
+                    String levelDesc = dictService.getBusUserLevel(busUser.getLevel());
+                    result.put("levelDesc", levelDesc);
+                    result.put("unionLevelDesc", unionLevelDesc);
                     return result;
                 }
             }
@@ -182,6 +189,9 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
                 List<UnionSettingMainCharge> list =unionSettingMainChargeService.listBusLevel(busUser.getLevel());
                 result.put("payItems", list);
                 result.put("number",list.get(0).getNumber());//联盟成员数
+                String levelDesc = dictService.getBusUserLevel(busUser.getLevel());
+                result.put("levelDesc", levelDesc);
+                result.put("unionLevelDesc", unionLevelDesc);
                 return result;
             }
         }

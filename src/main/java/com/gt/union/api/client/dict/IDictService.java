@@ -50,5 +50,12 @@ public interface IDictService {
 	 */
 	public List<Map> getUnionCreatePackage();
 
+	/**
+	 * 根据商家等级获取商家等级名称
+	 * @param level
+	 * @return
+	 */
+	public String getBusUserLevel(Integer level);
+
 
 }

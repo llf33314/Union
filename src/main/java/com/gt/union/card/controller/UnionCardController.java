@@ -112,7 +112,7 @@ public class UnionCardController {
 			response.setContentType("text/html");
 			response.setHeader("Cache-Control", "no-cache");
 			response.setCharacterEncoding("UTF-8");
-			String result = GTJsonResult.instanceErrorMsg("导出失败").toString();
+			String result = "<script>alert('导出失败')</script>";
 			PrintWriter writer = response.getWriter();
 			writer.print(result);
 			writer.close();
@@ -123,7 +123,7 @@ public class UnionCardController {
 			response.setContentType("text/html");
 			response.setHeader("Cache-Control", "no-cache");
 			response.setCharacterEncoding("UTF-8");
-			String result = GTJsonResult.instanceErrorMsg("导出失败").toString();
+			String result = "<script>alert('导出失败')</script>";
 			PrintWriter writer = response.getWriter();
 			writer.print(result);
 			writer.close();
@@ -228,6 +228,7 @@ public class UnionCardController {
 			data.put("memberId",member.getId());
 			data.put("headurl",member.getHeadimgurl());
 			data.put("time",DateTimeKit.format(new Date(),"yyyy-MM-dd HH:mm"));
+			logger.info("关注回调----------" + JSON.toJSONString(data));
 			socketService.socketSendMessage(ConfigConstant.SOCKET_KEY + CommonUtil.toInteger(param.get("externalId")), JSON.toJSONString(data),"");
 		} catch (Exception e) {
 			logger.error("", e);

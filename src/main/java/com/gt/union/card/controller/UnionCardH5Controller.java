@@ -61,7 +61,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 	public String indexList(HttpServletRequest request, @ApiParam(name = "busId", value = "商家id", required = true) @PathVariable("busId") Integer busId
 						,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) throws Exception{
 		Member member = SessionUtils.getLoginMember(request);
-//		member = memberService.getById(997);
+		member = memberService.getById(997);
 		String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
 		if(StringUtil.isNotEmpty(returnLoginUrl)){
 			return returnLoginUrl;
@@ -78,7 +78,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			,@ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam("unionId") Integer unionId
 			,@ApiParam(name = "memberId", value = "盟员id", required = true) @RequestParam("memberId") Integer memberId) throws Exception{
 		Member member = SessionUtils.getLoginMember(request);
-//		member = memberService.getById(997);
+		member = memberService.getById(997);
 		String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
 		if(StringUtil.isNotEmpty(returnLoginUrl)){
 			return returnLoginUrl;
@@ -133,6 +133,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 		if(member == null){
 			throw new BusinessException("用户不存在");
 		}
+		member.setBusid(busId);
 		String phoneKey = RedisKeyUtil.getCardH5LoginPhoneKey(phone);
 		String obj = redisCacheUtil.get(phoneKey);
 		if(CommonUtil.isEmpty(obj)){
@@ -154,7 +155,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url
 			,@ApiParam(name = "code", value = "验证码" ,required = true) @RequestParam(value = "code", required = true) String code) throws Exception{
 		Member member = SessionUtils.getLoginMember(request);
-//		member = memberService.getById(997);
+		member = memberService.getById(997);
 		String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
 		if(StringUtil.isNotEmpty(returnLoginUrl)){
 			return returnLoginUrl;
@@ -164,8 +165,16 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 	}
 
 	@ApiOperation(value = "获取二维码图片链接", notes = "获取二维码图片链接", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/79B4DE7C/cardNoImg", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
-	public void cardNoImges(HttpServletRequest request,
+	@RequestMapping(value = "/cardNoImgUrl", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
+	public String cardNoImgUrl(HttpServletRequest request,
+							HttpServletResponse response, @ApiParam(name="cardNo", value = "联盟卡号", required = true) @RequestParam("cardNo") String cardNo) throws UnsupportedEncodingException {
+		String url = ConfigConstant.UNION_ROOT_URL + "/cardH5/79B4DE7C/cardNoImg?cardNo="+cardNo;
+		return GTJsonResult.instanceSuccessMsg(url).toString();
+	}
+
+	@ApiOperation(value = "获取二维码图片", notes = "获取二维码图片", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/cardNoImg", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
+	public void cardNoImg(HttpServletRequest request,
 							HttpServletResponse response, @ApiParam(name="cardNo", value = "联盟卡号", required = true) @RequestParam("cardNo") String cardNo) throws UnsupportedEncodingException {
 		String encrypt = EncryptUtil.encrypt(ConfigConstant.UNION_ENCRYPTKEY, cardNo);//加密后参数
 		encrypt = URLEncoder.encode(encrypt,"UTF-8");
@@ -179,7 +188,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			, @ApiParam(name="unionCardBindParamVO", value = "办理联盟卡参数", required = true) @RequestBody @Valid UnionCardBindParamVO vo, BindingResult bindingResult ) throws Exception{
 			ParamValidatorUtil.checkBindingResult(bindingResult);
 			Member member = SessionUtils.getLoginMember(request);
-//			member = memberService.getById(997);
+			member = memberService.getById(997);
 			Integer busId = vo.getBusId();
 			String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
 			if(StringUtil.isNotEmpty(returnLoginUrl)){

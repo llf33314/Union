@@ -133,7 +133,7 @@ public interface ConfigConstant {
 	String UNION_PHONE_CARD_ROOT_URL = UNION_ROOT_URL + "/cardPhone/#/";
 
 	/**
-	 * 联盟卡手机端路径
+	 * 佣金平台手机端路径
 	 */
 	String UNION_PHONE_BROKERAGE_ROOT_URL = UNION_ROOT_URL + "/brokeragePhone/#/";
 
