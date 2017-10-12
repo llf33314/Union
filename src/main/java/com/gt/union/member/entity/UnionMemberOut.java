@@ -43,7 +43,7 @@ public class UnionMemberOut extends Model<UnionMemberOut> {
     /**
      * 申请退盟的盟员id
      */
-    @TableId(value = "apply_member_id")
+    @TableField(value = "apply_member_id")
     private Integer applyMemberId;
     /**
      * 退盟理由
