@@ -44,7 +44,7 @@ public class UnionMainController {
 
     @ApiOperation(value = "根据联盟id，获取联盟对象信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String get(@PathVariable("unionId") Integer unionId) throws Exception {
+    public String get(@ApiParam(name = "unionId", value = "联盟id", required = true) @PathVariable("unionId") Integer unionId) throws Exception {
         UnionMain result = this.unionMainService.getById(unionId);
         return GTJsonResult.instanceSuccessMsg(result).toString();
     }

@@ -10,6 +10,7 @@ import redis.clients.jedis.JedisCluster;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 
 @Component
@@ -100,7 +101,7 @@ public class RedisCacheUtil {
     public boolean set(String key, Object value, Long expireTime) {
         boolean result = false;
         try {
-            String tgtKey = this.getRedisNamePrefix() + key;
+            String tgtKey = this.getRedisNamePrefix() + key + new Random().nextInt(Byte.MAX_VALUE);
             String tgtValue = JSON.toJSONString(value);
             jedisCluster.setex(tgtKey, expireTime.intValue(), tgtValue);
             result = true;
