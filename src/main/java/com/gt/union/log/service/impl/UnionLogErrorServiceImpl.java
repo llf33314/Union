@@ -53,7 +53,7 @@ public class UnionLogErrorServiceImpl extends ServiceImpl<UnionLogErrorMapper, U
                 this.insert(unionLogError);
             }
         } catch (Exception e1) {
-            e1.printStackTrace();
+//            e1.printStackTrace();
         }
     }
 }

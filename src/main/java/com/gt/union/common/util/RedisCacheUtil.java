@@ -6,17 +6,21 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
+import redis.clients.jedis.JedisCluster;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 
 @Component
 public class RedisCacheUtil {
     @Autowired
     @Qualifier("redisTemplate")
     private RedisTemplate redisTemplate;
+
+    @Autowired
+    private JedisCluster jedisCluster;
 
     private String getRedisNamePrefix() {
         return PropertiesUtil.redisNamePrefix();
@@ -30,7 +34,6 @@ public class RedisCacheUtil {
      * @param key 键
      * @return Object 值
      */
-
     public String get(String key) {
         String result = null;
         try {
@@ -42,6 +45,16 @@ public class RedisCacheUtil {
         }
         return result;
     }
+//    public String get(String key) {
+//        String result = null;
+//        try {
+//            String tgtKey = this.getRedisNamePrefix() + key;
+//            result = jedisCluster.get(tgtKey);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return result;
+//    }
 
     //-------------------------------------------------- set ----------------------------------------------------------
 
@@ -71,14 +84,26 @@ public class RedisCacheUtil {
      * @param expireTime 过期时间
      * @return boolean 是否设置成功
      */
+//    public boolean set(String key, Object value, Long expireTime) {
+//        boolean result = false;
+//        try {
+//            ValueOperations<String, String> operations = redisTemplate.opsForValue();
+//            String tgtKey = this.getRedisNamePrefix() + key;
+//            String tgtValue = JSON.toJSONString(value);
+//            operations.set(tgtKey, tgtValue);
+//            this.redisTemplate.expire(tgtKey, expireTime, TimeUnit.SECONDS);
+//            result = true;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return result;
+//    }
     public boolean set(String key, Object value, Long expireTime) {
         boolean result = false;
         try {
-            ValueOperations<String, String> operations = redisTemplate.opsForValue();
-            String tgtKey = this.getRedisNamePrefix() + key;
+            String tgtKey = this.getRedisNamePrefix() + key + new Random().nextInt(Integer.MAX_VALUE);
             String tgtValue = JSON.toJSONString(value);
-            operations.set(tgtKey, tgtValue);
-            this.redisTemplate.expire(tgtKey, expireTime, TimeUnit.SECONDS);
+            jedisCluster.setex(tgtKey, expireTime.intValue(), tgtValue);
             result = true;
         } catch (Exception e) {
             e.printStackTrace();
