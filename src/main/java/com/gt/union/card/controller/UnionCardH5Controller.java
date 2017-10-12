@@ -133,6 +133,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 		if(member == null){
 			throw new BusinessException("用户不存在");
 		}
+		member.setBusid(busId);
 		String phoneKey = RedisKeyUtil.getCardH5LoginPhoneKey(phone);
 		String obj = redisCacheUtil.get(phoneKey);
 		if(CommonUtil.isEmpty(obj)){
@@ -164,8 +165,16 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 	}
 
 	@ApiOperation(value = "获取二维码图片链接", notes = "获取二维码图片链接", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/cardNoImgUrl", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
+	public String cardNoImgUrl(HttpServletRequest request,
+							HttpServletResponse response, @ApiParam(name="cardNo", value = "联盟卡号", required = true) @RequestParam("cardNo") String cardNo) throws UnsupportedEncodingException {
+		String url = ConfigConstant.UNION_ROOT_URL + "/cardH5/79B4DE7C/cardNoImg?cardNo="+cardNo;
+		return GTJsonResult.instanceSuccessMsg(url).toString();
+	}
+
+	@ApiOperation(value = "获取二维码图片", notes = "获取二维码图片", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/cardNoImg", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
-	public void cardNoImges(HttpServletRequest request,
+	public void cardNoImg(HttpServletRequest request,
 							HttpServletResponse response, @ApiParam(name="cardNo", value = "联盟卡号", required = true) @RequestParam("cardNo") String cardNo) throws UnsupportedEncodingException {
 		String encrypt = EncryptUtil.encrypt(ConfigConstant.UNION_ENCRYPTKEY, cardNo);//加密后参数
 		encrypt = URLEncoder.encode(encrypt,"UTF-8");
