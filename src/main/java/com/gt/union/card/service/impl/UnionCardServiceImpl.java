@@ -167,8 +167,8 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             return getUnionCardInfoByCardNo(no, busId, unionId);
         } else {
             //手机号或联盟卡号
-            //卡号使用8位
-            if (no.length() == 11) {//手机号
+            //卡号使用9位或10开头
+            if (no.length() == 11 && !no.startsWith("10")) {//手机号
                 return getUnionCardInfoByPhone(no, busId, unionId);
             } else {//卡号
                 return getUnionCardInfoByCardNo(no, busId, unionId);

@@ -296,8 +296,8 @@ public class UnionConsumeController {
 	@RequestMapping(value = "status/{only}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String getStatus(HttpServletRequest request, HttpServletResponse response, @PathVariable("only") String only) throws Exception {
 		logger.info("获取消费核销支付状态：" + only);
-		String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
-		String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
+		String statusKey = RedisKeyUtil.getConsumePayStatusKey(only);
+		String paramKey = RedisKeyUtil.getConsumePayParamKey(only);
 		String status = redisCacheUtil.get(statusKey);
 		if (CommonUtil.isEmpty(status)) {//订单超时
 			status = ConfigConstant.USER_ORDER_STATUS_004;

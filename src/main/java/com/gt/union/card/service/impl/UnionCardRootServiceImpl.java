@@ -97,7 +97,7 @@ public class UnionCardRootServiceImpl extends ServiceImpl<UnionCardRootMapper, U
 
 	//生成联盟卡号  8位
 	private String generateCardNo(){
-		int machineId = 1;// 最大支持1-9个集群机器部署
+		int machineId = 10;// 最大支持1-9个集群机器部署
 		int hashCodeV = UUID.randomUUID().toString().hashCode();
 		if (hashCodeV < 0) {// 有可能是负数
 			hashCodeV = -hashCodeV;
