@@ -71,22 +71,6 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 		return GTJsonResult.instanceSuccessMsg(data).toString();
 	}
 
-	@ApiOperation(value = "加载联盟下的盟员和联盟卡信息", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/info/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public String unionInfoCardList(HttpServletRequest request, @ApiParam(name = "busId", value = "商家id", required = true) @PathVariable("busId") Integer busId
-			,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url
-			,@ApiParam(name = "unionId", value = "联盟id", required = true) @RequestParam("unionId") Integer unionId
-			,@ApiParam(name = "memberId", value = "盟员id", required = true) @RequestParam("memberId") Integer memberId) throws Exception{
-		Member member = SessionUtils.getLoginMember(request);
-		member = memberService.getById(997);
-		String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
-		if(StringUtil.isNotEmpty(returnLoginUrl)){
-			return returnLoginUrl;
-		}
-		Map<String,Object> data = this.unionCardService.getUnionInfoCardList(busId, member, unionId, memberId);
-		return GTJsonResult.instanceSuccessMsg(data).toString();
-	}
-
 	@ApiOperation(value = "获取联盟卡手机登录验证码", notes = "获取联盟卡手机登录验证码", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/login/{phone}", produces = "application/json;charset=UTF-8",method = RequestMethod.GET)
 	public String getCodeByLoginPhone(HttpServletRequest request, HttpServletResponse response
