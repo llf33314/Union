@@ -33,27 +33,27 @@ public class RedisCacheUtil {
      * @param key 键
      * @return Object 值
      */
-//    public String get(String key) {
-//        String result = null;
-//        try {
-//            ValueOperations<String, String> operations = this.redisTemplate.opsForValue();
-//            String tgtKey = this.getRedisNamePrefix() + key;
-//            result = operations.get(tgtKey);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return result;
-//    }
     public String get(String key) {
         String result = null;
         try {
+            ValueOperations<String, String> operations = this.redisTemplate.opsForValue();
             String tgtKey = this.getRedisNamePrefix() + key;
-            result = jedisCluster.get(tgtKey);
+            result = operations.get(tgtKey);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return result;
     }
+//    public String get(String key) {
+//        String result = null;
+//        try {
+//            String tgtKey = this.getRedisNamePrefix() + key;
+//            result = jedisCluster.get(tgtKey);
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return result;
+//    }
 
     //-------------------------------------------------- set ----------------------------------------------------------
 
