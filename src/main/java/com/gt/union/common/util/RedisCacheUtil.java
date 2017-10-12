@@ -101,7 +101,7 @@ public class RedisCacheUtil {
     public boolean set(String key, Object value, Long expireTime) {
         boolean result = false;
         try {
-            String tgtKey = this.getRedisNamePrefix() + key + new Random().nextInt(Byte.MAX_VALUE);
+            String tgtKey = this.getRedisNamePrefix() + key + new Random().nextInt(Integer.MAX_VALUE);
             String tgtValue = JSON.toJSONString(value);
             jedisCluster.setex(tgtKey, expireTime.intValue(), tgtValue);
             result = true;
