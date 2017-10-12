@@ -189,7 +189,7 @@ public class UnionBrokerageIncomeController {
     @ApiOperation(value = "获取佣金平台二维码图片链接", notes = "获取佣金平台二维码图片链接", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/indexQRUrl", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
     public String indexQRUrl(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
-        String url = ConfigConstant.UNION_ROOT_URL + "/unionH5Brokerage/indexQR";
+        String url = ConfigConstant.UNION_ROOT_URL + "/unionBrokerageIncome/indexQR";
         return GTJsonResult.instanceSuccessMsg(url).toString();
     }
 
