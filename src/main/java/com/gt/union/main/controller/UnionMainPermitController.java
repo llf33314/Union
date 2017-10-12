@@ -89,7 +89,7 @@ public class UnionMainPermitController {
 
     @ApiOperation(value = "生成创建联盟支付订单二维码", produces = "application/json;charset=UTF-8")
     @SysLogAnnotation(op_function = "2", description = "生成创建联盟支付订单")
-    @RequestMapping(value = "/qrCode/{id}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/qrCode/{id}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String createUnionQRCode(HttpServletRequest request
             , @ApiParam(name = "id", value = "套餐列表中的id", required = true) @PathVariable("id") Integer id) {
         try {

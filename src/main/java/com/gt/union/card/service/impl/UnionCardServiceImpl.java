@@ -925,6 +925,10 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             }
         }
         data.put("unions", unions);
+        for(Map<String,Object> map : unions){
+            Map<String,Object> memberInfo = this.getUnionInfoCardList(busId, busMember, CommonUtil.toInteger(map.get("unionId")), CommonUtil.toInteger(map.get("memberId")));
+            map.put("memberInfo",memberInfo);
+        }
         String phone = busMember.getPhone();
         if (StringUtil.isNotEmpty(phone)) {
             UnionCardRoot root = unionCardRootService.getByPhone(phone);
