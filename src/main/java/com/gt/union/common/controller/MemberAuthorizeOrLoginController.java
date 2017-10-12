@@ -128,17 +128,17 @@ public class MemberAuthorizeOrLoginController {
 		if(CommonUtil.isEmpty(member)){
 			if(CommonUtil.judgeBrowser(request) == 1){//微信
 				String redirectUrl = authorizeMember(request, busId, null, ConfigConstant.UNION_PHONE_CARD_ROOT_URL + url);
-				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
+				return GTJsonResult.instanceSuccessMsg("登录授权",redirectUrl).toString();
 			}else {//其他浏览器
-				return GTJsonResult.instanceErrorMsg("登录授权",ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin").toString();
+				return GTJsonResult.instanceSuccessMsg("登录授权",ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin?busId="+busId).toString();
 			}
 		}
 		if(!member.getBusid().equals(busId)){
 			if(CommonUtil.judgeBrowser(request) == 1){//微信
 				String redirectUrl = authorizeMember(request, busId, null, ConfigConstant.UNION_PHONE_CARD_ROOT_URL + url);
-				return GTJsonResult.instanceErrorMsg("登录授权",redirectUrl).toString();
+				return GTJsonResult.instanceSuccessMsg("登录授权",redirectUrl).toString();
 			}else {//其他浏览器
-				return GTJsonResult.instanceErrorMsg("登录授权",ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin").toString();
+				return GTJsonResult.instanceSuccessMsg("登录授权",ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin?busId="+busId).toString();
 			}
 		}
 		return null;
