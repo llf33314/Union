@@ -12,6 +12,7 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
+import com.gt.union.common.exception.DataExportException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.service.IUnionValidateService;
 import com.gt.union.common.util.*;
@@ -30,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.io.PrintWriter;
 import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
@@ -163,40 +165,61 @@ public class UnionOpportunityController {
     public void exportContactByTgtMemberId(HttpServletRequest request, HttpServletResponse response
             , @ApiParam(name = "memberId", value = "操作人的盟员身份id")
                                            @RequestParam(name = "memberId", required = false) Integer memberId) throws Exception {
-        BusUser busUser = SessionUtils.getLoginUser(request);
-        Integer busId = busUser.getId();
-        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
-        }
-        List<Map<String, Object>> resultList = this.unionOpportunityService.listContactByBusId(busId, memberId);
-        String[] titles = new String[]{"所属联盟", "盟员名称", "商机往来金额（元）"};
-        HSSFWorkbook wb = ExportUtil.newHSSFWorkbook(titles);
-        HSSFSheet sheet = wb.getSheetAt(0);
-        if (ListUtil.isNotEmpty(resultList)) {
-            int rowIndex = 1;
-            HSSFCellStyle centerCellStyle = ExportUtil.newHSSFCellStyle(wb, HSSFCellStyle.ALIGN_CENTER);
-            for (Map<String, Object> map : resultList) {
-                int cellIndex = 0;
-                HSSFRow row = sheet.createRow(rowIndex++);
-                HSSFCell tgtUnionNameCell = row.createCell(cellIndex++);
-                //所属联盟
-                String tgtUnionName = map.get("tgtUnionName") != null ? map.get("tgtUnionName").toString() : "";
-                tgtUnionNameCell.setCellValue(tgtUnionName);
-                tgtUnionNameCell.setCellStyle(centerCellStyle);
-                //盟员名称
-                HSSFCell tgtMemberEnterpriseNameCell = row.createCell(cellIndex++);
-                String tgtMemberEnterpriseName = map.get("tgtMemberEnterpriseName") != null ? map.get("tgtMemberEnterpriseName").toString() : "";
-                tgtMemberEnterpriseNameCell.setCellValue(tgtMemberEnterpriseName);
-                tgtMemberEnterpriseNameCell.setCellStyle(centerCellStyle);
-                //商机往来金额（元）
-                HSSFCell contactMoneyCell = row.createCell(cellIndex++);
-                String tgtContactMoney = map.get("contactMoney") != null ? map.get("contactMoney").toString() : "";
-                contactMoneyCell.setCellValue(tgtContactMoney);
-                contactMoneyCell.setCellStyle(centerCellStyle);
+        try {
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            Integer busId = busUser.getId();
+            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+                busId = busUser.getPid();
             }
+            List<Map<String, Object>> resultList = this.unionOpportunityService.listContactByBusId(busId, memberId);
+            String[] titles = new String[]{"所属联盟", "盟员名称", "商机往来金额（元）"};
+            HSSFWorkbook wb = ExportUtil.newHSSFWorkbook(titles);
+            HSSFSheet sheet = wb.getSheetAt(0);
+            if (ListUtil.isNotEmpty(resultList)) {
+                int rowIndex = 1;
+                HSSFCellStyle centerCellStyle = ExportUtil.newHSSFCellStyle(wb, HSSFCellStyle.ALIGN_CENTER);
+                for (Map<String, Object> map : resultList) {
+                    int cellIndex = 0;
+                    HSSFRow row = sheet.createRow(rowIndex++);
+                    HSSFCell tgtUnionNameCell = row.createCell(cellIndex++);
+                    //所属联盟
+                    String tgtUnionName = map.get("tgtUnionName") != null ? map.get("tgtUnionName").toString() : "";
+                    tgtUnionNameCell.setCellValue(tgtUnionName);
+                    tgtUnionNameCell.setCellStyle(centerCellStyle);
+                    //盟员名称
+                    HSSFCell tgtMemberEnterpriseNameCell = row.createCell(cellIndex++);
+                    String tgtMemberEnterpriseName = map.get("tgtMemberEnterpriseName") != null ? map.get("tgtMemberEnterpriseName").toString() : "";
+                    tgtMemberEnterpriseNameCell.setCellValue(tgtMemberEnterpriseName);
+                    tgtMemberEnterpriseNameCell.setCellStyle(centerCellStyle);
+                    //商机往来金额（元）
+                    HSSFCell contactMoneyCell = row.createCell(cellIndex++);
+                    String tgtContactMoney = map.get("contactMoney") != null ? map.get("contactMoney").toString() : "";
+                    contactMoneyCell.setCellValue(tgtContactMoney);
+                    contactMoneyCell.setCellStyle(centerCellStyle);
+                }
+            }
+            String filename = "佣金往来明细";
+            ExportUtil.responseExport(response, wb, filename);
+        }catch (BaseException e){
+            response.setContentType("text/html");
+            response.setHeader("Cache-Control", "no-cache");
+            response.setCharacterEncoding("UTF-8");
+            String result = "<script>alert('导出失败')</script>";
+            PrintWriter writer = response.getWriter();
+            writer.print(result);
+            writer.close();
+        } catch (DataExportException e){
+
+        } catch (Exception e) {
+            response.setContentType("text/html");
+            response.setHeader("Cache-Control", "no-cache");
+            response.setCharacterEncoding("UTF-8");
+            String result = "<script>alert('导出失败')</script>";
+            PrintWriter writer = response.getWriter();
+            writer.print(result);
+            writer.close();
         }
-        String filename = "佣金往来明细";
-        ExportUtil.responseExport(response, wb, filename);
+
     }
 
     @ApiOperation(value = "查询商机佣金支付往来详情信息", produces = "application/json;charset=UTF-8")
@@ -222,59 +245,79 @@ public class UnionOpportunityController {
                                                  @RequestParam(name = "tgtMemberId") Integer tgtMemberId
             , @ApiParam(name = "memberId", value = "操作人的盟员身份id")
                                                  @RequestParam(name = "memberId", required = false) Integer memberId) throws Exception {
-        BusUser busUser = SessionUtils.getLoginUser(request);
-        Integer busId = busUser.getId();
-        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
-        }
-        Map<String, Object> resultMap = this.unionOpportunityService.getContactDetailByBusIdAndTgtMemberId(busId, tgtMemberId, memberId);
-        String[] titles = new String[]{"时间", "顾客姓名", "电话", "佣金（折）"};
-        HSSFWorkbook wb = ExportUtil.newHSSFWorkbook(titles);
-        HSSFSheet sheet = wb.getSheetAt(0);
-        if (resultMap != null && resultMap.get("contactList") != null) {
-            List<Map<String, Object>> contactList = (List<Map<String, Object>>) resultMap.get("contactList");
-            if (ListUtil.isNotEmpty(contactList)) {
-                int rowIndex = 1;
-                HSSFCellStyle centerCellStyle = ExportUtil.newHSSFCellStyle(wb, HSSFCellStyle.ALIGN_CENTER);
-                for (Map<String, Object> map : contactList) {
-                    int cellIndex = 0;
-                    HSSFRow row = sheet.createRow(rowIndex++);
-                    HSSFCell lastModifyTimeCell = row.createCell(cellIndex++);
-                    //时间
-                    String tgtLastModifyTime = resultMap.get("lastModifyTime") != null ? resultMap.get("lastModifyTime").toString() : "";
-                    lastModifyTimeCell.setCellValue(tgtLastModifyTime);
-                    lastModifyTimeCell.setCellStyle(centerCellStyle);
-                    //顾客姓名
-                    HSSFCell clientNameCell = row.createCell(cellIndex++);
-                    String tgtClientName = resultMap.get("clientName") != null ? resultMap.get("clientName").toString() : "";
-                    clientNameCell.setCellValue(tgtClientName);
-                    clientNameCell.setCellStyle(centerCellStyle);
-                    //电话
-                    HSSFCell clientPhoneCell = row.createCell(cellIndex++);
-                    String tgtClientPhone = resultMap.get("clientPhone") != null ? resultMap.get("clientPhone").toString() : "";
-                    clientPhoneCell.setCellValue(tgtClientPhone);
-                    clientPhoneCell.setCellStyle(centerCellStyle);
-                    //佣金（折）
-                    HSSFCell brokeragePriceCell = row.createCell(cellIndex++);
-                    String tgtBrokeragePrice = resultMap.get("brokeragePrice") != null ? resultMap.get("brokeragePrice").toString() : "";
-                    brokeragePriceCell.setCellValue(tgtBrokeragePrice);
-                    brokeragePriceCell.setCellStyle(centerCellStyle);
-                }
-                //统计佣金往来总额
-                HSSFRow rowSum = sheet.createRow(rowIndex++);
-                //标题
-                HSSFCell contactMoneySumTitleCell = rowSum.createCell(0);
-                contactMoneySumTitleCell.setCellValue("合计：");
-                contactMoneySumTitleCell.setCellStyle(centerCellStyle);
-                //内容
-                HSSFCell contactMoneySumCell = rowSum.createCell(1);
-                String tgtContactMoneySum = resultMap.get("contactMoneySum") != null ? resultMap.get("contactMoneySum").toString() : "";
-                contactMoneySumCell.setCellValue(tgtContactMoneySum);
-                contactMoneySumCell.setCellStyle(centerCellStyle);
+        try {
+            BusUser busUser = SessionUtils.getLoginUser(request);
+            Integer busId = busUser.getId();
+            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+                busId = busUser.getPid();
             }
+            Map<String, Object> resultMap = this.unionOpportunityService.getContactDetailByBusIdAndTgtMemberId(busId, tgtMemberId, memberId);
+            String[] titles = new String[]{"时间", "顾客姓名", "电话", "佣金（折）"};
+            HSSFWorkbook wb = ExportUtil.newHSSFWorkbook(titles);
+            HSSFSheet sheet = wb.getSheetAt(0);
+            if (resultMap != null && resultMap.get("contactList") != null) {
+                List<Map<String, Object>> contactList = (List<Map<String, Object>>) resultMap.get("contactList");
+                if (ListUtil.isNotEmpty(contactList)) {
+                    int rowIndex = 1;
+                    HSSFCellStyle centerCellStyle = ExportUtil.newHSSFCellStyle(wb, HSSFCellStyle.ALIGN_CENTER);
+                    for (Map<String, Object> map : contactList) {
+                        int cellIndex = 0;
+                        HSSFRow row = sheet.createRow(rowIndex++);
+                        HSSFCell lastModifyTimeCell = row.createCell(cellIndex++);
+                        //时间
+                        String tgtLastModifyTime = resultMap.get("lastModifyTime") != null ? resultMap.get("lastModifyTime").toString() : "";
+                        lastModifyTimeCell.setCellValue(tgtLastModifyTime);
+                        lastModifyTimeCell.setCellStyle(centerCellStyle);
+                        //顾客姓名
+                        HSSFCell clientNameCell = row.createCell(cellIndex++);
+                        String tgtClientName = resultMap.get("clientName") != null ? resultMap.get("clientName").toString() : "";
+                        clientNameCell.setCellValue(tgtClientName);
+                        clientNameCell.setCellStyle(centerCellStyle);
+                        //电话
+                        HSSFCell clientPhoneCell = row.createCell(cellIndex++);
+                        String tgtClientPhone = resultMap.get("clientPhone") != null ? resultMap.get("clientPhone").toString() : "";
+                        clientPhoneCell.setCellValue(tgtClientPhone);
+                        clientPhoneCell.setCellStyle(centerCellStyle);
+                        //佣金（折）
+                        HSSFCell brokeragePriceCell = row.createCell(cellIndex++);
+                        String tgtBrokeragePrice = resultMap.get("brokeragePrice") != null ? resultMap.get("brokeragePrice").toString() : "";
+                        brokeragePriceCell.setCellValue(tgtBrokeragePrice);
+                        brokeragePriceCell.setCellStyle(centerCellStyle);
+                    }
+                    //统计佣金往来总额
+                    HSSFRow rowSum = sheet.createRow(rowIndex++);
+                    //标题
+                    HSSFCell contactMoneySumTitleCell = rowSum.createCell(0);
+                    contactMoneySumTitleCell.setCellValue("合计：");
+                    contactMoneySumTitleCell.setCellStyle(centerCellStyle);
+                    //内容
+                    HSSFCell contactMoneySumCell = rowSum.createCell(1);
+                    String tgtContactMoneySum = resultMap.get("contactMoneySum") != null ? resultMap.get("contactMoneySum").toString() : "";
+                    contactMoneySumCell.setCellValue(tgtContactMoneySum);
+                    contactMoneySumCell.setCellStyle(centerCellStyle);
+                }
+            }
+            String filename = "佣金明细详情";
+            ExportUtil.responseExport(response, wb, filename);
+        }catch (BaseException e){
+            response.setContentType("text/html");
+            response.setHeader("Cache-Control", "no-cache");
+            response.setCharacterEncoding("UTF-8");
+            String result = "<script>alert('导出失败')</script>";
+            PrintWriter writer = response.getWriter();
+            writer.print(result);
+            writer.close();
+        } catch (DataExportException e){
+
+        } catch (Exception e) {
+            response.setContentType("text/html");
+            response.setHeader("Cache-Control", "no-cache");
+            response.setCharacterEncoding("UTF-8");
+            String result = "<script>alert('导出失败')</script>";
+            PrintWriter writer = response.getWriter();
+            writer.print(result);
+            writer.close();
         }
-        String filename = "佣金明细详情";
-        ExportUtil.responseExport(response, wb, filename);
     }
 
     @ApiOperation(value = "获取商机统计数据", produces = "application/json;charset=UTF-8")

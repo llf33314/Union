@@ -143,7 +143,7 @@ public class UnionConsumeController {
 			response.setContentType("text/html");
 			response.setHeader("Cache-Control", "no-cache");
 			response.setCharacterEncoding("UTF-8");
-			String result = GTJsonResult.instanceErrorMsg("导出失败").toString();
+			String result = "<script>alert('导出失败')</script>";
 			PrintWriter writer = response.getWriter();
 			writer.print(result);
 			writer.close();
@@ -154,7 +154,7 @@ public class UnionConsumeController {
 			response.setContentType("text/html");
 			response.setHeader("Cache-Control", "no-cache");
 			response.setCharacterEncoding("UTF-8");
-			String result = GTJsonResult.instanceErrorMsg("导出失败").toString();
+			String result = "<script>alert('导出失败')</script>";
 			PrintWriter writer = response.getWriter();
 			writer.print(result);
 			writer.close();
@@ -176,45 +176,31 @@ public class UnionConsumeController {
 	 * @throws IOException
 	 */
 	@ApiOperation(value = "导出他店消费记录列表", notes = "导出他店消费记录列表", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/consumeToDetailResult", method = RequestMethod.GET)
-	public String consumeToDetailResult(HttpServletRequest request, HttpServletResponse response,
+	@RequestMapping(value = "/consumeToDetail", method = RequestMethod.GET)
+	public void exportConsumeToDetail(HttpServletRequest request, HttpServletResponse response,
 									  @ApiParam(name="unionId", value = "联盟id", required = false) @RequestParam(name = "unionId", required = false) Integer unionId
 			,@ApiParam(name = "cardNo", value = "联盟卡号", required = false) @RequestParam(name = "cardNo", required = false) String cardNo
 			,@ApiParam(name = "phone", value = "手机号", required = false) @RequestParam(name = "phone", required = false) String phone
 			,@ApiParam(name = "memberId", value = "来往的商家id", required = false) @RequestParam(name = "memberId", required = false) Integer memberId
 			,@ApiParam(name = "beginTime", value = "开始时间", required = false) @RequestParam(name = "beginTime", required = false) String beginTime
 			,@ApiParam(name = "endTime", value = "结束时间", required = false) @RequestParam(name = "endTime", required = false) String endTime) throws IOException {
-		BusUser busUser = SessionUtils.getLoginUser(request);
-		Integer busId = busUser.getId();
-		if(busUser.getPid() != null && busUser.getPid() != 0){
-			busId = busUser.getPid();
-		}
-		List<Map<String,Object>> list = unionConsumeService.listOtherByUnionId(unionId, busId, memberId, cardNo, phone, beginTime, endTime);
-		String[] titles = new String[]{"来源", "联盟卡号","手机号", "消费金额（元）", "实收金额（元）", "优惠项目", "创建时间"};
-		String[] contentName = new String[]{"memberName", "cardNo", "phone", "consumeMoney", "payMoney", "serviceNames", "createtime"};
-		HSSFWorkbook wb = unionConsumeService.exportConsumeToDetail(titles,contentName,list);
-		String only = String.valueOf(System.currentTimeMillis());
-		redisCacheUtil.set(only,wb,60L);
-		String url = ConfigConstant.UNION_ROOT_URL + "/unionConsume/consumeToDetail?only="+only;
-		return GTJsonResult.instanceSuccessMsg(url).toString();
-	}
-
-	@ApiOperation(value = "导出他店消费记录列表", notes = "导出他店消费记录列表", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/consumeToDetail", method = RequestMethod.GET)
-	public void exportConsumeToDetail(HttpServletRequest request, HttpServletResponse response,
-					  @ApiParam(name="only", value = "时间戳", required = true) @RequestParam(name = "only", required = true) String only
-			) throws IOException {
 		try {
+			BusUser busUser = SessionUtils.getLoginUser(request);
+			Integer busId = busUser.getId();
+			if(busUser.getPid() != null && busUser.getPid() != 0){
+				busId = busUser.getPid();
+			}
+			List<Map<String,Object>> list = unionConsumeService.listOtherByUnionId(unionId, busId, memberId, cardNo, phone, beginTime, endTime);
+			String[] titles = new String[]{"来源", "联盟卡号","手机号", "消费金额（元）", "实收金额（元）", "优惠项目", "创建时间"};
+			String[] contentName = new String[]{"memberName", "cardNo", "phone", "consumeMoney", "payMoney", "serviceNames", "createtime"};
 			String filename = "联盟他店消费记录";
-			String obj = redisCacheUtil.get(only);
-			HSSFWorkbook wb = JSON.parseObject(obj,HSSFWorkbook.class);
+			HSSFWorkbook wb = unionConsumeService.exportConsumeToDetail(titles,contentName,list);
 			ExportUtil.responseExport(response, wb, filename);
-			redisCacheUtil.remove(obj);
 		} catch (BaseException e){
 			response.setContentType("text/html");
 			response.setHeader("Cache-Control", "no-cache");
 			response.setCharacterEncoding("UTF-8");
-			String result = GTJsonResult.instanceErrorMsg("导出失败").toString();
+			String result = "<script>alert('导出失败')</script>";
 			PrintWriter writer = response.getWriter();
 			writer.print(result);
 			writer.close();
@@ -225,7 +211,7 @@ public class UnionConsumeController {
 			response.setContentType("text/html");
 			response.setHeader("Cache-Control", "no-cache");
 			response.setCharacterEncoding("UTF-8");
-			String result = GTJsonResult.instanceErrorMsg("导出失败").toString();
+			String result = "<script>alert('导出失败')</script>";
 			PrintWriter writer = response.getWriter();
 			writer.print(result);
 			writer.close();

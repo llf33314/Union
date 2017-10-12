@@ -112,7 +112,7 @@ public class UnionCardController {
 			response.setContentType("text/html");
 			response.setHeader("Cache-Control", "no-cache");
 			response.setCharacterEncoding("UTF-8");
-			String result = GTJsonResult.instanceErrorMsg("导出失败").toString();
+			String result = "<script>alert('导出失败')</script>";
 			PrintWriter writer = response.getWriter();
 			writer.print(result);
 			writer.close();
@@ -123,7 +123,7 @@ public class UnionCardController {
 			response.setContentType("text/html");
 			response.setHeader("Cache-Control", "no-cache");
 			response.setCharacterEncoding("UTF-8");
-			String result = GTJsonResult.instanceErrorMsg("导出失败").toString();
+			String result = "<script>alert('导出失败')</script>";
 			PrintWriter writer = response.getWriter();
 			writer.print(result);
 			writer.close();
