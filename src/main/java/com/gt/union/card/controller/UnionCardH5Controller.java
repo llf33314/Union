@@ -164,7 +164,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 	}
 
 	@ApiOperation(value = "获取二维码图片链接", notes = "获取二维码图片链接", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/79B4DE7C/cardNoImg", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
+	@RequestMapping(value = "/cardNoImg", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
 	public void cardNoImges(HttpServletRequest request,
 							HttpServletResponse response, @ApiParam(name="cardNo", value = "联盟卡号", required = true) @RequestParam("cardNo") String cardNo) throws UnsupportedEncodingException {
 		String encrypt = EncryptUtil.encrypt(ConfigConstant.UNION_ENCRYPTKEY, cardNo);//加密后参数
