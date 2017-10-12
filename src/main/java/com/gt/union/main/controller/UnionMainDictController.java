@@ -27,7 +27,7 @@ public class UnionMainDictController {
     private IUnionMainDictService unionMainDictService;
 
     @ApiOperation(value = "根据联盟id，获取入盟申请必填信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listByUnionId(@PathVariable("unionId") Integer unionId) throws Exception {
         List<UnionMainDict> result = this.unionMainDictService.listByUnionId(unionId);
         return GTJsonResult.instanceSuccessMsg(result).toString();
