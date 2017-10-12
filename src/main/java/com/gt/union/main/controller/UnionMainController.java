@@ -42,6 +42,13 @@ public class UnionMainController {
 
     //-------------------------------------------------- get ----------------------------------------------------------
 
+    @ApiOperation(value = "根据联盟id，获取联盟对象信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String get(@PathVariable("unionId") Integer unionId) throws Exception {
+        UnionMain result = this.unionMainService.getById(unionId);
+        return GTJsonResult.instanceSuccessMsg(result).toString();
+    }
+
     @ApiOperation(value = "分页获取我尚未加入的联盟列表信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/page/otherUnion", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageOther(HttpServletRequest request, Page page) throws Exception {
