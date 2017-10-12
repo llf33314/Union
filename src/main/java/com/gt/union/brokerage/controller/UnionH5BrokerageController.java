@@ -425,20 +425,4 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 		}
 	}
 
-	@ApiOperation(value = "获取佣金平台二维码图片链接", notes = "获取佣金平台二维码图片链接", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/indexQRUrl", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
-	public String indexQRUrl(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
-		String url = ConfigConstant.UNION_ROOT_URL + "/unionH5Brokerage/indexQR";
-		return GTJsonResult.instanceSuccessMsg(url).toString();
-	}
-
-	@ApiOperation(value = "获取佣金平台二维码图片", notes = "获取佣金平台二维码图片", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/indexQR", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
-	public void indexQR(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
-		String url = ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + "index";
-		QRcodeKit.buildQRcode(url, 250, 250, response);
-	}
-
-
-
 }
