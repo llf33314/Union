@@ -79,6 +79,6 @@ public class MemberSchedule {
                 }
             });
         }
-
+        es.shutdown();
     }
 }
