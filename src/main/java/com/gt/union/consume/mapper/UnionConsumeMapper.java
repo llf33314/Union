@@ -58,7 +58,7 @@ public interface UnionConsumeMapper extends BaseMapper<UnionConsume> {
 	 * @param endTime
 	 * @return
 	 */
-	List<Map<String,Object>> listMyByUnionId(@Param("unionId") Integer unionId, @Param("busId") Integer busId, @Param("memberId") Integer memberId, @Param("cardNo") String cardNo, @Param("phone") String phone, @Param("beginTime") String beginTime, @Param("endTime") String endTime);
+	List<UnionConsumeVO> listMyByUnionId(@Param("unionId") Integer unionId, @Param("busId") Integer busId, @Param("memberId") Integer memberId, @Param("cardNo") String cardNo, @Param("phone") String phone, @Param("beginTime") String beginTime, @Param("endTime") String endTime);
 
 	/**
 	 * 他店消费记录列表

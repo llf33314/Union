@@ -14,6 +14,7 @@ import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.*;
 import com.gt.union.consume.service.IUnionConsumeService;
 import com.gt.union.consume.vo.UnionConsumeParamVO;
+import com.gt.union.consume.vo.UnionConsumeVO;
 import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.service.IUnionMainService;
 import io.swagger.annotations.ApiOperation;
@@ -133,7 +134,7 @@ public class UnionConsumeController {
 			if(busUser.getPid() != null && busUser.getPid() != 0){
 				busId = busUser.getPid();
 			}
-			List<Map<String,Object>> list = unionConsumeService.listMyByUnionId(unionId, busId, memberId, cardNo, phone, beginTime, endTime);
+			List<UnionConsumeVO> list = unionConsumeService.listMyByUnionId(unionId, busId, memberId, cardNo, phone, beginTime, endTime);
 			String[] titles = new String[]{"来源", "联盟卡号","手机号", "消费金额（元）", "实收金额（元）", "优惠项目", "创建时间"};
 			String[] contentName = new String[]{"memberName", "cardNo", "phone", "consumeMoney", "payMoney", "serviceNames", "createtime"};
 			String filename = "联盟本店消费记录";
