@@ -265,22 +265,22 @@ public class UnionOpportunityController {
                         HSSFRow row = sheet.createRow(rowIndex++);
                         HSSFCell lastModifyTimeCell = row.createCell(cellIndex++);
                         //时间
-                        String tgtLastModifyTime = resultMap.get("lastModifyTime") != null ? resultMap.get("lastModifyTime").toString() : "";
+                        String tgtLastModifyTime = map.get("lastModifyTime") != null ? map.get("lastModifyTime").toString() : "";
                         lastModifyTimeCell.setCellValue(tgtLastModifyTime);
                         lastModifyTimeCell.setCellStyle(centerCellStyle);
                         //顾客姓名
                         HSSFCell clientNameCell = row.createCell(cellIndex++);
-                        String tgtClientName = resultMap.get("clientName") != null ? resultMap.get("clientName").toString() : "";
+                        String tgtClientName = map.get("clientName") != null ? map.get("clientName").toString() : "";
                         clientNameCell.setCellValue(tgtClientName);
                         clientNameCell.setCellStyle(centerCellStyle);
                         //电话
                         HSSFCell clientPhoneCell = row.createCell(cellIndex++);
-                        String tgtClientPhone = resultMap.get("clientPhone") != null ? resultMap.get("clientPhone").toString() : "";
+                        String tgtClientPhone = map.get("clientPhone") != null ? map.get("clientPhone").toString() : "";
                         clientPhoneCell.setCellValue(tgtClientPhone);
                         clientPhoneCell.setCellStyle(centerCellStyle);
                         //佣金（折）
                         HSSFCell brokeragePriceCell = row.createCell(cellIndex++);
-                        String tgtBrokeragePrice = resultMap.get("brokeragePrice") != null ? resultMap.get("brokeragePrice").toString() : "";
+                        String tgtBrokeragePrice = map.get("brokeragePrice") != null ? map.get("brokeragePrice").toString() : "";
                         brokeragePriceCell.setCellValue(tgtBrokeragePrice);
                         brokeragePriceCell.setCellStyle(centerCellStyle);
                     }
