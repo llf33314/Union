@@ -753,7 +753,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         if (!fromMember.getUnionId().equals(toMember.getUnionId())) {
             throw new BusinessException("无法向其他联盟的人推荐商机");
         }
-        if (this.unionMemberService.hasWriteAuthority(toMember)) {
+        if (!this.unionMemberService.hasWriteAuthority(toMember)) {
             throw new BusinessException("您推荐的盟员不是正式盟员或正处在退盟过渡期");
         }
         //(5)商家保存信息
