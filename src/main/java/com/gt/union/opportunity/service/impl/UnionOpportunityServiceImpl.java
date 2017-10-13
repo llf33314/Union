@@ -240,14 +240,14 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
             if (ListUtil.isNotEmpty(opportunityFromMeList)) {
                 incomeBrokerageSum = sumBrokeragePriceWithFilter(opportunityFromMeList, beginDate, endDate);
             }
-            result.put("incomeBrokerageSum", incomeBrokerageSum.doubleValue());
+            result.put("paidBrokerageIncome", incomeBrokerageSum.doubleValue());
 
             BigDecimal expenseBrokerageSum = BigDecimal.valueOf(0D);
             List<UnionOpportunity> opportunityToMeList = this.listByToMemberId(memberId);
             if (ListUtil.isNotEmpty(opportunityToMeList)) {
                 expenseBrokerageSum = sumBrokeragePriceWithFilter(opportunityToMeList, beginDate, endDate);
             }
-            result.put("expenseBrokerageSum", expenseBrokerageSum.doubleValue());
+            result.put("paidBrokerageExpense", expenseBrokerageSum.doubleValue());
             return result;
         }
         return null;
@@ -753,7 +753,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         if (!fromMember.getUnionId().equals(toMember.getUnionId())) {
             throw new BusinessException("无法向其他联盟的人推荐商机");
         }
-        if (this.unionMemberService.hasWriteAuthority(toMember)) {
+        if (!this.unionMemberService.hasWriteAuthority(toMember)) {
             throw new BusinessException("您推荐的盟员不是正式盟员或正处在退盟过渡期");
         }
         //(5)商家保存信息

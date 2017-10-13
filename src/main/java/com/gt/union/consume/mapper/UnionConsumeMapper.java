@@ -7,7 +7,6 @@ import com.gt.union.consume.vo.UnionConsumeVO;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * <p>
@@ -58,7 +57,7 @@ public interface UnionConsumeMapper extends BaseMapper<UnionConsume> {
 	 * @param endTime
 	 * @return
 	 */
-	List<Map<String,Object>> listMyByUnionId(@Param("unionId") Integer unionId, @Param("busId") Integer busId, @Param("memberId") Integer memberId, @Param("cardNo") String cardNo, @Param("phone") String phone, @Param("beginTime") String beginTime, @Param("endTime") String endTime);
+	List<UnionConsumeVO> listMyByUnionId(@Param("unionId") Integer unionId, @Param("busId") Integer busId, @Param("memberId") Integer memberId, @Param("cardNo") String cardNo, @Param("phone") String phone, @Param("beginTime") String beginTime, @Param("endTime") String endTime);
 
 	/**
 	 * 他店消费记录列表
@@ -71,7 +70,7 @@ public interface UnionConsumeMapper extends BaseMapper<UnionConsume> {
 	 * @param endTime
 	 * @return
 	 */
-	List<Map<String,Object>> listOtherByUnionId(@Param("unionId") Integer unionId, @Param("busId") Integer busId, @Param("memberId") Integer memberId, @Param("cardNo") String cardNo, @Param("phone") String phone, @Param("beginTime") String beginTime, @Param("endTime") String endTime);
+	List<UnionConsumeVO> listOtherByUnionId(@Param("unionId") Integer unionId, @Param("busId") Integer busId, @Param("memberId") Integer memberId, @Param("cardNo") String cardNo, @Param("phone") String phone, @Param("beginTime") String beginTime, @Param("endTime") String endTime);
 
 	/**
 	 * 计算本店消费记录总数

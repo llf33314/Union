@@ -1,6 +1,5 @@
 package com.gt.union.consume.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -36,15 +35,14 @@ import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.service.IUnionMemberService;
-import com.gt.union.opportunity.constant.OpportunityConstant;
-import com.gt.union.opportunity.entity.UnionOpportunity;
+import com.gt.union.preferential.entity.UnionPreferentialItem;
 import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
 import org.apache.poi.hssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.lang.reflect.Field;
 import java.net.URLEncoder;
 import java.util.*;
 
@@ -383,18 +381,18 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 	}
 
 	@Override
-	public List<Map<String, Object>> listMyByUnionId(Integer unionId, Integer busId, Integer memberId, String cardNo, String phone, String beginTime, String endTime) throws Exception{
+	public List<UnionConsumeVO> listMyByUnionId(Integer unionId, Integer busId, Integer memberId, String cardNo, String phone, String beginTime, String endTime) throws Exception{
 		if(busId == null){
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
-		List<Map<String, Object>> list = unionConsumeMapper.listMyByUnionId(unionId, busId, memberId, cardNo, phone, beginTime, endTime);
+		List<UnionConsumeVO> list = unionConsumeMapper.listMyByUnionId(unionId, busId, memberId, cardNo, phone, beginTime, endTime);
 		return list;
 	}
 
 
 	@Override
-	public List<Map<String, Object>> listOtherByUnionId(Integer unionId, Integer busId, Integer memberId, String cardNo, String phone, String beginTime, String endTime) {
-		List<Map<String, Object>> list = unionConsumeMapper.listOtherByUnionId(unionId, busId, memberId, cardNo, phone, beginTime, endTime);
+	public List<UnionConsumeVO> listOtherByUnionId(Integer unionId, Integer busId, Integer memberId, String cardNo, String phone, String beginTime, String endTime) {
+		List<UnionConsumeVO> list = unionConsumeMapper.listOtherByUnionId(unionId, busId, memberId, cardNo, phone, beginTime, endTime);
 		return list;
 	}
 
@@ -439,51 +437,129 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 	}
 
 	@Override
-	public HSSFWorkbook exportConsumeFromDetail(String[] titles, String[] contentName, List<Map<String, Object>> list) {
-		HSSFWorkbook wb = new HSSFWorkbook();
-		HSSFCellStyle styleCenter = wb.createCellStyle();
-		HSSFSheet sheet = createHSSFSheet(titles, wb, styleCenter);
-		sheet.setColumnWidth(5, 100 * 150);
-		for (int i=0;i<list.size();i++) {
-			Map<String, Object> item = list.get(i);
-			HSSFRow row = sheet.createRow(i + 1);
-			for(int j=0;j<titles.length;j++){
-				String key = contentName[j];
-				String c = CommonUtil.isEmpty(item.get(key)) ? "" : item.get(key).toString();
-				if("createtime".equals(key)){//加入时间
-					c = DateTimeKit.format(DateTimeKit.parse(c,DateTimeKit.DEFAULT_DATETIME_FORMAT), "yyyy-MM-dd HH:mm");
+	public HSSFWorkbook exportConsumeFromDetail(String[] titles, String[] contentName, List<UnionConsumeVO> list) {
+		try{
+			HSSFWorkbook wb = new HSSFWorkbook();
+			HSSFCellStyle styleCenter = wb.createCellStyle();
+			HSSFSheet sheet = createHSSFSheet(titles, wb, styleCenter);
+			sheet.setColumnWidth(5, 100 * 150);
+			Class<UnionConsumeVO> clazz = UnionConsumeVO.class;
+			Field field1 = clazz.getDeclaredField("memberName");
+			Field field2 = clazz.getDeclaredField("items");
+			Field field3 = clazz.getDeclaredField("cardNo");
+			Field field4 = clazz.getDeclaredField("phone");
+			Field field5 = clazz.getDeclaredField("consumeMoney");
+			Field field6 = clazz.getDeclaredField("payMoney");
+			Field field7 = clazz.getDeclaredField("createtime");
+			for (int i=0;i<list.size();i++) {
+				UnionConsumeVO item = list.get(i);
+				HSSFRow row = sheet.createRow(i + 1);
+				for(int j=0;j<titles.length;j++){
+					String value = "";
+					if(contentName[j].equals(field1.getName())){//加入时间
+						value = item.getMemberName();
+					}
+					if(contentName[j].equals(field2.getName())){//加入时间
+						List<UnionPreferentialItem> unionPreferentialItems = item.getItems();
+						int size = unionPreferentialItems.size();
+						int count = 1;
+						for(UnionPreferentialItem unionPreferentialItem : unionPreferentialItems){
+							if(count == size){
+								value = value + unionPreferentialItem.getName();
+							}else {
+								value = value + unionPreferentialItem.getName() + "||";
+							}
+						}
+					}
+					if(contentName[j].equals(field3.getName())){//加入时间
+						value = item.getCardNo();
+					}
+					if(contentName[j].equals(field4.getName())){//加入时间
+						value = item.getPhone();
+					}
+					if(contentName[j].equals(field5.getName())){//加入时间
+						value = String.valueOf(CommonUtil.isEmpty(item.getConsumeMoney())? 0 : item.getConsumeMoney());
+					}
+					if(contentName[j].equals(field6.getName())){//加入时间
+						value = String.valueOf(CommonUtil.isEmpty(item.getPayMoney())? 0 : item.getPayMoney());
+					}
+					if(contentName[j].equals(field7.getName())){//加入时间
+						value = DateTimeKit.format(item.getCreatetime(), "yyyy-MM-dd HH:mm");
+					}
+					HSSFCell cell = row.createCell(j);
+					cell.setCellValue(value);
+					cell.setCellStyle(styleCenter);
 				}
-				HSSFCell cell = row.createCell(j);
-				cell.setCellValue(c);
-				cell.setCellStyle(styleCenter);
-			}
 
+			}
+			return wb;
+		}catch (Exception e){
+			return null;
 		}
-		return wb;
+
 	}
 
 
 	@Override
-	public HSSFWorkbook exportConsumeToDetail(String[] titles, String[] contentName, List<Map<String, Object>> list) {
-		HSSFWorkbook wb = new HSSFWorkbook();
-		HSSFCellStyle styleCenter = wb.createCellStyle();
-		HSSFSheet sheet = createHSSFSheet(titles, wb, styleCenter);
-		sheet.setColumnWidth(5, 100 * 150);
-		for (int i=0;i<list.size();i++) {
-			Map<String, Object> item = list.get(i);
-			HSSFRow row = sheet.createRow(i + 1);
-			for(int j=0;j<titles.length;j++){
-				String key = contentName[j];
-				String c = CommonUtil.isEmpty(item.get(key)) ? "" : item.get(key).toString();
-				if("createtime".equals(key)){//加入时间
-					c = DateTimeKit.format(DateTimeKit.parse(c,DateTimeKit.DEFAULT_DATETIME_FORMAT), "yyyy-MM-dd HH:mm");
+	public HSSFWorkbook exportConsumeToDetail(String[] titles, String[] contentName, List<UnionConsumeVO> list) {
+		try{
+			HSSFWorkbook wb = new HSSFWorkbook();
+			HSSFCellStyle styleCenter = wb.createCellStyle();
+			HSSFSheet sheet = createHSSFSheet(titles, wb, styleCenter);
+			sheet.setColumnWidth(5, 100 * 150);
+			Class<UnionConsumeVO> clazz = UnionConsumeVO.class;
+			Field field1 = clazz.getDeclaredField("memberName");
+			Field field2 = clazz.getDeclaredField("items");
+			Field field3 = clazz.getDeclaredField("cardNo");
+			Field field4 = clazz.getDeclaredField("phone");
+			Field field5 = clazz.getDeclaredField("consumeMoney");
+			Field field6 = clazz.getDeclaredField("payMoney");
+			Field field7 = clazz.getDeclaredField("createtime");
+			for (int i=0;i<list.size();i++) {
+				UnionConsumeVO item = list.get(i);
+				HSSFRow row = sheet.createRow(i + 1);
+				for(int j=0;j<titles.length;j++){
+					String value = "";
+					if(contentName[j].equals(field1.getName())){//加入时间
+						value = item.getMemberName();
+					}
+					if(contentName[j].equals(field2.getName())){//加入时间
+						List<UnionPreferentialItem> unionPreferentialItems = item.getItems();
+						int size = unionPreferentialItems.size();
+						int count = 1;
+						for(UnionPreferentialItem unionPreferentialItem : unionPreferentialItems){
+							if(count == size){
+								value = value + unionPreferentialItem.getName();
+							}else {
+								value = value + unionPreferentialItem.getName() + "||";
+							}
+						}
+					}
+					if(contentName[j].equals(field3.getName())){//加入时间
+						value = item.getCardNo();
+					}
+					if(contentName[j].equals(field4.getName())){//加入时间
+						value = item.getPhone();
+					}
+					if(contentName[j].equals(field5.getName())){//加入时间
+						value = String.valueOf(CommonUtil.isEmpty(item.getConsumeMoney())? 0 : item.getConsumeMoney());
+					}
+					if(contentName[j].equals(field6.getName())){//加入时间
+						value = String.valueOf(CommonUtil.isEmpty(item.getPayMoney())? 0 : item.getPayMoney());
+					}
+					if(contentName[j].equals(field7.getName())){//加入时间
+						value = DateTimeKit.format(item.getCreatetime(), "yyyy-MM-dd HH:mm");
+					}
+					HSSFCell cell = row.createCell(j);
+					cell.setCellValue(value);
+					cell.setCellStyle(styleCenter);
 				}
-				HSSFCell cell = row.createCell(j);
-				cell.setCellValue(c);
-				cell.setCellStyle(styleCenter);
+
 			}
+			return wb;
+		}catch (Exception e){
+			return null;
 		}
-		return wb;
 	}
 
 	/**

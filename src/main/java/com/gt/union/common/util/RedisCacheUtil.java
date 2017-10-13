@@ -6,7 +6,6 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.stereotype.Component;
-import redis.clients.jedis.JedisCluster;
 
 import java.util.HashSet;
 import java.util.List;
@@ -19,8 +18,8 @@ public class RedisCacheUtil {
     @Qualifier("redisTemplate")
     private RedisTemplate redisTemplate;
 
-    @Autowired
-    private JedisCluster jedisCluster;
+//    @Autowired
+//    private JedisCluster jedisCluster;
 
     private String getRedisNamePrefix() {
         return PropertiesUtil.redisNamePrefix();
