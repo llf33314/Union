@@ -193,7 +193,7 @@ public class UnionConsumeController {
 			}
 			List<UnionConsumeVO> list = unionConsumeService.listOtherByUnionId(unionId, busId, memberId, cardNo, phone, beginTime, endTime);
 			String[] titles = new String[]{"来源", "联盟卡号","手机号", "消费金额（元）", "实收金额（元）", "优惠项目", "创建时间"};
-			String[] contentName = new String[]{"memberName", "cardNo", "phone", "consumeMoney", "payMoney", "serviceNames", "createtime"};
+			String[] contentName = new String[]{"memberName", "cardNo", "phone", "consumeMoney", "payMoney", "items", "createtime"};
 			String filename = "联盟他店消费记录";
 			HSSFWorkbook wb = unionConsumeService.exportConsumeToDetail(titles,contentName,list);
 			ExportUtil.responseExport(response, wb, filename);
