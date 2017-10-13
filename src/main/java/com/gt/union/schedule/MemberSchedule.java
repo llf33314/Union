@@ -11,14 +11,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.Executor;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Administrator on 2017/9/27 0027.
@@ -26,6 +26,11 @@ import java.util.concurrent.Executors;
 @Component
 public class MemberSchedule {
     private Logger logger = LoggerFactory.getLogger(MemberSchedule.class);
+
+    private static final int nThread = 10;
+
+    public static AtomicInteger successCount = new AtomicInteger();
+    public static volatile AtomicInteger failCount = new AtomicInteger();
 
     @Autowired
     private IUnionLogErrorService unionLogErrorService;
@@ -58,26 +63,40 @@ public class MemberSchedule {
     }
 
     /**
-     * 每2秒执行一次
+     * 每秒执行一次
      */
-    @Scheduled(cron = "0/2 * * * * ?")
+    @Scheduled(cron = "0/1 * * * * ?")
     public void testRedisCluster() {
         final IUnionMemberService unionMemberService_ = this.unionMemberService;
-        ExecutorService es = Executors.newFixedThreadPool(10);
-        for (int i = 0; i < 10; i++) {
+        final CountDownLatch latch = new CountDownLatch(nThread);
+        final Random random = new Random();
+        ExecutorService es = Executors.newFixedThreadPool(nThread);
+        for (int i = 0; i < nThread; i++) {
             es.submit(new Runnable() {
                 @Override
                 public void run() {
-                    Random random = new Random();
-                    int unionId = 990 + random.nextInt(10);
                     try {
-                        unionMemberService_.listByUnionId(unionId);
-                        System.out.println(DateUtil.getCurrentDateString() + " - " + Thread.currentThread().getId() + " - testRedisCluster()");
-                    } catch (Exception e) {
-                        System.out.println(e.getMessage());
+                        latch.await();
+                    } catch (InterruptedException e) {
                     }
+                    int unionId;
+                    for (int j = 0; j < 100; j++) {
+                        unionId = 990 + random.nextInt(10);
+                        try {
+                            unionMemberService_.listByUnionId(unionId);
+                            successCount.addAndGet(1);
+                        } catch (Exception e) {
+                            failCount.addAndGet(1);
+                            System.out.println(e.getMessage());
+                        }
+                    }
+                    System.out.println(DateUtil.getCurrentDateString()
+                            + " " + Thread.currentThread().getName()
+                            + " successCount:" + successCount.toString()
+                            + " failCount:" + failCount.toString());
                 }
             });
+            latch.countDown();
         }
         es.shutdown();
     }
