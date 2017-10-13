@@ -240,14 +240,14 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
             if (ListUtil.isNotEmpty(opportunityFromMeList)) {
                 incomeBrokerageSum = sumBrokeragePriceWithFilter(opportunityFromMeList, beginDate, endDate);
             }
-            result.put("incomeBrokerageSum", incomeBrokerageSum.doubleValue());
+            result.put("paidBrokerageIncome", incomeBrokerageSum.doubleValue());
 
             BigDecimal expenseBrokerageSum = BigDecimal.valueOf(0D);
             List<UnionOpportunity> opportunityToMeList = this.listByToMemberId(memberId);
             if (ListUtil.isNotEmpty(opportunityToMeList)) {
                 expenseBrokerageSum = sumBrokeragePriceWithFilter(opportunityToMeList, beginDate, endDate);
             }
-            result.put("expenseBrokerageSum", expenseBrokerageSum.doubleValue());
+            result.put("paidBrokerageExpense", expenseBrokerageSum.doubleValue());
             return result;
         }
         return null;
