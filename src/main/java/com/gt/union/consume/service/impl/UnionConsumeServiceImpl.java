@@ -456,10 +456,10 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 				HSSFRow row = sheet.createRow(i + 1);
 				for(int j=0;j<titles.length;j++){
 					String value = "";
-					if("memberName".equals(field1.getName())){//加入时间
+					if(titles[j].equals(field1.getName())){//加入时间
 						value = item.getMemberName();
 					}
-					if("items".equals(field2.getName())){//加入时间
+					if(titles[j].equals(field2.getName())){//加入时间
 						List<UnionPreferentialItem> unionPreferentialItems = item.getItems();
 						int size = unionPreferentialItems.size();
 						int count = 1;
@@ -471,19 +471,19 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 							}
 						}
 					}
-					if("cardNo".equals(field3.getName())){//加入时间
+					if(titles[j].equals(field3.getName())){//加入时间
 						value = item.getCardNo();
 					}
-					if("phone".equals(field4.getName())){//加入时间
+					if(titles[j].equals(field4.getName())){//加入时间
 						value = item.getPhone();
 					}
-					if("consumeMoney".equals(field5.getName())){//加入时间
+					if(titles[j].equals(field5.getName())){//加入时间
 						value = String.valueOf(CommonUtil.isEmpty(item.getConsumeMoney())? 0 : item.getConsumeMoney());
 					}
-					if("payMoney".equals(field6.getName())){//加入时间
+					if(titles[j].equals(field6.getName())){//加入时间
 						value = String.valueOf(CommonUtil.isEmpty(item.getPayMoney())? 0 : item.getPayMoney());
 					}
-					if("items".equals(field7.getName())){//加入时间
+					if(titles[j].equals(field7.getName())){//加入时间
 						value = DateTimeKit.format(item.getCreatetime(), "yyyy-MM-dd HH:mm");
 					}
 					HSSFCell cell = row.createCell(j);
