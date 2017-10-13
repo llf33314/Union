@@ -140,8 +140,8 @@
 		order by con.id desc
 	</select>
 
-	<select id="listOtherByUnionId" resultType="java.util.Map">
-		SELECT m.enterprise_name memberName, um.name unionName, r.number cardNo, r.phone phone, con.consume_money consumeMoney, con.pay_money payMoney, con.status status, con.createtime createtime, GROUP_CONCAT(it.name SEPARATOR '$$') serviceNames
+	<select id="listOtherByUnionId" resultMap="UnionConsumeResultMap">
+		SELECT m.enterprise_name memberName, um.name unionName, r.number cardNo, r.phone phone, con.consume_money consumeMoney, con.pay_money payMoney, con.status status, con.createtime createtime, it.name
 		from (SELECT * from t_union_consume WHERE card_id in (SELECT id from t_union_card WHERE member_id in (SELECT id from t_union_member WHERE bus_id = #{busId} AND del_status = 0 and status in (2,3,4)
 		<if test="unionId != null" >
 			AND union_id = #{unionId}

@@ -114,7 +114,7 @@ public interface IUnionConsumeService extends IService<UnionConsume> {
 	 * @param endTime
 	 * @return
 	 */
-	List<Map<String,Object>> listOtherByUnionId(Integer unionId, Integer busId, Integer memberId, String cardNo, String phone, String beginTime, String endTime);
+	List<UnionConsumeVO> listOtherByUnionId(Integer unionId, Integer busId, Integer memberId, String cardNo, String phone, String beginTime, String endTime);
 
 	/**
 	 * 导出他店消费列表
@@ -123,7 +123,7 @@ public interface IUnionConsumeService extends IService<UnionConsume> {
 	 * @param list
 	 * @return
 	 */
-	HSSFWorkbook exportConsumeToDetail(String[] titles, String[] contentName, List<Map<String, Object>> list);
+	HSSFWorkbook exportConsumeToDetail(String[] titles, String[] contentName, List<UnionConsumeVO> list);
 
 	/**
 	 * 消费核销扫码支付成功回调
