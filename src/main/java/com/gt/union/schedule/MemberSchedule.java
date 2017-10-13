@@ -1,7 +1,6 @@
 package com.gt.union.schedule;
 
 import com.gt.union.common.constant.CommonConstant;
-import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.log.service.IUnionLogErrorService;
 import com.gt.union.member.entity.UnionMember;
@@ -14,11 +13,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by Administrator on 2017/9/27 0027.
@@ -27,10 +21,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class MemberSchedule {
     private Logger logger = LoggerFactory.getLogger(MemberSchedule.class);
 
-    private static final int nThread = 10;
-
-    public static AtomicInteger successCount = new AtomicInteger();
-    public static volatile AtomicInteger failCount = new AtomicInteger();
+//    private static final int nThread = 10;
+//
+//    public static AtomicInteger successCount = new AtomicInteger();
+//    public static volatile AtomicInteger failCount = new AtomicInteger();
 
     @Autowired
     private IUnionLogErrorService unionLogErrorService;
@@ -65,7 +59,7 @@ public class MemberSchedule {
     /**
      * 每秒执行一次
      */
-    @Scheduled(cron = "0/1 * * * * ?")
+    /*@Scheduled(cron = "0/1 * * * * ?")
     public void testRedisCluster() {
         final IUnionMemberService unionMemberService_ = this.unionMemberService;
         final CountDownLatch latch = new CountDownLatch(nThread);
@@ -99,5 +93,5 @@ public class MemberSchedule {
             latch.countDown();
         }
         es.shutdown();
-    }
+    }*/
 }

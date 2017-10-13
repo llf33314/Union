@@ -10,8 +10,8 @@ import redis.clients.jedis.JedisCluster;
 
 import java.util.HashSet;
 import java.util.List;
-import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @Component
 public class RedisCacheUtil {
@@ -84,32 +84,32 @@ public class RedisCacheUtil {
      * @param expireTime 过期时间
      * @return boolean 是否设置成功
      */
-//    public boolean set(String key, Object value, Long expireTime) {
-//        boolean result = false;
-//        try {
-//            ValueOperations<String, String> operations = redisTemplate.opsForValue();
-//            String tgtKey = this.getRedisNamePrefix() + key;
-//            String tgtValue = JSON.toJSONString(value);
-//            operations.set(tgtKey, tgtValue);
-//            this.redisTemplate.expire(tgtKey, expireTime, TimeUnit.SECONDS);
-//            result = true;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return result;
-//    }
     public boolean set(String key, Object value, Long expireTime) {
         boolean result = false;
         try {
-            String tgtKey = this.getRedisNamePrefix() + key + new Random().nextInt(Integer.MAX_VALUE);
+            ValueOperations<String, String> operations = redisTemplate.opsForValue();
+            String tgtKey = this.getRedisNamePrefix() + key;
             String tgtValue = JSON.toJSONString(value);
-            jedisCluster.setex(tgtKey, expireTime.intValue(), tgtValue);
+            operations.set(tgtKey, tgtValue);
+            this.redisTemplate.expire(tgtKey, expireTime, TimeUnit.SECONDS);
             result = true;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return result;
     }
+//    public boolean set(String key, Object value, Long expireTime) {
+//        boolean result = false;
+//        try {
+//            String tgtKey = this.getRedisNamePrefix() + key + new Random().nextInt(Integer.MAX_VALUE);
+//            String tgtValue = JSON.toJSONString(value);
+//            jedisCluster.setex(tgtKey, expireTime.intValue(), tgtValue);
+//            result = true;
+//        } catch (Exception e) {
+//            e.printStackTrace();
+//        }
+//        return result;
+//    }
 
     //------------------------------------------------ remove ---------------------------------------------------------
 
