@@ -49,7 +49,9 @@ public class UnionCardRootServiceImpl extends ServiceImpl<UnionCardRootMapper, U
 		entityWrapper.eq("phone", phone);
 		entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
 		unionCardRoot = this.selectOne(entityWrapper);
-		redisCacheUtil.set(key,unionCardRoot);
+		if(unionCardRoot != null){
+			redisCacheUtil.set(key,unionCardRoot);
+		}
 		return unionCardRoot;
 	}
 

@@ -83,7 +83,7 @@ public class LoginFilter implements Filter {
                     return;
                 }else if(url.indexOf("cardH5") > -1){
                     response.setCharacterEncoding("UTF-8");
-                    response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceSuccessMsg("请重新登录", ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin")));
+                    response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceSuccessMsg(null, ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin")));
                     return;
                 }else if(url.equals("/unionMain/")){
                     String wxmpLoginUrl = ConfigConstant.WXMP_ROOT_URL + "/user/tologin.do";
@@ -94,7 +94,7 @@ public class LoginFilter implements Filter {
                     return;
                 }else {
                     response.setCharacterEncoding("UTF-8");
-                    response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceSuccessMsg("请重新登录", ConfigConstant.WXMP_ROOT_URL + "/user/tologin.do")));
+                    response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceSuccessMsg(null, ConfigConstant.WXMP_ROOT_URL + "/user/tologin.do")));
                     return;
                 }
             }
