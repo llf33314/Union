@@ -367,7 +367,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 	@Override
 	public void payConsumeSuccess(String encrypt, String only) throws Exception{
 		//解密参数
-		String orderNo = EncryptUtil.decrypt(encrypt, encrypt);
+		String orderNo = EncryptUtil.decrypt(ConfigConstant.UNION_ENCRYPTKEY, encrypt);
 		String paramKey = RedisKeyUtil.getConsumePayParamKey(only);
 		String obj = redisCacheUtil.get(paramKey);
 		Map<String, Object> result = JSONObject.parseObject(obj, Map.class);
@@ -416,7 +416,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		data.put("payWay", 1);//系统判断支付方式
 		data.put("isreturn", 0);//0：不需要同步跳转
 		data.put("model", ConfigConstant.PAY_MODEL);
-		String encrypt = EncryptUtil.encrypt(PropertiesUtil.getEncryptKey(), orderNo);
+		String encrypt = EncryptUtil.encrypt(ConfigConstant.UNION_ENCRYPTKEY, orderNo);
 		encrypt = URLEncoder.encode(encrypt, "UTF-8");
 		WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(ConfigConstant.WXMP_DUOFEN_BUSID);
 		data.put("notifyUrl", ConfigConstant.UNION_ROOT_URL + "/unionConsume/79B4DE7C/paymentSuccess/" + encrypt + "/" + only);
