@@ -62,7 +62,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 						,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) throws Exception{
 		Member member = SessionUtils.getLoginMember(request);
 //		member = memberService.getById(997);
-		url = "?busId=" + busId;
+		url = url + "?busId=" + busId;
 		String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
 		if(StringUtil.isNotEmpty(returnLoginUrl)){
 			return returnLoginUrl;
@@ -141,7 +141,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			,@ApiParam(name = "code", value = "验证码" ,required = true) @RequestParam(value = "code", required = true) String code) throws Exception{
 		Member member = SessionUtils.getLoginMember(request);
 //		member = memberService.getById(997);
-		url = "?busId=" + busId;
+		url = url + "?busId=" + busId;
 		String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
 		if(StringUtil.isNotEmpty(returnLoginUrl)){
 			return returnLoginUrl;
@@ -176,7 +176,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			Member member = SessionUtils.getLoginMember(request);
 //			member = memberService.getById(997);
 			Integer busId = vo.getBusId();
-			url = "?busId=" + busId;
+			url = url + "?busId=" + busId;
 			String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
 			if(StringUtil.isNotEmpty(returnLoginUrl)){
 				return returnLoginUrl;
