@@ -53,6 +53,15 @@ spring:
         max-wait: -1
         max-idle: 8
         min-idle: 0
+      cluster:
+        nodes: 10.10.3.152:9001,10.10.3.154:9004,10.10.3.153:9002,10.10.3.152:9005,10.10.3.154:9003,10.10.3.153:9006
+        timeout: 30000
+        max-attempts: 3
+        password: Gu123123@
+        pool:
+          max-total: 8
+          max-idle: 8
+          min-idle: 0
   #redis session共享配置
   redis2:
       host: 113.106.202.51

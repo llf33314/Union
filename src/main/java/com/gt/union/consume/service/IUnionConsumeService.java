@@ -3,11 +3,11 @@ package com.gt.union.consume.service;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.api.entity.param.UnionConsumeParam;
-import com.gt.union.api.entity.param.UnionRefundParam;
 import com.gt.union.api.entity.result.UnionConsumeResult;
 import com.gt.union.api.entity.result.UnionRefundResult;
 import com.gt.union.consume.entity.UnionConsume;
 import com.gt.union.consume.vo.UnionConsumeParamVO;
+import com.gt.union.consume.vo.UnionConsumeVO;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 
 import java.util.List;
@@ -92,7 +92,7 @@ public interface IUnionConsumeService extends IService<UnionConsume> {
 	 * @param endTime
 	 * @return
 	 */
-	List<Map<String,Object>> listMyByUnionId(Integer unionId, Integer busId, Integer memberId, String cardNo, String phone, String beginTime, String endTime) throws Exception;
+	List<UnionConsumeVO> listMyByUnionId(Integer unionId, Integer busId, Integer memberId, String cardNo, String phone, String beginTime, String endTime) throws Exception;
 
 	/**
 	 * 导出本店消费记录列表
@@ -101,7 +101,7 @@ public interface IUnionConsumeService extends IService<UnionConsume> {
 	 * @param list
 	 * @return
 	 */
-	HSSFWorkbook exportConsumeFromDetail(String[] titles, String[] contentName, List<Map<String, Object>> list);
+	HSSFWorkbook exportConsumeFromDetail(String[] titles, String[] contentName, List<UnionConsumeVO> list);
 
 	/**
 	 * 导出他店消费列表
@@ -114,7 +114,7 @@ public interface IUnionConsumeService extends IService<UnionConsume> {
 	 * @param endTime
 	 * @return
 	 */
-	List<Map<String,Object>> listOtherByUnionId(Integer unionId, Integer busId, Integer memberId, String cardNo, String phone, String beginTime, String endTime);
+	List<UnionConsumeVO> listOtherByUnionId(Integer unionId, Integer busId, Integer memberId, String cardNo, String phone, String beginTime, String endTime);
 
 	/**
 	 * 导出他店消费列表
@@ -123,7 +123,7 @@ public interface IUnionConsumeService extends IService<UnionConsume> {
 	 * @param list
 	 * @return
 	 */
-	HSSFWorkbook exportConsumeToDetail(String[] titles, String[] contentName, List<Map<String, Object>> list);
+	HSSFWorkbook exportConsumeToDetail(String[] titles, String[] contentName, List<UnionConsumeVO> list);
 
 	/**
 	 * 消费核销扫码支付成功回调
