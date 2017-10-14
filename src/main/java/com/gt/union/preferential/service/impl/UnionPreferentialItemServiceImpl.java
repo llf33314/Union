@@ -94,9 +94,9 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
     public List<UnionPreferentialItem> listExpired() throws Exception {
         EntityWrapper entityWrapper = new EntityWrapper();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .notExists(new StringBuilder(" SELECT pp.id FROM t_union_preferential_item pp")
+                .notExists(new StringBuilder(" SELECT pp.id FROM t_union_preferential_project pp")
                         .append(" WHERE pp.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND pp.id = t_union_preferential_item.item_id")
+                        .append("  AND pp.id = t_union_preferential_item.project_id")
                         .toString());
         return this.selectList(entityWrapper);
     }
