@@ -1,6 +1,8 @@
 package com.gt.union.common.util;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
@@ -27,86 +29,141 @@ public class MockUtil {
     public static final String OBJECT_STRING = "java.lang.String";
     public static final String OBJECT_DATE = "java.util.Date";
     public static final String OBJECT_LIST = "java.util.List";
+    private static final Set<String> baseDataTypeSet = new HashSet() {
+        {
+            add(BASIC_BYTE);
+            add(BASIC_BYTE);
+            add(BASIC_SHORT);
+            add(BASIC_INT);
+            add(BASIC_LONG);
+            add(BASIC_FLOAT);
+            add(BASIC_DOUBLE);
+            add(BASIC_CHAR);
+            add(BASIC_BOOLEAN);
+            add(OBJECT_BYTE);
+            add(OBJECT_SHORT);
+            add(OBJECT_INTEGER);
+            add(OBJECT_LONG);
+            add(OBJECT_FLOAT);
+            add(OBJECT_DOUBLE);
+            add(OBJECT_CHARACTER);
+            add(OBJECT_BOOLEAN);
+            add(OBJECT_CHAR_SEQUENCE);
+            add(OBJECT_STRING);
+        }
+    };
 
-    public static final <T> T getOne(Class<T> clazz) {
-        T result = generateData(clazz, new HashSet<String>());
-        return result;
+    public static final <T> T get(Class<T> tClass) {
+        return get(tClass, null);
     }
 
-    public static final <T> List<T> get(Class<T> clazz, int size) {
-        List<T> result = new ArrayList<>();
+    public static final <T> T get(Class<T> tClass, Map<String, List<Object>> field2SourceListMap) {
+        return mock(tClass, field2SourceListMap);
+    }
+
+    public static final <T> List<T> list(Class<T> tClass, int size) {
+        return list(tClass, size, null);
+    }
+
+    public static final <T> List<T> list(Class<T> tClass, int size, Map<String, List<Object>> field2SourceListMap) {
+        List<T> result = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
-            result.add(getOne(clazz));
+            result.add(get(tClass, field2SourceListMap));
         }
         return result;
     }
 
-    private static <T> T generateData(Class<T> clazz, Set<String> nonBasicClassSet) {
-        if (nonBasicClassSet.contains(clazz.getName())) {
+    private static <T> T mock(Class<T> tClass, Map<String, List<Object>> field2SourceListMap) {
+        Random random = new Random(System.currentTimeMillis());
+        Set<String> set = new HashSet<>();
+        return mockData(tClass, field2SourceListMap, random, set);
+    }
+
+    private static <T> T mockData(Class<T> clazz, Map<String, List<Object>> field2SourceListMap, Random random, Set<String> set) {
+        if (baseDataTypeSet.contains(clazz.getName())) {
+            return (T) mockData4BaseDataType(clazz, random);
+        }
+        if (set.contains(clazz.getName())) { //防止A、B互相引用造成死循环
             return null;
         }
-        nonBasicClassSet.add(clazz.getName());
-        T result = null;
-        Random random = new Random(System.currentTimeMillis());
+        set.add(clazz.getName());
+        T result;
         try {
-            result = clazz.newInstance();
-            Field[] fields = clazz.getDeclaredFields();
-            for (Field field : fields) {
-                if (field.isEnumConstant()) {
-                    continue;
-                }
-                field.setAccessible(true);
-                switch (field.getType().getName()) {
-                    case BASIC_BYTE:
-                    case OBJECT_BYTE:
-                        field.set(result, (byte) random.nextInt(Byte.MAX_VALUE));
-                        break;
-                    case BASIC_SHORT:
-                    case OBJECT_SHORT:
-                        field.set(result, (short) random.nextInt(Byte.MAX_VALUE));
-                        break;
-                    case BASIC_INT:
-                    case OBJECT_INTEGER:
-                        field.set(result, random.nextInt(Byte.MAX_VALUE));
-                        break;
-                    case BASIC_LONG:
-                    case OBJECT_LONG:
-                        field.set(result, random.nextLong());
-                        break;
-                    case BASIC_FLOAT:
-                    case OBJECT_FLOAT:
-                        field.set(result, random.nextFloat());
-                        break;
-                    case BASIC_DOUBLE:
-                    case OBJECT_DOUBLE:
-                        field.set(result, random.nextDouble());
-                        break;
-                    case BASIC_CHAR:
-                    case OBJECT_CHARACTER:
-                        field.set(result, (char) random.nextInt(Byte.MAX_VALUE));
-                        break;
-                    case BASIC_BOOLEAN:
-                    case OBJECT_BOOLEAN:
-                        field.set(result, random.nextBoolean());
-                        break;
-                    case OBJECT_CHAR_SEQUENCE:
-                    case OBJECT_STRING:
-                        field.set(result, "测试数据" + random.nextInt(Byte.MAX_VALUE));
-                        break;
-                    case OBJECT_DATE:
-                        field.set(result, Calendar.getInstance().getTime());
-                        break;
-                    case OBJECT_LIST:
-                        field.set(result, new ArrayList<>());
-                        break;
-                    default:
-                        field.set(result, generateData(field.getType(), nonBasicClassSet));
-                        break;
-                }
+            Constructor defaultConstructor = clazz.getDeclaredConstructors()[0];//防止构造函数私有而报错
+            defaultConstructor.setAccessible(true);
+            Class[] paramTypeArray = defaultConstructor.getParameterTypes();
+            Object[] paramArray = new Object[paramTypeArray.length];
+            for (int i = 0; i < paramTypeArray.length; i++) {
+                paramArray[i] = null;
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+            result = (T) defaultConstructor.newInstance(paramArray);
+        } catch (Exception e) { //不支持枚举类实例
+            return null;
+        }
+
+        Field[] fields = clazz.getDeclaredFields();
+        for (Field field : fields) {
+            if (Modifier.isFinal(field.getModifiers())) { //不支持静态变量
+                continue;
+            }
+            field.setAccessible(true);
+            try {
+                Object obj = mockData4Field(field, field2SourceListMap, random, set);
+                field.set(result, obj);
+            } catch (IllegalAccessException e) {
+                e.printStackTrace();
+            }
+
         }
         return result;
+    }
+
+    private static Object mockData4Field(Field field, Map<String, List<Object>> field2SourceListMap, Random random, Set<String> set) {
+        if (field2SourceListMap != null && field2SourceListMap.containsKey(field.getName())) { //是否指定随机来源范围
+            List<Object> sourceList = field2SourceListMap.get(field.getName());
+            return ListUtil.isEmpty(sourceList) ? null : sourceList.get(random.nextInt(sourceList.size()));
+        }
+        if (baseDataTypeSet.contains(field.getType().getName())) { //是否是基本数据类型
+            return mockData4BaseDataType(field.getType(), random);
+        }
+        return mockData(field.getType(), field2SourceListMap, random, set);
+    }
+
+    private static Object mockData4BaseDataType(Class tClass, Random random) {
+        switch (tClass.getName()) {
+            case BASIC_BYTE:
+            case OBJECT_BYTE:
+                return (byte) random.nextInt(Byte.MAX_VALUE);
+            case BASIC_SHORT:
+            case OBJECT_SHORT:
+                return (short) random.nextInt(Byte.MAX_VALUE);
+            case BASIC_INT:
+            case OBJECT_INTEGER:
+                return random.nextInt(Byte.MAX_VALUE);
+            case BASIC_LONG:
+            case OBJECT_LONG:
+                return random.nextLong();
+            case BASIC_FLOAT:
+            case OBJECT_FLOAT:
+                return random.nextFloat();
+            case BASIC_DOUBLE:
+            case OBJECT_DOUBLE:
+                return random.nextDouble();
+            case BASIC_CHAR:
+            case OBJECT_CHARACTER:
+                return (char) random.nextInt(Byte.MAX_VALUE);
+            case BASIC_BOOLEAN:
+            case OBJECT_BOOLEAN:
+                return random.nextBoolean();
+            case OBJECT_CHAR_SEQUENCE:
+            case OBJECT_STRING:
+                return new StringBuilder("mock数据").append(random.nextInt(Byte.MAX_VALUE)).toString();
+            case OBJECT_DATE:
+                return Calendar.getInstance().getTime();
+            case OBJECT_LIST:
+                return new ArrayList<>();
+            default:
+                return null;
+        }
     }
 }
