@@ -122,7 +122,7 @@ public class UnionCardApiController extends ApiBaseController {
 	 * @throws IOException
 	 */
 	@ApiOperation( value = "根据手机号获取联盟卡,并绑定联盟卡，session的member不能为空", produces = "application/json;charset=UTF-8" )
-	@RequestMapping(value = "/uionCardBind", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/unionCardBind", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public ResponseUtils bindUnionCard(HttpServletRequest request, HttpServletResponse response, @RequestBody RequestApiParam<BindCardParam> requestApiParam) throws IOException {
 		try {
 			boolean verification=super.verification(request, response, requestApiParam);
