@@ -306,6 +306,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 if (StringUtil.isNotEmpty(clientPhone)) {
                     sbSqlSegment.append(" AND o.client_phone LIKE '%").append(clientPhone).append("%'");
                 }
+                sbSqlSegment.append(" ORDER BY o.is_accept ASC, o.modifytime DESC, o.createtime ASC");
                 return sbSqlSegment.toString();
             }
         };
@@ -352,6 +353,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 if (StringUtil.isNotEmpty(clientPhone)) {
                     sbSqlSegment.append(" AND o.client_phone LIKE '%").append(clientPhone).append("%'");
                 }
+                sbSqlSegment.append("ORDER BY o.is_accept ASC, o.modifytime DESC, o.createtime ASC");
                 return sbSqlSegment.toString();
             }
         };
@@ -814,7 +816,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         }
         //(5)判断是否设置了商机佣金比例
         UnionOpportunityRatio ratio = this.unionOpportunityBrokerageRatioService.getByFromMemberIdAndToMemberId(
-                opportunity.getFromMemberId(), opportunity.getToMemberId());
+                opportunity.getToMemberId(), opportunity.getFromMemberId());
         if (ratio == null) {
             throw new BusinessException("您还没设置给推荐方的商机佣金比例，请设置后接受商机");
         }
