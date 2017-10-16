@@ -187,6 +187,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 				  @ApiParam(name = "url", value = "登录授权后回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) throws Exception{
 		BusUser user = SessionUtils.getUnionBus(request);
 		Member member = SessionUtils.getLoginMember(request);
+		logger.info("提现member===" + JSON.toJSONString(member));
 		if(CommonUtil.isEmpty(member)){
 			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
 			return GTJsonResult.instanceSuccessMsg(null,redirectUrl).toString();

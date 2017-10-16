@@ -469,6 +469,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 							}else {
 								value = value + unionPreferentialItem.getName() + "||";
 							}
+							count++;
 						}
 					}
 					if(contentName[j].equals(field3.getName())){//加入时间
@@ -533,6 +534,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 							}else {
 								value = value + unionPreferentialItem.getName() + "||";
 							}
+							count++;
 						}
 					}
 					if(contentName[j].equals(field3.getName())){//加入时间
