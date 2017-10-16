@@ -393,7 +393,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     @Override
     public Map<String, Object> getByMinDiscountByCard(Integer rootId, Integer busId, List<UnionMember> members, Integer unionId) throws Exception {
         Map<String, Object> data = new HashMap<String, Object>();
-        List<UnionMain> unions = new ArrayList<UnionMain>();//封装联盟列表
+        LinkedList<UnionMain> unions = new LinkedList<UnionMain>();//封装联盟列表
         Map<String, Object> disMap = getMinDiscount(rootId, members, unionId);//得到最低折扣
         if (CommonUtil.isEmpty(disMap)) {
             throw new BusinessException("没有有效的联盟卡");
@@ -407,7 +407,11 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                     UnionMember unionMember = it.next();
                     for (UnionMain main : mains) {
                         if (unionMember.getUnionId().equals(main.getId())) {
-                            unions.add(main);
+                            if(unionMember.getUnionId().equals(CommonUtil.toInteger(disMap.get("unionId")))){
+                                unions.addFirst(main);
+                            }else {
+                                unions.addLast(main);
+                            }
                             break;
                         }
                     }
