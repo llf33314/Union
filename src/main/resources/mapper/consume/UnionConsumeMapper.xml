@@ -103,6 +103,7 @@
 		<if test="cardNo != null and cardNo != '' " >
 			AND r.number like CONCAT(CONCAT('%', #{cardNo}),'%')
 		</if>
+		AND m.bus_id != #{busId}
 		order by con.id desc
 	</select>
 
@@ -226,6 +227,7 @@
 		<if test="cardNo != null and cardNo != '' " >
 			AND r.number like CONCAT(CONCAT('%', #{cardNo}),'%')
 		</if>
+		AND m.bus_id != #{busId}
 	</select>
 
 </mapper>

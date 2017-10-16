@@ -48,4 +48,13 @@ public interface IUnionVerifierService extends IService<UnionVerifier> {
 	 * @return
 	 */
 	int selectCountByBusIdAndName(Integer busId, String name);
+
+	/**
+	 * 判断手机和用户姓名
+	 * @param phone
+	 * @param name
+	 * @param busId
+	 * @return
+	 */
+	boolean checkUnionVerifier(String phone, String name, Integer busId) throws Exception;
 }

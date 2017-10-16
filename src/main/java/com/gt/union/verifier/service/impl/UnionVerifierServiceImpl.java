@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.regex.Pattern;
 
 /**
  * <p>
@@ -47,7 +48,7 @@ public class UnionVerifierServiceImpl extends ServiceImpl<UnionVerifierMapper, U
 
     @Override
     public void save(UnionVerifierVO unionVerifier) throws Exception {
-       UnionVerifier phoneVerify = this.getByPhone(unionVerifier.getPhone());
+        UnionVerifier phoneVerify = this.getByPhone(unionVerifier.getPhone());
         if(phoneVerify != null){
             throw new ParamException("您输入的手机号码已存在，请重新输入");
         }
@@ -101,6 +102,32 @@ public class UnionVerifierServiceImpl extends ServiceImpl<UnionVerifierMapper, U
         memberWrapper.eq("bus_id",busId);
         memberWrapper.eq("name",name);
         return this.selectCount(memberWrapper);
+    }
+
+    @Override
+    public boolean checkUnionVerifier(String phone, String name, Integer busId) throws Exception{
+        if(StringUtil.isEmpty(name)){
+            throw new ParamException("姓名不能为空");
+        }
+        if(StringUtil.getStringLength(name) > 10){
+            throw new ParamException("姓名不可超过10字");
+        }
+        if(StringUtil.isEmpty(phone)){
+            throw new ParamException("验证码不能为空");
+        }
+        boolean isMatch = Pattern.matches("^1[3|4|5|6|7|8][0-9][0-9]{8}$", phone);
+        if(!isMatch){
+            throw new ParamException("手机号有误");
+        }
+        UnionVerifier phoneVerify = this.getByPhone(phone);
+        if(phoneVerify != null){
+            throw new ParamException("您输入的手机号码已存在，请重新输入");
+        }
+        int count = this.selectCountByBusIdAndName(busId,name);
+        if(count > 0){
+            throw new ParamException("您输入的姓名已存在，请重新输入");
+        }
+        return true;
     }
 
 

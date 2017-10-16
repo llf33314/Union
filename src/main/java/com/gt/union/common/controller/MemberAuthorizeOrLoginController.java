@@ -64,6 +64,9 @@ public class MemberAuthorizeOrLoginController {
 			if (!CommonUtil.isEmpty(guoqi)) {//商家已过期
 				throw new BusinessException("账号已过期");
 			}
+			if(CommonUtil.isNotEmpty(json.get("remoteUcLogin"))){//uc登陆
+				return GTJsonResult.instanceSuccessMsg("登录授权",ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin?busId="+busId).toString();
+			}
 		}
 		String otherRedisKey = "authority:"+System.currentTimeMillis();
 		redisService.setValue(otherRedisKey, reqUrl, 300);
@@ -127,7 +130,7 @@ public class MemberAuthorizeOrLoginController {
 	protected String getCardH5LoginReturnUrl(Member member, HttpServletRequest request, Integer busId, String url) throws Exception{
 		if(CommonUtil.isEmpty(member)){
 			if(CommonUtil.judgeBrowser(request) == 1){//微信
-				String redirectUrl = authorizeMember(request, busId, null, ConfigConstant.UNION_PHONE_CARD_ROOT_URL + url);
+				String redirectUrl = authorizeMember(request, busId, 1, ConfigConstant.UNION_PHONE_CARD_ROOT_URL + url);
 				return GTJsonResult.instanceSuccessMsg("登录授权",redirectUrl).toString();
 			}else {//其他浏览器
 				return GTJsonResult.instanceSuccessMsg("登录授权",ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin?busId="+busId).toString();
@@ -135,7 +138,7 @@ public class MemberAuthorizeOrLoginController {
 		}
 		if(!member.getBusid().equals(busId)){
 			if(CommonUtil.judgeBrowser(request) == 1){//微信
-				String redirectUrl = authorizeMember(request, busId, null, ConfigConstant.UNION_PHONE_CARD_ROOT_URL + url);
+				String redirectUrl = authorizeMember(request, busId, 1, ConfigConstant.UNION_PHONE_CARD_ROOT_URL + url);
 				return GTJsonResult.instanceSuccessMsg("登录授权",redirectUrl).toString();
 			}else {//其他浏览器
 				return GTJsonResult.instanceSuccessMsg("登录授权",ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin?busId="+busId).toString();

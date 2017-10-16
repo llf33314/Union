@@ -95,13 +95,18 @@ public class UnionVerifierController {
     @ApiOperation(value = "获取佣金平台管理员验证码", notes = "获取佣金平台管理员验证码", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/phone/{phone}", produces = "application/json;charset=UTF-8",method = RequestMethod.GET)
     public String getCodeByPhone(HttpServletRequest request, HttpServletResponse response
-            , @ApiParam(name="phone", value = "手机号", required = true) @PathVariable String phone) throws Exception {
+            , @ApiParam(name="phone", value = "手机号", required = true) @PathVariable String phone
+            ,@ApiParam(name="name", value = "姓名", required = true) @RequestParam String name) throws Exception {
         BusUser user = SessionUtils.getLoginUser(request);
         //生成验证码
         String code = RandomKit.getRandomString(6, 0);
         Integer busId = user.getId();
         if (user.getPid() != null && user.getPid() != 0) {
             busId = user.getPid();
+        }
+        boolean flag = unionVerifierService.checkUnionVerifier(phone,name,busId);
+        if(!flag){
+            return GTJsonResult.instanceErrorMsg("发送失败").toString();
         }
         PhoneMessage phoneMessage = new PhoneMessage(busId,phone,"佣金平台管理员验证码:" + code);
         Map param = new HashMap<String,Object>();
