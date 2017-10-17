@@ -358,6 +358,8 @@ public class UnionCardController {
         System.out.println(ConstantConfig.UNION_URL);
         System.out.println("-----2-----");
         System.out.println(PropertiesUtil.getUnionUrl());
+        System.out.println("-----3-----");
+        System.out.println(ConfigConstant.UNION_ROOT_URL);
         return GTJsonResult.instanceSuccessMsg("https://union.deeptel.com.cn" + "/unionCard/phoneImg").toString();
 	}
 
