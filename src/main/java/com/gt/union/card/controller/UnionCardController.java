@@ -12,6 +12,7 @@ import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.card.service.IUnionCardService;
 import com.gt.union.card.vo.UnionCardBindParamVO;
 import com.gt.union.common.annotation.SysLogAnnotation;
+import com.gt.union.common.config.ConstantConfig;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BaseException;
@@ -353,7 +354,7 @@ public class UnionCardController {
 	@ApiOperation(value = "获取手机端二维码图片链接", notes = "获取手机端二维码图片链接", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/phone", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
 	public String phoneQRCodeUrl(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
-		return GTJsonResult.instanceSuccessMsg(ConfigConstant.UNION_ROOT_URL + "/unionCard/phoneImg").toString();
+		return GTJsonResult.instanceSuccessMsg(ConstantConfig.UNION_URL + "/unionCard/phoneImg").toString();
 	}
 
 
