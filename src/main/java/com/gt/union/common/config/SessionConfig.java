@@ -1,5 +1,6 @@
 package com.gt.union.common.config;
 
+import com.gt.union.common.constant.ConfigConstant;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
@@ -29,13 +30,10 @@ public class SessionConfig {
     @Value("${spring.redis2.password}")
     private String password;
 
-    @Value("${spring.profiles.active}")
-    private String profiles;
-
     @Bean
     public DefaultCookieSerializer defaultCookieSerializer() {
         DefaultCookieSerializer defaultCookieSerializer = new DefaultCookieSerializer();
-        if (!"dev".equals(profiles)) {
+        if (!"dev".equals(ConfigConstant.PROFILES)) {
             defaultCookieSerializer.setDomainName(domainName);
             defaultCookieSerializer.setCookieName(cookieName);
             defaultCookieSerializer.setCookiePath(cookiePath);
