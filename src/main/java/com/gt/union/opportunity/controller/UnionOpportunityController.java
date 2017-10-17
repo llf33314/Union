@@ -417,6 +417,7 @@ public class UnionOpportunityController {
                 }
                 Map<String,Object> result = new HashMap<String,Object>();
                 result.put("status",status);
+                result.put("only",only);
                 logger.info("商机佣金扫码支付成功回调----------" + JSON.toJSONString(result));
                 socketService.socketSendMessage(ConfigConstant.SOCKET_KEY + CommonUtil.toInteger(map.get("payBusId")), JSON.toJSONString(data),"");
                 data.put("code", 0);

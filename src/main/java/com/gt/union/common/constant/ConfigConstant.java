@@ -168,6 +168,11 @@ public interface ConfigConstant {
 	String SOCKET_KEY = PropertiesUtil.getSocketKey();
 
 	/**
+	 * profiles
+	 */
+	String PROFILES = PropertiesUtil.getProfiles();
+
+	/**
 	 * 公众号二维码链接model
 	 */
 	int WXPUBLIC_QRCODE_MODEL = 10;

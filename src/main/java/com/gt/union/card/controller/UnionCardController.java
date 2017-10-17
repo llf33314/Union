@@ -300,6 +300,7 @@ public class UnionCardController {
 				}
 				Map<String,Object> result = new HashMap<String,Object>();
 				result.put("status",status);
+				result.put("only",only);
 				logger.info("办理联盟卡扫码支付成功回调----------" + JSON.toJSONString(result));
 				socketService.socketSendMessage(ConfigConstant.SOCKET_KEY + CommonUtil.toInteger(map.get("payBusId")), JSON.toJSONString(data),"");
 				data.put("code",0);
