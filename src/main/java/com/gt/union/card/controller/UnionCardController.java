@@ -249,7 +249,8 @@ public class UnionCardController {
 		if(user.getPid() != null && user.getPid() != 0){
 			busId = user.getPid();
 		}
-		Map<String,Object> data = unionCardService.createQRCode(busId, phone, memberId,unionId, cardType, 0, "");
+		Integer userId = user.getId();
+		Map<String,Object> data = unionCardService.createQRCode(busId, phone, memberId,unionId, cardType, 0, "", userId);
 		StringBuilder sb = new StringBuilder("?");
 		sb.append("totalFee="+data.get("totalFee"));
 		sb.append("&model="+data.get("model"));
@@ -266,6 +267,7 @@ public class UnionCardController {
 		Map<String, Object> result = new HashMap<String, Object>();
 		result.put("url",ConfigConstant.WXMP_ROOT_URL + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
 		result.put("only",data.get("only"));
+		result.put("busId",user.getId());
 		return GTJsonResult.instanceSuccessMsg(result).toString();
 	}
 
@@ -302,7 +304,7 @@ public class UnionCardController {
 				result.put("status",status);
 				result.put("only",only);
 				logger.info("办理联盟卡扫码支付成功回调----------" + JSON.toJSONString(result));
-				socketService.socketSendMessage(ConfigConstant.SOCKET_KEY + CommonUtil.toInteger(map.get("payBusId")), JSON.toJSONString(data),"");
+				socketService.socketSendMessage(ConfigConstant.SOCKET_KEY + CommonUtil.toInteger(map.get("userId")), JSON.toJSONString(data),"");
 				data.put("code",0);
 				data.put("msg","成功");
 				return JSON.toJSONString(data);

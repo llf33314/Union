@@ -471,6 +471,7 @@ public class UnionOpportunityController {
             Map<String, Object> result = new HashMap<String, Object>();
             result.put("url", ConfigConstant.WXMP_ROOT_URL + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
             result.put("only", data.get("only"));
+            result.put("busId",user.getId());
             return GTJsonResult.instanceSuccessMsg(result).toString();
         } catch (BaseException e) {
             logger.error("", e);

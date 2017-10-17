@@ -948,7 +948,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     }
 
     @Override
-    public Map<String, Object> createQRCode(Integer busId, String phone, Integer memberId, Integer unionId, Integer cardType, Integer isReturn, String returnUrl) throws Exception {
+    public Map<String, Object> createQRCode(Integer busId, String phone, Integer memberId, Integer unionId, Integer cardType, Integer isReturn, String returnUrl, Integer userId) throws Exception {
         UnionMainCharge charge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, cardType, MainConstant.CHARGE_IS_AVAILABLE_YES);
         Double price = charge.getChargePrice();//收费价格
         Map<String, Object> data = new HashMap<String, Object>();
@@ -976,6 +976,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         data.put("phone", phone);
         data.put("memberId", memberId);
         data.put("cardType", cardType);
+        data.put("userId", userId);
         String statusKey = RedisKeyUtil.getBindCardPayStatusKey(only);
         String paramKey = RedisKeyUtil.getBindCardPayParamKey(only);
         redisCacheUtil.set(paramKey, data, 360l);//5分钟
