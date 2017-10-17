@@ -252,7 +252,7 @@ public class UnionOpportunityController {
                 busId = busUser.getPid();
             }
             Map<String, Object> resultMap = this.unionOpportunityService.getContactDetailByBusIdAndTgtMemberId(busId, tgtMemberId, memberId);
-            String[] titles = new String[]{"时间", "顾客姓名", "电话", "佣金（折）"};
+            String[] titles = new String[]{"时间", "顾客姓名", "电话", "佣金（元）"};
             HSSFWorkbook wb = ExportUtil.newHSSFWorkbook(titles);
             HSSFSheet sheet = wb.getSheetAt(0);
             if (resultMap != null && resultMap.get("contactList") != null) {
@@ -278,7 +278,7 @@ public class UnionOpportunityController {
                         String tgtClientPhone = map.get("clientPhone") != null ? map.get("clientPhone").toString() : "";
                         clientPhoneCell.setCellValue(tgtClientPhone);
                         clientPhoneCell.setCellStyle(centerCellStyle);
-                        //佣金（折）
+                        //佣金（元）
                         HSSFCell brokeragePriceCell = row.createCell(cellIndex++);
                         String tgtBrokeragePrice = map.get("brokeragePrice") != null ? map.get("brokeragePrice").toString() : "";
                         brokeragePriceCell.setCellValue(tgtBrokeragePrice);

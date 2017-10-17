@@ -10,7 +10,10 @@ import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.*;
+import com.gt.union.common.util.DateUtil;
+import com.gt.union.common.util.ListUtil;
+import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.RedisKeyUtil;
 import com.gt.union.main.constant.MainConstant;
 import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.entity.UnionMainCharge;
@@ -262,10 +265,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         UnionMain updateUnion = new UnionMain();
         updateUnion.setId(unionId); //联盟id
         updateUnion.setName(vo.getUnionName()); //联盟名称
-        String unionImg = vo.getUnionImg();
-        if (StringUtil.isNotEmpty(unionImg) && unionImg.indexOf("/upload/") > -1) {
-            updateUnion.setImg(unionImg.split("/upload/")[1]); //联盟图标
-        }
+        updateUnion.setImg(vo.getUnionImg()); //联盟图标
         updateUnion.setJoinType(vo.getJoinType()); //加盟方式
         updateUnion.setIllustration(vo.getUnionIllustration()); //联盟说明
         updateUnion.setIsIntegral(vo.getIsIntegral()); //是否开启积分
@@ -322,7 +322,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
                 throw new BusinessException("红卡有效期不能小于0");
             }
             updateRedCharge.setValidityDay(redValidityDay); //红卡有效期
-            updateRedCharge.setIllustration(chargeVO.getBlackIllustration()); //红卡说明
+            updateRedCharge.setIllustration(chargeVO.getRedIllustration()); //红卡说明
         } else {
             updateRedCharge.setChargePrice(0D); //红卡收费价格
             updateRedCharge.setValidityDay(0); //红卡有效期
@@ -343,6 +343,9 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         this.unionMainDictService.removeByUnionId(unionId);
         List<UnionMainDict> dictList = vo.getUnionMainDictList();
         if (ListUtil.isNotEmpty(dictList)) {
+            for (UnionMainDict dict : dictList) {
+                dict.setUnionId(unionId);
+            }
             this.unionMainDictService.saveBatch(dictList);
         }
     }
