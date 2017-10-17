@@ -68,10 +68,10 @@ public class MemberAuthorizeOrLoginController {
 				return GTJsonResult.instanceSuccessMsg("登录授权",ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin?busId="+busId).toString();
 			}
 		}
-		String otherRedisKey = "authority:"+System.currentTimeMillis();
+		String otherRedisKey = ConfigConstant.UNION_REDIS_NAME_PREFIX + "authority:"+System.currentTimeMillis();
 		redisService.setValue(otherRedisKey, reqUrl, 300);
 		Map<String, Object> queryMap = new HashMap<>();
-		queryMap.put("otherRedisKey", ConfigConstant.UNION_REDIS_NAME_PREFIX + otherRedisKey);
+		queryMap.put("otherRedisKey", otherRedisKey);
 		queryMap.put("browser", browser);
 		queryMap.put("busId", busId);
 		queryMap.put("uclogin", uclogin);
