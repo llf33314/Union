@@ -120,7 +120,7 @@ public interface ConfigConstant {
 	/**
 	 * 联盟根路径
 	 */
-	String UNION_ROOT_URL = PropertiesUtil.getUnionUrl();
+	static String UNION_ROOT_URL = PropertiesUtil.getUnionUrl();
 
 	/**
 	 * 联盟接口秘钥
