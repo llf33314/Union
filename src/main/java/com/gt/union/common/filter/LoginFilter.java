@@ -84,7 +84,6 @@ public class LoginFilter implements Filter {
                 response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceSuccessMsg(null, ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin")));
                 return;
             }
-            System.out.println(ConfigConstant.PROFILES);
             if ("dev".equals(ConfigConstant.PROFILES)) {
                 busUser = justForDev(req, busUser);
             }
