@@ -144,7 +144,7 @@ public class RedisKeyUtil {
     }
 
     public static final String getDictUnionIdKey(Integer unionId) {
-        return new StringBuilder("unionDict:unionId").append(unionId).toString();
+        return new StringBuilder("unionDict:unionId:").append(unionId).toString();
     }
 
     /*******************************************************************************************************************
@@ -163,7 +163,7 @@ public class RedisKeyUtil {
     }
 
     public static final String getChargeUnionIdKey(Integer unionId) {
-        return new StringBuilder("unionCharge:unionId").append(unionId).toString();
+        return new StringBuilder("unionCharge:unionId:").append(unionId).toString();
     }
 
     /*******************************************************************************************************************
@@ -182,15 +182,15 @@ public class RedisKeyUtil {
     }
 
     public static final String getTransferUnionIdKey(Integer unionId) {
-        return new StringBuilder("unionTransfer:unionId").append(unionId).toString();
+        return new StringBuilder("unionTransfer:unionId:").append(unionId).toString();
     }
 
     public static final String getTransferFromMemberIdKey(Integer fromMemberId) {
-        return new StringBuilder("unionTransfer:fromMemberId").append(fromMemberId).toString();
+        return new StringBuilder("unionTransfer:fromMemberId:").append(fromMemberId).toString();
     }
 
     public static final String getTransferToMemberIdKey(Integer toMemberId) {
-        return new StringBuilder("unionTransfer:toMemberId").append(toMemberId).toString();
+        return new StringBuilder("unionTransfer:toMemberId:").append(toMemberId).toString();
     }
 
     /*******************************************************************************************************************
@@ -209,7 +209,7 @@ public class RedisKeyUtil {
     }
 
     public static final String getNoticeUnionIdKey(Integer unionId) {
-        return new StringBuilder("unionNotice:unionId").append(unionId).toString();
+        return new StringBuilder("unionNotice:unionId:").append(unionId).toString();
     }
 
     /*******************************************************************************************************************
@@ -228,11 +228,11 @@ public class RedisKeyUtil {
     }
 
     public static final String getOpportunityFromMemberIdKey(Integer fromMemberId) {
-        return new StringBuilder("opportunity:fromMemberId").append(fromMemberId).toString();
+        return new StringBuilder("opportunity:fromMemberId:").append(fromMemberId).toString();
     }
 
     public static final String getOpportunityToMemberIdKey(Integer toMemberId) {
-        return new StringBuilder("opportunity:toMemberId").append(toMemberId).toString();
+        return new StringBuilder("opportunity:toMemberId:").append(toMemberId).toString();
     }
 
     /*******************************************************************************************************************
@@ -251,11 +251,11 @@ public class RedisKeyUtil {
     }
 
     public static final String getRatioFromMemberIdKey(Integer fromMemberId) {
-        return new StringBuilder("opportunityRatio:fromMemberId").append(fromMemberId).toString();
+        return new StringBuilder("opportunityRatio:fromMemberId:").append(fromMemberId).toString();
     }
 
     public static final String getRatioToMemberIdKey(Integer toMemberId) {
-        return new StringBuilder("opportunityRatio:toMemberId").append(toMemberId).toString();
+        return new StringBuilder("opportunityRatio:toMemberId:").append(toMemberId).toString();
     }
 
     /*******************************************************************************************************************
@@ -274,7 +274,7 @@ public class RedisKeyUtil {
     }
 
     public static final String getProjectMemberIdKey(Integer memberId) {
-        return new StringBuilder("preferentialProject:memberId").append(memberId).toString();
+        return new StringBuilder("preferentialProject:memberId:").append(memberId).toString();
     }
 
     /*******************************************************************************************************************
@@ -293,7 +293,7 @@ public class RedisKeyUtil {
     }
 
     public static final String getItemProjectIdKey(Integer projectId) {
-        return new StringBuilder("preferentialItem:projectId").append(projectId).toString();
+        return new StringBuilder("preferentialItem:projectId:").append(projectId).toString();
     }
 
     /**

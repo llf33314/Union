@@ -29,12 +29,17 @@ public class SessionConfig {
     @Value("${spring.redis2.password}")
     private String password;
 
+    @Value("${spring.profiles.active}")
+    private String profiles;
+
     @Bean
     public DefaultCookieSerializer defaultCookieSerializer() {
         DefaultCookieSerializer defaultCookieSerializer = new DefaultCookieSerializer();
-        defaultCookieSerializer.setDomainName(domainName);
-        defaultCookieSerializer.setCookieName(cookieName);
-        defaultCookieSerializer.setCookiePath(cookiePath);
+        if (!"dev".equals(profiles)) {
+            defaultCookieSerializer.setDomainName(domainName);
+            defaultCookieSerializer.setCookieName(cookieName);
+            defaultCookieSerializer.setCookiePath(cookiePath);
+        }
         return defaultCookieSerializer;
     }
 

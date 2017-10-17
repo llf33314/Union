@@ -3,10 +3,10 @@ package com.gt.union.common.filter;
 import com.alibaba.fastjson.JSON;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
-import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.response.GTJsonResult;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -21,19 +21,21 @@ import java.util.*;
  */
 @WebFilter(filterName = "loginFilter", urlPatterns = "/*")
 public class LoginFilter implements Filter {
+    @Value("${spring.profiles.active}")
+    private String profiles;
 
-	//不需要登录的url
-	private final Map<String, String> passUrlMap = new HashMap<>();
+    //不需要登录的url
+    private final Map<String, String> passUrlMap = new HashMap<>();
 
-	//不需要过滤的文件类型
-	private final List<String> passSuffixList = new ArrayList<>();
+    //不需要过滤的文件类型
+    private final List<String> passSuffixList = new ArrayList<>();
 
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
 
-        passUrlMap.put("/unionH5Brokerage/login","/unionH5Brokerage/login");
-        passUrlMap.put("/unionH5Brokerage/loginSign","/unionH5Brokerage/loginSign");
+        passUrlMap.put("/unionH5Brokerage/login", "/unionH5Brokerage/login");
+        passUrlMap.put("/unionH5Brokerage/loginSign", "/unionH5Brokerage/loginSign");
         passSuffixList.add(".js");
         passSuffixList.add(".css");
         passSuffixList.add(".gif");
@@ -62,38 +64,40 @@ public class LoginFilter implements Filter {
             return;
         }
         //(3)判断是否已有登录信息
-        if(url.indexOf("unionH5Brokerage") > -1 || url.indexOf("brokeragePhone") > -1){
+        if (url.indexOf("unionH5Brokerage") > -1 || url.indexOf("brokeragePhone") > -1) {
             BusUser user = SessionUtils.getUnionBus(req);
             if (user == null) {
-                if(url.equals("/brokeragePhone/")){
+                if (url.equals("/brokeragePhone/")) {
                     chain.doFilter(request, response);
                     return;
-                }else if(url.indexOf("unionH5Brokerage") > -1){
+                } else if (url.indexOf("unionH5Brokerage") > -1) {
                     response.setCharacterEncoding("UTF-8");
                     response.getWriter().write(GTJsonResult.instanceSuccessMsg(null, ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + "toLogin").toString());
                     return;
                 }
             }
-        }else {
+        } else {
             BusUser busUser = SessionUtils.getLoginUser(req);
-            if(url.equals("/cardPhone/")){//
+            if (url.equals("/cardPhone/")) {//
                 chain.doFilter(request, response);
                 return;
-            }else if(url.indexOf("cardH5") > -1){
+            } else if (url.indexOf("cardH5") > -1) {
                 response.setCharacterEncoding("UTF-8");
                 response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceSuccessMsg(null, ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin")));
                 return;
             }
-//            busUser = justForDev(req, busUser); //TODO 正式中请注释掉
+            if ("dev".equals(profiles)) {
+                busUser = justForDev(req, busUser);
+            }
             if (busUser == null) {
-                if(url.equals("/unionMain/")){
+                if (url.equals("/unionMain/")) {
                     String wxmpLoginUrl = ConfigConstant.WXMP_ROOT_URL + "/user/tologin.do";
                     String script = "<script type='text/javascript'>"
-                            + "location.href='"+ wxmpLoginUrl +"';"
+                            + "location.href='" + wxmpLoginUrl + "';"
                             + "</script>";
                     response.getWriter().write(script);
                     return;
-                }else {
+                } else {
                     response.setCharacterEncoding("UTF-8");
                     response.getWriter().write(GTJsonResult.instanceSuccessMsg(null, ConfigConstant.WXMP_ROOT_URL + "/user/tologin.do").toString());
                     return;
@@ -110,8 +114,8 @@ public class LoginFilter implements Filter {
      * @param request
      * @return
      */
-    private BusUser justForDev(HttpServletRequest request,BusUser busUser) {
-        if(busUser == null){
+    private BusUser justForDev(HttpServletRequest request, BusUser busUser) {
+        if (busUser == null) {
             busUser = new BusUser();
             busUser.setId(33);
             busUser.setEndTime(new Date());
