@@ -286,10 +286,7 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         saveUnionMain.setCreatetime(DateUtil.getCurrentDate()); //创建时间
         saveUnionMain.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
         saveUnionMain.setName(unionMainVO.getUnionName()); //联盟名称
-        String unionImg = unionMainVO.getUnionImg();
-        if (unionImg.indexOf("/upload/") > -1) {
-            saveUnionMain.setImg(unionImg.split("/upload/")[1]); //联盟图标
-        }
+        saveUnionMain.setImg(unionMainVO.getUnionImg()); //联盟图标
         saveUnionMain.setJoinType(unionMainVO.getJoinType()); //联盟加盟方式
         saveUnionMain.setIsIntegral(unionMainVO.getIsIntegral()); //是否开启积分
         Integer limitMember = this.unionMainService.getLimitMemberByBusId(busId);
