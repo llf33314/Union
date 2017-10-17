@@ -354,7 +354,11 @@ public class UnionCardController {
 	@ApiOperation(value = "获取手机端二维码图片链接", notes = "获取手机端二维码图片链接", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/phone", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
 	public String phoneQRCodeUrl(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
-		return GTJsonResult.instanceSuccessMsg(ConstantConfig.UNION_URL + "/unionCard/phoneImg").toString();
+        System.out.println("-----1-----");
+        System.out.println(ConstantConfig.UNION_URL);
+        System.out.println("-----2-----");
+        System.out.println(PropertiesUtil.getUnionUrl());
+        return GTJsonResult.instanceSuccessMsg("https://union.deeptel.com.cn" + "/unionCard/phoneImg").toString();
 	}
 
 
