@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.KeysUtil;
 import com.gt.api.util.SessionUtils;
+import com.gt.union.api.client.socket.SocketService;
 import com.gt.union.common.annotation.SysLogAnnotation;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
@@ -59,6 +60,9 @@ public class UnionOpportunityController {
 
     @Autowired
     private IUnionValidateService unionValidateService;
+
+    @Autowired
+    private SocketService socketService;
 
     //-------------------------------------------------- get ----------------------------------------------------------
 
@@ -395,6 +399,27 @@ public class UnionOpportunityController {
                 logger.info("商机佣金支付成功，param------------------" + JSON.toJSONString(param));
                 logger.info("商机佣金支付成功，only------------------" + only);
                 unionOpportunityService.payOpportunitySuccess(param.get("out_trade_no").toString(), only);
+                String paramKey = RedisKeyUtil.getRecommendPayParamKey(only);
+                String paramData = redisCacheUtil.get(paramKey);
+                Map map = JSON.parseObject(paramData,Map.class);
+                String status = redisCacheUtil.get(statusKey);
+                if (CommonUtil.isEmpty(status)) {//订单超时
+                    status = ConfigConstant.USER_ORDER_STATUS_004;
+                }else {
+                    status = JSON.parseObject(status,String.class);
+                }
+                if (ConfigConstant.USER_ORDER_STATUS_003.equals(status)) {//订单支付成功
+                    redisCacheUtil.remove(statusKey);
+                }
+
+                if (ConfigConstant.USER_ORDER_STATUS_005.equals(status)) {//订单支付失败
+                    redisCacheUtil.remove(statusKey);
+                }
+                Map<String,Object> result = new HashMap<String,Object>();
+                result.put("status",status);
+                result.put("only",only);
+                logger.info("商机佣金扫码支付成功回调----------" + JSON.toJSONString(result));
+                socketService.socketSendMessage(ConfigConstant.SOCKET_KEY + CommonUtil.toInteger(map.get("payBusId")), JSON.toJSONString(data),"");
                 data.put("code", 0);
                 data.put("msg", "成功");
                 return JSON.toJSONString(data);
@@ -446,6 +471,7 @@ public class UnionOpportunityController {
             Map<String, Object> result = new HashMap<String, Object>();
             result.put("url", ConfigConstant.WXMP_ROOT_URL + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
             result.put("only", data.get("only"));
+            result.put("userId",ConfigConstant.SOCKET_KEY + user.getId());
             return GTJsonResult.instanceSuccessMsg(result).toString();
         } catch (BaseException e) {
             logger.error("", e);

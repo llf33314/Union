@@ -29,7 +29,6 @@ import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -187,7 +186,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			Map<String,Object> data = unionCardService.bindCard(vo);
 			if(CommonUtil.isNotEmpty(data.get("qrurl"))){
 				String returnUrl = ConfigConstant.UNION_PHONE_CARD_ROOT_URL + url;
-				Map<String,Object> qrCodeData = unionCardService.createQRCode(busId, vo.getPhone(), member.getId(),vo.getUnionId(), vo.getCardType(), 1, returnUrl);
+				Map<String,Object> qrCodeData = unionCardService.createQRCode(busId, vo.getPhone(), member.getId(),vo.getUnionId(), vo.getCardType(), 1, returnUrl, busId);
 				Map<String,Object> param = new HashMap<String,Object>();
 				param.put("totalFee", qrCodeData.get("totalFee"));
 				param.put("model", qrCodeData.get("model"));

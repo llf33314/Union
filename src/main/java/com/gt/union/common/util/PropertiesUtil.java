@@ -57,6 +57,8 @@ public class PropertiesUtil {
 
 	private static String encryptKey;
 
+	private static String profiles;
+
 	/**
 	 * 获取资源访问地址
 	 * @return resourceUrl
@@ -165,6 +167,7 @@ public class PropertiesUtil {
 	public static String getWxmpCompany() {
 		return wxmpCompany;
 	}
+
 
 	/**
 	 * 获取wxmp项目api密钥
@@ -322,5 +325,15 @@ public class PropertiesUtil {
 	@Value("${union.signkey}")
 	public void setUnionSignKey(String unionSignKey) {
 		this.unionSignKey = unionSignKey;
+	}
+
+
+	public static String getProfiles() {
+		return profiles;
+	}
+
+	@Value("${spring.profiles.active}")
+	public void setProfiles(String profiles) {
+		this.profiles = profiles;
 	}
 }

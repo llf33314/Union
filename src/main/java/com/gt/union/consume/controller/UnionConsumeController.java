@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
+import com.gt.union.api.client.socket.SocketService;
 import com.gt.union.common.annotation.SysLogAnnotation;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
@@ -31,6 +32,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,13 +52,13 @@ public class UnionConsumeController {
 	private Logger logger = LoggerFactory.getLogger(UnionConsumeController.class);
 
 	@Autowired
-	private IUnionMainService unionMainService;
-
-	@Autowired
 	private IUnionConsumeService unionConsumeService;
 
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
+
+	@Autowired
+	private SocketService socketService;
 
 
 	@ApiOperation(value = "查询本店消费核销记录", produces = "application/json;charset=UTF-8")
@@ -246,6 +248,28 @@ public class UnionConsumeController {
 			logger.info("消费核销支付成功，Encrypt------------------" + encrypt);
 			logger.info("消费核销支付成功，only------------------" + only);
 			unionConsumeService.payConsumeSuccess(encrypt, only);
+			String statusKey = RedisKeyUtil.getConsumePayStatusKey(only);
+			String paramKey = RedisKeyUtil.getConsumePayParamKey(only);
+			String paramData = redisCacheUtil.get(paramKey);
+			Map map = JSON.parseObject(paramData,Map.class);
+			String status = redisCacheUtil.get(statusKey);
+			if (CommonUtil.isEmpty(status)) {//订单超时
+				status = ConfigConstant.USER_ORDER_STATUS_004;
+			}else {
+				status = JSON.parseObject(status,String.class);
+			}
+			if (ConfigConstant.USER_ORDER_STATUS_003.equals(status)) {//订单支付成功
+				redisCacheUtil.remove(statusKey);
+			}
+
+			if (ConfigConstant.USER_ORDER_STATUS_005.equals(status)) {//订单支付失败
+				redisCacheUtil.remove(statusKey);
+			}
+			Map<String,Object> result = new HashMap<String,Object>();
+			result.put("status",status);
+			result.put("only",only);
+			logger.info("扫码支付核销成功回调----------" + JSON.toJSONString(result));
+			socketService.socketSendMessage(ConfigConstant.SOCKET_KEY + CommonUtil.toInteger(map.get("payBusId")), JSON.toJSONString(data),"");
 			data.put("code",0);
 			data.put("msg","成功");
 			return JSON.toJSONString(data);
@@ -288,6 +312,7 @@ public class UnionConsumeController {
 		Map<String, Object> result = new HashMap<String, Object>();
 		result.put("url", ConfigConstant.WXMP_ROOT_URL + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
 		result.put("only", data.get("only"));
+		result.put("userId",ConfigConstant.SOCKET_KEY + user.getId());
 		return GTJsonResult.instanceSuccessMsg(result).toString();
 	}
 

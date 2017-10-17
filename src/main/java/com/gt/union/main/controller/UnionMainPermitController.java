@@ -3,6 +3,7 @@ package com.gt.union.main.controller;
 import com.alibaba.fastjson.JSON;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
+import com.gt.union.api.client.socket.SocketService;
 import com.gt.union.common.annotation.SysLogAnnotation;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
@@ -42,6 +43,8 @@ public class UnionMainPermitController {
     @Autowired
     private IUnionMainPermitService unionMainPermitService;
 
+    @Autowired
+    private SocketService socketService;
 
 
 
@@ -68,6 +71,28 @@ public class UnionMainPermitController {
                 logger.info("创建联盟支付成功，订单orderNo------------------" + orderNo);
                 logger.info("创建联盟支付成功，only------------------" + only);
                 unionMainPermitService.payCreateUnionSuccess(orderNo, only);
+                String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
+                String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
+                String paramData = redisCacheUtil.get(paramKey);
+                Map map = JSON.parseObject(paramData,Map.class);
+                String status = redisCacheUtil.get(statusKey);
+                if (CommonUtil.isEmpty(status)) {//订单超时
+                    status = ConfigConstant.USER_ORDER_STATUS_004;
+                }else {
+                    status = JSON.parseObject(status,String.class);
+                }
+                if (ConfigConstant.USER_ORDER_STATUS_003.equals(status)) {//订单支付成功
+                    redisCacheUtil.remove(statusKey);
+                }
+
+                if (ConfigConstant.USER_ORDER_STATUS_005.equals(status)) {//订单支付失败
+                    redisCacheUtil.remove(statusKey);
+                }
+                Map<String,Object> result = new HashMap<String,Object>();
+                result.put("status",status);
+                result.put("only",only);
+                logger.info("创建联盟扫码支付成功回调----------" + JSON.toJSONString(result));
+                socketService.socketSendMessage(ConfigConstant.SOCKET_KEY + CommonUtil.toInteger(map.get("payBusId")), JSON.toJSONString(data),"");
                 data.put("code", 0);
                 data.put("msg", "成功");
                 return JSON.toJSONString(data);
@@ -114,6 +139,7 @@ public class UnionMainPermitController {
             Map<String, Object> result = new HashMap<String, Object>();
             result.put("url", ConfigConstant.WXMP_ROOT_URL + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
             result.put("only", data.get("only"));
+            result.put("userId",ConfigConstant.SOCKET_KEY + user.getId());
             return GTJsonResult.instanceSuccessMsg(result).toString();
         } catch (Exception e) {
             logger.error("生成购买联盟服务支付二维码错误：" + e);

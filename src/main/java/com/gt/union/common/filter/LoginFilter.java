@@ -21,8 +21,6 @@ import java.util.*;
  */
 @WebFilter(filterName = "loginFilter", urlPatterns = "/*")
 public class LoginFilter implements Filter {
-    @Value("${spring.profiles.active}")
-    private String profiles;
 
     //不需要登录的url
     private final Map<String, String> passUrlMap = new HashMap<>();
@@ -86,7 +84,7 @@ public class LoginFilter implements Filter {
                 response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceSuccessMsg(null, ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin")));
                 return;
             }
-            if ("dev".equals(profiles)) {
+            if ("dev".equals(ConfigConstant.PROFILES)) {
                 busUser = justForDev(req, busUser);
             }
             if (busUser == null) {
