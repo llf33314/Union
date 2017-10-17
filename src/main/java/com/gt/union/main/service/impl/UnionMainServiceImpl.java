@@ -284,8 +284,8 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         updateBlackCharge.setIsCharge(blackIsCharge); //黑卡是否收费
         if (MainConstant.CHARGE_IS_AVAILABLE_YES == blackIsAvailable && MainConstant.CHARGE_IS_CHARGE_YES == blackIsCharge) {
             Double blackChargePrice = chargeVO.getBlackChargePrice();
-            if (blackChargePrice < 0) {
-                throw new BusinessException("黑卡价格不能小于0");
+            if (blackChargePrice < 1) {
+                throw new BusinessException("黑卡价格不能小于1");
             }
             updateBlackCharge.setChargePrice(blackChargePrice); //黑卡收费价格
             Integer blackValidityDay = chargeVO.getBlackValidityDay();
@@ -313,8 +313,8 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         updateRedCharge.setIsCharge(redIsCharge); //红卡是否收费
         if (MainConstant.CHARGE_IS_AVAILABLE_YES == redIsAvailable && MainConstant.CHARGE_IS_CHARGE_YES == redIsCharge) {
             Double redChargePrice = chargeVO.getRedChargePrice();
-            if (redChargePrice < 0) {
-                throw new BusinessException("红卡价格不能小于0");
+            if (redChargePrice < 1) {
+                throw new BusinessException("红卡价格不能小于1");
             }
             updateRedCharge.setChargePrice(redChargePrice); //红卡收费价格
             Integer redValidityDay = chargeVO.getRedValidityDay();
