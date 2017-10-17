@@ -282,6 +282,26 @@ public class UnionCardController {
 				logger.info("前台办理联盟卡支付成功，only------------------"+only);
 				logger.info("办理联盟卡支付成功，orderNo------------------" + orderNo);
 				unionCardService.payBindCardSuccess(orderNo, only);
+				String paramKey = RedisKeyUtil.getBindCardPayParamKey(only);
+				String paramData = redisCacheUtil.get(paramKey);
+				Map map = JSON.parseObject(paramData,Map.class);
+				String status = redisCacheUtil.get(statusKey);
+				if (CommonUtil.isEmpty(status)) {//订单超时
+					status = ConfigConstant.USER_ORDER_STATUS_004;
+				}else {
+					status = JSON.parseObject(status,String.class);
+				}
+				if (ConfigConstant.USER_ORDER_STATUS_003.equals(status)) {//订单支付成功
+					redisCacheUtil.remove(statusKey);
+				}
+
+				if (ConfigConstant.USER_ORDER_STATUS_005.equals(status)) {//订单支付失败
+					redisCacheUtil.remove(statusKey);
+				}
+				Map<String,Object> result = new HashMap<String,Object>();
+				result.put("status",status);
+				logger.info("办理联盟卡扫码支付成功回调----------" + JSON.toJSONString(result));
+				socketService.socketSendMessage(ConfigConstant.SOCKET_KEY + CommonUtil.toInteger(map.get("payBusId")), JSON.toJSONString(data),"");
 				data.put("code",0);
 				data.put("msg","成功");
 				return JSON.toJSONString(data);
