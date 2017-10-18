@@ -11,6 +11,7 @@ import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.PropertiesUtil;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.RedisKeyUtil;
 import com.gt.union.main.service.IUnionMainPermitService;
@@ -51,7 +52,7 @@ public class UnionMainPermitController {
     @ApiOperation(value = "获取升级套餐链接", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/feeTradeUrl", method = RequestMethod.GET)
     public String feeTradeUrl() {
-        String url = ConfigConstant.WXMP_ROOT_URL + "/trading/index.do?setType=trading";
+        String url = PropertiesUtil.getWxmpUrl() + "/trading/index.do?setType=trading";
         return GTJsonResult.instanceSuccessMsg(url).toString();
     }
 
@@ -92,7 +93,7 @@ public class UnionMainPermitController {
                 result.put("status",status);
                 result.put("only",only);
                 logger.info("创建联盟扫码支付成功回调----------" + JSON.toJSONString(result));
-                socketService.socketSendMessage(ConfigConstant.SOCKET_KEY + CommonUtil.toInteger(map.get("payBusId")), JSON.toJSONString(data),"");
+                socketService.socketSendMessage(PropertiesUtil.getSocketKey() + CommonUtil.toInteger(map.get("payBusId")), JSON.toJSONString(data),"");
                 data.put("code", 0);
                 data.put("msg", "成功");
                 return JSON.toJSONString(data);
@@ -137,9 +138,9 @@ public class UnionMainPermitController {
             sb.append("&payWay=" + data.get("payWay"));
             sb.append("&sourceType=" + data.get("sourceType"));
             Map<String, Object> result = new HashMap<String, Object>();
-            result.put("url", ConfigConstant.WXMP_ROOT_URL + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
+            result.put("url", PropertiesUtil.getWxmpUrl() + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
             result.put("only", data.get("only"));
-            result.put("userId",ConfigConstant.SOCKET_KEY + user.getId());
+            result.put("userId", PropertiesUtil.getSocketKey() + user.getId());
             return GTJsonResult.instanceSuccessMsg(result).toString();
         } catch (Exception e) {
             logger.error("生成购买联盟服务支付二维码错误：" + e);

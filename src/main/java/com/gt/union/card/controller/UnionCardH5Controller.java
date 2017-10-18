@@ -153,7 +153,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 	@RequestMapping(value = "/cardNoImgUrl", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
 	public String cardNoImgUrl(HttpServletRequest request,
 							HttpServletResponse response, @ApiParam(name="cardNo", value = "联盟卡号", required = true) @RequestParam("cardNo") String cardNo) throws UnsupportedEncodingException {
-		String url = ConfigConstant.UNION_ROOT_URL + "/cardH5/79B4DE7C/cardNoImg?cardNo="+cardNo;
+		String url = PropertiesUtil.getUnionUrl() + "/cardH5/79B4DE7C/cardNoImg?cardNo="+cardNo;
 		return GTJsonResult.instanceSuccessMsg(url).toString();
 	}
 
@@ -161,7 +161,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 	@RequestMapping(value = "/cardNoImg", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
 	public void cardNoImg(HttpServletRequest request,
 							HttpServletResponse response, @ApiParam(name="cardNo", value = "联盟卡号", required = true) @RequestParam("cardNo") String cardNo) throws UnsupportedEncodingException {
-		String encrypt = EncryptUtil.encrypt(ConfigConstant.UNION_ENCRYPTKEY, cardNo);//加密后参数
+		String encrypt = EncryptUtil.encrypt(PropertiesUtil.getEncryptKey(), cardNo);//加密后参数
 		encrypt = URLEncoder.encode(encrypt,"UTF-8");
 		QRcodeKit.buildQRcode(encrypt, 250, 250, response);
 	}
@@ -185,7 +185,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			}
 			Map<String,Object> data = unionCardService.bindCard(vo);
 			if(CommonUtil.isNotEmpty(data.get("qrurl"))){
-				String returnUrl = ConfigConstant.UNION_PHONE_CARD_ROOT_URL + url;
+				String returnUrl = PropertiesUtil.getUnionUrl() + "/cardPhone/#/" + url;
 				Map<String,Object> qrCodeData = unionCardService.createQRCode(busId, vo.getPhone(), member.getId(),vo.getUnionId(), vo.getCardType(), 1, returnUrl, busId);
 				Map<String,Object> param = new HashMap<String,Object>();
 				param.put("totalFee", qrCodeData.get("totalFee"));

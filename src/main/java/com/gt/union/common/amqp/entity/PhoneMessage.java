@@ -2,6 +2,7 @@ package com.gt.union.common.amqp.entity;
 
 import com.alibaba.fastjson.JSON;
 import com.gt.union.common.constant.ConfigConstant;
+import com.gt.union.common.util.PropertiesUtil;
 
 /**
  * Created by Administrator on 2017/8/24 0024.
@@ -22,7 +23,7 @@ public class PhoneMessage {
     }
 
     public PhoneMessage(Integer busId, String mobiles, String content) {
-        this.company = ConfigConstant.WXMP_COMPANY;
+        this.company = PropertiesUtil.getWxmpCompany();
         this.model = ConfigConstant.SMS_UNION_MODEL;
 
         this.busId = busId;

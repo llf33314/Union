@@ -77,11 +77,11 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("login_name",username);
 		param.put("password",userpwd);
-		SignBean sign = SignUtils.sign(ConfigConstant.WXMP_SIGNKEY , JSONObject.toJSONString(param));
+		SignBean sign = SignUtils.sign(PropertiesUtil.getWxmpSignKey() , JSONObject.toJSONString(param));
 		if(CommonUtil.isEmpty(sign)){
 			throw new BusinessException("登录错误");
 		}
-		String url = ConfigConstant.WXMP_ROOT_URL + "/ErpMenus/79B4DE7C/UnionErplogin.do";
+		String url = PropertiesUtil.getWxmpUrl() + "/ErpMenus/79B4DE7C/UnionErplogin.do";
 		Map<String,Object> data = new HashMap<String,Object>();
 		data.put("sign",JSONObject.parseObject(JSON.toJSONString(sign)));
 		data.put("url",url);
@@ -189,11 +189,11 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 		Member member = SessionUtils.getLoginMember(request);
 		logger.info("提现member===" + JSON.toJSONString(member));
 		if(CommonUtil.isEmpty(member)){
-			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
+			String redirectUrl = this.authorizeMemberWx(request,PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + url);
 			return GTJsonResult.instanceSuccessMsg(null,redirectUrl).toString();
 		}
-		if(!member.getBusid().equals(ConfigConstant.WXMP_DUOFEN_BUSID)){
-			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
+		if(!member.getBusid().equals(PropertiesUtil.getDuofenBusId())){
+			String redirectUrl = this.authorizeMemberWx(request,PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + url);
 			return GTJsonResult.instanceSuccessMsg(null,redirectUrl).toString();
 		}
 		UnionVerifier verifier = com.gt.union.common.util.SessionUtils.getVerifier(request);
@@ -315,11 +315,11 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 		Member member = SessionUtils.getLoginMember(request);
 		BusUser user = SessionUtils.getUnionBus(request);
 		if(CommonUtil.isEmpty(member)){
-			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
+			String redirectUrl = this.authorizeMemberWx(request,PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + url);
 			return GTJsonResult.instanceSuccessMsg(null,redirectUrl).toString();
 		}
-		if(!member.getBusid().equals(ConfigConstant.WXMP_DUOFEN_BUSID)){
-			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
+		if(!member.getBusid().equals(PropertiesUtil.getDuofenBusId())){
+			String redirectUrl = this.authorizeMemberWx(request,PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + url);
 			return GTJsonResult.instanceSuccessMsg(null,redirectUrl).toString();
 		}
 		String payUrl = unionH5BrokerageService.payOpportunity(id, url, member.getId(), user.getId());
@@ -343,11 +343,11 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 		BusUser user = SessionUtils.getUnionBus(request);
 		Member member = SessionUtils.getLoginMember(request);
 		if(CommonUtil.isEmpty(member)){
-			String redirectUrl = this.authorizeMemberWx(request, ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
+			String redirectUrl = this.authorizeMemberWx(request, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + url);
 			return GTJsonResult.instanceSuccessMsg(null,redirectUrl).toString();
 		}
-		if(!member.getBusid().equals(ConfigConstant.WXMP_DUOFEN_BUSID)){
-			String redirectUrl = this.authorizeMemberWx(request,ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
+		if(!member.getBusid().equals(PropertiesUtil.getDuofenBusId())){
+			String redirectUrl = this.authorizeMemberWx(request,PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + url);
 			return GTJsonResult.instanceSuccessMsg(null,redirectUrl).toString();
 		}
 		String payUrl = unionH5BrokerageService.payAllOpportunity(user.getId(), unionId, fee, url, member.getId());

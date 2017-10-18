@@ -7,6 +7,7 @@ import com.gt.api.util.RequestUtils;
 import com.gt.union.api.client.shop.ShopService;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.PropertiesUtil;
 import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
 import org.springframework.stereotype.Service;
 
@@ -24,11 +25,11 @@ public class ShopServiceImpl implements ShopService {
 
 	@Override
 	public List<Map<String, Object>> listByBusId(Integer busId) {
-		String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/shopapi/6F6D9AD2/79B4DE7C/queryWxShopByBusId.do";
+		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/shopapi/6F6D9AD2/79B4DE7C/queryWxShopByBusId.do";
 		try {
 			RequestUtils req = new RequestUtils<Integer>();
 			req.setReqdata(busId);
-			Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(req),url, Map.class, ConfigConstant.WXMP_SIGN_KEY);
+			Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(req),url, Map.class, PropertiesUtil.getWxmpSignKey());
 			if(CommonUtil.isEmpty(result)){
 				return null;
 			}
@@ -52,11 +53,11 @@ public class ShopServiceImpl implements ShopService {
 
 	@Override
 	public List<WsWxShopInfoExtend> listByIds(List<Integer> list) {
-		String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/shopapi/6F6D9AD2/79B4DE7C/findByIds.do";
+		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/shopapi/6F6D9AD2/79B4DE7C/findByIds.do";
 		try {
 			RequestUtils req = new RequestUtils<Integer>();
 			req.setReqdata(list);
-			Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(req),url, Map.class, ConfigConstant.WXMP_SIGN_KEY);
+			Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(req),url, Map.class, PropertiesUtil.getWxmpSignKey());
 			if(CommonUtil.isEmpty(result)){
 				return null;
 			}

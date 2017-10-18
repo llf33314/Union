@@ -176,14 +176,14 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         Double pay = charge.getMoney();
         String orderNo = ConfigConstant.CREATE_UNION_PAY_ORDER_CODE + System.currentTimeMillis();
         String only= DateTimeKit.getDateTime(new Date(), DateTimeKit.yyyyMMddHHmmss);
-        WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(ConfigConstant.WXMP_DUOFEN_BUSID);
+        WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(PropertiesUtil.getDuofenBusId());
         data.put("totalFee",pay);
-        data.put("busId", ConfigConstant.WXMP_DUOFEN_BUSID);
+        data.put("busId", PropertiesUtil.getDuofenBusId());
         data.put("sourceType", 1);//是否墨盒支付
         data.put("payWay",0);//系统判断支付方式
         data.put("isreturn",0);//0：不需要同步跳转
         data.put("model", ConfigConstant.PAY_MODEL);
-        data.put("notifyUrl", ConfigConstant.UNION_ROOT_URL + "/unionMainPermit/79B4DE7C/paymentSuccess/" + only);
+        data.put("notifyUrl", PropertiesUtil.getUnionUrl() + "/unionMainPermit/79B4DE7C/paymentSuccess/" + only);
         data.put("orderNum", orderNo);//订单号
         data.put("payBusId", user);//支付的商家id
         data.put("isSendMessage",0);//不推送

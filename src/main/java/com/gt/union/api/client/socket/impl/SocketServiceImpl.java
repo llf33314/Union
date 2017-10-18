@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.gt.api.util.sign.SignHttpUtils;
 import com.gt.union.api.client.socket.SocketService;
 import com.gt.union.common.constant.ConfigConstant;
+import com.gt.union.common.util.PropertiesUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +29,7 @@ public class SocketServiceImpl implements SocketService{
 			}
 			params.put("pushMsg", message);
 			params.put("pushName",pushName);
-			String result = SignHttpUtils.WxmppostByHttp(ConfigConstant.WXMP_ROOT_URL+"/8A5DA52E/socket/getSocketApi.do", params, ConfigConstant.WXMP_SIGNKEY);
+			String result = SignHttpUtils.WxmppostByHttp(PropertiesUtil.getWxmpUrl()+"/8A5DA52E/socket/getSocketApi.do", params, PropertiesUtil.getWxmpSignKey());
 		}catch (Exception e){
 			return 0;
 		}

@@ -50,7 +50,7 @@ public class MemberAuthorizeOrLoginController {
 		Map<String, Object> getWxPublicMap = new HashMap<>();
 		getWxPublicMap.put("busId", busId);//商家账号
 		//判断商家信息 1是否过期 2公众号是否变更过
-		String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/busUserApi/getWxPulbicMsg.do";
+		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/busUserApi/getWxPulbicMsg.do";
 		String wxpublic = SignHttpUtils.WxmppostByHttp(url, getWxPublicMap, PropertiesUtil.getWxmpSignKey());
 		if(StringUtil.isEmpty(wxpublic)){
 			throw new BusinessException("登录错误");
@@ -65,10 +65,10 @@ public class MemberAuthorizeOrLoginController {
 				throw new BusinessException("账号已过期");
 			}
 			if(CommonUtil.isNotEmpty(json.get("remoteUcLogin"))){//uc登陆
-				return GTJsonResult.instanceSuccessMsg("登录授权",ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin?busId="+busId).toString();
+				return GTJsonResult.instanceSuccessMsg("登录授权",PropertiesUtil.getUnionUrl() + "/cardPhone/#/" + "toUnionLogin?busId="+busId).toString();
 			}
 		}
-		String otherRedisKey = ConfigConstant.UNION_REDIS_NAME_PREFIX + "authority:"+System.currentTimeMillis();
+		String otherRedisKey = PropertiesUtil.redisNamePrefix() + "authority:"+System.currentTimeMillis();
 		redisService.setValue(otherRedisKey, reqUrl, 300);
 		Map<String, Object> queryMap = new HashMap<>();
 		queryMap.put("otherRedisKey", otherRedisKey);
@@ -77,7 +77,7 @@ public class MemberAuthorizeOrLoginController {
 		queryMap.put("uclogin", uclogin);
 		logger.info("queryMap=" + JSON.toJSONString(queryMap));
 		String params = URLEncoder.encode(JSON.toJSONString(queryMap), "utf-8");
-		return ConfigConstant.WXMP_ROOT_URL + "/remoteUserAuthoriPhoneController/79B4DE7C/authorizeMember.do?queryBody=" + params;
+		return PropertiesUtil.getWxmpUrl() + "/remoteUserAuthoriPhoneController/79B4DE7C/authorizeMember.do?queryBody=" + params;
 	}
 
 
@@ -89,9 +89,9 @@ public class MemberAuthorizeOrLoginController {
 			throw new BusinessException("请使用微信登录");
 		}
 		Map<String, Object> getWxPublicMap = new HashMap<>();
-		getWxPublicMap.put("busId", ConfigConstant.WXMP_DUOFEN_BUSID);//多粉
+		getWxPublicMap.put("busId", PropertiesUtil.getDuofenBusId());//多粉
 		//判断商家信息 1是否过期 2公众号是否变更过
-		String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/busUserApi/getWxPulbicMsg.do";
+		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/busUserApi/getWxPulbicMsg.do";
 		String wxpublic = SignHttpUtils.WxmppostByHttp(url, getWxPublicMap, PropertiesUtil.getWxmpSignKey());
 		if(StringUtil.isEmpty(wxpublic)){
 			throw new BusinessException("微信登录错误");
@@ -106,15 +106,15 @@ public class MemberAuthorizeOrLoginController {
 				throw new BusinessException("账号已过期");
 			}
 		}
-		String otherRedisKey = ConfigConstant.UNION_REDIS_NAME_PREFIX + "authority:"+System.currentTimeMillis();
+		String otherRedisKey = PropertiesUtil.redisNamePrefix() + "authority:"+System.currentTimeMillis();
 		redisService.setValue(otherRedisKey, reqUrl, 300);
 		Map<String, Object> queryMap = new HashMap<>();
 		queryMap.put("otherRedisKey", otherRedisKey);
 		queryMap.put("browser", 1);
-		queryMap.put("busId", ConfigConstant.WXMP_DUOFEN_BUSID);
+		queryMap.put("busId", PropertiesUtil.getDuofenBusId());
 		logger.info("queryMap=" + JSON.toJSONString(queryMap));
 		String params = URLEncoder.encode(JSON.toJSONString(queryMap), "utf-8");
-		return ConfigConstant.WXMP_ROOT_URL + "/remoteUserAuthoriPhoneController/79B4DE7C/authorizeMember.do?queryBody=" + params;
+		return PropertiesUtil.getWxmpUrl() + "/remoteUserAuthoriPhoneController/79B4DE7C/authorizeMember.do?queryBody=" + params;
 	}
 
 
@@ -130,18 +130,18 @@ public class MemberAuthorizeOrLoginController {
 	protected String getCardH5LoginReturnUrl(Member member, HttpServletRequest request, Integer busId, String url) throws Exception{
 		if(CommonUtil.isEmpty(member)){
 			if(CommonUtil.judgeBrowser(request) == 1){//微信
-				String redirectUrl = authorizeMember(request, busId, 1, ConfigConstant.UNION_PHONE_CARD_ROOT_URL + url);
+				String redirectUrl = authorizeMember(request, busId, 1, PropertiesUtil.getUnionUrl() + "/cardPhone/#/" + url);
 				return GTJsonResult.instanceSuccessMsg("登录授权",redirectUrl).toString();
 			}else {//其他浏览器
-				return GTJsonResult.instanceSuccessMsg("登录授权",ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin?busId="+busId).toString();
+				return GTJsonResult.instanceSuccessMsg("登录授权",PropertiesUtil.getUnionUrl() + "/cardPhone/#/" + "toUnionLogin?busId="+busId).toString();
 			}
 		}
 		if(!member.getBusid().equals(busId)){
 			if(CommonUtil.judgeBrowser(request) == 1){//微信
-				String redirectUrl = authorizeMember(request, busId, 1, ConfigConstant.UNION_PHONE_CARD_ROOT_URL + url);
+				String redirectUrl = authorizeMember(request, busId, 1, PropertiesUtil.getUnionUrl() + "/cardPhone/#/" + url);
 				return GTJsonResult.instanceSuccessMsg("登录授权",redirectUrl).toString();
 			}else {//其他浏览器
-				return GTJsonResult.instanceSuccessMsg("登录授权",ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin?busId="+busId).toString();
+				return GTJsonResult.instanceSuccessMsg("登录授权",PropertiesUtil.getUnionUrl() + "/cardPhone/#/" + "toUnionLogin?busId="+busId).toString();
 			}
 		}
 		return null;

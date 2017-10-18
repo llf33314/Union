@@ -12,10 +12,7 @@ import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.DataExportException;
 import com.gt.union.common.response.GTJsonResult;
-import com.gt.union.common.util.BigDecimalUtil;
-import com.gt.union.common.util.ExportUtil;
-import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.QRcodeKit;
+import com.gt.union.common.util.*;
 import com.gt.union.log.service.IUnionLogErrorService;
 import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.service.IUnionMainService;
@@ -189,14 +186,14 @@ public class UnionBrokerageIncomeController {
     @ApiOperation(value = "获取佣金平台二维码图片链接", notes = "获取佣金平台二维码图片链接", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/indexQRUrl", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
     public String indexQRUrl(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
-        String url = ConfigConstant.UNION_ROOT_URL + "/unionBrokerageIncome/indexQR";
+        String url = PropertiesUtil.getUnionUrl() + "/unionBrokerageIncome/indexQR";
         return GTJsonResult.instanceSuccessMsg(url).toString();
     }
 
     @ApiOperation(value = "获取佣金平台二维码图片", notes = "获取佣金平台二维码图片", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/indexQR", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
     public void indexQR(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
-        String url = ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + "index";
+        String url = PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "index";
         QRcodeKit.buildQRcode(url, 250, 250, response);
     }
 }

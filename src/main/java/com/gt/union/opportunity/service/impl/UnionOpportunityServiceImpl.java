@@ -993,7 +993,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
             throw new BusinessException(CommonConstant.PARAM_ERROR);
         }
         double totalFee = 0;
-        WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(ConfigConstant.WXMP_DUOFEN_BUSID);
+        WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(PropertiesUtil.getDuofenBusId());
         for (UnionOpportunity opportunity : list) {
             if (CommonUtil.isEmpty(opportunity.getIsAccept()) || opportunity.getIsAccept() != OpportunityConstant.ACCEPT_YES) {
                 throw new BusinessException("不可支付未接受的商机");
@@ -1010,12 +1010,12 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         String orderNo = OpportunityConstant.ORDER_PREFIX + System.currentTimeMillis();
         String only = DateTimeKit.getDateTime(new Date(), DateTimeKit.yyyyMMddHHmmss);
         data.put("totalFee", totalFee);
-        data.put("busId", ConfigConstant.WXMP_DUOFEN_BUSID);
+        data.put("busId", PropertiesUtil.getDuofenBusId());
         data.put("sourceType", 1);//是否墨盒支付
         data.put("payWay", 1);//系统判断支付方式
         data.put("isreturn", 0);//0：不需要同步跳转
         data.put("model", ConfigConstant.PAY_MODEL);
-        data.put("notifyUrl", ConfigConstant.UNION_ROOT_URL + "/unionOpportunity/79B4DE7C/paymentSuccess/" + only);
+        data.put("notifyUrl", PropertiesUtil.getUnionUrl() + "/unionOpportunity/79B4DE7C/paymentSuccess/" + only);
         data.put("orderNum", orderNo);//订单号
         data.put("payBusId", busId);//支付的商家id
         data.put("isSendMessage", 0);//不推送

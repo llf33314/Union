@@ -34,9 +34,9 @@ public class BusUserServiceImpl implements IBusUserService {
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("userId", id);
         BusUser busUser = null;
-        String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/busUserApi/getBusUserApi.do";
+        String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/busUserApi/getBusUserApi.do";
         try {
-            String result = SignHttpUtils.WxmppostByHttp(url, param, ConfigConstant.WXMP_SIGN_KEY);
+            String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
             if (StringUtil.isEmpty(result)) {
                 return null;
             }
@@ -56,9 +56,9 @@ public class BusUserServiceImpl implements IBusUserService {
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("name", name);
         BusUser busUser = null;
-        String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/busUserApi/getBusUserApi.do";
+        String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/busUserApi/getBusUserApi.do";
         try {
-            String result = SignHttpUtils.WxmppostByHttp(url, param, ConfigConstant.WXMP_SIGN_KEY);
+            String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
             if (StringUtil.isEmpty(result)) {
                 return null;
             }
@@ -77,10 +77,10 @@ public class BusUserServiceImpl implements IBusUserService {
     public WxPublicUsers getWxPublicUserByBusId(Integer busId) {
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("reqdata", busId);
-        String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/wxpublicapi/6F6D9AD2/79B4DE7C/selectByUserId.do";
+        String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/wxpublicapi/6F6D9AD2/79B4DE7C/selectByUserId.do";
         WxPublicUsers publicUsers = null;
         try{
-            Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param), url, Map.class, ConfigConstant.WXMP_SIGN_KEY);
+            Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param), url, Map.class, PropertiesUtil.getWxmpSignKey());
             if (CommonUtil.isEmpty(result)) {
                 return null;
             }
@@ -109,8 +109,8 @@ public class BusUserServiceImpl implements IBusUserService {
         data.put("externalId", busId);
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("reqdata", data);
-        String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/wxpublicapi/6F6D9AD2/79B4DE7C/newqrcodeCreateFinal.do";
-        Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param), url, Map.class, ConfigConstant.WXMP_SIGN_KEY);
+        String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/wxpublicapi/6F6D9AD2/79B4DE7C/newqrcodeCreateFinal.do";
+        Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param), url, Map.class, PropertiesUtil.getWxmpSignKey());
         if (CommonUtil.isEmpty(result)) {
             return null;
         }

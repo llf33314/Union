@@ -16,6 +16,7 @@ import com.gt.union.card.service.IUnionCardService;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
+import com.gt.union.common.util.PropertiesUtil;
 import com.gt.union.common.util.RandomKit;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.RedisKeyUtil;
@@ -93,7 +94,7 @@ public class UnionCardApiController extends ApiBaseController {
 			HashMap<String, Object> smsParams = new HashMap<String,Object>();
 			smsParams.put("mobiles", requestApiParam.getReqdata().getPhone());
 			smsParams.put("content", "绑定联盟卡，验证码:" + code);
-			smsParams.put("company", ConfigConstant.WXMP_COMPANY);
+			smsParams.put("company", PropertiesUtil.getWxmpCompany());
 			smsParams.put("busId", requestApiParam.getReqdata().getBusId());
 			smsParams.put("model", ConfigConstant.SMS_UNION_MODEL);
 			Map<String,Object> param = new HashMap<String,Object>();

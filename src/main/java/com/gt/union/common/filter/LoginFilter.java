@@ -6,6 +6,7 @@ import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.response.GTJsonResult;
+import com.gt.union.common.util.PropertiesUtil;
 import org.springframework.beans.factory.annotation.Value;
 
 import javax.servlet.*;
@@ -70,7 +71,7 @@ public class LoginFilter implements Filter {
                     return;
                 } else if (url.indexOf("unionH5Brokerage") > -1) {
                     response.setCharacterEncoding("UTF-8");
-                    response.getWriter().write(GTJsonResult.instanceSuccessMsg(null, ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + "toLogin").toString());
+                    response.getWriter().write(GTJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
                     return;
                 }
             }
@@ -81,15 +82,15 @@ public class LoginFilter implements Filter {
                 return;
             } else if (url.indexOf("cardH5") > -1) {
                 response.setCharacterEncoding("UTF-8");
-                response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceSuccessMsg(null, ConfigConstant.UNION_PHONE_CARD_ROOT_URL + "toUnionLogin")));
+                response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/cardPhone/#/" + "toUnionLogin")));
                 return;
             }
-            if ("dev".equals(ConfigConstant.PROFILES)) {
+            if ("dev".equals(PropertiesUtil.getProfiles())) {
                 busUser = justForDev(req, busUser);
             }
             if (busUser == null) {
                 if (url.equals("/unionMain/")) {
-                    String wxmpLoginUrl = ConfigConstant.WXMP_ROOT_URL + "/user/tologin.do";
+                    String wxmpLoginUrl = PropertiesUtil.getWxmpUrl() + "/user/tologin.do";
                     String script = "<script type='text/javascript'>"
                             + "location.href='" + wxmpLoginUrl + "';"
                             + "</script>";
@@ -97,7 +98,7 @@ public class LoginFilter implements Filter {
                     return;
                 } else {
                     response.setCharacterEncoding("UTF-8");
-                    response.getWriter().write(GTJsonResult.instanceSuccessMsg(null, ConfigConstant.WXMP_ROOT_URL + "/user/tologin.do").toString());
+                    response.getWriter().write(GTJsonResult.instanceSuccessMsg(null, PropertiesUtil.getWxmpUrl() + "/user/tologin.do").toString());
                     return;
                 }
             }

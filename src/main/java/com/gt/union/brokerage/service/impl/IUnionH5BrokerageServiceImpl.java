@@ -323,7 +323,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		HashMap<String, Object> smsParams = new HashMap<String,Object>();
 		smsParams.put("mobiles", StringUtil.isEmpty(toMember.getNotifyPhone()) ? toMember.getDirectorPhone() : toMember.getNotifyPhone());
 		smsParams.put("content", "您尚未支付\"" + main.getName()+ "\"的\"" + fromMember.getEnterpriseName() + "\"" +opportunity.getBrokeragePrice() + "元的商机推荐佣金，请尽快支付，谢谢");
-		smsParams.put("company", ConfigConstant.WXMP_COMPANY);
+		smsParams.put("company", PropertiesUtil.getWxmpCompany());
 		smsParams.put("busId", busId);
 		smsParams.put("model", ConfigConstant.SMS_UNION_MODEL);
 		Map<String,Object> param = new HashMap<String,Object>();
@@ -391,13 +391,13 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		Map<String,Object> data = new HashMap<String,Object>();
 		data.put("totalFee",money);
 		data.put("model", ConfigConstant.ENTERPRISE_PAY_MODEL);
-		data.put("busId",ConfigConstant.WXMP_DUOFEN_BUSID);
+		data.put("busId",PropertiesUtil.getDuofenBusId());
 		data.put("appidType",0);//公众号
 		data.put("orderNum",orderNo);
 		data.put("memberId",memberId);
 		data.put("desc", "联盟商机佣金");
-		data.put("returnUrl",ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
-		data.put("notifyUrl",ConfigConstant.UNION_ROOT_URL + "/unionH5Brokerage/79B4DE7C/paymentAllSuccess/"+ busId + "/" + (unionId == null ? 0 : unionId));
+		data.put("returnUrl",PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + url);
+		data.put("notifyUrl",PropertiesUtil.getUnionUrl() + "/unionH5Brokerage/79B4DE7C/paymentAllSuccess/"+ busId + "/" + (unionId == null ? 0 : unionId));
 		data.put("isSendMessage",0);//不需要推送
 		data.put("payWay",1);//微信支付
 		data.put("sourceType",1);
@@ -453,13 +453,13 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		Map<String,Object> data = new HashMap<String,Object>();
 		data.put("totalFee",opportunity.getBrokeragePrice());
 		data.put("model", ConfigConstant.ENTERPRISE_PAY_MODEL);
-		data.put("busId",ConfigConstant.WXMP_DUOFEN_BUSID);
+		data.put("busId",PropertiesUtil.getDuofenBusId());
 		data.put("appidType",0);//公众号
 		data.put("orderNum",orderNo);
 		data.put("memberId",memberId);
 		data.put("desc", "联盟商机佣金");
-		data.put("returnUrl",ConfigConstant.UNION_PHONE_BROKERAGE_ROOT_URL + url);
-		data.put("notifyUrl",ConfigConstant.UNION_ROOT_URL + "/unionH5Brokerage/79B4DE7C/paymentOneSuccess/" + id);
+		data.put("returnUrl",PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + url);
+		data.put("notifyUrl",PropertiesUtil.getUnionUrl() + "/unionH5Brokerage/79B4DE7C/paymentOneSuccess/" + id);
 		data.put("isSendMessage",0);//不需要推送
 		data.put("payWay",1);//微信支付
 		data.put("sourceType",1);

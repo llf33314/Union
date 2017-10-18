@@ -6,6 +6,7 @@ import com.gt.api.util.HttpClienUtils;
 import com.gt.union.api.client.address.AddressService;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.PropertiesUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -21,9 +22,9 @@ public class AddressServiceImpl implements AddressService {
 
 	@Override
 	public List<Map> getByIds(Map<String,Object> param) {
-		String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/shopapi/6F6D9AD2/79B4DE7C/queryBasisCityIds.do";
+		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/shopapi/6F6D9AD2/79B4DE7C/queryBasisCityIds.do";
 		try {
-			Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param),url, Map.class, ConfigConstant.WXMP_SIGN_KEY);
+			Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param),url, Map.class, PropertiesUtil.getWxmpSignKey());
 			if(CommonUtil.isEmpty(result)){
 				return null;
 			}
@@ -40,9 +41,9 @@ public class AddressServiceImpl implements AddressService {
 
 	@Override
 	public List<Map> getByCityCode(Map<String, Object> param) {
-		String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/shopapi/6F6D9AD2/79B4DE7C/queryBasisByCodes.do";
+		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/shopapi/6F6D9AD2/79B4DE7C/queryBasisByCodes.do";
 		try {
-			Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param),url, Map.class, ConfigConstant.WXMP_SIGN_KEY);
+			Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param),url, Map.class, PropertiesUtil.getWxmpSignKey());
 			if(CommonUtil.isEmpty(result)){
 				return null;
 			}

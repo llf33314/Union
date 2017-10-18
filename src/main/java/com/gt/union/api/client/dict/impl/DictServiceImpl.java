@@ -131,9 +131,9 @@ public class DictServiceImpl implements IDictService {
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("style",itemKey);
 		Double exchange = null;
-		String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/dictApi/getDictApi.do";
+		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/dictApi/getDictApi.do";
 		try{
-			String result = SignHttpUtils.WxmppostByHttp(url, param, ConfigConstant.WXMP_SIGN_KEY);
+			String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
 			if(StringUtil.isEmpty(result)){
 				return null;
 			}
@@ -171,9 +171,9 @@ public class DictServiceImpl implements IDictService {
 		}
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("style",itemKey);
-		String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/dictApi/getDictApi.do";
+		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/dictApi/getDictApi.do";
 		try{
-			String result = SignHttpUtils.WxmppostByHttp(url, param, ConfigConstant.WXMP_SIGN_KEY);
+			String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
 			if(StringUtil.isEmpty(result)){
 				return null;
 			}

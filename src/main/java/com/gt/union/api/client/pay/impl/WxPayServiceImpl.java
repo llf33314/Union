@@ -15,6 +15,7 @@ import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.PropertiesUtil;
 import com.gt.union.opportunity.constant.OpportunityConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -44,9 +45,9 @@ public class WxPayServiceImpl implements WxPayService {
 
     @Override
     public int pay(Map<String,Object> param) {
-        String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/payapi.do";
+        String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/payapi.do";
         try {
-            Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param),url, Map.class, ConfigConstant.WXMP_SIGN_KEY);
+            Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param),url, Map.class, PropertiesUtil.getWxmpSignKey());
             if(CommonUtil.isEmpty(result)){
                 return 0;
             }
@@ -74,8 +75,8 @@ public class WxPayServiceImpl implements WxPayService {
         if(BigDecimalUtil.subtract(sumInCome,sumWithdrawal).doubleValue() < fee){
             throw new BusinessException("可提佣金不足");
         }
-        String url = ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/enterprisePayment.do";
-        WxPublicUsers wxPublicUsers = busUserService.getWxPublicUserByBusId(ConfigConstant.WXMP_DUOFEN_BUSID);
+        String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/enterprisePayment.do";
+        WxPublicUsers wxPublicUsers = busUserService.getWxPublicUserByBusId(PropertiesUtil.getDuofenBusId());
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("appid", wxPublicUsers.getAppid());
         params.put("partner_trade_no", OpportunityConstant.ORDER_PREFIX + System.currentTimeMillis());
@@ -88,7 +89,7 @@ public class WxPayServiceImpl implements WxPayService {
         Map<String,Object> data = new HashMap<String,Object>();
         data.put("reqdata",params);
         try {
-            Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(data),url, Map.class, ConfigConstant.WXMP_SIGN_KEY);
+            Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(data),url, Map.class, PropertiesUtil.getWxmpSignKey());
             if(CommonUtil.isEmpty(result)){
                 return 0;
             }
@@ -120,7 +121,7 @@ public class WxPayServiceImpl implements WxPayService {
         }catch (Exception e){
 
         }
-        return ConfigConstant.WXMP_ROOT_URL + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/payapi.do?obj="+obj;
+        return PropertiesUtil.getWxmpUrl() + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/payapi.do?obj="+obj;
 	}
 
 

@@ -269,7 +269,7 @@ public class UnionConsumeController {
 			result.put("status",status);
 			result.put("only",only);
 			logger.info("扫码支付核销成功回调----------" + JSON.toJSONString(result));
-			socketService.socketSendMessage(ConfigConstant.SOCKET_KEY + CommonUtil.toInteger(map.get("payBusId")), JSON.toJSONString(data),"");
+			socketService.socketSendMessage(PropertiesUtil.getSocketKey() + CommonUtil.toInteger(map.get("payBusId")), JSON.toJSONString(data),"");
 			data.put("code",0);
 			data.put("msg","成功");
 			return JSON.toJSONString(data);
@@ -310,9 +310,9 @@ public class UnionConsumeController {
 		sb.append("&payWay=" + data.get("payWay"));
 		sb.append("&sourceType=" + data.get("sourceType"));
 		Map<String, Object> result = new HashMap<String, Object>();
-		result.put("url", ConfigConstant.WXMP_ROOT_URL + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
+		result.put("url", PropertiesUtil.getWxmpUrl() + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
 		result.put("only", data.get("only"));
-		result.put("userId",ConfigConstant.SOCKET_KEY + user.getId());
+		result.put("userId",PropertiesUtil.getSocketKey() + user.getId());
 		return GTJsonResult.instanceSuccessMsg(result).toString();
 	}
 
