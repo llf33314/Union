@@ -73,11 +73,11 @@ public class UnionMainPermitController {
                 String orderNo = param.get("out_trade_no").toString();
                 logger.info("创建联盟支付成功，订单orderNo------------------" + orderNo);
                 logger.info("创建联盟支付成功，only------------------" + only);
-                unionMainPermitService.payCreateUnionSuccess(orderNo, only , CommonUtil.toInteger(param.get("payType")));
                 String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
                 String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
                 String paramData = redisCacheUtil.get(paramKey);
                 Map map = JSON.parseObject(paramData,Map.class);
+                unionMainPermitService.payCreateUnionSuccess(orderNo, only , CommonUtil.toInteger(param.get("payType")));
                 String status = redisCacheUtil.get(statusKey);
                 if (CommonUtil.isEmpty(status)) {//订单超时
                     status = ConfigConstant.USER_ORDER_STATUS_004;
@@ -94,7 +94,7 @@ public class UnionMainPermitController {
                 Map<String,Object> result = new HashMap<String,Object>();
                 result.put("status",status);
                 result.put("only",only);
-                logger.info("创建联盟扫码支付成功回调----------" + JSON.toJSONString(result));
+                logger.info("创建联盟扫码支付成功回调----------" + JSON.toJSONString(map));
                 socketService.socketSendMessage(PropertiesUtil.getSocketKey() + CommonUtil.toInteger(map.get("payBusId")), JSON.toJSONString(result),"");
                 data.put("code", 0);
                 data.put("msg", "成功");

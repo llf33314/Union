@@ -398,10 +398,10 @@ public class UnionOpportunityController {
             if(param.get("result_code").equals("SUCCESS") && param.get("result_code").equals("SUCCESS")){
                 logger.info("商机佣金支付成功，param------------------" + JSON.toJSONString(param));
                 logger.info("商机佣金支付成功，only------------------" + only);
-                unionOpportunityService.payOpportunitySuccess(param.get("out_trade_no").toString(), only);
                 String paramKey = RedisKeyUtil.getRecommendPayParamKey(only);
                 String paramData = redisCacheUtil.get(paramKey);
                 Map map = JSON.parseObject(paramData,Map.class);
+                unionOpportunityService.payOpportunitySuccess(param.get("out_trade_no").toString(), only);
                 String status = redisCacheUtil.get(statusKey);
                 if (CommonUtil.isEmpty(status)) {//订单超时
                     status = ConfigConstant.USER_ORDER_STATUS_004;

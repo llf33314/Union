@@ -282,10 +282,10 @@ public class UnionCardController {
 				String orderNo = param.get("out_trade_no").toString();
 				logger.info("前台办理联盟卡支付成功，only------------------"+only);
 				logger.info("办理联盟卡支付成功，orderNo------------------" + orderNo);
-				unionCardService.payBindCardSuccess(orderNo, only);
 				String paramKey = RedisKeyUtil.getBindCardPayParamKey(only);
 				String paramData = redisCacheUtil.get(paramKey);
 				Map map = JSON.parseObject(paramData,Map.class);
+				unionCardService.payBindCardSuccess(orderNo, only);
 				String status = redisCacheUtil.get(statusKey);
 				if (CommonUtil.isEmpty(status)) {//订单超时
 					status = ConfigConstant.USER_ORDER_STATUS_004;
