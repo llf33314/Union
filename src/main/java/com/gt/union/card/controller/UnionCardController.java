@@ -12,7 +12,6 @@ import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.card.service.IUnionCardService;
 import com.gt.union.card.vo.UnionCardBindParamVO;
 import com.gt.union.common.annotation.SysLogAnnotation;
-import com.gt.union.common.config.ConstantConfig;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BaseException;
@@ -36,7 +35,6 @@ import javax.validation.Valid;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -251,7 +249,7 @@ public class UnionCardController {
 			busId = user.getPid();
 		}
 		Integer userId = user.getId();
-		Map<String,Object> data = unionCardService.createQRCode(busId, phone, memberId,unionId, cardType, 0, "", userId);
+		Map<String,Object> data = unionCardService.createQRCode(busId, phone, memberId,unionId, cardType, 0, "", userId, 1);
 		StringBuilder sb = new StringBuilder("?");
 		sb.append("totalFee="+data.get("totalFee"));
 		sb.append("&model="+data.get("model"));
@@ -280,7 +278,7 @@ public class UnionCardController {
 		String statusKey = RedisKeyUtil.getBindCardPayStatusKey(only);
 		logger.info("办理联盟卡成功回调参数" + JSON.toJSONString(param));
 		try {
-			if(param.get("result_code").equals("SUCCESS") && param.get("result_code").equals("SUCCESS")){
+			if(param.get("result_code").equals("SUCCESS") && param.get("return_code").equals("SUCCESS")){
 				String orderNo = param.get("out_trade_no").toString();
 				logger.info("前台办理联盟卡支付成功，only------------------"+only);
 				logger.info("办理联盟卡支付成功，orderNo------------------" + orderNo);
@@ -301,11 +299,13 @@ public class UnionCardController {
 				if (ConfigConstant.USER_ORDER_STATUS_005.equals(status)) {//订单支付失败
 					redisCacheUtil.remove(statusKey);
 				}
-				Map<String,Object> result = new HashMap<String,Object>();
-				result.put("status",status);
-				result.put("only",only);
-				logger.info("办理联盟卡扫码支付成功回调----------" + JSON.toJSONString(result));
-				socketService.socketSendMessage(PropertiesUtil.getSocketKey() + CommonUtil.toInteger(map.get("userId")), JSON.toJSONString(data),"");
+				if(CommonUtil.toInteger(map.get("isSendSocketMessage")) == 1){//推送消息
+					Map<String,Object> result = new HashMap<String,Object>();
+					result.put("status",status);
+					result.put("only",only);
+					logger.info("办理联盟卡扫码支付成功回调----------" + JSON.toJSONString(result));
+					socketService.socketSendMessage(PropertiesUtil.getSocketKey() + CommonUtil.toInteger(map.get("userId")), JSON.toJSONString(result),"");
+				}
 				data.put("code",0);
 				data.put("msg","成功");
 				return JSON.toJSONString(data);

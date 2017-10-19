@@ -1012,7 +1012,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         data.put("totalFee", totalFee);
         data.put("busId", PropertiesUtil.getDuofenBusId());
         data.put("sourceType", 1);//是否墨盒支付
-        data.put("payWay", 1);//系统判断支付方式
+        data.put("payWay", 1);//微信支付
         data.put("isreturn", 0);//0：不需要同步跳转
         data.put("model", ConfigConstant.PAY_MODEL);
         data.put("notifyUrl", PropertiesUtil.getUnionUrl() + "/unionOpportunity/79B4DE7C/paymentSuccess/" + only);

@@ -413,7 +413,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		data.put("totalFee", vo.getConsumeMoney());
 		data.put("busId", PropertiesUtil.getDuofenBusId());
 		data.put("sourceType", 1);//是否墨盒支付
-		data.put("payWay", 1);//系统判断支付方式
+		data.put("payWay", 0);//系统判断支付方式
 		data.put("isreturn", 0);//0：不需要同步跳转
 		data.put("model", ConfigConstant.PAY_MODEL);
 		String encrypt = EncryptUtil.encrypt(PropertiesUtil.getEncryptKey(), orderNo);

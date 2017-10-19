@@ -67,7 +67,9 @@ public class UnionMainPermitController {
         Map<String, Object> data = new HashMap<String, Object>();
         try {
             logger.info("创建联盟支付成功回调参数" + JSON.toJSONString(param));
-            if(param.get("result_code").equals("SUCCESS") && param.get("result_code").equals("SUCCESS")){
+            if((CommonUtil.isNotEmpty(param.get("trade_status")) && param.get("trade_status").equals("TRADE_SUCCESS")) ||
+                    (CommonUtil.isNotEmpty(param.get("result_code")) && param.get("result_code").equals("SUCCESS") &&
+                            CommonUtil.isNotEmpty(param.get("return_code")) && param.get("return_code").equals("SUCCESS"))){
                 String orderNo = param.get("out_trade_no").toString();
                 logger.info("创建联盟支付成功，订单orderNo------------------" + orderNo);
                 logger.info("创建联盟支付成功，only------------------" + only);
@@ -93,7 +95,7 @@ public class UnionMainPermitController {
                 result.put("status",status);
                 result.put("only",only);
                 logger.info("创建联盟扫码支付成功回调----------" + JSON.toJSONString(result));
-                socketService.socketSendMessage(PropertiesUtil.getSocketKey() + CommonUtil.toInteger(map.get("payBusId")), JSON.toJSONString(data),"");
+                socketService.socketSendMessage(PropertiesUtil.getSocketKey() + CommonUtil.toInteger(map.get("payBusId")), JSON.toJSONString(result),"");
                 data.put("code", 0);
                 data.put("msg", "成功");
                 return JSON.toJSONString(data);

@@ -948,14 +948,14 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     }
 
     @Override
-    public Map<String, Object> createQRCode(Integer busId, String phone, Integer memberId, Integer unionId, Integer cardType, Integer isReturn, String returnUrl, Integer userId) throws Exception {
+    public Map<String, Object> createQRCode(Integer busId, String phone, Integer memberId, Integer unionId, Integer cardType, Integer isReturn, String returnUrl, Integer userId, Integer isSendSocketMessage) throws Exception {
         UnionMainCharge charge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, cardType, MainConstant.CHARGE_IS_AVAILABLE_YES);
         Double price = charge.getChargePrice();//收费价格
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("totalFee",price);
         data.put("busId", PropertiesUtil.getDuofenBusId());
         data.put("sourceType", 1);//是否墨盒支付
-        data.put("payWay", 0);//系统判断支付方式
+        data.put("payWay", 1);//微信支付
         data.put("isreturn", isReturn);//0：不需要同步跳转 1:同步跳转
         data.put("model", ConfigConstant.PAY_MODEL);
         String only = String.valueOf(System.currentTimeMillis());
@@ -977,6 +977,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         data.put("memberId", memberId);
         data.put("cardType", cardType);
         data.put("userId", userId);
+        data.put("isSendSocketMessage", isSendSocketMessage);
         String statusKey = RedisKeyUtil.getBindCardPayStatusKey(only);
         String paramKey = RedisKeyUtil.getBindCardPayParamKey(only);
         redisCacheUtil.set(paramKey, data, 360l);//5分钟

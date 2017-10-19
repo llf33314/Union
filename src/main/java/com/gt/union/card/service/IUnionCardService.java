@@ -180,9 +180,10 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 * @param unionId
 	 * @param cardType
 	 * @param userId
+	 * @param isSendSocketMessage
 	 * @return
 	 */
-	Map<String,Object> createQRCode(Integer busId, String phone, Integer memberId, Integer unionId, Integer cardType, Integer isReturn, String returnUrl, Integer userId) throws Exception;
+	Map<String,Object> createQRCode(Integer busId, String phone, Integer memberId, Integer unionId, Integer cardType, Integer isReturn, String returnUrl, Integer userId, Integer isSendSocketMessage) throws Exception;
 
 	/**
 	 * 办理联盟卡成功回调

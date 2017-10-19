@@ -242,37 +242,44 @@ public class UnionConsumeController {
 	@RequestMapping(value = "/79B4DE7C/paymentSuccess/{Encrypt}/{only}", method = RequestMethod.POST)
 	public String payConsumeSuccess(HttpServletRequest request, HttpServletResponse response
 			, @PathVariable(name = "Encrypt", required = true) String encrypt
-			, @PathVariable(name = "only", required = true) String only) {
+			, @PathVariable(name = "only", required = true) String only, @RequestBody Map<String,Object> param) {
 		Map<String,Object> data = new HashMap<String,Object>();
 		try {
 			logger.info("消费核销支付成功，Encrypt------------------" + encrypt);
 			logger.info("消费核销支付成功，only------------------" + only);
-			unionConsumeService.payConsumeSuccess(encrypt, only);
-			String statusKey = RedisKeyUtil.getConsumePayStatusKey(only);
-			String paramKey = RedisKeyUtil.getConsumePayParamKey(only);
-			String paramData = redisCacheUtil.get(paramKey);
-			Map map = JSON.parseObject(paramData,Map.class);
-			String status = redisCacheUtil.get(statusKey);
-			if (CommonUtil.isEmpty(status)) {//订单超时
-				status = ConfigConstant.USER_ORDER_STATUS_004;
-			}else {
-				status = JSON.parseObject(status,String.class);
-			}
-			if (ConfigConstant.USER_ORDER_STATUS_003.equals(status)) {//订单支付成功
-				redisCacheUtil.remove(statusKey);
-			}
+			logger.info("消费核销支付成功回调参数" + JSON.toJSONString(param));
+			if((CommonUtil.isNotEmpty(param.get("trade_status")) && param.get("trade_status").equals("TRADE_SUCCESS")) ||
+					(CommonUtil.isNotEmpty(param.get("result_code")) && param.get("result_code").equals("SUCCESS") &&
+							CommonUtil.isNotEmpty(param.get("return_code")) && param.get("return_code").equals("SUCCESS"))){
+				unionConsumeService.payConsumeSuccess(encrypt, only);
+				String statusKey = RedisKeyUtil.getConsumePayStatusKey(only);
+				String paramKey = RedisKeyUtil.getConsumePayParamKey(only);
+				String paramData = redisCacheUtil.get(paramKey);
+				Map map = JSON.parseObject(paramData,Map.class);
+				String status = redisCacheUtil.get(statusKey);
+				if (CommonUtil.isEmpty(status)) {//订单超时
+					status = ConfigConstant.USER_ORDER_STATUS_004;
+				}else {
+					status = JSON.parseObject(status,String.class);
+				}
+				if (ConfigConstant.USER_ORDER_STATUS_003.equals(status)) {//订单支付成功
+					redisCacheUtil.remove(statusKey);
+				}
 
-			if (ConfigConstant.USER_ORDER_STATUS_005.equals(status)) {//订单支付失败
-				redisCacheUtil.remove(statusKey);
+				if (ConfigConstant.USER_ORDER_STATUS_005.equals(status)) {//订单支付失败
+					redisCacheUtil.remove(statusKey);
+				}
+				Map<String,Object> result = new HashMap<String,Object>();
+				result.put("status",status);
+				result.put("only",only);
+				logger.info("扫码支付核销成功回调----------" + JSON.toJSONString(result));
+				socketService.socketSendMessage(PropertiesUtil.getSocketKey() + CommonUtil.toInteger(map.get("payBusId")), JSON.toJSONString(result),"");
+				data.put("code",0);
+				data.put("msg","成功");
+				return JSON.toJSONString(data);
+			}else {
+				throw new BusinessException("支付失败");
 			}
-			Map<String,Object> result = new HashMap<String,Object>();
-			result.put("status",status);
-			result.put("only",only);
-			logger.info("扫码支付核销成功回调----------" + JSON.toJSONString(result));
-			socketService.socketSendMessage(PropertiesUtil.getSocketKey() + CommonUtil.toInteger(map.get("payBusId")), JSON.toJSONString(data),"");
-			data.put("code",0);
-			data.put("msg","成功");
-			return JSON.toJSONString(data);
 		} catch (BaseException e) {
 			logger.error("消费核销支付成功后，产生错误：" + e);
 			data.put("code",-1);
