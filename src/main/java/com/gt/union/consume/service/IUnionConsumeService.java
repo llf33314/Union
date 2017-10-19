@@ -129,8 +129,9 @@ public interface IUnionConsumeService extends IService<UnionConsume> {
 	 * 消费核销扫码支付成功回调
 	 * @param encrypt
 	 * @param only
+	 * @param payType
 	 */
-	void payConsumeSuccess(String encrypt, String only) throws Exception;
+	void payConsumeSuccess(String encrypt, String only, Integer payType) throws Exception;
 
 	/**
 	 * 生成消费核销支付二维码

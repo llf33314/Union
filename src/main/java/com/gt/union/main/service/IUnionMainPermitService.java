@@ -71,8 +71,9 @@ public interface IUnionMainPermitService extends IService<UnionMainPermit> {
 
     /**
      * 创建联盟支付成功后回调
-     * @param orderNo
-     * @param only
-     */
-    void payCreateUnionSuccess(String orderNo, String only) throws Exception;
+	 * @param orderNo
+	 * @param only
+	 * @param payType
+	 */
+    void payCreateUnionSuccess(String orderNo, String only, Integer payType) throws Exception;
 }

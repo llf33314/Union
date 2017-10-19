@@ -308,7 +308,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		consume.setConsumeMoney(vo.getConsumeMoney());
 		consume.setPayMoney(vo.getPayMoney());
 		consume.setShopId(vo.getShopId());
-		consume.setPayType(vo.getPayType());
+		consume.setPayType(vo.getPayType() == 0 ? 1 : vo.getPayType() == 1 ? 2 : 0);
 		consume.setType(ConsumeConstant.CONSUME_TYPE_OFFLINE);
 		consume.setModel(ConsumeConstant.MODEL_TYPE_DEFAULT);
 		consume.setModelDesc(ConsumeConstant.MODEL_DESC_DEFAULT);
@@ -365,7 +365,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 
 	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public void payConsumeSuccess(String encrypt, String only) throws Exception{
+	public void payConsumeSuccess(String encrypt, String only, Integer payType) throws Exception{
 		//解密参数
 		String orderNo = EncryptUtil.decrypt(PropertiesUtil.getEncryptKey(), encrypt);
 		String paramKey = RedisKeyUtil.getConsumePayParamKey(only);
@@ -373,7 +373,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		Map<String, Object> result = JSONObject.parseObject(obj, Map.class);
 		UnionConsumeParamVO vo = (UnionConsumeParamVO)result.get("unionConsumeParamVO");
 		String statusKey = RedisKeyUtil.getConsumePayStatusKey(only);
-
+		vo.setPayType(payType);
 		consumeSuccess(vo, orderNo);
 
 		redisCacheUtil.remove(paramKey);

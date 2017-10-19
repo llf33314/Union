@@ -251,7 +251,7 @@ public class UnionConsumeController {
 			if((CommonUtil.isNotEmpty(param.get("trade_status")) && param.get("trade_status").equals("TRADE_SUCCESS")) ||
 					(CommonUtil.isNotEmpty(param.get("result_code")) && param.get("result_code").equals("SUCCESS") &&
 							CommonUtil.isNotEmpty(param.get("return_code")) && param.get("return_code").equals("SUCCESS"))){
-				unionConsumeService.payConsumeSuccess(encrypt, only);
+				unionConsumeService.payConsumeSuccess(encrypt, only, CommonUtil.toInteger(param.get("payType")));
 				String statusKey = RedisKeyUtil.getConsumePayStatusKey(only);
 				String paramKey = RedisKeyUtil.getConsumePayParamKey(only);
 				String paramData = redisCacheUtil.get(paramKey);

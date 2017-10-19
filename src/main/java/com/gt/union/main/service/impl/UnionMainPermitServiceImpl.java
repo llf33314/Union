@@ -1,6 +1,5 @@
 package com.gt.union.main.service.impl;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
@@ -28,7 +27,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.net.URLEncoder;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -201,7 +199,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void payCreateUnionSuccess(String orderNo, String only) throws Exception{
+    public void payCreateUnionSuccess(String orderNo, String only, Integer payType) throws Exception{
         String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
         String obj = redisCacheUtil.get(paramKey);
         if(CommonUtil.isEmpty(obj)){
@@ -234,13 +232,14 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         }
         UnionMainPermit unionMainPermit = new UnionMainPermit();
         unionMainPermit.setBusId(busId);
-        unionMainPermit.setOrderMoney(0d);
+        unionMainPermit.setOrderMoney(CommonUtil.toDouble(result.get("totalFee")));
         unionMainPermit.setDelStatus(CommonConstant.DEL_STATUS_NO);
         unionMainPermit.setCreatetime(new Date());
         unionMainPermit.setOrderDesc(result.get("desc").toString());
         unionMainPermit.setSysOrderNo(orderNo);
         unionMainPermit.setOrderStatus(MainConstant.PERMIT_ORDER_STATUS_UNPAY);
         unionMainPermit.setValidity(validity);
+        unionMainPermit.setPayType(payType == 0 ? 1 : payType == 1 ? 3 : 0);  //payType 0：微信支付 1：支付宝支付   联盟保存类型：1：微信支付 3：支付宝支付
         this.insert(unionMainPermit);
 
         UnionMember member = unionMemberService.getOwnerByBusId(busId);
