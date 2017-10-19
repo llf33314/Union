@@ -185,7 +185,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         data.put("model", ConfigConstant.PAY_MODEL);
         data.put("notifyUrl", PropertiesUtil.getUnionUrl() + "/unionMainPermit/79B4DE7C/paymentSuccess/" + only);
         data.put("orderNum", orderNo);//订单号
-        data.put("payBusId", user);//支付的商家id
+        data.put("payBusId", user.getId());//支付的商家id
         data.put("isSendMessage",0);//不推送
         data.put("appid",publicUser.getAppid());//appid
         data.put("desc", "多粉-创建联盟");
