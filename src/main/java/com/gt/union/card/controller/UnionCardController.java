@@ -210,7 +210,7 @@ public class UnionCardController {
 		Map<String,Object> data = new HashMap<String,Object>();
 		data.put("qrurl",url);
 		data.put("socketurl",PropertiesUtil.getSocketUrl());
-		data.put("userId",PropertiesUtil.getSocketKey() + user.getId());
+		data.put("userId",PropertiesUtil.getSocketKey() + "Follow_" + user.getId());
 		return GTJsonResult.instanceSuccessMsg(data).toString();
 	}
 
@@ -230,7 +230,7 @@ public class UnionCardController {
 			data.put("headurl",member.getHeadimgurl());
 			data.put("time",DateTimeKit.format(new Date(),"yyyy-MM-dd HH:mm"));
 			logger.info("关注回调----------" + JSON.toJSONString(data));
-			socketService.socketSendMessage(PropertiesUtil.getSocketKey() + CommonUtil.toInteger(param.get("externalId")), JSON.toJSONString(data),"");
+			socketService.socketSendMessage(PropertiesUtil.getSocketKey() + "Follow_" + CommonUtil.toInteger(param.get("externalId")), JSON.toJSONString(data),"");
 		} catch (Exception e) {
 			logger.error("", e);
 		}
