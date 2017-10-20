@@ -20,12 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>
  * 联盟升级收费 服务实现类
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-19 16:27:37
  */
 @Service
 public class UnionMainChargeServiceImpl extends ServiceImpl<UnionMainChargeMapper, UnionMainCharge> implements IUnionMainChargeService {
@@ -33,9 +31,7 @@ public class UnionMainChargeServiceImpl extends ServiceImpl<UnionMainChargeMappe
     @Autowired
     private RedisCacheUtil redisCacheUtil;
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - get *********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - get --------------------------------------------
 
     @Override
     public UnionMainCharge getByUnionIdAndType(Integer unionId, Integer type) throws Exception {
@@ -69,33 +65,19 @@ public class UnionMainChargeServiceImpl extends ServiceImpl<UnionMainChargeMappe
         return null;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - list ********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - list -------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - save ********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - save -------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - remove ******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - remove -----------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - update ******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - update -----------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - count *******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - count ------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - boolean *****************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - boolean ----------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - get **********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - get ********************************************
 
     @Override
     public UnionMainCharge getById(Integer chargeId) throws Exception {
@@ -119,9 +101,7 @@ public class UnionMainChargeServiceImpl extends ServiceImpl<UnionMainChargeMappe
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - list *********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - list *******************************************
 
     @Override
     public List<UnionMainCharge> listByUnionId(Integer unionId) throws Exception {
@@ -137,7 +117,7 @@ public class UnionMainChargeServiceImpl extends ServiceImpl<UnionMainChargeMappe
             return result;
         }
         //(2)get in db
-        EntityWrapper<UnionMainCharge> entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionMainCharge> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("union_id", unionId);
         result = this.selectList(entityWrapper);
@@ -145,12 +125,10 @@ public class UnionMainChargeServiceImpl extends ServiceImpl<UnionMainChargeMappe
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - save *********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - save *******************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void save(UnionMainCharge newCharge) throws Exception {
         if (newCharge == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -160,7 +138,7 @@ public class UnionMainChargeServiceImpl extends ServiceImpl<UnionMainChargeMappe
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void saveBatch(List<UnionMainCharge> newChargeList) throws Exception {
         if (newChargeList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -169,12 +147,10 @@ public class UnionMainChargeServiceImpl extends ServiceImpl<UnionMainChargeMappe
         this.removeCache(newChargeList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - remove *******************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - remove *****************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeById(Integer chargeId) throws Exception {
         if (chargeId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -190,7 +166,7 @@ public class UnionMainChargeServiceImpl extends ServiceImpl<UnionMainChargeMappe
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeBatchById(List<Integer> chargeIdList) throws Exception {
         if (chargeIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -213,12 +189,10 @@ public class UnionMainChargeServiceImpl extends ServiceImpl<UnionMainChargeMappe
         this.updateBatchById(removeChargeList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - update *******************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - update *****************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void update(UnionMainCharge updateCharge) throws Exception {
         if (updateCharge == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -232,7 +206,7 @@ public class UnionMainChargeServiceImpl extends ServiceImpl<UnionMainChargeMappe
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateBatch(List<UnionMainCharge> updateChargeList) throws Exception {
         if (updateChargeList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -252,9 +226,7 @@ public class UnionMainChargeServiceImpl extends ServiceImpl<UnionMainChargeMappe
         this.updateBatchById(updateChargeList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - cache support ************************************
-     ******************************************************************************************************************/
+    //***************************************** Object As a Service - cache support ************************************
 
     private void setCache(UnionMainCharge newCharge, Integer chargeId) {
         if (chargeId == null) {

@@ -11,7 +11,8 @@
       </el-col>
       <el-col :xs="3" :sm="3" :md="3" :lg="3" style="width:190px;">
         <div class="grid-content1 bg-purple">
-          <el-input placeholder="请输入关键字" icon="search" v-model="input" :on-icon-click="search" class="input-search fl">
+          <el-input placeholder="请输入关键字" icon="search" @keyup.enter.native="show1($event)"
+                    v-model="input" :on-icon-click="search" class="input-search fl">
           </el-input>
         </div>
       </el-col>
@@ -42,7 +43,8 @@
       <el-table-column prop="validity" label="有效期">
       </el-table-column>
     </el-table>
-    <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll">
+    <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage"
+                   :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
     </el-pagination>
   </div>
 </template>
@@ -88,6 +90,11 @@ export default {
     }
   },
   methods: {
+    show1:function(ev){
+      if(ev.keyCode == 13){
+        this.search();
+      }
+    },
     init() {
       $http.get(`/unionCard/unionId/${this.unionId}?current=1`)
         .then(res => {

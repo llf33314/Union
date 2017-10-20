@@ -4,12 +4,10 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.gt.union.main.entity.UnionMainTransfer;
 
 /**
- * <p>
-  * 联盟转移 Mapper 接口
- * </p>
+ * 联盟转移 Mapper 接口
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-19 16:27:37
  */
 public interface UnionMainTransferMapper extends BaseMapper<UnionMainTransfer> {
 

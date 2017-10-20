@@ -34,12 +34,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 /**
- * <p>
  * 联盟主表 服务实现类
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-19 16:27:37
  */
 @Service
 public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain> implements IUnionMainService {
@@ -62,9 +60,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
     @Autowired
     private RedisCacheUtil redisCacheUtil;
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - get *********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - get --------------------------------------------
 
     @Override
     public UnionMain getByBusIdAndMemberId(Integer busId, Integer memberId) throws Exception {
@@ -90,55 +86,52 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        Integer result = Integer.valueOf(0);
+        Integer result = 0;
         List<Map> dictList = this.dictService.getCreateUnionDict();
         BusUser busUser = this.busUserService.getBusUserById(busId);
         for (Map dict : dictList) {
             if (dict.get("item_key").equals(busUser.getLevel())) {
                 String itemValue = dict.get("item_value").toString();
                 String unionMember = itemValue.split(",")[1];
-                result = Integer.valueOf(unionMember); //联盟成员总数上限
+                //联盟成员总数上限
+                result = Integer.valueOf(unionMember);
                 break;
             }
         }
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - list ********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - list -------------------------------------------
 
     @Override
-    public Page<UnionMain> pageReadByBusId(Page page, Integer busId) throws Exception {
+    public Page<UnionMain> pageReadByBusId(Page<UnionMain> page, Integer busId) throws Exception {
         if (page == null || busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        EntityWrapper entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .exists(new StringBuilder("SELECT m.id FROM t_union_member m")
-                        .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND m.union_id = t_union_main.id")
-                        .append("  AND m.bus_id = ").append(busId)
-                        .append("  AND m.status in(").append(MemberConstant.STATUS_IN)
-                        .append("    , ").append(MemberConstant.STATUS_APPLY_OUT)
-                        .append("    , ").append(MemberConstant.STATUS_OUTING)
-                        .append("    )")
-                        .toString());
+                .exists("SELECT m.id FROM t_union_member m"
+                        + " WHERE m.del_status = " + CommonConstant.DEL_STATUS_NO
+                        + "  AND m.union_id = t_union_main.id"
+                        + "  AND m.bus_id = " + busId
+                        + "  AND m.status in(" + MemberConstant.STATUS_IN
+                        + "    , " + MemberConstant.STATUS_APPLY_OUT
+                        + "    , " + MemberConstant.STATUS_OUTING
+                        + "    )");
         return this.selectPage(page, entityWrapper);
     }
 
     @Override
-    public Page<UnionMain> pageOtherUnionByBusId(Page page, Integer busId) throws Exception {
+    public Page<UnionMain> pageOtherUnionByBusId(Page<UnionMain> page, Integer busId) throws Exception {
         if (page == null || busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        EntityWrapper entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .notExists(new StringBuilder(" SELECT m.id FROM t_union_member m")
-                        .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND m.union_id = t_union_main.id")
-                        .append("  AND m.bus_id = ").append(busId)
-                        .toString());
+                .notExists(" SELECT m.id FROM t_union_member m"
+                        + " WHERE m.del_status = " + CommonConstant.DEL_STATUS_NO
+                        + "  AND m.union_id = t_union_main.id"
+                        + "  AND m.bus_id = " + busId);
         return this.selectPage(page, entityWrapper);
     }
 
@@ -187,13 +180,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         return result;
     }
 
-    /**
-     * 根据商家id，获取所有具有写权限的盟员身份所在的联盟列表信息
-     *
-     * @param busId {not null} 商家id
-     * @return
-     * @throws Exception
-     */
     @Override
     public List<UnionMain> listWriteByBusId(Integer busId) throws Exception {
         if (busId == null) {
@@ -219,20 +205,14 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - save ********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - save -------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - remove ******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - remove -----------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - update ******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - update -----------------------------------------
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateByMemberIdAndBusIdAndVO(Integer memberId, Integer busId, UnionMainVO vo) throws Exception {
         if (memberId == null || busId == null || vo == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -263,12 +243,18 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         }
         //(6)联盟更新信息
         UnionMain updateUnion = new UnionMain();
-        updateUnion.setId(unionId); //联盟id
-        updateUnion.setName(vo.getUnionName()); //联盟名称
-        updateUnion.setImg(vo.getUnionImg()); //联盟图标
-        updateUnion.setJoinType(vo.getJoinType()); //加盟方式
-        updateUnion.setIllustration(vo.getUnionIllustration()); //联盟说明
-        updateUnion.setIsIntegral(vo.getIsIntegral()); //是否开启积分
+        //联盟id
+        updateUnion.setId(unionId);
+        //联盟名称
+        updateUnion.setName(vo.getUnionName());
+        //联盟图标
+        updateUnion.setImg(vo.getUnionImg());
+        //加盟方式
+        updateUnion.setJoinType(vo.getJoinType());
+        //联盟说明
+        updateUnion.setIllustration(vo.getUnionIllustration());
+        //是否开启积分
+        updateUnion.setIsIntegral(vo.getIsIntegral());
 
         //(7)联盟收费实体-黑卡
         UnionMainCharge blackCharge = this.unionMainChargeService.getByUnionIdAndType(unionId, MainConstant.CHARGE_TYPE_BLACK);
@@ -279,25 +265,33 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         UnionMainCharge updateBlackCharge = new UnionMainCharge();
         updateBlackCharge.setId(blackCharge.getId());
         Integer blackIsAvailable = chargeVO.getBlackIsAvailable();
-        updateBlackCharge.setIsAvailable(blackIsAvailable); //黑卡是否启用
+        //黑卡是否启用
+        updateBlackCharge.setIsAvailable(blackIsAvailable);
         Integer blackIsCharge = chargeVO.getBlackIsCharge();
-        updateBlackCharge.setIsCharge(blackIsCharge); //黑卡是否收费
+        //黑卡是否收费
+        updateBlackCharge.setIsCharge(blackIsCharge);
         if (MainConstant.CHARGE_IS_AVAILABLE_YES == blackIsAvailable && MainConstant.CHARGE_IS_CHARGE_YES == blackIsCharge) {
             Double blackChargePrice = chargeVO.getBlackChargePrice();
             if (blackChargePrice < 1) {
                 throw new BusinessException("黑卡价格不能小于1");
             }
-            updateBlackCharge.setChargePrice(blackChargePrice); //黑卡收费价格
+            //黑卡收费价格
+            updateBlackCharge.setChargePrice(blackChargePrice);
             Integer blackValidityDay = chargeVO.getBlackValidityDay();
             if (blackValidityDay < 0) {
                 throw new BusinessException("黑卡有效期不能小于0");
             }
-            updateBlackCharge.setValidityDay(blackValidityDay); //黑卡有效期
-            updateBlackCharge.setIllustration(chargeVO.getBlackIllustration()); //黑卡说明
+            //黑卡有效期
+            updateBlackCharge.setValidityDay(blackValidityDay);
+            //黑卡说明
+            updateBlackCharge.setIllustration(chargeVO.getBlackIllustration());
         } else {
-            updateBlackCharge.setChargePrice(0D); //黑卡收费价格
-            updateBlackCharge.setValidityDay(0); //黑卡有效期
-            updateBlackCharge.setIllustration(""); //黑卡说明
+            //黑卡收费价格
+            updateBlackCharge.setChargePrice(0D);
+            //黑卡有效期
+            updateBlackCharge.setValidityDay(0);
+            //黑卡说明
+            updateBlackCharge.setIllustration("");
         }
 
         //(8)联盟收费实体-红卡
@@ -308,25 +302,33 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         UnionMainCharge updateRedCharge = new UnionMainCharge();
         updateRedCharge.setId(redCharge.getId());
         Integer redIsAvailable = chargeVO.getRedIsAvailable();
-        updateRedCharge.setIsAvailable(redIsAvailable); //红卡是否启用
+        //红卡是否启用
+        updateRedCharge.setIsAvailable(redIsAvailable);
         Integer redIsCharge = chargeVO.getRedIsCharge();
-        updateRedCharge.setIsCharge(redIsCharge); //红卡是否收费
+        //红卡是否收费
+        updateRedCharge.setIsCharge(redIsCharge);
         if (MainConstant.CHARGE_IS_AVAILABLE_YES == redIsAvailable && MainConstant.CHARGE_IS_CHARGE_YES == redIsCharge) {
             Double redChargePrice = chargeVO.getRedChargePrice();
             if (redChargePrice < 1) {
                 throw new BusinessException("红卡价格不能小于1");
             }
-            updateRedCharge.setChargePrice(redChargePrice); //红卡收费价格
+            //红卡收费价格
+            updateRedCharge.setChargePrice(redChargePrice);
             Integer redValidityDay = chargeVO.getRedValidityDay();
             if (redValidityDay < 0) {
                 throw new BusinessException("红卡有效期不能小于0");
             }
-            updateRedCharge.setValidityDay(redValidityDay); //红卡有效期
-            updateRedCharge.setIllustration(chargeVO.getRedIllustration()); //红卡说明
+            //红卡有效期
+            updateRedCharge.setValidityDay(redValidityDay);
+            //红卡说明
+            updateRedCharge.setIllustration(chargeVO.getRedIllustration());
         } else {
-            updateRedCharge.setChargePrice(0D); //红卡收费价格
-            updateRedCharge.setValidityDay(0); //红卡有效期
-            updateRedCharge.setIllustration(""); //红卡说明
+            //红卡收费价格
+            updateRedCharge.setChargePrice(0D);
+            //红卡有效期
+            updateRedCharge.setValidityDay(0);
+            //红卡说明
+            updateRedCharge.setIllustration("");
         }
         //(9)黑卡价格不能高于红卡价格
         if (MainConstant.CHARGE_IS_AVAILABLE_YES == blackIsAvailable && MainConstant.CHARGE_IS_CHARGE_YES == blackIsCharge
@@ -350,13 +352,9 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         }
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - count *******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - count ------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - boolean *****************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - boolean ----------------------------------------
 
     @Override
     public void checkUnionValid(Integer unionId) throws Exception {
@@ -423,9 +421,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         return true;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - get **********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - get ********************************************
 
     @Override
     public UnionMain getById(Integer unionId) throws Exception {
@@ -449,16 +445,12 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - list *********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - list *******************************************
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - save *********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - save *******************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void save(UnionMain newUnion) throws Exception {
         if (newUnion == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -468,7 +460,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void saveBatch(List<UnionMain> newUnionList) throws Exception {
         if (newUnionList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -477,12 +469,10 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         this.removeCache(newUnionList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - remove *******************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - remove *****************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeById(Integer unionId) throws Exception {
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -498,7 +488,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeBatchById(List<Integer> unionIdList) throws Exception {
         if (unionIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -521,12 +511,10 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         this.updateBatchById(removeUnionList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - update *******************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - update *****************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void update(UnionMain updateUnion) throws Exception {
         if (updateUnion == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -540,7 +528,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateBatch(List<UnionMain> updateUnionList) throws Exception {
         if (updateUnionList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -560,9 +548,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         this.updateBatchById(updateUnionList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - cache support ************************************
-     ******************************************************************************************************************/
+    //***************************************** Object As a Service - cache support ************************************
 
     private void setCache(UnionMain newUnion, Integer unionId) {
         if (unionId == null) {

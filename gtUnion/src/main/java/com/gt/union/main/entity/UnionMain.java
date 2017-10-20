@@ -10,12 +10,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * <p>
  * 联盟主表
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-19 16:27:37
  */
 @TableName("t_union_main")
 public class UnionMain extends Model<UnionMain> {
@@ -25,134 +23,134 @@ public class UnionMain extends Model<UnionMain> {
     /**
      * 主表
      */
-	@TableId(value="id", type= IdType.AUTO)
-	private Integer id;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
     /**
      * 创建时间
      */
-	private Date createtime;
+    private Date createtime;
     /**
      * 删除状态（0：未删除 1：删除）
      */
-	@TableField("del_status")
-	private Integer delStatus;
+    @TableField("del_status")
+    private Integer delStatus;
     /**
      * 联盟名称
      */
-	private String name;
+    private String name;
     /**
      * 联盟图标
      */
-	private String img;
+    private String img;
     /**
      * 加盟方式（1：推荐 2：申请、推荐）
      */
-	@TableField("join_type")
-	private Integer joinType;
+    @TableField("join_type")
+    private Integer joinType;
     /**
      * 联盟说明
      */
-	private String illustration;
+    private String illustration;
     /**
      * 联盟成员总数上限
      */
-	@TableField("limit_member")
-	private Integer limitMember;
+    @TableField("limit_member")
+    private Integer limitMember;
     /**
      * 联盟是否开启积分（0：否 1：是）
      */
-	@TableField("is_integral")
-	private Integer isIntegral;
+    @TableField("is_integral")
+    private Integer isIntegral;
     /**
      * 联盟有效期
      */
-	@TableField("union_validity")
-	private Date unionValidity;
+    @TableField("union_validity")
+    private Date unionValidity;
 
 
-	public Integer getId() {
-		return id;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public Date getCreatetime() {
-		return createtime;
-	}
+    public Date getCreatetime() {
+        return createtime;
+    }
 
-	public void setCreatetime(Date createtime) {
-		this.createtime = createtime;
-	}
+    public void setCreatetime(Date createtime) {
+        this.createtime = createtime;
+    }
 
-	public Integer getDelStatus() {
-		return delStatus;
-	}
+    public Integer getDelStatus() {
+        return delStatus;
+    }
 
-	public void setDelStatus(Integer delStatus) {
-		this.delStatus = delStatus;
-	}
+    public void setDelStatus(Integer delStatus) {
+        this.delStatus = delStatus;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getImg() {
-		return img;
-	}
+    public String getImg() {
+        return img;
+    }
 
-	public void setImg(String img) {
-		this.img = img;
-	}
+    public void setImg(String img) {
+        this.img = img;
+    }
 
-	public Integer getJoinType() {
-		return joinType;
-	}
+    public Integer getJoinType() {
+        return joinType;
+    }
 
-	public void setJoinType(Integer joinType) {
-		this.joinType = joinType;
-	}
+    public void setJoinType(Integer joinType) {
+        this.joinType = joinType;
+    }
 
-	public String getIllustration() {
-		return illustration;
-	}
+    public String getIllustration() {
+        return illustration;
+    }
 
-	public void setIllustration(String illustration) {
-		this.illustration = illustration;
-	}
+    public void setIllustration(String illustration) {
+        this.illustration = illustration;
+    }
 
-	public Integer getLimitMember() {
-		return limitMember;
-	}
+    public Integer getLimitMember() {
+        return limitMember;
+    }
 
-	public void setLimitMember(Integer limitMember) {
-		this.limitMember = limitMember;
-	}
+    public void setLimitMember(Integer limitMember) {
+        this.limitMember = limitMember;
+    }
 
-	public Integer getIsIntegral() {
-		return isIntegral;
-	}
+    public Integer getIsIntegral() {
+        return isIntegral;
+    }
 
-	public void setIsIntegral(Integer isIntegral) {
-		this.isIntegral = isIntegral;
-	}
+    public void setIsIntegral(Integer isIntegral) {
+        this.isIntegral = isIntegral;
+    }
 
-	public Date getUnionValidity() {
-		return unionValidity;
-	}
+    public Date getUnionValidity() {
+        return unionValidity;
+    }
 
-	public void setUnionValidity(Date unionValidity) {
-		this.unionValidity = unionValidity;
-	}
+    public void setUnionValidity(Date unionValidity) {
+        this.unionValidity = unionValidity;
+    }
 
-	@Override
-	protected Serializable pkVal() {
-		return this.id;
-	}
+    @Override
+    protected Serializable pkVal() {
+        return this.id;
+    }
 
 }

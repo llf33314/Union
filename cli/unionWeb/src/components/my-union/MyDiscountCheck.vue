@@ -18,7 +18,8 @@
             </el-table-column>
           </el-table>
           <div class="footer">
-            <el-pagination @current-change="handleCurrentChange2" :current-page.sync="currentPage2" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll2">
+            <el-pagination @current-change="handleCurrentChange2" :current-page.sync="currentPage2"
+                           :page-size="10" layout="prev, pager, next, jumper" :total="totalAll2" v-if="tableData2.length>0">
             </el-pagination>
           </div>
         </div>
@@ -78,7 +79,8 @@
             </el-table-column>
           </el-table>
           <div class="footer">
-            <el-pagination @current-change="handleCurrentChange3" :current-page.sync="currentPage3" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll3">
+            <el-pagination @current-change="handleCurrentChange3" :current-page.sync="currentPage3"
+                           :page-size="10" layout="prev, pager, next, jumper" :total="totalAll3" v-if="tableData3.length>0">
             </el-pagination>
           </div>
         </div>
@@ -121,7 +123,8 @@
             </el-table-column>
           </el-table>
           <div class="footer">
-            <el-pagination @current-change="handleCurrentChange4" :current-page.sync="currentPage4" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll4">
+            <el-pagination @current-change="handleCurrentChange4" :current-page.sync="currentPage4" 
+                           :page-size="10" layout="prev, pager, next, jumper" :total="totalAll4" v-if="tableData4.length>0">
             </el-pagination>
           </div>
         </div>
@@ -162,7 +165,8 @@
             </el-table-column>
           </el-table>
           <div class="footer">
-            <el-pagination @current-change="handleCurrentChange1" :current-page.sync="currentPage1" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll1">
+            <el-pagination @current-change="handleCurrentChange1" :current-page.sync="currentPage1"
+                           :page-size="10" layout="prev, pager, next, jumper" :total="totalAll1" v-if="tableData1.length>0">
             </el-pagination>
           </div>
         </div>

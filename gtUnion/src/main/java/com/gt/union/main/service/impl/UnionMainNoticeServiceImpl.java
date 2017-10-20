@@ -23,12 +23,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>
  * 联盟公告 服务实现类
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-19 16:27:37
  */
 @Service
 public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMapper, UnionMainNotice> implements IUnionMainNoticeService {
@@ -42,34 +40,16 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
     @Autowired
     private IUnionMainService unionMainService;
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - get *********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - get --------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - list ********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - list -------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - save ********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - save -------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - remove ******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - remove -----------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - update ******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - update -----------------------------------------
 
-    /**
-     * 根据商家id、盟员身份id和联盟公告内容，更新保存联盟公告信息
-     *
-     * @param busId    {not null} 商家id
-     * @param memberId {not null} 盟员身份id
-     * @param content  {not null} 联盟公告内容
-     * @return
-     */
     @Override
     public void updateOrSaveByBusIdAndMemberId(Integer busId, Integer memberId, String content) throws Exception {
         if (busId == null || memberId == null || content == null) {
@@ -101,31 +81,32 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
         List<UnionMainNotice> noticeList = this.listByUnionId(unionOwner.getUnionId());
         if (ListUtil.isNotEmpty(noticeList)) {
             UnionMainNotice updateNotice = new UnionMainNotice();
-            updateNotice.setId(noticeList.get(0).getId()); //联盟公告id
-            updateNotice.setModifytime(DateUtil.getCurrentDate()); //更新时间
-            updateNotice.setContent(content);  //公告内容
+            //联盟公告id
+            updateNotice.setId(noticeList.get(0).getId());
+            //更新时间
+            updateNotice.setModifytime(DateUtil.getCurrentDate());
+            //公告内容
+            updateNotice.setContent(content);
             this.update(updateNotice);
         } else {
             UnionMainNotice saveNotice = new UnionMainNotice();
-            saveNotice.setCreatetime(DateUtil.getCurrentDate()); //创建时间
-            saveNotice.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
-            saveNotice.setUnionId(unionOwner.getUnionId()); //联盟id
-            saveNotice.setContent(content); //公告内容
+            //创建时间
+            saveNotice.setCreatetime(DateUtil.getCurrentDate());
+            //删除状态
+            saveNotice.setDelStatus(CommonConstant.DEL_STATUS_NO);
+            //联盟id
+            saveNotice.setUnionId(unionOwner.getUnionId());
+            //公告内容
+            saveNotice.setContent(content);
             this.save(saveNotice);
         }
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - count *******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - count ------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - boolean *****************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - boolean ----------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - get **********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - get ********************************************
 
     @Override
     public UnionMainNotice getById(Integer noticeId) throws Exception {
@@ -149,9 +130,7 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - list *********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - list *******************************************
 
     @Override
     public List<UnionMainNotice> listByUnionId(Integer unionId) throws Exception {
@@ -167,7 +146,7 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
             return result;
         }
         //(2)get in db
-        EntityWrapper<UnionMainNotice> entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionMainNotice> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("union_id", unionId);
         result = this.selectList(entityWrapper);
@@ -175,12 +154,10 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - save *********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - save *******************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void save(UnionMainNotice newNotice) throws Exception {
         if (newNotice == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -190,7 +167,7 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void saveBatch(List<UnionMainNotice> newNoticeList) throws Exception {
         if (newNoticeList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -199,12 +176,10 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
         this.removeCache(newNoticeList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - remove *******************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - remove *****************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeById(Integer noticeId) throws Exception {
         if (noticeId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -220,7 +195,7 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeBatchById(List<Integer> noticeIdList) throws Exception {
         if (noticeIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -243,12 +218,10 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
         this.updateBatchById(removeNoticeList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - update *******************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - update *****************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void update(UnionMainNotice updateNotice) throws Exception {
         if (updateNotice == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -262,7 +235,7 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateBatch(List<UnionMainNotice> updateNoticeList) throws Exception {
         if (updateNoticeList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -282,9 +255,7 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
         this.updateBatchById(updateNoticeList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - cache support ************************************
-     ******************************************************************************************************************/
+    //***************************************** Object As a Service - cache support ************************************
 
     private void setCache(UnionMainNotice newNotice, Integer noticeId) {
         if (noticeId == null) {

@@ -1,7 +1,7 @@
 <template>
   <el-button @click="create" class="avatar-uploader">
     <i class="el-icon-plus"></i>
-    <p class="el-bottom">去3453创建联盟</p>
+    <p class="el-bottom">去创建联盟</p>
   </el-button>
 </template>
 
