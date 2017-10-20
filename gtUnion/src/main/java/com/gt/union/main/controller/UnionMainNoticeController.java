@@ -9,6 +9,7 @@ import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.main.entity.UnionMainNotice;
 import com.gt.union.main.service.IUnionMainNoticeService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,6 +25,7 @@ import java.util.List;
  * @author linweicong
  * @version 2017-10-19 16:27:37
  */
+@Api(description = "联盟公告")
 @RestController
 @RequestMapping("/unionMainNotice")
 public class UnionMainNoticeController {

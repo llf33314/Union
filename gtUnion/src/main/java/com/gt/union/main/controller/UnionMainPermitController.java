@@ -15,6 +15,7 @@ import com.gt.union.common.util.PropertiesUtil;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.RedisKeyUtil;
 import com.gt.union.main.service.IUnionMainPermitService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
@@ -31,6 +32,7 @@ import java.util.Map;
  * @author linweicong
  * @version 2017-10-19 16:27:37
  */
+@Api(description = "联盟许可，盟主服务")
 @RestController
 @RequestMapping("/unionMainPermit")
 public class UnionMainPermitController {

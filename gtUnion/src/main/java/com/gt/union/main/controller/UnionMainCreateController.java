@@ -9,6 +9,7 @@ import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.service.IUnionValidateService;
 import com.gt.union.main.service.IUnionMainCreateService;
 import com.gt.union.main.vo.UnionMainCreateVO;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,7 @@ import java.util.Map;
  * @author linweicong
  * @version 2017-10-19 16:27:37
  */
+@Api(description = "创建联盟")
 @RestController
 @RequestMapping("/unionMainCreate")
 public class UnionMainCreateController {
