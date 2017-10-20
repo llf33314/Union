@@ -190,6 +190,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                         .append(" WHERE toM.del_status = ").append(CommonConstant.DEL_STATUS_NO)
                         .append("  AND toM.union_id = ").append(unionMember.getUnionId())
                         .append("  AND toM.status in (").append(MemberConstant.STATUS_IN)
+                        .append("  AND toM.id != ").append(unionMember.getId())
                         .append("    ,").append(MemberConstant.STATUS_APPLY_OUT).append(")");
                 return sbSqlSegment.toString();
             }
@@ -214,6 +215,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .ne("status", MemberConstant.STATUS_APPLY_IN)
                 .eq("union_id", ownerMember.getUnionId())
+                .ne("id", ownerMember.getId())
                 .notExists(new StringBuilder(" SELECT pi.id FROM t_union_preferential_item pi")
                         .append(" WHERE pi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
                         .append("  AND pi.status = ").append(PreferentialConstant.STATUS_PASS)

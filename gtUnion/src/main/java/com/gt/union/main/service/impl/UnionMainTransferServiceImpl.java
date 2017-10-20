@@ -30,12 +30,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>
  * 联盟转移 服务实现类
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-19 16:27:37
  */
 @Service
 public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferMapper, UnionMainTransfer> implements IUnionMainTransferService {
@@ -51,9 +49,7 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
     @Autowired
     private RedisCacheUtil redisCacheUtil;
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - get *********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - get --------------------------------------------
 
     @Override
     public UnionMainTransfer getByUnionIdAndFromMemberIdAndToMemberIdAndConfirmStatus(Integer unionId, Integer fromMemberId
@@ -91,9 +87,7 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
         return transfer;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - list ********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - list -------------------------------------------
 
     @Override
     public Page pageMapByBusIdAndFromMemberId(Page page, Integer busId, Integer fromMemberId) throws Exception {
@@ -119,9 +113,7 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
         return this.unionMemberService.pageTransferMapByUnionOwner(page, unionOwner);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - save ********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - save -------------------------------------------
 
     @Override
     public void saveByBusIdAndFromMemberIdAndToMemberId(Integer busId, Integer fromMemberId, Integer toMemberId) throws Exception {
@@ -177,26 +169,28 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
                 , fromMemberId, toMemberId, MainConstant.TRANSFER_CONFIRM_STATUS_HANDLING);
         if (transfer == null) {
             UnionMainTransfer saveTransfer = new UnionMainTransfer();
-            saveTransfer.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
-            saveTransfer.setUnionId(unionId); //联盟id
-            saveTransfer.setCreatetime(DateUtil.getCurrentDate()); //创建时间
-            saveTransfer.setFromMemberId(fromMemberId); //转移盟主权限的盟员身份id
-            saveTransfer.setToMemberId(toMemberId); //目标盟员身份id
-            saveTransfer.setConfirmStatus(MainConstant.TRANSFER_CONFIRM_STATUS_HANDLING); //确认状态
+            //删除状态
+            saveTransfer.setDelStatus(CommonConstant.DEL_STATUS_NO);
+            //联盟id
+            saveTransfer.setUnionId(unionId);
+            //创建时间
+            saveTransfer.setCreatetime(DateUtil.getCurrentDate());
+            //转移盟主权限的盟员身份id
+            saveTransfer.setFromMemberId(fromMemberId);
+            //目标盟员身份id
+            saveTransfer.setToMemberId(toMemberId);
+            //确认状态
+            saveTransfer.setConfirmStatus(MainConstant.TRANSFER_CONFIRM_STATUS_HANDLING);
             this.save(saveTransfer);
         }
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - remove ******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - remove -----------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - update ******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - update -----------------------------------------
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateStatusByTransferIdAndBusIdAndToMemberId(Integer transferId, Integer busId, Integer toMemberId, Integer isOK) throws Exception {
         if (transferId == null || busId == null || toMemberId == null || isOK == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -225,15 +219,20 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
             throw new BusinessException("转移者、被转移者及转移记录上的联盟信息不一致");
         }
         switch (isOK) {
-            case CommonConstant.COMMON_NO: //拒绝
+            case CommonConstant.COMMON_NO:
+                //拒绝
                 //(6)更新转移申请
                 UnionMainTransfer updateTransfer = new UnionMainTransfer();
-                updateTransfer.setId(transfer.getId()); //转移申请id
-                updateTransfer.setConfirmStatus(MainConstant.TRANSFER_CONFIRM_STATUS_NO); //转移申请状态改为拒绝
+                //转移申请id
+                updateTransfer.setId(transfer.getId());
+                //转移申请状态改为拒绝
+                updateTransfer.setConfirmStatus(MainConstant.TRANSFER_CONFIRM_STATUS_NO);
                 //(7)事务化操作
-                this.update(updateTransfer);//更新转移申请
+                //更新转移申请
+                this.update(updateTransfer);
                 break;
-            case CommonConstant.COMMON_YES: //接受
+            case CommonConstant.COMMON_YES:
+                //接受
                 //(6)判断转移者是否仍然是盟主
                 if (fromMember.getIsUnionOwner() != MemberConstant.IS_UNION_OWNER_YES) {
                     throw new BusinessException("盟主权限已转移他人");
@@ -252,32 +251,46 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
                 }
                 //(10)更新的联盟信息
                 UnionMain updateUnion = new UnionMain();
-                updateUnion.setId(unionId); //联盟id
+                //联盟id
+                updateUnion.setId(unionId);
                 UnionMainPermit permit = this.unionMainPermitService.getByBusId(busId);
                 if (permit != null) {
-                    updateUnion.setUnionValidity(permit.getValidity()); //联盟有效期
+                    //联盟有效期
+                    updateUnion.setUnionValidity(permit.getValidity());
                 } else {
-                    updateUnion.setUnionValidity(DateUtil.parseDate(CommonConstant.UNION_VALIDITY_DEFAULT)); //联盟有效期
+                    //联盟有效期
+                    updateUnion.setUnionValidity(DateUtil.parseDate(CommonConstant.UNION_VALIDITY_DEFAULT));
                 }
                 Integer limitMember = this.unionMainService.getLimitMemberByBusId(busId);
-                updateUnion.setLimitMember(limitMember); //联盟成员总数上限
+                //联盟成员总数上限
+                updateUnion.setLimitMember(limitMember);
                 //(11)更新的转移者信息
                 UnionMember updateFromMember = new UnionMember();
-                updateFromMember.setId(fromMember.getId()); //转移者的id
-                updateFromMember.setIsUnionOwner(MemberConstant.IS_UNION_OWNER_NO); //转移者盟主身份取消
+                //转移者的id
+                updateFromMember.setId(fromMember.getId());
+                //转移者盟主身份取消
+                updateFromMember.setIsUnionOwner(MemberConstant.IS_UNION_OWNER_NO);
                 //(12)更新的被转移者信息
                 UnionMember updateToMember = new UnionMember();
-                updateToMember.setId(toMember.getId()); //被转移者的id
-                updateToMember.setIsUnionOwner(MemberConstant.IS_UNION_OWNER_YES); //被转移者添加盟主身份
+                //被转移者的id
+                updateToMember.setId(toMember.getId());
+                //被转移者添加盟主身份
+                updateToMember.setIsUnionOwner(MemberConstant.IS_UNION_OWNER_YES);
                 //(13)更新转移申请
                 UnionMainTransfer updateTransfer2 = new UnionMainTransfer();
-                updateTransfer2.setId(transferId); //转移申请id
-                updateTransfer2.setConfirmStatus(MainConstant.TRANSFER_CONFIRM_STATUS_YES); //转移申请状态改为接受
+                //转移申请id
+                updateTransfer2.setId(transferId);
+                //转移申请状态改为接受
+                updateTransfer2.setConfirmStatus(MainConstant.TRANSFER_CONFIRM_STATUS_YES);
                 //(14)事务化操作
-                this.unionMainService.update(updateUnion);//更新联盟信息
-                this.unionMemberService.update(updateFromMember);//更新转移者信息
-                this.unionMemberService.update(updateToMember); //更新被转移者
-                this.update(updateTransfer2);//更新转移申请
+                //更新联盟信息
+                this.unionMainService.update(updateUnion);
+                //更新转移者信息
+                this.unionMemberService.update(updateFromMember);
+                //更新被转移者
+                this.unionMemberService.update(updateToMember);
+                //更新转移申请
+                this.update(updateTransfer2);
                 break;
             default:
                 throw new BusinessException("无法识别的更新状态");
@@ -317,22 +330,18 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
         }
         //(6)将申请置为无效
         UnionMainTransfer updateTransfer = new UnionMainTransfer();
-        updateTransfer.setId(transferId); //转移id
-        updateTransfer.setDelStatus(CommonConstant.DEL_STATUS_YES); //删除状态
+        //转移id
+        updateTransfer.setId(transferId);
+        //删除状态
+        updateTransfer.setDelStatus(CommonConstant.DEL_STATUS_YES);
         this.update(updateTransfer);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - count *******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - count ------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - boolean *****************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - boolean ----------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - get **********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - get ********************************************
 
     @Override
     public UnionMainTransfer getById(Integer transferId) throws Exception {
@@ -356,9 +365,7 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - list *********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - list *******************************************
 
     @Override
     public List<UnionMainTransfer> listByUnionId(Integer unionId) throws Exception {
@@ -374,7 +381,7 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
             return result;
         }
         //(2)get in db
-        EntityWrapper<UnionMainTransfer> entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionMainTransfer> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("union_id", unionId);
         result = this.selectList(entityWrapper);
@@ -396,7 +403,7 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
             return result;
         }
         //(2)get in db
-        EntityWrapper<UnionMainTransfer> entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionMainTransfer> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("from_member_id", fromMemberId);
         result = this.selectList(entityWrapper);
@@ -418,7 +425,7 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
             return result;
         }
         //(2)get in db
-        EntityWrapper<UnionMainTransfer> entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionMainTransfer> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("to_member_id", toMemberId);
         result = this.selectList(entityWrapper);
@@ -426,12 +433,10 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - save *********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - save *******************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void save(UnionMainTransfer newTransfer) throws Exception {
         if (newTransfer == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -441,7 +446,7 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void saveBatch(List<UnionMainTransfer> newTransferList) throws Exception {
         if (newTransferList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -450,12 +455,10 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
         this.removeCache(newTransferList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - remove *******************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - remove *****************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeById(Integer transferId) throws Exception {
         if (transferId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -471,7 +474,7 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeBatchById(List<Integer> transferIdList) throws Exception {
         if (transferIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -494,12 +497,10 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
         this.updateBatchById(removeTransferList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - update *******************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - update *****************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void update(UnionMainTransfer updateTransfer) throws Exception {
         if (updateTransfer == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -513,7 +514,7 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateBatch(List<UnionMainTransfer> updateTransferList) throws Exception {
         if (updateTransferList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -533,9 +534,7 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
         this.updateBatchById(updateTransferList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - cache support ************************************
-     ******************************************************************************************************************/
+    //***************************************** Object As a Service - cache support ************************************
 
     private void setCache(UnionMainTransfer newTransfer, Integer transferId) {
         if (transferId == null) {

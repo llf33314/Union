@@ -12,6 +12,7 @@ import com.gt.union.common.service.IUnionValidateService;
 import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.main.vo.UnionMainVO;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -23,13 +24,12 @@ import javax.validation.Valid;
 import java.util.List;
 
 /**
- * <p>
  * 联盟主表 前端控制器
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-19 16:27:37
  */
+@Api(description = "联盟主表")
 @RestController
 @RequestMapping("/unionMain")
 public class UnionMainController {
@@ -44,7 +44,8 @@ public class UnionMainController {
 
     @ApiOperation(value = "根据联盟id，获取联盟对象信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String get(@ApiParam(name = "unionId", value = "联盟id", required = true) @PathVariable("unionId") Integer unionId) throws Exception {
+    public String get(@ApiParam(name = "unionId", value = "联盟id", required = true)
+                      @PathVariable("unionId") Integer unionId) throws Exception {
         UnionMain result = this.unionMainService.getById(unionId);
         return GTJsonResult.instanceSuccessMsg(result).toString();
     }
@@ -75,7 +76,7 @@ public class UnionMainController {
 
     @ApiOperation(value = "分页获取我的所有联盟的信息，包括我创建的、以及我加入的", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/page/myUnion", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String PageByBusId(HttpServletRequest request, Page page) throws Exception {
+    public String pageByBusId(HttpServletRequest request, Page page) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -90,10 +91,10 @@ public class UnionMainController {
     @ApiOperation(value = "更新联盟信息，要求盟主权限", produces = "application/json;charset=UTF-8")
     @SysLogAnnotation(op_function = "3", description = "更新联盟信息，要求盟主权限")
     @RequestMapping(value = "/memberId/{memberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public String method(HttpServletRequest request
-            , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
-                         @PathVariable("memberId") Integer memberId
-            , @ApiParam(name = "unionMainVO", value = "更新信息实体", required = true)
+    public String method(HttpServletRequest request,
+                         @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
+                         @PathVariable("memberId") Integer memberId,
+                         @ApiParam(name = "unionMainVO", value = "更新信息实体", required = true)
                          @RequestBody @Valid UnionMainVO unionMainVO, BindingResult bindingResult) throws Exception {
         this.unionValidateService.checkBindingResult(bindingResult);
         BusUser busUser = SessionUtils.getLoginUser(request);

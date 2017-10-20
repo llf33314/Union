@@ -22,7 +22,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by Administrator on 2017/9/8 0008.
+ * 首页 服务实现类
+ *
+ * @author linweicong
+ * @version 2017-10-19 16:27:37
  */
 @Service
 public class IndexServiceImpl implements IIndexService {
@@ -38,9 +41,7 @@ public class IndexServiceImpl implements IIndexService {
     @Autowired
     private IUnionMainChargeService unionMainChargeService;
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - get *********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - get --------------------------------------------
 
     @Override
     public Map<String, Object> index(Integer busId) throws Exception {
@@ -79,7 +80,7 @@ public class IndexServiceImpl implements IIndexService {
     }
 
     private Map<String, Object> getCreateAndJoinUnionInfo(Integer busId) throws Exception {
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>(16);
         //(1)获取我(商家)的具有盟主身份的盟员信息，以及我创建的联盟信息
         UnionMember unionOwner = this.unionMemberService.getOwnerByBusId(busId);
         UnionMain myCreateUnion = null;
@@ -87,11 +88,16 @@ public class IndexServiceImpl implements IIndexService {
             myCreateUnion = this.unionMainService.getById(unionOwner.getUnionId());
         }
         if (myCreateUnion != null) {
-            result.put("myCreateUnionMemberId", unionOwner.getId()); //我创建的联盟具有盟主权限的盟员身份id
-            result.put("myCreateUnionId", myCreateUnion.getId()); //我创建的联盟id
-            result.put("myCreateUnionName", myCreateUnion.getName()); //我创建的联盟名称
-            result.put("myCreateUnionImg", myCreateUnion.getImg()); //我创建的联盟图标
-            result.put("myCreateUnionValidity", myCreateUnion.getUnionValidity()); //我创建的联盟有效期
+            //我创建的联盟具有盟主权限的盟员身份id
+            result.put("myCreateUnionMemberId", unionOwner.getId());
+            //我创建的联盟id
+            result.put("myCreateUnionId", myCreateUnion.getId());
+            //我创建的联盟名称
+            result.put("myCreateUnionName", myCreateUnion.getName());
+            //我创建的联盟图标
+            result.put("myCreateUnionImg", myCreateUnion.getImg());
+            //我创建的联盟有效期
+            result.put("myCreateUnionValidity", myCreateUnion.getUnionValidity());
         }
 
         //(2)获取我(商家)的具有非盟主身份的盟员信息列表，以及我加入的联盟信息
@@ -101,12 +107,17 @@ public class IndexServiceImpl implements IIndexService {
             for (UnionMember unionNoOwner : unionNotOwnerList) {
                 UnionMain myJoinUnion = this.unionMainService.getById(unionNoOwner.getUnionId());
                 if (myJoinUnion != null) {
-                    Map<String, Object> myJoinUnionMap = new HashMap<>();
-                    myJoinUnionMap.put("myJoinUnionMemberId", unionNoOwner.getId()); //我加入的联盟的盟员身份id
-                    myJoinUnionMap.put("myJoinUnionId", myJoinUnion.getId()); //我加入的联盟id
-                    myJoinUnionMap.put("myJoinUnionName", myJoinUnion.getName()); //我加入的联盟名称
-                    myJoinUnionMap.put("myJoinUnionImg", myJoinUnion.getImg()); //我加入的联盟图标
-                    myJoinUnionMap.put("myJoinUnionValidity", myJoinUnion.getUnionValidity()); //我加入的联盟有效期
+                    Map<String, Object> myJoinUnionMap = new HashMap<>(16);
+                    //我加入的联盟的盟员身份id
+                    myJoinUnionMap.put("myJoinUnionMemberId", unionNoOwner.getId());
+                    //我加入的联盟id
+                    myJoinUnionMap.put("myJoinUnionId", myJoinUnion.getId());
+                    //我加入的联盟名称
+                    myJoinUnionMap.put("myJoinUnionName", myJoinUnion.getName());
+                    //我加入的联盟图标
+                    myJoinUnionMap.put("myJoinUnionImg", myJoinUnion.getImg());
+                    //我加入的联盟有效期
+                    myJoinUnionMap.put("myJoinUnionValidity", myJoinUnion.getUnionValidity());
                     myJoinUnionList.add(myJoinUnionMap);
                 }
             }
@@ -117,13 +128,15 @@ public class IndexServiceImpl implements IIndexService {
         if (defaultCurrentUnionMember == null && ListUtil.isNotEmpty(unionNotOwnerList)) {
             defaultCurrentUnionMember = unionNotOwnerList.get(0);
         }
-        result.put("defaultCurrentUnionMember", defaultCurrentUnionMember); //当前盟员身份
+        //当前盟员身份
+        result.put("defaultCurrentUnionMember", defaultCurrentUnionMember);
         return result;
     }
 
     private Map<String, Object> getCurrentMemberInfo(Map<String, Object> result, UnionMember currentUnionMember) throws Exception {
         Integer currentUnionId = currentUnionMember.getUnionId();
-        result.put("currentUnionId", currentUnionId); //当前联盟id
+        //当前联盟id
+        result.put("currentUnionId", currentUnionId);
 
         UnionMain currentUnionMain = this.unionMainService.getById(currentUnionId);
         UnionMember currentUnionOwner;
@@ -134,65 +147,67 @@ public class IndexServiceImpl implements IIndexService {
         }
         // (1)拼接当前联盟信息
         if (currentUnionMain != null) {
-            result.put("currentUnionCreatetime", currentUnionMain.getCreatetime()); //当前联盟创建时间
-            result.put("currentUnionName", currentUnionMain.getName()); //当前联盟名称
-            result.put("currentUnionImg", currentUnionMain.getImg()); //当前联盟图标
-            result.put("currentUnionIllustration", currentUnionMain.getIllustration()); //当前联盟说明
+            //当前联盟创建时间
+            result.put("currentUnionCreatetime", currentUnionMain.getCreatetime());
+            //当前联盟名称
+            result.put("currentUnionName", currentUnionMain.getName());
+            //当前联盟图标
+            result.put("currentUnionImg", currentUnionMain.getImg());
+            //当前联盟说明
+            result.put("currentUnionIllustration", currentUnionMain.getIllustration());
             Integer currentUnionLimitMemberCount = currentUnionMain.getLimitMember();
-            result.put("currentUnionLimitMemberCount", currentUnionLimitMemberCount); //当前联盟盟员总数上限
+            //当前联盟盟员总数上限
+            result.put("currentUnionLimitMemberCount", currentUnionLimitMemberCount);
             Integer currentUnionMemberCount = this.unionMemberService.countReadByUnionId(currentUnionId);
-            result.put("currentUnionMemberCount", currentUnionMemberCount); //当前联盟已加入盟员数
+            //当前联盟已加入盟员数
+            result.put("currentUnionMemberCount", currentUnionMemberCount);
             Integer currentUnionSurplusMemberCount = null;
             if (currentUnionLimitMemberCount != null && currentUnionMemberCount != null) {
-                currentUnionSurplusMemberCount = currentUnionLimitMemberCount.intValue() - currentUnionMemberCount.intValue();
+                currentUnionSurplusMemberCount = currentUnionLimitMemberCount - currentUnionMemberCount;
             }
-            result.put("currentUnionSurplusMemberCount", currentUnionSurplusMemberCount); //当前联盟剩余可加盟数
+            //当前联盟剩余可加盟数
+            result.put("currentUnionSurplusMemberCount", currentUnionSurplusMemberCount);
             UnionMainCharge unionMainCharge = this.unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(
                     currentUnionId, MainConstant.CHARGE_TYPE_RED, MainConstant.CHARGE_IS_AVAILABLE_YES);
-            result.put("isRedCardAvailable", unionMainCharge != null ? true : false); //当前联盟是否启用红卡
+            //当前联盟是否启用红卡
+            result.put("isRedCardAvailable", unionMainCharge != null);
 
             Integer currentUnionIsIntegral = currentUnionMain.getIsIntegral();
-            result.put("currentUnionIsIntegral", currentUnionIsIntegral); //当前联盟是否启用积分
+            //当前联盟是否启用积分
+            result.put("currentUnionIsIntegral", currentUnionIsIntegral);
             if (currentUnionIsIntegral == MainConstant.IS_INTEGRAL_YES) {
                 Double currentUnionIntegralSum = this.unionCardIntegralService.getCardIntegralProfitByUnionId(currentUnionId);
-                result.put("currentUnionIntegralSum", currentUnionIntegralSum); //当前联盟总积分数
+                //当前联盟总积分数
+                result.put("currentUnionIntegralSum", currentUnionIntegralSum);
             }
         }
         // (2)拼接当前盟员信息
-        result.put("currentUnionMemberId", currentUnionMember.getId()); //当前盟员id
-        result.put("currentUnionMemberIsUnionOwner", currentUnionMember.getIsUnionOwner()); //当前盟员是否是盟主
-        result.put("currentUnionMemberEnterpriseName", currentUnionMember.getEnterpriseName()); //盟员名称
+        //当前盟员id
+        result.put("currentUnionMemberId", currentUnionMember.getId());
+        //当前盟员是否是盟主
+        result.put("currentUnionMemberIsUnionOwner", currentUnionMember.getIsUnionOwner());
+        //盟员名称
+        result.put("currentUnionMemberEnterpriseName", currentUnionMember.getEnterpriseName());
 
         // (3)拼接当前联盟盟主信息
         if (currentUnionOwner != null) {
-            result.put("currentUnionOwnerEnterpriseName", currentUnionOwner.getEnterpriseName()); //盟主名称
+            //盟主名称
+            result.put("currentUnionOwnerEnterpriseName", currentUnionOwner.getEnterpriseName());
         }
 
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - list ********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - list -------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - save ********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - save -------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - remove ******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - remove -----------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - update ******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - update -----------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - count *******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - count ------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - boolean *****************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - boolean ----------------------------------------
 
 }

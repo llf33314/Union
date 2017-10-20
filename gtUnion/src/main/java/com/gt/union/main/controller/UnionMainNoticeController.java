@@ -9,6 +9,7 @@ import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.main.entity.UnionMainNotice;
 import com.gt.union.main.service.IUnionMainNoticeService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,13 +20,12 @@ import javax.validation.constraints.NotNull;
 import java.util.List;
 
 /**
- * <p>
  * 联盟公告 前端控制器
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-19 16:27:37
  */
+@Api(description = "联盟公告")
 @RestController
 @RequestMapping("/unionMainNotice")
 public class UnionMainNoticeController {
@@ -48,10 +48,10 @@ public class UnionMainNoticeController {
 
     @ApiOperation(value = "保存联盟公告", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/memberId/{memberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public String saveByUnionId(HttpServletRequest request
-            , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
-                                @PathVariable("memberId") Integer memberId
-            , @ApiParam(name = "noticeContent", value = "联盟公告信息", required = true)
+    public String saveByUnionId(HttpServletRequest request,
+                                @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
+                                @PathVariable("memberId") Integer memberId,
+                                @ApiParam(name = "noticeContent", value = "联盟公告信息", required = true)
                                 @RequestParam @NotNull String noticeContent) throws Exception {
         BusUser user = SessionUtils.getLoginUser(request);
         if (CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0) {
