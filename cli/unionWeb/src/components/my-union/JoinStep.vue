@@ -32,7 +32,7 @@
             </el-pagination>
           </el-col>
         </el-row>
-        <div id="noUnion" style="margin: 0;">
+        <div id="noUnion" style="margin: 0;" v-if="!datas.length">
           <img src="../../assets/images/noCurrent.png" >
           <p>
             平台还没有联盟数据
@@ -75,7 +75,7 @@
         <div>
           <img src="../../assets/images/success01.png" alt="">
         </div>
-        <p>提交申请成功,请耐心等待！</p>
+        <p>创建联盟成功</p>
         <el-col>
           <el-button type="primary" @click="back">我的联盟</el-button>
           <el-button @click="pre">返回</el-button>

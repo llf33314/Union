@@ -17,7 +17,7 @@
       </div>
       <div v-if="active === 2" class="sucess_if">
         <div><img src="../../assets/images/success01.png" alt=""></div>
-        <p>提交申请成功,请耐心等待！</p>
+        <p>创建联盟成功</p>
         <el-col>
           <el-button style="margin-top: 12px;" @click="back">返回</el-button>
         </el-col>

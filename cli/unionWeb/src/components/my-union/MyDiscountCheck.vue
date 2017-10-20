@@ -168,7 +168,7 @@
         </div>
       </el-tab-pane>
     </el-tabs>
-    <div class="model_1">
+    <div class="model_2">
       <!-- 弹出框 移出确认 -->
       <el-dialog title="提示" :visible.sync="visible" size="tiny">
         <hr>
