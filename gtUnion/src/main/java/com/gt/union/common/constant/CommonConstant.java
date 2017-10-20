@@ -1,7 +1,5 @@
 package com.gt.union.common.constant;
 
-import com.gt.union.common.util.PropertiesUtil;
-
 /**
  * Created by Administrator on 2017/9/8 0008.
  */
@@ -80,6 +78,5 @@ public interface CommonConstant {
      * 验证码有误
      */
     String CODE_ERROR_MSG = "验证码有误";
-
 
 }
