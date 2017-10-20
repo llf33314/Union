@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="grid-content bg-purple notice-list">项目说明</div>
+  <div id="itemDescription">
+    <div>项目说明</div>
     <textarea id="Illustration" v-model="Illustration" type="textarea" :rows="3" :maxlength="IllustrationMaxlength" @focus="IllustrationFocus" @blur="IllustrationBlur" @change="IllustrationKeydown($event)" @keydown="IllustrationKeydown($event)" @keyup="IllustrationKeydown($event)" @input="IllustrationKeydown($event)" @onpropertychange="IllustrationKeydown($event)" placeholder="这是项目说明">
     </textarea>
   </div>
