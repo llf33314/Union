@@ -43,4 +43,4 @@ hs_err_pid*
 /logs/
 /*/LOG_HOME_IS_UNDEFINED/
 /*/logs/
-
+/out/
