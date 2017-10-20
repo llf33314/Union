@@ -339,10 +339,6 @@ export default {
   a:hover{
     transition: all .5s;
     background-color: #eee;
-  img{
-    width:14px;
-    transition: all .5s;
-  }
     >span{
       font-size: 16px;
       transition: all .5s;
