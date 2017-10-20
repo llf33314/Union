@@ -4,9 +4,9 @@
     <div class="tabs">
       <h4 class="union_set">推荐盟员加入谷通联盟</h4>
       <el-form :label-position="labelPosition" label-width="100px" :model="form" :rules="rules" ref="form">
-        <el-form-item label="联盟账号:" prop="userName">
+        <el-form-item label="联盟账号:" prop="busUserName">
           <el-col :span="6">
-            <el-input v-model="form.userName" placeholder="请输入联盟账号"></el-input>
+            <el-input v-model="form.busUserName" placeholder="请输入联盟账号"></el-input>
           </el-col>
         </el-form-item>
         <el-form-item label="申请企业：" prop="enterpriseName">
@@ -74,7 +74,7 @@ export default {
       labelPosition: 'right',
       form: {},
       rules: {
-        userName: [
+        busUserName: [
           { required: true, message: '联盟账号内容不能为空，请重新输入', trigger: 'blur' }
         ],
         enterpriseName: [
@@ -111,7 +111,9 @@ export default {
           data = this.form;
           $http.post(url, data)
             .then(res => {
-              this.$message({ showClose: true, message: '保存成功', type: 'success', duration: 5000 });
+                if(res.data.success){
+                  this.$message({ showClose: true, message: '推荐成功', type: 'success', duration: 5000 });
+                }
             })
             .catch(err => {
               this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
