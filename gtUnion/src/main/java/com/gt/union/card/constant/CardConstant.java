@@ -7,32 +7,32 @@ public interface CardConstant {
     /**
      * 积分状态：收入
      */
-    public static final int INTEGRAL_STATUS_IN = 1;
+    int INTEGRAL_STATUS_IN = 1;
 
     /**
      * 积分状态：支出
      */
-    public static final int INTEGRAL_STATUS_OUT = 2;
+    int INTEGRAL_STATUS_OUT = 2;
 
     /**
      * 消费
      */
-    public static final int INTEGRAL_TYPE_CONSUME = 1;
+    int INTEGRAL_TYPE_CONSUME = 1;
 
     /**
      * 赠送
      */
-    public static final int INTEGRAL_TYPE_GIVE = 2;
+    int INTEGRAL_TYPE_GIVE = 2;
 
     /**
      * 联盟卡类型：黑卡
      */
-    public static final int TYPE_BLACK = 1;
+    int TYPE_BLACK = 1;
 
     /**
      * 联盟卡类型：红卡
      */
-    public static final int TYPE_RED = 2;
+    int TYPE_RED = 2;
 
     /**
      * 免费会员
@@ -76,7 +76,6 @@ public interface CardConstant {
 
 
     /******************************************联盟卡手机端路由列表************************************************/
-
 
 
     /******************************************联盟卡手机端路由列表************************************************/
