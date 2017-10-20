@@ -23,12 +23,10 @@ import javax.validation.Valid;
 import java.util.Map;
 
 /**
- * <p>
  * 创建联盟 前端控制器
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-19 16:27:37
  */
 @RestController
 @RequestMapping("/unionMainCreate")
@@ -58,8 +56,8 @@ public class UnionMainCreateController {
 
     @ApiOperation(value = "保存创建联盟，创建联盟两步走的第二步", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/instance", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public String saveInstance(HttpServletRequest request
-            , @ApiParam(name = "unionMainCreateVO", value = "创建联盟实体", required = true)
+    public String saveInstance(HttpServletRequest request,
+                               @ApiParam(name = "unionMainCreateVO", value = "创建联盟实体", required = true)
                                @RequestBody @Valid UnionMainCreateVO unionMainCreateVO, BindingResult bindingResult) throws Exception {
         this.unionValidateService.checkBindingResult(bindingResult);
         BusUser busUser = SessionUtils.getLoginUser(request);

@@ -20,12 +20,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>
  * 联盟设置申请填写信息 服务实现类
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-19 16:27:37
  */
 @Service
 public class UnionMainDictServiceImpl extends ServiceImpl<UnionMainDictMapper, UnionMainDict> implements IUnionMainDictService {
@@ -33,24 +31,16 @@ public class UnionMainDictServiceImpl extends ServiceImpl<UnionMainDictMapper, U
     @Autowired
     private RedisCacheUtil redisCacheUtil;
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - get *********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - get --------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - list ********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - list -------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - save ********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - save -------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - remove ******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - remove -----------------------------------------
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeByUnionId(Integer unionId) throws Exception {
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -65,21 +55,13 @@ public class UnionMainDictServiceImpl extends ServiceImpl<UnionMainDictMapper, U
         }
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - update ******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - update -----------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - count *******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - count ------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - boolean *****************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - boolean ----------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - get **********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - get ********************************************
 
     @Override
     public UnionMainDict getById(Integer dictId) throws Exception {
@@ -102,9 +84,7 @@ public class UnionMainDictServiceImpl extends ServiceImpl<UnionMainDictMapper, U
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - list *********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - list *******************************************
 
     @Override
     public List<UnionMainDict> listByUnionId(Integer unionId) throws Exception {
@@ -120,19 +100,17 @@ public class UnionMainDictServiceImpl extends ServiceImpl<UnionMainDictMapper, U
             return result;
         }
         //(2)get in db
-        EntityWrapper<UnionMainDict> entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionMainDict> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("union_id", unionId);
         result = this.selectList(entityWrapper);
         setCache(result, unionId, MainConstant.REDIS_KEY_DICT_UNION_ID);
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - save *********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - save *******************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void save(UnionMainDict newDict) throws Exception {
         if (newDict == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -142,7 +120,7 @@ public class UnionMainDictServiceImpl extends ServiceImpl<UnionMainDictMapper, U
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void saveBatch(List<UnionMainDict> newDictList) throws Exception {
         if (newDictList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -151,12 +129,10 @@ public class UnionMainDictServiceImpl extends ServiceImpl<UnionMainDictMapper, U
         this.removeCache(newDictList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - remove *******************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - remove *****************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeById(Integer dictId) throws Exception {
         if (dictId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -165,13 +141,13 @@ public class UnionMainDictServiceImpl extends ServiceImpl<UnionMainDictMapper, U
         UnionMainDict dict = this.getById(dictId);
         removeCache(dict);
         //(2)remove in db physically, special...
-        EntityWrapper<UnionMainDict> entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionMainDict> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("id", dictId);
         this.delete(entityWrapper);
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeBatchById(List<Integer> dictIdList) throws Exception {
         if (dictIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -184,17 +160,15 @@ public class UnionMainDictServiceImpl extends ServiceImpl<UnionMainDictMapper, U
         }
         removeCache(dictList);
         //(2)remove in db physically, special...
-        EntityWrapper<UnionMainDict> entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionMainDict> entityWrapper = new EntityWrapper<>();
         entityWrapper.in("id", dictIdList);
         this.delete(entityWrapper);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - update *******************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - update *****************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void update(UnionMainDict updateDict) throws Exception {
         if (updateDict == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -208,7 +182,7 @@ public class UnionMainDictServiceImpl extends ServiceImpl<UnionMainDictMapper, U
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateBatch(List<UnionMainDict> updateDictList) throws Exception {
         if (updateDictList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -228,9 +202,7 @@ public class UnionMainDictServiceImpl extends ServiceImpl<UnionMainDictMapper, U
         this.updateBatchById(updateDictList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - cache support ************************************
-     ******************************************************************************************************************/
+    //***************************************** Object As a Service - cache support ************************************
 
     private void setCache(UnionMainDict newDict, Integer dictId) {
         if (dictId == null) {

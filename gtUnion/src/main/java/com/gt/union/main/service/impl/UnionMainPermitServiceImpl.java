@@ -33,12 +33,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <p>
  * 联盟许可，盟主服务 服务实现类
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-19 16:27:37
  */
 @Service
 public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMapper, UnionMainPermit> implements IUnionMainPermitService {
@@ -60,40 +58,25 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
     @Autowired
     private IUnionSettingMainChargeService unionSettingMainChargeService;
 
-    //-------------------------------------------------- get ----------------------------------------------------------
+    //------------------------------------------ Domain Driven Design - get --------------------------------------------
 
-    /**
-     * 根据商家id获取联盟服务许可
-     *
-     * @param busId {not null} 商家id
-     * @return
-     * @throws Exception
-     */
     @Override
     public UnionMainPermit getByBusId(Integer busId) throws Exception {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        EntityWrapper entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionMainPermit> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("bus_id", busId);
         return this.selectOne(entityWrapper);
     }
 
-    /**
-     * 根据商家id和许可id获取联盟服务许可信息
-     *
-     * @param busId {not null} 商家id
-     * @param id    {not null} 联盟许可id
-     * @return
-     * @throws Exception
-     */
     @Override
     public UnionMainPermit getByBusIdAndId(Integer busId, Integer id) throws Exception {
         if (busId == null || id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        EntityWrapper entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionMainPermit> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("bus_id", busId)
                 .eq("id", id);
@@ -102,41 +85,38 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
 
     /**
      * 获取免费的盟主权限
-     *
-     * @return
      */
     private Map<Integer, Object> getFreeUnionMainAuthority() {
         List<Map> list = dictService.getCreateUnionDict();
-        Map<Integer, Object> data = new HashMap<Integer, Object>();
+        Map<Integer, Object> data = new HashMap<>(16);
         for (Map map : list) {
             String payment = map.get("item_value").toString().split(",")[0];
-            if (payment.equals("")) {
+            if ("".equals(payment)) {
                 data.put(CommonUtil.toInteger(map.get("item_key")), 1);
             }
         }
         return data;
     }
 
-    //------------------------------------------ list(include page) ---------------------------------------------------
+    //------------------------------------------ Domain Driven Design - list -------------------------------------------
 
-    /**
-     * 获取所有已过期的、但为未删除状态的盟主服务许哭列表信息
-     *
-     * @return
-     * @throws Exception
-     */
     @Override
     public List<UnionMainPermit> listExpired() throws Exception {
-        EntityWrapper entityWrapper = new EntityWrapper<>();
+        EntityWrapper<UnionMainPermit> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .lt("validity", DateUtil.getCurrentDate());
         return this.selectList(entityWrapper);
     }
 
-    //------------------------------------------------- update --------------------------------------------------------
-    //------------------------------------------------- save ----------------------------------------------------------
-    //------------------------------------------------- count ---------------------------------------------------------
-    //------------------------------------------------ boolean --------------------------------------------------------
+    //------------------------------------------ Domain Driven Design - save -------------------------------------------
+
+    //------------------------------------------ Domain Driven Design - remove -----------------------------------------
+
+    //------------------------------------------ Domain Driven Design - update -----------------------------------------
+
+    //------------------------------------------ Domain Driven Design - count ------------------------------------------
+
+    //------------------------------------------ Domain Driven Design - boolean ----------------------------------------
 
     @Override
     public boolean hasUnionMainPermit(Integer busId) throws Exception {
@@ -153,80 +133,88 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
             return true;
         }
         //（2）其他版本，如升级版、高级版需要判断是否购买了盟主服务
-        EntityWrapper entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionMainPermit> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("bus_id", busId)
                 .orderBy("id", false);
         UnionMainPermit unionMainPermit = this.selectOne(entityWrapper);
-        if (unionMainPermit != null && DateUtil.getCurrentDate().compareTo(unionMainPermit.getValidity()) < 0) {
-            return true;
-        }
-        return false;
+        return unionMainPermit != null && DateUtil.getCurrentDate().compareTo(unionMainPermit.getValidity()) < 0;
     }
 
     @Override
-    public Map<String, Object> createUnionQRCode(BusUser user, Integer chargeId) throws Exception{
-        Map<String, Object> data = new HashMap<String, Object>();
+    public Map<String, Object> createUnionQRCode(BusUser user, Integer chargeId) throws Exception {
+        Map<String, Object> data = new HashMap<>(16);
         UnionSettingMainCharge charge = unionSettingMainChargeService.getById(chargeId);
-        if(charge == null){
+        if (charge == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         Double pay = charge.getMoney();
         String orderNo = ConfigConstant.CREATE_UNION_PAY_ORDER_CODE + System.currentTimeMillis();
-        String only= DateTimeKit.getDateTime(new Date(), DateTimeKit.yyyyMMddHHmmss);
+        String only = DateTimeKit.getDateTime(new Date(), DateTimeKit.yyyyMMddHHmmss);
         WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(PropertiesUtil.getDuofenBusId());
-        data.put("totalFee",pay);
+        data.put("totalFee", pay);
         data.put("busId", PropertiesUtil.getDuofenBusId());
-        data.put("sourceType", 1);//是否墨盒支付
-        data.put("payWay",0);//系统判断支付方式
-        data.put("isreturn",0);//0：不需要同步跳转
+        //是否墨盒支付
+        data.put("sourceType", 1);
+        //系统判断支付方式
+        data.put("payWay", 0);
+        //0：不需要同步跳转
+        data.put("isreturn", 0);
         data.put("model", ConfigConstant.PAY_MODEL);
         data.put("notifyUrl", PropertiesUtil.getUnionUrl() + "/unionMainPermit/79B4DE7C/paymentSuccess/" + only);
-        data.put("orderNum", orderNo);//订单号
-        data.put("payBusId", user.getId());//支付的商家id
-        data.put("isSendMessage",0);//不推送
-        data.put("appid",publicUser.getAppid());//appid
+        //订单号
+        data.put("orderNum", orderNo);
+        //支付的商家id
+        data.put("payBusId", user.getId());
+        //不推送
+        data.put("isSendMessage", 0);
+        //appid
+        data.put("appid", publicUser.getAppid());
         data.put("desc", "多粉-创建联盟");
-        data.put("appidType",0);//公众号
+        //公众号
+        data.put("appidType", 0);
         data.put("only", only);
         data.put("infoItemKey", chargeId);
         String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
         String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
-        redisCacheUtil.set(paramKey, data, 360l);//5分钟
-        redisCacheUtil.set(statusKey,ConfigConstant.USER_ORDER_STATUS_001,300l);//等待扫码状态
+        //5分钟
+        redisCacheUtil.set(paramKey, data, 360L);
+        //等待扫码状态
+        redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_001, 300L);
         return data;
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void payCreateUnionSuccess(String orderNo, String only, Integer payType) throws Exception{
+    public void payCreateUnionSuccess(String orderNo, String only, Integer payType) throws Exception {
         String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
         String obj = redisCacheUtil.get(paramKey);
-        if(CommonUtil.isEmpty(obj)){
+        if (CommonUtil.isEmpty(obj)) {
             throw new BusinessException("订单不存在或超时");
         }
-        Map<String,Object> result = JSONObject.parseObject(obj,Map.class);
+        Map<String, Object> result = JSONObject.parseObject(obj, Map.class);
         String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
         //判断订单是否支付
-        EntityWrapper entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("sys_order_no",orderNo);
-        entityWrapper.eq("del_status",CommonConstant.DEL_STATUS_NO);
-        entityWrapper.eq("order_status",MainConstant.PERMIT_ORDER_STATUS_SUCCESS);
+        EntityWrapper<UnionMainPermit> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("sys_order_no", orderNo);
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+        entityWrapper.eq("order_status", MainConstant.PERMIT_ORDER_STATUS_SUCCESS);
         UnionMainPermit mainPermit = this.selectOne(entityWrapper);
-        if(mainPermit != null){
+        if (mainPermit != null) {
             throw new BusinessException("该订单已支付");
         }
         //添加支付订单
         Integer busId = CommonUtil.toInteger(result.get("payBusId"));
         Integer chargeId = CommonUtil.toInteger(result.get("infoItemKey"));
         UnionSettingMainCharge charge = unionSettingMainChargeService.getById(chargeId);
-        int month = (int)(new BigDecimal(charge.getYear()).multiply(new BigDecimal(12)).doubleValue());
-        Date validity = DateTimeKit.addMonths(month);//有效期
+        int month = (int) (new BigDecimal(charge.getYear()).multiply(new BigDecimal(12)).doubleValue());
+        //有效期
+        Date validity = DateTimeKit.addMonths(month);
         //判断该商家是否有许可  新增或更新许可
         UnionMainPermit myPermit = this.getByBusId(busId);
-        if(myPermit != null){
+        if (myPermit != null) {
             UnionMainPermit unionMainPermit = new UnionMainPermit();
-            unionMainPermit.setId(mainPermit.getId());
+            unionMainPermit.setId(myPermit.getId());
             unionMainPermit.setDelStatus(CommonConstant.DEL_STATUS_YES);
             this.updateById(unionMainPermit);
         }
@@ -239,13 +227,14 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         unionMainPermit.setSysOrderNo(orderNo);
         unionMainPermit.setOrderStatus(MainConstant.PERMIT_ORDER_STATUS_UNPAY);
         unionMainPermit.setValidity(validity);
-        unionMainPermit.setPayType(payType == 0 ? 1 : payType == 1 ? 3 : 0);  //payType 0：微信支付 1：支付宝支付   联盟保存类型：1：微信支付 3：支付宝支付
+        //payType 0：微信支付 1：支付宝支付   联盟保存类型：1：微信支付 3：支付宝支付
+        unionMainPermit.setPayType(payType == 0 ? 1 : payType == 1 ? 3 : 0);
         this.insert(unionMainPermit);
 
         UnionMember member = unionMemberService.getOwnerByBusId(busId);
-        if(member != null){
+        if (member != null) {
             UnionMain main = unionMainService.getById(member.getUnionId());
-            if(main != null){
+            if (main != null) {
                 //将联盟有效期续期
                 UnionMain unionMain = new UnionMain();
                 unionMain.setId(main.getId());
@@ -254,7 +243,19 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
             }
         }
         redisCacheUtil.remove(paramKey);
-        redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_003, 60l);//支付成功
+        //支付成功
+        redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_003, 60L);
     }
 
+    //******************************************* Object As a Service - get ********************************************
+
+    //******************************************* Object As a Service - list *******************************************
+
+    //******************************************* Object As a Service - save *******************************************
+
+    //******************************************* Object As a Service - remove *****************************************
+
+    //******************************************* Object As a Service - update *****************************************
+
+    //***************************************** Object As a Service - cache support ************************************
 }

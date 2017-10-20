@@ -4,12 +4,10 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.gt.union.main.entity.UnionMainDict;
 
 /**
- * <p>
-  * 联盟设置申请填写信息 Mapper 接口
- * </p>
+ * 联盟设置申请填写信息 Mapper 接口
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-19 16:27:37
  */
 public interface UnionMainDictMapper extends BaseMapper<UnionMainDict> {
 
