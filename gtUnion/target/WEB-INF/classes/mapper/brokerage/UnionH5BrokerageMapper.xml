@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gt.union.brokerage.mapper.UnionH5BrokerageMapper">
+
+
+    <!-- 获取商家未收佣金之和 -->
+    <select id="getUnComeUnionBrokerage" resultType="java.lang.Double">
+      SELECT IFNULL(SUM(o.brokerage_price), 0) money from (SELECT brokerage_price,from_member_id, to_member_id from t_union_opportunity
+      WHERE is_accept = 2 AND del_status = 0 AND from_member_id in
+        <foreach collection="members" item="member" open="(" close=")"
+                 separator=",">
+            #{member.id}
+        </foreach>
+      AND NOT EXISTS (SELECT id from t_union_brokerage_income i WHERE t_union_opportunity.id = i.opportunity_id and del_status = 0)) o
+      LEFT JOIN t_union_member m on o.to_member_id = m.id WHERE m.del_status = 0 and m.`status` in(2,3)
+    </select>
+
+    <!-- 根据商家id获取未收入的佣金列表 -->
+    <select id="listUnComeUnionBrokerage" resultType="java.util.Map">
+      SELECT o.id, o.brokerage_price money, o.modifytime time, o.is_urge_brokerage isUrge, m.enterprise_name name, um.`name` unionName from
+      (SELECT id, modifytime, brokerage_price,from_member_id, to_member_id, is_urge_brokerage from t_union_opportunity
+      WHERE is_accept = 2 AND del_status = 0 AND from_member_id in
+        <foreach collection="members" item="member" open="(" close=")"
+                 separator=",">
+            #{member.id}
+        </foreach>
+        AND NOT EXISTS (SELECT id from t_union_brokerage_income i WHERE t_union_opportunity.id = i.opportunity_id and i.del_status = 0)) o
+        LEFT JOIN t_union_member m on o.to_member_id = m.id
+		LEFT JOIN t_union_main um on um.id = m.union_id
+		WHERE m.del_status = 0 and um.del_status = 0 and m.`status` in(2,3)
+    </select>
+
+
+    <!-- 根据联盟id和商家id获取未支付给别人佣金之和   unionId可以为空 -->
+    <select id="getSumUnPayUnionBrokerage" resultType="java.lang.Double">
+        SELECT IFNULL(SUM(o.brokerage_price), 0) money from (SELECT brokerage_price,from_member_id, to_member_id from t_union_opportunity
+        WHERE is_accept = 2 AND del_status = 0 AND to_member_id in
+        <foreach collection="members" item="member" open="(" close=")"
+                 separator=",">
+            #{member.id}
+        </foreach>
+        and NOT EXISTS (SELECT * from t_union_brokerage_income i WHERE t_union_opportunity.id = i.opportunity_id and i.del_status = 0)) o
+        LEFT JOIN t_union_member m on o.from_member_id = m.id WHERE m.del_status = 0 and m.`status` in(2,3)
+    </select>
+
+
+    <!-- 根据联盟id和商家id获取未支付给别人佣金列表   unionId可以为空 -->
+    <select id="listUnPayUnionBrokerage" resultType="java.util.Map">
+        SELECT o.id, o.brokerage_price money, o.modifytime time, m2.enterprise_name name, um.`name` unionName
+        from t_union_opportunity o LEFT JOIN (SELECT id,union_id from t_union_member WHERE id in
+        <foreach collection="members" item="member" open="(" close=")"
+                 separator=",">
+            #{member.id}
+        </foreach>
+        ) m on o.to_member_id = m.id
+        LEFT JOIN t_union_main um on um.id = m.union_id
+        LEFT JOIN t_union_member m2 on m2.id = o.from_member_id
+        WHERE o.del_status = 0 and o.is_accept = 2 and o.to_member_id = m.id AND m2.del_status = 0 and um.del_status = 0 and m2.`status` in (2,3) and NOT EXISTS (SELECT * from t_union_brokerage_income i WHERE o.id = i.opportunity_id and i.del_status = 0)
+    </select>
+
+
+
+    <!-- 根据联盟id和商家id获取已支付给别人佣金列表   unionId可以为空 -->
+    <select id="listPayUnionBrokerage" resultType="java.util.Map">
+        SELECT o.brokerage_price as money, o.modifytime as time, m.enterprise_name as name, um.name as unionName
+        from (SELECT brokerage_price,from_member_id, to_member_id, modifytime from t_union_opportunity WHERE is_accept = 2 AND del_status = 0 AND to_member_id in
+        <foreach collection="members" item="member" open="(" close=")"
+                 separator=",">
+            #{member.id}
+        </foreach>
+        and EXISTS (SELECT id from t_union_brokerage_income i WHERE t_union_opportunity.id = i.opportunity_id and i.del_status = 0)) o
+        LEFT JOIN t_union_member m on o.from_member_id = m.id
+        LEFT JOIN t_union_main um on um.id = m.union_id WHERE m.del_status = 0 and um.del_status = 0 and m.`status` in (2,3)
+    </select>
+
+    <!-- 根据联盟id和商家id获取已支付给别人佣金之和   unionId可以为空 -->
+    <select id="getSumPayUnionBrokerage" resultType="java.lang.Double">
+        SELECT IFNULL(SUM(o.brokerage_price), 0) money
+        from (SELECT brokerage_price, from_member_id, to_member_id from t_union_opportunity WHERE is_accept = 2 AND del_status = 0 AND to_member_id in
+        <foreach collection="members" item="member" open="(" close=")"
+                 separator=",">
+            #{member.id}
+        </foreach>
+        and EXISTS (SELECT id from t_union_brokerage_income i WHERE t_union_opportunity.id = i.opportunity_id and i.del_status = 0)) o
+        LEFT JOIN t_union_member m on o.from_member_id = m.id WHERE m.del_status = 0 and m.`status` in (2,3)
+    </select>
+
+
+    <!-- 已支付给我的佣金明细列表 -->
+    <select id="listOpportunityPayToMe" resultType="java.util.Map">
+        SELECT o.brokerage_price as money, o.modifytime as time, m.enterprise_name as name, um.name as unionName
+        from (SELECT brokerage_price,from_member_id, to_member_id, modifytime from t_union_opportunity WHERE is_accept = 2 AND del_status = 0 AND from_member_id in
+        <foreach collection="members" item="member" open="(" close=")"
+                 separator=",">
+            #{member.id}
+        </foreach>
+        and EXISTS (SELECT id from t_union_brokerage_income i WHERE t_union_opportunity.id = i.opportunity_id and i.del_status = 0)) o
+        LEFT JOIN t_union_member m on o.to_member_id = m.id
+        LEFT JOIN t_union_main um on um.id = m.union_id WHERE m.del_status = 0 and um.del_status = 0 and m.`status` in (2,3)
+    </select>
+
+    <!-- 已支付给我的佣金明细之和 -->
+    <select id="getOpportunitySumToMe" resultType="java.lang.Double">
+        SELECT IFNULL(SUM(o.brokerage_price), 0) money
+        from (SELECT brokerage_price, to_member_id from t_union_opportunity  WHERE is_accept = 2 AND del_status = 0 AND from_member_id in
+        <foreach collection="members" item="member" open="(" close=")"
+                 separator=",">
+            #{member.id}
+        </foreach>
+        and EXISTS (SELECT id from t_union_brokerage_income i WHERE t_union_opportunity.id = i.opportunity_id and i.del_status = 0)) o
+        LEFT JOIN t_union_member m on o.to_member_id = m.id
+        WHERE m.del_status = 0 and m.`status` in (2,3)
+    </select>
+
+    <!-- 我获取的付费的售卡佣金列表 -->
+    <select id="listCardDivide" resultType="java.util.Map">
+      SELECT m.enterprise_name as name, i.createtime as time, um.name as unionName, i.money from
+      (SELECT id, member_id from t_union_card WHERE member_id in (SELECT id from t_union_member WHERE union_id in
+        <foreach collection="members" item="member" open="(" close=")"
+                 separator=",">
+            #{member.unionId}
+        </foreach>
+      and del_status = 0 and status in (2,3))) c
+      LEFT JOIN (SELECT id, card_id, createtime, money from t_union_brokerage_income WHERE bus_id = #{busId} and del_status = 0 ) i on c.id = i.card_id
+      LEFT JOIN t_union_member m on m.id = c.member_id LEFT JOIN t_union_main um on um.id = m.union_id WHERE m.del_status = 0 and um.del_status = 0 and i.id is NOT NULL
+    </select>
+
+    <!-- 我获取的付费的售卡佣金之和  -->
+    <select id="getCardDivideSum" resultType="java.lang.Double">
+        SELECT IFNULL(SUM(i.money), 0) money from (SELECT id, member_id from t_union_card WHERE member_id in
+        (SELECT id from t_union_member WHERE union_id in
+        <foreach collection="members" item="member" open="(" close=")"
+                 separator=",">
+            #{member.unionId}
+        </foreach>
+        and del_status = 0 and status in (2,3))) c
+        LEFT JOIN (SELECT id, card_id, createtime, money from t_union_brokerage_income WHERE bus_id = #{busId} and del_status = 0 ) i on c.id = i.card_id WHERE i.id is NOT NULL
+
+    </select>
+
+    <!--查询未支付的佣金列表 不分页-->
+    <select id="listAllUnPayUnionBrokerage" resultType="com.gt.union.opportunity.entity.UnionOpportunity">
+        SELECT o.* from t_union_opportunity o LEFT JOIN (SELECT id,union_id from t_union_member WHERE id in
+        <foreach collection="members" item="member" open="(" close=")"
+                 separator=",">
+            #{member.unionId}
+        </foreach>
+        ) m on o.to_member_id = m.id
+        LEFT JOIN t_union_member m2 on m2.id = o.from_member_id
+        WHERE o.del_status = 0 and o.is_accept = 2 and o.to_member_id = m.id AND m2.del_status = 0 and m2.`status` in (2,3)
+        and NOT EXISTS (SELECT id from t_union_brokerage_income i WHERE o.id = i.opportunity_id and i.del_status = 0)
+    </select>
+
+
+</mapper>

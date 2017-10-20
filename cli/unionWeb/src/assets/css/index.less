@@ -1,0 +1,989 @@
+@import "./normalize.css";
+body{
+    background: #FFFFFF;
+    font-family: "Microsoft YaHei";
+    min-width: 1280px;
+    font-size:16px;
+}
+a{
+    text-decoration: none;
+}
+div,p,ul,ul,h1,h2,h3,h4,h5,h6{
+    margin: 0;
+    padding: 0;
+}
+textarea.el-textarea__inner{
+    resize:none;
+    width: 240px;
+}
+.fr {
+  float: right;
+}
+.fl {
+  float: left;
+}
+//清除浮动
+.clearfix:before,
+.clearfix:after {
+  content: " ";
+  display: table;
+}
+.clearfix:after {
+  clear: both;
+}
+li{
+  list-style: none;
+}
+h2{
+    font-size: 16px;
+    color: #333333;
+}
+//去掉*字公共样式
+.el-form-item.is-required .el-form-item__label:before {
+  content: '';
+}
+// 注：以下都是公共样式------------------------------------------------------------------------------------------------------------------0
+//弹出框居中公共样式----------
+.model_{
+  text-align: center;
+
+  p{
+    margin-top: 15px;
+    margin-bottom: 5px;
+  }
+}
+
+//超出部分文字提示--------
+.name-wrapper{
+  min-width:100px;
+  display: block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.el-popover{
+  background: #fff!important;
+  border: 1px solid #ddd!important;
+}
+.el-popover[x-placement^=bottom] .popper__arrow{
+  border-bottom-color: #ddd!important;
+}
+
+//列表项公共样式部分------------
+#gt_lm {
+  padding: 18px;
+  >ul{
+    position: relative;
+    top: -9px;
+  }
+  img {
+    margin-right: 20px;
+  }
+  li {
+    margin-bottom: 8px;
+    font-size: 14px;
+    span {
+      font-size: 14px;
+      color: #A0A0A0
+    }
+  }
+}
+//步骤条的公共样式
+.step-top{
+  //margin: 0 50px;
+  margin-bottom: 35px;
+  height: 105px;
+  border-bottom: 1px solid #f3f3f3;
+  .el-steps {
+    height: 105px;
+    //padding-top: 40px;
+    box-sizing: border-box;
+  }
+}
+
+//地理定位图标的公共式-----------
+.dingwei{
+  .el-icon-search:before {
+    content: "";
+  }
+  .el-input__icon{
+    left: 207px;
+    background:url('../images/dingwei.png') center no-repeat;
+  }
+}
+//地理定位图底部公共的样式
+.footer_public{
+  margin-left:130px;
+}
+//选择点击图片切换的公共样式类--------------------
+.selectUnion{
+    .ruleForm1{
+      margin-top:10px;
+    }
+    //块和块之间的右边距
+    .el-radio-button{
+      margin-right: 20px;
+    }
+    .el-radio-button__inner{
+      border: none;
+      border-left: 0;
+      padding: 0;
+      border-radius: 0;
+    }
+    //点击按钮里边的默认样式
+    .el-radio-button:first-child .el-radio-button__inner {
+      border-left: 0
+    }
+    //点击按钮时，浮现背景图和图标--------
+    .is-active{
+        div{
+            i{
+              display: block;
+              width:80px;
+              height:80px;
+              position: absolute;
+              background: rgba(35,34,34,0.5) url('../../assets/images/dagou.png') no-repeat center;
+              top: 0;
+              left:0;
+            }
+        }
+  }
+  //点击对象的字体样式
+  .el-radio-button__orig-radio:checked+.el-radio-button__inner {
+    color: #333333;
+    font-weight:bold ;
+    background-color:#ffffff ;
+    border-color: #ffffff;
+    box-shadow: none;
+  }
+}
+
+//修改所有页面操作中所有按钮的颜色
+.sizeAndColor{
+  .el-button{
+    border: 1px solid #1c8de0;
+    padding: 6px 10px;
+    span{
+      color: #1c8de0!important;
+    }
+  }
+  .el-button:hover{
+    background: #1c8de0;
+    span{
+      color: #fff!important;
+    }
+  }
+}
+
+//加入联盟,前台选择粉丝，1步骤;修改饿了么框架的样式，
+.step2{
+  .el-radio-button, .el-radio-button__inner {
+    position: relative;
+    display: block;
+    float: left;
+    width: 340px;
+    height: 170px;
+    border: 1px solid #dddddd;
+    cursor: pointer;
+    margin: 25px 49px 0 0;
+    &:hover{
+      background-color: #ddd;
+    }
+    .el-radio-button:first-child .el-radio-button__inner {
+      border-left: none;
+      border-radius: 0;
+    }
+    .el-radio-button__inner {
+      text-align: left;
+      box-sizing: border-box;
+      outline: 0;
+      margin: 0;
+      transition: all .3s cubic-bezier(.645,.045,.355,1);
+      padding: 35px 22px;
+      font-size: 14px;
+    }
+    .el-radio-button__inner:hover{
+      background-color: #fff;
+      border: 1px solid #20A0FF;
+    }
+    .el-radio-button__orig-radio:checked+.el-radio-button__inner {
+      color: #1f2d3d;
+      background-color: #fbfdff;
+      border: 1px solid #20a0ff;
+      box-shadow: none;
+      .dddddd{
+        i{
+          display: block;
+          width:50px;
+          height:50px;
+          position: absolute;
+          background: rgba(35,34,34,0) url("../images/images3.png") no-repeat center;
+          top: 119px;
+          left: 289px;
+        }
+      }
+    }
+
+  }
+}
+
+//删除弹出框的公共样式
+.model_2{
+  .el-dialog--tiny{
+    width: 500px!important;
+  }
+  .el-dialog__body{
+    >div{
+      margin-top: 20px;
+    }
+    img{
+      margin-left: 10px;
+      width: 38px;
+      position: relative;
+      top:5px;
+      left: 0;
+    }
+    span{
+      display: inline-block;
+      margin-top: 15px;
+      margin-left:15px;
+    }
+  }
+}
+
+//请选择的公共样式（合二为一）  变量的名字
+.selectPublic {
+  //请选择的背景颜色
+  .select_ {
+    .el-select .el-input__inner {
+      background: #F6F6F6;
+    }
+  }
+  .grid-content {
+    .el-select > .el-input {
+      .el-input__icon + .el-input__inner {
+        padding-right: 5px;
+        border-radius: 4px 0 0 4px;
+        background-color: #F6F6F6;
+      }
+    }
+    .el-input__inner:focus {
+      border-color:#bfcbd9;
+    }
+    .el-input__inner:hover {
+      border-color: #bfcbd9;
+    }
+    .el-select:hover .el-input__inner {
+      border-color: #bfcbd9;
+    }
+  }
+  .grid-content1 {
+    .el-input__icon + .el-input__inner {
+      border-radius: 0 4px 4px 0;
+    }
+  }
+}
+
+//消费核销成功弹出框   联盟卡核销公共样式-----
+.verSuccess{
+  .el-dialog--tiny{
+    width:520px;
+  }
+  .el-dialog__body{
+    padding: 0;
+    .ddd{
+      margin: 50px;
+      padding-bottom: 100px;
+      img{
+        margin-right: 20px;
+      }
+    }
+  }
+}
+
+
+// 注：以上都是公共样式------------------------------------------------------------------------------------------------------------------0
+
+//我的联盟公共信息描述样式
+.union_set{
+  margin:42px 0 31px;
+  font-weight: bold;
+}
+//我的联盟公告输入框信息
+#unionNotice{
+    textarea.el-textarea__inner{
+    width:100%;
+      border:none;
+  }
+}
+#memberName{
+    .el-table .cell, .el-table th>div{
+      padding-left: 38px!important;
+      padding-right: 1px!important;
+    }
+}
+#myUnionCard1{
+  .selectPublic
+}
+//入盟审核的样式
+#apply_for {
+  .apply_select {
+    .el-table_1_column_8 {
+      .cell {
+        width: 151px;
+      }
+    }
+  }
+  .selectPublic
+}
+// 我的联盟分页公共样式
+.el-pagination{
+  margin-top: 10px;
+  text-align: right;
+}
+//我的联盟中底部公共样式
+.user_search {
+  margin: 15px 0;
+}
+
+//我的联盟公共头部样式--Breadcrumb
+.Breadcrumb{
+  font-size:20px;
+  padding:15px 50px;
+  border-top:1px solid #ddd;
+  border-bottom:1px solid #ddd;
+  .myunion{
+    color:#3CA7FF
+  }
+}
+//我的联盟/推荐入盟输入框的公共样式
+.tabs{
+  .el-form-item__error {
+    color: #ff4949;
+    font-size: 12px;
+    line-height: 1;
+    padding-top: 4px;
+    position: static !important;
+    float: left;
+    margin: 10px 0 0 40px;
+  }
+  .el-form-item__label {
+    padding: 11px 12px 18px 0;
+  }
+  .el-input__inner {
+    width: 241px;
+    display: inline-block;
+  }
+  .el-textarea {
+    display: inline-block;
+    width: 240px;
+    vertical-align: bottom;
+    float: left;
+  }
+  .el-col-6 {
+    width: 241px;
+  }
+}
+//*****************************************************
+
+//我的联盟/去加入联盟（一部分是创建联盟）公共样式
+.container{
+  //头部输入信息样式
+  .information{
+    margin-bottom:37px!important;
+    font-weight: bold;
+  }
+  .el-step__title.is-success{
+    color:#20A0FF
+  }
+  .el-step__head.is-text.is-success{
+    color: #50bfff;
+    background-color: #ffffff;
+    border-color: #50bfff;
+  }
+  .el-step__title.is-process{
+    color:#808080;
+  }
+  .el-step__head.is-text.is-process{
+    background-color: #20a0ff;
+    border-color: #20a0ff;
+  }
+
+}
+
+//我的联盟/创建联盟公共样式--------------------------------
+.container_one {
+  .special {
+    .el-input__inner {
+      width: 210px!important;
+    }
+    //时间样式偏右
+    .el-input__icon {
+      right: -10px;
+    }
+  }
+  //联盟图标样式
+  .middle {
+    .el-upload--picture-card {
+      width: 72px;
+      height: 72px;
+      line-height: 78px;
+    }
+  }
+  .Price_Card{
+    .el-input__inner{
+      width:205px;
+    }
+  }
+}
+
+//我的联盟/联盟设置 公共样式····-----------------------------------------------
+#UnionSetting{
+  //设置定位可以看到，不会被隐藏
+  .el-tabs__content{
+    overflow: inherit;
+  }
+  .special {
+    .el-input__inner {
+      width: 210px;
+    }
+    .el-input__icon {
+      right: -10px;
+    }
+  }
+  //红卡价格输入框
+  .Price_Card {
+    .el-input__inner {
+      width:205px;
+      height:37px;
+    }
+  }
+  .el-input__icon {
+    right: -1px;
+  }
+  //盟主权限转移样
+  .el-table_1_column_3{
+     //操作样式处理
+     .el-button{
+       border: 1px solid #1c8de0;
+       color: #1c8de0;
+     }
+   }
+  .theLeader{
+    .el-dialog--tiny{
+      width: 550px;
+    }
+  }
+  #un_set{
+    .el-dialog--small{
+      width: 880px;
+    }
+  }
+}
+
+
+//我的联盟/红卡优惠设置样式---------------------------------------------------------
+#redCard,.sell_card{
+  //弹出框的样式
+  .el-dialog__body{
+    padding: 2px;
+  }
+  #setScale{
+    .el-dialog--small{
+      width: 725px!important;
+    }
+  }
+  .selectPublic
+}
+
+//我的联盟/红卡优惠设置样式---------------------------------------------------------------
+#redCard{
+  //优惠项目审核
+  .model_projects{
+    .el-dialog--small{
+      width:825px;
+    }
+    .model_2{
+      .el-dialog--tiny{
+        width:500px!important;
+      }
+      .el-dialog__body{
+        >div{
+          margin-top: 20px;
+        }
+        img{
+          margin-left: 10px;
+          width: 38px;
+          position: relative;
+          top:5px;
+          left: 0;
+        }
+        span{
+          display: inline-block;
+          margin-top: 15px;
+          margin-left:15px;
+        }
+      }
+    }
+  }
+    .el-table_1_column_4,.el-table_1_column_8,.el-table_1_column_12 {
+      &.is-leaf {
+        .cell {
+          //padding-right: 33px;
+          //text-align: right;
+        }
+      }
+      //操作样式处理
+      .el-button {
+        border: 1px solid #1c8de0;
+        color: #1c8de0;
+      }
+    }
+  //优惠项目审核弹出框“通过”样式
+  .el-table_1_column_4 .spacil>.el-button{
+    color:#ffffff
+  }
+  #table5 .butguo{
+    .el-button{
+      border: 1px solid #C4C4C4;
+      color: #6B6B6B;
+    }
+  }
+  //最后一格右浮动
+   .el-table_1_column_4 .cell>.el-button,.el-table_1_column_8 .cell>.el-button,.el-table_1_column_12 .cell>.el-button,.el-table_1_column_17 .cell>.el-button{
+     float:right;
+   }
+    .el-table_1_column_2,.el-table_1_column_6,.el-table_1_column_10{
+      //padding-left: 50px;
+    }
+    .el-table_1_column_3,.el-table_1_column_7,.el-table_1_column_11{
+      //padding-left: 150px;
+    }
+  .notSubmitted{
+    .el-button {
+      border: 1px solid #1c8de0;
+      color: #1c8de0;
+    }
+  }
+  // 我的优惠项目
+  .preferenceItems{
+    div{
+      textarea.el-textarea__inner{
+        width: 518px;
+        height: 90px;
+      }
+    }
+    .footer{
+      margin-top:140px;
+    }
+    .el-dialog--tiny{
+      width:500px;
+    }
+  }
+}
+
+//我的联盟/退盟管理--------------------------------------------
+#Refund{
+ //最后一列样式
+  .el-table_1_column_4,.el-table_1_column_8{
+    .el-button {
+      border: 1px solid #1c8de0;
+      color: #1c8de0;
+    }
+  }
+  .el-dialog__body{
+    padding:0px;
+  }
+  .tuimeng{
+    .el-dialog--tiny {
+      width: 600px;
+    }
+  }
+  //弹出框的样式
+  #popBox{
+    //总体弹出框的宽度
+    .el-dialog--tiny{
+      width: 615px;
+      top: 283px!important;
+    }
+    .el-dialog__header {
+      padding: 10px 15px 0;
+      .el-dialog__title {
+        font-size:15px;
+      }
+    }
+    .main{
+      .el-form-item{
+        margin-top: 30px;
+        margin-left: 10%;
+        margin-bottom:0;
+        .el-textarea__inner{
+          min-width: 60%;
+        }
+      }
+    }
+  }
+}
+
+//我的联盟未登录时的样式(no-register)------------------------
+.container{
+  .top_top{
+    .version{
+      .el-button{
+        padding:10px 35px;
+      }
+    }
+  }
+}
+
+
+//我的联盟中（商机模块）的所有样式------------------------------------------------------------------------------------------1
+//我的商机样式
+#Business{
+  //页面排版样式
+  margin:40px 89px 40px 50px;
+  h4{
+    margin:30px 0;
+  }
+  .el-col-6 {
+    width: 290px;
+  }
+  #myBusiness {
+    //我的商机弹出框样式
+    .businesTable .el-table_1_column_7 .cell {
+      .model_01 {
+        .el-dialog__footer {
+          .el-button {
+            padding: 8px 18px;
+            span {
+              color: #ffffff !important;
+            }
+          }
+        }
+      }
+    }
+    //引用变量
+    .selectPublic
+  }
+  //我要推荐里边表单样式
+  #myRecommend {
+    .MyRecommend {
+      .el-form-item__label {
+        width: 115px !important;
+      }
+      .selectUnion {
+        .el-form-item__content {
+          //文字提示样式
+          .el-form-item__error {
+            top: 80px;
+            left: 265px;
+          }
+        }
+      }
+      .el-form-item__content {
+        //文字提示样式
+        .el-form-item__error {
+          top: 7px;
+          left: 265px;
+        }
+      }
+      //表单的距离
+      .el-select > .el-input, .el-col-5 {
+        width: 238px;
+      }
+      .businessNote .el-form-item__content {
+        margin-left: 110px !important;
+        textarea.el-textarea__inner {
+          width: 220px;
+        }
+      }
+      .el-textarea {
+        width: 50% !important;
+      }
+    }
+    //引用变量
+    .selectPublic
+  }
+  //佣金结算模块样式----------------------------------
+  //我需支付的佣金“支付弹出框样式”
+  .commissionTable{
+    .el-dialog__body{
+      padding: 0
+    }
+  }
+  #CommossionSettle{
+    .model_0{
+      .el-dialog--tiny {
+        width: 500px;
+        .el-dialog__body{
+          padding:0;
+          .middle_{
+            text-align: center;
+            span{
+              color: red;
+            }
+          }
+        }
+      }
+    }
+    .el-tabs__item.is-active{
+      border-bottom: 2px solid #20a0ff!important;
+    }
+    //引用变量
+    .selectPublic
+  }
+  .CommissionDetail{
+    .el-dialog--small{
+      width:800px;
+      .el-dialog__body{
+        padding:0;
+        .middle{
+          padding:20px;
+          >span{
+            display: block;
+            margin-bottom:20px;
+          }
+          p{
+            padding-top: 5px;
+          }
+          .totalAll{
+            background: #eef1f6;
+            padding:8px 20px;
+          }
+          .el-button{
+            padding: 5px 17px;
+            margin-bottom: 8px;
+            float: right;
+          }
+        }
+      }
+    }
+  }
+  //商机佣金比例设置模块样式-------------------------------
+  //按钮的样式修改
+  .ratioSetting{
+    .el-table{
+      .el-table__body-wrapper{
+        .el-table_1_column_43{
+          .el-button{
+            border: 1px solid #1c8de0;
+            color: #1c8de0;
+          }
+        }
+      }
+    }
+  }
+  .model_03{
+    .el-dialog--tiny{
+      width:37%;
+    }
+  }
+}
+
+//我的联盟中(前台模块）里边的所有样式---------------------------------------------------------------------------------------------2
+#front{
+  //联盟卡消费核销--首页样式----------------------   1
+  #UnionCard {
+    .first_ {
+      .el-input__inner {
+        font-size: 18px;
+        height: 35px;
+      }
+    }
+    //支付弹出框页面
+    .model_0{
+      .el-dialog--tiny{
+        width:63%;
+      }
+      .el-dialog__body{
+        padding: 0;
+      }
+      //支付页面的字体样式
+      .zhifu{
+        .el-radio-button__inner{
+          color: #1c8de0;
+        }
+      }
+      .zhifu{
+        .is-active {
+          .el-radio-button__inner {
+            color: #fff;
+          }
+        }
+      }
+    }
+
+    .second_0 {
+      .el-dialog--tiny{
+        width:800px;
+      }
+      .el-form-item__label{
+        width: 124px !important;
+      }
+      .payWay{
+        .el-radio-group{
+          position: absolute;
+          top: 26px;
+          left: 38px;
+        }
+        .el-radio-button{
+          margin-right: 10px;
+        }
+        .el-radio-button__orig-radio:checked+.el-radio-button__inner{
+          color: #fff;
+        }
+      }
+      //点击时候按钮的样式
+      .is-active{
+        .pay_{
+          color: #ffffff;
+          margin-right: 10px;
+        }
+      }
+      //四个支付方式的样式
+      .el-radio-button__inner{
+        border: 1px solid #1c8de0;
+        margin-right: 10px;
+        margin-top: 10px;
+        padding: 16px 47px;
+        color: #20a0ff;
+      }
+      .el-col-5 {
+        width: 220px;
+      }
+    }
+    //二维码弹出框的样式
+    .codePayment{
+      .el-dialog{
+        width:800px;
+      }
+      .el-dialog__body{
+        padding:0;
+        text-align: center;
+        img{
+          margin: 80px;
+        }
+        p{
+          margin-bottom: 60px
+        }
+      }
+    }
+  }
+//消费核销记录--------------------------------   2
+  #ExpenseRecord{
+    .el-date-editor .el-input{
+      width:100%
+    }
+    //使用变量
+    .selectPublic;
+  }
+
+  //办理联盟卡---------------------------------  3
+  #transaction{
+    .el-col-6{
+      width:220px;
+    }
+    .el-select{
+      .el-input{
+        width:220px;
+      }
+    }
+    //左边整块表单的输入框样式
+    .el-form-item__content{
+      width: 560px;
+    }
+    .step2{
+      .el-radio-button{
+        height: inherit;
+        border: none;
+        margin: 20px 22px 25px 32px;
+      }
+      .el-radio-button__inner:hover{
+        background-color: #fff;
+        border: 1px solid #20A0FF;
+      }
+    }
+    .code_{
+      .el-button{
+        border: 1px solid #1c8de0;
+        color: #1c8de0;
+      }
+      .el-button:hover{
+        background: #1c8de0;
+        color: #fff;
+      }
+    }
+    .model_1{
+      .el-dialog{
+        width:450px;
+      }
+      .el-dialog__body {
+        padding: 0;
+      }
+    }
+  }
+}
+
+
+//财务页面所有样式---------------------------------------------------------------------------------------------3
+#finance{
+  //弹出框样式
+  .el-dialog--tiny{
+    width:650px;
+  }
+    .el-dialog__body {
+      padding: 0;
+    }
+  .Popup_ {
+    margin-top:30px;
+    padding-left: 50px;
+    .el-form-item__error{
+      top: 20%;
+      left: 35%;
+    }
+  }
+  .model_1{
+    .el-dialog--tiny{
+      width:450px;
+    }
+  }
+    .el-form-item__error:nth-child(3){
+      left: 60%;
+    }
+}
+
+//没有联盟的弹出框样式
+#noRegister{
+  .model_1{
+    .el-dialog--tiny{
+      width:450px;
+    }
+    .el-dialog__body {
+      padding: 0;
+    }
+  }
+}
+
+//没有数据的样式
+#noUnion{
+  margin: 40px 110px 0 50px;
+  margin-top: 30px;
+  border:1px solid #ddd;
+  text-align: center;
+  padding:28px 0;
+  img {
+    width: 35px;
+    margin-bottom: 10px;
+  }
+  p{
+    font-size: 14px;
+    color: #999999;
+  }
+}
+
+
+
+
+
+
+

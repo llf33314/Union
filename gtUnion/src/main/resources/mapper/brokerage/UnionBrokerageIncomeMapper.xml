@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gt.union.brokerage.mapper.UnionBrokerageIncomeMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.gt.union.brokerage.entity.UnionBrokerageIncome">
+		<id column="id" property="id" />
+		<result column="createtime" property="createtime" />
+		<result column="del_status" property="delStatus" />
+		<result column="type" property="type" />
+		<result column="bus_id" property="busId" />
+		<result column="money" property="money" />
+		<result column="card_id" property="cardId" />
+		<result column="opportunity_id" property="opportunityId" />
+	</resultMap>
+
+
+	<!--  根据盟员列表ids查询收入佣金金额 -->
+    <select id="listIncomeByMemberIds" resultType="java.util.Map">
+		SELECT IFNULL(SUM(i.money), 0) money, i.member_id, um.`name` from
+		(SELECT money, member_id from t_union_brokerage_income WHERE member_id in
+			<foreach collection="members" item="member" open="(" close=")" separator=",">
+				#{member.id}
+			</foreach>
+		) i
+		LEFT JOIN t_union_member m on i.member_id = m.id
+		LEFT JOIN t_union_main um on um.id = m.union_id
+		GROUP BY m.id
+	</select>
+
+</mapper>

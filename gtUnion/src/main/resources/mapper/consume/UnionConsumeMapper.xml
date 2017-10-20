@@ -1,0 +1,233 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gt.union.consume.mapper.UnionConsumeMapper">
+
+	<!-- 通用查询映射结果 -->
+	<resultMap id="BaseResultMap" type="com.gt.union.consume.entity.UnionConsume">
+		<id column="id" property="id" />
+		<result column="del_status" property="delStatus" />
+		<result column="createtime" property="createtime" />
+		<result column="card_id" property="cardId" />
+		<result column="status" property="status" />
+		<result column="type" property="type" />
+		<result column="consume_money" property="consumeMoney" />
+		<result column="pay_money" property="payMoney" />
+		<result column="member_id" property="memberId" />
+		<result column="order_no" property="orderNo" />
+		<result column="pay_type" property="payType" />
+		<result column="wx_order_no" property="wxOrderNo" />
+		<result column="model" property="model" />
+		<result column="model_desc" property="modelDesc" />
+		<result column="model_order_id" property="modelOrderId" />
+		<result column="is_integral" property="isIntegral" />
+		<result column="shop_id" property="shopId" />
+	</resultMap>
+
+	<!--  联合查询结果集-->
+	<resultMap id="UnionConsumeResultMap" type="com.gt.union.consume.vo.UnionConsumeVO">
+		<result column="memberName" property="memberName" />
+		<result column="unionName" property="unionName" />
+		<result column="cardNo" property="cardNo" />
+		<result column="phone" property="phone" />
+		<result column="consumeMoney" property="consumeMoney" />
+		<result column="payMoney" property="payMoney" />
+		<result column="status" property="status" />
+		<result column="shopId" property="shopId" />
+		<result column="createtime" property="createtime" />
+		<collection property="items" ofType="com.gt.union.preferential.entity.UnionPreferentialItem">
+			<result column="name" property="name" />
+		 </collection>
+	</resultMap>
+
+
+	<!-- 查询我店消费记录列表 -->
+    <select id="listMy" resultMap="UnionConsumeResultMap">
+		SELECT m.enterprise_name memberName, um.name unionName, r.number cardNo, r.phone phone, con.consume_money consumeMoney, con.pay_money payMoney, con.status status, con.createtime createtime, it.name, con.shop_id shopId
+		from (SELECT * from t_union_consume WHERE member_id in
+		(SELECT id from t_union_member WHERE bus_id = #{busId} AND del_status = 0 and status in (2,3,4)
+		<if test="unionId != null" >
+			AND union_id = #{unionId}
+		</if>
+		)) con
+		LEFT JOIN t_union_consume_item i on con.id = i.consume_id
+		LEFT JOIN t_union_preferential_item it on it.id = i.preferential_item_id
+		LEFT JOIN t_union_card card on card.id = con.card_id
+		LEFT JOIN t_union_card_root r on card.root_id = r.id
+		LEFT JOIN t_union_member m on m.id = card.member_id
+		LEFT JOIN t_union_main um on um.id = m.union_id
+		WHERE 1 = 1
+		<if test="memberId != null" >
+			AND m.id = #{memberId}
+		</if>
+		<if test="beginTime != null and beginTime != '' " >
+			AND con.createtime &gt;= #{beginTime}
+		</if>
+		<if test="endTime != null and endTime != '' " >
+			AND con.createtime &lt;= #{endTime}
+		</if>
+		<if test="phone != null and phone != '' " >
+			AND r.phone like CONCAT(CONCAT('%', #{phone}),'%')
+		</if>
+		<if test="cardNo != null and cardNo != '' " >
+			AND r.number like CONCAT(CONCAT('%', #{cardNo}),'%')
+		</if>
+		order by con.id desc
+	</select>
+
+	<!-- 查询他店消费记录列表 -->
+	<select id="listOther" resultMap="UnionConsumeResultMap">
+		SELECT m.enterprise_name memberName, um.name unionName, r.number cardNo, r.phone phone, con.consume_money consumeMoney, con.pay_money payMoney, con.status status, con.createtime createtime, it.name, con.shop_id shopId
+		from (SELECT * from t_union_consume WHERE card_id in (SELECT id from t_union_card WHERE member_id in (SELECT id from t_union_member WHERE bus_id = #{busId} AND del_status = 0 and status in (2,3,4)
+		<if test="unionId != null" >
+			AND union_id = #{unionId}
+		</if>) and del_status = 0)) con
+		LEFT JOIN t_union_consume_item i on con.id = i.consume_id
+		LEFT JOIN t_union_preferential_item it on it.id = i.preferential_item_id
+		LEFT JOIN t_union_card card on card.id = con.card_id
+		LEFT JOIN t_union_card_root r on card.root_id = r.id
+		LEFT JOIN t_union_member m on m.id = con.member_id
+		LEFT JOIN t_union_main um on um.id = m.union_id
+		WHERE 1 = 1
+		<if test="memberId != null" >
+			AND m.id = #{memberId}
+		</if>
+		<if test="beginTime != null and beginTime != '' " >
+			AND con.createtime &gt;= #{beginTime}
+		</if>
+		<if test="endTime != null and endTime != '' " >
+			AND con.createtime &lt;= #{endTime}
+		</if>
+		<if test="phone != null and phone != '' " >
+			AND r.phone like CONCAT(CONCAT('%', #{phone}),'%')
+		</if>
+		<if test="cardNo != null and cardNo != '' " >
+			AND r.number like CONCAT(CONCAT('%', #{cardNo}),'%')
+		</if>
+		AND m.bus_id != #{busId}
+		order by con.id desc
+	</select>
+
+
+    <select id="listMyByUnionId" resultMap="UnionConsumeResultMap">
+		SELECT m.enterprise_name memberName, um.name unionName, r.number cardNo, r.phone phone, con.consume_money consumeMoney, con.pay_money payMoney, con.status status, con.createtime createtime, it.name
+		from (SELECT * from t_union_consume WHERE member_id in
+		(SELECT id from t_union_member WHERE bus_id = #{busId} AND del_status = 0 and status in (2,3,4)
+		<if test="unionId != null" >
+			AND union_id = #{unionId}
+		</if> )
+		) con
+		LEFT JOIN t_union_consume_item i on con.id = i.consume_id
+		LEFT JOIN t_union_preferential_item it on it.id = i.preferential_item_id
+		LEFT JOIN t_union_card card on card.id = con.card_id
+		LEFT JOIN t_union_card_root r on card.root_id = r.id
+		LEFT JOIN t_union_member m on m.id = card.member_id
+		LEFT JOIN t_union_main um on um.id = m.union_id
+		WHERE 1 = 1
+		<if test="memberId != null" >
+			AND m.id = #{memberId}
+		</if>
+		<if test="beginTime != null and beginTime != '' " >
+			AND con.createtime &gt;= #{beginTime}
+		</if>
+		<if test="endTime != null and endTime != '' " >
+			AND con.createtime &lt;= #{endTime}
+		</if>
+		<if test="phone != null and phone != '' " >
+			AND r.phone like CONCAT(CONCAT('%', #{phone}),'%')
+		</if>
+		<if test="cardNo != null and cardNo != '' " >
+			AND r.number like CONCAT(CONCAT('%', #{cardNo}),'%')
+		</if>
+		order by con.id desc
+	</select>
+
+	<select id="listOtherByUnionId" resultMap="UnionConsumeResultMap">
+		SELECT m.enterprise_name memberName, um.name unionName, r.number cardNo, r.phone phone, con.consume_money consumeMoney, con.pay_money payMoney, con.status status, con.createtime createtime, it.name
+		from (SELECT * from t_union_consume WHERE card_id in (SELECT id from t_union_card WHERE member_id in (SELECT id from t_union_member WHERE bus_id = #{busId} AND del_status = 0 and status in (2,3,4)
+		<if test="unionId != null" >
+			AND union_id = #{unionId}
+		</if> ) and del_status = 0
+		)) con
+		LEFT JOIN t_union_consume_item i on con.id = i.consume_id
+		LEFT JOIN t_union_preferential_item it on it.id = i.preferential_item_id
+		LEFT JOIN t_union_card card on card.id = con.card_id
+		LEFT JOIN t_union_card_root r on card.root_id = r.id
+		LEFT JOIN t_union_member m on m.id = con.member_id
+		LEFT JOIN t_union_main um on um.id = m.union_id
+		WHERE 1 = 1
+		<if test="memberId != null" >
+			AND m.id = #{memberId}
+		</if>
+		<if test="beginTime != null and beginTime != '' " >
+			AND con.createtime &gt;= #{beginTime}
+		</if>
+		<if test="endTime != null and endTime != '' " >
+			AND con.createtime &lt;= #{endTime}
+		</if>
+		<if test="phone != null and phone != '' " >
+			AND r.phone like CONCAT(CONCAT('%', #{phone}),'%')
+		</if>
+		<if test="cardNo != null and cardNo != '' " >
+			AND r.number like CONCAT(CONCAT('%', #{cardNo}),'%')
+		</if>
+		order by con.id desc
+
+	</select>
+	<select id="listMyCount" resultType="java.lang.Integer">
+		SELECT count(1) from (SELECT * from t_union_consume WHERE member_id in
+		(SELECT id from t_union_member WHERE bus_id = #{busId} AND del_status = 0 and status in (2,3,4)
+		<if test="unionId != null" >
+			AND union_id = #{unionId}
+		</if> )
+		) con
+		LEFT JOIN t_union_card card on card.id = con.card_id
+		LEFT JOIN t_union_card_root r on card.root_id = r.id
+		LEFT JOIN t_union_member m on m.id = card.member_id
+		WHERE 1 = 1
+		<if test="memberId != null" >
+			AND m.id = #{memberId}
+		</if>
+		<if test="beginTime != null and beginTime != '' " >
+			AND con.createtime &gt;= #{beginTime}
+		</if>
+		<if test="endTime != null and endTime != '' " >
+			AND con.createtime &lt;= #{endTime}
+		</if>
+		<if test="phone != null and phone != '' " >
+			AND r.phone like CONCAT(CONCAT('%', #{phone}),'%')
+		</if>
+		<if test="cardNo != null and cardNo != '' " >
+			AND r.number like CONCAT(CONCAT('%', #{cardNo}),'%')
+		</if>
+	</select>
+
+	<select id="listOtherCount" resultType="java.lang.Integer">
+		SELECT count(*)
+		from (SELECT * from t_union_consume WHERE card_id in (SELECT id from t_union_card WHERE member_id in (SELECT id from t_union_member WHERE bus_id = #{busId} AND del_status = 0 and status in (2,3,4)
+		<if test="unionId != null" >
+			AND union_id = #{unionId}
+		</if> ) and del_status = 0
+		)) con
+		LEFT JOIN t_union_card card on card.id = con.card_id
+		LEFT JOIN t_union_card_root r on card.root_id = r.id
+		LEFT JOIN t_union_member m on m.id = con.member_id
+		WHERE 1 = 1
+		<if test="memberId != null" >
+			AND m.id = #{memberId}
+		</if>
+		<if test="beginTime != null and beginTime != '' " >
+			AND con.createtime &gt;= #{beginTime}
+		</if>
+		<if test="endTime != null and endTime != '' " >
+			AND con.createtime &lt;= #{endTime}
+		</if>
+		<if test="phone != null and phone != '' " >
+			AND r.phone like CONCAT(CONCAT('%', #{phone}),'%')
+		</if>
+		<if test="cardNo != null and cardNo != '' " >
+			AND r.number like CONCAT(CONCAT('%', #{cardNo}),'%')
+		</if>
+		AND m.bus_id != #{busId}
+	</select>
+
+</mapper>
