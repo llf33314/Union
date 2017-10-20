@@ -1,7 +1,8 @@
 <template>
   <div id="un_set">
     <p class="union_set">联盟基本信息设置</p>
-    <el-form :model="form" :rules="rules" ref="form" label-width="200px" style="margin-left: -68px;">
+    <div class="second_">
+      <el-form :model="form" :rules="rules" ref="form" label-width="200px" style="margin-left: -68px;">
       <el-form-item label="联盟名称：" prop="unionName">
         <el-input v-model="form.unionName" placeholder="请输入联盟名称"></el-input>
       </el-form-item>
@@ -71,8 +72,10 @@
         <el-button @click="materiallayer" v-if="!this.form.unionImg">
           <i class="el-icon-plus"></i>
         </el-button>
-        <el-dialog :visible.sync="materialVisible">
-          <iframe :src="materialUrl" width="400" height="300"></iframe>
+        <span style="position: relative;top: -1px;left: 6px;color:#bbbbbb;" v-if="!this.form.unionImg">图片尺寸：100*100px</span>
+        <el-dialog :visible.sync="materialVisible" title="素材库">
+          <hr>
+          <iframe :src="materialUrl" width="95%" height="500" frameborder="0" scrolling="no"></iframe>
         </el-dialog>
       </el-form-item>
       <el-form-item label="联盟说明：" prop="unionIllustration">
@@ -80,6 +83,7 @@
         </el-input>
       </el-form-item>
     </el-form>
+    </div>
     <div class="footer_public">
       <el-button type="primary" @click="submitForm('form')">保存</el-button>
       <el-button @click="back">返回</el-button>

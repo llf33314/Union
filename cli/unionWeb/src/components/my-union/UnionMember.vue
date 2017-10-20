@@ -3,7 +3,8 @@
     <el-row class="user_search">
       <el-col :xs="4" :sm="4" :md="4" :lg="4">
         <div class="grid-content bg-purple">
-          <el-input placeholder="请输入盟员名称" icon="search" v-model="input" :on-icon-click="search" class="input-search">
+          <el-input placeholder="请输入盟员名称" icon="search" v-model="input"
+                    :on-icon-click="search" class="input-search" @keyup.enter.native="show1($event)" >
           </el-input>
         </div>
       </el-col>
@@ -37,7 +38,9 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll">
+    <el-pagination @current-change="handleCurrentChange"
+                   :current-page.sync="currentPage" :page-size="10"
+                   layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
     </el-pagination>
     <!-- 弹出框 详情 -->
     <div class="model__10">
@@ -222,6 +225,11 @@ export default {
     }
   },
   methods: {
+    show1:function(ev){
+      if(ev.keyCode == 13){
+        this.search();
+      }
+    },
     // 带条件查询盟员列表
     search() {
       $http.get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=1&enterpriseName=${this.input}`)

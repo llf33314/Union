@@ -189,15 +189,6 @@ export default {
 }
 
 
-
-
-
-
-
-
-
-
-
 /*一个图标*/
 
 .tubiao {
@@ -215,15 +206,6 @@ export default {
   left: 250px;
   cursor: pointer;
 }
-
-
-
-
-
-
-
-
-
 
 
 /*地图的样式*/

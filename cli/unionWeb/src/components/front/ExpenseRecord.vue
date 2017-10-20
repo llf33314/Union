@@ -91,7 +91,8 @@
             <el-table-column prop="createtime" label="创建时间" width="180px">
             </el-table-column>
           </el-table>
-          <el-pagination @current-change="handleCurrentChange1" :current-page.sync="currentPage1" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll1">
+          <el-pagination @current-change="handleCurrentChange1" :current-page.sync="currentPage1"
+                         :page-size="10" layout="prev, pager, next, jumper" :total="totalAll1" v-if="tableData1.length>0">
           </el-pagination>
         </el-tab-pane>
         <!-- 他店消费 -->
@@ -183,7 +184,8 @@
             <el-table-column prop="createtime" label="创建时间" width="180px">
             </el-table-column>
           </el-table>
-          <el-pagination @current-change="handleCurrentChange2" :current-page.sync="currentPage2" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll2">
+          <el-pagination @current-change="handleCurrentChange2" :current-page.sync="currentPage2"
+                         :page-size="10" layout="prev, pager, next, jumper" :total="totalAll2" v-if="tableData2.length>0">
           </el-pagination>
         </el-tab-pane>
       </el-tabs>

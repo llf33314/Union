@@ -44,7 +44,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <div>
+        <div v-if="tableData.length>0">
           <div class="sizeAndColor fl">
             <el-button @click="selectAll()">全选</el-button>
             <el-button @click="toggleSelection()">取消选择</el-button>

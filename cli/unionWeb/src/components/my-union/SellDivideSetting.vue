@@ -8,11 +8,11 @@
       <div class="model_setting">
         <div>
           <span>盟主比例:</span>
-          <el-input v-model="input" placeholder="请输入比例" @change="onChange" style="width:26%"></el-input>
+          <el-input v-model="input" placeholder="请输入比例" @change="onChange"   style="width:26%"></el-input>
           <span>&nbsp;%&nbsp;</span>
           <el-button type="primary" @click="onAverage()">平均分配</el-button>
         </div>
-        <p>商机总比例之和不得超过100%，当前总比例为{{ sum }}%，剩余{{100 - sum}}%可分配</p>
+        <p>售卡佣金分成总比例之和不得超过100%，当前总比例为{{ sum }}%，剩余{{100 - sum}}%可分配</p>
         <el-table :data="tableData3" style="width: 100%" id="table3">
           <el-table-column prop="enterpriseName" label="企业名称">
           </el-table-column>
@@ -39,7 +39,9 @@
       <el-table-column prop="cardDividePercent" label="售卡分成比例">
       </el-table-column>
     </el-table>
-    <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll">
+    <el-pagination @current-change="handleCurrentChange"
+                   :current-page.sync="currentPage" :page-size="10"
+                   layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
     </el-pagination>
   </div>
 </template>

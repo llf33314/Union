@@ -40,14 +40,14 @@
         </div>
         <el-form-item label="联盟卡类型:" prop="cardType">
           <el-radio-group v-model="form2.cardType">
-            <el-radio :label="2">红卡</el-radio>
-            <el-radio :label="1">黑卡</el-radio>
+            <el-radio :label="2" v-if="form2.red != undefined && form2.red">红卡</el-radio>
+            <el-radio :label="1" v-if="form2.black != undefined && form2.black">黑卡</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="联盟卡有效期:" v-if="form2.cardType === 2">
           {{ form2.cards.red.termTime }}
         </el-form-item>
-        <el-form-item label="价格:" v-if="form2.cardType === 2">
+        <el-form-item label="价格:" v-if="form2.cardType === 2 ">
           ￥{{ form2.cards.red.price | formatPrice }}
         </el-form-item>
         <el-form-item label="联盟卡有效期:" v-if="form2.cardType === 1">
