@@ -234,18 +234,18 @@ export default {
     getVerificationCode() {
       $http.get(`/unionCard/phoneCode?phone=${this.form1.phone}`)
         .then(res => {
-          if (res.data.data) {
-            this.form1.getVerificationCode = true;
-            this.form1.countDownTime = 60;
-            let timer1 = setInterval(() => {
-              this.form1.countDownTime--;
-              if (this.form1.countDownTime === 0) {
-                clearInterval(timer1);
-                this.form1.getVerificationCode = false;
-                this.form1.countDownTime = '';
-              }
-            }, 1000)
-          }
+            if(res.data.success){
+              this.form1.getVerificationCode = true;
+              this.form1.countDownTime = 60;
+              let timer1 = setInterval(() => {
+                this.form1.countDownTime--;
+                if (this.form1.countDownTime === 0) {
+                  this.form1.getVerificationCode = false;
+                  this.form1.countDownTime = '';
+                  clearInterval(timer1);
+                }
+              }, 1000)
+            }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });

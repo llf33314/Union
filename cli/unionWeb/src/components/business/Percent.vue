@@ -150,26 +150,28 @@ export default {
     submit() {
       $http.put(`/unionOpportunityRatio/memberId/${this.value}?toMemberId=${this.toMemberId}&ratio=${this.ratioFromMe}`)
         .then(res => {
-          $http.get(`/unionOpportunityRatio/pageMap/memberId/${this.value}?current=${this.currentPage}`)
-            .then(res => {
-              if (res.data.data) {
-                this.tableData = res.data.data.records;
-                this.totalAll = res.data.data.total;
-                this.tableData.forEach((v, i) => {
-                  v.ratioFromMe = (v.ratioFromMe || 0) + '%';
-                  v.ratioToMe = (v.ratioToMe || 0) + '%';
-                });
-              } else {
-                this.tableData = [];
-                this.totalAll = 0;
-              };
-            })
-            .then(res => {
-              this.dialogVisible = false;
-            })
-            .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-            })
+            if(res.data.success){
+              $http.get(`/unionOpportunityRatio/pageMap/memberId/${this.value}?current=${this.currentPage}`)
+                .then(res => {
+                  if (res.data.data) {
+                    this.tableData = res.data.data.records;
+                    this.totalAll = res.data.data.total;
+                    this.tableData.forEach((v, i) => {
+                      v.ratioFromMe = (v.ratioFromMe || 0) + '%';
+                      v.ratioToMe = (v.ratioToMe || 0) + '%';
+                    });
+                  } else {
+                    this.tableData = [];
+                    this.totalAll = 0;
+                  };
+                })
+                .then(res => {
+                  this.dialogVisible = false;
+                })
+                .catch(err => {
+                  this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+                })
+            }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });

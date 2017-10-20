@@ -189,7 +189,7 @@ export default {
     getVerificationCode() {
       $http.get(`/unionVerifier/phone/${this.ruleForm.phone}?name=${this.ruleForm.name}`)
         .then(res => {
-          if (res.data.data) {
+          if (res.data.success) {
             this.form1.getVerificationCode = true;
             this.form1.countDownTime = 60;
             let timer1 = setInterval(() => {
@@ -217,17 +217,19 @@ export default {
       this.visible1 = false;
       $http.del(`/unionVerifier/${this.id}`)
         .then(res => {
-          $http.get(`/unionVerifier`)
-            .then(res => {
-              if (res.data.data) {
-                this.tableData = res.data.data.records;
-              } else {
-                this.tableData = [];
-              };
-            })
-            .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-            });
+            if(res.data.success){
+              $http.get(`/unionVerifier`)
+                .then(res => {
+                  if (res.data.data) {
+                    this.tableData = res.data.data.records;
+                  } else {
+                    this.tableData = [];
+                  };
+                })
+                .catch(err => {
+                  this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+                });
+            }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -242,17 +244,19 @@ export default {
           let data = this.ruleForm;
           $http.post(url, data)
             .then(res => {
-              $http.get(`/unionVerifier`)
-                .then(res => {
-                  if (res.data.data) {
-                    this.tableData = res.data.data.records;
-                  } else {
-                    this.tableData = [];
-                  };
-                })
-                .catch(err => {
-                  this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-                });
+              if(res.data.success){
+                $http.get(`/unionVerifier`)
+                  .then(res => {
+                    if (res.data.data) {
+                      this.tableData = res.data.data.records;
+                    } else {
+                      this.tableData = [];
+                    };
+                  })
+                  .catch(err => {
+                    this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+                  });
+              }
             })
             .catch(err => {
               this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
