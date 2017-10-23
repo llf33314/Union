@@ -52,92 +52,119 @@
 </template>
 
 <script>
-import $http from '@/utils/http.js'
+import $http from "@/utils/http.js";
 export default {
-  name: 'percent',
+  name: "percent",
   data() {
     return {
       dialogVisible: false,
       formInline1: {
-        region: '',
-        state: ''
+        region: "",
+        state: ""
       },
       value: 0,
       options: [],
       tableData: [],
       currentPage: 1,
-      toEnterpriseName: '',
-      ratioFromMe: '',
-      ratioToMe: '',
-      toMemberId: '',
-      totalAll: 0,
-    }
+      toEnterpriseName: "",
+      ratioFromMe: "",
+      ratioToMe: "",
+      toMemberId: "",
+      totalAll: 0
+    };
   },
   computed: {
     initUnionId() {
       return this.$store.state.unionId;
     }
   },
-  mounted: function() {
-    if (this.initUnionId) {
-      // 获取联盟列表
-      $http.get(`/unionMember/listMap`)
-        .then(res => {
-          if (res.data.data && res.data.data.length > 0) {
-            this.options = res.data.data;
-            res.data.data.forEach((v, i) => {
-              this.options[i].value = v.unionMember.id;
-              this.options[i].label = v.unionMain.name;
-            });
-            this.value = this.options[0].value;
-            $http.get(`/unionOpportunityRatio/pageMap/memberId/${this.value}?current=1`)
-              .then(res => {
-                if (res.data.data) {
-                  this.tableData = res.data.data.records;
-                  this.totalAll = res.data.data.total;
-                  this.tableData.forEach((v, i) => {
-                    v.ratioFromMe = (v.ratioFromMe || 0) + '%';
-                    v.ratioToMe = (v.ratioToMe || 0) + '%';
-                  });
-                } else {
-                  this.tableData = [];
-                  this.totalAll = 0;
-                };
-              })
-              .catch(err => {
-                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-              });
-          } else {
-            this.options = [];
-          };
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
-    };
-  },
   watch: {
+    initUnionId: function() {
+      this.init();
+    },
     value: function() {
-      $http.get(`/unionOpportunityRatio/pageMap/memberId/${this.value}?current=1`)
+      $http
+        .get(`/unionOpportunityRatio/pageMap/memberId/${this.value}?current=1`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
             this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
-              v.ratioFromMe = (v.ratioFromMe || 0) + '%';
-              v.ratioToMe = (v.ratioToMe || 0) + '%';
+              v.ratioFromMe = (v.ratioFromMe || 0) + "%";
+              v.ratioToMe = (v.ratioToMe || 0) + "%";
             });
           } else {
             this.tableData = [];
             this.totalAll = 0;
-          };
+          }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+          this.$message({
+            showClose: true,
+            message: err.toString(),
+            type: "error",
+            duration: 5000
+          });
+        });
     }
   },
+  mounted: function() {
+    this.init();
+  },
   methods: {
+    init() {
+      if (this.initUnionId) {
+        // 获取联盟列表
+        $http
+          .get(`/unionMember/listMap`)
+          .then(res => {
+            if (res.data.data && res.data.data.length > 0) {
+              this.options = res.data.data;
+              res.data.data.forEach((v, i) => {
+                this.options[i].value = v.unionMember.id;
+                this.options[i].label = v.unionMain.name;
+              });
+              this.value = this.options[0].value;
+              $http
+                .get(
+                  `/unionOpportunityRatio/pageMap/memberId/${this
+                    .value}?current=1`
+                )
+                .then(res => {
+                  if (res.data.data) {
+                    this.tableData = res.data.data.records;
+                    this.totalAll = res.data.data.total;
+                    this.tableData.forEach((v, i) => {
+                      v.ratioFromMe = (v.ratioFromMe || 0) + "%";
+                      v.ratioToMe = (v.ratioToMe || 0) + "%";
+                    });
+                  } else {
+                    this.tableData = [];
+                    this.totalAll = 0;
+                  }
+                })
+                .catch(err => {
+                  this.$message({
+                    showClose: true,
+                    message: err.toString(),
+                    type: "error",
+                    duration: 5000
+                  });
+                });
+            } else {
+              this.options = [];
+            }
+          })
+          .catch(err => {
+            this.$message({
+              showClose: true,
+              message: err.toString(),
+              type: "error",
+              duration: 5000
+            });
+          });
+      }
+    },
     // 设置比例
     setPercent(scope) {
       this.dialogVisible = true;
@@ -148,61 +175,87 @@ export default {
     },
     // 保存设置
     submit() {
-      $http.put(`/unionOpportunityRatio/memberId/${this.value}?toMemberId=${this.toMemberId}&ratio=${this.ratioFromMe}`)
+      $http
+        .put(
+          `/unionOpportunityRatio/memberId/${this.value}?toMemberId=${this
+            .toMemberId}&ratio=${this.ratioFromMe}`
+        )
         .then(res => {
-            if(res.data.success){
-              $http.get(`/unionOpportunityRatio/pageMap/memberId/${this.value}?current=${this.currentPage}`)
-                .then(res => {
-                  if (res.data.data) {
-                    this.tableData = res.data.data.records;
-                    this.totalAll = res.data.data.total;
-                    this.tableData.forEach((v, i) => {
-                      v.ratioFromMe = (v.ratioFromMe || 0) + '%';
-                      v.ratioToMe = (v.ratioToMe || 0) + '%';
-                    });
-                  } else {
-                    this.tableData = [];
-                    this.totalAll = 0;
-                  };
-                })
-                .then(res => {
-                  this.dialogVisible = false;
-                })
-                .catch(err => {
-                  this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-                })
-            }
+          if (res.data.success) {
+            $http
+              .get(
+                `/unionOpportunityRatio/pageMap/memberId/${this
+                  .value}?current=${this.currentPage}`
+              )
+              .then(res => {
+                if (res.data.data) {
+                  this.tableData = res.data.data.records;
+                  this.totalAll = res.data.data.total;
+                  this.tableData.forEach((v, i) => {
+                    v.ratioFromMe = (v.ratioFromMe || 0) + "%";
+                    v.ratioToMe = (v.ratioToMe || 0) + "%";
+                  });
+                } else {
+                  this.tableData = [];
+                  this.totalAll = 0;
+                }
+              })
+              .then(res => {
+                this.dialogVisible = false;
+              })
+              .catch(err => {
+                this.$message({
+                  showClose: true,
+                  message: err.toString(),
+                  type: "error",
+                  duration: 5000
+                });
+              });
+          }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+          this.$message({
+            showClose: true,
+            message: err.toString(),
+            type: "error",
+            duration: 5000
+          });
+        });
     },
     // 分页查询
     handleCurrentChange(val) {
-      $http.get(`/unionOpportunityRatio/pageMap/memberId/${this.value}?current=${val}`)
+      $http
+        .get(
+          `/unionOpportunityRatio/pageMap/memberId/${this.value}?current=${val}`
+        )
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
             this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
-              v.ratioFromMe = (v.ratioFromMe || 0) + '%';
-              v.ratioToMe = (v.ratioToMe || 0) + '%';
+              v.ratioFromMe = (v.ratioFromMe || 0) + "%";
+              v.ratioToMe = (v.ratioToMe || 0) + "%";
             });
           } else {
             this.tableData = [];
             this.totalAll = 0;
-          };
+          }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+          this.$message({
+            showClose: true,
+            message: err.toString(),
+            type: "error",
+            duration: 5000
+          });
+        });
     },
     // 关闭弹窗重置数据
     resetData() {
-      this.ratioFromMe = '';
-    },
+      this.ratioFromMe = "";
+    }
   }
-}
+};
 </script>
 
 <style lang='less' rel="stylesheet/less">

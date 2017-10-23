@@ -59,67 +59,89 @@
 </template>
 
 <script>
-import $http from '@/utils/http.js'
+import $http from "@/utils/http.js";
 export default {
-  name: 'commission-detail',
+  name: "commission-detail",
   data() {
     return {
-      memberId: '',
+      memberId: "",
       options1: [],
       tableData: [],
       currentPage: 1,
       dialogTableVisible: false,
       gridData: [],
-      unionName: '',
-      enterpriseName: '',
-      contactMoneySum: '',
+      unionName: "",
+      enterpriseName: "",
+      contactMoneySum: "",
       totalAll: 0,
-      tgtMemberId: '',
-    }
+      tgtMemberId: ""
+    };
   },
   computed: {
     initUnionId() {
       return this.$store.state.unionId;
     }
   },
+  watch: {
+    initUnionId: function() {
+      this.init();
+    },
+  },
   mounted: function() {
-    if (this.initUnionId) {
-      // 获取联盟列表
-      $http.get(`/unionMember/listMap`)
-        .then(res => {
-          if (res.data.data && res.data.data.length > 0) {
-            this.options1 = res.data.data;
-            res.data.data.forEach((v, i) => {
-              this.options1[i].value = v.unionMember.id;
-              this.options1[i].label = v.unionMain.name;
-            });
-          } else {
-            this.options1 = [];
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
-      $http.get(`/unionOpportunity/contact/page?current=1`)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.total;
-          } else {
-            this.tableData = [];
-            this.totalAll = 0;
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
-    }
-
+    this.init();
   },
   methods: {
+    init() {
+      if (this.initUnionId) {
+        // 获取联盟列表
+        $http
+          .get(`/unionMember/listMap`)
+          .then(res => {
+            if (res.data.data && res.data.data.length > 0) {
+              this.options1 = res.data.data;
+              res.data.data.forEach((v, i) => {
+                this.options1[i].value = v.unionMember.id;
+                this.options1[i].label = v.unionMain.name;
+              });
+            } else {
+              this.options1 = [];
+            }
+          })
+          .catch(err => {
+            this.$message({
+              showClose: true,
+              message: err.toString(),
+              type: "error",
+              duration: 5000
+            });
+          });
+        $http
+          .get(`/unionOpportunity/contact/page?current=1`)
+          .then(res => {
+            if (res.data.data) {
+              this.tableData = res.data.data.records;
+              this.totalAll = res.data.data.total;
+            } else {
+              this.tableData = [];
+              this.totalAll = 0;
+            }
+          })
+          .catch(err => {
+            this.$message({
+              showClose: true,
+              message: err.toString(),
+              type: "error",
+              duration: 5000
+            });
+          });
+      }
+    },
     // 改变选取联盟
     change() {
-      $http.get(`/unionOpportunity/contact/page?current=1&memberId=${this.memberId}`)
+      $http
+        .get(
+          `/unionOpportunity/contact/page?current=1&memberId=${this.memberId}`
+        )
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
@@ -130,12 +152,21 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+          this.$message({
+            showClose: true,
+            message: err.toString(),
+            type: "error",
+            duration: 5000
+          });
+        });
     },
     // 分页查询
     handleCurrentChange(val) {
-      $http.get(`/unionOpportunity/contact/page?current=${val}&memberId=${this.memberId}`)
+      $http
+        .get(
+          `/unionOpportunity/contact/page?current=${val}&memberId=${this
+            .memberId}`
+        )
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
@@ -146,14 +177,23 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+          this.$message({
+            showClose: true,
+            message: err.toString(),
+            type: "error",
+            duration: 5000
+          });
+        });
     },
     // 弹出框 佣金详情
     showDialog(scope) {
       this.dialogTableVisible = true;
       this.tgtMemberId = scope.row.tgtMemberId;
-      $http.get(`/unionOpportunity/contact/detail?tgtMemberId=${this.tgtMemberId}&memberId=${this.memberId}`)
+      $http
+        .get(
+          `/unionOpportunity/contact/detail?tgtMemberId=${this
+            .tgtMemberId}&memberId=${this.memberId}`
+        )
         .then(res => {
           if (res.data.data) {
             this.gridData = res.data.data.contactList;
@@ -162,25 +202,35 @@ export default {
             this.contactMoneySum = res.data.data.contactMoneySum;
           } else {
             this.gridData = [];
-            this.unionName = '';
-            this.enterpriseName = '';
-            this.contactMoneySum = '';
+            this.unionName = "";
+            this.enterpriseName = "";
+            this.contactMoneySum = "";
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+          this.$message({
+            showClose: true,
+            message: err.toString(),
+            type: "error",
+            duration: 5000
+          });
+        });
     },
     // 导出佣金明细详情
     output1() {
-      let url = this.$store.state.baseUrl + `/unionOpportunity/contact/exportDetail?tgtMemberId=${this.tgtMemberId}&memberId=${this.memberId}`;
+      let url =
+        this.$store.state.baseUrl +
+        `/unionOpportunity/contact/exportDetail?tgtMemberId=${this
+          .tgtMemberId}&memberId=${this.memberId}`;
       window.open(url);
     },
     // 导出支付明细
     output2() {
-      let url = this.$store.state.baseUrl + `/unionOpportunity/contact/export?memberId=${this.memberId}`;
+      let url =
+        this.$store.state.baseUrl +
+        `/unionOpportunity/contact/export?memberId=${this.memberId}`;
       window.open(url);
     }
   }
-}
+};
 </script>

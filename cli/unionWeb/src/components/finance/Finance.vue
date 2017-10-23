@@ -87,15 +87,15 @@
 </template>
 
 <script>
-import $http from '@/utils/http.js'
+import $http from "@/utils/http.js";
 export default {
-  name: 'finance',
+  name: "finance",
   data() {
     let phonePass = (rule, value, callback) => {
       if (!value) {
-        callback(new Error('手机号码内容不能为空，请重新输入'));
+        callback(new Error("手机号码内容不能为空，请重新输入"));
       } else if (!value.match(/^1[3|4|5|6|7|8][0-9][0-9]{8}$/)) {
-        callback(new Error('请输入正确的手机号码'));
+        callback(new Error("请输入正确的手机号码"));
       } else {
         callback();
       }
@@ -103,91 +103,113 @@ export default {
     return {
       dialogVisible1: false,
       dialogVisible2: false,
-      labelPosition: 'right',
+      labelPosition: "right",
       withdrawalSum: 0,
-      imgUrl: '',
+      imgUrl: "",
       ruleForm: {
-        name: '',
-        code: '',
-        phone: '',
+        name: "",
+        code: "",
+        phone: ""
       },
       rules: {
-        name: [
-          { required: true, message: '姓名不能为空，请重新输入', trigger: 'blur' }
-        ],
-        code: [
-          { required: true, message: '验证码不能为空，请重新输入', trigger: 'blur' }
-        ],
-        phone: [
-          { validator: phonePass, trigger: 'blur' }
-        ],
+        name: [{ required: true, message: "姓名不能为空，请重新输入", trigger: "blur" }],
+        code: [{ required: true, message: "验证码不能为空，请重新输入", trigger: "blur" }],
+        phone: [{ validator: phonePass, trigger: "blur" }]
       },
       tableData: [],
       form1: {
         getVerificationCode: false,
-        countDownTime: '',
+        countDownTime: ""
       },
       visible1: false,
-      name: '',
-      id: '',
-    }
+      name: "",
+      id: ""
+    };
   },
   created: function() {
     // 首页查询我的联盟信息
-    $http.get(`/union/index`)
+    $http
+      .get(`/union/index`)
       .then(res => {
         if (res.data.data) {
           // 判断是否创建或加入联盟
           if (!res.data.data.currentUnionId) {
-            this.$router.push({ path: '/no-union' });
+            this.$router.push({ path: "/no-union" });
           } else {
             //获取佣金平台手机端的二维码
-            $http.get(`/unionBrokerageIncome/indexQRUrl`)
+            $http
+              .get(`/unionBrokerageIncome/indexQRUrl`)
               .then(res => {
                 if (res.data.data) {
                   this.imgUrl = res.data.data;
                 } else {
-                  this.imgUrl = '';
-                };
+                  this.imgUrl = "";
+                }
               })
               .catch(err => {
-                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+                this.$message({
+                  showClose: true,
+                  message: err.toString(),
+                  type: "error",
+                  duration: 5000
+                });
               });
             // 可提现金额
-            $http.get(`/unionBrokerageIncome/withdrawalSum`)
+            $http
+              .get(`/unionBrokerageIncome/withdrawalSum`)
               .then(res => {
                 if (res.data.data) {
                   this.withdrawalSum = res.data.data;
                 } else {
                   this.withdrawalSum = 0;
-                };
+                }
               })
               .catch(err => {
-                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+                this.$message({
+                  showClose: true,
+                  message: err.toString(),
+                  type: "error",
+                  duration: 5000
+                });
               });
             // 佣金平台管理者列表
-            $http.get(`/unionVerifier`)
+            $http
+              .get(`/unionVerifier`)
               .then(res => {
                 if (res.data.data) {
                   this.tableData = res.data.data.records;
                 } else {
                   this.tableData = [];
-                };
+                }
               })
               .catch(err => {
-                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+                this.$message({
+                  showClose: true,
+                  message: err.toString(),
+                  type: "error",
+                  duration: 5000
+                });
               });
-          };
-        };
+          }
+        }
       })
       .catch(err => {
-        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        this.$message({
+          showClose: true,
+          message: err.toString(),
+          type: "error",
+          duration: 5000
+        });
       });
   },
   methods: {
     // 获取验证码
     getVerificationCode() {
-      $http.get(`/unionVerifier/phone/${this.ruleForm.phone}?name=${this.ruleForm.name}`)
+      $http
+        .get(
+          `/unionVerifier/phone/${this.ruleForm.phone}?name=${this.ruleForm
+            .name}`
+        )
         .then(res => {
           if (res.data.success) {
             this.form1.getVerificationCode = true;
@@ -197,13 +219,18 @@ export default {
               if (this.form1.countDownTime === 0) {
                 clearInterval(timer1);
                 this.form1.getVerificationCode = false;
-                this.form1.countDownTime = '';
+                this.form1.countDownTime = "";
               }
-            }, 1000)
+            }, 1000);
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({
+            showClose: true,
+            message: err.toString(),
+            type: "error",
+            duration: 5000
+          });
         });
     },
     // 删除
@@ -215,51 +242,77 @@ export default {
     // 删除确认
     confirm1() {
       this.visible1 = false;
-      $http.del(`/unionVerifier/${this.id}`)
+      $http
+        .del(`/unionVerifier/${this.id}`)
         .then(res => {
-            if(res.data.success){
-              $http.get(`/unionVerifier`)
-                .then(res => {
-                  if (res.data.data) {
-                    this.tableData = res.data.data.records;
-                  } else {
-                    this.tableData = [];
-                  };
-                })
-                .catch(err => {
-                  this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          if (res.data.success) {
+            $http
+              .get(`/unionVerifier`)
+              .then(res => {
+                if (res.data.data) {
+                  this.tableData = res.data.data.records;
+                } else {
+                  this.tableData = [];
+                }
+              })
+              .catch(err => {
+                this.$message({
+                  showClose: true,
+                  message: err.toString(),
+                  type: "error",
+                  duration: 5000
                 });
-            }
+              });
+          }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({
+            showClose: true,
+            message: err.toString(),
+            type: "error",
+            duration: 5000
+          });
         });
     },
     // 提交新增
     submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(valid => {
         if (valid) {
           this.dialogVisible2 = false;
           let url = `/unionVerifier`;
           let data = this.ruleForm;
-          $http.post(url, data)
+          $http
+            .post(url, data)
             .then(res => {
-              if(res.data.success){
-                $http.get(`/unionVerifier`)
+              if (res.data.success) {
+                this.form1.getVerificationCode = false;
+                this.form1.countDownTime = "";
+                $http
+                  .get(`/unionVerifier`)
                   .then(res => {
                     if (res.data.data) {
                       this.tableData = res.data.data.records;
                     } else {
                       this.tableData = [];
-                    };
+                    }
                   })
                   .catch(err => {
-                    this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+                    this.$message({
+                      showClose: true,
+                      message: err.toString(),
+                      type: "error",
+                      duration: 5000
+                    });
                   });
               }
             })
             .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+              this.$message({
+                showClose: true,
+                message: err.toString(),
+                type: "error",
+                duration: 5000
+              });
             });
         } else {
           return false;
@@ -271,29 +324,28 @@ export default {
       this.dialogVisible2 = false;
     }
   }
-}
-
+};
 </script>
 <style lang='less' rel="stylesheet/less" scoped>
 .container {
   margin: 40px 120px 20px 60px;
   #union_people {
     padding: 13px 0 17px;
-    background: #F8F8F8;
-    >ul>li {
+    background: #f8f8f8;
+    > ul > li {
       float: left;
       width: 22%;
-      border-left: 1px solid #EEEEEE;
+      border-left: 1px solid #eeeeee;
       padding-left: 22px;
       color: #999999;
       p {
         margin-bottom: 19px;
       }
       span {
-        color: #FF6600;
+        color: #ff6600;
         font-size: 25px;
         font-weight: bold;
-        margin-right: 10px
+        margin-right: 10px;
       }
       .special {
         display: block;
@@ -307,7 +359,7 @@ export default {
     }
   }
   .footer_ {
-    >button {
+    > button {
       margin-bottom: 15px;
     }
   }
