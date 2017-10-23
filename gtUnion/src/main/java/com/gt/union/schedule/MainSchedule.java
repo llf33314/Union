@@ -2,7 +2,6 @@ package com.gt.union.schedule;
 
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.util.ListUtil;
-import com.gt.union.log.service.IUnionLogErrorService;
 import com.gt.union.main.entity.UnionMainCreate;
 import com.gt.union.main.entity.UnionMainPermit;
 import com.gt.union.main.service.IUnionMainCreateService;
@@ -22,9 +21,6 @@ import java.util.List;
 @Component
 public class MainSchedule {
     private Logger logger = LoggerFactory.getLogger(MainSchedule.class);
-
-    @Autowired
-    private IUnionLogErrorService unionLogErrorService;
 
     @Autowired
     private IUnionMainPermitService unionMainPermitService;
@@ -52,7 +48,6 @@ public class MainSchedule {
             }
         } catch (Exception e) {
             logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
         }
     }
 
@@ -76,7 +71,6 @@ public class MainSchedule {
             }
         } catch (Exception e) {
             logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
         }
     }
 

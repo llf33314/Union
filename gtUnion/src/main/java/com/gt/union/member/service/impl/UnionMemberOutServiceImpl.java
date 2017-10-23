@@ -29,12 +29,10 @@ import java.util.List;
 
 
 /**
- * <p>
  * 联盟成员退盟申请 服务实现类
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-23 08:34:54
  */
 @Service
 public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper, UnionMemberOut> implements IUnionMemberOutService {
@@ -50,13 +48,9 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
     @Autowired
     private RedisCacheUtil redisCacheUtil;
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - get *********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - get --------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - list ********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - list -------------------------------------------
 
     @Override
     public Page pageApplyOutMapByBusIdAndMemberId(Page page, Integer busId, Integer memberId) throws Exception {
@@ -82,21 +76,25 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         Wrapper wrapper = new Wrapper() {
             @Override
             public String getSqlSegment() {
-                StringBuilder sbSqlSegment = new StringBuilder(" mo")
-                        .append(" LEFT JOIN t_union_member m ON m.id = mo.apply_member_id")
-                        .append(" WHERE mo.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND m.status = ").append(MemberConstant.STATUS_APPLY_OUT)
-                        .append("  AND m.union_id = ").append(unionOwner.getUnionId());
-                return sbSqlSegment.toString();
+                return " mo"
+                        + " LEFT JOIN t_union_member m ON m.id = mo.apply_member_id"
+                        + " WHERE mo.del_status = " + CommonConstant.DEL_STATUS_NO
+                        + "  AND m.del_status = " + CommonConstant.DEL_STATUS_NO
+                        + "  AND m.status = " + MemberConstant.STATUS_APPLY_OUT
+                        + "  AND m.union_id = " + unionOwner.getUnionId();
             }
         };
-        StringBuilder sbSqlSelect = new StringBuilder(" mo.id outId") //退盟申请id
-                .append(", m.enterprise_name outEnterpriseName") //退盟企业名称
-                .append(", mo.type outType") //退盟类型
-                .append(", DATE_FORMAT(mo.createtime, '%Y-%m-%d %T') applyOutTime") //申请退盟时间
-                .append(", mo.apply_out_reason applyOutReason"); //退盟理由
-        wrapper.setSqlSelect(sbSqlSelect.toString());
+        //退盟申请id
+        String sqlSelect = " mo.id outId"
+                //退盟企业名称
+                + ", m.enterprise_name outEnterpriseName"
+                //退盟类型
+                + ", mo.type outType"
+                //申请退盟时间
+                + ", DATE_FORMAT(mo.createtime, '%Y-%m-%d %T') applyOutTime"
+                //退盟理由
+                + ", mo.apply_out_reason applyOutReason";
+        wrapper.setSqlSelect(sqlSelect);
         return this.selectMapsPage(page, wrapper);
     }
 
@@ -124,32 +122,36 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         Wrapper wrapper = new Wrapper() {
             @Override
             public String getSqlSegment() {
-                StringBuilder sbSqlSegment = new StringBuilder(" mo")
-                        .append(" LEFT JOIN t_union_member m ON m.id = mo.apply_member_id")
-                        .append(" WHERE mo.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND m.status = ").append(MemberConstant.STATUS_OUTING)
-                        .append("  AND m.union_id = ").append(unionOwner.getUnionId());
-                return sbSqlSegment.toString();
+                return " mo"
+                        + " LEFT JOIN t_union_member m ON m.id = mo.apply_member_id"
+                        + " WHERE mo.del_status = " + CommonConstant.DEL_STATUS_NO
+                        + "  AND m.del_status = " + CommonConstant.DEL_STATUS_NO
+                        + "  AND m.status = " + MemberConstant.STATUS_OUTING
+                        + "  AND m.union_id = " + unionOwner.getUnionId();
             }
         };
-        StringBuilder sbSqlSelect = new StringBuilder(" mo.id outId") //退盟申请id
-                .append(", m.enterprise_name outEnterpriseName") //退盟企业名称
-                .append(", mo.type outType") //退盟类型
-                .append(", DATE_FORMAT(mo.createtime, '%Y-%m-%d %T') applyOutTime") //申请退盟时间
-                .append(", DATE_FORMAT(mo.confirm_out_time, '%Y-%m-%d %T') confirmOutTime") //盟主确认退盟时间
-                .append(", DATEDIFF(mo.actual_out_time, now()) remainDay") //剩余天数
-                .append(", mo.apply_out_reason applyOutReason"); //退盟理由
-        wrapper.setSqlSelect(sbSqlSelect.toString());
+        //退盟申请id
+        String sqlSelect = " mo.id outId"
+                // 退盟企业名称
+                + ", m.enterprise_name outEnterpriseName"
+                // 退盟类型
+                + ", mo.type outType"
+                // 申请退盟时间
+                + ", DATE_FORMAT(mo.createtime, '%Y-%m-%d %T') applyOutTime"
+                // 盟主确认退盟时间
+                + ", DATE_FORMAT(mo.confirm_out_time, '%Y-%m-%d %T') confirmOutTime"
+                // 剩余天数
+                + ", DATEDIFF(mo.actual_out_time, now()) remainDay"
+                // 退盟理由
+                + ", mo.apply_out_reason applyOutReason";
+        wrapper.setSqlSelect(sqlSelect);
         return this.selectMapsPage(page, wrapper);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - save ********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - save -------------------------------------------
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void saveApplyOutByBusIdAndMemberId(Integer busId, Integer memberId, String applyOutReason) throws Exception {
         if (busId == null || memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -175,11 +177,16 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         }
         //(5)要保存的退盟申请信息
         UnionMemberOut saveOut = new UnionMemberOut();
-        saveOut.setCreatetime(DateUtil.getCurrentDate()); //申请时间
-        saveOut.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
-        saveOut.setType(MemberConstant.OUT_TYPE_APPLY); //退盟类型
-        saveOut.setApplyMemberId(memberId); //申请退盟的盟员id
-        saveOut.setApplyOutReason(applyOutReason); //退盟理由
+        //申请时间
+        saveOut.setCreatetime(DateUtil.getCurrentDate());
+        //删除状态
+        saveOut.setDelStatus(CommonConstant.DEL_STATUS_NO);
+        //退盟类型
+        saveOut.setType(MemberConstant.OUT_TYPE_APPLY);
+        //申请退盟的盟员id
+        saveOut.setApplyMemberId(memberId);
+        //退盟理由
+        saveOut.setApplyOutReason(applyOutReason);
         //(6)更新盟员状态为申请退盟状态
         UnionMember updateMember = new UnionMember();
         updateMember.setId(memberId);
@@ -189,11 +196,11 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         if (unionOwner == null) {
             throw new BusinessException("盟主帐号不存在或已过期");
         }
-        String content = new StringBuilder("\"")
-                .append(member.getEnterpriseAddress())
-                .append("\"申请退出\"")
-                .append(unionMain.getName())
-                .append("\",请到退盟审核处查看并处理").toString();
+        String content = "\""
+                + member.getEnterpriseAddress()
+                + "\"申请退出\""
+                + unionMain.getName()
+                + "\",请到退盟审核处查看并处理";
         String phone = StringUtil.isNotEmpty(unionOwner.getNotifyPhone()) ? unionOwner.getNotifyPhone() : unionOwner.getDirectorPhone();
         PhoneMessage phoneMessage = new PhoneMessage(busId, phone, content);
         //(8)事务操作
@@ -202,16 +209,12 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         this.phoneMessageSender.sendMsg(phoneMessage);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - remove ******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - remove -----------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - update ******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - update -----------------------------------------
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateByBusIdAndMemberIdAndOutId(Integer busId, Integer memberId, Integer outId, Integer isOK) throws Exception {
         if (busId == null || memberId == null || outId == null || isOK == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -238,38 +241,41 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         }
         UnionMemberOut updateOut = new UnionMemberOut();
         UnionMember updateMember = new UnionMember();
-        if (isOK == CommonConstant.COMMON_YES) { //同意退盟
+        if (isOK == CommonConstant.COMMON_YES) {
+            //同意退盟
             //(6)退盟申请更新内容
-            updateOut.setId(outId); //退盟申请id
-            updateOut.setConfirmOutTime(DateUtil.getCurrentDate()); //盟主审核退盟时间
-            updateOut.setActualOutTime(DateUtil.addDays(DateUtil.getCurrentDate(), 15)); //实际退盟时间
+            //退盟申请id
+            updateOut.setId(outId);
+            //盟主审核退盟时间
+            updateOut.setConfirmOutTime(DateUtil.getCurrentDate());
+            //实际退盟时间
+            updateOut.setActualOutTime(DateUtil.addDays(DateUtil.getCurrentDate(), 15));
             //(7)退盟的盟员要更新的内容
-            updateMember.setId(out.getApplyMemberId()); //申请退盟的盟员id
-            updateMember.setStatus(MemberConstant.STATUS_OUTING); //退盟过渡期
+            //申请退盟的盟员id
+            updateMember.setId(out.getApplyMemberId());
+            //退盟过渡期
+            updateMember.setStatus(MemberConstant.STATUS_OUTING);
         } else {
             //(6)退盟申请更新内容
-            updateOut.setId(outId); //退盟申请id
-            updateOut.setConfirmOutTime(DateUtil.getCurrentDate()); //盟主审核退盟时间
-            updateOut.setDelStatus(CommonConstant.DEL_STATUS_YES); //废弃掉这条申请
+            //退盟申请id
+            updateOut.setId(outId);
+            //盟主审核退盟时间
+            updateOut.setConfirmOutTime(DateUtil.getCurrentDate());
+            //废弃掉这条申请
+            updateOut.setDelStatus(CommonConstant.DEL_STATUS_YES);
             //(7)退盟的盟员要更新的内容
-            updateMember.setId(out.getApplyMemberId()); //申请退盟的盟员id
-            updateMember.setStatus(MemberConstant.STATUS_IN); //返回正式盟员状态
+            //申请退盟的盟员id
+            updateMember.setId(out.getApplyMemberId());
+            //返回正式盟员状态
+            updateMember.setStatus(MemberConstant.STATUS_IN);
         }
         //(8)事务化操作
         this.update(updateOut);
         this.unionMemberService.update(updateMember);
     }
 
-    /**
-     * 根据商家id、盟员身份id和目标盟员身份id，直接设置目标盟员为退盟过渡期
-     *
-     * @param busId       {not null} 商家id
-     * @param memberId    {not null} 盟员身份id
-     * @param tgtMemberId {not null} 目标盟员身份id
-     * @throws Exception
-     */
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateByBusIdAndMemberIdAndTgtMemberId(Integer busId, Integer memberId, Integer tgtMemberId) throws Exception {
         if (busId == null || memberId == null || tgtMemberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -302,45 +308,52 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         switch (tgtMemberStatus) {
             case MemberConstant.STATUS_OUTING:
                 throw new BusinessException("要移出的对象正处于退盟过渡期");
-            case MemberConstant.STATUS_APPLY_OUT: //已申请退盟，移出操作变成审核通过退盟操作
+            case MemberConstant.STATUS_APPLY_OUT:
+                //已申请退盟，移出操作变成审核通过退盟操作
                 List<UnionMemberOut> tgtOutList = this.listByApplyMemberId(tgtMemberId);
                 if (ListUtil.isEmpty(tgtOutList)) {
                     throw new BusinessException("要移出的对象已申请退盟，但找不到退盟申请信息");
                 }
                 this.updateByBusIdAndMemberIdAndOutId(busId, memberId, tgtOutList.get(0).getId(), CommonConstant.COMMON_YES);
                 break;
-            case MemberConstant.STATUS_APPLY_IN: //目标对象直接设置为退盟过渡期
+            case MemberConstant.STATUS_APPLY_IN:
+                //目标对象直接设置为退盟过渡期
                 //目标对象的伪退盟申请
                 UnionMemberOut saveMemberOut = new UnionMemberOut();
                 Date currentDate = DateUtil.getCurrentDate();
-                saveMemberOut.setCreatetime(currentDate); //创建时间
-                saveMemberOut.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
-                saveMemberOut.setType(MemberConstant.OUT_TYPE_REMOVE); //退盟类型
-                saveMemberOut.setApplyMemberId(tgtMemberId); //退盟盟员id
-                saveMemberOut.setApplyOutReason("盟主移出"); //退盟理由
-                saveMemberOut.setConfirmOutTime(currentDate); //盟主审核确认时间
-                saveMemberOut.setActualOutTime(DateUtil.addDays(currentDate, 15)); //实际退盟时间
+                //创建时间
+                saveMemberOut.setCreatetime(currentDate);
+                //删除状态
+                saveMemberOut.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                //退盟类型
+                saveMemberOut.setType(MemberConstant.OUT_TYPE_REMOVE);
+                //退盟盟员id
+                saveMemberOut.setApplyMemberId(tgtMemberId);
+                //退盟理由
+                saveMemberOut.setApplyOutReason("盟主移出");
+                //盟主审核确认时间
+                saveMemberOut.setConfirmOutTime(currentDate);
+                //实际退盟时间
+                saveMemberOut.setActualOutTime(DateUtil.addDays(currentDate, 15));
                 //目标对象的更新状态
                 UnionMember updateMember = new UnionMember();
-                updateMember.setId(tgtMemberId); //目标盟员id
-                updateMember.setStatus(MemberConstant.STATUS_OUTING); //目标盟员状态为退盟过渡期
+                //目标盟员id
+                updateMember.setId(tgtMemberId);
+                //目标盟员状态为退盟过渡期
+                updateMember.setStatus(MemberConstant.STATUS_OUTING);
                 //事务化操作
-                this.insert(saveMemberOut);
+                this.save(saveMemberOut);
                 this.unionMemberService.update(updateMember);
+            default:
+                break;
         }
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - count *******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - count ------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - boolean *****************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - boolean ----------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - get **********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - get ********************************************
 
     @Override
     public UnionMemberOut getById(Integer outId) throws Exception {
@@ -364,9 +377,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - list *********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - list *******************************************
 
     @Override
     public List<UnionMemberOut> listByApplyMemberId(Integer applyMemberId) throws Exception {
@@ -382,7 +393,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
             return result;
         }
         //(2)get in db
-        EntityWrapper<UnionMemberOut> entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionMemberOut> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("apply_member_id", applyMemberId);
         result = this.selectList(entityWrapper);
@@ -390,12 +401,10 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - save *********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - save *******************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void save(UnionMemberOut newOut) throws Exception {
         if (newOut == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -405,7 +414,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void saveBatch(List<UnionMemberOut> newOutList) throws Exception {
         if (newOutList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -414,12 +423,10 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         this.removeCache(newOutList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - remove *******************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - remove *****************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeById(Integer outId) throws Exception {
         if (outId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -435,7 +442,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeBatchById(List<Integer> outIdList) throws Exception {
         if (outIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -458,12 +465,10 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         this.updateBatchById(removeOutList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - update *******************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - update *****************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void update(UnionMemberOut updateOut) throws Exception {
         if (updateOut == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -477,7 +482,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateBatch(List<UnionMemberOut> updateOutList) throws Exception {
         if (updateOutList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -497,9 +502,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         this.updateBatchById(updateOutList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - cache support ************************************
-     ******************************************************************************************************************/
+    //***************************************** Object As a Service - cache support ************************************
 
     private void setCache(UnionMemberOut newOut, Integer outId) {
         if (outId == null) {

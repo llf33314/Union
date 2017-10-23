@@ -27,12 +27,10 @@ import java.math.BigDecimal;
 import java.util.*;
 
 /**
- * <p>
  * 联盟成员 服务实现类
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-23 08:34:54
  */
 @Service
 public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, UnionMember> implements IUnionMemberService {
@@ -42,9 +40,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     @Autowired
     private RedisCacheUtil redisCacheUtil;
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - get *********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - get --------------------------------------------
 
     @Override
     public UnionMember getOwnerByUnionId(Integer unionId) throws Exception {
@@ -106,20 +102,18 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         return null;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - list ********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - list -------------------------------------------
 
     @Override
-    public Page pageByIds(Page page, List<Integer> memberIdList) throws Exception {
+    public Page pageByIds(Page<UnionMember> page, List<Integer> memberIdList) throws Exception {
         if (page == null || memberIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         if (ListUtil.isEmpty(memberIdList)) {
-            page.setRecords(new ArrayList());
+            page.setRecords(new ArrayList<UnionMember>());
             return page;
         }
-        EntityWrapper entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .in("id", memberIdList)
                 .orderBy("is_union_owner DESC,union_id ASC, id", true);
@@ -161,14 +155,21 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 return sbSqlSegment.toString();
             }
         };
-        StringBuilder sbSqlSelect = new StringBuilder(" m.id memberId") //盟员id
-                .append(", m.is_union_owner isUnionOwner") //是否盟主
-                .append(", m.enterprise_name enterpriseName") //盟员名称
-                .append(", DATE_FORMAT(m.createtime, '%Y-%m-%d %T') createTime") //创建时间
-                .append(", mdFromMe.discount discountFromMe") //我给他的折扣
-                .append(", mdToMe.discount discountToMe") //他给我的折扣
-                .append(", m.card_divide_percent cardDividePercent"); //售卡分成比例
-        wrapper.setSqlSelect(sbSqlSelect.toString());
+        //盟员id
+        String sqlSelect = " m.id memberId"
+                //是否盟主
+                + ", m.is_union_owner isUnionOwner"
+                //盟员名称
+                + ", m.enterprise_name enterpriseName"
+                //创建时间
+                + ", DATE_FORMAT(m.createtime, '%Y-%m-%d %T') createTime"
+                //我给他的折扣
+                + ", mdFromMe.discount discountFromMe"
+                //他给我的折扣
+                + ", mdToMe.discount discountToMe"
+                //售卡分成比例
+                + ", m.card_divide_percent cardDividePercent";
+        wrapper.setSqlSelect(sqlSelect);
         return this.selectMapsPage(page, wrapper);
     }
 
@@ -180,52 +181,54 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         Wrapper wrapper = new Wrapper() {
             @Override
             public String getSqlSegment() {
-                StringBuilder sbSqlSegment = new StringBuilder(" toM")
-                        .append(" LEFT JOIN t_union_opportunity_ratio rFromMe")
-                        .append("  ON rFromMe.from_member_id = ").append(unionMember.getId())
-                        .append("  AND rFromMe.to_member_id=toM.id")
-                        .append(" LEFT JOIN t_union_opportunity_ratio rToMe")
-                        .append("  ON rToMe.to_member_id =").append(unionMember.getId())
-                        .append("  AND rToMe.from_member_id = toM.id")
-                        .append(" WHERE toM.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND toM.union_id = ").append(unionMember.getUnionId())
-                        .append("  AND toM.status in (").append(MemberConstant.STATUS_IN)
-                        .append("  AND toM.id != ").append(unionMember.getId())
-                        .append("    ,").append(MemberConstant.STATUS_APPLY_OUT).append(")");
-                return sbSqlSegment.toString();
+                return " toM"
+                        + " LEFT JOIN t_union_opportunity_ratio rFromMe"
+                        + "  ON rFromMe.from_member_id = " + unionMember.getId()
+                        + "  AND rFromMe.to_member_id=toM.id"
+                        + " LEFT JOIN t_union_opportunity_ratio rToMe"
+                        + "  ON rToMe.to_member_id =" + unionMember.getId()
+                        + "  AND rToMe.from_member_id = toM.id"
+                        + " WHERE toM.del_status = " + CommonConstant.DEL_STATUS_NO
+                        + "  AND toM.union_id = " + unionMember.getUnionId()
+                        + "  AND toM.status in (" + MemberConstant.STATUS_IN
+                        + "  AND toM.id != " + unionMember.getId()
+                        + "    ," + MemberConstant.STATUS_APPLY_OUT + ")";
             }
         };
-        StringBuilder sbSqlSelect = new StringBuilder(" toM.id toMemberId") //受惠方盟员身份id
-                .append(", toM.enterprise_name toEnterpriseName") //受惠方盟员身份名称
-                .append(", rFromMe.ratio ratioFromMe") //我给TA的商机佣金比例
-                .append(", rToMe.ratio ratioToMe"); //TA给我的商机佣金比例
-        wrapper.setSqlSelect(sbSqlSelect.toString());
+        //受惠方盟员身份id
+        String sqlSelect = " toM.id toMemberId"
+                //受惠方盟员身份名称
+                + ", toM.enterprise_name toEnterpriseName"
+                //我给TA的商机佣金比例
+                + ", rFromMe.ratio ratioFromMe"
+                //TA给我的商机佣金比例
+                + ", rToMe.ratio ratioToMe";
+        wrapper.setSqlSelect(sqlSelect);
         return this.selectMapsPage(page, wrapper);
     }
 
     @Override
-    public Page pagePreferentialUnCommitByUnionOwner(Page page, UnionMember ownerMember) throws Exception {
+    public Page pagePreferentialUnCommitByUnionOwner(Page<UnionMember> page, UnionMember ownerMember) throws Exception {
         if (page == null || ownerMember == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         if (!ownerMember.getIsUnionOwner().equals(MemberConstant.IS_UNION_OWNER_YES)) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
         }
-        EntityWrapper entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .ne("status", MemberConstant.STATUS_APPLY_IN)
                 .eq("union_id", ownerMember.getUnionId())
                 .ne("id", ownerMember.getId())
-                .notExists(new StringBuilder(" SELECT pi.id FROM t_union_preferential_item pi")
-                        .append(" WHERE pi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND pi.status = ").append(PreferentialConstant.STATUS_PASS)
-                        .append("  AND exists(")
-                        .append("    SELECT pp.id FROM t_union_preferential_project pp")
-                        .append("    WHERE pp.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("      AND pp.id = pi.project_id")
-                        .append("      AND pp.member_id = t_union_member.id")
-                        .append("  )")
-                        .toString());
+                .notExists(" SELECT pi.id FROM t_union_preferential_item pi"
+                        + " WHERE pi.del_status = " + CommonConstant.DEL_STATUS_NO
+                        + "  AND pi.status = " + PreferentialConstant.STATUS_PASS
+                        + "  AND exists("
+                        + "    SELECT pp.id FROM t_union_preferential_project pp"
+                        + "    WHERE pp.del_status = " + CommonConstant.DEL_STATUS_NO
+                        + "      AND pp.id = pi.project_id"
+                        + "      AND pp.member_id = t_union_member.id"
+                        + "  )");
         return this.selectPage(page, entityWrapper);
     }
 
@@ -237,28 +240,31 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         Wrapper wrapper = new Wrapper() {
             @Override
             public String getSqlSegment() {
-                StringBuilder sbSqlSegment = new StringBuilder(" m")
-                        .append(" LEFT JOIN t_union_main_transfer mt ON mt.to_member_id = m.id")
-                        .append("  AND (mt.id IS NULL ")
-                        .append("    OR (")
-                        .append("      mt.id IS NOT NULL")
-                        .append("      AND mt.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("      AND mt.confirm_status = ").append(MainConstant.TRANSFER_CONFIRM_STATUS_HANDLING)
-                        .append("    )")
-                        .append("  )")
-                        .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND m.status != ").append(MemberConstant.STATUS_APPLY_IN)
-                        .append("  AND m.id != ").append(ownerMember.getId())
-                        .append("  AND m.union_id = ").append(ownerMember.getUnionId())
-                        .append(" ORDER BY mt.id ASC");
-                return sbSqlSegment.toString();
+                return " m"
+                        + " LEFT JOIN t_union_main_transfer mt ON mt.to_member_id = m.id"
+                        + "  AND (mt.id IS NULL "
+                        + "    OR ("
+                        + "      mt.id IS NOT NULL"
+                        + "      AND mt.del_status = " + CommonConstant.DEL_STATUS_NO
+                        + "      AND mt.confirm_status = " + MainConstant.TRANSFER_CONFIRM_STATUS_HANDLING
+                        + "    )"
+                        + "  )"
+                        + " WHERE m.del_status = " + CommonConstant.DEL_STATUS_NO
+                        + "  AND m.status != " + MemberConstant.STATUS_APPLY_IN
+                        + "  AND m.id != " + ownerMember.getId()
+                        + "  AND m.union_id = " + ownerMember.getUnionId()
+                        + " ORDER BY mt.id ASC";
             }
         };
-        StringBuilder sbSqlSelect = new StringBuilder(" m.id memberId") //盟员身份id
-                .append(", m.enterprise_name enterpriseName") //盟员名称
-                .append(", m.createtime createTime") //加入时间
-                .append(", mt.id transferId"); //盟主服务转移申请id
-        wrapper.setSqlSelect(sbSqlSelect.toString());
+        //盟员身份id
+        String sqlSelect = " m.id memberId"
+                //盟员名称
+                + ", m.enterprise_name enterpriseName"
+                //加入时间
+                + ", m.createtime createTime"
+                //盟主服务转移申请id
+                + ", mt.id transferId";
+        wrapper.setSqlSelect(sqlSelect);
         return this.selectMapsPage(page, wrapper);
     }
 
@@ -298,14 +304,21 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 return sbSqlSegment.toString();
             }
         };
-        StringBuilder sbSqlSelect = new StringBuilder(" m2.id memberId") //盟员id
-                .append(", m2.is_union_owner isUnionOwner") //是否盟主
-                .append(", m2.enterprise_name enterpriseName") //盟员名称
-                .append(", DATE_FORMAT(m2.createtime, '%Y-%m-%d %T') createTime") //创建时间
-                .append(", mdFromMe.discount discountFromMe") //我给他的折扣
-                .append(", mdToMe.discount discountToMe") //他给我的折扣
-                .append(", m2.card_divide_percent cardDividePercent"); //售卡分成比例
-        wrapper.setSqlSelect(sbSqlSelect.toString());
+        //盟员id
+        String sqlSelect = " m2.id memberId"
+                //是否盟主
+                + ", m2.is_union_owner isUnionOwner"
+                //盟员名称
+                + ", m2.enterprise_name enterpriseName"
+                //创建时间
+                + ", DATE_FORMAT(m2.createtime, '%Y-%m-%d %T') createTime"
+                //我给他的折扣
+                + ", mdFromMe.discount discountFromMe"
+                //他给我的折扣
+                + ", mdToMe.discount discountToMe"
+                //售卡分成比例
+                + ", m2.card_divide_percent cardDividePercent";
+        wrapper.setSqlSelect(sqlSelect);
         return this.selectMaps(wrapper);
     }
 
@@ -324,26 +337,33 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         Wrapper wrapper = new Wrapper() {
             @Override
             public String getSqlSegment() {
-                StringBuilder sbSqlSegment = new StringBuilder(" m")
-                        .append(" LEFT JOIN t_union_member_discount d ON m.id = d.to_member_id AND d.from_member_id = ").append(memberId)
-                        .append(" WHERE m.union_id = ").append(member.getUnionId())
-                        .append("  AND m.status in (").append(MemberConstant.STATUS_IN).append(",")
-                        .append("   ").append(MemberConstant.STATUS_APPLY_OUT).append(" )")
-                        .append(" AND m.del_status = ").append(CommonConstant.DEL_STATUS_NO);
-                sbSqlSegment.append(" ORDER BY m.is_union_owner DESC, m.id ASC");
-                return sbSqlSegment.toString();
+                return " m"
+                        + " LEFT JOIN t_union_member_discount d ON m.id = d.to_member_id AND d.from_member_id = " + memberId
+                        + " WHERE m.union_id = " + member.getUnionId()
+                        + "  AND m.status in (" + MemberConstant.STATUS_IN + "," + MemberConstant.STATUS_APPLY_OUT + " )"
+                        + "  AND m.del_status = " + CommonConstant.DEL_STATUS_NO
+                        + " ORDER BY m.is_union_owner DESC, m.id ASC";
             }
         };
-        StringBuilder sbSqlSelect = new StringBuilder(" m.id memberId") //盟员id
-                .append(", m.is_union_owner isUnionOwner") //是否盟主
-                .append(", m.enterprise_name enterpriseName") //盟员名称
-                .append(", DATE_FORMAT(m.createtime, '%Y-%m-%d %T') createTime") //创建时间
-                .append(", m.enterprise_address enterpriseAddress") //企业地址
-                .append(", m.director_phone directorPhone") //负责人电话
-                .append(", m.address_longitude addressLongitude") //地址经度
-                .append(", m.address_latitude addressLatitude") //地址维度
-                .append(", d.discount discount"); //我给他的折扣
-        wrapper.setSqlSelect(sbSqlSelect.toString());
+        //盟员id
+        String sqlSelect = " m.id memberId"
+                //是否盟主
+                + ", m.is_union_owner isUnionOwner"
+                //盟员名称
+                + ", m.enterprise_name enterpriseName"
+                //创建时间
+                + ", DATE_FORMAT(m.createtime, '%Y-%m-%d %T') createTime"
+                //企业地址
+                + ", m.enterprise_address enterpriseAddress"
+                //负责人电话
+                + ", m.director_phone directorPhone"
+                //地址经度
+                + ", m.address_longitude addressLongitude"
+                //地址维度
+                + ", m.address_latitude addressLatitude"
+                //我给他的折扣
+                + ", d.discount discount";
+        wrapper.setSqlSelect(sqlSelect);
         return this.selectMaps(wrapper);
     }
 
@@ -451,7 +471,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         if (ListUtil.isNotEmpty(memberList)) {
             for (UnionMember member : memberList) {
                 UnionMain unionMain = this.unionMainService.getById(member.getUnionId());
-                Map<String, Object> map = new HashMap<>();
+                Map<String, Object> map = new HashMap<>(16);
                 map.put("unionMember", member);
                 map.put("unionMain", unionMain);
                 result.add(map);
@@ -477,14 +497,13 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
 
     @Override
     public List<UnionMember> listExpired() throws Exception {
-        EntityWrapper entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("status", MemberConstant.STATUS_OUTING)
-                .exists(new StringBuilder("SELECT o.id FROM t_union_member_out o")
-                        .append(" WHERE o.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND o.apply_member_id = t_union_member.id")
-                        .append("  AND o.actual_out_time < '").append(DateUtil.getCurrentDateString()).append("'")
-                        .toString());
+                .exists("SELECT o.id FROM t_union_member_out o"
+                        + " WHERE o.del_status = " + CommonConstant.DEL_STATUS_NO
+                        + "  AND o.apply_member_id = t_union_member.id"
+                        + "  AND o.actual_out_time < '" + DateUtil.getCurrentDateString() + "'");
         return this.selectList(entityWrapper);
     }
 
@@ -512,7 +531,9 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         return result;
     }
 
-    // order by is_union_owner desc, id asc
+    /**
+     * order by is_union_owner desc, id asc
+     */
     private void sortByIsUnionOwnerAndId(List<UnionMember> memberList) {
         Collections.sort(memberList, new Comparator<UnionMember>() {
             @Override
@@ -531,20 +552,14 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         });
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - save ********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - save -------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - remove ******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - remove -----------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - update ******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - update -----------------------------------------
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateByIdAndBusId(Integer memberId, Integer busId, UnionMemberVO memberVO) throws Exception {
         if (memberId == null || busId == null || memberVO == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -563,24 +578,37 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         //(4)更新操作
         UnionMain unionMain = this.unionMainService.getById(member.getUnionId());
         UnionMember updateMember = new UnionMember();
-        updateMember.setId(memberId); //盟员身份id
-        updateMember.setEnterpriseName(memberVO.getEnterpriseName()); //企业名称
-        updateMember.setEnterpriseAddress(memberVO.getEnterpriseAddress()); //企业地址
-        updateMember.setDirectorName(memberVO.getDirectorName()); //负责人名称
-        updateMember.setDirectorPhone(memberVO.getDirectorPhone()); //负责人联系电话
-        updateMember.setDirectorEmail(memberVO.getDirectorEmail()); //负责人邮箱
-        updateMember.setAddressLongitude(memberVO.getAddressLongitude()); //地址经度
-        updateMember.setAddressLatitude(memberVO.getAddressLatitude()); //地址纬度
-        updateMember.setNotifyPhone(memberVO.getNotifyPhone()); //短信通知手机号
-        updateMember.setAddressProvinceCode(memberVO.getAddressProvinceCode()); //地址省份编码
-        updateMember.setAddressCityCode(memberVO.getAddressCityCode()); //地址城市编码
-        updateMember.setAddressDistrictCode(memberVO.getAddressDistrictCode()); //地址区编码
-        if (unionMain.getIsIntegral() == MainConstant.IS_INTEGRAL_YES) { //开启积分后，积分兑换率必填
+        //盟员身份id
+        updateMember.setId(memberId);
+        //企业名称
+        updateMember.setEnterpriseName(memberVO.getEnterpriseName());
+        //企业地址
+        updateMember.setEnterpriseAddress(memberVO.getEnterpriseAddress());
+        //负责人名称
+        updateMember.setDirectorName(memberVO.getDirectorName());
+        //负责人联系电话
+        updateMember.setDirectorPhone(memberVO.getDirectorPhone());
+        //负责人邮箱
+        updateMember.setDirectorEmail(memberVO.getDirectorEmail());
+        //地址经度
+        updateMember.setAddressLongitude(memberVO.getAddressLongitude());
+        //地址纬度
+        updateMember.setAddressLatitude(memberVO.getAddressLatitude());
+        //短信通知手机号
+        updateMember.setNotifyPhone(memberVO.getNotifyPhone());
+        //地址省份编码
+        updateMember.setAddressProvinceCode(memberVO.getAddressProvinceCode());
+        //地址城市编码
+        updateMember.setAddressCityCode(memberVO.getAddressCityCode());
+        //地址区编码
+        updateMember.setAddressDistrictCode(memberVO.getAddressDistrictCode());
+        if (unionMain.getIsIntegral() == MainConstant.IS_INTEGRAL_YES) {
+            //开启积分后，积分兑换率必填
             Double integralExchangePercent = memberVO.getIntegralExchangePercent();
             if (integralExchangePercent == null) {
                 throw new BusinessException("联盟已开启积分功能，积分兑换率不能为空");
             }
-            if (integralExchangePercent < 0D || integralExchangePercent > 30D) {
+            if (integralExchangePercent < 0.0 || integralExchangePercent > 30.0) {
                 throw new BusinessException("积分兑换率有误(应在0-30之间)，请重新设置");
             }
             updateMember.setIntegralExchangePercent(integralExchangePercent);
@@ -589,9 +617,9 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    @Transactional
-    public void updateCardDividePercentByIdAndBusId(Integer memberId, Integer busId, List<CardDividePercentVO> VOList) throws Exception {
-        if (memberId == null || busId == null || VOList == null) {
+    @Transactional(rollbackFor = Exception.class)
+    public void updateCardDividePercentByIdAndBusId(Integer memberId, Integer busId, List<CardDividePercentVO> voList) throws Exception {
+        if (memberId == null || busId == null || voList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         //(1)判断是否具有盟员权限
@@ -611,14 +639,14 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         }
         //(5)判断操作信息是否过期
         List<UnionMember> memberList = this.listReadByUnionId(unionOwner.getUnionId());
-        if (ListUtil.isEmpty(memberList) || memberList.size() != VOList.size()) {
+        if (ListUtil.isEmpty(memberList) || memberList.size() != voList.size()) {
             throw new BusinessException("操作信息已过期，请刷新后重试");
         }
         //(6)判断操作信息是否正确
         List<UnionMember> updateMemberList = new ArrayList<>();
         BigDecimal cardDividePercentSum = BigDecimal.valueOf(0);
         Integer unionId = unionOwner.getUnionId();
-        for (CardDividePercentVO vo : VOList) {
+        for (CardDividePercentVO vo : voList) {
             UnionMember member = this.getById(vo.getMemberId());
             if (member == null) {
                 throw new BusinessException("无法操作不存在或已过期的盟员信息");
@@ -631,21 +659,23 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 throw new BusinessException("售卡分成比例不能小于0，且不能大于100");
             }
             UnionMember updateMember = new UnionMember();
-            updateMember.setId(member.getId()); //盟员id
-            updateMember.setCardDividePercent(cardDividePercent); //盟员售卡分成比例
-            updateMemberList.add(updateMember); //更新列表
-            cardDividePercentSum = BigDecimalUtil.add(cardDividePercentSum, cardDividePercent); //累积售卡积分比例之和
+            //盟员id
+            updateMember.setId(member.getId());
+            //盟员售卡分成比例
+            updateMember.setCardDividePercent(cardDividePercent);
+            //更新列表
+            updateMemberList.add(updateMember);
+            //累积售卡积分比例之和
+            cardDividePercentSum = BigDecimalUtil.add(cardDividePercentSum, cardDividePercent);
         }
-        if (cardDividePercentSum.doubleValue() != 100D) {
+        if (cardDividePercentSum.doubleValue() != 100.0) {
             throw new BusinessException("售卡分成比例之和必须等于100");
         }
         //(7)批量更新
         this.updateBatch(updateMemberList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - count *******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - count ------------------------------------------
 
     @Override
     public Integer countReadByUnionId(Integer unionId) throws Exception {
@@ -682,26 +712,23 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         if (!ownerMember.getIsUnionOwner().equals(MemberConstant.IS_UNION_OWNER_YES)) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
         }
-        EntityWrapper entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .ne("status", MemberConstant.STATUS_APPLY_IN)
                 .eq("union_id", ownerMember.getUnionId())
-                .notExists(new StringBuilder(" SELECT pi.id FROM t_union_preferential_item pi")
-                        .append(" WHERE pi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND pi.status = ").append(PreferentialConstant.STATUS_PASS)
-                        .append("  AND exists(")
-                        .append("    SELECT pp.id FROM t_union_preferential_project pp")
-                        .append("    WHERE pp.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("      AND pp.id = pi.project_id")
-                        .append("      AND pp.member_id = t_union_member.id")
-                        .append("  )")
-                        .toString());
+                .notExists(" SELECT pi.id FROM t_union_preferential_item pi"
+                        + " WHERE pi.del_status = " + CommonConstant.DEL_STATUS_NO
+                        + "  AND pi.status = " + PreferentialConstant.STATUS_PASS
+                        + "  AND exists("
+                        + "    SELECT pp.id FROM t_union_preferential_project pp"
+                        + "    WHERE pp.del_status = " + CommonConstant.DEL_STATUS_NO
+                        + "      AND pp.id = pi.project_id"
+                        + "      AND pp.member_id = t_union_member.id"
+                        + "  )");
         return this.selectCount(entityWrapper);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - boolean *****************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - boolean ----------------------------------------
 
     @Override
     public boolean isUnionOwner(Integer busId) throws Exception {
@@ -757,9 +784,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         }
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - get **********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - get ********************************************
 
 
     @Override
@@ -776,7 +801,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             return result;
         }
         //(2)db
-        EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<UnionMember>();
+        EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("id", memberId)
                 .eq("del_status", CommonConstant.DEL_STATUS_NO);
         result = this.selectOne(entityWrapper);
@@ -784,9 +809,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - list *********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - list *******************************************
 
     @Override
     public List<UnionMember> listByBusId(Integer busId) throws Exception {
@@ -802,7 +825,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             return result;
         }
         //(2)get in db
-        EntityWrapper<UnionMember> entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("bus_id", busId);
         result = this.selectList(entityWrapper);
@@ -824,7 +847,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             return result;
         }
         //(2)get in db
-        EntityWrapper<UnionMember> entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("union_id", unionId);
         result = this.selectList(entityWrapper);
@@ -832,12 +855,10 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - save *********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - save *******************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void save(UnionMember newMember) throws Exception {
         if (newMember == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -847,7 +868,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void saveBatch(List<UnionMember> newMemberList) throws Exception {
         if (newMemberList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -856,12 +877,10 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         this.removeCache(newMemberList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - remove *******************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - remove *****************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeById(Integer memberId) throws Exception {
         if (memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -877,7 +896,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeBatchById(List<Integer> memberIdList) throws Exception {
         if (memberIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -900,12 +919,10 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         this.updateBatchById(removeMemberList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - update *******************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - update *****************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void update(UnionMember updateMember) throws Exception {
         if (updateMember == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -919,7 +936,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateBatch(List<UnionMember> updateMemberList) throws Exception {
         if (updateMemberList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -939,9 +956,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         this.updateBatchById(updateMemberList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - cache support ************************************
-     ******************************************************************************************************************/
+    //***************************************** Object As a Service - cache support ************************************
 
     private void setCache(UnionMember newMember, Integer memberId) {
         if (memberId == null) {

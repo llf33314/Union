@@ -2,7 +2,6 @@ package com.gt.union.schedule;
 
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.util.ListUtil;
-import com.gt.union.log.service.IUnionLogErrorService;
 import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.service.IUnionMemberService;
 import org.slf4j.Logger;
@@ -20,14 +19,6 @@ import java.util.List;
 @Component
 public class MemberSchedule {
     private Logger logger = LoggerFactory.getLogger(MemberSchedule.class);
-
-//    private static final int nThread = 10;
-//
-//    public static AtomicInteger successCount = new AtomicInteger();
-//    public static volatile AtomicInteger failCount = new AtomicInteger();
-
-    @Autowired
-    private IUnionLogErrorService unionLogErrorService;
 
     @Autowired
     private IUnionMemberService unionMemberService;
@@ -52,7 +43,6 @@ public class MemberSchedule {
             }
         } catch (Exception e) {
             logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
         }
     }
 

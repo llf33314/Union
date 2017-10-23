@@ -7,6 +7,7 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.member.service.IUnionMemberDiscountService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,13 +16,12 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 
 /**
- * <p>
  * 盟员折扣 前端控制器
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-23 08:34:54
  */
+@Api(description = "盟员折扣")
 @RestController
 @RequestMapping("/unionMemberDiscount")
 public class UnionMemberDiscountController {
@@ -34,12 +34,12 @@ public class UnionMemberDiscountController {
 
     @ApiOperation(value = "更新盟员折扣", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/memberId/{memberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public String method(HttpServletRequest request
-            , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
-                         @PathVariable("memberId") Integer memberId
-            , @ApiParam(name = "tgtMemberId", value = "被设置折扣的盟员身份id", required = true)
-                         @RequestParam(value = "tgtMemberId") Integer tgtMemberId
-            , @ApiParam(name = "discount", value = "折扣， 以折为单位", required = true)
+    public String method(HttpServletRequest request,
+                         @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
+                         @PathVariable("memberId") Integer memberId,
+                         @ApiParam(name = "tgtMemberId", value = "被设置折扣的盟员身份id", required = true)
+                         @RequestParam(value = "tgtMemberId") Integer tgtMemberId,
+                         @ApiParam(name = "discount", value = "折扣， 以折为单位", required = true)
                          @RequestParam(value = "discount") Double discount) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {

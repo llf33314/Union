@@ -7,7 +7,10 @@ import lombok.Data;
 import javax.validation.constraints.NotNull;
 
 /**
- * Created by Administrator on 2017/9/14 0014.
+ * 售卡分成比例 VO
+ *
+ * @author linweicong
+ * @version 2017-10-23 08:34:54
  */
 @ApiModel(value = "UnionMemberCardDividePercentVO", description = "更新售卡分成比例实体")
 @Data

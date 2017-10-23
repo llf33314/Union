@@ -2,7 +2,6 @@ package com.gt.union.schedule;
 
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.util.ListUtil;
-import com.gt.union.log.service.IUnionLogErrorService;
 import com.gt.union.preferential.entity.UnionPreferentialItem;
 import com.gt.union.preferential.entity.UnionPreferentialProject;
 import com.gt.union.preferential.service.IUnionPreferentialItemService;
@@ -22,9 +21,6 @@ import java.util.List;
 @Component
 public class PreferentialSchedule {
     private Logger logger = LoggerFactory.getLogger(PreferentialSchedule.class);
-
-    @Autowired
-    private IUnionLogErrorService unionLogErrorService;
 
     @Autowired
     private IUnionPreferentialProjectService unionPreferentialProjectService;
@@ -52,7 +48,6 @@ public class PreferentialSchedule {
             }
         } catch (Exception e) {
             logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
         }
     }
 
@@ -76,7 +71,6 @@ public class PreferentialSchedule {
             }
         } catch (Exception e) {
             logger.error("", e);
-            this.unionLogErrorService.saveIfNotNull(e);
         }
     }
 }
