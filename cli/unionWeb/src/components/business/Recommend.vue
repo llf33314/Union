@@ -191,6 +191,9 @@ export default {
               });
             } else {
               this.options1 = [];
+            };
+            if(this.options1.length === 1) {
+              this.ruleForm1.unionRadio = this.options1[0].value;
             }
           })
           .catch(err => {
