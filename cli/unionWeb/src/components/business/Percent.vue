@@ -88,7 +88,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.total;
+            this.totalAll = res.data.data.pages;
             this.tableData.forEach((v, i) => {
               v.ratioFromMe = (v.ratioFromMe || 0) + '%';
               v.ratioToMe = (v.ratioToMe || 0) + '%';
@@ -133,7 +133,7 @@ export default {
                 .then(res => {
                   if (res.data.data) {
                     this.tableData = res.data.data.records;
-                    this.totalAll = res.data.data.total;
+                    this.totalAll = res.data.data.pages;
                     this.tableData.forEach((v, i) => {
                       v.ratioFromMe = (v.ratioFromMe || 0) + '%';
                       v.ratioToMe = (v.ratioToMe || 0) + '%';
@@ -190,7 +190,7 @@ export default {
               .then(res => {
                 if (res.data.data) {
                   this.tableData = res.data.data.records;
-                  this.totalAll = res.data.data.total;
+                  this.totalAll = res.data.data.pages;
                   this.tableData.forEach((v, i) => {
                     v.ratioFromMe = (v.ratioFromMe || 0) + '%';
                     v.ratioToMe = (v.ratioToMe || 0) + '%';
@@ -231,7 +231,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.total;
+            this.totalAll = res.data.data.pages;
             this.tableData.forEach((v, i) => {
               v.ratioFromMe = (v.ratioFromMe || 0) + '%';
               v.ratioToMe = (v.ratioToMe || 0) + '%';

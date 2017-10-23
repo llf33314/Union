@@ -178,7 +178,7 @@ export default {
           }
           if (res.data.data) {
             this.tableData1 = res.data.data.records;
-            this.totalAll1 = res.data.data.total;
+            this.totalAll1 = res.data.data.pages;
           }
         })
         .catch(err => {
@@ -190,7 +190,7 @@ export default {
       .then(res => {
         if (res.data.data) {
           this.tableData2 = res.data.data.records;
-          this.totalAll2 = res.data.data.total;
+          this.totalAll2 = res.data.data.pages;
           this.tableData2.forEach((v, i) => {
             v.remainDay += '天';
             switch (v.outType) {
@@ -232,7 +232,7 @@ export default {
             .then(res => {
               if (res.data.data) {
                 this.tableData1 = res.data.data.records;
-                this.totalAll1 = res.data.data.total;
+                this.totalAll1 = res.data.data.pages;
               }
             })
             .catch(err => {
@@ -254,7 +254,7 @@ export default {
             .then(res => {
               if (res.data.data) {
                 this.tableData1 = res.data.data.records;
-                this.totalAll1 = res.data.data.total;
+                this.totalAll1 = res.data.data.pages;
               }
             })
             .catch(err => {
@@ -272,7 +272,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData1 = res.data.data.records;
-            this.totalAll1 = res.data.data.total;
+            this.totalAll1 = res.data.data.pages;
           }
         })
         .catch(err => {
@@ -285,7 +285,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData2 = res.data.data.records;
-            this.totalAll2 = res.data.data.total;
+            this.totalAll2 = res.data.data.pages;
             this.tableData2.forEach((v, i) => {
               v.remainDay += '天';
               switch (v.outType) {
@@ -310,7 +310,7 @@ export default {
         .then(res => {
           $http.get(`/unionMemberOut/page/outing/memberId/${this.unionMemberId}?current=1`).then(res => {
             this.tableData2 = res.data.data.records;
-            this.totalAll2 = res.data.data.total;
+            this.totalAll2 = res.data.data.pages;
             this.tableData2.forEach((v, i) => {
               v.remainDay += '天';
               switch (v.outType) {

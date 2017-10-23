@@ -360,7 +360,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData1 = res.data.data.records;
-            this.totalAll1 = res.data.data.total;
+            this.totalAll1 = res.data.data.pages;
             this.tableData1.forEach((v, i) => {
               v.items_ = []
               v.items.forEach((val, idx) => {
@@ -395,7 +395,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData2 = res.data.data.records;
-            this.totalAll2 = res.data.data.total;
+            this.totalAll2 = res.data.data.pages;
             this.tableData2.forEach((v, i) => {
               v.items_ = []
               v.items.forEach((val, idx) => {
@@ -438,7 +438,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData1 = res.data.data.records;
-            this.totalAll1 = res.data.data.total;
+            this.totalAll1 = res.data.data.pages;
             this.tableData1.forEach((v, i) => {
               v.items_ = []
               v.items.forEach((val, idx) => {
@@ -481,7 +481,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData2 = res.data.data.records;
-            this.totalAll2 = res.data.data.total;
+            this.totalAll2 = res.data.data.pages;
             this.tableData2.forEach((v, i) => {
               v.items_ = []
               v.items.forEach((val, idx) => {
@@ -524,7 +524,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData1 = res.data.data.records;
-            this.totalAll1 = res.data.data.total;
+            this.totalAll1 = res.data.data.pages;
             this.tableData1.forEach((v, i) => {
               v.items_ = []
               v.items.forEach((val, idx) => {
@@ -567,7 +567,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData2 = res.data.data.records;
-            this.totalAll2 = res.data.data.total;
+            this.totalAll2 = res.data.data.pages;
             this.tableData2.forEach((v, i) => {
               v.items_ = []
               v.items.forEach((val, idx) => {
