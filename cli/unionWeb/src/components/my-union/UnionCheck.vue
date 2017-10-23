@@ -97,7 +97,9 @@ export default {
       currentPage: 1,
       tableData: [],
       totalAll: 0,
-      joinId: ''
+      joinId: '',
+      visible1: false,
+      visible2: false,
     };
   },
   computed: {
