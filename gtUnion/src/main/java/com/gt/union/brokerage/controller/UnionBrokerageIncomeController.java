@@ -7,13 +7,10 @@ import com.gt.union.brokerage.service.IUnionBrokerageIncomeService;
 import com.gt.union.brokerage.service.IUnionBrokerageWithdrawalService;
 import com.gt.union.card.constant.CardConstant;
 import com.gt.union.common.constant.BusUserConstant;
-import com.gt.union.common.constant.CommonConstant;
-import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.DataExportException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.util.*;
-import com.gt.union.log.service.IUnionLogErrorService;
 import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.service.IUnionMainService;
 import io.swagger.annotations.ApiOperation;
@@ -26,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.List;
@@ -44,9 +40,6 @@ import java.util.Map;
 @RequestMapping("/unionBrokerageIncome")
 public class UnionBrokerageIncomeController {
     private Logger logger = LoggerFactory.getLogger(UnionBrokerageIncomeController.class);
-
-    @Autowired
-    private IUnionLogErrorService unionLogErrorService;
 
     @Autowired
     private IUnionBrokerageIncomeService unionBrokerageIncomeService;
@@ -69,15 +62,15 @@ public class UnionBrokerageIncomeController {
             , @ApiParam(name = "beginDate", value = "开始日期，大于或等于开始日期")
                                         @RequestParam(value = "beginDate", required = false) String beginDate
             , @ApiParam(name = "endDate", value = "结束日期，小于开始日期")
-                                        @RequestParam(value = "endDate", required = false) String endDate) throws Exception{
-            BusUser busUser = SessionUtils.getLoginUser(request);
-            Integer busId = busUser.getId();
-            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                busId = busUser.getPid();
-            }
-            Page result = this.unionBrokerageIncomeService.pageCardMapByBusIdAndMemberId(page, busId, memberId
-                    , cardType, cardNumber, beginDate, endDate);
-            return GTJsonResult.instanceSuccessMsg(result).toString();
+                                        @RequestParam(value = "endDate", required = false) String endDate) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        Page result = this.unionBrokerageIncomeService.pageCardMapByBusIdAndMemberId(page, busId, memberId
+                , cardType, cardNumber, beginDate, endDate);
+        return GTJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "导出：获取同一联盟下所有售卡佣金分成列表信息", produces = "application/json;charset=UTF-8")
@@ -92,7 +85,7 @@ public class UnionBrokerageIncomeController {
             , @ApiParam(name = "beginDate", value = "开始日期，大于或等于开始日期")
                                         @RequestParam(value = "beginDate", required = false) String beginDate
             , @ApiParam(name = "endDate", value = "结束日期，小于开始日期")
-                                        @RequestParam(value = "endDate", required = false) String endDate) throws Exception{
+                                        @RequestParam(value = "endDate", required = false) String endDate) throws Exception {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
             Integer busId = busUser.getId();
@@ -141,8 +134,7 @@ public class UnionBrokerageIncomeController {
             UnionMain unionMain = this.unionMainService.getByBusIdAndMemberId(busId, memberId);
             String filename = unionMain.getName() + "的售卡佣金分成记录";
             ExportUtil.responseExport(response, wb, filename);
-        } catch (BaseException e){
-            this.unionLogErrorService.saveIfNotNull(e);
+        } catch (BaseException e) {
             response.setContentType("text/html");
             response.setHeader("Cache-Control", "no-cache");
             response.setCharacterEncoding("UTF-8");
@@ -150,12 +142,10 @@ public class UnionBrokerageIncomeController {
             PrintWriter writer = response.getWriter();
             writer.print(result);
             writer.close();
-            logger.error("",e);
-        } catch (DataExportException e){
-            this.unionLogErrorService.saveIfNotNull(e);
-            logger.error("",e);
+            logger.error("", e);
+        } catch (DataExportException e) {
+            logger.error("", e);
         } catch (Exception e) {
-            this.unionLogErrorService.saveIfNotNull(e);
             response.setContentType("text/html");
             response.setHeader("Cache-Control", "no-cache");
             response.setCharacterEncoding("UTF-8");
@@ -163,7 +153,7 @@ public class UnionBrokerageIncomeController {
             PrintWriter writer = response.getWriter();
             writer.print(result);
             writer.close();
-            logger.error("",e);
+            logger.error("", e);
         }
     }
 

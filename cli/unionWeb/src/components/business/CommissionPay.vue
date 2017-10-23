@@ -121,115 +121,68 @@
 </template>
 
 <script>
-import $http from '@/utils/http.js'
-import $todate from '@/utils/todate.js'
+import $http from "@/utils/http.js";
+import $todate from "@/utils/todate.js";
 export default {
-  name: 'commission-income',
+  name: "commission-income",
   data() {
     return {
-      unionId: '',
-      memberId: '',
+      unionId: "",
+      memberId: "",
       options1: [],
-      fromMemberId: '',
+      fromMemberId: "",
       options2: [],
-      value: '',
+      value: "",
       options3: [
         {
-          value: 'clientName',
-          label: '顾客姓名'
+          value: "clientName",
+          label: "顾客姓名"
         },
         {
-          value: 'clientPhone',
-          label: '顾客电话'
-        },
+          value: "clientPhone",
+          label: "顾客电话"
+        }
       ],
-      input: '',
+      input: "",
       tableData: [],
       currentPage: 1,
       brokeragePrice: 0,
       dialogVisible: false,
-      opportunityId: '',
-      imgSrc: '',
+      opportunityId: "",
+      imgSrc: "",
       canPay: false,
       totalAll: 0,
-      only: '',
-      userId: '',
-      socket: '',
+      only: "",
+      userId: "",
+      socket: "",
       socketFlag: {
-        only: '',
-        status: '',
-      },
-    }
+        only: "",
+        status: ""
+      }
+    };
   },
   computed: {
     initUnionId() {
       return this.$store.state.unionId;
     }
   },
-  mounted: function() {
-    if (this.initUnionId) {
-      // 获取联盟列表
-      $http.get(`/unionMember/listMap`)
-        .then(res => {
-          if (res.data.data && res.data.data.length > 0) {
-            this.options1 = res.data.data;
-            res.data.data.forEach((v, i) => {
-              this.options1[i].value = v.unionMain.id;
-              this.options1[i].label = v.unionMain.name;
-            });
-          } else {
-            this.options1 = [];
-          };
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
-      $http.get(`/unionOpportunity/expense?current=1`)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.total;
-            this.tableData.forEach((v, i) => {
-              v.lastModifyTime = $todate.todate(new Date(v.lastModifyTime));
-              switch (v.isClose) {
-                case 0:
-                  v.isClose = '未结算';
-                  break;
-                case 1:
-                  v.isClose = '已结算';
-                  break;
-              };
-              switch (v.opportunityType) {
-                case 1:
-                  v.opportunityType = '线上';
-                  break;
-                case 2:
-                  v.opportunityType = '线下';
-                  break;
-              };
-            });
-          } else {
-            this.tableData = [];
-            this.totalAll = 0;
-          };
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
-    }
-  },
   watch: {
+    initUnionId: function() {
+      this.init();
+    },
     unionId: function() {
-      this.fromMemberId = '';
+      this.fromMemberId = "";
       this.options2 = [];
       // 通过对应的unionId获取对应的memberId
-      $http.get(`/unionMember/listMap`)
+      $http
+        .get(`/unionMember/listMap`)
         .then(res => {
           if (res.data.data) {
             res.data.data.forEach((v, i) => {
               if (v.unionMain.id === this.unionId) {
                 this.memberId = v.unionMember.id;
-                $http.get(`/unionMember/listMap/memberId/${this.memberId}`)
+                $http
+                  .get(`/unionMember/listMap/memberId/${this.memberId}`)
                   .then(res => {
                     if (res.data.data) {
                       this.options2 = res.data.data;
@@ -239,28 +192,112 @@ export default {
                       });
                     } else {
                       this.options2 = [];
-                    };
+                    }
                   })
                   .catch(err => {
-                    this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-                  })
-              };
+                    this.$message({
+                      showClose: true,
+                      message: err.toString(),
+                      type: "error",
+                      duration: 5000
+                    });
+                  });
+              }
               this.search();
             });
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+          this.$message({
+            showClose: true,
+            message: err.toString(),
+            type: "error",
+            duration: 5000
+          });
+        });
     },
     fromMemberId: function() {
       this.search();
     }
   },
+  mounted: function() {
+    this.init();
+  },
   methods: {
+    init() {
+      if (this.initUnionId) {
+        // 获取联盟列表
+        $http
+          .get(`/unionMember/listMap`)
+          .then(res => {
+            if (res.data.data && res.data.data.length > 0) {
+              this.options1 = res.data.data;
+              res.data.data.forEach((v, i) => {
+                this.options1[i].value = v.unionMain.id;
+                this.options1[i].label = v.unionMain.name;
+              });
+            } else {
+              this.options1 = [];
+            }
+          })
+          .catch(err => {
+            this.$message({
+              showClose: true,
+              message: err.toString(),
+              type: "error",
+              duration: 5000
+            });
+          });
+        $http
+          .get(`/unionOpportunity/expense?current=1`)
+          .then(res => {
+            if (res.data.data) {
+              this.tableData = res.data.data.records;
+              this.totalAll = res.data.data.total;
+              this.tableData.forEach((v, i) => {
+                v.lastModifyTime = $todate.todate(new Date(v.lastModifyTime));
+                switch (v.isClose) {
+                  case 0:
+                    v.isClose = "未结算";
+                    break;
+                  case 1:
+                    v.isClose = "已结算";
+                    break;
+                }
+                switch (v.opportunityType) {
+                  case 1:
+                    v.opportunityType = "线上";
+                    break;
+                  case 2:
+                    v.opportunityType = "线下";
+                    break;
+                }
+              });
+            } else {
+              this.tableData = [];
+              this.totalAll = 0;
+            }
+          })
+          .catch(err => {
+            this.$message({
+              showClose: true,
+              message: err.toString(),
+              type: "error",
+              duration: 5000
+            });
+          });
+      }
+    },
     // 带条件搜索
     search() {
-      $http.get(`/unionOpportunity/expense?current=1&unionId=${this.unionId}&fromMemberId=${this.fromMemberId}&` + this.value + '=' + this.input)
+      $http
+        .get(
+          `/unionOpportunity/expense?current=1&unionId=${this
+            .unionId}&fromMemberId=${this.fromMemberId}&` +
+            this.value +
+            "=" +
+            this.input
+        )
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
@@ -269,20 +306,20 @@ export default {
               v.lastModifyTime = $todate.todate(new Date(v.lastModifyTime));
               switch (v.isClose) {
                 case 0:
-                  v.isClose = '未结算';
+                  v.isClose = "未结算";
                   break;
                 case 1:
-                  v.isClose = '已结算';
+                  v.isClose = "已结算";
                   break;
-              };
+              }
               switch (v.opportunityType) {
                 case 1:
-                  v.opportunityType = '线上';
+                  v.opportunityType = "线上";
                   break;
                 case 2:
-                  v.opportunityType = '线下';
+                  v.opportunityType = "线下";
                   break;
-              };
+              }
             });
           } else {
             this.tableData = [];
@@ -290,12 +327,24 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+          this.$message({
+            showClose: true,
+            message: err.toString(),
+            type: "error",
+            duration: 5000
+          });
+        });
     },
     // 分页搜索
     handleCurrentChange(val) {
-      $http.get(`/unionOpportunity/expense?current=${val}&unionId=${this.unionId}&fromMemberId=${this.fromMemberId}&` + this.value + '=' + this.input)
+      $http
+        .get(
+          `/unionOpportunity/expense?current=${val}&unionId=${this
+            .unionId}&fromMemberId=${this.fromMemberId}&` +
+            this.value +
+            "=" +
+            this.input
+        )
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
@@ -304,20 +353,20 @@ export default {
               v.lastModifyTime = $todate.todate(new Date(v.lastModifyTime));
               switch (v.isClose) {
                 case 0:
-                  v.isClose = '未结算';
+                  v.isClose = "未结算";
                   break;
                 case 1:
-                  v.isClose = '已结算';
+                  v.isClose = "已结算";
                   break;
-              };
+              }
               switch (v.opportunityType) {
                 case 1:
-                  v.opportunityType = '线上';
+                  v.opportunityType = "线上";
                   break;
                 case 2:
-                  v.opportunityType = '线下';
+                  v.opportunityType = "线下";
                   break;
-              };
+              }
             });
           } else {
             this.tableData = [];
@@ -325,115 +374,172 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+          this.$message({
+            showClose: true,
+            message: err.toString(),
+            type: "error",
+            duration: 5000
+          });
+        });
     },
     // 支付
     pay(scope) {
       this.brokeragePrice = scope.row.brokeragePrice.toFixed(2);
       this.opportunityId = scope.row.opportunityId;
       this.dialogVisible = true;
-      $http.get(`/unionOpportunity/qrCode/${this.opportunityId}`)
+      $http
+        .get(`/unionOpportunity/qrCode/${this.opportunityId}`)
         .then(res => {
           if (res.data.data) {
             this.imgSrc = res.data.data.url;
             this.only = res.data.data.only;
             this.userId = res.data.data.userId;
           } else {
-            this.imgSrc = '';
-            this.only = '';
-            this.userId = '';
-          };
+            this.imgSrc = "";
+            this.only = "";
+            this.userId = "";
+          }
         })
         .then(res => {
           var _this = this;
           if (!this.socket) {
-            this.socket = io.connect('https://socket.deeptel.com.cn'); // 测试
+            this.socket = io.connect("https://socket.deeptel.com.cn"); // 测试
             // this.socket = io.connect('http://183.47.242.2:8881'); // 堡垒
             var userId = this.userId;
-            this.socket.on('connect', function() {
+            this.socket.on("connect", function() {
               let jsonObject = { userId: userId, message: "0" };
-              _this.socket.emit('auth', jsonObject);
+              _this.socket.emit("auth", jsonObject);
             });
           }
-          this.socket.on('chatevent', function(data) {
-            let msg = eval('(' + data.message + ')');
-            if (!(_this.socketFlag.only == msg.only && _this.socketFlag.status == msg.status)) {
+          this.socket.on("chatevent", function(data) {
+            let msg = eval("(" + data.message + ")");
+            if (
+              !(
+                _this.socketFlag.only == msg.only &&
+                _this.socketFlag.status == msg.status
+              )
+            ) {
               if (_this.only == msg.only) {
-                if (msg.status == '003') {
-                  _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
+                if (msg.status == "003") {
+                  _this.$message({
+                    showClose: true,
+                    message: "支付成功",
+                    type: "success",
+                    duration: 5000
+                  });
                   _this.visible3 = false;
                   _this.visible4 = true;
                   _this.search();
-                } else if (msg.status == '004') {
-                  _this.$message({ showClose: true, message: '请求超时', type: 'warning', duration: 5000 });
-                } else if (msg.status == '005') {
-                  _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
-                };
-              };
-            };
+                } else if (msg.status == "004") {
+                  _this.$message({
+                    showClose: true,
+                    message: "请求超时",
+                    type: "warning",
+                    duration: 5000
+                  });
+                } else if (msg.status == "005") {
+                  _this.$message({
+                    showClose: true,
+                    message: "支付失败",
+                    type: "warning",
+                    duration: 5000
+                  });
+                }
+              }
+            }
             _this.socketFlag.only = msg.only;
             _this.socketFlag.status = msg.status;
           });
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({
+            showClose: true,
+            message: err.toString(),
+            type: "error",
+            duration: 5000
+          });
         });
     },
     // 批量支付
     payAll() {
-      let ids = '';
+      let ids = "";
       this.brokeragePrice = 0;
       this.multipleSelection.forEach((v, i) => {
         this.brokeragePrice += Number(v.brokeragePrice);
-        ids += v.opportunityId + '%2C';
+        ids += v.opportunityId + "%2C";
       });
       this.dialogVisible = true;
-      $http.get(`/unionOpportunity/qrCode/${ids}`)
+      $http
+        .get(`/unionOpportunity/qrCode/${ids}`)
         .then(res => {
           if (res.data.data) {
             this.imgSrc = res.data.data.url;
             this.only = res.data.data.only;
             this.userId = res.data.data.userId;
           } else {
-            this.imgSrc = '';
-            this.only = '';
-            this.userId = '';
-          };
+            this.imgSrc = "";
+            this.only = "";
+            this.userId = "";
+          }
         })
         .then(res => {
           var _this = this;
           if (!this.socket) {
-            this.socket = io.connect('https://socket.deeptel.com.cn'); // 测试
+            this.socket = io.connect("https://socket.deeptel.com.cn"); // 测试
             // this.socket = io.connect('http://183.47.242.2:8881'); // 堡垒
             var userId = this.userId;
-            this.socket.on('connect', function() {
+            this.socket.on("connect", function() {
               let jsonObject = { userId: userId, message: "0" };
-              _this.socket.emit('auth', jsonObject);
+              _this.socket.emit("auth", jsonObject);
             });
           }
-          this.socket.on('chatevent', function(data) {
-            let msg = eval('(' + data.message + ')');
-            if (!(_this.socketFlag.only == msg.only && _this.socketFlag.status == msg.status)) {
+          this.socket.on("chatevent", function(data) {
+            let msg = eval("(" + data.message + ")");
+            if (
+              !(
+                _this.socketFlag.only == msg.only &&
+                _this.socketFlag.status == msg.status
+              )
+            ) {
               if (_this.only == msg.only) {
-                if (msg.status == '003') {
-                  _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
+                if (msg.status == "003") {
+                  _this.$message({
+                    showClose: true,
+                    message: "支付成功",
+                    type: "success",
+                    duration: 5000
+                  });
                   _this.visible3 = false;
                   _this.visible4 = true;
                   _this.search();
-                } else if (msg.status == '004') {
-                  _this.$message({ showClose: true, message: '请求超时', type: 'warning', duration: 5000 });
-                } else if (msg.status == '005') {
-                  _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
-                };
-              };
-            };
+                } else if (msg.status == "004") {
+                  _this.$message({
+                    showClose: true,
+                    message: "请求超时",
+                    type: "warning",
+                    duration: 5000
+                  });
+                } else if (msg.status == "005") {
+                  _this.$message({
+                    showClose: true,
+                    message: "支付失败",
+                    type: "warning",
+                    duration: 5000
+                  });
+                }
+              }
+            }
             _this.socketFlag.only = msg.only;
             _this.socketFlag.status = msg.status;
           });
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({
+            showClose: true,
+            message: err.toString(),
+            type: "error",
+            duration: 5000
+          });
         });
     },
     filterTag(value, row) {
@@ -444,16 +550,16 @@ export default {
       if (this.multipleSelection.length) {
         this.canPay = true;
         this.multipleSelection.forEach((v, i) => {
-          if (v.isClose === '已结算') {
+          if (v.isClose === "已结算") {
             this.canPay = false;
           }
-        })
+        });
       } else {
         this.canPay = false;
       }
-    },
+    }
   }
-}
+};
 </script>
 
 <style lang='less' rel="stylesheet/less" scoped>

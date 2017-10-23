@@ -1,6 +1,5 @@
 package com.gt.union.common.util;
 
-import com.gt.union.common.exception.DataExportException;
 import com.gt.union.common.response.GTJsonResult;
 import org.apache.poi.hssf.usermodel.*;
 import org.slf4j.Logger;
@@ -31,36 +30,17 @@ public class ExportUtil {
      * @throws IOException
      */
     public static void responseExport(HttpServletResponse response, HSSFWorkbook wb, String filename) throws Exception {
-        OutputStream os = null;
-        try {
-            response.reset();
-            // 先去掉文件名称中的空格,然后转换编码格式为utf-8,保证不出现乱码,这个文件名称用于浏览器的下载框中自动显示的文件名
-            os = new BufferedOutputStream(
-                    response.getOutputStream());
-            response.setHeader("Content-Disposition", "attachment;filename=\"" +
-                    URLEncoder.encode(filename +
-                            DateTimeKit.format(new Date()) + ".xls", "UTF-8") + "\"");
-            response.setContentType("application/vnd.ms-excel");
-            wb.write(os);// 输出文件
-            os.flush();
-        } catch (Exception e) {
-            logger.error("", e);
-            response.reset();
-            response.setContentType("text/html");
-            response.setHeader("Cache-Control", "no-cache");
-            response.setCharacterEncoding("UTF-8");
-            String result = "<script>alert('导出失败')</script>";
-            PrintWriter writer = response.getWriter();
-            writer.print(result);
-            writer.close();
-            throw new DataExportException("导出异常");
-        } finally {
-            try {
-                if (os != null) os.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        response.reset();
+        // 先去掉文件名称中的空格,然后转换编码格式为utf-8,保证不出现乱码,这个文件名称用于浏览器的下载框中自动显示的文件名
+        OutputStream os = new BufferedOutputStream(response.getOutputStream());
+        response.setHeader("Content-Disposition",
+                "attachment;filename=\"" + URLEncoder.encode(filename + DateTimeKit.format(new Date()) + ".xls",
+                        "UTF-8") + "\"");
+        response.setContentType("application/vnd.ms-excel");
+        // 输出文件
+        wb.write(os);
+        System.out.println(1/0);
+        os.flush();
     }
 
     /**
@@ -70,10 +50,11 @@ public class ExportUtil {
      * @throws IOException
      */
     public static void responseExportError(HttpServletResponse response) throws IOException {
+        response.reset();
         response.setContentType("text/html");
         response.setHeader("Cache-Control", "no-cache");
         response.setCharacterEncoding("UTF-8");
-        String result = GTJsonResult.instanceErrorMsg("导出失败").toString();
+        String result = "<script>alert('导出失败')</script>";
         PrintWriter writer = response.getWriter();
         writer.print(result);
         writer.close();

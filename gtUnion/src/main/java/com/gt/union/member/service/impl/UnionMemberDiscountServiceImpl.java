@@ -22,12 +22,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>
  * 盟员折扣 服务实现类
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-23 08:34:54
  */
 @Service
 public class UnionMemberDiscountServiceImpl extends ServiceImpl<UnionMemberDiscountMapper, UnionMemberDiscount> implements IUnionMemberDiscountService {
@@ -40,13 +38,9 @@ public class UnionMemberDiscountServiceImpl extends ServiceImpl<UnionMemberDisco
     @Autowired
     private RedisCacheUtil redisCacheUtil;
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - get *********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - get --------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - list ********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - list -------------------------------------------
 
     @Override
     public List<UnionMemberDiscount> listByFromMemberIdAndToMemberId(Integer fromMemberId, Integer toMemberId) throws Exception {
@@ -65,20 +59,14 @@ public class UnionMemberDiscountServiceImpl extends ServiceImpl<UnionMemberDisco
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - save ********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - save -------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - remove ******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - remove -----------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - update ******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - update -----------------------------------------
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateOrSaveDiscountByBusIdAndMemberId(Integer busId, Integer memberId, Integer tgtMemberId, Double dDiscount) throws Exception {
         if (busId == null || memberId == null || tgtMemberId == null || dDiscount == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -95,7 +83,7 @@ public class UnionMemberDiscountServiceImpl extends ServiceImpl<UnionMemberDisco
             throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
         }
         //(4)校验更新内容
-        if (dDiscount < 0D || dDiscount > 10D) {
+        if (dDiscount < 0.0 || dDiscount > 10.0) {
             throw new ParamException("折扣必须大于0折，且小于10折");
         }
         if (!DoubleUtil.checkDecimalPrecision(dDiscount, 2)) {
@@ -107,33 +95,37 @@ public class UnionMemberDiscountServiceImpl extends ServiceImpl<UnionMemberDisco
         if (ListUtil.isNotEmpty(discountList)) {
             discount = discountList.get(0);
         }
-        if (discount != null) { //更新
-            discount.setModifytime(DateUtil.getCurrentDate()); //修改时间
-            discount.setDiscount(dDiscount); //折扣
+        if (discount != null) {
+            //更新
+            //修改时间
+            discount.setModifytime(DateUtil.getCurrentDate());
+            //折扣
+            discount.setDiscount(dDiscount);
             this.update(discount);
-        } else { //新增
+        } else {
+            //新增
             UnionMemberDiscount saveDiscount = new UnionMemberDiscount();
-            saveDiscount.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
-            saveDiscount.setCreatetime(DateUtil.getCurrentDate()); //创建时间
-            saveDiscount.setModifytime(DateUtil.getCurrentDate()); //修改时间
-            saveDiscount.setFromMemberId(memberId); //设置折扣的盟员身份id
-            saveDiscount.setToMemberId(tgtMemberId); //受惠折扣的盟员身份id
-            saveDiscount.setDiscount(dDiscount); //折扣
+            //删除状态
+            saveDiscount.setDelStatus(CommonConstant.DEL_STATUS_NO);
+            //创建时间
+            saveDiscount.setCreatetime(DateUtil.getCurrentDate());
+            //修改时间
+            saveDiscount.setModifytime(DateUtil.getCurrentDate());
+            //设置折扣的盟员身份id
+            saveDiscount.setFromMemberId(memberId);
+            //受惠折扣的盟员身份id
+            saveDiscount.setToMemberId(tgtMemberId);
+            //折扣
+            saveDiscount.setDiscount(dDiscount);
             this.save(saveDiscount);
         }
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - count *******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - count ------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - boolean *****************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - boolean ----------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - get **********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - get ********************************************
 
     @Override
     public UnionMemberDiscount getById(Integer discountId) throws Exception {
@@ -157,9 +149,7 @@ public class UnionMemberDiscountServiceImpl extends ServiceImpl<UnionMemberDisco
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - list *********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - list *******************************************
 
     @Override
     public List<UnionMemberDiscount> listByFromMemberId(Integer fromMemberId) throws Exception {
@@ -175,7 +165,7 @@ public class UnionMemberDiscountServiceImpl extends ServiceImpl<UnionMemberDisco
             return result;
         }
         //(2)get in db
-        EntityWrapper<UnionMemberDiscount> entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionMemberDiscount> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("from_member_id", fromMemberId);
         result = this.selectList(entityWrapper);
@@ -197,7 +187,7 @@ public class UnionMemberDiscountServiceImpl extends ServiceImpl<UnionMemberDisco
             return result;
         }
         //(2)get in db
-        EntityWrapper<UnionMemberDiscount> entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionMemberDiscount> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("to_member_id", toMemberId);
         result = this.selectList(entityWrapper);
@@ -205,12 +195,10 @@ public class UnionMemberDiscountServiceImpl extends ServiceImpl<UnionMemberDisco
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - save *********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - save *******************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void save(UnionMemberDiscount newDiscount) throws Exception {
         if (newDiscount == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -220,7 +208,7 @@ public class UnionMemberDiscountServiceImpl extends ServiceImpl<UnionMemberDisco
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void saveBatch(List<UnionMemberDiscount> newDiscountList) throws Exception {
         if (newDiscountList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -229,12 +217,10 @@ public class UnionMemberDiscountServiceImpl extends ServiceImpl<UnionMemberDisco
         this.removeCache(newDiscountList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - remove *******************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - remove *****************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeById(Integer discountId) throws Exception {
         if (discountId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -250,7 +236,7 @@ public class UnionMemberDiscountServiceImpl extends ServiceImpl<UnionMemberDisco
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeBatchById(List<Integer> discountIdList) throws Exception {
         if (discountIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -273,12 +259,10 @@ public class UnionMemberDiscountServiceImpl extends ServiceImpl<UnionMemberDisco
         this.updateBatchById(removeDiscountList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - update *******************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - update *****************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void update(UnionMemberDiscount updateDiscount) throws Exception {
         if (updateDiscount == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -292,7 +276,7 @@ public class UnionMemberDiscountServiceImpl extends ServiceImpl<UnionMemberDisco
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateBatch(List<UnionMemberDiscount> updateDiscountList) throws Exception {
         if (updateDiscountList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -409,14 +393,4 @@ public class UnionMemberDiscountServiceImpl extends ServiceImpl<UnionMemberDisco
         return result;
     }
 
-    //-------------------------------------------------- get ----------------------------------------------------------
-
-
-    //------------------------------------------ list(include page) ---------------------------------------------------
-    //------------------------------------------------- update --------------------------------------------------------
-
-
-    //------------------------------------------------- save ----------------------------------------------------------
-    //------------------------------------------------- count ---------------------------------------------------------
-    //------------------------------------------------ boolean --------------------------------------------------------
 }

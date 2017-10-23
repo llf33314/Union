@@ -34,12 +34,10 @@ import java.util.List;
 
 
 /**
- * <p>
  * 联盟成员入盟申请 服务实现类
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-23 08:34:54
  */
 @Service
 public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMapper, UnionMemberJoin> implements IUnionMemberJoinService {
@@ -58,13 +56,9 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
     @Autowired
     private RedisCacheUtil redisCacheUtil;
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - get *********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - get --------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - list ********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - list -------------------------------------------
 
     @Override
     public Page pageMapByBusIdAndMemberId(Page page, Integer busId, Integer memberId, final String optionEnterpriseName
@@ -120,24 +114,30 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
                 return sbSqlSegment.toString();
             }
         };
-        StringBuilder sbSqlSelect = new StringBuilder(" mj.id joinId") //申请加入申请id
-                .append(", ma.enterprise_name joinEnterpriseName") //企业名称
-                .append(", ma.director_name joinDirectorName") //负责人名称
-                .append(", ma.director_phone joinDirectorPhone") //负责人电话
-                .append(", ma.director_email joinDirectorEmail") //负责人邮箱
-                .append(", mj.reason joinReason") //申请加入理由
-                .append(", DATE_FORMAT(mj.createtime, '%Y-%m-%d %T') joinTime") //申请加入时间
-                .append(", mr.enterprise_name recommendEnterpriseName"); //推荐人名称
-        wrapper.setSqlSelect(sbSqlSelect.toString());
+        //申请加入申请id
+        String sqlSelect = " mj.id joinId"
+                //企业名称
+                + ", ma.enterprise_name joinEnterpriseName"
+                //负责人名称
+                + ", ma.director_name joinDirectorName"
+                //负责人电话
+                + ", ma.director_phone joinDirectorPhone"
+                //负责人邮箱
+                + ", ma.director_email joinDirectorEmail"
+                //申请加入理由
+                + ", mj.reason joinReason"
+                //申请加入时间
+                + ", DATE_FORMAT(mj.createtime, '%Y-%m-%d %T') joinTime"
+                //推荐人名称
+                + ", mr.enterprise_name recommendEnterpriseName";
+        wrapper.setSqlSelect(sqlSelect);
         return this.selectMapsPage(page, wrapper);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - save ********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - save -------------------------------------------
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void saveTypeJoin(Integer busId, Integer unionId, UnionMemberJoinVO unionMemberJoinVO) throws Exception {
         if (busId == null || unionId == null || unionMemberJoinVO == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -166,30 +166,46 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         checkVoByUnionDictList(unionMemberJoinVO, unionMainDictList);
         //(5)申请信息
         UnionMemberJoin saveJoin = new UnionMemberJoin();
-        saveJoin.setCreatetime(DateUtil.getCurrentDate()); //申请时间
-        saveJoin.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
-        saveJoin.setType(MemberConstant.JOIN_TYPE_JOIN); //加盟类型
-        saveJoin.setReason(unionMemberJoinVO.getReason()); //申请理由
+        //申请时间
+        saveJoin.setCreatetime(DateUtil.getCurrentDate());
+        //删除状态
+        saveJoin.setDelStatus(CommonConstant.DEL_STATUS_NO);
+        //加盟类型
+        saveJoin.setType(MemberConstant.JOIN_TYPE_JOIN);
+        //申请理由
+        saveJoin.setReason(unionMemberJoinVO.getReason());
         //(6)申请加入的准盟员信息
         UnionMember saveMember = new UnionMember();
-        saveMember.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
-        saveMember.setCreatetime(DateUtil.getCurrentDate()); //加入时间
-        saveMember.setUnionId(unionId); //联盟id
-        saveMember.setBusId(busId); //商家id
-        saveMember.setIsUnionOwner(MemberConstant.IS_UNION_OWNER_NO); //是否盟主
-        saveMember.setStatus(MemberConstant.STATUS_APPLY_IN); //盟员状态
-        saveMember.setEnterpriseName(unionMemberJoinVO.getEnterpriseName()); //企业名称
-        saveMember.setDirectorName(unionMemberJoinVO.getDirectorName()); //负责人名称
-        saveMember.setDirectorPhone(unionMemberJoinVO.getDirectorPhone()); //负责人电话
-        saveMember.setDirectorEmail(unionMemberJoinVO.getDirectorEmail()); //负责人邮箱
+        //删除状态
+        saveMember.setDelStatus(CommonConstant.DEL_STATUS_NO);
+        //加入时间
+        saveMember.setCreatetime(DateUtil.getCurrentDate());
+        //联盟id
+        saveMember.setUnionId(unionId);
+        //商家id
+        saveMember.setBusId(busId);
+        //是否盟主
+        saveMember.setIsUnionOwner(MemberConstant.IS_UNION_OWNER_NO);
+        //盟员状态
+        saveMember.setStatus(MemberConstant.STATUS_APPLY_IN);
+        //企业名称
+        saveMember.setEnterpriseName(unionMemberJoinVO.getEnterpriseName());
+        //负责人名称
+        saveMember.setDirectorName(unionMemberJoinVO.getDirectorName());
+        //负责人电话
+        saveMember.setDirectorPhone(unionMemberJoinVO.getDirectorPhone());
+        //负责人邮箱
+        saveMember.setDirectorEmail(unionMemberJoinVO.getDirectorEmail());
         //(7)事务化处理
-        this.unionMemberService.save(saveMember); //保存准盟员信息
+        //保存准盟员信息
+        this.unionMemberService.save(saveMember);
         saveJoin.setApplyMemberId(saveMember.getId());
-        this.save(saveJoin); //保存申请信息
+        //保存申请信息
+        this.save(saveJoin);
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void saveTypeRecommend(Integer busId, Integer memberId, UnionMemberJoinVO unionMemberJoinVO) throws Exception {
         if (busId == null || memberId == null || unionMemberJoinVO == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -207,7 +223,8 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         }
         //(4)判断联盟是否设置为允许推荐加盟
         Integer unionId = memberRecommend.getUnionId();
-        UnionMain unionMain = this.unionMainService.getById(unionId); //推荐者所在联盟
+        //推荐者所在联盟
+        UnionMain unionMain = this.unionMainService.getById(unionId);
         if (unionMain == null) {
             throw new BusinessException("联盟不存在或已过期");
         }
@@ -215,6 +232,13 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
             throw new BusinessException("联盟被设置为不支持推荐入盟");
         }
         //(5)判断被推荐的商家是否有效
+        String busUserName = unionMemberJoinVO.getBusUserName();
+        if (StringUtil.isEmpty(busUserName)) {
+            throw new BusinessException("商家名称内容不能为空");
+        }
+        if (StringUtil.getStringLength(busUserName) > 10.0) {
+            throw new BusinessException("商家名称内容不可超过10字");
+        }
         BusUser busUserRecommended = this.busUserService.getBusUserByName(unionMemberJoinVO.getBusUserName());
         if (busUserRecommended == null) {
             throw new BusinessException("被推荐的帐号不存在");
@@ -244,52 +268,89 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         //(10)根据推荐者是否是盟主，保存推荐信息。如果是盟主，则直接入盟成功
         UnionMemberJoin saveJoin = new UnionMemberJoin();
         UnionMember saveMember = new UnionMember();
-        if (memberRecommend.getIsUnionOwner() == MemberConstant.IS_UNION_OWNER_YES) { //盟主
+        if (memberRecommend.getIsUnionOwner() == MemberConstant.IS_UNION_OWNER_YES) {
+            //盟主
             //(11-1)申请信息
-            saveJoin.setCreatetime(DateUtil.getCurrentDate()); //申请时间
-            saveJoin.setDelStatus(CommonConstant.DEL_STATUS_YES); //删除状态
-            saveJoin.setType(MemberConstant.JOIN_TYPE_RECOMMEND); //加盟类型
-            saveJoin.setRecommendMemberId(memberId); //推荐者id
-            saveJoin.setIsRecommendAgree(CommonConstant.COMMON_YES); // 默认同意
-            saveJoin.setReason(unionMemberJoinVO.getReason()); //推荐理由
+            //申请时间
+            saveJoin.setCreatetime(DateUtil.getCurrentDate());
+            //删除状态
+            saveJoin.setDelStatus(CommonConstant.DEL_STATUS_YES);
+            //加盟类型
+            saveJoin.setType(MemberConstant.JOIN_TYPE_RECOMMEND);
+            //推荐者id
+            saveJoin.setRecommendMemberId(memberId);
+            // 默认同意
+            saveJoin.setIsRecommendAgree(CommonConstant.COMMON_YES);
+            //推荐理由
+            saveJoin.setReason(unionMemberJoinVO.getReason());
             //(11-2)申请加入的准盟员信息
-            saveMember.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
-            saveMember.setCreatetime(DateUtil.getCurrentDate()); //加入时间
-            saveMember.setUnionId(unionId); //联盟id
-            saveMember.setBusId(recommendedBusId); //商家id
-            saveMember.setIsUnionOwner(MemberConstant.IS_UNION_OWNER_NO); //是否盟主
-            saveMember.setStatus(MemberConstant.STATUS_IN); //盟员状态
-            saveMember.setEnterpriseName(unionMemberJoinVO.getEnterpriseName()); //企业名称
-            saveMember.setDirectorName(unionMemberJoinVO.getDirectorName()); //负责人名称
-            saveMember.setDirectorPhone(unionMemberJoinVO.getDirectorPhone()); //负责人电话
-            saveMember.setDirectorEmail(unionMemberJoinVO.getDirectorEmail()); //负责人邮箱
+            //删除状态
+            saveMember.setDelStatus(CommonConstant.DEL_STATUS_NO);
+            //加入时间
+            saveMember.setCreatetime(DateUtil.getCurrentDate());
+            //联盟id
+            saveMember.setUnionId(unionId);
+            //商家id
+            saveMember.setBusId(recommendedBusId);
+            //是否盟主
+            saveMember.setIsUnionOwner(MemberConstant.IS_UNION_OWNER_NO);
+            //盟员状态
+            saveMember.setStatus(MemberConstant.STATUS_IN);
+            //企业名称
+            saveMember.setEnterpriseName(unionMemberJoinVO.getEnterpriseName());
+            //负责人名称
+            saveMember.setDirectorName(unionMemberJoinVO.getDirectorName());
+            //负责人电话
+            saveMember.setDirectorPhone(unionMemberJoinVO.getDirectorPhone());
+            //负责人邮箱
+            saveMember.setDirectorEmail(unionMemberJoinVO.getDirectorEmail());
         } else {
             //(11-1)申请信息
-            saveJoin.setCreatetime(DateUtil.getCurrentDate()); //申请时间
-            saveJoin.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
-            saveJoin.setType(MemberConstant.JOIN_TYPE_RECOMMEND); //加盟类型
-            saveJoin.setRecommendMemberId(memberId); //推荐者id
-            saveJoin.setIsRecommendAgree(CommonConstant.COMMON_YES); // 默认同意
-            saveJoin.setReason(unionMemberJoinVO.getReason()); //推荐理由
+            //申请时间
+            saveJoin.setCreatetime(DateUtil.getCurrentDate());
+            //删除状态
+            saveJoin.setDelStatus(CommonConstant.DEL_STATUS_NO);
+            //加盟类型
+            saveJoin.setType(MemberConstant.JOIN_TYPE_RECOMMEND);
+            //推荐者id
+            saveJoin.setRecommendMemberId(memberId);
+            // 默认同意
+            saveJoin.setIsRecommendAgree(CommonConstant.COMMON_YES);
+            //推荐理由
+            saveJoin.setReason(unionMemberJoinVO.getReason());
             //(11-2)申请加入的准盟员信息
-            saveMember.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
-            saveMember.setCreatetime(DateUtil.getCurrentDate()); //加入时间
-            saveMember.setUnionId(unionId); //联盟id
-            saveMember.setBusId(recommendedBusId); //商家id
-            saveMember.setIsUnionOwner(MemberConstant.IS_UNION_OWNER_NO); //是否盟主
-            saveMember.setStatus(MemberConstant.STATUS_APPLY_IN); //盟员状态
-            saveMember.setEnterpriseName(unionMemberJoinVO.getEnterpriseName()); //企业名称
-            saveMember.setDirectorName(unionMemberJoinVO.getDirectorName()); //负责人名称
-            saveMember.setDirectorPhone(unionMemberJoinVO.getDirectorPhone()); //负责人电话
-            saveMember.setDirectorEmail(unionMemberJoinVO.getDirectorEmail()); //负责人邮箱
+            //删除状态
+            saveMember.setDelStatus(CommonConstant.DEL_STATUS_NO);
+            //加入时间
+            saveMember.setCreatetime(DateUtil.getCurrentDate());
+            //联盟id
+            saveMember.setUnionId(unionId);
+            //商家id
+            saveMember.setBusId(recommendedBusId);
+            //是否盟主
+            saveMember.setIsUnionOwner(MemberConstant.IS_UNION_OWNER_NO);
+            //盟员状态
+            saveMember.setStatus(MemberConstant.STATUS_APPLY_IN);
+            //企业名称
+            saveMember.setEnterpriseName(unionMemberJoinVO.getEnterpriseName());
+            //负责人名称
+            saveMember.setDirectorName(unionMemberJoinVO.getDirectorName());
+            //负责人电话
+            saveMember.setDirectorPhone(unionMemberJoinVO.getDirectorPhone());
+            //负责人邮箱
+            saveMember.setDirectorEmail(unionMemberJoinVO.getDirectorEmail());
         }
         //(12)事务化处理
-        this.unionMemberService.save(saveMember); //保存准盟员信息
+        //保存准盟员信息
+        this.unionMemberService.save(saveMember);
         saveJoin.setApplyMemberId(saveMember.getId());
-        this.save(saveJoin); //保存推荐信息
+        //保存推荐信息
+        this.save(saveJoin);
     }
 
-    //根据联盟申请填写信息设置检查vo
+    /**
+     * 根据联盟申请填写信息设置检查vo
+     */
     private void checkVoByUnionDictList(UnionMemberJoinVO unionMemberJoinVO, List<UnionMainDict> unionMainDictList) throws Exception {
         if (ListUtil.isNotEmpty(unionMainDictList)) {
             for (UnionMainDict unionMainDict : unionMainDictList) {
@@ -317,16 +378,12 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         }
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - remove ******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - remove -----------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - update ******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - update -----------------------------------------
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateJoinStatus(Integer busId, Integer memberId, Integer joinId, Integer isOK) throws Exception {
         if (busId == null || memberId == null || joinId == null || isOK == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -378,17 +435,11 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         this.unionMemberService.update(updateJoiner);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - count *******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - count ------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - boolean *****************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - boolean ----------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - get **********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - get ********************************************
 
     @Override
     public UnionMemberJoin getById(Integer joinId) throws Exception {
@@ -412,9 +463,7 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - list *********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - list *******************************************
 
     @Override
     public List<UnionMemberJoin> listByApplyMemberId(Integer applyMemberId) throws Exception {
@@ -430,7 +479,7 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
             return result;
         }
         //(2)get in db
-        EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("apply_member_id", applyMemberId);
         result = this.selectList(entityWrapper);
@@ -452,7 +501,7 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
             return result;
         }
         //(2)get in db
-        EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("recommend_member_id", recommendMemberId);
         result = this.selectList(entityWrapper);
@@ -460,12 +509,10 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - save *********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - save *******************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void save(UnionMemberJoin newJoin) throws Exception {
         if (newJoin == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -475,7 +522,7 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void saveBatch(List<UnionMemberJoin> newJoinList) throws Exception {
         if (newJoinList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -484,12 +531,10 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         this.removeCache(newJoinList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - remove *******************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - remove *****************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeById(Integer joinId) throws Exception {
         if (joinId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -505,7 +550,7 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeBatchById(List<Integer> joinIdList) throws Exception {
         if (joinIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -528,12 +573,11 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         this.updateBatchById(removeJoinList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - update *******************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - update *****************************************
+
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void update(UnionMemberJoin updateJoin) throws Exception {
         if (updateJoin == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -547,7 +591,7 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateBatch(List<UnionMemberJoin> updateJoinList) throws Exception {
         if (updateJoinList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -567,9 +611,7 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         this.updateBatchById(updateJoinList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - cache support ************************************
-     ******************************************************************************************************************/
+    //***************************************** Object As a Service - cache support ************************************
 
     private void setCache(UnionMemberJoin newJoin, Integer joinId) {
         if (joinId == null) {
