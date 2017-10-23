@@ -48,7 +48,7 @@
           <div class="sizeAndColor fl">
             <el-button @click="selectAll()">全选</el-button>
             <el-button @click="toggleSelection()">取消选择</el-button>
-            <el-button @click="deleteAll()">批量删除</el-button>
+            <el-button @click="deleteAll()" v-bind:disabled="!canDel" >批量删除</el-button>
           </div>
           <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll">
           </el-pagination>
@@ -87,12 +87,12 @@
 </template>
 
 <script>
-import $http from '@/utils/http.js'
-import Illustration from './MyDiscountProjectIllustration'
+import $http from '@/utils/http.js';
+import Illustration from './MyDiscountProjectIllustration';
 export default {
   name: 'my-discount-project',
   components: {
-    Illustration,
+    Illustration
   },
   data() {
     return {
@@ -105,7 +105,8 @@ export default {
       visible2: false,
       id: '',
       name: '',
-    }
+      canDel: false
+    };
   },
   computed: {
     unionMemberId() {
@@ -113,14 +114,15 @@ export default {
     },
     isUnionOwner() {
       return this.$store.state.isUnionOwner;
-    },
+    }
   },
   mounted: function() {
     this.init();
   },
   methods: {
     init() {
-      $http.get(`/unionPreferentialProject/myProject/memberId/${this.unionMemberId}?current=1`)
+      $http
+        .get(`/unionPreferentialProject/myProject/memberId/${this.unionMemberId}?current=1`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.pageItem.records;
@@ -144,7 +146,7 @@ export default {
           } else {
             this.tableData = [];
             this.totalAll = 0;
-          };
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -152,9 +154,10 @@ export default {
     },
     // 新增优惠项目保存
     save() {
-      let url = `unionPreferentialItem/memberId/${this.unionMemberId}`
+      let url = `unionPreferentialItem/memberId/${this.unionMemberId}`;
       let data = this.serviceName;
-      $http.post(url, data)
+      $http
+        .post(url, data)
         .then(res => {
           this.init();
         })
@@ -163,20 +166,21 @@ export default {
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+        });
     },
     // 提交审核
     submit(scope) {
       let url = `/unionPreferentialItem/batch/status/2/memberId/${this.unionMemberId}`;
       let data = [];
       data.push(scope.row.id);
-      $http.put(url, data)
+      $http
+        .put(url, data)
         .then(res => {
           this.init();
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+        });
     },
     // 批量提交
     submitAll() {
@@ -185,20 +189,20 @@ export default {
       this.multipleSelection.forEach((v, i) => {
         data.push(v.id);
       });
-      $http.put(url, data)
+      $http
+        .put(url, data)
         .then(res => {
           this.init();
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+        });
     },
     // 删除
     del(scope) {
       this.name = scope.row.name;
       this.id = scope.row.id;
       this.visible1 = true;
-
     },
     // 删除确认
     confirm1() {
@@ -206,13 +210,14 @@ export default {
       let url = `unionPreferentialItem/batch/delStatus/1/memberId/${this.unionMemberId}`;
       let data = [];
       data.push(this.id);
-      $http.put(url, data)
+      $http
+        .put(url, data)
         .then(res => {
           this.init();
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+        });
     },
     // 批量删除
     deleteAll() {
@@ -226,13 +231,14 @@ export default {
       this.multipleSelection.forEach((v, i) => {
         data.push(v.id);
       });
-      $http.put(url, data)
+      $http
+        .put(url, data)
         .then(res => {
           this.init();
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+        });
     },
     // 取消选择
     toggleSelection(rows) {
@@ -252,7 +258,8 @@ export default {
     },
     // 分页查询
     handleCurrentChange(val) {
-      $http.get(`/unionPreferentialProject/myProject/memberId/${this.unionMemberId}?current=${val}`)
+      $http
+        .get(`/unionPreferentialProject/myProject/memberId/${this.unionMemberId}?current=${val}`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.pageItem.records;
@@ -276,7 +283,7 @@ export default {
           } else {
             this.tableData = [];
             this.totalAll = 0;
-          };
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -289,13 +296,18 @@ export default {
     // 勾选状态改变
     handleSelectionChange(val) {
       this.multipleSelection = val;
+      if (this.multipleSelection.length) {
+        this.canDel = true;
+      } else {
+        this.canDel = false;
+      }
     },
     // 弹框取消重置数据
     resetData() {
       this.serviceName = '';
-    },
+    }
   }
-}
+};
 </script>
 
 
