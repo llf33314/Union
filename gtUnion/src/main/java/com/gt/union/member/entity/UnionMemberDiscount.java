@@ -10,12 +10,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * <p>
  * 盟员折扣
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-23 08:34:54
  */
 @TableName("t_union_member_discount")
 public class UnionMemberDiscount extends Model<UnionMemberDiscount> {
@@ -25,96 +23,96 @@ public class UnionMemberDiscount extends Model<UnionMemberDiscount> {
     /**
      * 主键
      */
-	@TableId(value="id", type= IdType.AUTO)
-	private Integer id;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
     /**
      * 创建时间
      */
-	private Date createtime;
+    private Date createtime;
     /**
      * 删除状态（0：未删除 1：删除）
      */
-	@TableField("del_status")
-	private Integer delStatus;
+    @TableField("del_status")
+    private Integer delStatus;
     /**
      * 设置折扣盟员
      */
-	@TableField("from_member_id")
-	private Integer fromMemberId;
+    @TableField("from_member_id")
+    private Integer fromMemberId;
     /**
      * 受惠折扣盟员
      */
-	@TableField("to_member_id")
-	private Integer toMemberId;
+    @TableField("to_member_id")
+    private Integer toMemberId;
     /**
      * 折扣
      */
-	private Double discount;
+    private Double discount;
     /**
      * 修改时间
      */
-	private Date modifytime;
+    private Date modifytime;
 
 
-	public Integer getId() {
-		return id;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public Date getCreatetime() {
-		return createtime;
-	}
+    public Date getCreatetime() {
+        return createtime;
+    }
 
-	public void setCreatetime(Date createtime) {
-		this.createtime = createtime;
-	}
+    public void setCreatetime(Date createtime) {
+        this.createtime = createtime;
+    }
 
-	public Integer getDelStatus() {
-		return delStatus;
-	}
+    public Integer getDelStatus() {
+        return delStatus;
+    }
 
-	public void setDelStatus(Integer delStatus) {
-		this.delStatus = delStatus;
-	}
+    public void setDelStatus(Integer delStatus) {
+        this.delStatus = delStatus;
+    }
 
-	public Integer getFromMemberId() {
-		return fromMemberId;
-	}
+    public Integer getFromMemberId() {
+        return fromMemberId;
+    }
 
-	public void setFromMemberId(Integer fromMemberId) {
-		this.fromMemberId = fromMemberId;
-	}
+    public void setFromMemberId(Integer fromMemberId) {
+        this.fromMemberId = fromMemberId;
+    }
 
-	public Integer getToMemberId() {
-		return toMemberId;
-	}
+    public Integer getToMemberId() {
+        return toMemberId;
+    }
 
-	public void setToMemberId(Integer toMemberId) {
-		this.toMemberId = toMemberId;
-	}
+    public void setToMemberId(Integer toMemberId) {
+        this.toMemberId = toMemberId;
+    }
 
-	public Double getDiscount() {
-		return discount;
-	}
+    public Double getDiscount() {
+        return discount;
+    }
 
-	public void setDiscount(Double discount) {
-		this.discount = discount;
-	}
+    public void setDiscount(Double discount) {
+        this.discount = discount;
+    }
 
-	public Date getModifytime() {
-		return modifytime;
-	}
+    public Date getModifytime() {
+        return modifytime;
+    }
 
-	public void setModifytime(Date modifytime) {
-		this.modifytime = modifytime;
-	}
+    public void setModifytime(Date modifytime) {
+        this.modifytime = modifytime;
+    }
 
-	@Override
-	protected Serializable pkVal() {
-		return this.id;
-	}
+    @Override
+    protected Serializable pkVal() {
+        return this.id;
+    }
 
 }

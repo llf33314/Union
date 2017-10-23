@@ -10,12 +10,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * <p>
  * 联盟成员退盟申请
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-23 08:34:54
  */
 @TableName("t_union_member_out")
 public class UnionMemberOut extends Model<UnionMemberOut> {

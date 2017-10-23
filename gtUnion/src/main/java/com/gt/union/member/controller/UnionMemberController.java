@@ -5,9 +5,7 @@ import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
-import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
-import com.gt.union.common.exception.DataExportException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.service.IUnionValidateService;
 import com.gt.union.common.util.ExportUtil;
@@ -18,6 +16,7 @@ import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.service.IUnionMemberService;
 import com.gt.union.member.vo.CardDividePercentVO;
 import com.gt.union.member.vo.UnionMemberVO;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.poi.hssf.usermodel.*;
@@ -28,18 +27,16 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
-import java.io.PrintWriter;
 import java.util.List;
 import java.util.Map;
 
 /**
- * <p>
  * 联盟成员 前端控制器
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-23 08:34:54
  */
+@Api(description = "联盟成员")
 @RestController
 @RequestMapping("/unionMember")
 public class UnionMemberController {
@@ -57,10 +54,10 @@ public class UnionMemberController {
 
     @ApiOperation(value = "根据我的盟员身份id分页获取所有与我同属一个联盟的盟员相关信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/pageMap/memberId/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String pageMapByMemberId(HttpServletRequest request, Page page
-            , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
-                                    @PathVariable("memberId") Integer memberId
-            , @ApiParam(name = "enterpriseName", value = "盟员名称，模糊匹配")
+    public String pageMapByMemberId(HttpServletRequest request, Page page,
+                                    @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
+                                    @PathVariable("memberId") Integer memberId,
+                                    @ApiParam(name = "enterpriseName", value = "盟员名称，模糊匹配")
                                     @RequestParam(value = "enterpriseName", required = false) String enterpriseName) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
@@ -73,8 +70,8 @@ public class UnionMemberController {
 
     @ApiOperation(value = "根据我的盟员身份id获取所有与我同属一个联盟的盟员相关信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/listMap/memberId/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String listMapByMemberId(HttpServletRequest request
-            , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
+    public String listMapByMemberId(HttpServletRequest request,
+                                    @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
                                     @PathVariable("memberId") Integer memberId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
@@ -87,8 +84,7 @@ public class UnionMemberController {
 
     @ApiOperation(value = "根据我的盟员身份id获取对应的盟员信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getById(HttpServletRequest request
-            , @ApiParam(name = "memberId", value = "盟员身份id", required = true)
+    public String getById(@ApiParam(name = "memberId", value = "盟员身份id", required = true)
                           @PathVariable("memberId") Integer memberId) throws Exception {
         UnionMember result = this.unionMemberService.getById(memberId);
         return GTJsonResult.instanceSuccessMsg(result).toString();
@@ -108,10 +104,10 @@ public class UnionMemberController {
 
     @ApiOperation(value = "导出：根据我的盟员身份id分页获取所有与我同属一个联盟的盟员相关信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/exportMap/memberId/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public void exportByMemberId(HttpServletRequest request, HttpServletResponse response
-            , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
-                                 @PathVariable("memberId") Integer memberId
-            , @ApiParam(name = "enterpriseName", value = "盟员名称，模糊匹配")
+    public void exportByMemberId(HttpServletRequest request, HttpServletResponse response,
+                                 @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
+                                 @PathVariable("memberId") Integer memberId,
+                                 @ApiParam(name = "enterpriseName", value = "盟员名称，模糊匹配")
                                  @RequestParam(value = "enterpriseName", required = false) String enterpriseName) throws Exception {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
@@ -150,7 +146,7 @@ public class UnionMemberController {
                     discountToMeCell.setCellValue(tgtDiscountToMe);
                     discountToMeCell.setCellStyle(centerCellStyle);
                     //售卡分成比例
-                    HSSFCell cardDividePercentCell = row.createCell(cellIndex++);
+                    HSSFCell cardDividePercentCell = row.createCell(cellIndex);
                     String tgtCardDividePercent = resultMap.get("cardDividePercent") != null ? resultMap.get("cardDividePercent").toString() + "%" : "";
                     cardDividePercentCell.setCellValue(tgtCardDividePercent);
                     cardDividePercentCell.setCellStyle(centerCellStyle);
@@ -159,24 +155,8 @@ public class UnionMemberController {
             UnionMain unionMain = this.unionMainService.getByBusIdAndMemberId(busId, memberId);
             String filename = unionMain.getName() + "的盟员列表";
             ExportUtil.responseExport(response, wb, filename);
-        }catch (BaseException e){
-            response.setContentType("text/html");
-            response.setHeader("Cache-Control", "no-cache");
-            response.setCharacterEncoding("UTF-8");
-            String result = "<script>alert('导出失败')</script>";
-            PrintWriter writer = response.getWriter();
-            writer.print(result);
-            writer.close();
-        } catch (DataExportException e){
-
         } catch (Exception e) {
-            response.setContentType("text/html");
-            response.setHeader("Cache-Control", "no-cache");
-            response.setCharacterEncoding("UTF-8");
-            String result = "<script>alert('导出失败')</script>";
-            PrintWriter writer = response.getWriter();
-            writer.print(result);
-            writer.close();
+            ExportUtil.responseExportError(response);
         }
     }
 
@@ -184,10 +164,10 @@ public class UnionMemberController {
 
     @ApiOperation(value = "更新盟员信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{memberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public String updateById(HttpServletRequest request
-            , @ApiParam(name = "memberId", value = "盟员身份id", required = true)
-                             @PathVariable("memberId") Integer memberId
-            , @ApiParam(name = "unionMemberVO", value = "更新内容实体", required = true)
+    public String updateById(HttpServletRequest request,
+                             @ApiParam(name = "memberId", value = "盟员身份id", required = true)
+                             @PathVariable("memberId") Integer memberId,
+                             @ApiParam(name = "unionMemberVO", value = "更新内容实体", required = true)
                              @RequestBody @Valid UnionMemberVO unionMemberVO, BindingResult bindingResult) throws Exception {
         this.unionValidateService.checkBindingResult(bindingResult);
         BusUser busUser = SessionUtils.getLoginUser(request);
@@ -200,10 +180,10 @@ public class UnionMemberController {
 
     @ApiOperation(value = "批量更新售卡分成比例", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/cardDividePercent/memberId/{memberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public String updateCardDividePercentById(HttpServletRequest request
-            , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
-                                              @PathVariable("memberId") Integer memberId
-            , @ApiParam(name = "cardDividePercentVO", value = "更新内容实体", required = true)
+    public String updateCardDividePercentById(HttpServletRequest request,
+                                              @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
+                                              @PathVariable("memberId") Integer memberId,
+                                              @ApiParam(name = "cardDividePercentVO", value = "更新内容实体", required = true)
                                               @RequestBody @Valid List<CardDividePercentVO> cardDividePercentVOList, BindingResult bindingResult) throws Exception {
         this.unionValidateService.checkBindingResult(bindingResult);
         BusUser busUser = SessionUtils.getLoginUser(request);

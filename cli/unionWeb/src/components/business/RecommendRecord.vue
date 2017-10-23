@@ -22,7 +22,7 @@
       </el-col>
       <el-col style="width:200px;">
         <div class="grid-content1 bg-purple">
-          <el-input placeholder="请输入关键字" icon="search" v-model="input" :on-icon-click="search" class="input-search2 fl">
+          <el-input placeholder="请输入关键字" icon="search" v-model="input" @keyup.enter.native="search" :on-icon-click="search" class="input-search2 fl">
           </el-input>
         </div>
       </el-col>
@@ -52,113 +52,145 @@
   </div>
 </template>
 <script>
-import $http from '@/utils/http.js'
+import $http from "@/utils/http.js";
 export default {
-  name: 'recommend-record',
+  name: "recommend-record",
   data() {
     return {
-      unionId: '',
+      unionId: "",
       options1: [],
-      value: '',
+      value: "",
       options2: [
         {
-          value: 'clientName',
-          label: '顾客姓名'
+          value: "clientName",
+          label: "顾客姓名"
         },
         {
-          value: 'clientPhone',
-          label: '顾客电话'
-        },
+          value: "clientPhone",
+          label: "顾客电话"
+        }
       ],
-      input: '',
+      input: "",
       tableData: [],
       currentPage: 1,
-      totalAll: 0,
-    }
+      totalAll: 0
+    };
   },
   computed: {
     initUnionId() {
       return this.$store.state.unionId;
+    }
+  },
+  watch: {
+    initUnionId: function() {
+      this.init();
     },
   },
   mounted: function() {
-    if (this.initUnionId) {
-      // 我创建及加入的所有联盟
-      $http.get(`/unionMain/list/myUnion`)
-        .then(res => {
-          if (res.data.data && res.data.data.length > 0) {
-            this.options1 = res.data.data;
-            this.options1.forEach((v, i) => {
-              v.value = v.id;
-              v.label = v.name;
-            });
-          } else {
-            this.options1 = [];
-          };
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
-      // 我推荐的商机数据
-      $http.get(`/unionOpportunity/fromMe?current=1`)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.total;
-            this.tableData.forEach((v, i) => {
-              switch (v.isAccept) {
-                case 1:
-                  v.isAccept = '未处理';
-                  break;
-                case 2:
-                  v.isAccept = '已完成';
-                  break;
-                case 3:
-                  v.isAccept = '已拒绝'
-              }
-            });
-          } else {
-            this.tableData = [];
-            this.totalAll = 0;
-          };
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
-    };
-    // 监听是否有新的推荐
-    eventBus.$on('newRecommend', () => {
-      $http.get(`/unionOpportunity/fromMe?current=1`)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.total;
-            this.tableData.forEach((v, i) => {
-              switch (v.isAccept) {
-                case 1:
-                  v.isAccept = '未处理';
-                  break;
-                case 2:
-                  v.isAccept = '已完成';
-                  break;
-                case 3:
-                  v.isAccept = '已拒绝'
-              }
-            });
-          } else {
-            this.tableData = [];
-            this.totalAll = 0;
-          };
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
-    })
+    this.init();
   },
   methods: {
+    init() {
+      if (this.initUnionId) {
+        // 我创建及加入的所有联盟
+        $http
+          .get(`/unionMain/list/myUnion`)
+          .then(res => {
+            if (res.data.data && res.data.data.length > 0) {
+              this.options1 = res.data.data;
+              this.options1.forEach((v, i) => {
+                v.value = v.id;
+                v.label = v.name;
+              });
+            } else {
+              this.options1 = [];
+            }
+          })
+          .catch(err => {
+            this.$message({
+              showClose: true,
+              message: err.toString(),
+              type: "error",
+              duration: 5000
+            });
+          });
+        // 我推荐的商机数据
+        $http
+          .get(`/unionOpportunity/fromMe?current=1`)
+          .then(res => {
+            if (res.data.data) {
+              this.tableData = res.data.data.records;
+              this.totalAll = res.data.data.total;
+              this.tableData.forEach((v, i) => {
+                switch (v.isAccept) {
+                  case 1:
+                    v.isAccept = "未处理";
+                    break;
+                  case 2:
+                    v.isAccept = "已完成";
+                    break;
+                  case 3:
+                    v.isAccept = "已拒绝";
+                }
+              });
+            } else {
+              this.tableData = [];
+              this.totalAll = 0;
+            }
+          })
+          .catch(err => {
+            this.$message({
+              showClose: true,
+              message: err.toString(),
+              type: "error",
+              duration: 5000
+            });
+          });
+      }
+      // 监听是否有新的推荐
+      eventBus.$on("newRecommend", () => {
+        $http
+          .get(`/unionOpportunity/fromMe?current=1`)
+          .then(res => {
+            if (res.data.data) {
+              this.tableData = res.data.data.records;
+              this.totalAll = res.data.data.total;
+              this.tableData.forEach((v, i) => {
+                switch (v.isAccept) {
+                  case 1:
+                    v.isAccept = "未处理";
+                    break;
+                  case 2:
+                    v.isAccept = "已完成";
+                    break;
+                  case 3:
+                    v.isAccept = "已拒绝";
+                }
+              });
+            } else {
+              this.tableData = [];
+              this.totalAll = 0;
+            }
+          })
+          .catch(err => {
+            this.$message({
+              showClose: true,
+              message: err.toString(),
+              type: "error",
+              duration: 5000
+            });
+          });
+      });
+    },
     // 带条件搜索
     search() {
-      $http.get(`/unionOpportunity/fromMe?current=1&unionId=${this.unionId}&` + this.value + '=' + this.input)
+      $http
+        .get(
+          `/unionOpportunity/fromMe?current=1&unionId=${this.unionId}&` +
+            this.value +
+            "=" +
+            this.input
+        )
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
@@ -166,27 +198,38 @@ export default {
             this.tableData.forEach((v, i) => {
               switch (v.isAccept) {
                 case 1:
-                  v.isAccept = '未处理';
+                  v.isAccept = "未处理";
                   break;
                 case 2:
-                  v.isAccept = '已完成';
+                  v.isAccept = "已完成";
                   break;
                 case 3:
-                  v.isAccept = '已拒绝'
+                  v.isAccept = "已拒绝";
               }
             });
           } else {
             this.tableData = [];
             this.totalAll = 0;
-          };
+          }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+          this.$message({
+            showClose: true,
+            message: err.toString(),
+            type: "error",
+            duration: 5000
+          });
+        });
     },
     // 分页搜索
     handleCurrentChange(val) {
-      $http.get(`/unionOpportunity/fromMe?current=${val}&unionId=${this.unionId}&` + this.value + '=' + this.input)
+      $http
+        .get(
+          `/unionOpportunity/fromMe?current=${val}&unionId=${this.unionId}&` +
+            this.value +
+            "=" +
+            this.input
+        )
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
@@ -194,27 +237,32 @@ export default {
             this.tableData.forEach((v, i) => {
               switch (v.isAccept) {
                 case 1:
-                  v.isAccept = '未处理';
+                  v.isAccept = "未处理";
                   break;
                 case 2:
-                  v.isAccept = '已完成';
+                  v.isAccept = "已完成";
                   break;
                 case 3:
-                  v.isAccept = '已拒绝'
+                  v.isAccept = "已拒绝";
               }
             });
           } else {
             this.tableData = [];
             this.totalAll = 0;
-          };
+          }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+          this.$message({
+            showClose: true,
+            message: err.toString(),
+            type: "error",
+            duration: 5000
+          });
+        });
     },
     filterTag(value, row) {
       return row.isAccept === value;
     }
   }
-}
+};
 </script>

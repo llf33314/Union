@@ -22,7 +22,7 @@
       </el-col>
       <el-col style="width:200px;">
         <div class="grid-content1 bg-purple">
-          <el-input placeholder="请输入关键字" icon="search" v-model="input" :on-icon-click="search" class="input-search2 fl">
+          <el-input placeholder="请输入关键字" @keyup.enter.native="search" icon="search" v-model="input" :on-icon-click="search" class="input-search2 fl">
           </el-input>
         </div>
       </el-col>
@@ -106,128 +106,61 @@
 </template>
 
 <script>
-import $http from '@/utils/http.js'
+import $http from "@/utils/http.js";
 export default {
-  name: 'mybusiness',
+  name: "mybusiness",
   data() {
     return {
-      unionId: '',
+      unionId: "",
       options1: [],
-      value: '',
+      value: "",
       options2: [
         {
-          value: 'clientName',
-          label: '顾客姓名'
+          value: "clientName",
+          label: "顾客姓名"
         },
         {
-          value: 'clientPhone',
-          label: '顾客电话'
-        },
+          value: "clientPhone",
+          label: "顾客电话"
+        }
       ],
-      input: '',
+      input: "",
       tableData: [],
       currentPage: 1,
       dialogVisible: false,
       dialogVisible1: false,
       dialogVisible2: false,
       detailData: {
-        userName: '',
-        userPhone: '',
-        enterpriseName: '',
-        unionName: '',
-        isAccept: '',
-        businessMsg: '',
+        userName: "",
+        userPhone: "",
+        enterpriseName: "",
+        unionName: "",
+        isAccept: "",
+        businessMsg: ""
       },
-      acceptancePrice: '',
-      opportunityId: '',
+      acceptancePrice: "",
+      opportunityId: "",
       //请求到的所有表格列表总数目;
-      totalAll: 0,
-    }
+      totalAll: 0
+    };
   },
   computed: {
     initUnionId() {
       return this.$store.state.unionId;
-    },
-  },
-  mounted: function() {
-    if (this.initUnionId) {
-      // 我创建及加入的所有联盟
-      $http.get(`/unionMain/list/myUnion`)
-        .then(res => {
-          if (res.data.data && res.data.data.length > 0) {
-            this.options1 = res.data.data;
-            this.options1.forEach((v, i) => {
-              v.value = v.id;
-              v.label = v.name;
-            });
-          } else {
-            this.options1 = [];
-          };
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
-      // 推荐给我的商机
-      $http.get(`/unionOpportunity/toMe`)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.total;
-            this.tableData.forEach((v, i) => {
-              switch (v.isAccept) {
-                case 1:
-                  v.isAccept = '未处理';
-                  break;
-                case 2:
-                  v.isAccept = '已完成';
-                  break;
-                case 3:
-                  v.isAccept = '已拒绝'
-              };
-            });
-          } else {
-            this.tableData = [];
-            this.totalAll = 0;
-          };
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
-    };
-  },
-  watch: {
-    unionId: function() {
-      $http.get(`/unionOpportunity/toMe?current=1&unionId=${this.unionId}&` + this.value + '=' + this.input)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.total;
-            this.tableData.forEach((v, i) => {
-              switch (v.isAccept) {
-                case 1:
-                  v.isAccept = '未处理';
-                  break;
-                case 2:
-                  v.isAccept = '已完成';
-                  break;
-                case 3:
-                  v.isAccept = '已拒绝'
-              };
-            });
-          } else {
-            this.tableData = [];
-            this.totalAll = 0;
-          };
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
     }
   },
-  methods: {
-    // 带条件搜索
-    search() {
-      $http.get(`/unionOpportunity/toMe?current=1&unionId=${this.unionId}&` + this.value + '=' + this.input)
+  watch: {
+    initUnionId: function() {
+      this.init();
+    },
+    unionId: function() {
+      $http
+        .get(
+          `/unionOpportunity/toMe?current=1&unionId=${this.unionId}&` +
+            this.value +
+            "=" +
+            this.input
+        )
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
@@ -235,27 +168,140 @@ export default {
             this.tableData.forEach((v, i) => {
               switch (v.isAccept) {
                 case 1:
-                  v.isAccept = '未处理';
+                  v.isAccept = "未处理";
                   break;
                 case 2:
-                  v.isAccept = '已完成';
+                  v.isAccept = "已完成";
                   break;
                 case 3:
-                  v.isAccept = '已拒绝'
-              };
+                  v.isAccept = "已拒绝";
+              }
             });
           } else {
             this.tableData = [];
             this.totalAll = 0;
-          };
+          }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({
+            showClose: true,
+            message: err.toString(),
+            type: "error",
+            duration: 5000
+          });
+        });
+    }
+  },
+  mounted: function() {
+    this.init();
+  },
+  methods: {
+    init() {
+      if (this.initUnionId) {
+        // 我创建及加入的所有联盟
+        $http
+          .get(`/unionMain/list/myUnion`)
+          .then(res => {
+            if (res.data.data && res.data.data.length > 0) {
+              this.options1 = res.data.data;
+              this.options1.forEach((v, i) => {
+                v.value = v.id;
+                v.label = v.name;
+              });
+            } else {
+              this.options1 = [];
+            }
+          })
+          .catch(err => {
+            this.$message({
+              showClose: true,
+              message: err.toString(),
+              type: "error",
+              duration: 5000
+            });
+          });
+        // 推荐给我的商机
+        $http
+          .get(`/unionOpportunity/toMe`)
+          .then(res => {
+            if (res.data.data) {
+              this.tableData = res.data.data.records;
+              this.totalAll = res.data.data.total;
+              this.tableData.forEach((v, i) => {
+                switch (v.isAccept) {
+                  case 1:
+                    v.isAccept = "未处理";
+                    break;
+                  case 2:
+                    v.isAccept = "已完成";
+                    break;
+                  case 3:
+                    v.isAccept = "已拒绝";
+                }
+              });
+            } else {
+              this.tableData = [];
+              this.totalAll = 0;
+            }
+          })
+          .catch(err => {
+            this.$message({
+              showClose: true,
+              message: err.toString(),
+              type: "error",
+              duration: 5000
+            });
+          });
+      }
+    },
+    // 带条件搜索
+    search() {
+      $http
+        .get(
+          `/unionOpportunity/toMe?current=1&unionId=${this.unionId}&` +
+            this.value +
+            "=" +
+            this.input
+        )
+        .then(res => {
+          if (res.data.data) {
+            this.tableData = res.data.data.records;
+            this.totalAll = res.data.data.total;
+            this.tableData.forEach((v, i) => {
+              switch (v.isAccept) {
+                case 1:
+                  v.isAccept = "未处理";
+                  break;
+                case 2:
+                  v.isAccept = "已完成";
+                  break;
+                case 3:
+                  v.isAccept = "已拒绝";
+              }
+            });
+          } else {
+            this.tableData = [];
+            this.totalAll = 0;
+          }
         })
+        .catch(err => {
+          this.$message({
+            showClose: true,
+            message: err.toString(),
+            type: "error",
+            duration: 5000
+          });
+        });
     },
     // 分页搜索
     handleCurrentChange(val) {
-      $http.get(`/unionOpportunity/toMe?current=${val}&unionId=${this.unionId}&` + this.value + '=' + this.input)
+      $http
+        .get(
+          `/unionOpportunity/toMe?current=${val}&unionId=${this.unionId}&` +
+            this.value +
+            "=" +
+            this.input
+        )
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
@@ -263,23 +309,28 @@ export default {
             this.tableData.forEach((v, i) => {
               switch (v.isAccept) {
                 case 1:
-                  v.isAccept = '未处理';
+                  v.isAccept = "未处理";
                   break;
                 case 2:
-                  v.isAccept = '已完成';
+                  v.isAccept = "已完成";
                   break;
                 case 3:
-                  v.isAccept = '已拒绝'
-              };
+                  v.isAccept = "已拒绝";
+              }
             });
           } else {
             this.tableData = [];
             this.totalAll = 0;
-          };
+          }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+          this.$message({
+            showClose: true,
+            message: err.toString(),
+            type: "error",
+            duration: 5000
+          });
+        });
     },
     // 弹出框 商机详情
     showDialog(scope) {
@@ -293,10 +344,21 @@ export default {
     },
     // 接受确认
     confirm() {
-      $http.put(`/unionOpportunity/${this.opportunityId}/isAccept/2`, this.acceptancePrice)
+      $http
+        .put(
+          `/unionOpportunity/${this.opportunityId}/isAccept/2`,
+          this.acceptancePrice
+        )
         .then(res => {
           this.dialogVisible1 = false;
-          $http.get(`/unionOpportunity/toMe?current=${this.currentPage}&unionId=${this.unionId}&` + this.value + '=' + this.input)
+          $http
+            .get(
+              `/unionOpportunity/toMe?current=${this.currentPage}&unionId=${this
+                .unionId}&` +
+                this.value +
+                "=" +
+                this.input
+            )
             .then(res => {
               if (res.data.data) {
                 this.tableData = res.data.data.records;
@@ -304,27 +366,37 @@ export default {
                 this.tableData.forEach((v, i) => {
                   switch (v.isAccept) {
                     case 1:
-                      v.isAccept = '未处理';
+                      v.isAccept = "未处理";
                       break;
                     case 2:
-                      v.isAccept = '已完成';
+                      v.isAccept = "已完成";
                       break;
                     case 3:
-                      v.isAccept = '已拒绝'
-                  };
+                      v.isAccept = "已拒绝";
+                  }
                 });
               } else {
                 this.tableData = [];
                 this.totalAll = 0;
-              };
+              }
             })
             .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-            })
+              this.$message({
+                showClose: true,
+                message: err.toString(),
+                type: "error",
+                duration: 5000
+              });
+            });
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+          this.$message({
+            showClose: true,
+            message: err.toString(),
+            type: "error",
+            duration: 5000
+          });
+        });
     },
     // 拒绝
     disagree(scope) {
@@ -333,10 +405,18 @@ export default {
     },
     // 接受拒绝
     confirm1() {
-      $http.put(`/unionOpportunity/${this.opportunityId}/isAccept/3`)
+      $http
+        .put(`/unionOpportunity/${this.opportunityId}/isAccept/3`)
         .then(res => {
           this.dialogVisible2 = false;
-          $http.get(`/unionOpportunity/toMe?current=${this.currentPage}&unionId=${this.unionId}&` + this.value + '=' + this.input)
+          $http
+            .get(
+              `/unionOpportunity/toMe?current=${this.currentPage}&unionId=${this
+                .unionId}&` +
+                this.value +
+                "=" +
+                this.input
+            )
             .then(res => {
               if (res.data.data) {
                 this.tableData = res.data.data.records;
@@ -344,37 +424,47 @@ export default {
                 this.tableData.forEach((v, i) => {
                   switch (v.isAccept) {
                     case 1:
-                      v.isAccept = '未处理';
+                      v.isAccept = "未处理";
                       break;
                     case 2:
-                      v.isAccept = '已完成';
+                      v.isAccept = "已完成";
                       break;
                     case 3:
-                      v.isAccept = '已拒绝'
-                  };
+                      v.isAccept = "已拒绝";
+                  }
                 });
               } else {
                 this.tableData = [];
                 this.totalAll = 0;
-              };
+              }
             })
             .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-            })
+              this.$message({
+                showClose: true,
+                message: err.toString(),
+                type: "error",
+                duration: 5000
+              });
+            });
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+          this.$message({
+            showClose: true,
+            message: err.toString(),
+            type: "error",
+            duration: 5000
+          });
+        });
     },
     filterTag(value, row) {
       return row.isAccept === value;
     },
     // 关闭弹窗重置数据
     resetData() {
-      this.acceptancePrice = '';
-    },
+      this.acceptancePrice = "";
+    }
   }
-}
+};
 </script>
 
 <style lang='less' rel="stylesheet/less">
@@ -383,7 +473,7 @@ export default {
     padding: 0;
   }
   .el-dialog--tiny {
-    width: 660px!important;
+    width: 660px !important;
   }
   .model_detail {
     margin: 19px 0 10px 30px;
@@ -395,10 +485,10 @@ export default {
 
 .model_02 {
   .el-dialog--tiny {
-    width: 660px!important;
+    width: 660px !important;
   }
   .el-dialog__footer {
-    padding: 70px 20px 15px!important;
+    padding: 70px 20px 15px !important;
   }
 }
 </style>

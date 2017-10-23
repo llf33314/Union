@@ -14,7 +14,7 @@
       <el-col style="width:245px">
         <div class="grid-content1 bg-purple">
           <el-input placeholder="请输入关键字" icon="search" v-model="input" :on-icon-click="search"
-                    @keyup.enter.native="show1($event)">
+                    @keyup.enter.native="search">
           </el-input>
         </div>
       </el-col>
@@ -96,11 +96,6 @@ export default {
     }
   },
   methods: {
-    show1:function(ev){
-      if(ev.keyCode == 13){
-        this.search();
-      }
-    },
     // 带条件查询
     search() {
       $http.get(`/unionMemberJoin/memberId/${this.unionMemberId}?current=1&` + this.value + '=' + this.input)

@@ -27,13 +27,13 @@
         <el-table :data="tableData" style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55">
           </el-table-column>
-          <el-table-column prop="name" label="项目名称" style="width: 38%">
+          <el-table-column prop="name" label="项目名称" >
           </el-table-column>
-          <el-table-column prop="status" label="审核状态" width="150"
+          <el-table-column prop="status" label="审核状态"
                            :filters="[{ text: '未提交', value: '未提交' }, { text: '已提交', value: '已提交' }, { text: '已通过', value: '已通过' }, { text: '未通过', value: '未通过' }]"
-                           :filter-method="filterTag" filter-placement="bottom-end">
+                           :filter-method="filterTag" filter-placement="bottom-start">
           </el-table-column>
-          <el-table-column label="操作" ref="scope" style="width: 38%">
+          <el-table-column label="操作" ref="scope" width="220">
             <template scope="scope">
               <div class="sizeAndColor">
                 <el-button size="small" @click="submit(scope)" v-if="scope.row.status === '未提交' || scope.row.status === '未通过'">

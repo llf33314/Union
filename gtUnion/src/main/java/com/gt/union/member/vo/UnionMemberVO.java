@@ -11,7 +11,10 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
 
 /**
- * Created by Administrator on 2017/9/12 0012.
+ * 联盟成员 VO
+ *
+ * @author linweicong
+ * @version 2017-10-23 08:34:54
  */
 @ApiModel(value = "UnionMemberVO", description = "盟员实体")
 @Data

@@ -4,7 +4,7 @@
       <el-col :xs="4" :sm="4" :md="4" :lg="4">
         <div class="grid-content bg-purple">
           <el-input placeholder="请输入盟员名称" icon="search" v-model="input"
-                    :on-icon-click="search" class="input-search" @keyup.enter.native="show1($event)" >
+                    :on-icon-click="search" class="input-search" @keyup.enter.native="search" >
           </el-input>
         </div>
       </el-col>
@@ -14,13 +14,21 @@
       </el-col>
     </el-row>
     <el-table :data="tableData"  style="width: 100%">
-      <el-table-column label="盟员名称" width="200px;">
+      <el-table-column label="盟员名称" >
           <template scope="scope">
             <i class="iconfont" v-if="scope.row.isUnionOwner" style="font-size: 25px;color:#FDD43F;position: absolute;top: 4px;left: 9px;">&#xe504;</i>
             <span>{{ scope.row.enterpriseName }}</span>
           </template>
       </el-table-column>
       <el-table-column prop="createTime" label="加入时间">
+        <template scope="scope">
+          <el-popover trigger="hover" placement="bottom">
+            <p>{{ scope.row.createTime }}</p>
+            <div slot="reference" class="name-wrapper">
+              <span>{{ scope.row.createTime }}</span>
+            </div>
+          </el-popover>
+        </template>
       </el-table-column>
       <el-table-column prop="discountFromMe" label="我给TA折扣（折）">
       </el-table-column>
@@ -28,7 +36,7 @@
       </el-table-column>
       <el-table-column prop="cardDividePercent" label="售卡分成比例">
       </el-table-column>
-      <el-table-column label="操作" width="220px">
+      <el-table-column label="操作" width="220">
         <template scope="scope">
           <div class="sizeAndColor">
             <el-button size="small" @click="detail(scope)">详情</el-button>
@@ -70,7 +78,7 @@
         </div>
       </el-dialog>
     </div>
-    <!-- 弹出框 折扣 -->
+    <!-- 弹出框 当前折扣 -->
     <div class="model__10">
       <el-dialog title="设置折扣" :visible.sync="dialogVisible1" size="tiny" @close="resetData1">
         <hr>
@@ -93,6 +101,7 @@
         </div>
       </el-dialog>
     </div>
+    <!-- 弹出框 他给我的折扣 -->
     <div class="model__10">
       <el-dialog title="设置折扣" :visible.sync="dialogVisible2" size="tiny" @close="resetData2">
         <hr>
@@ -225,11 +234,6 @@ export default {
     }
   },
   methods: {
-    show1:function(ev){
-      if(ev.keyCode == 13){
-        this.search();
-      }
-    },
     // 带条件查询盟员列表
     search() {
       $http.get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=1&enterpriseName=${this.input}`)
