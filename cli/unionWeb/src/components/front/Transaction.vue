@@ -335,7 +335,7 @@ export default {
           $http
             .post(url, data)
             .then(res => {
-              if (res.data.success && res.data.data) {
+              if (res.data.success && res.data.data.length) {
                 this.visible3 = true;
                 $http
                   .get(

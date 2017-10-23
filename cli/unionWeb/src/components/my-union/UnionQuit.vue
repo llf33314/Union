@@ -133,8 +133,8 @@
 </template>
 
 <script>
-import Breadcrumb from '@/components/public-components/Breadcrumb'
-import $http from '@/utils/http.js'
+import Breadcrumb from '@/components/public-components/Breadcrumb';
+import $http from '@/utils/http.js';
 export default {
   name: 'union-quit',
   components: {
@@ -157,8 +157,8 @@ export default {
       outId: '',
       outEnterpriseName: '',
       totalAll1: 0,
-      totalAll2: 0,
-    }
+      totalAll2: 0
+    };
   },
   computed: {
     isUnionOwner() {
@@ -169,20 +169,24 @@ export default {
     }
   },
   mounted: function() {
-    $http.get(`/unionMemberOut/page/applyOut/memberId/${this.unionMemberId}?current=1`)
-      .then(res => {
-        if (this.isUnionOwner) {
-          this.activeName = 'first';
-        };
-        if (res.data.data) {
-          this.tableData1 = res.data.data.records;
-          this.totalAll1 = res.data.data.total;
-        };
-      })
-      .catch(err => {
-        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-      });
-    $http.get(`/unionMemberOut/page/outing/memberId/${this.unionMemberId}?current=1`)
+    if (this.isUnionOwner) {
+      $http
+        .get(`/unionMemberOut/page/applyOut/memberId/${this.unionMemberId}?current=1`)
+        .then(res => {
+          if (this.isUnionOwner) {
+            this.activeName = 'first';
+          }
+          if (res.data.data) {
+            this.tableData1 = res.data.data.records;
+            this.totalAll1 = res.data.data.total;
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    };
+    $http
+      .get(`/unionMemberOut/page/outing/memberId/${this.unionMemberId}?current=1`)
       .then(res => {
         if (res.data.data) {
           this.tableData2 = res.data.data.records;
@@ -199,11 +203,10 @@ export default {
             }
           });
         }
-
       })
       .catch(err => {
         this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-      })
+      });
   },
   methods: {
     // 弹出框 同意
@@ -220,10 +223,12 @@ export default {
     },
     // 弹出框 同意 确认
     confirm() {
-      $http.put(`/unionMemberOut/${this.outId}/memberId/${this.unionMemberId}?isOK=1`)
+      $http
+        .put(`/unionMemberOut/${this.outId}/memberId/${this.unionMemberId}?isOK=1`)
         .then(res => {
           this.dialogVisible2 = false;
-          $http.get(`/unionMemberOut/page/applyOut/memberId/${this.unionMemberId}?current=1`)
+          $http
+            .get(`/unionMemberOut/page/applyOut/memberId/${this.unionMemberId}?current=1`)
             .then(res => {
               if (res.data.data) {
                 this.tableData1 = res.data.data.records;
@@ -236,14 +241,16 @@ export default {
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+        });
     },
     // 弹出框 拒绝 确认
     confirm1() {
-      $http.put(`/unionMemberOut/${this.outId}/memberId/${this.unionMemberId}?isOK=0`)
+      $http
+        .put(`/unionMemberOut/${this.outId}/memberId/${this.unionMemberId}?isOK=0`)
         .then(res => {
           this.dialogVisible3 = false;
-          $http.get(`/unionMemberOut/page/applyOut/memberId/${this.unionMemberId}?current=1`)
+          $http
+            .get(`/unionMemberOut/page/applyOut/memberId/${this.unionMemberId}?current=1`)
             .then(res => {
               if (res.data.data) {
                 this.tableData1 = res.data.data.records;
@@ -256,11 +263,12 @@ export default {
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+        });
     },
     // 分页查询
     handleCurrentChange1(val) {
-      $http.get(`/unionMemberOut/page/applyOut/memberId/${this.unionMemberId}?current=${val}`)
+      $http
+        .get(`/unionMemberOut/page/applyOut/memberId/${this.unionMemberId}?current=${val}`)
         .then(res => {
           if (res.data.data) {
             this.tableData1 = res.data.data.records;
@@ -272,7 +280,8 @@ export default {
         });
     },
     handleCurrentChange2(val) {
-      $http.get(`/unionMemberOut/page/outing/memberId/${this.unionMemberId}?current=${val}`)
+      $http
+        .get(`/unionMemberOut/page/outing/memberId/${this.unionMemberId}?current=${val}`)
         .then(res => {
           if (res.data.data) {
             this.tableData2 = res.data.data.records;
@@ -292,31 +301,31 @@ export default {
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+        });
     },
     // 申请退盟
     outConfirm() {
-      $http.post(`/unionMemberOut/memberId/${this.unionMemberId}/applyOut?applyOutReason=${this.form.outReason}`)
+      $http
+        .post(`/unionMemberOut/memberId/${this.unionMemberId}/applyOut?applyOutReason=${this.form.outReason}`)
         .then(res => {
-          $http.get(`/unionMemberOut/page/outing/memberId/${this.unionMemberId}?current=1`)
-            .then(res => {
-              this.tableData2 = res.data.data.records;
-              this.totalAll2 = res.data.data.total;
-              this.tableData2.forEach((v, i) => {
-                v.remainDay += '天';
-                switch (v.outType) {
-                  case 1:
-                    v.outType = '盟员申请退盟';
-                    break;
-                  case 2:
-                    v.outType = '盟主移出盟员';
-                    break;
-                }
-              })
-            })
+          $http.get(`/unionMemberOut/page/outing/memberId/${this.unionMemberId}?current=1`).then(res => {
+            this.tableData2 = res.data.data.records;
+            this.totalAll2 = res.data.data.total;
+            this.tableData2.forEach((v, i) => {
+              v.remainDay += '天';
+              switch (v.outType) {
+                case 1:
+                  v.outType = '盟员申请退盟';
+                  break;
+                case 2:
+                  v.outType = '盟主移出盟员';
+                  break;
+              }
+            });
+          });
         })
         .then(res => {
-          this.dialogVisible = false
+          this.dialogVisible = false;
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -325,15 +334,15 @@ export default {
     // 关闭弹窗重置数据
     resetData() {
       this.form.outReason = '';
-    },
+    }
   }
-}
+};
 </script>
 <style lang='less' rel="stylesheet/less" scoped>
 .container {
   margin: 40px 50px;
   .second {
-    margin-top: 11px!important;
+    margin-top: 11px !important;
   }
   .main {
     margin-bottom: 45px;
