@@ -7,5 +7,5 @@ public interface LogConstant {
     /**
      * 换行符
      */
-    public static final String lineSeperator = System.getProperty("line.separator");
+    String lineSeperator = System.getProperty("line.separator");
 }

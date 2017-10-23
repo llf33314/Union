@@ -39,13 +39,15 @@
       </el-table-column>
       <el-table-column prop="unionName" label="所属联盟">
       </el-table-column>
-      <el-table-column prop="isAccept" label="状态" :filters="[{ text: '未处理', value: '未处理' }, { text: '已完成', value: '已完成' }, { text: '已拒绝', value: '已拒绝' }]" :filter-method="filterTag" filter-placement="bottom-end" width="150">
+      <el-table-column prop="isAccept" label="状态" :filters="[{ text: '未处理', value: '未处理' }, { text: '已完成', value: '已完成' }, { text: '已拒绝', value: '已拒绝' }]"
+                       :filter-method="filterTag" filter-placement="bottom-end" width="150">
         <template scope="scope">
           <el-tag :type="scope.row.isAccept === '未处理' ? 'warning' : (scope.row.isAccept === '已完成' ? 'success' : 'danger')">{{scope.row.isAccept}}</el-tag>
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll">
+    <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage"
+                   :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
     </el-pagination>
   </div>
 </template>

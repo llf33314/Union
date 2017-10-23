@@ -435,6 +435,36 @@ h2{
       width:205px;
     }
   }
+
+  #createStep{
+    .el-dialog--small{
+      width:950px;
+      .el-dialog__body{
+        padding:0px;
+        iframe{
+          margin-left: 20px;
+        }
+      }
+    }
+    .el-form-item__error {
+      position: absolute!important;
+      top: -1px!important;
+      left: 229px!important;
+    }
+    .second_{
+      img{
+        cursor: pointer;
+      }
+      .el-button{
+        width:72px;
+        height:72px;
+        border:1px dotted;
+        i{
+          font-size:20px;
+        }
+      }
+    }
+  }
 }
 
 //我的联盟/联盟设置 公共样式····-----------------------------------------------
@@ -476,7 +506,26 @@ h2{
   }
   #un_set{
     .el-dialog--small{
-      width: 880px;
+      width: 950px;
+    }
+    .el-dialog__body{
+      padding: 0;
+      iframe{
+        margin-left: 20px;
+      }
+    }
+    img{
+      cursor: pointer;
+    }
+    .second_{
+      .el-button{
+        width:72px;
+        height:72px;
+        border:1px dotted;
+        i{
+          font-size:20px;
+        }
+      }
     }
   }
 }
@@ -493,8 +542,20 @@ h2{
       width: 725px!important;
     }
   }
-  .selectPublic
+  .selectPublic;
+  #itemDescription{
+    position: relative;
+    top: 3px;
+    >div{
+      margin-bottom: 15px;
+    }
+    textarea{
+      width:518px!important;
+      height: 80px!important;
+    }
+  }
 }
+
 
 //我的联盟/红卡优惠设置样式---------------------------------------------------------------
 #redCard{
@@ -579,7 +640,16 @@ h2{
     .el-dialog--tiny{
       width:500px;
     }
+    .el-table_1_column_15{
+      .cell{
+        padding-left: 76%!important;
+      }
+    }
   }
+  .el-table-filter{
+    left: 850px!important;
+  }
+
 }
 
 //我的联盟/退盟管理--------------------------------------------

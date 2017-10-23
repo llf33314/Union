@@ -1,7 +1,8 @@
 <template>
   <!-- 我的优惠项目 -->
   <div>
-    <div class="preferenceItems clearfix">
+    <div class="preferenceItems clearfix" id="preferenceItems">
+      <illustration style="float:right;"></illustration>
       <p class="fl">
         <el-button type="primary" @click="dialogVisible = true">新增</el-button>
         <!-- 弹出框 新增 -->
@@ -18,22 +19,21 @@
         </el-dialog>
         <el-button type="primary" @click="submitAll" v-if="!isUnionOwner">提交审核</el-button>
         <el-button type="warning" style="padding: 10px 15px 10px 32px;">
-          <img src="../../assets/images/Videos.png" style="width: 17px;position: absolute;top: 67px;left: 9px;">
+          <img src="../../assets/images/Videos.png" style="width: 17px;position: absolute;top: 98px;left: 73px;">
           视频教程
         </el-button>
       </p>
-      <div class="fr">
-        <illustration></illustration>
-      </div>
       <div class="footer">
         <el-table :data="tableData" style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
           <el-table-column type="selection" width="55">
           </el-table-column>
-          <el-table-column prop="name" label="项目名称">
+          <el-table-column prop="name" label="项目名称" style="width: 38%">
           </el-table-column>
-          <el-table-column prop="status" label="审核状态" :filters="[{ text: '未提交', value: '未提交' }, { text: '已提交', value: '已提交' }, { text: '已通过', value: '已通过' }, { text: '未通过', value: '未通过' }]" :filter-method="filterTag" filter-placement="bottom-end">
+          <el-table-column prop="status" label="审核状态" width="150"
+                           :filters="[{ text: '未提交', value: '未提交' }, { text: '已提交', value: '已提交' }, { text: '已通过', value: '已通过' }, { text: '未通过', value: '未通过' }]"
+                           :filter-method="filterTag" filter-placement="bottom-end">
           </el-table-column>
-          <el-table-column label="操作" ref="scope">
+          <el-table-column label="操作" ref="scope" style="width: 38%">
             <template scope="scope">
               <div class="sizeAndColor">
                 <el-button size="small" @click="submit(scope)" v-if="scope.row.status === '未提交' || scope.row.status === '未通过'">
@@ -44,7 +44,7 @@
             </template>
           </el-table-column>
         </el-table>
-        <div>
+        <div v-if="tableData.length>0">
           <div class="sizeAndColor fl">
             <el-button @click="selectAll()">全选</el-button>
             <el-button @click="toggleSelection()">取消选择</el-button>

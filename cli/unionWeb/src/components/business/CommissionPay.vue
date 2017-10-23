@@ -96,9 +96,10 @@
         </template>
       </el-table-column>
     </el-table>
-    <div style="position: relative;padding: 5px 0;">
+    <div style="position: relative;padding: 5px 0;" v-if="tableData.length>0">
       <el-button @click="payAll" v-bind:disabled="!canPay" style="position: absolute;top:15px;left:0">批量支付</el-button>
-      <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll">
+      <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage"
+                     :page-size="10" layout="prev, pager, next, jumper" :total="totalAll">
       </el-pagination>
     </div>
     <!-- 弹出框 支付页面 -->

@@ -20,7 +20,7 @@
       <!-- 其他办理联盟卡信息 -->
       <el-form :label-position="labelPosition" :model="form2" v-show="visible2" :rules="rules2" ref="ruleForm2" label-position="right" label-width="120px">
         <el-form-item label="关注公众号办理:">
-          <el-switch v-model="follow_" on-text="" off-text="" v-if="form2.follow">
+          <el-switch v-model="follow_" on-text="" off-text="" v-if="form2.follow === 1">
           </el-switch>
         </el-form-item>
         <div class="selectUnion">
@@ -40,14 +40,14 @@
         </div>
         <el-form-item label="联盟卡类型:" prop="cardType">
           <el-radio-group v-model="form2.cardType">
-            <el-radio :label="2">红卡</el-radio>
-            <el-radio :label="1">黑卡</el-radio>
+            <el-radio :label="2" v-if="form2.red != undefined && form2.red">红卡</el-radio>
+            <el-radio :label="1" v-if="form2.black != undefined && form2.black">黑卡</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="联盟卡有效期:" v-if="form2.cardType === 2">
           {{ form2.cards.red.termTime }}
         </el-form-item>
-        <el-form-item label="价格:" v-if="form2.cardType === 2">
+        <el-form-item label="价格:" v-if="form2.cardType === 2 ">
           ￥{{ form2.cards.red.price | formatPrice }}
         </el-form-item>
         <el-form-item label="联盟卡有效期:" v-if="form2.cardType === 1">
@@ -153,7 +153,7 @@ export default {
       visible2: false,
       follow_: '',
       form2: {
-        follow: false,
+        follow: 0,
         cardType: '',
         red: {
           price: '',
@@ -196,40 +196,11 @@ export default {
         only: '',
         status: '',
       },
+      wxUser:false,
     }
   },
   mounted: function() {
-    $http.get(`/unionCard/wxUser/QRcode`)
-      .then(res => {
-        if (res.data.data) {
-          this.codeSrc1 = res.data.data.qrurl;
-          this.socketurl = res.data.data.socketurl;
-          this.userId1 = res.data.data.userId;
-        } else {
-          this.codeSrc1 = '';
-          this.socketurl = '';
-          this.userId1 = '';
-        }
-      })
-      .then(res => {
-        var _this = this;
-        if (!this.socket1) {
-          this.socket1 = io.connect('https://socket.deeptel.com.cn'); // 测试
-          // this.socket1 = io.connect('http://183.47.242.2:8881'); // 堡垒
-          var userId = this.userId1;
-          this.socket1.on('connect', function() {
-            let jsonObject = { userId: userId, message: "0" };
-            _this.socket1.emit('auth', jsonObject);
-          });
-        }
-        this.socket1.on('chatevent', function(data) {
-          let msg = eval('(' + data.message + ')');
-          _this.wxData = msg;
-        });
-      })
-      .catch(err => {
-        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-      });
+
   },
   watch: {
     follow_: function() {
@@ -263,18 +234,18 @@ export default {
     getVerificationCode() {
       $http.get(`/unionCard/phoneCode?phone=${this.form1.phone}`)
         .then(res => {
-          if (res.data.data) {
-            this.form1.getVerificationCode = true;
-            this.form1.countDownTime = 60;
-            let timer1 = setInterval(() => {
-              this.form1.countDownTime--;
-              if (this.form1.countDownTime === 0) {
-                clearInterval(timer1);
-                this.form1.getVerificationCode = false;
-                this.form1.countDownTime = '';
-              }
-            }, 1000)
-          }
+            if(res.data.success){
+              this.form1.getVerificationCode = true;
+              this.form1.countDownTime = 60;
+              let timer1 = setInterval(() => {
+                this.form1.countDownTime--;
+                if (this.form1.countDownTime === 0) {
+                  this.form1.getVerificationCode = false;
+                  this.form1.countDownTime = '';
+                  clearInterval(timer1);
+                }
+              }, 1000)
+            }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -291,9 +262,45 @@ export default {
                 this.form2.follow = res.data.data.follow;
                 this.form2.cards = res.data.data.cards;
                 this.visible2 = true;
+                //判断是否可以关注 然后获取二维码
+                if(this.form2.follow == 1 && !this.wxUser){
+                  this.wxUser = true;
+                  $http.get(`/unionCard/wxUser/QRcode`)
+                    .then(res => {
+                      if (res.data.data) {
+                        this.codeSrc1 = res.data.data.qrurl;
+                        this.socketurl = res.data.data.socketurl;
+                        this.userId1 = res.data.data.userId;
+                      } else {
+                        this.codeSrc1 = '';
+                        this.socketurl = '';
+                        this.userId1 = '';
+                      }
+                    })
+                    .then(res => {
+                      var _this = this;
+                      if (!this.socket1) {
+                        this.socket1 = io.connect('https://socket.deeptel.com.cn'); // 测试
+                        // this.socket1 = io.connect('http://183.47.242.2:8881'); // 堡垒
+                        var userId = this.userId1;
+                        this.socket1.on('connect', function() {
+                          let jsonObject = { userId: userId, message: "0" };
+                          _this.socket1.emit('auth', jsonObject);
+                        });
+                      }
+                      this.socket1.on('chatevent', function(data) {
+                        let msg = eval('(' + data.message + ')');
+                        console.log(msg);
+                        _this.wxData = msg;
+                      });
+                    })
+                    .catch(err => {
+                      this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+                    });
+                }
               } else {
                 this.form2.unions = '';
-                this.form2.follow = '';
+                this.form2.follow = 0;
                 this.form2.cards = '';
                 this.visible2 = false;
               }

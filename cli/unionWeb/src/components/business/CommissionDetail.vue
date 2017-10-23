@@ -32,7 +32,9 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll">
+    <el-pagination @current-change="handleCurrentChange"
+                   :current-page.sync="currentPage" :page-size="10"
+                   layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
     </el-pagination>
     <!-- 弹出框 佣金明细 -->
     <el-dialog title="佣金明细" :visible.sync="dialogTableVisible">

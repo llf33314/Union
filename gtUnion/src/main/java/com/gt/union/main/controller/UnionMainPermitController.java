@@ -15,6 +15,7 @@ import com.gt.union.common.util.PropertiesUtil;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.RedisKeyUtil;
 import com.gt.union.main.service.IUnionMainPermitService;
+import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
@@ -26,13 +27,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * <p>
  * 联盟许可，盟主服务 前端控制器
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-19 16:27:37
  */
+@Api(description = "联盟许可，盟主服务")
 @RestController
 @RequestMapping("/unionMainPermit")
 public class UnionMainPermitController {
@@ -48,7 +48,6 @@ public class UnionMainPermitController {
     private SocketService socketService;
 
 
-
     @ApiOperation(value = "获取升级套餐链接", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/feeTradeUrl", method = RequestMethod.GET)
     public String feeTradeUrl() {
@@ -56,50 +55,49 @@ public class UnionMainPermitController {
         return GTJsonResult.instanceSuccessMsg(url).toString();
     }
 
-    /**
-     * 创建联盟支付成功回调地址
-     *
-     * @param param
-     * @param only
-     */
+    @ApiOperation(value = "创建联盟支付成功回调地址")
     @RequestMapping(value = "/79B4DE7C/paymentSuccess/{only}", method = RequestMethod.POST)
-    public String payCreateUnionSuccess(@PathVariable(name = "only") String only, @RequestBody Map<String,Object> param) {
-        Map<String, Object> data = new HashMap<String, Object>();
+    public String payCreateUnionSuccess(@PathVariable(name = "only") String only, @RequestBody Map<String, Object> param) {
+        Map<String, Object> data = new HashMap<>(16);
         try {
             logger.info("创建联盟支付成功回调参数" + JSON.toJSONString(param));
-            if((CommonUtil.isNotEmpty(param.get("trade_status")) && param.get("trade_status").equals("TRADE_SUCCESS")) ||
-                    (CommonUtil.isNotEmpty(param.get("result_code")) && param.get("result_code").equals("SUCCESS") &&
-                            CommonUtil.isNotEmpty(param.get("return_code")) && param.get("return_code").equals("SUCCESS"))){
+            boolean isOK = (CommonUtil.isNotEmpty(param.get("trade_status")) && "TRADE_SUCCESS".equals(param.get("trade_status"))) ||
+                    (CommonUtil.isNotEmpty(param.get("result_code")) && "SUCCESS".equals(param.get("result_code")) &&
+                            CommonUtil.isNotEmpty(param.get("return_code")) && "SUCCESS".equals(param.get("return_code")));
+            if (isOK) {
                 String orderNo = param.get("out_trade_no").toString();
                 logger.info("创建联盟支付成功，订单orderNo------------------" + orderNo);
                 logger.info("创建联盟支付成功，only------------------" + only);
                 String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
                 String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
                 String paramData = redisCacheUtil.get(paramKey);
-                Map map = JSON.parseObject(paramData,Map.class);
-                unionMainPermitService.payCreateUnionSuccess(orderNo, only , CommonUtil.toInteger(param.get("payType")));
+                Map map = JSON.parseObject(paramData, Map.class);
+                unionMainPermitService.payCreateUnionSuccess(orderNo, only, CommonUtil.toInteger(param.get("payType")));
                 String status = redisCacheUtil.get(statusKey);
-                if (CommonUtil.isEmpty(status)) {//订单超时
+                if (CommonUtil.isEmpty(status)) {
+                    //订单超时
                     status = ConfigConstant.USER_ORDER_STATUS_004;
-                }else {
-                    status = JSON.parseObject(status,String.class);
+                } else {
+                    status = JSON.parseObject(status, String.class);
                 }
-                if (ConfigConstant.USER_ORDER_STATUS_003.equals(status)) {//订单支付成功
+                if (ConfigConstant.USER_ORDER_STATUS_003.equals(status)) {
+                    //订单支付成功
                     redisCacheUtil.remove(statusKey);
                 }
 
-                if (ConfigConstant.USER_ORDER_STATUS_005.equals(status)) {//订单支付失败
+                if (ConfigConstant.USER_ORDER_STATUS_005.equals(status)) {
+                    //订单支付失败
                     redisCacheUtil.remove(statusKey);
                 }
-                Map<String,Object> result = new HashMap<String,Object>();
-                result.put("status",status);
-                result.put("only",only);
+                Map<String, Object> result = new HashMap<>(16);
+                result.put("status", status);
+                result.put("only", only);
                 logger.info("创建联盟扫码支付成功回调----------" + JSON.toJSONString(map));
-                socketService.socketSendMessage(PropertiesUtil.getSocketKey() + CommonUtil.toInteger(map.get("payBusId")), JSON.toJSONString(result),"");
+                socketService.socketSendMessage(PropertiesUtil.getSocketKey() + CommonUtil.toInteger(map.get("payBusId")), JSON.toJSONString(result), "");
                 data.put("code", 0);
                 data.put("msg", "成功");
                 return JSON.toJSONString(data);
-            }else {
+            } else {
                 throw new BusinessException("支付失败");
             }
         } catch (BaseException e) {
@@ -118,29 +116,29 @@ public class UnionMainPermitController {
     @ApiOperation(value = "生成创建联盟支付订单二维码", produces = "application/json;charset=UTF-8")
     @SysLogAnnotation(op_function = "2", description = "生成创建联盟支付订单")
     @RequestMapping(value = "/qrCode/{id}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String createUnionQRCode(HttpServletRequest request
-            , @ApiParam(name = "id", value = "套餐列表中的id", required = true) @PathVariable("id") Integer id) {
+    public String createUnionQRCode(HttpServletRequest request,
+                                    @ApiParam(name = "id", value = "套餐列表中的id", required = true)
+                                    @PathVariable("id") Integer id) {
         try {
             BusUser user = SessionUtils.getLoginUser(request);
             if (CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != 0) {
                 throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
             }
             Map<String, Object> data = unionMainPermitService.createUnionQRCode(user, id);
-            StringBuilder sb = new StringBuilder("?");
-            sb.append("totalFee=" + data.get("totalFee"));
-            sb.append("&model=" + data.get("model"));
-            sb.append("&busId=" + data.get("busId"));
-            sb.append("&appidType=" + data.get("appidType"));
-            sb.append("&appid=" + data.get("appid"));
-            sb.append("&orderNum=" + data.get("orderNum"));
-            sb.append("&desc=" + data.get("desc"));
-            sb.append("&isreturn=" + data.get("isreturn"));
-            sb.append("&notifyUrl=" + data.get("notifyUrl"));
-            sb.append("&isSendMessage=" + data.get("isSendMessage"));
-            sb.append("&payWay=" + data.get("payWay"));
-            sb.append("&sourceType=" + data.get("sourceType"));
+            String str = "?totalFee=" + data.get("totalFee")
+                    + "&model=" + data.get("model")
+                    + "&busId=" + data.get("busId")
+                    + "&appidType=" + data.get("appidType")
+                    + "&appid=" + data.get("appid")
+                    + "&orderNum=" + data.get("orderNum")
+                    + "&desc=" + data.get("desc")
+                    + "&isreturn=" + data.get("isreturn")
+                    + "&notifyUrl=" + data.get("notifyUrl")
+                    + "&isSendMessage=" + data.get("isSendMessage")
+                    + "&payWay=" + data.get("payWay")
+                    + "&sourceType=" + data.get("sourceType");
             Map<String, Object> result = new HashMap<String, Object>();
-            result.put("url", PropertiesUtil.getWxmpUrl() + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
+            result.put("url", PropertiesUtil.getWxmpUrl() + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + str);
             result.put("only", data.get("only"));
             result.put("userId", PropertiesUtil.getSocketKey() + user.getId());
             return GTJsonResult.instanceSuccessMsg(result).toString();
@@ -158,17 +156,20 @@ public class UnionMainPermitController {
             String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
             String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
             String status = redisCacheUtil.get(statusKey);
-            if (CommonUtil.isEmpty(status)) {//订单超时
+            if (CommonUtil.isEmpty(status)) {
+                //订单超时
                 status = ConfigConstant.USER_ORDER_STATUS_004;
-            }else {
-                status = JSON.parseObject(status,String.class);
+            } else {
+                status = JSON.parseObject(status, String.class);
             }
-            if (ConfigConstant.USER_ORDER_STATUS_003.equals(status)) {//订单支付成功
+            if (ConfigConstant.USER_ORDER_STATUS_003.equals(status)) {
+                //订单支付成功
                 redisCacheUtil.remove(statusKey);
                 redisCacheUtil.remove(paramKey);
             }
 
-            if (ConfigConstant.USER_ORDER_STATUS_005.equals(status)) {//订单支付失败
+            if (ConfigConstant.USER_ORDER_STATUS_005.equals(status)) {
+                //订单支付失败
                 redisCacheUtil.remove(statusKey);
                 redisCacheUtil.remove(paramKey);
             }

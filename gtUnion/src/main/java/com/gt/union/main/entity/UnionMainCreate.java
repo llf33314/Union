@@ -10,12 +10,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * <p>
  * 创建联盟
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-19 16:27:37
  */
 @TableName("t_union_main_create")
 public class UnionMainCreate extends Model<UnionMainCreate> {
@@ -25,85 +23,85 @@ public class UnionMainCreate extends Model<UnionMainCreate> {
     /**
      * 主键
      */
-	@TableId(value="id", type= IdType.AUTO)
-	private Integer id;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
     /**
      * 创建时间
      */
-	private Date createtime;
+    private Date createtime;
     /**
      * 删除状态（0：未删除 1：删除）
      */
-	@TableField("del_status")
-	private Integer delStatus;
+    @TableField("del_status")
+    private Integer delStatus;
     /**
      * 商家id
      */
-	@TableField("bus_id")
-	private Integer busId;
+    @TableField("bus_id")
+    private Integer busId;
     /**
      * 联盟id
      */
-	@TableField("union_id")
-	private Integer unionId;
+    @TableField("union_id")
+    private Integer unionId;
     /**
      * 联盟许可id
      */
-	@TableField("permit_id")
-	private Integer permitId;
+    @TableField("permit_id")
+    private Integer permitId;
 
 
-	public Integer getId() {
-		return id;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public Date getCreatetime() {
-		return createtime;
-	}
+    public Date getCreatetime() {
+        return createtime;
+    }
 
-	public void setCreatetime(Date createtime) {
-		this.createtime = createtime;
-	}
+    public void setCreatetime(Date createtime) {
+        this.createtime = createtime;
+    }
 
-	public Integer getDelStatus() {
-		return delStatus;
-	}
+    public Integer getDelStatus() {
+        return delStatus;
+    }
 
-	public void setDelStatus(Integer delStatus) {
-		this.delStatus = delStatus;
-	}
+    public void setDelStatus(Integer delStatus) {
+        this.delStatus = delStatus;
+    }
 
-	public Integer getBusId() {
-		return busId;
-	}
+    public Integer getBusId() {
+        return busId;
+    }
 
-	public void setBusId(Integer busId) {
-		this.busId = busId;
-	}
+    public void setBusId(Integer busId) {
+        this.busId = busId;
+    }
 
-	public Integer getUnionId() {
-		return unionId;
-	}
+    public Integer getUnionId() {
+        return unionId;
+    }
 
-	public void setUnionId(Integer unionId) {
-		this.unionId = unionId;
-	}
+    public void setUnionId(Integer unionId) {
+        this.unionId = unionId;
+    }
 
-	public Integer getPermitId() {
-		return permitId;
-	}
+    public Integer getPermitId() {
+        return permitId;
+    }
 
-	public void setPermitId(Integer permitId) {
-		this.permitId = permitId;
-	}
+    public void setPermitId(Integer permitId) {
+        this.permitId = permitId;
+    }
 
-	@Override
-	protected Serializable pkVal() {
-		return this.id;
-	}
+    @Override
+    protected Serializable pkVal() {
+        return this.id;
+    }
 
 }

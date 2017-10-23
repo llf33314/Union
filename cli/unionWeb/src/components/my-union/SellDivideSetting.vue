@@ -8,7 +8,7 @@
       <div class="model_setting">
         <div>
           <span>盟主比例:</span>
-          <el-input v-model="input" placeholder="请输入比例" @change="onChange" style="width:26%"></el-input>
+          <el-input v-model="input" placeholder="请输入比例" @change="onChange"   style="width:26%"></el-input>
           <span>&nbsp;%&nbsp;</span>
           <el-button type="primary" @click="onAverage()">平均分配</el-button>
         </div>
@@ -39,7 +39,9 @@
       <el-table-column prop="cardDividePercent" label="售卡分成比例">
       </el-table-column>
     </el-table>
-    <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll">
+    <el-pagination @current-change="handleCurrentChange"
+                   :current-page.sync="currentPage" :page-size="10"
+                   layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
     </el-pagination>
   </div>
 </template>

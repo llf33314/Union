@@ -7,12 +7,12 @@ public interface BrokerageConstant {
     /**
      * 收支类型：收入
      */
-    public static final int TYPE_INCOME = 1;
+    int TYPE_INCOME = 1;
 
     /**
      * 收支类型：支出
      */
-    public static final int TYPE_EXPENSE = 2;
+    int TYPE_EXPENSE = 2;
 
     /**
      * 佣金支付状态：佣金未支付
@@ -42,12 +42,11 @@ public interface BrokerageConstant {
     /**
      * 来源类型：联盟卡
      */
-    public static final int SOURCE_TYPE_CARD = 1;
+    int SOURCE_TYPE_CARD = 1;
 
     /**
      * 来源类型：商机
      */
-    public static final int SOURCE_TYPE_OPPORTUNITY = 2;
-
-
+    int SOURCE_TYPE_OPPORTUNITY = 2;
+    
 }

@@ -37,7 +37,7 @@
         </div>
         <el-form-item label="推荐商家：" prop="toMemberId">
           <el-select v-model="ruleForm1.toMemberId" placeholder="请选择推荐的商家">
-            <el-option v-for="item in options2" :key="item.value" :label="item.label" :value="item.value">
+            <el-option v-for="item in options2" :key="item.value" :label="item.label" :value="item.value" v-if="item.value != this.memberId">
             </el-option>
           </el-select>
         </el-form-item>
@@ -152,8 +152,8 @@ export default {
                     if (res.data.data) {
                       this.options2 = res.data.data;
                       res.data.data.forEach((v, i) => {
-                        this.options2[i].value = v.memberId;
-                        this.options2[i].label = v.enterpriseName;
+                          this.options2[i].value = v.memberId;
+                          this.options2[i].label = v.enterpriseName;
                       });
                     } else {
                       this.options2 = [];
@@ -184,8 +184,11 @@ export default {
           data = this.ruleForm1;
           $http.post(url, data)
             .then(res => {
-              eventBus.$emit('newRecommend');
-              this.show();
+                if(res.data.success){
+                  this.$message({ showClose: true, message: '推荐成功', type: 'success', duration: 5000 });
+                  eventBus.$emit('newRecommend');
+                  this.show();
+                }
             })
             .catch(err => {
               this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
