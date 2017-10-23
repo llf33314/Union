@@ -7,7 +7,6 @@ import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GTJsonResult;
-import com.gt.union.preferential.constant.PreferentialConstant;
 import com.gt.union.preferential.service.IUnionPreferentialProjectService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.constraints.NotNull;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -62,21 +60,7 @@ public class UnionPreferentialProjectController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-        Page pageData = this.unionPreferentialProjectService.pageMapByBusIdAndMemberIdAndItemStatus(page, busId, memberId, status);
-        Integer unCommittedCount = this.unionPreferentialProjectService.countByBusInAndMemberIdAndItemStatus(busId
-                , memberId, PreferentialConstant.STATUS_UNCOMMITTED);
-        Integer verifyingCount = this.unionPreferentialProjectService.countByBusInAndMemberIdAndItemStatus(busId
-                , memberId, PreferentialConstant.STATUS_VERIFYING);
-        Integer passCount = this.unionPreferentialProjectService.countByBusInAndMemberIdAndItemStatus(busId
-                , memberId, PreferentialConstant.STATUS_PASS);
-        Integer failCount = this.unionPreferentialProjectService.countByBusInAndMemberIdAndItemStatus(busId
-                , memberId, PreferentialConstant.STATUS_FAIL);
-        Map<String, Object> result = new HashMap<>();
-        result.put("pageData", pageData);
-        result.put("unCommittedCount", unCommittedCount);
-        result.put("verifyingCount", verifyingCount);
-        result.put("passCount", passCount);
-        result.put("failCount", failCount);
+        Page result = this.unionPreferentialProjectService.pageMapByBusIdAndMemberIdAndItemStatus(page, busId, memberId, status);
         return GTJsonResult.instanceSuccessMsg(result).toString();
     }
 
