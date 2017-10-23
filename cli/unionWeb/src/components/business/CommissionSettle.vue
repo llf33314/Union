@@ -15,9 +15,9 @@
   </div>
 </template>
 <script>
-import CommissionIncome from './CommissionIncome'
-import CommissionPay from './CommissionPay'
-import CommissionDetail from './CommissionDetail'
+import CommissionIncome from './CommissionIncome';
+import CommissionPay from './CommissionPay';
+import CommissionDetail from './CommissionDetail';
 export default {
   name: 'commission-settle',
   components: {
@@ -27,13 +27,11 @@ export default {
   },
   data() {
     return {
-      activeName: 'first',
-    }
+      activeName: 'first'
+    };
   },
-  methods: {
-
-  }
-}
+  methods: {}
+};
 </script>
 <style lang='less' rel="stylesheet/less" >
 .model_02 {

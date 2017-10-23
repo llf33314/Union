@@ -52,24 +52,24 @@
 </template>
 
 <script>
-import $http from "@/utils/http.js";
+import $http from '@/utils/http.js';
 export default {
-  name: "percent",
+  name: 'percent',
   data() {
     return {
       dialogVisible: false,
       formInline1: {
-        region: "",
-        state: ""
+        region: '',
+        state: ''
       },
       value: 0,
       options: [],
       tableData: [],
       currentPage: 1,
-      toEnterpriseName: "",
-      ratioFromMe: "",
-      ratioToMe: "",
-      toMemberId: "",
+      toEnterpriseName: '',
+      ratioFromMe: '',
+      ratioToMe: '',
+      toMemberId: '',
       totalAll: 0
     };
   },
@@ -90,8 +90,8 @@ export default {
             this.tableData = res.data.data.records;
             this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
-              v.ratioFromMe = (v.ratioFromMe || 0) + "%";
-              v.ratioToMe = (v.ratioToMe || 0) + "%";
+              v.ratioFromMe = (v.ratioFromMe || 0) + '%';
+              v.ratioToMe = (v.ratioToMe || 0) + '%';
             });
           } else {
             this.tableData = [];
@@ -102,7 +102,7 @@ export default {
           this.$message({
             showClose: true,
             message: err.toString(),
-            type: "error",
+            type: 'error',
             duration: 5000
           });
         });
@@ -135,8 +135,8 @@ export default {
                     this.tableData = res.data.data.records;
                     this.totalAll = res.data.data.total;
                     this.tableData.forEach((v, i) => {
-                      v.ratioFromMe = (v.ratioFromMe || 0) + "%";
-                      v.ratioToMe = (v.ratioToMe || 0) + "%";
+                      v.ratioFromMe = (v.ratioFromMe || 0) + '%';
+                      v.ratioToMe = (v.ratioToMe || 0) + '%';
                     });
                   } else {
                     this.tableData = [];
@@ -147,7 +147,7 @@ export default {
                   this.$message({
                     showClose: true,
                     message: err.toString(),
-                    type: "error",
+                    type: 'error',
                     duration: 5000
                   });
                 });
@@ -159,7 +159,7 @@ export default {
             this.$message({
               showClose: true,
               message: err.toString(),
-              type: "error",
+              type: 'error',
               duration: 5000
             });
           });
@@ -192,8 +192,8 @@ export default {
                   this.tableData = res.data.data.records;
                   this.totalAll = res.data.data.total;
                   this.tableData.forEach((v, i) => {
-                    v.ratioFromMe = (v.ratioFromMe || 0) + "%";
-                    v.ratioToMe = (v.ratioToMe || 0) + "%";
+                    v.ratioFromMe = (v.ratioFromMe || 0) + '%';
+                    v.ratioToMe = (v.ratioToMe || 0) + '%';
                   });
                 } else {
                   this.tableData = [];
@@ -207,7 +207,7 @@ export default {
                 this.$message({
                   showClose: true,
                   message: err.toString(),
-                  type: "error",
+                  type: 'error',
                   duration: 5000
                 });
               });
@@ -217,7 +217,7 @@ export default {
           this.$message({
             showClose: true,
             message: err.toString(),
-            type: "error",
+            type: 'error',
             duration: 5000
           });
         });
@@ -233,8 +233,8 @@ export default {
             this.tableData = res.data.data.records;
             this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
-              v.ratioFromMe = (v.ratioFromMe || 0) + "%";
-              v.ratioToMe = (v.ratioToMe || 0) + "%";
+              v.ratioFromMe = (v.ratioFromMe || 0) + '%';
+              v.ratioToMe = (v.ratioToMe || 0) + '%';
             });
           } else {
             this.tableData = [];
@@ -245,14 +245,14 @@ export default {
           this.$message({
             showClose: true,
             message: err.toString(),
-            type: "error",
+            type: 'error',
             duration: 5000
           });
         });
     },
     // 关闭弹窗重置数据
     resetData() {
-      this.ratioFromMe = "";
+      this.ratioFromMe = '';
     }
   }
 };

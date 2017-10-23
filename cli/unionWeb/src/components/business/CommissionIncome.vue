@@ -32,7 +32,7 @@
       </el-col>
       <el-col style="width:200px;">
         <div class="grid-content1 bg-purple">
-          <el-input placeholder="请输入关键字" icon="search" v-model="input" :on-icon-click="search" class="input-search2 fl">
+          <el-input placeholder="请输入关键字"  @keyup.enter.native="search" icon="search" v-model="input" :on-icon-click="search" class="input-search2 fl">
           </el-input>
         </div>
       </el-col>
@@ -71,7 +71,8 @@
       </el-table-column>
       <el-table-column prop="opportunityType" label="交易类型" min-width="100px">
       </el-table-column>
-      <el-table-column prop="isClose" label="佣金结算状态" min-width="140px" :filters="[{ text: '未结算', value: '未结算' }, { text: '已结算', value: '已结算' }]" :filter-method="filterTag" filter-placement="bottom-end">
+      <el-table-column prop="isClose" label="佣金结算状态" min-width="140px" :filters="[{ text: '未结算', value: '未结算' }, { text: '已结算', value: '已结算' }]"
+                       :filter-method="filterTag" filter-placement="bottom-end">
         <template scope="scope">
           <el-tag :type="scope.row.isClose === '未结算' ? 'danger' : 'success'">{{scope.row.isClose}}</el-tag>
         </template>
@@ -94,29 +95,29 @@
 </template>
 
 <script>
-import $http from "@/utils/http.js";
-import $todate from "@/utils/todate.js";
+import $http from '@/utils/http.js';
+import $todate from '@/utils/todate.js';
 export default {
-  name: "commission-income",
+  name: 'commission-income',
   data() {
     return {
-      unionId: "",
-      memberId: "",
+      unionId: '',
+      memberId: '',
       options1: [],
-      toMemberId: "",
+      toMemberId: '',
       options2: [],
-      value: "",
+      value: '',
       options3: [
         {
-          value: "clientName",
-          label: "顾客姓名"
+          value: 'clientName',
+          label: '顾客姓名'
         },
         {
-          value: "clientPhone",
-          label: "顾客电话"
+          value: 'clientPhone',
+          label: '顾客电话'
         }
       ],
-      input: "",
+      input: '',
       tableData: [],
       currentPage: 1,
       totalAll: 0
@@ -132,7 +133,7 @@ export default {
       this.init();
     },
     unionId: function() {
-      this.toMemberId = "";
+      this.toMemberId = '';
       this.options2 = [];
       // 通过对应的unionId获取对应的memberId
       $http
@@ -159,7 +160,7 @@ export default {
                     this.$message({
                       showClose: true,
                       message: err.toString(),
-                      type: "error",
+                      type: 'error',
                       duration: 5000
                     });
                   });
@@ -172,7 +173,7 @@ export default {
           this.$message({
             showClose: true,
             message: err.toString(),
-            type: "error",
+            type: 'error',
             duration: 5000
           });
         });
@@ -205,7 +206,7 @@ export default {
             this.$message({
               showClose: true,
               message: err.toString(),
-              type: "error",
+              type: 'error',
               duration: 5000
             });
           });
@@ -219,18 +220,18 @@ export default {
                 v.lastModifyTime = $todate.todate(new Date(v.lastModifyTime));
                 switch (v.isClose) {
                   case 0:
-                    v.isClose = "未结算";
+                    v.isClose = '未结算';
                     break;
                   case 1:
-                    v.isClose = "已结算";
+                    v.isClose = '已结算';
                     break;
                 }
                 switch (v.opportunityType) {
                   case 1:
-                    v.opportunityType = "线上";
+                    v.opportunityType = '线上';
                     break;
                   case 2:
-                    v.opportunityType = "线下";
+                    v.opportunityType = '线下';
                     break;
                 }
               });
@@ -243,7 +244,7 @@ export default {
             this.$message({
               showClose: true,
               message: err.toString(),
-              type: "error",
+              type: 'error',
               duration: 5000
             });
           });
@@ -253,10 +254,9 @@ export default {
     search() {
       $http
         .get(
-          `/unionOpportunity/income?current=1&unionId=${this
-            .unionId}&toMemberId=${this.toMemberId}&` +
+          `/unionOpportunity/income?current=1&unionId=${this.unionId}&toMemberId=${this.toMemberId}&` +
             this.value +
-            "=" +
+            '=' +
             this.input
         )
         .then(res => {
@@ -266,18 +266,18 @@ export default {
               v.lastModifyTime = $todate.todate(new Date(v.lastModifyTime));
               switch (v.isClose) {
                 case 0:
-                  v.isClose = "未结算";
+                  v.isClose = '未结算';
                   break;
                 case 1:
-                  v.isClose = "已结算";
+                  v.isClose = '已结算';
                   break;
               }
               switch (v.opportunityType) {
                 case 1:
-                  v.opportunityType = "线上";
+                  v.opportunityType = '线上';
                   break;
                 case 2:
-                  v.opportunityType = "线下";
+                  v.opportunityType = '线下';
                   break;
               }
             });
@@ -289,7 +289,7 @@ export default {
           this.$message({
             showClose: true,
             message: err.toString(),
-            type: "error",
+            type: 'error',
             duration: 5000
           });
         });
@@ -298,10 +298,9 @@ export default {
     handleCurrentChange(val) {
       $http
         .get(
-          `/unionOpportunity/income?current=${val}&unionId=${this
-            .unionId}&toMemberId=${this.toMemberId}&` +
+          `/unionOpportunity/income?current=${val}&unionId=${this.unionId}&toMemberId=${this.toMemberId}&` +
             this.value +
-            "=" +
+            '=' +
             this.input
         )
         .then(res => {
@@ -311,18 +310,18 @@ export default {
               v.lastModifyTime = $todate.todate(new Date(v.lastModifyTime));
               switch (v.isClose) {
                 case 0:
-                  v.isClose = "未结算";
+                  v.isClose = '未结算';
                   break;
                 case 1:
-                  v.isClose = "已结算";
+                  v.isClose = '已结算';
                   break;
               }
               switch (v.opportunityType) {
                 case 1:
-                  v.opportunityType = "线上";
+                  v.opportunityType = '线上';
                   break;
                 case 2:
-                  v.opportunityType = "线下";
+                  v.opportunityType = '线下';
                   break;
               }
             });
@@ -334,7 +333,7 @@ export default {
           this.$message({
             showClose: true,
             message: err.toString(),
-            type: "error",
+            type: 'error',
             duration: 5000
           });
         });

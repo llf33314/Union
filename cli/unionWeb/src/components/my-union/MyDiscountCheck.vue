@@ -2,7 +2,7 @@
   <!-- 优惠项目审核 -->
   <div class="model_projects">
     <el-tabs v-model="activeName">
-      <el-tab-pane :label="'未审核（'+tableData2.length+'）'" name="first">
+      <el-tab-pane :label="'未审核（'+tableData2.length+'）'" style="color: red" name="first">
         <div>
           <el-table :data="tableData2">
             <el-table-column prop="enterpriseName" label="盟员名称">
@@ -123,7 +123,7 @@
             </el-table-column>
           </el-table>
           <div class="footer">
-            <el-pagination @current-change="handleCurrentChange4" :current-page.sync="currentPage4" 
+            <el-pagination @current-change="handleCurrentChange4" :current-page.sync="currentPage4"
                            :page-size="10" layout="prev, pager, next, jumper" :total="totalAll4" v-if="tableData4.length>0">
             </el-pagination>
           </div>

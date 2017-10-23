@@ -22,7 +22,7 @@
       </el-col>
       <el-col style="width:200px;">
         <div class="grid-content1 bg-purple">
-          <el-input placeholder="请输入关键字" icon="search" v-model="input" :on-icon-click="search" class="input-search2 fl">
+          <el-input placeholder="请输入关键字" icon="search" v-model="input" @keyup.enter.native="search" :on-icon-click="search" class="input-search2 fl">
           </el-input>
         </div>
       </el-col>
@@ -39,38 +39,36 @@
       </el-table-column>
       <el-table-column prop="unionName" label="所属联盟">
       </el-table-column>
-      <el-table-column prop="isAccept" label="状态" :filters="[{ text: '未处理', value: '未处理' }, { text: '已完成', value: '已完成' }, { text: '已拒绝', value: '已拒绝' }]"
-                       :filter-method="filterTag" filter-placement="bottom-end" width="150">
+      <el-table-column prop="isAccept" label="状态" :filters="[{ text: '未处理', value: '未处理' }, { text: '已完成', value: '已完成' }, { text: '已拒绝', value: '已拒绝' }]" :filter-method="filterTag" filter-placement="bottom-end" width="150">
         <template scope="scope">
           <el-tag :type="scope.row.isAccept === '未处理' ? 'warning' : (scope.row.isAccept === '已完成' ? 'success' : 'danger')">{{scope.row.isAccept}}</el-tag>
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage"
-                   :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
+    <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
     </el-pagination>
   </div>
 </template>
 <script>
-import $http from "@/utils/http.js";
+import $http from '@/utils/http.js';
 export default {
-  name: "recommend-record",
+  name: 'recommend-record',
   data() {
     return {
-      unionId: "",
+      unionId: '',
       options1: [],
-      value: "",
+      value: '',
       options2: [
         {
-          value: "clientName",
-          label: "顾客姓名"
+          value: 'clientName',
+          label: '顾客姓名'
         },
         {
-          value: "clientPhone",
-          label: "顾客电话"
+          value: 'clientPhone',
+          label: '顾客电话'
         }
       ],
-      input: "",
+      input: '',
       tableData: [],
       currentPage: 1,
       totalAll: 0
@@ -84,7 +82,7 @@ export default {
   watch: {
     initUnionId: function() {
       this.init();
-    },
+    }
   },
   mounted: function() {
     this.init();
@@ -110,7 +108,7 @@ export default {
             this.$message({
               showClose: true,
               message: err.toString(),
-              type: "error",
+              type: 'error',
               duration: 5000
             });
           });
@@ -124,13 +122,13 @@ export default {
               this.tableData.forEach((v, i) => {
                 switch (v.isAccept) {
                   case 1:
-                    v.isAccept = "未处理";
+                    v.isAccept = '未处理';
                     break;
                   case 2:
-                    v.isAccept = "已完成";
+                    v.isAccept = '已完成';
                     break;
                   case 3:
-                    v.isAccept = "已拒绝";
+                    v.isAccept = '已拒绝';
                 }
               });
             } else {
@@ -142,13 +140,13 @@ export default {
             this.$message({
               showClose: true,
               message: err.toString(),
-              type: "error",
+              type: 'error',
               duration: 5000
             });
           });
       }
       // 监听是否有新的推荐
-      eventBus.$on("newRecommend", () => {
+      eventBus.$on('newRecommend', () => {
         $http
           .get(`/unionOpportunity/fromMe?current=1`)
           .then(res => {
@@ -158,13 +156,13 @@ export default {
               this.tableData.forEach((v, i) => {
                 switch (v.isAccept) {
                   case 1:
-                    v.isAccept = "未处理";
+                    v.isAccept = '未处理';
                     break;
                   case 2:
-                    v.isAccept = "已完成";
+                    v.isAccept = '已完成';
                     break;
                   case 3:
-                    v.isAccept = "已拒绝";
+                    v.isAccept = '已拒绝';
                 }
               });
             } else {
@@ -176,7 +174,7 @@ export default {
             this.$message({
               showClose: true,
               message: err.toString(),
-              type: "error",
+              type: 'error',
               duration: 5000
             });
           });
@@ -188,7 +186,7 @@ export default {
         .get(
           `/unionOpportunity/fromMe?current=1&unionId=${this.unionId}&` +
             this.value +
-            "=" +
+            '=' +
             this.input
         )
         .then(res => {
@@ -198,13 +196,13 @@ export default {
             this.tableData.forEach((v, i) => {
               switch (v.isAccept) {
                 case 1:
-                  v.isAccept = "未处理";
+                  v.isAccept = '未处理';
                   break;
                 case 2:
-                  v.isAccept = "已完成";
+                  v.isAccept = '已完成';
                   break;
                 case 3:
-                  v.isAccept = "已拒绝";
+                  v.isAccept = '已拒绝';
               }
             });
           } else {
@@ -216,7 +214,7 @@ export default {
           this.$message({
             showClose: true,
             message: err.toString(),
-            type: "error",
+            type: 'error',
             duration: 5000
           });
         });
@@ -227,7 +225,7 @@ export default {
         .get(
           `/unionOpportunity/fromMe?current=${val}&unionId=${this.unionId}&` +
             this.value +
-            "=" +
+            '=' +
             this.input
         )
         .then(res => {
@@ -237,13 +235,13 @@ export default {
             this.tableData.forEach((v, i) => {
               switch (v.isAccept) {
                 case 1:
-                  v.isAccept = "未处理";
+                  v.isAccept = '未处理';
                   break;
                 case 2:
-                  v.isAccept = "已完成";
+                  v.isAccept = '已完成';
                   break;
                 case 3:
-                  v.isAccept = "已拒绝";
+                  v.isAccept = '已拒绝';
               }
             });
           } else {
@@ -255,7 +253,7 @@ export default {
           this.$message({
             showClose: true,
             message: err.toString(),
-            type: "error",
+            type: 'error',
             duration: 5000
           });
         });

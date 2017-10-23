@@ -181,8 +181,7 @@ export default {
     init() {
       if (this.initUnionId) {
         // 获取联盟列表
-        $http
-          .get(`/unionMember/listMap`)
+        $http.get(`/unionMember/listMap`)
           .then(res => {
             if (res.data.data && res.data.data.length > 0) {
               this.options1 = res.data.data;

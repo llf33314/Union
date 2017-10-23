@@ -23,7 +23,7 @@
       <el-col :span="4">
         <div class="grid-content1 bg-purple">
           <el-input placeholder="请输入关键字" icon="search" v-model="input"
-                    :on-icon-click="handleIconClick" class="input-search2 fl" @keyup.enter.native="show1($event)">
+                    :on-icon-click="handleIconClick" class="input-search2 fl" @keyup.enter.native="handleIconClick">
           </el-input>
         </div>
       </el-col>
@@ -139,11 +139,6 @@ export default {
       });
   },
   methods: {
-    show1:function(ev){
-      if(ev.keyCode == 13){
-        this.handleIconClick(ev);
-      }
-    },
     // 带条件搜索
     handleIconClick(ev) {
       let beginTime, endTime;

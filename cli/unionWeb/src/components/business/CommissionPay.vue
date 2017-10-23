@@ -33,7 +33,7 @@
       </el-col>
       <el-col style="width:200px;">
         <div class="grid-content1 bg-purple">
-          <el-input placeholder="请输入关键字" icon="search" v-model="input" :on-icon-click="search" class="input-search2 fl">
+          <el-input placeholder="请输入关键字" @keyup.enter.native="search" icon="search" v-model="input" :on-icon-click="search" class="input-search2 fl">
           </el-input>
         </div>
       </el-col>
@@ -121,43 +121,43 @@
 </template>
 
 <script>
-import $http from "@/utils/http.js";
-import $todate from "@/utils/todate.js";
+import $http from '@/utils/http.js';
+import $todate from '@/utils/todate.js';
 export default {
-  name: "commission-income",
+  name: 'commission-income',
   data() {
     return {
-      unionId: "",
-      memberId: "",
+      unionId: '',
+      memberId: '',
       options1: [],
-      fromMemberId: "",
+      fromMemberId: '',
       options2: [],
-      value: "",
+      value: '',
       options3: [
         {
-          value: "clientName",
-          label: "顾客姓名"
+          value: 'clientName',
+          label: '顾客姓名'
         },
         {
-          value: "clientPhone",
-          label: "顾客电话"
+          value: 'clientPhone',
+          label: '顾客电话'
         }
       ],
-      input: "",
+      input: '',
       tableData: [],
       currentPage: 1,
       brokeragePrice: 0,
       dialogVisible: false,
-      opportunityId: "",
-      imgSrc: "",
+      opportunityId: '',
+      imgSrc: '',
       canPay: false,
       totalAll: 0,
-      only: "",
-      userId: "",
-      socket: "",
+      only: '',
+      userId: '',
+      socket: '',
       socketFlag: {
-        only: "",
-        status: ""
+        only: '',
+        status: ''
       }
     };
   },
@@ -171,7 +171,7 @@ export default {
       this.init();
     },
     unionId: function() {
-      this.fromMemberId = "";
+      this.fromMemberId = '';
       this.options2 = [];
       // 通过对应的unionId获取对应的memberId
       $http
@@ -198,7 +198,7 @@ export default {
                     this.$message({
                       showClose: true,
                       message: err.toString(),
-                      type: "error",
+                      type: 'error',
                       duration: 5000
                     });
                   });
@@ -211,7 +211,7 @@ export default {
           this.$message({
             showClose: true,
             message: err.toString(),
-            type: "error",
+            type: 'error',
             duration: 5000
           });
         });
@@ -244,7 +244,7 @@ export default {
             this.$message({
               showClose: true,
               message: err.toString(),
-              type: "error",
+              type: 'error',
               duration: 5000
             });
           });
@@ -258,18 +258,18 @@ export default {
                 v.lastModifyTime = $todate.todate(new Date(v.lastModifyTime));
                 switch (v.isClose) {
                   case 0:
-                    v.isClose = "未结算";
+                    v.isClose = '未结算';
                     break;
                   case 1:
-                    v.isClose = "已结算";
+                    v.isClose = '已结算';
                     break;
                 }
                 switch (v.opportunityType) {
                   case 1:
-                    v.opportunityType = "线上";
+                    v.opportunityType = '线上';
                     break;
                   case 2:
-                    v.opportunityType = "线下";
+                    v.opportunityType = '线下';
                     break;
                 }
               });
@@ -282,7 +282,7 @@ export default {
             this.$message({
               showClose: true,
               message: err.toString(),
-              type: "error",
+              type: 'error',
               duration: 5000
             });
           });
@@ -295,7 +295,7 @@ export default {
           `/unionOpportunity/expense?current=1&unionId=${this
             .unionId}&fromMemberId=${this.fromMemberId}&` +
             this.value +
-            "=" +
+            '=' +
             this.input
         )
         .then(res => {
@@ -306,18 +306,18 @@ export default {
               v.lastModifyTime = $todate.todate(new Date(v.lastModifyTime));
               switch (v.isClose) {
                 case 0:
-                  v.isClose = "未结算";
+                  v.isClose = '未结算';
                   break;
                 case 1:
-                  v.isClose = "已结算";
+                  v.isClose = '已结算';
                   break;
               }
               switch (v.opportunityType) {
                 case 1:
-                  v.opportunityType = "线上";
+                  v.opportunityType = '线上';
                   break;
                 case 2:
-                  v.opportunityType = "线下";
+                  v.opportunityType = '线下';
                   break;
               }
             });
@@ -330,7 +330,7 @@ export default {
           this.$message({
             showClose: true,
             message: err.toString(),
-            type: "error",
+            type: 'error',
             duration: 5000
           });
         });
@@ -342,7 +342,7 @@ export default {
           `/unionOpportunity/expense?current=${val}&unionId=${this
             .unionId}&fromMemberId=${this.fromMemberId}&` +
             this.value +
-            "=" +
+            '=' +
             this.input
         )
         .then(res => {
@@ -353,18 +353,18 @@ export default {
               v.lastModifyTime = $todate.todate(new Date(v.lastModifyTime));
               switch (v.isClose) {
                 case 0:
-                  v.isClose = "未结算";
+                  v.isClose = '未结算';
                   break;
                 case 1:
-                  v.isClose = "已结算";
+                  v.isClose = '已结算';
                   break;
               }
               switch (v.opportunityType) {
                 case 1:
-                  v.opportunityType = "线上";
+                  v.opportunityType = '线上';
                   break;
                 case 2:
-                  v.opportunityType = "线下";
+                  v.opportunityType = '线下';
                   break;
               }
             });
@@ -377,7 +377,7 @@ export default {
           this.$message({
             showClose: true,
             message: err.toString(),
-            type: "error",
+            type: 'error',
             duration: 5000
           });
         });
@@ -395,24 +395,24 @@ export default {
             this.only = res.data.data.only;
             this.userId = res.data.data.userId;
           } else {
-            this.imgSrc = "";
-            this.only = "";
-            this.userId = "";
+            this.imgSrc = '';
+            this.only = '';
+            this.userId = '';
           }
         })
         .then(res => {
           var _this = this;
           if (!this.socket) {
-            this.socket = io.connect("https://socket.deeptel.com.cn"); // 测试
+            this.socket = io.connect('https://socket.deeptel.com.cn'); // 测试
             // this.socket = io.connect('http://183.47.242.2:8881'); // 堡垒
             var userId = this.userId;
-            this.socket.on("connect", function() {
-              let jsonObject = { userId: userId, message: "0" };
-              _this.socket.emit("auth", jsonObject);
+            this.socket.on('connect', function() {
+              let jsonObject = { userId: userId, message: '0' };
+              _this.socket.emit('auth', jsonObject);
             });
           }
-          this.socket.on("chatevent", function(data) {
-            let msg = eval("(" + data.message + ")");
+          this.socket.on('chatevent', function(data) {
+            let msg = eval('(' + data.message + ')');
             if (
               !(
                 _this.socketFlag.only == msg.only &&
@@ -420,28 +420,28 @@ export default {
               )
             ) {
               if (_this.only == msg.only) {
-                if (msg.status == "003") {
+                if (msg.status == '003') {
                   _this.$message({
                     showClose: true,
-                    message: "支付成功",
-                    type: "success",
+                    message: '支付成功',
+                    type: 'success',
                     duration: 5000
                   });
                   _this.visible3 = false;
                   _this.visible4 = true;
                   _this.search();
-                } else if (msg.status == "004") {
+                } else if (msg.status == '004') {
                   _this.$message({
                     showClose: true,
-                    message: "请求超时",
-                    type: "warning",
+                    message: '请求超时',
+                    type: 'warning',
                     duration: 5000
                   });
-                } else if (msg.status == "005") {
+                } else if (msg.status == '005') {
                   _this.$message({
                     showClose: true,
-                    message: "支付失败",
-                    type: "warning",
+                    message: '支付失败',
+                    type: 'warning',
                     duration: 5000
                   });
                 }
@@ -455,18 +455,18 @@ export default {
           this.$message({
             showClose: true,
             message: err.toString(),
-            type: "error",
+            type: 'error',
             duration: 5000
           });
         });
     },
     // 批量支付
     payAll() {
-      let ids = "";
+      let ids = '';
       this.brokeragePrice = 0;
       this.multipleSelection.forEach((v, i) => {
         this.brokeragePrice += Number(v.brokeragePrice);
-        ids += v.opportunityId + "%2C";
+        ids += v.opportunityId + '%2C';
       });
       this.dialogVisible = true;
       $http
@@ -477,24 +477,24 @@ export default {
             this.only = res.data.data.only;
             this.userId = res.data.data.userId;
           } else {
-            this.imgSrc = "";
-            this.only = "";
-            this.userId = "";
+            this.imgSrc = '';
+            this.only = '';
+            this.userId = '';
           }
         })
         .then(res => {
           var _this = this;
           if (!this.socket) {
-            this.socket = io.connect("https://socket.deeptel.com.cn"); // 测试
+            this.socket = io.connect('https://socket.deeptel.com.cn'); // 测试
             // this.socket = io.connect('http://183.47.242.2:8881'); // 堡垒
             var userId = this.userId;
-            this.socket.on("connect", function() {
-              let jsonObject = { userId: userId, message: "0" };
-              _this.socket.emit("auth", jsonObject);
+            this.socket.on('connect', function() {
+              let jsonObject = { userId: userId, message: '0' };
+              _this.socket.emit('auth', jsonObject);
             });
           }
-          this.socket.on("chatevent", function(data) {
-            let msg = eval("(" + data.message + ")");
+          this.socket.on('chatevent', function(data) {
+            let msg = eval('(' + data.message + ')');
             if (
               !(
                 _this.socketFlag.only == msg.only &&
@@ -502,28 +502,28 @@ export default {
               )
             ) {
               if (_this.only == msg.only) {
-                if (msg.status == "003") {
+                if (msg.status == '003') {
                   _this.$message({
                     showClose: true,
-                    message: "支付成功",
-                    type: "success",
+                    message: '支付成功',
+                    type: 'success',
                     duration: 5000
                   });
                   _this.visible3 = false;
                   _this.visible4 = true;
                   _this.search();
-                } else if (msg.status == "004") {
+                } else if (msg.status == '004') {
                   _this.$message({
                     showClose: true,
-                    message: "请求超时",
-                    type: "warning",
+                    message: '请求超时',
+                    type: 'warning',
                     duration: 5000
                   });
-                } else if (msg.status == "005") {
+                } else if (msg.status == '005') {
                   _this.$message({
                     showClose: true,
-                    message: "支付失败",
-                    type: "warning",
+                    message: '支付失败',
+                    type: 'warning',
                     duration: 5000
                   });
                 }
@@ -537,7 +537,7 @@ export default {
           this.$message({
             showClose: true,
             message: err.toString(),
-            type: "error",
+            type: 'error',
             duration: 5000
           });
         });
@@ -550,7 +550,7 @@ export default {
       if (this.multipleSelection.length) {
         this.canPay = true;
         this.multipleSelection.forEach((v, i) => {
-          if (v.isClose === "已结算") {
+          if (v.isClose === '已结算') {
             this.canPay = false;
           }
         });
