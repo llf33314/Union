@@ -63,7 +63,7 @@
           <el-checkbox label="directorName">负责人</el-checkbox>
           <el-checkbox label="directorPhone" disabled>联系电话</el-checkbox>
           <el-checkbox label="directorEmail">邮箱</el-checkbox>
-          <el-checkbox label="reson">申请/推荐理由</el-checkbox>
+          <el-checkbox label="reason">申请/推荐理由</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
       <el-form-item label="联盟图标：">
