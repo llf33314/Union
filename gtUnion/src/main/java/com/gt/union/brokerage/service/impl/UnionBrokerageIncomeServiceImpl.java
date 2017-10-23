@@ -19,15 +19,14 @@ import com.gt.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 /**
- * <p>
  * 佣金收入 服务实现类
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-23 15:28:54
  */
 @Service
 public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageIncomeMapper, UnionBrokerageIncome> implements IUnionBrokerageIncomeService {
@@ -38,30 +37,49 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
     @Autowired
     private IUnionMainService unionMainService;
 
+    //------------------------------------------ Domain Driven Design - get --------------------------------------------
+
     @Override
-    public UnionBrokerageIncome getByUnionOpportunityId(Integer id) {
-        EntityWrapper wrapper = new EntityWrapper();
-        wrapper.eq("opportunity_id", id);
+    public UnionBrokerageIncome getByOpportunityId(Integer opportunityId) {
+        EntityWrapper<UnionBrokerageIncome> wrapper = new EntityWrapper<>();
+        wrapper.eq("opportunity_id", opportunityId);
         wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
         return this.selectOne(wrapper);
     }
 
-    /**
-     * 根据商家id和盟员身份id，分页获取同一个联盟下的售卡佣金分成列表信息，并根据售卡类型(精确匹配)、卡号(模糊匹配)进行匹配
-     *
-     * @param page             {not null} 分页对象
-     * @param busId            {not null} 商家id
-     * @param memberId         {not null} 盟员身份id
-     * @param optionCardType   可选项 售卡类型
-     * @param optionCardNumber 可选项 卡号
-     * @param optionBeginDate  可选项 开始日期
-     * @param optionEndDate    可选项 结束日期
-     * @return
-     * @throws Exception
-     */
     @Override
-    public Page pageCardMapByBusIdAndMemberId(Page page, final Integer busId, Integer memberId, final Integer optionCardType
-            , final String optionCardNumber, final String optionBeginDate, final String optionEndDate) throws Exception {
+    public double getSumInComeUnionBrokerage(Integer busId) {
+        EntityWrapper wrapper = new EntityWrapper<>();
+        wrapper.eq("bus_id", busId);
+        wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+        wrapper.setSqlSelect("IFNULL(SUM(money), 0) money");
+        Map<String, Object> data = this.selectMap(wrapper);
+        if (CommonUtil.isEmpty(data)) {
+            return 0;
+        }
+        return CommonUtil.toDouble(data.get("money"));
+    }
+
+    @Override
+    public double getSumInComeUnionBrokerageByType(Integer busId, int type) {
+        EntityWrapper wrapper = new EntityWrapper<>();
+        wrapper.eq("bus_id", busId);
+        wrapper.eq("type", type);
+        wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+        wrapper.setSqlSelect("IFNULL(SUM(money), 0) money");
+        Map<String, Object> data = this.selectMap(wrapper);
+        if (CommonUtil.isEmpty(data)) {
+            return 0;
+        }
+        return CommonUtil.toDouble(data.get("money"));
+    }
+
+    //------------------------------------------ Domain Driven Design - list -------------------------------------------
+
+    @Override
+    public Page pageCardMapByBusIdAndMemberId(Page page, final Integer busId, Integer memberId,
+                                              final Integer optionCardType, final String optionCardNumber,
+                                              final String optionBeginDate, final String optionEndDate) throws Exception {
         if (page == null || busId == null || memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -105,31 +123,26 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
                 return sbSqlSegment.toString();
             }
         };
-        StringBuilder sbSqlSelect = new StringBuilder(" bi.id incomeId") //佣金收入id
-                .append(", DATE_FORMAT(bi.createtime, '%Y-%m-%d %T') incomeCreateTime") //佣金收入时间
-                .append(", cr.number cardNumber") //卡号
-                .append(", c.type cardType") //卡类型(红、黑卡)
-                .append(", bi.money incomeMoney") //佣金金额
-                .append(", m.enterprise_name srcEnterpriseName"); //售卡出处
-        wrapper.setSqlSelect(sbSqlSelect.toString());
+        //佣金收入id
+        String sqlSelect = " bi.id incomeId"
+                //佣金收入时间
+                + ", DATE_FORMAT(bi.createtime, '%Y-%m-%d %T') incomeCreateTime"
+                //卡号
+                + ", cr.number cardNumber"
+                //卡类型(红、黑卡)
+                + ", c.type cardType"
+                //佣金金额
+                + ", bi.money incomeMoney"
+                //售卡出处
+                + ", m.enterprise_name srcEnterpriseName";
+        wrapper.setSqlSelect(sqlSelect);
         return this.selectMapsPage(page, wrapper);
     }
 
-    /**
-     * 根据商家id和盟员身份id，获取同一个联盟下所有的售卡佣金分成列表信息，并根据售卡类型(精确匹配)、卡号(模糊匹配)进行匹配
-     *
-     * @param busId            {not null} 商家id
-     * @param memberId         {not null} 盟员身份id
-     * @param optionCardType   可选项 售卡类型
-     * @param optionCardNumber 可选项 卡号
-     * @param optionBeginDate  可选项 开始日期
-     * @param optionEndDate    可选项 结束日期
-     * @return
-     * @throws Exception
-     */
     @Override
-    public List<Map<String, Object>> listCardMapByBusIdAndMemberId(final Integer busId, Integer memberId, final Integer optionCardType
-            , final String optionCardNumber, final String optionBeginDate, final String optionEndDate) throws Exception {
+    public List<Map<String, Object>> listCardMapByBusIdAndMemberId(final Integer busId, Integer memberId,
+                                                                   final Integer optionCardType, final String optionCardNumber,
+                                                                   final String optionBeginDate, final String optionEndDate) throws Exception {
         if (busId == null || memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -173,50 +186,51 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
                 return sbSqlSegment.toString();
             }
         };
-        StringBuilder sbSqlSelect = new StringBuilder(" bi2.id incomeId") //佣金收入id
-                .append(", DATE_FORMAT(bi2.createtime, '%Y-%m-%d %T') incomeCreateTime") //佣金收入时间
-                .append(", cr.number cardNumber") //卡号
-                .append(", c.type cardType") //卡类型(红、黑卡)
-                .append(", bi2.money incomeMoney") //佣金金额
-                .append(", m.enterprise_name srcEnterpriseName"); //售卡出处
-        wrapper.setSqlSelect(sbSqlSelect.toString());
+        //佣金收入id
+        String sqlSelect = " bi2.id incomeId"
+                //佣金收入时间
+                + ", DATE_FORMAT(bi2.createtime, '%Y-%m-%d %T') incomeCreateTime"
+                //卡号
+                + ", cr.number cardNumber"
+                //卡类型(红、黑卡)
+                + ", c.type cardType"
+                //佣金金额
+                + ", bi2.money incomeMoney"
+                //售卡出处
+                + ", m.enterprise_name srcEnterpriseName";
+        wrapper.setSqlSelect(sqlSelect);
         return this.selectMaps(wrapper);
     }
 
+    //------------------------------------------ Domain Driven Design - save -------------------------------------------
 
-    @Override
-    public double getSumInComeUnionBrokerage(Integer busId) {
-        EntityWrapper wrapper = new EntityWrapper<>();
-        wrapper.eq("bus_id", busId);
-        wrapper.eq("del_status",CommonConstant.DEL_STATUS_NO);
-        wrapper.setSqlSelect("IFNULL(SUM(money), 0) money");
-        Map<String, Object> data = this.selectMap(wrapper);
-        if (CommonUtil.isEmpty(data)) {
-            return 0;
-        }
-        return CommonUtil.toDouble(data.get("money"));
-    }
+    //------------------------------------------ Domain Driven Design - remove -----------------------------------------
 
-    @Override
-    public double getSumInComeUnionBrokerageByType(Integer busId, int type) {
-        EntityWrapper wrapper = new EntityWrapper<>();
-        wrapper.eq("bus_id", busId);
-        wrapper.eq("type", type);
-        wrapper.eq("del_status",CommonConstant.DEL_STATUS_NO);
-        wrapper.setSqlSelect("IFNULL(SUM(money), 0) money");
-        Map<String, Object> data = this.selectMap(wrapper);
-        if (CommonUtil.isEmpty(data)) {
-            return 0;
-        }
-        return CommonUtil.toDouble(data.get("money"));
-    }
+    //------------------------------------------ Domain Driven Design - update -----------------------------------------
+
+    //------------------------------------------ Domain Driven Design - count ------------------------------------------
+
+    //------------------------------------------ Domain Driven Design - boolean ----------------------------------------
+
+    //******************************************* Object As a Service - get ********************************************
+
+    //******************************************* Object As a Service - list *******************************************
+
+    //******************************************* Object As a Service - save *******************************************
+
+    //******************************************* Object As a Service - remove *****************************************
+
+    //******************************************* Object As a Service - update *****************************************
+
+    //***************************************** Object As a Service - cache support ************************************
+
 
     @Override
     public int countByOpportunityIds(List<Integer> ids) {
         EntityWrapper wrapper = new EntityWrapper<>();
         wrapper.in("opportunity_id", ids.toArray());
         wrapper.eq("type", BrokerageConstant.SOURCE_TYPE_OPPORTUNITY);
-        wrapper.eq("del_status",CommonConstant.DEL_STATUS_NO);
+        wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
         return this.selectCount(wrapper);
     }
 }

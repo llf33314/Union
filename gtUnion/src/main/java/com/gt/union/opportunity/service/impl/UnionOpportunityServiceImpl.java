@@ -271,7 +271,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 if (!opportunity.getIsAccept().equals(OpportunityConstant.ACCEPT_YES)) {
                     continue;
                 }
-                UnionBrokerageIncome income = this.unionBrokerageIncomeService.getByUnionOpportunityId(opportunity.getId());
+                UnionBrokerageIncome income = this.unionBrokerageIncomeService.getByOpportunityId(opportunity.getId());
                 if (income == null || income.getCreatetime().compareTo(beginDate) < 0 || income.getCreatetime().compareTo(endDate) > 0) {
                     continue;
                 }
@@ -304,7 +304,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
             if (CommonUtil.isEmpty(opportunity.getIsAccept()) || opportunity.getIsAccept() != OpportunityConstant.ACCEPT_YES) {
                 throw new BusinessException("不可支付未接受的商机");
             }
-            UnionBrokerageIncome brokerageIncome = unionBrokerageIncomeService.getByUnionOpportunityId(opportunity.getId());
+            UnionBrokerageIncome brokerageIncome = unionBrokerageIncomeService.getByOpportunityId(opportunity.getId());
             if (brokerageIncome != null) {
                 throw new BusinessException("该商机已支付");
             }
@@ -848,7 +848,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 if (!opportunity.getIsAccept().equals(OpportunityConstant.ACCEPT_YES)) {
                     continue;
                 }
-                UnionBrokerageIncome income = this.unionBrokerageIncomeService.getByUnionOpportunityId(opportunity.getId());
+                UnionBrokerageIncome income = this.unionBrokerageIncomeService.getByOpportunityId(opportunity.getId());
                 switch (isPaid) {
                     case OpportunityConstant.IS_PAID_YES:
                         if (income != null) {

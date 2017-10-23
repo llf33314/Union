@@ -478,7 +478,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		if(opportunity.getIsAccept() != OpportunityConstant.ACCEPT_YES){
 			throw new BusinessException("该商机未受理");
 		}
-		UnionBrokerageIncome brokerageIncome = unionBrokerageIncomeService.getByUnionOpportunityId(id);
+		UnionBrokerageIncome brokerageIncome = unionBrokerageIncomeService.getByOpportunityId(id);
 		if(brokerageIncome != null){
 			throw new BusinessException("该商机已支付");
 		}
