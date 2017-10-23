@@ -5,7 +5,7 @@
         <!-- 本店消费 -->
         <el-tab-pane label="本店消费" name="first">
           <el-row>
-            <el-col style="width:300px;">
+            <el-col style="width:297px;">
               <el-form :inline="true" class="demo-form-inline">
                 <el-form-item label="所属联盟:">
                   <el-select v-model="unionId1" clearable placeholder="请选择所属联盟">
@@ -35,11 +35,11 @@
             </el-col>
             <el-col style="width:180px;margin-right: 20px;">
               <div class="grid-content1 bg-purple">
-                <el-input placeholder="请输入关键字" icon="search" v-model="input1" :on-icon-click="search1" class="input-search2 fl">
+                <el-input placeholder="请输入关键字" @keyup.enter.native="search" icon="search" v-model="input1" :on-icon-click="search1" class="input-search2 fl">
                 </el-input>
               </div>
             </el-col>
-              <el-col :span="3" style="width:250px;">
+              <el-col :span="3" style="width:235px;">
                 <div class="third_">
                   <div class="block">
                     <el-date-picker v-model="timeValue1" type="daterange" placeholder="选择日期范围" @change="search1">
@@ -48,7 +48,7 @@
                 </div>
               </el-col>
             <!-- 导出按钮 -->
-            <el-col style="width:100px;">
+            <el-col style="width:50px;">
               <el-button type="primary" @click="output1">导出</el-button>
             </el-col>
           </el-row>
@@ -98,7 +98,7 @@
         <!-- 他店消费 -->
         <el-tab-pane label="他店消费" name="second">
           <el-row>
-            <el-col style="width:300px;">
+            <el-col style="width:297px;">
               <el-form :inline="true" class="demo-form-inline">
                 <el-form-item label="所属联盟:">
                   <el-select v-model="unionId2" clearable placeholder="请选择所属联盟">
@@ -108,7 +108,7 @@
                 </el-form-item>
               </el-form>
             </el-col>
-            <el-col style="width:280px;">
+            <el-col style="width:270px;">
               <el-form :inline="true" class="demo-form-inline">
                 <el-form-item label="来源:">
                   <el-select v-model="toMemberId2" clearable placeholder="请选择来源">
@@ -128,12 +128,12 @@
             </el-col>
             <el-col style="width:180px;margin-right: 20px;">
               <div class="grid-content1 bg-purple">
-                <el-input placeholder="请输入关键字" icon="search" v-model="input2" :on-icon-click="search2" class="input-search2 fl">
+                <el-input placeholder="请输入关键字" @keyup.enter.native="search" icon="search" v-model="input2" :on-icon-click="search2" class="input-search2 fl">
                 </el-input>
               </div>
             </el-col>
             <div class="third_">
-              <el-col style="width:250px;">
+              <el-col style="width:235px;">
                 <div class="block">
                   <el-date-picker v-model="timeValue2" type="daterange" placeholder="选择日期范围" @change="search2">
                   </el-date-picker>
@@ -141,7 +141,7 @@
               </el-col>
             </div>
             <!-- 导出按钮 -->
-            <el-col style="width:100px;">
+            <el-col style="width:50px;">
               <el-button type="primary" @click="output2">导出</el-button>
             </el-col>
           </el-row>

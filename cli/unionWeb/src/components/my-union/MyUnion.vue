@@ -6,22 +6,22 @@
         <el-col :xs="8" :sm="8" :md="8" :lg="8">
           <div class="grid-content bg-purple notice-list">我创建的联盟</div>
           <div class="el_btn">
-            <el-tooltip content="联盟名(等等修改).." placement="bottom">
               <el-button class="fl" v-if="unionMainData.myCreateUnionImg" @click="changUnion1(unionMainData.myCreateUnionMemberId)">
-                <img v-bind:src="unionMainData.myCreateUnionImg" alt="" class="fl unionImg">
+                <el-tooltip :content="unionMainData.currentUnionName" placement="bottom">
+                  <img v-bind:src="unionMainData.myCreateUnionImg" alt="" class="fl unionImg">
+                </el-tooltip>
               </el-button>
-            </el-tooltip>
           </div>
           <create v-if="!unionMainData.myCreateUnionId && unionListLength < 3"></create>
         </el-col>
         <el-col :xs="8" :sm="8" :md="8" :lg="8">
           <div class="grid-content bg-purple notice-list">我加入的联盟</div>
           <div class="el_btn">
-            <el-tooltip content="联盟名(等等修改).." placement="bottom">
               <el-button v-for="item in unionMainData.myJoinUnionList" :key="item.myJoinUnionMemberId" class="fl" @click="changUnion2(item.myJoinUnionMemberId)">
-                <img v-bind:src="item.myJoinUnionImg" alt="" class="fl unionImg">
+                <el-tooltip :content="item.currentUnionName" placement="bottom">
+                  <img v-bind:src="item.myJoinUnionImg" alt="" class="fl unionImg">
+                </el-tooltip>
               </el-button>
-            </el-tooltip>
             <join v-if="unionListLength < 3"></join>
           </div>
         </el-col>

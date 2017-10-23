@@ -30,7 +30,7 @@
       </el-table-column>
       <el-table-column prop="integral" label="联盟积分">
       </el-table-column>
-      <el-table-column prop="createtime" label="升级时间" min-width="150">
+      <el-table-column prop="createtime" label="升级时间">
         <template scope="scope">
           <el-popover trigger="hover" placement="bottom">
             <p>{{ scope.row.createtime }}</p>
