@@ -151,7 +151,7 @@ export default {
     };
   },
   mounted: function() {
-    $http.get(`/unionMain/page/otherUnion?size=1`)
+    $http.get(`/unionMain/page/otherUnion`)
       .then(res => {
         if (res.data.data) {
           this.datas = res.data.data.records;
