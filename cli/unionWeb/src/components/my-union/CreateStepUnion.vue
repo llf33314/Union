@@ -92,19 +92,21 @@
 </template>
 
 <script>
-import $http from "@/utils/http.js";
-import $ from "jquery";
+import $http from '@/utils/http.js';
+import $ from 'jquery';
 export default {
-  name: "create-step-union",
-  props: ["basicFormData"],
+  name: 'create-step-union',
+  props: ['basicFormData'],
   data() {
     // 验证规则
     let blackChargePricePass = (rule, value, callback) => {
       if (this.form.blackIsCharge) {
-        if (!value) {
-          callback(new Error("黑卡价格内容不能为空，请重新输入"));
+        if (value === '') {
+          callback(new Error('黑卡价格内容不能为空，请重新输入'));
         } else if (isNaN(value)) {
-          callback(new Error("黑卡价格内容必须为数字值，请重新输入"));
+          callback(new Error('黑卡价格内容必须为数字值，请重新输入'));
+        } else if (value < 1) {
+          callback(new Error('黑卡价格内容必须大于1，请重新输入'));
         } else {
           callback();
         }
@@ -114,10 +116,12 @@ export default {
     };
     let blackValidityDayPass = (rule, value, callback) => {
       if (this.form.blackIsCharge) {
-        if (!value) {
-          callback(new Error("黑卡时效内容不能为空，请重新输入"));
+        if (value === '') {
+          callback(new Error('黑卡时效内容不能为空，请重新输入'));
         } else if (isNaN(value)) {
-          callback(new Error("黑卡时效内容必须为数字值，请重新输入"));
+          callback(new Error('黑卡时效内容必须为数字值，请重新输入'));
+        } else if (value < 1) {
+          callback(new Error('黑卡时效内容必须大于1，请重新输入'));
         } else {
           callback();
         }
@@ -127,12 +131,14 @@ export default {
     };
     let redChargePricePass = (rule, value, callback) => {
       if (this.form.redIsAvailable) {
-        if (!value) {
-          callback(new Error("红卡价格内容不能为空，请重新输入"));
+        if (value === '') {
+          callback(new Error('红卡价格内容不能为空，请重新输入'));
         } else if (isNaN(value)) {
-          callback(new Error("红卡价格内容必须为数字值，请重新输入"));
+          callback(new Error('红卡价格内容必须为数字值，请重新输入'));
+        } else if (value < 1) {
+          callback(new Error('红卡价格内容必须大于1，请重新输入'));
         } else if (value < this.form.blackChargePrice) {
-          callback(new Error("红卡价格需大于黑卡价格，请重新输入"));
+          callback(new Error('红卡价格需大于黑卡价格，请重新输入'));
         } else {
           callback();
         }
@@ -142,10 +148,12 @@ export default {
     };
     let redValidityDayPass = (rule, value, callback) => {
       if (this.form.redIsAvailable) {
-        if (!value) {
-          callback(new Error("红卡时效内容不能为空，请重新输入"));
+        if (value === '') {
+          callback(new Error('红卡时效内容不能为空，请重新输入'));
         } else if (isNaN(value)) {
-          callback(new Error("红卡价格内容必须为数字值，请重新输入"));
+          callback(new Error('红卡时效内容必须为数字值，请重新输入'));
+        } else if (value < 1) {
+          callback(new Error('红卡时效内容必须大于1，请重新输入'));
         } else {
           callback();
         }
@@ -154,40 +162,32 @@ export default {
       }
     };
     return {
-      childrenData: "",
+      childrenData: '',
       form: {
-        unionName: "",
+        unionName: '',
         joinType: 2,
         isIntegral: true,
         oldMemberCharge: false,
         blackIsCharge: true,
-        blackChargePrice: "",
-        blackValidityDay: "",
-        blackIllustration: "",
+        blackChargePrice: '',
+        blackValidityDay: '',
+        blackIllustration: '',
         redIsAvailable: true,
-        redChargePrice: "",
-        redValidityDay: "",
-        redIllustration: ""
+        redChargePrice: '',
+        redValidityDay: '',
+        redIllustration: ''
       },
-      checkList: ["enterpriseName", "directorPhone"],
+      checkList: ['enterpriseName', 'directorPhone'],
       rules: {
-        unionName: [
-          { required: true, message: "联盟名称内容不能为空，请重新输入", trigger: "blur" }
-        ],
-        blackChargePrice: [
-          { validator: blackChargePricePass, trigger: "blur" }
-        ],
-        blackValidityDay: [
-          { validator: blackValidityDayPass, trigger: "blur" }
-        ],
-        redChargePrice: [{ validator: redChargePricePass, trigger: "blur" }],
-        redValidityDay: [{ validator: redValidityDayPass, trigger: "blur" }],
-        unionIllustration: [
-          { required: true, message: "联盟说明内容不能为空，请重新输入", trigger: "blur" }
-        ]
+        unionName: [{ required: true, message: '联盟名称内容不能为空，请重新输入', trigger: 'blur' }],
+        blackChargePrice: [{ validator: blackChargePricePass, trigger: 'blur' }],
+        blackValidityDay: [{ validator: blackValidityDayPass, trigger: 'blur' }],
+        redChargePrice: [{ validator: redChargePricePass, trigger: 'blur' }],
+        redValidityDay: [{ validator: redValidityDayPass, trigger: 'blur' }],
+        unionIllustration: [{ required: true, message: '联盟说明内容不能为空，请重新输入', trigger: 'blur' }]
       },
       materialVisible: false,
-      materialUrl: ""
+      materialUrl: ''
     };
   },
   computed: {
@@ -197,10 +197,10 @@ export default {
   },
   mounted: function() {
     let _this = this;
-    window.addEventListener("message", function(e) {
+    window.addEventListener('message', function(e) {
       // alert("这个是fu页面" + e.data);
-      if (e.data && e.data != "go_back()") {
-        _this.form.unionImg = e.data.split(",")[1].replace(/\'|\)/g, "");
+      if (e.data && e.data != 'go_back()') {
+        _this.form.unionImg = e.data.split(',')[1].replace(/\'|\)/g, '');
       }
       _this.materialVisible = false;
     });
@@ -209,14 +209,12 @@ export default {
     // 调用素材库
     materiallayer() {
       this.materialVisible = true;
-      this.materialUrl =
-        "https://suc.deeptel.com.cn/common/material.do?retUrl=" +
-        window.location.href;
+      this.materialUrl = 'https://suc.deeptel.com.cn/common/material.do?retUrl=' + window.location.href;
     },
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          let url = "/unionMainCreate/instance";
+          let url = '/unionMainCreate/instance';
           // 处理要提交的数据
           let data = {};
           data.permitId = this.permitId;
@@ -230,23 +228,15 @@ export default {
           data.unionMainVO.unionMainChargeVO.blackChargePrice = this.form.blackChargePrice;
           data.unionMainVO.unionMainChargeVO.blackIllustration = this.form.blackIllustration;
           data.unionMainVO.unionMainChargeVO.blackIsAvailable = 1;
-          data.unionMainVO.unionMainChargeVO.blackIsCharge =
-            this.form.blackIsCharge - 0;
-          data.unionMainVO.unionMainChargeVO.blackIsOldCharge =
-            this.form.oldMemberCharge - 0;
-          data.unionMainVO.unionMainChargeVO.blackValidityDay =
-            this.form.blackValidityDay - 0;
-          data.unionMainVO.unionMainChargeVO.redChargePrice =
-            this.form.redChargePrice - 0;
+          data.unionMainVO.unionMainChargeVO.blackIsCharge = this.form.blackIsCharge - 0;
+          data.unionMainVO.unionMainChargeVO.blackIsOldCharge = this.form.oldMemberCharge - 0;
+          data.unionMainVO.unionMainChargeVO.blackValidityDay = this.form.blackValidityDay - 0;
+          data.unionMainVO.unionMainChargeVO.redChargePrice = this.form.redChargePrice - 0;
           data.unionMainVO.unionMainChargeVO.redIllustration = this.form.redIllustration;
-          data.unionMainVO.unionMainChargeVO.redIsAvailable =
-            this.form.redIsAvailable - 0;
-          data.unionMainVO.unionMainChargeVO.redIsCharge =
-            this.form.redIsAvailable - 0;
-          data.unionMainVO.unionMainChargeVO.redIsOldCharge =
-            this.form.oldMemberCharge - 0;
-          data.unionMainVO.unionMainChargeVO.redValidityDay =
-            this.form.redValidityDay - 0;
+          data.unionMainVO.unionMainChargeVO.redIsAvailable = this.form.redIsAvailable - 0;
+          data.unionMainVO.unionMainChargeVO.redIsCharge = this.form.redIsAvailable - 0;
+          data.unionMainVO.unionMainChargeVO.redIsOldCharge = this.form.oldMemberCharge - 0;
+          data.unionMainVO.unionMainChargeVO.redValidityDay = this.form.redValidityDay - 0;
           data.unionMainDictList = [];
           this.checkList.forEach((v, i) => {
             data.unionMainDictList.push({ itemKey: v });
@@ -254,10 +244,8 @@ export default {
           data.unionMemberVO = {};
           data.unionMemberVO.addressCityCode = this.basicFormData.addressCityCode;
           data.unionMemberVO.addressDistrictCode = this.basicFormData.addressDistrictCode;
-          data.unionMemberVO.addressLatitude =
-            this.basicFormData.addressLatitude + "";
-          data.unionMemberVO.addressLongitude =
-            this.basicFormData.addressLongitude + "";
+          data.unionMemberVO.addressLatitude = this.basicFormData.addressLatitude + '';
+          data.unionMemberVO.addressLongitude = this.basicFormData.addressLongitude + '';
           data.unionMemberVO.addressProvinceCode = this.basicFormData.addressProvinceCode;
           data.unionMemberVO.directorEmail = this.basicFormData.directorEmail;
           data.unionMemberVO.directorName = this.basicFormData.directorName;
@@ -271,14 +259,14 @@ export default {
             .then(res => {
               if (res.data.success) {
                 this.childrenData = 2;
-                this.$emit("activeChange", this.childrenData);
-              };
+                this.$emit('activeChange', this.childrenData);
+              }
             })
             .catch(err => {
               this.$message({
                 showClose: true,
                 message: err.toString(),
-                type: "error",
+                type: 'error',
                 duration: 5000
               });
             });
@@ -289,7 +277,7 @@ export default {
     },
     back() {
       this.childrenData = 0;
-      this.$emit("activeChange", this.childrenData);
+      this.$emit('activeChange', this.childrenData);
     }
   }
 };

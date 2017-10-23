@@ -18,7 +18,7 @@
           <div class="grid-content bg-purple notice-list">我加入的联盟</div>
           <div class="el_btn">
               <el-button v-for="item in unionMainData.myJoinUnionList" :key="item.myJoinUnionMemberId" class="fl" @click="changUnion2(item.myJoinUnionMemberId)">
-                <el-tooltip :content="item.currentUnionName" placement="bottom">
+                <el-tooltip :content="item.myJoinUnionName" placement="bottom">
                   <img v-bind:src="item.myJoinUnionImg" alt="" class="fl unionImg">
                 </el-tooltip>
               </el-button>
