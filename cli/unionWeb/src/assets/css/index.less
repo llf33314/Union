@@ -4,6 +4,7 @@ body{
     font-family: "Microsoft YaHei";
     min-width: 1280px;
     font-size:16px;
+    overflow:auto;
 }
 a{
     text-decoration: none;
@@ -586,8 +587,8 @@ h2{
         }
       }
     }
-    .el-tabs__item.is-active{
-      transition: all 1.5s;
+    .el-tabs__active-bar{
+      transition: transform .2s cubic-bezier(.645,.045,.355,1)!important;
     }
     .el-tabs__item.is-active{
       border-bottom: 3px solid #20a0ff!important;
@@ -790,8 +791,8 @@ h2{
         }
       }
     }
-    .el-tabs__item.is-active{
-      transition: all 1.5s;
+    .el-tabs__active-bar{
+      transition: transform .2s cubic-bezier(.645,.045,.355,1)!important;
     }
     .el-tabs__item.is-active{
       border-bottom: 3px solid #20a0ff!important;
@@ -943,8 +944,8 @@ h2{
     }
     //使用变量
     .selectPublic;
-    .el-tabs__item.is-active{
-      transition: all 1.5s;
+    .el-tabs__active-bar{
+      transition: transform .2s cubic-bezier(.645,.045,.355,1)!important;
     }
     .el-tabs__item.is-active{
       border-bottom: 3px solid #20a0ff!important;

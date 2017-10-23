@@ -38,7 +38,7 @@
         <el-table-column prop="" label="操作" width="160">
           <template scope="scope">
             <div class="sizeAndColor">
-              <el-button size="small" type="danger" @click="handlePass(scope.$index, scope.row)">通过</el-button>
+              <el-button size="small" @click="handlePass(scope.$index, scope.row)">通过</el-button>
               <el-button size="small" @click="handleFail(scope.$index, scope.row)">不通过</el-button>
             </div>
           </template>
