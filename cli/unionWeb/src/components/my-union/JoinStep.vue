@@ -62,8 +62,8 @@
               <el-input v-model="form.directorEmail" placeholder="请输入邮箱"></el-input>
             </el-col>
           </el-form-item>
-          <el-form-item label="申请理由：" prop="applyReason">
-            <el-input type="textarea" :rows="4" placeholder="请输入申请理由" v-model="form.applyReason"></el-input>
+          <el-form-item label="申请理由：" prop="reason">
+            <el-input type="textarea" :rows="4" placeholder="请输入申请理由" v-model="form.reason"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="onSubmit('form')">保存</el-button>
@@ -126,7 +126,7 @@ export default {
         directorName: '',
         directorPhone: '',
         directorEmail: '',
-        applyReason: ''
+        reason: ''
       },
       rules: {
         enterpriseName: [
@@ -141,7 +141,7 @@ export default {
         directorEmail: [
           { validator: emailPass, trigger: 'blur' }
         ],
-        applyReason: [
+        reason: [
           { required: true, message: '申请理由不能为空，请重新输入', trigger: 'blur' }
         ],
       },
@@ -203,12 +203,13 @@ export default {
     onSubmit(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          let url = '/unionApply/applyType/1';
+          let url = `/unionMemberJoin/unionId/${this.unionRadio}`;
           let data = this.form;
-          data.unionId = this.unionRadio;
           $http.post(url, data)
             .then(res => {
+              if(res.data.success) {
               this.$message({ showClose: true, message: '保存成功', type: 'success', duration: 5000 });
+              }
             })
             .catch(err => {
               this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });

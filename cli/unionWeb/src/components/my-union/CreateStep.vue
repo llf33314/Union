@@ -9,13 +9,15 @@
           <el-step title="创建联盟成功"></el-step>
         </el-steps>
       </div>
-      <div v-if="active === 0" class="tabs">
-        <create-step-basic @activeChange="activeChange" @basicForm='basicForm'></create-step-basic>
+      <div v-show="active === 0" class="tabs">
+        <keep-alive>
+          <create-step-basic @activeChange="activeChange" @basicForm='basicForm'></create-step-basic>
+        </keep-alive>
       </div>
-      <div v-if="active === 1" class="tabs">
+      <div v-show="active === 1" class="tabs">
         <create-step-union @activeChange="activeChange" :basicFormData="this.basicFormData"></create-step-union>
       </div>
-      <div v-if="active === 2" class="sucess_if">
+      <div v-show="active === 2" class="sucess_if">
         <div><img src="../../assets/images/success01.png" alt=""></div>
         <p>创建联盟成功</p>
         <el-col>
@@ -27,12 +29,12 @@
 </template>
 
 <script>
-import RegionChoose from '@/components/public-components/RegionChoose'
-import Breadcrumb from '@/components/public-components/Breadcrumb'
-import CreateStepBasic from './CreateStepBasic'
-import CreateStepUnion from './CreateStepUnion'
+import RegionChoose from "@/components/public-components/RegionChoose";
+import Breadcrumb from "@/components/public-components/Breadcrumb";
+import CreateStepBasic from "./CreateStepBasic";
+import CreateStepUnion from "./CreateStepUnion";
 export default {
-  name: 'create-step',
+  name: "create-step",
   components: {
     RegionChoose,
     Breadcrumb,
@@ -42,7 +44,7 @@ export default {
   data() {
     return {
       active: 0,
-      basicFormData: {},
+      basicFormData: {}
     };
   },
   methods: {
@@ -53,10 +55,10 @@ export default {
       this.basicFormData = v;
     },
     back() {
-      this.$router.push({ path: '/my-union' });
+      this.$router.push({ path: "/my-union" });
     }
-  },
-}
+  }
+};
 </script>
 
 <style lang='less' rel="stylesheet/less" scoped>
@@ -90,7 +92,7 @@ export default {
     text-align: center;
     p {
       margin: 31px 0 49px 0;
-      color: #666666
+      color: #666666;
     }
   }
   .percent {
