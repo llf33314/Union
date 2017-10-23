@@ -12,7 +12,7 @@
           <span>&nbsp;%&nbsp;</span>
           <el-button type="primary" @click="onAverage()">平均分配</el-button>
         </div>
-        <p>商机总比例之和不得超过100%，当前总比例为{{ sum }}%，剩余{{100 - sum}}%可分配</p>
+        <p>售卡分成总比例之和不得超过100%，当前总比例为{{ sum }}%，剩余{{100 - sum}}%可分配</p>
         <el-table :data="tableData3" style="width: 100%" id="table3">
           <el-table-column prop="enterpriseName" label="企业名称">
           </el-table-column>
