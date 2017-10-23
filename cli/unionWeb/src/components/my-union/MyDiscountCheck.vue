@@ -2,7 +2,7 @@
   <!-- 优惠项目审核 -->
   <div class="model_projects">
     <el-tabs v-model="activeName">
-      <el-tab-pane :label="'未审核（'+tableData2.length+'）'" style="color: red" name="first">
+      <el-tab-pane :label="'未审核（'+tableData2.total+'）'" style="color: red" name="first">
         <div>
           <el-table :data="tableData2">
             <el-table-column prop="enterpriseName" label="盟员名称">
@@ -19,7 +19,7 @@
           </el-table>
           <div class="footer">
             <el-pagination @current-change="handleCurrentChange2" :current-page.sync="currentPage2"
-                           :page-size="10" layout="prev, pager, next, jumper" :total="totalAll2" v-if="tableData2.length>0">
+                           :page-size="10" layout="prev, pager, next, jumper" :total="totalAll2" >
             </el-pagination>
           </div>
         </div>
@@ -244,7 +244,7 @@ export default {
     $http.get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/1?current=1`)
       .then(res => {
         if (res.data.data) {
-          this.tableData1 = res.data.data.pageData.records;
+          this.tableData1 = res.data.data.records;
           this.totalAll1 = res.data.data.pages;
         } else {
           this.tableData1 = [];
@@ -258,7 +258,7 @@ export default {
     $http.get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/2?current=1`)
       .then(res => {
         if (res.data.data) {
-          this.tableData2 = res.data.data.pageData.records;
+          this.tableData2 = res.data.data.records;
           this.totalAll2 = res.data.data.pages;
         } else {
           this.tableData2 = [];
@@ -272,7 +272,7 @@ export default {
     $http.get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/3?current=1`)
       .then(res => {
         if (res.data.data) {
-          this.tableData3 = res.data.data.pageData.records;
+          this.tableData3 = res.data.data.records;
           this.totalAll3 = res.data.data.pages;
         } else {
           this.tableData3 = [];
@@ -286,7 +286,7 @@ export default {
     $http.get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/4?current=1`)
       .then(res => {
         if (res.data.data) {
-          this.tableData4 = res.data.data.pageData.records;
+          this.tableData4 = res.data.data.records;
           this.totalAll4 = res.data.data.pages;
         } else {
           this.tableData4 = [];
@@ -303,7 +303,7 @@ export default {
       $http.get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/1?current=${val}`)
         .then(res => {
           if (res.data.data) {
-            this.tableData1 = res.data.data.pageData.records;
+            this.tableData1 = res.data.data.records;
             this.totalAll1 = res.data.data.pages;
           } else {
             this.tableData1 = [];
@@ -318,7 +318,7 @@ export default {
       $http.get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/2?current=${val}`)
         .then(res => {
           if (res.data.data) {
-            this.tableData2 = res.data.data.pageData.records;
+            this.tableData2 = res.data.data.records;
             this.totalAll2 = res.data.data.pages;
           } else {
             this.tableData2 = [];
@@ -333,7 +333,7 @@ export default {
       $http.get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/3?current=${val}`)
         .then(res => {
           if (res.data.data) {
-            this.tableData3 = res.data.data.pageData.records;
+            this.tableData3 = res.data.data.records;
             this.totalAll3 = res.data.data.pages;
           } else {
             this.tableData3 = [];
@@ -348,7 +348,7 @@ export default {
       $http.get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/4?current${val}`)
         .then(res => {
           if (res.data.data) {
-            this.tableData4 = res.data.data.pageData.records;
+            this.tableData4 = res.data.data.records;
             this.totalAll4 = res.data.data.pages;
           } else {
             this.tableData4 = [];
@@ -454,7 +454,7 @@ export default {
           $http.get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/1?current=1`)
             .then(res => {
               if (res.data.data) {
-                this.tableData1 = res.data.data.pageData.records;
+                this.tableData1 = res.data.data.records;
                 this.totalAll1 = res.data.data.pages;
               } else {
                 this.tableData1 = [];
@@ -480,7 +480,7 @@ export default {
           $http.get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/2?current=1`)
             .then(res => {
               if (res.data.data) {
-                this.tableData2 = res.data.data.pageData.records;
+                this.tableData2 = res.data.data.records;
                 this.totalAll2 = res.data.data.pages;
               } else {
                 this.tableData2 = [];
@@ -516,7 +516,7 @@ export default {
           $http.get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/2?current=1`)
             .then(res => {
               if (res.data.data) {
-                this.tableData2 = res.data.data.pageData.records;
+                this.tableData2 = res.data.data.records;
                 this.totalAll2 = res.data.data.pages;
               } else {
                 this.tableData2 = [];
