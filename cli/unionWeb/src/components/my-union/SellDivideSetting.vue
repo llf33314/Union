@@ -72,7 +72,7 @@ export default {
       .then(res => {
         if (res.data.data) {
           this.tableData = res.data.data.records;
-          this.totalAll = res.data.data.total;
+          this.totalAll = res.data.data.pages;
           if (this.tableData[0].isUnionOwner) {
             this.tableData[0].enterpriseName += '(盟主)';
           }
@@ -92,7 +92,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.total;
+            this.totalAll = res.data.data.pages;
             if (val === 1) {
               if (this.tableData[0].isUnionOwner) {
                 this.tableData[0].enterpriseName += '(盟主)';

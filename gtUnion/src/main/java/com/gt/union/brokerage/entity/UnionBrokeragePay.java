@@ -10,10 +10,12 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
+ * <p>
  * 佣金支付记录
+ * </p>
  *
  * @author linweicong
- * @version 2017-10-23 15:28:54
+ * @since 2017-09-13
  */
 @TableName("t_union_brokerage_pay")
 public class UnionBrokeragePay extends Model<UnionBrokeragePay> {

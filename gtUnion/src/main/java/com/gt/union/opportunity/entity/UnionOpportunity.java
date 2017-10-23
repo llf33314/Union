@@ -10,10 +10,12 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
+ * <p>
  * 商机推荐
+ * </p>
  *
  * @author linweicong
- * @version 2017-10-23 11:17:59
+ * @since 2017-09-07
  */
 @TableName("t_union_opportunity")
 public class UnionOpportunity extends Model<UnionOpportunity> {
@@ -23,185 +25,185 @@ public class UnionOpportunity extends Model<UnionOpportunity> {
     /**
      * 主键
      */
-    @TableId(value = "id", type = IdType.AUTO)
-    private Integer id;
+	@TableId(value="id", type= IdType.AUTO)
+	private Integer id;
     /**
      * 创建时间
      */
-    private Date createtime;
+	private Date createtime;
     /**
      * 删除状态（0：未删除 1：删除）
      */
-    @TableField("del_status")
-    private Integer delStatus;
+	@TableField("del_status")
+	private Integer delStatus;
     /**
      * 推荐类型（1：线上 2：线下）
      */
-    private Integer type;
+	private Integer type;
     /**
      * 推荐盟员id
      */
-    @TableField("from_member_id")
-    private Integer fromMemberId;
+	@TableField("from_member_id")
+	private Integer fromMemberId;
     /**
      * 接收盟员id
      */
-    @TableField("to_member_id")
-    private Integer toMemberId;
+	@TableField("to_member_id")
+	private Integer toMemberId;
     /**
      * 是否受理（1：受理中  2：已接受 3：已拒绝）
      */
-    @TableField("is_accept")
-    private Integer isAccept;
+	@TableField("is_accept")
+	private Integer isAccept;
     /**
      * 受理金额
      */
-    @TableField("accept_price")
-    private Double acceptPrice;
+	@TableField("accept_price")
+	private Double acceptPrice;
     /**
      * 佣金金额
      */
-    @TableField("brokerage_price")
-    private Double brokeragePrice;
+	@TableField("brokerage_price")
+	private Double brokeragePrice;
     /**
      * 修改时间
      */
-    private Date modifytime;
+	private Date modifytime;
     /**
      * 客户姓名
      */
-    @TableField("client_name")
-    private String clientName;
+	@TableField("client_name")
+	private String clientName;
     /**
      * 客户电话
      */
-    @TableField("client_phone")
-    private String clientPhone;
+	@TableField("client_phone")
+	private String clientPhone;
     /**
      * 业务备注
      */
-    @TableField("business_msg")
-    private String businessMsg;
+	@TableField("business_msg")
+	private String businessMsg;
 
-    @TableField("is_urge_brokerage")
-    private Integer isUrgeBrokerage;
+	@TableField("is_urge_brokerage")
+	private Integer isUrgeBrokerage;
 
 
-    public Integer getId() {
-        return id;
-    }
+	public Integer getId() {
+		return id;
+	}
 
-    public void setId(Integer id) {
-        this.id = id;
-    }
+	public void setId(Integer id) {
+		this.id = id;
+	}
 
-    public Date getCreatetime() {
-        return createtime;
-    }
+	public Date getCreatetime() {
+		return createtime;
+	}
 
-    public void setCreatetime(Date createtime) {
-        this.createtime = createtime;
-    }
+	public void setCreatetime(Date createtime) {
+		this.createtime = createtime;
+	}
 
-    public Integer getDelStatus() {
-        return delStatus;
-    }
+	public Integer getDelStatus() {
+		return delStatus;
+	}
 
-    public void setDelStatus(Integer delStatus) {
-        this.delStatus = delStatus;
-    }
+	public void setDelStatus(Integer delStatus) {
+		this.delStatus = delStatus;
+	}
 
-    public Integer getType() {
-        return type;
-    }
+	public Integer getType() {
+		return type;
+	}
 
-    public void setType(Integer type) {
-        this.type = type;
-    }
+	public void setType(Integer type) {
+		this.type = type;
+	}
 
-    public Integer getFromMemberId() {
-        return fromMemberId;
-    }
+	public Integer getFromMemberId() {
+		return fromMemberId;
+	}
 
-    public void setFromMemberId(Integer fromMemberId) {
-        this.fromMemberId = fromMemberId;
-    }
+	public void setFromMemberId(Integer fromMemberId) {
+		this.fromMemberId = fromMemberId;
+	}
 
-    public Integer getToMemberId() {
-        return toMemberId;
-    }
+	public Integer getToMemberId() {
+		return toMemberId;
+	}
 
-    public void setToMemberId(Integer toMemberId) {
-        this.toMemberId = toMemberId;
-    }
+	public void setToMemberId(Integer toMemberId) {
+		this.toMemberId = toMemberId;
+	}
 
-    public Integer getIsAccept() {
-        return isAccept;
-    }
+	public Integer getIsAccept() {
+		return isAccept;
+	}
 
-    public void setIsAccept(Integer isAccept) {
-        this.isAccept = isAccept;
-    }
+	public void setIsAccept(Integer isAccept) {
+		this.isAccept = isAccept;
+	}
 
-    public Double getAcceptPrice() {
-        return acceptPrice;
-    }
+	public Double getAcceptPrice() {
+		return acceptPrice;
+	}
 
-    public void setAcceptPrice(Double acceptPrice) {
-        this.acceptPrice = acceptPrice;
-    }
+	public void setAcceptPrice(Double acceptPrice) {
+		this.acceptPrice = acceptPrice;
+	}
 
-    public Double getBrokeragePrice() {
-        return brokeragePrice;
-    }
+	public Double getBrokeragePrice() {
+		return brokeragePrice;
+	}
 
-    public void setBrokeragePrice(Double brokeragePrice) {
-        this.brokeragePrice = brokeragePrice;
-    }
+	public void setBrokeragePrice(Double brokeragePrice) {
+		this.brokeragePrice = brokeragePrice;
+	}
 
-    public Date getModifytime() {
-        return modifytime;
-    }
+	public Date getModifytime() {
+		return modifytime;
+	}
 
-    public void setModifytime(Date modifytime) {
-        this.modifytime = modifytime;
-    }
+	public void setModifytime(Date modifytime) {
+		this.modifytime = modifytime;
+	}
 
-    public String getClientName() {
-        return clientName;
-    }
+	public String getClientName() {
+		return clientName;
+	}
 
-    public void setClientName(String clientName) {
-        this.clientName = clientName;
-    }
+	public void setClientName(String clientName) {
+		this.clientName = clientName;
+	}
 
-    public String getClientPhone() {
-        return clientPhone;
-    }
+	public String getClientPhone() {
+		return clientPhone;
+	}
 
-    public void setClientPhone(String clientPhone) {
-        this.clientPhone = clientPhone;
-    }
+	public void setClientPhone(String clientPhone) {
+		this.clientPhone = clientPhone;
+	}
 
-    public String getBusinessMsg() {
-        return businessMsg;
-    }
+	public String getBusinessMsg() {
+		return businessMsg;
+	}
 
-    public void setBusinessMsg(String businessMsg) {
-        this.businessMsg = businessMsg;
-    }
+	public void setBusinessMsg(String businessMsg) {
+		this.businessMsg = businessMsg;
+	}
 
-    public Integer getIsUrgeBrokerage() {
-        return isUrgeBrokerage;
-    }
+	public Integer getIsUrgeBrokerage() {
+		return isUrgeBrokerage;
+	}
 
-    public void setIsUrgeBrokerage(Integer isUrgeBrokerage) {
-        this.isUrgeBrokerage = isUrgeBrokerage;
-    }
+	public void setIsUrgeBrokerage(Integer isUrgeBrokerage) {
+		this.isUrgeBrokerage = isUrgeBrokerage;
+	}
 
-    @Override
-    protected Serializable pkVal() {
-        return this.id;
-    }
+	@Override
+	protected Serializable pkVal() {
+		return this.id;
+	}
 
 }

@@ -9,12 +9,13 @@ import com.baomidou.mybatisplus.enums.IdType;
 import java.io.Serializable;
 import java.util.Date;
 
-
 /**
+ * <p>
  * 佣金收入
+ * </p>
  *
  * @author linweicong
- * @version 2017-10-23 15:28:54
+ * @since 2017-09-07
  */
 @TableName("t_union_brokerage_income")
 public class UnionBrokerageIncome extends Model<UnionBrokerageIncome> {

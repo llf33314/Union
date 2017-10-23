@@ -1,8 +1,10 @@
 package com.gt.union.opportunity.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
+import com.gt.api.util.KeysUtil;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.api.client.socket.SocketService;
 import com.gt.union.common.annotation.SysLogAnnotation;
@@ -11,12 +13,12 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
+import com.gt.union.common.exception.DataExportException;
 import com.gt.union.common.response.GTJsonResult;
 import com.gt.union.common.service.IUnionValidateService;
 import com.gt.union.common.util.*;
 import com.gt.union.opportunity.service.IUnionOpportunityService;
 import com.gt.union.opportunity.vo.UnionOpportunityVO;
-import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.poi.hssf.usermodel.*;
@@ -30,17 +32,20 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+import java.io.PrintWriter;
+import java.net.URLDecoder;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 /**
+ * <p>
  * 商机推荐 前端控制器
+ * </p>
  *
  * @author linweicong
- * @version 2017-10-23 11:17:59
+ * @since 2017-09-07
  */
-@Api(description = "商机推荐")
 @RestController
 @RequestMapping("/unionOpportunity")
 public class UnionOpportunityController {
@@ -63,14 +68,14 @@ public class UnionOpportunityController {
 
     @ApiOperation(value = "查询我推荐的商机信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/fromMe", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String listFromMy(HttpServletRequest request, Page page,
-                             @ApiParam(name = "unionId", value = "联盟id")
-                             @RequestParam(name = "unionId", required = false) Integer unionId,
-                             @ApiParam(name = "isAccept", value = "商机状态，1为未处理，2为受理，3为拒绝，当勾选多个时用英文字符的逗号拼接，如=1,2")
-                             @RequestParam(name = "isAccept", required = false) String isAccept,
-                             @ApiParam(name = "clientName", value = "顾客姓名，模糊查询")
-                             @RequestParam(name = "clientName", required = false) String clientName,
-                             @ApiParam(name = "clientPhone", value = "顾客电话，模糊查询")
+    public String listFromMy(HttpServletRequest request, Page page
+            , @ApiParam(name = "unionId", value = "联盟id")
+                             @RequestParam(name = "unionId", required = false) Integer unionId
+            , @ApiParam(name = "isAccept", value = "商机状态，1为未处理，2为受理，3为拒绝，当勾选多个时用英文字符的逗号拼接，如=1,2")
+                             @RequestParam(name = "isAccept", required = false) String isAccept
+            , @ApiParam(name = "clientName", value = "顾客姓名，模糊查询")
+                             @RequestParam(name = "clientName", required = false) String clientName
+            , @ApiParam(name = "clientPhone", value = "顾客电话，模糊查询")
                              @RequestParam(name = "clientPhone", required = false) String clientPhone) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
@@ -83,14 +88,14 @@ public class UnionOpportunityController {
 
     @ApiOperation(value = "查询推荐给我的商机信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/toMe", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String listToMy(HttpServletRequest request, Page page,
-                           @ApiParam(name = "unionId", value = "所属联盟id")
-                           @RequestParam(name = "unionId", required = false) Integer unionId,
-                           @ApiParam(name = "isAccept", value = "商机状态，1为未处理，2为受理，3为拒绝，当勾选多个时用英文字符的分号拼接，如=1,2")
-                           @RequestParam(name = "isAccept", required = false) String isAccept,
-                           @ApiParam(name = "clientNname", value = "顾客姓名，模糊查询")
-                           @RequestParam(name = "clientName", required = false) String clientName,
-                           @ApiParam(name = "clientPhone", value = "顾客电话，模糊查询")
+    public String listToMy(HttpServletRequest request, Page page
+            , @ApiParam(name = "unionId", value = "所属联盟id")
+                           @RequestParam(name = "unionId", required = false) Integer unionId
+            , @ApiParam(name = "isAccept", value = "商机状态，1为未处理，2为受理，3为拒绝，当勾选多个时用英文字符的分号拼接，如=1,2")
+                           @RequestParam(name = "isAccept", required = false) String isAccept
+            , @ApiParam(name = "clientNname", value = "顾客姓名，模糊查询")
+                           @RequestParam(name = "clientName", required = false) String clientName
+            , @ApiParam(name = "clientPhone", value = "顾客电话，模糊查询")
                            @RequestParam(name = "clientPhone", required = false) String clientPhone) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
@@ -103,16 +108,16 @@ public class UnionOpportunityController {
 
     @ApiOperation(value = "查询我的佣金收入信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/income", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String pageIncome(HttpServletRequest request, Page page,
-                             @ApiParam(name = "unionId", value = "所属联盟id")
-                             @RequestParam(name = "unionId", required = false) Integer unionId,
-                             @ApiParam(name = "toMemberId", value = "商机接收方的盟员身份id")
-                             @RequestParam(name = "toMemberId", required = false) Integer toMemberId,
-                             @ApiParam(name = "isClose", value = "佣金结算状态，1：已结算 0：未结算，不传代表都包含")
-                             @RequestParam(name = "isClose", required = false) Integer isClose,
-                             @ApiParam(name = "clientName", value = "顾客姓名，模糊查询")
-                             @RequestParam(name = "clientName", required = false) String clientName,
-                             @ApiParam(name = "clientPhone", value = "顾客电话，模糊查询")
+    public String pageIncome(HttpServletRequest request, Page page
+            , @ApiParam(name = "unionId", value = "所属联盟id")
+                             @RequestParam(name = "unionId", required = false) Integer unionId
+            , @ApiParam(name = "toMemberId", value = "商机接收方的盟员身份id")
+                             @RequestParam(name = "toMemberId", required = false) Integer toMemberId
+            , @ApiParam(name = "isClose", value = "佣金结算状态，1：已结算 0：未结算，不传代表都包含")
+                             @RequestParam(name = "isClose", required = false) Integer isClose
+            , @ApiParam(name = "clientName", value = "顾客姓名，模糊查询")
+                             @RequestParam(name = "clientName", required = false) String clientName
+            , @ApiParam(name = "clientPhone", value = "顾客电话，模糊查询")
                              @RequestParam(name = "clientPhone", required = false) String clientPhone) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
@@ -125,16 +130,16 @@ public class UnionOpportunityController {
 
     @ApiOperation(value = "查询我的佣金支出信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/expense", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String pageExpense(HttpServletRequest request, Page page,
-                              @ApiParam(name = "unionId", value = "所属联盟id")
-                              @RequestParam(name = "unionId", required = false) Integer unionId,
-                              @ApiParam(name = "fromMemberId", value = "商机推荐方的盟员身份id")
-                              @RequestParam(name = "fromMemberId", required = false) Integer fromMemberId,
-                              @ApiParam(name = "isClose", value = "佣金结算状态，1：已结算 0：未结算，不传代表都包含")
-                              @RequestParam(name = "isClose", required = false) Integer isClose,
-                              @ApiParam(name = "clientName", value = "顾客姓名，模糊查询")
-                              @RequestParam(name = "clientName", required = false) String clientName,
-                              @ApiParam(name = "clientPhone", value = "顾客电话，模糊查询")
+    public String pageExpense(HttpServletRequest request, Page page
+            , @ApiParam(name = "unionId", value = "所属联盟id")
+                              @RequestParam(name = "unionId", required = false) Integer unionId
+            , @ApiParam(name = "fromMemberId", value = "商机推荐方的盟员身份id")
+                              @RequestParam(name = "fromMemberId", required = false) Integer fromMemberId
+            , @ApiParam(name = "isClose", value = "佣金结算状态，1：已结算 0：未结算，不传代表都包含")
+                              @RequestParam(name = "isClose", required = false) Integer isClose
+            , @ApiParam(name = "clientName", value = "顾客姓名，模糊查询")
+                              @RequestParam(name = "clientName", required = false) String clientName
+            , @ApiParam(name = "clientPhone", value = "顾客电话，模糊查询")
                               @RequestParam(name = "clientPhone", required = false) String clientPhone) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
@@ -147,8 +152,8 @@ public class UnionOpportunityController {
 
     @ApiOperation(value = "分页查询商机佣金支付往来列表信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/contact/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String pageContact(HttpServletRequest request, Page page,
-                              @ApiParam(name = "memberId", value = "操作人的盟员身份id")
+    public String pageContact(HttpServletRequest request, Page page
+            , @ApiParam(name = "memberId", value = "操作人的盟员身份id")
                               @RequestParam(name = "memberId", required = false) Integer memberId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
@@ -161,8 +166,8 @@ public class UnionOpportunityController {
 
     @ApiOperation(value = "导出：商机佣金支付往来列表信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/contact/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public void exportContactByTgtMemberId(HttpServletRequest request, HttpServletResponse response,
-                                           @ApiParam(name = "memberId", value = "操作人的盟员身份id")
+    public void exportContactByTgtMemberId(HttpServletRequest request, HttpServletResponse response
+            , @ApiParam(name = "memberId", value = "操作人的盟员身份id")
                                            @RequestParam(name = "memberId", required = false) Integer memberId) throws Exception {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
@@ -191,7 +196,7 @@ public class UnionOpportunityController {
                     tgtMemberEnterpriseNameCell.setCellValue(tgtMemberEnterpriseName);
                     tgtMemberEnterpriseNameCell.setCellStyle(centerCellStyle);
                     //商机往来金额（元）
-                    HSSFCell contactMoneyCell = row.createCell(cellIndex);
+                    HSSFCell contactMoneyCell = row.createCell(cellIndex++);
                     String tgtContactMoney = map.get("contactMoney") != null ? map.get("contactMoney").toString() : "";
                     contactMoneyCell.setCellValue(tgtContactMoney);
                     contactMoneyCell.setCellStyle(centerCellStyle);
@@ -199,18 +204,26 @@ public class UnionOpportunityController {
             }
             String filename = "佣金往来明细";
             ExportUtil.responseExport(response, wb, filename);
+        } catch (DataExportException e){
+
         } catch (Exception e) {
-            ExportUtil.responseExportError(response);
+            response.setContentType("text/html");
+            response.setHeader("Cache-Control", "no-cache");
+            response.setCharacterEncoding("UTF-8");
+            String result = "<script>alert('导出失败')</script>";
+            PrintWriter writer = response.getWriter();
+            writer.print(result);
+            writer.close();
         }
 
     }
 
     @ApiOperation(value = "查询商机佣金支付往来详情信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/contact/detail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getContactDetailByTgtMemberId(HttpServletRequest request,
-                                                @ApiParam(name = "tgtMemberId", value = "与操作人有商机佣金来往的盟员身份id", required = true)
-                                                @RequestParam(name = "tgtMemberId") Integer tgtMemberId,
-                                                @ApiParam(name = "memberId", value = "操作人的盟员身份id")
+    public String getContactDetailByTgtMemberId(HttpServletRequest request
+            , @ApiParam(name = "tgtMemberId", value = "与操作人有商机佣金来往的盟员身份id", required = true)
+                                                @RequestParam(name = "tgtMemberId") Integer tgtMemberId
+            , @ApiParam(name = "memberId", value = "操作人的盟员身份id")
                                                 @RequestParam(name = "memberId", required = false) Integer memberId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
@@ -223,10 +236,10 @@ public class UnionOpportunityController {
 
     @ApiOperation(value = "导出：商机佣金支付往来详情信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/contact/exportDetail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public void exportContactDetailByTgtMemberId(HttpServletRequest request, HttpServletResponse response,
-                                                 @ApiParam(name = "tgtMemberId", value = "与操作人有商机佣金来往的盟员身份id", required = true)
-                                                 @RequestParam(name = "tgtMemberId") Integer tgtMemberId,
-                                                 @ApiParam(name = "memberId", value = "操作人的盟员身份id")
+    public void exportContactDetailByTgtMemberId(HttpServletRequest request, HttpServletResponse response
+            , @ApiParam(name = "tgtMemberId", value = "与操作人有商机佣金来往的盟员身份id", required = true)
+                                                 @RequestParam(name = "tgtMemberId") Integer tgtMemberId
+            , @ApiParam(name = "memberId", value = "操作人的盟员身份id")
                                                  @RequestParam(name = "memberId", required = false) Integer memberId) throws Exception {
         try {
             BusUser busUser = SessionUtils.getLoginUser(request);
@@ -262,13 +275,13 @@ public class UnionOpportunityController {
                         clientPhoneCell.setCellValue(tgtClientPhone);
                         clientPhoneCell.setCellStyle(centerCellStyle);
                         //佣金（元）
-                        HSSFCell brokeragePriceCell = row.createCell(cellIndex);
+                        HSSFCell brokeragePriceCell = row.createCell(cellIndex++);
                         String tgtBrokeragePrice = map.get("brokeragePrice") != null ? map.get("brokeragePrice").toString() : "";
                         brokeragePriceCell.setCellValue(tgtBrokeragePrice);
                         brokeragePriceCell.setCellStyle(centerCellStyle);
                     }
                     //统计佣金往来总额
-                    HSSFRow rowSum = sheet.createRow(rowIndex);
+                    HSSFRow rowSum = sheet.createRow(rowIndex++);
                     //标题
                     HSSFCell contactMoneySumTitleCell = rowSum.createCell(0);
                     contactMoneySumTitleCell.setCellValue("合计：");
@@ -282,15 +295,31 @@ public class UnionOpportunityController {
             }
             String filename = "佣金明细详情";
             ExportUtil.responseExport(response, wb, filename);
+        }catch (BaseException e){
+            response.setContentType("text/html");
+            response.setHeader("Cache-Control", "no-cache");
+            response.setCharacterEncoding("UTF-8");
+            String result = "<script>alert('导出失败')</script>";
+            PrintWriter writer = response.getWriter();
+            writer.print(result);
+            writer.close();
+        } catch (DataExportException e){
+
         } catch (Exception e) {
-            ExportUtil.responseExportError(response);
+            response.setContentType("text/html");
+            response.setHeader("Cache-Control", "no-cache");
+            response.setCharacterEncoding("UTF-8");
+            String result = "<script>alert('导出失败')</script>";
+            PrintWriter writer = response.getWriter();
+            writer.print(result);
+            writer.close();
         }
     }
 
     @ApiOperation(value = "获取商机统计数据", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/memberId/{memberId}/statistics", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getStatisticData(HttpServletRequest request,
-                                   @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
+    public String getStatisticData(HttpServletRequest request
+            , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
                                    @PathVariable("memberId") Integer memberId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
@@ -305,10 +334,10 @@ public class UnionOpportunityController {
 
     @ApiOperation(value = "接受商家推荐", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{opportunityId}/isAccept/2", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public String updateAcceptYesById(HttpServletRequest request,
-                                      @ApiParam(name = "opportunityId", value = "商机推荐id", required = true)
-                                      @PathVariable("opportunityId") Integer opportunityId,
-                                      @ApiParam(name = "acceptPrice", value = "受理金额", required = true)
+    public String updateAcceptYesById(HttpServletRequest request
+            , @ApiParam(name = "opportunityId", value = "商机推荐id", required = true)
+                                      @PathVariable("opportunityId") Integer opportunityId
+            , @ApiParam(name = "acceptPrice", value = "受理金额", required = true)
                                       @RequestBody @NotNull Double acceptPrice) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         if (busUser.getPid() != null && busUser.getPid() != 0) {
@@ -320,8 +349,8 @@ public class UnionOpportunityController {
 
     @ApiOperation(value = "拒绝商家推荐", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{opportunityId}/isAccept/3", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public String updateAcceptNoById(HttpServletRequest request,
-                                     @ApiParam(name = "opportunityId", value = "商机推荐id", required = true)
+    public String updateAcceptNoById(HttpServletRequest request
+            , @ApiParam(name = "opportunityId", value = "商机推荐id", required = true)
                                      @PathVariable("opportunityId") Integer opportunityId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         if (busUser.getPid() != null && busUser.getPid() != 0) {
@@ -335,16 +364,15 @@ public class UnionOpportunityController {
 
     @ApiOperation(value = "添加商机推荐", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/memberId/{memberId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public String save(HttpServletRequest request,
-                       @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
-                       @PathVariable("memberId") Integer memberId,
-                       @ApiParam(name = "unionOpportunityVO", value = "推荐的商机信息", required = true)
+    public String save(HttpServletRequest request
+            , @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
+                       @PathVariable("memberId") Integer memberId
+            , @ApiParam(name = "unionOpportunityVO", value = "推荐的商机信息", required = true)
                        @RequestBody @Valid UnionOpportunityVO vo, BindingResult bindingResult) throws Exception {
         this.unionValidateService.checkBindingResult(bindingResult);
         BusUser user = SessionUtils.getLoginUser(request);
         Integer busId = user.getId();
-        if (CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            //子账号
+        if (CommonUtil.isNotEmpty(user.getPid()) && user.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {//子账号
             busId = user.getPid();
         }
         this.unionOpportunityService.saveByBusIdAndMemberId(busId, memberId, vo);
@@ -352,54 +380,52 @@ public class UnionOpportunityController {
     }
 
     //------------------------------------------------- money ----------------------------------------------------------
-    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{only}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public String payOpportunitySuccess(@PathVariable(name = "only") String only,
-                                        @RequestBody Map<String, Object> param) throws Exception {
-        Map<String, Object> data = new HashMap<>(16);
+    @RequestMapping(value = "/79B4DE7C/paymentSuccess/{only}",method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public String payOpportunitySuccess(HttpServletRequest request, HttpServletResponse response
+            , @PathVariable(name = "only", required = true) String only
+            , @RequestBody Map<String,Object> param) throws Exception {
+        Map<String, Object> data = new HashMap<String, Object>();
         String statusKey = RedisKeyUtil.getRecommendPayStatusKey(only);
         try {
-            if ("SUCCESS".equals(param.get("result_code")) && "SUCCESS".equals(param.get("result_code"))) {
+            if(param.get("result_code").equals("SUCCESS") && param.get("result_code").equals("SUCCESS")){
                 logger.info("商机佣金支付成功，param------------------" + JSON.toJSONString(param));
                 logger.info("商机佣金支付成功，only------------------" + only);
                 String paramKey = RedisKeyUtil.getRecommendPayParamKey(only);
                 String paramData = redisCacheUtil.get(paramKey);
-                Map map = JSON.parseObject(paramData, Map.class);
+                Map map = JSON.parseObject(paramData,Map.class);
                 unionOpportunityService.payOpportunitySuccess(param.get("out_trade_no").toString(), only);
                 String status = redisCacheUtil.get(statusKey);
-                if (CommonUtil.isEmpty(status)) {
-                    //订单超时
+                if (CommonUtil.isEmpty(status)) {//订单超时
                     status = ConfigConstant.USER_ORDER_STATUS_004;
-                } else {
-                    status = JSON.parseObject(status, String.class);
+                }else {
+                    status = JSON.parseObject(status,String.class);
                 }
-                if (ConfigConstant.USER_ORDER_STATUS_003.equals(status)) {
-                    //订单支付成功
+                if (ConfigConstant.USER_ORDER_STATUS_003.equals(status)) {//订单支付成功
                     redisCacheUtil.remove(statusKey);
                 }
 
-                if (ConfigConstant.USER_ORDER_STATUS_005.equals(status)) {
-                    //订单支付失败
+                if (ConfigConstant.USER_ORDER_STATUS_005.equals(status)) {//订单支付失败
                     redisCacheUtil.remove(statusKey);
                 }
-                Map<String, Object> result = new HashMap<>(16);
-                result.put("status", status);
-                result.put("only", only);
+                Map<String,Object> result = new HashMap<String,Object>();
+                result.put("status",status);
+                result.put("only",only);
                 logger.info("商机佣金扫码支付成功回调----------" + JSON.toJSONString(result));
-                socketService.socketSendMessage(PropertiesUtil.getSocketKey() + CommonUtil.toInteger(map.get("payBusId")), JSON.toJSONString(data), "");
+                socketService.socketSendMessage(PropertiesUtil.getSocketKey() + CommonUtil.toInteger(map.get("payBusId")), JSON.toJSONString(data),"");
                 data.put("code", 0);
                 data.put("msg", "成功");
                 return JSON.toJSONString(data);
-            } else {
+            }else {
                 throw new BusinessException("支付失败");
             }
         } catch (BaseException e) {
-            redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_005);
+            redisCacheUtil.set(statusKey,ConfigConstant.USER_ORDER_STATUS_005);
             logger.error("商机佣金支付成功后，产生错误：" + e);
             data.put("code", -1);
             data.put("msg", e.getErrorMsg());
             return JSON.toJSONString(data);
         } catch (Exception e) {
-            redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_005);
+            redisCacheUtil.set(statusKey,ConfigConstant.USER_ORDER_STATUS_005);
             logger.error("商机佣金支付成功后，产生错误：" + e);
             data.put("code", -1);
             data.put("msg", "失败");
@@ -408,11 +434,12 @@ public class UnionOpportunityController {
     }
 
 
+
     @ApiOperation(value = "生成商机推荐支付订单二维码", produces = "application/json;charset=UTF-8")
     @SysLogAnnotation(op_function = "2", description = "生成商机推荐支付二维码")
     @RequestMapping(value = "/qrCode/{ids}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String payOpportunityQRCode(HttpServletRequest request,
-                                       @ApiParam(name = "ids", value = "商机ids，使用“,”隔开", required = true)
+    public String payOpportunityQRCode(HttpServletRequest request
+            , @ApiParam(name = "ids", value = "商机ids，使用“,”隔开", required = true)
                                        @PathVariable("ids") String ids) {
         try {
             BusUser user = SessionUtils.getLoginUser(request);
@@ -420,23 +447,23 @@ public class UnionOpportunityController {
                 throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
             }
             Map<String, Object> data = unionOpportunityService.payOpportunityQRCode(user.getId(), ids);
-            String str = "?"
-                    + "totalFee=" + data.get("totalFee")
-                    + "&model=" + data.get("model")
-                    + "&busId=" + data.get("busId")
-                    + "&appidType=" + data.get("appidType")
-                    + "&appid=" + data.get("appid")
-                    + "&orderNum=" + data.get("orderNum")
-                    + "&desc=" + data.get("desc")
-                    + "&isreturn=" + data.get("isreturn")
-                    + "&notifyUrl=" + data.get("notifyUrl")
-                    + "&isSendMessage=" + data.get("isSendMessage")
-                    + "&payWay=" + data.get("payWay")
-                    + "&sourceType=" + data.get("sourceType");
-            Map<String, Object> result = new HashMap<>(16);
-            result.put("url", PropertiesUtil.getWxmpUrl() + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + str);
+            StringBuilder sb = new StringBuilder("?");
+            sb.append("totalFee=" + data.get("totalFee"));
+            sb.append("&model=" + data.get("model"));
+            sb.append("&busId=" + data.get("busId"));
+            sb.append("&appidType=" + data.get("appidType"));
+            sb.append("&appid=" + data.get("appid"));
+            sb.append("&orderNum=" + data.get("orderNum"));
+            sb.append("&desc=" + data.get("desc"));
+            sb.append("&isreturn=" + data.get("isreturn"));
+            sb.append("&notifyUrl=" + data.get("notifyUrl"));
+            sb.append("&isSendMessage=" + data.get("isSendMessage"));
+            sb.append("&payWay=" + data.get("payWay"));
+            sb.append("&sourceType=" + data.get("sourceType"));
+            Map<String, Object> result = new HashMap<String, Object>();
+            result.put("url", PropertiesUtil.getWxmpUrl() + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + sb.toString());
             result.put("only", data.get("only"));
-            result.put("userId", PropertiesUtil.getSocketKey() + user.getId());
+            result.put("userId",PropertiesUtil.getSocketKey() + user.getId());
             return GTJsonResult.instanceSuccessMsg(result).toString();
         } catch (BaseException e) {
             logger.error("", e);
@@ -455,20 +482,17 @@ public class UnionOpportunityController {
             String paramKey = RedisKeyUtil.getRecommendPayParamKey(only);
             String statusKey = RedisKeyUtil.getRecommendPayStatusKey(only);
             String status = redisCacheUtil.get(statusKey);
-            if (CommonUtil.isEmpty(status)) {
-                //订单超时
+            if (CommonUtil.isEmpty(status)) {//订单超时
                 status = ConfigConstant.USER_ORDER_STATUS_004;
-            } else {
-                status = JSON.parseObject(status, String.class);
+            }else {
+                status = JSON.parseObject(status,String.class);
             }
-            if (ConfigConstant.USER_ORDER_STATUS_003.equals(status)) {
-                //订单支付成功
+            if (ConfigConstant.USER_ORDER_STATUS_003.equals(status)) {//订单支付成功
                 redisCacheUtil.remove(statusKey);
                 redisCacheUtil.remove(paramKey);
             }
 
-            if (ConfigConstant.USER_ORDER_STATUS_005.equals(status)) {
-                //订单支付失败
+            if (ConfigConstant.USER_ORDER_STATUS_005.equals(status)) {//订单支付失败
                 redisCacheUtil.remove(statusKey);
                 redisCacheUtil.remove(paramKey);
             }

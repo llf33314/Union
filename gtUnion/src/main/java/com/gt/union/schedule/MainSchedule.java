@@ -16,10 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 定时任务器 main模块
- *
- * @author linweicong
- * @version 2017-10-23 14:51:10
+ * Created by Administrator on 2017/9/20 0020.
  */
 @Component
 public class MainSchedule {
@@ -43,10 +40,8 @@ public class MainSchedule {
                 List<UnionMainPermit> updatePermitList = new ArrayList<>();
                 for (UnionMainPermit expiredPermit : expiredPermitList) {
                     UnionMainPermit updatePermit = new UnionMainPermit();
-                    //过期的盟主服务许可id
-                    updatePermit.setId(expiredPermit.getId());
-                    //删除状态
-                    updatePermit.setDelStatus(CommonConstant.DEL_STATUS_YES);
+                    updatePermit.setId(expiredPermit.getId()); //过期的盟主服务许可id
+                    updatePermit.setDelStatus(CommonConstant.DEL_STATUS_YES); //删除状态
                     updatePermitList.add(updatePermit);
                 }
                 this.unionMainPermitService.updateBatchById(updatePermitList);
@@ -68,10 +63,8 @@ public class MainSchedule {
                 List<UnionMainCreate> updateCreateList = new ArrayList<>();
                 for (UnionMainCreate expiredCreate : expiredCreateList) {
                     UnionMainCreate updateCreate = new UnionMainCreate();
-                    //对应的联盟创建记录id
-                    updateCreate.setId(expiredCreate.getId());
-                    //删除状态
-                    updateCreate.setDelStatus(CommonConstant.DEL_STATUS_YES);
+                    updateCreate.setId(expiredCreate.getId()); //对应的联盟创建记录id
+                    updateCreate.setDelStatus(CommonConstant.DEL_STATUS_YES); //删除状态
                     updateCreateList.add(updateCreate);
                 }
                 this.unionMainCreateService.updateBatchById(updateCreateList);

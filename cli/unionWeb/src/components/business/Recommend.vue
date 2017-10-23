@@ -44,7 +44,7 @@
         <el-form-item label="业务备注：" prop="businessMsg">
           <el-input type="textarea" :rows="3" placeholder="请输入业务备注" v-model="ruleForm1.businessMsg" :maxlength="unionNoticeMaxlength" @focus="unionNoticeFocus" @blur="unionNoticeBlur" @change="unionNoticeKeydown($event)" @keydown.native="unionNoticeKeydown($event)" @keyup.native="unionNoticeKeydown($event)" @input.native="unionNoticeKeydown($event)" @onpropertychange.native="unionNoticeKeydown($event)"></el-input>
         </el-form-item>
-        <el-form-item>
+        <el-form-item style="margin-left: 15px;">
           <el-button type="primary" @click="submitForm1('ruleForm1')">确定</el-button>
           <el-button @click="resetForm1('ruleForm1')">取消</el-button>
         </el-form-item>
@@ -227,7 +227,8 @@ export default {
                   duration: 5000
                 });
                 eventBus.$emit("newRecommend");
-                this.show();
+                this.$refs[formName].resetFields();
+                this.init();
               }
             })
             .catch(err => {

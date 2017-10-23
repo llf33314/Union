@@ -1,10 +1,7 @@
 package com.gt.union.brokerage.constant;
 
 /**
- * 佣金 常量接口
- *
- * @author linweicong
- * @version 2017-10-23 15:28:54
+ * Created by Administrator on 2017/9/11 0011.
  */
 public interface BrokerageConstant {
     /**
@@ -51,5 +48,5 @@ public interface BrokerageConstant {
      * 来源类型：商机
      */
     int SOURCE_TYPE_OPPORTUNITY = 2;
-
+    
 }
