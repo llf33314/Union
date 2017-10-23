@@ -92,17 +92,19 @@
 </template>
 
 <script>
-import $http from '@/utils/http.js'
+import $http from '@/utils/http.js';
 export default {
   name: 'union-setting-owner',
   data() {
     // 验证规则
     let blackChargePricePass = (rule, value, callback) => {
       if (this.form.blackIsCharge) {
-        if (!value) {
+        if (value === '') {
           callback(new Error('黑卡价格内容不能为空，请重新输入'));
         } else if (isNaN(value)) {
           callback(new Error('黑卡价格内容必须为数字值，请重新输入'));
+        } else if (value < 1) {
+          callback(new Error('黑卡价格内容必须大于1，请重新输入'));
         } else {
           callback();
         }
@@ -112,10 +114,12 @@ export default {
     };
     let blackValidityDayPass = (rule, value, callback) => {
       if (this.form.blackIsCharge) {
-        if (!value) {
+        if (value === '') {
           callback(new Error('黑卡时效内容不能为空，请重新输入'));
         } else if (isNaN(value)) {
           callback(new Error('黑卡时效内容必须为数字值，请重新输入'));
+        } else if (value < 1) {
+          callback(new Error('黑卡时效内容必须大于1，请重新输入'));
         } else {
           callback();
         }
@@ -125,10 +129,12 @@ export default {
     };
     let redChargePricePass = (rule, value, callback) => {
       if (this.form.redIsAvailable) {
-        if (!value) {
+        if (value === '') {
           callback(new Error('红卡价格内容不能为空，请重新输入'));
         } else if (isNaN(value)) {
           callback(new Error('红卡价格内容必须为数字值，请重新输入'));
+        } else if (value < 1) {
+          callback(new Error('红卡价格内容必须大于1，请重新输入'));
         } else if (value < this.form.blackChargePrice) {
           callback(new Error('红卡价格需大于黑卡价格，请重新输入'));
         } else {
@@ -140,10 +146,12 @@ export default {
     };
     let redValidityDayPass = (rule, value, callback) => {
       if (this.form.redIsAvailable) {
-        if (!value) {
+        if (value === '') {
           callback(new Error('红卡时效内容不能为空，请重新输入'));
         } else if (isNaN(value)) {
-          callback(new Error('红卡价格内容必须为数字值，请重新输入'));
+          callback(new Error('红卡时效内容必须为数字值，请重新输入'));
+        } else if (value < 1) {
+          callback(new Error('红卡时效内容必须大于1，请重新输入'));
         } else {
           callback();
         }
@@ -167,32 +175,20 @@ export default {
         redValidityDay: '',
         redIllustration: '',
         unionIllustration: '',
-        blackIsAvailable: '',
+        blackIsAvailable: ''
       },
       checkList: ['enterpriseName', 'directorPhone'],
       rules: {
-        unionName: [
-          { required: true, message: '联盟名称内容不能为空，请重新输入', trigger: 'blur' }
-        ],
-        blackChargePrice: [
-          { validator: blackChargePricePass, trigger: 'blur' }
-        ],
-        blackValidityDay: [
-          { validator: blackValidityDayPass, trigger: 'blur' }
-        ],
-        redChargePrice: [
-          { validator: redChargePricePass, trigger: 'blur' }
-        ],
-        redValidityDay: [
-          { validator: redValidityDayPass, trigger: 'blur' }
-        ],
-        unionIllustration: [
-          { required: true, message: '联盟说明内容不能为空，请重新输入', trigger: 'blur' }
-        ]
+        unionName: [{ required: true, message: '联盟名称内容不能为空，请重新输入', trigger: 'blur' }],
+        blackChargePrice: [{ validator: blackChargePricePass, trigger: 'blur' }],
+        blackValidityDay: [{ validator: blackValidityDayPass, trigger: 'blur' }],
+        redChargePrice: [{ validator: redChargePricePass, trigger: 'blur' }],
+        redValidityDay: [{ validator: redValidityDayPass, trigger: 'blur' }],
+        unionIllustration: [{ required: true, message: '联盟说明内容不能为空，请重新输入', trigger: 'blur' }]
       },
       materialVisible: false,
-      materialUrl: '',
-    }
+      materialUrl: ''
+    };
   },
   computed: {
     unionMemberId() {
@@ -204,7 +200,7 @@ export default {
   },
   mounted: function() {
     let _this = this;
-    window.addEventListener("message", function(e) {
+    window.addEventListener('message', function(e) {
       // alert("这个是fu页面" + e.data);
       if (e.data && e.data != 'go_back()') {
         _this.form.unionImg = e.data.split(',')[1].replace(/\'|\)/g, '');
@@ -212,7 +208,8 @@ export default {
       _this.materialVisible = false;
     });
     // 获取联盟基本信息
-    $http.get(`/unionMain/${this.unionId}`)
+    $http
+      .get(`/unionMain/${this.unionId}`)
       .then(res => {
         if (res.data.data) {
           this.form.unionName = res.data.data.name;
@@ -226,7 +223,8 @@ export default {
         this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
       });
     // 黑卡信息
-    $http.get(`/unionMainCharge/unionId/${this.unionId}/type/1`)
+    $http
+      .get(`/unionMainCharge/unionId/${this.unionId}/type/1`)
       .then(res => {
         if (res.data.data) {
           this.form.blackChargePrice = res.data.data.chargePrice;
@@ -241,7 +239,8 @@ export default {
         this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
       });
     // 红卡信息
-    $http.get(`/unionMainCharge/unionId/${this.unionId}/type/2`)
+    $http
+      .get(`/unionMainCharge/unionId/${this.unionId}/type/2`)
       .then(res => {
         if (res.data.data) {
           this.form.redChargePrice = res.data.data.chargePrice;
@@ -255,7 +254,8 @@ export default {
         this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
       });
     // 收集信息
-    $http.get(`/unionMainDict/${this.unionId}`)
+    $http
+      .get(`/unionMainDict/${this.unionId}`)
       .then(res => {
         if (res.data.data) {
           res.data.data.forEach((v, i) => {
@@ -263,7 +263,7 @@ export default {
             if (!this.checkList.key) {
               this.checkList.push(v.itemKey);
             }
-          })
+          });
         }
       })
       .catch(err => {
@@ -277,7 +277,7 @@ export default {
       this.materialUrl = 'https://suc.deeptel.com.cn/common/material.do?retUrl=' + window.location.href;
     },
     submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(valid => {
         if (valid) {
           let url = `/unionMain/memberId/${this.unionMemberId}`;
           // 处理要提交的数据
@@ -303,15 +303,14 @@ export default {
           data.unionMainChargeVO.redValidityDay = this.form.redValidityDay;
           data.unionMainDictList = [];
           this.checkList.forEach((v, i) => {
-            data.unionMainDictList.push({ 'itemKey': v });
+            data.unionMainDictList.push({ itemKey: v });
           });
-          $http.put(url, data)
-            .then(res => {
-
-            })
+          $http
+            .put(url, data)
+            .then(res => {})
             .catch(err => {
               this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-            })
+            });
         } else {
           return false;
         }
@@ -319,9 +318,9 @@ export default {
     },
     back() {
       this.$router.push({ path: '/my-union/index' });
-    },
+    }
   }
-}
+};
 </script>
 
 <style lang='less' rel="stylesheet/less" scoped>
