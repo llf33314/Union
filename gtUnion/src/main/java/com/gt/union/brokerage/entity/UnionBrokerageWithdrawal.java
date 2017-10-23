@@ -10,12 +10,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * <p>
  * 佣金提现记录
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-23 15:28:54
  */
 @TableName("t_union_brokerage_withdrawal")
 public class UnionBrokerageWithdrawal extends Model<UnionBrokerageWithdrawal> {
