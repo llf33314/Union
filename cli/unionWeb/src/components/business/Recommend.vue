@@ -227,7 +227,8 @@ export default {
                   duration: 5000
                 });
                 eventBus.$emit("newRecommend");
-                this.show();
+                this.$refs[formName].resetFields();
+                this.init();
               }
             })
             .catch(err => {
