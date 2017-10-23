@@ -85,7 +85,7 @@ export default {
       }
     };
     let integralExchangePercentPass = (rule, value, callback) => {
-      if (!value) {
+      if (value === '') {
         callback(new Error('积分折扣率内容不能为空，请重新输入'));
       } else if (isNaN(value)) {
         callback(new Error('积分折扣率必须为数字值，请重新输入'));
@@ -144,8 +144,7 @@ export default {
           this.form.addressCityCode = this.form.addressCityCode;
           this.form.addressDistrictCode = this.form.addressDistrictCode;
           this.form.region = [this.form.addressProvinceCode, this.form.addressCityCode, this.form.addressDistrictCode];
-          // 积分折扣率
-          this.form.integralExchangePercent = this.form.cardDividePercent; 
+          this.form.integralExchangePercent = this.form.integralExchangePercent;
         }
       })
       .catch(err => {
