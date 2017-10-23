@@ -172,17 +172,17 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
             Wrapper wrapper = new Wrapper() {
                 @Override
                 public String getSqlSegment() {
-                    StringBuilder sbSqlSegment = new StringBuilder(" pp")
-                            .append(" LEFT JOIN t_union_member m ON m.id = pp.member_id")
-                            .append(" WHERE pp.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                            .append("  AND m.union_id = ").append(unionOwner.getUnionId())
-                            .append("  AND exists(")
-                            .append("    SELECT pi.id FROM t_union_preferential_item pi")
-                            .append("    WHERE pi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                            .append("      AND pi.status = ").append(itemStatus)
-                            .append("  )")
-                            .append(" ORDER BY pp.id ASC");
-                    return sbSqlSegment.toString();
+                    return " pp"
+                            + " LEFT JOIN t_union_member m ON m.id = pp.member_id"
+                            + " WHERE pp.del_status = " + CommonConstant.DEL_STATUS_NO
+                            + "  AND m.union_id = " + unionOwner.getUnionId()
+                            + "  AND m.id != " + unionOwner.getId()
+                            + "  AND exists("
+                            + "    SELECT pi.id FROM t_union_preferential_item pi"
+                            + "    WHERE pi.del_status = " + CommonConstant.DEL_STATUS_NO
+                            + "      AND pi.status = " + itemStatus
+                            + "  )"
+                            + " ORDER BY pp.id ASC";
                 }
             };
             //优惠项目id
