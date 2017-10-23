@@ -113,7 +113,7 @@ export default {
       .then(res => {
         if (res.data.data) {
           this.tableData = res.data.data.records;
-          this.totalAll = res.data.data.total;
+          this.totalAll = res.data.data.pages;
         }
       })
       .catch(err => {
@@ -129,7 +129,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.total;
+            this.totalAll = res.data.data.pages;
           }
         })
         .catch(err => {
@@ -143,7 +143,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.total;
+            this.totalAll = res.data.data.pages;
           }
         })
         .catch(err => {

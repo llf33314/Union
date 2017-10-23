@@ -118,7 +118,7 @@ export default {
           .then(res => {
             if (res.data.data) {
               this.tableData = res.data.data.records;
-              this.totalAll = res.data.data.total;
+              this.totalAll = res.data.data.pages;
               this.tableData.forEach((v, i) => {
                 switch (v.isAccept) {
                   case 1:
@@ -152,7 +152,7 @@ export default {
           .then(res => {
             if (res.data.data) {
               this.tableData = res.data.data.records;
-              this.totalAll = res.data.data.total;
+              this.totalAll = res.data.data.pages;
               this.tableData.forEach((v, i) => {
                 switch (v.isAccept) {
                   case 1:
@@ -192,7 +192,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.total;
+            this.totalAll = res.data.data.pages;
             this.tableData.forEach((v, i) => {
               switch (v.isAccept) {
                 case 1:
@@ -231,7 +231,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.total;
+            this.totalAll = res.data.data.pages;
             this.tableData.forEach((v, i) => {
               switch (v.isAccept) {
                 case 1:

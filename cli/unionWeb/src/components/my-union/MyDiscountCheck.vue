@@ -245,7 +245,7 @@ export default {
       .then(res => {
         if (res.data.data) {
           this.tableData1 = res.data.data.pageData.records;
-          this.totalAll1 = res.data.data.total;
+          this.totalAll1 = res.data.data.pages;
         } else {
           this.tableData1 = [];
           this.totalAll1 = 0;
@@ -259,7 +259,7 @@ export default {
       .then(res => {
         if (res.data.data) {
           this.tableData2 = res.data.data.pageData.records;
-          this.totalAll2 = res.data.data.total;
+          this.totalAll2 = res.data.data.pages;
         } else {
           this.tableData2 = [];
           this.totalAll2 = 0;
@@ -273,7 +273,7 @@ export default {
       .then(res => {
         if (res.data.data) {
           this.tableData3 = res.data.data.pageData.records;
-          this.totalAll3 = res.data.data.total;
+          this.totalAll3 = res.data.data.pages;
         } else {
           this.tableData3 = [];
           this.totalAll3 = 0;
@@ -287,7 +287,7 @@ export default {
       .then(res => {
         if (res.data.data) {
           this.tableData4 = res.data.data.pageData.records;
-          this.totalAll4 = res.data.data.total;
+          this.totalAll4 = res.data.data.pages;
         } else {
           this.tableData4 = [];
           this.totalAll4 = 0;
@@ -304,7 +304,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData1 = res.data.data.pageData.records;
-            this.totalAll11 = res.data.data.total;
+            this.totalAll1 = res.data.data.pages;
           } else {
             this.tableData1 = [];
             this.totalAll1 = 0;
@@ -319,7 +319,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData2 = res.data.data.pageData.records;
-            this.totalAll12 = res.data.data.total;
+            this.totalAll2 = res.data.data.pages;
           } else {
             this.tableData2 = [];
             this.totalAll2 = 0;
@@ -334,7 +334,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData3 = res.data.data.pageData.records;
-            this.totalAll3 = res.data.data.total;
+            this.totalAll3 = res.data.data.pages;
           } else {
             this.tableData3 = [];
             this.totalAll3 = 0;
@@ -349,7 +349,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData4 = res.data.data.pageData.records;
-            this.totalAll4 = res.data.data.total;
+            this.totalAll4 = res.data.data.pages;
           } else {
             this.tableData4 = [];
             this.totalAll4 = 0;
@@ -455,7 +455,7 @@ export default {
             .then(res => {
               if (res.data.data) {
                 this.tableData1 = res.data.data.pageData.records;
-                this.totalAll1 = res.data.data.total;
+                this.totalAll1 = res.data.data.pages;
               } else {
                 this.tableData1 = [];
                 this.totalAll1 = 0;
@@ -481,7 +481,7 @@ export default {
             .then(res => {
               if (res.data.data) {
                 this.tableData2 = res.data.data.pageData.records;
-                this.totalAll2 = res.data.data.total;
+                this.totalAll2 = res.data.data.pages;
               } else {
                 this.tableData2 = [];
                 this.totalAll2 = 0;
@@ -517,7 +517,7 @@ export default {
             .then(res => {
               if (res.data.data) {
                 this.tableData2 = res.data.data.pageData.records;
-                this.totalAll2 = res.data.data.total;
+                this.totalAll2 = res.data.data.pages;
               } else {
                 this.tableData2 = [];
                 this.totalAll2 = 0;

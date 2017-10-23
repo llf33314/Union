@@ -155,7 +155,7 @@ export default {
       .then(res => {
         if (res.data.data) {
           this.datas = res.data.data.records;
-          this.totalAll = res.data.data.total;
+          this.totalAll = res.data.data.pages;
         } else {
           this.datas = [];
           this.totalAll = 0;
@@ -190,7 +190,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.datas = res.data.data.records;
-            this.totalAll = res.data.data.total;
+            this.totalAll = res.data.data.pages;
           } else {
             this.datas = [];
             this.totalAll = 0;
