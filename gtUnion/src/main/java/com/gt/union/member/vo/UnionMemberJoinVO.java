@@ -10,7 +10,10 @@ import org.hibernate.validator.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 
 /**
- * Created by Administrator on 2017/9/12 0012.
+ * 加入联盟申请信息 VO
+ *
+ * @author linweicong
+ * @version 2017-10-23 08:34:54
  */
 @ApiModel(value = "UnionMemberJoinVO", description = "加入联盟申请信息实体")
 @Data
@@ -19,8 +22,6 @@ public class UnionMemberJoinVO {
      * 商家名称
      */
     @ApiModelProperty(value = "商家名称", required = true)
-    @NotBlank(message = "商家名称内容不能为空")
-    @StringLengthValid(length = 10, message = "商家名称内容不可超过10字")
     private String busUserName;
 
     /**

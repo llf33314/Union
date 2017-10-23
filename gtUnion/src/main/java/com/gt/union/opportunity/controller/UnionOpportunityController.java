@@ -204,14 +204,6 @@ public class UnionOpportunityController {
             }
             String filename = "佣金往来明细";
             ExportUtil.responseExport(response, wb, filename);
-        }catch (BaseException e){
-            response.setContentType("text/html");
-            response.setHeader("Cache-Control", "no-cache");
-            response.setCharacterEncoding("UTF-8");
-            String result = "<script>alert('导出失败')</script>";
-            PrintWriter writer = response.getWriter();
-            writer.print(result);
-            writer.close();
         } catch (DataExportException e){
 
         } catch (Exception e) {

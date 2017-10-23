@@ -1,7 +1,10 @@
 package com.gt.union.member.constant;
 
 /**
- * Created by Administrator on 2017/9/8 0008.
+ * 联盟成员 常量接口
+ *
+ * @author linweicong
+ * @version 2017-10-19 16:27:37
  */
 public interface MemberConstant {
     /**

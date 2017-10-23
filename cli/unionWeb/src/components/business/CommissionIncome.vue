@@ -32,7 +32,7 @@
       </el-col>
       <el-col style="width:200px;">
         <div class="grid-content1 bg-purple">
-          <el-input placeholder="请输入关键字" icon="search" v-model="input" :on-icon-click="search" class="input-search2 fl">
+          <el-input placeholder="请输入关键字"  @keyup.enter.native="search" icon="search" v-model="input" :on-icon-click="search" class="input-search2 fl">
           </el-input>
         </div>
       </el-col>
@@ -71,7 +71,8 @@
       </el-table-column>
       <el-table-column prop="opportunityType" label="交易类型" min-width="100px">
       </el-table-column>
-      <el-table-column prop="isClose" label="佣金结算状态" min-width="140px" :filters="[{ text: '未结算', value: '未结算' }, { text: '已结算', value: '已结算' }]" :filter-method="filterTag" filter-placement="bottom-end">
+      <el-table-column prop="isClose" label="佣金结算状态" min-width="140px" :filters="[{ text: '未结算', value: '未结算' }, { text: '已结算', value: '已结算' }]"
+                       :filter-method="filterTag" filter-placement="bottom-end">
         <template scope="scope">
           <el-tag :type="scope.row.isClose === '未结算' ? 'danger' : 'success'">{{scope.row.isClose}}</el-tag>
         </template>
