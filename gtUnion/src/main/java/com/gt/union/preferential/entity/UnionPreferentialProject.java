@@ -10,12 +10,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * <p>
  * 优惠项目
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-23 14:51:10
  */
 @TableName("t_union_preferential_project")
 public class UnionPreferentialProject extends Model<UnionPreferentialProject> {
@@ -25,83 +23,83 @@ public class UnionPreferentialProject extends Model<UnionPreferentialProject> {
     /**
      * 主键
      */
-	@TableId(value="id", type= IdType.AUTO)
-	private Integer id;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
     /**
      * 创建时间
      */
-	private Date createtime;
+    private Date createtime;
     /**
      * 删除状态（0：未删除，1：删除）
      */
-	@TableField("del_status")
-	private Integer delStatus;
+    @TableField("del_status")
+    private Integer delStatus;
     /**
      * 修改时间
      */
-	private Date modifytime;
+    private Date modifytime;
     /**
      * 盟员id
      */
-	@TableField("member_id")
-	private Integer memberId;
+    @TableField("member_id")
+    private Integer memberId;
     /**
      * 说明
      */
-	private String illustration;
+    private String illustration;
 
 
-	public Integer getId() {
-		return id;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public Date getCreatetime() {
-		return createtime;
-	}
+    public Date getCreatetime() {
+        return createtime;
+    }
 
-	public void setCreatetime(Date createtime) {
-		this.createtime = createtime;
-	}
+    public void setCreatetime(Date createtime) {
+        this.createtime = createtime;
+    }
 
-	public Integer getDelStatus() {
-		return delStatus;
-	}
+    public Integer getDelStatus() {
+        return delStatus;
+    }
 
-	public void setDelStatus(Integer delStatus) {
-		this.delStatus = delStatus;
-	}
+    public void setDelStatus(Integer delStatus) {
+        this.delStatus = delStatus;
+    }
 
-	public Date getModifytime() {
-		return modifytime;
-	}
+    public Date getModifytime() {
+        return modifytime;
+    }
 
-	public void setModifytime(Date modifytime) {
-		this.modifytime = modifytime;
-	}
+    public void setModifytime(Date modifytime) {
+        this.modifytime = modifytime;
+    }
 
-	public Integer getMemberId() {
-		return memberId;
-	}
+    public Integer getMemberId() {
+        return memberId;
+    }
 
-	public void setMemberId(Integer memberId) {
-		this.memberId = memberId;
-	}
+    public void setMemberId(Integer memberId) {
+        this.memberId = memberId;
+    }
 
-	public String getIllustration() {
-		return illustration;
-	}
+    public String getIllustration() {
+        return illustration;
+    }
 
-	public void setIllustration(String illustration) {
-		this.illustration = illustration;
-	}
+    public void setIllustration(String illustration) {
+        this.illustration = illustration;
+    }
 
-	@Override
-	protected Serializable pkVal() {
-		return this.id;
-	}
+    @Override
+    protected Serializable pkVal() {
+        return this.id;
+    }
 
 }

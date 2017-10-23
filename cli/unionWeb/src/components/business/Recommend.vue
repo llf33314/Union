@@ -181,8 +181,7 @@ export default {
     init() {
       if (this.initUnionId) {
         // 获取联盟列表
-        $http
-          .get(`/unionMember/listMap`)
+        $http.get(`/unionMember/listMap`)
           .then(res => {
             if (res.data.data && res.data.data.length > 0) {
               this.options1 = res.data.data;
@@ -192,6 +191,9 @@ export default {
               });
             } else {
               this.options1 = [];
+            };
+            if(this.options1.length === 1) {
+              this.ruleForm1.unionRadio = this.options1[0].value;
             }
           })
           .catch(err => {

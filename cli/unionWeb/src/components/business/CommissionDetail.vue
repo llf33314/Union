@@ -32,9 +32,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination @current-change="handleCurrentChange"
-                   :current-page.sync="currentPage" :page-size="10"
-                   layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
+    <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
     </el-pagination>
     <!-- 弹出框 佣金明细 -->
     <el-dialog title="佣金明细" :visible.sync="dialogTableVisible">
@@ -59,22 +57,22 @@
 </template>
 
 <script>
-import $http from "@/utils/http.js";
+import $http from '@/utils/http.js';
 export default {
-  name: "commission-detail",
+  name: 'commission-detail',
   data() {
     return {
-      memberId: "",
+      memberId: '',
       options1: [],
       tableData: [],
       currentPage: 1,
       dialogTableVisible: false,
       gridData: [],
-      unionName: "",
-      enterpriseName: "",
-      contactMoneySum: "",
+      unionName: '',
+      enterpriseName: '',
+      contactMoneySum: '',
       totalAll: 0,
-      tgtMemberId: ""
+      tgtMemberId: ''
     };
   },
   computed: {
@@ -85,7 +83,7 @@ export default {
   watch: {
     initUnionId: function() {
       this.init();
-    },
+    }
   },
   mounted: function() {
     this.init();
@@ -111,7 +109,7 @@ export default {
             this.$message({
               showClose: true,
               message: err.toString(),
-              type: "error",
+              type: 'error',
               duration: 5000
             });
           });
@@ -130,7 +128,7 @@ export default {
             this.$message({
               showClose: true,
               message: err.toString(),
-              type: "error",
+              type: 'error',
               duration: 5000
             });
           });
@@ -139,9 +137,7 @@ export default {
     // 改变选取联盟
     change() {
       $http
-        .get(
-          `/unionOpportunity/contact/page?current=1&memberId=${this.memberId}`
-        )
+        .get(`/unionOpportunity/contact/page?current=1&memberId=${this.memberId}`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
@@ -155,7 +151,7 @@ export default {
           this.$message({
             showClose: true,
             message: err.toString(),
-            type: "error",
+            type: 'error',
             duration: 5000
           });
         });
@@ -163,10 +159,7 @@ export default {
     // 分页查询
     handleCurrentChange(val) {
       $http
-        .get(
-          `/unionOpportunity/contact/page?current=${val}&memberId=${this
-            .memberId}`
-        )
+        .get(`/unionOpportunity/contact/page?current=${val}&memberId=${this.memberId}`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
@@ -180,7 +173,7 @@ export default {
           this.$message({
             showClose: true,
             message: err.toString(),
-            type: "error",
+            type: 'error',
             duration: 5000
           });
         });
@@ -190,10 +183,7 @@ export default {
       this.dialogTableVisible = true;
       this.tgtMemberId = scope.row.tgtMemberId;
       $http
-        .get(
-          `/unionOpportunity/contact/detail?tgtMemberId=${this
-            .tgtMemberId}&memberId=${this.memberId}`
-        )
+        .get(`/unionOpportunity/contact/detail?tgtMemberId=${this.tgtMemberId}&memberId=${this.memberId}`)
         .then(res => {
           if (res.data.data) {
             this.gridData = res.data.data.contactList;
@@ -202,16 +192,16 @@ export default {
             this.contactMoneySum = res.data.data.contactMoneySum;
           } else {
             this.gridData = [];
-            this.unionName = "";
-            this.enterpriseName = "";
-            this.contactMoneySum = "";
+            this.unionName = '';
+            this.enterpriseName = '';
+            this.contactMoneySum = '';
           }
         })
         .catch(err => {
           this.$message({
             showClose: true,
             message: err.toString(),
-            type: "error",
+            type: 'error',
             duration: 5000
           });
         });
@@ -220,15 +210,12 @@ export default {
     output1() {
       let url =
         this.$store.state.baseUrl +
-        `/unionOpportunity/contact/exportDetail?tgtMemberId=${this
-          .tgtMemberId}&memberId=${this.memberId}`;
+        `/unionOpportunity/contact/exportDetail?tgtMemberId=${this.tgtMemberId}&memberId=${this.memberId}`;
       window.open(url);
     },
     // 导出支付明细
     output2() {
-      let url =
-        this.$store.state.baseUrl +
-        `/unionOpportunity/contact/export?memberId=${this.memberId}`;
+      let url = this.$store.state.baseUrl + `/unionOpportunity/contact/export?memberId=${this.memberId}`;
       window.open(url);
     }
   }

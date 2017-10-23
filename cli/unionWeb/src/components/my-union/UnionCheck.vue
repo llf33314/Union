@@ -38,12 +38,30 @@
         <el-table-column prop="" label="操作" width="160">
           <template scope="scope">
             <div class="sizeAndColor">
-              <el-button size="small" type="danger" @click="handlePass(scope.$index, scope.row)">通过</el-button>
-              <el-button size="small" @click="handleFail(scope.$index, scope.row)">不通过</el-button>
+              <el-button size="small" type="danger" @click="handlePass(scope)">通过</el-button>
+              <el-button size="small" @click="handleFail(scope)">不通过</el-button>
             </div>
           </template>
         </el-table-column>
       </el-table>
+    </div>
+    <!-- 弹出框 确认通过 -->
+    <div class="model_02">
+      <el-dialog title="是否确认通过申请" :visible.sync="visible1" size="tiny">
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="confirm1">确定</el-button>
+          <el-button @click="visible1=false">取消</el-button>
+        </span>
+      </el-dialog>
+    </div>
+    <!-- 弹出框 确认不通过 -->
+    <div class="model_02">
+      <el-dialog title="是否确认不通过申请" :visible.sync="visible2" size="tiny">
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="confirm2">确定</el-button>
+          <el-button @click="visible2=false">取消</el-button>
+        </span>
+      </el-dialog>
     </div>
     <div class="footer">
       <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage"
@@ -54,13 +72,35 @@
 </template>
 
 <script>
-import Breadcrumb from '@/components/public-components/Breadcrumb'
-import $http from '@/utils/http.js'
+import Breadcrumb from '@/components/public-components/Breadcrumb';
+import $http from '@/utils/http.js';
 
 export default {
   name: 'union-check',
   components: {
     Breadcrumb
+  },
+  data() {
+    return {
+      value: '',
+      options: [
+        {
+          value: 'joinEnterpriseName',
+          label: '申请企业'
+        },
+        {
+          value: 'joinDirectorPhone',
+          label: '联系电话'
+        }
+      ],
+      input: '',
+      currentPage: 1,
+      tableData: [],
+      totalAll: 0,
+      joinId: '',
+      visible1: false,
+      visible2: false,
+    };
   },
   computed: {
     unionMemberId() {
@@ -68,7 +108,8 @@ export default {
     }
   },
   mounted: function() {
-    $http.get(`/unionMemberJoin/memberId/${this.unionMemberId}?current=1`)
+    $http
+      .get(`/unionMemberJoin/memberId/${this.unionMemberId}?current=1`)
       .then(res => {
         if (res.data.data) {
           this.tableData = res.data.data.records;
@@ -79,26 +120,12 @@ export default {
         this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
       });
   },
-  data() {
-    return {
-      value: '',
-      options: [{
-        value: 'joinEnterpriseName',
-        label: '申请企业'
-      }, {
-        value: 'joinDirectorPhone',
-        label: '联系电话'
-      }],
-      input: '',
-      currentPage: 1,
-      tableData: [],
-      totalAll: 0,
-    }
-  },
+
   methods: {
     // 带条件查询
     search() {
-      $http.get(`/unionMemberJoin/memberId/${this.unionMemberId}?current=1&` + this.value + '=' + this.input)
+      $http
+        .get(`/unionMemberJoin/memberId/${this.unionMemberId}?current=1&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
@@ -111,7 +138,8 @@ export default {
     },
     // 分页查询
     handleCurrentChange(val) {
-      $http.get(`/unionMemberJoin/memberId/${this.unionMemberId}?&current=${val}&` + this.value + '=' + this.input)
+      $http
+        .get(`/unionMemberJoin/memberId/${this.unionMemberId}?&current=${val}&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
@@ -122,26 +150,46 @@ export default {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
-    handlePass(index, row) {
-      let url = `/unionMemberJoin/${row.joinId}/memberId/${this.unionMemberId}?isOK=1`;
-      $http.put(url)
+    // 通过
+    handlePass(scope) {
+      this.visible1 = true;
+      this.joinId = scope.row.joinId;
+    },
+    // 确认通过
+    confirm1() {
+      let url = `/unionMemberJoin/${this.joinId}/memberId/${this.unionMemberId}?isOK=1`;
+      $http
+        .put(url)
         .then(res => {
+          if (res.data.success) {
+            this.$message({ showClose: true, message: '审核通过', type: 'success', duration: 5000 });
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
-    handleFail(index, row) {
-      let url = `/unionMemberJoin/${row.joinId}/memberId/${this.unionMemberId}?isOK=0`;
-      $http.put(url)
+    // 不通过
+    handleFail(scope) {
+      his.visible2 = true;
+      this.joinId = scope.row.joinId;
+    },
+    // 确认不通过
+    confirm2() {
+      let url = `/unionMemberJoin/${this.joinId}/memberId/${this.unionMemberId}?isOK=0`;
+      $http
+        .put(url)
         .then(res => {
+          if (res.data.success) {
+            this.$message({ showClose: true, message: '审核通过', type: 'success', duration: 5000 });
+          };
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
-    },
+    }
   }
-}
+};
 </script>
 <style lang='less' rel="stylesheet/less" scoped>
 .apply_for {

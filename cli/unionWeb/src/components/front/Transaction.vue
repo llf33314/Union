@@ -38,20 +38,20 @@
             </el-radio-group>
           </el-form-item>
         </div>
-        <el-form-item label="联盟卡类型:" prop="cardType">
+        <el-form-item label="联盟卡类型:" prop="cardType" v-if="form2.cards.red || form2.cards.black">
           <el-radio-group v-model="form2.cardType">
-            <el-radio :label="2" v-if="form2.red != undefined && form2.red">红卡</el-radio>
-            <el-radio :label="1" v-if="form2.black != undefined && form2.black">黑卡</el-radio>
+            <el-radio :label="2" v-if="form2.cards.red">红卡</el-radio>
+            <el-radio :label="1" v-if="form2.cards.black">黑卡</el-radio>
           </el-radio-group>
         </el-form-item>
         <el-form-item label="联盟卡有效期:" v-if="form2.cardType === 2">
-          {{ form2.cards.red.termTime }}
+          {{ form2.cards.red.termTime}}
         </el-form-item>
         <el-form-item label="价格:" v-if="form2.cardType === 2 ">
           ￥{{ form2.cards.red.price | formatPrice }}
         </el-form-item>
         <el-form-item label="联盟卡有效期:" v-if="form2.cardType === 1">
-          {{ form2.cards.black.termTime }}
+          {{ form2.cards.black.termTime}}
         </el-form-item>
         <el-form-item label="价格:" v-if="form2.cardType === 1">
           ￥{{ form2.cards.black.price | formatPrice }}
@@ -121,7 +121,7 @@
 </template>
 
 <script>
-import $http from '@/utils/http.js'
+import $http from '@/utils/http.js';
 export default {
   name: 'transaction',
   data() {
@@ -140,38 +140,32 @@ export default {
         phone: '',
         code: '',
         getVerificationCode: false,
-        countDownTime: '',
+        countDownTime: ''
       },
       rules: {
-        code: [
-          { required: true, message: '验证码不能为空，请重新输入', trigger: 'blur' }
-        ],
-        phone: [
-          { validator: phonePass, trigger: 'blur' }
-        ],
+        code: [{ required: true, message: '验证码不能为空，请重新输入', trigger: 'blur' }],
+        phone: [{ validator: phonePass, trigger: 'blur' }]
       },
       visible2: false,
       follow_: '',
       form2: {
         follow: 0,
         cardType: '',
-        red: {
-          price: '',
-          termTime: '',
-        },
-        black: {
-          price: '',
-          termTime: '',
-        },
+        cards: {
+          red: {
+            price: '',
+            termTime: ''
+          },
+          black: {
+            price: '',
+            termTime: ''
+          }
+        }
       },
       unionId: '',
       rules2: {
-        unionId: [
-          { type: 'number', required: true, message: '请选择联盟', trigger: 'change' }
-        ],
-        cardType: [
-          { type: 'number', required: true, message: '请选择联盟卡类型', trigger: 'change' }
-        ],
+        unionId: [{ type: 'number', required: true, message: '请选择联盟', trigger: 'change' }],
+        cardType: [{ type: 'number', required: true, message: '请选择联盟卡类型', trigger: 'change' }]
       },
       visible3: false,
       visible4: false,
@@ -183,7 +177,7 @@ export default {
       socket1: '',
       socketFlag1: {
         only: '',
-        status: '',
+        status: ''
       },
       wxData: {},
       wxData_: {},
@@ -194,14 +188,12 @@ export default {
       socket2: '',
       socketFlag2: {
         only: '',
-        status: '',
+        status: ''
       },
-      wxUser:false,
-    }
+      wxUser: false
+    };
   },
-  mounted: function() {
-
-  },
+  mounted: function() {},
   watch: {
     follow_: function() {
       if (this.follow_) {
@@ -222,30 +214,27 @@ export default {
   filters: {
     // 价格格式
     formatPrice: function(value) {
-      if (!value) {
-        return ''
-      } else {
-        return (Number(value)).toFixed(2);
-      }
+      return Number(value).toFixed(2);
     }
   },
   methods: {
     // 获取验证码
     getVerificationCode() {
-      $http.get(`/unionCard/phoneCode?phone=${this.form1.phone}`)
+      $http
+        .get(`/unionCard/phoneCode?phone=${this.form1.phone}`)
         .then(res => {
-            if(res.data.success){
-              this.form1.getVerificationCode = true;
-              this.form1.countDownTime = 60;
-              let timer1 = setInterval(() => {
-                this.form1.countDownTime--;
-                if (this.form1.countDownTime === 0) {
-                  this.form1.getVerificationCode = false;
-                  this.form1.countDownTime = '';
-                  clearInterval(timer1);
-                }
-              }, 1000)
-            }
+          if (res.data.success) {
+            this.form1.getVerificationCode = true;
+            this.form1.countDownTime = 60;
+            let timer1 = setInterval(() => {
+              this.form1.countDownTime--;
+              if (this.form1.countDownTime === 0) {
+                this.form1.getVerificationCode = false;
+                this.form1.countDownTime = '';
+                clearInterval(timer1);
+              }
+            }, 1000);
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -253,19 +242,38 @@ export default {
     },
     // 确认验证码
     confirmCode(formName) {
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(valid => {
         if (valid) {
-          $http.get(`/unionCard/info?phone=${this.form1.phone}&code=${this.form1.code}`)
+          $http
+            .get(`/unionCard/info?phone=${this.form1.phone}&code=${this.form1.code}`)
             .then(res => {
               if (res.data.data) {
                 this.form2.unions = res.data.data.unions;
+                if (this.form2.unions) {
+                  this.unionId = this.form2.unions[0].id;
+                };
                 this.form2.follow = res.data.data.follow;
                 this.form2.cards = res.data.data.cards;
+                if (this.form2.cards.red) {
+                  if (this.form2.cards.red.termTime) {
+                    this.form2.cards.red.termTime = this.form2.cards.red.termTime + '天';
+                  } else {
+                    this.form2.cards.red.termTime = '无';
+                  }
+                }
+                if (this.form2.cards.black) {
+                  if (this.form2.cards.black.termTime) {
+                    this.form2.cards.black.termTime = this.form2.cards.black.termTime + '天';
+                  } else {
+                    this.form2.cards.black.termTime = '无';
+                  }
+                }
                 this.visible2 = true;
                 //判断是否可以关注 然后获取二维码
-                if(this.form2.follow == 1 && !this.wxUser){
+                if (this.form2.follow == 1 && !this.wxUser) {
                   this.wxUser = true;
-                  $http.get(`/unionCard/wxUser/QRcode`)
+                  $http
+                    .get(`/unionCard/wxUser/QRcode`)
                     .then(res => {
                       if (res.data.data) {
                         this.codeSrc1 = res.data.data.qrurl;
@@ -284,7 +292,7 @@ export default {
                         // this.socket1 = io.connect('http://183.47.242.2:8881'); // 堡垒
                         var userId = this.userId1;
                         this.socket1.on('connect', function() {
-                          let jsonObject = { userId: userId, message: "0" };
+                          let jsonObject = { userId: userId, message: '0' };
                           _this.socket1.emit('auth', jsonObject);
                         });
                       }
@@ -312,11 +320,11 @@ export default {
         } else {
           return false;
         }
-      })
+      });
     },
     // 提交
     submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(valid => {
         if (valid) {
           let url = `/unionCard`;
           let data = {};
@@ -325,11 +333,15 @@ export default {
           data.memberId = this.memberId - 0;
           data.phone = this.form1.phone;
           data.unionId = this.unionId;
-          $http.post(url, data)
+          $http
+            .post(url, data)
             .then(res => {
               if (res.data.success && res.data.data) {
                 this.visible3 = true;
-                $http.get(`/unionCard/qrCode?phone=${data.phone}&memberId=${data.memberId}&unionId=${data.unionId}&cardType=${data.cardType}`)
+                $http
+                  .get(
+                    `/unionCard/qrCode?phone=${data.phone}&memberId=${data.memberId}&unionId=${data.unionId}&cardType=${data.cardType}`
+                  )
                   .then(res => {
                     if (res.data.data) {
                       this.codeSrc2 = res.data.data.url;
@@ -339,7 +351,7 @@ export default {
                       this.codeSrc2 = '';
                       this.only = '';
                       this.userId2 = '';
-                    };
+                    }
                   })
                   .then(res => {
                     var _this = this;
@@ -348,7 +360,7 @@ export default {
                       // this.socket2 = io.connect('http://183.47.242.2:8881'); // 堡垒
                       var userId = this.userId2;
                       this.socket2.on('connect', function() {
-                        let jsonObject = { userId: userId, message: "0" };
+                        let jsonObject = { userId: userId, message: '0' };
                         _this.socket2.emit('auth', jsonObject);
                       });
                     }
@@ -365,9 +377,9 @@ export default {
                             _this.$message({ showClose: true, message: '请求超时', type: 'warning', duration: 5000 });
                           } else if (msg.status == '005') {
                             _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
-                          };
-                        };
-                      };
+                          }
+                        }
+                      }
                       _this.socketFlag2.only = msg.only;
                       _this.socketFlag2.status = msg.status;
                     });
@@ -393,7 +405,7 @@ export default {
         } else {
           return false;
         }
-      })
+      });
     },
     // 取消
     cancel(formName) {
@@ -416,9 +428,9 @@ export default {
       alink.href = this.codeSrc1;
       alink.download = 'wx.jpg';
       alink.click();
-    },
+    }
   }
-}
+};
 </script>
 
 <style lang='less' rel="stylesheet/less" scoped>
@@ -438,8 +450,8 @@ export default {
   height: 720px;
   overflow: auto;
   width: 420px;
-  >p {
-    background: #EEF1F6;
+  > p {
+    background: #eef1f6;
     padding: 15px 30px;
     font-size: 12px;
   }
@@ -447,19 +459,19 @@ export default {
   .middle_ {
     text-align: center;
     padding: 50px 42px 40px 58px;
-    >img {
+    > img {
       display: block;
       margin: 0 40px 30px 40px;
     }
   }
-  >span {
+  > span {
     display: block;
     margin: 0px 42px 40px 58px;
     border-top: 1px solid #ddd;
     padding-top: 40px;
-    p{
-      color:#999999;
-    };
+    p {
+      color: #999999;
+    }
   }
 }
 .drop_down1 {
@@ -467,7 +479,7 @@ export default {
   overflow: auto;
   width: 420px;
   > p {
-    background: #EEF1F6;
+    background: #eef1f6;
     padding: 15px 30px;
     font-size: 12px;
   }
