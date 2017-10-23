@@ -106,40 +106,40 @@
 </template>
 
 <script>
-import $http from "@/utils/http.js";
+import $http from '@/utils/http.js';
 export default {
-  name: "mybusiness",
+  name: 'mybusiness',
   data() {
     return {
-      unionId: "",
+      unionId: '',
       options1: [],
-      value: "",
+      value: '',
       options2: [
         {
-          value: "clientName",
-          label: "顾客姓名"
+          value: 'clientName',
+          label: '顾客姓名'
         },
         {
-          value: "clientPhone",
-          label: "顾客电话"
+          value: 'clientPhone',
+          label: '顾客电话'
         }
       ],
-      input: "",
+      input: '',
       tableData: [],
       currentPage: 1,
       dialogVisible: false,
       dialogVisible1: false,
       dialogVisible2: false,
       detailData: {
-        userName: "",
-        userPhone: "",
-        enterpriseName: "",
-        unionName: "",
-        isAccept: "",
-        businessMsg: ""
+        userName: '',
+        userPhone: '',
+        enterpriseName: '',
+        unionName: '',
+        isAccept: '',
+        businessMsg: ''
       },
-      acceptancePrice: "",
-      opportunityId: "",
+      acceptancePrice: '',
+      opportunityId: '',
       //请求到的所有表格列表总数目;
       totalAll: 0
     };
@@ -158,7 +158,7 @@ export default {
         .get(
           `/unionOpportunity/toMe?current=1&unionId=${this.unionId}&` +
             this.value +
-            "=" +
+            '=' +
             this.input
         )
         .then(res => {
@@ -168,13 +168,13 @@ export default {
             this.tableData.forEach((v, i) => {
               switch (v.isAccept) {
                 case 1:
-                  v.isAccept = "未处理";
+                  v.isAccept = '未处理';
                   break;
                 case 2:
-                  v.isAccept = "已完成";
+                  v.isAccept = '已完成';
                   break;
                 case 3:
-                  v.isAccept = "已拒绝";
+                  v.isAccept = '已拒绝';
               }
             });
           } else {
@@ -186,7 +186,7 @@ export default {
           this.$message({
             showClose: true,
             message: err.toString(),
-            type: "error",
+            type: 'error',
             duration: 5000
           });
         });
@@ -216,7 +216,7 @@ export default {
             this.$message({
               showClose: true,
               message: err.toString(),
-              type: "error",
+              type: 'error',
               duration: 5000
             });
           });
@@ -230,13 +230,13 @@ export default {
               this.tableData.forEach((v, i) => {
                 switch (v.isAccept) {
                   case 1:
-                    v.isAccept = "未处理";
+                    v.isAccept = '未处理';
                     break;
                   case 2:
-                    v.isAccept = "已完成";
+                    v.isAccept = '已完成';
                     break;
                   case 3:
-                    v.isAccept = "已拒绝";
+                    v.isAccept = '已拒绝';
                 }
               });
             } else {
@@ -248,7 +248,7 @@ export default {
             this.$message({
               showClose: true,
               message: err.toString(),
-              type: "error",
+              type: 'error',
               duration: 5000
             });
           });
@@ -260,7 +260,7 @@ export default {
         .get(
           `/unionOpportunity/toMe?current=1&unionId=${this.unionId}&` +
             this.value +
-            "=" +
+            '=' +
             this.input
         )
         .then(res => {
@@ -270,13 +270,13 @@ export default {
             this.tableData.forEach((v, i) => {
               switch (v.isAccept) {
                 case 1:
-                  v.isAccept = "未处理";
+                  v.isAccept = '未处理';
                   break;
                 case 2:
-                  v.isAccept = "已完成";
+                  v.isAccept = '已完成';
                   break;
                 case 3:
-                  v.isAccept = "已拒绝";
+                  v.isAccept = '已拒绝';
               }
             });
           } else {
@@ -288,7 +288,7 @@ export default {
           this.$message({
             showClose: true,
             message: err.toString(),
-            type: "error",
+            type: 'error',
             duration: 5000
           });
         });
@@ -299,7 +299,7 @@ export default {
         .get(
           `/unionOpportunity/toMe?current=${val}&unionId=${this.unionId}&` +
             this.value +
-            "=" +
+            '=' +
             this.input
         )
         .then(res => {
@@ -309,13 +309,13 @@ export default {
             this.tableData.forEach((v, i) => {
               switch (v.isAccept) {
                 case 1:
-                  v.isAccept = "未处理";
+                  v.isAccept = '未处理';
                   break;
                 case 2:
-                  v.isAccept = "已完成";
+                  v.isAccept = '已完成';
                   break;
                 case 3:
-                  v.isAccept = "已拒绝";
+                  v.isAccept = '已拒绝';
               }
             });
           } else {
@@ -327,7 +327,7 @@ export default {
           this.$message({
             showClose: true,
             message: err.toString(),
-            type: "error",
+            type: 'error',
             duration: 5000
           });
         });
@@ -356,7 +356,7 @@ export default {
               `/unionOpportunity/toMe?current=${this.currentPage}&unionId=${this
                 .unionId}&` +
                 this.value +
-                "=" +
+                '=' +
                 this.input
             )
             .then(res => {
@@ -366,13 +366,13 @@ export default {
                 this.tableData.forEach((v, i) => {
                   switch (v.isAccept) {
                     case 1:
-                      v.isAccept = "未处理";
+                      v.isAccept = '未处理';
                       break;
                     case 2:
-                      v.isAccept = "已完成";
+                      v.isAccept = '已完成';
                       break;
                     case 3:
-                      v.isAccept = "已拒绝";
+                      v.isAccept = '已拒绝';
                   }
                 });
               } else {
@@ -384,7 +384,7 @@ export default {
               this.$message({
                 showClose: true,
                 message: err.toString(),
-                type: "error",
+                type: 'error',
                 duration: 5000
               });
             });
@@ -393,7 +393,7 @@ export default {
           this.$message({
             showClose: true,
             message: err.toString(),
-            type: "error",
+            type: 'error',
             duration: 5000
           });
         });
@@ -414,7 +414,7 @@ export default {
               `/unionOpportunity/toMe?current=${this.currentPage}&unionId=${this
                 .unionId}&` +
                 this.value +
-                "=" +
+                '=' +
                 this.input
             )
             .then(res => {
@@ -424,13 +424,13 @@ export default {
                 this.tableData.forEach((v, i) => {
                   switch (v.isAccept) {
                     case 1:
-                      v.isAccept = "未处理";
+                      v.isAccept = '未处理';
                       break;
                     case 2:
-                      v.isAccept = "已完成";
+                      v.isAccept = '已完成';
                       break;
                     case 3:
-                      v.isAccept = "已拒绝";
+                      v.isAccept = '已拒绝';
                   }
                 });
               } else {
@@ -442,7 +442,7 @@ export default {
               this.$message({
                 showClose: true,
                 message: err.toString(),
-                type: "error",
+                type: 'error',
                 duration: 5000
               });
             });
@@ -451,7 +451,7 @@ export default {
           this.$message({
             showClose: true,
             message: err.toString(),
-            type: "error",
+            type: 'error',
             duration: 5000
           });
         });
@@ -461,7 +461,7 @@ export default {
     },
     // 关闭弹窗重置数据
     resetData() {
-      this.acceptancePrice = "";
+      this.acceptancePrice = '';
     }
   }
 };

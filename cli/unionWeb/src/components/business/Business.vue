@@ -21,12 +21,12 @@
 </template>
 
 <script>
-import MyBusiness from './MyBusiness'
-import Recommend from './Recommend'
-import CommissionSettle from './CommissionSettle'
-import Datachart from './Datachart'
-import Percent from './Percent'
-import $http from '@/utils/http.js'
+import MyBusiness from './MyBusiness';
+import Recommend from './Recommend';
+import CommissionSettle from './CommissionSettle';
+import Datachart from './Datachart';
+import Percent from './Percent';
+import $http from '@/utils/http.js';
 export default {
   name: 'business',
   components: {
@@ -38,12 +38,13 @@ export default {
   },
   data() {
     return {
-      activeName: 'first',
+      activeName: 'first'
     };
   },
   created: function() {
     // 首页查询我的联盟信息
-    $http.get(`/union/index`)
+    $http
+      .get(`/union/index`)
       .then(res => {
         if (res.data.data) {
           // 判断是否创建或加入联盟
@@ -52,14 +53,19 @@ export default {
           } else {
             // 全局存储信息
             this.$store.commit('unionIdChange', res.data.data.currentUnionId);
-          };
-        };
+          }
+        }
       })
       .catch(err => {
-        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        this.$message({
+          showClose: true,
+          message: err.toString(),
+          type: 'error',
+          duration: 5000
+        });
       });
   }
-}
+};
 </script>
 
 <style lang='less' rel="stylesheet/less" scoped>
