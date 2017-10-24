@@ -142,26 +142,8 @@ public class UnionConsumeController {
 			String filename = "联盟本店消费记录";
 			HSSFWorkbook wb = unionConsumeService.exportConsumeFromDetail(titles,contentName,list);
 			ExportUtil.responseExport(response, wb, filename);
-		} catch (BaseException e){
-			response.setContentType("text/html");
-			response.setHeader("Cache-Control", "no-cache");
-			response.setCharacterEncoding("UTF-8");
-			String result = "<script>alert('导出失败')</script>";
-			PrintWriter writer = response.getWriter();
-			writer.print(result);
-			writer.close();
-			logger.error("",e);
-		} catch (DataExportException e){
-			logger.error("",e);
 		} catch (Exception e) {
-			response.setContentType("text/html");
-			response.setHeader("Cache-Control", "no-cache");
-			response.setCharacterEncoding("UTF-8");
-			String result = "<script>alert('导出失败')</script>";
-			PrintWriter writer = response.getWriter();
-			writer.print(result);
-			writer.close();
-			logger.error("",e);
+			ExportUtil.responseExportError(response);
 		}
 	}
 
@@ -199,26 +181,8 @@ public class UnionConsumeController {
 			String filename = "联盟他店消费记录";
 			HSSFWorkbook wb = unionConsumeService.exportConsumeToDetail(titles,contentName,list);
 			ExportUtil.responseExport(response, wb, filename);
-		} catch (BaseException e){
-			response.setContentType("text/html");
-			response.setHeader("Cache-Control", "no-cache");
-			response.setCharacterEncoding("UTF-8");
-			String result = "<script>alert('导出失败')</script>";
-			PrintWriter writer = response.getWriter();
-			writer.print(result);
-			writer.close();
-			logger.error("",e);
-		} catch (DataExportException e){
-			logger.error("",e);
 		} catch (Exception e) {
-			response.setContentType("text/html");
-			response.setHeader("Cache-Control", "no-cache");
-			response.setCharacterEncoding("UTF-8");
-			String result = "<script>alert('导出失败')</script>";
-			PrintWriter writer = response.getWriter();
-			writer.print(result);
-			writer.close();
-			logger.error("",e);
+			ExportUtil.responseExportError(response);
 		}
 	}
 
