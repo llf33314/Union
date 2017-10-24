@@ -59,7 +59,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 	@RequestMapping(value = "/index/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String indexList(HttpServletRequest request, @ApiParam(name = "busId", value = "商家id", required = true) @PathVariable("busId") Integer busId
 						,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) throws Exception{
-		Member member = SessionUtils.getLoginMember(request);
+		Member member = SessionUtils.getLoginMember(request,busId);
 //		member = memberService.getById(997);
 		url = url + "?busId=" + busId;
 		String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
@@ -138,7 +138,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			,@ApiParam(name="busId", value = "商家id", required = true) @RequestParam("busId") Integer busId
 			,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url
 			,@ApiParam(name = "code", value = "验证码" ,required = true) @RequestParam(value = "code", required = true) String code) throws Exception{
-		Member member = SessionUtils.getLoginMember(request);
+		Member member = SessionUtils.getLoginMember(request,busId);
 //		member = memberService.getById(997);
 		url = url + "?busId=" + busId;
 		String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
@@ -172,7 +172,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 	public String bindCard(HttpServletRequest request, HttpServletResponse response, @ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url
 			, @ApiParam(name="unionCardBindParamVO", value = "办理联盟卡参数", required = true) @RequestBody @Valid UnionCardBindParamVO vo, BindingResult bindingResult ) throws Exception{
 			ParamValidatorUtil.checkBindingResult(bindingResult);
-			Member member = SessionUtils.getLoginMember(request);
+			Member member = SessionUtils.getLoginMember(request,vo.getBusId());
 //			member = memberService.getById(997);
 			Integer busId = vo.getBusId();
 			url = url + "?busId=" + busId;
