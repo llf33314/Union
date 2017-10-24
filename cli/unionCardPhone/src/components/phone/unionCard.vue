@@ -20,13 +20,13 @@
           <h1>多粉平台联盟卡</h1>
         </div>
         <span>{{mainContent.nickname}}</span>
-        <p>凭次卡在联盟内其他商家消费，可享受折扣</p>
+        <p>凭此卡在联盟内其他商家消费，可享受折扣</p>
       </div>
     </div>
     <!--联盟列表-->
     <ul class="third_ ">
       <li class="unionLi" v-for="(items,index) in unionList">
-        <div  @click="showContent1(index,items.unionId,items.memberId,$event)" id="event_">
+        <div  @touchend="showContent1(index,items.unionId,items.memberId,$event)" id="event_">
           <i class="el-icon-arrow-right fr"></i>
           <span>{{items.unionName}}</span>
         </div>
@@ -43,8 +43,14 @@
               {{item.directorPhone}}
             </div>
             <p class="">
-              <img src="../../assets/images/SJunionCar04.png" style="width:0.65rem;margin-right: 0.2rem;">
-              <span style="font-size:0.6442rem;">{{item.enterpriseAddress}}</span>
+              <el-tooltip class="item" effect="dark" :content='item.enterpriseAddress' placement="top-start">
+                <img src="../../assets/images/SJunionCar04.png" style="width:0.65rem;margin-right: 0.2rem;">
+              </el-tooltip>
+              <el-tooltip class="item" effect="dark" :content='item.enterpriseAddress' placement="top-start">
+                <span title="123" style="font-size:0.6442rem;overflow: hidden;width: 8.12rem;display: inline-block;white-space: nowrap;text-overflow: ellipsis;">
+                  {{item.enterpriseAddress}}
+                </span>
+              </el-tooltip>
               <button class="fr" @click="boxWarp(index)" v-if="List.bind==1&&(List.memberId==List.members[index].memberId)">
                 领取联盟卡
               </button>
@@ -99,15 +105,15 @@
             <p >￥<span class="price2_" style="font-size:1.74rem;">**</span></p>
           </div>
           <h5 class="select_" v-for="(card,index) in Cards">
-            <div  id="black" @click="selectBlackCard()" v-if="card.black">  <!--v-if="card.black"-->
+            <div  id="black" @click="selectBlackCard()" v-if="card.black">
               <div>黑卡（￥<span class="blackCard">{{card.black.price}}</span>）</div>
               <i class="el-icon-check fr" style="color:#1FC055;opacity:0"></i>
-              <h6>{{card.black.illustration}}</h6>
+              <h6>{{card.black.illustration?card.black.illustration:'没有黑卡说明'}}</h6>
             </div>
-            <div  id="red" @click="selectRedCard()" v-if="card.red">  <!--v-if="card.red"-->
+            <div  id="red" @click="selectRedCard()" v-if="card.red">
               <div>红卡（￥<span class="redCard">{{card.red.price}}</span>）</div>
               <i class="el-icon-check fr" style="color:#1FC055;opacity:0;"></i>
-              <h6>{{card.red.illustration}}</h6>
+              <h6>{{card.red.illustration?card.red.illustration:'没有红卡说明'}}</h6>
             </div>
           </h5>
           <button style="color:#ffffff" @click="goAndGet">确认领取</button>
@@ -253,7 +259,11 @@
         $http.post(`cardH5/79B4DE7C?url=${url1}`,data)
           .then(res => {
             if(res.data.success){
-              location.href=res.data.data.qrurl;
+              if(res.data.data.length > 0){
+                location.href=res.data.data.qrurl;
+              }else {
+                location.reload();
+              }
             }
           })
           .catch(err => {
@@ -286,11 +296,13 @@
               $('.price_').text('黑卡价格');
               $('.price2_').text(this.Cards[0].black.price);
               $('.el-icon-check')[0].style.opacity=1;
+              this.cardType=1;
            }
            if(this.Cards[0].red){
              $('.price_').text('红卡价格');
              $('.price2_').text(this.Cards[0].red.price);
              $('.el-icon-check')[0].style.opacity=1;
+             this.cardType=2;
            }
          }
         }else{
@@ -353,8 +365,8 @@
           $('.el-icon-arrow-right ').className ='el-icon-arrow-down';
           $('.el-icon-arrow-right ')[index1].className='el-icon-arrow-down fr';
           $('.unionLi>div')[index1].style.borderBottom=0;
-          $('.unionLi>div')[index1].style.paddingBottom=0;
           $('.details_')[index1].style.display = 'block';
+          $('.unionLi>div')[index1].style.paddingBottom='1rem';
         }else {////当前显示了
           $('.details_')[index1].style.display = 'none';
           $('.unionLi>div')[index1].style.borderBottom = '0.01rem solid #dddddd';

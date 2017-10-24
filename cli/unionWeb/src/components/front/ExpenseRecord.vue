@@ -60,7 +60,7 @@
             </el-table-column>
             <el-table-column prop="shopName" label="消费门店">
               <template scope="scope">
-                <el-popover trigger="hover" placement="top" effect="Dark">
+                <el-popover trigger="hover" placement="bottom" effect="Dark">
                   <p> {{ scope.row.shopName }}</p>
                   <div slot="reference" class="name-wrapper">
                     <span>{{ scope.row.shopName }}</span>
@@ -69,6 +69,14 @@
               </template>
             </el-table-column>
             <el-table-column prop="cardNo" label="联盟卡号">
+              <template scope="scope">
+                <el-popover trigger="hover" placement="bottom">
+                  <p>{{ scope.row.cardNo }}</p>
+                  <div slot="reference" class="name-wrapper">
+                    <span>{{ scope.row.cardNo }}</span>
+                  </div>
+                </el-popover>
+              </template>
             </el-table-column>
             <el-table-column prop="phone" label="手机号" width="150px">
               <template scope="scope">
@@ -89,6 +97,14 @@
             <el-table-column prop="status" label="支付状态">
             </el-table-column>
             <el-table-column prop="createtime" label="创建时间" width="180px">
+              <template scope="scope">
+                <el-popover trigger="hover" placement="bottom">
+                  <p>手机号: {{ scope.row.createtime }}</p>
+                  <div slot="reference" class="name-wrapper">
+                    <span>{{ scope.row.createtime }}</span>
+                  </div>
+                </el-popover>
+              </template>
             </el-table-column>
           </el-table>
           <el-pagination @current-change="handleCurrentChange1" :current-page.sync="currentPage1" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll1" v-if="tableData1.length>0">
@@ -161,6 +177,14 @@
               </template>
             </el-table-column>
             <el-table-column prop="cardNo" label="联盟卡号">
+              <template scope="scope">
+                <el-popover trigger="hover" placement="bottom" effect="Dark">
+                  <p> {{ scope.row.cardNo }}</p>
+                  <div slot="reference" class="name-wrapper">
+                    <span>{{ scope.row.cardNo }}</span>
+                  </div>
+                </el-popover>
+              </template>
             </el-table-column>
             <el-table-column prop="phone" label="手机号" width="150px">
               <template scope="scope">
@@ -181,6 +205,14 @@
             <el-table-column prop="status" label="支付状态">
             </el-table-column>
             <el-table-column prop="createtime" label="创建时间" width="180px">
+              <template scope="scope">
+                <el-popover trigger="hover" placement="bottom" effect="Dark">
+                  <p> {{ scope.row.createtime }}</p>
+                  <div slot="reference" class="name-wrapper">
+                    <span>{{ scope.row.createtime }}</span>
+                  </div>
+                </el-popover>
+              </template>
             </el-table-column>
           </el-table>
           <el-pagination @current-change="handleCurrentChange2" :current-page.sync="currentPage2" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll2" v-if="tableData2.length>0">
