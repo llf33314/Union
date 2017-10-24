@@ -237,6 +237,10 @@ export default {
       .catch(err => {
         this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
       });
+    // 切换tab情况输入数据
+    eventBus.$on('tabChange1', () => {
+      this.input = '';
+    });
   },
   filters: {
     formatPrice: function(value) {
@@ -370,6 +374,7 @@ export default {
         .post(url, data)
         .then(res => {
           this.visible4 = true;
+          eventBus.$emit('newTransaction');
           let timer1 = setInterval(() => {
             if (this.countTime == 0) {
               clearInterval(timer1);
@@ -467,6 +472,7 @@ export default {
                     _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
                     _this.visible5 = false;
                     _this.visible4 = true;
+                    _this.eventBus.$emit('newTransaction');
                     let timer3 = setInterval(() => {
                       if (_this.countTime == 0) {
                         clearInterval(timer3);

@@ -224,8 +224,8 @@
 </template>
 
 <script>
-import $http from '@/utils/http.js'
-import $todate from '@/utils/todate.js'
+import $http from '@/utils/http.js';
+import $todate from '@/utils/todate.js';
 export default {
   name: 'expense-record',
   data() {
@@ -238,10 +238,7 @@ export default {
       toMemberId1: '',
       options12: [],
       value1: '',
-      options13: [
-        { value: 'cardNo', label: '联盟卡号' },
-        { value: 'phone', label: '顾客电话' },
-      ],
+      options13: [{ value: 'cardNo', label: '联盟卡号' }, { value: 'phone', label: '顾客电话' }],
       input1: '',
       tableData1: [],
       currentPage1: 1,
@@ -253,10 +250,7 @@ export default {
       toMemberId2: '',
       options22: [],
       value2: '',
-      options23: [
-        { value: 'cardNo', label: '联盟卡号' },
-        { value: 'phone', label: '顾客电话' },
-      ],
+      options23: [{ value: 'cardNo', label: '联盟卡号' }, { value: 'phone', label: '顾客电话' }],
       input2: '',
       tableData2: [],
       currentPage2: 1,
@@ -264,12 +258,13 @@ export default {
       totalAll1: 0,
       totalAll2: 0,
       memberId1: '',
-      memberId2: '',
-    }
+      memberId2: ''
+    };
   },
   mounted: function() {
     // 获取联盟列表
-    $http.get(`/unionMember/listMap`)
+    $http
+      .get(`/unionMember/listMap`)
       .then(res => {
         if (res.data.data && res.data.data.length > 0) {
           this.options11 = res.data.data;
@@ -283,7 +278,7 @@ export default {
         } else {
           this.options11 = [];
           this.options21 = [];
-        };
+        }
       })
       .catch(err => {
         this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -293,8 +288,9 @@ export default {
     // 他店
     this.init2();
     // 是否有新的消费核销成功
-    eventBus.$on('updataExpenseRecord', () => {
+    eventBus.$on('newTransaction', () => {
       this.init1();
+      this.init2();
     });
   },
   // 获取商家列表
@@ -304,13 +300,15 @@ export default {
       this.toMemberId1 = '';
       this.options12 = [];
       // 通过对应的unionId获取对应的memberId
-      $http.get(`/unionMember/listMap`)
+      $http
+        .get(`/unionMember/listMap`)
         .then(res => {
           if (res.data.data) {
             res.data.data.forEach((v, i) => {
               if (v.unionMain.id === this.unionId1) {
                 this.memberId1 = v.unionMember.id;
-                $http.get(`/unionMember/listMap/memberId/${this.memberId1}`)
+                $http
+                  .get(`/unionMember/listMap/memberId/${this.memberId1}`)
                   .then(res => {
                     if (res.data.data) {
                       this.options12 = res.data.data;
@@ -320,31 +318,33 @@ export default {
                       });
                     } else {
                       this.options12 = [];
-                    };
+                    }
                   })
                   .catch(err => {
                     this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-                  })
+                  });
               }
-            })
-          };
+            });
+          }
           this.search1();
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+        });
     },
     unionId2: function() {
       this.toMemberId2 = '';
       this.options22 = [];
       // 通过对应的unionId获取对应的memberId
-      $http.get(`/unionMember/listMap`)
+      $http
+        .get(`/unionMember/listMap`)
         .then(res => {
           if (res.data.data) {
             res.data.data.forEach((v, i) => {
               if (v.unionMain.id === this.unionId2) {
                 this.memberId2 = v.unionMember.id;
-                $http.get(`/unionMember/listMap/memberId/${this.memberId2}`)
+                $http
+                  .get(`/unionMember/listMap/memberId/${this.memberId2}`)
                   .then(res => {
                     if (res.data.data) {
                       this.options22 = res.data.data;
@@ -354,19 +354,19 @@ export default {
                       });
                     } else {
                       this.options22 = [];
-                    };
+                    }
                   })
                   .catch(err => {
                     this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-                  })
+                  });
               }
-            })
-          };
+            });
+          }
           this.search2();
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+        });
     },
     // 来源更改
     toMemberId1: function() {
@@ -381,18 +381,19 @@ export default {
     },
     timeValue2: function() {
       this.search2();
-    },
+    }
   },
   methods: {
     // 本店消费记录加载
     init1() {
-      $http.get(`/unionConsume/my?current=${this.currentPage1}`)
+      $http
+        .get(`/unionConsume/my?current=${this.currentPage1}`)
         .then(res => {
           if (res.data.data) {
             this.tableData1 = res.data.data.records;
             this.totalAll1 = res.data.data.total;
             this.tableData1.forEach((v, i) => {
-              v.items_ = []
+              v.items_ = [];
               v.items.forEach((val, idx) => {
                 v.items_.push(val.name);
                 v.items_.join(',');
@@ -408,12 +409,12 @@ export default {
                 case 3:
                   v.status = '已退款';
                   break;
-              };
+              }
             });
           } else {
             this.tableData1 = [];
             this.totalAll1 = 0;
-          };
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -421,13 +422,14 @@ export default {
     },
     // 他店消费记录加载
     init2() {
-      $http.get(`/unionConsume/other?current=${this.currentPage2}`)
+      $http
+        .get(`/unionConsume/other?current=${this.currentPage2}`)
         .then(res => {
           if (res.data.data) {
             this.tableData2 = res.data.data.records;
             this.totalAll2 = res.data.data.total;
             this.tableData2.forEach((v, i) => {
-              v.items_ = []
+              v.items_ = [];
               v.items.forEach((val, idx) => {
                 v.items_.push(val.name);
                 v.items_.join(',');
@@ -443,12 +445,12 @@ export default {
                 case 3:
                   v.status = '已退款';
                   break;
-              };
+              }
             });
           } else {
             this.tableData2 = [];
             this.totalAll2 = 0;
-          };
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -464,13 +466,23 @@ export default {
         beginTime = '';
         endTime = '';
       }
-      $http.get(`/unionConsume/my?current=${this.currentPage1}&unionId=${this.unionId1}&memberId=${this.toMemberId1}&` + this.value1 + '=' + this.input1 + '&beginTime=' + beginTime + '&endTime=' + endTime)
+      $http
+        .get(
+          `/unionConsume/my?current=${this.currentPage1}&unionId=${this.unionId1}&memberId=${this.toMemberId1}&` +
+            this.value1 +
+            '=' +
+            this.input1 +
+            '&beginTime=' +
+            beginTime +
+            '&endTime=' +
+            endTime
+        )
         .then(res => {
           if (res.data.data) {
             this.tableData1 = res.data.data.records;
             this.totalAll1 = res.data.data.total;
             this.tableData1.forEach((v, i) => {
-              v.items_ = []
+              v.items_ = [];
               v.items.forEach((val, idx) => {
                 v.items_.push(val.name);
                 v.items_.join(',');
@@ -486,16 +498,16 @@ export default {
                 case 3:
                   v.status = '已退款';
                   break;
-              };
+              }
             });
           } else {
             this.tableData1 = [];
             this.totalAll1 = 0;
-          };
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+        });
     },
     // 带条件搜索他店消费记录
     search2() {
@@ -507,13 +519,23 @@ export default {
         beginTime = '';
         endTime = '';
       }
-      $http.get(`/unionConsume/other?current=${this.currentPage2}&unionId=${this.unionId2}&memberId=${this.toMemberId2}&` + this.value2 + '=' + this.input2 + '&beginTime=' + beginTime + '&endTime=' + endTime)
+      $http
+        .get(
+          `/unionConsume/other?current=${this.currentPage2}&unionId=${this.unionId2}&memberId=${this.toMemberId2}&` +
+            this.value2 +
+            '=' +
+            this.input2 +
+            '&beginTime=' +
+            beginTime +
+            '&endTime=' +
+            endTime
+        )
         .then(res => {
           if (res.data.data) {
             this.tableData2 = res.data.data.records;
             this.totalAll2 = res.data.data.total;
             this.tableData2.forEach((v, i) => {
-              v.items_ = []
+              v.items_ = [];
               v.items.forEach((val, idx) => {
                 v.items_.push(val.name);
                 v.items_.join(',');
@@ -529,16 +551,16 @@ export default {
                 case 3:
                   v.status = '已退款';
                   break;
-              };
+              }
             });
           } else {
             this.tableData2 = [];
             this.totalAll2 = 0;
-          };
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+        });
     },
     // 分页搜索本店消费记录
     handleCurrentChange1(val) {
@@ -550,13 +572,23 @@ export default {
         beginTime = '';
         endTime = '';
       }
-      $http.get(`/unionConsume/my?current=${val}&unionId=${this.unionId1}&memberId=${this.toMemberId1}&` + this.value1 + '=' + this.input1 + '&beginTime=' + beginTime + '&endTime=' + endTime)
+      $http
+        .get(
+          `/unionConsume/my?current=${val}&unionId=${this.unionId1}&memberId=${this.toMemberId1}&` +
+            this.value1 +
+            '=' +
+            this.input1 +
+            '&beginTime=' +
+            beginTime +
+            '&endTime=' +
+            endTime
+        )
         .then(res => {
           if (res.data.data) {
             this.tableData1 = res.data.data.records;
             this.totalAll1 = res.data.data.total;
             this.tableData1.forEach((v, i) => {
-              v.items_ = []
+              v.items_ = [];
               v.items.forEach((val, idx) => {
                 v.items_.push(val.name);
                 v.items_.join(',');
@@ -572,16 +604,16 @@ export default {
                 case 3:
                   v.status = '已退款';
                   break;
-              };
+              }
             });
           } else {
             this.tableData1 = [];
             this.totalAll1 = 0;
-          };
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+        });
     },
     // 分页搜索他店消费记录
     handleCurrentChange2(val) {
@@ -593,13 +625,23 @@ export default {
         beginTime = '';
         endTime = '';
       }
-      $http.get(`/unionConsume/other?current=${val}&unionId=${this.unionId1}&memberId=${this.toMemberId1}&` + this.value1 + '=' + this.input1 + '&beginTime=' + beginTime + '&endTime=' + endTime)
+      $http
+        .get(
+          `/unionConsume/other?current=${val}&unionId=${this.unionId1}&memberId=${this.toMemberId1}&` +
+            this.value1 +
+            '=' +
+            this.input1 +
+            '&beginTime=' +
+            beginTime +
+            '&endTime=' +
+            endTime
+        )
         .then(res => {
           if (res.data.data) {
             this.tableData2 = res.data.data.records;
             this.totalAll2 = res.data.data.total;
             this.tableData2.forEach((v, i) => {
-              v.items_ = []
+              v.items_ = [];
               v.items.forEach((val, idx) => {
                 v.items_.push(val.name);
                 v.items_.join(',');
@@ -615,16 +657,16 @@ export default {
                 case 3:
                   v.status = '已退款';
                   break;
-              };
+              }
             });
           } else {
             this.tableData2 = [];
             this.totalAll2 = 0;
-          };
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+        });
     },
     // 导出本店消费记录
     output1() {
@@ -635,8 +677,14 @@ export default {
       } else {
         beginTime = '';
         endTime = '';
-      };
-      let url = this.$store.state.baseUrl + `/unionConsume/consumeFromDetail?unionId=${this.unionId1}&memberId=${this.toMemberId1}&` + this.value1 + '=' + this.input1 + `beginTime=${beginTime}&endTime=${endTime}`;
+      }
+      let url =
+        this.$store.state.baseUrl +
+        `/unionConsume/consumeFromDetail?unionId=${this.unionId1}&memberId=${this.toMemberId1}&` +
+        this.value1 +
+        '=' +
+        this.input1 +
+        `beginTime=${beginTime}&endTime=${endTime}`;
       window.open(url);
     },
     // 导出他店消费记录
@@ -648,12 +696,18 @@ export default {
       } else {
         beginTime = '';
         endTime = '';
-      };
-      let url = this.$store.state.baseUrl + `/unionConsume/consumeToDetail?unionId=${this.unionId2}&memberId=${this.toMemberId2}&` + this.value2 + '=' + this.input2 + `beginTime=${beginTime}&endTime=${endTime}`;
+      }
+      let url =
+        this.$store.state.baseUrl +
+        `/unionConsume/consumeToDetail?unionId=${this.unionId2}&memberId=${this.toMemberId2}&` +
+        this.value2 +
+        '=' +
+        this.input2 +
+        `beginTime=${beginTime}&endTime=${endTime}`;
       window.open(url);
-    },
+    }
   }
-}
+};
 </script>
 
 <style lang='less' rel="stylesheet/less" scoped>

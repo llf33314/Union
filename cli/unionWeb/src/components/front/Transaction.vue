@@ -93,7 +93,6 @@
         </el-radio-button>
       </el-radio-group>
     </div>
-
     <!-- 弹出框 提现 -->
     <div class="model_1">
       <el-dialog title="付款" :visible.sync="visible3" size="tiny">
@@ -104,7 +103,7 @@
         </div>
       </el-dialog>
     </div>
-    <!-- 弹出框 消费核销成功 -->
+    <!-- 弹出框 办理联盟卡成功 -->
     <div class="verSuccess">
       <el-dialog title="办理联盟卡成功" :visible.sync="visible4" size="tiny">
         <hr>
@@ -112,7 +111,7 @@
           <div class="fl"><img src="../../assets/images/success01.png" alt=""></div>
           <div class="fl">
             <p>消费核销成功</p>
-            <P> {{ countTime }} 秒后返回“联盟卡消费核销”页面... </P>
+            <P> {{ countTime }} 秒后返回“办理联盟卡”页面... </P>
           </div>
         </div>
       </el-dialog>
@@ -193,7 +192,13 @@ export default {
       wxUser: false
     };
   },
-  mounted: function() {},
+  mounted: function() {
+    // 切换tab情况输入数据
+    eventBus.$on('tabChange3', () => {
+      this.form1.phone = '';
+      this.form1.code = '';
+    });
+  },
   watch: {
     follow_: function() {
       if (this.follow_) {
@@ -254,7 +259,7 @@ export default {
                 this.form2.unions = res.data.data.unions;
                 if (this.form2.unions) {
                   this.unionId = this.form2.unions[0].id;
-                };
+                }
                 this.form2.follow = res.data.data.follow;
                 this.form2.cards = res.data.data.cards;
                 if (this.form2.cards.red) {
@@ -300,7 +305,7 @@ export default {
                         });
                       }
                       this.socket1.on('chatevent', function(data) {
-                        if(this.visible5){
+                        if (this.visible5) {
                           let msg = eval('(' + data.message + ')');
                           _this.wxData = msg;
                         }
@@ -392,7 +397,6 @@ export default {
                   });
               } else if (res.data.success) {
                 this.visible4 = true;
-                eventBus.$emit('updataExpenseRecord');
                 let timer1 = setInterval(() => {
                   if (this.countTime == 0) {
                     clearInterval(timer1);
