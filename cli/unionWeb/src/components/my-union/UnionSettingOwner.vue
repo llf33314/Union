@@ -165,8 +165,8 @@ export default {
         unionName: '',
         joinType: 2,
         isIntegral: true,
-        oldMemberCharge: false,
         blackIsCharge: true,
+        oldMemberCharge: false,
         blackChargePrice: '',
         blackValidityDay: '',
         blackIllustration: '',
@@ -196,6 +196,29 @@ export default {
     },
     unionId() {
       return this.$store.state.unionId;
+    },
+    blackIsCharge() {
+      return this.form.blackIsCharge;
+    },
+    redIsAvailable() {
+      return this.form.redIsAvailable;
+    }
+  },
+  watch: {
+    blackIsCharge: function() {
+      if (!this.blackIsCharge) {
+        this.form.oldMemberCharge = false;
+        this.form.blackChargePrice = '';
+        this.form.blackValidityDay = '';
+        this.form.blackIllustration = '';
+      }
+    },
+    redIsAvailable: function() {
+      if (!this.redIsAvailable) {
+        this.form.redChargePrice = '';
+        this.form.redValidityDay = '';
+        this.form.redIllustration = '';
+      }
     }
   },
   mounted: function() {
@@ -261,7 +284,7 @@ export default {
           res.data.data.forEach((v, i) => {
             if (this.checkList.indexOf(v.itemKey) === -1) {
               this.checkList.push(v.itemKey);
-            };
+            }
           });
         }
       })
@@ -282,24 +305,24 @@ export default {
           // 处理要提交的数据
           let data = {};
           data.isIntegral = this.form.isIntegral - 0;
-          data.joinType = this.form.joinType;
+          data.joinType = this.form.joinType - 0;
           data.unionIllustration = this.form.unionIllustration;
           data.unionImg = this.form.unionImg;
           data.unionName = this.form.unionName;
           data.unionMainChargeVO = {};
-          data.unionMainChargeVO.blackChargePrice = this.form.blackChargePrice;
+          data.unionMainChargeVO.blackChargePrice = this.form.blackChargePrice - 0;
           data.unionMainChargeVO.blackIllustration = this.form.blackIllustration;
-          data.unionMainChargeVO.blackIsAvailable = this.form.blackIsAvailable;
+          data.unionMainChargeVO.blackIsAvailable = this.form.blackIsAvailable - 0;
           data.unionMainChargeVO.blackIsCharge = this.form.blackIsCharge - 0;
           data.unionMainChargeVO.blackIsOldCharge = this.form.oldMemberCharge - 0;
-          data.unionMainChargeVO.blackValidityDay = this.form.blackValidityDay;
+          data.unionMainChargeVO.blackValidityDay = this.form.blackValidityDay - 0;
 
-          data.unionMainChargeVO.redChargePrice = this.form.redChargePrice;
+          data.unionMainChargeVO.redChargePrice = this.form.redChargePrice - 0;
           data.unionMainChargeVO.redIllustration = this.form.redIllustration;
           data.unionMainChargeVO.redIsAvailable = this.form.redIsAvailable - 0;
           data.unionMainChargeVO.redIsCharge = this.form.redIsCharge - 0;
           data.unionMainChargeVO.redIsOldCharge = this.form.oldMemberCharge - 0;
-          data.unionMainChargeVO.redValidityDay = this.form.redValidityDay;
+          data.unionMainChargeVO.redValidityDay = this.form.redValidityDay - 0;
           data.unionMainDictList = [];
           this.checkList.forEach((v, i) => {
             data.unionMainDictList.push({ itemKey: v });

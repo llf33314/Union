@@ -2,7 +2,7 @@
   <div>
     <Breadcrumb :header-name="'推荐入盟'"></Breadcrumb>
     <div class="tabs">
-      <h4 class="union_set">推荐盟员加入谷通联盟</h4>
+      <h4 class="union_set">推荐盟员加入联盟</h4>
       <el-form :label-position="labelPosition" label-width="100px" :model="form" :rules="rules" ref="form">
         <el-form-item label="联盟账号:" prop="busUserName">
           <el-col :span="6">
