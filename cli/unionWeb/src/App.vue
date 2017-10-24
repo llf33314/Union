@@ -16,9 +16,6 @@ export default {
       console.log("屏幕宽度为："+widthWindow);
     }
   }
-}
-
-  name: 'app'
 };
 </script>
 

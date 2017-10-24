@@ -141,7 +141,7 @@
                   <span class="color_" v-if="price2-price1 > 0 || price2-price1 === 0">{{ (price2*100 - price1*100)/100 | formatPrice }}</span>
                 </span>
               </el-col>
-              <el-col style="width:240px;margin-left:50px;">
+              <el-col style="width:240px;margin-left:50px;position: absolute;top: 40px;left: 72px;">
                 <span class="color_" v-if="price2 && price2-price1 < 0">收取金额小于支付金额，请重新输入</span>
               </el-col>
             </el-row>

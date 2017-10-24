@@ -35,7 +35,7 @@
             </el-col>
             <el-col style="width:180px;margin-right: 20px;">
               <div class="grid-content1 bg-purple">
-                <el-input placeholder="请输入关键字" @keyup.enter.native="search" icon="search" v-model="input1" :on-icon-click="search1" class="input-search2 fl">
+                <el-input placeholder="请输入关键字" @keyup.enter.native="search1" icon="search" v-model="input1" :on-icon-click="search1" class="input-search2 fl">
                 </el-input>
               </div>
             </el-col>
@@ -99,7 +99,7 @@
             <el-table-column prop="createtime" label="创建时间" width="180px">
               <template scope="scope">
                 <el-popover trigger="hover" placement="bottom">
-                  <p>手机号: {{ scope.row.createtime }}</p>
+                  <p>时间: {{ scope.row.createtime }}</p>
                   <div slot="reference" class="name-wrapper">
                     <span>{{ scope.row.createtime }}</span>
                   </div>
@@ -143,7 +143,7 @@
             </el-col>
             <el-col style="width:180px;margin-right: 20px;">
               <div class="grid-content1 bg-purple">
-                <el-input placeholder="请输入关键字" @keyup.enter.native="search" icon="search" v-model="input2" :on-icon-click="search2" class="input-search2 fl">
+                <el-input placeholder="请输入关键字" @keyup.enter.native="search2" icon="search" v-model="input2" :on-icon-click="search2" class="input-search2 fl" >
                 </el-input>
               </div>
             </el-col>
