@@ -98,8 +98,7 @@
     </el-table>
     <div style="position: relative;padding: 5px 0;" v-if="tableData.length>0">
       <el-button @click="payAll" v-bind:disabled="!canPay" style="position: absolute;top:15px;left:0">批量支付</el-button>
-      <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage"
-                     :page-size="10" layout="prev, pager, next, jumper" :total="totalAll">
+      <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
       </el-pagination>
     </div>
     <!-- 弹出框 支付页面 -->
@@ -253,7 +252,7 @@ export default {
           .then(res => {
             if (res.data.data) {
               this.tableData = res.data.data.records;
-              this.totalAll = res.data.data.pages;
+              this.totalAll = res.data.data.total;
               this.tableData.forEach((v, i) => {
                 v.lastModifyTime = $todate.todate(new Date(v.lastModifyTime));
                 switch (v.isClose) {
@@ -301,7 +300,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.pages;
+            this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
               v.lastModifyTime = $todate.todate(new Date(v.lastModifyTime));
               switch (v.isClose) {
@@ -348,7 +347,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.pages;
+            this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
               v.lastModifyTime = $todate.todate(new Date(v.lastModifyTime));
               switch (v.isClose) {

@@ -43,8 +43,7 @@
           </span>
         </el-dialog>
       </div>
-      <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10"
-                     layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
+      <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
       </el-pagination>
     </div>
 
@@ -88,7 +87,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.pages;
+            this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
               v.ratioFromMe = (v.ratioFromMe || 0) + '%';
               v.ratioToMe = (v.ratioToMe || 0) + '%';
@@ -133,7 +132,7 @@ export default {
                 .then(res => {
                   if (res.data.data) {
                     this.tableData = res.data.data.records;
-                    this.totalAll = res.data.data.pages;
+                    this.totalAll = res.data.data.total;
                     this.tableData.forEach((v, i) => {
                       v.ratioFromMe = (v.ratioFromMe || 0) + '%';
                       v.ratioToMe = (v.ratioToMe || 0) + '%';
@@ -190,7 +189,7 @@ export default {
               .then(res => {
                 if (res.data.data) {
                   this.tableData = res.data.data.records;
-                  this.totalAll = res.data.data.pages;
+                  this.totalAll = res.data.data.total;
                   this.tableData.forEach((v, i) => {
                     v.ratioFromMe = (v.ratioFromMe || 0) + '%';
                     v.ratioToMe = (v.ratioToMe || 0) + '%';
@@ -231,7 +230,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.pages;
+            this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
               v.ratioFromMe = (v.ratioFromMe || 0) + '%';
               v.ratioToMe = (v.ratioToMe || 0) + '%';

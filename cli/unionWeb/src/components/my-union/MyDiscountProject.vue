@@ -29,16 +29,12 @@
           </el-table-column>
           <el-table-column prop="name" label="项目名称" >
           </el-table-column>
-          <el-table-column prop="status" label="审核状态"
-                           :filters="[{ text: '未提交', value: '未提交' }, { text: '已提交', value: '已提交' }, { text: '已通过', value: '已通过' }, { text: '未通过', value: '未通过' }]"
-                           :filter-method="filterTag" filter-placement="bottom-start">
+          <el-table-column prop="status" label="审核状态" :filters="[{ text: '未提交', value: '未提交' }, { text: '已提交', value: '已提交' }, { text: '已通过', value: '已通过' }, { text: '未通过', value: '未通过' }]" :filter-method="filterTag" filter-placement="bottom-start">
           </el-table-column>
           <el-table-column label="操作" ref="scope" width="220">
             <template scope="scope">
               <div class="sizeAndColor">
-                <el-button size="small" @click="submit(scope)" v-if="scope.row.status === '未提交' || scope.row.status === '未通过'">
-                  提交
-                </el-button>
+                <el-button size="small" @click="submit(scope)" v-if="scope.row.status === '未提交' || scope.row.status === '未通过'"> 提交 </el-button>
                 <el-button size="small" @click="del(scope)">删除</el-button>
               </div>
             </template>
@@ -50,7 +46,7 @@
             <el-button @click="toggleSelection()">取消选择</el-button>
             <el-button @click="deleteAll()" v-bind:disabled="!canDel" >批量删除</el-button>
           </div>
-          <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll">
+          <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
           </el-pagination>
         </div>
       </div>
@@ -126,7 +122,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.pageItem.records;
-            this.totalAll = res.data.data.pages;
+            this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
               switch (v.status) {
                 case 1:
@@ -263,7 +259,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.pageItem.records;
-            this.totalAll = res.data.data.pages;
+            this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
               switch (v.status) {
                 case 1:

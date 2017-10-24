@@ -51,32 +51,28 @@
       <el-table-column prop="srcEnterpriseName" label="售卡出处" width="150">
       </el-table-column>
     </el-table>
-    <el-pagination @current-change="handleCurrentChange"
-                   :current-page.sync="currentPage" :page-size="10"
-                   layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
+    <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
     </el-pagination>
   </div>
 </template>
 
 <script>
-import $http from '@/utils/http.js'
-import $todate from '@/utils/todate.js'
+import $http from '@/utils/http.js';
+import $todate from '@/utils/todate.js';
 export default {
   name: 'sell-divide-proportion',
   data() {
     return {
       typeOptions: '',
       value: '',
-      options: [
-        { value: 'cardNumber', label: '联盟卡号' },
-      ],
+      options: [{ value: 'cardNumber', label: '联盟卡号' }],
       input: '',
       value1: '',
       value2: '',
       tableData: [],
       currentPage: 1,
-      totalAll: 0,
-    }
+      totalAll: 0
+    };
   },
   computed: {
     unionMemberId() {
@@ -92,8 +88,15 @@ export default {
       } else {
         beginTime = '';
         endTime = '';
-      };
-      $http.get(`unionBrokerageIncome/card/memberId/${this.unionMemberId}?current=1&cardType=${this.typeOptions}&` + this.value + '=' + this.input + `&beginDate=${beginTime}&endDate=${endTime}`)
+      }
+      $http
+        .get(
+          `unionBrokerageIncome/card/memberId/${this.unionMemberId}?current=1&cardType=${this.typeOptions}&` +
+            this.value +
+            '=' +
+            this.input +
+            `&beginDate=${beginTime}&endDate=${endTime}`
+        )
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
@@ -109,7 +112,7 @@ export default {
             });
           } else {
             this.tableData = [];
-          };
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -117,11 +120,12 @@ export default {
     }
   },
   mounted: function() {
-    $http.get(`/unionBrokerageIncome/card/memberId/${this.unionMemberId}?current=${this.currentPage}`)
+    $http
+      .get(`/unionBrokerageIncome/card/memberId/${this.unionMemberId}?current=${this.currentPage}`)
       .then(res => {
         if (res.data.data) {
           this.tableData = res.data.data.records;
-          this.totalAll = res.data.data.pages;
+          this.totalAll = res.data.data.total;
           this.tableData.forEach((v, i) => {
             switch (v.cardType) {
               case 1:
@@ -148,8 +152,16 @@ export default {
       } else {
         beginTime = '';
         endTime = '';
-      };
-      $http.get(`unionBrokerageIncome/card/memberId/${this.unionMemberId}?current=${this.currentPage}&cardType=${this.typeOptions}&` + this.value + '=' + this.input + `&beginDate=${beginTime}&endDate=${endTime}`)
+      }
+      $http
+        .get(
+          `unionBrokerageIncome/card/memberId/${this.unionMemberId}?current=${this.currentPage}&cardType=${this
+            .typeOptions}&` +
+            this.value +
+            '=' +
+            this.input +
+            `&beginDate=${beginTime}&endDate=${endTime}`
+        )
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
@@ -178,12 +190,19 @@ export default {
       } else {
         beginTime = '';
         endTime = '';
-      };
-      $http.get(`unionBrokerageIncome/card/memberId/${this.unionMemberId}?current=${val}&cardType=${this.typeOptions}&` + this.value + '=' + this.input + `&beginDate=${beginTime}&endDate=${endTime}`)
+      }
+      $http
+        .get(
+          `unionBrokerageIncome/card/memberId/${this.unionMemberId}?current=${val}&cardType=${this.typeOptions}&` +
+            this.value +
+            '=' +
+            this.input +
+            `&beginDate=${beginTime}&endDate=${endTime}`
+        )
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.pages;
+            this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
               switch (v.cardType) {
                 case 1:
@@ -209,11 +228,17 @@ export default {
       } else {
         beginTime = '';
         endTime = '';
-      };
-      let url = this.$store.state.baseUrl + `/unionBrokerageIncome/exportCard/memberId/${this.unionMemberId}?&cardType=${this.typeOptions}&` + this.value + '=' + this.input + `&beginDate=${beginTime}&endDate=${endTime}`;
+      }
+      let url =
+        this.$store.state.baseUrl +
+        `/unionBrokerageIncome/exportCard/memberId/${this.unionMemberId}?&cardType=${this.typeOptions}&` +
+        this.value +
+        '=' +
+        this.input +
+        `&beginDate=${beginTime}&endDate=${endTime}`;
       window.open(url);
     }
   }
-}
+};
 </script>
 

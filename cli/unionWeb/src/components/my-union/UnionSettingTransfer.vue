@@ -22,7 +22,7 @@
       </span>
     </el-dialog>
     <div class="footer">
-      <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll">
+      <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
       </el-pagination>
     </div>
   </div>
@@ -53,7 +53,7 @@ export default {
       .then(res => {
         if (res.data.data) {
           this.tableData = res.data.data.records;
-          this.totalAll = res.data.data.pages;
+          this.totalAll = res.data.data.total;
           this.tableData.forEach((v, i) => {
             v.createTime = $todate.todate(new Date(v.createTime));
           });
@@ -70,7 +70,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.pages;
+            this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
               v.createTime = $todate.todate(new Date(v.createTime));
             });
@@ -95,7 +95,7 @@ export default {
             .then(res => {
               if (res.data.data) {
                 this.tableData = res.data.data.records;
-                this.totalAll = res.data.data.pages;
+                this.totalAll = res.data.data.total;
                 this.tableData.forEach((v, i) => {
                   v.createTime = $todate.todate(new Date(v.createTime));
                 });

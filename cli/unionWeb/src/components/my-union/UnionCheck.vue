@@ -64,8 +64,7 @@
       </el-dialog>
     </div>
     <div class="footer">
-      <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage"
-                     :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
+      <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
       </el-pagination>
     </div>
   </div>
@@ -99,7 +98,7 @@ export default {
       totalAll: 0,
       joinId: '',
       visible1: false,
-      visible2: false,
+      visible2: false
     };
   },
   computed: {
@@ -113,7 +112,7 @@ export default {
       .then(res => {
         if (res.data.data) {
           this.tableData = res.data.data.records;
-          this.totalAll = res.data.data.pages;
+          this.totalAll = res.data.data.total;
         }
       })
       .catch(err => {
@@ -129,7 +128,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.pages;
+            this.totalAll = res.data.data.total;
           }
         })
         .catch(err => {
@@ -143,7 +142,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.pages;
+            this.totalAll = res.data.data.total;
           }
         })
         .catch(err => {
@@ -182,7 +181,7 @@ export default {
         .then(res => {
           if (res.data.success) {
             this.$message({ showClose: true, message: '审核通过', type: 'success', duration: 5000 });
-          };
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
