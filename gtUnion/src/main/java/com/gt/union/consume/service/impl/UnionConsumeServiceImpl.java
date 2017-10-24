@@ -365,9 +365,8 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 
 	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public void payConsumeSuccess(String encrypt, String only, Integer payType) throws Exception{
+	public void payConsumeSuccess(String orderNo, String only, Integer payType) throws Exception{
 		//解密参数
-		String orderNo = EncryptUtil.decrypt(PropertiesUtil.getEncryptKey(), encrypt);
 		String paramKey = RedisKeyUtil.getConsumePayParamKey(only);
 		String obj = redisCacheUtil.get(paramKey);
 		Map<String, Object> result = JSONObject.parseObject(obj, Map.class);
@@ -416,10 +415,8 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		data.put("payWay", 0);//系统判断支付方式
 		data.put("isreturn", 0);//0：不需要同步跳转
 		data.put("model", ConfigConstant.PAY_MODEL);
-		String encrypt = EncryptUtil.encrypt(PropertiesUtil.getEncryptKey(), orderNo);
-		encrypt = URLEncoder.encode(encrypt, "UTF-8");
 		WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(PropertiesUtil.getDuofenBusId());
-		data.put("notifyUrl", PropertiesUtil.getUnionUrl() + "/unionConsume/79B4DE7C/paymentSuccess/" + encrypt + "/" + only);
+		data.put("notifyUrl", PropertiesUtil.getUnionUrl() + "/unionConsume/79B4DE7C/paymentSuccess/" + only);
 		data.put("orderNum", orderNo);//订单号
 		data.put("payBusId", busId);//支付的商家id
 		data.put("isSendMessage", 0);//不推送
