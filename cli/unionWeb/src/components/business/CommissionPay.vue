@@ -207,12 +207,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     fromMemberId: function() {
@@ -240,12 +235,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({
-              showClose: true,
-              message: err.toString(),
-              type: 'error',
-              duration: 5000
-            });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
         $http
           .get(`/unionOpportunity/expense?current=1`)
@@ -278,12 +268,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({
-              showClose: true,
-              message: err.toString(),
-              type: 'error',
-              duration: 5000
-            });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
       }
     },
@@ -291,8 +276,7 @@ export default {
     search() {
       $http
         .get(
-          `/unionOpportunity/expense?current=1&unionId=${this
-            .unionId}&fromMemberId=${this.fromMemberId}&` +
+          `/unionOpportunity/expense?current=1&unionId=${this.unionId}&fromMemberId=${this.fromMemberId}&` +
             this.value +
             '=' +
             this.input
@@ -326,20 +310,14 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     // 分页搜索
     handleCurrentChange(val) {
       $http
         .get(
-          `/unionOpportunity/expense?current=${val}&unionId=${this
-            .unionId}&fromMemberId=${this.fromMemberId}&` +
+          `/unionOpportunity/expense?current=${val}&unionId=${this.unionId}&fromMemberId=${this.fromMemberId}&` +
             this.value +
             '=' +
             this.input
@@ -373,12 +351,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     // 支付
@@ -412,37 +385,17 @@ export default {
           }
           this.socket.on('chatevent', function(data) {
             let msg = eval('(' + data.message + ')');
-            if (
-              !(
-                _this.socketFlag.only == msg.only &&
-                _this.socketFlag.status == msg.status
-              )
-            ) {
+            if (!(_this.socketFlag.only == msg.only && _this.socketFlag.status == msg.status)) {
               if (_this.only == msg.only) {
                 if (msg.status == '003') {
-                  _this.$message({
-                    showClose: true,
-                    message: '支付成功',
-                    type: 'success',
-                    duration: 5000
-                  });
+                  _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
                   _this.visible3 = false;
                   _this.visible4 = true;
                   _this.search();
                 } else if (msg.status == '004') {
-                  _this.$message({
-                    showClose: true,
-                    message: '请求超时',
-                    type: 'warning',
-                    duration: 5000
-                  });
+                  _this.$message({ showClose: true, message: '请求超时', type: 'warning', duration: 5000 });
                 } else if (msg.status == '005') {
-                  _this.$message({
-                    showClose: true,
-                    message: '支付失败',
-                    type: 'warning',
-                    duration: 5000
-                  });
+                  _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
                 }
               }
             }
@@ -451,12 +404,7 @@ export default {
           });
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     // 批量支付
@@ -494,12 +442,7 @@ export default {
           }
           this.socket.on('chatevent', function(data) {
             let msg = eval('(' + data.message + ')');
-            if (
-              !(
-                _this.socketFlag.only == msg.only &&
-                _this.socketFlag.status == msg.status
-              )
-            ) {
+            if (!(_this.socketFlag.only == msg.only && _this.socketFlag.status == msg.status)) {
               if (_this.only == msg.only) {
                 if (msg.status == '003') {
                   _this.$message({

@@ -100,7 +100,7 @@
             </p>
           </div>
           <span slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="dialogVisible1 = false">确 定</el-button>
+            <el-button type="primary" @click="dialogVisible1=false">确 定</el-button>
           </span>
         </el-dialog>
       </div>
@@ -112,7 +112,7 @@
           </div>
           <span slot="footer" class="dialog-footer">
             <el-button type="primary" @click="confirm">确定</el-button>
-            <el-button @click="dialogVisible2 = false">取消</el-button>
+            <el-button @click="dialogVisible2=false">取消</el-button>
           </span>
         </el-dialog>
         <el-dialog title="" :visible.sync="dialogVisible3" size="tiny">
