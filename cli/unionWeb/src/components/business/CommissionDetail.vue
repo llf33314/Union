@@ -106,12 +106,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({
-              showClose: true,
-              message: err.toString(),
-              type: 'error',
-              duration: 5000
-            });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
         $http
           .get(`/unionOpportunity/contact/page?current=1`)
@@ -125,12 +120,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({
-              showClose: true,
-              message: err.toString(),
-              type: 'error',
-              duration: 5000
-            });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
       }
     },
@@ -148,12 +138,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     // 分页查询
@@ -170,12 +155,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     // 弹出框 佣金详情
@@ -198,12 +178,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     // 导出佣金明细详情
