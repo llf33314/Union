@@ -247,7 +247,7 @@
       },
       //确认领取联盟卡
       goAndGet(){
-        let url='toUnionCard';
+        let url1='toUnionCard';
         let data1={
           busId:this.busId,
           cardType:this.cardType,
@@ -256,7 +256,7 @@
           unionId:this.unionId
         };
         let data=JSON.stringify(data1);
-        $http.post(`cardH5/79B4DE7C?url=${url}`,data)
+        $http.post(`cardH5/79B4DE7C?url=${url1}`,data)
           .then(res => {
             if(res.data.success){
               if(res.data.data.length > 0){
@@ -323,9 +323,6 @@
             borderBottom:'none'
           })
         },10);
-          let url='toUnionCard';
-          let unionId1=unionid;
-          let memberId=memberid;
           //赋值成员和联盟的Id号码--------------
           this.memberId=memberid;
           this.unionId=unionid;
@@ -415,11 +412,11 @@
       },
       //点击绑定手机号
       bindPhone(){
-        let url='toUnionCard';
+        let url1='toUnionCard';
         let uPhone=$('#Phone').val();
         let pCode=$('#verification').val();
         if($('#verification').val()){
-          $http.post(`/cardH5/79B4DE7C/bind/${uPhone}?busId=${this.busId}&url=${url}&code=${pCode}`)
+          $http.post(`/cardH5/79B4DE7C/bind/${uPhone}?busId=${this.busId}&url=${url1}&code=${pCode}`)
             .then(res => {
               //刷新当前页面
               if(res.data.success){
@@ -443,8 +440,8 @@
       let number=window.location.href.slice(parseInt(Index1)+1);
       this.busId=number;
       //刷新页面渲染联盟卡首页列表数据---------------------------------------------------------1
-      let url='toUnionCard';
-      $http.get(`/cardH5/79B4DE7C/index/${this.busId}?url=${url}`)
+      let url1='toUnionCard';
+      $http.get(`/cardH5/79B4DE7C/index/${this.busId}?url=${url1}`)
         .then(res => {
           if(res.data.data) {
             if (res.data.data.phone) {

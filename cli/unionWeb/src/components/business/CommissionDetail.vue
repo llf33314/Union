@@ -106,31 +106,21 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({
-              showClose: true,
-              message: err.toString(),
-              type: 'error',
-              duration: 5000
-            });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
         $http
           .get(`/unionOpportunity/contact/page?current=1`)
           .then(res => {
             if (res.data.data) {
               this.tableData = res.data.data.records;
-              this.totalAll = res.data.data.pages;
+              this.totalAll = res.data.data.total;
             } else {
               this.tableData = [];
               this.totalAll = 0;
             }
           })
           .catch(err => {
-            this.$message({
-              showClose: true,
-              message: err.toString(),
-              type: 'error',
-              duration: 5000
-            });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
       }
     },
@@ -141,19 +131,14 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.pages;
+            this.totalAll = res.data.data.total;
           } else {
             this.tableData = [];
             this.totalAll = 0;
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     // 分页查询
@@ -163,19 +148,14 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.pages;
+            this.totalAll = res.data.data.total;
           } else {
             this.tableData = [];
             this.totalAll = 0;
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     // 弹出框 佣金详情
@@ -198,12 +178,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     // 导出佣金明细详情

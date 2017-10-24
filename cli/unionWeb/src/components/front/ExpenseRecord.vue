@@ -107,8 +107,7 @@
               </template>
             </el-table-column>
           </el-table>
-          <el-pagination @current-change="handleCurrentChange1" :current-page.sync="currentPage1"
-                         :page-size="10" layout="prev, pager, next, jumper" :total="totalAll1" v-if="tableData1.length>0">
+          <el-pagination @current-change="handleCurrentChange1" :current-page.sync="currentPage1" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll1" v-if="tableData1.length>0">
           </el-pagination>
         </el-tab-pane>
         <!-- 他店消费 -->
@@ -216,8 +215,7 @@
               </template>
             </el-table-column>
           </el-table>
-          <el-pagination @current-change="handleCurrentChange2" :current-page.sync="currentPage2"
-                         :page-size="10" layout="prev, pager, next, jumper" :total="totalAll2" v-if="tableData2.length>0">
+          <el-pagination @current-change="handleCurrentChange2" :current-page.sync="currentPage2" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll2" v-if="tableData2.length>0">
           </el-pagination>
         </el-tab-pane>
       </el-tabs>
@@ -392,7 +390,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData1 = res.data.data.records;
-            this.totalAll1 = res.data.data.pages;
+            this.totalAll1 = res.data.data.total;
             this.tableData1.forEach((v, i) => {
               v.items_ = []
               v.items.forEach((val, idx) => {
@@ -427,7 +425,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData2 = res.data.data.records;
-            this.totalAll2 = res.data.data.pages;
+            this.totalAll2 = res.data.data.total;
             this.tableData2.forEach((v, i) => {
               v.items_ = []
               v.items.forEach((val, idx) => {
@@ -470,7 +468,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData1 = res.data.data.records;
-            this.totalAll1 = res.data.data.pages;
+            this.totalAll1 = res.data.data.total;
             this.tableData1.forEach((v, i) => {
               v.items_ = []
               v.items.forEach((val, idx) => {
@@ -513,7 +511,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData2 = res.data.data.records;
-            this.totalAll2 = res.data.data.pages;
+            this.totalAll2 = res.data.data.total;
             this.tableData2.forEach((v, i) => {
               v.items_ = []
               v.items.forEach((val, idx) => {
@@ -556,7 +554,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData1 = res.data.data.records;
-            this.totalAll1 = res.data.data.pages;
+            this.totalAll1 = res.data.data.total;
             this.tableData1.forEach((v, i) => {
               v.items_ = []
               v.items.forEach((val, idx) => {
@@ -599,7 +597,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData2 = res.data.data.records;
-            this.totalAll2 = res.data.data.pages;
+            this.totalAll2 = res.data.data.total;
             this.tableData2.forEach((v, i) => {
               v.items_ = []
               v.items.forEach((val, idx) => {

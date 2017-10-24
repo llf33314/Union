@@ -239,7 +239,7 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         if (StringUtil.getStringLength(busUserName) > 10.0) {
             throw new BusinessException("商家名称内容不可超过10字");
         }
-        BusUser busUserRecommended = this.busUserService.getBusUserByName(unionMemberJoinVO.getBusUserName());
+        BusUser busUserRecommended = this.busUserService.getBusUserByName(busUserName);
         if (busUserRecommended == null) {
             throw new BusinessException("被推荐的帐号不存在");
         }
@@ -248,7 +248,7 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         }
         //(6)判断被推荐的商家是否已经是盟员
         Integer recommendedBusId = busUserRecommended.getId();
-        UnionMember unionMemberRecommended = this.unionMemberService.getByBusIdAndUnionId(recommendedBusId, busId);
+        UnionMember unionMemberRecommended = this.unionMemberService.getByBusIdAndUnionId(recommendedBusId, unionId);
         if (unionMemberRecommended != null) {
             throw new BusinessException("被推荐的帐号已加入或已申请加入了该联盟");
         }

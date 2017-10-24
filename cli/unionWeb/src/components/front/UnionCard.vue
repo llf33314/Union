@@ -2,7 +2,7 @@
   <div id="UnionCard">
     <div class="first_">
       <el-col style="width: 435px;;">
-        <el-input placeholder="请用扫码抢扫码或手动输入联盟卡号" icon="search" v-model="input" :on-icon-click="handleIconClick" @keypress.native="keypress($event)">
+        <el-input placeholder="请用扫码枪扫码或手动输入联盟卡号" icon="search" v-model="input" :on-icon-click="handleIconClick" @keypress.native="keypress($event)">
         </el-input>
       </el-col>
     </div>
@@ -137,8 +137,12 @@
               </el-col>
               <el-col style="width:240px;margin-left:50px;">
                 <span>找零: ￥
-                  <span class="color_">{{ price2 - price1 | formatPrice }}</span>
+                  <span class="color_" v-if="!price2">0.00</span>
+                  <span class="color_" v-if="price2-price1 > 0 || price2-price1 === 0">{{ (price2*100 - price1*100)/100 | formatPrice }}</span>
                 </span>
+              </el-col>
+              <el-col style="width:240px;margin-left:50px;">
+                <span class="color_" v-if="price2 && price2-price1 < 0">收取金额小于支付金额，请重新输入</span>
               </el-col>
             </el-row>
           </el-form-item>
@@ -174,7 +178,7 @@
 </template>
 
 <script>
-import $http from '@/utils/http.js'
+import $http from '@/utils/http.js';
 export default {
   name: 'unioncard',
   data() {
@@ -195,7 +199,7 @@ export default {
         validity: '',
         items: [],
         illustration: '',
-        exchangeIntegral: '',
+        exchangeIntegral: ''
       },
       isIntegral: '', // 数据传输
       isIntegral_: '', // 控制显示
@@ -216,18 +220,19 @@ export default {
       socket: '',
       socketFlag: {
         only: '',
-        status: '',
-      },
+        status: ''
+      }
     };
   },
   mounted: function() {
-    $http.get(`/unionCard/phone`)
+    $http
+      .get(`/unionCard/phone`)
       .then(res => {
         if (res.data.data) {
           this.imgSrc = res.data.data;
         } else {
           this.imgSrc = '';
-        };
+        }
       })
       .catch(err => {
         this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -236,9 +241,9 @@ export default {
   filters: {
     formatPrice: function(value) {
       if (!value) {
-        return ''
+        return '';
       } else {
-        return (Number(value)).toFixed(2);
+        return Number(value).toFixed(2);
       }
     }
   },
@@ -261,13 +266,13 @@ export default {
     },
     isIntegral_: function() {
       let temData = 0;
-      this.isIntegral_ ? temData = 1 : temData = 0;
+      this.isIntegral_ ? (temData = 1) : (temData = 0);
       this.deductionPrice = this.price * this.form.discount / 10 * 0.2 * temData;
       this.deductionIntegral = this.deductionPrice * 100;
       if (this.deductionIntegral > this.form.integral) {
         this.deductionIntegral = this.form.integral;
         this.deductionPrice = this.deductionIntegral / 10;
-      };
+      }
       this.price1 = this.price * this.form.discount / 10 - this.deductionPrice;
     }
   },
@@ -275,12 +280,13 @@ export default {
     // 搜索
     handleIconClick(ev) {
       if (this.input) {
-        $http.get(`unionCard/unionCardInfo?no=${this.input}`)
+        $http
+          .get(`unionCard/unionCardInfo?no=${this.input}`)
           .then(res => {
             if (res.data.data) {
               this.form = res.data.data;
               this.isIntegral = this.form.isIntegral;
-              this.isIntegral ? this.isIntegral_ = true : this.isIntegral_ = false;
+              this.isIntegral ? (this.isIntegral_ = true) : (this.isIntegral_ = false);
               this.visible1 = false;
               this.visible2 = true;
             }
@@ -297,7 +303,8 @@ export default {
     },
     // 联盟改变
     unionIdChange() {
-      $http.get(`/unionCard/unionCardInfo?no=${this.input}&unionId=${this.form.unionId}`)
+      $http
+        .get(`/unionCard/unionCardInfo?no=${this.input}&unionId=${this.form.unionId}`)
         .then(res => {
           if (res.data.data) {
             this.form.enterpriseName = res.data.data.enterpriseName;
@@ -307,7 +314,7 @@ export default {
             this.form.integral = res.data.data.integral;
             this.form.validity = res.data.data.validity;
             this.isIntegral = this.form.isIntegral;
-            this.isIntegral ? this.isIntegral_ = true : this.isIntegral_ = false;
+            this.isIntegral ? (this.isIntegral_ = true) : (this.isIntegral_ = false);
           } else {
             this.form.enterpriseName = '';
             this.form.discount = '';
@@ -315,7 +322,7 @@ export default {
             this.form.isIntegral = '';
             this.form.integral = '';
             this.form.validity = '';
-          };
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -328,13 +335,13 @@ export default {
       } else if (this.price) {
         this.visible3 = true;
         let temData = 0;
-        this.isIntegral_ ? temData = 1 : temData = 0;
+        this.isIntegral_ ? (temData = 1) : (temData = 0);
         this.deductionPrice = this.price * this.form.discount / 10 * 0.2 * temData;
         this.deductionIntegral = this.deductionPrice * 100;
         if (this.deductionIntegral > this.form.integral) {
           this.deductionIntegral = this.form.integral;
           this.deductionPrice = this.deductionIntegral / 10;
-        };
+        }
         this.price1 = this.price * this.form.discount / 10 - this.deductionPrice;
       } else {
         this.submit();
@@ -357,7 +364,8 @@ export default {
       data.unionId = this.form.unionId;
       data.useIntegral = this.isIntegral_;
       data.memberId = this.form.memberId;
-      $http.post(url, data)
+      $http
+        .post(url, data)
         .then(res => {
           this.visible4 = true;
           let timer1 = setInterval(() => {
@@ -389,7 +397,7 @@ export default {
         validity: '',
         items: [],
         illustration: '',
-        exchangeIntegral: '',
+        exchangeIntegral: ''
       };
       this.isIntegral = ''; // 数据传输
       this.isIntegral_ = ''; // 控制显示
@@ -425,7 +433,8 @@ export default {
         data.unionId = this.form.unionId;
         data.useIntegral = this.isIntegral_;
         data.memberId = this.form.memberId;
-        $http.post(url, data)
+        $http
+          .post(url, data)
           .then(res => {
             if (res.data.data) {
               this.codeSrc = res.data.data.url;
@@ -435,7 +444,7 @@ export default {
               this.codeSrc = '';
               this.only = '';
               this.userId = '';
-            };
+            }
           })
           .then(res => {
             var _this = this;
@@ -444,7 +453,7 @@ export default {
               // this.socket = io.connect('http://183.47.242.2:8881'); // 堡垒
               var userId = this.userId;
               this.socket.on('connect', function() {
-                let jsonObject = { userId: userId, message: "0" };
+                let jsonObject = { userId: userId, message: '0' };
                 _this.socket.emit('auth', jsonObject);
               });
             }
@@ -468,7 +477,7 @@ export default {
                   } else if (msg.status == '005') {
                     _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
                   }
-                };
+                }
               }
               _this.socketFlag.only = msg.only;
               _this.socketFlag.status = msg.status;
@@ -489,7 +498,7 @@ export default {
       this.visible2 = false;
     }
   }
-}
+};
 </script>
 
 <style lang='less' rel="stylesheet/less" scoped>
@@ -505,15 +514,15 @@ export default {
 
 .first_ {
   height: 100px;
-  background: #F8F8F8;
+  background: #f8f8f8;
   line-height: 100px;
   margin-bottom: 25px;
-  padding:0 35%;
+  padding: 0 35%;
 }
 
 .second_ {
-    width: 400px;
-    margin: auto;
+  width: 400px;
+  margin: auto;
 }
 
 .code_ {
@@ -526,19 +535,18 @@ export default {
 }
 
 /*点击输出弹出框的样式*/
-  .second_0 {
-    .color_ {
-      color: red;
-      font-size: 14px;
-    }
-    .el-form-item {
-      margin-bottom: 5px;
-    }
-    .pay_ {
-      margin: 6px 13px;
-      font-size: 18px;
-      color: #20a0ff;
-    }
+.second_0 {
+  .color_ {
+    color: red;
+    font-size: 14px;
   }
-
+  .el-form-item {
+    margin-bottom: 5px;
+  }
+  .pay_ {
+    margin: 6px 13px;
+    font-size: 18px;
+    color: #20a0ff;
+  }
+}
 </style>

@@ -300,9 +300,10 @@ export default {
                         });
                       }
                       this.socket1.on('chatevent', function(data) {
-                        let msg = eval('(' + data.message + ')');
-                        console.log(msg);
-                        _this.wxData = msg;
+                        if(this.visible5){
+                          let msg = eval('(' + data.message + ')');
+                          _this.wxData = msg;
+                        }
                       });
                     })
                     .catch(err => {

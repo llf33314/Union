@@ -98,8 +98,7 @@
     </el-table>
     <div style="position: relative;padding: 5px 0;" v-if="tableData.length>0">
       <el-button @click="payAll" v-bind:disabled="!canPay" style="position: absolute;top:15px;left:0">批量支付</el-button>
-      <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage"
-                     :page-size="10" layout="prev, pager, next, jumper" :total="totalAll">
+      <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
       </el-pagination>
     </div>
     <!-- 弹出框 支付页面 -->
@@ -208,12 +207,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     fromMemberId: function() {
@@ -241,19 +235,14 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({
-              showClose: true,
-              message: err.toString(),
-              type: 'error',
-              duration: 5000
-            });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
         $http
           .get(`/unionOpportunity/expense?current=1`)
           .then(res => {
             if (res.data.data) {
               this.tableData = res.data.data.records;
-              this.totalAll = res.data.data.pages;
+              this.totalAll = res.data.data.total;
               this.tableData.forEach((v, i) => {
                 v.lastModifyTime = $todate.todate(new Date(v.lastModifyTime));
                 switch (v.isClose) {
@@ -279,12 +268,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({
-              showClose: true,
-              message: err.toString(),
-              type: 'error',
-              duration: 5000
-            });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
       }
     },
@@ -292,8 +276,7 @@ export default {
     search() {
       $http
         .get(
-          `/unionOpportunity/expense?current=1&unionId=${this
-            .unionId}&fromMemberId=${this.fromMemberId}&` +
+          `/unionOpportunity/expense?current=1&unionId=${this.unionId}&fromMemberId=${this.fromMemberId}&` +
             this.value +
             '=' +
             this.input
@@ -301,7 +284,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.pages;
+            this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
               v.lastModifyTime = $todate.todate(new Date(v.lastModifyTime));
               switch (v.isClose) {
@@ -327,20 +310,14 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     // 分页搜索
     handleCurrentChange(val) {
       $http
         .get(
-          `/unionOpportunity/expense?current=${val}&unionId=${this
-            .unionId}&fromMemberId=${this.fromMemberId}&` +
+          `/unionOpportunity/expense?current=${val}&unionId=${this.unionId}&fromMemberId=${this.fromMemberId}&` +
             this.value +
             '=' +
             this.input
@@ -348,7 +325,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.pages;
+            this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
               v.lastModifyTime = $todate.todate(new Date(v.lastModifyTime));
               switch (v.isClose) {
@@ -374,12 +351,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     // 支付
@@ -413,37 +385,17 @@ export default {
           }
           this.socket.on('chatevent', function(data) {
             let msg = eval('(' + data.message + ')');
-            if (
-              !(
-                _this.socketFlag.only == msg.only &&
-                _this.socketFlag.status == msg.status
-              )
-            ) {
+            if (!(_this.socketFlag.only == msg.only && _this.socketFlag.status == msg.status)) {
               if (_this.only == msg.only) {
                 if (msg.status == '003') {
-                  _this.$message({
-                    showClose: true,
-                    message: '支付成功',
-                    type: 'success',
-                    duration: 5000
-                  });
+                  _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
                   _this.visible3 = false;
                   _this.visible4 = true;
                   _this.search();
                 } else if (msg.status == '004') {
-                  _this.$message({
-                    showClose: true,
-                    message: '请求超时',
-                    type: 'warning',
-                    duration: 5000
-                  });
+                  _this.$message({ showClose: true, message: '请求超时', type: 'warning', duration: 5000 });
                 } else if (msg.status == '005') {
-                  _this.$message({
-                    showClose: true,
-                    message: '支付失败',
-                    type: 'warning',
-                    duration: 5000
-                  });
+                  _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
                 }
               }
             }
@@ -452,12 +404,7 @@ export default {
           });
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     // 批量支付
@@ -495,12 +442,7 @@ export default {
           }
           this.socket.on('chatevent', function(data) {
             let msg = eval('(' + data.message + ')');
-            if (
-              !(
-                _this.socketFlag.only == msg.only &&
-                _this.socketFlag.status == msg.status
-              )
-            ) {
+            if (!(_this.socketFlag.only == msg.only && _this.socketFlag.status == msg.status)) {
               if (_this.only == msg.only) {
                 if (msg.status == '003') {
                   _this.$message({

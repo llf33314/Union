@@ -63,7 +63,7 @@
           <el-checkbox label="directorName">负责人</el-checkbox>
           <el-checkbox label="directorPhone" disabled>联系电话</el-checkbox>
           <el-checkbox label="directorEmail">邮箱</el-checkbox>
-          <el-checkbox label="reson">申请/推荐理由</el-checkbox>
+          <el-checkbox label="reason">申请/推荐理由</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
       <el-form-item label="联盟图标：">
@@ -99,7 +99,7 @@ export default {
     // 验证规则
     let blackChargePricePass = (rule, value, callback) => {
       if (this.form.blackIsCharge) {
-        if (value === '') {
+        if (value !== 0 && !value) {
           callback(new Error('黑卡价格内容不能为空，请重新输入'));
         } else if (isNaN(value)) {
           callback(new Error('黑卡价格内容必须为数字值，请重新输入'));
@@ -114,7 +114,7 @@ export default {
     };
     let blackValidityDayPass = (rule, value, callback) => {
       if (this.form.blackIsCharge) {
-        if (value === '') {
+        if (value !== 0 && !value) {
           callback(new Error('黑卡时效内容不能为空，请重新输入'));
         } else if (isNaN(value)) {
           callback(new Error('黑卡时效内容必须为数字值，请重新输入'));
@@ -129,7 +129,7 @@ export default {
     };
     let redChargePricePass = (rule, value, callback) => {
       if (this.form.redIsAvailable) {
-        if (value === '') {
+        if (value !== 0 && !value) {
           callback(new Error('红卡价格内容不能为空，请重新输入'));
         } else if (isNaN(value)) {
           callback(new Error('红卡价格内容必须为数字值，请重新输入'));
@@ -146,7 +146,7 @@ export default {
     };
     let redValidityDayPass = (rule, value, callback) => {
       if (this.form.redIsAvailable) {
-        if (value === '') {
+        if (value !== 0 && !value) {
           callback(new Error('红卡时效内容不能为空，请重新输入'));
         } else if (isNaN(value)) {
           callback(new Error('红卡时效内容必须为数字值，请重新输入'));
@@ -165,8 +165,8 @@ export default {
         unionName: '',
         joinType: 2,
         isIntegral: true,
-        oldMemberCharge: false,
         blackIsCharge: true,
+        oldMemberCharge: false,
         blackChargePrice: '',
         blackValidityDay: '',
         blackIllustration: '',
@@ -196,6 +196,29 @@ export default {
     },
     unionId() {
       return this.$store.state.unionId;
+    },
+    blackIsCharge() {
+      return this.form.blackIsCharge;
+    },
+    redIsAvailable() {
+      return this.form.redIsAvailable;
+    }
+  },
+  watch: {
+    blackIsCharge: function() {
+      if (!this.blackIsCharge) {
+        this.form.oldMemberCharge = false;
+        this.form.blackChargePrice = '';
+        this.form.blackValidityDay = '';
+        this.form.blackIllustration = '';
+      }
+    },
+    redIsAvailable: function() {
+      if (!this.redIsAvailable) {
+        this.form.redChargePrice = '';
+        this.form.redValidityDay = '';
+        this.form.redIllustration = '';
+      }
     }
   },
   mounted: function() {
@@ -259,8 +282,7 @@ export default {
       .then(res => {
         if (res.data.data) {
           res.data.data.forEach((v, i) => {
-            let key = v.itemKey;
-            if (!this.checkList.key) {
+            if (this.checkList.indexOf(v.itemKey) === -1) {
               this.checkList.push(v.itemKey);
             }
           });
@@ -283,31 +305,35 @@ export default {
           // 处理要提交的数据
           let data = {};
           data.isIntegral = this.form.isIntegral - 0;
-          data.joinType = this.form.joinType;
+          data.joinType = this.form.joinType - 0;
           data.unionIllustration = this.form.unionIllustration;
           data.unionImg = this.form.unionImg;
           data.unionName = this.form.unionName;
           data.unionMainChargeVO = {};
-          data.unionMainChargeVO.blackChargePrice = this.form.blackChargePrice;
+          data.unionMainChargeVO.blackChargePrice = this.form.blackChargePrice - 0;
           data.unionMainChargeVO.blackIllustration = this.form.blackIllustration;
-          data.unionMainChargeVO.blackIsAvailable = this.form.blackIsAvailable;
+          data.unionMainChargeVO.blackIsAvailable = this.form.blackIsAvailable - 0;
           data.unionMainChargeVO.blackIsCharge = this.form.blackIsCharge - 0;
           data.unionMainChargeVO.blackIsOldCharge = this.form.oldMemberCharge - 0;
-          data.unionMainChargeVO.blackValidityDay = this.form.blackValidityDay;
+          data.unionMainChargeVO.blackValidityDay = this.form.blackValidityDay - 0;
 
-          data.unionMainChargeVO.redChargePrice = this.form.redChargePrice;
+          data.unionMainChargeVO.redChargePrice = this.form.redChargePrice - 0;
           data.unionMainChargeVO.redIllustration = this.form.redIllustration;
           data.unionMainChargeVO.redIsAvailable = this.form.redIsAvailable - 0;
           data.unionMainChargeVO.redIsCharge = this.form.redIsCharge - 0;
           data.unionMainChargeVO.redIsOldCharge = this.form.oldMemberCharge - 0;
-          data.unionMainChargeVO.redValidityDay = this.form.redValidityDay;
+          data.unionMainChargeVO.redValidityDay = this.form.redValidityDay - 0;
           data.unionMainDictList = [];
           this.checkList.forEach((v, i) => {
             data.unionMainDictList.push({ itemKey: v });
           });
           $http
             .put(url, data)
-            .then(res => {})
+            .then(res => {
+              if (res.data.success) {
+                this.$message({ showClose: true, message: '保存成功', type: 'success', duration: 5000 });
+              }
+            })
             .catch(err => {
               this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
             });

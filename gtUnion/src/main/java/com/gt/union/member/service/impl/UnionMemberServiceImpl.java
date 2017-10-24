@@ -190,9 +190,8 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                         + "  AND rToMe.from_member_id = toM.id"
                         + " WHERE toM.del_status = " + CommonConstant.DEL_STATUS_NO
                         + "  AND toM.union_id = " + unionMember.getUnionId()
-                        + "  AND toM.status in (" + MemberConstant.STATUS_IN
-                        + "  AND toM.id != " + unionMember.getId()
-                        + "    ," + MemberConstant.STATUS_APPLY_OUT + ")";
+                        + "  AND toM.status in (" + MemberConstant.STATUS_IN + "," + MemberConstant.STATUS_APPLY_OUT + ")"
+                        + "  AND toM.id != " + unionMember.getId();
             }
         };
         //受惠方盟员身份id

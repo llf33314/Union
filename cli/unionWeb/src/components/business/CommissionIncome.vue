@@ -71,8 +71,7 @@
       </el-table-column>
       <el-table-column prop="opportunityType" label="交易类型" min-width="100px">
       </el-table-column>
-      <el-table-column prop="isClose" label="佣金结算状态" min-width="140px" :filters="[{ text: '未结算', value: '未结算' }, { text: '已结算', value: '已结算' }]"
-                       :filter-method="filterTag" filter-placement="bottom-end">
+      <el-table-column prop="isClose" label="佣金结算状态" min-width="140px" :filters="[{ text: '未结算', value: '未结算' }, { text: '已结算', value: '已结算' }]" :filter-method="filterTag" filter-placement="bottom-end">
         <template scope="scope">
           <el-tag :type="scope.row.isClose === '未结算' ? 'danger' : 'success'">{{scope.row.isClose}}</el-tag>
         </template>
@@ -88,8 +87,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage"
-                   :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
+    <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
     </el-pagination>
   </div>
 </template>
@@ -157,12 +155,7 @@ export default {
                     }
                   })
                   .catch(err => {
-                    this.$message({
-                      showClose: true,
-                      message: err.toString(),
-                      type: 'error',
-                      duration: 5000
-                    });
+                    this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
                   });
               }
               this.search();
@@ -170,12 +163,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     toMemberId: function() {
@@ -203,19 +191,14 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({
-              showClose: true,
-              message: err.toString(),
-              type: 'error',
-              duration: 5000
-            });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
         $http
           .get(`/unionOpportunity/income?current=1`)
           .then(res => {
             if (res.data.data) {
               this.tableData = res.data.data.records;
-              this.totalAll = res.data.data.pages;
+              this.totalAll = res.data.data.total;
               this.tableData.forEach((v, i) => {
                 v.lastModifyTime = $todate.todate(new Date(v.lastModifyTime));
                 switch (v.isClose) {
@@ -241,12 +224,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({
-              showClose: true,
-              message: err.toString(),
-              type: 'error',
-              duration: 5000
-            });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
       }
     },
@@ -286,12 +264,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     // 分页搜索
@@ -330,12 +303,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     filterTag(value, row) {
