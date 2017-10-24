@@ -39,7 +39,6 @@ public class ExportUtil {
         response.setContentType("application/vnd.ms-excel");
         // 输出文件
         wb.write(os);
-        System.out.println(1/0);
         os.flush();
     }
 
