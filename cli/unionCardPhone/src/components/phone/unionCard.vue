@@ -431,8 +431,8 @@
       let number=window.location.href.slice(parseInt(Index1)+1);
       this.busId=number;
       //刷新页面渲染联盟卡首页列表数据---------------------------------------------------------1
-      let url='toUnionCard';
-      $http.get(`/cardH5/79B4DE7C/index/${this.busId}?url=${url}`)
+      let url1='toUnionCard';
+      $http.get(`/cardH5/79B4DE7C/index/${this.busId}?url=${url1}`)
         .then(res => {
           if(res.data.data) {
             if (res.data.data.phone) {

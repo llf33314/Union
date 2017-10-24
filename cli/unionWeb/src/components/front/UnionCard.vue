@@ -2,7 +2,7 @@
   <div id="UnionCard">
     <div class="first_">
       <el-col style="width: 435px;;">
-        <el-input placeholder="请用扫码抢扫码或手动输入联盟卡号" icon="search" v-model="input" :on-icon-click="handleIconClick" @keypress.native="keypress($event)">
+        <el-input placeholder="请用扫码枪扫码或手动输入联盟卡号" icon="search" v-model="input" :on-icon-click="handleIconClick" @keypress.native="keypress($event)">
         </el-input>
       </el-col>
     </div>

@@ -16,10 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 定时任务器 preferential模块
- *
- * @author linweicong
- * @version 2017-10-23 14:51:10
+ * Created by Administrator on 2017/9/27 0027.
  */
 @Component
 public class PreferentialSchedule {
@@ -43,10 +40,8 @@ public class PreferentialSchedule {
                 List<UnionPreferentialProject> updateProjectList = new ArrayList<>();
                 for (UnionPreferentialProject expiredProject : expiredProjectList) {
                     UnionPreferentialProject updateProject = new UnionPreferentialProject();
-                    //优惠项目id
-                    updateProject.setId(expiredProject.getId());
-                    //删除状态
-                    updateProject.setDelStatus(CommonConstant.DEL_STATUS_YES);
+                    updateProject.setId(expiredProject.getId()); //优惠项目id
+                    updateProject.setDelStatus(CommonConstant.DEL_STATUS_YES); //删除状态
                     updateProjectList.add(updateProject);
                 }
                 this.unionPreferentialProjectService.updateBatchById(updateProjectList);
@@ -68,10 +63,8 @@ public class PreferentialSchedule {
                 List<UnionPreferentialItem> updateItemList = new ArrayList<>();
                 for (UnionPreferentialItem expiredItem : expiredItemList) {
                     UnionPreferentialItem updateItem = new UnionPreferentialItem();
-                    //优惠服务id
-                    updateItem.setId(expiredItem.getId());
-                    //删除状态
-                    updateItem.setDelStatus(CommonConstant.DEL_STATUS_YES);
+                    updateItem.setId(expiredItem.getId()); //优惠服务id
+                    updateItem.setDelStatus(CommonConstant.DEL_STATUS_YES); //删除状态
                     updateItemList.add(updateItem);
                 }
                 this.unionPreferentialItemService.updateBatchById(updateItemList);

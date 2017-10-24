@@ -10,10 +10,12 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
+ * <p>
  * 优惠服务项
+ * </p>
  *
  * @author linweicong
- * @version 2017-10-23 14:51:10
+ * @since 2017-09-07
  */
 @TableName("t_union_preferential_item")
 public class UnionPreferentialItem extends Model<UnionPreferentialItem> {

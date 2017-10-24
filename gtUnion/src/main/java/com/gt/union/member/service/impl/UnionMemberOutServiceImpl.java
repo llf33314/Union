@@ -114,7 +114,11 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         if (!this.unionMemberService.hasReadAuthority(unionOwner)) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
         }
-        //(4)查询操作
+        //(4)判断盟主权限
+        if (!unionOwner.getIsUnionOwner().equals(MemberConstant.IS_UNION_OWNER_YES)) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
+        }
+        //(5)查询操作
         Wrapper wrapper = new Wrapper() {
             @Override
             public String getSqlSegment() {

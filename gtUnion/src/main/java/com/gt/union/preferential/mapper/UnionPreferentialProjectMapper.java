@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.gt.union.preferential.entity.UnionPreferentialProject;
 
 /**
- * 优惠项目 Mapper 接口
+ * <p>
+  * 优惠项目 Mapper 接口
+ * </p>
  *
  * @author linweicong
- * @version 2017-10-23 14:51:10
+ * @since 2017-09-07
  */
 public interface UnionPreferentialProjectMapper extends BaseMapper<UnionPreferentialProject> {
 

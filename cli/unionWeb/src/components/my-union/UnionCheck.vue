@@ -38,8 +38,8 @@
         <el-table-column prop="" label="操作" width="160">
           <template scope="scope">
             <div class="sizeAndColor">
-              <el-button size="small" type="danger" @click="handlePass(scope)">通过</el-button>
-              <el-button size="small" @click="handleFail(scope)">不通过</el-button>
+              <el-button size="small" @click="handlePass(scope.$index, scope.row)">通过</el-button>
+              <el-button size="small" @click="handleFail(scope.$index, scope.row)">不通过</el-button>
             </div>
           </template>
         </el-table-column>
@@ -170,7 +170,7 @@ export default {
     },
     // 不通过
     handleFail(scope) {
-      his.visible2 = true;
+      this.visible2 = true;
       this.joinId = scope.row.joinId;
     },
     // 确认不通过
