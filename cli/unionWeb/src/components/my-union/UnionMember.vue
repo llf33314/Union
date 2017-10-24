@@ -178,6 +178,7 @@ export default {
     }
   },
   mounted: function() {
+    console.log(this.unionMemberId, 11111111);
     if (this.unionMemberId) {
       $http
         .get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=1`)
@@ -206,6 +207,7 @@ export default {
   watch: {
     // 查询盟员列表
     unionMemberId: function() {
+    console.log(this.unionMemberId, 22222222);
       $http
         .get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=1`)
         .then(res => {

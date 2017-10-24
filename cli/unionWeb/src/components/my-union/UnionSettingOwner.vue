@@ -259,10 +259,9 @@ export default {
       .then(res => {
         if (res.data.data) {
           res.data.data.forEach((v, i) => {
-            let key = v.itemKey;
-            if (!this.checkList.key) {
+            if (this.checkList.indexOf(v.itemKey) === -1) {
               this.checkList.push(v.itemKey);
-            }
+            };
           });
         }
       })
@@ -307,7 +306,11 @@ export default {
           });
           $http
             .put(url, data)
-            .then(res => {})
+            .then(res => {
+              if (res.data.success) {
+                this.$message({ showClose: true, message: '保存成功', type: 'success', duration: 5000 });
+              }
+            })
             .catch(err => {
               this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
             });
