@@ -125,7 +125,7 @@ public class RedisKeyUtil {
     }
 
     public static final String getUnionValidKey(Integer unionId) {
-        return new StringBuilder("union:").append(unionId).append("valid").toString();
+        return new StringBuilder("union:").append(unionId).append(":valid").toString();
     }
 
     /*******************************************************************************************************************
