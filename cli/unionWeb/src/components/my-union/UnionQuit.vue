@@ -28,8 +28,7 @@
             </div>
           </div>
           <div class="footer">
-            <el-pagination @current-change="handleCurrentChange1" :current-page.sync="currentPage1"
-                           :page-size="10" layout="prev, pager, next, jumper" :total="totalAll1" v-if="tableData1.length>0">
+            <el-pagination @current-change="handleCurrentChange1" :current-page.sync="currentPage1" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll1" v-if="tableData1.length>0">
             </el-pagination>
           </div>
         </el-tab-pane>
@@ -75,8 +74,7 @@
                 </el-table-column>
               </el-table>
               <div class="footer">
-                <el-pagination @current-change="handleCurrentChange2" :current-page.sync="currentPage2"
-                               :page-size="10" layout="prev, pager, next, jumper" :total="totalAll2" v-if="tableData2.length>0">
+                <el-pagination @current-change="handleCurrentChange2" :current-page.sync="currentPage2" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll2" v-if="tableData2.length>0">
                 </el-pagination>
               </div>
             </div>
@@ -178,19 +176,19 @@ export default {
           }
           if (res.data.data) {
             this.tableData1 = res.data.data.records;
-            this.totalAll1 = res.data.data.pages;
+            this.totalAll1 = res.data.data.total;
           }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
-    };
+    }
     $http
       .get(`/unionMemberOut/page/outing/memberId/${this.unionMemberId}?current=1`)
       .then(res => {
         if (res.data.data) {
           this.tableData2 = res.data.data.records;
-          this.totalAll2 = res.data.data.pages;
+          this.totalAll2 = res.data.data.total;
           this.tableData2.forEach((v, i) => {
             v.remainDay += '天';
             switch (v.outType) {
@@ -232,7 +230,7 @@ export default {
             .then(res => {
               if (res.data.data) {
                 this.tableData1 = res.data.data.records;
-                this.totalAll1 = res.data.data.pages;
+                this.totalAll1 = res.data.data.total;
               }
             })
             .catch(err => {
@@ -254,7 +252,7 @@ export default {
             .then(res => {
               if (res.data.data) {
                 this.tableData1 = res.data.data.records;
-                this.totalAll1 = res.data.data.pages;
+                this.totalAll1 = res.data.data.total;
               }
             })
             .catch(err => {
@@ -272,7 +270,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData1 = res.data.data.records;
-            this.totalAll1 = res.data.data.pages;
+            this.totalAll1 = res.data.data.total;
           }
         })
         .catch(err => {
@@ -285,7 +283,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData2 = res.data.data.records;
-            this.totalAll2 = res.data.data.pages;
+            this.totalAll2 = res.data.data.total;
             this.tableData2.forEach((v, i) => {
               v.remainDay += '天';
               switch (v.outType) {
@@ -310,7 +308,7 @@ export default {
         .then(res => {
           $http.get(`/unionMemberOut/page/outing/memberId/${this.unionMemberId}?current=1`).then(res => {
             this.tableData2 = res.data.data.records;
-            this.totalAll2 = res.data.data.pages;
+            this.totalAll2 = res.data.data.total;
             this.tableData2.forEach((v, i) => {
               v.remainDay += '天';
               switch (v.outType) {

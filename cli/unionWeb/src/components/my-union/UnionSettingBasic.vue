@@ -45,10 +45,10 @@
 </template>
 
 <script>
-import axios from 'axios'
-import $http from '@/utils/http.js'
-import RegionChoose from '@/components/public-components/RegionChoose'
-import TMap from '@/components/public-components/TMap'
+import axios from 'axios';
+import $http from '@/utils/http.js';
+import RegionChoose from '@/components/public-components/RegionChoose';
+import TMap from '@/components/public-components/TMap';
 export default {
   name: 'union-setting-basic',
   components: {
@@ -103,32 +103,16 @@ export default {
       mapShow: false,
       form: {},
       rules: {
-        enterpriseName: [
-          { required: true, message: '企业名称内容不能为空，请重新输入', trigger: 'blur' }
-        ],
-        directorName: [
-          { required: true, message: '负责人内容不能为空，请重新输入', trigger: 'blur' }
-        ],
-        directorPhone: [
-          { validator: directorPhonePass, trigger: 'blur' }
-        ],
-        directorEmail: [
-          { validator: emailPass, trigger: 'blur' }
-        ],
-        notifyPhone: [
-          { validator: notifyPhonePass, trigger: 'blur' }
-        ],
-        integralExchangePercent: [
-          { validator: integralExchangePercentPass, trigger: 'blur' }
-        ],
-        region: [
-          { type: 'array', required: true, message: '地区内容不能为空，请重新输入', trigger: 'change' }
-        ],
-        enterpriseAddress: [
-          { required: true, message: '我的地址内容不能为空，请重新输入', trigger: 'change' }
-        ],
-      },
-    }
+        enterpriseName: [{ required: true, message: '企业名称内容不能为空，请重新输入', trigger: 'blur' }],
+        directorName: [{ required: true, message: '负责人内容不能为空，请重新输入', trigger: 'blur' }],
+        directorPhone: [{ validator: directorPhonePass, trigger: 'blur' }],
+        directorEmail: [{ validator: emailPass, trigger: 'blur' }],
+        notifyPhone: [{ validator: notifyPhonePass, trigger: 'blur' }],
+        integralExchangePercent: [{ validator: integralExchangePercentPass, trigger: 'blur' }],
+        region: [{ type: 'array', required: true, message: '地区内容不能为空，请重新输入', trigger: 'change' }],
+        enterpriseAddress: [{ required: true, message: '我的地址内容不能为空，请重新输入', trigger: 'change' }]
+      }
+    };
   },
   computed: {
     unionMemberId() {
@@ -136,7 +120,8 @@ export default {
     }
   },
   created: function() {
-    $http.get(`/unionMember/${this.unionMemberId}`)
+    $http
+      .get(`/unionMember/${this.unionMemberId}`)
       .then(res => {
         if (res.data.data) {
           this.form = res.data.data;
@@ -149,7 +134,7 @@ export default {
       })
       .catch(err => {
         this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-      })
+      });
   },
   methods: {
     regionChange(v) {
@@ -165,7 +150,7 @@ export default {
       this.form.addressLongitude = this.$store.state.addressLongitude;
     },
     submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(valid => {
         if (valid) {
           let url = `/unionMember/${this.unionMemberId}`;
           // 处理要提交的数据
@@ -182,13 +167,16 @@ export default {
           data.enterpriseName = this.form.enterpriseName;
           data.integralExchangePercent = this.form.integralExchangePercent - 0;
           data.notifyPhone = this.form.notifyPhone;
-          $http.put(url, data)
+          $http
+            .put(url, data)
             .then(res => {
-              this.$message({ showClose: true, message: '保存成功', type: 'success', duration: 5000 });
+              if (res.data.success) {
+                this.$message({ showClose: true, message: '保存成功', type: 'success', duration: 5000 });
+              };
             })
             .catch(err => {
               this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-            })
+            });
         } else {
           return false;
         }
@@ -199,9 +187,9 @@ export default {
     },
     handleIconClick(ev) {
       this.mapShow = !this.mapShow;
-    },
-  },
-}
+    }
+  }
+};
 </script>
 
 <style lang='less' rel="stylesheet/less" scoped>
@@ -210,11 +198,6 @@ export default {
   top: 1px;
   left: 250px;
 }
-
-
-
-
-
 
 /*一个图标*/
 
@@ -233,11 +216,6 @@ export default {
   left: 250px;
   cursor: pointer;
 }
-
-
-
-
-
 
 /*地图的样式*/
 

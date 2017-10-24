@@ -2,7 +2,7 @@
   <!-- 优惠项目审核 -->
   <div class="model_projects">
     <el-tabs v-model="activeName">
-      <el-tab-pane :label="'未审核（'+tableData2.total+'）'" style="color: red" name="first">
+      <el-tab-pane :label="'未审核（'+totalAll2+'）'" style="color: red" name="first">
         <div>
           <el-table :data="tableData2">
             <el-table-column prop="enterpriseName" label="盟员名称">
@@ -18,8 +18,7 @@
             </el-table-column>
           </el-table>
           <div class="footer">
-            <el-pagination @current-change="handleCurrentChange2" :current-page.sync="currentPage2"
-                           :page-size="10" layout="prev, pager, next, jumper" :total="totalAll2" >
+            <el-pagination @current-change="handleCurrentChange2" :current-page.sync="currentPage2" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll2" v-if="tableData2.length>0">
             </el-pagination>
           </div>
         </div>
@@ -63,7 +62,7 @@
           </div>
         </el-dialog>
       </el-tab-pane>
-      <el-tab-pane :label="'通过（'+tableData3.length+'）'" name="second">
+      <el-tab-pane :label="'通过（'+totalAll3+'）'" name="second">
         <div>
           <el-table :data="tableData3">
             <el-table-column prop="enterpriseName" label="盟员名称">
@@ -79,8 +78,7 @@
             </el-table-column>
           </el-table>
           <div class="footer">
-            <el-pagination @current-change="handleCurrentChange3" :current-page.sync="currentPage3"
-                           :page-size="10" layout="prev, pager, next, jumper" :total="totalAll3" v-if="tableData3.length>0">
+            <el-pagination @current-change="handleCurrentChange3" :current-page.sync="currentPage3" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll3" v-if="tableData3.length>0">
             </el-pagination>
           </div>
         </div>
@@ -107,7 +105,7 @@
           </div>
         </el-dialog>
       </el-tab-pane>
-      <el-tab-pane :label="'未通过（'+tableData4.length+'）'" name="third">
+      <el-tab-pane :label="'未通过（'+totalAll4+'）'" name="third">
         <div class="notSubmitted">
           <el-table :data="tableData4" style="width: 100%">
             <el-table-column prop="enterpriseName" label="盟员名称">
@@ -123,8 +121,7 @@
             </el-table-column>
           </el-table>
           <div class="footer">
-            <el-pagination @current-change="handleCurrentChange4" :current-page.sync="currentPage4"
-                           :page-size="10" layout="prev, pager, next, jumper" :total="totalAll4" v-if="tableData4.length>0">
+            <el-pagination @current-change="handleCurrentChange4" :current-page.sync="currentPage4" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll4" v-if="tableData4.length>0">
             </el-pagination>
           </div>
         </div>
@@ -151,7 +148,7 @@
           </div>
         </el-dialog>
       </el-tab-pane>
-      <el-tab-pane :label="'未提交（'+tableData1.length+'）'" name="fourth">
+      <el-tab-pane :label="'未提交（'+totalAll1+'）'" name="fourth">
         <div>
           <el-table :data="tableData1">
             <el-table-column prop="enterpriseName" label="盟员名称">
@@ -165,8 +162,7 @@
             </el-table-column>
           </el-table>
           <div class="footer">
-            <el-pagination @current-change="handleCurrentChange1" :current-page.sync="currentPage1"
-                           :page-size="10" layout="prev, pager, next, jumper" :total="totalAll1" v-if="tableData1.length>0">
+            <el-pagination @current-change="handleCurrentChange1" :current-page.sync="currentPage1" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll1" v-if="tableData1.length>0">
             </el-pagination>
           </div>
         </div>
@@ -190,8 +186,8 @@
 </template>
 
 <script>
-import $http from '@/utils/http.js'
-import $todate from '@/utils/todate.js'
+import $http from '@/utils/http.js';
+import $todate from '@/utils/todate.js';
 export default {
   name: 'my-discount-check',
   data() {
@@ -204,7 +200,7 @@ export default {
       dialogTableVisible2: false,
       visibleData2: {
         enterpriseName: '',
-        illustration: '',
+        illustration: ''
       },
       tableData21: [],
       currentPage2: 1,
@@ -212,7 +208,7 @@ export default {
       dialogTableVisible3: false,
       visibleData3: {
         enterpriseName: '',
-        illustration: '',
+        illustration: ''
       },
       tableData31: [],
       currentPage3: 1,
@@ -220,7 +216,7 @@ export default {
       dialogTableVisible4: false,
       visibleData4: {
         enterpriseName: '',
-        illustration: '',
+        illustration: ''
       },
       tableData41: [],
       currentPage4: 1,
@@ -231,8 +227,8 @@ export default {
       visible: false,
       enterpriseName: '',
       id: '',
-      canPass: false,
-    }
+      canPass: false
+    };
   },
   computed: {
     unionMemberId() {
@@ -241,57 +237,61 @@ export default {
   },
   mounted: function() {
     // 未提交
-    $http.get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/1?current=1`)
+    $http
+      .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/1?current=1`)
       .then(res => {
         if (res.data.data) {
           this.tableData1 = res.data.data.records;
-          this.totalAll1 = res.data.data.pages;
+          this.totalAll1 = res.data.data.total;
         } else {
           this.tableData1 = [];
           this.totalAll1 = 0;
-        };
+        }
       })
       .catch(err => {
         this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
       });
     // 未审核
-    $http.get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/2?current=1`)
+    $http
+      .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/2?current=1`)
       .then(res => {
         if (res.data.data) {
           this.tableData2 = res.data.data.records;
-          this.totalAll2 = res.data.data.pages;
+          this.totalAll2 = res.data.data.total;
         } else {
           this.tableData2 = [];
           this.totalAll2 = 0;
-        };
+        }
       })
       .catch(err => {
         this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
       });
     // 已通过
-    $http.get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/3?current=1`)
+    $http
+      .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/3?current=1`)
       .then(res => {
         if (res.data.data) {
           this.tableData3 = res.data.data.records;
-          this.totalAll3 = res.data.data.pages;
+          this.totalAll3 = res.data.data.total;
         } else {
           this.tableData3 = [];
           this.totalAll3 = 0;
-        };
+        }
       })
       .catch(err => {
         this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
       });
     // 未通过
-    $http.get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/4?current=1`)
+    $http
+      .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/4?current=1`)
       .then(res => {
         if (res.data.data) {
           this.tableData4 = res.data.data.records;
-          this.totalAll4 = res.data.data.pages;
+          this.totalAll4 = res.data.data.total;
         } else {
           this.tableData4 = [];
           this.totalAll4 = 0;
-        };
+        }
       })
       .catch(err => {
         this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -300,60 +300,64 @@ export default {
   methods: {
     // 分页查询
     handleCurrentChange1(val) {
-      $http.get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/1?current=${val}`)
+      $http
+        .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/1?current=${val}`)
         .then(res => {
           if (res.data.data) {
             this.tableData1 = res.data.data.records;
-            this.totalAll1 = res.data.data.pages;
+            this.totalAll1 = res.data.data.total;
           } else {
             this.tableData1 = [];
             this.totalAll1 = 0;
-          };
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     handleCurrentChange2(val) {
-      $http.get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/2?current=${val}`)
+      $http
+        .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/2?current=${val}`)
         .then(res => {
           if (res.data.data) {
             this.tableData2 = res.data.data.records;
-            this.totalAll2 = res.data.data.pages;
+            this.totalAll2 = res.data.data.total;
           } else {
             this.tableData2 = [];
             this.totalAll2 = 0;
-          };
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     handleCurrentChange3(val) {
-      $http.get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/3?current=${val}`)
+      $http
+        .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/3?current=${val}`)
         .then(res => {
           if (res.data.data) {
             this.tableData3 = res.data.data.records;
-            this.totalAll3 = res.data.data.pages;
+            this.totalAll3 = res.data.data.total;
           } else {
             this.tableData3 = [];
             this.totalAll3 = 0;
-          };
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     handleCurrentChange4(val) {
-      $http.get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/4?current${val}`)
+      $http
+        .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/4?current=${val}`)
         .then(res => {
           if (res.data.data) {
             this.tableData4 = res.data.data.records;
-            this.totalAll4 = res.data.data.pages;
+            this.totalAll4 = res.data.data.total;
           } else {
             this.tableData4 = [];
             this.totalAll4 = 0;
-          };
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -362,7 +366,8 @@ export default {
     // 详情
     showDetail2(scope) {
       this.dialogTableVisible2 = true;
-      $http.get(`/unionPreferentialProject/${scope.row.projectId}/memberId/${this.unionMemberId}/status/2`)
+      $http
+        .get(`/unionPreferentialProject/${scope.row.projectId}/memberId/${this.unionMemberId}/status/2`)
         .then(res => {
           if (res.data.data) {
             this.visibleData2.enterpriseName = res.data.data.enterpriseName;
@@ -371,14 +376,14 @@ export default {
             this.tableData21.forEach((v, i) => {
               v.createtime = $todate.todate(new Date(v.createtime));
               if (v.status === 2) {
-                v.status = '未审核'
-              };
+                v.status = '未审核';
+              }
             });
           } else {
             this.visibleData2.enterpriseName = '';
             this.visibleData2.illustration = '';
             this.tableData21 = [];
-          };
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -386,7 +391,8 @@ export default {
     },
     showDetail3(scope) {
       this.dialogTableVisible3 = true;
-      $http.get(`/unionPreferentialProject/${scope.row.projectId}/memberId/${this.unionMemberId}/status/3`)
+      $http
+        .get(`/unionPreferentialProject/${scope.row.projectId}/memberId/${this.unionMemberId}/status/3`)
         .then(res => {
           if (res.data.data) {
             this.visibleData3.enterpriseName = res.data.data.enterpriseName;
@@ -395,14 +401,14 @@ export default {
             this.tableData31.forEach((v, i) => {
               v.createtime = $todate.todate(new Date(v.createtime));
               if (v.status === 3) {
-                v.status = '通过'
-              };
+                v.status = '通过';
+              }
             });
           } else {
             this.visibleData3.enterpriseName = '';
             this.visibleData3.illustration = '';
             this.tableData31 = [];
-          };
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -410,7 +416,8 @@ export default {
     },
     showDetail4(scope) {
       this.dialogTableVisible4 = true;
-      $http.get(`/unionPreferentialProject/${scope.row.projectId}/memberId/${this.unionMemberId}/status/4`)
+      $http
+        .get(`/unionPreferentialProject/${scope.row.projectId}/memberId/${this.unionMemberId}/status/4`)
         .then(res => {
           if (res.data.data) {
             this.visibleData4.enterpriseName = res.data.data.enterpriseName;
@@ -419,14 +426,14 @@ export default {
             this.tableData41.forEach((v, i) => {
               v.createtime = $todate.todate(new Date(v.createtime));
               if (v.status === 4) {
-                v.status = '不通过'
-              };
+                v.status = '不通过';
+              }
             });
           } else {
             this.visibleData4.enterpriseName = '';
             this.visibleData4.illustration = '';
             this.tableData41 = [];
-          };
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -435,11 +442,11 @@ export default {
     // 全选
     handleSelectionChange2(val) {
       this.multipleSelection = val;
-      if(this.multipleSelection.length) {
+      if (this.multipleSelection.length) {
         this.canPass = true;
       } else {
         this.canPass = false;
-      };
+      }
     },
     // 移出
     moveOut(scope) {
@@ -449,17 +456,19 @@ export default {
     },
     // 确认移出
     confirm() {
-      $http.put(`/unionMemberOut/memberId/${this.unionMemberId}?tgtMemberId=${this.id}`)
+      $http
+        .put(`/unionMemberOut/memberId/${this.unionMemberId}?tgtMemberId=${this.id}`)
         .then(res => {
-          $http.get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/1?current=1`)
+          $http
+            .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/1?current=1`)
             .then(res => {
               if (res.data.data) {
                 this.tableData1 = res.data.data.records;
-                this.totalAll1 = res.data.data.pages;
+                this.totalAll1 = res.data.data.total;
               } else {
                 this.tableData1 = [];
                 this.totalAll1 = 0;
-              };
+              }
             })
             .catch(err => {
               this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -474,18 +483,20 @@ export default {
       let url = `/unionPreferentialItem/batch/memberId/${this.unionMemberId}?isOK=1`;
       let data = [];
       data.push(scope.row.id);
-      $http.put(url, data)
+      $http
+        .put(url, data)
         .then(res => {
           this.dialogTableVisible2 = false;
-          $http.get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/2?current=1`)
+          $http
+            .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/2?current=1`)
             .then(res => {
               if (res.data.data) {
                 this.tableData2 = res.data.data.records;
-                this.totalAll2 = res.data.data.pages;
+                this.totalAll2 = res.data.data.total;
               } else {
                 this.tableData2 = [];
                 this.totalAll2 = 0;
-              };
+              }
             })
             .catch(err => {
               this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -499,7 +510,8 @@ export default {
       let url = `/unionPreferentialItem/batch/memberId/${this.unionMemberId}?isOK=0`;
       let data = [];
       data.push(scope.row.id);
-      $http.put(url, data)
+      $http
+        .put(url, data)
         .then(res => {
           this.dialogTableVisible2 = false;
         })
@@ -510,18 +522,20 @@ export default {
     passAll() {
       let url = `/unionPreferentialItem/batch/memberId/${this.unionMemberId}?isOK=1`;
       let data = this.multipleSelection;
-      $http.put(url, data)
+      $http
+        .put(url, data)
         .then(res => {
           this.dialogTableVisible2 = false;
-          $http.get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/2?current=1`)
+          $http
+            .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/2?current=1`)
             .then(res => {
               if (res.data.data) {
                 this.tableData2 = res.data.data.records;
-                this.totalAll2 = res.data.data.pages;
+                this.totalAll2 = res.data.data.total;
               } else {
                 this.tableData2 = [];
                 this.totalAll2 = 0;
-              };
+              }
             })
             .catch(err => {
               this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -534,16 +548,17 @@ export default {
     noPassAll() {
       let url = `/unionPreferentialItem/batch/memberId/${this.unionMemberId}?isOK=0`;
       let data = this.multipleSelection;
-      $http.put(url, data)
+      $http
+        .put(url, data)
         .then(res => {
           this.dialogTableVisible2 = false;
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
-    },
+    }
   }
-}
+};
 </script>
 
 <style lang='less' rel="stylesheet/less" scoped>

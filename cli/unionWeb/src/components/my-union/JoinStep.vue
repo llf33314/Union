@@ -28,7 +28,7 @@
             <el-button style="margin-top: 12px;" @click="back">返回</el-button>
           </el-col>
           <el-col :span="10" :offset="6">
-            <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll">
+            <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="datas.length>0">
             </el-pagination>
           </el-col>
         </el-row>
@@ -155,7 +155,7 @@ export default {
       .then(res => {
         if (res.data.data) {
           this.datas = res.data.data.records;
-          this.totalAll = res.data.data.pages;
+          this.totalAll = res.data.data.total;
         } else {
           this.datas = [];
           this.totalAll = 0;
@@ -190,7 +190,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.datas = res.data.data.records;
-            this.totalAll = res.data.data.pages;
+            this.totalAll = res.data.data.total;
           } else {
             this.datas = [];
             this.totalAll = 0;

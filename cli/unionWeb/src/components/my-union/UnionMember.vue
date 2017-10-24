@@ -46,9 +46,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-pagination @current-change="handleCurrentChange"
-                   :current-page.sync="currentPage" :page-size="10"
-                   layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
+    <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
     </el-pagination>
     <!-- 弹出框 详情 -->
     <div class="model__10">
@@ -138,8 +136,8 @@
 </template>
 
 <script>
-import $http from '@/utils/http.js'
-import $todate from '@/utils/todate.js'
+import $http from '@/utils/http.js';
+import $todate from '@/utils/todate.js';
 export default {
   name: 'union-member',
   data() {
@@ -156,23 +154,23 @@ export default {
         directorEmail: '',
         directorName: '',
         directorPhone: '',
-        enterpriseName: '',
+        enterpriseName: ''
       },
       form1: {
         discountFromMe: '',
-        discount: '',
+        discount: ''
       },
       form2: {
         discountFromMe: '',
-        discountToMe: '',
+        discountToMe: ''
       },
       current: 1,
       tgtMemberId: '',
       totalAll: 0,
       visible: false,
       enterpriseName: '',
-      memberId: '',
-    }
+      memberId: ''
+    };
   },
   computed: {
     unionMemberId() {
@@ -181,21 +179,22 @@ export default {
   },
   mounted: function() {
     if (this.unionMemberId) {
-      $http.get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=1`)
+      $http
+        .get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=1`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.pages;
+            this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
               if (v.discountFromMe) {
                 v.discountFromMe = v.discountFromMe.toFixed(1);
-              };
+              }
               if (v.discountToMe) {
                 v.discountToMe = v.discountToMe.toFixed(1);
-              };
+              }
               if (v.cardDividePercent) {
                 v.cardDividePercent = v.cardDividePercent.toFixed(2) + '%';
-              };
+              }
             });
           }
         })
@@ -207,26 +206,27 @@ export default {
   watch: {
     // 查询盟员列表
     unionMemberId: function() {
-      $http.get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=1`)
+      $http
+        .get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=1`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.pages;
+            this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
               if (v.discountFromMe) {
                 v.discountFromMe = v.discountFromMe.toFixed(1);
-              };
+              }
               if (v.discountToMe) {
                 v.discountToMe = v.discountToMe.toFixed(1);
-              };
+              }
               if (v.cardDividePercent) {
                 v.cardDividePercent = v.cardDividePercent.toFixed(2) + '%';
-              };
+              }
             });
           } else {
             this.tableData = [];
             this.totalAll = 0;
-          };
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -236,21 +236,22 @@ export default {
   methods: {
     // 带条件查询盟员列表
     search() {
-      $http.get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=1&enterpriseName=${this.input}`)
+      $http
+        .get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=1&enterpriseName=${this.input}`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.pages;
+            this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
               if (v.discountFromMe) {
                 v.discountFromMe = v.discountFromMe.toFixed(1);
-              };
+              }
               if (v.discountToMe) {
                 v.discountToMe = v.discountToMe.toFixed(1);
-              };
+              }
               if (v.cardDividePercent) {
                 v.cardDividePercent = v.cardDividePercent.toFixed(2) + '%';
-              };
+              }
             });
           }
         })
@@ -261,21 +262,22 @@ export default {
     // 分页查询盟员列表
     handleCurrentChange(val) {
       this.current = val;
-      $http.get(`/unionMember/pageMap/memberId/${this.unionMemberId}/?current=${val}&enterpriseName=${this.input}`)
+      $http
+        .get(`/unionMember/pageMap/memberId/${this.unionMemberId}/?current=${val}&enterpriseName=${this.input}`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.pages;
+            this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
               if (v.discountFromMe) {
                 v.discountFromMe = v.discountFromMe.toFixed(1);
-              };
+              }
               if (v.discountToMe) {
                 v.discountToMe = v.discountToMe.toFixed(1);
-              };
+              }
               if (v.cardDividePercent) {
                 v.cardDividePercent = v.cardDividePercent.toFixed(2) + '%';
-              };
+              }
             });
           }
         })
@@ -285,7 +287,8 @@ export default {
     },
     // 详情
     detail(scope) {
-      $http.get(`/unionMember/${scope.row.memberId}`)
+      $http
+        .get(`/unionMember/${scope.row.memberId}`)
         .then(res => {
           if (res.data.data) {
             this.form = res.data.data;
@@ -295,7 +298,7 @@ export default {
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+        });
     },
     // 移出
     remove(scope) {
@@ -306,23 +309,25 @@ export default {
     // 确认移出
     confirm() {
       this.visible = false;
-      $http.put(`/unionMemberOut/memberId/${this.unionMemberId}?tgtMemberId=${this.memberId}`)
+      $http
+        .put(`/unionMemberOut/memberId/${this.unionMemberId}?tgtMemberId=${this.memberId}`)
         .then(res => {
-          $http.get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=${this.current}`)
+          $http
+            .get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=${this.current}`)
             .then(res => {
               if (res.data.data) {
                 this.tableData = res.data.data.records;
-                this.totalAll = res.data.data.pages;
+                this.totalAll = res.data.data.total;
                 this.tableData.forEach((v, i) => {
                   if (v.discountFromMe) {
                     v.discountFromMe = v.discountFromMe.toFixed(1);
-                  };
+                  }
                   if (v.discountToMe) {
                     v.discountToMe = v.discountToMe.toFixed(1);
-                  };
+                  }
                   if (v.cardDividePercent) {
                     v.cardDividePercent = v.cardDividePercent.toFixed(2) + '%';
-                  };
+                  }
                 });
               }
             })
@@ -348,24 +353,29 @@ export default {
     },
     // 确认折扣
     discountConfirm1() {
-      $http.put(`/unionMemberDiscount/memberId/${this.unionMemberId}?tgtMemberId=${this.tgtMemberId}&discount=${this.form1.discount}`)
+      $http
+        .put(
+          `/unionMemberDiscount/memberId/${this.unionMemberId}?tgtMemberId=${this.tgtMemberId}&discount=${this.form1
+            .discount}`
+        )
         .then(res => {
           this.dialogVisible1 = false;
-          $http.get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=${this.current}`)
+          $http
+            .get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=${this.current}`)
             .then(res => {
               if (res.data.data) {
                 this.tableData = res.data.data.records;
-                this.totalAll = res.data.data.pages;
+                this.totalAll = res.data.data.total;
                 this.tableData.forEach((v, i) => {
                   if (v.discountFromMe) {
                     v.discountFromMe = v.discountFromMe.toFixed(1);
-                  };
+                  }
                   if (v.discountToMe) {
                     v.discountToMe = v.discountToMe.toFixed(1);
-                  };
+                  }
                   if (v.cardDividePercent) {
                     v.cardDividePercent = v.cardDividePercent.toFixed(2) + '%';
-                  };
+                  }
                 });
               }
             })
@@ -378,24 +388,29 @@ export default {
         });
     },
     discountConfirm2() {
-      $http.put(`/unionMemberDiscount/memberId/${this.unionMemberId}?tgtMemberId=${this.tgtMemberId}&discount=${this.form2.discountFromMe}`)
+      $http
+        .put(
+          `/unionMemberDiscount/memberId/${this.unionMemberId}?tgtMemberId=${this.tgtMemberId}&discount=${this.form2
+            .discountFromMe}`
+        )
         .then(res => {
           this.dialogVisible2 = false;
-          $http.get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=${this.current}`)
+          $http
+            .get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=${this.current}`)
             .then(res => {
               if (res.data.data) {
                 this.tableData = res.data.data.records;
-                this.totalAll = res.data.data.pages;
+                this.totalAll = res.data.data.total;
                 this.tableData.forEach((v, i) => {
                   if (v.discountFromMe) {
                     v.discountFromMe = v.discountFromMe.toFixed(1);
-                  };
+                  }
                   if (v.discountToMe) {
                     v.discountToMe = v.discountToMe.toFixed(1);
-                  };
+                  }
                   if (v.cardDividePercent) {
                     v.cardDividePercent = v.cardDividePercent.toFixed(2) + '%';
-                  };
+                  }
                 });
               }
             })
@@ -409,7 +424,9 @@ export default {
     },
     // 导出盟员列表
     output() {
-      let url = this.$store.state.baseUrl + `/unionMember/exportMap/memberId/${this.unionMemberId}?enterpriseName=${this.input}`;
+      let url =
+        this.$store.state.baseUrl +
+        `/unionMember/exportMap/memberId/${this.unionMemberId}?enterpriseName=${this.input}`;
       window.open(url);
     },
     // 关闭弹窗重置数据
@@ -418,9 +435,9 @@ export default {
     },
     resetData2() {
       this.form2.discountFromMe = '';
-    },
+    }
   }
-}
+};
 </script>
 
 
@@ -432,9 +449,9 @@ export default {
 .model__10 {
   .el-dialog__body {
     padding: 0;
-    >div {
+    > div {
       margin: 20px 40px 50px;
-      >span {
+      > span {
         float: right;
         margin-bottom: 20px;
       }
@@ -444,7 +461,7 @@ export default {
     width: 550px;
   }
   .el-form-item__label {
-    width: 110px!important;
+    width: 110px !important;
   }
 }
 </style>

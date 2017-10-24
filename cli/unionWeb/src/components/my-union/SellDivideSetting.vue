@@ -39,15 +39,13 @@
       <el-table-column prop="cardDividePercent" label="售卡分成比例">
       </el-table-column>
     </el-table>
-    <el-pagination @current-change="handleCurrentChange"
-                   :current-page.sync="currentPage" :page-size="10"
-                   layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
+    <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
     </el-pagination>
   </div>
 </template>
 
 <script>
-import $http from '@/utils/http.js'
+import $http from '@/utils/http.js';
 export default {
   name: 'sell-divide-setting',
   data() {
@@ -59,8 +57,8 @@ export default {
       sum: 0,
       tableData3: [], // 渲染视图
       _tableData3: [], // 传输数据
-      totalAll: 0,
-    }
+      totalAll: 0
+    };
   },
   computed: {
     unionMemberId() {
@@ -68,16 +66,17 @@ export default {
     }
   },
   mounted: function() {
-    $http.get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=1`)
+    $http
+      .get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=1`)
       .then(res => {
         if (res.data.data) {
           this.tableData = res.data.data.records;
-          this.totalAll = res.data.data.pages;
+          this.totalAll = res.data.data.total;
           if (this.tableData[0].isUnionOwner) {
             this.tableData[0].enterpriseName += '(盟主)';
           }
           this.tableData.forEach((v, i) => {
-            v.cardDividePercent = (v.cardDividePercent).toFixed(2) + '%';
+            v.cardDividePercent = v.cardDividePercent.toFixed(2) + '%';
           });
         }
       })
@@ -88,18 +87,19 @@ export default {
   methods: {
     // 比例设置 分页 获取数据
     handleCurrentChange(val) {
-      $http.get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=${val}`)
+      $http
+        .get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=${val}`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.pages;
+            this.totalAll = res.data.data.total;
             if (val === 1) {
               if (this.tableData[0].isUnionOwner) {
                 this.tableData[0].enterpriseName += '(盟主)';
               }
             }
             this.tableData.forEach((v, i) => {
-              v.cardDividePercent = (v.cardDividePercent).toFixed(2) + '%';
+              v.cardDividePercent = v.cardDividePercent.toFixed(2) + '%';
             });
           }
         })
@@ -110,7 +110,8 @@ export default {
     // 比例设置 弹出框 获取数据
     dialogShow() {
       this.dialogVisible = true;
-      $http.get(`/unionMember/listMap/memberId/${this.unionMemberId}`)
+      $http
+        .get(`/unionMember/listMap/memberId/${this.unionMemberId}`)
         .then(res => {
           if (res.data.data) {
             this.tableData3 = res.data.data;
@@ -118,8 +119,8 @@ export default {
               this.input = this.tableData3[0].cardDividePercent;
               this.sum = parseFloat(this.input);
               this.tableData3.splice(0, 1);
-            };
-          };
+            }
+          }
         })
         .then(res => {
           let table3 = document.getElementById('table3');
@@ -127,7 +128,7 @@ export default {
           for (let i = 0; i < inputs3.length; i++) {
             inputs3[i].value = this.tableData3[i].cardDividePercent;
             this.sum += parseFloat(inputs3[i].value);
-          };
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -152,7 +153,7 @@ export default {
             showClose: true,
             message: '商机总比例之和不得超过100%,必须设置盟主比例',
             type: 'warning',
-            duration: 5000,
+            duration: 5000
           });
         }
       }
@@ -162,23 +163,24 @@ export default {
       let table3 = document.getElementById('table3');
       let inputs3 = table3.getElementsByTagName('input');
       this.sum = 0;
-      $http.get(`/unionMember/listMap/memberId/${this.unionMemberId}`)
+      $http
+        .get(`/unionMember/listMap/memberId/${this.unionMemberId}`)
         .then(res => {
           if (res.data.data) {
             this._tableData3 = res.data.data;
             this._tableData3[0].cardDividePercent = this.input - 0;
-            for (let i = 1, j = i - 1; i < inputs3.length + 1; i++ , j++) {
+            for (let i = 1, j = i - 1; i < inputs3.length + 1; i++, j++) {
               inputs3[j].value = inputs3[j].value;
               this._tableData3[i].cardDividePercent = inputs3[j].value - 0;
             }
             this._tableData3.forEach((v, i) => {
               this.sum += parseFloat(v.cardDividePercent);
-            })
+            });
           }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+        });
     },
     // 保存
     onSave() {
@@ -189,16 +191,16 @@ export default {
         this._tableData3.forEach((v, i) => {
           data[i].cardDividePercent = v.cardDividePercent;
           data[i].memberId = v.memberId;
-        })
-        data.cardDividePercent =
-          data.memberId = this._tableData3.memberId;
-        $http.put(url, data)
+        });
+        data.cardDividePercent = data.memberId = this._tableData3.memberId;
+        $http
+          .put(url, data)
           .then(res => {
             this.$message({ showClose: true, message: '保存成功', type: 'success', duration: 5000 });
           })
           .catch(err => {
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          })
+          });
       } else {
         this.$message({
           showClose: true,
@@ -206,7 +208,7 @@ export default {
           type: 'warning',
           duration: 5000
         });
-      };
+      }
     },
     // 关闭弹窗重置数据
     resetData() {
@@ -217,9 +219,9 @@ export default {
       for (let i = 0; i < inputs3.length; i++) {
         inputs3[i].value = '';
       }
-    },
+    }
   }
-}
+};
 </script>
 
 <style lang='less' rel="stylesheet/less" scoped>
