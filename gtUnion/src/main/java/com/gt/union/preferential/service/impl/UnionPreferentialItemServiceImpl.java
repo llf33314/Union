@@ -147,7 +147,8 @@ public class UnionPreferentialItemServiceImpl extends ServiceImpl<UnionPreferent
         //优惠服务名称
         saveItem.setName(itemName);
         //状态
-        saveItem.setStatus(PreferentialConstant.STATUS_UNCOMMITTED);
+        saveItem.setStatus(MemberConstant.IS_UNION_OWNER_YES == unionMember.getIsUnionOwner()
+                ? PreferentialConstant.STATUS_PASS : PreferentialConstant.STATUS_UNCOMMITTED);
         //默认修改时间
         saveItem.setModifytime(DateUtil.getCurrentDate());
         this.save(saveItem);
