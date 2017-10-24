@@ -99,7 +99,7 @@ export default {
     // 验证规则
     let blackChargePricePass = (rule, value, callback) => {
       if (this.form.blackIsCharge) {
-        if (value === '') {
+        if (value !== 0 && !value) {
           callback(new Error('黑卡价格内容不能为空，请重新输入'));
         } else if (isNaN(value)) {
           callback(new Error('黑卡价格内容必须为数字值，请重新输入'));
@@ -114,7 +114,7 @@ export default {
     };
     let blackValidityDayPass = (rule, value, callback) => {
       if (this.form.blackIsCharge) {
-        if (value === '') {
+        if (value !== 0 && !value) {
           callback(new Error('黑卡时效内容不能为空，请重新输入'));
         } else if (isNaN(value)) {
           callback(new Error('黑卡时效内容必须为数字值，请重新输入'));
@@ -129,7 +129,7 @@ export default {
     };
     let redChargePricePass = (rule, value, callback) => {
       if (this.form.redIsAvailable) {
-        if (value === '') {
+        if (value !== 0 && !value) {
           callback(new Error('红卡价格内容不能为空，请重新输入'));
         } else if (isNaN(value)) {
           callback(new Error('红卡价格内容必须为数字值，请重新输入'));
@@ -146,7 +146,7 @@ export default {
     };
     let redValidityDayPass = (rule, value, callback) => {
       if (this.form.redIsAvailable) {
-        if (value === '') {
+        if (value !== 0 && !value) {
           callback(new Error('红卡时效内容不能为空，请重新输入'));
         } else if (isNaN(value)) {
           callback(new Error('红卡时效内容必须为数字值，请重新输入'));

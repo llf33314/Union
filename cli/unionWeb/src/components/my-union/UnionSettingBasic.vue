@@ -85,7 +85,7 @@ export default {
       }
     };
     let integralExchangePercentPass = (rule, value, callback) => {
-      if (value === '') {
+      if (value !== 0 && !value) {
         callback(new Error('积分折扣率内容不能为空，请重新输入'));
       } else if (isNaN(value)) {
         callback(new Error('积分折扣率必须为数字值，请重新输入'));
@@ -101,7 +101,9 @@ export default {
       childrenData: '',
       labelPosition: 'right',
       mapShow: false,
-      form: {},
+      form: {
+        enterpriseAddress: ''
+      },
       rules: {
         enterpriseName: [{ required: true, message: '企业名称内容不能为空，请重新输入', trigger: 'blur' }],
         directorName: [{ required: true, message: '负责人内容不能为空，请重新输入', trigger: 'blur' }],
@@ -124,11 +126,21 @@ export default {
       .get(`/unionMember/${this.unionMemberId}`)
       .then(res => {
         if (res.data.data) {
+          // 处理无地址内容时刚进页面触发校验chang
+          if (!res.data.data.enterpriseAddress) {
+            res.data.data.enterpriseAddress = '';
+          }
           this.form = res.data.data;
           this.form.addressProvinceCode = this.form.addressProvinceCode;
           this.form.addressCityCode = this.form.addressCityCode;
           this.form.addressDistrictCode = this.form.addressDistrictCode;
-          this.form.region = [this.form.addressProvinceCode, this.form.addressCityCode, this.form.addressDistrictCode];
+          if (this.form.addressProvinceCode) {
+            this.form.region = [
+              this.form.addressProvinceCode,
+              this.form.addressCityCode,
+              this.form.addressDistrictCode
+            ];
+          }
           this.form.integralExchangePercent = this.form.integralExchangePercent;
         }
       })
@@ -172,7 +184,7 @@ export default {
             .then(res => {
               if (res.data.success) {
                 this.$message({ showClose: true, message: '保存成功', type: 'success', duration: 5000 });
-              };
+              }
             })
             .catch(err => {
               this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
