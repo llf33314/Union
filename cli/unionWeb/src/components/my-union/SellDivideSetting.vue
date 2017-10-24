@@ -28,8 +28,8 @@
         <el-button @click="dialogVisible=false">取 消</el-button>
       </span>
     </el-dialog>
-    <el-button type="warning" style="padding: 10px 15px 10px 32px;">
-      <img src="../../assets/images/Videos.png" style="width: 17px;position: absolute;top: 9px;left: 101px;">
+    <el-button type="warning" style="padding: 10px 15px 10px 32px;position: relative">
+      <img src="../../assets/images/Videos.png" style="width: 17px;position: absolute;top: 7px;left: 7px;">
       视频教程
     </el-button>
     <!-- 比例设置列表 -->

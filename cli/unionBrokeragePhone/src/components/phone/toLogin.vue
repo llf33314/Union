@@ -174,7 +174,7 @@
                     if(res.code == 0){
                       setTimeout(function () {
                         location.href = '#/Index';
-                      }, 1000);
+                      }, 10);
                     }else {
                       that_.$message({showClose: true, message: res.msg, type: 'error', duration: 3000});
                     }
