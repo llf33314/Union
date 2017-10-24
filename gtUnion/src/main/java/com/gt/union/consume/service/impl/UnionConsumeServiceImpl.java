@@ -377,7 +377,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		consumeSuccess(vo, orderNo);
 
 		redisCacheUtil.remove(paramKey);
-		redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_003, 60l);//支付成功
+		redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_003, 60L);//支付成功
 	}
 
 	@Override
@@ -429,10 +429,10 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		data.put("only", only);
 
 		data.put("unionConsumeParamVO", vo);
-		String paramKey = RedisKeyUtil.getConsumePayStatusKey(only);
-		String statusKey = RedisKeyUtil.getConsumePayParamKey(only);
-		redisCacheUtil.set(paramKey, data, 360l);//5分钟
-		redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_001,300l);
+		String statusKey = RedisKeyUtil.getConsumePayStatusKey(only);
+		String paramKey = RedisKeyUtil.getConsumePayParamKey(only);
+		redisCacheUtil.set(paramKey, data, 360L);//5分钟
+		redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_001,300L);
 		return data;
 	}
 

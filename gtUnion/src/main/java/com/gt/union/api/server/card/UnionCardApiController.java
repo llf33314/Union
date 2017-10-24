@@ -101,7 +101,7 @@ public class UnionCardApiController extends ApiBaseController {
 			param.put("reqdata",smsParams);
 			if(smsService.sendSms(param) == 1){
 				String phoneKey = RedisKeyUtil.getMemberPhoneCodeKey(requestApiParam.getReqdata().getMemberId());
-				redisCacheUtil.set(phoneKey,code,300l);//5分钟
+				redisCacheUtil.set(phoneKey,code,300L);//5分钟
 				return ResponseUtils.createBySuccess();
 			} else {
 				return ResponseUtils.createByErrorMessage("发送失败");
