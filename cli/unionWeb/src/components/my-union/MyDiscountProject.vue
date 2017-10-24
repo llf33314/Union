@@ -122,7 +122,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.pageItem.records;
-            this.totalAll = res.data.data.total;
+            this.totalAll = res.data.data.pageItem.total;
             this.tableData.forEach((v, i) => {
               switch (v.status) {
                 case 1:
