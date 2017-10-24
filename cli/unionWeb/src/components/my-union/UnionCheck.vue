@@ -171,7 +171,7 @@ export default {
     },
     // 不通过
     handleFail(scope) {
-      his.visible2 = true;
+      this.visible2 = true;
       this.joinId = scope.row.joinId;
     },
     // 确认不通过
