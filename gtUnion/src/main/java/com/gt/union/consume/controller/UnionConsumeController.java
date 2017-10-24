@@ -203,22 +203,21 @@ public class UnionConsumeController {
 	}
 
 	//------------------------------------------------- money ----------------------------------------------------------
-	@RequestMapping(value = "/79B4DE7C/paymentSuccess/{Encrypt}/{only}", method = RequestMethod.POST)
+	@RequestMapping(value = "/79B4DE7C/paymentSuccess/{only}", method = RequestMethod.POST)
 	public String payConsumeSuccess(HttpServletRequest request, HttpServletResponse response
-			, @PathVariable(name = "Encrypt", required = true) String encrypt
 			, @PathVariable(name = "only", required = true) String only, @RequestBody Map<String,Object> param) {
 		Map<String,Object> data = new HashMap<String,Object>();
 		try {
-			logger.info("消费核销支付成功，Encrypt------------------" + encrypt);
 			logger.info("消费核销支付成功，only------------------" + only);
 			logger.info("消费核销支付成功回调参数" + JSON.toJSONString(param));
 			if((CommonUtil.isNotEmpty(param.get("trade_status")) && param.get("trade_status").equals("TRADE_SUCCESS")) ||
 					(CommonUtil.isNotEmpty(param.get("result_code")) && param.get("result_code").equals("SUCCESS") &&
 							CommonUtil.isNotEmpty(param.get("return_code")) && param.get("return_code").equals("SUCCESS"))){
+				String orderNo = param.get("out_trade_no").toString();
 				String paramKey = RedisKeyUtil.getConsumePayParamKey(only);
 				String paramData = redisCacheUtil.get(paramKey);
 				Map map = JSON.parseObject(paramData,Map.class);
-				unionConsumeService.payConsumeSuccess(encrypt, only, CommonUtil.toInteger(param.get("payType")));
+				unionConsumeService.payConsumeSuccess(orderNo, only, CommonUtil.toInteger(param.get("payType")));
 				String statusKey = RedisKeyUtil.getConsumePayStatusKey(only);
 				String status = redisCacheUtil.get(statusKey);
 				if (CommonUtil.isEmpty(status)) {//订单超时

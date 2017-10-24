@@ -115,7 +115,7 @@ public class UnionVerifierController {
             return GTJsonResult.instanceErrorMsg("发送失败").toString();
         }
         String phoneKey = RedisKeyUtil.getVerifyPhoneKey(phone);
-        redisCacheUtil.set(phoneKey , code, 300l);
+        redisCacheUtil.set(phoneKey , code, 300L);
         return GTJsonResult.instanceSuccessMsg().toString();
     }
 }

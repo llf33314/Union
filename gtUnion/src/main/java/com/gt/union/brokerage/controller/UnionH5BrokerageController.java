@@ -120,7 +120,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 			return GTJsonResult.instanceErrorMsg("发送失败").toString();
 		}
 		String phoneKey = RedisKeyUtil.getBrokeragePhoneKey(phone);
-		redisCacheUtil.set(phoneKey , code, 300l);
+		redisCacheUtil.set(phoneKey , code, 300L);
 		return GTJsonResult.instanceSuccessMsg().toString();
 	}
 

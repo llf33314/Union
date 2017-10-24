@@ -32,8 +32,24 @@
       <el-table-column prop="clientName" label="顾客姓名">
       </el-table-column>
       <el-table-column prop="clientPhone" label="电话">
+        <template scope="scope">
+          <el-popover trigger="hover" placement="bottom">
+            <p>{{ scope.row.clientPhone }}</p>
+            <div slot="reference" class="name-wrapper">
+              <span>{{ scope.row.clientPhone }}</span>
+            </div>
+          </el-popover>
+        </template>
       </el-table-column>
       <el-table-column prop="businessMsg" label="业务备注">
+        <template scope="scope">
+          <el-popover trigger="hover" placement="bottom">
+            <p>{{ scope.row.businessMsg }}</p>
+            <div slot="reference" class="name-wrapper">
+              <span>{{ scope.row.businessMsg }}</span>
+            </div>
+          </el-popover>
+        </template>
       </el-table-column>
       <el-table-column prop="toEnterpriseName" label="推荐商家">
       </el-table-column>
@@ -86,6 +102,35 @@ export default {
   },
   mounted: function() {
     this.init();
+    // 监听是否有新的推荐
+    eventBus.$on('newRecommend', () => {
+      $http
+        .get(`/unionOpportunity/fromMe?current=1`)
+        .then(res => {
+          if (res.data.data) {
+            this.tableData = res.data.data.records;
+            this.totalAll = res.data.data.total;
+            this.tableData.forEach((v, i) => {
+              switch (v.isAccept) {
+                case 1:
+                  v.isAccept = '未处理';
+                  break;
+                case 2:
+                  v.isAccept = '已完成';
+                  break;
+                case 3:
+                  v.isAccept = '已拒绝';
+              }
+            });
+          } else {
+            this.tableData = [];
+            this.totalAll = 0;
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    });
   },
   methods: {
     init() {
@@ -145,50 +190,11 @@ export default {
             });
           });
       }
-      // 监听是否有新的推荐
-      eventBus.$on('newRecommend', () => {
-        $http
-          .get(`/unionOpportunity/fromMe?current=1`)
-          .then(res => {
-            if (res.data.data) {
-              this.tableData = res.data.data.records;
-              this.totalAll = res.data.data.total;
-              this.tableData.forEach((v, i) => {
-                switch (v.isAccept) {
-                  case 1:
-                    v.isAccept = '未处理';
-                    break;
-                  case 2:
-                    v.isAccept = '已完成';
-                    break;
-                  case 3:
-                    v.isAccept = '已拒绝';
-                }
-              });
-            } else {
-              this.tableData = [];
-              this.totalAll = 0;
-            }
-          })
-          .catch(err => {
-            this.$message({
-              showClose: true,
-              message: err.toString(),
-              type: 'error',
-              duration: 5000
-            });
-          });
-      });
     },
     // 带条件搜索
     search() {
       $http
-        .get(
-          `/unionOpportunity/fromMe?current=1&unionId=${this.unionId}&` +
-            this.value +
-            '=' +
-            this.input
-        )
+        .get(`/unionOpportunity/fromMe?current=1&unionId=${this.unionId}&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
@@ -222,12 +228,7 @@ export default {
     // 分页搜索
     handleCurrentChange(val) {
       $http
-        .get(
-          `/unionOpportunity/fromMe?current=${val}&unionId=${this.unionId}&` +
-            this.value +
-            '=' +
-            this.input
-        )
+        .get(`/unionOpportunity/fromMe?current=${val}&unionId=${this.unionId}&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;

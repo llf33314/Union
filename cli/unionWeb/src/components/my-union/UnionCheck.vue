@@ -22,16 +22,48 @@
     <div class="apply_select">
       <el-table :data="tableData" style="width: 100%">
         <el-table-column prop="joinEnterpriseName" label="申请企业">
+          <template scope="scope">
+            <el-popover trigger="hover" placement="bottom">
+              <p>{{ scope.row.joinEnterpriseName }}</p>
+              <div slot="reference" class="name-wrapper">
+                <span>{{ scope.row.joinEnterpriseName }}</span>
+              </div>
+            </el-popover>
+          </template>
         </el-table-column>
         <el-table-column prop="joinDirectorName" label="负责人">
         </el-table-column>
         <el-table-column prop="joinDirectorPhone" label="联系电话">
+          <template scope="scope">
+            <el-popover trigger="hover" placement="bottom">
+              <p>{{ scope.row.joinDirectorPhone }}</p>
+              <div slot="reference" class="name-wrapper">
+                <span>{{ scope.row.joinDirectorPhone }}</span>
+              </div>
+            </el-popover>
+          </template>
         </el-table-column>
         <el-table-column prop="joinDirectorEmail" label="邮箱">
+          <template scope="scope">
+            <el-popover trigger="hover" placement="bottom">
+              <p>{{ scope.row.joinDirectorEmail }}</p>
+              <div slot="reference" class="name-wrapper">
+                <span>{{ scope.row.joinDirectorEmail }}</span>
+              </div>
+            </el-popover>
+          </template>
         </el-table-column>
         <el-table-column prop="joinReason" label="申请/推荐理由">
         </el-table-column>
         <el-table-column prop="joinTime" label="申请/推荐时间">
+          <template scope="scope">
+            <el-popover trigger="hover" placement="bottom">
+              <p>{{ scope.row.joinTime }}</p>
+              <div slot="reference" class="name-wrapper">
+                <span>{{ scope.row.joinTime }}</span>
+              </div>
+            </el-popover>
+          </template>
         </el-table-column>
         <el-table-column prop="" label="推荐人">
         </el-table-column>

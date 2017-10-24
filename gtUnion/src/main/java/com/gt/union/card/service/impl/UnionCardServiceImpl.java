@@ -658,7 +658,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         param.put("reqdata", smsParams);
         if (smsService.sendSms(param) == 1) {
             String phoneKey = RedisKeyUtil.getBindCardPhoneKey(phone);
-            redisCacheUtil.set(phoneKey, code, 600l);//5分钟
+            redisCacheUtil.set(phoneKey, code, 600L);//5分钟
         } else {
             throw new BusinessException("发送失败");
         }
@@ -992,8 +992,8 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         data.put("isSendSocketMessage", isSendSocketMessage);
         String statusKey = RedisKeyUtil.getBindCardPayStatusKey(only);
         String paramKey = RedisKeyUtil.getBindCardPayParamKey(only);
-        redisCacheUtil.set(paramKey, data, 360l);//5分钟
-        redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_001, 300l);//等待扫码状态
+        redisCacheUtil.set(paramKey, data, 360L);//5分钟
+        redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_001, 300L);//等待扫码状态
         return data;
     }
 
@@ -1077,7 +1077,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         }
         unionBrokerageIncomeService.insertBatch(incomes);
         redisCacheUtil.remove(paramKey);
-        redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_003, 60l);//支付成功
+        redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_003, 60L);//支付成功
 
     }
 

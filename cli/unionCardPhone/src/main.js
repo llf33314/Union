@@ -6,7 +6,6 @@ import router from './router'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
 import './assets/css/index.less'
-import store from './store/index.js'
 
 Vue.use(ElementUI);
 Vue.config.productionTip = false;
@@ -17,7 +16,6 @@ window.eventBus = new Vue({});
 new Vue({
   el: '#app',
   router,
-  store,
   render: h => h(App),
   components: {
     App

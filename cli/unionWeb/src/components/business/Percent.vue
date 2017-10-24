@@ -98,12 +98,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     }
   },
@@ -125,10 +120,7 @@ export default {
               });
               this.value = this.options[0].value;
               $http
-                .get(
-                  `/unionOpportunityRatio/pageMap/memberId/${this
-                    .value}?current=1`
-                )
+                .get(`/unionOpportunityRatio/pageMap/memberId/${this.value}?current=1`)
                 .then(res => {
                   if (res.data.data) {
                     this.tableData = res.data.data.records;
@@ -143,24 +135,14 @@ export default {
                   }
                 })
                 .catch(err => {
-                  this.$message({
-                    showClose: true,
-                    message: err.toString(),
-                    type: 'error',
-                    duration: 5000
-                  });
+                  this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
                 });
             } else {
               this.options = [];
             }
           })
           .catch(err => {
-            this.$message({
-              showClose: true,
-              message: err.toString(),
-              type: 'error',
-              duration: 5000
-            });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
       }
     },
@@ -175,17 +157,11 @@ export default {
     // 保存设置
     submit() {
       $http
-        .put(
-          `/unionOpportunityRatio/memberId/${this.value}?toMemberId=${this
-            .toMemberId}&ratio=${this.ratioFromMe}`
-        )
+        .put(`/unionOpportunityRatio/memberId/${this.value}?toMemberId=${this.toMemberId}&ratio=${this.ratioFromMe}`)
         .then(res => {
           if (res.data.success) {
             $http
-              .get(
-                `/unionOpportunityRatio/pageMap/memberId/${this
-                  .value}?current=${this.currentPage}`
-              )
+              .get(`/unionOpportunityRatio/pageMap/memberId/${this.value}?current=${this.currentPage}`)
               .then(res => {
                 if (res.data.data) {
                   this.tableData = res.data.data.records;
@@ -203,30 +179,18 @@ export default {
                 this.dialogVisible = false;
               })
               .catch(err => {
-                this.$message({
-                  showClose: true,
-                  message: err.toString(),
-                  type: 'error',
-                  duration: 5000
-                });
+                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
               });
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     // 分页查询
     handleCurrentChange(val) {
       $http
-        .get(
-          `/unionOpportunityRatio/pageMap/memberId/${this.value}?current=${val}`
-        )
+        .get(`/unionOpportunityRatio/pageMap/memberId/${this.value}?current=${val}`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
@@ -241,12 +205,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     // 关闭弹窗重置数据

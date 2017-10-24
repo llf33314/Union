@@ -28,8 +28,8 @@
         <el-button @click="dialogVisible=false">取 消</el-button>
       </span>
     </el-dialog>
-    <el-button type="warning" style="padding: 10px 15px 10px 32px;">
-      <img src="../../assets/images/Videos.png" style="width: 17px;position: absolute;top: 9px;left: 101px;">
+    <el-button type="warning" style="padding: 10px 15px 10px 32px;position: relative">
+      <img src="../../assets/images/Videos.png" style="width: 17px;position: absolute;top: 7px;left: 7px;">
       视频教程
     </el-button>
     <!-- 比例设置列表 -->
@@ -202,12 +202,7 @@ export default {
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
       } else {
-        this.$message({
-          showClose: true,
-          message: '商机总比例之和应为100%',
-          type: 'warning',
-          duration: 5000
-        });
+        this.$message({ showClose: true, message: '商机总比例之和应为100%', type: 'warning', duration: 5000 });
       }
     },
     // 关闭弹窗重置数据
