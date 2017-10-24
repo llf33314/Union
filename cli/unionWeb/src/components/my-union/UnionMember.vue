@@ -41,7 +41,7 @@
           <div class="sizeAndColor">
             <el-button size="small" @click="detail(scope)">详情</el-button>
             <el-button size="small" @click="discount(scope)">折扣</el-button>
-            <el-button size="small" v-if="!scope.row.isUnionOwner" @click="remove(scope)">移出</el-button>
+            <el-button size="small" v-if="isUnionOwner && !scope.row.isUnionOwner" @click="remove(scope)">移出</el-button>
           </div>
         </template>
       </el-table-column>
@@ -175,6 +175,9 @@ export default {
   computed: {
     unionMemberId() {
       return this.$store.state.unionMemberId;
+    },
+    isUnionOwner() {
+      return this.$store.state.isUnionOwner;
     }
   },
   mounted: function() {
