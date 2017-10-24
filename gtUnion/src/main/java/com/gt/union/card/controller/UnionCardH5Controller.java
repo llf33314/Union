@@ -85,7 +85,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			return GTJsonResult.instanceErrorMsg("发送失败").toString();
 		}
 		String phoneKey = RedisKeyUtil.getCardH5LoginPhoneKey(phone);
-		redisCacheUtil.set(phoneKey , code, 300l);
+		redisCacheUtil.set(phoneKey , code, 300L);
 		return GTJsonResult.instanceSuccessMsg().toString();
 	}
 
@@ -103,7 +103,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 				return GTJsonResult.instanceErrorMsg("发送失败").toString();
 			}
 			String phoneKey = RedisKeyUtil.getCardH5BindPhoneKey(phone);
-			redisCacheUtil.set(phoneKey , code, 300l);
+			redisCacheUtil.set(phoneKey , code, 300L);
 			return GTJsonResult.instanceSuccessMsg().toString();
 	}
 

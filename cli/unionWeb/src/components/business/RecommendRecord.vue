@@ -102,6 +102,35 @@ export default {
   },
   mounted: function() {
     this.init();
+    // 监听是否有新的推荐
+    eventBus.$on('newRecommend', () => {
+      $http
+        .get(`/unionOpportunity/fromMe?current=1`)
+        .then(res => {
+          if (res.data.data) {
+            this.tableData = res.data.data.records;
+            this.totalAll = res.data.data.total;
+            this.tableData.forEach((v, i) => {
+              switch (v.isAccept) {
+                case 1:
+                  v.isAccept = '未处理';
+                  break;
+                case 2:
+                  v.isAccept = '已完成';
+                  break;
+                case 3:
+                  v.isAccept = '已拒绝';
+              }
+            });
+          } else {
+            this.tableData = [];
+            this.totalAll = 0;
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    });
   },
   methods: {
     init() {
@@ -161,50 +190,11 @@ export default {
             });
           });
       }
-      // 监听是否有新的推荐
-      eventBus.$on('newRecommend', () => {
-        $http
-          .get(`/unionOpportunity/fromMe?current=1`)
-          .then(res => {
-            if (res.data.data) {
-              this.tableData = res.data.data.records;
-              this.totalAll = res.data.data.total;
-              this.tableData.forEach((v, i) => {
-                switch (v.isAccept) {
-                  case 1:
-                    v.isAccept = '未处理';
-                    break;
-                  case 2:
-                    v.isAccept = '已完成';
-                    break;
-                  case 3:
-                    v.isAccept = '已拒绝';
-                }
-              });
-            } else {
-              this.tableData = [];
-              this.totalAll = 0;
-            }
-          })
-          .catch(err => {
-            this.$message({
-              showClose: true,
-              message: err.toString(),
-              type: 'error',
-              duration: 5000
-            });
-          });
-      });
     },
     // 带条件搜索
     search() {
       $http
-        .get(
-          `/unionOpportunity/fromMe?current=1&unionId=${this.unionId}&` +
-            this.value +
-            '=' +
-            this.input
-        )
+        .get(`/unionOpportunity/fromMe?current=1&unionId=${this.unionId}&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
@@ -238,12 +228,7 @@ export default {
     // 分页搜索
     handleCurrentChange(val) {
       $http
-        .get(
-          `/unionOpportunity/fromMe?current=${val}&unionId=${this.unionId}&` +
-            this.value +
-            '=' +
-            this.input
-        )
+        .get(`/unionOpportunity/fromMe?current=${val}&unionId=${this.unionId}&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;

@@ -148,7 +148,7 @@
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="submit">确 定</el-button>
+          <el-button type="primary" @click="submit" :disabled="!canSubmit">确 定</el-button>
           <el-button @click="visible3 = false">取 消</el-button>
         </span>
       </el-dialog>
@@ -221,7 +221,8 @@ export default {
       socketFlag: {
         only: '',
         status: ''
-      }
+      },
+      canSubmit: false
     };
   },
   mounted: function() {
@@ -237,6 +238,10 @@ export default {
       .catch(err => {
         this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
       });
+    // 切换tab情况输入数据
+    eventBus.$on('tabChange1', () => {
+      this.input = '';
+    });
   },
   filters: {
     formatPrice: function(value) {
@@ -262,6 +267,9 @@ export default {
         setTimeout(function() {
           that.price2 = '';
         }, 100);
+      }
+      if (this.price2 - this.price1 > 0 || this.price2 - this.price1 === 0) {
+        this.canSubmit = true;
       }
     },
     isIntegral_: function() {
@@ -303,30 +311,32 @@ export default {
     },
     // 联盟改变
     unionIdChange() {
-      $http
-        .get(`/unionCard/unionCardInfo?no=${this.input}&unionId=${this.form.unionId}`)
-        .then(res => {
-          if (res.data.data) {
-            this.form.enterpriseName = res.data.data.enterpriseName;
-            this.form.discount = res.data.data.discount;
-            this.form.cardNo = res.data.data.cardNo;
-            this.form.isIntegral = res.data.data.isIntegral;
-            this.form.integral = res.data.data.integral;
-            this.form.validity = res.data.data.validity;
-            this.isIntegral = this.form.isIntegral;
-            this.isIntegral ? (this.isIntegral_ = true) : (this.isIntegral_ = false);
-          } else {
-            this.form.enterpriseName = '';
-            this.form.discount = '';
-            this.form.cardNo = '';
-            this.form.isIntegral = '';
-            this.form.integral = '';
-            this.form.validity = '';
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+      if (this.form.unionId) {
+        $http
+          .get(`/unionCard/unionCardInfo?no=${this.input}&unionId=${this.form.unionId}`)
+          .then(res => {
+            if (res.data.data) {
+              this.form.enterpriseName = res.data.data.enterpriseName;
+              this.form.discount = res.data.data.discount;
+              this.form.cardNo = res.data.data.cardNo;
+              this.form.isIntegral = res.data.data.isIntegral;
+              this.form.integral = res.data.data.integral;
+              this.form.validity = res.data.data.validity;
+              this.isIntegral = this.form.isIntegral;
+              this.isIntegral ? (this.isIntegral_ = true) : (this.isIntegral_ = false);
+            } else {
+              this.form.enterpriseName = '';
+              this.form.discount = '';
+              this.form.cardNo = '';
+              this.form.isIntegral = '';
+              this.form.integral = '';
+              this.form.validity = '';
+            }
+          })
+          .catch(err => {
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          });
+      }
     },
     // 确认
     confirm() {
@@ -349,7 +359,6 @@ export default {
     },
     // 提交
     submit() {
-      this.visible3 = false;
       let url = `/unionConsume`;
       let data = {};
       data.cardId = this.form.cardId;
@@ -367,14 +376,18 @@ export default {
       $http
         .post(url, data)
         .then(res => {
-          this.visible4 = true;
-          let timer1 = setInterval(() => {
-            if (this.countTime == 0) {
-              clearInterval(timer1);
-              this.init();
-            }
-            this.countTime--;
-          }, 1000);
+          if (res.data.success) {
+            this.visible3 = false;
+            this.visible4 = true;
+            eventBus.$emit('newTransaction');
+            let timer1 = setInterval(() => {
+              if (this.countTime == 0) {
+                clearInterval(timer1);
+                this.init();
+              }
+              this.countTime--;
+            }, 1000);
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -462,9 +475,12 @@ export default {
               if (!(_this.socketFlag.only == msg.only && _this.socketFlag.status == msg.status)) {
                 if (_this.only == msg.only) {
                   if (msg.status == '003') {
-                    _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
+                    // _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
+                    _this.visible3 = false;
                     _this.visible5 = false;
+                    _this.parent.window.postMessage('openMask()', 'https://deeptel.com.cn/user/toIndex_1.do');
                     _this.visible4 = true;
+                    _this.eventBus.$emit('newTransaction');
                     let timer3 = setInterval(() => {
                       if (_this.countTime == 0) {
                         clearInterval(timer3);
@@ -491,6 +507,7 @@ export default {
     // 关闭二维码改变付款方式
     resetData() {
       this.payType = 0;
+      parent.window.postMessage('openMask()', 'https://deeptel.com.cn/user/toIndex_1.do');
     },
     // 返回
     back() {

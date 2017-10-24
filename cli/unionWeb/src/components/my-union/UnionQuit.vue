@@ -2,8 +2,8 @@
   <div>
     <Breadcrumb :header-name="'退盟管理'"></Breadcrumb>
     <div class="container" id="Refund">
-      <el-tabs v-model="activeName" v-if="isUnionOwner">
-        <el-tab-pane label="退盟审核" name="first">
+      <el-tabs v-model="activeName">
+        <el-tab-pane label="退盟审核" name="first" v-if="isUnionOwner">
           <div>
             <p style="text-align: right;color:#20A0FF">
               <span @click="dialogVisible1 = true" style="cursor: pointer">退盟说明?</span>
