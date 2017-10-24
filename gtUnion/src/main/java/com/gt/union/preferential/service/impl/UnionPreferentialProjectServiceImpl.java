@@ -32,12 +32,10 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * <p>
  * 优惠项目 服务实现类
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-23 14:51:10
  */
 @Service
 public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPreferentialProjectMapper, UnionPreferentialProject> implements IUnionPreferentialProjectService {
@@ -53,9 +51,7 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
     @Autowired
     private RedisCacheUtil redisCacheUtil;
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - get *********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - get --------------------------------------------
 
     @Override
     public UnionPreferentialProject getByMemberId(Integer memberId) throws Exception {
@@ -92,7 +88,7 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
             throw new BusinessException("优惠项目不存在");
         }
         List<UnionPreferentialItem> itemList = this.unionPreferentialItemService.listByProjectIdAndStatus(projectId, itemStatus);
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>(16);
         result.put("project", project);
         result.put("itemList", itemList);
         result.put("enterpriseName", unionMember.getEnterpriseName());
@@ -120,11 +116,11 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
     }
 
     @Override
-    public Map<String, Object> getPageMapByBusIdAndMemberId(Page page, Integer busId, Integer memberId) throws Exception {
+    public Map<String, Object> getPageMapByBusIdAndMemberId(Page<UnionPreferentialItem> page, Integer busId, Integer memberId) throws Exception {
         if (page == null || busId == null || memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        Map<String, Object> result = new HashMap<>();
+        Map<String, Object> result = new HashMap<>(16);
         //(1)判断是否具有盟员权限
         UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
         if (unionMember == null) {
@@ -149,9 +145,7 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - list ********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - list -------------------------------------------
 
     @Override
     public Page pageMapByBusIdAndMemberIdAndItemStatus(Page page, Integer busId, Integer memberId, final Integer itemStatus) throws Exception {
@@ -178,24 +172,28 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
             Wrapper wrapper = new Wrapper() {
                 @Override
                 public String getSqlSegment() {
-                    StringBuilder sbSqlSegment = new StringBuilder(" pp")
-                            .append(" LEFT JOIN t_union_member m ON m.id = pp.member_id")
-                            .append(" WHERE pp.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                            .append("  AND m.union_id = ").append(unionOwner.getUnionId())
-                            .append("  AND exists(")
-                            .append("    SELECT pi.id FROM t_union_preferential_item pi")
-                            .append("    WHERE pi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                            .append("      AND pi.status = ").append(itemStatus)
-                            .append("  )")
-                            .append(" ORDER BY pp.id ASC");
-                    return sbSqlSegment.toString();
+                    return " pp"
+                            + " LEFT JOIN t_union_member m ON m.id = pp.member_id"
+                            + " WHERE pp.del_status = " + CommonConstant.DEL_STATUS_NO
+                            + "  AND m.union_id = " + unionOwner.getUnionId()
+                            + "  AND m.id != " + unionOwner.getId()
+                            + "  AND exists("
+                            + "    SELECT pi.id FROM t_union_preferential_item pi"
+                            + "    WHERE pi.del_status = " + CommonConstant.DEL_STATUS_NO
+                            + "      AND pi.status = " + itemStatus
+                            + "  )"
+                            + " ORDER BY pp.id ASC";
                 }
             };
-            StringBuilder sbSqlSelect = new StringBuilder(" pp.id projectId") //优惠项目id
-                    .append(", pp.illustration projectIllustration") //优惠项目说明
-                    .append(", m.enterprise_name enterpriseName") //优惠项目所属盟员的名称
-                    .append(", m.id memberId"); //优惠项目所属盟员身份id
-            wrapper.setSqlSelect(sbSqlSelect.toString());
+            //优惠项目id
+            String sqlSelect = " pp.id projectId"
+                    //优惠项目说明
+                    + ", pp.illustration projectIllustration"
+                    //优惠项目所属盟员的名称
+                    + ", m.enterprise_name enterpriseName"
+                    //优惠项目所属盟员身份id
+                    + ", m.id memberId";
+            wrapper.setSqlSelect(sqlSelect);
             return this.selectMapsPage(page, wrapper);
         } else {
             //(5-2)未提交
@@ -205,27 +203,20 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
 
     @Override
     public List<UnionPreferentialProject> listExpired() throws Exception {
-        EntityWrapper entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionPreferentialProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .notExists(new StringBuilder(" SELECT m.id FROM t_union_member m")
-                        .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND m.status != ").append(MemberConstant.STATUS_APPLY_IN)
-                        .append("  AND m.id = t_union_preferential_project.member_id")
-                        .toString());
+                .notExists(" SELECT m.id FROM t_union_member m"
+                        + " WHERE m.del_status = " + CommonConstant.DEL_STATUS_NO
+                        + "  AND m.status != " + MemberConstant.STATUS_APPLY_IN
+                        + "  AND m.id = t_union_preferential_project.member_id");
         return this.selectList(entityWrapper);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - save ********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - save -------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - remove ******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - remove -----------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - update ******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - update -----------------------------------------
 
     @Override
     public void updateIllustrationByIdAndBusIdAndMemberId(Integer projectId, Integer busId, Integer memberId, String illustration) throws Exception {
@@ -250,15 +241,16 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         }
         //(5)更新信息
         UnionPreferentialProject updateProject = new UnionPreferentialProject();
-        updateProject.setId(projectId); //优惠项目id
-        updateProject.setIllustration(illustration); //优惠项目说明
-        updateProject.setModifytime(DateUtil.getCurrentDate()); //优惠项目更新时间
+        //优惠项目id
+        updateProject.setId(projectId);
+        //优惠项目说明
+        updateProject.setIllustration(illustration);
+        //优惠项目更新时间
+        updateProject.setModifytime(DateUtil.getCurrentDate());
         this.update(updateProject);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - count *******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - count ------------------------------------------
 
     @Override
     public Integer countByBusInAndMemberIdAndItemStatus(Integer busId, Integer memberId, final Integer itemStatus) throws Exception {
@@ -285,25 +277,25 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
             Wrapper wrapper = new Wrapper() {
                 @Override
                 public String getSqlSegment() {
-                    StringBuilder sbSqlSegment = new StringBuilder(" pp")
-                            .append(" WHERE pp.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                            .append(" AND exists(")
-                            .append("  SELECT pi.id FROM t_union_preferential_item pi")
-                            .append("  WHERE pi.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                            .append("    AND pi.status = ").append(itemStatus)
-                            .append("    AND pi.project_id = pp.id")
-                            .append(" )")
-                            .append(" AND exists(")
-                            .append("  SELECT m.id FROM t_union_member m")
-                            .append("  WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                            .append("    AND m.id = pp.member_id")
-                            .append("    AND m.union_id = ").append(unionOwner.getUnionId())
-                            .append(" )");
-                    return sbSqlSegment.toString();
+                    return " pp"
+                            + " WHERE pp.del_status = " + CommonConstant.DEL_STATUS_NO
+                            + " AND exists("
+                            + "  SELECT pi.id FROM t_union_preferential_item pi"
+                            + "  WHERE pi.del_status = " + CommonConstant.DEL_STATUS_NO
+                            + "    AND pi.status = " + itemStatus
+                            + "    AND pi.project_id = pp.id"
+                            + " )"
+                            + " AND exists("
+                            + "  SELECT m.id FROM t_union_member m"
+                            + "  WHERE m.del_status = " + CommonConstant.DEL_STATUS_NO
+                            + "    AND m.id = pp.member_id"
+                            + "    AND m.union_id = " + unionOwner.getUnionId()
+                            + " )";
                 }
             };
-            StringBuilder sbSqlSelect = new StringBuilder(" pp.id projectId"); //优惠项目id
-            wrapper.setSqlSelect(sbSqlSelect.toString());
+            //优惠项目id
+            String sqlSelect = " pp.id projectId";
+            wrapper.setSqlSelect(sqlSelect);
             return this.selectCount(wrapper);
         } else {
             //(5-2) 未提交
@@ -311,13 +303,9 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         }
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - boolean *****************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - boolean ----------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - get **********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - get ********************************************
 
     @Override
     public UnionPreferentialProject getById(Integer projectId) throws Exception {
@@ -341,9 +329,7 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - list *********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - list *******************************************
 
     @Override
     public List<UnionPreferentialProject> listByMemberId(Integer memberId) throws Exception {
@@ -359,7 +345,7 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
             return result;
         }
         //(2)get in db
-        EntityWrapper<UnionPreferentialProject> entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionPreferentialProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("member_id", memberId);
         result = this.selectList(entityWrapper);
@@ -367,12 +353,10 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - save *********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - save *******************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void save(UnionPreferentialProject newProject) throws Exception {
         if (newProject == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -382,7 +366,7 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void saveBatch(List<UnionPreferentialProject> newProjectList) throws Exception {
         if (newProjectList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -391,12 +375,10 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         this.removeCache(newProjectList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - remove *******************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - remove *****************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeById(Integer projectId) throws Exception {
         if (projectId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -412,7 +394,7 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeBatchById(List<Integer> projectIdList) throws Exception {
         if (projectIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -435,12 +417,10 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         this.updateBatchById(removeProjectList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - update *******************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - update *****************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void update(UnionPreferentialProject updateProject) throws Exception {
         if (updateProject == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -454,7 +434,7 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateBatch(List<UnionPreferentialProject> updateProjectList) throws Exception {
         if (updateProjectList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -474,9 +454,7 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         this.updateBatchById(updateProjectList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - cache support ************************************
-     ******************************************************************************************************************/
+    //***************************************** Object As a Service - cache support ************************************
 
     private void setCache(UnionPreferentialProject newProject, Integer projectId) {
         if (projectId == null) {

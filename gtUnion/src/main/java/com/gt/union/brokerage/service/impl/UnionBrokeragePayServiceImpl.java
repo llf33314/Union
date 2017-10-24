@@ -7,12 +7,10 @@ import com.gt.union.brokerage.service.IUnionBrokeragePayService;
 import org.springframework.stereotype.Service;
 
 /**
- * <p>
  * 佣金支付记录 服务实现类
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-23 15:28:54
  */
 @Service
 public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayMapper, UnionBrokeragePay> implements IUnionBrokeragePayService {

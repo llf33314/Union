@@ -1,7 +1,10 @@
 package com.gt.union.opportunity.constant;
 
 /**
- * Created by Administrator on 2017/9/11 0011.
+ * 商机 常量接口
+ *
+ * @author linweicong
+ * @version 2017-10-23 08:34:54
  */
 public interface OpportunityConstant {
 

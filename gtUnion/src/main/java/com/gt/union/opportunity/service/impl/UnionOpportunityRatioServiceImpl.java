@@ -26,12 +26,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * <p>
  * 商机佣金比率 服务实现类
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-23 11:17:59
  */
 @Service
 public class UnionOpportunityRatioServiceImpl extends ServiceImpl<UnionOpportunityRatioMapper, UnionOpportunityRatio> implements IUnionOpportunityRatioService {
@@ -44,9 +42,7 @@ public class UnionOpportunityRatioServiceImpl extends ServiceImpl<UnionOpportuni
     @Autowired
     private RedisCacheUtil redisCacheUtil;
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - get *********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - get --------------------------------------------
 
     @Override
     public UnionOpportunityRatio getByFromMemberIdAndToMemberId(Integer fromMemberId, Integer toMemberId) throws Exception {
@@ -64,9 +60,7 @@ public class UnionOpportunityRatioServiceImpl extends ServiceImpl<UnionOpportuni
         return null;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - list ********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - list -------------------------------------------
 
     @Override
     public Page pageMapByBusIdAndMemberId(Page page, Integer busId, final Integer memberId) throws Exception {
@@ -88,17 +82,11 @@ public class UnionOpportunityRatioServiceImpl extends ServiceImpl<UnionOpportuni
         return this.unionMemberService.pageOpportunityRatioMapByMember(page, member);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - save ********************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - save -------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - remove ******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - remove -----------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - update ******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - update -----------------------------------------
 
     @Override
     public void updateOrSaveByBusIdAndFromMemberIdAndToMemberIdAndRatio(Integer busId, Integer fromMemberId, Integer toMemberId, Double dRatio) throws Exception {
@@ -125,39 +113,41 @@ public class UnionOpportunityRatioServiceImpl extends ServiceImpl<UnionOpportuni
             throw new BusinessException("受惠方正在退盟过渡期，无法操作");
         }
         //(5)校验比例
-        if (dRatio < 0D || dRatio > 100D) {
+        if (dRatio < 0.0 || dRatio > 100.0) {
             throw new BusinessException("比例必须大于0，且小于100");
         }
         //(6)查询是否已存在商机佣金比例设置，若有，则更新，否则，新增
         UnionOpportunityRatio ratio = this.getByFromMemberIdAndToMemberId(fromMemberId, toMemberId);
         if (ratio != null) {
             UnionOpportunityRatio updateRatio = new UnionOpportunityRatio();
-            updateRatio.setId(ratio.getId()); //商机佣金比例设置id
-            updateRatio.setModifytime(DateUtil.getCurrentDate()); //最后更新时间
-            updateRatio.setRatio(dRatio); //比例
+            //商机佣金比例设置id
+            updateRatio.setId(ratio.getId());
+            //最后更新时间
+            updateRatio.setModifytime(DateUtil.getCurrentDate());
+            //比例
+            updateRatio.setRatio(dRatio);
             this.update(updateRatio);
         } else {
             UnionOpportunityRatio saveRatio = new UnionOpportunityRatio();
-            saveRatio.setDelStatus(CommonConstant.DEL_STATUS_NO); //删除状态
-            saveRatio.setCreatetime(DateUtil.getCurrentDate()); //创建时间
-            saveRatio.setFromMemberId(fromMemberId); //设置方盟员身份id
-            saveRatio.setToMemberId(toMemberId); //受惠方盟员身份id
-            saveRatio.setRatio(dRatio); //比例
+            //删除状态
+            saveRatio.setDelStatus(CommonConstant.DEL_STATUS_NO);
+            //创建时间
+            saveRatio.setCreatetime(DateUtil.getCurrentDate());
+            //设置方盟员身份id
+            saveRatio.setFromMemberId(fromMemberId);
+            //受惠方盟员身份id
+            saveRatio.setToMemberId(toMemberId);
+            //比例
+            saveRatio.setRatio(dRatio);
             this.save(saveRatio);
         }
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - count *******************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - count ------------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Domain Driven Design - boolean *****************************************
-     ******************************************************************************************************************/
+    //------------------------------------------ Domain Driven Design - boolean ----------------------------------------
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - get **********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - get ********************************************
 
     @Override
     public UnionOpportunityRatio getById(Integer ratioId) throws Exception {
@@ -181,9 +171,7 @@ public class UnionOpportunityRatioServiceImpl extends ServiceImpl<UnionOpportuni
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - list *********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - list *******************************************
 
     @Override
     public List<UnionOpportunityRatio> listByFromMemberId(Integer fromMemberId) throws Exception {
@@ -199,7 +187,7 @@ public class UnionOpportunityRatioServiceImpl extends ServiceImpl<UnionOpportuni
             return result;
         }
         //(2)get in db
-        EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("from_member_id", fromMemberId);
         result = this.selectList(entityWrapper);
@@ -221,7 +209,7 @@ public class UnionOpportunityRatioServiceImpl extends ServiceImpl<UnionOpportuni
             return result;
         }
         //(2)get in db
-        EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper();
+        EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("to_member_id", toMemberId);
         result = this.selectList(entityWrapper);
@@ -229,12 +217,10 @@ public class UnionOpportunityRatioServiceImpl extends ServiceImpl<UnionOpportuni
         return result;
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - save *********************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - save *******************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void save(UnionOpportunityRatio newRatio) throws Exception {
         if (newRatio == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -244,7 +230,7 @@ public class UnionOpportunityRatioServiceImpl extends ServiceImpl<UnionOpportuni
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void saveBatch(List<UnionOpportunityRatio> newRatioList) throws Exception {
         if (newRatioList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -253,12 +239,10 @@ public class UnionOpportunityRatioServiceImpl extends ServiceImpl<UnionOpportuni
         this.removeCache(newRatioList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - remove *******************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - remove *****************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeById(Integer ratioId) throws Exception {
         if (ratioId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -274,7 +258,7 @@ public class UnionOpportunityRatioServiceImpl extends ServiceImpl<UnionOpportuni
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void removeBatchById(List<Integer> ratioIdList) throws Exception {
         if (ratioIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -297,12 +281,10 @@ public class UnionOpportunityRatioServiceImpl extends ServiceImpl<UnionOpportuni
         this.updateBatchById(removeRatioList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - update *******************************************
-     ******************************************************************************************************************/
+    //******************************************* Object As a Service - update *****************************************
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void update(UnionOpportunityRatio updateRatio) throws Exception {
         if (updateRatio == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -316,7 +298,7 @@ public class UnionOpportunityRatioServiceImpl extends ServiceImpl<UnionOpportuni
     }
 
     @Override
-    @Transactional
+    @Transactional(rollbackFor = Exception.class)
     public void updateBatch(List<UnionOpportunityRatio> updateRatioList) throws Exception {
         if (updateRatioList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -336,9 +318,7 @@ public class UnionOpportunityRatioServiceImpl extends ServiceImpl<UnionOpportuni
         this.updateBatchById(updateRatioList);
     }
 
-    /*******************************************************************************************************************
-     ****************************************** Object As a Service - cache support ************************************
-     ******************************************************************************************************************/
+    //***************************************** Object As a Service - cache support ************************************
 
     private void setCache(UnionOpportunityRatio newRatio, Integer ratioId) {
         if (ratioId == null) {
