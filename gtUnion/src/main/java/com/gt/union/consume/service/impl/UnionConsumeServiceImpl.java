@@ -371,7 +371,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		String paramKey = RedisKeyUtil.getConsumePayParamKey(only);
 		String obj = redisCacheUtil.get(paramKey);
 		Map<String, Object> result = JSONObject.parseObject(obj, Map.class);
-		UnionConsumeParamVO vo = (UnionConsumeParamVO)result.get("unionConsumeParamVO");
+		UnionConsumeParamVO vo = JSONObject.parseObject(result.get("unionConsumeParamVO").toString(),UnionConsumeParamVO.class);
 		String statusKey = RedisKeyUtil.getConsumePayStatusKey(only);
 		vo.setPayType(payType);
 		consumeSuccess(vo, orderNo);
