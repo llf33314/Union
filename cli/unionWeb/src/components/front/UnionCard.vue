@@ -303,30 +303,32 @@ export default {
     },
     // 联盟改变
     unionIdChange() {
-      $http
-        .get(`/unionCard/unionCardInfo?no=${this.input}&unionId=${this.form.unionId}`)
-        .then(res => {
-          if (res.data.data) {
-            this.form.enterpriseName = res.data.data.enterpriseName;
-            this.form.discount = res.data.data.discount;
-            this.form.cardNo = res.data.data.cardNo;
-            this.form.isIntegral = res.data.data.isIntegral;
-            this.form.integral = res.data.data.integral;
-            this.form.validity = res.data.data.validity;
-            this.isIntegral = this.form.isIntegral;
-            this.isIntegral ? (this.isIntegral_ = true) : (this.isIntegral_ = false);
-          } else {
-            this.form.enterpriseName = '';
-            this.form.discount = '';
-            this.form.cardNo = '';
-            this.form.isIntegral = '';
-            this.form.integral = '';
-            this.form.validity = '';
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+      if (this.form.unionId) {
+        $http
+          .get(`/unionCard/unionCardInfo?no=${this.input}&unionId=${this.form.unionId}`)
+          .then(res => {
+            if (res.data.data) {
+              this.form.enterpriseName = res.data.data.enterpriseName;
+              this.form.discount = res.data.data.discount;
+              this.form.cardNo = res.data.data.cardNo;
+              this.form.isIntegral = res.data.data.isIntegral;
+              this.form.integral = res.data.data.integral;
+              this.form.validity = res.data.data.validity;
+              this.isIntegral = this.form.isIntegral;
+              this.isIntegral ? (this.isIntegral_ = true) : (this.isIntegral_ = false);
+            } else {
+              this.form.enterpriseName = '';
+              this.form.discount = '';
+              this.form.cardNo = '';
+              this.form.isIntegral = '';
+              this.form.integral = '';
+              this.form.validity = '';
+            }
+          })
+          .catch(err => {
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          });
+      }
     },
     // 确认
     confirm() {
@@ -491,6 +493,7 @@ export default {
     // 关闭二维码改变付款方式
     resetData() {
       this.payType = 0;
+      parent.window.postMessage('openMask()', 'https://deeptel.com.cn/user/toIndex_1.do');
     },
     // 返回
     back() {
