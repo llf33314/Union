@@ -186,7 +186,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 				  @ApiParam(name = "fee", value = "提现金额" ,required = true) @RequestParam(value = "fee", required = true) Double fee,
 				  @ApiParam(name = "url", value = "登录授权后回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) throws Exception{
 		BusUser user = SessionUtils.getUnionBus(request);
-		Member member = SessionUtils.getLoginMember(request);
+		Member member = SessionUtils.getLoginMember(request,user.getId());
 		logger.info("提现member===" + JSON.toJSONString(member));
 		if(CommonUtil.isEmpty(member)){
 			String redirectUrl = this.authorizeMemberWx(request,PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + url);
@@ -312,8 +312,8 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	@RequestMapping(value = "/onePay/{id}", method=RequestMethod.POST, produces = "application/json;charset=UTF-8")
 	public String payOne(HttpServletRequest request, HttpServletResponse response, @ApiParam(name = "id", value = "商机id", required = true) @PathVariable(value = "id", required = true) Integer id
 							,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) throws Exception{
-		Member member = SessionUtils.getLoginMember(request);
 		BusUser user = SessionUtils.getUnionBus(request);
+		Member member = SessionUtils.getLoginMember(request,user.getId());
 		if(CommonUtil.isEmpty(member)){
 			String redirectUrl = this.authorizeMemberWx(request,PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + url);
 			return GTJsonResult.instanceSuccessMsg(null,redirectUrl).toString();
@@ -341,7 +341,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 							,@ApiParam(name = "fee", value = "支付金额", required = true) @RequestParam(value = "fee", required = true) Double fee
 							,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) throws Exception{
 		BusUser user = SessionUtils.getUnionBus(request);
-		Member member = SessionUtils.getLoginMember(request);
+		Member member = SessionUtils.getLoginMember(request,user.getId());
 		if(CommonUtil.isEmpty(member)){
 			String redirectUrl = this.authorizeMemberWx(request, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + url);
 			return GTJsonResult.instanceSuccessMsg(null,redirectUrl).toString();
