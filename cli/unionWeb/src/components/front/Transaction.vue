@@ -377,7 +377,7 @@ export default {
                       if (!(_this.socketFlag2.only == msg.only && _this.socketFlag2.status == msg.status)) {
                         if (_this.only == msg.only) {
                           if (msg.status == '003') {
-                            _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
+                            // _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
                             _this.visible3 = false;
                             _this.visible4 = true;
                             _this.init();
