@@ -20,27 +20,35 @@
           </el-select>
         </div>
       </el-col>
-      <el-col :span="4">
+      <el-col :span="4" style="width:210px">
         <div class="grid-content1 bg-purple">
           <el-input placeholder="请输入关键字" icon="search" v-model="input"
                     :on-icon-click="handleIconClick" class="input-search2 fl" @keyup.enter.native="handleIconClick">
           </el-input>
         </div>
       </el-col>
-      <el-col :span="5" :offset="1">
+      <el-col :span="5"  style="width:210px;margin-left: 50px;">
         <div class="block">
           <el-date-picker v-model="value2" type="daterange" placeholder="选择日期范围">
           </el-date-picker>
         </div>
       </el-col>
       <!-- 导出按钮 -->
-      <el-col :span="2">
+      <el-col :span="2" style="width:80px;margin-left: 50px;">
         <el-button type="primary" @click="output">导出</el-button>
       </el-col>
     </el-row>
     <!-- 售卡佣金分成记录表格 -->
     <el-table :data="tableData" style="width: 100%">
       <el-table-column prop="incomeCreatetime" label="加入时间">
+        <template scope="scope">
+          <el-popover trigger="hover" placement="bottom">
+            <p>{{ scope.row.incomeCreatetime }}</p>
+            <div slot="reference" class="name-wrapper">
+              <span>{{ scope.row.incomeCreatetime }}</span>
+            </div>
+          </el-popover>
+        </template>
       </el-table-column>
       <el-table-column prop="cardNumber" label="联盟卡号">
       </el-table-column>

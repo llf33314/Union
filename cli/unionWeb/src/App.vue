@@ -6,8 +6,18 @@
 
 <script>
 export default {
-  name: 'app'
+  name: 'app',
+  mounted(){
+    $(document).ready(function () {
+      firstLoad();
+    })
+    var firstLoad = function () {
+      var widthWindow = $(window).width();
+      console.log("屏幕宽度为："+widthWindow);
+    }
+  }
 }
+
 </script>
 
 <style>

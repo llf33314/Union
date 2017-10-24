@@ -5,9 +5,9 @@
       <el-form :label-position="labelPosition" :model="form1" :rules="rules" ref="ruleForm" label-position="right" label-width="120px">
         <el-form-item label="手机号码：" prop="phone">
           <el-col style="width: 250px;margin-right: 20px;">
-            <el-input v-model="form1.phone"></el-input>
+            <el-input v-model="form1.phone" @keyup.enter.native="show1($event)"></el-input>
           </el-col>
-          <el-button type="primary" @click="getVerificationCode" :disabled="form1.getVerificationCode || !form1.phone">获取验证码{{ form1.countDownTime}}</el-button>
+          <el-button type="primary" @click="getVerificationCode" :disabled="form1.getVerificationCode || !form1.phone">{{ form1.countDownTime?form1.countDownTime+'s':'获取验证码'}}</el-button>
         </el-form-item>
         <el-form-item label="短信验证码：" prop="code">
           <!--176072-->
@@ -218,6 +218,9 @@ export default {
     }
   },
   methods: {
+    show1(e) {
+      this.getVerificationCode();
+    },
     // 获取验证码
     getVerificationCode() {
       $http
