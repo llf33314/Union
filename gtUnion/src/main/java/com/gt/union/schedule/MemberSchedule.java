@@ -14,7 +14,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Created by Administrator on 2017/9/27 0027.
+ * 定时任务器 member模块
+ *
+ * @author linweicong
+ * @version 2017-10-23 14:51:10
  */
 @Component
 public class MemberSchedule {
@@ -35,8 +38,10 @@ public class MemberSchedule {
                 List<UnionMember> updateMemberList = new ArrayList<>();
                 for (UnionMember expiredMember : expiredMemberList) {
                     UnionMember updateMember = new UnionMember();
-                    updateMember.setId(expiredMember.getId()); //对应的联盟创建记录id
-                    updateMember.setDelStatus(CommonConstant.DEL_STATUS_YES); //删除状态
+                    //对应的联盟创建记录id
+                    updateMember.setId(expiredMember.getId());
+                    //删除状态
+                    updateMember.setDelStatus(CommonConstant.DEL_STATUS_YES);
                     updateMemberList.add(updateMember);
                 }
                 this.unionMemberService.updateBatchById(updateMemberList);
@@ -46,42 +51,4 @@ public class MemberSchedule {
         }
     }
 
-    /**
-     * 每秒执行一次
-     */
-    /*@Scheduled(cron = "0/1 * * * * ?")
-    public void testRedisCluster() {
-        final IUnionMemberService unionMemberService_ = this.unionMemberService;
-        final CountDownLatch latch = new CountDownLatch(nThread);
-        final Random random = new Random();
-        ExecutorService es = Executors.newFixedThreadPool(nThread);
-        for (int i = 0; i < nThread; i++) {
-            es.submit(new Runnable() {
-                @Override
-                public void run() {
-                    try {
-                        latch.await();
-                    } catch (InterruptedException e) {
-                    }
-                    int unionId;
-                    for (int j = 0; j < 100; j++) {
-                        unionId = 990 + random.nextInt(10);
-                        try {
-                            unionMemberService_.listByUnionId(unionId);
-                            successCount.addAndGet(1);
-                        } catch (Exception e) {
-                            failCount.addAndGet(1);
-                            System.out.println(e.getMessage());
-                        }
-                    }
-                    System.out.println(DateUtil.getCurrentDateString()
-                            + " " + Thread.currentThread().getName()
-                            + " successCount:" + successCount.toString()
-                            + " failCount:" + failCount.toString());
-                }
-            });
-            latch.countDown();
-        }
-        es.shutdown();
-    }*/
 }
