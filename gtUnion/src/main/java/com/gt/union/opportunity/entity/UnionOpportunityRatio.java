@@ -10,12 +10,10 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * <p>
  * 商机佣金比率
- * </p>
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-10-23 11:17:59
  */
 @TableName("t_union_opportunity_ratio")
 public class UnionOpportunityRatio extends Model<UnionOpportunityRatio> {

@@ -1,7 +1,10 @@
 package com.gt.union.preferential.constant;
 
 /**
- * Created by Administrator on 2017/9/14 0014.
+ * 优惠服务 常量接口
+ *
+ * @author linweicong
+ * @version 2017-10-23 14:51:10
  */
 public interface PreferentialConstant {
     /**
