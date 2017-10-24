@@ -86,22 +86,8 @@ export default {
       },
       rules: {
         clientName: [{ required: true, message: '意向客户内容不能为空，请重新输入', trigger: 'blur' }],
-        unionRadio: [
-          {
-            type: 'number',
-            required: true,
-            message: '联盟不能为空，请重新选择',
-            trigger: 'change'
-          }
-        ],
-        toMemberId: [
-          {
-            type: 'number',
-            required: true,
-            message: '推荐商家不能为空，请重新选择',
-            trigger: 'change'
-          }
-        ],
+        unionRadio: [{ type: 'number', required: true, message: '联盟不能为空，请重新选择', trigger: 'change' }],
+        toMemberId: [{ type: 'number', required: true, message: '推荐商家不能为空，请重新选择', trigger: 'change' }],
         businessMsg: [{ required: true, message: '业务备注内容不能为空，请重新输入', trigger: 'blur' }],
         clientPhone: [{ validator: clientPhonePass, trigger: 'blur' }]
       },
@@ -144,29 +130,24 @@ export default {
                         this.options2[i].value = v.memberId;
                         this.options2[i].label = v.enterpriseName;
                       });
+                      // 不能推荐给自己
+                      this.options2.forEach((v, i) => {
+                        if(v.value === this.memberId)
+                        this.options2.splice(i, 1);
+                      });
                     } else {
                       this.options2 = [];
                     }
                   })
                   .catch(err => {
-                    this.$message({
-                      showClose: true,
-                      message: err.toString(),
-                      type: 'error',
-                      duration: 5000
-                    });
+                    this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
                   });
               }
             });
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     }
   },
