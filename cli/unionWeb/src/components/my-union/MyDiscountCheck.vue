@@ -367,7 +367,7 @@ export default {
     showDetail2(scope) {
       this.dialogTableVisible2 = true;
       $http
-        .get(`/unionPreferentialProject/${scope.row.projectId}/memberId/${this.unionMemberId}/status/2`)
+        .get(`/unionPreferentialProject/${scope.row.projectId}/memberId/${scope.row.memberId}/status/2`)
         .then(res => {
           if (res.data.data) {
             this.visibleData2.enterpriseName = res.data.data.enterpriseName;
@@ -392,7 +392,7 @@ export default {
     showDetail3(scope) {
       this.dialogTableVisible3 = true;
       $http
-        .get(`/unionPreferentialProject/${scope.row.projectId}/memberId/${this.unionMemberId}/status/3`)
+        .get(`/unionPreferentialProject/${scope.row.projectId}/memberId/${scope.row.memberId}/status/3`)
         .then(res => {
           if (res.data.data) {
             this.visibleData3.enterpriseName = res.data.data.enterpriseName;
@@ -417,7 +417,7 @@ export default {
     showDetail4(scope) {
       this.dialogTableVisible4 = true;
       $http
-        .get(`/unionPreferentialProject/${scope.row.projectId}/memberId/${this.unionMemberId}/status/4`)
+        .get(`/unionPreferentialProject/${scope.row.projectId}/memberId/${scope.row.memberId}/status/4`)
         .then(res => {
           if (res.data.data) {
             this.visibleData4.enterpriseName = res.data.data.enterpriseName;
@@ -451,7 +451,7 @@ export default {
     // 移出
     moveOut(scope) {
       this.enterpriseName = scope.row.enterpriseName;
-      this.memberId = scope.row.memberId;
+      this.id = scope.row.id;
       this.visible = true;
     },
     // 确认移出
@@ -459,20 +459,23 @@ export default {
       $http
         .put(`/unionMemberOut/memberId/${this.unionMemberId}?tgtMemberId=${this.id}`)
         .then(res => {
-          $http
-            .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/1?current=1`)
-            .then(res => {
-              if (res.data.data) {
-                this.tableData1 = res.data.data.records;
-                this.totalAll1 = res.data.data.total;
-              } else {
-                this.tableData1 = [];
-                this.totalAll1 = 0;
-              }
-            })
-            .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-            });
+          if (res.data.success) {
+            this.visible = false;
+            $http
+              .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/1?current=1`)
+              .then(res => {
+                if (res.data.data) {
+                  this.tableData1 = res.data.data.records;
+                  this.totalAll1 = res.data.data.total;
+                } else {
+                  this.tableData1 = [];
+                  this.totalAll1 = 0;
+                }
+              })
+              .catch(err => {
+                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+              });
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
