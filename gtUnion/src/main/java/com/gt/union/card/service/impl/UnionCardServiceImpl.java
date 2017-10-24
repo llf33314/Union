@@ -830,8 +830,8 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 Date time = (charge.getValidityDay() == null || charge.getValidityDay() == 0) ? DateTimeKit.parse(CardConstant.CARD_FREE_VALIDITY, "yyyy-MM-dd HH:mm:ss") : DateTimeKit.addDate(new Date(), charge.getValidityDay());
                 UnionCard upCard = new UnionCard();
                 upCard.setId(unionCard.getId());
-                unionCard.setValidity(time);
-                unionCard.setIsCharge(CardConstant.IS_CHARGE_NO);
+                upCard.setValidity(time);
+                upCard.setIsCharge(CardConstant.IS_CHARGE_NO);
                 this.updateById(upCard);
                 if (CommonUtil.isNotEmpty(vo.getMemberId())) {
                     UnionCardBinding binding = unionCardBindingService.getByCardRootIdAndMemberId(rootId, vo.getMemberId());

@@ -107,26 +107,8 @@ public class UnionCardController {
 			String filename = main.getName() + "的联盟卡列表";
 			HSSFWorkbook wb = unionCardService.exportCardList(titles, contentName, list);
 			ExportUtil.responseExport(response, wb, filename);
-		} catch (BaseException e){
-			response.setContentType("text/html");
-			response.setHeader("Cache-Control", "no-cache");
-			response.setCharacterEncoding("UTF-8");
-			String result = "<script>alert('导出失败')</script>";
-			PrintWriter writer = response.getWriter();
-			writer.print(result);
-			writer.close();
-			logger.error("",e);
-		} catch (DataExportException e){
-			logger.error("",e);
 		} catch (Exception e) {
-			response.setContentType("text/html");
-			response.setHeader("Cache-Control", "no-cache");
-			response.setCharacterEncoding("UTF-8");
-			String result = "<script>alert('导出失败')</script>";
-			PrintWriter writer = response.getWriter();
-			writer.print(result);
-			writer.close();
-			logger.error("",e);
+			ExportUtil.responseExportError(response);
 		}
 	}
 
