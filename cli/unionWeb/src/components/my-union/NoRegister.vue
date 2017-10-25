@@ -54,47 +54,28 @@
           </div>
         </el-dialog>
       </div>
-      <!-- 弹出框 消费核销成功 -->
-      <div class="verSuccess">
-        <el-dialog title="消费核销成功" :visible.sync="visible2" size="tiny">
-          <hr>
-          <div class="ddd" style="padding-bottom: 20px;">
-            <div class="fl"><img src="../../assets/images/success01.png" alt=""></div>
-            <div class="fl">
-              <p>消费核销成功</p>
-              <P> {{ countTime }} 秒后返回“我的联盟”页面... </P>
-            </div>
-          </div>
-          <span slot="footer" class="dialog-footer">
-              <el-button type="primary" @click="create">创建联盟</el-button>
-              <el-button @click="visible2=false">取 消</el-button>
-            </span>
-        </el-dialog>
-      </div>
     </div>
   </div>
 </template>
 <script>
-import $http from "@/utils/http.js";
+import $http from '@/utils/http.js';
 export default {
   data() {
     return {
       number: 0,
       payItems: [],
-      levelDesc: "",
-      unionLevelDesc: "",
-      id: "",
+      levelDesc: '',
+      unionLevelDesc: '',
+      id: '',
       money: 0,
       visible1: false,
-      visible2: false,
-      codeSrc: "",
-      only: "",
-      countTime: 6,
-      userId: "",
-      socket: "",
+      codeSrc: '',
+      only: '',
+      userId: '',
+      socket: '',
       socketFlag: {
-        only: "",
-        status: ""
+        only: '',
+        status: ''
       }
     };
   },
@@ -120,19 +101,14 @@ export default {
           this.levelDesc = res.data.data.levelDesc;
           this.unionLevelDesc = res.data.data.unionLevelDesc;
         } else {
-          this.number = "";
+          this.number = '';
           this.payItems = [];
-          this.levelDesc = "";
-          this.unionLevelDesc = "";
+          this.levelDesc = '';
+          this.unionLevelDesc = '';
         }
       })
       .catch(err => {
-        this.$message({
-          showClose: true,
-          message: err.toString(),
-          type: "error",
-          duration: 5000
-        });
+        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
       });
   },
   watch: {
@@ -156,9 +132,9 @@ export default {
               this.only = res.data.data.only;
               this.userId = res.data.data.userId;
             } else {
-              this.codeSrc = "";
-              this.only = "";
-              this.userId = "";
+              this.codeSrc = '';
+              this.only = '';
+              this.userId = '';
             }
           })
           .then(res => {
@@ -167,54 +143,26 @@ export default {
           .then(res => {
             var _this = this;
             if (!this.socket) {
-              this.socket = io.connect("https://socket.deeptel.com.cn"); // 测试
+              this.socket = io.connect('https://socket.deeptel.com.cn'); // 测试
               // this.socket = io.connect('http://183.47.242.2:8881'); // 堡垒
               var userId = this.userId;
-              this.socket.on("connect", function() {
-                let jsonObject = { userId: userId, message: "0" };
-                _this.socket.emit("auth", jsonObject);
+              this.socket.on('connect', function() {
+                let jsonObject = { userId: userId, message: '0' };
+                _this.socket.emit('auth', jsonObject);
               });
             }
-            this.socket.on("chatevent", function(data) {
-              let msg = eval("(" + data.message + ")");
-              if (
-                !(
-                  _this.socketFlag.only == msg.only &&
-                  _this.socketFlag.status == msg.status
-                )
-              ) {
+            this.socket.on('chatevent', function(data) {
+              let msg = eval('(' + data.message + ')');
+              if (!(_this.socketFlag.only == msg.only && _this.socketFlag.status == msg.status)) {
                 if (_this.only == msg.only) {
-                  if (msg.status == "003") {
-                    _this.$message({
-                      showClose: true,
-                      message: "支付成功",
-                      type: "success",
-                      duration: 5000
-                    });
-                    _this.visible2 = true;
-                    let timer3 = setInterval(() => {
-                      if (_this.countTime == 0) {
-                        _this.visible1 = false;
-                        _this.visible2 = false;
-                        clearInterval(timer3);
-                        _this.$router.push({ path: "/my-union" });
-                      }
-                      _this.countTime--;
-                    }, 1000);
-                  } else if (msg.status == "004") {
-                    _this.$message({
-                      showClose: true,
-                      message: "请求超时",
-                      type: "warning",
-                      duration: 5000
-                    });
-                  } else if (msg.status == "005") {
-                    _this.$message({
-                      showClose: true,
-                      message: "支付失败",
-                      type: "warning",
-                      duration: 5000
-                    });
+                  if (msg.status == '003') {
+                    _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
+                    _this.visible1 = false;
+                    _this.$router.push({ path: '/my-union' });
+                  } else if (msg.status == '004') {
+                    _this.$message({ showClose: true, message: '请求超时', type: 'warning', duration: 5000 });
+                  } else if (msg.status == '005') {
+                    _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
                   }
                 }
               }
@@ -223,20 +171,10 @@ export default {
             });
           })
           .catch(err => {
-            this.$message({
-              showClose: true,
-              message: err.toString(),
-              type: "error",
-              duration: 5000
-            });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
       } else {
-        this.$message({
-          showClose: true,
-          message: "请选择版本",
-          type: "warning",
-          duration: 5000
-        });
+        this.$message({ showClose: true, message: '请选择版本', type: 'warning', duration: 5000 });
       }
     },
     // 免费使用
@@ -249,34 +187,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: "error",
-            duration: 5000
-          });
-        });
-    },
-    // 创建联盟
-    create: function() {
-      this.visible2 = false;
-      $http
-        .get(`/unionMainCreate/instance`)
-        .then(res => {
-          if (res.data.success && res.data.data.save) {
-            this.$store.commit("permitIdChange", res.data.data.permitId);
-            this.$router.push({ path: "/my-union/create-step" });
-          } else if (res.data.success && res.data.data.pay) {
-            this.$router.push({ path: "/my-union/no-register" });
-          }
-        })
-        .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: "error",
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     }
   }
@@ -293,7 +204,7 @@ export default {
   .top_top {
     border: 1px solid #ddd;
     padding: 20px 20px 20px 50px;
-    background: #F8F8F8;
+    background: #f8f8f8;
     margin-bottom: 25px;
     p {
       margin-top: 170px;
@@ -322,9 +233,9 @@ export default {
   .bottom_bottom {
     padding: 26px 0 26px 50px;
     border: 1px solid #ddd;
-    .fontColor{
-      p{
-        color:#666666;
+    .fontColor {
+      p {
+        color: #666666;
       }
     }
     div {
@@ -338,7 +249,7 @@ export default {
         margin-top: 5px;
       }
     }
-    >p {
+    > p {
       margin: 22px 0 30px 0;
       font-size: 14px;
       color: #333333;

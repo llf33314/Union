@@ -153,25 +153,12 @@
         </span>
       </el-dialog>
     </div>
-    <!-- 弹出框 消费核销成功 -->
-    <div class="verSuccess">
-      <el-dialog title="消费核销成功" :visible.sync="visible4" size="tiny">
-        <hr>
-        <div class="clear ddd">
-          <div class="fl"><img src="../../assets/images/success01.png" alt=""></div>
-          <div class="fl">
-            <p>消费核销成功</p>
-            <P> {{ countTime }} 秒后返回“联盟卡消费核销”页面... </P>
-          </div>
-        </div>
-      </el-dialog>
-    </div>
     <!-- 弹出框 扫码支付 -->
     <div class="codePayment">
       <el-dialog title="付款" :visible.sync="visible5" size="tiny" @close="resetData">
         <hr>
         <img v-bind:src="codeSrc" class="codeImg">
-        <p>请使用微信扫描该二维码付款</p>
+        <p>请使用微信/支付宝扫描该二维码付款</p>
       </el-dialog>
     </div>
   </div>
@@ -212,8 +199,6 @@ export default {
       price1: '', // 实收金额
       payType: 0,
       price2: '', // 收取现金
-      visible4: false,
-      countTime: 3,
       visible5: false,
       codeSrc: '',
       only: '',
@@ -378,15 +363,9 @@ export default {
         .then(res => {
           if (res.data.success) {
             this.visible3 = false;
-            this.visible4 = true;
             eventBus.$emit('newTransaction');
-            let timer1 = setInterval(() => {
-              if (this.countTime == 0) {
-                clearInterval(timer1);
-                this.init();
-              }
-              this.countTime--;
-            }, 1000);
+            this.$message({ showClose: true, message: '核销成功', type: 'success', duration: 5000 });
+            this.init();
           }
         })
         .catch(err => {
@@ -423,8 +402,6 @@ export default {
       this.price1 = ''; // 实收金额
       this.payType = 0;
       this.price2 = ''; // 收取现金
-      this.visible4 = false;
-      this.countTime = 3;
       this.visible5 = false;
       this.codeSrc = '';
     },
@@ -475,19 +452,12 @@ export default {
               if (!(_this.socketFlag.only == msg.only && _this.socketFlag.status == msg.status)) {
                 if (_this.only == msg.only) {
                   if (msg.status == '003') {
-                    // _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
+                    _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
                     _this.visible3 = false;
                     _this.visible5 = false;
                     _this.parent.window.postMessage('openMask()', 'https://deeptel.com.cn/user/toIndex_1.do');
-                    _this.visible4 = true;
                     _this.eventBus.$emit('newTransaction');
-                    let timer3 = setInterval(() => {
-                      if (_this.countTime == 0) {
-                        clearInterval(timer3);
-                        _this.init();
-                      }
-                      _this.countTime--;
-                    }, 1000);
+                    _this.init();
                   } else if (msg.status == '004') {
                     _this.$message({ showClose: true, message: '请求超时', type: 'warning', duration: 5000 });
                   } else if (msg.status == '005') {

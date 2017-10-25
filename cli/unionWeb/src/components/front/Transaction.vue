@@ -103,19 +103,7 @@
         </div>
       </el-dialog>
     </div>
-    <!-- 弹出框 办理联盟卡成功 -->
-    <div class="verSuccess">
-      <el-dialog title="办理联盟卡成功" :visible.sync="visible4" size="tiny">
-        <hr>
-        <div class="clear ddd">
-          <div class="fl"><img src="../../assets/images/success01.png" alt=""></div>
-          <div class="fl">
-            <p>消费核销成功</p>
-            <P> {{ countTime }} 秒后返回“办理联盟卡”页面... </P>
-          </div>
-        </div>
-      </el-dialog>
-    </div>
+
   </div>
 </template>
 
@@ -167,8 +155,6 @@ export default {
         cardType: [{ type: 'number', required: true, message: '请选择联盟卡类型', trigger: 'change' }]
       },
       visible3: false,
-      visible4: false,
-      countTime: 3,
       codeSrc1: '',
       codeSrc2: '',
       socketurl: '',
@@ -193,7 +179,7 @@ export default {
     };
   },
   mounted: function() {
-    // 切换tab情况输入数据
+    // 切换tab清空输入数据
     eventBus.$on('tabChange3', () => {
       this.form1.phone = '';
       this.form1.code = '';
@@ -377,9 +363,8 @@ export default {
                       if (!(_this.socketFlag2.only == msg.only && _this.socketFlag2.status == msg.status)) {
                         if (_this.only == msg.only) {
                           if (msg.status == '003') {
-                            // _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
+                            _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
                             _this.visible3 = false;
-                            _this.visible4 = true;
                             _this.init();
                           } else if (msg.status == '004') {
                             _this.$message({ showClose: true, message: '请求超时', type: 'warning', duration: 5000 });
@@ -396,14 +381,8 @@ export default {
                     this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
                   });
               } else if (res.data.success) {
-                this.visible4 = true;
-                let timer1 = setInterval(() => {
-                  if (this.countTime == 0) {
-                    clearInterval(timer1);
-                    this.init();
-                  }
-                  this.countTime--;
-                }, 1000);
+                this.$message({ showClose: true, message: '办理成功', type: 'success', duration: 5000 });
+                this.init();
               }
             })
             .catch(err => {
@@ -426,7 +405,6 @@ export default {
       this.form1.code = '';
       this.visible2 = false;
       this.visible3 = false;
-      this.visible4 = false;
       this.visible5 = true;
     },
     // 下载二维码

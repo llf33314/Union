@@ -6,15 +6,15 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   name: 'state',
   state: {
-    unionId: sessionStorage.unionId,
-    unionMemberId: sessionStorage.unionMemberId,
-    infoId: sessionStorage.infoId,
+    unionId: sessionStorage.getItem('unionId'),
+    unionMemberId: sessionStorage.getItem('unionMemberId'),
+    infoId: '',
     addressLatitude: '',
     addressLongitude: '',
     enterpriseAddress: '',
     address: '',
-    isUnionOwner: sessionStorage.isUnionOwner,
-    busId: sessionStorage.busId,
+    isUnionOwner: sessionStorage.getItem('isUnionOwner'),
+    busId: '',
     permitId: '',
     // baseUrl: 'http://union.yifriend.net:7884', // 调试
     baseUrl: 'https://union.deeptel.com.cn', // 测试
@@ -26,17 +26,17 @@ export default new Vuex.Store({
   mutations: {
     unionIdChange(state, id) {
       state.unionId = id;
+      sessionStorage.setItem('unionId', id);
     },
     unionMemberIdChange(state, id) {
       state.unionMemberId = id;
-      sessionStorage.unionMemberId = id;
+      sessionStorage.setItem('unionMemberId', id);
     },
     infoIdChange(state, id) {
       state.infoId = id;
     },
     busIdChange(state, id) {
       state.busId = id;
-      sessionStorage.busId = id;
     },
     latitudeChange(state, value) {
       state.addressLatitude = value;
@@ -55,7 +55,7 @@ export default new Vuex.Store({
     // 是否盟主
     isUnionOwnerChange(state, value) {
       state.isUnionOwner = value;
-      sessionStorage.isUnionOwner = value;
+      sessionStorage.setItem('isUnionOwner', value);
     },
     // 创建联盟permitId
     permitIdChange(state, value) {
