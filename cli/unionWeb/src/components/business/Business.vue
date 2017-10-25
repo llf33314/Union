@@ -41,6 +41,10 @@ export default {
       activeName: 'first'
     };
   },
+  beforeCreate: function() {
+    // 清空缓存的数据
+    sessionStorage.setItem('unionId', '');
+  },
   created: function() {
     // 首页查询我的联盟信息
     $http
