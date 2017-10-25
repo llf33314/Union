@@ -57,7 +57,7 @@
                 </span>
               </el-dialog>
               <el-button type="warning" style="padding: 10px 15px 10px 32px;position: relative">
-                <img src="../../assets/images/Videos.png" style="width: 17px;position: absolute;top: 7px;left: 7px;">
+                <img src="../../assets/images/Videos.png" style="width: 17px;position: absolute;top: 8px;left: 7px;">
                 视频教程
               </el-button>
               <p class="fr" style="color:#20A0FF;cursor:pointer;" @click="dialogVisible1 = true">退盟说明?</p>

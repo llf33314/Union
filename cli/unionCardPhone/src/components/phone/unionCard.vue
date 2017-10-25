@@ -26,7 +26,7 @@
     <!--联盟列表-->
     <ul class="third_ ">
       <li class="unionLi" v-for="(items,index) in unionList">
-        <div  @touchend="showContent1(index,items.unionId,items.memberId,$event)" id="event_">
+        <div  @click="showContent1(index,items.unionId,items.memberId,$event)" id="event_">
           <i class="el-icon-arrow-right fr"></i>
           <span>{{items.unionName}}</span>
         </div>
@@ -323,6 +323,7 @@
             borderBottom:'none'
           })
         },10);
+
           //赋值成员和联盟的Id号码--------------
           this.memberId=memberid;
           this.unionId=unionid;
