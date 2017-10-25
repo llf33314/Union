@@ -1,8 +1,8 @@
 package com.gt.union.common.amqp.receiver;
 
-import com.alibaba.fastjson.JSON;
-import com.gt.union.common.amqp.entity.PhoneMessage;
+import com.alibaba.fastjson.JSONArray;
 import com.gt.union.api.client.sms.SmsService;
+import com.gt.union.common.amqp.entity.PhoneMessage;
 import com.gt.union.common.config.AmqpConfig;
 import com.rabbitmq.client.Channel;
 import org.slf4j.Logger;
@@ -19,7 +19,10 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Created by Administrator on 2017/8/24 0024.
+ * 消息队列消费者
+ *
+ * @author linweicong
+ * @version 2017-10-19 16:27:37
  */
 @Component
 public class PhoneMessageReceiver {
@@ -51,17 +54,20 @@ public class PhoneMessageReceiver {
         container.setExposeListenerChannel(true);
         container.setMaxConcurrentConsumers(1);
         container.setConcurrentConsumers(1);
-        container.setAcknowledgeMode(AcknowledgeMode.MANUAL); //设置确认模式手工确认
+        //设置确认模式手工确认
+        container.setAcknowledgeMode(AcknowledgeMode.MANUAL);
         container.setMessageListener(new ChannelAwareMessageListener() {
 
             @Override
             public void onMessage(Message message, Channel channel) throws Exception {
-                String msg = new String(message.getBody());
-                PhoneMessage phoneMessage = JSON.parseObject(msg, PhoneMessage.class);
-                Map<String, Object> map = new HashMap<>();
+                String msg = new String(message.getBody(), "UTF-8");
+                logger.info(msg);
+                PhoneMessage phoneMessage = JSONArray.parseObject(msg, PhoneMessage.class);
+                Map<String, Object> map = new HashMap<>(16);
                 map.put("reqdata", phoneMessage);
                 smsService.sendSms(map);
-                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false); //确认消息成功消费
+                //确认消息成功消费
+                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
             }
         });
         return container;

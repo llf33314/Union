@@ -10,7 +10,10 @@ import org.springframework.stereotype.Component;
 import java.util.UUID;
 
 /**
- * Created by Administrator on 2017/8/24 0024.
+ * 消息队列生产者
+ *
+ * @author linweicong
+ * @version 2017-10-19 16:27:37
  */
 @Component
 public class PhoneMessageSender {
@@ -18,8 +21,8 @@ public class PhoneMessageSender {
     private RabbitTemplate rabbitTemplate;
 
     public void sendMsg(PhoneMessage phoneMessage) {
-        CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());;
-        this.rabbitTemplate.convertAndSend(AmqpConfig.UNION_EXCHANGE, AmqpConfig.UNION_ROUTINGKEY_PHONE_MESSAGE
-                , phoneMessage.toString(), correlationData);
+        CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
+        this.rabbitTemplate.convertAndSend(AmqpConfig.UNION_EXCHANGE, AmqpConfig.UNION_ROUTINGKEY_PHONE_MESSAGE,
+                phoneMessage.toString(), correlationData);
     }
 }
