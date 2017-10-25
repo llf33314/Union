@@ -41,7 +41,7 @@ public class UnionConsumeParamVO implements Serializable{
 	private Double payMoney;
 
 	@ApiModelProperty( value = "是否使用积分抵扣" ,required = false)
-	private boolean useIntegral;
+	private Boolean useIntegral;
 
 	@ApiModelProperty( value = "消耗的积分" ,required = false)
 	private Double consumeIntegral;

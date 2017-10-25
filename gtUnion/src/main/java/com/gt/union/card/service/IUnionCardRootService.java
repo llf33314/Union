@@ -14,23 +14,26 @@ import com.gt.union.card.entity.UnionCardRoot;
 public interface IUnionCardRootService extends IService<UnionCardRoot> {
 
 	/**
-	 * 根据手机号获取信息
-	 * @param phone 手机号
+	 * 根据手机号获取联盟主卡信息
+	 * @param phone	手机号
 	 * @return
+	 * @throws Exception
 	 */
 	UnionCardRoot getByPhone(String phone) throws Exception;
 
 	/**
-	 * 根据联盟卡号获取信息
-	 * @param cardNo
-	 * @return
+	 * 根据联盟卡号获取联盟主卡信息
+	 *
+	 * @param cardNo	联盟卡号
+	 * @return UnionCardRoot
+	 * @throws Exception
 	 */
 	UnionCardRoot getByCardNo(String cardNo) throws Exception;
 
 	/**
-	 *
+	 * 根据联盟卡主id获取联盟主卡信息
 	 * @param rootId
-	 * @return
+	 * @return UnionCardRoot
 	 */
 	UnionCardRoot getById(Integer rootId);
 

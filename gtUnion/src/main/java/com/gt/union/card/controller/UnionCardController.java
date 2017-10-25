@@ -260,7 +260,7 @@ public class UnionCardController {
 		String statusKey = RedisKeyUtil.getBindCardPayStatusKey(only);
 		logger.info("办理联盟卡成功回调参数" + JSON.toJSONString(param));
 		try {
-			if(param.get("result_code").equals("SUCCESS") && param.get("return_code").equals("SUCCESS")){
+			if("SUCCESS".equals(param.get("result_code")) && "SUCCESS".equals(param.get("return_code"))){
 				String orderNo = param.get("out_trade_no").toString();
 				logger.info("前台办理联盟卡支付成功，only------------------"+only);
 				logger.info("办理联盟卡支付成功，orderNo------------------" + orderNo);

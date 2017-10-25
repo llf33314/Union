@@ -24,7 +24,7 @@
         <el-table-column prop="joinEnterpriseName" label="申请企业">
           <template scope="scope">
             <el-popover trigger="hover" placement="bottom">
-              <p>{{ scope.row.joinEnterpriseName }}</p>
+              <p>企业：{{ scope.row.joinEnterpriseName }}</p>
               <div slot="reference" class="name-wrapper">
                 <span>{{ scope.row.joinEnterpriseName }}</span>
               </div>
@@ -36,7 +36,7 @@
         <el-table-column prop="joinDirectorPhone" label="联系电话">
           <template scope="scope">
             <el-popover trigger="hover" placement="bottom">
-              <p>{{ scope.row.joinDirectorPhone }}</p>
+              <p>电话：{{ scope.row.joinDirectorPhone }}</p>
               <div slot="reference" class="name-wrapper">
                 <span>{{ scope.row.joinDirectorPhone }}</span>
               </div>
@@ -46,7 +46,7 @@
         <el-table-column prop="joinDirectorEmail" label="邮箱">
           <template scope="scope">
             <el-popover trigger="hover" placement="bottom">
-              <p>{{ scope.row.joinDirectorEmail }}</p>
+              <p>邮箱：{{ scope.row.joinDirectorEmail }}</p>
               <div slot="reference" class="name-wrapper">
                 <span>{{ scope.row.joinDirectorEmail }}</span>
               </div>
@@ -58,7 +58,7 @@
         <el-table-column prop="joinTime" label="申请/推荐时间">
           <template scope="scope">
             <el-popover trigger="hover" placement="bottom">
-              <p>{{ scope.row.joinTime }}</p>
+              <p>时间：{{ scope.row.joinTime }}</p>
               <div slot="reference" class="name-wrapper">
                 <span>{{ scope.row.joinTime }}</span>
               </div>

@@ -13,5 +13,14 @@ import com.gt.union.card.entity.UnionCardUpgradePay;
  */
 public interface IUnionCardUpgradePayService extends IService<UnionCardUpgradePay> {
 
+	/**
+	 * 添加支付购买联盟卡记录信息
+	 * @param orderNo	订单号
+	 * @param payStatus	支付状态
+	 * @param payType
+	 * @param payMoney
+	 * @param orderDesc
+	 * @return
+	 */
 	UnionCardUpgradePay createCardUpgreadePay(String orderNo, int payStatus, int payType, Double payMoney, String orderDesc);
 }
