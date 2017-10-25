@@ -113,7 +113,7 @@ public class UnionOpportunityRatioServiceImpl extends ServiceImpl<UnionOpportuni
             throw new BusinessException("受惠方正在退盟过渡期，无法操作");
         }
         //(5)校验比例
-        if (dRatio < 0.0 || dRatio > 100.0) {
+        if (dRatio <= 0.0 || dRatio > 100.0) {
             throw new BusinessException("比例必须大于0，且小于100");
         }
         //(6)查询是否已存在商机佣金比例设置，若有，则更新，否则，新增
