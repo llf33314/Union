@@ -447,7 +447,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 if (StringUtil.isNotEmpty(clientPhone)) {
                     sbSqlSegment.append(" AND o.client_phone LIKE '%").append(clientPhone).append("%'");
                 }
-                sbSqlSegment.append(" ORDER BY o.is_accept ASC, o.modifytime DESC, o.createtime ASC");
+                sbSqlSegment.append(" ORDER BY o.is_accept ASC, o.modifytime DESC, o.createtime DESC");
                 return sbSqlSegment.toString();
             }
         };
@@ -501,7 +501,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 if (StringUtil.isNotEmpty(clientPhone)) {
                     sbSqlSegment.append(" AND o.client_phone LIKE '%").append(clientPhone).append("%'");
                 }
-                sbSqlSegment.append(" ORDER BY o.is_accept ASC, o.modifytime DESC, o.createtime ASC");
+                sbSqlSegment.append(" ORDER BY o.is_accept ASC, o.modifytime DESC, o.createtime DESC");
                 return sbSqlSegment.toString();
             }
         };
