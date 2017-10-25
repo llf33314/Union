@@ -14,6 +14,9 @@
       </el-form-item>
       <el-form-item label="联盟积分：">
         <el-switch on-text="" off-text="" v-model="form.isIntegral"></el-switch>
+        <el-tooltip content="开启联盟积分后，可让粉丝消费获得积分回扣，粉丝可使用积分抵扣金额，该功能开启后不可关闭" placement="right">
+          <span class="tubiao">!</span>
+        </el-tooltip>
       </el-form-item>
       <el-form-item label="黑卡收费：">
         <el-switch on-text="" off-text="" v-model="form.blackIsCharge"></el-switch>
@@ -293,5 +296,21 @@ export default {
 .unionImg {
   width: 80px;
   height: 80px;
+}
+/*一个图标*/
+.tubiao {
+  width: 18px;
+  height: 18px;
+  border: 1px solid #1c8de0;
+  border-radius: 50%;
+  display: block;
+  text-align: center;
+  line-height: 18px;
+  color: #1d90e6;
+  font-weight: bold;
+  position: absolute;
+  top: 9px;
+  left: 55px;
+  cursor: pointer;
 }
 </style>
