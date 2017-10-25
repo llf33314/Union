@@ -13,7 +13,7 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item label="联盟积分：">
-        <el-switch on-text="" off-text="" v-model="form.isIntegral"></el-switch>
+        <el-switch on-text="" off-text="" v-model="form.isIntegral" :disabled="isIntegral_"></el-switch>
       </el-form-item>
       <el-form-item label="黑卡收费：">
         <el-switch on-text="" off-text="" v-model="form.blackIsCharge"></el-switch>
@@ -187,7 +187,8 @@ export default {
         unionIllustration: [{ required: true, message: '联盟说明内容不能为空，请重新输入', trigger: 'blur' }]
       },
       materialVisible: false,
-      materialUrl: ''
+      materialUrl: '',
+      isIntegral_: false // 判断联盟积分能否选择
     };
   },
   computed: {
@@ -238,6 +239,7 @@ export default {
           this.form.unionName = res.data.data.name;
           this.form.joinType = res.data.data.joinType;
           this.form.isIntegral = Boolean(res.data.data.isIntegral);
+          this.isIntegral_ = Boolean(res.data.data.isIntegral);
           this.form.unionIllustration = res.data.data.illustration;
           this.form.unionImg = res.data.data.img;
         }
