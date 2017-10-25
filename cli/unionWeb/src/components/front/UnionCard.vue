@@ -158,7 +158,7 @@
       <el-dialog title="付款" :visible.sync="visible5" size="tiny" @close="resetData">
         <hr>
         <img v-bind:src="codeSrc" class="codeImg">
-        <p>请使用微信扫描该二维码付款</p>
+        <p>请使用微信/支付宝扫描该二维码付款</p>
       </el-dialog>
     </div>
   </div>

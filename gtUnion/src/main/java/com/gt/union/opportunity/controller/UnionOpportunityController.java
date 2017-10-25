@@ -385,7 +385,7 @@ public class UnionOpportunityController {
                 result.put("status", status);
                 result.put("only", only);
                 logger.info("商机佣金扫码支付成功回调----------" + JSON.toJSONString(result));
-                socketService.socketSendMessage(PropertiesUtil.getSocketKey() + CommonUtil.toInteger(map.get("payBusId")), JSON.toJSONString(data), "");
+                socketService.socketSendMessage(PropertiesUtil.getSocketKey() + CommonUtil.toInteger(map.get("payBusId")), JSON.toJSONString(result), "");
                 data.put("code", 0);
                 data.put("msg", "成功");
                 return JSON.toJSONString(data);
