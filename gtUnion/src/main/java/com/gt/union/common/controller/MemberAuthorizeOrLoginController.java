@@ -64,8 +64,12 @@ public class MemberAuthorizeOrLoginController {
 			if (!CommonUtil.isEmpty(guoqi)) {//商家已过期
 				throw new BusinessException("账号已过期");
 			}
-			if(CommonUtil.isNotEmpty(json.get("remoteUcLogin"))){//uc登陆
-				return GTJsonResult.instanceSuccessMsg("登录授权",PropertiesUtil.getUnionUrl() + "/cardPhone/#/" + "toUnionLogin?busId="+busId).toString();
+			if(CommonUtil.isNotEmpty(json.get("data"))){//uc登陆
+				JSONObject obj = JSONObject.parseObject(json.get("data").toString());
+				if(CommonUtil.isNotEmpty(obj.get("remoteUcLogin"))){
+					return GTJsonResult.instanceSuccessMsg("登录授权",PropertiesUtil.getUnionUrl() + "/cardPhone/#/" + "toUnionLogin?busId="+busId).toString();
+				}
+
 			}
 		}
 		String otherRedisKey = PropertiesUtil.redisNamePrefix() + "authority:"+System.currentTimeMillis();

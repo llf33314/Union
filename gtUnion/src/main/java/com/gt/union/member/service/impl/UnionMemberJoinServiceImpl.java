@@ -234,17 +234,14 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         //(5)判断被推荐的商家是否有效
         String busUserName = unionMemberJoinVO.getBusUserName();
         if (StringUtil.isEmpty(busUserName)) {
-            throw new BusinessException("商家名称内容不能为空");
-        }
-        if (StringUtil.getStringLength(busUserName) > 10.0) {
-            throw new BusinessException("商家名称内容不可超过10字");
+            throw new BusinessException("联盟账号内容不能为空");
         }
         BusUser busUserRecommended = this.busUserService.getBusUserByName(busUserName);
         if (busUserRecommended == null) {
             throw new BusinessException("被推荐的帐号不存在");
         }
         if (busUserRecommended.getPid() != null && busUserRecommended.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            throw new BusinessException("请填写被推荐主体的主帐号");
+            throw new BusinessException("请填写被推荐盟员的主帐号");
         }
         //(6)判断被推荐的商家是否已经是盟员
         Integer recommendedBusId = busUserRecommended.getId();
