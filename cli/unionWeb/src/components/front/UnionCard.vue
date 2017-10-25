@@ -138,11 +138,11 @@
               <el-col style="width:240px;margin-left:50px;">
                 <span>找零: ￥
                   <span class="color_" v-if="!price2">0.00</span>
-                  <span class="color_" v-if="price2-price1 > 0 || price2-price1 === 0">{{ (price2*100 - price1*100)/100 | formatPrice }}</span>
+                  <span class="color_" v-if="(price2*100 - price1*100)/100 > 0 || Number(price2).toFixed(2) - Number(price1).toFixed(2) == 0">{{ (price2*100 - price1*100)/100 | formatPrice }}</span>
                 </span>
               </el-col>
               <el-col style="width:240px;margin-left:50px;position: absolute;top: 40px;left: 72px;">
-                <span class="color_" v-if="price2 && price2-price1 < 0">收取金额小于支付金额，请重新输入</span>
+                <span class="color_" v-if="price2 && (price2*100 - price1*100)/100 < 0">收取金额小于支付金额，请重新输入</span>
               </el-col>
             </el-row>
           </el-form-item>
@@ -231,7 +231,7 @@ export default {
   filters: {
     formatPrice: function(value) {
       if (!value) {
-        return '';
+        return Number(0).toFixed(2);
       } else {
         return Number(value).toFixed(2);
       }
@@ -253,7 +253,7 @@ export default {
           that.price2 = '';
         }, 100);
       }
-      if (this.price2 - this.price1 > 0 || this.price2 - this.price1 === 0) {
+      if ((this.price2 * 100 - this.price1 * 100) / 100 > 0 || (this.price2 * 100 - this.price1 * 100) / 100 === 0) {
         this.canSubmit = true;
       }
     },
@@ -266,7 +266,7 @@ export default {
         this.deductionIntegral = this.form.integral;
         this.deductionPrice = this.deductionIntegral / 10;
       }
-      this.price1 = this.price * this.form.discount / 10 - this.deductionPrice;
+      this.price1 = ((this.price * this.form.discount - this.deductionPrice * 10) / 10).toFixed(2);
     }
   },
   methods: {
@@ -337,7 +337,7 @@ export default {
           this.deductionIntegral = this.form.integral;
           this.deductionPrice = this.deductionIntegral / 10;
         }
-        this.price1 = this.price * this.form.discount / 10 - this.deductionPrice;
+        this.price1 = ((this.price * this.form.discount - this.deductionPrice * 10) / 10).toFixed(2);
       } else {
         this.submit();
       }
@@ -346,18 +346,17 @@ export default {
     submit() {
       let url = `/unionConsume`;
       let data = {};
-      data.cardId = this.form.cardId;
-      data.consumeIntegral = this.deductionIntegral;
+      data.cardId = this.form.cardId - 0;
+      data.consumeIntegral = this.deductionIntegral - 0;
       data.consumeMoney = this.price - 0;
-      data.discount = this.form.discount;
+      data.discount = this.form.discount - 0;
       data.items = this.item;
-      data.memberId = this.form.memberId;
-      data.payMoney = this.price1;
+      data.memberId = this.form.memberId - 0;
+      data.payMoney = this.price1 - 0;
       data.payType = this.payType - 0;
       data.shopId = this.shop - 0;
-      data.unionId = this.form.unionId;
+      data.unionId = this.form.unionId - 0;
       data.useIntegral = this.isIntegral_;
-      data.memberId = this.form.memberId;
       $http
         .post(url, data)
         .then(res => {
@@ -411,18 +410,17 @@ export default {
         this.visible5 = true;
         let url = `/unionConsume/qrCode`;
         let data = {};
-        data.cardId = this.form.cardId;
-        data.consumeIntegral = this.deductionIntegral;
+        data.cardId = this.form.cardId - 0;
+        data.consumeIntegral = this.deductionIntegral - 0;
         data.consumeMoney = this.price - 0;
-        data.discount = this.form.discount;
+        data.discount = this.form.discount - 0;
         data.items = this.item;
         data.memberId = this.form.memberId;
-        data.payMoney = this.price1;
+        data.payMoney = this.price1 - 0;
         data.payType = this.payType - 0;
         data.shopId = this.shop - 0;
-        data.unionId = this.form.unionId;
+        data.unionId = this.form.unionId - 0;
         data.useIntegral = this.isIntegral_;
-        data.memberId = this.form.memberId;
         $http
           .post(url, data)
           .then(res => {
@@ -477,7 +475,6 @@ export default {
     // 关闭二维码改变付款方式
     resetData() {
       this.payType = 0;
-      parent.window.postMessage('openMask()', 'https://deeptel.com.cn/user/toIndex_1.do');
     },
     // 返回
     back() {
