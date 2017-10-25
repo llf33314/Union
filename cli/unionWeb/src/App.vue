@@ -13,6 +13,7 @@ export default {
     $(window).on('resize', function() {
       /* 这里添加执行代码 */
       resizeBannerImage();
+      console.log("测试测试的罚款了是的很高了")
     });
     let resizeBannerImage=function()
     {
