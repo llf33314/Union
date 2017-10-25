@@ -4,7 +4,7 @@
     <div v-show="visible" class="btn1">
       <el-button type="primary" @click="show">我要推荐</el-button>
       <el-button type="warning" style="padding: 10px 15px 10px 32px;position: relative">
-        <img src="../../assets/images/Videos.png" style="width: 17px;position: absolute;top:8px;left: 7px;">
+        <img src="../../assets/images/Videos.png" style="width: 17px;position: absolute;top:7px;left: 7px;">
         视频教程
       </el-button>
     </div>
@@ -42,7 +42,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="业务备注：" prop="businessMsg">
-          <el-input type="textarea" :rows="3" placeholder="请输入业务备注" v-model="ruleForm1.businessMsg" :maxlength="unionNoticeMaxlength" @focus="unionNoticeFocus" @blur="unionNoticeBlur" @change="unionNoticeKeydown($event)" @keydown.native="unionNoticeKeydown($event)" @keyup.native="unionNoticeKeydown($event)" @input.native="unionNoticeKeydown($event)" @onpropertychange.native="unionNoticeKeydown($event)"></el-input>
+          <textarea type="textarea" id="feedbackcontent" placeholder="请输入业务备注" v-model="ruleForm1.businessMsg" :maxlength="unionNoticeMaxlength" @focus="unionNoticeFocus" @blur="unionNoticeBlur" @change="unionNoticeKeydown($event)" @keydown.native="unionNoticeKeydown($event)" @keyup.native="unionNoticeKeydown($event)" @input.native="unionNoticeKeydown($event)" @onpropertychange.native="unionNoticeKeydown($event)"></textarea>
         </el-form-item>
         <el-form-item style="margin-left: 15px;">
           <el-button type="primary" @click="submitForm1('ruleForm1')">确定</el-button>
@@ -286,5 +286,21 @@ export default {
 
 .btn1 {
   margin-bottom: 20px;
+}
+#feedbackcontent::-webkit-input-placeholder {
+  /* WebKit browsers */
+  color: #97A8BE;
+}
+#feedbackcontent:-moz-placeholder {
+  /* Mozilla Firefox 4 to 18 */
+  color: #97A8BE;
+}
+#feedbackcontent::-moz-placeholder {
+  /* Mozilla Firefox 19+ */
+  color: #97A8BE;
+}
+#feedbackcontent::-ms-input-placeholder {
+  /* Internet Explorer 10+ */
+  color: #97A8BE;
 }
 </style>

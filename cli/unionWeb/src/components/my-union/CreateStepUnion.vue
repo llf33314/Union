@@ -30,7 +30,7 @@
       </div>
       <el-form-item label="黑卡时效：" prop="blackValidityDay" v-if="form.blackIsCharge">
         <div class="special">
-          <el-input v-model="form.blackValidityDay" placeholder="请输入有效期"></el-input>
+          <el-input v-model="form.blackValidityDay" placeholder="请输入有效期（天）"></el-input>
         </div>
       </el-form-item>
       <el-form-item label="黑卡说明：" v-if="form.blackIsCharge">
@@ -49,7 +49,7 @@
       </el-form-item>
       <el-form-item label="红卡时效：" prop="redValidityDay" v-if="form.redIsAvailable">
         <div class="special">
-          <el-input v-model="form.redValidityDay" placeholder="请输入有效期">
+          <el-input v-model="form.redValidityDay" placeholder="请输入有效期（天）">
           </el-input>
         </div>
       </el-form-item>
