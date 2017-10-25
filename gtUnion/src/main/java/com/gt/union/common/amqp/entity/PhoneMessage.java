@@ -5,7 +5,10 @@ import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.util.PropertiesUtil;
 
 /**
- * Created by Administrator on 2017/8/24 0024.
+ * 消息队列实体
+ *
+ * @author linweicong
+ * @version 2017-10-19 16:27:37
  */
 public class PhoneMessage {
     private String company;
@@ -18,7 +21,9 @@ public class PhoneMessage {
 
     private String content;
 
-    //默认构造函数，json转对象时需要
+    /**
+     * 默认构造函数，json转对象时需要
+     */
     private PhoneMessage(){
     }
 
@@ -71,6 +76,7 @@ public class PhoneMessage {
         this.content = content;
     }
 
+    @Override
     public String toString() {
         return JSON.toJSONString(this);
     }

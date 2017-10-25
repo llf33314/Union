@@ -71,27 +71,39 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         if (busId == null || memberId == null || projectId == null || itemStatus == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        //(1)判断是否具有盟员权限
-        UnionMember unionMember = this.unionMemberService.getByIdAndBusId(memberId, busId);
-        if (unionMember == null) {
+        // (1)判断是否具有盟员权限
+        UnionMember unionOwner = this.unionMemberService.getByIdAndBusId(memberId, busId);
+        if (unionOwner == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
-        //(2)检查联盟有效期
-        this.unionMainService.checkUnionValid(unionMember.getUnionId());
-        //(3)判断是否具有读权限
-        if (!this.unionMemberService.hasReadAuthority(unionMember)) {
+        // (2)检查联盟有效期
+        this.unionMainService.checkUnionValid(unionOwner.getUnionId());
+        // (3)判断是否具有读权限
+        if (!this.unionMemberService.hasReadAuthority(unionOwner)) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
         }
-        //(4)检查优惠项目参数，并查询
+        // (4)判断是否是盟主
+        if (MemberConstant.IS_UNION_OWNER_YES != unionOwner.getIsUnionOwner()) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
+        }
+        // (5)检查优惠项目参数，并查询
         UnionPreferentialProject project = this.getById(projectId);
         if (project == null) {
             throw new BusinessException("优惠项目不存在");
+        }
+        Integer projectOwnerMemberId = project.getMemberId();
+        if (projectOwnerMemberId == null) {
+            throw new BusinessException("优惠项目所属盟员不存在");
+        }
+        UnionMember projectOwner = this.unionMemberService.getById(projectOwnerMemberId);
+        if (projectOwner == null) {
+            throw new BusinessException("优惠项目所属盟员不存在或已过期");
         }
         List<UnionPreferentialItem> itemList = this.unionPreferentialItemService.listByProjectIdAndStatus(projectId, itemStatus);
         Map<String, Object> result = new HashMap<>(16);
         result.put("project", project);
         result.put("itemList", itemList);
-        result.put("enterpriseName", unionMember.getEnterpriseName());
+        result.put("enterpriseName", projectOwner.getEnterpriseName());
         return result;
     }
 
@@ -152,23 +164,23 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
         if (page == null || busId == null || memberId == null || itemStatus == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        //(1)判断是否具有盟员权限
+        // (1)判断是否具有盟员权限
         final UnionMember unionOwner = this.unionMemberService.getByIdAndBusId(memberId, busId);
         if (unionOwner == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
         }
-        //(2)检查联盟有效期
+        // (2)检查联盟有效期
         this.unionMainService.checkUnionValid(unionOwner.getUnionId());
-        //(3)判断是否具有读权限
+        // (3)判断是否具有读权限
         if (!this.unionMemberService.hasReadAuthority(unionOwner)) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
         }
-        //(4)判断盟主权限
+        // (4)判断盟主权限
         if (!unionOwner.getIsUnionOwner().equals(MemberConstant.IS_UNION_OWNER_YES)) {
-            throw new BusinessException("非盟主身份无法操作");
+            throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
         }
         if (itemStatus != PreferentialConstant.STATUS_UNCOMMITTED) {
-            //(5-1)审核中、审核通过、审核不通过
+            // (5-1)审核中、审核通过、审核不通过
             Wrapper wrapper = new Wrapper() {
                 @Override
                 public String getSqlSegment() {
@@ -185,18 +197,18 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
                             + " ORDER BY pp.id ASC";
                 }
             };
-            //优惠项目id
+            // 优惠项目id
             String sqlSelect = " pp.id projectId"
-                    //优惠项目说明
+                    // 优惠项目说明
                     + ", pp.illustration projectIllustration"
-                    //优惠项目所属盟员的名称
+                    // 优惠项目所属盟员的名称
                     + ", m.enterprise_name enterpriseName"
-                    //优惠项目所属盟员身份id
+                    // 优惠项目所属盟员身份id
                     + ", m.id memberId";
             wrapper.setSqlSelect(sqlSelect);
             return this.selectMapsPage(page, wrapper);
         } else {
-            //(5-2)未提交
+            // (5-2)未提交
             return this.unionMemberService.pagePreferentialUnCommitByUnionOwner(page, unionOwner);
         }
     }
