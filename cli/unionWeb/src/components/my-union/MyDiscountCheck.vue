@@ -367,7 +367,7 @@ export default {
     showDetail2(scope) {
       this.dialogTableVisible2 = true;
       $http
-        .get(`/unionPreferentialProject/${scope.row.projectId}/memberId/${scope.row.memberId}/status/2`)
+        .get(`/unionPreferentialProject/${scope.row.projectId}/memberId/${this.unionMemberId}/status/2`)
         .then(res => {
           if (res.data.data) {
             this.visibleData2.enterpriseName = res.data.data.enterpriseName;
@@ -392,7 +392,7 @@ export default {
     showDetail3(scope) {
       this.dialogTableVisible3 = true;
       $http
-        .get(`/unionPreferentialProject/${scope.row.projectId}/memberId/${scope.row.memberId}/status/3`)
+        .get(`/unionPreferentialProject/${scope.row.projectId}/memberId/${this.unionMemberId}/status/3`)
         .then(res => {
           if (res.data.data) {
             this.visibleData3.enterpriseName = res.data.data.enterpriseName;
@@ -417,7 +417,7 @@ export default {
     showDetail4(scope) {
       this.dialogTableVisible4 = true;
       $http
-        .get(`/unionPreferentialProject/${scope.row.projectId}/memberId/${scope.row.memberId}/status/4`)
+        .get(`/unionPreferentialProject/${scope.row.projectId}/memberId/${this.unionMemberId}/status/4`)
         .then(res => {
           if (res.data.data) {
             this.visibleData4.enterpriseName = res.data.data.enterpriseName;
