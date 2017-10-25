@@ -19,6 +19,7 @@ export default {
     {
       var winW = parseInt($(window).width())-220;
 //      console.log('减去左边一，二级菜单的宽度后：屏幕宽度为：'+winW+'px');
+      console.log('test');
     }
   }
 };
