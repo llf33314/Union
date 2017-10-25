@@ -163,13 +163,13 @@
 </template>
 
 <script>
-import Join from './Join'
-import Create from './Create'
-import UnionMember from './UnionMember'
-import UnionCard from './UnionCard'
-import UnionNotice from './UnionNotice'
-import $http from '@/utils/http.js'
-import $todate from '@/utils/todate.js'
+import Join from './Join';
+import Create from './Create';
+import UnionMember from './UnionMember';
+import UnionCard from './UnionCard';
+import UnionNotice from './UnionNotice';
+import $http from '@/utils/http.js';
+import $todate from '@/utils/todate.js';
 export default {
   name: 'my-union',
   components: {
@@ -196,11 +196,11 @@ export default {
         currentUnionMemberCount: '',
         currentUnionSurplusMemberCount: '',
         currentUnionIsIntegral: '',
-        currentUnionIntegralSum: 0,
+        currentUnionIntegralSum: 0
       },
       activeName: 'first',
       memberId: '',
-      unionListLength: '',
+      unionListLength: ''
     };
   },
   computed: {
@@ -208,9 +208,16 @@ export default {
       return this.$store.state.isUnionOwner;
     }
   },
+  beforeCreate: function() {
+    // 清空缓存的数据
+    sessionStorage.setItem('unionMemberId', '');
+    sessionStorage.setItem('isUnionOwner', '');
+    sessionStorage.setItem('unionId', '');
+  },
   created: function() {
     // 首页查询我的联盟信息
-    $http.get(`/union/index`)
+    $http
+      .get(`/union/index`)
       .then(res => {
         if (res.data.data) {
           this.unionMainData = res.data.data;
@@ -219,7 +226,7 @@ export default {
             this.$router.push({ path: '/my-union/no-currentUnion' });
           } else {
             // 判断创建和加入联盟的数量
-            this.unionMainData.myCreateUnionId ? this.unionListLength = 1 : this.unionListLength = 0;
+            this.unionMainData.myCreateUnionId ? (this.unionListLength = 1) : (this.unionListLength = 0);
             if (this.unionMainData.myJoinUnionList) {
               this.unionListLength += this.unionMainData.myJoinUnionList.length;
             }
@@ -230,8 +237,12 @@ export default {
             this.$store.commit('busIdChange', this.unionMainData.busId);
             this.$store.commit('isUnionOwnerChange', this.unionMainData.currentUnionMemberIsUnionOwner);
             // 处理当前页面数据展示格式
-            this.unionMainData.currentUnionCreatetime = $todate.todate(new Date(this.unionMainData.currentUnionCreatetime));
-            this.unionMainData.currentUnionMemberIsUnionOwner == 1 ? this.unionMainData.currentUnionMemberIsUnionOwner = '盟主' : this.unionMainData.currentUnionMemberIsUnionOwner = '盟员';
+            this.unionMainData.currentUnionCreatetime = $todate.todate(
+              new Date(this.unionMainData.currentUnionCreatetime)
+            );
+            this.unionMainData.currentUnionMemberIsUnionOwner == 1
+              ? (this.unionMainData.currentUnionMemberIsUnionOwner = '盟主')
+              : (this.unionMainData.currentUnionMemberIsUnionOwner = '盟员');
             this.unionMainData.currentUnionIntegralSum = res.data.data.currentUnionIntegralSum || 0;
           }
         }
@@ -245,7 +256,8 @@ export default {
     changUnion1(myCreateUnionMemberId) {
       if (myCreateUnionMemberId !== this.memberId) {
         this.memberId = myCreateUnionMemberId;
-        $http.get(`/union/index/memberId/${myCreateUnionMemberId}`)
+        $http
+          .get(`/union/index/memberId/${myCreateUnionMemberId}`)
           .then(res => {
             if (res.data.data) {
               this.unionMainData = res.data.data;
@@ -256,8 +268,12 @@ export default {
               this.$store.commit('busIdChange', this.unionMainData.busId);
               this.$store.commit('isUnionOwnerChange', this.unionMainData.currentUnionMemberIsUnionOwner);
               // 处理当前页面数据展示格式
-              this.unionMainData.currentUnionCreatetime = $todate.todate(new Date(this.unionMainData.currentUnionCreatetime));
-              this.unionMainData.currentUnionMemberIsUnionOwner == 1 ? this.unionMainData.currentUnionMemberIsUnionOwner = '盟主' : this.unionMainData.currentUnionMemberIsUnionOwner = '盟员';
+              this.unionMainData.currentUnionCreatetime = $todate.todate(
+                new Date(this.unionMainData.currentUnionCreatetime)
+              );
+              this.unionMainData.currentUnionMemberIsUnionOwner == 1
+                ? (this.unionMainData.currentUnionMemberIsUnionOwner = '盟主')
+                : (this.unionMainData.currentUnionMemberIsUnionOwner = '盟员');
               this.unionMainData.currentUnionIntegralSum = res.data.data.currentUnionIntegralSum || 0;
             }
           })
@@ -269,7 +285,8 @@ export default {
     changUnion2(myJoinUnionMemberId) {
       if (myJoinUnionMemberId !== this.memberId) {
         this.memberId = myJoinUnionMemberId;
-        $http.get(`/union/index/memberId/${myJoinUnionMemberId}`)
+        $http
+          .get(`/union/index/memberId/${myJoinUnionMemberId}`)
           .then(res => {
             if (res.data.data) {
               this.unionMainData = res.data.data;
@@ -280,8 +297,12 @@ export default {
               this.$store.commit('busIdChange', this.unionMainData.busId);
               this.$store.commit('isUnionOwnerChange', this.unionMainData.currentUnionMemberIsUnionOwner);
               // 处理当前页面数据展示格式
-              this.unionMainData.currentUnionCreatetime = $todate.todate(new Date(this.unionMainData.currentUnionCreatetime));
-              this.unionMainData.currentUnionMemberIsUnionOwner == 1 ? this.unionMainData.currentUnionMemberIsUnionOwner = '盟主' : this.unionMainData.currentUnionMemberIsUnionOwner = '盟员';
+              this.unionMainData.currentUnionCreatetime = $todate.todate(
+                new Date(this.unionMainData.currentUnionCreatetime)
+              );
+              this.unionMainData.currentUnionMemberIsUnionOwner == 1
+                ? (this.unionMainData.currentUnionMemberIsUnionOwner = '盟主')
+                : (this.unionMainData.currentUnionMemberIsUnionOwner = '盟员');
               this.unionMainData.currentUnionIntegralSum = res.data.data.currentUnionIntegralSum || 0;
             }
           })
@@ -290,12 +311,11 @@ export default {
           });
       }
     }
-  },
-}
+  }
+};
 </script>
 
 <style scoped lang='less' rel="stylesheet/less">
-
 .container {
   margin: 41px 119px 10px 56px;
 }
@@ -304,7 +324,7 @@ export default {
   min-height: 100px;
   margin: 0 0 14px 0;
   .grid-content {
-    font-family: "Microsoft YaHei";
+    font-family: 'Microsoft YaHei';
     font-size: 16px;
     font-weight: bold;
     margin-bottom: 13px;
@@ -317,10 +337,9 @@ export default {
   }
 }
 
-
 /*中间栏信息（红卡，售卡，入盟，联盟设置...）--------------------------*/
 .nav .grid-content {
-  background: #F8F8F8;
+  background: #f8f8f8;
   line-height: 60px;
   margin: 2px;
   height: 60px;
@@ -328,20 +347,20 @@ export default {
     font-size: 14px;
     color: #333333;
   }
-  a{
+  a {
     display: inline-block;
     width: 100%;
     height: 100%;
-    .el-button{
+    .el-button {
       margin-left: 20px;
     }
   }
-  a:hover{
-    transition: all .5s;
+  a:hover {
+    transition: all 0.5s;
     background-color: #eee;
-    >span{
+    > span {
       font-size: 16px;
-      transition: all .5s;
+      transition: all 0.5s;
     }
   }
 }
@@ -352,46 +371,46 @@ export default {
   border: 1px solid #ddd;
   ul.gt_union {
     max-height: 120px;
-    background: #F8F8F8;
+    background: #f8f8f8;
     overflow: hidden;
     border-bottom: 1px solid #ddd;
-    >li {
+    > li {
       float: left;
     }
   }
 
   #gt_rt {
-    border-left: 1px solid #EEEEEE;
+    border-left: 1px solid #eeeeee;
     height: 80px;
     margin-top: 19px;
     padding-left: 19px;
-    >ul>li {
+    > ul > li {
       margin-bottom: 6px;
       font-size: 14px;
     }
     span {
       font-size: 14px;
-      color: #A0A0A0
+      color: #a0a0a0;
     }
   }
 }
 
 #union_people {
   padding: 13px 0 17px;
-  >ul>li {
+  > ul > li {
     float: left;
     width: 32%;
-    border-left: 1px solid #EEEEEE;
+    border-left: 1px solid #eeeeee;
     padding-left: 22px;
     color: #999999;
     p {
       margin-bottom: 19px;
     }
     span {
-      color: #FF6600;
+      color: #ff6600;
       font-size: 25px;
       font-weight: bold;
-      margin-right: 10px
+      margin-right: 10px;
     }
   }
 }
@@ -404,6 +423,6 @@ export default {
 
 /*用户管理和表格*/
 .list {
-  margin-top: 30px
+  margin-top: 30px;
 }
 </style>
