@@ -181,8 +181,7 @@ export default {
   mounted: function() {
     // 切换tab清空输入数据
     eventBus.$on('tabChange3', () => {
-      this.form1.phone = '';
-      this.form1.code = '';
+      this.init();
     });
   },
   watch: {

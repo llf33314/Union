@@ -226,6 +226,8 @@ export default {
     // 切换tab清空输入数据
     eventBus.$on('tabChange1', () => {
       this.input = '';
+      this.visible1 = true;
+      this.visible2 = false;
     });
   },
   filters: {
