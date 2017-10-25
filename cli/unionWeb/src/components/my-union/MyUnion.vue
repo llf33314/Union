@@ -233,8 +233,6 @@ export default {
             // 全局存储信息
             this.$store.commit('unionIdChange', this.unionMainData.currentUnionId);
             this.$store.commit('unionMemberIdChange', this.unionMainData.currentUnionMemberId);
-            this.$store.commit('infoIdChange', this.unionMainData.infoId);
-            this.$store.commit('busIdChange', this.unionMainData.busId);
             this.$store.commit('isUnionOwnerChange', this.unionMainData.currentUnionMemberIsUnionOwner);
             // 处理当前页面数据展示格式
             this.unionMainData.currentUnionCreatetime = $todate.todate(
@@ -264,8 +262,6 @@ export default {
               // 全局存储信息
               this.$store.commit('unionIdChange', this.unionMainData.currentUnionId);
               this.$store.commit('unionMemberIdChange', this.unionMainData.currentUnionMemberId);
-              this.$store.commit('infoIdChange', this.unionMainData.infoId);
-              this.$store.commit('busIdChange', this.unionMainData.busId);
               this.$store.commit('isUnionOwnerChange', this.unionMainData.currentUnionMemberIsUnionOwner);
               // 处理当前页面数据展示格式
               this.unionMainData.currentUnionCreatetime = $todate.todate(
@@ -293,8 +289,6 @@ export default {
               // 全局存储信息
               this.$store.commit('unionIdChange', this.unionMainData.currentUnionId);
               this.$store.commit('unionMemberIdChange', this.unionMainData.currentUnionMemberId);
-              this.$store.commit('infoIdChange', this.unionMainData.infoId);
-              this.$store.commit('busIdChange', this.unionMainData.busId);
               this.$store.commit('isUnionOwnerChange', this.unionMainData.currentUnionMemberIsUnionOwner);
               // 处理当前页面数据展示格式
               this.unionMainData.currentUnionCreatetime = $todate.todate(
