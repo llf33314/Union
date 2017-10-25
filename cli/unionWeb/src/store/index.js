@@ -8,13 +8,11 @@ export default new Vuex.Store({
   state: {
     unionId: sessionStorage.getItem('unionId'),
     unionMemberId: sessionStorage.getItem('unionMemberId'),
-    infoId: '',
     addressLatitude: '',
     addressLongitude: '',
     enterpriseAddress: '',
     address: '',
     isUnionOwner: sessionStorage.getItem('isUnionOwner'),
-    busId: '',
     permitId: '',
     // baseUrl: 'http://union.yifriend.net:7884', // 调试
     baseUrl: 'https://union.deeptel.com.cn', // 测试
@@ -31,12 +29,6 @@ export default new Vuex.Store({
     unionMemberIdChange(state, id) {
       state.unionMemberId = id;
       sessionStorage.setItem('unionMemberId', id);
-    },
-    infoIdChange(state, id) {
-      state.infoId = id;
-    },
-    busIdChange(state, id) {
-      state.busId = id;
     },
     latitudeChange(state, value) {
       state.addressLatitude = value;

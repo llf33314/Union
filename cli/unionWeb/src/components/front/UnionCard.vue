@@ -223,7 +223,7 @@ export default {
       .catch(err => {
         this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
       });
-    // 切换tab情况输入数据
+    // 切换tab清空输入数据
     eventBus.$on('tabChange1', () => {
       this.input = '';
     });

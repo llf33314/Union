@@ -181,36 +181,18 @@ export default {
     }
   },
   mounted: function() {
-    console.log(this.unionMemberId, 11111111);
     if (this.unionMemberId) {
-      $http
-        .get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=1`)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.total;
-            this.tableData.forEach((v, i) => {
-              if (v.discountFromMe) {
-                v.discountFromMe = v.discountFromMe.toFixed(1);
-              }
-              if (v.discountToMe) {
-                v.discountToMe = v.discountToMe.toFixed(1);
-              }
-              if (v.cardDividePercent) {
-                v.cardDividePercent = v.cardDividePercent.toFixed(2) + '%';
-              }
-            });
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+      this.init();
     }
   },
   watch: {
     // 查询盟员列表
     unionMemberId: function() {
-      console.log(this.unionMemberId, 22222222);
+      this.init();
+    }
+  },
+  methods: {
+    init() {
       $http
         .get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=1`)
         .then(res => {
@@ -236,9 +218,7 @@ export default {
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
-    }
-  },
-  methods: {
+    },
     // 带条件查询盟员列表
     search() {
       $http

@@ -6,14 +6,6 @@ export const unionMemberIdChange = (state, id) => {
   state.unionMemberId = id;
   sessionStorage.unionMemberId = id;
 }
-export const infoIdChange = (state, id) => {
-  state.infoId = id;
-  sessionStorage.infoId = id;
-}
-export const busIdChange = (state, id) => {
-  state.busId = id;
-  sessionStorage.busId = id;
-}
 export const latitudeChange = (state, value) => {
   state.addressLatitude = value;
 }

@@ -8,14 +8,14 @@
 </template>
 
 <script>
-import $http from '@/utils/http.js'
+import $http from '@/utils/http.js';
 export default {
   name: 'union-notice',
   data() {
     return {
       unionNotice: '',
-      unionNoticeMaxlength: 100,
-    }
+      unionNoticeMaxlength: 100
+    };
   },
   computed: {
     isUnionOwner() {
@@ -31,23 +31,19 @@ export default {
   mounted: function() {
     if (this.unionMemberId) {
       if (this.unionId) {
-        $http.get(`/unionMainNotice/unionId/${this.unionId}`)
-          .then(res => {
-            if (res.data.data) {
-              this.unionNotice = res.data.data.content;
-            } else {
-              this.unionNotice = '';
-            }
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          });
-      };
+        this.init();
+      }
     }
   },
   watch: {
     unionId: function() {
-      $http.get(`/unionMainNotice/unionId/${this.unionId}`)
+      this.init();
+    }
+  },
+  methods: {
+    init() {
+      $http
+        .get(`/unionMainNotice/unionId/${this.unionId}`)
         .then(res => {
           if (res.data.data) {
             this.unionNotice = res.data.data.content;
@@ -57,13 +53,12 @@ export default {
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
-    }
-  },
-  methods: {
+        });
+    },
+    // 处理公告
     unionNoticeFocus() {
       if (this.isUnionOwner) {
-        document.querySelector("#unionNotice").style.border = "1px solid #ddd";
+        document.querySelector('#unionNotice').style.border = '1px solid #ddd';
         let valueLength = this.unionNoticeCheck()[0];
         let len = this.unionNoticeCheck()[1];
         if (valueLength > 50) {
@@ -76,18 +71,17 @@ export default {
       }
     },
     unionNoticeBlur() {
-      document.querySelector("#unionNotice").style.border = "none";
+      document.querySelector('#unionNotice').style.border = 'none';
       let valueLength = this.unionNoticeCheck()[0];
       if (valueLength > 50) {
         return false;
       } else {
-        $http.put(`/unionMainNotice/memberId/${this.$store.state.unionMemberId}?noticeContent=${this.unionNotice}`)
-          .then(res => {
-
-          })
+        $http
+          .put(`/unionMainNotice/memberId/${this.$store.state.unionMemberId}?noticeContent=${this.unionNotice}`)
+          .then(res => {})
           .catch(err => {
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          })
+          });
       }
     },
     unionNoticeKeydown(e) {
@@ -104,29 +98,32 @@ export default {
     unionNoticeCheck() {
       let valueLength = 0;
       let maxLenth = 0;
-      let chinese = "[\u4e00-\u9fa5]";  // 获取字段值的长度，如果含中文字符，则每个中文字符长度为2，否则为1
+      let chinese = '[\u4e00-\u9fa5]'; // 获取字段值的长度，如果含中文字符，则每个中文字符长度为2，否则为1
       let str = this.unionNotice;
-      for (let i = 0; i < str.length; i++) { // 获取一个字符
+      for (let i = 0; i < str.length; i++) {
+        // 获取一个字符
         let temp = str.substring(i, i + 1); // 判断是否为中文字符
-        if (temp.match(chinese)) { // 中文字符长度为1
+        if (temp.match(chinese)) {
+          // 中文字符长度为1
           valueLength += 1;
-        } else { // 其他字符长度为0.5
+        } else {
+          // 其他字符长度为0.5
           valueLength += 0.5;
-        };
+        }
         if (Math.ceil(valueLength) == 50) {
           maxLenth = i;
-        };
+        }
       }
       valueLength = Math.ceil(valueLength); //进位取整
       return [valueLength, maxLenth];
-    },
+    }
   }
-}
+};
 </script>
 
 <style scoped lang='less' rel="stylesheet/less">
 .grid-content {
-  font-family: "Microsoft YaHei";
+  font-family: 'Microsoft YaHei';
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 13px;
