@@ -194,12 +194,7 @@ export default {
                     }
                   })
                   .catch(err => {
-                    this.$message({
-                      showClose: true,
-                      message: err.toString(),
-                      type: 'error',
-                      duration: 5000
-                    });
+                    this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
                   });
               }
               this.search();
@@ -215,6 +210,9 @@ export default {
     }
   },
   mounted: function() {
+    eventBus.$on('newCommissionPay', () => {
+      this.init();
+    });
     this.init();
   },
   methods: {
@@ -389,8 +387,7 @@ export default {
               if (_this.only == msg.only) {
                 if (msg.status == '003') {
                   _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
-                  _this.visible3 = false;
-                  _this.visible4 = true;
+                  _this.dialogVisible = false;
                   _this.search();
                 } else if (msg.status == '004') {
                   _this.$message({ showClose: true, message: '请求超时', type: 'warning', duration: 5000 });
@@ -445,29 +442,13 @@ export default {
             if (!(_this.socketFlag.only == msg.only && _this.socketFlag.status == msg.status)) {
               if (_this.only == msg.only) {
                 if (msg.status == '003') {
-                  _this.$message({
-                    showClose: true,
-                    message: '支付成功',
-                    type: 'success',
-                    duration: 5000
-                  });
-                  _this.visible3 = false;
-                  _this.visible4 = true;
+                  _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
+                  _this.dialogVisible = false;
                   _this.search();
                 } else if (msg.status == '004') {
-                  _this.$message({
-                    showClose: true,
-                    message: '请求超时',
-                    type: 'warning',
-                    duration: 5000
-                  });
+                  _this.$message({ showClose: true, message: '请求超时', type: 'warning', duration: 5000 });
                 } else if (msg.status == '005') {
-                  _this.$message({
-                    showClose: true,
-                    message: '支付失败',
-                    type: 'warning',
-                    duration: 5000
-                  });
+                  _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
                 }
               }
             }
@@ -476,12 +457,7 @@ export default {
           });
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     filterTag(value, row) {

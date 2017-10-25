@@ -170,12 +170,7 @@ export default {
     },
     unionId: function() {
       $http
-        .get(
-          `/unionOpportunity/toMe?current=1&unionId=${this.unionId}&` +
-            this.value +
-            '=' +
-            this.input
-        )
+        .get(`/unionOpportunity/toMe?current=1&unionId=${this.unionId}&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
@@ -272,12 +267,7 @@ export default {
     // 带条件搜索
     search() {
       $http
-        .get(
-          `/unionOpportunity/toMe?current=1&unionId=${this.unionId}&` +
-            this.value +
-            '=' +
-            this.input
-        )
+        .get(`/unionOpportunity/toMe?current=1&unionId=${this.unionId}&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
@@ -311,12 +301,7 @@ export default {
     // 分页搜索
     handleCurrentChange(val) {
       $http
-        .get(
-          `/unionOpportunity/toMe?current=${val}&unionId=${this.unionId}&` +
-            this.value +
-            '=' +
-            this.input
-        )
+        .get(`/unionOpportunity/toMe?current=${val}&unionId=${this.unionId}&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
@@ -360,57 +345,46 @@ export default {
     // 接受确认
     confirm() {
       $http
-        .put(
-          `/unionOpportunity/${this.opportunityId}/isAccept/2`,
-          this.acceptancePrice
-        )
+        .put(`/unionOpportunity/${this.opportunityId}/isAccept/2`, this.acceptancePrice)
         .then(res => {
-          this.dialogVisible1 = false;
-          $http
-            .get(
-              `/unionOpportunity/toMe?current=${this.currentPage}&unionId=${this
-                .unionId}&` +
-                this.value +
-                '=' +
-                this.input
-            )
-            .then(res => {
-              if (res.data.data) {
-                this.tableData = res.data.data.records;
-                this.totalAll = res.data.data.total;
-                this.tableData.forEach((v, i) => {
-                  switch (v.isAccept) {
-                    case 1:
-                      v.isAccept = '未处理';
-                      break;
-                    case 2:
-                      v.isAccept = '已完成';
-                      break;
-                    case 3:
-                      v.isAccept = '已拒绝';
-                  }
-                });
-              } else {
-                this.tableData = [];
-                this.totalAll = 0;
-              }
-            })
-            .catch(err => {
-              this.$message({
-                showClose: true,
-                message: err.toString(),
-                type: 'error',
-                duration: 5000
+          if (res.data.success) {
+            this.dialogVisible1 = false;
+            eventBus.$emit('newCommissionPay');
+            $http
+              .get(
+                `/unionOpportunity/toMe?current=${this.currentPage}&unionId=${this.unionId}&` +
+                  this.value +
+                  '=' +
+                  this.input
+              )
+              .then(res => {
+                if (res.data.data) {
+                  this.tableData = res.data.data.records;
+                  this.totalAll = res.data.data.total;
+                  this.tableData.forEach((v, i) => {
+                    switch (v.isAccept) {
+                      case 1:
+                        v.isAccept = '未处理';
+                        break;
+                      case 2:
+                        v.isAccept = '已完成';
+                        break;
+                      case 3:
+                        v.isAccept = '已拒绝';
+                    }
+                  });
+                } else {
+                  this.tableData = [];
+                  this.totalAll = 0;
+                }
+              })
+              .catch(err => {
+                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
               });
-            });
+          }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     // 拒绝
@@ -426,8 +400,7 @@ export default {
           this.dialogVisible2 = false;
           $http
             .get(
-              `/unionOpportunity/toMe?current=${this.currentPage}&unionId=${this
-                .unionId}&` +
+              `/unionOpportunity/toMe?current=${this.currentPage}&unionId=${this.unionId}&` +
                 this.value +
                 '=' +
                 this.input
@@ -454,21 +427,11 @@ export default {
               }
             })
             .catch(err => {
-              this.$message({
-                showClose: true,
-                message: err.toString(),
-                type: 'error',
-                duration: 5000
-              });
+              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
             });
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     filterTag(value, row) {

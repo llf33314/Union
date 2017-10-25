@@ -66,7 +66,7 @@ public class LoginFilter implements Filter {
         if (url.indexOf("unionH5Brokerage") > -1 || url.indexOf("brokeragePhone") > -1) {
             BusUser user = SessionUtils.getUnionBus(req);
             if (user == null) {
-                if (url.equals("/brokeragePhone/")) {
+                if ("/brokeragePhone/".equals(url)) {
                     chain.doFilter(request, response);
                     return;
                 } else if (url.indexOf("unionH5Brokerage") > -1) {
@@ -77,7 +77,7 @@ public class LoginFilter implements Filter {
             }
         } else {
             BusUser busUser = SessionUtils.getLoginUser(req);
-            if (url.equals("/cardPhone/")) {//
+            if ("/cardPhone/".equals(url)) {//
                 chain.doFilter(request, response);
                 return;
             } else if (url.indexOf("cardH5") > -1) {
@@ -89,7 +89,7 @@ public class LoginFilter implements Filter {
                 busUser = justForDev(req, busUser);
             }
             if (busUser == null) {
-                if (url.equals("/unionMain/")) {
+                if ("/unionMain/".equals(url)) {
                     String wxmpLoginUrl = PropertiesUtil.getWxmpUrl() + "/user/tologin.do";
                     String script = "<script type='text/javascript'>"
                             + "location.href='" + wxmpLoginUrl + "';"

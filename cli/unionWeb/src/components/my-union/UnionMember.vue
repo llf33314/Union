@@ -188,7 +188,9 @@ export default {
   watch: {
     // 查询盟员列表
     unionMemberId: function() {
-      this.init();
+      if (this.unionMemberId) {
+        this.init();
+      }
     }
   },
   methods: {

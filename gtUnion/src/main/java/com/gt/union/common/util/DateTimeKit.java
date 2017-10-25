@@ -441,7 +441,7 @@ public class DateTimeKit {
 		try {
 			dateFormat = new SimpleDateFormat(format);
 			String dt = dateStr.replaceAll("-", "/");
-			if ((!dt.equals("")) && (dt.length() < format.length())) {
+			if ((!"".equals(dt)) && (dt.length() < format.length())) {
 				dt += format.substring(dt.length()).replaceAll("[YyMmDdHhSs]",
 						"0");
 			}
@@ -770,8 +770,8 @@ public class DateTimeKit {
 	}
 
 	public String getChineseWeek(Calendar date) {
-		final String dayNames[] = { "星期日", "星期一", "星期二", "星期三", "星期四", "星期五",
-				"星期六" };
+		final String[] dayNames = {"星期日", "星期一", "星期二", "星期三", "星期四", "星期五",
+				"星期六"};
 
 		int dayOfWeek = date.get(Calendar.DAY_OF_WEEK);
 
@@ -1622,7 +1622,7 @@ public class DateTimeKit {
 	        long now = sdf.parse(curTime).getTime();
 	        long start = sdf.parse(args[0]).getTime();
 	        long end = sdf.parse(args[1]).getTime();
-	        if (args[1].equals("00:00")) {
+	        if ("00:00".equals(args[1])) {
 	            args[1] = "24:00";
 	        }
 	        if (end < start) {

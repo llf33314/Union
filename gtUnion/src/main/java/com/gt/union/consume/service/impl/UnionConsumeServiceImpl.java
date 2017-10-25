@@ -409,7 +409,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		Map<String, Object> data = new HashMap<String, Object>();
 		String orderNo = ConsumeConstant.ORDER_PREFIX + System.currentTimeMillis();
 		String only = DateTimeKit.getDateTime(new Date(), DateTimeKit.yyyyMMddHHmmss);
-		data.put("totalFee", vo.getConsumeMoney());
+		data.put("totalFee", vo.getPayMoney());
 		data.put("busId", PropertiesUtil.getDuofenBusId());
 		data.put("sourceType", 1);//是否墨盒支付
 		data.put("payWay", 0);//系统判断支付方式
@@ -460,14 +460,16 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 						List<UnionPreferentialItem> unionPreferentialItems = item.getItems();
 						int size = unionPreferentialItems.size();
 						int count = 1;
+						StringBuilder sb = new StringBuilder(value);
 						for(UnionPreferentialItem unionPreferentialItem : unionPreferentialItems){
 							if(count == size){
-								value = value + unionPreferentialItem.getName();
+								sb.append(unionPreferentialItem.getName());
 							}else {
-								value = value + unionPreferentialItem.getName() + "||";
+								sb.append(unionPreferentialItem.getName()).append("||");
 							}
 							count++;
 						}
+						value = sb.toString();
 					}
 					if(contentName[j].equals(field3.getName())){//加入时间
 						value = item.getCardNo();
@@ -525,14 +527,16 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 						List<UnionPreferentialItem> unionPreferentialItems = item.getItems();
 						int size = unionPreferentialItems.size();
 						int count = 1;
+						StringBuilder sb = new StringBuilder(value);
 						for(UnionPreferentialItem unionPreferentialItem : unionPreferentialItems){
 							if(count == size){
-								value = value + unionPreferentialItem.getName();
+								sb.append(unionPreferentialItem.getName());
 							}else {
-								value = value + unionPreferentialItem.getName() + "||";
+								sb.append(unionPreferentialItem.getName()).append("||");
 							}
 							count++;
 						}
+						value = sb.toString();
 					}
 					if(contentName[j].equals(field3.getName())){//加入时间
 						value = item.getCardNo();

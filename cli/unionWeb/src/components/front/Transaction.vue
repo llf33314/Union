@@ -189,6 +189,8 @@ export default {
     follow_: function() {
       if (this.follow_) {
         this.visible5 = true;
+      } else {
+        this.memberId = '';
       }
     },
     wxData: function() {
@@ -205,7 +207,11 @@ export default {
   filters: {
     // 价格格式
     formatPrice: function(value) {
-      return Number(value).toFixed(2);
+      if (!value) {
+        return Number(0).toFixed(2);
+      } else {
+        return Number(value).toFixed(2);
+      }
     }
   },
   methods: {
@@ -324,7 +330,14 @@ export default {
           let data = {};
           data.cardType = this.form2.cardType;
           data.follow = this.follow_;
-          data.memberId = this.memberId - 0;
+          if (this.follow_) {
+            if (this.memberId) {
+              data.memberId = this.memberId - 0;
+            } else {
+              this.$message({ showClose: true, message: '请选择粉丝', type: 'warning', duration: 5000 });
+              return false;
+            }
+          }
           data.phone = this.form1.phone;
           data.unionId = this.unionId;
           $http

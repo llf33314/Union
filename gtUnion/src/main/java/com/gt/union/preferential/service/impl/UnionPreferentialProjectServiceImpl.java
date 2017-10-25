@@ -193,6 +193,7 @@ public class UnionPreferentialProjectServiceImpl extends ServiceImpl<UnionPrefer
                             + "    SELECT pi.id FROM t_union_preferential_item pi"
                             + "    WHERE pi.del_status = " + CommonConstant.DEL_STATUS_NO
                             + "      AND pi.status = " + itemStatus
+                            + "      AND pi.project_id = pp.id"
                             + "  )"
                             + " ORDER BY pp.id ASC";
                 }
