@@ -64,7 +64,25 @@ export default {
   watch: {
     initUnionId: function() {
       if (this.initUnionId) {
-        this.change();
+        // 获取联盟列表
+        $http
+          .get(`/unionMember/listMap`)
+          .then(res => {
+            if (res.data.data && res.data.data.length > 0) {
+              this.options = res.data.data;
+              res.data.data.forEach((v, i) => {
+                this.options[i].value = v.unionMember.id;
+                this.options[i].label = v.unionMain.name;
+              });
+              this.value = this.options[0].value;
+              this.change();
+            } else {
+              this.options = [];
+            }
+          })
+          .catch(err => {
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          });
       }
     }
   },
