@@ -208,13 +208,11 @@ export default {
       return this.$store.state.isUnionOwner;
     }
   },
-  beforeCreate: function() {
-    // 清空缓存的数据
-    sessionStorage.setItem('unionMemberId', '');
-    sessionStorage.setItem('isUnionOwner', '');
-    sessionStorage.setItem('unionId', '');
-  },
   created: function() {
+    // 清空缓存的数据
+    this.$store.commit('unionIdChange', '');
+    this.$store.commit('unionMemberIdChange', '');
+    this.$store.commit('isUnionOwnerChange', '');
     // 首页查询我的联盟信息
     $http
       .get(`/union/index`)

@@ -182,6 +182,7 @@ export default {
   },
   mounted: function() {
     if (this.unionMemberId) {
+      console.log(this.unionMemberId, 111111);
       this.init();
     }
   },
