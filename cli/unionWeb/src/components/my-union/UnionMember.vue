@@ -182,14 +182,15 @@ export default {
   },
   mounted: function() {
     if (this.unionMemberId) {
-      console.log(this.unionMemberId, 111111);
       this.init();
     }
   },
   watch: {
     // 查询盟员列表
     unionMemberId: function() {
-      this.init();
+      if (this.unionMemberId) {
+        this.init();
+      }
     }
   },
   methods: {

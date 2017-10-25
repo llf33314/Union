@@ -30,8 +30,8 @@
           </el-col>
         </el-form-item>
         <el-form-item label="推荐理由：" prop="reason">
-          <el-input type="textarea" :rows="4" placeholder="请输入推荐理由" v-model="form.reason"
-          :maxlength="unionNoticeMaxlength" @focus="unionNoticeFocus" @blur="unionNoticeBlur" @change="unionNoticeKeydown($event)" @keydown.native="unionNoticeKeydown($event)" @keyup.native="unionNoticeKeydown($event)" @input.native="unionNoticeKeydown($event)" @onpropertychange.native="unionNoticeKeydown($event)"></el-input>
+          <textarea :rows="4" placeholder="请输入推荐理由" v-model="form.reason"
+          :maxlength="unionNoticeMaxlength" @focus="unionNoticeFocus" @blur="unionNoticeBlur" @change="unionNoticeKeydown($event)" @keydown="unionNoticeKeydown($event)" @keyup="unionNoticeKeydown($event)" @input="unionNoticeKeydown($event)" @onpropertychange="unionNoticeKeydown($event)"></textarea>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSubmit('form')">保存</el-button>

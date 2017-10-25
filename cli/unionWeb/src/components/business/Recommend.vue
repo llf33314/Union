@@ -42,7 +42,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="业务备注：" prop="businessMsg">
-          <el-input type="textarea" :rows="3" placeholder="请输入业务备注" v-model="ruleForm1.businessMsg" :maxlength="unionNoticeMaxlength" @focus="unionNoticeFocus" @blur="unionNoticeBlur" @change="unionNoticeKeydown($event)" @keydown.native="unionNoticeKeydown($event)" @keyup.native="unionNoticeKeydown($event)" @input.native="unionNoticeKeydown($event)" @onpropertychange.native="unionNoticeKeydown($event)"></el-input>
+          <textarea :rows="3" placeholder="请输入业务备注" v-model="ruleForm1.businessMsg" :maxlength="unionNoticeMaxlength" @focus="unionNoticeFocus" @blur="unionNoticeBlur" @change="unionNoticeKeydown($event)" @keydown="unionNoticeKeydown($event)" @keyup="unionNoticeKeydown($event)" @input="unionNoticeKeydown($event)" @onpropertychange="unionNoticeKeydown($event)"></textarea>
         </el-form-item>
         <el-form-item style="margin-left: 15px;">
           <el-button type="primary" @click="submitForm1('ruleForm1')">确定</el-button>
@@ -132,8 +132,7 @@ export default {
                       });
                       // 不能推荐给自己
                       this.options2.forEach((v, i) => {
-                        if(v.value === this.memberId)
-                        this.options2.splice(i, 1);
+                        if (v.value === this.memberId) this.options2.splice(i, 1);
                       });
                     } else {
                       this.options2 = [];

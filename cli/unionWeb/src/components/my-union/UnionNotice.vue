@@ -37,7 +37,11 @@ export default {
   },
   watch: {
     unionId: function() {
-      this.init();
+      if (this.unionMemberId) {
+        if (this.unionId) {
+          this.init();
+        }
+      }
     }
   },
   methods: {
