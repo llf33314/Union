@@ -460,14 +460,16 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 						List<UnionPreferentialItem> unionPreferentialItems = item.getItems();
 						int size = unionPreferentialItems.size();
 						int count = 1;
+						StringBuilder sb = new StringBuilder(value);
 						for(UnionPreferentialItem unionPreferentialItem : unionPreferentialItems){
 							if(count == size){
-								value = value + unionPreferentialItem.getName();
+								sb.append(unionPreferentialItem.getName());
 							}else {
-								value = value + unionPreferentialItem.getName() + "||";
+								sb.append(unionPreferentialItem.getName()).append("||");
 							}
 							count++;
 						}
+						value = sb.toString();
 					}
 					if(contentName[j].equals(field3.getName())){//加入时间
 						value = item.getCardNo();
@@ -525,14 +527,16 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 						List<UnionPreferentialItem> unionPreferentialItems = item.getItems();
 						int size = unionPreferentialItems.size();
 						int count = 1;
+						StringBuilder sb = new StringBuilder(value);
 						for(UnionPreferentialItem unionPreferentialItem : unionPreferentialItems){
 							if(count == size){
-								value = value + unionPreferentialItem.getName();
+								sb.append(unionPreferentialItem.getName());
 							}else {
-								value = value + unionPreferentialItem.getName() + "||";
+								sb.append(unionPreferentialItem.getName()).append("||");
 							}
 							count++;
 						}
+						value = sb.toString();
 					}
 					if(contentName[j].equals(field3.getName())){//加入时间
 						value = item.getCardNo();

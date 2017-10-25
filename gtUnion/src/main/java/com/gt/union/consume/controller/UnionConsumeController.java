@@ -210,9 +210,9 @@ public class UnionConsumeController {
 		try {
 			logger.info("消费核销支付成功，only------------------" + only);
 			logger.info("消费核销支付成功回调参数" + JSON.toJSONString(param));
-			if((CommonUtil.isNotEmpty(param.get("trade_status")) && param.get("trade_status").equals("TRADE_SUCCESS")) ||
-					(CommonUtil.isNotEmpty(param.get("result_code")) && param.get("result_code").equals("SUCCESS") &&
-							CommonUtil.isNotEmpty(param.get("return_code")) && param.get("return_code").equals("SUCCESS"))){
+			if((CommonUtil.isNotEmpty(param.get("trade_status")) && "TRADE_SUCCESS".equals(param.get("trade_status"))) ||
+					(CommonUtil.isNotEmpty(param.get("result_code")) && "SUCCESS".equals(param.get("result_code")) &&
+							CommonUtil.isNotEmpty(param.get("return_code")) && "SUCCESS".equals(param.get("return_code")))){
 				String orderNo = param.get("out_trade_no").toString();
 				String paramKey = RedisKeyUtil.getConsumePayParamKey(only);
 				String paramData = redisCacheUtil.get(paramKey);
