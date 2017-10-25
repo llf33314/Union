@@ -138,7 +138,7 @@
               <el-col style="width:240px;margin-left:50px;">
                 <span>找零: ￥
                   <span class="color_" v-if="!price2">0.00</span>
-                  <span class="color_" v-if="(price2*100 - price1*100)/100 > 0 || (price2*100 - price1*100)/100 === 0">{{ (price2*100 - price1*100)/100 | formatPrice }}</span>
+                  <span class="color_" v-if="(price2*100 - price1*100)/100 > 0 || Number(price2).toFixed(2) - Number(price1).toFixed(2) == 0">{{ (price2*100 - price1*100)/100 | formatPrice }}</span>
                 </span>
               </el-col>
               <el-col style="width:240px;margin-left:50px;position: absolute;top: 40px;left: 72px;">
@@ -231,7 +231,7 @@ export default {
   filters: {
     formatPrice: function(value) {
       if (!value) {
-        return '';
+        return Number(0).toFixed(2);
       } else {
         return Number(value).toFixed(2);
       }
@@ -266,7 +266,7 @@ export default {
         this.deductionIntegral = this.form.integral;
         this.deductionPrice = this.deductionIntegral / 10;
       }
-      this.price1 = (this.price * this.form.discount - this.deductionPrice * 10) / 10;
+      this.price1 = ((this.price * this.form.discount - this.deductionPrice * 10) / 10).toFixed(2);
     }
   },
   methods: {
@@ -337,7 +337,7 @@ export default {
           this.deductionIntegral = this.form.integral;
           this.deductionPrice = this.deductionIntegral / 10;
         }
-        this.price1 = (this.price * this.form.discount - this.deductionPrice * 10) / 10;
+        this.price1 = ((this.price * this.form.discount - this.deductionPrice * 10) / 10).toFixed(2);
       } else {
         this.submit();
       }

@@ -207,7 +207,11 @@ export default {
   filters: {
     // 价格格式
     formatPrice: function(value) {
-      return Number(value).toFixed(2);
+      if (!value) {
+        return Number(0).toFixed(2);
+      } else {
+        return Number(value).toFixed(2);
+      }
     }
   },
   methods: {
