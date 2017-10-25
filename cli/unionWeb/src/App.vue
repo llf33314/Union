@@ -8,13 +8,15 @@
 export default {
   name: 'app',
   mounted() {
-    $(document).ready(function() {
-      firstLoad();
+    $(window).on('resize', function() {
+      /* 这里添加执行代码 */
+      resizeBannerImage();
     });
-    var firstLoad = function() {
-      var widthWindow = $(window).width();
-      console.log('屏幕宽度为：' + widthWindow);
-    };
+    let resizeBannerImage=function()
+    {
+      var winW = parseInt($(window).width())-220;
+//      console.log('减去左边一，二级菜单的宽度后：屏幕宽度为：'+winW+'px');
+    }
   }
 };
 </script>
