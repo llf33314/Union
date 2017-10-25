@@ -409,7 +409,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		Map<String, Object> data = new HashMap<String, Object>();
 		String orderNo = ConsumeConstant.ORDER_PREFIX + System.currentTimeMillis();
 		String only = DateTimeKit.getDateTime(new Date(), DateTimeKit.yyyyMMddHHmmss);
-		data.put("totalFee", vo.getConsumeMoney());
+		data.put("totalFee", vo.getPayMoney());
 		data.put("busId", PropertiesUtil.getDuofenBusId());
 		data.put("sourceType", 1);//是否墨盒支付
 		data.put("payWay", 0);//系统判断支付方式
