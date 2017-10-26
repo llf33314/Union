@@ -151,24 +151,26 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 if (StringUtil.isNotEmpty(optionEnterpriseName)) {
                     sbSqlSegment.append(" AND m.enterprise_name LIKE '%").append(optionEnterpriseName).append("%'");
                 }
-                sbSqlSegment.append(" ORDER BY m.is_union_owner DESC, m.id ASC");
+                sbSqlSegment.append(" ORDER BY m.is_union_owner DESC, Field('m.id',").append(memberId).append(",m.id)");
                 return sbSqlSegment.toString();
             }
         };
-        //盟员id
+        // 盟员id
         String sqlSelect = " m.id memberId"
-                //是否盟主
+                // 是否盟主
                 + ", m.is_union_owner isUnionOwner"
-                //盟员名称
+                // 盟员名称
                 + ", m.enterprise_name enterpriseName"
-                //创建时间
+                // 创建时间
                 + ", DATE_FORMAT(m.createtime, '%Y-%m-%d %T') createTime"
-                //我给他的折扣
+                // 我给他的折扣
                 + ", mdFromMe.discount discountFromMe"
-                //他给我的折扣
+                // 他给我的折扣
                 + ", mdToMe.discount discountToMe"
-                //售卡分成比例
-                + ", m.card_divide_percent cardDividePercent";
+                // 售卡分成比例
+                + ", m.card_divide_percent cardDividePercent"
+                // 盟员状态
+                + ", m.status status";
         wrapper.setSqlSelect(sqlSelect);
         return this.selectMapsPage(page, wrapper);
     }

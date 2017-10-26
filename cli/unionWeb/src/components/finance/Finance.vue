@@ -123,7 +123,8 @@ export default {
       },
       visible1: false,
       name: "",
-      id: ""
+      id: "",
+      timeOut : ''
     };
   },
   created: function() {
@@ -214,10 +215,10 @@ export default {
           if (res.data.success) {
             this.form1.getVerificationCode = true;
             this.form1.countDownTime = 60;
-            let timer1 = setInterval(() => {
+            this.timeOut = setInterval(() => {
               this.form1.countDownTime--;
               if (this.form1.countDownTime === 0) {
-                clearInterval(timer1);
+                clearInterval(this.timeOut);
                 this.form1.getVerificationCode = false;
                 this.form1.countDownTime = "";
               }
@@ -285,6 +286,7 @@ export default {
             .post(url, data)
             .then(res => {
               if (res.data.success) {
+                clearInterval(this.timeOut);
                 this.form1.getVerificationCode = false;
                 this.form1.countDownTime = "";
                 $http
@@ -322,6 +324,9 @@ export default {
     resetForm(formName) {
       this.$refs[formName].resetFields();
       this.dialogVisible2 = false;
+      clearInterval(this.timeOut);
+      this.form1.getVerificationCode = false;
+      this.form1.countDownTime = "";
     }
   }
 };

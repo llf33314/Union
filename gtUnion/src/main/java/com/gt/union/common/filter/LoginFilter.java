@@ -80,10 +80,6 @@ public class LoginFilter implements Filter {
             if ("/cardPhone/".equals(url)) {//
                 chain.doFilter(request, response);
                 return;
-            } else if (url.indexOf("cardH5") > -1) {
-                response.setCharacterEncoding("UTF-8");
-                response.getWriter().write(JSON.toJSONString(GTJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/cardPhone/#/" + "toUnionLogin")));
-                return;
             }
             if ("dev".equals(PropertiesUtil.getProfiles())) {
                 busUser = justForDev(req, busUser);
