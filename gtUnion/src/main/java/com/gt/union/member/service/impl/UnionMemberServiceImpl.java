@@ -151,7 +151,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 if (StringUtil.isNotEmpty(optionEnterpriseName)) {
                     sbSqlSegment.append(" AND m.enterprise_name LIKE '%").append(optionEnterpriseName).append("%'");
                 }
-                sbSqlSegment.append(" ORDER BY m.is_union_owner DESC, m.id ASC");
+                sbSqlSegment.append(" ORDER BY m.is_union_owner DESC, Field('m.id',").append(memberId).append(",m.id)");
                 return sbSqlSegment.toString();
             }
         };
