@@ -42,7 +42,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="业务备注：" prop="businessMsg">
-          <el-input type="textarea"  :rows="3" id="feedbackcontent" placeholder="请输入业务备注" v-model="ruleForm1.businessMsg" :maxlength="unionNoticeMaxlength" @focus="unionNoticeFocus" @blur="unionNoticeBlur" @change="unionNoticeKeydown($event)" @keydown="unionNoticeKeydown($event)" @keyup="unionNoticeKeydown($event)" @input="unionNoticeKeydown($event)" @onpropertychange="unionNoticeKeydown($event)"></el-input>
+          <el-input type="textarea" :rows="3" id="feedbackcontent" placeholder="请输入业务备注" v-model="ruleForm1.businessMsg" :maxlength="unionNoticeMaxlength" @focus="unionNoticeFocus" @blur="unionNoticeBlur" @change="unionNoticeKeydown($event)" @keydown="unionNoticeKeydown($event)" @keyup="unionNoticeKeydown($event)" @input="unionNoticeKeydown($event)" @onpropertychange="unionNoticeKeydown($event)"></el-input>
         </el-form-item>
         <el-form-item style="margin-left: 15px;">
           <el-button type="primary" @click="submitForm1('ruleForm1')">确定</el-button>
@@ -288,18 +288,18 @@ export default {
 }
 #feedbackcontent::-webkit-input-placeholder {
   /* WebKit browsers */
-  color: #97A8BE;
+  color: #97a8be;
 }
 #feedbackcontent:-moz-placeholder {
   /* Mozilla Firefox 4 to 18 */
-  color: #97A8BE;
+  color: #97a8be;
 }
 #feedbackcontent::-moz-placeholder {
   /* Mozilla Firefox 19+ */
-  color: #97A8BE;
+  color: #97a8be;
 }
 #feedbackcontent::-ms-input-placeholder {
   /* Internet Explorer 10+ */
-  color: #97A8BE;
+  color: #97a8be;
 }
 </style>
