@@ -415,6 +415,8 @@ export default {
     init() {
       this.form1.phone = '';
       this.form1.code = '';
+      this.form1.getVerificationCode = false;
+      this.form1.countDownTime = '';
       this.visible2 = false;
       this.visible3 = false;
       this.visible5 = true;
