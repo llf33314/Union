@@ -155,7 +155,7 @@ export default {
             inputs3[i].value = average;
           }
           this.input = (100 - average * len).toFixed(2);
-          this.tableData4[0].cardDividePercent = 100 - average * len;
+          this.tableData4[0].cardDividePercent = this.input;
           for (let i = 1, j = i - 1; i < inputs3.length + 1; i++, j++) {
             this.tableData4[i].cardDividePercent = inputs3[j].value;
           }
@@ -166,9 +166,18 @@ export default {
       } else {
         this.tableData4[0].cardDividePercent = parseFloat(this.input);
       }
-      this.tableData.forEach((v, i) => {
-        this.tableData4.memberId = v.memberId;
-      });
+      $http
+        .get(`/unionMember/listMap/memberId/${this.unionMemberId}`)
+        .then(res => {
+          if (res.data.data) {
+            res.data.data.forEach((v, i) => {
+              this.tableData4[i].memberId = v.memberId;
+            });
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
     },
     // 计算分配比例
     onChange() {
@@ -177,7 +186,7 @@ export default {
       let len = inputs3.length;
       this.tableData4 = [];
       for (let i = 0; i < len + 1; i++) {
-        this.tableData4.push({ cardDividePercent: 0 });
+        this.tableData4.push({ cardDividePercent: 0, memberId: 0 });
       }
       this.sum = 0;
       // this.input = (this.input - 0).toFixed(2);
@@ -189,10 +198,19 @@ export default {
       this.tableData4.forEach((v, i) => {
         this.sum += parseFloat(v.cardDividePercent || 0);
       });
-      this.sum = this.sum.toFixed(2);
-      this.tableData.forEach((v, i) => {
-        this.tableData4.memberId = v.memberId;
-      });
+      this.sum = parseFloat(this.sum.toFixed(2));
+      $http
+        .get(`/unionMember/listMap/memberId/${this.unionMemberId}`)
+        .then(res => {
+          if (res.data.data) {
+            res.data.data.forEach((v, i) => {
+              this.tableData4[i].memberId = v.memberId;
+            });
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
     },
     // 保存
     onSave() {
