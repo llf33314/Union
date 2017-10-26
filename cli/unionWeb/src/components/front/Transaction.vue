@@ -5,7 +5,7 @@
       <el-form :label-position="labelPosition" :model="form1" :rules="rules" ref="ruleForm" label-position="right" label-width="120px">
         <el-form-item label="手机号码：" prop="phone">
           <el-col style="width: 250px;margin-right: 20px;">
-            <el-input v-model="form1.phone" @keyup.enter.native="show1($event)"></el-input>
+            <el-input v-model="form1.phone" @keyup.native="form1.phone=form1.phone.replace(/[^\d]/g,'')"  @keyup.enter.native="show1($event)"></el-input>
           </el-col>
           <el-button type="primary" @click="getVerificationCode" :disabled="form1.getVerificationCode || !form1.phone">{{ form1.countDownTime?form1.countDownTime+'s':'获取验证码'}}</el-button>
         </el-form-item>
@@ -175,7 +175,7 @@ export default {
         status: ''
       },
       wxUser: false,
-      timeEnd : ''
+      timeEnd: ''
     };
   },
   mounted: function() {
@@ -398,9 +398,9 @@ export default {
                   });
               } else if (res.data.success) {
                 this.$message({ showClose: true, message: '办理成功', type: 'success', duration: 5000 });
-                this.init();
                 clearInterval(this.timeEnd);
                 //灰色倒计时'60s'变为紫蓝色"获取验证码"按钮;
+                this.init();
                 this.form1.countDownTime = '';
                 this.form1.getVerificationCode = false;
               }
@@ -424,7 +424,7 @@ export default {
       this.form1.phone = '';
       this.form1.code = '';
       this.form1.getVerificationCode = false;
-      this.form1.countDownTime = '';
+      this.form1.countDownTime = 0;
       this.visible2 = false;
       this.visible3 = false;
       this.visible5 = true;
