@@ -239,23 +239,32 @@ h2{
 //删除弹出框的公共样式
 .model_2{
   .el-dialog--tiny{
-    width: 500px!important;
-  }
-  .el-dialog__body{
-    >div{
-      margin-top: 20px;
+    width: 560px!important;
+    height: 360px!important;
+    .el-dialog__footer{
+      margin-top: 120px;
     }
-    img{
-      margin-left: 10px;
-      width: 38px;
-      position: relative;
-      top:5px;
-      left: 0;
-    }
-    span{
-      display: inline-block;
-      margin-top: 15px;
-      margin-left:15px;
+    .el-dialog__body{
+      >div{
+        margin-top: 40px;
+        img{
+          margin-left: 10px;
+          width: 36px;
+          position: relative;
+          top:5px;
+          left: 0;
+        }
+        span{
+          display: inline-block;
+          margin-top: 5px;
+          margin-left:15px;
+        }
+        p{
+          color: #666666;
+          margin-top: 2px;
+          margin-left: 60px;
+        }
+      }
     }
   }
 }
@@ -393,6 +402,7 @@ h2{
   .el-col-6 {
     width: 241px;
   }
+
 }
 //*****************************************************
 
@@ -539,7 +549,20 @@ h2{
     }
   }
 }
-
+#recommended{
+  textarea {
+    border-color:#BFCBD9;
+    height: 85px;
+    width: 224px;
+    border-radius: 5px;
+    resize: none;
+    padding-left: 10px;
+    //transition: all 0.44s;
+  }
+  textarea:focus{
+    border-color: transparent;
+  }
+}
 
 //我的联盟/红卡优惠设置样式---------------------------------------------------------
 #redCard,.sell_card{
@@ -573,28 +596,6 @@ h2{
   .model_projects{
     .el-dialog--small{
       width:825px;
-    }
-    .model_2{
-      .el-dialog--tiny{
-        width:500px!important;
-      }
-      .el-dialog__body{
-        >div{
-          margin-top: 20px;
-        }
-        img{
-          margin-left: 10px;
-          width: 38px;
-          position: relative;
-          top:5px;
-          left: 0;
-        }
-        span{
-          display: inline-block;
-          margin-top: 15px;
-          margin-left:15px;
-        }
-      }
     }
     .el-tabs__active-bar{
       transition: transform .2s cubic-bezier(.645,.045,.355,1)!important;
@@ -652,6 +653,18 @@ h2{
     }
     .footer{
       margin-top:140px;
+    }
+    .model_{
+      .el-dialog--tiny{
+        width:560px;
+        height: 250px;
+        .el-dialog__body{
+          margin-top: 35px;
+        }
+      }
+      .el-dialog__footer{
+        margin-top: 50px;
+      }
     }
   }
 }
@@ -1009,7 +1022,11 @@ h2{
     }
     .model_1{
       .el-dialog{
-        width:450px;
+        width:560px;
+        height: 360px;
+        img{
+          width: 200px;
+        }
       }
       .el-dialog__body {
         padding: 0;
@@ -1025,6 +1042,11 @@ h2{
   .el-dialog--tiny{
     width:650px;
     height: 360px;
+  }
+  .footer_{
+    .el-dialog--tiny{
+      height: 400px;
+    }
   }
     .el-dialog__body {
       padding: 0;
