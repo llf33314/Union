@@ -7,9 +7,11 @@ import com.gt.union.common.util.ListUtil;
 import com.gt.union.main.constant.MainConstant;
 import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.entity.UnionMainCharge;
+import com.gt.union.main.entity.UnionMainTransfer;
 import com.gt.union.main.service.IIndexService;
 import com.gt.union.main.service.IUnionMainChargeService;
 import com.gt.union.main.service.IUnionMainService;
+import com.gt.union.main.service.IUnionMainTransferService;
 import com.gt.union.member.constant.MemberConstant;
 import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.service.IUnionMemberService;
@@ -40,6 +42,9 @@ public class IndexServiceImpl implements IIndexService {
 
     @Autowired
     private IUnionMainChargeService unionMainChargeService;
+
+    @Autowired
+    private IUnionMainTransferService unionMainTransferService;
 
     //------------------------------------------ Domain Driven Design - get --------------------------------------------
 
@@ -193,6 +198,18 @@ public class IndexServiceImpl implements IIndexService {
         if (currentUnionOwner != null) {
             //盟主名称
             result.put("currentUnionOwnerEnterpriseName", currentUnionOwner.getEnterpriseName());
+        }
+        // (4)拼接是否存在盟主权限转移邀请
+        List<UnionMainTransfer> transferList = this.unionMainTransferService.listByToMemberId(currentUnionMember.getId());
+        if (ListUtil.isNotEmpty(transferList)) {
+            for (UnionMainTransfer transfer : transferList) {
+                if (MainConstant.TRANSFER_CONFIRM_STATUS_HANDLING == transfer.getConfirmStatus()) {
+                    result.put("currentUnionMemberTransferId", transfer.getId());
+                    break;
+                }
+            }
+        } else {
+            result.put("currentUnionMemberTransferId", null);
         }
 
         return result;
