@@ -50,7 +50,7 @@ public class UnionMember extends Model<UnionMember> {
     @TableField("is_union_owner")
     private Integer isUnionOwner;
     /**
-     * 盟员状态(0：申请入盟；1：已入盟 2：申请退盟 3：退盟过渡期 )
+     * 盟员状态(1：申请入盟；2：已入盟 3：申请退盟 4：退盟过渡期 )
      */
     private Integer status;
     /**
