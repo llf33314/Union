@@ -392,7 +392,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
             brokerageIncome.setBusId(fromMember.getBusId());
             brokerageIncome.setOpportunityId(opportunity.getId());
             brokerageIncome.setMoney(opportunity.getBrokeragePrice());
-            brokerageIncome.setType(BrokerageConstant.TYPE_INCOME);
+            brokerageIncome.setType(BrokerageConstant.SOURCE_TYPE_OPPORTUNITY);
             incomes.add(brokerageIncome);
 
 

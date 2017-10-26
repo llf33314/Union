@@ -82,7 +82,7 @@ export default {
         reason: [{ required: true, message: '推荐理由不能为空，请重新输入', trigger: 'blur' }]
       },
       unionNoticeMaxlength: 40,
-      checkList: [busUserName]
+      checkList: ['busUserName']
     };
   },
   computed: {
