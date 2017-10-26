@@ -102,7 +102,7 @@ public class UnionMemberOutController {
                          @ApiParam(name = "memberId", value = "操作人的盟员身份id", required = true)
                          @PathVariable(value = "memberId") Integer memberId,
                          @ApiParam(name = "applyOutReason", value = "退盟理由", required = true)
-                         @RequestParam(name = "outReason") String applyOutReason) throws Exception {
+                         @RequestParam(name = "applyOutReason") String applyOutReason) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
