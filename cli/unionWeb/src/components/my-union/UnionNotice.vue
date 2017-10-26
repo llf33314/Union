@@ -1,8 +1,8 @@
 <template>
   <div>
     <div class="grid-content bg-purple notice-list">联盟公告</div>
-    <textarea id="unionNotice" v-model="unionNotice" type="textarea" :rows="3" :maxlength="unionNoticeMaxlength" @focus="unionNoticeFocus" @blur="unionNoticeBlur" @change="unionNoticeKeydown($event)" @keydown="unionNoticeKeydown($event)" @keyup="unionNoticeKeydown($event)" @input="unionNoticeKeydown($event)" @onpropertychange="unionNoticeKeydown($event)" placeholder="这是一条联盟公告" v-if="isUnionOwner" style="border: none;width: 99%;height: 72px;resize:none">
-    </textarea>
+    <el-input type="textarea"  id="unionNotice" v-model="unionNotice" type="textarea" :rows="3" :maxlength="unionNoticeMaxlength" @focus="unionNoticeFocus" @blur="unionNoticeBlur" @change="unionNoticeKeydown($event)" @keydown="unionNoticeKeydown($event)" @keyup="unionNoticeKeydown($event)" @input="unionNoticeKeydown($event)" @onpropertychange="unionNoticeKeydown($event)" placeholder="这是一条联盟公告" v-if="isUnionOwner" style="border: none;width: 99%;height: 72px;resize:none">
+    </el-input>
     <span v-if="!isUnionOwner">{{ unionNotice }}</span>
   </div>
 </template>
@@ -92,7 +92,7 @@ export default {
       let valueLength = this.unionNoticeCheck()[0];
       let len = this.unionNoticeCheck()[1];
       if (valueLength > 50) {
-        this.unionNotice = this.unionNotice.substring(0, len + 1);
+        // this.unionNotice = this.unionNotice.substring(0, len + 1);
         this.unionNoticeMaxlength = len;
         return false;
       } else {
@@ -103,7 +103,7 @@ export default {
       let valueLength = 0;
       let maxLenth = 0;
       let chinese = '[\u4e00-\u9fa5]'; // 获取字段值的长度，如果含中文字符，则每个中文字符长度为2，否则为1
-      let str = this.unionNotice;
+      let str = this.unionNotice || '';
       for (let i = 0; i < str.length; i++) {
         // 获取一个字符
         let temp = str.substring(i, i + 1); // 判断是否为中文字符

@@ -1,8 +1,8 @@
 <template>
   <div id="itemDescription">
     <div>项目说明</div>
-    <textarea id="Illustration" v-model="Illustration" type="textarea" :rows="3" :maxlength="IllustrationMaxlength" @focus="IllustrationFocus" @blur="IllustrationBlur" @change="IllustrationKeydown($event)" @keydown="IllustrationKeydown($event)" @keyup="IllustrationKeydown($event)" @input="IllustrationKeydown($event)" @onpropertychange="IllustrationKeydown($event)" placeholder="这是项目说明">
-    </textarea>
+    <el-input type="textarea"  id="Illustration" v-model="Illustration" type="textarea" :rows="3" :maxlength="IllustrationMaxlength" @focus="IllustrationFocus" @blur="IllustrationBlur" @change="IllustrationKeydown($event)" @keydown="IllustrationKeydown($event)" @keyup="IllustrationKeydown($event)" @input="IllustrationKeydown($event)" @onpropertychange="IllustrationKeydown($event)" placeholder="这是项目说明">
+    </el-input>
   </div>
 </template>
 
@@ -90,7 +90,7 @@ export default {
       let valueLength = this.IllustrationCheck()[0];
       let len = this.IllustrationCheck()[1];
       if (valueLength > 50) {
-        this.Illustration = this.illustration.substring(0, len + 1);
+        // this.Illustration = this.illustration.substring(0, len + 1);
         this.IllustrationMaxlength = len;
         return false;
       } else {
@@ -101,7 +101,7 @@ export default {
       let valueLength = 0;
       let maxLenth = 0;
       let chinese = "[\u4e00-\u9fa5]";  // 获取字段值的长度，如果含中文字符，则每个中文字符长度为2，否则为1
-      let str = this.Illustration;
+      let str = this.Illustration || '';
       for (let i = 0; i < str.length; i++) { // 获取一个字符
         let temp = str.substring(i, i + 1); // 判断是否为中文字符
         if (temp.match(chinese)) { // 中文字符长度为1

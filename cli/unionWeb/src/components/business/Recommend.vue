@@ -42,7 +42,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="业务备注：" prop="businessMsg">
-          <textarea :rows="3" id="feedbackcontent" placeholder="请输入业务备注" v-model="ruleForm1.businessMsg" :maxlength="unionNoticeMaxlength" @focus="unionNoticeFocus" @blur="unionNoticeBlur" @change="unionNoticeKeydown($event)" @keydown="unionNoticeKeydown($event)" @keyup="unionNoticeKeydown($event)" @input="unionNoticeKeydown($event)" @onpropertychange="unionNoticeKeydown($event)"></textarea>
+          <el-input type="textarea"  :rows="3" id="feedbackcontent" placeholder="请输入业务备注" v-model="ruleForm1.businessMsg" :maxlength="unionNoticeMaxlength" @focus="unionNoticeFocus" @blur="unionNoticeBlur" @change="unionNoticeKeydown($event)" @keydown="unionNoticeKeydown($event)" @keyup="unionNoticeKeydown($event)" @input="unionNoticeKeydown($event)" @onpropertychange="unionNoticeKeydown($event)"></el-input>
         </el-form-item>
         <el-form-item style="margin-left: 15px;">
           <el-button type="primary" @click="submitForm1('ruleForm1')">确定</el-button>
@@ -233,7 +233,7 @@ export default {
       let valueLength = this.unionNoticeCheck()[0];
       let len = this.unionNoticeCheck()[1];
       if (valueLength > 20) {
-        this.ruleForm1.businessMsg = this.ruleForm1.businessMsg.substring(0, len + 1);
+        // this.ruleForm1.businessMsg = this.ruleForm1.businessMsg.substring(0, len + 1);
         this.unionNoticeMaxlength = len;
         return false;
       } else {
@@ -244,7 +244,7 @@ export default {
       let valueLength = 0;
       let maxLenth = 0;
       let chinese = '[\u4e00-\u9fa5]'; // 获取字段值的长度，如果含中文字符，则每个中文字符长度为2，否则为1
-      let str = this.ruleForm1.businessMsg;
+      let str = this.ruleForm1.businessMsg || '';
       for (let i = 0; i < str.length; i++) {
         // 获取一个字符
         let temp = str.substring(i, i + 1); // 判断是否为中文字符
