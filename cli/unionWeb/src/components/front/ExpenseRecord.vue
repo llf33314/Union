@@ -5,7 +5,7 @@
         <!-- 本店消费 -->
         <el-tab-pane label="本店消费" name="first">
           <el-row>
-            <el-col style="width:297px;">
+            <el-col style="width:290px;">
               <el-form :inline="true" class="demo-form-inline">
                 <el-form-item label="所属联盟:">
                   <el-select v-model="unionId1" clearable placeholder="请选择所属联盟">
@@ -113,7 +113,7 @@
         <!-- 他店消费 -->
         <el-tab-pane label="他店消费" name="second">
           <el-row>
-            <el-col style="width:297px;">
+            <el-col style="width:290px;">
               <el-form :inline="true" class="demo-form-inline">
                 <el-form-item label="所属联盟:">
                   <el-select v-model="unionId2" clearable placeholder="请选择所属联盟">
