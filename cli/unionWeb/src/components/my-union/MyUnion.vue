@@ -103,7 +103,7 @@
           <!-- todo -->
           <a @click="transfer">
             <el-button type="info" size="mini">
-              <img src="../../assets/images/icon07.png" style="width: 11px;">
+              <img src="../../assets/images/icon06.png" style="width: 11px;">
             </el-button>
             <span>盟主权限转移</span>
           </a>

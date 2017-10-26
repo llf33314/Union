@@ -23,6 +23,7 @@ import UnionSettingBasic from './UnionSettingBasic';
 import UnionSettingOwner from './UnionSettingOwner';
 import UnionSettingTransfer from './UnionSettingTransfer';
 export default {
+  name: 'union-setting',
   components: {
     Breadcrumb,
     UnionSettingBasic,
