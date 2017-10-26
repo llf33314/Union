@@ -421,23 +421,23 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         saveUnionOwner.setIntegralExchangePercent(unionMemberVO.getIntegralExchangePercent());
         // (8)事务化处理
         //保存联盟
-        this.unionMainService.insert(saveUnionMain);
+        this.unionMainService.save(saveUnionMain);
         //保存黑卡设置
         blackUnionMainCharge.setUnionId(saveUnionMain.getId());
-        this.unionMainChargeService.insert(blackUnionMainCharge);
+        this.unionMainChargeService.save(blackUnionMainCharge);
         //保存红卡设置
         redUnionMainCharge.setUnionId(saveUnionMain.getId());
-        this.unionMainChargeService.insert(redUnionMainCharge);
+        this.unionMainChargeService.save(redUnionMainCharge);
         //保存联盟设置申请填写信息
         if (ListUtil.isNotEmpty(saveUnionMainDictList)) {
             for (UnionMainDict unionMainDict : unionMainDictList) {
                 unionMainDict.setUnionId(saveUnionMain.getId());
             }
-            this.unionMainDictService.insertBatch(saveUnionMainDictList);
+            this.unionMainDictService.saveBatch(saveUnionMainDictList);
         }
         //保存盟主信息
         saveUnionOwner.setUnionId(saveUnionMain.getId());
-        this.unionMemberService.insert(saveUnionOwner);
+        this.unionMemberService.save(saveUnionOwner);
         //保存创建联盟记录
         UnionMainCreate unionMainCreate = this.getByBusIdAndPermitId(busId, permitId);
         if (unionMainCreate != null) {
