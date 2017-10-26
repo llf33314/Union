@@ -41,7 +41,7 @@
           <div class="sizeAndColor">
             <el-button size="small" @click="detail(scope)">详情</el-button>
             <el-button size="small" @click="discount(scope)">折扣</el-button>
-            <el-button size="small" v-if="isUnionOwner && !scope.row.isUnionOwner" @click="remove(scope)">移出</el-button>
+            <el-button size="small" v-if="isUnionOwner && !scope.row.isUnionOwner && scope.row.status == 2" @click="remove(scope)">移出</el-button>
           </div>
         </template>
       </el-table-column>
@@ -299,28 +299,29 @@ export default {
       $http
         .put(`/unionMemberOut/memberId/${this.unionMemberId}?tgtMemberId=${this.memberId}`)
         .then(res => {
-          $http
-            .get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=${this.current}`)
-            .then(res => {
-              if (res.data.data) {
-                this.tableData = res.data.data.records;
-                this.totalAll = res.data.data.total;
-                this.tableData.forEach((v, i) => {
-                  if (v.discountFromMe) {
-                    v.discountFromMe = v.discountFromMe.toFixed(1);
-                  }
-                  if (v.discountToMe) {
-                    v.discountToMe = v.discountToMe.toFixed(1);
-                  }
-                  if (v.cardDividePercent) {
-                    v.cardDividePercent = v.cardDividePercent.toFixed(2) + '%';
-                  }
-                });
-              }
-            })
-            .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-            });
+            this.$message({ showClose: true, message: '移出成功，该盟员将在15天过渡期后正式退盟', type: 'success', duration: 5000 });
+            $http
+              .get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=${this.current}`)
+              .then(res => {
+                if (res.data.data) {
+                  this.tableData = res.data.data.records;
+                  this.totalAll = res.data.data.total;
+                  this.tableData.forEach((v, i) => {
+                    if (v.discountFromMe) {
+                      v.discountFromMe = v.discountFromMe.toFixed(1);
+                    }
+                    if (v.discountToMe) {
+                      v.discountToMe = v.discountToMe.toFixed(1);
+                    }
+                    if (v.cardDividePercent) {
+                      v.cardDividePercent = v.cardDividePercent.toFixed(2) + '%';
+                    }
+                  });
+                }
+              })
+              .catch(err => {
+                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+              });
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -346,6 +347,7 @@ export default {
             .discount}`
         )
         .then(res => {
+          this.$message({ showClose: true, message: '设置成功', type: 'success', duration: 5000 });
           this.dialogVisible1 = false;
           $http
             .get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=${this.current}`)
@@ -381,6 +383,7 @@ export default {
             .discountFromMe}`
         )
         .then(res => {
+          this.$message({ showClose: true, message: '设置成功', type: 'success', duration: 5000 });
           this.dialogVisible2 = false;
           $http
             .get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=${this.current}`)
