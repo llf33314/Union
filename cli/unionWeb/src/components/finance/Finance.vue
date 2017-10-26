@@ -75,6 +75,7 @@
           <div>
             <img src="../../assets/images/delect01.png"  class="fl">
             <span>是否确认删除“ {{ name }} ”</span>
+            <p>点击确定后，该财务管理者不可登录佣金平台</p>
           </div>
           <span slot="footer" class="dialog-footer">
             <el-button type="primary" @click="confirm1">确定</el-button>
