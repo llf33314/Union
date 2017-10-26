@@ -952,9 +952,9 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 data.put("cardNo", root.getNumber());
                 data.put("integral", root.getIntegral());
             }
-            data.put("nickname", busMember.getNickname());
-            data.put("headurl", busMember.getHeadimgurl());
         }
+        data.put("nickname", busMember.getNickname());
+        data.put("headurl", busMember.getHeadimgurl());
         data.put("busId", busId);
         return data;
     }
