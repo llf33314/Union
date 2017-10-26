@@ -30,8 +30,7 @@
           </el-col>
         </el-form-item>
         <el-form-item label="推荐理由：" prop="reason">
-          <textarea :rows="4" placeholder="请输入推荐理由" v-model="form.reason"
-          :maxlength="unionNoticeMaxlength" @focus="unionNoticeFocus" @blur="unionNoticeBlur" @change="unionNoticeKeydown($event)" @keydown="unionNoticeKeydown($event)" @keyup="unionNoticeKeydown($event)" @input="unionNoticeKeydown($event)" @onpropertychange="unionNoticeKeydown($event)"></textarea>
+          <el-input type="textarea" :rows="4" placeholder="请输入推荐理由" v-model="form.reason" :maxlength="unionNoticeMaxlength" @focus="unionNoticeFocus" @blur="unionNoticeBlur" @change="unionNoticeKeydown($event)" @keydown.native="unionNoticeKeydown($event)" @keyup.native="unionNoticeKeydown($event)" @input.native="unionNoticeKeydown($event)" @onpropertychange.native="unionNoticeKeydown($event)"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSubmit('form')">保存</el-button>
@@ -155,10 +154,11 @@ export default {
       }
     },
     unionNoticeKeydown(e) {
-      let valueLength = this.unionNoticeCheck()[0];
-      let len = this.unionNoticeCheck()[1];
+      let lengthObj = this.unionNoticeCheck();
+      let valueLength = lengthObj[0];
+      let len = lengthObj[1];
       if (valueLength > 20) {
-        this.form.reason = this.form.reason.substring(0, len + 1);
+        // this.form.reason = this.form.reason.substring(0, len + 1);
         this.unionNoticeMaxlength = len;
         return false;
       } else {
@@ -169,7 +169,7 @@ export default {
       let valueLength = 0;
       let maxLenth = 0;
       let chinese = '[\u4e00-\u9fa5]'; // 获取字段值的长度，如果含中文字符，则每个中文字符长度为2，否则为1
-      let str = this.form.reason;
+      let str = this.form.reason || '';
       for (let i = 0; i < str.length; i++) {
         // 获取一个字符
         let temp = str.substring(i, i + 1); // 判断是否为中文字符

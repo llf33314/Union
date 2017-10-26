@@ -73,9 +73,9 @@
       </el-table-column>
       <el-table-column prop="opportunityType" label="交易类型" min-width="100px">
       </el-table-column>
-      <el-table-column prop="isClose" label="佣金结算状态" width="140" :filters="[{ text: '未结算', value: '未结算' }, { text: '已结算', value: '已结算' }]" :filter-method="filterTag" filter-placement="bottom-end">
+      <el-table-column prop="isClose" label="佣金支付状态" width="140" :filters="[{ text: '未支付', value: '未支付' }, { text: '已支付', value: '已支付' }]" :filter-method="filterTag" filter-placement="bottom-end">
         <template scope="scope">
-          <el-tag :type="scope.row.isClose === '未结算' ? 'danger' : 'success'">{{scope.row.isClose}}</el-tag>
+          <el-tag :type="scope.row.isClose === '未支付' ? 'danger' : 'success'">{{scope.row.isClose}}</el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="lastModifyTime" label="交易时间" min-width="120">
@@ -91,7 +91,7 @@
       <el-table-column label="操作">
         <template scope="scope">
           <div class="sizeAndColor">
-            <el-button v-if="scope.row.isClose === '未结算'" @click="pay(scope)">支付</el-button>
+            <el-button v-if="scope.row.isClose === '未支付'" @click="pay(scope)">支付</el-button>
           </div>
         </template>
       </el-table-column>
@@ -245,10 +245,10 @@ export default {
                 v.lastModifyTime = $todate.todate(new Date(v.lastModifyTime));
                 switch (v.isClose) {
                   case 0:
-                    v.isClose = '未结算';
+                    v.isClose = '未支付';
                     break;
                   case 1:
-                    v.isClose = '已结算';
+                    v.isClose = '已支付';
                     break;
                 }
                 switch (v.opportunityType) {
@@ -287,10 +287,10 @@ export default {
               v.lastModifyTime = $todate.todate(new Date(v.lastModifyTime));
               switch (v.isClose) {
                 case 0:
-                  v.isClose = '未结算';
+                  v.isClose = '未支付';
                   break;
                 case 1:
-                  v.isClose = '已结算';
+                  v.isClose = '已支付';
                   break;
               }
               switch (v.opportunityType) {
@@ -328,10 +328,10 @@ export default {
               v.lastModifyTime = $todate.todate(new Date(v.lastModifyTime));
               switch (v.isClose) {
                 case 0:
-                  v.isClose = '未结算';
+                  v.isClose = '未支付';
                   break;
                 case 1:
-                  v.isClose = '已结算';
+                  v.isClose = '已支付';
                   break;
               }
               switch (v.opportunityType) {
@@ -468,7 +468,7 @@ export default {
       if (this.multipleSelection.length) {
         this.canPay = true;
         this.multipleSelection.forEach((v, i) => {
-          if (v.isClose === '已结算') {
+          if (v.isClose === '已支付') {
             this.canPay = false;
           }
         });
