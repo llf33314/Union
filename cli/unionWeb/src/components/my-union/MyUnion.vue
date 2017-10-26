@@ -99,12 +99,14 @@
         </div>
       </el-col>
       <el-col :xs="8" :sm="8" :md="8" :lg="8" v-if="unionMainData.currentUnionMemberTransferId">
-        <div class="grid-content bg-purple nav-list" @click="transfer">
+        <div class="grid-content bg-purple nav-list">
           <!-- todo -->
-          <el-button type="info" size="mini">
-            <img src="../../assets/images/icon02.png" style="width: 11px;">
-          </el-button>
-          <span>盟主权限转移</span>
+          <a @click="transfer">
+            <el-button type="info" size="mini">
+              <img src="../../assets/images/icon07.png" style="width: 11px;">
+            </el-button>
+            <span>盟主权限转移</span>
+          </a>
         </div>
       </el-col>
       <!-- 弹出框 提示 -->
