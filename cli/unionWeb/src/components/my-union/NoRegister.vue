@@ -60,6 +60,7 @@
 <script>
 import $http from '@/utils/http.js';
 export default {
+  name: 'no-register',
   data() {
     return {
       number: 0,

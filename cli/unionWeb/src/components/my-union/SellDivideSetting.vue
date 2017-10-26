@@ -132,6 +132,7 @@ export default {
             inputs3[i].value = this.tableData3[i].cardDividePercent.toFixed(2);
             this.sum += parseFloat(inputs3[i].value);
           }
+          this.sum = parseFloat(this.sum.toFixed(2));
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });

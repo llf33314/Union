@@ -122,57 +122,23 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
 
     @Override
     public Page pageMapByIdAndBusId(Page page, final Integer memberId, Integer busId, final String optionEnterpriseName) throws Exception {
-        if (page == null || memberId == null || busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        //(1)判断是否具有盟员权限
-        final UnionMember unionMember = this.getByIdAndBusId(memberId, busId);
-        if (unionMember == null) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
-        }
-        //(2)检查联盟有效期
-        this.unionMainService.checkUnionValid(unionMember.getUnionId());
-        //(3)判断是否具有读权限
-        if (!this.hasReadAuthority(unionMember)) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
-        }
-        //(4)查询操作
-        Wrapper wrapper = new Wrapper() {
-            @Override
-            public String getSqlSegment() {
-                StringBuilder sbSqlSegment = new StringBuilder(" m")
-                        .append(" LEFT JOIN t_union_member_discount mdFromMe ON mdFromMe.from_member_id = ").append(memberId)
-                        .append("  AND mdFromMe.to_member_id = m.id")
-                        .append(" LEFT JOIN t_union_member_discount mdToMe ON mdToMe.from_member_id = m.id")
-                        .append("  AND mdToMe.to_member_id = ").append(memberId)
-                        .append(" WHERE m.del_status = ").append(CommonConstant.DEL_STATUS_NO)
-                        .append("  AND m.status != ").append(MemberConstant.STATUS_APPLY_IN)
-                        .append("  AND m.union_id = ").append(unionMember.getUnionId());
-                if (StringUtil.isNotEmpty(optionEnterpriseName)) {
-                    sbSqlSegment.append(" AND m.enterprise_name LIKE '%").append(optionEnterpriseName).append("%'");
+        List<Map<String, Object>> tempRecords = this.listMapByIdAndBusId(memberId, busId, optionEnterpriseName);
+        if (ListUtil.isNotEmpty(tempRecords)) {
+            // 手工分页。。。
+            int offsetCurrent = page.getOffsetCurrent();
+            int recordSize = tempRecords.size();
+            page.setTotal(recordSize);
+            List<Map<String, Object>> records = new ArrayList<>();
+            if (offsetCurrent >= recordSize) {
+                page.setRecords(records);
+            } else {
+                for (int i = 0, j = offsetCurrent, pageSize = page.getSize(); i < pageSize && j < recordSize; i++, j++) {
+                    records.add(tempRecords.get(j));
                 }
-                sbSqlSegment.append(" ORDER BY m.is_union_owner DESC, Field('m.id',").append(memberId).append(",m.id)");
-                return sbSqlSegment.toString();
+                page.setRecords(records);
             }
-        };
-        // 盟员id
-        String sqlSelect = " m.id memberId"
-                // 是否盟主
-                + ", m.is_union_owner isUnionOwner"
-                // 盟员名称
-                + ", m.enterprise_name enterpriseName"
-                // 创建时间
-                + ", DATE_FORMAT(m.createtime, '%Y-%m-%d %T') createTime"
-                // 我给他的折扣
-                + ", mdFromMe.discount discountFromMe"
-                // 他给我的折扣
-                + ", mdToMe.discount discountToMe"
-                // 售卡分成比例
-                + ", m.card_divide_percent cardDividePercent"
-                // 盟员状态
-                + ", m.status status";
-        wrapper.setSqlSelect(sqlSelect);
-        return this.selectMapsPage(page, wrapper);
+        }
+        return page;
     }
 
     @Override
@@ -320,9 +286,46 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 // 售卡分成比例
                 + ", m2.card_divide_percent cardDividePercent"
                 // 盟员状态
-                + ", m.status status";
+                + ", m2.status status";
         wrapper.setSqlSelect(sqlSelect);
-        return this.selectMaps(wrapper);
+        List<Map<String, Object>> result = this.selectMaps(wrapper);
+        sortByIsUnionOwnerAndCurrentIdAndId(result, memberId);
+        return result;
+    }
+
+    private void sortByIsUnionOwnerAndCurrentIdAndId(List<Map<String, Object>> records, final Integer memberId) {
+        Collections.sort(records, new Comparator<Map<String, Object>>() {
+            @Override
+            public int compare(Map<String, Object> o1, Map<String, Object> o2) {
+                // (1)先按盟主身份排序，盟主在前，盟员在后
+                Object objIsUnionOwner1 = o1.get("isUnionOwner");
+                Object objIsUnionOwner2 = o2.get("isUnionOwner");
+                int intIsUnionOwner1 = objIsUnionOwner1 != null ? Integer.valueOf(objIsUnionOwner1.toString()) : 0;
+                int intIsUnionOwner2 = objIsUnionOwner2 != null ? Integer.valueOf(objIsUnionOwner2.toString()) : 0;
+                if (intIsUnionOwner1 > intIsUnionOwner2) {
+                    return -1;
+                }
+                if (intIsUnionOwner1 < intIsUnionOwner2) {
+                    return 1;
+                }
+                // (2)再按操作者排序，操作者在前，其余在后
+                Object objMemberId1 = o1.get("memberId");
+                Object objMemberId2 = o2.get("memberId");
+                int intMemberId1 = objMemberId1 != null ? Integer.valueOf(objMemberId1.toString()) : 0;
+                int intMemberId2 = objMemberId2 != null ? Integer.valueOf(objMemberId2.toString()) : 0;
+                if (intMemberId1 == memberId) {
+                    return -1;
+                } else if (intMemberId2 == memberId) {
+                    return 1;
+                }
+                // (3)最后按id排序，升序
+                if (intMemberId1 <= intMemberId2) {
+                    return -1;
+                } else {
+                    return 1;
+                }
+            }
+        });
     }
 
     @Override
