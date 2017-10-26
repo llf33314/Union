@@ -121,7 +121,7 @@ export default {
       return this.$store.state.unionMemberId;
     }
   },
-  created: function() {
+  mounted: function() {
     $http
       .get(`/unionMember/${this.unionMemberId}`)
       .then(res => {
