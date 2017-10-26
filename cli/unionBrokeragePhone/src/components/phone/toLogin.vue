@@ -69,6 +69,7 @@
       }
     },
     mounted(){
+      let that_=this;
       userPhone.onblur=function(){
         if(/^1[3|4|5|6|7|8][0-9][0-9]{8}$/.test(this.value)){
           that_.isGetCode = 1;
