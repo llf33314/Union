@@ -40,8 +40,8 @@ hs_err_pid*
 
 /target/
 /classes/
-/logs/
 /*/LOG_HOME_IS_UNDEFINED/
 /*/logs/
 /out/
 /gtUnion/target/
+webapp/

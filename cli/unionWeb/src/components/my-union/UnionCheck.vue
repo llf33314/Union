@@ -70,8 +70,8 @@
         <el-table-column prop="" label="操作" width="160">
           <template scope="scope">
             <div class="sizeAndColor">
-              <el-button size="small" @click="handlePass(scope.$index, scope.row)">通过</el-button>
-              <el-button size="small" @click="handleFail(scope.$index, scope.row)">不通过</el-button>
+              <el-button size="small" @click="handlePass(scope)">通过</el-button>
+              <el-button size="small" @click="handleFail(scope)">不通过</el-button>
             </div>
           </template>
         </el-table-column>
@@ -139,20 +139,24 @@ export default {
     }
   },
   mounted: function() {
-    $http
-      .get(`/unionMemberJoin/memberId/${this.unionMemberId}?current=1`)
-      .then(res => {
-        if (res.data.data) {
-          this.tableData = res.data.data.records;
-          this.totalAll = res.data.data.total;
-        }
-      })
-      .catch(err => {
-        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
-      });
+    this.init();
   },
-
   methods: {
+    init() {
+      if (this.unionMemberId) {
+        $http
+          .get(`/unionMemberJoin/memberId/${this.unionMemberId}?current=1`)
+          .then(res => {
+            if (res.data.data) {
+              this.tableData = res.data.data.records;
+              this.totalAll = res.data.data.total;
+            }
+          })
+          .catch(err => {
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+          });
+      }
+    },
     // 带条件查询
     search() {
       $http
@@ -193,6 +197,8 @@ export default {
         .put(url)
         .then(res => {
           if (res.data.success) {
+            this.search();
+            this.visible1 = false;
             this.$message({ showClose: true, message: '审核通过', type: 'success', duration: 5000 });
           }
         })
@@ -212,6 +218,8 @@ export default {
         .put(url)
         .then(res => {
           if (res.data.success) {
+            this.search();
+            this.visible1 = false;
             this.$message({ showClose: true, message: '审核通过', type: 'success', duration: 5000 });
           }
         })

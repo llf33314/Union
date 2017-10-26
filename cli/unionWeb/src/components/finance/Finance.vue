@@ -50,12 +50,12 @@
             <el-form-item>
               该手机号是联盟佣金平台的验证登录号码，请管理人员慎重设置号码
             </el-form-item>
+            <el-form-item>
+              <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+              <el-button @click="resetForm('ruleForm')">取 消</el-button>
+            </el-form-item>
           </el-form>
         </div>
-        <span slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
-          <el-button @click="resetForm('ruleForm')">取 消</el-button>
-        </span>
       </el-dialog>
       <el-table :data="tableData" style="width: 100%">
         <el-table-column prop="name" label="姓名">
@@ -75,6 +75,7 @@
           <div>
             <img src="../../assets/images/delect01.png"  class="fl">
             <span>是否确认删除“ {{ name }} ”</span>
+            <p>点击确定后，该财务管理者不可登录佣金平台</p>
           </div>
           <span slot="footer" class="dialog-footer">
             <el-button type="primary" @click="confirm1">确定</el-button>
@@ -87,15 +88,15 @@
 </template>
 
 <script>
-import $http from "@/utils/http.js";
+import $http from '@/utils/http.js';
 export default {
-  name: "finance",
+  name: 'finance',
   data() {
     let phonePass = (rule, value, callback) => {
       if (!value) {
-        callback(new Error("手机号码内容不能为空，请重新输入"));
+        callback(new Error('手机号码内容不能为空，请重新输入'));
       } else if (!value.match(/^1[3|4|5|6|7|8][0-9][0-9]{8}$/)) {
-        callback(new Error("请输入正确的手机号码"));
+        callback(new Error('请输入正确的手机号码'));
       } else {
         callback();
       }
@@ -103,28 +104,28 @@ export default {
     return {
       dialogVisible1: false,
       dialogVisible2: false,
-      labelPosition: "right",
+      labelPosition: 'right',
       withdrawalSum: 0,
-      imgUrl: "",
+      imgUrl: '',
       ruleForm: {
-        name: "",
-        code: "",
-        phone: ""
+        name: '',
+        code: '',
+        phone: ''
       },
       rules: {
-        name: [{ required: true, message: "姓名不能为空，请重新输入", trigger: "blur" }],
-        code: [{ required: true, message: "验证码不能为空，请重新输入", trigger: "blur" }],
-        phone: [{ validator: phonePass, trigger: "blur" }]
+        name: [{ required: true, message: '姓名不能为空，请重新输入', trigger: 'blur' }],
+        code: [{ required: true, message: '验证码不能为空，请重新输入', trigger: 'blur' }],
+        phone: [{ validator: phonePass, trigger: 'blur' }]
       },
       tableData: [],
       form1: {
         getVerificationCode: false,
-        countDownTime: ""
+        countDownTime: ''
       },
       visible1: false,
-      name: "",
-      id: "",
-      timeOut : ''
+      name: '',
+      id: '',
+      timeOut: ''
     };
   },
   created: function() {
@@ -135,7 +136,7 @@ export default {
         if (res.data.data) {
           // 判断是否创建或加入联盟
           if (!res.data.data.currentUnionId) {
-            this.$router.push({ path: "/no-union" });
+            this.$router.push({ path: '/no-union' });
           } else {
             //获取佣金平台手机端的二维码
             $http
@@ -144,16 +145,11 @@ export default {
                 if (res.data.data) {
                   this.imgUrl = res.data.data;
                 } else {
-                  this.imgUrl = "";
+                  this.imgUrl = '';
                 }
               })
               .catch(err => {
-                this.$message({
-                  showClose: true,
-                  message: err.toString(),
-                  type: "error",
-                  duration: 5000
-                });
+                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
               });
             // 可提现金额
             $http
@@ -166,12 +162,7 @@ export default {
                 }
               })
               .catch(err => {
-                this.$message({
-                  showClose: true,
-                  message: err.toString(),
-                  type: "error",
-                  duration: 5000
-                });
+                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
               });
             // 佣金平台管理者列表
             $http
@@ -184,33 +175,20 @@ export default {
                 }
               })
               .catch(err => {
-                this.$message({
-                  showClose: true,
-                  message: err.toString(),
-                  type: "error",
-                  duration: 5000
-                });
+                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
               });
           }
         }
       })
       .catch(err => {
-        this.$message({
-          showClose: true,
-          message: err.toString(),
-          type: "error",
-          duration: 5000
-        });
+        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
       });
   },
   methods: {
     // 获取验证码
     getVerificationCode() {
       $http
-        .get(
-          `/unionVerifier/phone/${this.ruleForm.phone}?name=${this.ruleForm
-            .name}`
-        )
+        .get(`/unionVerifier/phone/${this.ruleForm.phone}?name=${this.ruleForm.name}`)
         .then(res => {
           if (res.data.success) {
             this.form1.getVerificationCode = true;
@@ -220,18 +198,13 @@ export default {
               if (this.form1.countDownTime === 0) {
                 clearInterval(this.timeOut);
                 this.form1.getVerificationCode = false;
-                this.form1.countDownTime = "";
+                this.form1.countDownTime = '';
               }
             }, 1000);
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: "error",
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     // 删除
@@ -257,26 +230,17 @@ export default {
                 }
               })
               .catch(err => {
-                this.$message({
-                  showClose: true,
-                  message: err.toString(),
-                  type: "error",
-                  duration: 5000
-                });
+                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
               });
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: "error",
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     // 提交新增
     submitForm(formName) {
+      console.log(this.ruleForm, 222);
       this.$refs[formName].validate(valid => {
         if (valid) {
           this.dialogVisible2 = false;
@@ -288,7 +252,7 @@ export default {
               if (res.data.success) {
                 clearInterval(this.timeOut);
                 this.form1.getVerificationCode = false;
-                this.form1.countDownTime = "";
+                this.form1.countDownTime = '';
                 $http
                   .get(`/unionVerifier`)
                   .then(res => {
@@ -302,7 +266,7 @@ export default {
                     this.$message({
                       showClose: true,
                       message: err.toString(),
-                      type: "error",
+                      type: 'error',
                       duration: 5000
                     });
                   });
@@ -312,7 +276,7 @@ export default {
               this.$message({
                 showClose: true,
                 message: err.toString(),
-                type: "error",
+                type: 'error',
                 duration: 5000
               });
             });
@@ -326,7 +290,7 @@ export default {
       this.dialogVisible2 = false;
       clearInterval(this.timeOut);
       this.form1.getVerificationCode = false;
-      this.form1.countDownTime = "";
+      this.form1.countDownTime = '';
     }
   }
 };
