@@ -69,7 +69,7 @@
           <el-checkbox label="applyReason">申请/推荐理由</el-checkbox>
         </el-checkbox-group>
       </el-form-item>
-      <el-form-item label="联盟图标：">
+      <el-form-item label="联盟图标："  prop="unionImg">
         <img v-if="this.form.unionImg" v-bind:src="this.form.unionImg" class="unionImg" @click="materiallayer">
         <!-- todo button 改变样式 -->
         <el-button @click="materiallayer" v-if="!this.form.unionImg">
@@ -169,13 +169,13 @@ export default {
       form: {
         unionName: '',
         joinType: 2,
-        isIntegral: true,
+        isIntegral: false,
         oldMemberCharge: false,
-        blackIsCharge: true,
+        blackIsCharge: false,
         blackChargePrice: '',
         blackValidityDay: '',
         blackIllustration: '',
-        redIsAvailable: true,
+        redIsAvailable: false,
         redChargePrice: '',
         redValidityDay: '',
         redIllustration: ''
@@ -187,6 +187,7 @@ export default {
         blackValidityDay: [{ validator: blackValidityDayPass, trigger: 'blur' }],
         redChargePrice: [{ validator: redChargePricePass, trigger: 'blur' }],
         redValidityDay: [{ validator: redValidityDayPass, trigger: 'blur' }],
+        unionImg: [{ required: true, message: '联盟图标内容不能为空，请重新输入', trigger: 'change' }],
         unionIllustration: [{ required: true, message: '联盟说明内容不能为空，请重新输入', trigger: 'blur' }]
       },
       materialVisible: false,
@@ -240,9 +241,9 @@ export default {
           data.unionMainVO.unionMainChargeVO.redIsCharge = this.form.redIsAvailable - 0;
           data.unionMainVO.unionMainChargeVO.redIsOldCharge = this.form.oldMemberCharge - 0;
           data.unionMainVO.unionMainChargeVO.redValidityDay = this.form.redValidityDay - 0;
-          data.unionMainDictList = [];
+          data.unionMainVO.unionMainDictList = [];
           this.checkList.forEach((v, i) => {
-            data.unionMainDictList.push({ itemKey: v });
+            data.unionMainVO.unionMainDictList.push({ itemKey: v });
           });
           data.unionMemberVO = {};
           data.unionMemberVO.addressCityCode = this.basicFormData.addressCityCode;
