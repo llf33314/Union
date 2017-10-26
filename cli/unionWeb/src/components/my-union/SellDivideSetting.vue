@@ -12,7 +12,7 @@
           <span>&nbsp;%&nbsp;</span>
           <el-button type="primary" @click="onAverage()">平均分配</el-button>
         </div>
-        <p>售卡分成总比例之和不得超过100%，当前总比例为{{ sum }}%，剩余{{100 - sum}}%可分配</p>
+        <p>售卡分成总比例之和不得超过100%，当前总比例为{{ sum }}%，剩余{{(100 - sum).toFixed(2)}}%可分配</p>
         <el-table :data="tableData3" style="width: 100%" id="table3">
           <el-table-column prop="enterpriseName" label="企业名称">
           </el-table-column>
@@ -56,7 +56,7 @@ export default {
       currentPage: 1,
       sum: 0,
       tableData3: [], // 渲染视图
-      _tableData3: [], // 传输数据
+      tableData4: [], // 传输数据
       totalAll: 0
     };
   },
@@ -66,25 +66,28 @@ export default {
     }
   },
   mounted: function() {
-    $http
-      .get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=1`)
-      .then(res => {
-        if (res.data.data) {
-          this.tableData = res.data.data.records;
-          this.totalAll = res.data.data.total;
-          if (this.tableData[0].isUnionOwner) {
-            this.tableData[0].enterpriseName += '(盟主)';
-          }
-          this.tableData.forEach((v, i) => {
-            v.cardDividePercent = v.cardDividePercent.toFixed(2) + '%';
-          });
-        }
-      })
-      .catch(err => {
-        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-      });
+    this.init();
   },
   methods: {
+    init() {
+      $http
+        .get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=1`)
+        .then(res => {
+          if (res.data.data) {
+            this.tableData = res.data.data.records;
+            this.totalAll = res.data.data.total;
+            if (this.tableData[0].isUnionOwner) {
+              this.tableData[0].enterpriseName += '(盟主)';
+            }
+            this.tableData.forEach((v, i) => {
+              v.cardDividePercent = v.cardDividePercent.toFixed(2) + '%';
+            });
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    },
     // 比例设置 分页 获取数据
     handleCurrentChange(val) {
       $http
@@ -116,7 +119,7 @@ export default {
           if (res.data.data) {
             this.tableData3 = res.data.data;
             if (this.tableData3[0].isUnionOwner) {
-              this.input = this.tableData3[0].cardDividePercent;
+              this.input = this.tableData3[0].cardDividePercent.toFixed(2);
               this.sum = parseFloat(this.input);
               this.tableData3.splice(0, 1);
             }
@@ -126,7 +129,7 @@ export default {
           let table3 = document.getElementById('table3');
           let inputs3 = table3.getElementsByTagName('input');
           for (let i = 0; i < inputs3.length; i++) {
-            inputs3[i].value = this.tableData3[i].cardDividePercent;
+            inputs3[i].value = this.tableData3[i].cardDividePercent.toFixed(2);
             this.sum += parseFloat(inputs3[i].value);
           }
         })
@@ -136,10 +139,15 @@ export default {
     },
     // 平均分配
     onAverage() {
-      let _sum = 100 - this.input;
+      let _sum = 100 - Number(this.input).toFixed(2);
       let table3 = document.getElementById('table3');
       let inputs3 = table3.getElementsByTagName('input');
       let len = inputs3.length;
+      this.sum = 0;
+      this.tableData4 = [];
+      for (let i = 0; i < len + 1; i++) {
+        this.tableData4.push({ cardDividePercent: 0, memberId: 0 });
+      }
       if (len !== 0) {
         let average = (_sum / len).toFixed(2);
         if (this.input && 0 < this.input && 100 > this.input) {
@@ -147,40 +155,44 @@ export default {
             inputs3[i].value = average;
           }
           this.input = (100 - average * len).toFixed(2);
+          this.tableData4[0].cardDividePercent = 100 - average * len;
+          for (let i = 1, j = i - 1; i < inputs3.length + 1; i++, j++) {
+            this.tableData4[i].cardDividePercent = inputs3[j].value;
+          }
           this.sum = 100;
         } else {
-          this.$message({
-            showClose: true,
-            message: '商机总比例之和不得超过100%,必须设置盟主比例',
-            type: 'warning',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: '商机总比例之和不得超过100%,必须设置盟主比例', type: 'warning', duration: 5000 });
         }
+      } else {
+        this.tableData4[0].cardDividePercent = parseFloat(this.input);
       }
+      this.tableData.forEach((v, i) => {
+        this.tableData4.memberId = v.memberId;
+      });
     },
     // 计算分配比例
     onChange() {
       let table3 = document.getElementById('table3');
       let inputs3 = table3.getElementsByTagName('input');
+      let len = inputs3.length;
+      this.tableData4 = [];
+      for (let i = 0; i < len + 1; i++) {
+        this.tableData4.push({ cardDividePercent: 0 });
+      }
       this.sum = 0;
-      $http
-        .get(`/unionMember/listMap/memberId/${this.unionMemberId}`)
-        .then(res => {
-          if (res.data.data) {
-            this._tableData3 = res.data.data;
-            this._tableData3[0].cardDividePercent = this.input - 0;
-            for (let i = 1, j = i - 1; i < inputs3.length + 1; i++, j++) {
-              inputs3[j].value = inputs3[j].value;
-              this._tableData3[i].cardDividePercent = inputs3[j].value - 0;
-            }
-            this._tableData3.forEach((v, i) => {
-              this.sum += parseFloat(v.cardDividePercent);
-            });
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+      // this.input = (this.input - 0).toFixed(2);
+      this.tableData4[0].cardDividePercent = this.input;
+      for (let i = 1, j = i - 1; i < inputs3.length + 1; i++, j++) {
+        // inputs3[j].value = (inputs3[j].value - 0).toFixed(2);
+        this.tableData4[i].cardDividePercent = inputs3[j].value || 0;
+      }
+      this.tableData4.forEach((v, i) => {
+        this.sum += parseFloat(v.cardDividePercent || 0);
+      });
+      this.sum = this.sum.toFixed(2);
+      this.tableData.forEach((v, i) => {
+        this.tableData4.memberId = v.memberId;
+      });
     },
     // 保存
     onSave() {
@@ -188,15 +200,20 @@ export default {
         let url = `/unionMember/cardDividePercent/memberId/${this.unionMemberId}`;
         // 处理数据
         let data = [];
-        this._tableData3.forEach((v, i) => {
-          data[i].cardDividePercent = v.cardDividePercent;
-          data[i].memberId = v.memberId;
+        this.tableData4.forEach((v, i) => {
+          let obj = {};
+          obj.cardDividePercent = v.cardDividePercent - 0;
+          obj.memberId = v.memberId - 0;
+          data.push(obj);
         });
-        data.cardDividePercent = data.memberId = this._tableData3.memberId;
         $http
           .put(url, data)
           .then(res => {
-            this.$message({ showClose: true, message: '保存成功', type: 'success', duration: 5000 });
+            if (res.data.success) {
+              this.init();
+              this.dialogVisible = false;
+              this.$message({ showClose: true, message: '保存成功', type: 'success', duration: 5000 });
+            }
           })
           .catch(err => {
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
