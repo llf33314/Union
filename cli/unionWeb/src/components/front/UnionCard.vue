@@ -148,7 +148,7 @@
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="submit" :disabled="!canSubmit">确 定</el-button>
+          <el-button type="primary" @click="submit" >确 定</el-button>
           <el-button @click="visible3 = false">取 消</el-button>
         </span>
       </el-dialog>
@@ -207,7 +207,7 @@ export default {
         only: '',
         status: ''
       },
-      canSubmit: false
+//      canSubmit: false
     };
   },
   mounted: function() {
@@ -256,7 +256,7 @@ export default {
         }, 100);
       }
       if ((this.price2 * 100 - this.price1 * 100) / 100 > 0 || (this.price2 * 100 - this.price1 * 100) / 100 === 0) {
-        this.canSubmit = true;
+//        this.canSubmit = true;
       }
     },
     isIntegral_: function() {

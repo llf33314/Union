@@ -10,7 +10,6 @@
           <el-button type="primary" @click="getVerificationCode" :disabled="form1.getVerificationCode || !form1.phone">{{ form1.countDownTime?form1.countDownTime+'s':'获取验证码'}}</el-button>
         </el-form-item>
         <el-form-item label="短信验证码：" prop="code">
-          <!--176072-->
           <el-row style="width: 250px;">
             <el-input v-model="form1.code"></el-input>
           </el-row>
@@ -175,7 +174,8 @@ export default {
         only: '',
         status: ''
       },
-      wxUser: false
+      wxUser: false,
+      timeEnd : ''
     };
   },
   mounted: function() {
@@ -225,12 +225,12 @@ export default {
           if (res.data.success) {
             this.form1.getVerificationCode = true;
             this.form1.countDownTime = 60;
-            let timer1 = setInterval(() => {
+            this.timeEnd = setInterval(() => {
               this.form1.countDownTime--;
               if (this.form1.countDownTime === 0) {
                 this.form1.getVerificationCode = false;
                 this.form1.countDownTime = '';
-                clearInterval(timer1);
+                clearInterval(this.timeEnd);
               }
             }, 1000);
           }
@@ -247,6 +247,10 @@ export default {
             .get(`/unionCard/info?phone=${this.form1.phone}&code=${this.form1.code}`)
             .then(res => {
               if (res.data.data) {
+                clearInterval(this.timeEnd);
+                //灰色倒计时'60s'变为紫蓝色"获取验证码"按钮;
+                this.form1.countDownTime = '';
+                this.form1.getVerificationCode = false;
                 this.form2.unions = res.data.data.unions;
                 if (this.form2.unions) {
                   this.unionId = this.form2.unions[0].id;
@@ -395,6 +399,10 @@ export default {
               } else if (res.data.success) {
                 this.$message({ showClose: true, message: '办理成功', type: 'success', duration: 5000 });
                 this.init();
+                clearInterval(this.timeEnd);
+                //灰色倒计时'60s'变为紫蓝色"获取验证码"按钮;
+                this.form1.countDownTime = '';
+                this.form1.getVerificationCode = false;
               }
             })
             .catch(err => {
