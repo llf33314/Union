@@ -31,6 +31,7 @@ import com.gt.union.consume.service.IUnionConsumeItemService;
 import com.gt.union.consume.service.IUnionConsumeService;
 import com.gt.union.consume.vo.UnionConsumeParamVO;
 import com.gt.union.consume.vo.UnionConsumeVO;
+import com.gt.union.main.constant.MainConstant;
 import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.member.entity.UnionMember;
@@ -296,7 +297,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 	 * @param vo
 	 * @param orderNo
 	 */
-	private void consumeSuccess( UnionConsumeParamVO vo, String orderNo){
+	private void consumeSuccess( UnionConsumeParamVO vo, String orderNo) throws Exception{
 		//核销优惠项目或者现金支付时调用该接口
 		UnionConsume consume = new UnionConsume();
 		consume.setStatus(ConsumeConstant.PAY_STATUS_YES);
@@ -328,12 +329,15 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 			}
 			unionConsumeItemService.insertBatch(consumeItems);
 		}
-
-		if(vo.isUseIntegral()){//是否使用了积分
-			UnionCard card = unionCardService.getById(vo.getCardId());
-			UnionCardRoot root = unionCardRootService.getById(card.getRootId());
+		Integer unionId = vo.getUnionId();
+		UnionMain main = unionMainService.getById(unionId);
+		//联盟开启积分 可赠送积分
+		if(CommonUtil.isNotEmpty(main.getIsIntegral()) && main.getIsIntegral() == MainConstant.IS_INTEGRAL_YES){
+			//积分赠送率
 			Double giveIntegral = dictService.getGiveIntegral();
-
+			//赠送的积分
+			Double integral = BigDecimalUtil.multiply(vo.getPayMoney(),giveIntegral).doubleValue();
+			UnionCard card = unionCardService.getById(vo.getCardId());
 			//收入
 			UnionCardIntegral incomeIntegral = new UnionCardIntegral();
 			incomeIntegral.setCardId(card.getId());
@@ -341,23 +345,30 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 			incomeIntegral.setCreatetime(new Date());
 			incomeIntegral.setType(CardConstant.CARD_INTEGRAL_TYPE_GIVE);
 			incomeIntegral.setStatus(CardConstant.CARD_INTEGRAL_STATUS_INCOME);
-			Double integral = BigDecimalUtil.multiply(vo.getPayMoney(),giveIntegral).doubleValue();//赠送的积分
 			incomeIntegral.setIntegral(integral);
 			unionCardIntegralService.insert(incomeIntegral);
-			//支出
-			UnionCardIntegral outcomeIntegral = new UnionCardIntegral();
-			outcomeIntegral.setCardId(card.getId());
-			outcomeIntegral.setDelStatus(CommonConstant.DEL_STATUS_NO);
-			outcomeIntegral.setCreatetime(new Date());
-			outcomeIntegral.setType(CardConstant.CARD_INTEGRAL_TYPE_GIVE);
-			outcomeIntegral.setStatus(CardConstant.CARD_INTEGRAL_STATUS_INCOME);
-			outcomeIntegral.setIntegral(vo.getConsumeIntegral());
-			unionCardIntegralService.insert(outcomeIntegral);
-
-			Double subIntegral = BigDecimalUtil.subtract(integral,vo.getConsumeIntegral()).doubleValue();//赠送的积分-消费的积分
+			//保存的联盟积分
+			Double saveIntegral = integral;
+			UnionCardRoot root = unionCardRootService.getById(card.getRootId());
+			//是否使用了积分
+			if(vo.isUseIntegral()){
+				if(!(CommonUtil.isNotEmpty(root.getIntegral()) && root.getIntegral() > 0)){
+					throw new BusinessException("联盟卡积分不足");
+				}
+				//支出
+				UnionCardIntegral outcomeIntegral = new UnionCardIntegral();
+				outcomeIntegral.setCardId(card.getId());
+				outcomeIntegral.setDelStatus(CommonConstant.DEL_STATUS_NO);
+				outcomeIntegral.setCreatetime(new Date());
+				outcomeIntegral.setType(CardConstant.CARD_INTEGRAL_TYPE_CONSUME);
+				outcomeIntegral.setStatus(CardConstant.CARD_INTEGRAL_STATUS_EXPENSE);
+				outcomeIntegral.setIntegral(vo.getConsumeIntegral());
+				unionCardIntegralService.insert(outcomeIntegral);
+				saveIntegral = BigDecimalUtil.subtract(integral,vo.getConsumeIntegral()).doubleValue();//赠送的积分-消费的积分
+			}
 			UnionCardRoot cardRoot = new UnionCardRoot();
 			cardRoot.setId(root.getId());
-			cardRoot.setIntegral(root.getIntegral() == null ? (0 + subIntegral) : (root.getIntegral() + subIntegral));
+			cardRoot.setIntegral(root.getIntegral() == null ? (0 + saveIntegral) : (root.getIntegral() + saveIntegral));
 			unionCardRootService.updateById(cardRoot);
 		}
 
