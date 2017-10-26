@@ -312,7 +312,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
                 }
                 this.updateByBusIdAndMemberIdAndOutId(busId, memberId, tgtOutList.get(0).getId(), CommonConstant.COMMON_YES);
                 break;
-            case MemberConstant.STATUS_APPLY_IN:
+            case MemberConstant.STATUS_IN:
                 //目标对象直接设置为退盟过渡期
                 //目标对象的伪退盟申请
                 UnionMemberOut saveMemberOut = new UnionMemberOut();
