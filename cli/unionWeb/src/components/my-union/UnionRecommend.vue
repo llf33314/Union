@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="recommended">
     <Breadcrumb :header-name="'推荐入盟'"></Breadcrumb>
     <div class="tabs">
       <h4 class="union_set">推荐盟员加入联盟</h4>
@@ -30,7 +30,7 @@
           </el-col>
         </el-form-item>
         <el-form-item label="推荐理由：" prop="reason">
-          <el-input type="textarea" :rows="4" placeholder="请输入推荐理由" v-model="form.reason" :maxlength="unionNoticeMaxlength" @focus="unionNoticeFocus" @blur="unionNoticeBlur" @change="unionNoticeKeydown($event)" @keydown.native="unionNoticeKeydown($event)" @keyup.native="unionNoticeKeydown($event)" @input.native="unionNoticeKeydown($event)" @onpropertychange.native="unionNoticeKeydown($event)"></el-input>
+          <el-input type="textarea" :rows="4" id="feedbackcontent" placeholder="请输入推荐理由" v-model="form.reason" :maxlength="unionNoticeMaxlength" @focus="unionNoticeFocus" @blur="unionNoticeBlur" @change="unionNoticeKeydown($event)" @keydown.native="unionNoticeKeydown($event)" @keyup.native="unionNoticeKeydown($event)" @input.native="unionNoticeKeydown($event)" @onpropertychange.native="unionNoticeKeydown($event)"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSubmit('form')">保存</el-button>
@@ -193,5 +193,21 @@ export default {
 <style lang='less' rel="stylesheet/less" scoped>
 .tabs {
   margin: 40px 50px;
+}
+#feedbackcontent::-webkit-input-placeholder {
+  /* WebKit browsers */
+  color: #97A8BE;
+}
+#feedbackcontent:-moz-placeholder {
+  /* Mozilla Firefox 4 to 18 */
+  color: #97A8BE;
+}
+#feedbackcontent::-moz-placeholder {
+  /* Mozilla Firefox 19+ */
+  color: #97A8BE;
+}
+#feedbackcontent::-ms-input-placeholder {
+  /* Internet Explorer 10+ */
+  color: #97A8BE;
 }
 </style>

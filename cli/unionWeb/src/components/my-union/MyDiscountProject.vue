@@ -1,22 +1,22 @@
 <template>
   <!-- 我的优惠项目 -->
-  <div>
+  <div >
     <div class="preferenceItems clearfix" id="preferenceItems">
       <illustration style="float:right;"></illustration>
-      <p class="fl">
+      <p class="fl model_">
         <el-button type="primary" @click="dialogVisible = true">新增</el-button>
         <!-- 弹出框 新增 -->
-        <el-dialog :visible.sync="dialogVisible" size="tiny" @close="resetData">
-          <el-row>
-            <el-col :span="12" :offset="2">
-              <el-input v-model="serviceName" placeholder="请输入项目名称"></el-input>
-            </el-col>
-          </el-row>
-          <span slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="save">保 存</el-button>
-            <el-button @click="dialogVisible=false">取 消</el-button>
-          </span>
-        </el-dialog>
+          <el-dialog :visible.sync="dialogVisible" size="tiny" @close="resetData">
+            <el-row>
+              <el-col :span="12" :offset="2">
+                <el-input v-model="serviceName" placeholder="请输入项目名称"></el-input>
+              </el-col>
+            </el-row>
+            <span slot="footer" class="dialog-footer">
+              <el-button type="primary" @click="save">保 存</el-button>
+              <el-button @click="dialogVisible=false">取 消</el-button>
+            </span>
+          </el-dialog>
         <el-button type="primary" @click="submitAll" v-if="!isUnionOwner">提交审核</el-button>
         <el-button type="warning" style="padding: 10px 15px 10px 32px;position: relative">
           <img src="../../assets/images/Videos.png" style="width: 17px;position: absolute;top: 8px;left: 7px;">
@@ -57,6 +57,7 @@
           <div>
             <img src="../../assets/images/delect01.png"  class="fl">
             <span>是否确认删除“ {{ name }} ”</span>
+            <p></p>
           </div>
           <span slot="footer" class="dialog-footer">
             <el-button type="primary" @click="confirm1">确定</el-button>

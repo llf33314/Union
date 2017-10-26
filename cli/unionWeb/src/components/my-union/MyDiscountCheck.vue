@@ -175,6 +175,7 @@
         <div>
           <img src="../../assets/images/delect01.png"  class="fl">
           <span>是否确认移出“ {{ enterpriseName }} ”</span>
+          <p>该盟员没有提交优惠项目，点击‘确定’后可直接移出盟员。</p>
         </div>
         <span slot="footer" class="dialog-footer">
           <el-button type="primary" @click="confirm">确定</el-button>

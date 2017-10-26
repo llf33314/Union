@@ -4,9 +4,9 @@ import { Message } from 'element-ui';
 
 // axios 配置
 // axios.defaults.baseURL = 'http://union.yifriend.net:7884';
-axios.defaults.baseURL = 'https://union.deeptel.com.cn';           //后台调试用
+// axios.defaults.baseURL = 'https://union.deeptel.com.cn';           //后台调试用
 // axios.defaults.baseURL = 'http://nb.union.deeptel.com.cn';         //验收
-// axios.defaults.baseURL = 'http://union.duofee.com';
+axios.defaults.baseURL = 'http://union.duofee.com';
 
 // axios.defaults.timeout = 5000;
 
