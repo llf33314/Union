@@ -212,7 +212,6 @@ export default {
 }
 
 /*一个图标*/
-
 .tubiao {
   width: 25px;
   height: 25px;

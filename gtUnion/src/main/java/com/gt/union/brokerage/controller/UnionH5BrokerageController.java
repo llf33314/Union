@@ -370,7 +370,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 		Map<String,Object> data = new HashMap<String,Object>();
 		try {
 			logger.info("支付成功回调参数" + JSON.toJSONString(param));
-			if(param.get("result_code").equals("SUCCESS") && param.get("result_code").equals("SUCCESS")){
+			if("SUCCESS".equals(param.get("result_code")) && "SUCCESS".equals(param.get("result_code"))){
 				String orderNo = param.get("out_trade_no").toString();
 				logger.info("商机佣金支付成功，id------------------" + id);
 				logger.info("商机佣金支付成功，orderNo------------------" + orderNo);
@@ -402,7 +402,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 		Map<String,Object> data = new HashMap<String,Object>();
 		try {
 			logger.info("商机支付成功回调参数" + JSON.toJSONString(param));
-			if(param.get("result_code").equals("SUCCESS") && param.get("result_code").equals("SUCCESS")){
+			if("SUCCESS".equals(param.get("result_code")) && "SUCCESS".equals(param.get("result_code"))){
 				String orderNo = param.get("out_trade_no").toString();
 				logger.info("商机佣金支付成功，orderNo------------------" + orderNo);
 				UnionVerifier verifier = com.gt.union.common.util.SessionUtils.getVerifier(request);

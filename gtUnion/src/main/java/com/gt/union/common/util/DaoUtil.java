@@ -65,21 +65,21 @@ public class DaoUtil extends JdbcTemplate {
 		try {
 			Class type = field.getType();
 			Object value = field.get(obj);
-			if (type.getSimpleName().equalsIgnoreCase("String")) {
+			if ("String".equalsIgnoreCase(type.getSimpleName())) {
 				str = "'" + value.toString() + "'";
-			} else if (type.getSimpleName().equalsIgnoreCase("Integer")
-					|| type.getSimpleName().equalsIgnoreCase("int")
-					|| type.getSimpleName().equalsIgnoreCase("Long")
-					|| type.getSimpleName().equalsIgnoreCase("long")
-					|| type.getSimpleName().equalsIgnoreCase("Double")
-					|| type.getSimpleName().equalsIgnoreCase("Float")
-					|| type.getSimpleName().equalsIgnoreCase("double")
-					|| type.getSimpleName().equalsIgnoreCase("float")) {
+			} else if ("Integer".equalsIgnoreCase(type.getSimpleName())
+					|| "int".equalsIgnoreCase(type.getSimpleName())
+					|| "Long".equalsIgnoreCase(type.getSimpleName())
+					|| "long".equalsIgnoreCase(type.getSimpleName())
+					|| "Double".equalsIgnoreCase(type.getSimpleName())
+					|| "Float".equalsIgnoreCase(type.getSimpleName())
+					|| "double".equalsIgnoreCase(type.getSimpleName())
+					|| "float".equalsIgnoreCase(type.getSimpleName())) {
 				str = value.toString();
 			} else if (value instanceof Date) {
 				Date dd = (Date) value;
 				str = "'" + new Timestamp(dd.getTime()).toString() + "'";
-			} else if (type.getSimpleName().equalsIgnoreCase("boolean")) {
+			} else if ("boolean".equalsIgnoreCase(type.getSimpleName())) {
 				throw new RuntimeException("暂不支持boolean类型数据。");
 			}
 			return str;
@@ -399,10 +399,10 @@ public class DaoUtil extends JdbcTemplate {
 	private void setInsertSqlByMap(StringBuffer sql, StringBuffer values,
 			String dbName, String tableName) {
 		sql.append("insert into ");
-		if (dbName != null && !dbName.equals("")) {
+		if (dbName != null && !"".equals(dbName)) {
 			sql.append(dbName).append(".");
 		}
-		if (tableName == null || tableName.equals("")) {
+		if (tableName == null || "".equals(tableName)) {
 			throw new RuntimeException("没有对应要写入数据表的名字!");
 		} else {
 			sql.append(tableName).append(" (");
@@ -511,11 +511,11 @@ public class DaoUtil extends JdbcTemplate {
 	private void setDeleteSql(String dbName, String tableName, String idName,
 			StringBuffer sql) {
 		sql.append("DELETE FROM ");
-		if (dbName != null && !dbName.equals("")) {
+		if (dbName != null && !"".equals(dbName)) {
 			sql.append(dbName).append(".");
 		}
-		if (tableName != null && !tableName.equals("")) {
-			if (idName != null && !idName.equals("")) {
+		if (tableName != null && !"".equals(tableName)) {
+			if (idName != null && !"".equals(idName)) {
 				sql.append(tableName).append(" WHERE ").append(idName)
 						.append("=?");
 			} else {
@@ -579,15 +579,15 @@ public class DaoUtil extends JdbcTemplate {
 			String idColumn, Serializable idValue, Map<String, Object> updateMap) {
 		StringBuffer sql = new StringBuffer();
 		sql.append("UPDATE ");
-		if (dbName != null && !dbName.equals("")) {
+		if (dbName != null && !"".equals(dbName)) {
 			sql.append(dbName).append(".");
 		}
-		if (tableName == null || tableName.equals("")) {
+		if (tableName == null || "".equals(tableName)) {
 			throw new RuntimeException("数据表名称没有...");
 		} else {
 			sql.append(tableName).append(" SET ");
 		}
-		if (idColumn == null || idColumn.equals("")) {
+		if (idColumn == null || "".equals(idColumn)) {
 			throw new RuntimeException("没有对应的数据表的id字段...");
 		}
 		if (updateMap == null || updateMap.size() == 0) {

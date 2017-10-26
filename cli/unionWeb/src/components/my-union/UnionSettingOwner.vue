@@ -13,7 +13,10 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item label="联盟积分：">
-        <el-switch on-text="" off-text="" v-model="form.isIntegral"></el-switch>
+        <el-switch on-text="" off-text="" v-model="form.isIntegral" :disabled="isIntegral_"></el-switch>
+        <el-tooltip content="开启联盟积分后，可让粉丝消费获得积分回扣，粉丝可使用积分抵扣金额，该功能开启后不可关闭" placement="right">
+          <span class="tubiao">!</span>
+        </el-tooltip>
       </el-form-item>
       <el-form-item label="黑卡收费：">
         <el-switch on-text="" off-text="" v-model="form.blackIsCharge"></el-switch>
@@ -30,7 +33,7 @@
       </div>
       <el-form-item label="黑卡时效：" prop="blackValidityDay" v-if="form.blackIsCharge">
         <div class="special">
-          <el-input v-model="form.blackValidityDay" placeholder="请输入有效期"></el-input>
+          <el-input v-model="form.blackValidityDay" placeholder="请输入有效期（天）"></el-input>
         </div>
       </el-form-item>
       <el-form-item label="黑卡说明：" v-if="form.blackIsCharge">
@@ -49,7 +52,7 @@
       </el-form-item>
       <el-form-item label="红卡时效：" prop="redValidityDay" v-if="form.redIsAvailable">
         <div class="special">
-          <el-input v-model="form.redValidityDay" placeholder="请输入有效期">
+          <el-input v-model="form.redValidityDay" placeholder="请输入有效期（天）">
           </el-input>
         </div>
       </el-form-item>
@@ -187,7 +190,8 @@ export default {
         unionIllustration: [{ required: true, message: '联盟说明内容不能为空，请重新输入', trigger: 'blur' }]
       },
       materialVisible: false,
-      materialUrl: ''
+      materialUrl: '',
+      isIntegral_: false // 判断联盟积分能否选择
     };
   },
   computed: {
@@ -238,6 +242,7 @@ export default {
           this.form.unionName = res.data.data.name;
           this.form.joinType = res.data.data.joinType;
           this.form.isIntegral = Boolean(res.data.data.isIntegral);
+          this.isIntegral_ = Boolean(res.data.data.isIntegral);
           this.form.unionIllustration = res.data.data.illustration;
           this.form.unionImg = res.data.data.img;
         }
@@ -359,5 +364,21 @@ export default {
 .unionImg {
   width: 80px;
   height: 80px;
+}
+/*一个图标*/
+.tubiao {
+  width: 18px;
+  height: 18px;
+  border: 1px solid #1c8de0;
+  border-radius: 50%;
+  display: block;
+  text-align: center;
+  line-height: 18px;
+  color: #1d90e6;
+  font-weight: bold;
+  position: absolute;
+  top: 9px;
+  left: 55px;
+  cursor: pointer;
 }
 </style>

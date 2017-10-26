@@ -181,7 +181,7 @@
     },
     created(){
       //页面的title变换
-      $("#title_").text('我要体现');
+      $("#title_").text('我要提现');
       //获取盟员列表的数据
       $http.get(`/unionH5Brokerage/withdrawals`)
         .then(res => {

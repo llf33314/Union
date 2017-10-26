@@ -18,10 +18,10 @@
 </template>
 
 <script>
-import Breadcrumb from '@/components/public-components/Breadcrumb'
-import UnionSettingBasic from './UnionSettingBasic'
-import UnionSettingOwner from './UnionSettingOwner'
-import UnionSettingTransfer from './UnionSettingTransfer'
+import Breadcrumb from '@/components/public-components/Breadcrumb';
+import UnionSettingBasic from './UnionSettingBasic';
+import UnionSettingOwner from './UnionSettingOwner';
+import UnionSettingTransfer from './UnionSettingTransfer';
 export default {
   components: {
     Breadcrumb,
@@ -31,35 +31,37 @@ export default {
   },
   data() {
     return {
-      activeName: 'first',
-    }
+      activeName: 'first'
+    };
   },
   computed: {
     isUnionOwner() {
       return this.$store.state.isUnionOwner;
     }
   },
-  methods: {
-    activeNameChange(v) {
-      this.activeName = v;
-    },
-  }
-}
+  watch: {
+    isUnionOwner: function() {
+      if (!this.isUnionOwner) {
+        this.activeName = 'first';
+      }
+    }
+  },
+  methods: {}
+};
 </script>
 
 <style lang='less' rel="stylesheet/less" scoped>
-  .container{
-    margin:40px 50px;
-    .percent {
-      position: absolute;
-      top: 1px;
-      left: 250px;
-    }
-
-    .middle{
-      position: relative;
-      left:-70px;
-
-    }
+.container {
+  margin: 40px 50px;
+  .percent {
+    position: absolute;
+    top: 1px;
+    left: 250px;
   }
+
+  .middle {
+    position: relative;
+    left: -70px;
+  }
+}
 </style>

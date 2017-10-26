@@ -61,7 +61,7 @@
             <el-table-column prop="shopName" label="消费门店">
               <template scope="scope">
                 <el-popover trigger="hover" placement="bottom" effect="Dark">
-                  <p> {{ scope.row.shopName }}</p>
+                  <p> 门店：{{ scope.row.shopName }}</p>
                   <div slot="reference" class="name-wrapper">
                     <span>{{ scope.row.shopName }}</span>
                   </div>
@@ -71,7 +71,7 @@
             <el-table-column prop="cardNo" label="联盟卡号">
               <template scope="scope">
                 <el-popover trigger="hover" placement="bottom">
-                  <p>{{ scope.row.cardNo }}</p>
+                  <p>卡号：{{ scope.row.cardNo }}</p>
                   <div slot="reference" class="name-wrapper">
                     <span>{{ scope.row.cardNo }}</span>
                   </div>
@@ -169,7 +169,7 @@
             <el-table-column prop="shopName" label="消费门店" min-width="100px">
               <template scope="scope">
                 <el-popover trigger="hover" placement="bottom" effect="Dark">
-                  <p> {{ scope.row.shopName }}</p>
+                  <p> 门店：{{ scope.row.shopName }}</p>
                   <div slot="reference" class="name-wrapper">
                     <span>{{ scope.row.shopName }}</span>
                   </div>
@@ -179,7 +179,7 @@
             <el-table-column prop="cardNo" label="联盟卡号">
               <template scope="scope">
                 <el-popover trigger="hover" placement="bottom" effect="Dark">
-                  <p> {{ scope.row.cardNo }}</p>
+                  <p> 卡号：{{ scope.row.cardNo }}</p>
                   <div slot="reference" class="name-wrapper">
                     <span>{{ scope.row.cardNo }}</span>
                   </div>
@@ -207,7 +207,7 @@
             <el-table-column prop="createtime" label="创建时间" width="180px">
               <template scope="scope">
                 <el-popover trigger="hover" placement="bottom" effect="Dark">
-                  <p> {{ scope.row.createtime }}</p>
+                  <p> 创建时间：{{ scope.row.createtime }}</p>
                   <div slot="reference" class="name-wrapper">
                     <span>{{ scope.row.createtime }}</span>
                   </div>
