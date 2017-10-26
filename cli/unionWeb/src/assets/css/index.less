@@ -40,6 +40,11 @@ h2{
     font-size: 16px;
     color: #333333;
 }
+hr{
+  border: 0!important;
+  height: 1px!important;
+  background: #EEEEEE!important;
+}
 //去掉*字公共样式
 .el-form-item.is-required .el-form-item__label:before {
   content: '';
@@ -323,6 +328,13 @@ h2{
 
 // 注：以上都是公共样式------------------------------------------------------------------------------------------------------------------0
 
+#myMainUnion{
+  .model_2{
+    .el-dialog__body{
+      padding: 2px;
+    }
+  }
+}
 //我的联盟公共信息描述样式
 .union_set{
   margin:42px 0 31px;
@@ -546,21 +558,20 @@ h2{
           font-size:20px;
         }
       }
+      .el-switch.is-disabled .el-switch__core {
+        border-color: #20a0ff!important;
+        background: #20a0ff!important;
+      }
     }
   }
 }
 #recommended{
   textarea {
-    border-color:#BFCBD9;
     height: 85px;
-    width: 224px;
+    width: 241px;
     border-radius: 5px;
     resize: none;
     padding-left: 10px;
-    //transition: all 0.44s;
-  }
-  textarea:focus{
-    border-color: transparent;
   }
 }
 
@@ -655,15 +666,20 @@ h2{
       margin-top:140px;
     }
     .model_{
+      text-align: inherit;
       .el-dialog--tiny{
         width:560px;
         height: 250px;
-        .el-dialog__body{
-          margin-top: 35px;
+        .el-dialog__header {
+          padding: 20px 20px 16px;
+          border-bottom: 1px solid #ddd;
         }
-      }
-      .el-dialog__footer{
-        margin-top: 50px;
+        .el-row{
+          padding-top: 35px;
+        }
+        .el-dialog__footer{
+          margin-top: 50px;
+        }
       }
     }
   }
@@ -785,9 +801,8 @@ h2{
         }
       }
       textarea {
-        border-color:#BFCBD9;
         height: 85px;
-        width: 224px;
+        width: 238px;
         border-radius: 5px;
         resize: none;
         padding-left: 10px;
@@ -844,6 +859,11 @@ h2{
           .totalAll{
             background: #eef1f6;
             padding:8px 20px;
+            span{
+              float: right;
+              margin-right: 115px;
+              font-weight: bold;
+            }
           }
           .el-button{
             padding: 5px 17px;
@@ -870,7 +890,12 @@ h2{
   }
   .model_03{
     .el-dialog--tiny{
-      width:37%;
+      width:560px;
+      height: 360px;
+      .el-dialog__header {
+        padding: 20px 20px 16px;
+        border-bottom: 1px solid #eeeeee;
+      }
     }
   }
 }

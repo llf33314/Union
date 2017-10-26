@@ -44,13 +44,13 @@
           <!-- 导出按钮 -->
           <el-button type="primary" @click="output1">导出</el-button>
         </p>
-        <el-table :data="gridData">
+        <el-table :data="gridData" max-height="500">
           <el-table-column prop="lastModifyTime" label="时间"></el-table-column>
           <el-table-column prop="clientName" label="顾客姓名"></el-table-column>
           <el-table-column prop="clientPhone" label="电话"></el-table-column>
           <el-table-column prop="brokeragePrice" label="佣金（元）"></el-table-column>
         </el-table>
-        <p class="totalAll">合计 {{ contactMoneySum }}</p>
+        <p class="totalAll">合计 <span>{{ contactMoneySum }}</span></p>
       </div>
     </el-dialog>
   </div>

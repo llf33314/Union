@@ -33,7 +33,7 @@
     <!--中间栏信息（红卡，售卡，入盟，联盟设置...）-->
     <div class="nav clearfix">
       <el-col :xs="8" :sm="8" :md="8" :lg="8">
-        <div class="grid-content bg-purple nav-list">
+        <div class="grid-content bg-purple ">
           <router-link :to="{ path: '/my-union/union-setting', name: 'UnionSetting'}" v-if="isUnionOwner">
             <el-button type="success" size="mini">
               <img src="../../assets/images/icon01.png" style="width: 11px;">
@@ -49,7 +49,7 @@
         </div>
       </el-col>
       <el-col :xs="8" :sm="8" :md="8" :lg="8" v-if="isUnionOwner">
-        <div class="grid-content bg-purple nav-list">
+        <div class="grid-content bg-purple ">
           <router-link :to="{ path: '/my-union/union-check', name: 'UnionCheck'}">
             <el-button type="info" size="mini">
               <img src="../../assets/images/icon02.png" style="width: 11px;">
@@ -59,7 +59,7 @@
         </div>
       </el-col>
       <el-col :xs="8" :sm="8" :md="8" :lg="8">
-        <div class="grid-content bg-purple nav-list">
+        <div class="grid-content bg-purple ">
           <router-link :to="{ path: '/my-union/union-recommend', name: 'UnionRecommend'}">
             <el-button type="danger" size="mini">
               <img src="../../assets/images/icon03.png" >
@@ -69,7 +69,7 @@
         </div>
       </el-col>
       <el-col :xs="8" :sm="8" :md="8" :lg="8">
-        <div class="grid-content bg-purple nav-list">
+        <div class="grid-content bg-purple ">
           <router-link :to="{ path: '/my-union/union-percent', name: 'UnionPercent'}">
             <el-button type="warning" size="mini">
               <img src="../../assets/images/icon04.png" style="width: 11px;">
@@ -79,7 +79,7 @@
         </div>
       </el-col>
       <el-col :xs="8" :sm="8" :md="8" :lg="8">
-        <div class="grid-content bg-purple nav-list">
+        <div class="grid-content bg-purple ">
           <router-link :to="{ path: '/my-union/union-discount', name: 'UnionDiscount'}">
             <el-button type="success" size="mini">
               <img src="../../assets/images/icon05.png" style="width: 11px;">
@@ -89,13 +89,23 @@
         </div>
       </el-col>
       <el-col :xs="8" :sm="8" :md="8" :lg="8">
-        <div class="grid-content bg-purple nav-list">
+        <div class="grid-content bg-purple ">
           <router-link :to="{ path: '/my-union/union-quit', name: 'UnionQuit'}">
             <el-button type="danger" size="mini">
               <img src="../../assets/images/icon06.png" alt="">
             </el-button>
             <span>退盟管理</span>
           </router-link>
+        </div>
+      </el-col>
+      <el-col :xs="8" :sm="8" :md="8" :lg="8" v-if="!isUnionOwner">
+        <div class="grid-content bg-purple nav-list" @click="visible1=true">
+          <a style="cursor: pointer">
+            <el-button type="primary" size="mini">
+              <img src="../../assets/images/icon07.png" style="width: 13px;height: 11px;">
+            </el-button>
+            <span>盟主权限转移</span>
+          </a>
         </div>
       </el-col>
     </div>
@@ -159,6 +169,21 @@
         </el-tab-pane>
       </el-tabs>
     </div>
+    <!--弹出框提示-->
+    <div class="model_2">
+      <el-dialog title="删除" :visible.sync="visible1" size="tiny">
+        <hr>
+        <div>
+          <img src="../../assets/images/delect01.png"  class="fl">
+          <span>盟主（企业名称）将“联盟名称”权限转移给您，</span>
+          <p style="color: #666666">请确认！</p>
+        </div>
+        <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="confirm1">确定</el-button>
+            <el-button @click="visible1=false">取消</el-button>
+          </span>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -181,6 +206,7 @@ export default {
   },
   data() {
     return {
+      visible1: false,
       unionMainData: {
         myJoinUnionList: [],
         myCreateUnionImg: '',

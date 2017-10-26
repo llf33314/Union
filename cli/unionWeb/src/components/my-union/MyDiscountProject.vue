@@ -6,9 +6,10 @@
       <p class="fl model_">
         <el-button type="primary" @click="dialogVisible = true">新增</el-button>
         <!-- 弹出框 新增 -->
-          <el-dialog :visible.sync="dialogVisible" size="tiny" @close="resetData">
+          <el-dialog title="新增优惠项目" :visible.sync="dialogVisible" size="tiny" @close="resetData">
+            <!--<hr>-->
             <el-row>
-              <el-col :span="12" :offset="2">
+              <el-col :span="20" :offset="2">
                 <el-input v-model="serviceName" placeholder="请输入项目名称"></el-input>
               </el-col>
             </el-row>
@@ -56,8 +57,8 @@
           <hr>
           <div>
             <img src="../../assets/images/delect01.png"  class="fl">
-            <span>是否确认删除“ {{ name }} ”</span>
-            <p></p>
+            <span>是否确认删除“ {{ name }} ”？</span>
+            <p>删除后不可恢复！</p>
           </div>
           <span slot="footer" class="dialog-footer">
             <el-button type="primary" @click="confirm1">确定</el-button>
@@ -71,7 +72,8 @@
           <hr>
           <div>
             <img src="../../assets/images/delect01.png"  class="fl">
-            <span>是否确认批量删除选中项目</span>
+            <span>是否确认批量删除选中项目？</span>
+            <p>删除后不可恢复！</p>
           </div>
           <span slot="footer" class="dialog-footer">
             <el-button type="primary" @click="confirm2">确定</el-button>
