@@ -85,6 +85,14 @@ export default {
         this.init();
       }
     }
+    // 是否有新的消费核销成功
+    eventBus.$on('newTransaction', () => {
+      if (this.unionMemberId) {
+        if (this.unionId) {
+          this.init();
+        }
+      }
+    });
   },
   watch: {
     unionId: function() {
