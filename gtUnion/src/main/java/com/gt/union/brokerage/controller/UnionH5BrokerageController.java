@@ -313,7 +313,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	public String payOne(HttpServletRequest request, HttpServletResponse response, @ApiParam(name = "id", value = "商机id", required = true) @PathVariable(value = "id", required = true) Integer id
 							,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) throws Exception{
 		BusUser user = SessionUtils.getUnionBus(request);
-		Member member = SessionUtils.getLoginMember(request,user.getId());
+		Member member = SessionUtils.getLoginMember(request,PropertiesUtil.getDuofenBusId());
 		if(CommonUtil.isEmpty(member)){
 			String redirectUrl = this.authorizeMemberWx(request,PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + url);
 			return GTJsonResult.instanceSuccessMsg(null,redirectUrl).toString();

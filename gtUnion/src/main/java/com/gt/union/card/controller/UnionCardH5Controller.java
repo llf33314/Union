@@ -185,6 +185,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			}
 			Map<String,Object> data = unionCardService.bindCard(vo);
 			if(CommonUtil.isNotEmpty(data.get("qrurl"))){
+				url = url + "?busId=" + busId;
 				String returnUrl = PropertiesUtil.getUnionUrl() + "/cardPhone/#/" + url;
 				Map<String,Object> qrCodeData = unionCardService.createQRCode(busId, vo.getPhone(), member.getId(),vo.getUnionId(), vo.getCardType(), 1, returnUrl, busId, 0);
 				Map<String,Object> param = new HashMap<String,Object>();

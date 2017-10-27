@@ -259,7 +259,7 @@
         $http.post(`cardH5/79B4DE7C?url=${url1}`,data)
           .then(res => {
             if(res.data.success){
-              if(res.data.data.length > 0){
+              if(res.data.data.qrurl != undefined && res.data.data.qrurl != null){
                 location.href=res.data.data.qrurl;
               }else {
                 location.reload();
