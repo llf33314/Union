@@ -306,6 +306,7 @@ export default {
                 }
                 if (this.socket1) {
                   this.socket1.on('chatevent', function(data) {
+                      console.log(data);
                     if (this.visible5) {
                       let msg = eval('(' + data.message + ')');
                       _this.wxData = msg;
