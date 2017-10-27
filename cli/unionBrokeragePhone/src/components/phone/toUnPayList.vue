@@ -5,9 +5,9 @@
         <el-breadcrumb-item :to="{ path: '/index' }">
           <img class="back__" src="../../assets/images/back.png" alt="" style="width: 1rem;">
         </el-breadcrumb-item>
-        <p class="fr union_head" >
+        <p class="fr union_head" @click="boxWarp">
           <img src="../../assets/images/switchover.png" alt="">
-          <span @click="boxWarp" class="unionName">全部</span>
+          <span class="unionName">全部</span>
         </p>
       </div>
       <div class="union_second payed">
@@ -105,7 +105,7 @@
                   showClose: true,
                   message: "已催促",
                   type: 'success',
-                  duration: 3000
+                  duration: 3500
                 });
             }
           })

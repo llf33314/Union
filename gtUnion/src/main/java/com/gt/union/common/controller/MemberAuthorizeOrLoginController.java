@@ -135,7 +135,7 @@ public class MemberAuthorizeOrLoginController {
 		if(CommonUtil.isEmpty(member)){
 			if(CommonUtil.judgeBrowser(request) == 1){//微信
 				String redirectUrl = authorizeMember(request, busId, 1, PropertiesUtil.getUnionUrl() + "/cardPhone/#/" + url);
-				return GTJsonResult.instanceSuccessMsg("登录授权",redirectUrl).toString();
+				return redirectUrl;
 			}else {//其他浏览器
 				return GTJsonResult.instanceSuccessMsg("登录授权",PropertiesUtil.getUnionUrl() + "/cardPhone/#/" + "toUnionLogin?busId="+busId).toString();
 			}
@@ -143,7 +143,7 @@ public class MemberAuthorizeOrLoginController {
 		if(!member.getBusid().equals(busId)){
 			if(CommonUtil.judgeBrowser(request) == 1){//微信
 				String redirectUrl = authorizeMember(request, busId, 1, PropertiesUtil.getUnionUrl() + "/cardPhone/#/" + url);
-				return GTJsonResult.instanceSuccessMsg("登录授权",redirectUrl).toString();
+				return redirectUrl;
 			}else {//其他浏览器
 				return GTJsonResult.instanceSuccessMsg("登录授权",PropertiesUtil.getUnionUrl() + "/cardPhone/#/" + "toUnionLogin?busId="+busId).toString();
 			}

@@ -29,7 +29,7 @@
         <button style="color: #ffffff;font-size: 0.65rem;
         margin-left: 1rem;background-color:transparent;
         border: none"
-                @click="getNumber" id="getCode" disabled="true">
+                @click="getNumber" id="getCode">
           获取验证码
         </button>
       </div>

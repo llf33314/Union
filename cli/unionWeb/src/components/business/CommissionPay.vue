@@ -110,7 +110,7 @@
           <p>￥
             <span>{{ brokeragePrice }}</span>
           </p>
-          <p>扫描二维码进行支付</p>
+          <p style="margin-top: 5px;">扫描二维码进行支付</p>
         </div>
         <span slot="footer" class="dialog-footer">
         </span>
@@ -481,9 +481,6 @@ export default {
 </script>
 
 <style lang='less' rel="stylesheet/less" scoped>
-.imgSrc {
-  width: 200px;
-  height: 200px;
-}
+
 </style>
 

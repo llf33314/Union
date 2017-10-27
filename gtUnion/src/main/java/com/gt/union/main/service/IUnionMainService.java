@@ -51,12 +51,13 @@ public interface IUnionMainService extends IService<UnionMain> {
     /**
      * 根据商家id，分页获取商家尚未加入的联盟列表信息
      *
-     * @param page  {not null} 分页对象
-     * @param busId {not null} 商家id
+     * @param page     {not null} 分页对象
+     * @param busId    {not null} 商家id
+     * @param joinType {not null} 加盟方式
      * @return Page<UnionMain>
      * @throws Exception 全局处理异常
      */
-    Page<UnionMain> pageOtherUnionByBusId(Page<UnionMain> page, Integer busId) throws Exception;
+    Page<UnionMain> pageOtherUnionByBusIdAndJoinType(Page<UnionMain> page, Integer busId, Integer joinType) throws Exception;
 
     /**
      * 根据联盟id集合，获取联盟列表信息

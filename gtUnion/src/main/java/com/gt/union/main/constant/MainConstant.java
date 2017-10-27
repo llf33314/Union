@@ -63,7 +63,7 @@ public interface MainConstant {
     int NOTICE_MAX_LENGTH = 50;
 
     /**
-     * 加盟方式：默认为申请
+     * 加盟方式：默认为推荐
      */
     int MAIN_JOIN_TYPE_DEFAULT = 1;
 
