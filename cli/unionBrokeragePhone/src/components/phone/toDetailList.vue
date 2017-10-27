@@ -304,7 +304,7 @@
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
         //隐藏弹出框
-        $('.box-wrap').hide(300);
+        $('.box-wrap').hide();
       },
       //推荐佣金页面加载更多列表数据
       loadMore1(){
