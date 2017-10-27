@@ -259,20 +259,21 @@ export default {
                 this.form2.cards = res.data.data.cards;
                 if (this.form2.cards.red) {
                   if (this.form2.cards.red.termTime) {
-                    this.form2.cards.red.termTime = this.form2.cards.red.termTime + '天';
+                    this.form2.cards.red.termTime = this.form2.cards.red.termTime;
                   } else {
                     this.form2.cards.red.termTime = '无';
                   }
                 }
                 if (this.form2.cards.black) {
                   if (this.form2.cards.black.termTime) {
-                    this.form2.cards.black.termTime = this.form2.cards.black.termTime + '天';
+                    this.form2.cards.black.termTime = this.form2.cards.black.termTime;
                   } else {
                     this.form2.cards.black.termTime = '无';
                   }
                 }
                 this.visible2 = true;
                 //判断是否可以关注 然后获取二维码
+                var _this = this;
                 if (this.form2.follow == 1 && !this.wxUser) {
                   this.wxUser = true;
                   $http
@@ -289,7 +290,6 @@ export default {
                       }
                     })
                     .then(res => {
-                      var _this = this;
                       if (!this.socket1) {
                         this.socket1 = io.connect('https://socket.deeptel.com.cn'); // 测试
                         // this.socket1 = io.connect('http://183.47.242.2:8881'); // 堡垒
@@ -299,16 +299,18 @@ export default {
                           _this.socket1.emit('auth', jsonObject);
                         });
                       }
-                      this.socket1.on('chatevent', function(data) {
-                        if (this.visible5) {
-                          let msg = eval('(' + data.message + ')');
-                          _this.wxData = msg;
-                        }
-                      });
                     })
                     .catch(err => {
                       this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
                     });
+                }
+                if (this.socket1) {
+                  this.socket1.on('chatevent', function(data) {
+                    if (this.visible5) {
+                      let msg = eval('(' + data.message + ')');
+                      _this.wxData = msg;
+                    }
+                  });
                 }
               } else {
                 this.form2.unions = '';
@@ -337,10 +339,11 @@ export default {
             if (this.memberId) {
               data.memberId = this.memberId - 0;
             } else {
-              data.memberId = '';
               this.$message({ showClose: true, message: '请选择粉丝', type: 'warning', duration: 5000 });
               return false;
             }
+          } else {
+            data.memberId = '';
           }
           data.phone = this.form1.phone;
           data.unionId = this.unionId;
