@@ -72,8 +72,8 @@
             </div>
           </li>
         </ul>
-        <div class="loadMore hasPayLoadMore1"  @click="loadMore1">加载更多</div>
-        <div class="nothing noPayNothing" style="display: none">没有更多数据</div>
+        <div class="loadMore hasPayLoadMore1"  @click="loadMore1" style="color:#868686;">加载更多</div>
+        <div class="nothing noPayNothing" style="display: none;color:#868686;">没有更多数据</div>
       </div>
       <!--已经支付的页面-->
       <div class="payed passive">
@@ -97,8 +97,8 @@
             </div>
           </li>
         </ul>
-        <div class="loadMore hasPayLoadMore2" style="display: none" @click="loadMore2">加载更多</div>
-        <div class="nothing hasPayNothing" style="display: none">没有更多数据</div>
+        <div class="loadMore hasPayLoadMore2" style="display: none;color:#868686;" @click="loadMore2">加载更多</div>
+        <div class="nothing hasPayNothing" style="display: none;color:#868686;">没有更多数据</div>
       </div>
     </div>
     <!--多粉大联盟按钮弹框-->
@@ -192,7 +192,7 @@
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
       },
       //一键支付的弹出框
@@ -218,7 +218,7 @@
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
         let url='toPayList';
         $http.post(`/unionH5Brokerage/allPay?unionId=${uid}&fee=${this.totalMoney12}&url=${url}`)
@@ -231,7 +231,7 @@
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
         $('.box-wrap3').hide(200);
       },
@@ -273,12 +273,12 @@
                   }
                 })
                 .catch(err => {
-                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 0});
+                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 3000});
                 });
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
         //已支付的页面的请求-------------2
           $http.get(`/unionH5Brokerage/pay/list?size=${this.size}&current=${this.current}`)
@@ -311,12 +311,12 @@
                     }
                   })
                   .catch(err => {
-                    this.$message({showClose: true, message: err.toString(), type: 'error', duration: 0});
+                    this.$message({showClose: true, message: err.toString(), type: 'error', duration: 3000});
                   });
               }
             })
             .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
             });
         $('.box-wrap').hide(300);
       },
@@ -357,12 +357,12 @@
                   }
                 })
                 .catch(err => {
-                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 0});
+                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 3000});
                 });
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
         //已支付的页面的请求----------------2
         $http.get(`/unionH5Brokerage/pay/list?size=${this.size}&current=${this.current}&unionId=${Uid}`)
@@ -393,13 +393,13 @@
                   }
                 })
                 .catch(err => {
-                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 0});
+                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 3000});
                 });
             }
           }
         )
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
         //只要点击就隐藏弹出框
         $('.box-wrap').hide(300);
@@ -427,7 +427,7 @@
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
       },
       //已支付页面加载更多列表数据
@@ -453,7 +453,7 @@
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
         console.log(this.unCommission);
       },
@@ -487,7 +487,7 @@
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
       //未支付金额的总和
       $http.get(`/unionH5Brokerage/unPaySum`)
@@ -497,7 +497,7 @@
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
 // 以下为已支付的------------------------------------------------------------------------------2
       //已支付页面（页面加载时就渲染数据）
@@ -525,7 +525,7 @@
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           console.log(666)
         });
       //已支付的佣金总和
@@ -536,7 +536,7 @@
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
 //多粉弹出框的请求盟员列表-----------------------------------------------------------------------3
       $http.get(`/unionH5Brokerage/unionList`)
@@ -549,7 +549,7 @@
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     }
   }
