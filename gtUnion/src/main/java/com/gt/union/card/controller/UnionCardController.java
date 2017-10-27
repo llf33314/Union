@@ -165,7 +165,7 @@ public class UnionCardController {
 			if(user.getPid() != null && user.getPid() != 0){
 				busId = user.getPid();
 			}
-			vo.setBusId(36);
+			vo.setBusId(busId);
 			Map<String,Object> data = unionCardService.bindCard(vo);
 			return GTJsonResult.instanceSuccessMsg(data).toString();
 	}

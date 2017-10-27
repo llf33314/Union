@@ -302,20 +302,18 @@ export default {
                           _this.socket1.emit('auth', jsonObject);
                         });
                       }
+                      this.socket1.on('chatevent', function(data) {
+                        if (_this.visible5) {
+                          let msg = eval('(' + data.message + ')');
+                          _this.wxData = msg;
+                        }
+                      });
                     })
                     .catch(err => {
                       this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
                     });
                 }
-                if (this.socket1) {
-                  this.socket1.on('chatevent', function(data) {
-                      console.log(data);
-                    if (this.visible5) {
-                      let msg = eval('(' + data.message + ')');
-                      _this.wxData = msg;
-                    }
-                  });
-                }
+
               } else {
                 this.form2.unions = '';
                 this.form2.follow = 0;
