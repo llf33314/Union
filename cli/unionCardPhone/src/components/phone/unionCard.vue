@@ -6,7 +6,7 @@
     <div class="starts_">
       <img src="../../assets/images/sjUnionX1.png" v-for="(items,index) in unionList">
     </div>
-    <h1 class="fr" @click="showModel(mainContent.cardNo)">
+    <h1 class="fr" @click="showModel(mainContent.cardNo)" v-if="mainContent.cardNo">
       <img src="../../assets/images/SJunionCard3.png">
     </h1>
     <h2 class="fl">{{mainContent.cardNo}}</h2>

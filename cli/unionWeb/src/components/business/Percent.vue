@@ -219,6 +219,7 @@ export default {
 <style lang='less' rel="stylesheet/less">
 .model_03 {
   .el-dialog__body {
+
     padding: 0;
     margin: 30px 0 30px 30px;
     .el-dialog--tiny {

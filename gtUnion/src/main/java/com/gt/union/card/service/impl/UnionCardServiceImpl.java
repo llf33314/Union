@@ -447,7 +447,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         data.put("memberId", memberId);
         int isIntegral = currentUnionMain.getIsIntegral();
         data.put("isIntegral", isIntegral);
-        if (isIntegral == 1) {//开启积分
+        if (isIntegral == MainConstant.IS_INTEGRAL_YES) {//开启积分
             UnionMember unionMember = unionMemberService.getById(memberId);
             if (CommonUtil.isNotEmpty(unionMember.getIntegralExchangePercent()) && unionMember.getIntegralExchangePercent() > 0) {
                 data.put("integralPercent", unionMember.getIntegralExchangePercent());
@@ -952,9 +952,9 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 data.put("cardNo", root.getNumber());
                 data.put("integral", root.getIntegral());
             }
-            data.put("nickname", busMember.getNickname());
-            data.put("headurl", busMember.getHeadimgurl());
         }
+        data.put("nickname", busMember.getNickname());
+        data.put("headurl", busMember.getHeadimgurl());
         data.put("busId", busId);
         return data;
     }

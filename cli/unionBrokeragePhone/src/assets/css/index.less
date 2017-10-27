@@ -306,6 +306,7 @@ table {
     }
   }
 }
+
 //顶部按钮点击弹出框的公共样式--------------
 .box-wrap,.box-wrap2,.box-wrap3{
   width: 100%;
@@ -357,6 +358,7 @@ table {
     right: 0.3rem;
   }
 }
+
 //最底部固定图片的公共样式
 .supportIcon {
   margin-bottom: 1rem;
@@ -385,7 +387,13 @@ table {
   }
 }
 
-
+//点击切换的样式
+.focusPay {
+  background: #39a7ff;
+  color: white;
+  background: -webkit-linear-gradient(top, #3ad1ff, #39aaff);
+  background: linear-gradient(top, #3ad1ff, #39aaff);
+}
 
 //以下为手机端样式--------------------------------------------------------
 
@@ -516,15 +524,16 @@ table {
       }
       .payTab {
         position: absolute;
-        width: 7.5rem;
+        width: 8.5rem;
         left: 50%;
-        margin-left: -3.1rem;
+        margin-left: -3.7rem;
         text-align: center;
         border: 0.02rem solid #39a7ff;
         border-radius: 0.5rem;
         color: #39a7ff;
+        top: -.2rem;
         div {
-          padding: 0.1rem 0.2rem;
+          padding: 0.2rem 0.2rem;
           font-size: 0.35rem;
           text-align: center;
           width: 50%;
@@ -535,12 +544,6 @@ table {
         }
         div:nth-of-type(2) {
           border-radius: 0 0.8rem 0.8rem 0;
-        }
-        .focusPay {
-          background: #39a7ff;
-          color: white;
-          background: -webkit-linear-gradient(top, #3ad1ff, #39aaff);
-          background: linear-gradient(top, #3ad1ff, #39aaff);
         }
       }
       .payed, .unpay {
@@ -569,6 +572,9 @@ table {
               bottom: 0;
               right: 0;
               font-size: 0.8rem;
+            }
+            button:active{
+              background-color:transparent!important;
             }
           }
         }
@@ -777,15 +783,16 @@ table {
     }
     .payTab {
       position: absolute;
-      width: 7.5rem;
+      width: 8.5rem;
       left: 50%;
-      margin-left: -3.1rem;
+      margin-left: -3.7rem;
       text-align: center;
       border: 1px solid #39a7ff;
       border-radius: 0.5rem;
       color: #39a7ff;
+      top:-.2rem;
       div {
-        padding: 0.1rem 0.2rem;
+        padding: 0.2rem 0.2rem;
         font-size: 0.35rem;
         text-align: center;
         width: 50%;
@@ -796,12 +803,6 @@ table {
       }
       div:nth-of-type(2) {
         border-radius: 0 0.48rem 0.48rem 0;
-      }
-      .focusPay {
-        background: #39a7ff;
-        color: white;
-        background: -webkit-linear-gradient(top, #3ad1ff, #39aaff);
-        background: linear-gradient(top, #3ad1ff, #39aaff);
       }
     }
     .payed, .unpay {
