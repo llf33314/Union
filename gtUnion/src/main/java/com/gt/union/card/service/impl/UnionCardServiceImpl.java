@@ -1020,6 +1020,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         Integer rootId = null;
         Integer cardId = null;
         Date validity = null;
+        int isCharge = charge.getIsCharge() == 0 ? CardConstant.IS_CHARGE_NO : CardConstant.IS_CHARGE_YES;
         if (unionCard == null) {
             if (root == null) {
                 UnionCardRoot unionCardRoot = unionCardRootService.createUnionCardRoot(phone);
@@ -1028,7 +1029,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 rootId = root.getId();
             }
             Date time = (charge.getValidityDay() == null || charge.getValidityDay() == 0) ? DateTimeKit.parse(CardConstant.CARD_FREE_VALIDITY, "yyyy-MM-dd HH:mm:ss") : DateTimeKit.addDate(new Date(), charge.getValidityDay());
-            UnionCard card = this.createUnionCard(rootId, cardType, member.getId(), time, 0);
+            UnionCard card = this.createUnionCard(rootId, cardType, member.getId(), time, isCharge);
             if (memberId != 0) {
                 UnionCardBinding binding = unionCardBindingService.getByCardRootIdAndMemberId(rootId, memberId);
                 if (binding == null) {
@@ -1049,7 +1050,8 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             } else {
                 unionCard.setValidity(time);
             }
-            unionCard.setIsCharge(CardConstant.IS_CHARGE_NO);
+
+            unionCard.setIsCharge(isCharge);
             this.updateById(upCard);
             validity = upCard.getValidity();
         }
