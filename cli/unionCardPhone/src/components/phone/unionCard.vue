@@ -172,7 +172,7 @@
         url1:'',
         blackCard:{},
         redCard:{},
-        isGetCode : 1,
+        isGetCode : 0,
       }
     },
     mounted(){

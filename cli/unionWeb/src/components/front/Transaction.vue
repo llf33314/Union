@@ -226,12 +226,12 @@ export default {
             this.form1.getVerificationCode = true;
             this.form1.countDownTime = 60;
             this.timeEnd = setInterval(() => {
-              this.form1.countDownTime--;
               if (this.form1.countDownTime === 0) {
                 this.form1.getVerificationCode = false;
                 this.form1.countDownTime = '';
                 clearInterval(this.timeEnd);
               }
+              this.form1.countDownTime--;
             }, 1000);
           }
         })

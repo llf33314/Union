@@ -205,7 +205,7 @@
       },
       //隐藏一键支付弹出框
       hide3_(){
-        $('.box-wrap3').hide(200);
+        $('.box-wrap3').hide();
       },
       //一键支付确认按钮
       send3_(){
@@ -233,7 +233,7 @@
           .catch(err => {
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
-        $('.box-wrap3').hide(200);
+        $('.box-wrap3').hide();
       },
 //    点击'全部'时候触发
       fullyLoaded(){
@@ -318,7 +318,7 @@
             .catch(err => {
               this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
             });
-        $('.box-wrap').hide(300);
+        $('.box-wrap').hide();
       },
 //      点击'对应联盟'时候触发;
       partLoaded(did,uname){
@@ -402,7 +402,7 @@
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
         //只要点击就隐藏弹出框
-        $('.box-wrap').hide(300);
+        $('.box-wrap').hide();
       },
       //未支付页面加载更多列表数据
       loadMore1(){
