@@ -1,5 +1,6 @@
 <template>
   <button @click="fn1"> 登陆 </button>
+  <div>test</div>
 </template>
 
 <script>
