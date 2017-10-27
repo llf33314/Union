@@ -181,6 +181,9 @@ export default {
   mounted: function() {
     // 切换tab清空输入数据
     eventBus.$on('tabChange3', () => {
+      if (this.timeEnd) {
+        clearInterval(this.timeEnd);
+      }
       this.init();
     });
   },
