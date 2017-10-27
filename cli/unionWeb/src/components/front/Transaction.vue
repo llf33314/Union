@@ -337,6 +337,7 @@ export default {
             if (this.memberId) {
               data.memberId = this.memberId - 0;
             } else {
+              data.memberId = '';
               this.$message({ showClose: true, message: '请选择粉丝', type: 'warning', duration: 5000 });
               return false;
             }
