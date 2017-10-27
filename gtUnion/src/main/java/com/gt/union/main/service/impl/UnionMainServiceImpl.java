@@ -122,12 +122,13 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
     }
 
     @Override
-    public Page<UnionMain> pageOtherUnionByBusId(Page<UnionMain> page, Integer busId) throws Exception {
-        if (page == null || busId == null) {
+    public Page<UnionMain> pageOtherUnionByBusIdAndJoinType(Page<UnionMain> page, Integer busId, Integer joinType) throws Exception {
+        if (page == null || busId == null || joinType == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("join_type", joinType)
                 .notExists(" SELECT m.id FROM t_union_member m"
                         + " WHERE m.del_status = " + CommonConstant.DEL_STATUS_NO
                         + "  AND m.union_id = t_union_main.id"
