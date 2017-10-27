@@ -206,7 +206,7 @@ export default {
   /* Mozilla Firefox 19+ */
   color: #97A8BE;
 }
-#feedbackcontent::-ms-input-placeholder {
+#feedbackcontent:-ms-input-placeholder {
   /* Internet Explorer 10+ */
   color: #97A8BE;
 }

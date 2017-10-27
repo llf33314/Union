@@ -86,8 +86,8 @@
             </tr>
             </tbody>
           </table>
-          <p class="hasPayLoadMore" style="display:none" @click="loadMore">加载更多</p>
-          <div class="nothing hasPayNothing" style="display:none" >没有更多数据</div>
+          <p class="hasPayLoadMore" style="display:none;color:#868686;" @click="loadMore">加载更多</p>
+          <div class="nothing hasPayNothing" style="display:none;color:#868686;">没有更多数据</div>
         </div>
   </div>
 </template>
@@ -127,7 +127,7 @@
 
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
         $('.box-wrap2').hide(200);
       },
@@ -152,7 +152,7 @@
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
       },
     },
@@ -190,7 +190,7 @@
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
       //获取提现记录表的数据
       $http.get(`/unionH5Brokerage/withdrawals/list?size=${this.size}&current=${this.current}`)
@@ -214,7 +214,7 @@
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
   }
@@ -245,5 +245,6 @@
   .nothing{
     margin: 0.8rem 6rem;
     font-size: 0.85rem;
+    color: #868686;
   }
 </style>

@@ -157,7 +157,7 @@
     <div class="codePayment">
       <el-dialog title="付款" :visible.sync="visible5" size="tiny" @close="resetData">
         <hr>
-        <img v-bind:src="codeSrc" class="codeImg">
+        <img v-bind:src="codeSrc">
         <p>请使用微信/支付宝扫描该二维码付款</p>
       </el-dialog>
     </div>
@@ -488,10 +488,6 @@ export default {
 </script>
 
 <style lang='less' rel="stylesheet/less" scoped>
-.codeImg {
-  width: 200px;
-  height: 200px;
-}
 
 .unionImg {
   width: 80px;

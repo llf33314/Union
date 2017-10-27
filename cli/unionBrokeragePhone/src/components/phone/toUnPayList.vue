@@ -43,7 +43,7 @@
         </li>
       </ul>
       <div class="loadMore hasPayLoadMore" @click="loadMore" >加载更多</div>
-      <div class="nothing hasPayNothing" style="display:none" >没有更多数据</div>
+      <div class="nothing hasPayNothing" style="display:none;color:#868686;" >没有更多数据</div>
     </div>
     <!--多粉大联盟按钮弹框-->
     <div class="box-wrap" style="display: none">
@@ -110,7 +110,7 @@
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
       },
       //点击全部联盟
@@ -146,13 +146,13 @@
                   }
                 })
                 .catch(err => {
-                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 0});
+                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 3000});
                 });
               $('.box-wrap').hide();
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
       },
       //点击部分联盟
@@ -193,12 +193,12 @@
                   }
                 })
                 .catch(err => {
-                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 0});
+                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 3000});
                 });
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
       },
       //加载更多列表数据
@@ -223,7 +223,7 @@
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
       },
     },
@@ -254,7 +254,7 @@
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
       //获取盟员列表的数据----------------------------------------------------------------2
       $http.get(`/unionH5Brokerage/unionList`)
@@ -264,7 +264,7 @@
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
       //未收取佣金的总金额----------------------------------------------------------------3
       $http.get(`/unionH5Brokerage/unComeSum`)
@@ -274,7 +274,7 @@
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     }
   }

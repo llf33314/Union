@@ -395,6 +395,43 @@ table {
   background: linear-gradient(top, #3ad1ff, #39aaff);
 }
 
+//element弹出提示框的公共样式
+.el-message {
+  box-shadow: 0 0.1068rem 0.2136rem rgba(0, 0, 0, .12), 0 0 0.3204rem rgba(0, 0, 0, .04);
+  min-width: 16.02rem;
+  padding: 0.534rem 0.6408rem;
+  box-sizing: border-box;
+  border-radius: .1068rem;
+  position: fixed;
+  left: 50%;
+  top: 1.068rem;
+  -ms-transform: translateX(-50%);
+  transform: translateX(-50%);
+  background-color: #fff;
+  transition: opacity .3s, transform .4s;
+  overflow: hidden;
+  .el-message__group p {
+    font-size: 0.75rem;
+    margin: 0 1.82rem 0 1.2rem;
+    color: #8391a5;
+    text-align: justify;
+  }
+  .el-message__img {
+    width: 2.136rem;
+    height: 2.136rem;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  .el-message__closeBtn {
+    right: 0;
+    position: absolute;
+    cursor: pointer;
+    color: #bfcbd9;
+    font-size: 0.75rem;
+  }
+}
+
 //以下为手机端样式--------------------------------------------------------
 
   //首页的所有样式-----------------------------------------------------模块1
@@ -534,7 +571,7 @@ table {
         top: -.2rem;
         div {
           padding: 0.2rem 0.2rem;
-          font-size: 0.35rem;
+          font-size: 0.6rem;
           text-align: center;
           width: 50%;
           border-radius: 0.8rem 0 0 0.8rem;
@@ -572,6 +609,8 @@ table {
               bottom: 0;
               right: 0;
               font-size: 0.8rem;
+              //防止高亮
+              -webkit-tap-highlight-color:transparent;
             }
             button:active{
               background-color:transparent!important;
@@ -793,7 +832,7 @@ table {
       top:-.2rem;
       div {
         padding: 0.2rem 0.2rem;
-        font-size: 0.35rem;
+        font-size: 0.6rem;
         text-align: center;
         width: 50%;
         border-radius: 0.48rem 0 0 0.48rem;
