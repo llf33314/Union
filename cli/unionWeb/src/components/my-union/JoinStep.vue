@@ -151,7 +151,7 @@ export default {
     };
   },
   mounted: function() {
-    $http.get(`/unionMain/page/otherUnion`)
+    $http.get(`/unionMain/page/otherUnion/joinType/2`)
       .then(res => {
         if (res.data.data) {
           this.datas = res.data.data.records;
