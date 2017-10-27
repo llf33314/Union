@@ -206,8 +206,8 @@ export default {
       socketFlag: {
         only: '',
         status: ''
-      },
-//      canSubmit: false
+      }
+      //      canSubmit: false
     };
   },
   mounted: function() {
@@ -256,7 +256,7 @@ export default {
         }, 100);
       }
       if ((this.price2 * 100 - this.price1 * 100) / 100 > 0 || (this.price2 * 100 - this.price1 * 100) / 100 === 0) {
-//        this.canSubmit = true;
+        //        this.canSubmit = true;
       }
     },
     isIntegral_: function() {
@@ -476,6 +476,7 @@ export default {
     },
     // 关闭二维码改变付款方式
     resetData() {
+      parent.window.postMessage('openMask()', 'https://deeptel.com.cn/user/toIndex_1.do');
       this.payType = 0;
     },
     // 返回
@@ -488,7 +489,6 @@ export default {
 </script>
 
 <style lang='less' rel="stylesheet/less" scoped>
-
 .unionImg {
   width: 80px;
   height: 80px;
