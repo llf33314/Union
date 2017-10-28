@@ -90,6 +90,9 @@ export default {
     },
     unionId() {
       return this.$store.state.unionId;
+    },
+    isUnionOwner() {
+      return this.$store.state.isUnionOwner;
     }
   },
   mounted: function() {
@@ -122,6 +125,9 @@ export default {
             .then(res => {
               if (res.data.success) {
                 this.$message({ showClose: true, message: '推荐成功', type: 'success', duration: 5000 });
+                if (this.isUnionOwner) {
+                  eventBus.$emit('newUnionRecommend');
+                }
               }
             })
             .catch(err => {
@@ -196,18 +202,18 @@ export default {
 }
 #feedbackcontent::-webkit-input-placeholder {
   /* WebKit browsers */
-  color: #97A8BE;
+  color: #97a8be;
 }
 #feedbackcontent:-moz-placeholder {
   /* Mozilla Firefox 4 to 18 */
-  color: #97A8BE;
+  color: #97a8be;
 }
 #feedbackcontent::-moz-placeholder {
   /* Mozilla Firefox 19+ */
-  color: #97A8BE;
+  color: #97a8be;
 }
 #feedbackcontent:-ms-input-placeholder {
   /* Internet Explorer 10+ */
-  color: #97A8BE;
+  color: #97a8be;
 }
 </style>

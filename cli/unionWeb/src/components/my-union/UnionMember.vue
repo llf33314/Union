@@ -190,6 +190,21 @@ export default {
         this.init();
       }
     });
+    // 是否有新的盟主推荐入盟
+    eventBus.$on('newUnionRecommend', () => {
+      if (this.unionMemberId) {
+        if (this.unionId) {
+          this.init();
+        }
+      }
+    });
+    eventBus.$on('newUnionCheck', () => {
+      if (this.unionMemberId) {
+        if (this.unionId) {
+          this.init();
+        }
+      }
+    });
   },
   watch: {
     // 查询盟员列表

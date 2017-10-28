@@ -195,7 +195,7 @@ export default {
             .then(res => {
               if (res.data.success) {
                 this.$message({ showClose: true, message: '推荐成功', type: 'success', duration: 5000 });
-                eventBus.$emit('newRecommend');
+                eventBus.$emit('newBusinessRecommend');
                 this.$refs[formName].resetFields();
                 this.init();
               }

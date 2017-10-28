@@ -200,6 +200,7 @@ export default {
             this.search();
             this.visible1 = false;
             this.$message({ showClose: true, message: '审核通过', type: 'success', duration: 5000 });
+            eventBus.$emit('newUnionCheck');
           }
         })
         .catch(err => {
