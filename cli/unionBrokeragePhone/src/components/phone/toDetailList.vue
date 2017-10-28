@@ -99,6 +99,8 @@
     name: 'toDetailList',
     data() {
       return {
+//        底部颜色切换
+        toLogin: 'ceshi1',
         //推荐佣金列表
         recommendList:[],
         //推荐佣金显示的总金额
@@ -365,6 +367,8 @@
     created (){
       //页面的title变换
       $("#title_").text('佣金明细');
+      //图片底部的颜色切换（白和灰切换）
+      this.$emit('getValue',this.toLogin);
 //以下伟推荐佣金部分------------------------------------------------------------------------------------------01
     //推荐佣金
       $http.get(`/unionH5Brokerage/opportunity/list?size=${this.size}&current=${this.current}`)

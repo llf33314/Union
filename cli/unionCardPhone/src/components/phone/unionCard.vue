@@ -42,7 +42,7 @@
               <img src="../../assets/images/SJunionCar03.png" style="width:0.65rem;margin-right: 0.2rem;">
               {{item.directorPhone}}
             </div>
-            <p class="">
+            <p class="messsge1">
               <el-tooltip class="item" effect="dark" :content='item.enterpriseAddress' placement="top-start">
                 <img src="../../assets/images/SJunionCar04.png" style="width:0.65rem;margin-right: 0.2rem;">
               </el-tooltip>
@@ -62,7 +62,7 @@
     <!--绑定手机号的弹框-->
     <div class="box-wrap" style="display: none">
       <div class="mask" @click="hide_"></div>
-      <div class="box">
+      <div class="box" id="box">
         <ul>
           <li>
             <span style="font-size:0.8536rem;color:#000000">绑定手机号</span>
@@ -288,6 +288,10 @@
       //点击按钮弹出领取联盟卡选择框;
       boxWarp(index){
         let Index=index;
+        $('body').css({
+          height:'100%',
+          overflow:hidden
+        });
         if(this.phone){
           //展示出选择联盟卡的框
           $('.box-wrap1').show();
