@@ -113,7 +113,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     private static Pattern CHARACTER_PATTERN = Pattern.compile("[a-zA-z]");
 
     @Override
-    public Page selectListByUnionId(Page page, Integer unionId, Integer busId, String cardNo, String phone) throws Exception {
+    public Page selectListByUnionId(Page page, final Integer unionId, final Integer busId, final String cardNo, final String phone) throws Exception {
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -124,9 +124,33 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         UnionMember unionMember = unionMemberService.getByBusIdAndUnionId(busId, unionId);
-        List<Map<String,Object>> list = this.baseMapper.selectListByMemberId(page, unionMember.getId(), phone, cardNo);
-        page.setRecords(list);
-        return page;
+        final int memberId = unionMember.getId();
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                StringBuilder sbSqlSegment = new StringBuilder();
+                sbSqlSegment.append(" t1 LEFT JOIN t_union_card_root t2 ON t1.root_id = t2.id")
+                        .append(" WHERE")
+                        .append(" t1.member_id = ").append(memberId)
+                        .append(" AND t2.del_status = ").append(CommonConstant.DEL_STATUS_NO)
+                        .append(" AND t1.del_status = ").append(CommonConstant.DEL_STATUS_NO);
+                if (StringUtil.isNotEmpty(phone)) {
+                    sbSqlSegment.append(" AND t2.phone LIKE '%").append(phone.trim()).append("%' ");
+                }
+                if (StringUtil.isNotEmpty(cardNo)) {
+                    sbSqlSegment.append(" AND t2.number LIKE '%").append(cardNo.trim()).append("%' ");
+                }
+                sbSqlSegment.append(" ORDER BY t1.id DESC ");
+                return sbSqlSegment.toString();
+            }
+
+            ;
+
+        };
+        wrapper.setSqlSelect(" t1.id, DATE_FORMAT(t1.createtime, '%Y-%m-%d %T') createtime, t1.type, DATE_FORMAT(t1.validity, '%Y-%m-%d %T') validity, t2.phone, t2.number as cardNo, t2.integral, t1.is_charge");
+        wrapper.orderBy("ti.id",false);
+        Page result = this.selectMapsPage(page, wrapper);
+        return result;
     }
 
     @Override
@@ -904,7 +928,30 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         UnionMember unionMember = unionMemberService.getByBusIdAndUnionId(busId, unionId);
-        List<Map<String, Object>> list = this.baseMapper.listByMemberId(unionMember.getId(), cardNo, phone);
+        final int memberId = unionMember.getId();
+        Wrapper wrapper = new Wrapper() {
+            @Override
+            public String getSqlSegment() {
+                StringBuilder sbSqlSegment = new StringBuilder();
+                sbSqlSegment.append(" t1 LEFT JOIN t_union_card_root t2 ON t1.root_id = t2.id")
+                        .append(" WHERE")
+                        .append(" t1.member_id = ").append(memberId)
+                        .append(" AND t1.del_status = ").append(CommonConstant.DEL_STATUS_NO);
+                if (StringUtil.isNotEmpty(phone)) {
+                    sbSqlSegment.append(" AND t2.phone LIKE '%").append(phone.trim()).append("%' ");
+                }
+                if (StringUtil.isNotEmpty(cardNo)) {
+                    sbSqlSegment.append(" AND t2.number LIKE '%").append(cardNo.trim()).append("%' ");
+                }
+                sbSqlSegment.append(" ORDER BY t1.id DESC ");
+                return sbSqlSegment.toString();
+            }
+
+            ;
+
+        };
+        wrapper.setSqlSelect(" t1.id, DATE_FORMAT(t1.createtime, '%Y-%m-%d %T') createtime, t1.type, DATE_FORMAT(t1.validity, '%Y-%m-%d %T') validity, t2.phone, t2.number as cardNo, t2.integral");
+        List<Map<String, Object>> list = this.selectMaps(wrapper);
         return list;
     }
 

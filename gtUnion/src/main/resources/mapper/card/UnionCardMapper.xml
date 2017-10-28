@@ -67,39 +67,4 @@
 	 	LIMIT 1
 	</select>
 
-	<!-- 分页查询盟员的联盟卡列表 -->
-    <select id="selectListByMemberId" resultType="java.util.Map">
-		SELECT t.id, t.createtime, t.type, t.validity, t.phone, t.cardNo, t.is_charge, (IFNULL(SUM(i1.integral), 0) - IFNULL(SUM(i2.integral), 0)) integral
-		from (SELECT t1.id, DATE_FORMAT(t1.createtime, '%Y-%m-%d %T') createtime, t1.type, DATE_FORMAT(t1.validity, '%Y-%m-%d %T') validity, t2.phone, t2.number as cardNo, t1.is_charge from t_union_card t1 LEFT JOIN t_union_card_root t2 ON t1.root_id = t2.id
-		WHERE t1.member_id = 1 and t1.del_status = 0 and t2.del_status = 0
-		<if test="phone != null and phone != '' " >
-			AND t2.phone LIKE CONCAT(CONCAT('%', #{phone}),'%')
-		</if>
-		<if test="cardNo != null and cardNo != '' " >
-			AND t2.number LIKE CONCAT(CONCAT('%', #{cardNo}),'%')
-		</if>
-		) t
-		LEFT JOIN t_union_card_integral i1 on i1.card_id = t.id and i1.status = 1
-		LEFT JOIN t_union_card_integral i2 on i2.card_id = t.id and i2.status = 2
-		GROUP BY t.id
-		ORDER BY t.id DESC
-	</select>
-
-	<!-- 查询盟员的联盟卡列表 -->
-	<select id="listByMemberId" resultType="java.util.Map">
-		SELECT t.id, t.createtime, t.type, t.validity, t.phone, t.cardNo, (IFNULL(SUM(i1.integral), 0) - IFNULL(SUM(i2.integral), 0)) integral
-		from (SELECT t1.id, DATE_FORMAT(t1.createtime, '%Y-%m-%d %T') createtime, t1.type, DATE_FORMAT(t1.validity, '%Y-%m-%d %T') validity, t2.phone, t2.number as cardNo from t_union_card t1 LEFT JOIN t_union_card_root t2 ON t1.root_id = t2.id
-		WHERE t1.member_id = 1 and t1.del_status = 0 and t2.del_status = 0
-		<if test="phone != null and phone != '' " >
-			AND t2.phone LIKE CONCAT(CONCAT('%', #{phone}),'%')
-		</if>
-		<if test="cardNo != null and cardNo != '' " >
-			AND t2.number LIKE CONCAT(CONCAT('%', #{cardNo}),'%')
-		</if>
-		) t
-		LEFT JOIN t_union_card_integral i1 on i1.card_id = t.id and i1.status = 1
-		LEFT JOIN t_union_card_integral i2 on i2.card_id = t.id and i2.status = 2
-		GROUP BY t.id
-		ORDER BY t.id DESC
-	</select>
 </mapper>
