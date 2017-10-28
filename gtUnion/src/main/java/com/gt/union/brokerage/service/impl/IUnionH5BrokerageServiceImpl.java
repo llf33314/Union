@@ -84,9 +84,10 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		}
 		String phoneKey = RedisKeyUtil.getBrokeragePhoneKey(phone);
 		String obj = redisCacheUtil.get(phoneKey);
-		if(obj == null){
+		if(StringUtil.isEmpty(obj)){
 			throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
 		}
+		obj = JSON.parseObject(obj, String.class);
 		if(!code.equals(JSON.parse(obj))){
 			throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
 		}

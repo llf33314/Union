@@ -194,13 +194,9 @@
         $http.post(`/unionH5Brokerage/login?phone=${uPhone}&code=${pCode}`)
           .then(res => {
             //跳转到主页面中去
-            if(res.data && res.data != undefined && res.data.success) {
+            if(res.data.success) {
               //跳转到主页面
               location.href = '#/Index';
-            }else{
-              this.$message({
-                showClose: true, message: res, type: 'error', duration: 3000
-              });
             }
           })
           .catch(err => {
