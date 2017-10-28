@@ -125,8 +125,7 @@ export default {
             .then(res => {
               if (res.data.success) {
                 this.$message({ showClose: true, message: '推荐成功', type: 'success', duration: 5000 });
-                if (this.isUnionOwner) {
-                }
+                this.form = {};
               }
             })
             .catch(err => {
