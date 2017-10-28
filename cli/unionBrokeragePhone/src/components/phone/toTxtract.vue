@@ -100,6 +100,8 @@
     name: 'toTxtract',
     data() {
       return {
+        //底部颜色切换
+        toLogin: 'ceshi1',
         //金额数据列表
         moneyList:[],
         //体现记录数据
@@ -182,6 +184,8 @@
     created(){
       //页面的title变换
       $("#title_").text('我要提现');
+      //图片底部的颜色切换（白和灰切换）
+      this.$emit('getValue',this.toLogin);
       //获取盟员列表的数据
       $http.get(`/unionH5Brokerage/withdrawals`)
         .then(res => {

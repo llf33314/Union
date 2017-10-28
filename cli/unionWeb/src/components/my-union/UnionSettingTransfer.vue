@@ -9,8 +9,8 @@
       <el-table-column label="操作">
         <template scope="scope">
           <div class="sizeAndColor">
-            <el-button v-if="!scope.row.transferId" size="small" @click="onTransfer(scope)" :disabled="!canTransferFlag">转移</el-button>
-            <el-button v-if="scope.row.transferId" size="small" @click="onRevoke(scope)">撤销</el-button>
+            <span class="repeal"><el-button v-if="!scope.row.transferId" size="small" @click="onTransfer(scope)" :disabled="!canTransferFlag">转移</el-button></span>
+            <span class="repeal"><el-button v-if="scope.row.transferId" size="small" @click="onRevoke(scope)">撤销</el-button></span>
           </div>
         </template>
       </el-table-column>
