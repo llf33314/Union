@@ -1,5 +1,5 @@
 <template><!--佣金明细模块-->
-  <div id="unionCard">
+  <div id="unionCard" @click="clicks">
     <!--卡号-->
     <p class="position_">
       <img src="../../assets/images/sjUnionCard111.png" alt="">
@@ -25,33 +25,35 @@
     </div>
     <!--联盟列表-->
     <ul class="third_ ">
-      <li class="unionLi" v-for="(items,index) in unionList">
-        <div  @click="showContent1(index,items.unionId,items.memberId,$event)" id="event_">
+      <li class="unionLi" v-for="(items,index1) in unionList">
+        <div  @click="showContent1(index1,items.unionId,items.memberId,$event)" id="event_">
           <i class="el-icon-arrow-right fr"></i>
           <span>{{items.unionName}}</span>
         </div>
-        <ul class="details_   passive">
-          <li v-for="(item,index) in UnionCardList" class="li_Li">
-            <div>
+        <ul class="details_  passive">
+          <li v-for="(item,index2) in UnionCardList" class="li_Li">
+            <div >
               <p class="fr">享受折扣：<span style="color:#1FC055;font-size:0.6442rem;">{{item.discount?item.discount:9.5}}折</span></p>
-              {{item.enterpriseName}}
+              <span style="font-weight: bold;">{{item.enterpriseName}}</span>
               <span style="color:#1FC055;font-size:0.6442rem;" v-if="item.memberId==menId">(本商家)</span>
               <span style="color:#1FC055;font-size:0.6442rem;" v-if="item.isUnionOwner">(盟主)</span>
             </div>
-            <div>
+            <div style="position: relative">
+              <div class="box-wrap3" style="display: none" @click="hide_">
+                <div class="mask" ></div>
+                <div class="box">
+                  {{item.enterpriseAddress}}
+                </div>
+              </div>
               <img src="../../assets/images/SJunionCar03.png" style="width:0.65rem;margin-right: 0.2rem;">
               {{item.directorPhone}}
             </div>
             <p class="messsge1">
-              <el-tooltip class="item" effect="dark" :content='item.enterpriseAddress' placement="top-start">
-                <img src="../../assets/images/SJunionCar04.png" style="width:0.65rem;margin-right: 0.2rem;">
-              </el-tooltip>
-              <el-tooltip class="item" effect="dark" :content='item.enterpriseAddress' placement="top-start">
-                <span title="123" style="font-size:0.6442rem;overflow: hidden;width: 8.12rem;display: inline-block;white-space: nowrap;text-overflow: ellipsis;">
+                <img src="../../assets/images/SJunionCar04.png" >
+                <span @click="boxWarp3(index1, index2)" class="asdasd">
                   {{item.enterpriseAddress}}
                 </span>
-              </el-tooltip>
-              <button class="fr" @click="boxWarp(index)" v-if="List.bind==1&&(List.memberId==List.members[index].memberId)">
+              <button class="fr" @click="boxWarp(index2)" v-if="List.bind==1&&(List.memberId==List.members[index2].memberId)">
                 领取联盟卡
               </button>
             </p>
@@ -65,7 +67,7 @@
       <div class="box" id="box">
         <ul>
           <li>
-            <span style="font-size:0.8536rem;color:#000000">绑定手机号</span>
+            <span style="font-size:0.8536rem;font-weight:bold;color:#000000">绑定手机号</span>
             <i class="el-icon-close fr" @click="hide_"></i>
           </li>
         </ul>
@@ -73,16 +75,15 @@
           <form action="">
             <div>
               <span>手机号：</span>
-              <input type="text" style="border: none" id="Phone" maxlength="11">
+              <input type="text" id="Phone" maxlength="11" v-model="phoneCode">
+              <div class="fr" @click="getNumber" id="getCode">
+                获取验证码
+              </div>
             </div>
             <div>
               <span>验证码：</span>
-              <input type="text" style="border: none;width: 3.2rem;" id="verification">
-              <div class="fr" style="color:#A8A8A8;background-color: rgb(255, 255, 255);border: none;" @click="getNumber"
-                      id="getCode">
-                获取验证码
-              </div>
-              <p id="message_" style="display: none">验证码错误</p>
+              <input type="text" id="verification" maxlength="8" v-model="verificationCode">
+              <p id="message_">验证码错误</p>
             </div>
           </form>
           <button class="btn1" @click="bindPhone">绑定手机号</button>
@@ -133,6 +134,7 @@
         </div>
       </div>
     </div>
+    <!--点击弹出地址-->
   </div>
 </template>
 
@@ -142,8 +144,11 @@
     name: 'unionCard',
     data() {
       return {
+        //验证码
+        phoneCode:'',
+        verificationCode:'',
         //验证码等待的时间
-        wait:30,
+        wait:10,
         //统一的id号码
         busId:33,
         //首页加载的数据
@@ -173,13 +178,39 @@
         blackCard:{},
         redCard:{},
         isGetCode : 0,
+        orShow:false,//是否显示
+      }
+    },//监听数据的变化
+    watch: {
+      phoneCode(){
+        if(/^1[3|4|5|6|7|8][0-9][0-9]{8}$/.test(Phone.value)){
+          message_.innerHTML='';
+          getCode.style.color="#1FC055";
+          this.isGetCode = 1;
+        }
+        if(Phone.value.length<11){
+          getCode.style.color="#A8A8A8";
+          this.isGetCode = 0;
+        }
+      },
+      verificationCode(){
+        if(verification.value.length>5){
+          $('.btn1').css({
+            color:'#ffffff'
+          })
+        }else{
+          $('.btn1').css({
+            color:'#CCCCCC'
+          })
+        }
       }
     },
     mounted(){
+
       let that_=this;
       //验证码获得焦点的时候
       verification.onfocus=function(){
-
+        box.style.top='10%';
       };
       //验证码失去焦点的时候
       verification.onblur=function(){
@@ -218,6 +249,13 @@
       }
     },
     methods: {
+      clicks(){
+        var that=this;
+        if(that.orShow == true) {
+          console.log(123132465)
+//          $('.box-wrap3 .box').hide()
+        }
+      },
       // 选择红卡        -------------------------1
       selectRedCard(){
         this.selectCard();
@@ -290,7 +328,7 @@
         let Index=index;
         $('body').css({
           height:'100%',
-          overflow:hidden
+          overflow:"hidden"
         });
         if(this.phone){
           //展示出选择联盟卡的框
@@ -314,11 +352,29 @@
           $('.box-wrap').show();
         }
       },
+      //点击弹出地址
+      boxWarp3(index1, index2){
+        console.log($('.unionLi').eq(index1).find('.box-wrap3')[index2]);
+        $('.unionLi').eq(index1).find('.box-wrap3')[index2].style.display='block';
+        this.orShow = true;
+      },
       //隐藏联所有的弹出框;
       hide_(){
         $('.box-wrap').hide();
         $('.box-wrap1').hide();
         $('.box-wrap2').hide();
+        $('.box-wrap3').hide();
+        $('#message_').hide();
+        this.init();
+      },
+      //初始化数据;
+      init(){
+        Phone.value='';
+        verification.value='';
+        this.wait=0;
+        this.isGetCode = 1;
+        getCode.innerHTML = "获取验证码";
+        getCode.style.color='#A8A8A8';
       },
       //点击div弹出对应的联盟信息
       showContent1(index1,unionid,memberid,$event){
@@ -383,7 +439,6 @@
         let that_=this;
         if(this.isGetCode == 1) {
           that_.isGetCode = 0;
-          let wait = 60;
           let Number_ = $('#Phone').val();
           //手机页面
           $http.get(`/cardH5/79B4DE7C/code/${Number_}?busId=${this.busId}`)
@@ -394,15 +449,14 @@
                 that_.isGetCode = 1;
               }
               function time(o) {
-                if (wait == 0) {
-                  that_.isGetCode = 1;
-                  o.innerHTML = "获取验证码";
-                  o.style.color='#1EC054';
+                if (that_.wait == 0) {
+                  //初始化数据
+                  that_.init();
                 } else {
                   that_.isGetCode = 0;
-                  o.innerHTML = "重新发送(" + wait + ")";
+                  o.innerHTML = "重新发送(" + that_.wait + ")";
                   o.style.color = "#8a7e7e";
-                  wait--;
+                  that_.wait--;
                   setTimeout(function () {
                       time(o)
                     },
@@ -420,7 +474,7 @@
         let url1='toUnionCard';
         let uPhone=$('#Phone').val();
         let pCode=$('#verification').val();
-        if($('#verification').val()){
+        if($('#verification').val().length>5){
           $http.post(`/cardH5/79B4DE7C/bind/${uPhone}?busId=${this.busId}&url=${url1}&code=${pCode}`)
             .then(res => {
               //刷新当前页面
