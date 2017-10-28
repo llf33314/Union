@@ -35,7 +35,7 @@ public class PreferentialSchedule {
      * 每天00:00:00执行
      * 优惠项目在其所属的盟员退盟后，自动变成删除状态
      */
-    @Scheduled(cron = "0 0 0 * * ?")
+//    @Scheduled(cron = "0 0 0 * * ?")
     public void disableExpiredProject() {
         try {
             List<UnionPreferentialProject> expiredProjectList = this.unionPreferentialProjectService.listExpired();
@@ -60,7 +60,7 @@ public class PreferentialSchedule {
      * 每天00:20:00执行
      * 优惠服务在优惠项目不存在时，自动变成删除状态
      */
-    @Scheduled(cron = "0 20 0 * * ?")
+//    @Scheduled(cron = "0 20 0 * * ?")
     public void disableExpiredItem() {
         try {
             List<UnionPreferentialItem> expiredItemList = this.unionPreferentialItemService.listExpired();

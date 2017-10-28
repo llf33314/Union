@@ -30,7 +30,7 @@ public class MemberSchedule {
      * 每天00:00:00执行
      * 盟员退盟后，当退盟过渡期时间已过，需改为无效状态
      */
-    @Scheduled(cron = "0 0 0 * * ?")
+//    @Scheduled(cron = "0 0 0 * * ?")
     public void disableExpiredMember() {
         try {
             List<UnionMember> expiredMemberList = this.unionMemberService.listExpired();

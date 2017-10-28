@@ -1,6 +1,7 @@
 package com.gt.union.card.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.card.entity.UnionCard;
 import com.gt.union.member.entity.UnionMember;
 import org.apache.ibatis.annotations.Param;
@@ -41,4 +42,23 @@ public interface UnionCardMapper extends BaseMapper<UnionCard> {
 	 * @return
 	 */
 	Map<String,Object> getByEarliestByCardList(@Param("list") List<UnionCard> list);
+
+	/**
+	 * 分页查询盟员的联盟卡列表
+	 * @param page		分页参数
+	 * @param memberId 盟员id
+	 * @param phone		手机号
+	 * @param cardNo	联盟卡号
+	 * @return
+	 */
+	List<Map<String,Object>> selectListByMemberId(@Param("page")Page page, @Param("memberId")Integer memberId, @Param("phone")String phone, @Param("cardNo")String cardNo);
+
+	/**
+	 * 查询盟员的联盟卡列表
+	 * @param memberId 盟员id
+	 * @param phone		手机号
+	 * @param cardNo	联盟卡号
+	 * @return
+	 */
+	List<Map<String,Object>> listByMemberId(Integer memberId, String cardNo, String phone);
 }

@@ -27,15 +27,6 @@ public interface IUnionMainService extends IService<UnionMain> {
      */
     UnionMain getByBusIdAndMemberId(Integer busId, Integer memberId) throws Exception;
 
-    /**
-     * 根据商家id，获取联盟成员总数上限
-     *
-     * @param busId {not null} 商家id
-     * @return Integer
-     * @throws Exception 全局处理异常
-     */
-    Integer getLimitMemberByBusId(Integer busId) throws Exception;
-
     //------------------------------------------ Domain Driven Design - list -------------------------------------------
 
     /**

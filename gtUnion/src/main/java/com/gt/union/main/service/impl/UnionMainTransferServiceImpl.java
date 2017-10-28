@@ -22,6 +22,7 @@ import com.gt.union.main.service.IUnionMainTransferService;
 import com.gt.union.member.constant.MemberConstant;
 import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.service.IUnionMemberService;
+import com.gt.union.setting.service.IUnionSettingMainChargeService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +46,9 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
 
     @Autowired
     private IUnionMainService unionMainService;
+
+    @Autowired
+    private IUnionSettingMainChargeService unionSettingMainChargeService;
 
     @Autowired
     private RedisCacheUtil redisCacheUtil;
@@ -249,11 +253,19 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
                 if (!this.unionMainPermitService.hasUnionMainPermit(busId)) {
                     throw new BusinessException("不具有盟主服务许可或已过期");
                 }
-                //(10)更新的联盟信息
+                UnionMainPermit permit = this.unionMainPermitService.getByBusId(busId);
+                //(10)判断被转移者联盟权限人数是否大于当前联盟人数
+                Integer currentUnionMemberCount = this.unionMemberService.countReadByUnionId(unionId);
+                //联盟成员总数上限
+                Integer limitMember = unionSettingMainChargeService.getById(permit.getSettingMainChargeId()).getNumber();
+                if(limitMember.intValue() < currentUnionMemberCount.intValue()){
+                    throw new BusinessException("您的盟主权限不可容纳该联盟成员数");
+                }
+                //(11)更新的联盟信息
                 UnionMain updateUnion = new UnionMain();
                 //联盟id
                 updateUnion.setId(unionId);
-                UnionMainPermit permit = this.unionMainPermitService.getByBusId(busId);
+
                 if (permit != null) {
                     //联盟有效期
                     updateUnion.setUnionValidity(permit.getValidity());
@@ -261,28 +273,26 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
                     //联盟有效期
                     updateUnion.setUnionValidity(DateUtil.parseDate(CommonConstant.UNION_VALIDITY_DEFAULT));
                 }
-                Integer limitMember = this.unionMainService.getLimitMemberByBusId(busId);
-                //联盟成员总数上限
                 updateUnion.setLimitMember(limitMember);
-                //(11)更新的转移者信息
+                //(12)更新的转移者信息
                 UnionMember updateFromMember = new UnionMember();
                 //转移者的id
                 updateFromMember.setId(fromMember.getId());
                 //转移者盟主身份取消
                 updateFromMember.setIsUnionOwner(MemberConstant.IS_UNION_OWNER_NO);
-                //(12)更新的被转移者信息
+                //(13)更新的被转移者信息
                 UnionMember updateToMember = new UnionMember();
                 //被转移者的id
                 updateToMember.setId(toMember.getId());
                 //被转移者添加盟主身份
                 updateToMember.setIsUnionOwner(MemberConstant.IS_UNION_OWNER_YES);
-                //(13)更新转移申请
+                //(14)更新转移申请
                 UnionMainTransfer updateTransfer2 = new UnionMainTransfer();
                 //转移申请id
                 updateTransfer2.setId(transferId);
                 //转移申请状态改为接受
                 updateTransfer2.setConfirmStatus(MainConstant.TRANSFER_CONFIRM_STATUS_YES);
-                //(14)事务化操作
+                //(15)事务化操作
                 //更新联盟信息
                 this.unionMainService.update(updateUnion);
                 //更新转移者信息

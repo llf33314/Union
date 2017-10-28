@@ -100,9 +100,6 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		if(unionConsumeParam.getBusId() == null){
 			throw new ParamException("busId为空");
 		}
-		if(unionConsumeParam.getUnionId() == null){
-			throw new ParamException("unionId为空");
-		}
 		if(unionConsumeParam.getModel() == null){
 			throw new ParamException("model为空");
 		}
@@ -130,7 +127,6 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 			result.setSuccess(false);
 			return result;
 		}
-		UnionMember unionMember = unionMemberService.getByBusIdAndUnionId(unionConsumeParam.getBusId(), unionConsumeParam.getUnionId());
 
         UnionConsume unionConsume = new UnionConsume();
         unionConsume.setCreatetime(new Date());
@@ -145,7 +141,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
         unionConsume.setPayMoney(unionConsumeParam.getPayMoney());//折后支付价格
         unionConsume.setCardId(unionConsumeParam.getUnionCardId());//联盟卡id
         unionConsume.setIsIntegral(0);//是否赠送积分 0未赠送 1赠送
-        unionConsume.setMemberId(unionMember.getId());
+        unionConsume.setMemberId(card.getMemberId());
         this.insert(unionConsume);
         //线上积分赠送积分
         if (CommonUtil.isEmpty(unionConsumeParam.getGiveIntegralNow()) || unionConsumeParam.getGiveIntegralNow()) {//立即赠送

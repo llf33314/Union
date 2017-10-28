@@ -81,26 +81,6 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         return this.getById(member.getUnionId());
     }
 
-    @Override
-    public Integer getLimitMemberByBusId(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        Integer result = 0;
-        List<Map> dictList = this.dictService.getCreateUnionDict();
-        BusUser busUser = this.busUserService.getBusUserById(busId);
-        for (Map dict : dictList) {
-            if (dict.get("item_key").equals(busUser.getLevel())) {
-                String itemValue = dict.get("item_value").toString();
-                String unionMember = itemValue.split(",")[1];
-                //联盟成员总数上限
-                result = Integer.valueOf(unionMember);
-                break;
-            }
-        }
-        return result;
-    }
-
     //------------------------------------------ Domain Driven Design - list -------------------------------------------
 
     @Override
