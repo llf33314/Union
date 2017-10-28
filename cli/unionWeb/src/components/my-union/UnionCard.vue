@@ -85,30 +85,13 @@ export default {
         this.init();
       }
     }
-    // 是否有新的消费核销成功
-    eventBus.$on('newTransaction', () => {
-      if (this.unionMemberId) {
-        if (this.unionId) {
-          this.init();
-        }
+  },
+  activated: function() {
+    if (this.unionMemberId) {
+      if (this.unionId) {
+        this.init();
       }
-    });
-    // 是否有新的盟主推荐入盟
-    eventBus.$on('newUnionRecommend', () => {
-      if (this.unionMemberId) {
-        if (this.unionId) {
-          this.init();
-        }
-      }
-    });
-    // 是否有新的入盟审核通过
-    eventBus.$on('newUnionCheck', () => {
-      if (this.unionMemberId) {
-        if (this.unionId) {
-          this.init();
-        }
-      }
-    });
+    }
   },
   watch: {
     unionId: function() {

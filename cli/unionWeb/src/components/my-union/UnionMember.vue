@@ -184,27 +184,11 @@ export default {
     if (this.unionMemberId) {
       this.init();
     }
-    // 是否有新的消费核销成功
-    eventBus.$on('newTransaction', () => {
-      if (this.unionMemberId) {
-        this.init();
-      }
-    });
-    // 是否有新的盟主推荐入盟
-    eventBus.$on('newUnionRecommend', () => {
-      if (this.unionMemberId) {
-        if (this.unionId) {
-          this.init();
-        }
-      }
-    });
-    eventBus.$on('newUnionCheck', () => {
-      if (this.unionMemberId) {
-        if (this.unionId) {
-          this.init();
-        }
-      }
-    });
+  },
+  activated: function() {
+    if (this.unionMemberId) {
+      this.init();
+    }
   },
   watch: {
     // 查询盟员列表
