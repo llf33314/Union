@@ -35,7 +35,7 @@ public class MainSchedule {
      * 每天00:00:00执行
      * 盟主服务许可过期后，自动改为删除状态
      */
-    @Scheduled(cron = "0 0 0 * * ?")
+    //@Scheduled(cron = "0 0 0 * * ?")
     public void disableExpiredPermit() {
         try {
             List<UnionMainPermit> expiredPermitList = this.unionMainPermitService.listExpired();
@@ -60,7 +60,7 @@ public class MainSchedule {
      * 每天00:20:00执行
      * 盟主服务过期后，联盟创建记录自动改为删除状态
      */
-    @Scheduled(cron = "0 20 0 * * ?")
+//    @Scheduled(cron = "0 20 0 * * ?")
     public void disableExpiredCreate() {
         try {
             List<UnionMainCreate> expiredCreateList = this.unionMainCreateService.listExpired();

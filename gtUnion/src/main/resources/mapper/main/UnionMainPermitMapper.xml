@@ -17,6 +17,7 @@
 		<result column="wx_order_no" property="wxOrderNo" />
 		<result column="product_id" property="productId" />
 		<result column="alipay_order_no" property="alipayOrderNo" />
+		<result column="setting_main_charge_id" property="settingMainChargeId" />
 	</resultMap>
 
 </mapper>

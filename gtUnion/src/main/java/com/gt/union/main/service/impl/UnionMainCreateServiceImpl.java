@@ -277,7 +277,10 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         saveUnionMain.setJoinType(unionMainVO.getJoinType());
         //是否开启积分
         saveUnionMain.setIsIntegral(unionMainVO.getIsIntegral());
-        Integer limitMember = this.unionMainService.getLimitMemberByBusId(busId);
+        //盟主收费设置
+        Integer settingMainChargeId = unionMainPermit.getSettingMainChargeId();
+        UnionSettingMainCharge settingMainCharge = unionSettingMainChargeService.getById(settingMainChargeId);
+        Integer limitMember = settingMainCharge.getNumber();
         //联盟成员总数上限
         saveUnionMain.setLimitMember(limitMember);
         //联盟有效期
