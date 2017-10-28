@@ -7,7 +7,7 @@
           <div class="grid-content bg-purple notice-list">我创建的联盟</div>
           <div class="el_btn">
               <el-button class="fl" v-if="unionMainData.myCreateUnionImg" @click="changUnion1(unionMainData.myCreateUnionMemberId)">
-                <el-tooltip :content="unionMainData.currentUnionName" placement="bottom">
+                <el-tooltip :content="unionMainData.myCreateUnionName" placement="bottom">
                   <img v-bind:src="unionMainData.myCreateUnionImg" alt="" class="fl unionImg">
                 </el-tooltip>
               </el-button>
