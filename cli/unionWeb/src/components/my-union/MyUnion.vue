@@ -233,28 +233,38 @@ export default {
   created: function() {
     this.init();
   },
-  mounted: function() {},
-  activated: function() {
-    if (this.memberId) {
-      $http
-        .get(`/union/index/memberId/${this.memberId}`)
-        .then(res => {
-          if (res.data.data) {
-            this.unionMainData = res.data.data;
-            // 处理当前页面数据展示格式
-            this.unionMainData.currentUnionCreatetime = $todate.todate(
-              new Date(this.unionMainData.currentUnionCreatetime)
-            );
-            this.unionMainData.currentUnionMemberIsUnionOwner == 1
-              ? (this.unionMainData.currentUnionMemberIsUnionOwner = '盟主')
-              : (this.unionMainData.currentUnionMemberIsUnionOwner = '盟员');
-            this.unionMainData.currentUnionIntegralSum = res.data.data.currentUnionIntegralSum || 0;
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
-    }
+  mounted: function() {
+    eventBus.$on('unionUpdata', () => {
+      if (this.memberId) {
+        $http
+          .get(`/union/index/memberId/${this.memberId}`)
+          .then(res => {
+            if (res.data.data) {
+              // 更新联盟基础信息
+              this.unionMainData.currentUnionName = res.data.data.currentUnionName;
+              this.unionMainData.currentUnionOwnerEnterpriseName = res.data.data.currentUnionOwnerEnterpriseName;
+              this.unionMainData.currentUnionIllustration = res.data.data.currentUnionIllustration;
+              this.unionMainData.currentUnionCreatetime = res.data.data.currentUnionCreatetime;
+              this.unionMainData.currentUnionMemberEnterpriseName = res.data.data.currentUnionMemberEnterpriseName;
+              this.unionMainData.currentUnionMemberIsUnionOwner = res.data.data.currentUnionMemberIsUnionOwner;
+              this.unionMainData.currentUnionMemberCount = res.data.data.currentUnionMemberCount;
+              this.unionMainData.currentUnionSurplusMemberCount = res.data.data.currentUnionSurplusMemberCount;
+              this.unionMainData.currentUnionIntegralSum = res.data.data.currentUnionIntegralSum;
+              // 处理当前页面数据展示格式
+              this.unionMainData.currentUnionCreatetime = $todate.todate(
+                new Date(this.unionMainData.currentUnionCreatetime)
+              );
+              this.unionMainData.currentUnionMemberIsUnionOwner == 1
+                ? (this.unionMainData.currentUnionMemberIsUnionOwner = '盟主')
+                : (this.unionMainData.currentUnionMemberIsUnionOwner = '盟员');
+              this.unionMainData.currentUnionIntegralSum = res.data.data.currentUnionIntegralSum || 0;
+            }
+          })
+          .catch(err => {
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          });
+      }
+    });
   },
   methods: {
     init() {

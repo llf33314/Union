@@ -264,6 +264,7 @@ export default {
               if (res.data.success) {
                 this.childrenData = 2;
                 this.$emit('activeChange', this.childrenData);
+                eventBus.$emit('unionUpdata');
               }
             })
             .catch(err => {

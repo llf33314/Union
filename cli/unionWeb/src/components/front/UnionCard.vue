@@ -364,9 +364,10 @@ export default {
         .then(res => {
           if (res.data.success) {
             this.visible3 = false;
-            eventBus.$emit('newTransaction');
             this.$message({ showClose: true, message: '核销成功', type: 'success', duration: 5000 });
             this.init();
+            eventBus.$emit('newTransaction');
+            eventBus.$emit('unionUpdata');
           }
         })
         .catch(err => {
@@ -457,6 +458,7 @@ export default {
                     _this.visible5 = false;
                     _this.parent.window.postMessage('openMask()', 'https://deeptel.com.cn/user/toIndex_1.do');
                     _this.eventBus.$emit('newTransaction');
+                    _this.eventBus.$emit('unionUpdata');
                     _this.init();
                   } else if (msg.status == '004') {
                     _this.$message({ showClose: true, message: '请求超时', type: 'warning', duration: 5000 });

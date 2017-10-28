@@ -161,12 +161,7 @@ export default {
       if (this.unionRadio) {
         this.active++;
       } else {
-        this.$message({
-          showClose: true,
-          message: '请选择要加入的联盟',
-          type: 'warning',
-          duration: 5000
-        });
+        this.$message({ showClose: true, message: '请选择要加入的联盟', type: 'warning', duration: 5000 });
       }
     },
     pre() {
@@ -203,6 +198,7 @@ export default {
               if (res.data.success) {
                 this.$message({ showClose: true, message: '保存成功', type: 'success', duration: 5000 });
                 this.active++;
+                eventBus.$emit('unionUpdata');
               }
             })
             .catch(err => {

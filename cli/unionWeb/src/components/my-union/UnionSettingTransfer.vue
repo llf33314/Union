@@ -115,6 +115,7 @@ export default {
           if (res.data.success) {
             this.dialogVisible1 = false;
             this.canTransferFlag = false;
+            eventBus.$emit('unionUpdata');
             $http
               .get(`/unionMainTransfer/pageMap/memberId/${this.unionMemberId}?current=1`)
               .then(res => {
@@ -149,6 +150,7 @@ export default {
           if (res.data.success) {
             this.dialogVisible2 = false;
             this.canTransferFlag = true;
+            eventBus.$emit('unionUpdata');
             $http
               .get(`/unionMainTransfer/pageMap/memberId/${this.unionMemberId}?current=1`)
               .then(res => {

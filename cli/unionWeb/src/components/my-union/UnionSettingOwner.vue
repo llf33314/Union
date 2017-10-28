@@ -337,6 +337,7 @@ export default {
             .then(res => {
               if (res.data.success) {
                 this.$message({ showClose: true, message: '保存成功', type: 'success', duration: 5000 });
+                eventBus.$emit('unionUpdata');
               }
             })
             .catch(err => {
