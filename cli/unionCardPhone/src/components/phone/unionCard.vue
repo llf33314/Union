@@ -1,5 +1,5 @@
 <template><!--佣金明细模块-->
-  <div id="unionCard" @click="clicks">
+  <div id="unionCard">
     <!--卡号-->
     <p class="position_">
       <img src="../../assets/images/sjUnionCard111.png" alt="">
@@ -39,18 +39,18 @@
               <span style="color:#1FC055;font-size:0.6442rem;" v-if="item.isUnionOwner">(盟主)</span>
             </div>
             <div style="position: relative">
-              <div class="box-wrap3" style="display: none" @click="hide_">
-                <div class="mask" ></div>
+              <div class="box-wrap3">
                 <div class="box">
                   {{item.enterpriseAddress}}
                 </div>
+                <i></i>
               </div>
               <img src="../../assets/images/SJunionCar03.png" style="width:0.65rem;margin-right: 0.2rem;">
               {{item.directorPhone}}
             </div>
             <p class="messsge1">
-                <img src="../../assets/images/SJunionCar04.png" >
-                <span @click="boxWarp3(index1, index2)" class="asdasd">
+                <img src="../../assets/images/SJunionCar04.png" @click="boxWarp3(index1, index2)">
+                <span @click="boxWarp3(index1, index2)">
                   {{item.enterpriseAddress}}
                 </span>
               <button class="fr" @click="boxWarp(index2)" v-if="List.bind==1&&(List.memberId==List.members[index2].memberId)">
@@ -73,6 +73,7 @@
         </ul>
         <div>
           <form action="">
+            <!--//输入手机号-->
             <div>
               <span>手机号：</span>
               <input type="text" id="Phone" maxlength="11" v-model="phoneCode">
@@ -80,6 +81,7 @@
                 获取验证码
               </div>
             </div>
+            <!--输入验证码-->
             <div>
               <span>验证码：</span>
               <input type="text" id="verification" maxlength="8" v-model="verificationCode">
@@ -245,17 +247,10 @@
       };
       //手机号获得焦点事件
       Phone.onfocus=function(){
-
+        box.style.top='5rem';
       }
     },
     methods: {
-      clicks(){
-        var that=this;
-        if(that.orShow == true) {
-          console.log(123132465)
-//          $('.box-wrap3 .box').hide()
-        }
-      },
       // 选择红卡        -------------------------1
       selectRedCard(){
         this.selectCard();
@@ -266,7 +261,7 @@
         })
         this.cardType=2;
       },
-      //选择黑卡          ------------------------2
+      //选择黑卡          ---菜单cli---------------------2
       selectBlackCard(){
         this.selectCard();
         $('.price_').text('黑卡价格');
@@ -354,16 +349,19 @@
       },
       //点击弹出地址
       boxWarp3(index1, index2){
-        console.log($('.unionLi').eq(index1).find('.box-wrap3')[index2]);
-        $('.unionLi').eq(index1).find('.box-wrap3')[index2].style.display='block';
-        this.orShow = true;
+        if(!this.orShow) {
+          $('.unionLi').eq(index1).find('.box-wrap3')[index2].style.display = 'block';
+          this.orShow = true;
+        }else{
+          this.orShow = false;
+          $('.unionLi').eq(index1).find('.box-wrap3')[index2].style.display = 'none';
+        }
       },
       //隐藏联所有的弹出框;
       hide_(){
         $('.box-wrap').hide();
         $('.box-wrap1').hide();
         $('.box-wrap2').hide();
-        $('.box-wrap3').hide();
         $('#message_').hide();
         this.init();
       },
@@ -383,7 +381,7 @@
             borderBottom:'none'
           })
         },10);
-
+        $('.box-wrap3').hide();
           //赋值成员和联盟的Id号码--------------
           this.memberId=memberid;
           this.unionId=unionid;
@@ -474,7 +472,12 @@
         let url1='toUnionCard';
         let uPhone=$('#Phone').val();
         let pCode=$('#verification').val();
-        if($('#verification').val().length>5){
+        if(!(/^1[3|4|5|6|7|8][0-9][0-9]{8}$/.test(Phone.value))){
+          message_.innerHTML='请输入手机号!';
+          message_.style.display='block';
+           $('#Phone').focus();
+        }
+        if($('#verification').val().length>5 && (/^1[3|4|5|6|7|8][0-9][0-9]{8}$/.test(Phone.value))){
           $http.post(`/cardH5/79B4DE7C/bind/${uPhone}?busId=${this.busId}&url=${url1}&code=${pCode}`)
             .then(res => {
               //刷新当前页面
