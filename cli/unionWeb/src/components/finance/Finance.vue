@@ -3,31 +3,32 @@
     <div v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="拼命加载中">
       <!--显示整页加载，1秒后消失-->
     </div>
-    <div id="union_people">
-      <ul class="clearfix">
-        <li>
-          <p>可提现金额</p>
-          <div class="special">
-            <span> {{ withdrawalSum }} </span>元
-            <span class="btn1">
-              <el-button type="primary" @click="dialogVisible1 = true">提现</el-button>
-            </span>
-            <div class="model_1">
-              <!-- 弹出框 提现 -->
-              <el-dialog title="提现" :visible.sync="dialogVisible1" size="tiny">
-                <hr>
-                <div class="model_">
-                  <p><img v-bind:src="imgUrl"></p>
-                  <p>扫二维码可进入商家联盟佣金平台</p>
-                </div>
-              </el-dialog>
+    <div id="container_finance" style="display: none;">
+      <div id="union_people">
+        <ul class="clearfix">
+          <li>
+            <p>可提现金额</p>
+            <div class="special">
+              <span> {{ withdrawalSum }} </span>元
+              <span class="btn1">
+                <el-button type="primary" @click="dialogVisible1 = true">提现</el-button>
+              </span>
+              <div class="model_1">
+                <!-- 弹出框 提现 -->
+                <el-dialog title="提现" :visible.sync="dialogVisible1" size="tiny">
+                  <hr>
+                  <div class="model_">
+                    <p><img v-bind:src="imgUrl"></p>
+                    <p>扫二维码可进入商家联盟佣金平台</p>
+                  </div>
+                </el-dialog>
+              </div>
             </div>
-          </div>
-        </li>
-      </ul>
-    </div>
-    <p class="union_set">佣金平台管理者设置</p>
-    <div class="footer_">
+          </li>
+        </ul>
+      </div>
+      <p class="union_set">佣金平台管理者设置</p>
+      <div class="footer_">
       <el-button type="primary" @click="dialogVisible2 = true">新增</el-button>
       <!-- 弹出框 新增 -->
       <el-dialog title="新增管理者" :visible.sync="dialogVisible2" size="tiny" @close="resetForm('ruleForm')">
@@ -86,6 +87,7 @@
           </span>
         </el-dialog>
       </div>
+    </div>
     </div>
   </div>
 </template>
@@ -183,8 +185,9 @@ export default {
                 .catch(err => {
                   this.$message({showClose: true, message: err.toString(), type: 'error', duration: 5000});
                 });
+              container_finance.style.display='block';
             }
-          },1000)
+          },600)
         }
       })
       .catch(err => {

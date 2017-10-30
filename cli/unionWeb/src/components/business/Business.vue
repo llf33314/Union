@@ -3,7 +3,7 @@
     <div v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="拼命加载中">
       <!--显示整页加载，1秒后消失-->
     </div>
-    <el-tabs v-model="activeName" type="card">
+    <el-tabs v-model="activeName" type="card" style="display: none">
       <el-tab-pane label="我的商机" name="first">
         <my-business></my-business>
       </el-tab-pane>
@@ -62,7 +62,8 @@ export default {
               this.$store.commit('unionIdChange', res.data.data.currentUnionId);
             }
             this.fullscreenLoading = false;
-          },1000)
+            $('.el-tabs--card').show();
+          },600)
         }
       })
       .catch(err => {
