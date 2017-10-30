@@ -455,7 +455,7 @@
               function time(o) {
                 that_.timeEnd = setInterval(() => {
                   that_.isGetCode = 0;
-                  o.innerHTML = "重新发送(" + that_.wait + ")";
+                  o.innerHTML = that_.wait + "s";
                   o.style.color = "#8a7e7e";
                   if ( that_.wait === 0) {
                     clearInterval(that_.timeEnd);
