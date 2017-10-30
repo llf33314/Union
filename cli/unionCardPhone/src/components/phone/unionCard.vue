@@ -46,11 +46,11 @@
                 <i></i>
               </div>
               <img src="../../assets/images/SJunionCar03.png" style="width:0.65rem;margin-right: 0.2rem;">
-              {{item.directorPhone}}
+              <span  @click="telPhone(item.directorPhone)">{{item.directorPhone}}</span>
             </div>
             <p class="messsge1">
-                <img src="../../assets/images/SJunionCar04.png" @click="boxWarp3(index1, index2)">
-                <span @click="boxWarp3(index1, index2)">
+                <img src="../../assets/images/SJunionCar04.png" @click="boxWarp3(index1, index2)" v-if="item.enterpriseAddress">
+                <span @click="boxWarp3(index1, index2)" >
                   {{item.enterpriseAddress}}
                 </span>
               <button class="fr" @click="boxWarp(index2)" v-if="List.bind==1&&(List.memberId==List.members[index2].memberId)">
@@ -136,7 +136,6 @@
         </div>
       </div>
     </div>
-    <!--点击弹出地址-->
   </div>
 </template>
 
@@ -150,7 +149,7 @@
         phoneCode:'',
         verificationCode:'',
         //验证码等待的时间
-        wait:10,
+        wait:60,
         //统一的id号码
         busId:33,
         //首页加载的数据
@@ -180,7 +179,8 @@
         blackCard:{},
         redCard:{},
         isGetCode : 0,
-        orShow:false,//是否显示
+        orShow:'',//是否显示
+        timeEnd :'',
       }
     },//监听数据的变化
     watch: {
@@ -349,12 +349,11 @@
       },
       //点击弹出地址
       boxWarp3(index1, index2){
-        if(!this.orShow) {
-          $('.unionLi').eq(index1).find('.box-wrap3')[index2].style.display = 'block';
-          this.orShow = true;
-        }else{
-          this.orShow = false;
-          $('.unionLi').eq(index1).find('.box-wrap3')[index2].style.display = 'none';
+        let diplay_style = $('.unionLi').eq(index1).find('.box-wrap3')[index2].style;
+        if(diplay_style.display  == '' || diplay_style.display  == 'none'){
+           diplay_style.display = 'block';
+        }else if(diplay_style.display == 'block'){
+          diplay_style.display = 'none';
         }
       },
       //隐藏联所有的弹出框;
@@ -369,10 +368,17 @@
       init(){
         Phone.value='';
         verification.value='';
-        this.wait=0;
+        this.wait=60;
         this.isGetCode = 1;
         getCode.innerHTML = "获取验证码";
         getCode.style.color='#A8A8A8';
+      },
+      //清除定时器
+      clearCodeTime(){
+        this.wait=60;
+        this.isGetCode = 1;
+        getCode.innerHTML = "获取验证码";
+        getCode.style.color='#1EC054';
       },
       //点击div弹出对应的联盟信息
       showContent1(index1,unionid,memberid,$event){
@@ -381,10 +387,11 @@
             borderBottom:'none'
           })
         },10);
+        //隐藏所有的弹出地址
         $('.box-wrap3').hide();
-          //赋值成员和联盟的Id号码--------------
-          this.memberId=memberid;
-          this.unionId=unionid;
+        //赋值成员和联盟的Id号码--------------
+        this.memberId=memberid;
+        this.unionId=unionid;
         let isShow = $('.details_')[index1].style.display;
         //箭头全部向右
         var jiantou=document.querySelectorAll('.el-icon-arrow-down');
@@ -396,7 +403,8 @@
         for(var i=0;i<ddd.length;i++){
           ddd[i].style.display='none';
         }
-        if(isShow == '' || isShow == 'none'){//当前隐藏了
+        //如果当前隐藏了
+        if(isShow == '' || isShow == 'none'){
           this.List=this.unionList[index1].memberInfo;
           //加载联盟下的盟员和联盟卡信息列表
           this.UnionCardList=this.unionList[index1].memberInfo.members;
@@ -421,12 +429,10 @@
           }
           //当前列表数据展开、当前箭头向下
           $('.details_')[index1].style.display='block';
-          $('.el-icon-arrow-right ').className ='el-icon-arrow-down';
           $('.el-icon-arrow-right ')[index1].className='el-icon-arrow-down fr';
           $('.unionLi>div')[index1].style.borderBottom=0;
-          $('.details_')[index1].style.display = 'block';
           $('.unionLi>div')[index1].style.paddingBottom='1rem';
-        }else {////当前显示了
+        }else {////否则;当前显示了
           $('.details_')[index1].style.display = 'none';
           $('.unionLi>div')[index1].style.borderBottom = '0.01rem solid #dddddd';
           $('.unionLi>div')[index1].style.paddingBottom = '1rem';
@@ -447,19 +453,16 @@
                 that_.isGetCode = 1;
               }
               function time(o) {
-                if (that_.wait == 0) {
-                  //初始化数据
-                  that_.init();
-                } else {
+                that_.timeEnd = setInterval(() => {
                   that_.isGetCode = 0;
                   o.innerHTML = "重新发送(" + that_.wait + ")";
                   o.style.color = "#8a7e7e";
+                  if ( that_.wait === 0) {
+                    clearInterval(that_.timeEnd);
+                    that_.clearCodeTime();
+                  }
                   that_.wait--;
-                  setTimeout(function () {
-                      time(o)
-                    },
-                    1000)
-                }
+                }, 1000);
               }
             })
             .catch(err => {
@@ -493,6 +496,10 @@
           return
         }
       },
+      //拨打电话
+      telPhone(phone){
+        window.location.href = "tel:" + phone;
+      }
     },
     created (){
       //页面的title变换
@@ -506,6 +513,7 @@
       $http.get(`/cardH5/79B4DE7C/index/${this.busId}?url=${url1}`)
         .then(res => {
           if(res.data.data) {
+
             if (res.data.data.phone) {
               //如果有phone的值就赋值，方便后续传参数
               this.phone = res.data.data.phone;

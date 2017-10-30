@@ -1,5 +1,8 @@
 <template>
   <div class="container" id="Business">
+    <div v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="拼命加载中">
+      <!--显示整页加载，1秒后消失-->
+    </div>
     <el-tabs v-model="activeName" type="card">
       <el-tab-pane label="我的商机" name="first">
         <my-business></my-business>
@@ -34,11 +37,12 @@ export default {
     Recommend,
     CommissionSettle,
     Datachart,
-    Percent
+    Percent,
   },
   data() {
     return {
-      activeName: 'first'
+      activeName: 'first',
+      fullscreenLoading: true,
     };
   },
   created: function() {
@@ -49,13 +53,16 @@ export default {
       .get(`/union/index`)
       .then(res => {
         if (res.data.data) {
-          // 判断是否创建或加入联盟
-          if (!res.data.data.currentUnionId) {
-            this.$router.push({ path: '/no-union' });
-          } else {
-            // 全局存储信息
-            this.$store.commit('unionIdChange', res.data.data.currentUnionId);
-          }
+          setTimeout(() => {
+            // 判断是否创建或加入联盟
+            if (!res.data.data.currentUnionId) {
+              this.$router.push({path: '/no-union'});
+            } else {
+              // 全局存储信息
+              this.$store.commit('unionIdChange', res.data.data.currentUnionId);
+            }
+            this.fullscreenLoading = false;
+          },1000)
         }
       })
       .catch(err => {

@@ -28,7 +28,7 @@ export default {
   },
   data() {
     return {
-      activeName: 'first'
+      activeName: 'first',
     };
   },
   created: function() {
@@ -39,7 +39,7 @@ export default {
         if (res.data.data) {
           // 判断是否创建或加入联盟
           if (!res.data.data.currentUnionId) {
-            this.$router.push({ path: '/no-union' });
+            this.$router.push({path: '/no-union'});
           }
         }
       })

@@ -1,5 +1,8 @@
 <template>
   <div class="container" id="finance">
+    <div v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="拼命加载中">
+      <!--显示整页加载，1秒后消失-->
+    </div>
     <div id="union_people">
       <ul class="clearfix">
         <li>
@@ -125,7 +128,8 @@ export default {
       visible1: false,
       name: '',
       id: '',
-      timeOut: ''
+      timeOut: '',
+      fullscreenLoading: true,
     };
   },
   created: function() {
@@ -134,50 +138,53 @@ export default {
       .get(`/union/index`)
       .then(res => {
         if (res.data.data) {
-          // 判断是否创建或加入联盟
-          if (!res.data.data.currentUnionId) {
-            this.$router.push({ path: '/no-union' });
-          } else {
-            //获取佣金平台手机端的二维码
-            $http
-              .get(`/unionBrokerageIncome/indexQRUrl`)
-              .then(res => {
-                if (res.data.data) {
-                  this.imgUrl = res.data.data;
-                } else {
-                  this.imgUrl = '';
-                }
-              })
-              .catch(err => {
-                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-              });
-            // 可提现金额
-            $http
-              .get(`/unionBrokerageIncome/withdrawalSum`)
-              .then(res => {
-                if (res.data.data) {
-                  this.withdrawalSum = res.data.data;
-                } else {
-                  this.withdrawalSum = 0;
-                }
-              })
-              .catch(err => {
-                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-              });
-            // 佣金平台管理者列表
-            $http
-              .get(`/unionVerifier`)
-              .then(res => {
-                if (res.data.data) {
-                  this.tableData = res.data.data.records;
-                } else {
-                  this.tableData = [];
-                }
-              })
-              .catch(err => {
-                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-              });
-          }
+          setTimeout(() => {
+            this.fullscreenLoading = false;
+            // 判断是否创建或加入联盟
+            if (!res.data.data.currentUnionId) {
+              this.$router.push({path: '/no-union'});
+            } else {
+              //获取佣金平台手机端的二维码
+              $http
+                .get(`/unionBrokerageIncome/indexQRUrl`)
+                .then(res => {
+                  if (res.data.data) {
+                    this.imgUrl = res.data.data;
+                  } else {
+                    this.imgUrl = '';
+                  }
+                })
+                .catch(err => {
+                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 5000});
+                });
+              // 可提现金额
+              $http
+                .get(`/unionBrokerageIncome/withdrawalSum`)
+                .then(res => {
+                  if (res.data.data) {
+                    this.withdrawalSum = res.data.data;
+                  } else {
+                    this.withdrawalSum = 0;
+                  }
+                })
+                .catch(err => {
+                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 5000});
+                });
+              // 佣金平台管理者列表
+              $http
+                .get(`/unionVerifier`)
+                .then(res => {
+                  if (res.data.data) {
+                    this.tableData = res.data.data.records;
+                  } else {
+                    this.tableData = [];
+                  }
+                })
+                .catch(err => {
+                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 5000});
+                });
+            }
+          },1000)
         }
       })
       .catch(err => {

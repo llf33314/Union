@@ -1,5 +1,8 @@
 <template>
   <div class="container" id="myMainUnion">
+    <div v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="拼命加载中">
+      <!--显示整页加载，1秒后消失-->
+    </div>
     <!--创建和加入联盟-->
     <div class="notice">
       <el-row justify="center">
@@ -197,7 +200,7 @@ export default {
     Create,
     UnionMember,
     UnionCard,
-    UnionNotice
+    UnionNotice,
   },
   data() {
     return {
@@ -222,7 +225,8 @@ export default {
       activeName: 'first',
       memberId: '',
       unionListLength: '',
-      visible: false
+      visible: false,
+      fullscreenLoading: true,
     };
   },
   computed: {
@@ -277,29 +281,33 @@ export default {
         .get(`/union/index`)
         .then(res => {
           if (res.data.data) {
-            this.unionMainData = res.data.data;
-            // 判断是否创建或加入联盟
-            if (!this.unionMainData.currentUnionId) {
-              this.$router.push({ path: '/my-union/no-currentUnion' });
-            } else {
-              // 判断创建和加入联盟的数量
-              this.unionMainData.myCreateUnionId ? (this.unionListLength = 1) : (this.unionListLength = 0);
-              if (this.unionMainData.myJoinUnionList) {
-                this.unionListLength += this.unionMainData.myJoinUnionList.length;
+            setTimeout(() => {
+              this.fullscreenLoading = false;
+              console.log(res.data);
+              this.unionMainData = res.data.data;
+              // 判断是否创建或加入联盟
+              if (!this.unionMainData.currentUnionId) {
+                this.$router.push({path: '/my-union/no-currentUnion'});
+              } else {
+                // 判断创建和加入联盟的数量
+                this.unionMainData.myCreateUnionId ? (this.unionListLength = 1) : (this.unionListLength = 0);
+                if (this.unionMainData.myJoinUnionList) {
+                  this.unionListLength += this.unionMainData.myJoinUnionList.length;
+                }
+                // 全局存储信息
+                this.$store.commit('unionIdChange', this.unionMainData.currentUnionId);
+                this.$store.commit('unionMemberIdChange', this.unionMainData.currentUnionMemberId);
+                this.$store.commit('isUnionOwnerChange', this.unionMainData.currentUnionMemberIsUnionOwner);
+                // 处理当前页面数据展示格式
+                this.unionMainData.currentUnionCreatetime = $todate.todate(
+                  new Date(this.unionMainData.currentUnionCreatetime)
+                );
+                this.unionMainData.currentUnionMemberIsUnionOwner == 1
+                  ? (this.unionMainData.currentUnionMemberIsUnionOwner = '盟主')
+                  : (this.unionMainData.currentUnionMemberIsUnionOwner = '盟员');
+                this.unionMainData.currentUnionIntegralSum = res.data.data.currentUnionIntegralSum || 0;
               }
-              // 全局存储信息
-              this.$store.commit('unionIdChange', this.unionMainData.currentUnionId);
-              this.$store.commit('unionMemberIdChange', this.unionMainData.currentUnionMemberId);
-              this.$store.commit('isUnionOwnerChange', this.unionMainData.currentUnionMemberIsUnionOwner);
-              // 处理当前页面数据展示格式
-              this.unionMainData.currentUnionCreatetime = $todate.todate(
-                new Date(this.unionMainData.currentUnionCreatetime)
-              );
-              this.unionMainData.currentUnionMemberIsUnionOwner == 1
-                ? (this.unionMainData.currentUnionMemberIsUnionOwner = '盟主')
-                : (this.unionMainData.currentUnionMemberIsUnionOwner = '盟员');
-              this.unionMainData.currentUnionIntegralSum = res.data.data.currentUnionIntegralSum || 0;
-            }
+            },1000)
           }
         })
         .catch(err => {
