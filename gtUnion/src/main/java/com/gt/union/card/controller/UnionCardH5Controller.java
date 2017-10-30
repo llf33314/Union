@@ -139,6 +139,8 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			return returnLoginUrl;
 		}
 		unionCardService.bindCardPhone(member,busId,phone, code);
+		//清掉member  session
+		request.getSession().setAttribute(SessionUtils.SESSION_MEMBER,null);
 		return GTJsonResult.instanceSuccessMsg().toString();
 	}
 

@@ -102,7 +102,7 @@ public class MemberServiceImpl implements MemberService {
 				return 0;
 			}
 			Map map = JSONObject.parseObject(data,Map.class);
-			if(CommonUtil.isEmpty(map.get("data"))){
+			if(!("0".equals(map.get("code").toString()))){
 				return 0;
 			}
 		}catch (Exception e){
