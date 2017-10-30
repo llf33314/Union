@@ -483,9 +483,9 @@
         if($('#verification').val().length>5 && (/^1[3|4|5|6|7|8][0-9][0-9]{8}$/.test(Phone.value))){
           $http.post(`/cardH5/79B4DE7C/bind/${uPhone}?busId=${this.busId}&url=${url1}&code=${pCode}`)
             .then(res => {
-              //刷新当前页面
               if(res.data.success){
-                location.reload();
+                //刷新当前页面
+                window.location.href = location.href+'&time='+((new Date()).getTime());
               }
             })
             .catch(err => {
@@ -502,6 +502,7 @@
       }
     },
     created (){
+
       //页面的title变换
       $("#title_").text('会员信息');
       //如果有busId值，就赋值
