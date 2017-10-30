@@ -295,7 +295,7 @@
               if(res.data.data.qrurl != undefined && res.data.data.qrurl != null){
                 location.href=res.data.data.qrurl;
               }else {
-                location.reload();
+                window.location.href = location.href+'&time='+((new Date()).getTime());
               }
             }
           })
@@ -506,8 +506,10 @@
       //页面的title变换
       $("#title_").text('会员信息');
       //如果有busId值，就赋值
-      let Index1=window.location.href.indexOf('=');
-      let number=window.location.href.slice(parseInt(Index1)+1);
+      let hre_url = window.location.href;
+      let Index1=hre_url.indexOf('busId=');
+      let Index2=hre_url.indexOf('&time');
+      let number=hre_url.slice(parseInt(Index1)+6,(Index2 > -1) ? Index2 : hre_url.length);
       this.busId=number;
       //刷新页面渲染联盟卡首页列表数据---------------------------------------------------------1
       let url1='toUnionCard';
