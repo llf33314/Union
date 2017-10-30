@@ -22,6 +22,8 @@ import com.gt.union.card.entity.*;
 import com.gt.union.card.mapper.UnionCardMapper;
 import com.gt.union.card.service.*;
 import com.gt.union.card.vo.UnionCardBindParamVO;
+import com.gt.union.common.amqp.entity.PhoneMessage;
+import com.gt.union.common.amqp.sender.PhoneMessageSender;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
@@ -75,9 +77,6 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     private IDictService dictService;
 
     @Autowired
-    private SmsService smsService;
-
-    @Autowired
     private RedisCacheUtil redisCacheUtil;
 
     @Autowired
@@ -106,6 +105,9 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 
     @Autowired
     private ShopService shopService;
+
+    @Autowired
+    private PhoneMessageSender phoneMessageSender;
 
     /**
      * 字母正则校验
@@ -663,20 +665,10 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             throw new BusinessException("您没有有效的联盟或该手机号已办理联盟卡");
         }
         String code = RandomKit.getRandomString(6, 0);
-        HashMap<String, Object> smsParams = new HashMap<String, Object>();
-        smsParams.put("mobiles", phone);
-        smsParams.put("content", "办理联盟卡，验证码:" + code);
-        smsParams.put("company", PropertiesUtil.getWxmpCompany());
-        smsParams.put("busId", busId);
-        smsParams.put("model", ConfigConstant.SMS_UNION_MODEL);
-        Map<String, Object> param = new HashMap<String, Object>();
-        param.put("reqdata", smsParams);
-        if (smsService.sendSms(param) == 1) {
-            String phoneKey = RedisKeyUtil.getBindCardPhoneKey(phone);
-            redisCacheUtil.set(phoneKey, code, 600L);//5分钟
-        } else {
-            throw new BusinessException("发送失败");
-        }
+        PhoneMessage phoneMessage = new PhoneMessage(busId,phone,"办理联盟卡，验证码:" + code);
+        this.phoneMessageSender.sendMsg(phoneMessage);
+        String phoneKey = RedisKeyUtil.getBindCardPhoneKey(phone);
+        redisCacheUtil.set(phoneKey, code, 600L);//5分钟
     }
 
 
@@ -1126,8 +1118,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         if (CommonUtil.isEmpty(obj)) {
             throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
         }
-        obj = JSON.parseObject(obj, String.class);
-        if (!code.equals(obj)) {
+        if (!code.equals(JSON.parse(obj))) {
             throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
         }
         int status = memberService.bindMemberPhone(busId, member.getId(), phone);

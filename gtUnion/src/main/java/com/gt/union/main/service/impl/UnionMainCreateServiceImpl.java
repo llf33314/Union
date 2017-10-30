@@ -177,6 +177,7 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
             }
         } else {
             if ("0".equals(isPay)) {//不需要付费 创建许可
+                List<UnionSettingMainCharge> list = unionSettingMainChargeService.listBusLevel(busUser.getLevel());
                 String orderNo = ConfigConstant.CREATE_UNION_PAY_ORDER_CODE + System.currentTimeMillis();
                 UnionMainPermit unionMainPermit = new UnionMainPermit();
                 unionMainPermit.setBusId(busId);
@@ -187,6 +188,7 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
                 unionMainPermit.setSysOrderNo(orderNo);
                 unionMainPermit.setOrderStatus(MainConstant.PERMIT_ORDER_STATUS_UNPAY);
                 unionMainPermit.setValidity(DateUtil.parseDate(CommonConstant.UNION_VALIDITY_DEFAULT));//默认有效期
+                unionMainPermit.setSettingMainChargeId(list.get(0).getId());
                 unionMainPermitService.insert(unionMainPermit);
                 result.put("isPay", isPay);
                 //去创建联盟

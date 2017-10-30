@@ -5,6 +5,7 @@ import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.amqp.entity.PhoneMessage;
 import com.gt.union.api.client.sms.SmsService;
+import com.gt.union.common.amqp.sender.PhoneMessageSender;
 import com.gt.union.common.annotation.SysLogAnnotation;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BaseException;
@@ -48,7 +49,7 @@ public class UnionVerifierController {
     private IUnionVerifierService unionVerifierService;
 
     @Autowired
-    private SmsService smsService;
+    private PhoneMessageSender phoneMessageSender;
 
     @ApiOperation(value = "获取商家的佣金平台管理员列表", notes = "获取商家的佣金平台管理员列表", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -109,11 +110,7 @@ public class UnionVerifierController {
             return GTJsonResult.instanceErrorMsg("发送失败").toString();
         }
         PhoneMessage phoneMessage = new PhoneMessage(busId,phone,"佣金平台管理员验证码:" + code);
-        Map param = new HashMap<String,Object>();
-        param.put("reqdata",phoneMessage);
-        if(smsService.sendSms(param) == 0){
-            return GTJsonResult.instanceErrorMsg("发送失败").toString();
-        }
+        this.phoneMessageSender.sendMsg(phoneMessage);
         String phoneKey = RedisKeyUtil.getVerifyPhoneKey(phone);
         redisCacheUtil.set(phoneKey , code, 300L);
         return GTJsonResult.instanceSuccessMsg().toString();

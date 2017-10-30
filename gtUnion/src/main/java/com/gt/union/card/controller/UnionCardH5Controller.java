@@ -9,6 +9,7 @@ import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.card.service.IUnionCardService;
 import com.gt.union.card.vo.UnionCardBindParamVO;
 import com.gt.union.common.amqp.entity.PhoneMessage;
+import com.gt.union.common.amqp.sender.PhoneMessageSender;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.controller.MemberAuthorizeOrLoginController;
@@ -44,9 +45,6 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 	private IUnionCardService unionCardService;
 
 	@Autowired
-	private SmsService smsService;
-
-	@Autowired
 	private RedisCacheUtil redisCacheUtil;
 
 	@Autowired
@@ -54,6 +52,9 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 
 	@Autowired
 	private MemberService memberService;
+
+	@Autowired
+	private PhoneMessageSender phoneMessageSender;
 
 	@ApiOperation(value = "联盟卡首页", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/index/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -79,11 +80,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 		//生成验证码
 		String code = RandomKit.getRandomString(6, 0);
 		PhoneMessage phoneMessage = new PhoneMessage(busId,phone,"联盟卡手机登录验证码:" + code);
-		Map param = new HashMap<String,Object>();
-		param.put("reqdata",phoneMessage);
-		if(smsService.sendSms(param) == 0){
-			return GTJsonResult.instanceErrorMsg("发送失败").toString();
-		}
+		this.phoneMessageSender.sendMsg(phoneMessage);
 		String phoneKey = RedisKeyUtil.getCardH5LoginPhoneKey(phone);
 		redisCacheUtil.set(phoneKey , code, 300L);
 		return GTJsonResult.instanceSuccessMsg().toString();
@@ -97,11 +94,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			//生成验证码
 			String code = RandomKit.getRandomString(6, 0);
 			PhoneMessage phoneMessage = new PhoneMessage(busId,phone,"联盟卡手机绑定验证码:" + code);
-			Map param = new HashMap<String,Object>();
-			param.put("reqdata",phoneMessage);
-			if(smsService.sendSms(param) == 0){
-				return GTJsonResult.instanceErrorMsg("发送失败").toString();
-			}
+			this.phoneMessageSender.sendMsg(phoneMessage);
 			String phoneKey = RedisKeyUtil.getCardH5BindPhoneKey(phone);
 			redisCacheUtil.set(phoneKey , code, 300L);
 			return GTJsonResult.instanceSuccessMsg().toString();
