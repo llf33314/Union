@@ -32,7 +32,7 @@
         <el-dialog title="商机佣金比例设置" :visible.sync="dialogVisible" size="tiny" @close="resetData">
           <div class="model_03_detail">
             <p>"{{ toEnterpriseName }}" 给我的佣金为：{{ ratioToMe }}</p>
-            <p>我给TA佣金 ：&nbsp;&nbsp;<input type="text" v-model="ratioFromMe">
+            <p>我给TA佣金 ：&nbsp;&nbsp;<input type="text" v-model="ratioFromMe" @keyup.enter.native="submit" id="pushMoney">
               <span> %</span>
             </p>
             <div style="width:340px;text-align:right;color: #999999">对方推荐商机成功后获得的佣金百分比</div>
@@ -104,8 +104,18 @@ export default {
   },
   mounted: function() {
     this.init();
+    window.addEventListener('keyup',this.keyUp);
   },
   methods: {
+    //点击键盘事件
+    keyUp(event){
+     if(event.keyCode == 13){
+//       如果获得焦点
+       if($('#pushMoney').is(":focus")){
+         this.submit();
+       }
+     }
+    },
     init() {
       if (this.initUnionId) {
         // 获取联盟列表

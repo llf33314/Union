@@ -187,7 +187,7 @@ export default {
                 });
               container_finance.style.display='block';
             }
-          },600)
+          },300)
         }
       })
       .catch(err => {
