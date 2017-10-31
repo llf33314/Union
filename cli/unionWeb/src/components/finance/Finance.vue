@@ -42,12 +42,12 @@
             </el-form-item>
             <el-form-item label="手机号码：" prop="phone">
               <el-col :span="8">
-                <el-input v-model="ruleForm.phone" placeholder="请输入管理者手机号码"></el-input>
+                <el-input v-model="ruleForm.phone" placeholder="请输入管理者手机号码" @keyup.enter.native="getVerificationCode" ></el-input>
               </el-col>
             </el-form-item>
             <el-form-item label="验证码：" prop="code">
               <el-col :span="8">
-                <el-input v-model="ruleForm.code" placeholder="请输入验证码"></el-input>
+                <el-input v-model="ruleForm.code" placeholder="请输入验证码" ></el-input>
               </el-col>
               <el-button type="primary" style="margin-left: 20px" @click="getVerificationCode" :disabled="form1.getVerificationCode || !ruleForm.phone">获取验证码{{form1.countDownTime}}</el-button>
             </el-form-item>
