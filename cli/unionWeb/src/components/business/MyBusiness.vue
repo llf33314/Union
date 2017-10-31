@@ -348,8 +348,8 @@ export default {
         .put(`/unionOpportunity/${this.opportunityId}/isAccept/2`, this.acceptancePrice)
         .then(res => {
           if (res.data.success) {
-            this.dialogVisible1 = false;
             eventBus.$emit('newCommissionPay');
+            this.dialogVisible1 = false;
             $http
               .get(
                 `/unionOpportunity/toMe?current=${this.currentPage}&unionId=${this.unionId}&` +
