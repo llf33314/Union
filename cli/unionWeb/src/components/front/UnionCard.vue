@@ -454,16 +454,19 @@ export default {
                   if (msg.status == '003') {
                     eventBus.$emit('newTransaction');
                     eventBus.$emit('unionUpdata');
-                    _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
                     _this.init();
+                    setTimeout(() => {
+                      parent.window.postMessage('closeMask()', 'https://deeptel.com.cn/user/toIndex_1.do');
+                    }, 0);
+                    _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
                   } else if (msg.status == '004') {
                     _this.$message({ showClose: true, message: '请求超时', type: 'warning', duration: 5000 });
                   } else if (msg.status == '005') {
                     _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
                   }
                 }
+                _this.socketFlag.only = msg.only;
               }
-              _this.socketFlag.only = msg.only;
               _this.socketFlag.status = msg.status;
             });
           })
