@@ -1,6 +1,9 @@
 <template>
   <div id="front">
-    <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+    <div v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="拼命加载中">
+      <!--显示整页加载，1秒后消失-->
+    </div>
+    <el-tabs v-model="activeName" type="card" @tab-click="handleClick" style="display: none">
       <el-tab-pane label="联盟卡消费核销" name="first">
         <UnionCard></UnionCard>
       </el-tab-pane>
@@ -29,6 +32,7 @@ export default {
   data() {
     return {
       activeName: 'first',
+      fullscreenLoading: true,
     };
   },
   created: function() {
@@ -37,10 +41,14 @@ export default {
       .get(`/union/index`)
       .then(res => {
         if (res.data.data) {
-          // 判断是否创建或加入联盟
-          if (!res.data.data.currentUnionId) {
-            this.$router.push({path: '/no-union'});
-          }
+          setTimeout(() => {
+            this.fullscreenLoading = false;
+            // 判断是否创建或加入联盟
+            if (!res.data.data.currentUnionId) {
+              this.$router.push({path: '/no-union'});
+            }
+            $('.el-tabs--card').show();
+          },600);
         }
       })
       .catch(err => {

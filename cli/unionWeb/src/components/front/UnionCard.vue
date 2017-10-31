@@ -1,9 +1,5 @@
 <template>
   <div id="UnionCard">
-    <div v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="拼命加载中">
-      <!--显示整页加载，1秒后消失-->
-    </div>
-    <div id="container_front_unionCard" style="display: none">
       <div class="first_">
         <el-col style="width: 435px;;">
           <el-input placeholder="请用扫码枪扫码或手动输入联盟卡号" icon="search" v-model="input" :on-icon-click="handleIconClick" @keypress.native="keypress($event)">
@@ -166,7 +162,6 @@
       </el-dialog>
     </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -212,7 +207,6 @@ export default {
         only: '',
         status: ''
       },
-      fullscreenLoading: true
       //      canSubmit: false
     };
   },
@@ -221,11 +215,7 @@ export default {
       .get(`/unionCard/phone`)
       .then(res => {
         if (res.data.data) {
-          setTimeout(() => {
-            this.fullscreenLoading = false;
-            this.imgSrc = res.data.data;
-            container_front_unionCard.style.display = 'block';
-          }, 600);
+          this.imgSrc = res.data.data;
         } else {
           this.imgSrc = '';
         }
@@ -432,7 +422,7 @@ export default {
         data.payType = this.payType - 0;
         data.shopId = this.shop - 0;
         data.unionId = this.form.unionId - 0;
-        data.useIntegral = this.isIntegral_ && this.form.integral;
+        this.isIntegral_ && this.form.integral ? (data.useIntegral = true) : (data.useIntegral = false);
         $http
           .post(url, data)
           .then(res => {
@@ -463,16 +453,19 @@ export default {
                   if (msg.status == '003') {
                     eventBus.$emit('newTransaction');
                     eventBus.$emit('unionUpdata');
-                    _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
                     _this.init();
+                    setTimeout(() => {
+                      parent.window.postMessage('closeMask()', 'https://deeptel.com.cn/user/toIndex_1.do');
+                    }, 0);
+                    _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
                   } else if (msg.status == '004') {
                     _this.$message({ showClose: true, message: '请求超时', type: 'warning', duration: 5000 });
                   } else if (msg.status == '005') {
                     _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
                   }
                 }
+                _this.socketFlag.only = msg.only;
               }
-              _this.socketFlag.only = msg.only;
               _this.socketFlag.status = msg.status;
             });
           })

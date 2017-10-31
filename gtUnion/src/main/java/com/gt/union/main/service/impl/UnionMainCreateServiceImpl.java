@@ -287,6 +287,8 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         saveUnionMain.setLimitMember(limitMember);
         //联盟有效期
         saveUnionMain.setUnionValidity(isPay != null && isPay == 1 ? unionMainPermit.getValidity() : DateUtil.parseDate(CommonConstant.UNION_VALIDITY_DEFAULT));
+        //联盟说明
+        saveUnionMain.setIllustration(unionMainVO.getUnionIllustration());
         // (3)联盟黑卡设置
         UnionMainChargeVO unionMainChargeVO = unionMainVO.getUnionMainChargeVO();
         UnionMainCharge blackUnionMainCharge = new UnionMainCharge();
