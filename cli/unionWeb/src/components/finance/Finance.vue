@@ -205,9 +205,10 @@ export default {
             this.form1.countDownTime = 60;
             this.timeOut = setInterval(() => {
               if (this.form1.countDownTime === 0) {
-                clearInterval(this.timeOut);
                 this.form1.getVerificationCode = false;
                 this.form1.countDownTime = '';
+                clearInterval(this.timeOut);
+                return;
               }
               this.form1.countDownTime--;
             }, 1000);
