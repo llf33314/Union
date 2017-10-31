@@ -7,7 +7,7 @@
           <el-col style="width: 250px;margin-right: 20px;">
             <el-input v-model="form1.phone" @keyup.native="form1.phone=form1.phone.replace(/[^\d]/g,'')"  @keyup.enter.native="show1($event)"></el-input>
           </el-col>
-          <el-button type="primary" @click="getVerificationCode" :disabled="form1.getVerificationCode || !form1.phone">{{ form1.countDownTime?form1.countDownTime+'s':'获取验证码'}}</el-button>
+          <el-button type="primary" @click="getVerificationCode" :disabled="form1.getVerificationCode || !form1.phone">{{ form1.countDownTime > 0?form1.countDownTime+'s':'获取验证码'}}</el-button>
         </el-form-item>
         <el-form-item label="短信验证码：" prop="code">
           <el-row style="width: 250px;">
@@ -233,6 +233,7 @@ export default {
                 this.form1.getVerificationCode = false;
                 this.form1.countDownTime = '';
                 clearInterval(this.timeEnd);
+                return;
               }
               this.form1.countDownTime--;
             }, 1000);
@@ -274,6 +275,7 @@ export default {
                     this.form2.cards.black.termTime = '无';
                   }
                 }
+
                 this.visible2 = true;
                 //判断是否可以关注 然后获取二维码
                 var _this = this;
@@ -313,7 +315,6 @@ export default {
                       this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
                     });
                 }
-
               } else {
                 this.form2.unions = '';
                 this.form2.follow = 0;

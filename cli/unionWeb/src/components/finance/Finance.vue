@@ -49,7 +49,7 @@
               <el-col :span="8">
                 <el-input v-model="ruleForm.code" placeholder="请输入验证码" ></el-input>
               </el-col>
-              <el-button type="primary" style="margin-left: 20px" @click="getVerificationCode" :disabled="form1.getVerificationCode || !ruleForm.phone">获取验证码{{form1.countDownTime}}</el-button>
+              <el-button type="primary" style="margin-left: 20px" @click="getVerificationCode" :disabled="form1.getVerificationCode || !ruleForm.phone">{{ form1.countDownTime > 0?form1.countDownTime+'s':'获取验证码'}}</el-button>
             </el-form-item>
             <el-form-item>
               该手机号是联盟佣金平台的验证登录号码，请管理人员慎重设置号码
@@ -205,9 +205,10 @@ export default {
             this.form1.countDownTime = 60;
             this.timeOut = setInterval(() => {
               if (this.form1.countDownTime === 0) {
-                clearInterval(this.timeOut);
                 this.form1.getVerificationCode = false;
                 this.form1.countDownTime = '';
+                clearInterval(this.timeOut);
+                return;
               }
               this.form1.countDownTime--;
             }, 1000);

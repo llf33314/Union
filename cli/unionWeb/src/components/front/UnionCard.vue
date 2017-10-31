@@ -206,7 +206,7 @@ export default {
       socketFlag: {
         only: '',
         status: ''
-      },
+      }
       //      canSubmit: false
     };
   },
@@ -375,6 +375,7 @@ export default {
     },
     // 初始化
     init() {
+      this.visible5 = false;
       this.input = '';
       this.visible1 = true;
       this.visible2 = false;
@@ -403,7 +404,6 @@ export default {
       this.price1 = ''; // 实收金额
       this.payType = 0;
       this.price2 = ''; // 收取现金
-      this.visible5 = false;
       this.codeSrc = '';
     },
     // 付款二维码
@@ -422,7 +422,7 @@ export default {
         data.payType = this.payType - 0;
         data.shopId = this.shop - 0;
         data.unionId = this.form.unionId - 0;
-        data.useIntegral = this.isIntegral_ && this.form.integral;
+        this.isIntegral_ && this.form.integral ? (data.useIntegral = true) : (data.useIntegral = false);
         $http
           .post(url, data)
           .then(res => {
@@ -447,6 +447,7 @@ export default {
                 _this.socket.emit('auth', jsonObject);
               });
             }
+
             this.socket.on('chatevent', function(data) {
               let msg = eval('(' + data.message + ')');
               if (!(_this.socketFlag.only == msg.only && _this.socketFlag.status == msg.status)) {
@@ -456,14 +457,17 @@ export default {
                     eventBus.$emit('unionUpdata');
                     _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
                     _this.init();
+                    setTimeout(() => {
+                      parent.window.postMessage('closeMask()', 'https://deeptel.com.cn/user/toIndex_1.do');
+                    }, 0);
                   } else if (msg.status == '004') {
                     _this.$message({ showClose: true, message: '请求超时', type: 'warning', duration: 5000 });
                   } else if (msg.status == '005') {
                     _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
                   }
                 }
+                _this.socketFlag.only = msg.only;
               }
-              _this.socketFlag.only = msg.only;
               _this.socketFlag.status = msg.status;
             });
           })
