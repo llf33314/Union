@@ -346,7 +346,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 			UnionCardRoot root = unionCardRootService.getById(card.getRootId());
 			//是否使用了积分
 			if(vo.isUseIntegral()){
-				if(CommonUtil.isNotEmpty(root.getIntegral()) || root.getIntegral() <= 0 || root.getIntegral() < vo.getConsumeIntegral()){
+				if(CommonUtil.isEmpty(root.getIntegral()) || root.getIntegral() <= 0 || root.getIntegral() < vo.getConsumeIntegral()){
 					throw new BusinessException("联盟卡积分不足");
 				}
 				//支出
