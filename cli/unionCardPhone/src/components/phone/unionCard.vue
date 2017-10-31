@@ -3,13 +3,13 @@
     <!--卡号-->
     <p class="position_">
       <img src="../../assets/images/sjUnionCard111.png" alt="">
-    <div class="starts_">
-      <img src="../../assets/images/sjUnionX1.png" v-for="(items,index) in unionList">
-    </div>
-    <h1 class="fr" @click="showModel(mainContent.cardNo)" v-if="mainContent.cardNo">
-      <img src="../../assets/images/SJunionCard3.png">
-    </h1>
-    <h2 class="fl">{{mainContent.cardNo}}</h2>
+      <div class="starts_">
+        <img src="../../assets/images/sjUnionX1.png" v-for="(items,index) in unionList">
+      </div>
+      <h1 class="fr" @click="showModel(mainContent.cardNo)" v-if="mainContent.cardNo">
+        <img src="../../assets/images/SJunionCard3.png">
+      </h1>
+      <h2 class="fl">{{mainContent.cardNo}}</h2>
     </p>
     <!--首页头像信息-->
     <div class="second_ clear">
@@ -321,6 +321,7 @@
       //点击按钮弹出领取联盟卡选择框;
       boxWarp(index){
         let Index=index;
+//        让父元素不产生滚动条
         $('body').css({
           height:'100%',
           overflow:"hidden"
@@ -363,6 +364,10 @@
         $('.box-wrap2').hide();
         $('#message_').hide();
         this.init();
+        var card_price=$('.el-icon-check');
+        for(var i=0;i<card_price.length;i++){
+          $('.el-icon-check')[0].style.opacity=0;
+        }
       },
       //初始化数据;
       init(){
