@@ -34,7 +34,6 @@ import com.gt.union.consume.vo.UnionConsumeVO;
 import com.gt.union.main.constant.MainConstant;
 import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.service.IUnionMainService;
-import com.gt.union.member.entity.UnionMember;
 import com.gt.union.member.service.IUnionMemberService;
 import com.gt.union.preferential.entity.UnionPreferentialItem;
 import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
@@ -44,7 +43,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.lang.reflect.Field;
-import java.net.URLEncoder;
 import java.util.*;
 
 /**
@@ -100,9 +98,6 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		if(unionConsumeParam.getBusId() == null){
 			throw new ParamException("busId为空");
 		}
-		if(unionConsumeParam.getUnionId() == null){
-			throw new ParamException("unionId为空");
-		}
 		if(unionConsumeParam.getModel() == null){
 			throw new ParamException("model为空");
 		}
@@ -130,7 +125,6 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 			result.setSuccess(false);
 			return result;
 		}
-		UnionMember unionMember = unionMemberService.getByBusIdAndUnionId(unionConsumeParam.getBusId(), unionConsumeParam.getUnionId());
 
         UnionConsume unionConsume = new UnionConsume();
         unionConsume.setCreatetime(new Date());
@@ -145,7 +139,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
         unionConsume.setPayMoney(unionConsumeParam.getPayMoney());//折后支付价格
         unionConsume.setCardId(unionConsumeParam.getUnionCardId());//联盟卡id
         unionConsume.setIsIntegral(0);//是否赠送积分 0未赠送 1赠送
-        unionConsume.setMemberId(unionMember.getId());
+        unionConsume.setMemberId(card.getMemberId());
         this.insert(unionConsume);
         //线上积分赠送积分
         if (CommonUtil.isEmpty(unionConsumeParam.getGiveIntegralNow()) || unionConsumeParam.getGiveIntegralNow()) {//立即赠送
@@ -229,7 +223,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		List<WsWxShopInfoExtend> shops = shopService.listByIds(shopIds);
 		if(ListUtil.isNotEmpty(shops)){
 			for(UnionConsumeVO vo : list){
-				if(CommonUtil.isNotEmpty(vo.getShopId())){
+				if(CommonUtil.isNotEmpty(vo.getShopId()) && vo.getShopId() != 0){
 					for(WsWxShopInfoExtend info : shops){
 						if(info.getId().equals(vo.getShopId())){
 							vo.setShopName(info.getBusinessName());
@@ -261,7 +255,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 		List<WsWxShopInfoExtend> shops = shopService.listByIds(shopIds);
 		if(ListUtil.isNotEmpty(shops)){
 			for(UnionConsumeVO vo : list){
-				if(CommonUtil.isNotEmpty(vo.getShopId())){
+				if(CommonUtil.isNotEmpty(vo.getShopId()) && vo.getShopId() != 0){
 					for(WsWxShopInfoExtend info : shops){
 						if(info.getId().equals(vo.getShopId())){
 							vo.setShopName(info.getBusinessName());
@@ -352,7 +346,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 			UnionCardRoot root = unionCardRootService.getById(card.getRootId());
 			//是否使用了积分
 			if(vo.isUseIntegral()){
-				if(!(CommonUtil.isNotEmpty(root.getIntegral()) && root.getIntegral() > 0)){
+				if(CommonUtil.isEmpty(root.getIntegral()) || root.getIntegral() <= 0 || root.getIntegral() < vo.getConsumeIntegral()){
 					throw new BusinessException("联盟卡积分不足");
 				}
 				//支出
@@ -376,12 +370,10 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 
 	@Transactional(rollbackFor = Exception.class)
 	@Override
-	public void payConsumeSuccess(String orderNo, String only, Integer payType) throws Exception{
+	public void payConsumeSuccess(String orderNo, Map map, Integer payType, String only) throws Exception{
 		//解密参数
 		String paramKey = RedisKeyUtil.getConsumePayParamKey(only);
-		String obj = redisCacheUtil.get(paramKey);
-		Map<String, Object> result = JSONObject.parseObject(obj, Map.class);
-		UnionConsumeParamVO vo = JSONObject.parseObject(result.get("unionConsumeParamVO").toString(),UnionConsumeParamVO.class);
+		UnionConsumeParamVO vo = JSONObject.parseObject(map.get("unionConsumeParamVO").toString(),UnionConsumeParamVO.class);
 		String statusKey = RedisKeyUtil.getConsumePayStatusKey(only);
 		vo.setPayType(payType);
 		consumeSuccess(vo, orderNo);

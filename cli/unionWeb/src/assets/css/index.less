@@ -4,7 +4,8 @@ body{
     font-family: "Microsoft YaHei";
     min-width: 1280px;
     font-size:16px;
-    overflow:auto;
+    overflow-y:auto;
+    //overflow-x:hidden;
     width: 100%;
 }
 a{
@@ -185,6 +186,35 @@ hr{
     border-color: #1c8de0;
     span{
       color:#1c8de0!important;
+    }
+  }
+  .repeal{
+    .el-button{
+      border: 1px solid #f7ba2a!important;
+      span{
+        color: #f7ba2a!important;
+      }
+    }
+    .el-button:hover{
+      background: #1c8de0;
+      span{
+        color: #fff!important;
+      }
+    }
+    .el-button.is-disabled{
+      background-color: #fff!important;
+      border-color: #999999!important;
+      span{
+        color:#999999!important;
+      }
+    }
+  }
+  .repeal_{
+    .el-button{
+      border: 1px solid #1c8de0!important;
+      span{
+        color: #1c8de0!important;
+      }
     }
   }
 }
@@ -821,11 +851,16 @@ hr{
   #CommossionSettle{
     .model_0{
       .el-dialog--tiny {
-        width: 500px;
+        width: 560px;
+        height: 360px;
         .el-dialog__body{
           padding:0;
           .middle_{
             text-align: center;
+            margin-top: 25px;
+            .imgSrc{
+              width: 200px;
+            }
             span{
               color: red;
             }
@@ -981,16 +1016,19 @@ hr{
     //二维码弹出框的样式
     .codePayment{
       .el-dialog{
-        width:800px;
+        width:560px;
+        height: 360px;
       }
       .el-dialog__body{
         padding:0;
         text-align: center;
         img{
-          margin: 80px;
+          width:200px;
+          height:200px;
         }
         p{
-          margin-bottom: 60px
+          margin-top: 30px;
+          margin-bottom: 30px;
         }
       }
     }
@@ -1125,10 +1163,3 @@ hr{
     color: #999999;
   }
 }
-
-
-
-
-
-
-

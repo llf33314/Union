@@ -2,14 +2,14 @@
 * {
   margin: 0;
   padding: 0;
-  font-size:0.65rem;
+  font-size:.75rem;
 }
 body{
   width: 100%;
   height: 100%;
   background: #FFFFFF;
   font-family: '微软雅黑';
-  font-size:0.65rem;
+  font-size:.7rem;
 }
 .line {
   position: relative;
@@ -25,8 +25,8 @@ body{
   color: #D5D5D6;
   -webkit-transform-origin: 0 0;
   transform-origin: 0 0;
-  -webkit-transform: scaleY(0.5);
-  transform: scaleY(0.5);
+  -webkit-transform: scaleY(.5);
+  transform: scaleY(.5);
 }
 a{
   text-decoration: none;
@@ -129,7 +129,7 @@ input,
 select,
 textarea {
   outline: none;
-  text-indent:  0.26rem;
+  text-indent:  .26rem;
 }
 textarea.el-textarea__inner{
   resize:none;
@@ -227,7 +227,7 @@ table {
 }
 
 //顶部按钮点击弹出框的公共样式--------------
-.box-wrap,.box-wrap2,.box-wrap3{
+.box-wrap,.box-wrap2{
   width: 100%;
   height: 100%;
   /* background: red; */
@@ -242,22 +242,22 @@ table {
     left: 0;
     top: 0;
     z-index: 1;
-    background: rgba(0, 0, 0, 0.44);
+    background: rgba(0, 0, 0, .44);
   }
   .box {
     position: absolute;
     background: white;
     z-index: 5;
-    border-radius: 0.35rem;
+    border-radius: .35rem;
     border: 1px solid white;
     right: 3.5rem;
-    padding: 0 0.16rem;
+    padding: 0 .16rem;
     top: 2.2rem;
     min-width: 6.5rem;
     ul {
       li {
         border-bottom: 1px solid #E7E5E5;
-        padding: 0.534rem 1.335rem;
+        padding: .534rem 1.335rem;
         text-align: center;
       }
       li:last-child {
@@ -302,18 +302,6 @@ table {
   white-space: nowrap;
   overflow: hidden;
 }
-.el-popover{
-  background: #fff!important;
-  border: 1px solid #ddd!important;
-}
-.el-popover[x-placement^=bottom] .popper__arrow{
-  border-bottom-color: #ddd!important;
-}
-.el-tooltip__popper {
-  border-radius: 0.2136rem;
-  padding: 0.534rem;
-  font-size: 0.65rem;
-}
 
 //以下为手机端样式--------------------------------------------------------
 //多粉联盟卡--模块----------------------------------------------------------------------------模块8
@@ -323,8 +311,8 @@ table {
     >img {
       width: 17rem;
       height: 10.24rem;
-      margin-left: 0.2rem;
-      margin-bottom: 0.5rem;
+      margin-left: .2rem;
+      margin-bottom: .5rem;
     }
   }
   .starts_{
@@ -332,7 +320,7 @@ table {
     top: 6.1rem;
     left: 7.8rem;
     >img{
-      width:0.7rem;
+      width:.7rem;
     }
   }
   >h1{
@@ -349,30 +337,30 @@ table {
     left: 2.4rem;
     color:#AC8133;
     width: 6rem;
-    font-size: 0.9rem;
+    font-size: .9rem;
   }
   .second_{
     >img{
       width:2.92rem;
-      margin-right: 0.3rem;
+      margin-right: .3rem;
     }
     >div{
-      padding-bottom: 0.75rem;
+      padding-bottom: .75rem;
       border-bottom:1px solid #dddddd;
-      margin-bottom: 0.1rem;
+      margin-bottom: .1rem;
       >div{
         span,h1{
-          font-size:0.805rem;
+          font-size:.805rem;
         }
         span{
           color: #90A4AE;
         }
       }
       >span{
-        font-size:0.72rem;
+        font-size:.72rem;
       }
       >p{
-        font-size:0.64rem;
+        font-size:.64rem;
         color:#D0D0D0;
       }
     }
@@ -381,15 +369,15 @@ table {
     .unionLi{
       >div{
         -webkit-tap-highlight-color:transparent;
-        padding: 1rem 0.3rem 1rem 0.3rem;
-        border-bottom:0.01rem solid #dddddd;
+        padding: 1rem .3rem 1rem .3rem;
+        border-bottom:.01rem solid #dddddd;
         padding-bottom: 1rem;
       }
       >span{
-        font-size:0.7246rem;
+        font-size:.7246rem;
       }
       >b{
-        font-size:0.38rem;
+        font-size:.38rem;
       }
       >ul{
         background: #F9F9FD;
@@ -399,29 +387,45 @@ table {
         padding-left: 2rem;
         padding-right: 1.2rem;
         .li_Li{
-          //padding-top: 1rem;
-          //padding-bottom: 1rem;
-          //margin: 1rem 0.6rem 0rem 1.5rem;
-          border-bottom: 0.01rem solid #dddddd;
+          border-bottom: .01rem solid #dddddd;
           padding-top: .8rem;
           >div{
-            font-size:0.6442rem;
-            margin-bottom: 0.55rem;
-            >p{
-              //margin-right: 1.8rem;
-            }
+            font-size:.6442rem;
+            margin-bottom: .55rem;
           }
           >p{
             padding-bottom: 1rem;
             >button{
               background:#1EC054;
-              padding: 0.2rem;
+              padding: .2rem;
               border: none;
               color:#E2F6E8;
-              border-radius: 0.2rem;
-              font-size:0.6442rem;
+              border-radius: .2rem;
+              font-size:.6442rem;
               position: relative;
-              top: -0.8rem;
+              top: -.8rem;
+            }
+          }
+          .messsge1 {
+            position: relative;
+            > span {
+              font-size: .6442rem;
+              overflow: hidden;
+              width: 11.12rem;
+              display: inline-block;
+              white-space: nowrap;
+              text-overflow: ellipsis;
+              padding: .5rem 1rem;
+              position: absolute;
+              top: -.45rem;
+              left: 0rem;
+            }
+            >img{
+              width:.65rem;margin-right: .2rem;
+            }
+            button{
+              //防止高亮
+              -webkit-tap-highlight-color:transparent;
             }
           }
         }
@@ -443,58 +447,58 @@ table {
       left: 0;
       top: 0;
       z-index: 1;
-      background: rgba(0, 0, 0, 0.44);
+      background: rgba(0, 0, 0, .44);
     }
     .box {
       position: absolute;
       background: white;
       z-index: 5;
-      border-radius: 0.35rem;
+      border-radius: .35rem;
       border: 1px solid white;
       left: 17%;
-      padding: 0 0.17rem;
-      top: 20%;
+      padding: 0 .17rem;
+      top: 5rem;
       width: 66%;
       ul {
         li {
-          border-bottom: 0.09rem solid #4CCD77;
-          padding: 0.6rem 0.5rem;
+          border-bottom: .09rem solid #4CCD77;
+          padding: .6rem .5rem;
           text-align: center;
         }
       }
       >div{
-        margin: 0.85rem 0.72rem;
+        margin: .85rem .72rem;
         >span{
-          font-size: 0.67rem;
+          font-size: .67rem;
         }
         >div{
           text-align: center;
-          border-bottom: 0.05rem solid #A8A8A8;
+          border-bottom: .05rem solid #A8A8A8;
           span{
-            font-size: 0.75rem;
+            font-size: .75rem;
           }
           p{
             font-size:1.74rem;
-            margin: 0.1rem auto;
+            margin: .1rem auto;
           }
         }
         //选择联盟卡的样式
         .select_{
           div{
-            margin-top:0.2rem;
-            font-size:0.8rem;
+            margin-top:.2rem;
+            font-size:.8rem;
             font-weight: normal;
           }
           h6{
-            padding:0.5rem 0;
-            border-bottom:0.01rem solid #ddd;
+            padding:.5rem 0;
+            border-bottom:.01rem solid #ddd;
             color:#B8B8B8;
           }
         }
         form{
-          margin-bottom: 2.5rem;
+          margin-bottom: 2rem;
           >div {
-            border-bottom: 0.05rem solid #A8A8A8;
+            border-bottom: .05rem solid #A8A8A8;
             padding-bottom: 1rem;
             margin-top: 1rem;
             position: relative;
@@ -502,18 +506,18 @@ table {
               position: absolute;
               top: 2.5rem;
               color: red;
-              font-size: 0.672rem;
+              font-size: .672rem;
             }
           }
         }
         >button{
           width:100%;
-          padding: 0.72rem 0;
+          padding: .72rem 0;
           color: #80D496;
           background: #1FC055;
           border:none;
-          border-radius: 0.2rem;
-          margin-top: 0.8rem;
+          border-radius: .2rem;
+          margin-top: .8rem;
         }
       }
     }
@@ -532,10 +536,10 @@ table {
       padding: 0;
       .first_{
         color:#43C96E;
-        font-size:0.8rem;
+        font-size:.8rem;
         float: right;
-        margin-right: 0.5rem;
-        margin-top: 0.5rem;
+        margin-right: .5rem;
+        margin-top: .5rem;
       }
       .second_{
         margin-top: 8rem;
@@ -544,7 +548,7 @@ table {
           margin: 1rem  0;
         }
         h6{
-          margin-bottom: 0.5rem;
+          margin-bottom: .5rem;
           font-size:1.2rem;
           font-weight: normal;
         }
@@ -564,37 +568,37 @@ table {
   .login_{
     height:2.5rem;
     line-height: 2.5rem;
-    border-bottom: 0.01rem solid #cccccc;
+    border-bottom: .01rem solid #cccccc;
     position: relative;
     span{
-      font-size:0.8054rem;
+      font-size:.8054rem;
       font-weight: bold;
-      margin-left: 0.84rem;
+      margin-left: .84rem;
     }
     input{
-      font-size:0.8054rem;
+      font-size:.8054rem;
     }
     >div{
       height:2.5rem;
       width:5.76rem;
       background-color: #ffffff;
       border: none;
-      border-left:0.01rem solid #cccccc;
+      border-left:.01rem solid #cccccc;
       color: #98989F;
-      font-size:0.8054rem;
+      font-size:.8054rem;
       text-align: center;
     }
     .btn0:focus {
       color:#ffffff;
       background-color: #1FC055;
-      border:0.05rem solid #1FC055!important;
+      border:.05rem solid #1FC055!important;
     }
     #message_ {
       position: absolute;
       top: 2.5rem;
       color: red;
-      font-size: 0.672rem;
-      left: 0.8rem;
+      font-size: .672rem;
+      left: .8rem;
     }
   }
   >button{
@@ -603,16 +607,76 @@ table {
     margin: 2.46rem auto;
     background-color:#58b473 ;
     border: none;
-    border-radius: 0.216rem;
+    border-radius: .216rem;
     height: 2.16rem;
     color:#ffffff;
-    font-size:0.8054rem;
+    font-size:.8054rem;
   }
 
 }
+#box{
+  left: 13%!important;
+  width: 74%!important;
+  transition: all .5s;
+  form{
+    span{
+      font-size:.75rem;
+    }
+    input{
+      font-size: .85rem;
+      //-webkit-appearance:none; /*去除input默认样式*/
+    }
+    #Phone{
+      border: none;
+      //防止高亮
+      -webkit-tap-highlight-color:transparent;
+      width:5.7rem;
+    }
+    #verification{
+      border: none;width: 5.2rem;
+      -webkit-tap-highlight-color:transparent;
+    }
+    #getCode{
+      color:#A8A8A8;
+      display: inline-block;
+      font-size:.75rem;
+    }
+    #message_{
+      display: none
+    }
+  }
+}
 
-
-
-
-
-
+//点击弹出地址详情
+.box-wrap3{
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  left: 0;
+  top: 0;
+  z-index: 10;
+  display: none;
+  .box {
+    position: absolute;
+    background: #000000;
+    color:#fff;
+    z-index: 5;
+    border-radius: .35rem;
+    border: 1px solid #000000;
+    left: 0;
+    padding: 0 .16rem;
+    top: 2.8rem;
+    min-width: 6.5rem;
+  }
+  i{
+    height: 0;
+    width: 0;
+    border-top: .5rem transparent solid;
+    border-right: .5rem transparent solid;
+    border-bottom: .5rem black solid;
+    border-left: .5rem transparent solid;
+    position: absolute;
+    top: 1.9rem;
+    left: 3rem;
+  }
+}

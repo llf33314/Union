@@ -51,8 +51,8 @@
           </li>
         </ul>
         <!--<div class="loadMore hasPayLoadMore">加载更多</div>-->
-        <div class="loadMore hasPayLoadMore1"  @click="loadMore1">加载更多</div>
-        <div class="nothing noPayNothing" style="display:none;">没有更多数据</div>
+        <div class="loadMore hasPayLoadMore1"  @click="loadMore1" style="color:#868686;">加载更多</div>
+        <div class="nothing noPayNothing" style="display:none;color:#868686;">没有更多数据</div>
       </div>
     <!--售卡佣金页面-->
     <div class="unpay passive">
@@ -74,8 +74,8 @@
           </div>
         </li>
       </ul>
-      <div class="loadMore hasPayLoadMore2"  @click="loadMore2">加载更多</div>
-      <div class="nothing hasPayNothing " style="display: none">没有更多数据</div>
+      <div class="loadMore hasPayLoadMore2"  @click="loadMore2" style="color:#868686;">加载更多</div>
+      <div class="nothing hasPayNothing " style="display: none;color:#868686;">没有更多数据</div>
     </div>
   </div>
   <!--多粉大联盟按钮弹框-->
@@ -99,6 +99,8 @@
     name: 'toDetailList',
     data() {
       return {
+//        底部颜色切换
+        toLogin: 'ceshi1',
         //推荐佣金列表
         recommendList:[],
         //推荐佣金显示的总金额
@@ -178,12 +180,12 @@
                   }
                 })
                 .catch(err => {
-                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 0});
+                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 3000});
                 });
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
         //售卡佣金的页面的请求------------------------------2
         $http.get(`/unionH5Brokerage/cardDivide/list`)
@@ -212,12 +214,12 @@
                   if(res.data.data) {this.sellCardMoney = res.data.data.toFixed(2);}
                 })
                 .catch(err => {
-                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 0});
+                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 3000});
                 });
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
             console.log('111')
           });
         //隐藏弹出框
@@ -259,12 +261,12 @@
                   }
                 })
                 .catch(err => {
-                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 0});
+                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 3000});
                 });
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
 
         //售卡佣金的页面的请求--------------------------------2
@@ -296,15 +298,15 @@
                   }
                 })
                 .catch(err => {
-                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 0});
+                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 3000});
                 });
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
         //隐藏弹出框
-        $('.box-wrap').hide(300);
+        $('.box-wrap').hide();
       },
       //推荐佣金页面加载更多列表数据
       loadMore1(){
@@ -329,7 +331,7 @@
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
       },
       //售卡佣金页面加载更多列表数据
@@ -357,7 +359,7 @@
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
         console.log(this.unCommission);
       },
@@ -365,6 +367,8 @@
     created (){
       //页面的title变换
       $("#title_").text('佣金明细');
+      //图片底部的颜色切换（白和灰切换）
+      this.$emit('getValue',this.toLogin);
 //以下伟推荐佣金部分------------------------------------------------------------------------------------------01
     //推荐佣金
       $http.get(`/unionH5Brokerage/opportunity/list?size=${this.size}&current=${this.current}`)
@@ -391,7 +395,7 @@
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
       //推荐佣金明细的总金额
       $http.get(`/unionH5Brokerage/opportunitySum`)
@@ -401,7 +405,7 @@
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
 
   //以下为售卡佣金的明细--------------------------------------------------------------------------------------02
@@ -429,7 +433,7 @@
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
       //售卡佣金明细的总金额
       $http.get(`/unionH5Brokerage/cardDivideSum`)
@@ -439,7 +443,7 @@
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
 
 //多粉弹出框的请求盟员列表-------------------------------------------------------------------------------------03
@@ -450,7 +454,7 @@
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 0 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     }
   }

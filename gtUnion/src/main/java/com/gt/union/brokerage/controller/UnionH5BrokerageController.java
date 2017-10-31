@@ -13,6 +13,7 @@ import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.brokerage.service.IUnionH5BrokerageService;
 import com.gt.union.common.amqp.entity.PhoneMessage;
+import com.gt.union.common.amqp.sender.PhoneMessageSender;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.controller.MemberAuthorizeOrLoginController;
 import com.gt.union.common.exception.BaseException;
@@ -22,6 +23,7 @@ import com.gt.union.common.util.*;
 import com.gt.union.main.entity.UnionMain;
 import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.verifier.entity.UnionVerifier;
+import com.gt.union.verifier.service.IUnionVerifierService;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
 import org.apache.log4j.Logger;
@@ -54,10 +56,13 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	private IUnionMainService unionMainService;
 
 	@Autowired
-	private SmsService smsService;
+	private RedisCacheUtil redisCacheUtil;
 
 	@Autowired
-	private RedisCacheUtil redisCacheUtil;
+	private PhoneMessageSender phoneMessageSender;
+
+	@Autowired
+	private IUnionVerifierService unionVerifierService;
 
 
 	/**
@@ -112,13 +117,13 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	public String getCodeByPhone(HttpServletRequest request, HttpServletResponse response
 			, @ApiParam(name="phone", value = "手机号", required = true) @PathVariable String phone) throws Exception{
 			//生成验证码
+		UnionVerifier verifier = unionVerifierService.getByPhone(phone);
+		if(verifier == null){
+			throw new BusinessException("该手机号不存在");
+		}
 		String code = RandomKit.getRandomString(6, 0);
 		PhoneMessage phoneMessage = new PhoneMessage(0,phone,"佣金平台手机登录验证码:" + code);
-		Map param = new HashMap<String,Object>();
-		param.put("reqdata",phoneMessage);
-		if(smsService.sendSms(param) == 0){
-			return GTJsonResult.instanceErrorMsg("发送失败").toString();
-		}
+		this.phoneMessageSender.sendMsg(phoneMessage);
 		String phoneKey = RedisKeyUtil.getBrokeragePhoneKey(phone);
 		redisCacheUtil.set(phoneKey , code, 300L);
 		return GTJsonResult.instanceSuccessMsg().toString();
@@ -313,7 +318,7 @@ public class UnionH5BrokerageController extends MemberAuthorizeOrLoginController
 	public String payOne(HttpServletRequest request, HttpServletResponse response, @ApiParam(name = "id", value = "商机id", required = true) @PathVariable(value = "id", required = true) Integer id
 							,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) throws Exception{
 		BusUser user = SessionUtils.getUnionBus(request);
-		Member member = SessionUtils.getLoginMember(request,user.getId());
+		Member member = SessionUtils.getLoginMember(request,PropertiesUtil.getDuofenBusId());
 		if(CommonUtil.isEmpty(member)){
 			String redirectUrl = this.authorizeMemberWx(request,PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + url);
 			return GTJsonResult.instanceSuccessMsg(null,redirectUrl).toString();

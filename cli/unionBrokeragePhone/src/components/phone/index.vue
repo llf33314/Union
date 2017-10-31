@@ -51,6 +51,8 @@
     name: 'index',
     data() {
       return {
+//        底部颜色切换
+        toLogin: 'ceshi1',
         dataList:[],
         canReflect:'',
         unpaid:'',
@@ -63,6 +65,8 @@
 //    页面创建之前执行的函数
     created (){
       $("#title_").text('商家联盟佣金平台');
+      //图片底部的颜色切换（白和灰切换）
+      this.$emit('getValue',this.toLogin);
       //可提现的数据
       $http.get("/unionH5Brokerage/index")
         .then(res => {
@@ -73,7 +77,7 @@
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 1000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     }
   }

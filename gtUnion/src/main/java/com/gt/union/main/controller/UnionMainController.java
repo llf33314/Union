@@ -50,15 +50,17 @@ public class UnionMainController {
         return GTJsonResult.instanceSuccessMsg(result).toString();
     }
 
-    @ApiOperation(value = "分页获取我尚未加入的联盟列表信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/page/otherUnion", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String pageOther(HttpServletRequest request, Page page) throws Exception {
+    @ApiOperation(value = "根据加盟方式，分页获取我尚未加入的联盟列表信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/page/otherUnion/joinType/{joinType}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String pageOther(HttpServletRequest request, Page page,
+                            @ApiParam(name = "joinType", value = "加盟方式，1：推荐；2：申请和推荐", required = true)
+                            @PathVariable("joinType") Integer joinType) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-        Page<UnionMain> result = this.unionMainService.pageOtherUnionByBusId(page, busId);
+        Page<UnionMain> result = this.unionMainService.pageOtherUnionByBusIdAndJoinType(page, busId, joinType);
         return GTJsonResult.instanceSuccessMsg(result).toString();
     }
 

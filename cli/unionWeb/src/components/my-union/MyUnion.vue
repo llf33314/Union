@@ -1,175 +1,179 @@
 <template>
   <div class="container" id="myMainUnion">
-    <!--创建和加入联盟-->
-    <div class="notice">
-      <el-row justify="center">
-        <el-col :xs="8" :sm="8" :md="8" :lg="8">
-          <div class="grid-content bg-purple notice-list">我创建的联盟</div>
-          <div class="el_btn">
-              <el-button class="fl" v-if="unionMainData.myCreateUnionImg" @click="changUnion1(unionMainData.myCreateUnionMemberId)">
-                <el-tooltip :content="unionMainData.currentUnionName" placement="bottom">
-                  <img v-bind:src="unionMainData.myCreateUnionImg" alt="" class="fl unionImg">
-                </el-tooltip>
-              </el-button>
-          </div>
-          <create v-if="!unionMainData.myCreateUnionId && unionListLength < 3"></create>
-        </el-col>
-        <el-col :xs="8" :sm="8" :md="8" :lg="8">
-          <div class="grid-content bg-purple notice-list">我加入的联盟</div>
-          <div class="el_btn">
-              <el-button v-for="item in unionMainData.myJoinUnionList" :key="item.myJoinUnionMemberId" class="fl" @click="changUnion2(item.myJoinUnionMemberId)">
-                <el-tooltip :content="item.myJoinUnionName" placement="bottom">
-                  <img v-bind:src="item.myJoinUnionImg" alt="" class="fl unionImg">
-                </el-tooltip>
-              </el-button>
-            <join v-if="unionListLength < 3"></join>
-          </div>
-        </el-col>
-        <el-col :xs="8" :sm="8" :md="8" :lg="8">
-          <union-notice></union-notice>
-        </el-col>
-      </el-row>
+    <div v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="拼命加载中">
+      <!--显示整页加载，1秒后消失-->
     </div>
-    <!--中间栏信息（红卡，售卡，入盟，联盟设置...）-->
-    <div class="nav clearfix">
-      <el-col :xs="8" :sm="8" :md="8" :lg="8">
-        <div class="grid-content bg-purple ">
-          <router-link :to="{ path: '/my-union/union-setting', name: 'UnionSetting'}" v-if="isUnionOwner">
-            <el-button type="success" size="mini">
-              <img src="../../assets/images/icon01.png" style="width: 11px;">
-            </el-button>
-            <span>联盟设置</span>
-          </router-link>
-          <router-link :to="{ path: '/my-union/union-setting', name: 'UnionSetting'}" v-if="!isUnionOwner">
-            <el-button type="success" size="mini">
-              <img src="../../assets/images/icon01.png" style="width: 11px;">
-            </el-button>
-            <span>基础设置</span>
-          </router-link>
-        </div>
-      </el-col>
-      <el-col :xs="8" :sm="8" :md="8" :lg="8" v-if="isUnionOwner">
-        <div class="grid-content bg-purple ">
-          <router-link :to="{ path: '/my-union/union-check', name: 'UnionCheck'}">
-            <el-button type="info" size="mini">
-              <img src="../../assets/images/icon02.png" style="width: 11px;">
-            </el-button>
-            <span>入盟审核</span>
-          </router-link>
-        </div>
-      </el-col>
-      <el-col :xs="8" :sm="8" :md="8" :lg="8">
-        <div class="grid-content bg-purple ">
-          <router-link :to="{ path: '/my-union/union-recommend', name: 'UnionRecommend'}">
-            <el-button type="danger" size="mini">
-              <img src="../../assets/images/icon03.png" >
-            </el-button>
-            <span>推荐入盟</span>
-          </router-link>
-        </div>
-      </el-col>
-      <el-col :xs="8" :sm="8" :md="8" :lg="8">
-        <div class="grid-content bg-purple ">
-          <router-link :to="{ path: '/my-union/union-percent', name: 'UnionPercent'}">
-            <el-button type="warning" size="mini">
-              <img src="../../assets/images/icon04.png" style="width: 11px;">
-            </el-button>
-            <span>售卡分成管理</span>
-          </router-link>
-        </div>
-      </el-col>
-      <el-col :xs="8" :sm="8" :md="8" :lg="8">
-        <div class="grid-content bg-purple ">
-          <router-link :to="{ path: '/my-union/union-discount', name: 'UnionDiscount'}">
-            <el-button type="success" size="mini">
-              <img src="../../assets/images/icon05.png" style="width: 11px;">
-            </el-button>
-            <span>红卡优惠设置</span>
-          </router-link>
-        </div>
-      </el-col>
-      <el-col :xs="8" :sm="8" :md="8" :lg="8">
-        <div class="grid-content bg-purple ">
-          <router-link :to="{ path: '/my-union/union-quit', name: 'UnionQuit'}">
-            <el-button type="danger" size="mini">
-              <img src="../../assets/images/icon06.png" alt="">
-            </el-button>
-            <span>退盟管理</span>
-          </router-link>
-        </div>
-      </el-col>
-      <el-col :xs="8" :sm="8" :md="8" :lg="8" v-if="unionMainData.currentUnionMemberTransferId">
-        <div class="grid-content bg-purple nav-list">
-          <a @click="transfer" style="cursor: pointer">
-            <el-button type="primary" size="mini">
-              <img src="../../assets/images/icon07.png" style="width: 13px;height: 11px;">
-            </el-button>
-            <span>盟主权限转移</span>
-          </a>
-        </div>
-      </el-col>
-      <!-- 弹出框 提示 -->
-      <el-dialog title="提示" :visible.sync="visible" size="tiny">
-        <span>盟主({{ unionMainData.currentUnionOwnerEnterpriseName }})
-          将“{{ unionMainData.currentUnionName }}”权限转移给您，请确认！
-        </span>
-        <span slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="confirm">确 定</el-button>
-          <el-button @click="reject">拒 绝</el-button>
-        </span>
-      </el-dialog>
-    </div>
-    <!-- 联盟基础信息 -->
-    <div class="info">
-      <ul class="gt_union">
-        <li style="width:50%">
-          <div class="clearfix" id="gt_lm">
-            <img :src="unionMainData.currentUnionImg" class="fl unionImg">
-            <ul class="fl">
-              <li>
-                <span>联盟名称 :</span> {{ unionMainData.currentUnionName }}</li>
-              <li>
-                <span>盟&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;主 :</span> {{ unionMainData.currentUnionOwnerEnterpriseName }}</li>
-              <li>
-                <span>联盟说明 :</span> {{ unionMainData.currentUnionIllustration }}</li>
-              <li>
-                <span>创建时间 :</span> {{ unionMainData.currentUnionCreatetime }}</li>
-            </ul>
+    <div id="container_myUnion" style="display: none">
+      <!--创建和加入联盟-->
+      <div class="notice">
+        <el-row justify="center">
+          <el-col :xs="8" :sm="8" :md="8" :lg="8">
+            <div class="grid-content bg-purple notice-list">我创建的联盟</div>
+            <div class="el_btn">
+                <el-button class="fl" v-if="unionMainData.myCreateUnionImg" @click="changUnion1(unionMainData.myCreateUnionMemberId)">
+                  <el-tooltip :content="unionMainData.myCreateUnionName" placement="bottom">
+                    <img v-bind:src="unionMainData.myCreateUnionImg" alt="" class="fl unionImg">
+                  </el-tooltip>
+                </el-button>
+            </div>
+            <create v-if="!unionMainData.myCreateUnionId && unionListLength < 3"></create>
+          </el-col>
+          <el-col :xs="8" :sm="8" :md="8" :lg="8">
+            <div class="grid-content bg-purple notice-list">我加入的联盟</div>
+            <div class="el_btn">
+                <el-button v-for="item in unionMainData.myJoinUnionList" :key="item.myJoinUnionMemberId" class="fl" @click="changUnion2(item.myJoinUnionMemberId)">
+                  <el-tooltip :content="item.myJoinUnionName" placement="bottom">
+                    <img v-bind:src="item.myJoinUnionImg" alt="" class="fl unionImg">
+                  </el-tooltip>
+                </el-button>
+              <join v-if="unionListLength < 3"></join>
+            </div>
+          </el-col>
+          <el-col :xs="8" :sm="8" :md="8" :lg="8">
+            <union-notice></union-notice>
+          </el-col>
+        </el-row>
+      </div>
+      <!--中间栏信息（红卡，售卡，入盟，联盟设置...）-->
+      <div class="nav clearfix">
+        <el-col :xs="8" :sm="8" :md="8" :lg="8">
+          <div class="grid-content bg-purple ">
+            <router-link :to="{ path: '/my-union/union-setting', name: 'UnionSetting'}" v-if="isUnionOwner">
+              <el-button type="success" size="mini">
+                <img src="../../assets/images/icon01.png" style="width: 11px;">
+              </el-button>
+              <span>联盟设置</span>
+            </router-link>
+            <router-link :to="{ path: '/my-union/union-setting', name: 'UnionSetting'}" v-if="!isUnionOwner">
+              <el-button type="success" size="mini">
+                <img src="../../assets/images/icon01.png" style="width: 11px;">
+              </el-button>
+              <span>基础设置</span>
+            </router-link>
           </div>
-        </li>
-        <li>
-          <div class="gt_right" id="gt_rt">
-            <ul>
-              <li>
-                <span>企业名称 :</span> {{ unionMainData.currentUnionMemberEnterpriseName }}
-              </li>
-              <li>
-                <span>职&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;位 :</span>
-                {{ unionMainData.currentUnionMemberIsUnionOwner }}
-              </li>
-              <li>
-                <span>已加入盟员数</span> {{ unionMainData.currentUnionMemberCount }}
-                <span>,剩余盟员数</span> {{ unionMainData.currentUnionSurplusMemberCount }}
-              </li>
-            </ul>
+        </el-col>
+        <el-col :xs="8" :sm="8" :md="8" :lg="8" v-if="isUnionOwner">
+          <div class="grid-content bg-purple ">
+            <router-link :to="{ path: '/my-union/union-check', name: 'UnionCheck'}">
+              <el-button type="info" size="mini">
+                <img src="../../assets/images/icon02.png" style="width: 11px;">
+              </el-button>
+              <span>入盟审核</span>
+            </router-link>
           </div>
-        </li>
-      </ul>
-      <div id="union_people">
-        <ul class="clearfix">
-          <li>
-            <p>联盟成员</p>
-            <span> {{ unionMainData.currentUnionMemberCount }} </span>人
+        </el-col>
+        <el-col :xs="8" :sm="8" :md="8" :lg="8">
+          <div class="grid-content bg-purple ">
+            <router-link :to="{ path: '/my-union/union-recommend', name: 'UnionRecommend'}">
+              <el-button type="danger" size="mini">
+                <img src="../../assets/images/icon03.png" >
+              </el-button>
+              <span>推荐入盟</span>
+            </router-link>
+          </div>
+        </el-col>
+        <el-col :xs="8" :sm="8" :md="8" :lg="8">
+          <div class="grid-content bg-purple ">
+            <router-link :to="{ path: '/my-union/union-percent', name: 'UnionPercent'}">
+              <el-button type="warning" size="mini">
+                <img src="../../assets/images/icon04.png" style="width: 11px;">
+              </el-button>
+              <span>售卡分成管理</span>
+            </router-link>
+          </div>
+        </el-col>
+        <el-col :xs="8" :sm="8" :md="8" :lg="8">
+          <div class="grid-content bg-purple ">
+            <router-link :to="{ path: '/my-union/union-discount', name: 'UnionDiscount'}">
+              <el-button type="success" size="mini">
+                <img src="../../assets/images/icon05.png" style="width: 11px;">
+              </el-button>
+              <span>红卡优惠设置</span>
+            </router-link>
+          </div>
+        </el-col>
+        <el-col :xs="8" :sm="8" :md="8" :lg="8">
+          <div class="grid-content bg-purple ">
+            <router-link :to="{ path: '/my-union/union-quit', name: 'UnionQuit'}">
+              <el-button type="danger" size="mini">
+                <img src="../../assets/images/icon06.png" alt="">
+              </el-button>
+              <span>退盟管理</span>
+            </router-link>
+          </div>
+        </el-col>
+        <el-col :xs="8" :sm="8" :md="8" :lg="8" v-if="unionMainData.currentUnionMemberTransferId">
+          <div class="grid-content bg-purple nav-list">
+            <a @click="transfer" style="cursor: pointer">
+              <el-button type="primary" size="mini">
+                <img src="../../assets/images/icon07.png" style="width: 13px;height: 11px;">
+              </el-button>
+              <span>盟主权限转移</span>
+            </a>
+          </div>
+        </el-col>
+        <!-- 弹出框 提示 -->
+        <el-dialog title="提示" :visible.sync="visible" size="tiny">
+          <span>盟主({{ unionMainData.currentUnionOwnerEnterpriseName }})
+            将“{{ unionMainData.currentUnionName }}”权限转移给您，请确认！
+          </span>
+          <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="confirm">确 定</el-button>
+            <el-button @click="reject">拒 绝</el-button>
+          </span>
+        </el-dialog>
+      </div>
+      <!-- 联盟基础信息 -->
+      <div class="info">
+        <ul class="gt_union">
+          <li style="width:50%">
+            <div class="clearfix" id="gt_lm">
+              <img :src="unionMainData.currentUnionImg" class="fl unionImg">
+              <ul class="fl">
+                <li>
+                  <span>联盟名称 :</span> {{ unionMainData.currentUnionName }}</li>
+                <li>
+                  <span>盟&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;主 :</span> {{ unionMainData.currentUnionOwnerEnterpriseName }}</li>
+                <li>
+                  <span>联盟说明 :</span> {{ unionMainData.currentUnionIllustration }}</li>
+                <li>
+                  <span>创建时间 :</span> {{ unionMainData.currentUnionCreatetime }}</li>
+              </ul>
+            </div>
           </li>
-          <li v-if="unionMainData.currentUnionIsIntegral">
-            <p>联盟积分</p>
-            <span> {{ unionMainData.currentUnionIntegralSum }} </span>积分
+          <li>
+            <div class="gt_right" id="gt_rt">
+              <ul>
+                <li>
+                  <span>企业名称 :</span> {{ unionMainData.currentUnionMemberEnterpriseName }}
+                </li>
+                <li>
+                  <span>职&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;位 :</span>
+                  {{ unionMainData.currentUnionMemberIsUnionOwner }}
+                </li>
+                <li>
+                  <span>已加入盟员数</span> {{ unionMainData.currentUnionMemberCount }}
+                  <span>,剩余盟员数</span> {{ unionMainData.currentUnionSurplusMemberCount }}
+                </li>
+              </ul>
+            </div>
           </li>
         </ul>
+        <div id="union_people">
+          <ul class="clearfix">
+            <li>
+              <p>联盟成员</p>
+              <span> {{ unionMainData.currentUnionMemberCount }} </span>人
+            </li>
+            <li v-if="unionMainData.currentUnionIsIntegral">
+              <p>联盟积分</p>
+              <span> {{ unionMainData.currentUnionIntegralSum }} </span>积分
+            </li>
+          </ul>
+        </div>
       </div>
-    </div>
-    <!--列表数据-->
-    <div class="list">
+      <!--列表数据-->
+      <div class="list">
       <el-tabs v-model="activeName">
         <el-tab-pane label="盟员列表" name="first">
           <union-member></union-member>
@@ -178,6 +182,7 @@
           <union-card></union-card>
         </el-tab-pane>
       </el-tabs>
+    </div>
     </div>
   </div>
 </template>
@@ -197,7 +202,7 @@ export default {
     Create,
     UnionMember,
     UnionCard,
-    UnionNotice
+    UnionNotice,
   },
   data() {
     return {
@@ -222,7 +227,8 @@ export default {
       activeName: 'first',
       memberId: '',
       unionListLength: '',
-      visible: false
+      visible: false,
+      fullscreenLoading: true,
     };
   },
   computed: {
@@ -232,6 +238,39 @@ export default {
   },
   created: function() {
     this.init();
+  },
+  mounted: function() {
+    eventBus.$on('unionUpdata', () => {
+      if (this.memberId) {
+        $http
+          .get(`/union/index/memberId/${this.memberId}`)
+          .then(res => {
+            if (res.data.data) {
+              // 更新联盟基础信息
+              this.unionMainData.currentUnionName = res.data.data.currentUnionName;
+              this.unionMainData.currentUnionOwnerEnterpriseName = res.data.data.currentUnionOwnerEnterpriseName;
+              this.unionMainData.currentUnionIllustration = res.data.data.currentUnionIllustration;
+              this.unionMainData.currentUnionCreatetime = res.data.data.currentUnionCreatetime;
+              this.unionMainData.currentUnionMemberEnterpriseName = res.data.data.currentUnionMemberEnterpriseName;
+              this.unionMainData.currentUnionMemberIsUnionOwner = res.data.data.currentUnionMemberIsUnionOwner;
+              this.unionMainData.currentUnionMemberCount = res.data.data.currentUnionMemberCount;
+              this.unionMainData.currentUnionSurplusMemberCount = res.data.data.currentUnionSurplusMemberCount;
+              this.unionMainData.currentUnionIntegralSum = res.data.data.currentUnionIntegralSum;
+              // 处理当前页面数据展示格式
+              this.unionMainData.currentUnionCreatetime = $todate.todate(
+                new Date(this.unionMainData.currentUnionCreatetime)
+              );
+              this.unionMainData.currentUnionMemberIsUnionOwner == 1
+                ? (this.unionMainData.currentUnionMemberIsUnionOwner = '盟主')
+                : (this.unionMainData.currentUnionMemberIsUnionOwner = '盟员');
+              this.unionMainData.currentUnionIntegralSum = res.data.data.currentUnionIntegralSum || 0;
+            }
+          })
+          .catch(err => {
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          });
+      }
+    });
   },
   methods: {
     init() {
@@ -244,29 +283,35 @@ export default {
         .get(`/union/index`)
         .then(res => {
           if (res.data.data) {
-            this.unionMainData = res.data.data;
-            // 判断是否创建或加入联盟
-            if (!this.unionMainData.currentUnionId) {
-              this.$router.push({ path: '/my-union/no-currentUnion' });
-            } else {
-              // 判断创建和加入联盟的数量
-              this.unionMainData.myCreateUnionId ? (this.unionListLength = 1) : (this.unionListLength = 0);
-              if (this.unionMainData.myJoinUnionList) {
-                this.unionListLength += this.unionMainData.myJoinUnionList.length;
+
+            setTimeout(() => {
+              this.fullscreenLoading = false;
+              console.log(res.data);
+              this.unionMainData = res.data.data;
+              // 判断是否创建或加入联盟
+              if (!this.unionMainData.currentUnionId) {
+                this.$router.push({path: '/my-union/no-currentUnion'});
+              } else {
+                // 判断创建和加入联盟的数量
+                this.unionMainData.myCreateUnionId ? (this.unionListLength = 1) : (this.unionListLength = 0);
+                if (this.unionMainData.myJoinUnionList) {
+                  this.unionListLength += this.unionMainData.myJoinUnionList.length;
+                }
+                // 全局存储信息
+                this.$store.commit('unionIdChange', this.unionMainData.currentUnionId);
+                this.$store.commit('unionMemberIdChange', this.unionMainData.currentUnionMemberId);
+                this.$store.commit('isUnionOwnerChange', this.unionMainData.currentUnionMemberIsUnionOwner);
+                // 处理当前页面数据展示格式
+                this.unionMainData.currentUnionCreatetime = $todate.todate(
+                  new Date(this.unionMainData.currentUnionCreatetime)
+                );
+                this.unionMainData.currentUnionMemberIsUnionOwner == 1
+                  ? (this.unionMainData.currentUnionMemberIsUnionOwner = '盟主')
+                  : (this.unionMainData.currentUnionMemberIsUnionOwner = '盟员');
+                this.unionMainData.currentUnionIntegralSum = res.data.data.currentUnionIntegralSum || 0;
               }
-              // 全局存储信息
-              this.$store.commit('unionIdChange', this.unionMainData.currentUnionId);
-              this.$store.commit('unionMemberIdChange', this.unionMainData.currentUnionMemberId);
-              this.$store.commit('isUnionOwnerChange', this.unionMainData.currentUnionMemberIsUnionOwner);
-              // 处理当前页面数据展示格式
-              this.unionMainData.currentUnionCreatetime = $todate.todate(
-                new Date(this.unionMainData.currentUnionCreatetime)
-              );
-              this.unionMainData.currentUnionMemberIsUnionOwner == 1
-                ? (this.unionMainData.currentUnionMemberIsUnionOwner = '盟主')
-                : (this.unionMainData.currentUnionMemberIsUnionOwner = '盟员');
-              this.unionMainData.currentUnionIntegralSum = res.data.data.currentUnionIntegralSum || 0;
-            }
+              container_myUnion.style.display = 'block';
+            },500)
           }
         })
         .catch(err => {

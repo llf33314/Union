@@ -13,6 +13,8 @@ import com.gt.union.api.entity.result.UnionDiscountResult;
 import com.gt.union.api.server.ApiBaseController;
 import com.gt.union.card.service.IUnionCardBindingService;
 import com.gt.union.card.service.IUnionCardService;
+import com.gt.union.common.amqp.entity.PhoneMessage;
+import com.gt.union.common.amqp.sender.PhoneMessageSender;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
@@ -47,7 +49,7 @@ public class UnionCardApiController extends ApiBaseController {
 
 
 	@Autowired
-	private SmsService smsService;
+	private PhoneMessageSender phoneMessageSender;
 
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
@@ -91,21 +93,11 @@ public class UnionCardApiController extends ApiBaseController {
 			boolean verification=super.verification(request, response, requestApiParam);
 			//生成验证码
 			String code = RandomKit.getRandomString(6, 0);
-			HashMap<String, Object> smsParams = new HashMap<String,Object>();
-			smsParams.put("mobiles", requestApiParam.getReqdata().getPhone());
-			smsParams.put("content", "绑定联盟卡，验证码:" + code);
-			smsParams.put("company", PropertiesUtil.getWxmpCompany());
-			smsParams.put("busId", requestApiParam.getReqdata().getBusId());
-			smsParams.put("model", ConfigConstant.SMS_UNION_MODEL);
-			Map<String,Object> param = new HashMap<String,Object>();
-			param.put("reqdata",smsParams);
-			if(smsService.sendSms(param) == 1){
-				String phoneKey = RedisKeyUtil.getMemberPhoneCodeKey(requestApiParam.getReqdata().getMemberId());
-				redisCacheUtil.set(phoneKey,code,300L);//5分钟
-				return ResponseUtils.createBySuccess();
-			} else {
-				return ResponseUtils.createByErrorMessage("发送失败");
-			}
+			PhoneMessage phoneMessage = new PhoneMessage(requestApiParam.getReqdata().getBusId(),requestApiParam.getReqdata().getPhone(),"绑定联盟卡，验证码:" + code);
+			this.phoneMessageSender.sendMsg(phoneMessage);
+			String phoneKey = RedisKeyUtil.getMemberPhoneCodeKey(requestApiParam.getReqdata().getMemberId());
+			redisCacheUtil.set(phoneKey,code,300L);//5分钟
+			return ResponseUtils.createBySuccess();
 		} catch (BaseException e) {
 			e.printStackTrace();
 			return ResponseUtils.createByErrorMessage(e.getErrorMsg());

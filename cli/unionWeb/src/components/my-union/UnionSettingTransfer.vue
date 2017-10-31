@@ -9,8 +9,8 @@
       <el-table-column label="操作">
         <template scope="scope">
           <div class="sizeAndColor">
-            <el-button v-if="!scope.row.transferId" size="small" @click="onTransfer(scope)" :disabled="!canTransferFlag">转移</el-button>
-            <el-button v-if="scope.row.transferId" size="small" @click="onRevoke(scope)">撤销</el-button>
+            <span class="repeal repeal_"><el-button v-if="!scope.row.transferId" size="small" @click="onTransfer(scope)" :disabled="!canTransferFlag">转移</el-button></span>
+            <span class="repeal"><el-button v-if="scope.row.transferId" size="small" @click="onRevoke(scope)">撤销</el-button></span>
           </div>
         </template>
       </el-table-column>
@@ -113,6 +113,7 @@ export default {
         .put(`/unionMainTransfer/memberId/${this.unionMemberId}?tgtMemberId=${this.id}`)
         .then(res => {
           if (res.data.success) {
+            eventBus.$emit('unionUpdata');
             this.dialogVisible1 = false;
             this.canTransferFlag = false;
             $http
@@ -147,6 +148,7 @@ export default {
         .put(`/unionMainTransfer/${this.transferId}/memberId/${this.unionMemberId}/revoke`)
         .then(res => {
           if (res.data.success) {
+            eventBus.$emit('unionUpdata');
             this.dialogVisible2 = false;
             this.canTransferFlag = true;
             $http

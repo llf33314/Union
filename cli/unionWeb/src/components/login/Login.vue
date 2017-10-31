@@ -1,5 +1,8 @@
 <template>
-  <button @click="fn1"> 登陆 </button>
+  <div>
+    <button @click="fn1"> 登陆 </button>
+    <div>test</div>
+  </div>
 </template>
 
 <script>
@@ -20,6 +23,7 @@ export default {
           data1.login_name = data.userName;
           data1.password = data.password;
           data1.sign = res.data.data;
+          // zhajinglan
           // data1.sign = JSON.stringify(res.data.data);
           // data1.sign = res.data.data.sign;
           // data1.sign = JSON.stringify(res.data.data.sign);

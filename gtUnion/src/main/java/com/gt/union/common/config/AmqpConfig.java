@@ -23,7 +23,7 @@ public class AmqpConfig {
         UNION_EXCHANGE = exchange;
     }
 
-    @Value("${exchange.union.exchange}")
+    @Value("${queueName.union.queueName}")
     public void setUnionRoutingkeyPhoneMessage(String message) {
         UNION_ROUTINGKEY_PHONE_MESSAGE = message;
     }

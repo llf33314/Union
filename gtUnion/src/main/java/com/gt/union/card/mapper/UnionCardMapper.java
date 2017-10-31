@@ -1,6 +1,7 @@
 package com.gt.union.card.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.card.entity.UnionCard;
 import com.gt.union.member.entity.UnionMember;
 import org.apache.ibatis.annotations.Param;
@@ -41,4 +42,5 @@ public interface UnionCardMapper extends BaseMapper<UnionCard> {
 	 * @return
 	 */
 	Map<String,Object> getByEarliestByCardList(@Param("list") List<UnionCard> list);
+
 }

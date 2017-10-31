@@ -86,6 +86,13 @@ export default {
       }
     }
   },
+  activated: function() {
+    if (this.unionMemberId) {
+      if (this.unionId) {
+        this.init();
+      }
+    }
+  },
   watch: {
     unionId: function() {
       if (this.unionMemberId) {

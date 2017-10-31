@@ -198,6 +198,7 @@ export default {
         .then(res => {
           if (res.data.success) {
             this.search();
+            eventBus.$emit('unionUpdata');
             this.visible1 = false;
             this.$message({ showClose: true, message: '审核通过', type: 'success', duration: 5000 });
           }
@@ -219,6 +220,7 @@ export default {
         .then(res => {
           if (res.data.success) {
             this.search();
+            eventBus.$emit('unionUpdata');
             this.visible1 = false;
             this.$message({ showClose: true, message: '审核通过', type: 'success', duration: 5000 });
           }

@@ -227,6 +227,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         unionMainPermit.setSysOrderNo(orderNo);
         unionMainPermit.setOrderStatus(MainConstant.PERMIT_ORDER_STATUS_UNPAY);
         unionMainPermit.setValidity(validity);
+        unionMainPermit.setSettingMainChargeId(chargeId);
         //payType 0：微信支付 1：支付宝支付   联盟保存类型：1：微信支付 3：支付宝支付
         unionMainPermit.setPayType(payType == 0 ? 1 : payType == 1 ? 3 : 0);
         this.insert(unionMainPermit);

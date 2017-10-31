@@ -22,6 +22,8 @@ import com.gt.union.card.entity.*;
 import com.gt.union.card.mapper.UnionCardMapper;
 import com.gt.union.card.service.*;
 import com.gt.union.card.vo.UnionCardBindParamVO;
+import com.gt.union.common.amqp.entity.PhoneMessage;
+import com.gt.union.common.amqp.sender.PhoneMessageSender;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
@@ -75,9 +77,6 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     private IDictService dictService;
 
     @Autowired
-    private SmsService smsService;
-
-    @Autowired
     private RedisCacheUtil redisCacheUtil;
 
     @Autowired
@@ -106,6 +105,14 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 
     @Autowired
     private ShopService shopService;
+
+    @Autowired
+    private PhoneMessageSender phoneMessageSender;
+
+    /**
+     * 字母正则校验
+     */
+    private static Pattern CHARACTER_PATTERN = Pattern.compile("[a-zA-z]");
 
     @Override
     public Page selectListByUnionId(Page page, final Integer unionId, final Integer busId, final String cardNo, final String phone) throws Exception {
@@ -156,8 +163,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        Pattern p = Pattern.compile("[a-zA-z]");
-        if (p.matcher(no).find()) {//包含字母--扫码枪扫码所得
+        if (CHARACTER_PATTERN.matcher(no).find()) {//包含字母--扫码枪扫码所得
             //解密
             try {
                 no = EncryptUtil.decrypt(PropertiesUtil.getEncryptKey(), no);//解码后得到联盟卡号
@@ -496,6 +502,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                             red.put("termTime", DateTimeKit.format(DateTimeKit.addDays(redCharge.getValidityDay()), "yyyy-MM-dd"));//收费的，有效期
                             red.put("illustration", redCharge.getIllustration());
                             map.put("red", red);
+                            map.put("unionId",member.getUnionId());
                             dataList.add(map);
                         } else {
                             if (percent) {
@@ -505,6 +512,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                                 red.put("termTime", DateTimeKit.format(DateTimeKit.addDays(redCharge.getValidityDay()), "yyyy-MM-dd"));//收费的，有效期
                                 red.put("illustration", redCharge.getIllustration());
                                 map.put("red", red);
+                                map.put("unionId",member.getUnionId());
                                 dataList.add(map);
                             }
                         }
@@ -523,6 +531,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                             black.put("termTime", DateTimeKit.format(DateTimeKit.addDays(blackCharge.getValidityDay()), "yyyy-MM-dd"));//收费的，有效期
                             black.put("illustration", blackCharge.getIllustration());
                             map.put("black", black);
+                            map.put("unionId",member.getUnionId());
                             dataList.add(map);
                         } else {
                             if (percent) {
@@ -532,6 +541,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                                 black.put("termTime", DateTimeKit.format(DateTimeKit.addDays(blackCharge.getValidityDay()), "yyyy-MM-dd"));//收费的，有效期
                                 black.put("illustration", blackCharge.getIllustration());
                                 map.put("black", black);
+                                map.put("unionId",member.getUnionId());
                                 dataList.add(map);
                             }
                         }
@@ -549,6 +559,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                             red.put("termTime", DateTimeKit.format(DateTimeKit.addDays(redCharge.getValidityDay()), "yyyy-MM-dd"));//收费的，有效期
                             red.put("illustration", redCharge.getIllustration());
                             map.put("red", red);
+                            map.put("unionId",member.getUnionId());
                             dataList.add(map);
                         } else {
                             if (percent) {
@@ -558,6 +569,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                                 red.put("termTime", DateTimeKit.format(DateTimeKit.addDays(redCharge.getValidityDay()), "yyyy-MM-dd"));//收费的，有效期
                                 red.put("illustration", redCharge.getIllustration());
                                 map.put("red", red);
+                                map.put("unionId",member.getUnionId());
                                 dataList.add(map);
                             }
                         }
@@ -577,6 +589,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                     black.put("termTime", DateTimeKit.format(DateTimeKit.addDays(blackCharge.getValidityDay()), "yyyy-MM-dd"));//收费的，有效期
                     black.put("illustration", blackCharge.getIllustration());
                     map.put("black", black);
+                    map.put("unionId",member.getUnionId());
                     dataList.add(map);
                 } else {
                     if (percent) {
@@ -586,6 +599,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                         black.put("termTime", DateTimeKit.format(DateTimeKit.addDays(blackCharge.getValidityDay()), "yyyy-MM-dd"));//收费的，有效期
                         black.put("illustration", blackCharge.getIllustration());
                         map.put("black", black);
+                        map.put("unionId",member.getUnionId());
                         dataList.add(map);
                     }
                 }
@@ -595,6 +609,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 black.put("price", blackCharge.getChargePrice());
                 black.put("illustration", blackCharge.getIllustration());
                 map.put("black", black);
+                map.put("unionId",member.getUnionId());
                 dataList.add(map);
             }
             if (redCharge != null) {//开启红卡
@@ -609,6 +624,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                     red.put("termTime", DateTimeKit.format(DateTimeKit.addDays(redCharge.getValidityDay()), "yyyy-MM-dd"));//收费的，有效期
                     red.put("illustration", redCharge.getIllustration());
                     map.put("red", red);
+                    map.put("unionId",member.getUnionId());
                     dataList.add(map);
                 } else {
                     if (percent) {
@@ -618,6 +634,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                         red.put("termTime", DateTimeKit.format(DateTimeKit.addDays(redCharge.getValidityDay()), "yyyy-MM-dd"));//收费的，有效期
                         red.put("illustration", redCharge.getIllustration());
                         map.put("red", red);
+                        map.put("unionId",member.getUnionId());
                         dataList.add(map);
                     }
                 }
@@ -648,20 +665,10 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             throw new BusinessException("您没有有效的联盟或该手机号已办理联盟卡");
         }
         String code = RandomKit.getRandomString(6, 0);
-        HashMap<String, Object> smsParams = new HashMap<String, Object>();
-        smsParams.put("mobiles", phone);
-        smsParams.put("content", "办理联盟卡，验证码:" + code);
-        smsParams.put("company", PropertiesUtil.getWxmpCompany());
-        smsParams.put("busId", busId);
-        smsParams.put("model", ConfigConstant.SMS_UNION_MODEL);
-        Map<String, Object> param = new HashMap<String, Object>();
-        param.put("reqdata", smsParams);
-        if (smsService.sendSms(param) == 1) {
-            String phoneKey = RedisKeyUtil.getBindCardPhoneKey(phone);
-            redisCacheUtil.set(phoneKey, code, 600L);//5分钟
-        } else {
-            throw new BusinessException("发送失败");
-        }
+        PhoneMessage phoneMessage = new PhoneMessage(busId,phone,"办理联盟卡，验证码:" + code);
+        this.phoneMessageSender.sendMsg(phoneMessage);
+        String phoneKey = RedisKeyUtil.getBindCardPhoneKey(phone);
+        redisCacheUtil.set(phoneKey, code, 600L);//5分钟
     }
 
 
@@ -728,11 +735,12 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         Map<Integer, List<Map<String, Object>>> cardInfo = new HashMap<Integer, List<Map<String, Object>>>();
         while (it.hasNext()) {
             UnionMember member = it.next();
-            List<Map<String, Object>> dataList = getCardInfoByMemberAndPhone(member, phone);//可以升级的联盟列表
+            //可以升级的联盟列表
+            List<Map<String, Object>> dataList = getCardInfoByMemberAndPhone(member, phone);
             if (ListUtil.isEmpty(dataList)) {
                 it.remove();
             } else {
-                if (cardInfo.keySet().size() == 0) {
+                if (!cardInfo.containsKey(member.getId())) {
                     cardInfo.put(member.getId(), dataList);
                 }
             }
@@ -740,35 +748,49 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         if (ListUtil.isEmpty(members)) {
             throw new BusinessException("您没有有效的联盟或该手机号已办理联盟卡");
         }
-        List<UnionMain> unions = new ArrayList<UnionMain>();//封装联盟列表
+        //得到当前的盟员信息
+        UnionMember unionMember = members.get(0);
+        if (unionId != null) {
+            for (UnionMember member : members) {
+                if(unionId.equals(member.getUnionId())){
+                    unionMember = member;
+                }
+            }
+        }
+        //封装联盟卡信息
+        Map<String, Object> cards = new HashMap<String,Object>();
         List<Integer> unionIds = new ArrayList<Integer>();
         for (UnionMember member : members) {
-            unionIds.add(member.getUnionId());
+            if(cardInfo.containsKey(member.getId())){
+                List<Map<String, Object>> list = cardInfo.get(member.getId());
+                //选中的
+                if(member.getId().equals(unionMember.getId())){
+                    for(Map map : list){
+                        if(map.containsKey("black")){
+                            cards.put("black",map.get("black"));
+                        }
+                        if(map.containsKey("red")){
+                            cards.put("red",map.get("red"));
+                        }
+                        unionId = CommonUtil.toInteger(map.get("unionId"));
+                    }
+                }
+                //得到可升级的联盟ids
+                unionIds.add(member.getUnionId());
+            }
         }
+        //封装联盟列表
+        List<UnionMain> unions = new ArrayList<UnionMain>();
         List<UnionMain> mains = unionMainService.listByIds(unionIds);
-        for (UnionMember unionMember : members) {
+        for (UnionMember member : members) {
             for (UnionMain main : mains) {
-                if (unionMember.getUnionId().equals(main.getId())) {
+                if (member.getUnionId().equals(main.getId())) {
                     unions.add(main);
                     break;
                 }
             }
         }
-        UnionMember member = members.get(0);
-        if (unionId == null) {
-            unionId = member.getUnionId();
-        }
         Map<String, Object> data = new HashMap<String, Object>();
-        List<Map<String, Object>> list = cardInfo.get(member.getId());
-        Map<String, Object> cards = new HashMap<String,Object>();
-        for(Map map : list){
-            if(map.containsKey("black")){
-                cards.put("black",map.get("black"));
-            }
-            if(map.containsKey("red")){
-                cards.put("red",map.get("red"));
-            }
-        }
         data.put("cards", cards);
         data.put("unions", unions);//可以升级的联盟列表
         data.put("unionId", unionId);//当前的联盟
@@ -1020,6 +1042,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         Integer rootId = null;
         Integer cardId = null;
         Date validity = null;
+        int isCharge = charge.getIsCharge() == 0 ? CardConstant.IS_CHARGE_NO : CardConstant.IS_CHARGE_YES;
         if (unionCard == null) {
             if (root == null) {
                 UnionCardRoot unionCardRoot = unionCardRootService.createUnionCardRoot(phone);
@@ -1028,7 +1051,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 rootId = root.getId();
             }
             Date time = (charge.getValidityDay() == null || charge.getValidityDay() == 0) ? DateTimeKit.parse(CardConstant.CARD_FREE_VALIDITY, "yyyy-MM-dd HH:mm:ss") : DateTimeKit.addDate(new Date(), charge.getValidityDay());
-            UnionCard card = this.createUnionCard(rootId, cardType, member.getId(), time, 0);
+            UnionCard card = this.createUnionCard(rootId, cardType, member.getId(), time, isCharge);
             if (memberId != 0) {
                 UnionCardBinding binding = unionCardBindingService.getByCardRootIdAndMemberId(rootId, memberId);
                 if (binding == null) {
@@ -1049,7 +1072,8 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             } else {
                 unionCard.setValidity(time);
             }
-            unionCard.setIsCharge(CardConstant.IS_CHARGE_NO);
+
+            unionCard.setIsCharge(isCharge);
             this.updateById(upCard);
             validity = upCard.getValidity();
         }
@@ -1090,11 +1114,11 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             throw new BusinessException("验证码不能为空");
         }
         String phoneKey = RedisKeyUtil.getCardH5BindPhoneKey(phone);
-        Object obj = redisCacheUtil.get(phoneKey);
+        String obj = redisCacheUtil.get(phoneKey);
         if (CommonUtil.isEmpty(obj)) {
             throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
         }
-        if (!code.equals(obj)) {
+        if (!code.equals(JSON.parse(obj))) {
             throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
         }
         int status = memberService.bindMemberPhone(busId, member.getId(), phone);

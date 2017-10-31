@@ -2,14 +2,14 @@
 * {
   margin: 0;
   padding: 0;
-  font-size:0.65rem;
+  font-size:.65rem;
 }
 body{
     width: 100%;
     height: 100%;
     background: #FFFFFF;
     font-family: '微软雅黑';
-    font-size:0.65rem;
+    font-size:.65rem;
 }
 .line {
   position: relative;
@@ -25,8 +25,8 @@ body{
   color: #D5D5D6;
   -webkit-transform-origin: 0 0;
   transform-origin: 0 0;
-  -webkit-transform: scaleY(0.5);
-  transform: scaleY(0.5);
+  -webkit-transform: scaleY(.5);
+  transform: scaleY(.5);
 }
 a{
     text-decoration: none;
@@ -129,7 +129,7 @@ input,
 select,
 textarea {
   outline: none;
-  text-indent:  0.26rem;
+  text-indent:  .26rem;
 }
 textarea.el-textarea__inner{
     resize:none;
@@ -231,11 +231,14 @@ table {
 }
 //手机端整个头部样式
 .header_Css {
-  //background: url("https://union.deeptel.com.cn/phone/static/img/bg-3.f8b0bfc.png") no-repeat;
-  //background: url("/static/img/bg-3.f8b0bfc.png") no-repeat;
+  .el-breadcrumb__item__inner{
+    padding-top: .27rem;
+  }//防止高亮
+  -webkit-tap-highlight-color:transparent;
+
   background: url("../../assets/images/bg-3.png") no-repeat;
   background-size: 100% ;
-  padding: 0.7rem 0.7rem 0 0.7rem;
+  padding: .7rem .7rem 0 .7rem;
   .back__ {
     width: 1rem;
     height: 1rem;
@@ -244,15 +247,14 @@ table {
     width: 4.7rem;
     img {
       width: 1rem;
-      height: 0.82rem;
+      height: .82rem;
     }
     span {
       color: #ffffff;
-      font-size: 0.65rem;
     }
   }
   .union_second {
-    margin-top: 0.5rem;
+    margin-top: .5rem;
     p {
       color: #ffffff;
       font-size: 1.8rem;
@@ -271,9 +273,14 @@ table {
       border: 1px solid #FFFFFF;
       border-radius: 1rem;
       cursor: pointer;
-      margin-top: 0.6rem;
+      margin-top: .6rem;
+      //防止高亮
+      -webkit-tap-highlight-color:transparent;
       a{
         color: #FFFFFF;
+        padding: .373rem .747rem;
+        //防止高亮
+        -webkit-tap-highlight-color:transparent;
       }
     }
   }
@@ -283,24 +290,24 @@ table {
 .record{
   margin-top: 4rem;
   color: #39a8ff;
-  font-size: 0.725rem;
+  font-size: .725rem;
   border-bottom: 1px solid #F3F3F3;
-  padding-bottom: 0.8rem;
+  padding-bottom: .8rem;
 }
 
 //主体部分公共的样式表
 .footer_Css{
-  margin-top: 0.4rem;
+  margin-top: .4rem;
   ul{
     li{
-      margin-top:0.53rem;
-      padding-bottom: 0.43rem;
-      border-bottom: 1px solid rgba(221, 221, 221, 0.34);
+      margin-top:.53rem;
+      padding-bottom: .43rem;
+      border-bottom: 1px solid rgba(221, 221, 221, .34);
       /*右边>图标的样式*/
       .greater-than{
         position: relative;
-        top:0.533rem;
-        left:0.16rem;
+        top:.533rem;
+        left:.16rem;
         font-weight: bold;
       }
     }
@@ -323,16 +330,16 @@ table {
     left: 0;
     top: 0;
     z-index: 1;
-    background: rgba(0, 0, 0, 0.44);
+    background: rgba(0, 0, 0, .44);
   }
   .box {
     position: absolute;
     background: white;
     z-index: 5;
-    border-radius: 0.426rem;
+    border-radius: .426rem;
     border: 1px solid white;
     right: 3.5rem;
-    padding: 0 0.16rem;
+    padding: 0 .16rem;
     top: 2.2rem;
     min-width: 6.5rem;
     ul {
@@ -350,12 +357,12 @@ table {
   #triangle-up {
     width: 0;
     height: 0;
-    border-left: 0.48rem solid transparent;
-    border-right: 0.43rem solid transparent;
-    border-bottom: 0.4rem solid white;
-    top: -0.4rem;
+    border-left: .48rem solid transparent;
+    border-right: .43rem solid transparent;
+    border-bottom: .4rem solid white;
+    top: -.4rem;
     position: absolute;
-    right: 0.3rem;
+    right: .3rem;
   }
 }
 
@@ -395,6 +402,43 @@ table {
   background: linear-gradient(top, #3ad1ff, #39aaff);
 }
 
+//element弹出提示框的公共样式
+.el-message {
+  box-shadow: 0 .1068rem .2136rem rgba(0, 0, 0, .12), 0 0 .3204rem rgba(0, 0, 0, .04);
+  min-width: 16.02rem;
+  padding: .534rem .6408rem;
+  box-sizing: border-box;
+  border-radius: .1068rem;
+  position: fixed;
+  left: 50%;
+  top: 1.068rem;
+  -ms-transform: translateX(-50%);
+  transform: translateX(-50%);
+  background-color: #fff;
+  transition: opacity .3s, transform .4s;
+  overflow: hidden;
+  .el-message__group p {
+    font-size: .75rem;
+    margin: 0 1.82rem 0 1.2rem;
+    color: #8391a5;
+    text-align: justify;
+  }
+  .el-message__img {
+    width: 2.1333rem;
+    height: 2.1333rem;
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  .el-message__closeBtn {
+    right: 0;
+    position: absolute;
+    cursor: pointer;
+    color: #bfcbd9;
+    font-size: .75rem;
+  }
+}
+
 //以下为手机端样式--------------------------------------------------------
 
   //首页的所有样式-----------------------------------------------------模块1
@@ -405,7 +449,7 @@ table {
     //background: url("/static/img/ZXBG_01.6fe24fd.png") no-repeat;
     background-color: #F6F6F6;
     background-size: 100%;
-    padding-top: 0.48rem;
+    padding-top: .48rem;
     .main-title {
       text-align: center;
       padding: 1.0rem auto 1rem auto;
@@ -420,12 +464,12 @@ table {
       }
       p {
         font-size: 1.6rem;
-        margin-top: 0.2rem;
-        margin-bottom: 0.3rem;
+        margin-top: .2rem;
+        margin-bottom: .3rem;
         font-weight: normal;
       }
       span {
-        font-size: 0.65rem;
+        font-size: .8rem;
       }
     }
     .main-wrap {
@@ -434,31 +478,31 @@ table {
       margin-bottom: 3.4rem;
       strong {
         text-align: center;
-        margin-bottom: 0.2rem;
+        margin-bottom: .2rem;
         display: block;
         color: white;
       }
       p {
         text-align: center;
-        font-size: 0.65rem;
+        font-size: .8rem;
         color: white;
       }
       strong {
-        font-size: 0.65rem;
+        font-size: .8rem;
       }
       //中间的图标样式
       .tubiao{
         position: absolute;
-        top: 0.3rem;
+        top: .3rem;
         left: 9.9rem;
-        border-left: 0.008rem solid #ffffff;
+        border-left: .008rem solid #ffffff;
         height: 1.3rem;
       }
     }
     //中间图片部分
     .main_list{
       width:90%;
-      margin: 1rem 0.827rem 0.533rem 0.827rem;
+      margin: 1rem .827rem .533rem .827rem;
       background-color: #ffffff;
       padding: 1.5rem 0;
       img{
@@ -468,13 +512,13 @@ table {
         margin-right: 1rem;
       }
       >div{
-        padding-top: 0.5rem;
+        padding-top: .5rem;
         h2{
-          margin-bottom: 0.6rem;
-          font-size:0.8rem;
+          margin-bottom: .6rem;
+          font-size:.8rem;
         }
         p{
-          font-size:0.7rem;
+          font-size:.7rem;
         }
       }
     }
@@ -489,24 +533,24 @@ table {
     //支付弹出框的样式
     .box-wrap2,.box-wrap3{
       .mask {
-        background: rgba(0, 0, 0, 0.2);
+        background: rgba(0, 0, 0, .2);
       }
       .box{
-        border-radius: 0.3rem;
+        border-radius: .3rem;
         right: 2rem;
-        padding: 0 0.08rem;
+        padding: 0 .08rem;
         top: 9.2rem;
         width: 14.9rem;
         p{
           padding: 2rem 1.5rem 2rem 1.5rem;
-          font-size:0.75rem!important;
+          font-size:.75rem!important;
           color: #999999;
-          border-bottom: 0.01rem solid #D2D3D5;
+          border-bottom: .01rem solid #D2D3D5;
         }
         div{
-          border-left:0.01rem solid #D2D3D5;
+          border-left:.01rem solid #D2D3D5;
           padding: 1rem 3.1rem;
-          font-size:0.8rem;
+          font-size:.8rem;
         }
         div:nth-of-type(1){
           color: #00c200;
@@ -520,7 +564,7 @@ table {
       min-height: 69%;
       .record {
         color: #39a8ff;
-        font-size: 0.725rem;
+        font-size: .725rem;
       }
       .payTab {
         position: absolute;
@@ -528,50 +572,52 @@ table {
         left: 50%;
         margin-left: -3.7rem;
         text-align: center;
-        border: 0.02rem solid #39a7ff;
-        border-radius: 0.5rem;
+        border: .02rem solid #39a7ff;
+        border-radius: .5rem;
         color: #39a7ff;
         top: -.2rem;
         div {
-          padding: 0.2rem 0.2rem;
-          font-size: 0.35rem;
+          padding: .2rem .2rem;
+          font-size: .6rem;
           text-align: center;
           width: 50%;
-          border-radius: 0.8rem 0 0 0.8rem;
+          border-radius: .8rem 0 0 .8rem;
         }
         div:nth-of-type(1) {
-          border-radius: 0.8rem 0 0 0.8rem;
+          border-radius: .4rem 0 0 .4rem;
         }
         div:nth-of-type(2) {
-          border-radius: 0 0.8rem 0.8rem 0;
+          border-radius: 0 .4rem .4rem 0;
         }
       }
       .payed, .unpay {
         ul {
           li {
-            margin-top: 0.90rem;
+            margin-top: .90rem;
             position: relative;
-            padding-bottom: 0.42rem;
-            border-bottom: 0.02rem solid rgba(221, 221, 221, 0.34);
+            padding-bottom: .42rem;
+            border-bottom: .02rem solid rgba(221, 221, 221, .34);
             p {
               line-height: 1.06rem;
-              font-size: 0.8rem;
+              font-size: .8rem;
             }
             //去支付的样式
             .goPay {
               width: auto !important;
-              line-height: 0.34rem;
+              line-height: .34rem;
               height: 1.34rem;
               text-align: center;
-              padding: 0.106rem 0.22rem;
+              padding: .106rem .22rem;
               color: white;
-              margin: 0.2rem;
+              margin: .2rem;
               vertical-align: bottom;
               background: #39abff;
-              border-radius: 0.16rem;
+              border-radius: .16rem;
               bottom: 0;
               right: 0;
-              font-size: 0.8rem;
+              font-size: .8rem;
+              //防止高亮
+              -webkit-tap-highlight-color:transparent;
             }
             button:active{
               background-color:transparent!important;
@@ -588,44 +634,41 @@ table {
     }
   }
 
-//坏账的模块样式表-------------------------------------------------------------------模块3
-//#toBadPayList{
-//  //引用变量.header_Css
-//  .header_Css;
-//}
-
   //未收佣金的模块样式表---------------------------------------------------------------模块4
 #toUnPayList{
   //引用变量.header_Css
   .header_Css;
   .footer_Css{
     img{
-      width: 0.98rem;
+      width: .98rem;
       height:1.09rem;
       position:relative;
-      top: 0.08rem;
-      left: 0.4rem;
+      top: .2rem;
+      left: .4rem;
+    }
+    >ul>li>div>div>p{
+      font-size: .8rem;
     }
     .box-wrap2{
       .mask {
-        background: rgba(0, 0, 0, 0.2);
+        background: rgba(0, 0, 0, .2);
       }
       .box{
-        border-radius: 0.3rem;
+        border-radius: .3rem;
         right: 2rem;
-        padding: 0 0.08rem;
+        padding: 0 .08rem;
         top: 9.2rem;
         width: 14.9rem;
         p{
           padding:2.26rem 2.37rem 2.05rem 2.61rem;
-          font-size:0.75rem;
+          font-size:.75rem;
           color: #999999;
-          border-bottom: 0.01rem solid #D2D3D5;
+          border-bottom: .01rem solid #D2D3D5;
         }
         div{
-          border-left:0.01rem solid #D2D3D5;
+          border-left:.01rem solid #D2D3D5;
           padding: 1rem 3.1rem;
-          font-size:0.8rem;
+          font-size:.8rem;
         }
         div:nth-of-type(1){
           color: #00c200;
@@ -649,22 +692,22 @@ table {
     }
    }
   .wantMoney-wrap li div {
-    padding-left: 0.66666667rem;
+    padding-left: .66666667rem;
   }
    .wantMoney-wrap li div span {
     color: #999999;
   }
    .wantMoney-wrap li div h2 {
-    font-size: 0.96rem;
+    font-size: .96rem;
     line-height: 1.49rem;
      font-weight: normal;
   }
    .wantMoney-wrap li:nth-of-type(1),.wantMoney-wrap li:nth-of-type(3) {
-    border-right: 0.05rem solid #E7E5E5;
+    border-right: .05rem solid #E7E5E5;
   }
    .wantMoney-wrap strong {
     text-align: center;
-    margin-bottom: 0.4rem;
+    margin-bottom: .4rem;
     display: block;
   }
   .wantMoney-input {
@@ -675,14 +718,14 @@ table {
       width: 94%;
       height: 2.13rem;
       text-align: center;
-      margin: 0.96rem auto;
+      margin: .96rem auto;
       line-height: 2.13rem;
       color: white;
       overflow: hidden;
-      border-radius: 0.43rem;
+      border-radius: .43rem;
       display: block;
       border: 1px solid #f2f2f2;
-      font-size: 0.8rem;
+      font-size: .8rem;
     }
   }
   .button-btn{
@@ -692,12 +735,12 @@ table {
      width: 94%;
      height: 2.13rem;
      text-align: center;
-     margin: 0.96rem auto;
+     margin: .96rem auto;
      line-height: 2.13rem;
      color: white;
      overflow: hidden;
-     border-radius: 0.43rem;
-     font-size: 0.8rem;
+     border-radius: .43rem;
+     font-size: .8rem;
     border:none;
    }
 
@@ -706,8 +749,8 @@ table {
     min-height: 30%;
     position: relative;
     p {
-      margin-bottom: 0.3rem;
-      margin-left: 0.4rem;
+      margin-bottom: .3rem;
+      margin-left: .4rem;
     }
     .table-list {
       display: table;
@@ -727,7 +770,7 @@ table {
     }
     thead tr td:nth-of-type(1),tbody tr td:nth-of-type(1) {
       text-align: left;
-      padding-left: 0.5rem;
+      padding-left: .5rem;
       width: 40%;
     }
     tbody tr td:not(:first-child) {
@@ -741,24 +784,24 @@ table {
   //提现弹出框
   .box-wrap2{
     .mask {
-      background: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, .2);
     }
     .box{
-      border-radius: 0.3rem;
+      border-radius: .3rem;
       right: 2rem;
-      padding: 0 0.16rem;
+      padding: 0 .16rem;
       top: 9.2rem;
       width: 14.9rem;
       p{
         padding:2.26rem 2.37rem 2.05rem 2.61rem;
-        font-size:0.75rem;
+        font-size:.75rem;
         color: #999999;
-        border-bottom: 0.01rem solid #D2D3D5;
+        border-bottom: .01rem solid #D2D3D5;
       }
       div{
-        border-left:0.01rem solid #D2D3D5;
+        border-left:.01rem solid #D2D3D5;
         padding: 1rem 3.1rem;
-        font-size:0.8rem;
+        font-size:.8rem;
       }
       div:nth-of-type(1){
         color: #00c200;
@@ -779,7 +822,7 @@ table {
     min-height: 69%;
     .record {
       color: #39a8ff;
-      font-size: 0.725rem;
+      font-size: .725rem;
     }
     .payTab {
       position: absolute;
@@ -788,33 +831,33 @@ table {
       margin-left: -3.7rem;
       text-align: center;
       border: 1px solid #39a7ff;
-      border-radius: 0.5rem;
+      border-radius: .5rem;
       color: #39a7ff;
       top:-.2rem;
       div {
-        padding: 0.2rem 0.2rem;
-        font-size: 0.35rem;
+        padding: .2rem .2rem;
+        font-size: .6rem;
         text-align: center;
         width: 50%;
-        border-radius: 0.48rem 0 0 0.48rem;
+        border-radius: .4rem 0 0 .4rem;
       }
       div:nth-of-type(1) {
-        border-radius: 0.48rem 0 0 0.48rem;
+        border-radius: .4rem 0 0 .4rem;
       }
       div:nth-of-type(2) {
-        border-radius: 0 0.48rem 0.48rem 0;
+        border-radius: 0 .4rem .4rem 0;
       }
     }
     .payed, .unpay {
       ul {
         li {
-          margin-top: 0.91rem;
+          margin-top: .91rem;
           position: relative;
-          padding-bottom: 0.43rem;
-          border-bottom: 1px solid rgba(221, 221, 221, 0.34);
+          padding-bottom: .43rem;
+          border-bottom: 1px solid rgba(221, 221, 221, .34);
           p {
             line-height: 1.07rem;
-            font-size: 0.4rem;
+            font-size: .8rem;
           }
         }
       }
@@ -845,11 +888,11 @@ table {
     position: relative;
     .check-wrap-div {
       position: relative;
-      border-bottom: 0.01rem solid white;
-      padding: 0.27rem 0;
-      margin-bottom: 0.53rem;
+      border-bottom: .01rem solid white;
+      padding: .27rem 0;
+      margin-bottom: .53rem;
       img {
-        width: 0.8rem;
+        width: .8rem;
         vertical-align: bottom;
       }
       input {
@@ -857,9 +900,9 @@ table {
         border: none;
         color: white;
         display: inline-block;
-        padding: 0.27rem 0;
+        padding: .27rem 0;
         width: 80%;
-        font-size: 0.85rem;
+        font-size: .85rem;
         placeholder{
           color:#ddd;
         }
@@ -870,23 +913,18 @@ table {
       }
       .checkCode {
         position: absolute;
-        /* bottom: 0.3rem; */
         width: 5.33rem;
         height: 1.6rem;
         color: white;
-        /* background: red; */
-        /* right: -0.4rem; */
         top: 50%;
-        /* padding: 0.2rem 0; */
-        margin-top: -0.8rem;
-        /* bottom: 0.05rem; */
+        margin-top: -.8rem;
       }
     }
     #message_ {
       position: absolute;
       top: 6.5rem;
       color: #ffffff;
-      font-size: 0.672rem;
+      font-size: .672rem;
     }
   }
 
@@ -899,14 +937,24 @@ table {
     text-align: center;
     line-height: 2.24rem;
     color: #39ACFF;
-    box-shadow: 0.106rem 0.106rem 0.106rem #39B6FF;
-    font-size: 0.8rem;
+    box-shadow: .106rem .106rem .106rem #39B6FF;
+    font-size: .8rem;
   }
   .User_phone,.User_name{
     text-align: center;
     color: #ffffff;
   }
-
+  #getCode{
+    color: #ffffff;
+    margin-left: 1rem;
+    background-color:transparent;
+    border: none;
+    //防止高亮
+    -webkit-tap-highlight-color:transparent;
+    //&:focus {
+    //  border: none;
+    //}
+  }
 }
 
 //多粉联盟卡--模块-------------------------------------------------------------------模块8
@@ -916,8 +964,8 @@ table {
      >img {
       width: 17rem;
       height: 10.24rem;
-      margin-left: 0.2rem;
-      margin-bottom: 0.5rem;
+      margin-left: .2rem;
+      margin-bottom: .5rem;
     }
   }
   >h1{
@@ -934,42 +982,42 @@ table {
     left: 2.4rem;
     color:#AC8133;
     width: 6rem;
-    font-size: 0.9rem;
+    font-size: .9rem;
   }
   .second_{
     >img{
       width:2.92rem;
-      margin-right: 0.3rem;
+      margin-right: .3rem;
     }
     >div{
-      padding-bottom: 0.75rem;
+      padding-bottom: .75rem;
       border-bottom:1px solid #dddddd;
         >div{
           span,h1{
-            font-size:0.805rem;
+            font-size:.805rem;
           }
           span{
             color: #90A4AE;
           }
         }
       >span{
-        font-size:0.72rem;
+        font-size:.72rem;
       }
       >p{
-        font-size:0.64rem;
+        font-size:.64rem;
         color:#D0D0D0;
       }
     }
   }
   .third_{
     >li{
-      padding: 1rem 0.3rem 1rem 0.3rem;
-      border-bottom:0.01rem solid #dddddd;
+      padding: 1rem .3rem 1rem .3rem;
+      border-bottom:.01rem solid #dddddd;
       >span{
-        font-size:0.7246rem;
+        font-size:.7246rem;
       }
       >b{
-        font-size:0.38rem;
+        font-size:.38rem;
       }
       >ul{
         background: #F9F9FD;
@@ -980,22 +1028,22 @@ table {
         >li{
           padding-top: 1rem;
           padding-bottom: 1rem;
-          margin: 1rem 0.6rem 0rem 1.5rem;
-          border-bottom: 0.01rem solid #dddddd;;
+          margin: 1rem .6rem 0 1.5rem;
+          border-bottom: .01rem solid #dddddd;;
           >div{
-            font-size:0.6442rem;
-            margin-bottom: 0.55rem;
+            font-size:.6442rem;
+            margin-bottom: .55rem;
 
           }
           >p{
             padding-bottom: 1rem;
             >button{
               background:#1EC054;
-              padding: 0.2rem;
+              padding: .2rem;
               border: none;
               color:#E2F6E8;
-              border-radius: 0.2rem;
-              font-size:0.6442rem;
+              border-radius: .2rem;
+              font-size:.6442rem;
             }
           }
         }
@@ -1017,58 +1065,58 @@ table {
       left: 0;
       top: 0;
       z-index: 1;
-      background: rgba(0, 0, 0, 0.44);
+      background: rgba(0, 0, 0, .44);
     }
     .box {
       position: absolute;
       background: white;
       z-index: 5;
-      border-radius: 0.43rem;
+      border-radius: .43rem;
       border: 1px solid white;
       left: 17%;
-      padding: 0 0.16rem;
+      padding: 0 .16rem;
       top: 20%;
       width: 66%;
       ul {
         li {
-          border-bottom: 0.09rem solid #4CCD77;
-          padding: 0.6rem 0.5rem;
+          border-bottom: .09rem solid #4CCD77;
+          padding: .6rem .5rem;
           text-align: center;
         }
       }
       >div{
-        margin: 0.85rem 0.72rem;
+        margin: .85rem .72rem;
         >span{
-          font-size: 0.67rem;
+          font-size: .67rem;
         }
         >div{
           text-align: center;
-          border-bottom: 0.05rem solid #A8A8A8;
+          border-bottom: .05rem solid #A8A8A8;
           span{
-            font-size: 0.75rem;
+            font-size: .75rem;
           }
           p{
             font-size:1.74rem;
-            margin: 0.1rem auto;
+            margin: .1rem auto;
           }
         }
         //选择联盟卡的样式
         .select_{
           div{
-            margin-top:0.2rem;
-            font-size:0.8rem;
+            margin-top:.2rem;
+            font-size:.8rem;
             font-weight: normal;
           }
           h6{
-            padding:0.5rem 0;
-            border-bottom:0.01rem solid #ddd;
+            padding:.5rem 0;
+            border-bottom:.01rem solid #ddd;
             color:#B8B8B8;
           }
         }
         form{
           margin-bottom: 2.5rem;
           >div {
-            border-bottom: 0.05rem solid #A8A8A8;
+            border-bottom: .05rem solid #A8A8A8;
             padding-bottom: 1rem;
             margin-top: 1rem;
             position: relative;
@@ -1076,18 +1124,18 @@ table {
               position: absolute;
               top: 2.5rem;
               color: red;
-              font-size: 0.672rem;
+              font-size: .672rem;
             }
           }
         }
         >button{
           width:100%;
-          padding: 0.72rem 0;
+          padding: .72rem 0;
           color: #80D496;
           background: #1FC055;
           border:none;
-          border-radius: 0.2rem;
-          margin-top: 0.8rem;
+          border-radius: .2rem;
+          margin-top: .8rem;
         }
       }
     }
@@ -1106,16 +1154,16 @@ table {
       padding: 0;
       .first_{
         color:#43C96E;
-        font-size:0.8rem;
+        font-size:.8rem;
         float: right;
-        margin-right: 0.5rem;
-        margin-top: 0.5rem;
+        margin-right: .5rem;
+        margin-top: .5rem;
       }
       .second_{
         margin-top: 9rem;
         text-align: center;
         h6{
-          margin-bottom: 0.5rem;
+          margin-bottom: .5rem;
           font-size:1.2rem;
           font-weight: normal;
         }
@@ -1135,36 +1183,36 @@ table {
   .login_{
     height:2.5rem;
     line-height: 2.5rem;
-    border-bottom: 0.01rem solid #cccccc;
+    border-bottom: .01rem solid #cccccc;
     position: relative;
     span{
-      font-size:0.8054rem;
+      font-size:.8054rem;
       font-weight: bold;
-      margin-left: 0.84rem;
+      margin-left: .84rem;
     }
     input{
-      font-size:0.8054rem;
+      font-size:.8054rem;
     }
     button{
       height:2.5rem;
       width:5.76rem;
       background-color: #ffffff;
       border: none;
-      border-left:0.01rem solid #cccccc;
+      border-left:.01rem solid #cccccc;
       color: #98989F;
-      font-size:0.8054rem;
+      font-size:.8054rem;
     }
     .btn0:focus {
       color:#ffffff;
       background-color: #1FC055;
-      border:0.05rem solid #1FC055!important;
+      border:.05rem solid #1FC055!important;
     }
     #message_ {
       position: absolute;
       top: 2.5rem;
       color: red;
-      font-size: 0.672rem;
-      left: 0.8rem;
+      font-size: .672rem;
+      left: .8rem;
     }
   }
   >button{
@@ -1173,10 +1221,10 @@ table {
     margin: 2.46rem auto;
     background-color:#1FC055 ;
     border: none;
-    border-radius: 0.213rem;
+    border-radius: .213rem;
     height: 2.16rem;
     color:#ffffff;
-    font-size:0.8054rem;
+    font-size:.8054rem;
   }
 }
 

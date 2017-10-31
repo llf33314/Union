@@ -26,10 +26,7 @@
           <img src="../../assets/images/shouji01.png" alt="">
         </div>
         <input type="text" placeholder="请输入手机号" id="userPhone" name="username" style="width: 50%;color:#AEDCFF;">
-        <button style="color: #ffffff;font-size: 0.65rem;
-        margin-left: 1rem;background-color:transparent;
-        border: none"
-                @click="getNumber" id="getCode" disabled="true">
+        <button @click="getNumber" id="getCode">
           获取验证码
         </button>
       </div>
@@ -64,7 +61,7 @@
       return {
         toLogin: 'ceshi',
 //        verificationCode:'',
-        isGetCode : 1,
+        isGetCode :'',
 
       }
     },
@@ -124,14 +121,12 @@
               function time(o) {
                 if (wait == 0) {
                   that_.isGetCode = 1;
-                  o.removeAttribute("disabled");
                   o.innerHTML = "获取验证码";
                   o.style.color = '#ffffff';
                 } else {
                   that_.isGetCode = 0;
-                  o.setAttribute("disabled", true);
                   o.innerHTML = "重新发送(" + wait + ")";
-                  o.style.color = "#8a7e7e";
+                  o.style.color = "#ffffff";
                   o.style.fontSize = "0.60rem!important;";
                   wait--;
                   setTimeout(function () {
@@ -142,7 +137,7 @@
               }
             })
             .catch(err => {
-              this.$message({showClose: true, message: err.toString(), type: 'error', duration: 0});
+              this.$message({showClose: true, message: err.toString(), type: 'error', duration: 3000});
             });
         }
       },
@@ -199,13 +194,9 @@
         $http.post(`/unionH5Brokerage/login?phone=${uPhone}&code=${pCode}`)
           .then(res => {
             //跳转到主页面中去
-            if(res.data && res.data != undefined && res.data.success) {
+            if(res.data.success) {
               //跳转到主页面
               location.href = '#/Index';
-            }else{
-              this.$message({
-                showClose: true, message: res, type: 'error', duration: 3000
-              });
             }
           })
           .catch(err => {
@@ -217,7 +208,7 @@
     created (){
       //页面的title变换
       $("#title_").text('商家联盟佣金平台');
-      //图片中的颜色切换（白和灰切换）
+      //图片底部的颜色切换（白和灰切换）
       this.$emit('getValue',this.toLogin);
     }
   }

@@ -1,30 +1,34 @@
 <template>
   <div class="container" id="finance">
-    <div id="union_people">
-      <ul class="clearfix">
-        <li>
-          <p>可提现金额</p>
-          <div class="special">
-            <span> {{ withdrawalSum }} </span>元
-            <span class="btn1">
-              <el-button type="primary" @click="dialogVisible1 = true">提现</el-button>
-            </span>
-            <div class="model_1">
-              <!-- 弹出框 提现 -->
-              <el-dialog title="提现" :visible.sync="dialogVisible1" size="tiny">
-                <hr>
-                <div class="model_">
-                  <p><img v-bind:src="imgUrl"></p>
-                  <p>扫二维码可进入商家联盟佣金平台</p>
-                </div>
-              </el-dialog>
-            </div>
-          </div>
-        </li>
-      </ul>
+    <div v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="拼命加载中">
+      <!--显示整页加载，1秒后消失-->
     </div>
-    <p class="union_set">佣金平台管理者设置</p>
-    <div class="footer_">
+    <div id="container_finance" style="display: none;">
+      <div id="union_people">
+        <ul class="clearfix">
+          <li>
+            <p>可提现金额</p>
+            <div class="special">
+              <span> {{ withdrawalSum }} </span>元
+              <span class="btn1">
+                <el-button type="primary" @click="dialogVisible1 = true">提现</el-button>
+              </span>
+              <div class="model_1">
+                <!-- 弹出框 提现 -->
+                <el-dialog title="提现" :visible.sync="dialogVisible1" size="tiny">
+                  <hr>
+                  <div class="model_">
+                    <p><img v-bind:src="imgUrl"></p>
+                    <p>扫二维码可进入商家联盟佣金平台</p>
+                  </div>
+                </el-dialog>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </div>
+      <p class="union_set">佣金平台管理者设置</p>
+      <div class="footer_">
       <el-button type="primary" @click="dialogVisible2 = true">新增</el-button>
       <!-- 弹出框 新增 -->
       <el-dialog title="新增管理者" :visible.sync="dialogVisible2" size="tiny" @close="resetForm('ruleForm')">
@@ -38,12 +42,12 @@
             </el-form-item>
             <el-form-item label="手机号码：" prop="phone">
               <el-col :span="8">
-                <el-input v-model="ruleForm.phone" placeholder="请输入管理者手机号码"></el-input>
+                <el-input v-model="ruleForm.phone" placeholder="请输入管理者手机号码" @keyup.enter.native="getVerificationCode" ></el-input>
               </el-col>
             </el-form-item>
             <el-form-item label="验证码：" prop="code">
               <el-col :span="8">
-                <el-input v-model="ruleForm.code" placeholder="请输入验证码"></el-input>
+                <el-input v-model="ruleForm.code" placeholder="请输入验证码" ></el-input>
               </el-col>
               <el-button type="primary" style="margin-left: 20px" @click="getVerificationCode" :disabled="form1.getVerificationCode || !ruleForm.phone">获取验证码{{form1.countDownTime}}</el-button>
             </el-form-item>
@@ -83,6 +87,7 @@
           </span>
         </el-dialog>
       </div>
+    </div>
     </div>
   </div>
 </template>
@@ -125,7 +130,8 @@ export default {
       visible1: false,
       name: '',
       id: '',
-      timeOut: ''
+      timeOut: '',
+      fullscreenLoading: true,
     };
   },
   created: function() {
@@ -134,50 +140,54 @@ export default {
       .get(`/union/index`)
       .then(res => {
         if (res.data.data) {
-          // 判断是否创建或加入联盟
-          if (!res.data.data.currentUnionId) {
-            this.$router.push({ path: '/no-union' });
-          } else {
-            //获取佣金平台手机端的二维码
-            $http
-              .get(`/unionBrokerageIncome/indexQRUrl`)
-              .then(res => {
-                if (res.data.data) {
-                  this.imgUrl = res.data.data;
-                } else {
-                  this.imgUrl = '';
-                }
-              })
-              .catch(err => {
-                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-              });
-            // 可提现金额
-            $http
-              .get(`/unionBrokerageIncome/withdrawalSum`)
-              .then(res => {
-                if (res.data.data) {
-                  this.withdrawalSum = res.data.data;
-                } else {
-                  this.withdrawalSum = 0;
-                }
-              })
-              .catch(err => {
-                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-              });
-            // 佣金平台管理者列表
-            $http
-              .get(`/unionVerifier`)
-              .then(res => {
-                if (res.data.data) {
-                  this.tableData = res.data.data.records;
-                } else {
-                  this.tableData = [];
-                }
-              })
-              .catch(err => {
-                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-              });
-          }
+          setTimeout(() => {
+            this.fullscreenLoading = false;
+            // 判断是否创建或加入联盟
+            if (!res.data.data.currentUnionId) {
+              this.$router.push({path: '/no-union'});
+            } else {
+              //获取佣金平台手机端的二维码
+              $http
+                .get(`/unionBrokerageIncome/indexQRUrl`)
+                .then(res => {
+                  if (res.data.data) {
+                    this.imgUrl = res.data.data;
+                  } else {
+                    this.imgUrl = '';
+                  }
+                })
+                .catch(err => {
+                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 5000});
+                });
+              // 可提现金额
+              $http
+                .get(`/unionBrokerageIncome/withdrawalSum`)
+                .then(res => {
+                  if (res.data.data) {
+                    this.withdrawalSum = res.data.data;
+                  } else {
+                    this.withdrawalSum = 0;
+                  }
+                })
+                .catch(err => {
+                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 5000});
+                });
+              // 佣金平台管理者列表
+              $http
+                .get(`/unionVerifier`)
+                .then(res => {
+                  if (res.data.data) {
+                    this.tableData = res.data.data.records;
+                  } else {
+                    this.tableData = [];
+                  }
+                })
+                .catch(err => {
+                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 5000});
+                });
+              container_finance.style.display='block';
+            }
+          },600)
         }
       })
       .catch(err => {
@@ -194,12 +204,12 @@ export default {
             this.form1.getVerificationCode = true;
             this.form1.countDownTime = 60;
             this.timeOut = setInterval(() => {
-              this.form1.countDownTime--;
               if (this.form1.countDownTime === 0) {
                 clearInterval(this.timeOut);
                 this.form1.getVerificationCode = false;
                 this.form1.countDownTime = '';
               }
+              this.form1.countDownTime--;
             }, 1000);
           }
         })

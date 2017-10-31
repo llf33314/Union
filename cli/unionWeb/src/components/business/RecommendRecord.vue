@@ -103,7 +103,7 @@ export default {
   mounted: function() {
     this.init();
     // 监听是否有新的推荐
-    eventBus.$on('newRecommend', () => {
+    eventBus.$on('newBusinessRecommend', () => {
       $http
         .get(`/unionOpportunity/fromMe?current=1`)
         .then(res => {

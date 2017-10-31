@@ -25,33 +25,35 @@
     </div>
     <!--联盟列表-->
     <ul class="third_ ">
-      <li class="unionLi" v-for="(items,index) in unionList">
-        <div  @click="showContent1(index,items.unionId,items.memberId,$event)" id="event_">
+      <li class="unionLi" v-for="(items,index1) in unionList">
+        <div  @click="showContent1(index1,items.unionId,items.memberId,$event)" id="event_">
           <i class="el-icon-arrow-right fr"></i>
           <span>{{items.unionName}}</span>
         </div>
-        <ul class="details_   passive">
-          <li v-for="(item,index) in UnionCardList" class="li_Li">
-            <div>
+        <ul class="details_  passive">
+          <li v-for="(item,index2) in UnionCardList" class="li_Li">
+            <div >
               <p class="fr">享受折扣：<span style="color:#1FC055;font-size:0.6442rem;">{{item.discount?item.discount:9.5}}折</span></p>
-              {{item.enterpriseName}}
+              <span style="font-weight: bold;">{{item.enterpriseName}}</span>
               <span style="color:#1FC055;font-size:0.6442rem;" v-if="item.memberId==menId">(本商家)</span>
               <span style="color:#1FC055;font-size:0.6442rem;" v-if="item.isUnionOwner">(盟主)</span>
             </div>
-            <div>
+            <div style="position: relative">
+              <div class="box-wrap3">
+                <div class="box">
+                  {{item.enterpriseAddress}}
+                </div>
+                <i></i>
+              </div>
               <img src="../../assets/images/SJunionCar03.png" style="width:0.65rem;margin-right: 0.2rem;">
-              {{item.directorPhone}}
+              <span  @click="telPhone(item.directorPhone)">{{item.directorPhone}}</span>
             </div>
-            <p class="">
-              <el-tooltip class="item" effect="dark" :content='item.enterpriseAddress' placement="top-start">
-                <img src="../../assets/images/SJunionCar04.png" style="width:0.65rem;margin-right: 0.2rem;">
-              </el-tooltip>
-              <el-tooltip class="item" effect="dark" :content='item.enterpriseAddress' placement="top-start">
-                <span title="123" style="font-size:0.6442rem;overflow: hidden;width: 8.12rem;display: inline-block;white-space: nowrap;text-overflow: ellipsis;">
+            <p class="messsge1">
+                <img src="../../assets/images/SJunionCar04.png" @click="boxWarp3(index1, index2)" v-if="item.enterpriseAddress">
+                <span @click="boxWarp3(index1, index2)" >
                   {{item.enterpriseAddress}}
                 </span>
-              </el-tooltip>
-              <button class="fr" @click="boxWarp(index)" v-if="List.bind==1&&(List.memberId==List.members[index].memberId)">
+              <button class="fr" @click="boxWarp(index2)" v-if="List.bind==1&&(List.memberId==List.members[index2].memberId)">
                 领取联盟卡
               </button>
             </p>
@@ -62,27 +64,28 @@
     <!--绑定手机号的弹框-->
     <div class="box-wrap" style="display: none">
       <div class="mask" @click="hide_"></div>
-      <div class="box">
+      <div class="box" id="box">
         <ul>
           <li>
-            <span style="font-size:0.8536rem;color:#000000">绑定手机号</span>
+            <span style="font-size:0.8536rem;font-weight:bold;color:#000000">绑定手机号</span>
             <i class="el-icon-close fr" @click="hide_"></i>
           </li>
         </ul>
         <div>
           <form action="">
+            <!--//输入手机号-->
             <div>
               <span>手机号：</span>
-              <input type="text" style="border: none" id="Phone" maxlength="11">
-            </div>
-            <div>
-              <span>验证码：</span>
-              <input type="text" style="border: none;width: 3.2rem;" id="verification">
-              <div class="fr" style="color:#A8A8A8;background-color: rgb(255, 255, 255);border: none;" @click="getNumber"
-                      id="getCode">
+              <input type="text" id="Phone" maxlength="11" v-model="phoneCode">
+              <div class="fr" @click="getNumber" id="getCode">
                 获取验证码
               </div>
-              <p id="message_" style="display: none">验证码错误</p>
+            </div>
+            <!--输入验证码-->
+            <div>
+              <span>验证码：</span>
+              <input type="text" id="verification" maxlength="8" v-model="verificationCode">
+              <p id="message_">验证码错误</p>
             </div>
           </form>
           <button class="btn1" @click="bindPhone">绑定手机号</button>
@@ -142,8 +145,11 @@
     name: 'unionCard',
     data() {
       return {
+        //验证码
+        phoneCode:'',
+        verificationCode:'',
         //验证码等待的时间
-        wait:30,
+        wait:60,
         //统一的id号码
         busId:33,
         //首页加载的数据
@@ -172,14 +178,41 @@
         url1:'',
         blackCard:{},
         redCard:{},
-        isGetCode : 1,
+        isGetCode : 0,
+        orShow:'',//是否显示
+        timeEnd :'',
+      }
+    },//监听数据的变化
+    watch: {
+      phoneCode(){
+        if(/^1[3|4|5|6|7|8][0-9][0-9]{8}$/.test(Phone.value)){
+          message_.innerHTML='';
+          getCode.style.color="#1FC055";
+          this.isGetCode = 1;
+        }
+        if(Phone.value.length<11){
+          getCode.style.color="#A8A8A8";
+          this.isGetCode = 0;
+        }
+      },
+      verificationCode(){
+        if(verification.value.length>5){
+          $('.btn1').css({
+            color:'#ffffff'
+          })
+        }else{
+          $('.btn1').css({
+            color:'#CCCCCC'
+          })
+        }
       }
     },
     mounted(){
+
       let that_=this;
       //验证码获得焦点的时候
       verification.onfocus=function(){
-
+        box.style.top='10%';
       };
       //验证码失去焦点的时候
       verification.onblur=function(){
@@ -214,7 +247,7 @@
       };
       //手机号获得焦点事件
       Phone.onfocus=function(){
-
+        box.style.top='5rem';
       }
     },
     methods: {
@@ -228,7 +261,7 @@
         })
         this.cardType=2;
       },
-      //选择黑卡          ------------------------2
+      //选择黑卡          ---菜单cli---------------------2
       selectBlackCard(){
         this.selectCard();
         $('.price_').text('黑卡价格');
@@ -259,10 +292,10 @@
         $http.post(`cardH5/79B4DE7C?url=${url1}`,data)
           .then(res => {
             if(res.data.success){
-              if(res.data.data.length > 0){
+              if(res.data.data.qrurl != undefined && res.data.data.qrurl != null){
                 location.href=res.data.data.qrurl;
               }else {
-                location.reload();
+                window.location.href = location.href+'&time='+((new Date()).getTime());
               }
             }
           })
@@ -288,6 +321,10 @@
       //点击按钮弹出领取联盟卡选择框;
       boxWarp(index){
         let Index=index;
+        $('body').css({
+          height:'100%',
+          overflow:"hidden"
+        });
         if(this.phone){
           //展示出选择联盟卡的框
           $('.box-wrap1').show();
@@ -310,11 +347,38 @@
           $('.box-wrap').show();
         }
       },
+      //点击弹出地址
+      boxWarp3(index1, index2){
+        let diplay_style = $('.unionLi').eq(index1).find('.box-wrap3')[index2].style;
+        if(diplay_style.display  == '' || diplay_style.display  == 'none'){
+           diplay_style.display = 'block';
+        }else if(diplay_style.display == 'block'){
+          diplay_style.display = 'none';
+        }
+      },
       //隐藏联所有的弹出框;
       hide_(){
         $('.box-wrap').hide();
         $('.box-wrap1').hide();
         $('.box-wrap2').hide();
+        $('#message_').hide();
+        this.init();
+      },
+      //初始化数据;
+      init(){
+        Phone.value='';
+        verification.value='';
+        this.wait=60;
+        this.isGetCode = 1;
+        getCode.innerHTML = "获取验证码";
+        getCode.style.color='#A8A8A8';
+      },
+      //清除定时器
+      clearCodeTime(){
+        this.wait=60;
+        this.isGetCode = 1;
+        getCode.innerHTML = "获取验证码";
+        getCode.style.color='#1EC054';
       },
       //点击div弹出对应的联盟信息
       showContent1(index1,unionid,memberid,$event){
@@ -323,10 +387,11 @@
             borderBottom:'none'
           })
         },10);
-
-          //赋值成员和联盟的Id号码--------------
-          this.memberId=memberid;
-          this.unionId=unionid;
+        //隐藏所有的弹出地址
+        $('.box-wrap3').hide();
+        //赋值成员和联盟的Id号码--------------
+        this.memberId=memberid;
+        this.unionId=unionid;
         let isShow = $('.details_')[index1].style.display;
         //箭头全部向右
         var jiantou=document.querySelectorAll('.el-icon-arrow-down');
@@ -338,7 +403,8 @@
         for(var i=0;i<ddd.length;i++){
           ddd[i].style.display='none';
         }
-        if(isShow == '' || isShow == 'none'){//当前隐藏了
+        //如果当前隐藏了
+        if(isShow == '' || isShow == 'none'){
           this.List=this.unionList[index1].memberInfo;
           //加载联盟下的盟员和联盟卡信息列表
           this.UnionCardList=this.unionList[index1].memberInfo.members;
@@ -363,12 +429,10 @@
           }
           //当前列表数据展开、当前箭头向下
           $('.details_')[index1].style.display='block';
-          $('.el-icon-arrow-right ').className ='el-icon-arrow-down';
           $('.el-icon-arrow-right ')[index1].className='el-icon-arrow-down fr';
           $('.unionLi>div')[index1].style.borderBottom=0;
-          $('.details_')[index1].style.display = 'block';
           $('.unionLi>div')[index1].style.paddingBottom='1rem';
-        }else {////当前显示了
+        }else {////否则;当前显示了
           $('.details_')[index1].style.display = 'none';
           $('.unionLi>div')[index1].style.borderBottom = '0.01rem solid #dddddd';
           $('.unionLi>div')[index1].style.paddingBottom = '1rem';
@@ -379,7 +443,6 @@
         let that_=this;
         if(this.isGetCode == 1) {
           that_.isGetCode = 0;
-          let wait = 60;
           let Number_ = $('#Phone').val();
           //手机页面
           $http.get(`/cardH5/79B4DE7C/code/${Number_}?busId=${this.busId}`)
@@ -390,20 +453,16 @@
                 that_.isGetCode = 1;
               }
               function time(o) {
-                if (wait == 0) {
-                  that_.isGetCode = 1;
-                  o.innerHTML = "获取验证码";
-                  o.style.color='#1EC054';
-                } else {
+                that_.timeEnd = setInterval(() => {
                   that_.isGetCode = 0;
-                  o.innerHTML = "重新发送(" + wait + ")";
+                  o.innerHTML = that_.wait + "s";
                   o.style.color = "#8a7e7e";
-                  wait--;
-                  setTimeout(function () {
-                      time(o)
-                    },
-                    1000)
-                }
+                  if ( that_.wait === 0) {
+                    clearInterval(that_.timeEnd);
+                    that_.clearCodeTime();
+                  }
+                  that_.wait--;
+                }, 1000);
               }
             })
             .catch(err => {
@@ -416,12 +475,17 @@
         let url1='toUnionCard';
         let uPhone=$('#Phone').val();
         let pCode=$('#verification').val();
-        if($('#verification').val()){
+        if(!(/^1[3|4|5|6|7|8][0-9][0-9]{8}$/.test(Phone.value))){
+          message_.innerHTML='请输入手机号!';
+          message_.style.display='block';
+           $('#Phone').focus();
+        }
+        if($('#verification').val().length>5 && (/^1[3|4|5|6|7|8][0-9][0-9]{8}$/.test(Phone.value))){
           $http.post(`/cardH5/79B4DE7C/bind/${uPhone}?busId=${this.busId}&url=${url1}&code=${pCode}`)
             .then(res => {
-              //刷新当前页面
               if(res.data.success){
-                location.reload();
+                //刷新当前页面
+                window.location.href = location.href+'&time='+((new Date()).getTime());
               }
             })
             .catch(err => {
@@ -432,19 +496,27 @@
           return
         }
       },
+      //拨打电话
+      telPhone(phone){
+        window.location.href = "tel:" + phone;
+      }
     },
     created (){
+
       //页面的title变换
       $("#title_").text('会员信息');
       //如果有busId值，就赋值
-      let Index1=window.location.href.indexOf('=');
-      let number=window.location.href.slice(parseInt(Index1)+1);
+      let hre_url = window.location.href;
+      let Index1=hre_url.indexOf('busId=');
+      let Index2=hre_url.indexOf('&time');
+      let number=hre_url.slice(parseInt(Index1)+6,(Index2 > -1) ? Index2 : hre_url.length);
       this.busId=number;
       //刷新页面渲染联盟卡首页列表数据---------------------------------------------------------1
       let url1='toUnionCard';
       $http.get(`/cardH5/79B4DE7C/index/${this.busId}?url=${url1}`)
         .then(res => {
           if(res.data.data) {
+
             if (res.data.data.phone) {
               //如果有phone的值就赋值，方便后续传参数
               this.phone = res.data.data.phone;

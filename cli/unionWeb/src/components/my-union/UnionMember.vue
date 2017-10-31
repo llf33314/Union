@@ -185,6 +185,11 @@ export default {
       this.init();
     }
   },
+  activated: function() {
+    if (this.unionMemberId) {
+      this.init();
+    }
+  },
   watch: {
     // 查询盟员列表
     unionMemberId: function() {
@@ -299,29 +304,29 @@ export default {
       $http
         .put(`/unionMemberOut/memberId/${this.unionMemberId}?tgtMemberId=${this.memberId}`)
         .then(res => {
-            this.$message({ showClose: true, message: '移出成功，该盟员将在15天过渡期后正式退盟', type: 'success', duration: 5000 });
-            $http
-              .get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=${this.current}`)
-              .then(res => {
-                if (res.data.data) {
-                  this.tableData = res.data.data.records;
-                  this.totalAll = res.data.data.total;
-                  this.tableData.forEach((v, i) => {
-                    if (v.discountFromMe) {
-                      v.discountFromMe = v.discountFromMe.toFixed(1);
-                    }
-                    if (v.discountToMe) {
-                      v.discountToMe = v.discountToMe.toFixed(1);
-                    }
-                    if (v.cardDividePercent) {
-                      v.cardDividePercent = v.cardDividePercent.toFixed(2) + '%';
-                    }
-                  });
-                }
-              })
-              .catch(err => {
-                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-              });
+          this.$message({ showClose: true, message: '移出成功，该盟员将在15天过渡期后正式退盟', type: 'success', duration: 5000 });
+          $http
+            .get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=${this.current}`)
+            .then(res => {
+              if (res.data.data) {
+                this.tableData = res.data.data.records;
+                this.totalAll = res.data.data.total;
+                this.tableData.forEach((v, i) => {
+                  if (v.discountFromMe) {
+                    v.discountFromMe = v.discountFromMe.toFixed(1);
+                  }
+                  if (v.discountToMe) {
+                    v.discountToMe = v.discountToMe.toFixed(1);
+                  }
+                  if (v.cardDividePercent) {
+                    v.cardDividePercent = v.cardDividePercent.toFixed(2) + '%';
+                  }
+                });
+              }
+            })
+            .catch(err => {
+              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+            });
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });

@@ -75,7 +75,7 @@
         <div>
           <img src="../../assets/images/success01.png" alt="">
         </div>
-        <p>创建联盟成功</p>
+        <p>加入联盟成功</p>
         <el-col>
           <el-button type="primary" @click="back">我的联盟</el-button>
           <el-button @click="pre">返回</el-button>
@@ -87,10 +87,10 @@
 </template>
 
 <script>
-import axios from 'axios'
-import Breadcrumb from '@/components/public-components/Breadcrumb'
-import $http from '@/utils/http.js'
-import NoUnion from '@/components/public-components/NoUnion'
+import axios from 'axios';
+import Breadcrumb from '@/components/public-components/Breadcrumb';
+import $http from '@/utils/http.js';
+import NoUnion from '@/components/public-components/NoUnion';
 export default {
   name: 'join-step',
   components: {
@@ -129,29 +129,20 @@ export default {
         reason: ''
       },
       rules: {
-        enterpriseName: [
-          { required: true, message: '申请企业内容不能为空，请重新输入', trigger: 'blur' }
-        ],
-        directorName: [
-          { required: true, message: '负责人内容不能为空，请重新输入', trigger: 'blur' }
-        ],
-        directorPhone: [
-          { validator: directorPhonePass, trigger: 'blur' }
-        ],
-        directorEmail: [
-          { validator: emailPass, trigger: 'blur' }
-        ],
-        reason: [
-          { required: true, message: '申请理由不能为空，请重新输入', trigger: 'blur' }
-        ],
+        enterpriseName: [{ required: true, message: '申请企业内容不能为空，请重新输入', trigger: 'blur' }],
+        directorName: [{ required: true, message: '负责人内容不能为空，请重新输入', trigger: 'blur' }],
+        directorPhone: [{ validator: directorPhonePass, trigger: 'blur' }],
+        directorEmail: [{ validator: emailPass, trigger: 'blur' }],
+        reason: [{ required: true, message: '申请理由不能为空，请重新输入', trigger: 'blur' }]
       },
       datas: [],
       unionRadio: '',
-      totalAll: 0,
+      totalAll: 0
     };
   },
   mounted: function() {
-    $http.get(`/unionMain/page/otherUnion`)
+    $http
+      .get(`/unionMain/page/otherUnion/joinType/2`)
       .then(res => {
         if (res.data.data) {
           this.datas = res.data.data.records;
@@ -159,34 +150,30 @@ export default {
         } else {
           this.datas = [];
           this.totalAll = 0;
-        };
+        }
       })
       .catch(err => {
         this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-      })
+      });
   },
   methods: {
     next() {
       if (this.unionRadio) {
         this.active++;
       } else {
-        this.$message({
-          showClose: true,
-          message: '请选择要加入的联盟',
-          type: 'warning',
-          duration: 5000
-        });
+        this.$message({ showClose: true, message: '请选择要加入的联盟', type: 'warning', duration: 5000 });
       }
     },
     pre() {
       this.active--;
     },
     back() {
-      this.$router.push({ path: '/my-union' })
+      this.$router.push({ path: '/my-union' });
     },
     // 分页查询
     handleCurrentChange(val) {
-      $http.get(`/unionMain/page?current=${val}`)
+      $http
+        .get(`/unionMain/page?current=${val}`)
         .then(res => {
           if (res.data.data) {
             this.datas = res.data.data.records;
@@ -194,34 +181,36 @@ export default {
           } else {
             this.datas = [];
             this.totalAll = 0;
-          };
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        })
+        });
     },
     onSubmit(formName) {
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(valid => {
         if (valid) {
           let url = `/unionMemberJoin/unionId/${this.unionRadio}`;
           let data = this.form;
-          $http.post(url, data)
+          $http
+            .post(url, data)
             .then(res => {
-              if(res.data.success) {
-              this.$message({ showClose: true, message: '保存成功', type: 'success', duration: 5000 });
+              if (res.data.success) {
+                eventBus.$emit('unionUpdata');
+                this.$message({ showClose: true, message: '保存成功', type: 'success', duration: 5000 });
+                this.active++;
               }
             })
             .catch(err => {
               this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
             });
-          this.active++;
         } else {
           return false;
         }
       });
-    },
+    }
   }
-}
+};
 </script>
 
 <style lang='less' rel="stylesheet/less" scoped>
@@ -231,7 +220,7 @@ export default {
     text-align: center;
     p {
       margin: 31px 0 49px 0;
-      color: #666666
+      color: #666666;
     }
   }
 }

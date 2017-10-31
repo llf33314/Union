@@ -17,6 +17,8 @@ import com.gt.union.brokerage.service.IUnionBrokerageIncomeService;
 import com.gt.union.brokerage.service.IUnionBrokeragePayService;
 import com.gt.union.brokerage.service.IUnionBrokerageWithdrawalService;
 import com.gt.union.brokerage.service.IUnionH5BrokerageService;
+import com.gt.union.common.amqp.entity.PhoneMessage;
+import com.gt.union.common.amqp.sender.PhoneMessageSender;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
@@ -48,9 +50,6 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 	private RedisCacheUtil redisCacheUtil;
 
 	@Autowired
-	private SmsService smsService;
-
-	@Autowired
 	private IBusUserService busUserService;
 
 	@Autowired
@@ -77,6 +76,9 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 	@Autowired
 	private WxPayService payService;
 
+	@Autowired
+	private PhoneMessageSender phoneMessageSender;
+
 	@Override
 	public void checkLogin(String phone, String code, HttpServletRequest request) throws Exception{
 		if(StringUtil.isEmpty(phone) || StringUtil.isEmpty(code)){
@@ -84,7 +86,7 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		}
 		String phoneKey = RedisKeyUtil.getBrokeragePhoneKey(phone);
 		String obj = redisCacheUtil.get(phoneKey);
-		if(obj == null){
+		if(StringUtil.isEmpty(obj)){
 			throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
 		}
 		if(!code.equals(JSON.parse(obj))){
@@ -320,17 +322,9 @@ public class IUnionH5BrokerageServiceImpl implements IUnionH5BrokerageService {
 		}
 
 		UnionMain main = unionMainService.getById(toMember.getUnionId());
-		HashMap<String, Object> smsParams = new HashMap<String,Object>();
-		smsParams.put("mobiles", StringUtil.isEmpty(toMember.getNotifyPhone()) ? toMember.getDirectorPhone() : toMember.getNotifyPhone());
-		smsParams.put("content", "您尚未支付\"" + main.getName()+ "\"的\"" + fromMember.getEnterpriseName() + "\"" +opportunity.getBrokeragePrice() + "元的商机推荐佣金，请尽快支付，谢谢");
-		smsParams.put("company", PropertiesUtil.getWxmpCompany());
-		smsParams.put("busId", busId);
-		smsParams.put("model", ConfigConstant.SMS_UNION_MODEL);
-		Map<String,Object> param = new HashMap<String,Object>();
-		param.put("reqdata",smsParams);
-		if(smsService.sendSms(param) != 1){
-			throw new BusinessException("发送失败");
-		}
+		PhoneMessage phoneMessage = new PhoneMessage(busId,StringUtil.isEmpty(toMember.getNotifyPhone()) ? toMember.getDirectorPhone() : toMember.getNotifyPhone(),
+				"您尚未支付\"" + main.getName()+ "\"的\"" + fromMember.getEnterpriseName() + "\"" +opportunity.getBrokeragePrice() + "元的商机推荐佣金，请尽快支付，谢谢");
+		this.phoneMessageSender.sendMsg(phoneMessage);
 		UnionOpportunity unionOpportunity = new UnionOpportunity();
 		unionOpportunity.setId(opportunity.getId());
 		unionOpportunity.setIsUrgeBrokerage(OpportunityConstant.URGE_YES);

@@ -264,15 +264,11 @@ export default {
               if (res.data.success) {
                 this.childrenData = 2;
                 this.$emit('activeChange', this.childrenData);
+                eventBus.$emit('unionUpdata');
               }
             })
             .catch(err => {
-              this.$message({
-                showClose: true,
-                message: err.toString(),
-                type: 'error',
-                duration: 5000
-              });
+              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
             });
         } else {
           return false;

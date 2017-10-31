@@ -9,6 +9,7 @@ import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.card.service.IUnionCardService;
 import com.gt.union.card.vo.UnionCardBindParamVO;
 import com.gt.union.common.amqp.entity.PhoneMessage;
+import com.gt.union.common.amqp.sender.PhoneMessageSender;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.controller.MemberAuthorizeOrLoginController;
@@ -28,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -44,9 +46,6 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 	private IUnionCardService unionCardService;
 
 	@Autowired
-	private SmsService smsService;
-
-	@Autowired
 	private RedisCacheUtil redisCacheUtil;
 
 	@Autowired
@@ -55,13 +54,16 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 	@Autowired
 	private MemberService memberService;
 
+	@Autowired
+	private PhoneMessageSender phoneMessageSender;
+
 	@ApiOperation(value = "联盟卡首页", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/index/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String indexList(HttpServletRequest request, @ApiParam(name = "busId", value = "商家id", required = true) @PathVariable("busId") Integer busId
 						,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) throws Exception{
 		Member member = SessionUtils.getLoginMember(request,busId);
 //		member = memberService.getById(997);
-		url = url + "?busId=" + busId;
+		url = url + "?busId=" + busId + "&time=" + System.currentTimeMillis();
 		String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
 		if(StringUtil.isNotEmpty(returnLoginUrl)){
 			return returnLoginUrl;
@@ -79,11 +81,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 		//生成验证码
 		String code = RandomKit.getRandomString(6, 0);
 		PhoneMessage phoneMessage = new PhoneMessage(busId,phone,"联盟卡手机登录验证码:" + code);
-		Map param = new HashMap<String,Object>();
-		param.put("reqdata",phoneMessage);
-		if(smsService.sendSms(param) == 0){
-			return GTJsonResult.instanceErrorMsg("发送失败").toString();
-		}
+		this.phoneMessageSender.sendMsg(phoneMessage);
 		String phoneKey = RedisKeyUtil.getCardH5LoginPhoneKey(phone);
 		redisCacheUtil.set(phoneKey , code, 300L);
 		return GTJsonResult.instanceSuccessMsg().toString();
@@ -97,11 +95,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			//生成验证码
 			String code = RandomKit.getRandomString(6, 0);
 			PhoneMessage phoneMessage = new PhoneMessage(busId,phone,"联盟卡手机绑定验证码:" + code);
-			Map param = new HashMap<String,Object>();
-			param.put("reqdata",phoneMessage);
-			if(smsService.sendSms(param) == 0){
-				return GTJsonResult.instanceErrorMsg("发送失败").toString();
-			}
+			this.phoneMessageSender.sendMsg(phoneMessage);
 			String phoneKey = RedisKeyUtil.getCardH5BindPhoneKey(phone);
 			redisCacheUtil.set(phoneKey , code, 300L);
 			return GTJsonResult.instanceSuccessMsg().toString();
@@ -140,12 +134,14 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			,@ApiParam(name = "code", value = "验证码" ,required = true) @RequestParam(value = "code", required = true) String code) throws Exception{
 		Member member = SessionUtils.getLoginMember(request,busId);
 //		member = memberService.getById(997);
-		url = url + "?busId=" + busId;
+		url = url + "?busId=" + busId + "&time=" + System.currentTimeMillis();
 		String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
 		if(StringUtil.isNotEmpty(returnLoginUrl)){
 			return returnLoginUrl;
 		}
 		unionCardService.bindCardPhone(member,busId,phone, code);
+		//清掉member  session
+		request.getSession().setAttribute(SessionUtils.SESSION_MEMBER,null);
 		return GTJsonResult.instanceSuccessMsg().toString();
 	}
 
@@ -175,7 +171,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			Member member = SessionUtils.getLoginMember(request,vo.getBusId());
 //			member = memberService.getById(997);
 			Integer busId = vo.getBusId();
-			url = url + "?busId=" + busId;
+			url = url + "?busId=" + busId + "&time=" + System.currentTimeMillis();
 			String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
 			if(StringUtil.isNotEmpty(returnLoginUrl)){
 				return returnLoginUrl;
@@ -185,6 +181,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			}
 			Map<String,Object> data = unionCardService.bindCard(vo);
 			if(CommonUtil.isNotEmpty(data.get("qrurl"))){
+				url = url + "?busId=" + busId;
 				String returnUrl = PropertiesUtil.getUnionUrl() + "/cardPhone/#/" + url;
 				Map<String,Object> qrCodeData = unionCardService.createQRCode(busId, vo.getPhone(), member.getId(),vo.getUnionId(), vo.getCardType(), 1, returnUrl, busId, 0);
 				Map<String,Object> param = new HashMap<String,Object>();
