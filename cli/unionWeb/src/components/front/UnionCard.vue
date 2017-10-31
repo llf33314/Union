@@ -449,8 +449,7 @@ export default {
           .then(res => {
             var _this = this;
             if (!this.socket) {
-              this.socket = io.connect('https://socket.deeptel.com.cn'); // 测试
-              // this.socket = io.connect('http://183.47.242.2:8881'); // 堡垒
+               this.socket = io.connect('http://183.47.242.2:8881'); // 堡垒
               var userId = this.userId;
               this.socket.on('connect', function() {
                 let jsonObject = { userId: userId, message: '0' };
@@ -484,7 +483,7 @@ export default {
     },
     // 关闭二维码改变付款方式
     resetData() {
-      parent.window.postMessage('openMask()', 'https://deeptel.com.cn/user/toIndex_1.do');
+      parent.window.postMessage('openMask()', 'http://nb.deeptel.com.cn/user/toIndex_1.do');
       this.payType = 0;
     },
     // 返回

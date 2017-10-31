@@ -294,8 +294,7 @@ export default {
                     })
                     .then(res => {
                       if (!this.socket1) {
-                        this.socket1 = io.connect('https://socket.deeptel.com.cn'); // 测试
-                        // this.socket1 = io.connect('http://183.47.242.2:8881'); // 堡垒
+                         this.socket1 = io.connect('http://183.47.242.2:8881'); // 堡垒
                         var userId = this.userId1;
                         this.socket1.on('connect', function() {
                           let jsonObject = { userId: userId, message: '0' };
@@ -372,8 +371,7 @@ export default {
                   .then(res => {
                     var _this = this;
                     if (!this.socket2) {
-                      this.socket2 = io.connect('https://socket.deeptel.com.cn'); // 测试
-                      // this.socket2 = io.connect('http://183.47.242.2:8881'); // 堡垒
+                       this.socket2 = io.connect('http://183.47.242.2:8881'); // 堡垒
                       var userId = this.userId2;
                       this.socket2.on('connect', function() {
                         let jsonObject = { userId: userId, message: '0' };

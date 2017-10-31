@@ -213,7 +213,7 @@ export default {
     // 调用素材库
     materiallayer() {
       this.materialVisible = true;
-      this.materialUrl = 'https://suc.deeptel.com.cn/common/material.do?retUrl=' + window.location.href;
+      this.materialUrl = 'http://nb.suc.deeptel.com.cn/common/material.do?retUrl=' + window.location.href;
     },
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
