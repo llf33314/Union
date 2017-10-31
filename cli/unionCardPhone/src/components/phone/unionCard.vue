@@ -295,7 +295,9 @@
               if(res.data.data.qrurl != undefined && res.data.data.qrurl != null){
                 location.href=res.data.data.qrurl;
               }else {
-                window.location.href = location.href+'&time='+((new Date()).getTime());
+                let hre_url = window.location.href;
+                let redirectUrl = hre_url.indexOf("&time=") > -1 ? (hre_url.slice(0,hre_url.indexOf("&time=") + 6) + new Date().getTime()) : hre_url +'&time='+((new Date()).getTime())
+                window.location.href = redirectUrl;
               }
             }
           })
@@ -490,7 +492,9 @@
             .then(res => {
               if(res.data.success){
                 //刷新当前页面
-                window.location.href = location.href+'&time='+((new Date()).getTime());
+                let hre_url = window.location.href;
+                let redirectUrl = hre_url.indexOf("&time=") > -1 ? (hre_url.slice(0,hre_url.indexOf("&time=") + 6) + new Date().getTime()) : hre_url +'&time='+((new Date()).getTime())
+                window.location.href = redirectUrl;
               }
             })
             .catch(err => {
