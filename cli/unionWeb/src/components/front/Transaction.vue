@@ -275,7 +275,6 @@ export default {
                     this.form2.cards.black.termTime = '无';
                   }
                 }
-
                 this.visible2 = true;
                 //判断是否可以关注 然后获取二维码
                 var _this = this;
@@ -452,7 +451,6 @@ export default {
   width: 80px;
   height: 80px;
 }
-
 
 .codeImg {
   width: 200px;
