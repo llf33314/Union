@@ -33,7 +33,8 @@ public class DictServiceImpl implements IDictService {
 	/**
 	 * 创建联盟权限属性
 	 */
-	private static String CREATE_UNION_TYPE = "1183";
+//	private static String CREATE_UNION_TYPE = "1183";//其他环境
+	private static String CREATE_UNION_TYPE = "E999";//堡垒使用
 
 	/**
 	 * 联盟积分兑换规则 消费1元赠送多少积分
