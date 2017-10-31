@@ -217,7 +217,8 @@ public class UnionConsumeController {
 				String paramKey = RedisKeyUtil.getConsumePayParamKey(only);
 				String paramData = redisCacheUtil.get(paramKey);
 				Map map = JSON.parseObject(paramData,Map.class);
-				unionConsumeService.payConsumeSuccess(orderNo, only, CommonUtil.toInteger(param.get("payType")));
+				logger.info("扫码支付消费核销成功redis--map数据", JSON.toJSONString(map));
+				unionConsumeService.payConsumeSuccess(orderNo, map, CommonUtil.toInteger(param.get("payType")), only);
 				String statusKey = RedisKeyUtil.getConsumePayStatusKey(only);
 				String status = redisCacheUtil.get(statusKey);
 				if (CommonUtil.isEmpty(status)) {//订单超时
@@ -244,12 +245,12 @@ public class UnionConsumeController {
 				throw new BusinessException("支付失败");
 			}
 		} catch (BaseException e) {
-			logger.error("消费核销支付成功后，产生错误：" + e);
+			logger.error("消费核销支付成功后，产生错误：",e);
 			data.put("code",-1);
 			data.put("msg",e.getErrorMsg());
 			return JSON.toJSONString(data);
 		} catch (Exception e) {
-			logger.error("消费核销支付成功后，产生错误：" + e);
+			logger.error("消费核销支付成功后，产生错误：", e);
 			data.put("code",-1);
 			data.put("msg","失败");
 			return JSON.toJSONString(data);
