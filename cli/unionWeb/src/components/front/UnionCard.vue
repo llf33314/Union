@@ -368,7 +368,7 @@ export default {
       data.payType = this.payType - 0;
       data.shopId = this.shop - 0;
       data.unionId = this.form.unionId - 0;
-      data.useIntegral = this.isIntegral_;
+      data.useIntegral = this.isIntegral_ && this.form.integral;
       $http
         .post(url, data)
         .then(res => {
@@ -432,7 +432,7 @@ export default {
         data.payType = this.payType - 0;
         data.shopId = this.shop - 0;
         data.unionId = this.form.unionId - 0;
-        data.useIntegral = this.isIntegral_;
+        data.useIntegral = this.isIntegral_ && this.form.integral;
         $http
           .post(url, data)
           .then(res => {
