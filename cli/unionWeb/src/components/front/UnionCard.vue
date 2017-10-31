@@ -385,6 +385,7 @@ export default {
     },
     // 初始化
     init() {
+      this.visible5 = false;
       this.input = '';
       this.visible1 = true;
       this.visible2 = false;
@@ -413,7 +414,6 @@ export default {
       this.price1 = ''; // 实收金额
       this.payType = 0;
       this.price2 = ''; // 收取现金
-      this.visible5 = false;
       this.codeSrc = '';
     },
     // 付款二维码
