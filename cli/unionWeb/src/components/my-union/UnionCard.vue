@@ -33,7 +33,7 @@
       <el-table-column prop="createtime" label="升级时间">
         <template scope="scope">
           <el-popover trigger="hover" placement="bottom">
-            <p>{{ scope.row.createtime }}</p>
+            <p>升级时间：{{ scope.row.createtime }}</p>
             <div slot="reference" class="name-wrapper">
               <span>{{ scope.row.createtime }}</span>
             </div>

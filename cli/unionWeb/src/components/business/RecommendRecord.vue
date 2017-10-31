@@ -34,7 +34,7 @@
       <el-table-column prop="clientPhone" label="电话">
         <template scope="scope">
           <el-popover trigger="hover" placement="bottom">
-            <p>{{ scope.row.clientPhone }}</p>
+            <p>电话：{{ scope.row.clientPhone }}</p>
             <div slot="reference" class="name-wrapper">
               <span>{{ scope.row.clientPhone }}</span>
             </div>
@@ -44,7 +44,7 @@
       <el-table-column prop="businessMsg" label="业务备注">
         <template scope="scope">
           <el-popover trigger="hover" placement="bottom">
-            <p>{{ scope.row.businessMsg }}</p>
+            <p>业务备注：{{ scope.row.businessMsg }}</p>
             <div slot="reference" class="name-wrapper">
               <span>{{ scope.row.businessMsg }}</span>
             </div>

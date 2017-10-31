@@ -56,7 +56,7 @@
       <el-table-column prop="businessMsg" label="业务备注" min-width="100px">
         <template scope="scope">
           <el-popover trigger="hover" placement="bottom">
-            <p>{{ scope.row.businessMsg }}</p>
+            <p>备注：{{ scope.row.businessMsg }}</p>
             <div slot="reference" class="name-wrapper">
               <span>{{ scope.row.businessMsg }}</span>
             </div>
@@ -81,7 +81,7 @@
       <el-table-column prop="lastModifyTime" label="交易时间" min-width="120">
         <template scope="scope">
           <el-popover trigger="hover" placement="bottom">
-            <p>{{ scope.row.lastModifyTime }}</p>
+            <p>交易时间：{{ scope.row.lastModifyTime }}</p>
             <div slot="reference" class="name-wrapper">
               <span>{{ scope.row.lastModifyTime }}</span>
             </div>
