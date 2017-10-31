@@ -1,9 +1,5 @@
 <template>
   <div id="UnionCard">
-    <div v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="拼命加载中">
-      <!--显示整页加载，1秒后消失-->
-    </div>
-    <div id="container_front_unionCard" style="display: none">
       <div class="first_">
         <el-col style="width: 435px;;">
           <el-input placeholder="请用扫码枪扫码或手动输入联盟卡号" icon="search" v-model="input" :on-icon-click="handleIconClick" @keypress.native="keypress($event)">
@@ -166,7 +162,6 @@
       </el-dialog>
     </div>
     </div>
-  </div>
 </template>
 
 <script>
@@ -212,7 +207,6 @@ export default {
         only: '',
         status: ''
       },
-      fullscreenLoading: true,
       //      canSubmit: false
     };
   },
@@ -221,11 +215,7 @@ export default {
       .get(`/unionCard/phone`)
       .then(res => {
         if (res.data.data) {
-          setTimeout(() => {
-            this.fullscreenLoading = false;
-            this.imgSrc = res.data.data;
-            container_front_unionCard.style.display="block";
-          },600);
+          this.imgSrc = res.data.data;
         } else {
           this.imgSrc = '';
         }
