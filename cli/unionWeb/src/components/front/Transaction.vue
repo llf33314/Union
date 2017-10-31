@@ -7,7 +7,7 @@
           <el-col style="width: 250px;margin-right: 20px;">
             <el-input v-model="form1.phone" @keyup.native="form1.phone=form1.phone.replace(/[^\d]/g,'')"  @keyup.enter.native="show1($event)"></el-input>
           </el-col>
-          <el-button type="primary" @click="getVerificationCode" :disabled="form1.getVerificationCode || !form1.phone">{{ form1.countDownTime > 0?form1.countDownTime+'s':'获取验证码'}}</el-button>
+          <el-button type="primary" @click="getVerificationCode" :disabled="form1.getVerificationCode || !form1.phone">{{ form1.countDownTime>0?form1.countDownTime+'s':'获取验证码' }}</el-button>
         </el-form-item>
         <el-form-item label="短信验证码：" prop="code">
           <el-row style="width: 250px;">
