@@ -233,6 +233,7 @@ export default {
                 this.form1.getVerificationCode = false;
                 this.form1.countDownTime = '';
                 clearInterval(this.timeEnd);
+                return;
               }
               this.form1.countDownTime--;
             }, 1000);
@@ -313,7 +314,6 @@ export default {
                       this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
                     });
                 }
-
               } else {
                 this.form2.unions = '';
                 this.form2.follow = 0;
