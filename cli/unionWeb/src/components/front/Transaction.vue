@@ -453,6 +453,7 @@ export default {
   height: 80px;
 }
 
+
 .codeImg {
   width: 200px;
   height: 200px;
