@@ -4,7 +4,7 @@
     <property name="PATTERN" value="%-12(%d{yyyy-MM-dd HH:mm:ss.SSS}) |-%-5level [%thread] %c [%L] -| %msg%n" />
     <!-- 日志文件默认位置,正式中可能需要改成绝对路径！！！ -->
     <!--<property name="LOG_PATH" value="../logs/"/>-->
-    <property name="LOG_PATH" value="/home/server/log/tomcat/union/"/>
+    <property name="LOG_PATH" value="/home/server/log/tomcat/nbunion/"/>
 
     <!--console输出-->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
@@ -30,6 +30,15 @@
         <logger name="com.gt.union" level="debug"/>
         <root level="info">
             <appender-ref ref="STDOUT" />
+            <appender-ref ref="FILE" />
+        </root>
+    </springProfile>
+
+    <!-- 测试环境 -->
+    <springProfile name="nb">
+        <logger name="com.gt.union" level="debug"/>
+        <root level="info">
+            <appender-ref ref="STDOUT"/>
             <appender-ref ref="FILE" />
         </root>
     </springProfile>
