@@ -24,7 +24,7 @@
         <el-table-column prop="joinEnterpriseName" label="申请企业">
           <template scope="scope">
             <el-popover trigger="hover" placement="bottom">
-              <p>企业：{{ scope.row.joinEnterpriseName }}</p>
+              <p>申请企业：{{ scope.row.joinEnterpriseName }}</p>
               <div slot="reference" class="name-wrapper">
                 <span>{{ scope.row.joinEnterpriseName }}</span>
               </div>
@@ -36,7 +36,7 @@
         <el-table-column prop="joinDirectorPhone" label="联系电话">
           <template scope="scope">
             <el-popover trigger="hover" placement="bottom">
-              <p>电话：{{ scope.row.joinDirectorPhone }}</p>
+              <p>联系电话：{{ scope.row.joinDirectorPhone }}</p>
               <div slot="reference" class="name-wrapper">
                 <span>{{ scope.row.joinDirectorPhone }}</span>
               </div>

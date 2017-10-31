@@ -1,7 +1,7 @@
 <template>
   <div class="container" id="Business">
     <div v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="拼命加载中">
-      <!--显示整页加载，1秒后消失-->
+      <!--显示整页加载，0.6秒后消失-->
     </div>
     <el-tabs v-model="activeName" type="card" style="display: none">
       <el-tab-pane label="我的商机" name="first">
