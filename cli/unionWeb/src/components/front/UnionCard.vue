@@ -92,20 +92,20 @@
                 <span class="color_">{{ price * form.discount / 10 | formatPrice }}</span>
               </span>
             </el-form-item>
-            <el-form-item label="联盟积分折扣：" v-if="isIntegral">
+            <el-form-item label="联盟积分折扣：" v-if="isIntegral && form.integral > 0">
               <el-switch v-model="isIntegral_" on-text="" off-text="">
               </el-switch>
               <span>最大折扣比率：20%</span>
             </el-form-item>
-            <el-form-item label="消耗联盟积分：" v-if="isIntegral_">
+            <el-form-item label="消耗联盟积分：" v-if="isIntegral_ && form.integral > 0">
               <span> {{ deductionIntegral | formatPrice }} </span>
             </el-form-item>
-            <el-form-item label="抵扣金额：" v-if="isIntegral_">
+            <el-form-item label="抵扣金额：" v-if="isIntegral_ && form.integral > 0">
               <span> ￥
                 <span class="color_">{{ deductionPrice | formatPrice }} </span>
               </span>
             </el-form-item>
-            <el-form-item label="实收金额：" v-if="isIntegral_">
+            <el-form-item label="实收金额：" v-if="isIntegral_ && form.integral > 0">
               <span> ￥
                 <span class="color_">{{ price1 | formatPrice }} </span>
               </span>
@@ -358,16 +358,15 @@ export default {
       data.payType = this.payType - 0;
       data.shopId = this.shop - 0;
       data.unionId = this.form.unionId - 0;
-      data.useIntegral = this.isIntegral_;
+      data.useIntegral = this.isIntegral_ && this.form.integral;
       $http
         .post(url, data)
         .then(res => {
           if (res.data.success) {
-            this.visible3 = false;
-            this.$message({ showClose: true, message: '核销成功', type: 'success', duration: 5000 });
-            this.init();
             eventBus.$emit('newTransaction');
             eventBus.$emit('unionUpdata');
+            this.init();
+            this.$message({ showClose: true, message: '核销成功', type: 'success', duration: 5000 });
           }
         })
         .catch(err => {
@@ -423,7 +422,7 @@ export default {
         data.payType = this.payType - 0;
         data.shopId = this.shop - 0;
         data.unionId = this.form.unionId - 0;
-        data.useIntegral = this.isIntegral_;
+        data.useIntegral = this.isIntegral_ && this.form.integral;
         $http
           .post(url, data)
           .then(res => {
@@ -453,12 +452,9 @@ export default {
               if (!(_this.socketFlag.only == msg.only && _this.socketFlag.status == msg.status)) {
                 if (_this.only == msg.only) {
                   if (msg.status == '003') {
+                    eventBus.$emit('newTransaction');
+                    eventBus.$emit('unionUpdata');
                     _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
-                    _this.visible3 = false;
-                    _this.visible5 = false;
-                    _this.parent.window.postMessage('openMask()', 'https://deeptel.com.cn/user/toIndex_1.do');
-                    _this.eventBus.$emit('newTransaction');
-                    _this.eventBus.$emit('unionUpdata');
                     _this.init();
                   } else if (msg.status == '004') {
                     _this.$message({ showClose: true, message: '请求超时', type: 'warning', duration: 5000 });

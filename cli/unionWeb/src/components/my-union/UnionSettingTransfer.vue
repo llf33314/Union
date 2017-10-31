@@ -113,9 +113,9 @@ export default {
         .put(`/unionMainTransfer/memberId/${this.unionMemberId}?tgtMemberId=${this.id}`)
         .then(res => {
           if (res.data.success) {
+            eventBus.$emit('unionUpdata');
             this.dialogVisible1 = false;
             this.canTransferFlag = false;
-            eventBus.$emit('unionUpdata');
             $http
               .get(`/unionMainTransfer/pageMap/memberId/${this.unionMemberId}?current=1`)
               .then(res => {
@@ -148,9 +148,9 @@ export default {
         .put(`/unionMainTransfer/${this.transferId}/memberId/${this.unionMemberId}/revoke`)
         .then(res => {
           if (res.data.success) {
+            eventBus.$emit('unionUpdata');
             this.dialogVisible2 = false;
             this.canTransferFlag = true;
-            eventBus.$emit('unionUpdata');
             $http
               .get(`/unionMainTransfer/pageMap/memberId/${this.unionMemberId}?current=1`)
               .then(res => {

@@ -29,6 +29,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -62,7 +63,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 						,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) throws Exception{
 		Member member = SessionUtils.getLoginMember(request,busId);
 //		member = memberService.getById(997);
-		url = url + "?busId=" + busId;
+		url = url + "?busId=" + busId + "&time=" + System.currentTimeMillis();
 		String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
 		if(StringUtil.isNotEmpty(returnLoginUrl)){
 			return returnLoginUrl;
@@ -133,7 +134,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			,@ApiParam(name = "code", value = "验证码" ,required = true) @RequestParam(value = "code", required = true) String code) throws Exception{
 		Member member = SessionUtils.getLoginMember(request,busId);
 //		member = memberService.getById(997);
-		url = url + "?busId=" + busId;
+		url = url + "?busId=" + busId + "&time=" + System.currentTimeMillis();
 		String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
 		if(StringUtil.isNotEmpty(returnLoginUrl)){
 			return returnLoginUrl;
@@ -170,7 +171,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			Member member = SessionUtils.getLoginMember(request,vo.getBusId());
 //			member = memberService.getById(997);
 			Integer busId = vo.getBusId();
-			url = url + "?busId=" + busId;
+			url = url + "?busId=" + busId + "&time=" + System.currentTimeMillis();
 			String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
 			if(StringUtil.isNotEmpty(returnLoginUrl)){
 				return returnLoginUrl;

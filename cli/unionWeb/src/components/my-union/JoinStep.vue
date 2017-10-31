@@ -196,9 +196,9 @@ export default {
             .post(url, data)
             .then(res => {
               if (res.data.success) {
+                eventBus.$emit('unionUpdata');
                 this.$message({ showClose: true, message: '保存成功', type: 'success', duration: 5000 });
                 this.active++;
-                eventBus.$emit('unionUpdata');
               }
             })
             .catch(err => {
