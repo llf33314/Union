@@ -422,7 +422,7 @@ export default {
         data.payType = this.payType - 0;
         data.shopId = this.shop - 0;
         data.unionId = this.form.unionId - 0;
-        data.useIntegral = this.isIntegral_ && this.form.integral;
+        this.isIntegral_ && this.form.integral ? (data.useIntegral = true) : (data.useIntegral = false);
         $http
           .post(url, data)
           .then(res => {
