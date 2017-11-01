@@ -368,7 +368,7 @@
         //所有打勾的都隐藏
         var card_price=$('.el-icon-check');
         for(var i=0;i<card_price.length;i++){
-          $('.el-icon-check')[0].style.opacity=0;
+          $('.el-icon-check')[i].style.opacity=0;
         }
         clearInterval(this.timeEnd);
       },
