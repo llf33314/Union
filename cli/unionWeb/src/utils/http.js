@@ -8,7 +8,7 @@ import {
 // axios.defaults.baseURL = 'http://113.106.199.74:7884';
 // axios.defaults.baseURL = 'http://union.yifriend.net:7884';  // 调试
 // axios.defaults.baseURL = 'http://union.duofee.com';         // 调试
-   axios.defaults.baseURL = 'https://union.deeptel.com.cn';   // 测试
+axios.defaults.baseURL = 'https://union.deeptel.com.cn';   // 测试
 // axios.defaults.baseURL = 'http://nb.union.deeptel.com.cn'; // 堡垒
 
 axios.defaults.timeout = 5000;
