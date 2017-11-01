@@ -237,68 +237,80 @@ export default {
     }
   },
   mounted: function() {
-    // 未提交
-    $http
-      .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/1?current=1`)
-      .then(res => {
-        if (res.data.data) {
-          this.tableData1 = res.data.data.records;
-          this.totalAll1 = res.data.data.total;
-        } else {
-          this.tableData1 = [];
-          this.totalAll1 = 0;
-        }
-      })
-      .catch(err => {
-        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-      });
-    // 未审核
-    $http
-      .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/2?current=1`)
-      .then(res => {
-        if (res.data.data) {
-          this.tableData2 = res.data.data.records;
-          this.totalAll2 = res.data.data.total;
-        } else {
-          this.tableData2 = [];
-          this.totalAll2 = 0;
-        }
-      })
-      .catch(err => {
-        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-      });
-    // 已通过
-    $http
-      .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/3?current=1`)
-      .then(res => {
-        if (res.data.data) {
-          this.tableData3 = res.data.data.records;
-          this.totalAll3 = res.data.data.total;
-        } else {
-          this.tableData3 = [];
-          this.totalAll3 = 0;
-        }
-      })
-      .catch(err => {
-        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-      });
-    // 未通过
-    $http
-      .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/4?current=1`)
-      .then(res => {
-        if (res.data.data) {
-          this.tableData4 = res.data.data.records;
-          this.totalAll4 = res.data.data.total;
-        } else {
-          this.tableData4 = [];
-          this.totalAll4 = 0;
-        }
-      })
-      .catch(err => {
-        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-      });
+    this.init1();
+    this.init2();
+    this.init3();
+    this.init4();
   },
   methods: {
+    // 未提交
+    init1() {
+      $http
+        .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/1?current=1`)
+        .then(res => {
+          if (res.data.data) {
+            this.tableData1 = res.data.data.records;
+            this.totalAll1 = res.data.data.total;
+          } else {
+            this.tableData1 = [];
+            this.totalAll1 = 0;
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    },
+    // 未审核
+    init2() {
+      $http
+        .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/2?current=1`)
+        .then(res => {
+          if (res.data.data) {
+            this.tableData2 = res.data.data.records;
+            this.totalAll2 = res.data.data.total;
+          } else {
+            this.tableData2 = [];
+            this.totalAll2 = 0;
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    },
+    // 已通过
+    init3() {
+      $http
+        .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/3?current=1`)
+        .then(res => {
+          if (res.data.data) {
+            this.tableData3 = res.data.data.records;
+            this.totalAll3 = res.data.data.total;
+          } else {
+            this.tableData3 = [];
+            this.totalAll3 = 0;
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    },
+    // 未通过
+    init4() {
+      $http
+        .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/4?current=1`)
+        .then(res => {
+          if (res.data.data) {
+            this.tableData4 = res.data.data.records;
+            this.totalAll4 = res.data.data.total;
+          } else {
+            this.tableData4 = [];
+            this.totalAll4 = 0;
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    },
     // 分页查询
     handleCurrentChange1(val) {
       $http
@@ -462,20 +474,7 @@ export default {
         .then(res => {
           if (res.data.success) {
             this.visible = false;
-            $http
-              .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/1?current=1`)
-              .then(res => {
-                if (res.data.data) {
-                  this.tableData1 = res.data.data.records;
-                  this.totalAll1 = res.data.data.total;
-                } else {
-                  this.tableData1 = [];
-                  this.totalAll1 = 0;
-                }
-              })
-              .catch(err => {
-                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-              });
+            this.init1();
           }
         })
         .catch(err => {
@@ -490,21 +489,11 @@ export default {
       $http
         .put(url, data)
         .then(res => {
-          this.dialogTableVisible2 = false;
-          $http
-            .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/2?current=1`)
-            .then(res => {
-              if (res.data.data) {
-                this.tableData2 = res.data.data.records;
-                this.totalAll2 = res.data.data.total;
-              } else {
-                this.tableData2 = [];
-                this.totalAll2 = 0;
-              }
-            })
-            .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-            });
+          if (res.data.success) {
+            this.dialogTableVisible2 = false;
+            this.init2();
+            this.init3();
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -517,7 +506,11 @@ export default {
       $http
         .put(url, data)
         .then(res => {
-          this.dialogTableVisible2 = false;
+          if (res.data.success) {
+            this.dialogTableVisible2 = false;
+            this.init2();
+            this.init4();
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -529,21 +522,11 @@ export default {
       $http
         .put(url, data)
         .then(res => {
-          this.dialogTableVisible2 = false;
-          $http
-            .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/2?current=1`)
-            .then(res => {
-              if (res.data.data) {
-                this.tableData2 = res.data.data.records;
-                this.totalAll2 = res.data.data.total;
-              } else {
-                this.tableData2 = [];
-                this.totalAll2 = 0;
-              }
-            })
-            .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-            });
+          if (res.data.success) {
+            this.dialogTableVisible2 = false;
+            this.init2();
+            this.init3();
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -555,7 +538,11 @@ export default {
       $http
         .put(url, data)
         .then(res => {
-          this.dialogTableVisible2 = false;
+          if (res.data.success) {
+            this.dialogTableVisible2 = false;
+            this.init2();
+            this.init4();
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
