@@ -77,7 +77,7 @@ public class LoginFilter implements Filter {
             }
         } else {
             BusUser busUser = SessionUtils.getLoginUser(req);
-            if ("/cardPhone/".equals(url)) {//
+            if ("/cardPhone/".equals(url) || "/cardPhone".equals(url)) {//
                 chain.doFilter(request, response);
                 return;
             }

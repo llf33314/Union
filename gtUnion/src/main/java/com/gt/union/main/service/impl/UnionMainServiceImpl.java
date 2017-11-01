@@ -266,6 +266,8 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
             updateBlackCharge.setValidityDay(blackValidityDay);
             //黑卡说明
             updateBlackCharge.setIllustration(chargeVO.getBlackIllustration());
+            //老会员是否收费
+            updateBlackCharge.setIsOldCharge(chargeVO.getBlackIsOldCharge());
         } else {
             //黑卡收费价格
             updateBlackCharge.setChargePrice(0D);
@@ -273,6 +275,8 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
             updateBlackCharge.setValidityDay(0);
             //黑卡说明
             updateBlackCharge.setIllustration("");
+            //黑卡老会员不收费
+            updateBlackCharge.setIsOldCharge(0);
         }
 
         //(8)联盟收费实体-红卡

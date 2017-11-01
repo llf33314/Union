@@ -3,10 +3,10 @@ import axios from 'axios';
 import { Message } from 'element-ui';
 
 // axios 配置
-axios.defaults.baseURL = 'http://union.yifriend.net:7884';   //调试
+// axios.defaults.baseURL = 'http://union.yifriend.net:7884';   //调试
 // axios.defaults.baseURL = 'http://union.duofee.com';       //调试
 // axios.defaults.baseURL = 'http://192.168.3.59:8080';         //调试
-// axios.defaults.baseURL = 'https://union.deeptel.com.cn';     //测试
+axios.defaults.baseURL = 'https://union.deeptel.com.cn';     //测试
 // axios.defaults.baseURL = 'http://nb.union.deeptel.com.cn';   //堡垒
 
 // axios.defaults.timeout = 5000;
