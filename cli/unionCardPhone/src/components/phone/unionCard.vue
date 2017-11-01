@@ -151,7 +151,7 @@
         //验证码等待的时间
         wait:60,
         //统一的id号码
-        busId:33,
+        busId:'',
         //首页加载的数据
         mainContent:[],
         //是否是本商家
@@ -296,8 +296,7 @@
                 location.href=res.data.data.qrurl;
               }else {
                 let hre_url = window.location.href;
-                alert(hre_url)
-                let redirectUrl = hre_url.indexOf("&time=") > -1 ? (hre_url.slice(0,hre_url.indexOf("&time=") + 6) + new Date().getTime()) : (hre_url +'&time='+(new Date().getTime())
+                let redirectUrl = hre_url.indexOf("?time=") > -1 ? (hre_url.slice(0,hre_url.indexOf("?time=") + 6) + new Date().getTime() + hre_url.slice(hre_url.indexOf("/#/"))) : (hre_url.slice(0,hre_url.indexOf("/#/")) + "?time=" + new Date().getTime() + hre_url.slice(hre_url.indexOf("/#/")));
                 window.location.href = redirectUrl;
               }
             }
@@ -371,6 +370,7 @@
         for(var i=0;i<card_price.length;i++){
           $('.el-icon-check')[0].style.opacity=0;
         }
+        clearInterval(this.timeEnd);
       },
       //初始化数据;
       init(){
@@ -468,6 +468,7 @@
                   if ( that_.wait === 0) {
                     clearInterval(that_.timeEnd);
                     that_.clearCodeTime();
+                    return;
                   }
                   that_.wait--;
                 }, 1000);
@@ -494,9 +495,7 @@
               if(res.data.success){
                 //刷新当前页面
                 let hre_url = window.location.href;
-                alert(hre_url)
-                let redirectUrl = hre_url.indexOf("&time=") > -1 ? (hre_url.slice(0,hre_url.indexOf("&time=") + 6) + new Date().getTime()) : (hre_url +'&time='+new Date().getTime())
-                alert(redirectUrl)
+                let redirectUrl = hre_url.indexOf("?time=") > -1 ? (hre_url.slice(0,hre_url.indexOf("?time=") + 6) + new Date().getTime() + hre_url.slice(hre_url.indexOf("/#/"))) : (hre_url.slice(0,hre_url.indexOf("/#/")) + "?time=" + new Date().getTime() + hre_url.slice(hre_url.indexOf("/#/")));
                 window.location.href = redirectUrl;
               }
             })
@@ -520,8 +519,7 @@
       //如果有busId值，就赋值
       let hre_url = window.location.href;
       let Index1=hre_url.indexOf('busId=');
-      let Index2=hre_url.indexOf('&time');
-      let number=hre_url.slice(parseInt(Index1)+6,(Index2 > -1) ? Index2 : hre_url.length);
+      let number=(hre_url.indexOf("%3F") > -1) ? hre_url.slice(parseInt(Index1)+6,hre_url.indexOf("%3F")) :hre_url.slice(parseInt(Index1)+6);
       this.busId=number;
       //刷新页面渲染联盟卡首页列表数据---------------------------------------------------------1
       let url1='toUnionCard';

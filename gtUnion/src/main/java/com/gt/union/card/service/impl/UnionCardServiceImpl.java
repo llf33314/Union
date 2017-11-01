@@ -1052,30 +1052,25 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             }
             Date time = (charge.getValidityDay() == null || charge.getValidityDay() == 0) ? DateTimeKit.parse(CardConstant.CARD_FREE_VALIDITY, "yyyy-MM-dd HH:mm:ss") : DateTimeKit.addDate(new Date(), charge.getValidityDay());
             UnionCard card = this.createUnionCard(rootId, cardType, member.getId(), time, isCharge);
-            if (memberId != 0) {
-                UnionCardBinding binding = unionCardBindingService.getByCardRootIdAndMemberId(rootId, memberId);
-                if (binding == null) {
-                    unionCardBindingService.createUnionCardBinding(rootId, memberId);
-                }
-            }
             cardId = card.getId();
             validity = card.getValidity();
         } else {
             rootId = unionCard.getRootId();
-            cardId = unionCard.getId();
             Date time = (charge.getValidityDay() == null || charge.getValidityDay() == 0) ? DateTimeKit.parse(CardConstant.CARD_FREE_VALIDITY, "yyyy-MM-dd HH:mm:ss") : DateTimeKit.addDate(new Date(), charge.getValidityDay());
+            cardId = unionCard.getId();
             UnionCard upCard = new UnionCard();
             upCard.setId(unionCard.getId());
             //收费黑卡升红卡
             if (unionCard.getType() == CardConstant.TYPE_BLACK && unionCard.getIsCharge() == CardConstant.IS_CHARGE_YES && cardType == CardConstant.TYPE_RED) {
-                unionCard.setValidity(DateTimeKit.addDays(unionCard.getValidity(), charge.getValidityDay()));
+                upCard.setValidity(DateTimeKit.addDays(unionCard.getValidity(), charge.getValidityDay()));
             } else {
-                unionCard.setValidity(time);
+                upCard.setValidity(time);
             }
-
-            unionCard.setIsCharge(isCharge);
+            upCard.setIsCharge(isCharge);
+            upCard.setType(cardType);
             this.updateById(upCard);
             validity = upCard.getValidity();
+
         }
         //绑定联盟卡和粉丝信息
         if (memberId != 0) {
