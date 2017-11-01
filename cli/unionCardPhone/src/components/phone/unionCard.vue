@@ -61,6 +61,7 @@
         </ul>
       </li>
     </ul>
+
     <!--绑定手机号的弹框-->
     <div class="box-wrap" style="display: none">
       <div class="mask" @click="hide_"></div>
@@ -208,7 +209,6 @@
       }
     },
     mounted(){
-
       let that_=this;
       //验证码获得焦点的时候
       verification.onfocus=function(){
@@ -367,6 +367,7 @@
         $('.box-wrap2').hide();
         $('#message_').hide();
         this.init();
+        //所有打勾的都隐藏
         var card_price=$('.el-icon-check');
         for(var i=0;i<card_price.length;i++){
           $('.el-icon-check')[0].style.opacity=0;
@@ -468,6 +469,7 @@
                   if ( that_.wait === 0) {
                     clearInterval(that_.timeEnd);
                     that_.clearCodeTime();
+
                   }
                   that_.wait--;
                 }, 1000);
@@ -494,9 +496,7 @@
               if(res.data.success){
                 //刷新当前页面
                 let hre_url = window.location.href;
-                alert(hre_url)
                 let redirectUrl = hre_url.indexOf("&time=") > -1 ? (hre_url.slice(0,hre_url.indexOf("&time=") + 6) + new Date().getTime()) : (hre_url +'&time='+new Date().getTime())
-                alert(redirectUrl)
                 window.location.href = redirectUrl;
               }
             })
@@ -508,13 +508,12 @@
           return
         }
       },
-      //拨打电话
+      //是否拨打电话
       telPhone(phone){
         window.location.href = "tel:" + phone;
       }
     },
     created (){
-
       //页面的title变换
       $("#title_").text('会员信息');
       //如果有busId值，就赋值
@@ -528,7 +527,6 @@
       $http.get(`/cardH5/79B4DE7C/index/${this.busId}?url=${url1}`)
         .then(res => {
           if(res.data.data) {
-
             if (res.data.data.phone) {
               //如果有phone的值就赋值，方便后续传参数
               this.phone = res.data.data.phone;
