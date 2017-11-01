@@ -63,7 +63,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 						,@ApiParam(name = "url", value = "回调的url" ,required = true) @RequestParam(value = "url", required = true) String url) throws Exception{
 		Member member = SessionUtils.getLoginMember(request,busId);
 //		member = memberService.getById(997);
-		url = url + "?busId=" + busId + "&time=" + System.currentTimeMillis();
+		url = url + "?busId=" + busId;
 		String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
 		if(StringUtil.isNotEmpty(returnLoginUrl)){
 			return returnLoginUrl;
@@ -134,7 +134,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			,@ApiParam(name = "code", value = "验证码" ,required = true) @RequestParam(value = "code", required = true) String code) throws Exception{
 		Member member = SessionUtils.getLoginMember(request,busId);
 //		member = memberService.getById(997);
-		url = url + "?busId=" + busId + "&time=" + System.currentTimeMillis();
+		url = url + "?busId=" + busId;
 		String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
 		if(StringUtil.isNotEmpty(returnLoginUrl)){
 			return returnLoginUrl;
@@ -171,8 +171,8 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			Member member = SessionUtils.getLoginMember(request,vo.getBusId());
 //			member = memberService.getById(997);
 			Integer busId = vo.getBusId();
-			url = url + "?busId=" + busId + "&time=" + System.currentTimeMillis();
-			String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,url);
+			String reqUrl = url + "?busId=" + busId;
+			String returnLoginUrl = this.getCardH5LoginReturnUrl(member,request,busId,reqUrl);
 			if(StringUtil.isNotEmpty(returnLoginUrl)){
 				return returnLoginUrl;
 			}
@@ -181,8 +181,7 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			}
 			Map<String,Object> data = unionCardService.bindCard(vo);
 			if(CommonUtil.isNotEmpty(data.get("qrurl"))){
-				url = url + "?busId=" + busId;
-				String returnUrl = PropertiesUtil.getUnionUrl() + "/cardPhone/#/" + url;
+				String returnUrl = PropertiesUtil.getUnionUrl() + "/cardPhone/#/"+url+"?busId="+busId;
 				Map<String,Object> qrCodeData = unionCardService.createQRCode(busId, vo.getPhone(), member.getId(),vo.getUnionId(), vo.getCardType(), 1, returnUrl, busId, 0);
 				Map<String,Object> param = new HashMap<String,Object>();
 				param.put("totalFee", qrCodeData.get("totalFee"));
