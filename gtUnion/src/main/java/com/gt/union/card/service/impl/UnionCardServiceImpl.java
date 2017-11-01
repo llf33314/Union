@@ -823,11 +823,30 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 throw new BusinessException("该手机号已办理联盟卡");
             }
         }
+        //升级的联盟卡信息
+        List<Map<String, Object>> list = getCardInfoByMemberAndPhone(member, vo.getPhone());
         UnionMainCharge charge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(vo.getUnionId(), vo.getCardType(), MainConstant.CHARGE_IS_AVAILABLE_YES);
         if (charge == null) {
             throw new BusinessException("联盟未开启该联盟卡类型");
         }
-        Double price = charge.getChargePrice();//收费价格
+        //黑卡
+        Double price = 0D;
+        for (Map<String,Object> map : list){
+            //黑卡
+            if(vo.getCardType() == CardConstant.TYPE_BLACK){
+                if (CommonUtil.isNotEmpty(map.get("black"))) {
+                    Map<String,Object> black = (Map<String,Object>)map.get("black");
+                    price = CommonUtil.toDouble(black.get("price"));//收费价格
+                }
+            }
+            //红卡
+            if(vo.getCardType() == CardConstant.TYPE_RED){
+                if (CommonUtil.isNotEmpty(map.get("red"))) {
+                    Map<String,Object> red = (Map<String,Object>)map.get("red");
+                    price = CommonUtil.toDouble(red.get("price"));//收费价格
+                }
+            }
+        }
         Map<String, Object> data = new HashMap<String, Object>();
         if (CommonUtil.isEmpty(price) || price == 0) {//不收费，直接办理
             UnionCard unionCard = this.getByRootAndMemberId(root, member.getId(), false);
