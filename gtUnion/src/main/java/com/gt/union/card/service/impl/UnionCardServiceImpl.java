@@ -494,7 +494,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                     if (redCharge != null) {//开启红卡
                         int count = 0;
                         if(ListUtil.isNotEmpty(memberList)){
-                            count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, root == null ? null : root.getId());//查询是否在其他盟员升级红卡
+                            count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, phone);//查询是否在其他盟员升级红卡
                         }
                         if (count > 0) {
                             Map<String, Object> map = new HashMap<String, Object>();
@@ -523,7 +523,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                     if (blackCharge.getIsCharge() == MainConstant.CHARGE_IS_CHARGE_YES && blackCharge.getIsOldCharge() == MainConstant.CHARGE_OLD_IS_YES) {
                         int count = 0;
                         if(ListUtil.isNotEmpty(memberList)){
-                            count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_BLACK, MainConstant.CHARGE_IS_CHARGE_YES, root == null ? null : root.getId());
+                            count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_BLACK, MainConstant.CHARGE_IS_CHARGE_YES, phone);
                         }
                         if (count > 0) {
                             Map<String, Object> map = new HashMap<String, Object>();
@@ -551,7 +551,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                     if (redCharge != null) {
                         int count = 0;
                         if(ListUtil.isNotEmpty(memberList)){
-                            count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, root == null ? null : root.getId());
+                            count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, phone);
                         }
                         if (count > 0) {
                             Map<String, Object> map = new HashMap<String, Object>();
@@ -581,7 +581,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             if (blackCharge.getIsCharge() == MainConstant.CHARGE_IS_CHARGE_YES) {//黑卡收费
                 int count = 0;
                 if(ListUtil.isNotEmpty(memberList)){
-                    count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_BLACK, MainConstant.CHARGE_IS_CHARGE_YES, root == null ? null : root.getId());
+                    count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_BLACK, MainConstant.CHARGE_IS_CHARGE_YES, phone);
                 }
                 if (count > 0) {
                     Map<String, Object> map = new HashMap<String, Object>();
@@ -616,7 +616,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             if (redCharge != null) {//开启红卡
                 int count = 0;
                 if(ListUtil.isNotEmpty(memberList)){
-                    count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, root == null ? null : root.getId());
+                    count = this.baseMapper.countByMemberIdsAndType(memberList, CardConstant.TYPE_RED, MainConstant.CHARGE_IS_CHARGE_YES, phone);
                 }
                 if (count > 0) {
                     Map<String, Object> map = new HashMap<String, Object>();

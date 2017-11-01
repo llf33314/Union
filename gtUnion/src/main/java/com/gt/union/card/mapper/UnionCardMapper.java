@@ -34,7 +34,7 @@ public interface UnionCardMapper extends BaseMapper<UnionCard> {
 	 * @param isCharge
 	 * @return
 	 */
-	int countByMemberIdsAndType(@Param("members") List<Integer> memberList, @Param("type") Integer type, @Param("isCharge") Integer isCharge, @Param("rootId") Integer rootId);
+	int countByMemberIdsAndType(@Param("members") List<Integer> memberList, @Param("type") Integer type, @Param("isCharge") Integer isCharge, @Param("phone") String phone);
 
 	/**
 	 * 根据联盟卡列表查询最早办理的联盟卡
