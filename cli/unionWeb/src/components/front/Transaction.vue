@@ -209,6 +209,7 @@ export default {
           .then(res => {
             if (res.data.data) {
               this.form2.cards = res.data.data.cards;
+              this.form2.cardType = '';
               if (this.form2.cards.red) {
                 if (this.form2.cards.red.termTime) {
                   this.form2.cards.red.termTime = this.form2.cards.red.termTime;
