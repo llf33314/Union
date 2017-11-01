@@ -203,6 +203,32 @@ export default {
       this.wxData_.time = this.wxData.time;
     },
     unionId: function() {
+      if (this.unionId) {
+        $http
+          .get(`/unionCard/info?phone=${this.form1.phone}&code=${this.form1.code}&unionId=${this.unionId}`)
+          .then(res => {
+            if (res.data.data) {
+              this.form2.cards = res.data.data.cards;
+              if (this.form2.cards.red) {
+                if (this.form2.cards.red.termTime) {
+                  this.form2.cards.red.termTime = this.form2.cards.red.termTime;
+                } else {
+                  this.form2.cards.red.termTime = '无';
+                }
+              }
+              if (this.form2.cards.black) {
+                if (this.form2.cards.black.termTime) {
+                  this.form2.cards.black.termTime = this.form2.cards.black.termTime;
+                } else {
+                  this.form2.cards.black.termTime = '无';
+                }
+              }
+            }
+          })
+          .catch(err => {
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          });
+      }
       this.form2.unionId = this.unionId;
     }
   },
