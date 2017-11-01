@@ -11,7 +11,6 @@ import com.gt.api.bean.session.WxPublicUsers;
 import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.api.client.member.MemberService;
 import com.gt.union.api.client.shop.ShopService;
-import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.api.entity.result.UnionDiscountResult;
 import com.gt.union.brokerage.constant.BrokerageConstant;
@@ -437,11 +436,13 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         data.put("cardNo", root.getNumber());
         data.put("integral", root.getIntegral());
         data.put("validity", CommonUtil.toInteger(disMap.get("isCharge")) == 1 ? DateTimeKit.daysBetween(new Date(), DateTimeKit.parseDate(disMap.get("validity").toString(), "yyyy/MM/dd HH:mm:ss")) : null);
-        if(CommonUtil.toInteger(disMap.get("cardType")) == CardConstant.TYPE_RED){
-            UnionMainCharge redCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_RED, MainConstant.CHARGE_IS_AVAILABLE_YES);
-            if (redCharge != null) {
-                UnionPreferentialProject project = unionPreferentialProjectService.getByMemberId(memberId);
-                if (project != null) {
+        UnionMainCharge redCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_RED, MainConstant.CHARGE_IS_AVAILABLE_YES);
+        if (redCharge != null) {
+            UnionPreferentialProject project = unionPreferentialProjectService.getByMemberId(memberId);
+            if (project != null) {
+                //查询是否在该联盟升级红卡
+                int count = this.countCardByTypeAndRootIdAndUnionId(CardConstant.TYPE_RED, root.getId(), unionId);
+                if(count > 0){
                     List<UnionPreferentialItem> items = unionPreferentialItemService.listByProjectIdAndStatus(project.getId(), PreferentialConstant.STATUS_PASS);
                     data.put("items", items);
                     data.put("illustration", CommonUtil.isEmpty(redCharge.getIllustration()) ? "" : redCharge.getIllustration());
@@ -1210,6 +1211,11 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         data.put("memberId", memberId);
         data.put("members", members);
         return data;
+    }
+
+    @Override
+    public int countCardByTypeAndRootIdAndUnionId(int cardType, Integer rootId, Integer unionId) {
+        return this.baseMapper.countCardByTypeAndRootIdAndUnionId(cardType, rootId, unionId);
     }
 
 

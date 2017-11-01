@@ -211,4 +211,12 @@ public interface IUnionCardService extends IService<UnionCard> {
 	 */
 	Map<String,Object> getUnionInfoCardList(Integer busId, Member member, Integer unionId, Integer memberId) throws Exception;
 
+	/**
+	 * 查询数量 判断该联盟卡在该联盟卡是否升级了该联盟卡类型
+	 * @param cardType	联盟卡类型 1：黑卡 2：红卡
+	 * @param rootId	联盟卡主id
+	 * @param unionId	联盟id
+	 * @return
+	 */
+	int countCardByTypeAndRootIdAndUnionId(int cardType, Integer rootId, Integer unionId);
 }

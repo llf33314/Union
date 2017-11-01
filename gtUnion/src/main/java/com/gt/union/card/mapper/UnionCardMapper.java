@@ -43,4 +43,12 @@ public interface UnionCardMapper extends BaseMapper<UnionCard> {
 	 */
 	Map<String,Object> getByEarliestByCardList(@Param("list") List<UnionCard> list);
 
+	/**
+	 * 查询数量 判断该联盟卡在该联盟卡是否升级了该联盟卡类型
+	 * @param cardType	联盟卡类型 1：黑卡 2：红卡
+	 * @param rootId	联盟卡主id
+	 * @param unionId	联盟id
+	 * @return
+	 */
+	int countCardByTypeAndRootIdAndUnionId(@Param("cardType")int cardType, @Param("rootId")Integer rootId, @Param("unionId")Integer unionId);
 }
