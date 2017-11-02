@@ -40,9 +40,7 @@
 				 separator=",">
 			#{memberId}
 		</foreach>
-		<if test="rootId != null" >
-			AND root_id = #{rootId}
-		</if>
+		AND root_id = #{rootId}
 		<if test="type != null" >
 			AND type = #{type}
 		</if>
@@ -68,8 +66,8 @@
 	</select>
 	<!-- 查询数量 判断该联盟卡在该联盟卡是否升级了该联盟卡类型 -->
     <select id="countCardByTypeAndRootIdAndUnionId" resultType="java.lang.Integer">
-		SELECT count(1) from t_union_card WHERE rootId = #{rootId} and member_id in (select id from t_union_member where union_id = #{unionId} and del_status = 0
-		 and status in (2,3)) and del_status = 0 and card_type = #{cardType} and validity &gt; NOW()
+		SELECT count(1) from t_union_card WHERE root_id = #{rootId} and member_id in (select id from t_union_member where union_id = #{unionId} and del_status = 0
+		 and status in (2,3)) and del_status = 0 and type = #{cardType} and validity &gt; NOW()
 	</select>
 
 </mapper>
