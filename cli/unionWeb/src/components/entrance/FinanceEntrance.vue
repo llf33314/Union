@@ -7,7 +7,6 @@ import $http from '@/utils/http.js'
 export default {
   name: 'finance-entrance',
   created: function() {
-    parent.document.title = '商家联盟管理系统';
     // 首页查询我的联盟信息
     $http.get(`/union/index`)
       .then(res => {
