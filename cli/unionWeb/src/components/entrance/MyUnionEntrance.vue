@@ -3,12 +3,14 @@
 </template>
 
 <script>
-import $http from '@/utils/http.js'
+import $http from '@/utils/http.js';
 export default {
   name: 'my-union-entrance',
   created: function() {
+    parent.document.title = '商家联盟管理系统';
     // 首页查询我的联盟信息
-    $http.get(`/union/index`)
+    $http
+      .get(`/union/index`)
       .then(res => {
         if (res.data.data) {
           // 判断是否创建或加入联盟
@@ -16,13 +18,13 @@ export default {
             this.$router.push({ path: '/my-union/no-currentUnion' });
           } else {
             this.$router.push({ path: '/my-union/index' });
-          };
-        };
+          }
+        }
       })
       .catch(err => {
         this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
       });
-  },
-}
+  }
+};
 </script>
 
