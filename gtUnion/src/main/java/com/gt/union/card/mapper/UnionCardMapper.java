@@ -1,9 +1,7 @@
 package com.gt.union.card.mapper;
 
 import com.baomidou.mybatisplus.mapper.BaseMapper;
-import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.card.entity.UnionCard;
-import com.gt.union.member.entity.UnionMember;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
@@ -32,9 +30,10 @@ public interface UnionCardMapper extends BaseMapper<UnionCard> {
 	 * @param memberList
 	 * @param type
 	 * @param isCharge
+	 * @param rootId
 	 * @return
 	 */
-	int countByMemberIdsAndType(@Param("members") List<Integer> memberList, @Param("type") Integer type, @Param("isCharge") Integer isCharge, @Param("phone") String phone);
+	int countByMemberIdsAndType(@Param("members") List<Integer> memberList, @Param("type") Integer type, @Param("isCharge") Integer isCharge, @Param("rootId") Integer rootId);
 
 	/**
 	 * 根据联盟卡列表查询最早办理的联盟卡

@@ -40,7 +40,7 @@
 				 separator=",">
 			#{memberId}
 		</foreach>
-		AND root_id in (select id from t_union_card_root where phone = #{phone} and del_status = 0)
+		AND root_id = #{rootId}
 		<if test="type != null" >
 			AND type = #{type}
 		</if>
