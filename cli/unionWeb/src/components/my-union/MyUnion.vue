@@ -319,6 +319,8 @@ export default {
     },
     // 点击联盟图片切换联盟
     changUnion1(myCreateUnionMemberId) {
+      console.log(parent.document.title, 1111);
+      parent.document.title = '商家联盟管理系统';
       if (myCreateUnionMemberId !== this.memberId) {
         this.memberId = myCreateUnionMemberId;
         $http
