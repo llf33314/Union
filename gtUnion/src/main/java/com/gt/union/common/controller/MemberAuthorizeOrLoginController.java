@@ -57,20 +57,18 @@ public class MemberAuthorizeOrLoginController {
 		}
 		JSONObject json = JSONObject.parseObject(wxpublic);
 		Integer code = Integer.parseInt(json.get("code").toString());
-		if (code.equals(-1)) {
-			throw new BusinessException("登录错误");
-		} else if (code.equals(0)) {
-			Object guoqi = json.get("guoqi");
-			if (!CommonUtil.isEmpty(guoqi)) {//商家已过期
-				throw new BusinessException("账号已过期");
-			}
-			if(CommonUtil.isNotEmpty(json.get("data"))){//uc登陆
+		if (code.equals(0)) {
+			if(CommonUtil.isNotEmpty(json.get("data"))){
 				JSONObject obj = JSONObject.parseObject(json.get("data").toString());
+				if (CommonUtil.isNotEmpty(obj.get("guoqi"))) {//商家已过期
+					return obj.get("guoqiUrl").toString();//跳到过期页面
+				}
 				if(CommonUtil.isNotEmpty(obj.get("remoteUcLogin"))){
 					return PropertiesUtil.getUnionUrl() + "/cardPhone/#/" + "toUnionLogin?busId="+busId;
 				}
-
 			}
+		}else {
+			throw new BusinessException("登录错误");
 		}
 		String otherRedisKey = PropertiesUtil.redisNamePrefix() + "authority:"+System.currentTimeMillis();
 		redisService.setValue(otherRedisKey, reqUrl, 300);
@@ -98,17 +96,22 @@ public class MemberAuthorizeOrLoginController {
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/busUserApi/getWxPulbicMsg.do";
 		String wxpublic = SignHttpUtils.WxmppostByHttp(url, getWxPublicMap, PropertiesUtil.getWxmpSignKey());
 		if(StringUtil.isEmpty(wxpublic)){
-			throw new BusinessException("微信登录错误");
+			throw new BusinessException("登录错误");
 		}
 		JSONObject json = JSONObject.parseObject(wxpublic);
 		Integer code = Integer.parseInt(json.get("code").toString());
-		if (code.equals(-1)) {
-			throw new BusinessException("登录错误");
-		} else if (code.equals(0)) {
-			Object guoqi = json.get("guoqi");
-			if (!CommonUtil.isEmpty(guoqi)) {//商家已过期
-				throw new BusinessException("账号已过期");
+		if (code.equals(0)) {
+			if(CommonUtil.isNotEmpty(json.get("data"))){
+				JSONObject obj = JSONObject.parseObject(json.get("data").toString());
+				if (CommonUtil.isNotEmpty(obj.get("guoqi"))) {//商家已过期
+					return obj.get("guoqiUrl").toString();//跳到过期页面
+				}
+				if(CommonUtil.isNotEmpty(obj.get("remoteUcLogin"))){
+					throw new BusinessException("登录错误");
+				}
 			}
+		}else {
+			throw new BusinessException("登录错误");
 		}
 		String otherRedisKey = PropertiesUtil.redisNamePrefix() + "authority:"+System.currentTimeMillis();
 		redisService.setValue(otherRedisKey, reqUrl, 300);
