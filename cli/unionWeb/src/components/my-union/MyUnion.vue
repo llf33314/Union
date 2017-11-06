@@ -310,7 +310,7 @@ export default {
                 this.unionMainData.currentUnionIntegralSum = res.data.data.currentUnionIntegralSum || 0;
               }
               container_myUnion.style.display = 'block';
-            },300)
+            }, 300);
           }
         })
         .catch(err => {
