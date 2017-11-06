@@ -137,7 +137,8 @@ export default {
       },
       datas: [],
       unionRadio: '',
-      totalAll: 0
+      totalAll: 0,
+      checkList: []
     };
   },
   mounted: function() {
@@ -159,6 +160,21 @@ export default {
   methods: {
     next() {
       if (this.unionRadio) {
+        // 获取必填字段
+        $http.get(`/unionMainDict/${this.unionRadio}`).then(res => {
+          if (res.data.data) {
+            res.data.data.forEach((v, i) => {
+              if (this.checkList.indexOf(v.itemKey) === -1) {
+                this.checkList.push(v.itemKey);
+              }
+            });
+          }
+          for (let key in this.rules) {
+            if (this.checkList.indexOf(key) === -1) {
+              this.rules[key] = [];
+            }
+          }
+        });
         this.active++;
       } else {
         this.$message({ showClose: true, message: '请选择要加入的联盟', type: 'warning', duration: 5000 });

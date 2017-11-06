@@ -11,7 +11,6 @@ import com.gt.api.bean.session.WxPublicUsers;
 import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.api.client.member.MemberService;
 import com.gt.union.api.client.shop.ShopService;
-import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.api.entity.result.UnionDiscountResult;
 import com.gt.union.brokerage.constant.BrokerageConstant;
@@ -437,11 +436,13 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         data.put("cardNo", root.getNumber());
         data.put("integral", root.getIntegral());
         data.put("validity", CommonUtil.toInteger(disMap.get("isCharge")) == 1 ? DateTimeKit.daysBetween(new Date(), DateTimeKit.parseDate(disMap.get("validity").toString(), "yyyy/MM/dd HH:mm:ss")) : null);
-        if(CommonUtil.toInteger(disMap.get("cardType")) == CardConstant.TYPE_RED){
-            UnionMainCharge redCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_RED, MainConstant.CHARGE_IS_AVAILABLE_YES);
-            if (redCharge != null) {
-                UnionPreferentialProject project = unionPreferentialProjectService.getByMemberId(memberId);
-                if (project != null) {
+        UnionMainCharge redCharge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(unionId, MainConstant.CHARGE_TYPE_RED, MainConstant.CHARGE_IS_AVAILABLE_YES);
+        if (redCharge != null) {
+            UnionPreferentialProject project = unionPreferentialProjectService.getByMemberId(memberId);
+            if (project != null) {
+                //查询是否在该联盟升级红卡
+                int count = this.countCardByTypeAndRootIdAndUnionId(CardConstant.TYPE_RED, root.getId(), unionId);
+                if(count > 0){
                     List<UnionPreferentialItem> items = unionPreferentialItemService.listByProjectIdAndStatus(project.getId(), PreferentialConstant.STATUS_PASS);
                     data.put("items", items);
                     data.put("illustration", CommonUtil.isEmpty(redCharge.getIllustration()) ? "" : redCharge.getIllustration());
@@ -823,11 +824,30 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 throw new BusinessException("该手机号已办理联盟卡");
             }
         }
+        //升级的联盟卡信息
+        List<Map<String, Object>> list = getCardInfoByMemberAndPhone(member, vo.getPhone());
         UnionMainCharge charge = unionMainChargeService.getByUnionIdAndTypeAndIsAvailable(vo.getUnionId(), vo.getCardType(), MainConstant.CHARGE_IS_AVAILABLE_YES);
         if (charge == null) {
             throw new BusinessException("联盟未开启该联盟卡类型");
         }
-        Double price = charge.getChargePrice();//收费价格
+        //黑卡
+        Double price = 0D;
+        for (Map<String,Object> map : list){
+            //黑卡
+            if(vo.getCardType() == CardConstant.TYPE_BLACK){
+                if (CommonUtil.isNotEmpty(map.get("black"))) {
+                    Map<String,Object> black = (Map<String,Object>)map.get("black");
+                    price = CommonUtil.toDouble(black.get("price"));//收费价格
+                }
+            }
+            //红卡
+            if(vo.getCardType() == CardConstant.TYPE_RED){
+                if (CommonUtil.isNotEmpty(map.get("red"))) {
+                    Map<String,Object> red = (Map<String,Object>)map.get("red");
+                    price = CommonUtil.toDouble(red.get("price"));//收费价格
+                }
+            }
+        }
         Map<String, Object> data = new HashMap<String, Object>();
         if (CommonUtil.isEmpty(price) || price == 0) {//不收费，直接办理
             UnionCard unionCard = this.getByRootAndMemberId(root, member.getId(), false);
@@ -1052,30 +1072,25 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             }
             Date time = (charge.getValidityDay() == null || charge.getValidityDay() == 0) ? DateTimeKit.parse(CardConstant.CARD_FREE_VALIDITY, "yyyy-MM-dd HH:mm:ss") : DateTimeKit.addDate(new Date(), charge.getValidityDay());
             UnionCard card = this.createUnionCard(rootId, cardType, member.getId(), time, isCharge);
-            if (memberId != 0) {
-                UnionCardBinding binding = unionCardBindingService.getByCardRootIdAndMemberId(rootId, memberId);
-                if (binding == null) {
-                    unionCardBindingService.createUnionCardBinding(rootId, memberId);
-                }
-            }
             cardId = card.getId();
             validity = card.getValidity();
         } else {
             rootId = unionCard.getRootId();
-            cardId = unionCard.getId();
             Date time = (charge.getValidityDay() == null || charge.getValidityDay() == 0) ? DateTimeKit.parse(CardConstant.CARD_FREE_VALIDITY, "yyyy-MM-dd HH:mm:ss") : DateTimeKit.addDate(new Date(), charge.getValidityDay());
+            cardId = unionCard.getId();
             UnionCard upCard = new UnionCard();
             upCard.setId(unionCard.getId());
             //收费黑卡升红卡
             if (unionCard.getType() == CardConstant.TYPE_BLACK && unionCard.getIsCharge() == CardConstant.IS_CHARGE_YES && cardType == CardConstant.TYPE_RED) {
-                unionCard.setValidity(DateTimeKit.addDays(unionCard.getValidity(), charge.getValidityDay()));
+                upCard.setValidity(DateTimeKit.addDays(unionCard.getValidity(), charge.getValidityDay()));
             } else {
-                unionCard.setValidity(time);
+                upCard.setValidity(time);
             }
-
-            unionCard.setIsCharge(isCharge);
+            upCard.setIsCharge(isCharge);
+            upCard.setType(cardType);
             this.updateById(upCard);
             validity = upCard.getValidity();
+
         }
         //绑定联盟卡和粉丝信息
         if (memberId != 0) {
@@ -1196,6 +1211,11 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         data.put("memberId", memberId);
         data.put("members", members);
         return data;
+    }
+
+    @Override
+    public int countCardByTypeAndRootIdAndUnionId(int cardType, Integer rootId, Integer unionId) {
+        return this.baseMapper.countCardByTypeAndRootIdAndUnionId(cardType, rootId, unionId);
     }
 
 

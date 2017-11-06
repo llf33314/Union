@@ -48,7 +48,7 @@ export default {
               this.$router.push({path: '/no-union'});
             }
             $('.el-tabs--card').show();
-          },600);
+          },300);
         }
       })
       .catch(err => {

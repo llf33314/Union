@@ -3,13 +3,13 @@
     <!--卡号-->
     <p class="position_">
       <img src="../../assets/images/sjUnionCard111.png" alt="">
-    <div class="starts_">
-      <img src="../../assets/images/sjUnionX1.png" v-for="(items,index) in unionList">
-    </div>
-    <h1 class="fr" @click="showModel(mainContent.cardNo)" v-if="mainContent.cardNo">
-      <img src="../../assets/images/SJunionCard3.png">
-    </h1>
-    <h2 class="fl">{{mainContent.cardNo}}</h2>
+      <div class="starts_">
+        <img src="../../assets/images/sjUnionX1.png" v-for="(items,index) in unionList">
+      </div>
+      <h1 class="fr" @click="showModel(mainContent.cardNo)" v-if="mainContent.cardNo">
+        <img src="../../assets/images/SJunionCard3.png">
+      </h1>
+      <h2 class="fl">{{mainContent.cardNo}}</h2>
     </p>
     <!--首页头像信息-->
     <div class="second_ clear">
@@ -151,7 +151,7 @@
         //验证码等待的时间
         wait:60,
         //统一的id号码
-        busId:33,
+        busId:'',
         //首页加载的数据
         mainContent:[],
         //是否是本商家
@@ -208,7 +208,6 @@
       }
     },
     mounted(){
-
       let that_=this;
       //验证码获得焦点的时候
       verification.onfocus=function(){
@@ -295,7 +294,9 @@
               if(res.data.data.qrurl != undefined && res.data.data.qrurl != null){
                 location.href=res.data.data.qrurl;
               }else {
-                window.location.href = location.href+'&time='+((new Date()).getTime());
+                let hre_url = window.location.href;
+                let redirectUrl = hre_url.indexOf("?time=") > -1 ? (hre_url.slice(0,hre_url.indexOf("?time=") + 6) + new Date().getTime() + hre_url.slice(hre_url.indexOf("/#/"))) : (hre_url.slice(0,hre_url.indexOf("/#/")) + "?time=" + new Date().getTime() + hre_url.slice(hre_url.indexOf("/#/")));
+                window.location.href = redirectUrl;
               }
             }
           })
@@ -321,6 +322,7 @@
       //点击按钮弹出领取联盟卡选择框;
       boxWarp(index){
         let Index=index;
+//        让父元素不产生滚动条
         $('body').css({
           height:'100%',
           overflow:"hidden"
@@ -363,6 +365,12 @@
         $('.box-wrap2').hide();
         $('#message_').hide();
         this.init();
+        //所有打勾的都隐藏
+        var card_price=$('.el-icon-check');
+        for(var i=0;i<card_price.length;i++){
+          $('.el-icon-check')[i].style.opacity=0;
+        }
+        clearInterval(this.timeEnd);
       },
       //初始化数据;
       init(){
@@ -460,6 +468,7 @@
                   if ( that_.wait === 0) {
                     clearInterval(that_.timeEnd);
                     that_.clearCodeTime();
+                    return;
                   }
                   that_.wait--;
                 }, 1000);
@@ -485,7 +494,9 @@
             .then(res => {
               if(res.data.success){
                 //刷新当前页面
-                window.location.href = location.href+'&time='+((new Date()).getTime());
+                let hre_url = window.location.href;
+                let redirectUrl = hre_url.indexOf("?time=") > -1 ? (hre_url.slice(0,hre_url.indexOf("?time=") + 6) + new Date().getTime() + hre_url.slice(hre_url.indexOf("/#/"))) : (hre_url.slice(0,hre_url.indexOf("/#/")) + "?time=" + new Date().getTime() + hre_url.slice(hre_url.indexOf("/#/")));
+                window.location.href = redirectUrl;
               }
             })
             .catch(err => {
@@ -496,7 +507,7 @@
           return
         }
       },
-      //拨打电话
+      //是否拨打电话
       telPhone(phone){
         window.location.href = "tel:" + phone;
       }
@@ -508,8 +519,7 @@
       //如果有busId值，就赋值
       let hre_url = window.location.href;
       let Index1=hre_url.indexOf('busId=');
-      let Index2=hre_url.indexOf('&time');
-      let number=hre_url.slice(parseInt(Index1)+6,(Index2 > -1) ? Index2 : hre_url.length);
+      let number=(hre_url.indexOf("%3F") > -1) ? hre_url.slice(parseInt(Index1)+6,hre_url.indexOf("%3F")) :hre_url.slice(parseInt(Index1)+6);
       this.busId=number;
       //刷新页面渲染联盟卡首页列表数据---------------------------------------------------------1
       let url1='toUnionCard';

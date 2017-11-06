@@ -12,7 +12,7 @@
           <span>&nbsp;%&nbsp;</span>
           <el-button type="primary" @click="onAverage()">平均分配</el-button>
         </div>
-        <p>售卡分成总比例之和不得超过100%，当前总比例为{{ sum }}%，剩余{{(100 - sum).toFixed(2)}}%可分配</p>
+        <p>售卡分成总比例之和不得超过100%，当前总比例为{{ sum }}%，剩余{{(100 - sum).toFixed(0)}}%可分配</p>
         <el-table :data="tableData3" style="width: 100%" id="table3">
           <el-table-column prop="enterpriseName" label="企业名称">
           </el-table-column>
@@ -80,7 +80,7 @@ export default {
               this.tableData[0].enterpriseName += '(盟主)';
             }
             this.tableData.forEach((v, i) => {
-              v.cardDividePercent = v.cardDividePercent.toFixed(2) + '%';
+              v.cardDividePercent = v.cardDividePercent.toFixed(0) + '%';
             });
           }
         })
@@ -102,7 +102,7 @@ export default {
               }
             }
             this.tableData.forEach((v, i) => {
-              v.cardDividePercent = v.cardDividePercent.toFixed(2) + '%';
+              v.cardDividePercent = v.cardDividePercent.toFixed(0) + '%';
             });
           }
         })
@@ -119,7 +119,7 @@ export default {
           if (res.data.data) {
             this.tableData3 = res.data.data;
             if (this.tableData3[0].isUnionOwner) {
-              this.input = this.tableData3[0].cardDividePercent.toFixed(2);
+              this.input = this.tableData3[0].cardDividePercent.toFixed(0);
               this.sum = parseFloat(this.input);
               this.tableData3.splice(0, 1);
             }
@@ -129,10 +129,10 @@ export default {
           let table3 = document.getElementById('table3');
           let inputs3 = table3.getElementsByTagName('input');
           for (let i = 0; i < inputs3.length; i++) {
-            inputs3[i].value = this.tableData3[i].cardDividePercent.toFixed(2);
+            inputs3[i].value = this.tableData3[i].cardDividePercent.toFixed(0);
             this.sum += parseFloat(inputs3[i].value);
           }
-          this.sum = parseFloat(this.sum.toFixed(2));
+          this.sum = parseFloat(this.sum.toFixed(0));
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -140,7 +140,7 @@ export default {
     },
     // 平均分配
     onAverage() {
-      let _sum = 100 - Number(this.input).toFixed(2);
+      let _sum = 100 - Number(this.input).toFixed(0);
       let table3 = document.getElementById('table3');
       let inputs3 = table3.getElementsByTagName('input');
       let len = inputs3.length;
@@ -150,19 +150,19 @@ export default {
         this.tableData4.push({ cardDividePercent: 0, memberId: 0 });
       }
       if (len !== 0) {
-        let average = (_sum / len).toFixed(2);
+        let average = (_sum / len).toFixed(0);
         if (this.input && 0 < this.input && 100 > this.input) {
           for (let i = 0; i < len; i++) {
             inputs3[i].value = average;
           }
-          this.input = (100 - average * len).toFixed(2);
+          this.input = (100 - average * len).toFixed(0);
           this.tableData4[0].cardDividePercent = this.input;
           for (let i = 1, j = i - 1; i < inputs3.length + 1; i++, j++) {
             this.tableData4[i].cardDividePercent = inputs3[j].value;
           }
           this.sum = 100;
         } else {
-          this.$message({ showClose: true, message: '商机总比例之和不得超过100%,必须设置盟主比例', type: 'warning', duration: 5000 });
+          this.$message({ showClose: true, message: '售卡分成总比例之和不得超过100%,必须设置盟主比例', type: 'warning', duration: 5000 });
         }
       } else {
         this.tableData4[0].cardDividePercent = parseFloat(this.input);
@@ -190,16 +190,14 @@ export default {
         this.tableData4.push({ cardDividePercent: 0, memberId: 0 });
       }
       this.sum = 0;
-      // this.input = (this.input - 0).toFixed(2);
       this.tableData4[0].cardDividePercent = this.input;
       for (let i = 1, j = i - 1; i < inputs3.length + 1; i++, j++) {
-        // inputs3[j].value = (inputs3[j].value - 0).toFixed(2);
         this.tableData4[i].cardDividePercent = inputs3[j].value || 0;
       }
       this.tableData4.forEach((v, i) => {
         this.sum += parseFloat(v.cardDividePercent || 0);
       });
-      this.sum = parseFloat(this.sum.toFixed(2));
+      this.sum = parseFloat(this.sum.toFixed(0));
       $http
         .get(`/unionMember/listMap/memberId/${this.unionMemberId}`)
         .then(res => {
@@ -238,7 +236,7 @@ export default {
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
       } else {
-        this.$message({ showClose: true, message: '商机总比例之和应为100%', type: 'warning', duration: 5000 });
+        this.$message({ showClose: true, message: '售卡分成总比例之和应为100%', type: 'warning', duration: 5000 });
       }
     },
     // 关闭弹窗重置数据

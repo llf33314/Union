@@ -7,7 +7,7 @@
           <el-col style="width: 250px;margin-right: 20px;">
             <el-input v-model="form1.phone" @keyup.native="form1.phone=form1.phone.replace(/[^\d]/g,'')"  @keyup.enter.native="show1($event)"></el-input>
           </el-col>
-          <el-button type="primary" @click="getVerificationCode" :disabled="form1.getVerificationCode || !form1.phone">{{ form1.countDownTime > 0?form1.countDownTime+'s':'获取验证码'}}</el-button>
+          <el-button type="primary" @click="getVerificationCode" :disabled="form1.getVerificationCode || !form1.phone">{{ form1.countDownTime>0?form1.countDownTime+'s':'获取验证码' }}</el-button>
         </el-form-item>
         <el-form-item label="短信验证码：" prop="code">
           <el-row style="width: 250px;">
@@ -203,6 +203,33 @@ export default {
       this.wxData_.time = this.wxData.time;
     },
     unionId: function() {
+      if (this.unionId) {
+        $http
+          .get(`/unionCard/info?phone=${this.form1.phone}&code=${this.form1.code}&unionId=${this.unionId}`)
+          .then(res => {
+            if (res.data.data) {
+              this.form2.cards = res.data.data.cards;
+              this.form2.cardType = '';
+              if (this.form2.cards.red) {
+                if (this.form2.cards.red.termTime) {
+                  this.form2.cards.red.termTime = this.form2.cards.red.termTime;
+                } else {
+                  this.form2.cards.red.termTime = '无';
+                }
+              }
+              if (this.form2.cards.black) {
+                if (this.form2.cards.black.termTime) {
+                  this.form2.cards.black.termTime = this.form2.cards.black.termTime;
+                } else {
+                  this.form2.cards.black.termTime = '无';
+                }
+              }
+            }
+          })
+          .catch(err => {
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          });
+      }
       this.form2.unionId = this.unionId;
     }
   },
@@ -275,7 +302,6 @@ export default {
                     this.form2.cards.black.termTime = '无';
                   }
                 }
-
                 this.visible2 = true;
                 //判断是否可以关注 然后获取二维码
                 var _this = this;

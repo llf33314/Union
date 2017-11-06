@@ -202,7 +202,7 @@ export default {
     Create,
     UnionMember,
     UnionCard,
-    UnionNotice,
+    UnionNotice
   },
   data() {
     return {
@@ -228,7 +228,7 @@ export default {
       memberId: '',
       unionListLength: '',
       visible: false,
-      fullscreenLoading: true,
+      fullscreenLoading: true
     };
   },
   computed: {
@@ -241,9 +241,9 @@ export default {
   },
   mounted: function() {
     eventBus.$on('unionUpdata', () => {
-      if (this.memberId) {
+      if (this.unionMainData.currentUnionMemberId) {
         $http
-          .get(`/union/index/memberId/${this.memberId}`)
+          .get(`/union/index/memberId/${this.unionMainData.currentUnionMemberId}`)
           .then(res => {
             if (res.data.data) {
               // 更新联盟基础信息
@@ -283,14 +283,13 @@ export default {
         .get(`/union/index`)
         .then(res => {
           if (res.data.data) {
-
             setTimeout(() => {
               this.fullscreenLoading = false;
               console.log(res.data);
               this.unionMainData = res.data.data;
               // 判断是否创建或加入联盟
               if (!this.unionMainData.currentUnionId) {
-                this.$router.push({path: '/my-union/no-currentUnion'});
+                this.$router.push({ path: '/my-union/no-currentUnion' });
               } else {
                 // 判断创建和加入联盟的数量
                 this.unionMainData.myCreateUnionId ? (this.unionListLength = 1) : (this.unionListLength = 0);
@@ -311,7 +310,7 @@ export default {
                 this.unionMainData.currentUnionIntegralSum = res.data.data.currentUnionIntegralSum || 0;
               }
               container_myUnion.style.display = 'block';
-            },500)
+            }, 300);
           }
         })
         .catch(err => {

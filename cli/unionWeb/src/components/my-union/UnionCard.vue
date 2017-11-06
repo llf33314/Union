@@ -140,7 +140,7 @@ export default {
     // 带条件查询联盟卡
     search() {
       $http
-        .get(`/unionCard/unionId/${this.unionId}?current=${this.currentPage}&` + this.value + '=' + this.input)
+        .get(`/unionCard/unionId/${this.unionId}?current=1&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;

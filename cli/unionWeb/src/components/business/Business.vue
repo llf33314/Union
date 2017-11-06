@@ -63,7 +63,7 @@ export default {
             }
             this.fullscreenLoading = false;
             $('.el-tabs--card').show();
-          },600)
+          },300)
         }
       })
       .catch(err => {

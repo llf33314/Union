@@ -387,7 +387,7 @@ export default {
     // 本店消费记录加载
     init1() {
       $http
-        .get(`/unionConsume/my?current=${this.currentPage1}`)
+        .get(`/unionConsume/my?current=1`)
         .then(res => {
           if (res.data.data) {
             this.tableData1 = res.data.data.records;
@@ -423,7 +423,7 @@ export default {
     // 他店消费记录加载
     init2() {
       $http
-        .get(`/unionConsume/other?current=${this.currentPage2}`)
+        .get(`/unionConsume/other?current=1`)
         .then(res => {
           if (res.data.data) {
             this.tableData2 = res.data.data.records;
@@ -468,7 +468,7 @@ export default {
       }
       $http
         .get(
-          `/unionConsume/my?current=${this.currentPage1}&unionId=${this.unionId1}&memberId=${this.toMemberId1}&` +
+          `/unionConsume/my?current=1&unionId=${this.unionId1}&memberId=${this.toMemberId1}&` +
             this.value1 +
             '=' +
             this.input1 +
@@ -521,7 +521,7 @@ export default {
       }
       $http
         .get(
-          `/unionConsume/other?current=${this.currentPage2}&unionId=${this.unionId2}&memberId=${this.toMemberId2}&` +
+          `/unionConsume/other?current=1&unionId=${this.unionId2}&memberId=${this.toMemberId2}&` +
             this.value2 +
             '=' +
             this.input2 +

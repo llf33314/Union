@@ -446,7 +446,6 @@ export default {
                 _this.socket.emit('auth', jsonObject);
               });
             }
-
             this.socket.on('chatevent', function(data) {
               let msg = eval('(' + data.message + ')');
               if (!(_this.socketFlag.only == msg.only && _this.socketFlag.status == msg.status)) {

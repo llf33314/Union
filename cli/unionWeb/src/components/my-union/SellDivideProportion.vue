@@ -129,7 +129,7 @@ export default {
   },
   mounted: function() {
     $http
-      .get(`/unionBrokerageIncome/card/memberId/${this.unionMemberId}?current=${this.currentPage}`)
+      .get(`/unionBrokerageIncome/card/memberId/${this.unionMemberId}?current=1`)
       .then(res => {
         if (res.data.data) {
           this.tableData = res.data.data.records;
@@ -163,7 +163,7 @@ export default {
       }
       $http
         .get(
-          `unionBrokerageIncome/card/memberId/${this.unionMemberId}?current=${this.currentPage}&cardType=${this
+          `unionBrokerageIncome/card/memberId/${this.unionMemberId}?current=1&cardType=${this
             .typeOptions}&` +
             this.value +
             '=' +

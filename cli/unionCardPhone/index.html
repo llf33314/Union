@@ -9606,11 +9606,11 @@
     <script>
       $(document).ready(function () {
         firstLoad();
-      })
+      });
       var firstLoad = function () {
         var widthWindow = $(window).width();
-        console.log("手机屏幕宽度为："+widthWindow);
-        console.log("html标签字体大小占比："+widthWindow/320*100+"%");
+//        console.log("手机屏幕宽度为："+widthWindow);
+//        console.log("html标签字体大小占比："+widthWindow/320*100+"%");
         $('html').css('font-size',widthWindow/320*100 + '%');
       }
     </script>
