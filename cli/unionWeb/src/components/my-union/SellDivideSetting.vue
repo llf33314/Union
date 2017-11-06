@@ -162,7 +162,7 @@ export default {
           }
           this.sum = 100;
         } else {
-          this.$message({ showClose: true, message: '商机总比例之和不得超过100%,必须设置盟主比例', type: 'warning', duration: 5000 });
+          this.$message({ showClose: true, message: '售卡分成总比例之和不得超过100%,必须设置盟主比例', type: 'warning', duration: 5000 });
         }
       } else {
         this.tableData4[0].cardDividePercent = parseFloat(this.input);
@@ -236,7 +236,7 @@ export default {
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
       } else {
-        this.$message({ showClose: true, message: '商机总比例之和应为100%', type: 'warning', duration: 5000 });
+        this.$message({ showClose: true, message: '售卡分成总比例之和应为100%', type: 'warning', duration: 5000 });
       }
     },
     // 关闭弹窗重置数据
