@@ -126,12 +126,12 @@ redisSession:
 
 #数据请求地址
 wxmp:
-   url: http://nb.deeptel.com.cn
+   url: https://nb.deeptel.com.cn
    signkey: WXMP2017
    company: "多粉平台"
 
 union:
-  url: http://nb.union.deeptel.com.cn
+  url: https://nb.union.deeptel.com.cn
   encryptKey: CFCCBD99C12B62E52952EA90A931A01F
   signkey: SR36E9KIYDLIU1VB6WX20HCW494QL97T
 wx:
@@ -139,7 +139,7 @@ wx:
     busId: 4856
 
 member:
-  url: http://nb.member.deeptel.com.cn
+  url: https://nb.member.deeptel.com.cn
   signkey: MV8MMFQUMU1HJ6F2GNH40ZFJJ7Q8LNVM
 
 
