@@ -40,12 +40,12 @@
     </el-row>
     <!-- 售卡佣金分成记录表格 -->
     <el-table :data="tableData" style="width: 100%">
-      <el-table-column prop="incomeCreatetime" label="加入时间">
+      <el-table-column prop="incomeCreateTime" label="加入时间">
         <template scope="scope">
           <el-popover trigger="hover" placement="bottom">
-            <p>加入时间：{{ scope.row.incomeCreatetime }}</p>
+            <p>加入时间：{{ scope.row.incomeCreateTimeincomeCreateTime }}</p>
             <div slot="reference" class="name-wrapper">
-              <span>{{ scope.row.incomeCreatetime }}</span>
+              <span>{{ scope.row.incomeCreateTime }}</span>
             </div>
           </el-popover>
         </template>
