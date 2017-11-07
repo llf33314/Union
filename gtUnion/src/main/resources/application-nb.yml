@@ -92,7 +92,7 @@ resource:
   url:
     prefix: http://192.168.3.41:9998/upload/
 socket:
-  url: http://183.47.242.2:8881
+  url: https://socket1.duofriend.com
   key: "Union_Key_"
 #企业短信通-密码
 
