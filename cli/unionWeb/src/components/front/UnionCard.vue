@@ -263,7 +263,7 @@ export default {
     isIntegral_: function() {
       let temData = 0;
       this.isIntegral_ ? (temData = 1) : (temData = 0);
-      this.deductionPrice = this.price * this.form.discount / 10 * this.form.integralPercent * temData;
+      this.deductionPrice = this.price * this.form.discount / 10 * this.form.integralPercent / 100 * temData;
       this.deductionIntegral = this.deductionPrice * 100 / this.form.exchangeIntegral;
       if (this.deductionIntegral > this.form.integral) {
         this.deductionIntegral = this.form.integral;
@@ -334,7 +334,7 @@ export default {
         this.visible3 = true;
         let temData = 0;
         this.isIntegral_ ? (temData = 1) : (temData = 0);
-        this.deductionPrice = this.price * this.form.discount / 10 * this.form.integralPercent * temData;
+        this.deductionPrice = this.price * this.form.discount / 10 * this.form.integralPercent / 100 * temData;
         this.deductionIntegral = this.deductionPrice * 100 / this.form.exchangeIntegral;
         if (this.deductionIntegral > this.form.integral) {
           this.deductionIntegral = this.form.integral;
