@@ -41,4 +41,12 @@ public interface MemberService {
 	 * @return
 	 */
 	int bindMemberPhone(Integer busId, Integer memberId, String phone);
+
+	/**
+	 * 手机号登录
+	 * @param phone
+	 * @param busId
+	 * @return
+	 */
+	int loginMemberByPhone(String phone, Integer busId);
 }
