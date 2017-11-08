@@ -262,11 +262,11 @@ export default {
     isIntegral_: function() {
       let temData = 0;
       this.isIntegral_ ? (temData = 1) : (temData = 0);
-      this.deductionPrice = this.price * this.form.discount / 10 * 0.2 * temData;
-      this.deductionIntegral = this.deductionPrice * 100;
+      this.deductionPrice = this.price * this.form.discount / 10 * 0.3 * temData;
+      this.deductionIntegral = this.deductionPrice * 100 / this.form.exchangeIntegral;
       if (this.deductionIntegral > this.form.integral) {
         this.deductionIntegral = this.form.integral;
-        this.deductionPrice = this.deductionIntegral / 10;
+        this.deductionPrice = this.deductionIntegral / 100 * this.form.exchangeIntegral;
       }
       this.price1 = ((this.price * this.form.discount - this.deductionPrice * 10) / 10).toFixed(2);
     }
