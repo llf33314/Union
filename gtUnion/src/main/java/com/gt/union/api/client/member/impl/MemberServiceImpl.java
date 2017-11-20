@@ -110,4 +110,25 @@ public class MemberServiceImpl implements MemberService {
 		}
 		return 1;
 	}
+
+	@Override
+	public int loginMemberByPhone(String phone, Integer busId) {
+		String url = PropertiesUtil.getMemberUrl() + "/memberAPI/member/loginMemberByPhone";
+		Map<String,Object> param = new HashMap<String,Object>();
+		param.put("phone",phone);
+		param.put("busId",busId);
+		try {
+			String data = SignHttpUtils.WxmppostByHttp(url,param,PropertiesUtil.getMemberSignKey());
+			if(StringUtil.isEmpty(data)){
+				return 0;
+			}
+			Map map = JSONObject.parseObject(data,Map.class);
+			if(!("0".equals(map.get("code").toString()))){
+				return 0;
+			}
+		}catch (Exception e){
+			return 0;
+		}
+		return 1;
+	}
 }

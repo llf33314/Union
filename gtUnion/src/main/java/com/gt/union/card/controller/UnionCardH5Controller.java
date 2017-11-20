@@ -107,11 +107,6 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 			, @ApiParam(name="phone", value = "手机号", required = true) @PathVariable String phone
 			, @ApiParam(name="code", value = "验证码", required = true) @RequestParam("code") String code
 			, @ApiParam(name="busId", value = "商家id", required = true) @RequestParam("busId") Integer busId) throws Exception{
-		Member member = memberService.findByPhoneAndBusId(phone,busId);
-		if(member == null){
-			throw new BusinessException("用户不存在");
-		}
-		member.setBusid(busId);
 		String phoneKey = RedisKeyUtil.getCardH5LoginPhoneKey(phone);
 		String obj = redisCacheUtil.get(phoneKey);
 		if(CommonUtil.isEmpty(obj)){
@@ -120,7 +115,9 @@ public class UnionCardH5Controller extends MemberAuthorizeOrLoginController{
 		if(!code.equals(JSON.parse(obj))){
 			throw new BusinessException(CommonConstant.CODE_ERROR_MSG);
 		}
-		com.gt.union.common.util.SessionUtils.setLoginMember(request, member);
+		if(memberService.loginMemberByPhone(phone,busId) != 1){
+			throw new BusinessException("登录失败");
+		}
 		return GTJsonResult.instanceSuccessMsg().toString();
 	}
 

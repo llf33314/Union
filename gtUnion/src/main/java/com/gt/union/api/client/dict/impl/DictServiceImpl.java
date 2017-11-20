@@ -80,7 +80,39 @@ public class DictServiceImpl implements IDictService {
 
 	@Override
 	public Double getExchangeIntegral() {
-		return getItemDoubleValue(EXCHANGE_INTEGRAL_TYPE);
+		String key = RedisKeyUtil.getDictTypeKey(EXCHANGE_INTEGRAL_TYPE);
+		if(redisCacheUtil.exists(key)){
+			String obj = redisCacheUtil.get(key);
+			if(CommonUtil.isNotEmpty(obj)){
+				return JSON.parseObject(obj,Double.class);
+			}
+		}
+		Map<String,Object> param = new HashMap<String,Object>();
+		param.put("style",EXCHANGE_INTEGRAL_TYPE);
+		Double exchange = null;
+		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/dictApi/getDictApi.do";
+		try{
+			String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
+			if(StringUtil.isEmpty(result)){
+				return null;
+			}
+			Map<String,Object> data= JSON.parseObject(result,Map.class);
+			if(CommonUtil.isEmpty(data.get("data"))){
+				return null;
+			}
+			Map item = JSON.parseObject(data.get("data").toString(),Map.class);
+			List<Map> dict = JSONArray.parseArray(item.get("dictJSON").toString(),Map.class);
+			if(ListUtil.isEmpty(dict)){
+				return null;
+			}
+			exchange = CommonUtil.toDouble(dict.get(0).get("item_key"));
+			if(CommonUtil.isNotEmpty(exchange)){
+				redisCacheUtil.set(key,exchange);
+			}
+		}catch (Exception e){
+			return null;
+		}
+		return exchange;
 	}
 
 	@Override

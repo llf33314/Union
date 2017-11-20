@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.gt.api.bean.sign.SignBean;
 import com.gt.api.bean.sign.SignEnum;
+import com.gt.api.util.KeysUtil;
 import com.gt.api.util.sign.SignUtils;
 import com.gt.union.api.entity.param.RequestApiParam;
 import com.gt.union.common.constant.ConfigConstant;
@@ -42,7 +43,7 @@ public class ApiBaseController {
 		String param = JSONObject.toJSONString(requestApiParam);
 		param = new String(param.getBytes("utf-8"));
 		boolean result=true;
-		String code = SignUtils.decSign(signKey, signBean, param);
+		String code = decSign(signKey, signBean, param);
 		if ( SignEnum.TIME_OUT.getCode().equals( code ) ) {
 			// 超过指定时间
 			throw new BusinessException("请求超时");
@@ -56,5 +57,50 @@ public class ApiBaseController {
 		}
 		logger.info("*******************************************签名验证结束*******************************************");
 		return result;
+	}
+
+	/**
+	 * 签名验证
+	 * @param signKey 签名密钥
+	 * @param signBean 签名Bean
+	 * @return 结果code（对应SignEnum里面的code）
+	 */
+	public static String decSign(String signKey, SignBean signBean, String param){
+		String reqTime = signBean.getTimeStamp();
+		// 判断时间是否在10分钟内
+		boolean timeOut = contrastTimeNow(Long.parseLong(reqTime)) > 10;
+		if(timeOut){
+			return SignEnum.TIME_OUT.getCode();
+		}
+		// 根据key+时间撮+随机数-->MD5加密
+		String reqSign = signBean.getSign();
+		String json="";
+		try {
+			json=param;
+			String sign = KeysUtil.getEncString(signKey + signBean.getTimeStamp() + signBean.getRandNum() + json);
+			boolean signFail = !sign.equals(reqSign);
+			if(signFail){
+				return SignEnum.SIGN_ERROR.getCode();
+			}
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return SignEnum.SUCCESS.getCode();
+	}
+
+	private static long contrastTimeNow(Long paramTime){
+		return contrastTime(System.currentTimeMillis(), paramTime);
+	}
+
+	/**
+	 * 对比两个时间戳相差的分钟数
+	 * @param bigTime 较大的时间
+	 * @param smallTime 较小的时间
+	 * @return
+	 */
+	private static long contrastTime(Long bigTime, Long smallTime){
+		return (bigTime - smallTime) / (1000 * 60);
 	}
 }
