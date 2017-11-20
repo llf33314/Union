@@ -43,7 +43,7 @@ public class ApiBaseController {
 		String param = JSONObject.toJSONString(requestApiParam);
 		param = new String(param.getBytes("utf-8"));
 		boolean result=true;
-		String code = SignUtils.decSign(signKey, signBean, param);
+		String code = decSign(signKey, signBean, param);
 		if ( SignEnum.TIME_OUT.getCode().equals( code ) ) {
 			// 超过指定时间
 			throw new BusinessException("请求超时");
