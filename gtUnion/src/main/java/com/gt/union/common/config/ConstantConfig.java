@@ -4,7 +4,10 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Created by Administrator on 2017/10/17 0017.
+ * 常量配置类
+ *
+ * @author linweicong
+ * @version 2017-11-22 17:45:00
  */
 @Configuration
 public class ConstantConfig {

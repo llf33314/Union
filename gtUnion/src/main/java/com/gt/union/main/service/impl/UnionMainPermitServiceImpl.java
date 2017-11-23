@@ -1,262 +1,309 @@
 package com.gt.union.main.service.impl;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.gt.api.bean.session.BusUser;
-import com.gt.api.bean.session.WxPublicUsers;
-import com.gt.union.api.client.dict.IDictService;
-import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.common.constant.CommonConstant;
-import com.gt.union.common.constant.ConfigConstant;
-import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.*;
-import com.gt.union.main.constant.MainConstant;
-import com.gt.union.main.entity.UnionMain;
+import com.gt.union.common.util.ListUtil;
+import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.main.entity.UnionMainPermit;
 import com.gt.union.main.mapper.UnionMainPermitMapper;
 import com.gt.union.main.service.IUnionMainPermitService;
-import com.gt.union.main.service.IUnionMainService;
-import com.gt.union.member.entity.UnionMember;
-import com.gt.union.member.service.IUnionMemberService;
-import com.gt.union.setting.entity.UnionSettingMainCharge;
-import com.gt.union.setting.service.IUnionSettingMainChargeService;
+import com.gt.union.main.util.UnionMainPermitCacheUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.util.Date;
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
- * 联盟许可，盟主服务 服务实现类
+ * 联盟许可 服务实现类
  *
  * @author linweicong
- * @version 2017-10-19 16:27:37
+ * @version 2017-11-23 15:26:19
  */
 @Service
 public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMapper, UnionMainPermit> implements IUnionMainPermitService {
     @Autowired
-    private IBusUserService busUserService;
+    public RedisCacheUtil redisCacheUtil;
 
-    @Autowired
-    private IDictService dictService;
+    //***************************************** Domain Driven Design - get *********************************************
 
-    @Autowired
-    private RedisCacheUtil redisCacheUtil;
+    //***************************************** Domain Driven Design - list ********************************************
 
-    @Autowired
-    private IUnionMainService unionMainService;
+    //***************************************** Domain Driven Design - save ********************************************
 
-    @Autowired
-    private IUnionMemberService unionMemberService;
+    //***************************************** Domain Driven Design - remove ******************************************
 
-    @Autowired
-    private IUnionSettingMainChargeService unionSettingMainChargeService;
+    //***************************************** Domain Driven Design - update ******************************************
 
-    //------------------------------------------ Domain Driven Design - get --------------------------------------------
+    //***************************************** Domain Driven Design - count *******************************************
 
-    @Override
-    public UnionMainPermit getByBusId(Integer busId) throws Exception {
+    //***************************************** Domain Driven Design - boolean *****************************************
+
+    //***************************************** Object As a Service - get **********************************************
+
+    public UnionMainPermit getById(Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        UnionMainPermit result;
+        // (1)cache
+        String idKey = UnionMainPermitCacheUtil.getIdKey(id);
+        if (redisCacheUtil.exists(idKey)) {
+            String tempStr = redisCacheUtil.get(idKey);
+            result = JSONArray.parseObject(tempStr, UnionMainPermit.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionMainPermit> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("id", id)
+                .eq("del_status", CommonConstant.DEL_STATUS_NO);
+        result = selectOne(entityWrapper);
+        setCache(result, id);
+        return result;
+    }
+
+    //***************************************** Object As a Service - list *********************************************
+
+    public List<UnionMainPermit> listByBusId(Integer busId) throws Exception {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+        List<UnionMainPermit> result;
+        // (1)cache
+        String busIdKey = UnionMainPermitCacheUtil.getBusId(busId);
+        if (redisCacheUtil.exists(busIdKey)) {
+            String tempStr = redisCacheUtil.get(busIdKey);
+            result = JSONArray.parseArray(tempStr, UnionMainPermit.class);
+            return result;
+        }
+        // (2)db
         EntityWrapper<UnionMainPermit> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("bus_id", busId);
-        return this.selectOne(entityWrapper);
+        entityWrapper.eq("bus_id", busId)
+                .eq("del_status", CommonConstant.COMMON_NO);
+        result = selectList(entityWrapper);
+        setCache(result, busId, UnionMainPermitCacheUtil.TYPE_BUS_ID);
+        return result;
     }
 
-    @Override
-    public UnionMainPermit getByBusIdAndId(Integer busId, Integer id) throws Exception {
-        if (busId == null || id == null) {
+    public List<UnionMainPermit> listByPackageId(Integer packageId) throws Exception {
+        if (packageId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+        List<UnionMainPermit> result;
+        // (1)cache
+        String packageIdKey = UnionMainPermitCacheUtil.getPackageId(packageId);
+        if (redisCacheUtil.exists(packageIdKey)) {
+            String tempStr = redisCacheUtil.get(packageIdKey);
+            result = JSONArray.parseArray(tempStr, UnionMainPermit.class);
+            return result;
+        }
+        // (2)db
         EntityWrapper<UnionMainPermit> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("bus_id", busId)
-                .eq("id", id);
-        return this.selectOne(entityWrapper);
+        entityWrapper.eq("package_id", packageId)
+                .eq("del_status", CommonConstant.COMMON_NO);
+        result = selectList(entityWrapper);
+        setCache(result, packageId, UnionMainPermitCacheUtil.TYPE_PACKAGE_ID);
+        return result;
     }
 
-    /**
-     * 获取免费的盟主权限
-     */
-    private Map<Integer, Object> getFreeUnionMainAuthority() {
-        List<Map> list = dictService.getCreateUnionDict();
-        Map<Integer, Object> data = new HashMap<>(16);
-        for (Map map : list) {
-            String payment = map.get("item_value").toString().split(",")[0];
-            if ("".equals(payment)) {
-                data.put(CommonUtil.toInteger(map.get("item_key")), 1);
-            }
-        }
-        return data;
-    }
+    //***************************************** Object As a Service - save *********************************************
 
-    //------------------------------------------ Domain Driven Design - list -------------------------------------------
-
-    @Override
-    public List<UnionMainPermit> listExpired() throws Exception {
-        EntityWrapper<UnionMainPermit> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .lt("validity", DateUtil.getCurrentDate());
-        return this.selectList(entityWrapper);
-    }
-
-    //------------------------------------------ Domain Driven Design - save -------------------------------------------
-
-    //------------------------------------------ Domain Driven Design - remove -----------------------------------------
-
-    //------------------------------------------ Domain Driven Design - update -----------------------------------------
-
-    //------------------------------------------ Domain Driven Design - count ------------------------------------------
-
-    //------------------------------------------ Domain Driven Design - boolean ----------------------------------------
-
-    @Override
-    public boolean hasUnionMainPermit(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        BusUser busUser = this.busUserService.getBusUserById(busId);
-        if (busUser == null) {
-            throw new ParamException("商家帐号不存在");
-        }
-        //（1）判断商家版本：至尊版、白金版、钻石版直接拥有盟主服务许可
-        Map<Integer, Object> data = getFreeUnionMainAuthority();
-        if (data.containsKey(busUser.getLevel())) {
-            return true;
-        }
-        //（2）其他版本，如升级版、高级版需要判断是否购买了盟主服务
-        EntityWrapper<UnionMainPermit> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("bus_id", busId)
-                .orderBy("id", false);
-        UnionMainPermit unionMainPermit = this.selectOne(entityWrapper);
-        return unionMainPermit != null && DateUtil.getCurrentDate().compareTo(unionMainPermit.getValidity()) < 0;
-    }
-
-    @Override
-    public Map<String, Object> createUnionQRCode(BusUser user, Integer chargeId) throws Exception {
-        Map<String, Object> data = new HashMap<>(16);
-        UnionSettingMainCharge charge = unionSettingMainChargeService.getById(chargeId);
-        if (charge == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        Double pay = charge.getMoney();
-        String orderNo = ConfigConstant.CREATE_UNION_PAY_ORDER_CODE + System.currentTimeMillis();
-        String only = DateTimeKit.getDateTime(new Date(), DateTimeKit.yyyyMMddHHmmss);
-        WxPublicUsers publicUser = busUserService.getWxPublicUserByBusId(PropertiesUtil.getDuofenBusId());
-        data.put("totalFee", pay);
-        data.put("busId", PropertiesUtil.getDuofenBusId());
-        //是否墨盒支付
-        data.put("sourceType", 1);
-        //系统判断支付方式
-        data.put("payWay", 0);
-        //0：不需要同步跳转
-        data.put("isreturn", 0);
-        data.put("model", ConfigConstant.PAY_MODEL);
-        data.put("notifyUrl", PropertiesUtil.getUnionUrl() + "/unionMainPermit/79B4DE7C/paymentSuccess/" + only);
-        //订单号
-        data.put("orderNum", orderNo);
-        //支付的商家id
-        data.put("payBusId", user.getId());
-        //不推送
-        data.put("isSendMessage", 0);
-        //appid
-        data.put("appid", publicUser.getAppid());
-        data.put("desc", "多粉-创建联盟");
-        //公众号
-        data.put("appidType", 0);
-        data.put("only", only);
-        data.put("infoItemKey", chargeId);
-        String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
-        String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
-        //5分钟
-        redisCacheUtil.set(paramKey, data, 360L);
-        //等待扫码状态
-        redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_001, 300L);
-        return data;
-    }
-
-    @Override
     @Transactional(rollbackFor = Exception.class)
-    public void payCreateUnionSuccess(String orderNo, String only, Integer payType) throws Exception {
-        String paramKey = RedisKeyUtil.getCreateUnionPayParamKey(only);
-        String obj = redisCacheUtil.get(paramKey);
-        if (CommonUtil.isEmpty(obj)) {
-            throw new BusinessException("订单不存在或超时");
+    public void save(UnionMainPermit newUnionMainPermit) throws Exception {
+        if (newUnionMainPermit == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        Map<String, Object> result = JSONObject.parseObject(obj, Map.class);
-        String statusKey = RedisKeyUtil.getCreateUnionPayStatusKey(only);
-        //判断订单是否支付
-        EntityWrapper<UnionMainPermit> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("sys_order_no", orderNo);
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
-        entityWrapper.eq("order_status", MainConstant.PERMIT_ORDER_STATUS_SUCCESS);
-        UnionMainPermit mainPermit = this.selectOne(entityWrapper);
-        if (mainPermit != null) {
-            throw new BusinessException("该订单已支付");
-        }
-        //添加支付订单
-        Integer busId = CommonUtil.toInteger(result.get("payBusId"));
-        Integer chargeId = CommonUtil.toInteger(result.get("infoItemKey"));
-        UnionSettingMainCharge charge = unionSettingMainChargeService.getById(chargeId);
-        int month = (int) (new BigDecimal(charge.getYear()).multiply(new BigDecimal(12)).doubleValue());
-        //有效期
-        Date validity = DateTimeKit.addMonths(month);
-        //判断该商家是否有许可  新增或更新许可
-        UnionMainPermit myPermit = this.getByBusId(busId);
-        if (myPermit != null) {
-            UnionMainPermit unionMainPermit = new UnionMainPermit();
-            unionMainPermit.setId(myPermit.getId());
-            unionMainPermit.setDelStatus(CommonConstant.DEL_STATUS_YES);
-            this.updateById(unionMainPermit);
-        }
-        UnionMainPermit unionMainPermit = new UnionMainPermit();
-        unionMainPermit.setBusId(busId);
-        unionMainPermit.setOrderMoney(CommonUtil.toDouble(result.get("totalFee")));
-        unionMainPermit.setDelStatus(CommonConstant.DEL_STATUS_NO);
-        unionMainPermit.setCreatetime(new Date());
-        unionMainPermit.setOrderDesc(result.get("desc").toString());
-        unionMainPermit.setSysOrderNo(orderNo);
-        unionMainPermit.setOrderStatus(MainConstant.PERMIT_ORDER_STATUS_UNPAY);
-        unionMainPermit.setValidity(validity);
-        unionMainPermit.setSettingMainChargeId(chargeId);
-        //payType 0：微信支付 1：支付宝支付   联盟保存类型：1：微信支付 3：支付宝支付
-        unionMainPermit.setPayType(payType == 0 ? 1 : payType == 1 ? 3 : 0);
-        this.insert(unionMainPermit);
-
-        UnionMember member = unionMemberService.getOwnerByBusId(busId);
-        if (member != null) {
-            UnionMain main = unionMainService.getById(member.getUnionId());
-            if (main != null) {
-                //将联盟有效期续期
-                UnionMain unionMain = new UnionMain();
-                unionMain.setId(main.getId());
-                unionMain.setUnionValidity(validity);
-                unionMainService.updateById(unionMain);
-            }
-        }
-        redisCacheUtil.remove(paramKey);
-        //支付成功
-        redisCacheUtil.set(statusKey, ConfigConstant.USER_ORDER_STATUS_003, 60L);
+        insert(newUnionMainPermit);
+        removeCache(newUnionMainPermit);
     }
 
-    //******************************************* Object As a Service - get ********************************************
+    @Transactional(rollbackFor = Exception.class)
+    public void saveBatch(List<UnionMainPermit> newUnionMainPermitList) throws Exception {
+        if (newUnionMainPermitList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        insertBatch(newUnionMainPermitList);
+        removeCache(newUnionMainPermitList);
+    }
 
-    //******************************************* Object As a Service - list *******************************************
+    //***************************************** Object As a Service - remove *******************************************
 
-    //******************************************* Object As a Service - save *******************************************
+    @Transactional(rollbackFor = Exception.class)
+    public void removeById(Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)remove cache
+        UnionMainPermit unionMainPermit = getById(id);
+        removeCache(unionMainPermit);
+        // (2)remove in db logically
+        UnionMainPermit removeUnionMainPermit = new UnionMainPermit();
+        removeUnionMainPermit.setId(id);
+        removeUnionMainPermit.setDelStatus(CommonConstant.DEL_STATUS_YES);
+        updateById(removeUnionMainPermit);
+    }
 
-    //******************************************* Object As a Service - remove *****************************************
+    @Transactional(rollbackFor = Exception.class)
+    public void removeBatchById(List<Integer> idList) throws Exception {
+        if (idList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)remove cache
+        List<UnionMainPermit> unionMainPermitList = new ArrayList<>();
+        for (Integer id : idList) {
+            UnionMainPermit unionMainPermit = getById(id);
+            unionMainPermitList.add(unionMainPermit);
+        }
+        removeCache(unionMainPermitList);
+        // (2)remove in db logically
+        List<UnionMainPermit> removeUnionMainPermitList = new ArrayList<>();
+        for (Integer id : idList) {
+            UnionMainPermit removeUnionMainPermit = new UnionMainPermit();
+            removeUnionMainPermit.setId(id);
+            removeUnionMainPermit.setDelStatus(CommonConstant.DEL_STATUS_YES);
+            removeUnionMainPermitList.add(removeUnionMainPermit);
+        }
+        updateBatchById(removeUnionMainPermitList);
+    }
 
-    //******************************************* Object As a Service - update *****************************************
+    //***************************************** Object As a Service - update *******************************************
+
+    @Transactional(rollbackFor = Exception.class)
+    public void update(UnionMainPermit updateUnionMainPermit) throws Exception {
+        if (updateUnionMainPermit == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)remove cache
+        Integer id = updateUnionMainPermit.getId();
+        UnionMainPermit unionMainPermit = getById(id);
+        removeCache(unionMainPermit);
+        // (2)update db
+        updateById(updateUnionMainPermit);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void updateBatch(List<UnionMainPermit> updateUnionMainPermitList) throws Exception {
+        if (updateUnionMainPermitList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)remove cache
+        List<Integer> idList = new ArrayList<>();
+        for (UnionMainPermit updateUnionMainPermit : updateUnionMainPermitList) {
+            idList.add(updateUnionMainPermit.getId());
+        }
+        List<UnionMainPermit> unionMainPermitList = new ArrayList<>();
+        for (Integer id : idList) {
+            UnionMainPermit unionMainPermit = getById(id);
+            unionMainPermitList.add(unionMainPermit);
+        }
+        removeCache(unionMainPermitList);
+        // (2)update db
+        updateBatchById(updateUnionMainPermitList);
+    }
 
     //***************************************** Object As a Service - cache support ************************************
+
+    private void setCache(UnionMainPermit newUnionMainPermit, Integer id) {
+        if (id == null) {
+            //do nothing,just in case
+            return;
+        }
+        String idKey = UnionMainPermitCacheUtil.getIdKey(id);
+        redisCacheUtil.set(idKey, newUnionMainPermit);
+    }
+
+    private void setCache(List<UnionMainPermit> newUnionMainPermitList, Integer foreignId, int foreignIdType) {
+        if (foreignId == null) {
+            //do nothing,just in case
+            return;
+        }
+        String foreignIdKey = null;
+        switch (foreignIdType) {
+            case UnionMainPermitCacheUtil.TYPE_BUS_ID:
+                foreignIdKey = UnionMainPermitCacheUtil.getBusId(foreignId);
+                break;
+            case UnionMainPermitCacheUtil.TYPE_PACKAGE_ID:
+                foreignIdKey = UnionMainPermitCacheUtil.getPackageId(foreignId);
+                break;
+            default:
+                break;
+        }
+        if (foreignIdKey != null) {
+            redisCacheUtil.set(foreignIdKey, newUnionMainPermitList);
+        }
+    }
+
+    private void removeCache(UnionMainPermit unionMainPermit) {
+        if (unionMainPermit == null) {
+            return;
+        }
+        Integer id = unionMainPermit.getId();
+        String idKey = UnionMainPermitCacheUtil.getIdKey(id);
+        redisCacheUtil.remove(idKey);
+
+        Integer busId = unionMainPermit.getBusId();
+        if (busId != null) {
+            String busIdKey = UnionMainPermitCacheUtil.getBusId(busId);
+            redisCacheUtil.remove(busIdKey);
+        }
+
+        Integer packageId = unionMainPermit.getPackageId();
+        if (busId != null) {
+            String packageIdKey = UnionMainPermitCacheUtil.getPackageId(packageId);
+            redisCacheUtil.remove(packageIdKey);
+        }
+    }
+
+    private void removeCache(List<UnionMainPermit> unionMainPermitList) {
+        if (ListUtil.isEmpty(unionMainPermitList)) {
+            return;
+        }
+        List<Integer> idList = new ArrayList<>();
+        for (UnionMainPermit unionMainPermit : unionMainPermitList) {
+            idList.add(unionMainPermit.getId());
+        }
+        List<String> idKeyList = UnionMainPermitCacheUtil.getIdKey(idList);
+        redisCacheUtil.remove(idKeyList);
+
+        List<String> busIdKeyList = getForeignIdKeyList(unionMainPermitList, UnionMainPermitCacheUtil.TYPE_BUS_ID);
+        if (ListUtil.isNotEmpty(busIdKeyList)) {
+            redisCacheUtil.remove(busIdKeyList);
+        }
+
+        List<String> packageIdKeyList = getForeignIdKeyList(unionMainPermitList, UnionMainPermitCacheUtil.TYPE_PACKAGE_ID);
+        if (ListUtil.isNotEmpty(packageIdKeyList)) {
+            redisCacheUtil.remove(packageIdKeyList);
+        }
+    }
+
+    private List<String> getForeignIdKeyList(List<UnionMainPermit> unionMainPermitList, int foreignIdType) {
+        List<String> result = new ArrayList<>();
+        switch (foreignIdType) {
+            case UnionMainPermitCacheUtil.TYPE_BUS_ID:
+                for (UnionMainPermit unionMainPermit : unionMainPermitList) {
+                    Integer busId = unionMainPermit.getBusId();
+                    if (busId != null) {
+                        String busIdKey = UnionMainPermitCacheUtil.getBusId(busId);
+                        result.add(busIdKey);
+                    }
+                }
+                break;
+            case UnionMainPermitCacheUtil.TYPE_PACKAGE_ID:
+                for (UnionMainPermit unionMainPermit : unionMainPermitList) {
+                    Integer packageId = unionMainPermit.getPackageId();
+                    if (packageId != null) {
+                        String packageIdKey = UnionMainPermitCacheUtil.getPackageId(packageId);
+                        result.add(packageIdKey);
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+        return result;
+    }
 }

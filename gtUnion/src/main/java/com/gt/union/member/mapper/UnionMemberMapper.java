@@ -4,10 +4,10 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.gt.union.member.entity.UnionMember;
 
 /**
- * 联盟成员 Mapper 接口
+ * 盟员 Mapper 接口
  *
  * @author linweicong
- * @version 2017-10-23 08:34:54
+ * @version 2017-11-23 10:22:05
  */
 public interface UnionMemberMapper extends BaseMapper<UnionMember> {
 

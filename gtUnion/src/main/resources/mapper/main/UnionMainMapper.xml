@@ -2,18 +2,19 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.gt.union.main.mapper.UnionMainMapper">
 
-	<!-- 通用查询映射结果 -->
-	<resultMap id="BaseResultMap" type="com.gt.union.main.entity.UnionMain">
-		<id column="id" property="id" />
-		<result column="createtime" property="createtime" />
-		<result column="del_status" property="delStatus" />
-		<result column="name" property="name" />
-		<result column="img" property="img" />
-		<result column="join_type" property="joinType" />
-		<result column="illustration" property="illustration" />
-		<result column="limit_member" property="limitMember" />
-		<result column="is_integral" property="isIntegral" />
-		<result column="union_validity" property="unionValidity" />
-	</resultMap>
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gt.union.main.entity.UnionMain">
+        <id column="id" property="id"/>
+        <result column="del_status" property="delStatus"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+        <result column="name" property="name"/>
+        <result column="img" property="img"/>
+        <result column="join_type" property="joinType"/>
+        <result column="illustration" property="illustration"/>
+        <result column="member_limit" property="memberLimit"/>
+        <result column="is_integral" property="isIntegral"/>
+        <result column="validity" property="validity"/>
+    </resultMap>
 
 </mapper>

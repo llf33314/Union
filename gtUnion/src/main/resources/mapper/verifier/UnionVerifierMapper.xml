@@ -2,15 +2,14 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.gt.union.verifier.mapper.UnionVerifierMapper">
 
-	<!-- 通用查询映射结果 -->
-	<resultMap id="BaseResultMap" type="com.gt.union.verifier.entity.UnionVerifier">
-		<id column="id" property="id" />
-		<result column="bus_id" property="busId" />
-		<result column="createtime" property="createtime" />
-		<result column="del_status" property="delStatus" />
-		<result column="third_member_id" property="thirdMemberId" />
-		<result column="phone" property="phone" />
-		<result column="name" property="name" />
-	</resultMap>
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gt.union.verifier.entity.UnionVerifier">
+        <id column="id" property="id"/>
+        <result column="del_status" property="delStatus"/>
+        <result column="create_time" property="createTime"/>
+        <result column="name" property="name"/>
+        <result column="phone" property="phone"/>
+        <result column="bus_id" property="busId"/>
+    </resultMap>
 
 </mapper>

@@ -4,17 +4,13 @@ import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.CommonConstant;
-import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.*;
-import com.gt.union.main.constant.MainConstant;
+import com.gt.union.common.util.ListUtil;
+import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.main.entity.UnionMainNotice;
 import com.gt.union.main.mapper.UnionMainNoticeMapper;
 import com.gt.union.main.service.IUnionMainNoticeService;
-import com.gt.union.main.service.IUnionMainService;
-import com.gt.union.member.constant.MemberConstant;
-import com.gt.union.member.entity.UnionMember;
-import com.gt.union.member.service.IUnionMemberService;
+import com.gt.union.main.util.UnionMainNoticeCacheUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,298 +22,237 @@ import java.util.List;
  * 联盟公告 服务实现类
  *
  * @author linweicong
- * @version 2017-10-19 16:27:37
+ * @version 2017-11-23 15:18:52
  */
 @Service
 public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMapper, UnionMainNotice> implements IUnionMainNoticeService {
-
     @Autowired
-    private RedisCacheUtil redisCacheUtil;
+    public RedisCacheUtil redisCacheUtil;
 
-    @Autowired
-    private IUnionMemberService unionMemberService;
+    //***************************************** Domain Driven Design - get *********************************************
 
-    @Autowired
-    private IUnionMainService unionMainService;
+    //***************************************** Domain Driven Design - list ********************************************
 
-    //------------------------------------------ Domain Driven Design - get --------------------------------------------
+    //***************************************** Domain Driven Design - save ********************************************
 
-    //------------------------------------------ Domain Driven Design - list -------------------------------------------
+    //***************************************** Domain Driven Design - remove ******************************************
 
-    //------------------------------------------ Domain Driven Design - save -------------------------------------------
+    //***************************************** Domain Driven Design - update ******************************************
 
-    //------------------------------------------ Domain Driven Design - remove -----------------------------------------
+    //***************************************** Domain Driven Design - count *******************************************
 
-    //------------------------------------------ Domain Driven Design - update -----------------------------------------
+    //***************************************** Domain Driven Design - boolean *****************************************
 
-    @Override
-    public void updateOrSaveByBusIdAndMemberId(Integer busId, Integer memberId, String content) throws Exception {
-        if (busId == null || memberId == null || content == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        //(1)判断是否具有盟员权限
-        UnionMember unionOwner = this.unionMemberService.getByIdAndBusId(memberId, busId);
-        if (unionOwner == null) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
-        }
-        //(2)检查联盟有效期
-        this.unionMainService.checkUnionValid(unionOwner.getUnionId());
-        //(3)判断是否具有写权限
-        if (!this.unionMemberService.hasWriteAuthority(unionOwner)) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
-        }
-        //(4)判断是否是盟主
-        if (!unionOwner.getIsUnionOwner().equals(MemberConstant.IS_UNION_OWNER_YES)) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
-        }
-        //(5)校验更新内容
-        if (StringUtil.isEmpty(content)) {
-            throw new BusinessException("联盟公告内容不能为空");
-        }
-        if (StringUtil.getStringLength(content) > MainConstant.NOTICE_MAX_LENGTH) {
-            throw new BusinessException("联盟公告内容不可超过50字");
-        }
-        //(6)更新操作
-        List<UnionMainNotice> noticeList = this.listByUnionId(unionOwner.getUnionId());
-        if (ListUtil.isNotEmpty(noticeList)) {
-            UnionMainNotice updateNotice = new UnionMainNotice();
-            //联盟公告id
-            updateNotice.setId(noticeList.get(0).getId());
-            //更新时间
-            updateNotice.setModifytime(DateUtil.getCurrentDate());
-            //公告内容
-            updateNotice.setContent(content);
-            this.update(updateNotice);
-        } else {
-            UnionMainNotice saveNotice = new UnionMainNotice();
-            //创建时间
-            saveNotice.setCreatetime(DateUtil.getCurrentDate());
-            //删除状态
-            saveNotice.setDelStatus(CommonConstant.DEL_STATUS_NO);
-            //联盟id
-            saveNotice.setUnionId(unionOwner.getUnionId());
-            //公告内容
-            saveNotice.setContent(content);
-            this.save(saveNotice);
-        }
-    }
+    //***************************************** Object As a Service - get **********************************************
 
-    //------------------------------------------ Domain Driven Design - count ------------------------------------------
-
-    //------------------------------------------ Domain Driven Design - boolean ----------------------------------------
-
-    //******************************************* Object As a Service - get ********************************************
-
-    @Override
-    public UnionMainNotice getById(Integer noticeId) throws Exception {
-        if (noticeId == null) {
+    public UnionMainNotice getById(Integer id) throws Exception {
+        if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         UnionMainNotice result;
-        //(1)cache
-        String noticeIdKey = RedisKeyUtil.getNoticeIdKey(noticeId);
-        if (this.redisCacheUtil.exists(noticeIdKey)) {
-            String tempStr = this.redisCacheUtil.get(noticeIdKey);
+        // (1)cache
+        String idKey = UnionMainNoticeCacheUtil.getIdKey(id);
+        if (redisCacheUtil.exists(idKey)) {
+            String tempStr = redisCacheUtil.get(idKey);
             result = JSONArray.parseObject(tempStr, UnionMainNotice.class);
             return result;
         }
-        //(2)db
+        // (2)db
         EntityWrapper<UnionMainNotice> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", noticeId);
-        result = this.selectOne(entityWrapper);
-        setCache(result, noticeId);
+        entityWrapper.eq("id", id)
+                .eq("del_status", CommonConstant.DEL_STATUS_NO);
+        result = selectOne(entityWrapper);
+        setCache(result, id);
         return result;
     }
 
-    //******************************************* Object As a Service - list *******************************************
+    //***************************************** Object As a Service - list *********************************************
 
-    @Override
     public List<UnionMainNotice> listByUnionId(Integer unionId) throws Exception {
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         List<UnionMainNotice> result;
-        //(1)get in cache
-        String unionIdKey = RedisKeyUtil.getNoticeUnionIdKey(unionId);
-        if (this.redisCacheUtil.exists(unionIdKey)) {
-            String tempStr = this.redisCacheUtil.get(unionIdKey);
+        // (1)cache
+        String unionIdKey = UnionMainNoticeCacheUtil.getUnionIdKey(unionId);
+        if (redisCacheUtil.exists(unionIdKey)) {
+            String tempStr = redisCacheUtil.get(unionIdKey);
             result = JSONArray.parseArray(tempStr, UnionMainNotice.class);
             return result;
         }
-        //(2)get in db
+        // (2)db
         EntityWrapper<UnionMainNotice> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
-        result = this.selectList(entityWrapper);
-        setCache(result, unionId, MainConstant.REDIS_KEY_NOTICE_UNION_ID);
+        entityWrapper.eq("union_id", unionId)
+                .eq("del_status", CommonConstant.COMMON_NO);
+        result = selectList(entityWrapper);
+        setCache(result, unionId, UnionMainNoticeCacheUtil.TYPE_UNION_ID);
         return result;
     }
 
-    //******************************************* Object As a Service - save *******************************************
+    //***************************************** Object As a Service - save *********************************************
 
-    @Override
     @Transactional(rollbackFor = Exception.class)
-    public void save(UnionMainNotice newNotice) throws Exception {
-        if (newNotice == null) {
+    public void save(UnionMainNotice newUnionMainNotice) throws Exception {
+        if (newUnionMainNotice == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        this.insert(newNotice);
-        this.removeCache(newNotice);
+        insert(newUnionMainNotice);
+        removeCache(newUnionMainNotice);
     }
 
-    @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveBatch(List<UnionMainNotice> newNoticeList) throws Exception {
-        if (newNoticeList == null) {
+    public void saveBatch(List<UnionMainNotice> newUnionMainNoticeList) throws Exception {
+        if (newUnionMainNoticeList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        this.insertBatch(newNoticeList);
-        this.removeCache(newNoticeList);
+        insertBatch(newUnionMainNoticeList);
+        removeCache(newUnionMainNoticeList);
     }
 
-    //******************************************* Object As a Service - remove *****************************************
+    //***************************************** Object As a Service - remove *******************************************
 
-    @Override
     @Transactional(rollbackFor = Exception.class)
-    public void removeById(Integer noticeId) throws Exception {
-        if (noticeId == null) {
+    public void removeById(Integer id) throws Exception {
+        if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        //(1)remove cache
-        UnionMainNotice notice = this.getById(noticeId);
-        removeCache(notice);
-        //(2)remove in db logically
-        UnionMainNotice removeNotice = new UnionMainNotice();
-        removeNotice.setId(noticeId);
-        removeNotice.setDelStatus(CommonConstant.DEL_STATUS_YES);
-        this.updateById(removeNotice);
+        // (1)remove cache
+        UnionMainNotice unionMainNotice = getById(id);
+        removeCache(unionMainNotice);
+        // (2)remove in db logically
+        UnionMainNotice removeUnionMainNotice = new UnionMainNotice();
+        removeUnionMainNotice.setId(id);
+        removeUnionMainNotice.setDelStatus(CommonConstant.DEL_STATUS_YES);
+        updateById(removeUnionMainNotice);
     }
 
-    @Override
     @Transactional(rollbackFor = Exception.class)
-    public void removeBatchById(List<Integer> noticeIdList) throws Exception {
-        if (noticeIdList == null) {
+    public void removeBatchById(List<Integer> idList) throws Exception {
+        if (idList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        //(1)remove cache
-        List<UnionMainNotice> noticeList = new ArrayList<>();
-        for (Integer noticeId : noticeIdList) {
-            UnionMainNotice notice = this.getById(noticeId);
-            noticeList.add(notice);
+        // (1)remove cache
+        List<UnionMainNotice> unionMainNoticeList = new ArrayList<>();
+        for (Integer id : idList) {
+            UnionMainNotice unionMainNotice = getById(id);
+            unionMainNoticeList.add(unionMainNotice);
         }
-        removeCache(noticeList);
-        //(2)remove in db logically
-        List<UnionMainNotice> removeNoticeList = new ArrayList<>();
-        for (Integer noticeId : noticeIdList) {
-            UnionMainNotice removeNotice = new UnionMainNotice();
-            removeNotice.setId(noticeId);
-            removeNotice.setDelStatus(CommonConstant.DEL_STATUS_YES);
-            removeNoticeList.add(removeNotice);
+        removeCache(unionMainNoticeList);
+        // (2)remove in db logically
+        List<UnionMainNotice> removeUnionMainNoticeList = new ArrayList<>();
+        for (Integer id : idList) {
+            UnionMainNotice removeUnionMainNotice = new UnionMainNotice();
+            removeUnionMainNotice.setId(id);
+            removeUnionMainNotice.setDelStatus(CommonConstant.DEL_STATUS_YES);
+            removeUnionMainNoticeList.add(removeUnionMainNotice);
         }
-        this.updateBatchById(removeNoticeList);
+        updateBatchById(removeUnionMainNoticeList);
     }
 
-    //******************************************* Object As a Service - update *****************************************
+    //***************************************** Object As a Service - update *******************************************
 
-    @Override
     @Transactional(rollbackFor = Exception.class)
-    public void update(UnionMainNotice updateNotice) throws Exception {
-        if (updateNotice == null) {
+    public void update(UnionMainNotice updateUnionMainNotice) throws Exception {
+        if (updateUnionMainNotice == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        //(1)remove cache
-        Integer noticeId = updateNotice.getId();
-        UnionMainNotice notice = this.getById(noticeId);
-        removeCache(notice);
-        //(2)update db
-        this.updateById(updateNotice);
+        // (1)remove cache
+        Integer id = updateUnionMainNotice.getId();
+        UnionMainNotice unionMainNotice = getById(id);
+        removeCache(unionMainNotice);
+        // (2)update db
+        updateById(updateUnionMainNotice);
     }
 
-    @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateBatch(List<UnionMainNotice> updateNoticeList) throws Exception {
-        if (updateNoticeList == null) {
+    public void updateBatch(List<UnionMainNotice> updateUnionMainNoticeList) throws Exception {
+        if (updateUnionMainNoticeList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        //(1)remove cache
-        List<Integer> noticeIdList = new ArrayList<>();
-        for (UnionMainNotice updateNotice : updateNoticeList) {
-            noticeIdList.add(updateNotice.getId());
+        // (1)remove cache
+        List<Integer> idList = new ArrayList<>();
+        for (UnionMainNotice updateUnionMainNotice : updateUnionMainNoticeList) {
+            idList.add(updateUnionMainNotice.getId());
         }
-        List<UnionMainNotice> noticeList = new ArrayList<>();
-        for (Integer noticeId : noticeIdList) {
-            UnionMainNotice notice = this.getById(noticeId);
-            noticeList.add(notice);
+        List<UnionMainNotice> unionMainNoticeList = new ArrayList<>();
+        for (Integer id : idList) {
+            UnionMainNotice unionMainNotice = getById(id);
+            unionMainNoticeList.add(unionMainNotice);
         }
-        removeCache(noticeList);
-        //(2)update db
-        this.updateBatchById(updateNoticeList);
+        removeCache(unionMainNoticeList);
+        // (2)update db
+        updateBatchById(updateUnionMainNoticeList);
     }
 
     //***************************************** Object As a Service - cache support ************************************
 
-    private void setCache(UnionMainNotice newNotice, Integer noticeId) {
-        if (noticeId == null) {
-            return; //do nothing,just in case
+    private void setCache(UnionMainNotice newUnionMainNotice, Integer id) {
+        if (id == null) {
+            //do nothing,just in case
+            return;
         }
-        String noticeIdKey = RedisKeyUtil.getNoticeIdKey(noticeId);
-        this.redisCacheUtil.set(noticeIdKey, newNotice);
+        String idKey = UnionMainNoticeCacheUtil.getIdKey(id);
+        redisCacheUtil.set(idKey, newUnionMainNotice);
     }
 
-    private void setCache(List<UnionMainNotice> newNoticeList, Integer foreignId, int foreignIdType) {
+    private void setCache(List<UnionMainNotice> newUnionMainNoticeList, Integer foreignId, int foreignIdType) {
         if (foreignId == null) {
-            return; //do nothing,just in case
+            //do nothing,just in case
+            return;
         }
-        String foreignIdKey;
+        String foreignIdKey = null;
         switch (foreignIdType) {
-            case MainConstant.REDIS_KEY_NOTICE_UNION_ID:
-                foreignIdKey = RedisKeyUtil.getNoticeUnionIdKey(foreignId);
-                this.redisCacheUtil.set(foreignIdKey, newNoticeList);
+            case UnionMainNoticeCacheUtil.TYPE_UNION_ID:
+                foreignIdKey = UnionMainNoticeCacheUtil.getUnionIdKey(foreignId);
                 break;
             default:
                 break;
         }
+        if (foreignIdKey != null) {
+            redisCacheUtil.set(foreignIdKey, newUnionMainNoticeList);
+        }
     }
 
-    private void removeCache(UnionMainNotice notice) {
-        if (notice == null) {
+    private void removeCache(UnionMainNotice unionMainNotice) {
+        if (unionMainNotice == null) {
             return;
         }
-        Integer noticeId = notice.getId();
-        String noticeIdKey = RedisKeyUtil.getNoticeIdKey(noticeId);
-        this.redisCacheUtil.remove(noticeIdKey);
-        Integer unionId = notice.getUnionId();
+        Integer id = unionMainNotice.getId();
+        String idKey = UnionMainNoticeCacheUtil.getIdKey(id);
+        redisCacheUtil.remove(idKey);
+
+        Integer unionId = unionMainNotice.getUnionId();
         if (unionId != null) {
-            String unionIdKey = RedisKeyUtil.getNoticeUnionIdKey(unionId);
-            this.redisCacheUtil.remove(unionIdKey);
+            String unionIdKey = UnionMainNoticeCacheUtil.getUnionIdKey(unionId);
+            redisCacheUtil.remove(unionIdKey);
         }
     }
 
-    private void removeCache(List<UnionMainNotice> noticeList) {
-        if (ListUtil.isEmpty(noticeList)) {
+    private void removeCache(List<UnionMainNotice> unionMainNoticeList) {
+        if (ListUtil.isEmpty(unionMainNoticeList)) {
             return;
         }
-        List<Integer> noticeIdList = new ArrayList<>();
-        for (UnionMainNotice notice : noticeList) {
-            noticeIdList.add(notice.getId());
+        List<Integer> idList = new ArrayList<>();
+        for (UnionMainNotice unionMainNotice : unionMainNoticeList) {
+            idList.add(unionMainNotice.getId());
         }
-        List<String> noticeIdKeyList = RedisKeyUtil.getNoticeIdKey(noticeIdList);
-        this.redisCacheUtil.remove(noticeIdKeyList);
-        List<String> unionIdKeyList = getForeignIdKeyList(noticeList, MainConstant.REDIS_KEY_NOTICE_UNION_ID);
+        List<String> idKeyList = UnionMainNoticeCacheUtil.getIdKey(idList);
+        redisCacheUtil.remove(idKeyList);
+
+        List<String> unionIdKeyList = getForeignIdKeyList(unionMainNoticeList, UnionMainNoticeCacheUtil.TYPE_UNION_ID);
         if (ListUtil.isNotEmpty(unionIdKeyList)) {
-            this.redisCacheUtil.remove(unionIdKeyList);
+            redisCacheUtil.remove(unionIdKeyList);
         }
     }
 
-    private List<String> getForeignIdKeyList(List<UnionMainNotice> noticeList, int foreignIdType) {
+    private List<String> getForeignIdKeyList(List<UnionMainNotice> unionMainNoticeList, int foreignIdType) {
         List<String> result = new ArrayList<>();
         switch (foreignIdType) {
-            case MainConstant.REDIS_KEY_NOTICE_UNION_ID:
-                for (UnionMainNotice notice : noticeList) {
-                    Integer unionId = notice.getUnionId();
+            case UnionMainNoticeCacheUtil.TYPE_UNION_ID:
+                for (UnionMainNotice unionMainNotice : unionMainNoticeList) {
+                    Integer unionId = unionMainNotice.getUnionId();
                     if (unionId != null) {
-                        String unionIdKey = RedisKeyUtil.getNoticeUnionIdKey(unionId);
+                        String unionIdKey = UnionMainNoticeCacheUtil.getUnionIdKey(unionId);
                         result.add(unionIdKey);
                     }
                 }
@@ -327,5 +262,4 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
         }
         return result;
     }
-
 }

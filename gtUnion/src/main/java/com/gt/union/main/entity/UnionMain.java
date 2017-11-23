@@ -10,14 +10,13 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 联盟主表
+ * 联盟
  *
  * @author linweicong
- * @version 2017-10-19 16:27:37
+ * @version 2017-11-23 15:26:16
  */
 @TableName("t_union_main")
 public class UnionMain extends Model<UnionMain> {
-
     private static final long serialVersionUID = 1L;
 
     /**
@@ -25,47 +24,66 @@ public class UnionMain extends Model<UnionMain> {
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
+
     /**
-     * 创建时间
-     */
-    private Date createtime;
-    /**
-     * 删除状态（0：未删除 1：删除）
+     * 是否删除(0:否 1:是)
      */
     @TableField("del_status")
     private Integer delStatus;
+
     /**
-     * 联盟名称
+     * 创建时间
      */
+    @TableField("create_time")
+    private Date createTime;
+
+    /**
+     * 修改时间
+     */
+    @TableField("modify_time")
+    private Date modifyTime;
+
+    /**
+     * 名称
+     */
+    @TableField("name")
     private String name;
+
     /**
-     * 联盟图标
+     * 图标
      */
+    @TableField("img")
     private String img;
+
     /**
-     * 加盟方式（1：推荐 2：申请、推荐）
+     * 加盟方式(1:推荐 2:申请、推荐)
      */
     @TableField("join_type")
     private Integer joinType;
+
     /**
-     * 联盟说明
+     * 说明
      */
+    @TableField("illustration")
     private String illustration;
+
     /**
-     * 联盟成员总数上限
+     * 成员总数上限
      */
-    @TableField("limit_member")
-    private Integer limitMember;
+    @TableField("member_limit")
+    private Integer memberLimit;
+
     /**
-     * 联盟是否开启积分（0：否 1：是）
+     * 是否开启积分(0:否 1:是)
      */
     @TableField("is_integral")
     private Integer isIntegral;
+
     /**
-     * 联盟有效期
+     * 有效期
      */
-    @TableField("union_validity")
-    private Date unionValidity;
+    @TableField("validity")
+    private Date validity;
 
 
     public Integer getId() {
@@ -76,20 +94,28 @@ public class UnionMain extends Model<UnionMain> {
         this.id = id;
     }
 
-    public Date getCreatetime() {
-        return createtime;
-    }
-
-    public void setCreatetime(Date createtime) {
-        this.createtime = createtime;
-    }
-
     public Integer getDelStatus() {
         return delStatus;
     }
 
     public void setDelStatus(Integer delStatus) {
         this.delStatus = delStatus;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(Date modifyTime) {
+        this.modifyTime = modifyTime;
     }
 
     public String getName() {
@@ -124,12 +150,12 @@ public class UnionMain extends Model<UnionMain> {
         this.illustration = illustration;
     }
 
-    public Integer getLimitMember() {
-        return limitMember;
+    public Integer getMemberLimit() {
+        return memberLimit;
     }
 
-    public void setLimitMember(Integer limitMember) {
-        this.limitMember = limitMember;
+    public void setMemberLimit(Integer memberLimit) {
+        this.memberLimit = memberLimit;
     }
 
     public Integer getIsIntegral() {
@@ -140,17 +166,16 @@ public class UnionMain extends Model<UnionMain> {
         this.isIntegral = isIntegral;
     }
 
-    public Date getUnionValidity() {
-        return unionValidity;
+    public Date getValidity() {
+        return validity;
     }
 
-    public void setUnionValidity(Date unionValidity) {
-        this.unionValidity = unionValidity;
+    public void setValidity(Date validity) {
+        this.validity = validity;
     }
 
     @Override
     protected Serializable pkVal() {
         return this.id;
     }
-
 }

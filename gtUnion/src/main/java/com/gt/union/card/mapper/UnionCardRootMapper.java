@@ -4,12 +4,10 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.gt.union.card.entity.UnionCardRoot;
 
 /**
- * <p>
-  * 联盟卡主信息 Mapper 接口
- * </p>
+ * 联盟卡根信息 Mapper 接口
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-11-23 17:39:13
  */
 public interface UnionCardRootMapper extends BaseMapper<UnionCardRoot> {
 

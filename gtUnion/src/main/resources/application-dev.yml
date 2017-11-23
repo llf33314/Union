@@ -12,7 +12,7 @@ spring:
     # jdbc配置
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://113.106.202.51:3306/gt_union_ceshi20170907?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false
+    url: jdbc:mysql://113.106.202.51:3306/gt_union_ceshi?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false
     username: root
     password: gt123456
     # druid连接池配置

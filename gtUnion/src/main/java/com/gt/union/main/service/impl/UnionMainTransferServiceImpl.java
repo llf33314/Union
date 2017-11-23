@@ -2,27 +2,15 @@ package com.gt.union.main.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.CommonConstant;
-import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
-import com.gt.union.common.util.RedisKeyUtil;
-import com.gt.union.main.constant.MainConstant;
-import com.gt.union.main.entity.UnionMain;
-import com.gt.union.main.entity.UnionMainPermit;
 import com.gt.union.main.entity.UnionMainTransfer;
 import com.gt.union.main.mapper.UnionMainTransferMapper;
-import com.gt.union.main.service.IUnionMainPermitService;
-import com.gt.union.main.service.IUnionMainService;
 import com.gt.union.main.service.IUnionMainTransferService;
-import com.gt.union.member.constant.MemberConstant;
-import com.gt.union.member.entity.UnionMember;
-import com.gt.union.member.service.IUnionMemberService;
-import com.gt.union.setting.service.IUnionSettingMainChargeService;
+import com.gt.union.main.util.UnionMainTransferCacheUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -34,623 +22,325 @@ import java.util.List;
  * 联盟转移 服务实现类
  *
  * @author linweicong
- * @version 2017-10-19 16:27:37
+ * @version 2017-11-23 15:26:25
  */
 @Service
 public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferMapper, UnionMainTransfer> implements IUnionMainTransferService {
     @Autowired
-    private IUnionMemberService unionMemberService;
+    public RedisCacheUtil redisCacheUtil;
 
-    @Autowired
-    private IUnionMainPermitService unionMainPermitService;
+    //***************************************** Domain Driven Design - get *********************************************
 
-    @Autowired
-    private IUnionMainService unionMainService;
+    //***************************************** Domain Driven Design - list ********************************************
 
-    @Autowired
-    private IUnionSettingMainChargeService unionSettingMainChargeService;
+    //***************************************** Domain Driven Design - save ********************************************
 
-    @Autowired
-    private RedisCacheUtil redisCacheUtil;
+    //***************************************** Domain Driven Design - remove ******************************************
 
-    //------------------------------------------ Domain Driven Design - get --------------------------------------------
+    //***************************************** Domain Driven Design - update ******************************************
 
-    @Override
-    public UnionMainTransfer getByUnionIdAndFromMemberIdAndToMemberIdAndConfirmStatus(Integer unionId, Integer fromMemberId
-            , Integer toMemberId, Integer confirmStatus) throws Exception {
-        if (unionId == null || fromMemberId == null || toMemberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionMainTransfer> transferList = this.listByUnionId(unionId);
-        if (ListUtil.isNotEmpty(transferList)) {
-            for (UnionMainTransfer transfer : transferList) {
-                if (!fromMemberId.equals(transfer.getFromMemberId())) {
-                    continue;
-                }
-                if (!toMemberId.equals(transfer.getToMemberId())) {
-                    continue;
-                }
-                if (!confirmStatus.equals(transfer.getConfirmStatus())) {
-                    continue;
-                }
-                return transfer;
-            }
-        }
-        return null;
-    }
+    //***************************************** Domain Driven Design - count *******************************************
 
-    @Override
-    public UnionMainTransfer getByIdAndToMemberIdAndConfirmStatus(Integer transferId, Integer toMemberId, Integer confirmStatus) throws Exception {
-        if (transferId == null || toMemberId == null || confirmStatus == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        UnionMainTransfer transfer = this.getById(transferId);
-        if (!toMemberId.equals(transfer.getToMemberId()) || !confirmStatus.equals(transfer.getConfirmStatus())) {
-            return null;
-        }
-        return transfer;
-    }
+    //***************************************** Domain Driven Design - boolean *****************************************
 
-    //------------------------------------------ Domain Driven Design - list -------------------------------------------
+    //***************************************** Object As a Service - get **********************************************
 
-    @Override
-    public Page pageMapByBusIdAndFromMemberId(Page page, Integer busId, Integer fromMemberId) throws Exception {
-        if (page == null || busId == null || fromMemberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        //(1)判断是否具有盟员权限
-        UnionMember unionOwner = this.unionMemberService.getByIdAndBusId(fromMemberId, busId);
-        if (unionOwner == null) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
-        }
-        //(2)检查联盟有效期
-        this.unionMainService.checkUnionValid(unionOwner.getUnionId());
-        //(3)判断是否具有读权限
-        if (!this.unionMemberService.hasReadAuthority(unionOwner)) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_READ_REJECT);
-        }
-        //(4)判断盟主权限
-        if (!unionOwner.getIsUnionOwner().equals(MemberConstant.IS_UNION_OWNER_YES)) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
-        }
-
-        return this.unionMemberService.pageTransferMapByUnionOwner(page, unionOwner);
-    }
-
-    //------------------------------------------ Domain Driven Design - save -------------------------------------------
-
-    @Override
-    public void saveByBusIdAndFromMemberIdAndToMemberId(Integer busId, Integer fromMemberId, Integer toMemberId) throws Exception {
-        if (busId == null || fromMemberId == null || toMemberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        //(1)判断是否具有盟员权限
-        UnionMember fromMember = this.unionMemberService.getByIdAndBusId(fromMemberId, busId);
-        if (fromMember == null) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
-        }
-        //(2)检查联盟有效期
-        this.unionMainService.checkUnionValid(fromMember.getUnionId());
-        //(3)判断是否具有写权限
-        if (!this.unionMemberService.hasWriteAuthority(fromMember)) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
-        }
-        //(4)判断盟主身份
-        if (!fromMember.getIsUnionOwner().equals(MemberConstant.IS_UNION_OWNER_YES)) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
-        }
-        //(5)判断是否已转移记录
-        List<UnionMainTransfer> transferList = this.listByFromMemberId(fromMemberId);
-        if (ListUtil.isNotEmpty(transferList)) {
-            throw new BusinessException("已存在转移申请，请撤销申请后再提交");
-        }
-        Integer unionId = fromMember.getUnionId();
-        //(6)判断目标对象是否在同一个联盟
-        UnionMember toMember = this.unionMemberService.getById(toMemberId);
-        if (toMember == null) {
-            throw new BusinessException("目标对象不存在或已过期");
-        }
-        if (!toMember.getUnionId().equals(unionId)) {
-            throw new BusinessException("不在同一个联盟，无法操作");
-        }
-        //(7)判断目标对象的状态
-        if (toMember.getStatus() == MemberConstant.STATUS_APPLY_IN) {
-            throw new BusinessException("目标对象尚未入盟");
-        }
-        if (toMember.getStatus() == MemberConstant.STATUS_OUTING) {
-            throw new BusinessException("目标对象正处于退盟过渡期");
-        }
-        //(8)判断目标对象是否是盟主
-        if (this.unionMemberService.isUnionOwner(toMember.getBusId())) {
-            throw new BusinessException("目标对象已经是另一个联盟的盟主");
-        }
-        //(9)判断目标对象是否具有盟主服务许可
-        if (!this.unionMainPermitService.hasUnionMainPermit(toMember.getBusId())) {
-            throw new BusinessException("目标对象不具有盟主服务许可");
-        }
-        //(10)判断是否已存在转移申请
-        UnionMainTransfer transfer = this.getByUnionIdAndFromMemberIdAndToMemberIdAndConfirmStatus(unionId
-                , fromMemberId, toMemberId, MainConstant.TRANSFER_CONFIRM_STATUS_HANDLING);
-        if (transfer == null) {
-            UnionMainTransfer saveTransfer = new UnionMainTransfer();
-            //删除状态
-            saveTransfer.setDelStatus(CommonConstant.DEL_STATUS_NO);
-            //联盟id
-            saveTransfer.setUnionId(unionId);
-            //创建时间
-            saveTransfer.setCreatetime(DateUtil.getCurrentDate());
-            //转移盟主权限的盟员身份id
-            saveTransfer.setFromMemberId(fromMemberId);
-            //目标盟员身份id
-            saveTransfer.setToMemberId(toMemberId);
-            //确认状态
-            saveTransfer.setConfirmStatus(MainConstant.TRANSFER_CONFIRM_STATUS_HANDLING);
-            this.save(saveTransfer);
-        }
-    }
-
-    //------------------------------------------ Domain Driven Design - remove -----------------------------------------
-
-    //------------------------------------------ Domain Driven Design - update -----------------------------------------
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void updateStatusByTransferIdAndBusIdAndToMemberId(Integer transferId, Integer busId, Integer toMemberId, Integer isOK) throws Exception {
-        if (transferId == null || busId == null || toMemberId == null || isOK == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        //(1)判断是否具有盟员权限
-        UnionMember member = this.unionMemberService.getByIdAndBusId(toMemberId, busId);
-        if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
-        }
-        //(2)检查联盟有效期
-        this.unionMainService.checkUnionValid(member.getUnionId());
-        //(3)判断是否具有写权限
-        if (!this.unionMemberService.hasWriteAuthority(member)) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
-        }
-        //(4)判断转移记录
-        UnionMainTransfer transfer = this.getByIdAndToMemberIdAndConfirmStatus(transferId, toMemberId, MainConstant.TRANSFER_CONFIRM_STATUS_HANDLING);
-        if (transfer == null) {
-            throw new BusinessException("转移记录不存在或已处理");
-        }
-        //(5)判断转移者、被转移者及转移记录上的联盟id是否一致
-        Integer unionId = transfer.getUnionId();
-        UnionMember fromMember = this.unionMemberService.getById(transfer.getFromMemberId());
-        UnionMember toMember = this.unionMemberService.getByIdAndBusId(toMemberId, busId);
-        if (!unionId.equals(fromMember.getUnionId()) || !unionId.equals(toMember.getUnionId())) {
-            throw new BusinessException("转移者、被转移者及转移记录上的联盟信息不一致");
-        }
-        switch (isOK) {
-            case CommonConstant.COMMON_NO:
-                //拒绝
-                //(6)更新转移申请
-                UnionMainTransfer updateTransfer = new UnionMainTransfer();
-                //转移申请id
-                updateTransfer.setId(transfer.getId());
-                //转移申请状态改为拒绝
-                updateTransfer.setConfirmStatus(MainConstant.TRANSFER_CONFIRM_STATUS_NO);
-                //(7)事务化操作
-                //更新转移申请
-                this.update(updateTransfer);
-                break;
-            case CommonConstant.COMMON_YES:
-                //接受
-                //(6)判断转移者是否仍然是盟主
-                if (fromMember.getIsUnionOwner() != MemberConstant.IS_UNION_OWNER_YES) {
-                    throw new BusinessException("盟主权限已转移他人");
-                }
-                //(7)判断转移者、被转移者的状态
-                if (fromMember.getStatus() != MemberConstant.STATUS_IN || toMember.getStatus() != MemberConstant.STATUS_IN) {
-                    throw new BusinessException("转移者或被转移者的状态已发生改变");
-                }
-                //(8)判断被转移者是否已经是盟主
-                if (this.unionMemberService.isUnionOwner(busId)) {
-                    throw new BusinessException("已是盟主，无法接受");
-                }
-                //(9)判断是否具有盟主服务许可
-                if (!this.unionMainPermitService.hasUnionMainPermit(busId)) {
-                    throw new BusinessException("不具有盟主服务许可或已过期");
-                }
-                UnionMainPermit permit = this.unionMainPermitService.getByBusId(busId);
-                //(10)判断被转移者联盟权限人数是否大于当前联盟人数
-                Integer currentUnionMemberCount = this.unionMemberService.countReadByUnionId(unionId);
-                //联盟成员总数上限
-                Integer limitMember = unionSettingMainChargeService.getById(permit.getSettingMainChargeId()).getNumber();
-                if(limitMember.intValue() < currentUnionMemberCount.intValue()){
-                    throw new BusinessException("您的盟主权限不可容纳该联盟成员数");
-                }
-                //(11)更新的联盟信息
-                UnionMain updateUnion = new UnionMain();
-                //联盟id
-                updateUnion.setId(unionId);
-
-                if (permit != null) {
-                    //联盟有效期
-                    updateUnion.setUnionValidity(permit.getValidity());
-                } else {
-                    //联盟有效期
-                    updateUnion.setUnionValidity(DateUtil.parseDate(CommonConstant.UNION_VALIDITY_DEFAULT));
-                }
-                updateUnion.setLimitMember(limitMember);
-                //(12)更新的转移者信息
-                UnionMember updateFromMember = new UnionMember();
-                //转移者的id
-                updateFromMember.setId(fromMember.getId());
-                //转移者盟主身份取消
-                updateFromMember.setIsUnionOwner(MemberConstant.IS_UNION_OWNER_NO);
-                //(13)更新的被转移者信息
-                UnionMember updateToMember = new UnionMember();
-                //被转移者的id
-                updateToMember.setId(toMember.getId());
-                //被转移者添加盟主身份
-                updateToMember.setIsUnionOwner(MemberConstant.IS_UNION_OWNER_YES);
-                //(14)更新转移申请
-                UnionMainTransfer updateTransfer2 = new UnionMainTransfer();
-                //转移申请id
-                updateTransfer2.setId(transferId);
-                //转移申请状态改为接受
-                updateTransfer2.setConfirmStatus(MainConstant.TRANSFER_CONFIRM_STATUS_YES);
-                //(15)事务化操作
-                //更新联盟信息
-                this.unionMainService.update(updateUnion);
-                //更新转移者信息
-                this.unionMemberService.update(updateFromMember);
-                //更新被转移者
-                this.unionMemberService.update(updateToMember);
-                //更新转移申请
-                this.update(updateTransfer2);
-                break;
-            default:
-                throw new BusinessException("无法识别的更新状态");
-        }
-    }
-
-    @Override
-    public void revokeByIdAndBusIdAndFromMemberId(Integer transferId, Integer busId, Integer fromMemberId) throws Exception {
-        if (transferId == null || busId == null || fromMemberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        //(1)判断是否具有盟员权限
-        UnionMember unionOwner = this.unionMemberService.getByIdAndBusId(fromMemberId, busId);
-        if (unionOwner == null) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_INVALID);
-        }
-        //(2)检查联盟有效期
-        this.unionMainService.checkUnionValid(unionOwner.getUnionId());
-        //(3)判断是否具有写权限
-        if (!this.unionMemberService.hasWriteAuthority(unionOwner)) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_WRITE_REJECT);
-        }
-        //(4)判断盟主权限
-        if (!unionOwner.getIsUnionOwner().equals(MemberConstant.IS_UNION_OWNER_YES)) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_NEED_OWNER);
-        }
-        //(5)判断转移申请状态
-        UnionMainTransfer transfer = this.getById(transferId);
-        if (transfer == null) {
-            throw new BusinessException("未找到盟主权限转移信息");
-        }
-        if (!transfer.getFromMemberId().equals(fromMemberId)) {
-            throw new BusinessException("无法撤回他人的盟主权限转移申请");
-        }
-        if (!transfer.getConfirmStatus().equals(MainConstant.TRANSFER_CONFIRM_STATUS_HANDLING)) {
-            throw new BusinessException("该盟主权限转移申请已处理，无法撤回");
-        }
-        //(6)将申请置为无效
-        UnionMainTransfer updateTransfer = new UnionMainTransfer();
-        //转移id
-        updateTransfer.setId(transferId);
-        //删除状态
-        updateTransfer.setDelStatus(CommonConstant.DEL_STATUS_YES);
-        this.update(updateTransfer);
-    }
-
-    //------------------------------------------ Domain Driven Design - count ------------------------------------------
-
-    //------------------------------------------ Domain Driven Design - boolean ----------------------------------------
-
-    //******************************************* Object As a Service - get ********************************************
-
-    @Override
-    public UnionMainTransfer getById(Integer transferId) throws Exception {
-        if (transferId == null) {
+    public UnionMainTransfer getById(Integer id) throws Exception {
+        if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         UnionMainTransfer result;
-        //(1)cache
-        String transferIdKey = RedisKeyUtil.getTransferIdKey(transferId);
-        if (this.redisCacheUtil.exists(transferIdKey)) {
-            String tempStr = this.redisCacheUtil.get(transferIdKey);
+        // (1)cache
+        String idKey = UnionMainTransferCacheUtil.getIdKey(id);
+        if (redisCacheUtil.exists(idKey)) {
+            String tempStr = redisCacheUtil.get(idKey);
             result = JSONArray.parseObject(tempStr, UnionMainTransfer.class);
             return result;
         }
-        //(2)db
+        // (2)db
         EntityWrapper<UnionMainTransfer> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", transferId);
-        result = this.selectOne(entityWrapper);
-        setCache(result, transferId);
+        entityWrapper.eq("id", id)
+                .eq("del_status", CommonConstant.DEL_STATUS_NO);
+        result = selectOne(entityWrapper);
+        setCache(result, id);
         return result;
     }
 
-    //******************************************* Object As a Service - list *******************************************
+    //***************************************** Object As a Service - list *********************************************
 
-    @Override
     public List<UnionMainTransfer> listByUnionId(Integer unionId) throws Exception {
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         List<UnionMainTransfer> result;
-        //(1)get in cache
-        String unionIdKey = RedisKeyUtil.getTransferUnionIdKey(unionId);
-        if (this.redisCacheUtil.exists(unionIdKey)) {
-            String tempStr = this.redisCacheUtil.get(unionIdKey);
+        // (1)cache
+        String unionIdKey = UnionMainTransferCacheUtil.getUnionInKey(unionId);
+        if (redisCacheUtil.exists(unionIdKey)) {
+            String tempStr = redisCacheUtil.get(unionIdKey);
             result = JSONArray.parseArray(tempStr, UnionMainTransfer.class);
             return result;
         }
-        //(2)get in db
+        // (2)db
         EntityWrapper<UnionMainTransfer> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
-        result = this.selectList(entityWrapper);
-        setCache(result, unionId, MainConstant.REDIS_KEY_TRANSFER_UNION_ID);
+        entityWrapper.eq("union_id", unionId)
+                .eq("del_status", CommonConstant.COMMON_NO);
+        result = selectList(entityWrapper);
+        setCache(result, unionId, UnionMainTransferCacheUtil.TYPE_UNION_ID);
         return result;
     }
 
-    @Override
     public List<UnionMainTransfer> listByFromMemberId(Integer fromMemberId) throws Exception {
         if (fromMemberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         List<UnionMainTransfer> result;
-        //(1)get in cache
-        String fromMemberIdKey = RedisKeyUtil.getTransferFromMemberIdKey(fromMemberId);
-        if (this.redisCacheUtil.exists(fromMemberIdKey)) {
-            String tempStr = this.redisCacheUtil.get(fromMemberIdKey);
+        // (1)cache
+        String fromMemberIdKey = UnionMainTransferCacheUtil.getFromMemberIdKey(fromMemberId);
+        if (redisCacheUtil.exists(fromMemberIdKey)) {
+            String tempStr = redisCacheUtil.get(fromMemberIdKey);
             result = JSONArray.parseArray(tempStr, UnionMainTransfer.class);
             return result;
         }
-        //(2)get in db
+        // (2)db
         EntityWrapper<UnionMainTransfer> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("from_member_id", fromMemberId);
-        result = this.selectList(entityWrapper);
-        setCache(result, fromMemberId, MainConstant.REDIS_KEY_TRANSFER_FROM_MEMBER_ID);
+        entityWrapper.eq("from_member_id", fromMemberId)
+                .eq("del_status", CommonConstant.COMMON_NO);
+        result = selectList(entityWrapper);
+        setCache(result, fromMemberId, UnionMainTransferCacheUtil.TYPE_FROM_MEMBER_ID);
         return result;
     }
 
-    @Override
     public List<UnionMainTransfer> listByToMemberId(Integer toMemberId) throws Exception {
         if (toMemberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         List<UnionMainTransfer> result;
-        //(1)get in cache
-        String toMemberIdKey = RedisKeyUtil.getTransferToMemberIdKey(toMemberId);
-        if (this.redisCacheUtil.exists(toMemberIdKey)) {
-            String tempStr = this.redisCacheUtil.get(toMemberIdKey);
+        // (1)cache
+        String toMemberIdKey = UnionMainTransferCacheUtil.getToMemberIdKey(toMemberId);
+        if (redisCacheUtil.exists(toMemberIdKey)) {
+            String tempStr = redisCacheUtil.get(toMemberIdKey);
             result = JSONArray.parseArray(tempStr, UnionMainTransfer.class);
             return result;
         }
-        //(2)get in db
+        // (2)db
         EntityWrapper<UnionMainTransfer> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("to_member_id", toMemberId);
-        result = this.selectList(entityWrapper);
-        setCache(result, toMemberId, MainConstant.REDIS_KEY_TRANSFER_TO_MEMBER_ID);
+        entityWrapper.eq("to_member_id", toMemberId)
+                .eq("del_status", CommonConstant.COMMON_NO);
+        result = selectList(entityWrapper);
+        setCache(result, toMemberId, UnionMainTransferCacheUtil.TYPE_TO_MEMBER_ID);
         return result;
     }
 
-    //******************************************* Object As a Service - save *******************************************
+    //***************************************** Object As a Service - save *********************************************
 
-    @Override
     @Transactional(rollbackFor = Exception.class)
-    public void save(UnionMainTransfer newTransfer) throws Exception {
-        if (newTransfer == null) {
+    public void save(UnionMainTransfer newUnionMainTransfer) throws Exception {
+        if (newUnionMainTransfer == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        this.insert(newTransfer);
-        this.removeCache(newTransfer);
+        insert(newUnionMainTransfer);
+        removeCache(newUnionMainTransfer);
     }
 
-    @Override
     @Transactional(rollbackFor = Exception.class)
-    public void saveBatch(List<UnionMainTransfer> newTransferList) throws Exception {
-        if (newTransferList == null) {
+    public void saveBatch(List<UnionMainTransfer> newUnionMainTransferList) throws Exception {
+        if (newUnionMainTransferList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        this.insertBatch(newTransferList);
-        this.removeCache(newTransferList);
+        insertBatch(newUnionMainTransferList);
+        removeCache(newUnionMainTransferList);
     }
 
-    //******************************************* Object As a Service - remove *****************************************
+    //***************************************** Object As a Service - remove *******************************************
 
-    @Override
     @Transactional(rollbackFor = Exception.class)
-    public void removeById(Integer transferId) throws Exception {
-        if (transferId == null) {
+    public void removeById(Integer id) throws Exception {
+        if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        //(1)remove cache
-        UnionMainTransfer transfer = this.getById(transferId);
-        removeCache(transfer);
-        //(2)remove in db logically
-        UnionMainTransfer removeTransfer = new UnionMainTransfer();
-        removeTransfer.setId(transferId);
-        removeTransfer.setDelStatus(CommonConstant.DEL_STATUS_YES);
-        this.updateById(removeTransfer);
+        // (1)remove cache
+        UnionMainTransfer unionMainTransfer = getById(id);
+        removeCache(unionMainTransfer);
+        // (2)remove in db logically
+        UnionMainTransfer removeUnionMainTransfer = new UnionMainTransfer();
+        removeUnionMainTransfer.setId(id);
+        removeUnionMainTransfer.setDelStatus(CommonConstant.DEL_STATUS_YES);
+        updateById(removeUnionMainTransfer);
     }
 
-    @Override
     @Transactional(rollbackFor = Exception.class)
-    public void removeBatchById(List<Integer> transferIdList) throws Exception {
-        if (transferIdList == null) {
+    public void removeBatchById(List<Integer> idList) throws Exception {
+        if (idList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        //(1)remove cache
-        List<UnionMainTransfer> transferList = new ArrayList<>();
-        for (Integer transferId : transferIdList) {
-            UnionMainTransfer transfer = this.getById(transferId);
-            transferList.add(transfer);
+        // (1)remove cache
+        List<UnionMainTransfer> unionMainTransferList = new ArrayList<>();
+        for (Integer id : idList) {
+            UnionMainTransfer unionMainTransfer = getById(id);
+            unionMainTransferList.add(unionMainTransfer);
         }
-        removeCache(transferList);
-        //(2)remove in db logically
-        List<UnionMainTransfer> removeTransferList = new ArrayList<>();
-        for (Integer transferId : transferIdList) {
-            UnionMainTransfer removeTransfer = new UnionMainTransfer();
-            removeTransfer.setId(transferId);
-            removeTransfer.setDelStatus(CommonConstant.DEL_STATUS_YES);
-            removeTransferList.add(removeTransfer);
+        removeCache(unionMainTransferList);
+        // (2)remove in db logically
+        List<UnionMainTransfer> removeUnionMainTransferList = new ArrayList<>();
+        for (Integer id : idList) {
+            UnionMainTransfer removeUnionMainTransfer = new UnionMainTransfer();
+            removeUnionMainTransfer.setId(id);
+            removeUnionMainTransfer.setDelStatus(CommonConstant.DEL_STATUS_YES);
+            removeUnionMainTransferList.add(removeUnionMainTransfer);
         }
-        this.updateBatchById(removeTransferList);
+        updateBatchById(removeUnionMainTransferList);
     }
 
-    //******************************************* Object As a Service - update *****************************************
+    //***************************************** Object As a Service - update *******************************************
 
-    @Override
     @Transactional(rollbackFor = Exception.class)
-    public void update(UnionMainTransfer updateTransfer) throws Exception {
-        if (updateTransfer == null) {
+    public void update(UnionMainTransfer updateUnionMainTransfer) throws Exception {
+        if (updateUnionMainTransfer == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        //(1)remove cache
-        Integer transferId = updateTransfer.getId();
-        UnionMainTransfer transfer = this.getById(transferId);
-        removeCache(transfer);
-        //(2)update db
-        this.updateById(updateTransfer);
+        // (1)remove cache
+        Integer id = updateUnionMainTransfer.getId();
+        UnionMainTransfer unionMainTransfer = getById(id);
+        removeCache(unionMainTransfer);
+        // (2)update db
+        updateById(updateUnionMainTransfer);
     }
 
-    @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateBatch(List<UnionMainTransfer> updateTransferList) throws Exception {
-        if (updateTransferList == null) {
+    public void updateBatch(List<UnionMainTransfer> updateUnionMainTransferList) throws Exception {
+        if (updateUnionMainTransferList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        //(1)remove cache
-        List<Integer> transferIdList = new ArrayList<>();
-        for (UnionMainTransfer updateTransfer : updateTransferList) {
-            transferIdList.add(updateTransfer.getId());
+        // (1)remove cache
+        List<Integer> idList = new ArrayList<>();
+        for (UnionMainTransfer updateUnionMainTransfer : updateUnionMainTransferList) {
+            idList.add(updateUnionMainTransfer.getId());
         }
-        List<UnionMainTransfer> transferList = new ArrayList<>();
-        for (Integer transferId : transferIdList) {
-            UnionMainTransfer transfer = this.getById(transferId);
-            transferList.add(transfer);
+        List<UnionMainTransfer> unionMainTransferList = new ArrayList<>();
+        for (Integer id : idList) {
+            UnionMainTransfer unionMainTransfer = getById(id);
+            unionMainTransferList.add(unionMainTransfer);
         }
-        removeCache(transferList);
-        //(2)update db
-        this.updateBatchById(updateTransferList);
+        removeCache(unionMainTransferList);
+        // (2)update db
+        updateBatchById(updateUnionMainTransferList);
     }
 
     //***************************************** Object As a Service - cache support ************************************
 
-    private void setCache(UnionMainTransfer newTransfer, Integer transferId) {
-        if (transferId == null) {
-            return; //do nothing,just in case
+    private void setCache(UnionMainTransfer newUnionMainTransfer, Integer id) {
+        if (id == null) {
+            //do nothing,just in case
+            return;
         }
-        String transferIdKey = RedisKeyUtil.getTransferIdKey(transferId);
-        this.redisCacheUtil.set(transferIdKey, newTransfer);
+        String idKey = UnionMainTransferCacheUtil.getIdKey(id);
+        redisCacheUtil.set(idKey, newUnionMainTransfer);
     }
 
-    private void setCache(List<UnionMainTransfer> newTransferList, Integer foreignId, int foreignIdType) {
+    private void setCache(List<UnionMainTransfer> newUnionMainTransferList, Integer foreignId, int foreignIdType) {
         if (foreignId == null) {
-            return; //do nothing,just in case
+            //do nothing,just in case
+            return;
         }
-        String foreignIdKey;
+        String foreignIdKey = null;
         switch (foreignIdType) {
-            case MainConstant.REDIS_KEY_TRANSFER_UNION_ID:
-                foreignIdKey = RedisKeyUtil.getTransferUnionIdKey(foreignId);
-                this.redisCacheUtil.set(foreignIdKey, newTransferList);
+            case UnionMainTransferCacheUtil.TYPE_UNION_ID:
+                foreignIdKey = UnionMainTransferCacheUtil.getUnionInKey(foreignId);
                 break;
-            case MainConstant.REDIS_KEY_TRANSFER_FROM_MEMBER_ID:
-                foreignIdKey = RedisKeyUtil.getTransferFromMemberIdKey(foreignId);
-                this.redisCacheUtil.set(foreignIdKey, newTransferList);
+            case UnionMainTransferCacheUtil.TYPE_FROM_MEMBER_ID:
+                foreignIdKey = UnionMainTransferCacheUtil.getFromMemberIdKey(foreignId);
                 break;
-            case MainConstant.REDIS_KEY_TRANSFER_TO_MEMBER_ID:
-                foreignIdKey = RedisKeyUtil.getTransferToMemberIdKey(foreignId);
-                this.redisCacheUtil.set(foreignIdKey, newTransferList);
+            case UnionMainTransferCacheUtil.TYPE_TO_MEMBER_ID:
+                foreignIdKey = UnionMainTransferCacheUtil.getToMemberIdKey(foreignId);
                 break;
             default:
                 break;
         }
+        if (foreignIdKey != null) {
+            redisCacheUtil.set(foreignIdKey, newUnionMainTransferList);
+        }
     }
 
-    private void removeCache(UnionMainTransfer transfer) {
-        if (transfer == null) {
+    private void removeCache(UnionMainTransfer unionMainTransfer) {
+        if (unionMainTransfer == null) {
             return;
         }
-        Integer transferId = transfer.getId();
-        String transferIdKey = RedisKeyUtil.getTransferIdKey(transferId);
-        this.redisCacheUtil.remove(transferIdKey);
-        Integer unionId = transfer.getUnionId();
+        Integer id = unionMainTransfer.getId();
+        String idKey = UnionMainTransferCacheUtil.getIdKey(id);
+        redisCacheUtil.remove(idKey);
+
+        Integer unionId = unionMainTransfer.getUnionId();
         if (unionId != null) {
-            String unionIdKey = RedisKeyUtil.getTransferUnionIdKey(unionId);
-            this.redisCacheUtil.remove(unionIdKey);
+            String unionIdKey = UnionMainTransferCacheUtil.getUnionInKey(unionId);
+            redisCacheUtil.remove(unionIdKey);
         }
-        Integer fromMemberId = transfer.getFromMemberId();
+
+        Integer fromMemberId = unionMainTransfer.getFromMemberId();
         if (fromMemberId != null) {
-            String fromMemberIdKey = RedisKeyUtil.getTransferFromMemberIdKey(fromMemberId);
-            this.redisCacheUtil.remove(fromMemberIdKey);
+            String fromMemberIdKey = UnionMainTransferCacheUtil.getFromMemberIdKey(fromMemberId);
+            redisCacheUtil.remove(fromMemberIdKey);
         }
-        Integer toMemberId = transfer.getToMemberId();
+
+        Integer toMemberId = unionMainTransfer.getToMemberId();
         if (toMemberId != null) {
-            String toMemberIdKey = RedisKeyUtil.getTransferToMemberIdKey(toMemberId);
-            this.redisCacheUtil.remove(toMemberIdKey);
+            String toMemberIdKey = UnionMainTransferCacheUtil.getToMemberIdKey(toMemberId);
+            redisCacheUtil.remove(toMemberIdKey);
         }
     }
 
-    private void removeCache(List<UnionMainTransfer> transferList) {
-        if (ListUtil.isEmpty(transferList)) {
+    private void removeCache(List<UnionMainTransfer> unionMainTransferList) {
+        if (ListUtil.isEmpty(unionMainTransferList)) {
             return;
         }
-        List<Integer> transferIdList = new ArrayList<>();
-        for (UnionMainTransfer transfer : transferList) {
-            transferIdList.add(transfer.getId());
+        List<Integer> idList = new ArrayList<>();
+        for (UnionMainTransfer unionMainTransfer : unionMainTransferList) {
+            idList.add(unionMainTransfer.getId());
         }
-        List<String> transferIdKeyList = RedisKeyUtil.getTransferIdKey(transferIdList);
-        this.redisCacheUtil.remove(transferIdKeyList);
-        List<String> unionIdKeyList = getForeignIdKeyList(transferList, MainConstant.REDIS_KEY_TRANSFER_UNION_ID);
+        List<String> idKeyList = UnionMainTransferCacheUtil.getIdKey(idList);
+        redisCacheUtil.remove(idKeyList);
+
+        List<String> unionIdKeyList = getForeignIdKeyList(unionMainTransferList, UnionMainTransferCacheUtil.TYPE_UNION_ID);
         if (ListUtil.isNotEmpty(unionIdKeyList)) {
-            this.redisCacheUtil.remove(unionIdKeyList);
+            redisCacheUtil.remove(unionIdKeyList);
         }
-        List<String> fromMemberIdKeyList = getForeignIdKeyList(transferList, MainConstant.REDIS_KEY_TRANSFER_FROM_MEMBER_ID);
+
+        List<String> fromMemberIdKeyList = getForeignIdKeyList(unionMainTransferList, UnionMainTransferCacheUtil.TYPE_FROM_MEMBER_ID);
         if (ListUtil.isNotEmpty(fromMemberIdKeyList)) {
-            this.redisCacheUtil.remove(fromMemberIdKeyList);
+            redisCacheUtil.remove(fromMemberIdKeyList);
         }
-        List<String> toMemberIdKeyList = getForeignIdKeyList(transferList, MainConstant.REDIS_KEY_TRANSFER_TO_MEMBER_ID);
+
+        List<String> toMemberIdKeyList = getForeignIdKeyList(unionMainTransferList, UnionMainTransferCacheUtil.TYPE_TO_MEMBER_ID);
         if (ListUtil.isNotEmpty(toMemberIdKeyList)) {
-            this.redisCacheUtil.remove(toMemberIdKeyList);
+            redisCacheUtil.remove(toMemberIdKeyList);
         }
     }
 
-    private List<String> getForeignIdKeyList(List<UnionMainTransfer> transferList, int foreignIdType) {
+    private List<String> getForeignIdKeyList(List<UnionMainTransfer> unionMainTransferList, int foreignIdType) {
         List<String> result = new ArrayList<>();
         switch (foreignIdType) {
-            case MainConstant.REDIS_KEY_TRANSFER_UNION_ID:
-                for (UnionMainTransfer transfer : transferList) {
-                    Integer unionId = transfer.getUnionId();
+            case UnionMainTransferCacheUtil.TYPE_UNION_ID:
+                for (UnionMainTransfer unionMainTransfer : unionMainTransferList) {
+                    Integer unionId = unionMainTransfer.getUnionId();
                     if (unionId != null) {
-                        String unionIdKey = RedisKeyUtil.getTransferUnionIdKey(unionId);
+                        String unionIdKey = UnionMainTransferCacheUtil.getUnionInKey(unionId);
                         result.add(unionIdKey);
                     }
                 }
                 break;
-            case MainConstant.REDIS_KEY_TRANSFER_FROM_MEMBER_ID:
-                for (UnionMainTransfer transfer : transferList) {
-                    Integer fromMemberId = transfer.getFromMemberId();
+            case UnionMainTransferCacheUtil.TYPE_FROM_MEMBER_ID:
+                for (UnionMainTransfer unionMainTransfer : unionMainTransferList) {
+                    Integer fromMemberId = unionMainTransfer.getFromMemberId();
                     if (fromMemberId != null) {
-                        String fromMemberIdKey = RedisKeyUtil.getTransferFromMemberIdKey(fromMemberId);
+                        String fromMemberIdKey = UnionMainTransferCacheUtil.getFromMemberIdKey(fromMemberId);
                         result.add(fromMemberIdKey);
                     }
                 }
                 break;
-            case MainConstant.REDIS_KEY_TRANSFER_TO_MEMBER_ID:
-                for (UnionMainTransfer transfer : transferList) {
-                    Integer toMemberId = transfer.getToMemberId();
+            case UnionMainTransferCacheUtil.TYPE_TO_MEMBER_ID:
+                for (UnionMainTransfer unionMainTransfer : unionMainTransferList) {
+                    Integer toMemberId = unionMainTransfer.getToMemberId();
                     if (toMemberId != null) {
-                        String toMemberIdKey = RedisKeyUtil.getTransferToMemberIdKey(toMemberId);
+                        String toMemberIdKey = UnionMainTransferCacheUtil.getToMemberIdKey(toMemberId);
                         result.add(toMemberIdKey);
                     }
                 }
@@ -660,5 +350,4 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
         }
         return result;
     }
-
 }

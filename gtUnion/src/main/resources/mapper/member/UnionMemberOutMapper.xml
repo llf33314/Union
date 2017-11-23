@@ -5,13 +5,14 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.gt.union.member.entity.UnionMemberOut">
         <id column="id" property="id"/>
-        <result column="createtime" property="createtime"/>
         <result column="del_status" property="delStatus"/>
+        <result column="create_time" property="createTime"/>
         <result column="type" property="type"/>
         <result column="apply_member_id" property="applyMemberId"/>
         <result column="apply_out_reason" property="applyOutReason"/>
         <result column="confirm_out_time" property="confirmOutTime"/>
         <result column="actual_out_time" property="actualOutTime"/>
+        <result column="union_id" property="unionId"/>
     </resultMap>
 
 </mapper>

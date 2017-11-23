@@ -1,13 +1,10 @@
 package com.gt.union.common.filter;
 
-import com.alibaba.fastjson.JSON;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
-import com.gt.union.common.constant.ConfigConstant;
-import com.gt.union.common.response.GTJsonResult;
+import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.PropertiesUtil;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
@@ -18,15 +15,21 @@ import java.util.*;
 
 /**
  * 访问过滤器
- * Created by Administrator on 2017/7/25 0025.
+ *
+ * @author linweicong
+ * @version 2017-11-22 17:45:00
  */
 @WebFilter(filterName = "loginFilter", urlPatterns = "/*")
 public class LoginFilter implements Filter {
 
-    //不需要登录的url
+    /**
+     * 不需要登录的url
+     */
     private final Map<String, String> passUrlMap = new HashMap<>();
 
-    //不需要过滤的文件类型
+    /**
+     * 不需要过滤的文件类型
+     */
     private final List<String> passSuffixList = new ArrayList<>();
 
 
@@ -71,13 +74,13 @@ public class LoginFilter implements Filter {
                     return;
                 } else if (url.indexOf("unionH5Brokerage") > -1) {
                     response.setCharacterEncoding("UTF-8");
-                    response.getWriter().write(GTJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
+                    response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
                     return;
                 }
             }
         } else {
             BusUser busUser = SessionUtils.getLoginUser(req);
-            if ("/cardPhone/".equals(url) || "/cardPhone".equals(url)) {//
+            if ("/cardPhone/".equals(url) || "/cardPhone".equals(url)) {
                 chain.doFilter(request, response);
                 return;
             }
@@ -94,7 +97,7 @@ public class LoginFilter implements Filter {
                     return;
                 } else {
                     response.setCharacterEncoding("UTF-8");
-                    response.getWriter().write(GTJsonResult.instanceSuccessMsg(null, PropertiesUtil.getWxmpUrl() + "/user/tologin.do").toString());
+                    response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getWxmpUrl() + "/user/tologin.do").toString());
                     return;
                 }
             }
@@ -106,8 +109,8 @@ public class LoginFilter implements Filter {
     /**
      * 开发测试专用，正式中请注释掉
      *
-     * @param request
-     * @return
+     * @param request 请求对象
+     * @return BusUser
      */
     private BusUser justForDev(HttpServletRequest request, BusUser busUser) {
         if (busUser == null) {
@@ -129,8 +132,8 @@ public class LoginFilter implements Filter {
     /**
      * 判断是否是不需要过滤的文件类型
      *
-     * @param url
-     * @return
+     * @param url 请求地址
+     * @return boolean
      */
     private boolean isPassSuffixRequest(String url) {
         for (String passSuffix : passSuffixList) {
@@ -144,8 +147,8 @@ public class LoginFilter implements Filter {
     /**
      * 判断是否是不需要登录的url
      *
-     * @param url
-     * @return
+     * @param url 请求地址
+     * @return boolean
      */
     private boolean isPassUrl(String url) {
         return passUrlMap.containsKey(url);
@@ -154,8 +157,8 @@ public class LoginFilter implements Filter {
     /**
      * 判断是否是移动端请求
      *
-     * @param url
-     * @return
+     * @param url 请求地址
+     * @return boolean
      */
     private boolean isMobileRequest(String url) {
         return url.indexOf("79B4DE7C") > -1 ? true : false;
@@ -164,8 +167,8 @@ public class LoginFilter implements Filter {
     /**
      * 判断是否是内部系统接口请求
      *
-     * @param url
-     * @return
+     * @param url 请求地址
+     * @return boolean
      */
     private boolean isApiRequest(String url) {
         return url.indexOf("8A5DA52E") > -1 ? true : false;
@@ -174,8 +177,8 @@ public class LoginFilter implements Filter {
     /**
      * 判断是否是swaggerUI请求
      *
-     * @param url
-     * @return
+     * @param url 请求地址
+     * @return boolean
      */
     private boolean isSwaggerUIRequest(String url) {
         return (url.indexOf("v2") > -1 || url.indexOf("swagger") > -1) ? true : false;

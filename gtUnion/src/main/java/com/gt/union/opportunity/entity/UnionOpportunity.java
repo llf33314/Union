@@ -10,14 +10,13 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 商机推荐
+ * 商机
  *
  * @author linweicong
- * @version 2017-10-23 11:17:59
+ * @version 2017-11-23 16:56:17
  */
 @TableName("t_union_opportunity")
 public class UnionOpportunity extends Model<UnionOpportunity> {
-
     private static final long serialVersionUID = 1L;
 
     /**
@@ -25,64 +24,88 @@ public class UnionOpportunity extends Model<UnionOpportunity> {
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
+
     /**
-     * 创建时间
-     */
-    private Date createtime;
-    /**
-     * 删除状态（0：未删除 1：删除）
+     * 是否删除(0:否 1:是)
      */
     @TableField("del_status")
     private Integer delStatus;
+
     /**
-     * 推荐类型（1：线上 2：线下）
+     * 创建时间
      */
+    @TableField("create_time")
+    private Date createTime;
+
+    /**
+     * 修改时间
+     */
+    @TableField("modify_time")
+    private Date modifyTime;
+
+    /**
+     * 推荐类型(1:线上 2:线下)
+     */
+    @TableField("type")
     private Integer type;
+
     /**
      * 推荐盟员id
      */
     @TableField("from_member_id")
     private Integer fromMemberId;
+
     /**
      * 接收盟员id
      */
     @TableField("to_member_id")
     private Integer toMemberId;
+
     /**
-     * 是否受理（1：受理中  2：已接受 3：已拒绝）
+     * 联盟id
      */
-    @TableField("is_accept")
-    private Integer isAccept;
+    @TableField("union_id")
+    private Integer unionId;
+
+    /**
+     * 受理状态(1:受理中 2:已接受 3:已拒绝)
+     */
+    @TableField("accept_status")
+    private Integer acceptStatus;
+
     /**
      * 受理金额
      */
     @TableField("accept_price")
     private Double acceptPrice;
+
     /**
      * 佣金金额
      */
-    @TableField("brokerage_price")
-    private Double brokeragePrice;
-    /**
-     * 修改时间
-     */
-    private Date modifytime;
+    @TableField("brokerage_money")
+    private Double brokerageMoney;
+
     /**
      * 客户姓名
      */
     @TableField("client_name")
     private String clientName;
+
     /**
      * 客户电话
      */
     @TableField("client_phone")
     private String clientPhone;
+
     /**
      * 业务备注
      */
     @TableField("business_msg")
     private String businessMsg;
 
+    /**
+     * 是否需要催促佣金(0:否 1:是)
+     */
     @TableField("is_urge_brokerage")
     private Integer isUrgeBrokerage;
 
@@ -95,20 +118,28 @@ public class UnionOpportunity extends Model<UnionOpportunity> {
         this.id = id;
     }
 
-    public Date getCreatetime() {
-        return createtime;
-    }
-
-    public void setCreatetime(Date createtime) {
-        this.createtime = createtime;
-    }
-
     public Integer getDelStatus() {
         return delStatus;
     }
 
     public void setDelStatus(Integer delStatus) {
         this.delStatus = delStatus;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(Date modifyTime) {
+        this.modifyTime = modifyTime;
     }
 
     public Integer getType() {
@@ -135,12 +166,20 @@ public class UnionOpportunity extends Model<UnionOpportunity> {
         this.toMemberId = toMemberId;
     }
 
-    public Integer getIsAccept() {
-        return isAccept;
+    public Integer getUnionId() {
+        return unionId;
     }
 
-    public void setIsAccept(Integer isAccept) {
-        this.isAccept = isAccept;
+    public void setUnionId(Integer unionId) {
+        this.unionId = unionId;
+    }
+
+    public Integer getAcceptStatus() {
+        return acceptStatus;
+    }
+
+    public void setAcceptStatus(Integer acceptStatus) {
+        this.acceptStatus = acceptStatus;
     }
 
     public Double getAcceptPrice() {
@@ -151,20 +190,12 @@ public class UnionOpportunity extends Model<UnionOpportunity> {
         this.acceptPrice = acceptPrice;
     }
 
-    public Double getBrokeragePrice() {
-        return brokeragePrice;
+    public Double getBrokerageMoney() {
+        return brokerageMoney;
     }
 
-    public void setBrokeragePrice(Double brokeragePrice) {
-        this.brokeragePrice = brokeragePrice;
-    }
-
-    public Date getModifytime() {
-        return modifytime;
-    }
-
-    public void setModifytime(Date modifytime) {
-        this.modifytime = modifytime;
+    public void setBrokerageMoney(Double brokerageMoney) {
+        this.brokerageMoney = brokerageMoney;
     }
 
     public String getClientName() {
@@ -203,5 +234,4 @@ public class UnionOpportunity extends Model<UnionOpportunity> {
     protected Serializable pkVal() {
         return this.id;
     }
-
 }

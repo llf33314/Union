@@ -10,7 +10,10 @@ import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
 /**
- * Created by Administrator on 2017/7/19 0019.
+ * swagger配置类
+ *
+ * @author linweicong
+ * @version 2017-11-22 17:45:00
  */
 @Configuration
 @EnableSwagger2
@@ -26,68 +29,8 @@ public class SwaggerConfig {
                         .build())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.gt.union.api.server"))
-                .paths(PathSelectors.regex("/.*")) //可通过"或"来匹配多个模块
-                .build();
-    }
-
-    @Bean
-    public Docket brokerageGroupConfig() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("brokerage")
-                .apiInfo(new ApiInfoBuilder()
-                        .title("Restful文档接口服务平台-佣金相关")
-                        .description("基于Swagger2实现")
-                        .version("1.0.0")
-                        .build())
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("com.gt.union.brokerage.controller"))
-                .paths(PathSelectors.regex("/.*")) //可通过"或"来匹配多个模块
-                .build();
-    }
-
-    @Bean
-    public Docket cardGroupConfig() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("card")
-                .apiInfo(new ApiInfoBuilder()
-                        .title("Restful文档接口服务平台-联盟卡相关")
-                        .description("基于Swagger2实现")
-                        .version("1.0.0")
-                        .build())
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("com.gt.union.card.controller"))
-                .paths(PathSelectors.regex("/.*")) //可通过"或"来匹配多个模块
-                .build();
-    }
-
-    @Bean
-    public Docket consumeGroupConfig() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("consume")
-                .apiInfo(new ApiInfoBuilder()
-                        .title("Restful文档接口服务平台-消费核销相关")
-                        .description("基于Swagger2实现")
-                        .version("1.0.0")
-                        .build())
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("com.gt.union.consume.controller"))
-                .paths(PathSelectors.regex("/.*")) //可通过"或"来匹配多个模块
-                .build();
-    }
-
-
-    @Bean
-    public Docket mainGroupConfig() {
-        return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("main")
-                .apiInfo(new ApiInfoBuilder()
-                        .title("Restful文档接口服务平台-联盟相关")
-                        .description("基于Swagger2实现")
-                        .version("1.0.0")
-                        .build())
-                .select()
-                .apis(RequestHandlerSelectors.basePackage("com.gt.union.main.controller"))
-                .paths(PathSelectors.regex("/.*")) //可通过"或"来匹配多个模块
+                //可通过"或"来匹配多个模块
+                .paths(PathSelectors.regex("/.*"))
                 .build();
     }
 
@@ -96,13 +39,30 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .groupName("member")
                 .apiInfo(new ApiInfoBuilder()
-                        .title("Restful文档接口服务平台-盟员相关")
+                        .title("Restful文档接口服务平台-盟员")
                         .description("基于Swagger2实现")
-                        .version("1.0.0")
+                        .version("3.1.0")
                         .build())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.gt.union.member.controller"))
-                .paths(PathSelectors.regex("/.*")) //可通过"或"来匹配多个模块
+                //可通过"或"来匹配多个模块
+                .paths(PathSelectors.regex("/.*"))
+                .build();
+    }
+
+    @Bean
+    public Docket mainGroupConfig() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("main")
+                .apiInfo(new ApiInfoBuilder()
+                        .title("Restful文档接口服务平台-联盟")
+                        .description("基于Swagger2实现")
+                        .version("3.1.0")
+                        .build())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.gt.union.main.controller"))
+                //可通过"或"来匹配多个模块
+                .paths(PathSelectors.regex("/.*"))
                 .build();
     }
 
@@ -111,28 +71,30 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .groupName("opportunity")
                 .apiInfo(new ApiInfoBuilder()
-                        .title("Restful文档接口服务平台-商机相关")
+                        .title("Restful文档接口服务平台-商机")
                         .description("基于Swagger2实现")
-                        .version("1.0.0")
+                        .version("3.1.0")
                         .build())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.gt.union.opportunity.controller"))
-                .paths(PathSelectors.regex("/.*")) //可通过"或"来匹配多个模块
+                //可通过"或"来匹配多个模块
+                .paths(PathSelectors.regex("/.*"))
                 .build();
     }
 
     @Bean
-    public Docket preferentialGroupConfig() {
+    public Docket cardGroupConfig() {
         return new Docket(DocumentationType.SWAGGER_2)
-                .groupName("preferential")
+                .groupName("card")
                 .apiInfo(new ApiInfoBuilder()
-                        .title("Restful文档接口服务平台-优惠服务相关")
+                        .title("Restful文档接口服务平台-联盟卡")
                         .description("基于Swagger2实现")
-                        .version("1.0.0")
+                        .version("3.1.0")
                         .build())
                 .select()
-                .apis(RequestHandlerSelectors.basePackage("com.gt.union.preferential.controller"))
-                .paths(PathSelectors.regex("/.*")) //可通过"或"来匹配多个模块
+                .apis(RequestHandlerSelectors.basePackage("com.gt.union.card.controller"))
+                //可通过"或"来匹配多个模块
+                .paths(PathSelectors.regex("/.*"))
                 .build();
     }
 
@@ -141,13 +103,15 @@ public class SwaggerConfig {
         return new Docket(DocumentationType.SWAGGER_2)
                 .groupName("verifier")
                 .apiInfo(new ApiInfoBuilder()
-                        .title("Restful文档接口服务平台-管理人员相关")
+                        .title("Restful文档接口服务平台-平台管理者")
                         .description("基于Swagger2实现")
-                        .version("1.0.0")
+                        .version("3.1.0")
                         .build())
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.gt.union.verifier.controller"))
-                .paths(PathSelectors.regex("/.*")) //可通过"或"来匹配多个模块
+                //可通过"或"来匹配多个模块
+                .paths(PathSelectors.regex("/.*"))
                 .build();
     }
+
 }

@@ -1,7 +1,10 @@
 package com.gt.union.common.constant;
 
 /**
- * Created by Administrator on 2017/9/8 0008.
+ * 通用常量类
+ *
+ * @author linweicong
+ * @version 2017-11-22 17:45:00
  */
 public interface CommonConstant {
     /**

@@ -6,7 +6,10 @@ import java.util.Calendar;
 import java.util.Date;
 
 /**
- * Created by Administrator on 2017/8/22 0022.
+ * 日期工具类
+ *
+ * @author linweicong
+ * @version 2017-11-22 17:45:00
  */
 public class DateUtil {
     public static final String DATE_PATTERN = "yyyy-MM-dd";
@@ -14,68 +17,75 @@ public class DateUtil {
 
     /**
      * 获取当前时间
-     * @return
+     *
+     * @return Date
      */
-    public static final Date getCurrentDate() {
+    public static Date getCurrentDate() {
         return Calendar.getInstance().getTime();
     }
 
     /**
      * 获取字符形式的当前时间
-     * @return
+     *
+     * @return String
      */
-    public static final String getCurrentDateString() {
+    public static String getCurrentDateString() {
         return getDateString(getCurrentDate(), DATETIME_PATTERN);
     }
 
     /**
      * 获取指定格式、字符形式的当期时间
-     * @param pattern
-     * @return
+     *
+     * @param pattern String
+     * @return String
      */
-    public static final String getCurrentDateString(String pattern) {
+    public static String getCurrentDateString(String pattern) {
         return getDateString(getCurrentDate(), pattern);
     }
 
     /**
      * 获取指定格式、字符形式的当期时间
-     * @param date
-     * @param pattern
-     * @return
+     *
+     * @param date    Date
+     * @param pattern String
+     * @return String
      */
-    public static final String getDateString(Date date, String pattern) {
+    public static String getDateString(Date date, String pattern) {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         return simpleDateFormat.format(date);
     }
 
     /**
      * 将字符形式时间解析为日期形式
-     * @param date
-     * @return
-     * @throws ParseException
+     *
+     * @param date String
+     * @return Date
+     * @throws ParseException 转换异常
      */
-    public static final Date parseDate(String date) throws ParseException{
+    public static Date parseDate(String date) throws ParseException {
         return parseDate(date, DATETIME_PATTERN);
     }
 
     /**
      * 将字符形式时间按指定格式解析为日期形式
-     * @param date
-     * @param pattern
-     * @return
-     * @throws ParseException
+     *
+     * @param date    String
+     * @param pattern String
+     * @return Date
+     * @throws ParseException 转换异常
      */
-    public static final Date parseDate(String date, String pattern) throws ParseException{
+    public static Date parseDate(String date, String pattern) throws ParseException {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         return simpleDateFormat.parse(date);
     }
 
     /**
      * 获取指定时间的星期几形式，中文
-     * @param date
-     * @return
+     *
+     * @param date Date
+     * @return String
      */
-    public static final String getChDayInWeek(Date date) {
+    public static String getChDayInWeek(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         switch (calendar.get(Calendar.DAY_OF_WEEK)) {
@@ -100,10 +110,11 @@ public class DateUtil {
 
     /**
      * 获取指定时间的星期几形式，英文
-     * @param date
-     * @return
+     *
+     * @param date Date
+     * @return String
      */
-    public static final String getEnDayInWeek(Date date) {
+    public static String getEnDayInWeek(Date date) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         switch (calendar.get(Calendar.DAY_OF_WEEK)) {
@@ -126,7 +137,7 @@ public class DateUtil {
         }
     }
 
-    public static final Date addDays(Date date, Integer amount) {
+    public static Date addDays(Date date, Integer amount) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         calendar.add(Calendar.DATE, amount);

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gt.union.card.mapper.UnionProjectErpGoodsMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gt.union.card.entity.UnionProjectErpGoods">
+        <id column="id" property="id"/>
+        <result column="del_status" property="delStatus"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+        <result column="number" property="number"/>
+        <result column="surplus_number" property="surplusNumber"/>
+        <result column="shop_id" property="shopId"/>
+        <result column="erp_goods_id" property="erpGoodsId"/>
+        <result column="activity_project_id" property="activityProjectId"/>
+    </resultMap>
+
+</mapper>

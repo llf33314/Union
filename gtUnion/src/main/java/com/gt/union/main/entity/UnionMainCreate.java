@@ -10,14 +10,13 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 创建联盟
+ * 联盟创建
  *
  * @author linweicong
- * @version 2017-10-19 16:27:37
+ * @version 2017-11-23 15:26:25
  */
 @TableName("t_union_main_create")
 public class UnionMainCreate extends Model<UnionMainCreate> {
-
     private static final long serialVersionUID = 1L;
 
     /**
@@ -25,25 +24,31 @@ public class UnionMainCreate extends Model<UnionMainCreate> {
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
+
     /**
-     * 创建时间
-     */
-    private Date createtime;
-    /**
-     * 删除状态（0：未删除 1：删除）
+     * 是否删除(0:否 1:是)
      */
     @TableField("del_status")
     private Integer delStatus;
+
+    /**
+     * 创建时间
+     */
+    @TableField("create_time")
+    private Date createTime;
+
     /**
      * 商家id
      */
     @TableField("bus_id")
     private Integer busId;
+
     /**
      * 联盟id
      */
     @TableField("union_id")
     private Integer unionId;
+
     /**
      * 联盟许可id
      */
@@ -59,20 +64,20 @@ public class UnionMainCreate extends Model<UnionMainCreate> {
         this.id = id;
     }
 
-    public Date getCreatetime() {
-        return createtime;
-    }
-
-    public void setCreatetime(Date createtime) {
-        this.createtime = createtime;
-    }
-
     public Integer getDelStatus() {
         return delStatus;
     }
 
     public void setDelStatus(Integer delStatus) {
         this.delStatus = delStatus;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
     public Integer getBusId() {
@@ -103,5 +108,4 @@ public class UnionMainCreate extends Model<UnionMainCreate> {
     protected Serializable pkVal() {
         return this.id;
     }
-
 }

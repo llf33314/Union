@@ -3,9 +3,10 @@ package com.gt.union.common.constant;
 import com.gt.union.common.util.PropertiesUtil;
 
 /**
- * 系统配置全局常量
+ * 系统配置全局常量类
  *
- * @author Mr.Yu
+ * @author linweicong
+ * @version 2017-11-22 17:45:00
  */
 public interface ConfigConstant {
 

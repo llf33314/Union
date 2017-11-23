@@ -4,10 +4,10 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.gt.union.main.entity.UnionMainCreate;
 
 /**
- * 创建联盟 Mapper 接口
+ * 联盟创建 Mapper 接口
  *
  * @author linweicong
- * @version 2017-10-19 16:27:37
+ * @version 2017-11-23 15:26:25
  */
 public interface UnionMainCreateMapper extends BaseMapper<UnionMainCreate> {
 

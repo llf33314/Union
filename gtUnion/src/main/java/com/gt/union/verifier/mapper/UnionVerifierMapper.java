@@ -4,12 +4,10 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.gt.union.verifier.entity.UnionVerifier;
 
 /**
- * <p>
-  * 联盟平台管理人员 Mapper 接口
- * </p>
+ * 平台管理者 Mapper 接口
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-11-23 14:54:27
  */
 public interface UnionVerifierMapper extends BaseMapper<UnionVerifier> {
 

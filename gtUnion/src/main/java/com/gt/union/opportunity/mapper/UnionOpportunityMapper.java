@@ -4,10 +4,10 @@ import com.baomidou.mybatisplus.mapper.BaseMapper;
 import com.gt.union.opportunity.entity.UnionOpportunity;
 
 /**
- * 商机推荐 Mapper 接口
+ * 商机 Mapper 接口
  *
  * @author linweicong
- * @version 2017-10-23 11:17:59
+ * @version 2017-11-23 16:56:17
  */
 public interface UnionOpportunityMapper extends BaseMapper<UnionOpportunity> {
 

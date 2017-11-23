@@ -7,7 +7,10 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * Created by Administrator on 2017/8/25 0025.
+ * 数字小数点长度校验注解实现类
+ *
+ * @author linweicong
+ * @version 2017-11-22 17:45:00
  */
 public class DoublePrecisionValidator implements ConstraintValidator<DoublePrecisionValid, Double> {
     private int integer;

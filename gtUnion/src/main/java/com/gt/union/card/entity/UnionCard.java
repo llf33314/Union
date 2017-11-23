@@ -1,133 +1,167 @@
 package com.gt.union.card.entity;
 
+import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
-import java.util.Date;
-import com.baomidou.mybatisplus.enums.IdType;
-import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableName;
+import com.baomidou.mybatisplus.enums.IdType;
+
 import java.io.Serializable;
+import java.util.Date;
 
 /**
- * <p>
- * 联盟卡信息
- * </p>
+ * 联盟卡
  *
  * @author linweicong
- * @since 2017-09-13
+ * @version 2017-11-23 17:39:04
  */
 @TableName("t_union_card")
 public class UnionCard extends Model<UnionCard> {
-
     private static final long serialVersionUID = 1L;
 
     /**
      * 主键
      */
-	@TableId(value="id", type= IdType.AUTO)
-	private Integer id;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
+
+    /**
+     * 是否删除(0:否 1:是)
+     */
+    @TableField("del_status")
+    private Integer delStatus;
+
     /**
      * 创建时间
      */
-	private Date createtime;
+    @TableField("create_time")
+    private Date createTime;
+
     /**
-     * 删除状态（0：未删除 1：删除）
+     * 类型(1:折扣卡 2:活动卡)
      */
-	@TableField("del_status")
-	private Integer delStatus;
+    @TableField("type")
+    private Integer type;
+
     /**
-     * 联盟卡主信息表id
+     * 有效期
      */
-	@TableField("root_id")
-	private Integer rootId;
+    @TableField("validity")
+    private Date validity;
+
+    /**
+     * 积分
+     */
+    @TableField("integral")
+    private Double integral;
+
     /**
      * 盟员id
      */
-	@TableField("member_id")
-	private Integer memberId;
+    @TableField("member_id")
+    private Integer memberId;
+
     /**
-     * 联盟卡有效期
+     * 联盟id
      */
-	private Date validity;
+    @TableField("union_id")
+    private Integer unionId;
+
     /**
-     * 联盟卡类型（1：黑卡 2：红卡）
+     * 根id
      */
-	private Integer type;
+    @TableField("root_id")
+    private Integer rootId;
 
-	/**
-	 * 是否收费 1：是 0：否（旧会员）
-	 */
-	@TableField("is_charge")
-	private Integer isCharge;
+    /**
+     * 活动id
+     */
+    @TableField("activity_id")
+    private Integer activityId;
 
 
-	public Integer getId() {
-		return id;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public Date getCreatetime() {
-		return createtime;
-	}
+    public Integer getDelStatus() {
+        return delStatus;
+    }
 
-	public void setCreatetime(Date createtime) {
-		this.createtime = createtime;
-	}
+    public void setDelStatus(Integer delStatus) {
+        this.delStatus = delStatus;
+    }
 
-	public Integer getDelStatus() {
-		return delStatus;
-	}
+    public Date getCreateTime() {
+        return createTime;
+    }
 
-	public void setDelStatus(Integer delStatus) {
-		this.delStatus = delStatus;
-	}
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
 
-	public Integer getRootId() {
-		return rootId;
-	}
+    public Integer getType() {
+        return type;
+    }
 
-	public void setRootId(Integer rootId) {
-		this.rootId = rootId;
-	}
+    public void setType(Integer type) {
+        this.type = type;
+    }
 
-	public Integer getMemberId() {
-		return memberId;
-	}
+    public Date getValidity() {
+        return validity;
+    }
 
-	public void setMemberId(Integer memberId) {
-		this.memberId = memberId;
-	}
+    public void setValidity(Date validity) {
+        this.validity = validity;
+    }
 
-	public Date getValidity() {
-		return validity;
-	}
+    public Double getIntegral() {
+        return integral;
+    }
 
-	public void setValidity(Date validity) {
-		this.validity = validity;
-	}
+    public void setIntegral(Double integral) {
+        this.integral = integral;
+    }
 
-	public Integer getType() {
-		return type;
-	}
+    public Integer getMemberId() {
+        return memberId;
+    }
 
-	public void setType(Integer type) {
-		this.type = type;
-	}
+    public void setMemberId(Integer memberId) {
+        this.memberId = memberId;
+    }
 
-	public Integer getIsCharge() {
-		return isCharge;
-	}
+    public Integer getUnionId() {
+        return unionId;
+    }
 
-	public void setIsCharge(Integer isCharge) {
-		this.isCharge = isCharge;
-	}
+    public void setUnionId(Integer unionId) {
+        this.unionId = unionId;
+    }
 
-	@Override
-	protected Serializable pkVal() {
-		return this.id;
-	}
+    public Integer getRootId() {
+        return rootId;
+    }
 
+    public void setRootId(Integer rootId) {
+        this.rootId = rootId;
+    }
+
+    public Integer getActivityId() {
+        return activityId;
+    }
+
+    public void setActivityId(Integer activityId) {
+        this.activityId = activityId;
+    }
+
+    @Override
+    protected Serializable pkVal() {
+        return this.id;
+    }
 }

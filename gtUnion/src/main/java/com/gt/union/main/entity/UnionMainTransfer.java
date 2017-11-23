@@ -13,11 +13,10 @@ import java.util.Date;
  * 联盟转移
  *
  * @author linweicong
- * @version 2017-10-19 16:27:37
+ * @version 2017-11-23 15:26:25
  */
 @TableName("t_union_main_transfer")
 public class UnionMainTransfer extends Model<UnionMainTransfer> {
-
     private static final long serialVersionUID = 1L;
 
     /**
@@ -25,37 +24,45 @@ public class UnionMainTransfer extends Model<UnionMainTransfer> {
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
+
     /**
-     * 删除状态（0：未删除 1：删除）
+     * 是否删除(0:否 1:是)
      */
     @TableField("del_status")
     private Integer delStatus;
+
+    /**
+     * 转移时间
+     */
+    @TableField("create_time")
+    private Date createTime;
+
     /**
      * 联盟id
      */
     @TableField("union_id")
     private Integer unionId;
+
     /**
-     * 转移时间
-     */
-    private Date createtime;
-    /**
-     * 转移盟员id(此时仍然是盟主)
+     * 转移前盟主盟员id
      */
     @TableField("from_member_id")
     private Integer fromMemberId;
+
     /**
-     * 被转移盟员id
+     * 转移后盟主盟员id
      */
     @TableField("to_member_id")
     private Integer toMemberId;
+
     /**
-     * 确认状态（1：确认中  2：已确认 3：已拒绝）
+     * 确认状态(1:确认中 2:已确认 3:已拒绝)
      */
     @TableField("confirm_status")
     private Integer confirmStatus;
+
     /**
-     * 是否提示（0：否  1：是）
+     * 是否需要提示(0:否  1:是)
      */
     @TableField("is_advice")
     private Integer isAdvice;
@@ -77,20 +84,20 @@ public class UnionMainTransfer extends Model<UnionMainTransfer> {
         this.delStatus = delStatus;
     }
 
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
     public Integer getUnionId() {
         return unionId;
     }
 
     public void setUnionId(Integer unionId) {
         this.unionId = unionId;
-    }
-
-    public Date getCreatetime() {
-        return createtime;
-    }
-
-    public void setCreatetime(Date createtime) {
-        this.createtime = createtime;
     }
 
     public Integer getFromMemberId() {
@@ -129,5 +136,4 @@ public class UnionMainTransfer extends Model<UnionMainTransfer> {
     protected Serializable pkVal() {
         return this.id;
     }
-
 }

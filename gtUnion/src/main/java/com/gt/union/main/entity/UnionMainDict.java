@@ -9,14 +9,13 @@ import com.baomidou.mybatisplus.enums.IdType;
 import java.io.Serializable;
 
 /**
- * 联盟设置申请填写信息
+ * 联盟入盟申请必填信息
  *
  * @author linweicong
- * @version 2017-10-19 16:27:37
+ * @version 2017-11-23 15:26:25
  */
 @TableName("t_union_main_dict")
 public class UnionMainDict extends Model<UnionMainDict> {
-
     private static final long serialVersionUID = 1L;
 
     /**
@@ -24,13 +23,15 @@ public class UnionMainDict extends Model<UnionMainDict> {
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
+
     /**
      * 联盟id
      */
     @TableField("union_id")
     private Integer unionId;
+
     /**
-     * 字典关键key
+     * 字典关键字
      */
     @TableField("item_key")
     private String itemKey;
@@ -64,5 +65,4 @@ public class UnionMainDict extends Model<UnionMainDict> {
     protected Serializable pkVal() {
         return this.id;
     }
-
 }

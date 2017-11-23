@@ -5,12 +5,13 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.gt.union.opportunity.entity.UnionOpportunityRatio">
         <id column="id" property="id"/>
-        <result column="createtime" property="createtime"/>
         <result column="del_status" property="delStatus"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
         <result column="from_member_id" property="fromMemberId"/>
         <result column="to_member_id" property="toMemberId"/>
+        <result column="union_id" property="unionId"/>
         <result column="ratio" property="ratio"/>
-        <result column="modifytime" property="modifytime"/>
     </resultMap>
 
 </mapper>

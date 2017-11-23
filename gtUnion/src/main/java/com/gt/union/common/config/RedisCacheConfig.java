@@ -11,9 +11,10 @@ import org.springframework.data.redis.serializer.RedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 /**
- * redis缓存配置
- * <p>
- * Created by Administrator on 2017/8/2 0002.
+ * redis缓存配置类
+ *
+ * @author linweicong
+ * @version 2017-11-22 17:45:00
  */
 @Configuration
 @EnableCaching
@@ -48,7 +49,8 @@ public class RedisCacheConfig extends CachingConfigurerSupport {
         factory.setHostName(host);
         factory.setPort(port);
         factory.setPassword(password);
-        factory.setTimeout(timeout); //设置连接超时时间
+        //设置连接超时时间
+        factory.setTimeout(timeout);
         factory.setDatabase(database);
         return factory;
     }

@@ -5,123 +5,107 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
-import com.gt.union.common.annotation.valid.StringLengthValid;
-import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
-import lombok.Data;
-import org.hibernate.validator.constraints.NotBlank;
 
-import javax.validation.constraints.Pattern;
 import java.io.Serializable;
 import java.util.Date;
 
 /**
- * <p>
- * 联盟平台管理人员
- * </p>
+ * 平台管理者
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-11-23 14:54:27
  */
 @TableName("t_union_verifier")
 public class UnionVerifier extends Model<UnionVerifier> {
-
     private static final long serialVersionUID = 1L;
 
     /**
      * 主键
      */
-	@TableId(value="id", type= IdType.AUTO)
-	private Integer id;
+    @TableId(value = "id", type = IdType.AUTO)
+    private Integer id;
+
     /**
-     * 商家id
+     * 是否删除(0:否 1:是)
      */
-	@TableField("bus_id")
-	private Integer busId;
+    @TableField("del_status")
+    private Integer delStatus;
+
     /**
      * 创建时间
      */
-	private Date createtime;
+    @TableField("create_time")
+    private Date createTime;
+
     /**
-     * 删除状态（0：未删除 1：删除）
+     * 姓名
      */
-	@TableField("del_status")
-	private Integer delStatus;
+    @TableField("name")
+    private String name;
+
     /**
-     * 用户id
+     * 电话
      */
-	@TableField("third_member_id")
-	private Integer thirdMemberId;
+    @TableField("phone")
+    private String phone;
+
     /**
-     * 电话号码
+     * 商家id
      */
-	private String phone;
-    /**
-     * 用户姓名
-     */
-	private String name;
+    @TableField("bus_id")
+    private Integer busId;
 
 
-	public Integer getId() {
-		return id;
-	}
+    public Integer getId() {
+        return id;
+    }
 
-	public void setId(Integer id) {
-		this.id = id;
-	}
+    public void setId(Integer id) {
+        this.id = id;
+    }
 
-	public Integer getBusId() {
-		return busId;
-	}
+    public Integer getDelStatus() {
+        return delStatus;
+    }
 
-	public void setBusId(Integer busId) {
-		this.busId = busId;
-	}
+    public void setDelStatus(Integer delStatus) {
+        this.delStatus = delStatus;
+    }
 
-	public Date getCreatetime() {
-		return createtime;
-	}
+    public Date getCreateTime() {
+        return createTime;
+    }
 
-	public void setCreatetime(Date createtime) {
-		this.createtime = createtime;
-	}
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
 
-	public Integer getDelStatus() {
-		return delStatus;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setDelStatus(Integer delStatus) {
-		this.delStatus = delStatus;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public Integer getThirdMemberId() {
-		return thirdMemberId;
-	}
+    public String getPhone() {
+        return phone;
+    }
 
-	public void setThirdMemberId(Integer thirdMemberId) {
-		this.thirdMemberId = thirdMemberId;
-	}
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
-	public String getPhone() {
-		return phone;
-	}
+    public Integer getBusId() {
+        return busId;
+    }
 
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
+    public void setBusId(Integer busId) {
+        this.busId = busId;
+    }
 
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-
-	@Override
-	protected Serializable pkVal() {
-		return this.id;
-	}
-
+    @Override
+    protected Serializable pkVal() {
+        return this.id;
+    }
 }

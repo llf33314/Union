@@ -22,7 +22,8 @@ import java.util.Map;
 /**
  * 功能日志拦截器
  *
- * @date 2015-6-23
+ * @author linweicong
+ * @version 2017-11-22 17:45:00
  */
 public class SysLogInterceptor extends HandlerInterceptorAdapter {
 
@@ -53,8 +54,7 @@ public class SysLogInterceptor extends HandlerInterceptorAdapter {
                 logObj.put("opt_function", annotation.op_function());
                 logObj.put("log_type", annotation.log_type());
                 logObj.put("opt_ip", IPKit.getIpAddr(request));
-                KeysUtil des = new KeysUtil();
-                logObj.put("opt_paramers", des.getEncString(JSONObject.toJSONString(getParamers(request))));
+                logObj.put("opt_paramers", KeysUtil.getEncString(JSONObject.toJSONString(getParamers(request))));
                 String date = DateTimeKit.getDateTime(DateTimeKit.DEFAULT_DATE_FORMAT_YYYYMM);
 //				daoUtil.saveObjectByMap("", "t_bus_log_"+date, logObj);
             }
@@ -70,7 +70,7 @@ public class SysLogInterceptor extends HandlerInterceptorAdapter {
 
 
     private Map<String, Object> getParamers(HttpServletRequest request) {
-        Map<String, Object> paramers = new HashMap<String, Object>();
+        Map<String, Object> paramers = new HashMap<String, Object>(16);
         Enumeration<String> enumeration = request.getParameterNames();
         while (enumeration.hasMoreElements()) {
             String key = enumeration.nextElement();

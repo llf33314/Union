@@ -4,43 +4,24 @@ import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.card.entity.UnionCardRoot;
 
 /**
- * <p>
- * 联盟卡主信息 服务类
- * </p>
+ * 联盟卡根信息 服务接口
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-11-23 17:39:13
  */
 public interface IUnionCardRootService extends IService<UnionCardRoot> {
+    //***************************************** Domain Driven Design - get *********************************************
 
-	/**
-	 * 根据手机号获取联盟主卡信息
-	 * @param phone	手机号
-	 * @return
-	 * @throws Exception
-	 */
-	UnionCardRoot getByPhone(String phone) throws Exception;
+    //***************************************** Domain Driven Design - list ********************************************
 
-	/**
-	 * 根据联盟卡号获取联盟主卡信息
-	 *
-	 * @param cardNo	联盟卡号
-	 * @return UnionCardRoot
-	 * @throws Exception
-	 */
-	UnionCardRoot getByCardNo(String cardNo) throws Exception;
+    //***************************************** Domain Driven Design - save ********************************************
 
-	/**
-	 * 根据联盟卡主id获取联盟主卡信息
-	 * @param rootId
-	 * @return UnionCardRoot
-	 */
-	UnionCardRoot getById(Integer rootId);
+    //***************************************** Domain Driven Design - remove ******************************************
 
-	/**
-	 * 添加root
-	 * @param phone
-	 * @return
-	 */
-	UnionCardRoot createUnionCardRoot(String phone);
+    //***************************************** Domain Driven Design - update ******************************************
+
+    //***************************************** Domain Driven Design - count *******************************************
+
+    //***************************************** Domain Driven Design - boolean *****************************************
+
 }

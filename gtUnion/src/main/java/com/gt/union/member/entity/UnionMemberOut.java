@@ -10,14 +10,13 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 联盟成员退盟申请
+ * 退盟申请
  *
  * @author linweicong
- * @version 2017-10-23 08:34:54
+ * @version 2017-11-23 10:22:05
  */
 @TableName("t_union_member_out")
 public class UnionMemberOut extends Model<UnionMemberOut> {
-
     private static final long serialVersionUID = 1L;
 
     /**
@@ -25,39 +24,54 @@ public class UnionMemberOut extends Model<UnionMemberOut> {
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
+
     /**
-     * 创建时间
-     */
-    private Date createtime;
-    /**
-     * 删除状态（0：未删除 1：删除）
+     * 是否删除(0:否 1:是)
      */
     @TableField("del_status")
     private Integer delStatus;
+
     /**
-     * 退盟类型（1：自己申请退盟 2：盟主移出退盟）
+     * 创建时间
      */
+    @TableField("create_time")
+    private Date createTime;
+
+    /**
+     * 退盟类型(1:自己申请 2:盟主移出)
+     */
+    @TableField("type")
     private Integer type;
+
     /**
-     * 申请退盟的盟员id
+     * 退盟盟员id
      */
-    @TableField(value = "apply_member_id")
+    @TableField("apply_member_id")
     private Integer applyMemberId;
+
     /**
      * 退盟理由
      */
     @TableField("apply_out_reason")
     private String applyOutReason;
+
     /**
      * 盟主审核退盟时间
      */
     @TableField("confirm_out_time")
     private Date confirmOutTime;
+
     /**
      * 实际退盟时间
      */
     @TableField("actual_out_time")
     private Date actualOutTime;
+
+    /**
+     * 联盟id
+     */
+    @TableField("union_id")
+    private Integer unionId;
 
 
     public Integer getId() {
@@ -68,22 +82,6 @@ public class UnionMemberOut extends Model<UnionMemberOut> {
         this.id = id;
     }
 
-    public Integer getApplyMemberId() {
-        return applyMemberId;
-    }
-
-    public void setApplyMemberId(Integer applyMemberId) {
-        this.applyMemberId = applyMemberId;
-    }
-
-    public Date getCreatetime() {
-        return createtime;
-    }
-
-    public void setCreatetime(Date createtime) {
-        this.createtime = createtime;
-    }
-
     public Integer getDelStatus() {
         return delStatus;
     }
@@ -92,12 +90,28 @@ public class UnionMemberOut extends Model<UnionMemberOut> {
         this.delStatus = delStatus;
     }
 
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
     public Integer getType() {
         return type;
     }
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public Integer getApplyMemberId() {
+        return applyMemberId;
+    }
+
+    public void setApplyMemberId(Integer applyMemberId) {
+        this.applyMemberId = applyMemberId;
     }
 
     public String getApplyOutReason() {
@@ -124,9 +138,16 @@ public class UnionMemberOut extends Model<UnionMemberOut> {
         this.actualOutTime = actualOutTime;
     }
 
+    public Integer getUnionId() {
+        return unionId;
+    }
+
+    public void setUnionId(Integer unionId) {
+        this.unionId = unionId;
+    }
+
     @Override
     protected Serializable pkVal() {
         return this.id;
     }
-
 }

@@ -10,14 +10,13 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 联盟成员入盟申请
+ * 入盟申请
  *
  * @author linweicong
- * @version 2017-10-23 08:34:54
+ * @version 2017-11-23 10:22:05
  */
 @TableName("t_union_member_join")
 public class UnionMemberJoin extends Model<UnionMemberJoin> {
-
     private static final long serialVersionUID = 1L;
 
     /**
@@ -25,38 +24,54 @@ public class UnionMemberJoin extends Model<UnionMemberJoin> {
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
+
     /**
-     * 创建时间
-     */
-    private Date createtime;
-    /**
-     * 删除状态（0：否 1：是）
+     * 是否删除(0:否 1:是)
      */
     @TableField("del_status")
     private Integer delStatus;
+
     /**
-     * 申请加入的联盟成员id
+     * 创建时间
+     */
+    @TableField("create_time")
+    private Date createTime;
+
+    /**
+     * 入盟类型(1:申请 2:推荐)
+     */
+    @TableField("type")
+    private Integer type;
+
+    /**
+     * 入盟盟员id
      */
     @TableField("apply_member_id")
     private Integer applyMemberId;
+
     /**
-     * 推荐加入的联盟成员id
+     * 推荐盟员id
      */
     @TableField("recommend_member_id")
     private Integer recommendMemberId;
-    /**
-     * 加入或推荐理由
-     */
-    private String reason;
+
     /**
      * 是否同意推荐(0：不同意 1：同意)
      */
     @TableField("is_recommend_agree")
     private Integer isRecommendAgree;
+
     /**
-     * 入盟类型（1：申请 2：推荐）
+     * 加入或推荐理由
      */
-    private Integer type;
+    @TableField("reason")
+    private String reason;
+
+    /**
+     * 联盟id
+     */
+    @TableField("union_id")
+    private Integer unionId;
 
 
     public Integer getId() {
@@ -67,20 +82,28 @@ public class UnionMemberJoin extends Model<UnionMemberJoin> {
         this.id = id;
     }
 
-    public Date getCreatetime() {
-        return createtime;
-    }
-
-    public void setCreatetime(Date createtime) {
-        this.createtime = createtime;
-    }
-
     public Integer getDelStatus() {
         return delStatus;
     }
 
     public void setDelStatus(Integer delStatus) {
         this.delStatus = delStatus;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Integer getType() {
+        return type;
+    }
+
+    public void setType(Integer type) {
+        this.type = type;
     }
 
     public Integer getApplyMemberId() {
@@ -99,14 +122,6 @@ public class UnionMemberJoin extends Model<UnionMemberJoin> {
         this.recommendMemberId = recommendMemberId;
     }
 
-    public String getReason() {
-        return reason;
-    }
-
-    public void setReason(String reason) {
-        this.reason = reason;
-    }
-
     public Integer getIsRecommendAgree() {
         return isRecommendAgree;
     }
@@ -115,17 +130,24 @@ public class UnionMemberJoin extends Model<UnionMemberJoin> {
         this.isRecommendAgree = isRecommendAgree;
     }
 
-    public Integer getType() {
-        return type;
+    public String getReason() {
+        return reason;
     }
 
-    public void setType(Integer type) {
-        this.type = type;
+    public void setReason(String reason) {
+        this.reason = reason;
+    }
+
+    public Integer getUnionId() {
+        return unionId;
+    }
+
+    public void setUnionId(Integer unionId) {
+        this.unionId = unionId;
     }
 
     @Override
     protected Serializable pkVal() {
         return this.id;
     }
-
 }

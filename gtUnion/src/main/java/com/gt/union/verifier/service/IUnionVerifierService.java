@@ -1,60 +1,27 @@
 package com.gt.union.verifier.service;
 
-import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.verifier.entity.UnionVerifier;
-import com.gt.union.verifier.vo.UnionVerifierVO;
 
 /**
- * <p>
- * 联盟平台管理人员 服务类
- * </p>
+ * 平台管理者 服务接口
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-11-23 14:54:27
  */
 public interface IUnionVerifierService extends IService<UnionVerifier> {
-    /**
-     * 删除佣金平台管理员
-     * @param id
-     */
-    void deleteById(Integer id) throws Exception;
+    //***************************************** Domain Driven Design - get *********************************************
 
-    /**
-     * 保存佣金平台管理员
-	 * @param unionVerifier
-	 */
-    void save(UnionVerifierVO unionVerifier) throws Exception;
+    //***************************************** Domain Driven Design - list ********************************************
 
-    /**
-     * 查询佣金平台管理员
-     * @param page
-     * @param busId
-     * @return
-     */
-    Page list(Page<UnionVerifier> page, Integer busId) throws Exception;
+    //***************************************** Domain Driven Design - save ********************************************
 
-    /**
-     * 根据手机号查询
-     * @param phone
-     * @return
-     */
-	UnionVerifier getByPhone(String phone);
+    //***************************************** Domain Driven Design - remove ******************************************
 
-	/**
-	 * 根据商家id和名称查询佣金平台管理员个数
-	 * @param busId
-	 * @param name
-	 * @return
-	 */
-	int selectCountByBusIdAndName(Integer busId, String name);
+    //***************************************** Domain Driven Design - update ******************************************
 
-	/**
-	 * 判断手机和用户姓名
-	 * @param phone
-	 * @param name
-	 * @param busId
-	 * @return
-	 */
-	boolean checkUnionVerifier(String phone, String name, Integer busId) throws Exception;
+    //***************************************** Domain Driven Design - count *******************************************
+
+    //***************************************** Domain Driven Design - boolean *****************************************
+
 }

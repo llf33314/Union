@@ -13,11 +13,10 @@ import java.util.Date;
  * 商机佣金比率
  *
  * @author linweicong
- * @version 2017-10-23 11:17:59
+ * @version 2017-11-23 16:56:20
  */
 @TableName("t_union_opportunity_ratio")
 public class UnionOpportunityRatio extends Model<UnionOpportunityRatio> {
-
     private static final long serialVersionUID = 1L;
 
     /**
@@ -25,33 +24,48 @@ public class UnionOpportunityRatio extends Model<UnionOpportunityRatio> {
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
+
     /**
-     * 创建时间
-     */
-    private Date createtime;
-    /**
-     * 删除状态（0：未删除 1：删除）
+     * 是否删除(0:否 1:是)
      */
     @TableField("del_status")
     private Integer delStatus;
+
+    /**
+     * 创建时间
+     */
+    @TableField("create_time")
+    private Date createTime;
+
+    /**
+     * 修改时间
+     */
+    @TableField("modify_time")
+    private Date modifyTime;
+
     /**
      * 设置佣金比率盟员id
      */
     @TableField("from_member_id")
     private Integer fromMemberId;
+
     /**
      * 受惠佣金比率盟员id
      */
     @TableField("to_member_id")
     private Integer toMemberId;
+
+    /**
+     * 联盟id
+     */
+    @TableField("union_id")
+    private Integer unionId;
+
     /**
      * 佣金比率（百分比）
      */
+    @TableField("ratio")
     private Double ratio;
-    /**
-     * 修改时间
-     */
-    private Date modifytime;
 
 
     public Integer getId() {
@@ -62,20 +76,28 @@ public class UnionOpportunityRatio extends Model<UnionOpportunityRatio> {
         this.id = id;
     }
 
-    public Date getCreatetime() {
-        return createtime;
-    }
-
-    public void setCreatetime(Date createtime) {
-        this.createtime = createtime;
-    }
-
     public Integer getDelStatus() {
         return delStatus;
     }
 
     public void setDelStatus(Integer delStatus) {
         this.delStatus = delStatus;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(Date modifyTime) {
+        this.modifyTime = modifyTime;
     }
 
     public Integer getFromMemberId() {
@@ -94,6 +116,14 @@ public class UnionOpportunityRatio extends Model<UnionOpportunityRatio> {
         this.toMemberId = toMemberId;
     }
 
+    public Integer getUnionId() {
+        return unionId;
+    }
+
+    public void setUnionId(Integer unionId) {
+        this.unionId = unionId;
+    }
+
     public Double getRatio() {
         return ratio;
     }
@@ -102,17 +132,8 @@ public class UnionOpportunityRatio extends Model<UnionOpportunityRatio> {
         this.ratio = ratio;
     }
 
-    public Date getModifytime() {
-        return modifytime;
-    }
-
-    public void setModifytime(Date modifytime) {
-        this.modifytime = modifytime;
-    }
-
     @Override
     protected Serializable pkVal() {
         return this.id;
     }
-
 }

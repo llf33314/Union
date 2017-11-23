@@ -10,14 +10,13 @@ import java.io.Serializable;
 import java.util.Date;
 
 /**
- * 联盟成员
+ * 盟员
  *
  * @author linweicong
- * @version 2017-10-23 08:34:54
+ * @version 2017-11-23 10:22:05
  */
 @TableName("t_union_member")
 public class UnionMember extends Model<UnionMember> {
-
     private static final long serialVersionUID = 1L;
 
     /**
@@ -25,104 +24,132 @@ public class UnionMember extends Model<UnionMember> {
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
+
     /**
-     * 创建时间
-     */
-    private Date createtime;
-    /**
-     * 删除状态（0：未删除 1：删除）
+     * 是否删除(0:否 1:是)
      */
     @TableField("del_status")
     private Integer delStatus;
+
+    /**
+     * 创建时间
+     */
+    @TableField("create_time")
+    private Date createTime;
+
+    /**
+     * 修改时间
+     */
+    @TableField("modify_time")
+    private Date modifyTime;
+
     /**
      * 联盟id
      */
     @TableField("union_id")
     private Integer unionId;
+
     /**
-     * 成员id
+     * 商家id
      */
     @TableField("bus_id")
     private Integer busId;
+
     /**
-     * 是否盟主（0：否 1：是）
+     * 是否盟主(0:否 1:是)
      */
     @TableField("is_union_owner")
     private Integer isUnionOwner;
+
     /**
-     * 盟员状态(1：申请入盟；2：已入盟 3：申请退盟 4：退盟过渡期 )
+     * 盟员状态(1:申请入盟 2:已入盟 3:申请退盟 4:退盟过渡期)
      */
+    @TableField("status")
     private Integer status;
+
     /**
      * 企业名称
      */
     @TableField("enterprise_name")
     private String enterpriseName;
+
     /**
      * 企业地址
      */
     @TableField("enterprise_address")
     private String enterpriseAddress;
+
     /**
      * 负责人名称
      */
     @TableField("director_name")
     private String directorName;
+
     /**
      * 负责人电话
      */
     @TableField("director_phone")
     private String directorPhone;
+
     /**
      * 负责人邮箱
      */
     @TableField("director_email")
     private String directorEmail;
+
     /**
      * 地址经度
      */
     @TableField("address_longitude")
     private String addressLongitude;
+
     /**
      * 地址维度
      */
     @TableField("address_latitude")
     private String addressLatitude;
+
     /**
      * 地址省份code
      */
     @TableField("address_province_code")
     private String addressProvinceCode;
+
     /**
      * 地址城市code
      */
     @TableField("address_city_code")
     private String addressCityCode;
+
     /**
      * 地址区code
      */
     @TableField("address_district_code")
     private String addressDistrictCode;
+
     /**
-     * 盟员退出是否短信通知开关设置（0：关闭 1：开启）
+     * 盟员退出是否短信通知(0:否 1:是)
      */
     @TableField("is_member_out_notify")
     private Integer isMemberOutNotify;
+
     /**
      * 短信通知手机号
      */
     @TableField("notify_phone")
     private String notifyPhone;
+
     /**
-     * 售卡分成比例
+     * 积分兑换率(百分比)
      */
-    @TableField("card_divide_percent")
-    private Double cardDividePercent;
+    @TableField("integral_exchange_ratio")
+    private Double integralExchangeRatio;
+
     /**
-     * 积分兑换率
+     * 统一折扣(折)
      */
-    @TableField("integral_exchange_percent")
-    private Double integralExchangePercent;
+    @TableField("discount")
+    private Double discount;
 
 
     public Integer getId() {
@@ -141,12 +168,20 @@ public class UnionMember extends Model<UnionMember> {
         this.delStatus = delStatus;
     }
 
-    public Date getCreatetime() {
-        return createtime;
+    public Date getCreateTime() {
+        return createTime;
     }
 
-    public void setCreatetime(Date createtime) {
-        this.createtime = createtime;
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(Date modifyTime) {
+        this.modifyTime = modifyTime;
     }
 
     public Integer getUnionId() {
@@ -277,25 +312,24 @@ public class UnionMember extends Model<UnionMember> {
         this.notifyPhone = notifyPhone;
     }
 
-    public Double getCardDividePercent() {
-        return cardDividePercent;
+    public Double getIntegralExchangeRatio() {
+        return integralExchangeRatio;
     }
 
-    public void setCardDividePercent(Double cardDividePercent) {
-        this.cardDividePercent = cardDividePercent;
+    public void setIntegralExchangeRatio(Double integralExchangeRatio) {
+        this.integralExchangeRatio = integralExchangeRatio;
     }
 
-    public Double getIntegralExchangePercent() {
-        return integralExchangePercent;
+    public Double getDiscount() {
+        return discount;
     }
 
-    public void setIntegralExchangePercent(Double integralExchangePercent) {
-        this.integralExchangePercent = integralExchangePercent;
+    public void setDiscount(Double discount) {
+        this.discount = discount;
     }
 
     @Override
     protected Serializable pkVal() {
         return this.id;
     }
-
 }

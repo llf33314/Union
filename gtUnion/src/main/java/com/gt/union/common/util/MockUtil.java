@@ -6,7 +6,10 @@ import java.lang.reflect.Modifier;
 import java.util.*;
 
 /**
- * Created by Administrator on 2017/10/16 0016.
+ * 模拟数据工具类
+ *
+ * @author linweicong
+ * @version 2017-11-22 17:45:00
  */
 public class MockUtil {
     public static final String BASIC_BYTE = "byte";
@@ -53,19 +56,19 @@ public class MockUtil {
         }
     };
 
-    public static final <T> T get(Class<T> tClass) {
+    public static <T> T get(Class<T> tClass) {
         return get(tClass, null);
     }
 
-    public static final <T> T get(Class<T> tClass, Map<String, List<Object>> field2SourceListMap) {
+    public static <T> T get(Class<T> tClass, Map<String, List<Object>> field2SourceListMap) {
         return mock(tClass, field2SourceListMap);
     }
 
-    public static final <T> List<T> list(Class<T> tClass, int size) {
+    public static <T> List<T> list(Class<T> tClass, int size) {
         return list(tClass, size, null);
     }
 
-    public static final <T> List<T> list(Class<T> tClass, int size, Map<String, List<Object>> field2SourceListMap) {
+    public static <T> List<T> list(Class<T> tClass, int size, Map<String, List<Object>> field2SourceListMap) {
         List<T> result = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
             result.add(get(tClass, field2SourceListMap));
@@ -83,13 +86,15 @@ public class MockUtil {
         if (baseDataTypeSet.contains(clazz.getName())) {
             return (T) mockData4BaseDataType(clazz, random);
         }
-        if (set.contains(clazz.getName())) { //防止A、B互相引用造成死循环
+        if (set.contains(clazz.getName())) {
+            //防止A、B互相引用造成死循环
             return null;
         }
         set.add(clazz.getName());
         T result;
         try {
-            Constructor defaultConstructor = clazz.getDeclaredConstructors()[0];//防止构造函数私有而报错
+            //防止构造函数私有而报错
+            Constructor defaultConstructor = clazz.getDeclaredConstructors()[0];
             defaultConstructor.setAccessible(true);
             Class[] paramTypeArray = defaultConstructor.getParameterTypes();
             Object[] paramArray = new Object[paramTypeArray.length];
@@ -97,13 +102,15 @@ public class MockUtil {
                 paramArray[i] = null;
             }
             result = (T) defaultConstructor.newInstance(paramArray);
-        } catch (Exception e) { //不支持枚举类实例
+        } catch (Exception e) {
+            //不支持枚举类实例
             return null;
         }
 
         Field[] fields = clazz.getDeclaredFields();
         for (Field field : fields) {
-            if (Modifier.isFinal(field.getModifiers())) { //不支持静态变量
+            if (Modifier.isFinal(field.getModifiers())) {
+                //不支持静态变量
                 continue;
             }
             field.setAccessible(true);
@@ -119,11 +126,13 @@ public class MockUtil {
     }
 
     private static Object mockData4Field(Field field, Map<String, List<Object>> field2SourceListMap, Random random, Set<String> set) {
-        if (field2SourceListMap != null && field2SourceListMap.containsKey(field.getName())) { //是否指定随机来源范围
+        if (field2SourceListMap != null && field2SourceListMap.containsKey(field.getName())) {
+            //是否指定随机来源范围
             List<Object> sourceList = field2SourceListMap.get(field.getName());
             return ListUtil.isEmpty(sourceList) ? null : sourceList.get(random.nextInt(sourceList.size()));
         }
-        if (baseDataTypeSet.contains(field.getType().getName())) { //是否是基本数据类型
+        if (baseDataTypeSet.contains(field.getType().getName())) {
+            //是否是基本数据类型
             return mockData4BaseDataType(field.getType(), random);
         }
         return mockData(field.getType(), field2SourceListMap, random, set);
@@ -157,7 +166,7 @@ public class MockUtil {
                 return random.nextBoolean();
             case OBJECT_CHAR_SEQUENCE:
             case OBJECT_STRING:
-                return new StringBuilder("mock数据").append(random.nextInt(Byte.MAX_VALUE)).toString();
+                return "mock数据" + random.nextInt(Byte.MAX_VALUE);
             case OBJECT_DATE:
                 return Calendar.getInstance().getTime();
             case OBJECT_LIST:

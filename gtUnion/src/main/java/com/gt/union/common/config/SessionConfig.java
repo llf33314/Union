@@ -1,6 +1,5 @@
 package com.gt.union.common.config;
 
-import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.util.PropertiesUtil;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -8,8 +7,13 @@ import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.session.data.redis.config.annotation.web.http.EnableRedisHttpSession;
 import org.springframework.session.web.http.DefaultCookieSerializer;
 
-//这个类用配置redis服务器的连接
-//maxInactiveIntervalInSeconds为SpringSession的过期时间（单位：秒）
+/**
+ * redis session配置类
+ * maxInactiveIntervalInSeconds为SpringSession的过期时间（单位：秒）
+ *
+ * @author linweicong
+ * @version 2017-11-22 17:45:00
+ */
 @EnableRedisHttpSession(maxInactiveIntervalInSeconds = 1800)
 public class SessionConfig {
 
@@ -48,7 +52,8 @@ public class SessionConfig {
         factory.setHostName(host);
         factory.setPort(port);
         factory.setDatabase(database);
-        factory.setTimeout(timeout); //设置连接超时时间
+        //设置连接超时时间
+        factory.setTimeout(timeout);
         factory.setPassword(password);
         return factory;
     }

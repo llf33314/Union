@@ -13,11 +13,10 @@ import java.util.Date;
  * 联盟公告
  *
  * @author linweicong
- * @version 2017-10-19 16:27:37
+ * @version 2017-11-23 15:18:52
  */
 @TableName("t_union_main_notice")
 public class UnionMainNotice extends Model<UnionMainNotice> {
-
     private static final long serialVersionUID = 1L;
 
     /**
@@ -25,28 +24,36 @@ public class UnionMainNotice extends Model<UnionMainNotice> {
      */
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
+
     /**
-     * 创建时间
-     */
-    private Date createtime;
-    /**
-     * 删除状态（0：未删除 1：删除）
+     * 是否删除(0:否 1:是)
      */
     @TableField("del_status")
     private Integer delStatus;
+
+    /**
+     * 创建时间
+     */
+    @TableField("create_time")
+    private Date createTime;
+
+    /**
+     * 修改时间
+     */
+    @TableField("modify_time")
+    private Date modifyTime;
+
     /**
      * 联盟id
      */
     @TableField("union_id")
     private Integer unionId;
+
     /**
      * 公告内容
      */
+    @TableField("content")
     private String content;
-    /**
-     * 修改时间
-     */
-    private Date modifytime;
 
 
     public Integer getId() {
@@ -57,20 +64,28 @@ public class UnionMainNotice extends Model<UnionMainNotice> {
         this.id = id;
     }
 
-    public Date getCreatetime() {
-        return createtime;
-    }
-
-    public void setCreatetime(Date createtime) {
-        this.createtime = createtime;
-    }
-
     public Integer getDelStatus() {
         return delStatus;
     }
 
     public void setDelStatus(Integer delStatus) {
         this.delStatus = delStatus;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
+    }
+
+    public Date getModifyTime() {
+        return modifyTime;
+    }
+
+    public void setModifyTime(Date modifyTime) {
+        this.modifyTime = modifyTime;
     }
 
     public Integer getUnionId() {
@@ -89,17 +104,8 @@ public class UnionMainNotice extends Model<UnionMainNotice> {
         this.content = content;
     }
 
-    public Date getModifytime() {
-        return modifytime;
-    }
-
-    public void setModifytime(Date modifytime) {
-        this.modifytime = modifytime;
-    }
-
     @Override
     protected Serializable pkVal() {
         return this.id;
     }
-
 }

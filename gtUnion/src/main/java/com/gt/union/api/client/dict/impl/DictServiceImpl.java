@@ -67,7 +67,7 @@ public class DictServiceImpl implements IDictService {
 	 */
 	private static String BUS_USER_LEVEL_DESC_TYPE = "1004";
 
-
+	@Override
 	public Double getDefaultDiscount(){
 		return getItemDoubleValue(DEFAULT_DISCOUNT_TYPE);
 	}

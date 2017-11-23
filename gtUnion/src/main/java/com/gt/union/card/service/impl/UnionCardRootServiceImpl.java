@@ -6,107 +6,216 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.card.entity.UnionCardRoot;
 import com.gt.union.card.mapper.UnionCardRootMapper;
 import com.gt.union.card.service.IUnionCardRootService;
+import com.gt.union.card.util.UnionCardRootCacheUtil;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.ParamException;
+import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
-import com.gt.union.common.util.RedisKeyUtil;
-import com.gt.union.common.util.StringUtil;
-import com.gt.union.opportunity.entity.UnionOpportunityRatio;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.UUID;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * <p>
- * 联盟卡主信息 服务实现类
- * </p>
+ * 联盟卡根信息 服务实现类
  *
  * @author linweicong
- * @since 2017-09-07
+ * @version 2017-11-23 17:39:13
  */
 @Service
 public class UnionCardRootServiceImpl extends ServiceImpl<UnionCardRootMapper, UnionCardRoot> implements IUnionCardRootService {
+    @Autowired
+    public RedisCacheUtil redisCacheUtil;
 
-	@Autowired
-	private RedisCacheUtil redisCacheUtil;
+    //***************************************** Domain Driven Design - get *********************************************
 
-	@Override
-	public UnionCardRoot getByPhone(String phone) throws Exception{
-		if(StringUtil.isEmpty(phone)){
-			throw new ParamException(CommonConstant.PARAM_ERROR);
-		}
-		UnionCardRoot unionCardRoot = null;
-		String key = RedisKeyUtil.getUnionCardRootByPhoneKey(phone);
+    //***************************************** Domain Driven Design - list ********************************************
 
-		if(redisCacheUtil.exists(key)){
-			String tempStr = this.redisCacheUtil.get(key);
-			unionCardRoot = JSONArray.parseObject(tempStr, UnionCardRoot.class);
-			return unionCardRoot;
-		}
-		EntityWrapper entityWrapper = new EntityWrapper<>();
-		entityWrapper.eq("phone", phone);
-		entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
-		unionCardRoot = this.selectOne(entityWrapper);
-		if(unionCardRoot != null){
-			redisCacheUtil.set(key,unionCardRoot);
-		}
-		return unionCardRoot;
-	}
+    //***************************************** Domain Driven Design - save ********************************************
 
-	@Override
-	public UnionCardRoot getByCardNo(String cardNo) throws Exception {
-		if(StringUtil.isEmpty(cardNo)){
-			throw new ParamException(CommonConstant.PARAM_ERROR);
-		}
-		UnionCardRoot unionCardRoot = null;
-		String key = RedisKeyUtil.getUnionCardRootByCardNoKey(cardNo);
+    //***************************************** Domain Driven Design - remove ******************************************
 
-		if(redisCacheUtil.exists(key)){
-			String tempStr = this.redisCacheUtil.get(key);
-			unionCardRoot = JSONArray.parseObject(tempStr, UnionCardRoot.class);
-			return unionCardRoot;
-		}
-		EntityWrapper entityWrapper = new EntityWrapper<>();
-		entityWrapper.eq("number", cardNo);
-		entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
-		unionCardRoot = this.selectOne(entityWrapper);
-		redisCacheUtil.set(key,unionCardRoot);
-		return unionCardRoot;
-	}
+    //***************************************** Domain Driven Design - update ******************************************
 
-	@Override
-	public UnionCardRoot getById(Integer rootId) {
-		EntityWrapper entityWrapper = new EntityWrapper<>();
-		entityWrapper.eq("id", rootId);
-		entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
-		return this.selectOne(entityWrapper);
-	}
+    //***************************************** Domain Driven Design - count *******************************************
 
-	@Override
-	public UnionCardRoot createUnionCardRoot(String phone) {
-		UnionCardRoot root = new UnionCardRoot();
-		root.setPhone(phone);
-		root.setDelStatus(CommonConstant.DEL_STATUS_NO);
-		root.setCreatetime(new Date());
-		root.setIntegral(0d);
-		root.setNumber(generateCardNo());
-		this.insert(root);
-		return root;
-	}
+    //***************************************** Domain Driven Design - boolean *****************************************
 
+    //***************************************** Object As a Service - get **********************************************
 
-	//生成联盟卡号  8位
-	private String generateCardNo(){
-		int machineId = 10;// 最大支持1-9个集群机器部署
-		int hashCodeV = UUID.randomUUID().toString().hashCode();
-		if (hashCodeV < 0) {// 有可能是负数
-			hashCodeV = -hashCodeV;
-		}
-		// 0 代表前面补充0
-		// 4 代表长度为4
-		// d 代表参数为正数型
-		return machineId + String.format("%010d", hashCodeV);
-	}
+    public UnionCardRoot getById(Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        UnionCardRoot result;
+        // (1)cache
+        String idKey = UnionCardRootCacheUtil.getIdKey(id);
+        if (redisCacheUtil.exists(idKey)) {
+            String tempStr = redisCacheUtil.get(idKey);
+            result = JSONArray.parseObject(tempStr, UnionCardRoot.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionCardRoot> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("id", id)
+                .eq("del_status", CommonConstant.DEL_STATUS_NO);
+        result = selectOne(entityWrapper);
+        setCache(result, id);
+        return result;
+    }
+
+    //***************************************** Object As a Service - list *********************************************
+
+    //***************************************** Object As a Service - save *********************************************
+
+    @Transactional(rollbackFor = Exception.class)
+    public void save(UnionCardRoot newUnionCardRoot) throws Exception {
+        if (newUnionCardRoot == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        insert(newUnionCardRoot);
+        removeCache(newUnionCardRoot);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void saveBatch(List<UnionCardRoot> newUnionCardRootList) throws Exception {
+        if (newUnionCardRootList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        insertBatch(newUnionCardRootList);
+        removeCache(newUnionCardRootList);
+    }
+
+    //***************************************** Object As a Service - remove *******************************************
+
+    @Transactional(rollbackFor = Exception.class)
+    public void removeById(Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)remove cache
+        UnionCardRoot unionCardRoot = getById(id);
+        removeCache(unionCardRoot);
+        // (2)remove in db logically
+        UnionCardRoot removeUnionCardRoot = new UnionCardRoot();
+        removeUnionCardRoot.setId(id);
+        removeUnionCardRoot.setDelStatus(CommonConstant.DEL_STATUS_YES);
+        updateById(removeUnionCardRoot);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void removeBatchById(List<Integer> idList) throws Exception {
+        if (idList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)remove cache
+        List<UnionCardRoot> unionCardRootList = new ArrayList<>();
+        for (Integer id : idList) {
+            UnionCardRoot unionCardRoot = getById(id);
+            unionCardRootList.add(unionCardRoot);
+        }
+        removeCache(unionCardRootList);
+        // (2)remove in db logically
+        List<UnionCardRoot> removeUnionCardRootList = new ArrayList<>();
+        for (Integer id : idList) {
+            UnionCardRoot removeUnionCardRoot = new UnionCardRoot();
+            removeUnionCardRoot.setId(id);
+            removeUnionCardRoot.setDelStatus(CommonConstant.DEL_STATUS_YES);
+            removeUnionCardRootList.add(removeUnionCardRoot);
+        }
+        updateBatchById(removeUnionCardRootList);
+    }
+
+    //***************************************** Object As a Service - update *******************************************
+
+    @Transactional(rollbackFor = Exception.class)
+    public void update(UnionCardRoot updateUnionCardRoot) throws Exception {
+        if (updateUnionCardRoot == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)remove cache
+        Integer id = updateUnionCardRoot.getId();
+        UnionCardRoot unionCardRoot = getById(id);
+        removeCache(unionCardRoot);
+        // (2)update db
+        updateById(updateUnionCardRoot);
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void updateBatch(List<UnionCardRoot> updateUnionCardRootList) throws Exception {
+        if (updateUnionCardRootList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)remove cache
+        List<Integer> idList = new ArrayList<>();
+        for (UnionCardRoot updateUnionCardRoot : updateUnionCardRootList) {
+            idList.add(updateUnionCardRoot.getId());
+        }
+        List<UnionCardRoot> unionCardRootList = new ArrayList<>();
+        for (Integer id : idList) {
+            UnionCardRoot unionCardRoot = getById(id);
+            unionCardRootList.add(unionCardRoot);
+        }
+        removeCache(unionCardRootList);
+        // (2)update db
+        updateBatchById(updateUnionCardRootList);
+    }
+
+    //***************************************** Object As a Service - cache support ************************************
+
+    private void setCache(UnionCardRoot newUnionCardRoot, Integer id) {
+        if (id == null) {
+            //do nothing,just in case
+            return;
+        }
+        String idKey = UnionCardRootCacheUtil.getIdKey(id);
+        redisCacheUtil.set(idKey, newUnionCardRoot);
+    }
+
+    private void setCache(List<UnionCardRoot> newUnionCardRootList, Integer foreignId, int foreignIdType) {
+        if (foreignId == null) {
+            //do nothing,just in case
+            return;
+        }
+        String foreignIdKey = null;
+        switch (foreignIdType) {
+            default:
+                break;
+        }
+        if (foreignIdKey != null) {
+            redisCacheUtil.set(foreignIdKey, newUnionCardRootList);
+        }
+    }
+
+    private void removeCache(UnionCardRoot unionCardRoot) {
+        if (unionCardRoot == null) {
+            return;
+        }
+        Integer id = unionCardRoot.getId();
+        String idKey = UnionCardRootCacheUtil.getIdKey(id);
+        redisCacheUtil.remove(idKey);
+    }
+
+    private void removeCache(List<UnionCardRoot> unionCardRootList) {
+        if (ListUtil.isEmpty(unionCardRootList)) {
+            return;
+        }
+        List<Integer> idList = new ArrayList<>();
+        for (UnionCardRoot unionCardRoot : unionCardRootList) {
+            idList.add(unionCardRoot.getId());
+        }
+        List<String> idKeyList = UnionCardRootCacheUtil.getIdKey(idList);
+        redisCacheUtil.remove(idKeyList);
+    }
+
+    private List<String> getForeignIdKeyList(List<UnionCardRoot> unionCardRootList, int foreignIdType) {
+        List<String> result = new ArrayList<>();
+        switch (foreignIdType) {
+            default:
+                break;
+        }
+        return result;
+    }
 }
