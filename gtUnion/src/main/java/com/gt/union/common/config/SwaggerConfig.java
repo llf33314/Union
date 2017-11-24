@@ -99,6 +99,22 @@ public class SwaggerConfig {
     }
 
     @Bean
+    public Docket brokerageGroupConfig() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("brokerage")
+                .apiInfo(new ApiInfoBuilder()
+                        .title("Restful文档接口服务平台-平台管理者")
+                        .description("基于Swagger2实现")
+                        .version("3.1.0")
+                        .build())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.gt.union.brokerage.controller"))
+                //可通过"或"来匹配多个模块
+                .paths(PathSelectors.regex("/.*"))
+                .build();
+    }
+
+    @Bean
     public Docket verifierGroupConfig() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .groupName("verifier")

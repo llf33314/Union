@@ -53,6 +53,7 @@ public class MockUtil {
             add(OBJECT_BOOLEAN);
             add(OBJECT_CHAR_SEQUENCE);
             add(OBJECT_STRING);
+            add(OBJECT_DATE);
         }
     };
 
