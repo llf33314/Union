@@ -64,12 +64,12 @@ public class UnionMemberOutController {
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
-    @ApiOperation(value = "根据退盟类型和退盟盟员id，更新退盟信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/type/{type}/applyMemberId/{applyMemberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "移除盟员", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/applyMemberId/{applyMemberId}/remove", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String removeByTypeAndApplyMemberId(HttpServletRequest request,
-                                               @ApiParam(value = "退盟类型(1:自己申请 2:盟主移出)", name = "type", required = true)
-                                               @PathVariable("type") Integer type,
-                                               @ApiParam(value = "退盟盟员id", name = "applyMemberId", required = true)
+                                               @ApiParam(value = "联盟id", name = "unionId", required = true)
+                                               @PathVariable("unionId") Integer unionId,
+                                               @ApiParam(value = "盟员id", name = "applyMemberId", required = true)
                                                @PathVariable("applyMemberId") Integer applyMemberId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();

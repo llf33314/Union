@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.card.entity.UnionCardActivity;
+import com.gt.union.card.vo.ActivityCardVO;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
@@ -28,7 +29,7 @@ public class UnionCardActivityController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "根据联盟id，分页获取联盟卡活动", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页获取活动卡信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageByUnionId(HttpServletRequest request,
                                 Page page,
@@ -40,7 +41,7 @@ public class UnionCardActivityController {
             busId = busUser.getPid();
         }
         // mock
-        List<UnionCardActivity> result = MockUtil.list(UnionCardActivity.class, page.getSize());
+        List<ActivityCardVO> result = MockUtil.list(ActivityCardVO.class, page.getSize());
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 

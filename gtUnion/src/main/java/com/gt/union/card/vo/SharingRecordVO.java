@@ -24,7 +24,7 @@ public class SharingRecordVO {
     private Double sellPrice;
 
     @ApiModelProperty(value = "售卡分成")
-    private Double sharingPrice;
+    private Double sharingMoney;
 
     @ApiModelProperty(value = "售卡来源")
     private String memberName;
@@ -53,12 +53,12 @@ public class SharingRecordVO {
         this.sellPrice = sellPrice;
     }
 
-    public Double getSharingPrice() {
-        return sharingPrice;
+    public Double getSharingMoney() {
+        return sharingMoney;
     }
 
-    public void setSharingPrice(Double sharingPrice) {
-        this.sharingPrice = sharingPrice;
+    public void setSharingMoney(Double sharingMoney) {
+        this.sharingMoney = sharingMoney;
     }
 
     public String getMemberName() {

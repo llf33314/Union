@@ -24,7 +24,7 @@ public class CurrentUnion {
     private String memberName;
 
     @ApiModelProperty(value = "创建时间")
-    private Date createDate;
+    private Date createTime;
 
     @ApiModelProperty(value = "图标")
     private String img;
@@ -74,12 +74,12 @@ public class CurrentUnion {
         this.memberName = memberName;
     }
 
-    public Date getCreateDate() {
-        return createDate;
+    public Date getCreateTime() {
+        return createTime;
     }
 
-    public void setCreateDate(Date createDate) {
-        this.createDate = createDate;
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
     public String getImg() {
