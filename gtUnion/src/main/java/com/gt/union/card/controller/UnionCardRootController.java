@@ -6,9 +6,12 @@ import com.gt.api.util.SessionUtils;
 import com.gt.union.card.entity.UnionCardRoot;
 import com.gt.union.card.vo.ActivityCard;
 import com.gt.union.card.vo.RootDetailVO;
+import com.gt.union.card.vo.RootVO;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
+import com.gt.union.main.entity.UnionMain;
+import com.gt.union.member.entity.UnionMember;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -80,6 +83,23 @@ public class UnionCardRootController {
         RootDetailVO result = MockUtil.get(RootDetailVO.class);
         List<ActivityCard> activityCardList = MockUtil.list(ActivityCard.class, 5);
         result.setActivityCardList(activityCardList);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
+    }
+
+    @ApiOperation(value = "根据卡号搜索", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/number/{number}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String searchByNumber(HttpServletRequest request,
+                                 @ApiParam(value = "卡号", name = "number", required = true)
+                                 @PathVariable("number") String number) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        // mock
+        RootVO result = MockUtil.get(RootVO.class);
+        List<UnionMain> unionList = MockUtil.list(UnionMain.class, 20);
+        result.setUnionList(unionList);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 

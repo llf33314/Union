@@ -3,6 +3,7 @@ package com.gt.union.card.controller;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
+import com.gt.union.card.entity.UnionActivityProject;
 import com.gt.union.card.vo.ActivityProjectErpVO;
 import com.gt.union.card.vo.ActivityProjectIndexVO;
 import com.gt.union.card.vo.ActivityProjectVO;
@@ -31,7 +32,7 @@ public class UnionActivityProjectController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "根据联盟id，分页获取活动项目", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页获取活动项目", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageByUnionId(HttpServletRequest request,
                                 Page page,
@@ -46,6 +47,21 @@ public class UnionActivityProjectController {
         List<ActivityProjectIndexVO> voList = MockUtil.list(ActivityProjectIndexVO.class, page.getSize());
         page.setRecords(voList);
         return GtJsonResult.instanceSuccessMsg(page).toString();
+    }
+
+    @ApiOperation(value = "获取所有活动项目", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String listByUnionId(HttpServletRequest request,
+                                @ApiParam(value = "联盟id", name = "unionId", required = true)
+                                @PathVariable("unionId") Integer unionId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        // mock
+        List<UnionActivityProject> result = MockUtil.list(UnionActivityProject.class, 30);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "根据联盟卡活动id和联盟id，获取参与盟员数信息", produces = "application/json;charset=UTF-8")
