@@ -137,6 +137,7 @@ union:
 wx:
   duofen:
     busId: 33
+    appid: wxa6e320cadfaaf729
 
 member:
   url: http://member.yifriend.net
