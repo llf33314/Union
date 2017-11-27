@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gt.union.card.main.mapper.UnionCardMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gt.union.card.main.entity.UnionCard">
+        <id column="id" property="id"/>
+        <result column="del_status" property="delStatus"/>
+        <result column="create_time" property="createTime"/>
+        <result column="type" property="type"/>
+        <result column="validity" property="validity"/>
+        <result column="integral" property="integral"/>
+        <result column="member_id" property="memberId"/>
+        <result column="union_id" property="unionId"/>
+        <result column="fan_id" property="fanId"/>
+        <result column="activity_id" property="activityId"/>
+    </resultMap>
+
+</mapper>

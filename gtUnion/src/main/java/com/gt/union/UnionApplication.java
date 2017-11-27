@@ -15,7 +15,7 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
  */
 @SpringBootApplication
 @ServletComponentScan
-@MapperScan("com.gt.union.*.mapper")
+@MapperScan("com.gt.union.*.*.mapper")
 public class UnionApplication extends SpringBootServletInitializer {
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder springApplicationBuilder) {

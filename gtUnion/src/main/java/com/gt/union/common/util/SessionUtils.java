@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.gt.api.bean.session.Member;
 import com.gt.union.common.constant.ConfigConstant;
-import com.gt.union.verifier.entity.UnionVerifier;
+import com.gt.union.finance.verifier.entity.UnionVerifier;
 import org.apache.log4j.Logger;
 
 import javax.servlet.http.HttpServletRequest;
