@@ -6,7 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by Administrator on 2017/9/18 0018.
+ * 门店服务api
+ * @author hongjiye
+ * Created by Administrator on 2017/11/25 0018.
  */
 public interface ShopService {
 
@@ -19,7 +21,7 @@ public interface ShopService {
 
 	/**
 	 * 根据多个门店id查询门店信息
-	 * @param list
+	 * @param list		门店id列表
 	 * @return
 	 */
 	List<WsWxShopInfoExtend> listByIds(List<Integer> list);

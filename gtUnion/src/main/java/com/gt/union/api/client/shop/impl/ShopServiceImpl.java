@@ -6,6 +6,7 @@ import com.gt.api.util.HttpClienUtils;
 import com.gt.api.util.RequestUtils;
 import com.gt.union.api.client.shop.ShopService;
 import com.gt.union.common.constant.ConfigConstant;
+import com.gt.union.common.util.ApiResultHandlerUtil;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.PropertiesUtil;
 import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
@@ -29,15 +30,8 @@ public class ShopServiceImpl implements ShopService {
 		try {
 			RequestUtils req = new RequestUtils<Integer>();
 			req.setReqdata(busId);
-			Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(req),url, Map.class, PropertiesUtil.getWxmpSignKey());
-			if(CommonUtil.isEmpty(result)){
-				return null;
-			}
-			Object data = result.get("data");
-			if(CommonUtil.isEmpty(data)){
-				return null;
-			}
-			List<WsWxShopInfoExtend> list = JSONArray.parseArray(data.toString(), WsWxShopInfoExtend.class);
+			String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(req),url, String.class, PropertiesUtil.getWxmpSignKey());
+			List<WsWxShopInfoExtend> list = ApiResultHandlerUtil.listDataObject(result,WsWxShopInfoExtend.class);
 			List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
 			for(WsWxShopInfoExtend info : list){
 				Map<String,Object> map = new HashMap<String,Object>();
@@ -57,15 +51,8 @@ public class ShopServiceImpl implements ShopService {
 		try {
 			RequestUtils req = new RequestUtils<Integer>();
 			req.setReqdata(list);
-			Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(req),url, Map.class, PropertiesUtil.getWxmpSignKey());
-			if(CommonUtil.isEmpty(result)){
-				return null;
-			}
-			Object data = result.get("data");
-			if(CommonUtil.isEmpty(data)){
-				return null;
-			}
-			List<WsWxShopInfoExtend> shops = JSONArray.parseArray(data.toString(), WsWxShopInfoExtend.class);
+			String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(req),url, String.class, PropertiesUtil.getWxmpSignKey());
+			List<WsWxShopInfoExtend> shops = ApiResultHandlerUtil.listDataObject(result,WsWxShopInfoExtend.class);
 			return shops;
 		}catch (Exception e){
 			return null;

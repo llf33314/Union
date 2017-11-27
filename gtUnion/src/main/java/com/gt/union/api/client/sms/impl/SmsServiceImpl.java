@@ -2,6 +2,8 @@ package com.gt.union.api.client.sms.impl;
 
 import com.alibaba.fastjson.JSONObject;
 import com.gt.api.util.HttpClienUtils;
+import com.gt.api.util.RequestUtils;
+import com.gt.union.api.amqp.entity.PhoneMessage;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.util.CommonUtil;
@@ -12,17 +14,20 @@ import org.springframework.stereotype.Service;
 import java.util.Map;
 
 /**
- * Created by Administrator on 2017/8/22 0022.
+ * 短信服务api
+ * @author hongjiye
+ * Created by Administrator on 2017/11/25 0022.
  */
 @Service
 public class SmsServiceImpl implements SmsService {
 
-
 	@Override
-	public int sendSms(Map<String,Object> param) {
+	public int sendSms(PhoneMessage phoneMessage) {
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/smsapi/6F6D9AD2/79B4DE7C/sendSmsOld.do";
 		try {
-			Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param),url, Map.class, PropertiesUtil.getWxmpSignKey());
+			RequestUtils requestUtils = new RequestUtils<PhoneMessage>();
+			requestUtils.setReqdata(phoneMessage);
+			Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(requestUtils),url, Map.class, PropertiesUtil.getWxmpSignKey());
 			if(CommonUtil.isEmpty(result)){
 				return 0;
 			}
