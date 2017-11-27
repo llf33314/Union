@@ -6,47 +6,50 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by Administrator on 2017/9/18 0018.
+ *
+ * 粉丝会员接口服务
+ * @author hongjiye
+ * Created by Administrator on 2017/11/25 0018.
  */
 public interface MemberService {
 
 	/**
 	 * 根据商家id和用户ids查询列表信息
-	 * @param busId
-	 * @param memberIds
+	 * @param busId		商家id
+	 * @param memberIds	用户ids
 	 * @return
 	 */
 	List<Map> listByBusIdAndMemberIds(Integer busId, String memberIds);
 
 	/**
 	 * 根据粉丝用户id获取用户信息
-	 * @param memberId
+	 * @param memberId		粉丝用户id
 	 * @return
 	 */
 	Member getById(Integer memberId);
 
 	/**
 	 * 根据手机号和商家id获取用户信息
-	 * @param phone
-	 * @param busId
+	 * @param phone		手机号
+	 * @param busId		商家id
 	 * @return
 	 */
 	Member findByPhoneAndBusId(String phone, Integer busId);
 
 	/**
-	 * 绑定会员手机号
-	 * @param busId
-	 * @param memberId
-	 * @param phone
-	 * @return
+	 * 绑定粉丝用户手机号
+	 * @param busId		商家id
+	 * @param memberId	粉丝id
+	 * @param phone		手机号
+	 * @return	1：成功 0：失败
 	 */
 	int bindMemberPhone(Integer busId, Integer memberId, String phone);
 
 	/**
-	 * 手机号登录
-	 * @param phone
-	 * @param busId
-	 * @return
+	 * 粉丝用户手机号登录
+	 * @param phone		手机号
+	 * @param busId		商家id
+	 * @return	1：成功 0：失败
 	 */
 	int loginMemberByPhone(String phone, Integer busId);
 }

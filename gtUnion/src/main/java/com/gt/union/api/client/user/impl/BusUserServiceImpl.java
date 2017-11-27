@@ -20,7 +20,8 @@ import java.util.Map;
 
 /**
  * 商家信息 服务实现类
- * Created by Administrator on 2017/8/22 0022.
+ * @author hongjiye
+ * Created by Administrator on 2017/11/25 0022.
  */
 @Service
 public class BusUserServiceImpl implements IBusUserService {
@@ -30,47 +31,29 @@ public class BusUserServiceImpl implements IBusUserService {
 
 
     @Override
-    public BusUser getBusUserById(Integer id) {
+    public BusUser getBusUserById(Integer busId) {
         Map<String, Object> param = new HashMap<String, Object>();
-        param.put("userId", id);
-        BusUser busUser = null;
+        param.put("userId", busId);
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/busUserApi/getBusUserApi.do";
         try {
             String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
-            if (StringUtil.isEmpty(result)) {
-                return null;
-            }
-            Map<String, Object> data = JSON.parseObject(result, Map.class);
-            if (CommonUtil.isEmpty(data.get("data"))) {
-                return null;
-            }
-            busUser = JSON.parseObject(data.get("data").toString(), BusUser.class);
+            return ApiResultHandlerUtil.getDataObject(result, BusUser.class);
         } catch (Exception e) {
             return null;
         }
-        return busUser;
     }
 
     @Override
     public BusUser getBusUserByName(String name) {
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("name", name);
-        BusUser busUser = null;
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/busUserApi/getBusUserApi.do";
         try {
             String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
-            if (StringUtil.isEmpty(result)) {
-                return null;
-            }
-            Map<String, Object> data = JSON.parseObject(result, Map.class);
-            if (CommonUtil.isEmpty(data.get("data"))) {
-                return null;
-            }
-            busUser = JSON.parseObject(data.get("data").toString(), BusUser.class);
+            return ApiResultHandlerUtil.getDataObject(result, BusUser.class);
         } catch (Exception e) {
             return null;
         }
-        return busUser;
     }
 
     @Override
@@ -78,20 +61,12 @@ public class BusUserServiceImpl implements IBusUserService {
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("reqdata", busId);
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/wxpublicapi/6F6D9AD2/79B4DE7C/selectByUserId.do";
-        WxPublicUsers publicUsers = null;
         try{
-            Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param), url, Map.class, PropertiesUtil.getWxmpSignKey());
-            if (CommonUtil.isEmpty(result)) {
-                return null;
-            }
-            if (CommonUtil.toInteger(result.get("code")) != 0) {
-                return null;
-            }
-            publicUsers = JSONObject.parseObject(result.get("data").toString(), WxPublicUsers.class);
+            String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param), url, String.class, PropertiesUtil.getWxmpSignKey());
+            return ApiResultHandlerUtil.getDataObject(result, WxPublicUsers.class);
         }catch (Exception e){
             return null;
         }
-        return publicUsers;
     }
 
 	@Override
@@ -110,14 +85,8 @@ public class BusUserServiceImpl implements IBusUserService {
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("reqdata", data);
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/wxpublicapi/6F6D9AD2/79B4DE7C/newqrcodeCreateFinal.do";
-        Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param), url, Map.class, PropertiesUtil.getWxmpSignKey());
-        if (CommonUtil.isEmpty(result)) {
-            return null;
-        }
-        if (CommonUtil.toInteger(result.get("code")) != 0) {
-            return null;
-        }
-        String qrurl = result.get("data").toString();
+        String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param), url, String.class, PropertiesUtil.getWxmpSignKey());
+        String qrurl = ApiResultHandlerUtil.getDataObject(result, String.class);
         if (CommonUtil.isNotEmpty(qrurl)) {
             redisCacheUtil.set(codeKey, qrurl);
         }

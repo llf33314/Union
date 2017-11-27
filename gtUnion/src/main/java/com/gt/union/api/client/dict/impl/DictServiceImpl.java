@@ -15,7 +15,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by Administrator on 2017/8/22 0022.
+ * @author hongjiye
+ * Created by Administrator on 2017/11/25 0022.
  */
 @Service
 public class DictServiceImpl implements IDictService {
@@ -166,14 +167,7 @@ public class DictServiceImpl implements IDictService {
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/dictApi/getDictApi.do";
 		try{
 			String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
-			if(StringUtil.isEmpty(result)){
-				return null;
-			}
-			Map<String,Object> data= JSON.parseObject(result,Map.class);
-			if(CommonUtil.isEmpty(data.get("data"))){
-				return null;
-			}
-			Map item = JSON.parseObject(data.get("data").toString(),Map.class);
+			Map item = ApiResultHandlerUtil.getDataObject(result,Map.class );
 			List<Map> dict = JSONArray.parseArray(item.get("dictJSON").toString(),Map.class);
 			if(ListUtil.isEmpty(dict)){
 				return null;
@@ -206,14 +200,7 @@ public class DictServiceImpl implements IDictService {
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/dictApi/getDictApi.do";
 		try{
 			String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
-			if(StringUtil.isEmpty(result)){
-				return null;
-			}
-			Map<String,Object> data= JSON.parseObject(result,Map.class);
-			if(CommonUtil.isEmpty(data.get("data"))){
-				return null;
-			}
-			Map item = JSON.parseObject(data.get("data").toString(),Map.class);
+			Map item = ApiResultHandlerUtil.getDataObject(result,Map.class );
 			List list = JSONArray.parseArray(item.get("dictJSON").toString(),Map.class);
 			if(ListUtil.isNotEmpty(list)){
 				redisCacheUtil.set(key, list);

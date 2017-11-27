@@ -59,6 +59,8 @@ public class PropertiesUtil {
 
 	private static String profiles;
 
+	private static String duofenAppid;
+
 	/**
 	 * 获取资源访问地址
 	 * @return resourceUrl
@@ -179,77 +181,77 @@ public class PropertiesUtil {
 
 	@Value("${resource.url.prefix}")
 	public void setResourceUrl(String resourceUrl) {
-		this.resourceUrl = resourceUrl;
+		PropertiesUtil.resourceUrl = resourceUrl;
 	}
 
 	@Value("${socket.url}")
 	public void setSocketUrl(String socketUrl) {
-		this.socketUrl = socketUrl;
+		PropertiesUtil.socketUrl = socketUrl;
 	}
 
 	@Value("${mq.uri}")
 	public void setMqUrl(String mqUrl) {
-		this.mqUrl = mqUrl;
+		PropertiesUtil.mqUrl = mqUrl;
 	}
 
 	@Value("${mq.user}")
 	public void setMqUser(String mqUser) {
-		this.mqUser = mqUser;
+		PropertiesUtil.mqUser = mqUser;
 	}
 
 	@Value("${mq.password}")
 	public void setMqPassWord(String mqPassWord) {
-		this.mqPassWord = mqPassWord;
+		PropertiesUtil.mqPassWord = mqPassWord;
 	}
 
 	@Value("${spring.redis.host}")
 	public void setRedisIp(String redisIp) {
-		this.redisIp = redisIp;
+		PropertiesUtil.redisIp = redisIp;
 	}
 
 	@Value("${spring.redis.port}")
 	public void setRedisPort(Integer redisPort) {
-		this.redisPort = redisPort;
+		PropertiesUtil.redisPort = redisPort;
 	}
 
 	@Value("${spring.redis.password}")
 	public void setRedisPwd(String redisPwd) {
-		this.redisPwd = redisPwd;
+		redisPwd = redisPwd;
 	}
 
 	@Value("${redisNamePrefix}")
 	public void setRedisNamePrefix(String redisNamePrefix) {
-		this.redisNamePrefix = redisNamePrefix;
+		PropertiesUtil.redisNamePrefix = redisNamePrefix;
 	}
 
 	@Value("${wxmp.url}")
 	public void setWxmpUrl(String wxmpUrl) {
-		this.wxmpUrl = wxmpUrl;
+		PropertiesUtil.wxmpUrl = wxmpUrl;
 	}
 
 	@Value("${domain.df}")
 	public void setDomain(String domainDf){
-		this.domainDf = domainDf;
+		PropertiesUtil.domainDf = domainDf;
 	}
 
 	@Value("${wxmp.signkey}")
 	public void setWxmpSignKey(String wxmpSignKey) {
-		this.wxmpSignkey = wxmpSignKey;
+		wxmpSignkey = wxmpSignKey;
 	}
 
 	@Value("${wxmp.company}")
 	public void setWxmpCompany(String wxmpCompany) {
-		this.wxmpCompany = wxmpCompany;
+		PropertiesUtil.wxmpCompany = wxmpCompany;
 	}
 
 	@Value("${queueName.union.queueName}")
 	public void setMqQueueName(String mqQueueName) {
-		this.mqQueueName = mqQueueName;
+		mqQueueName = mqQueueName;
 	}
 
 	@Value("${exchange.union.exchange}")
 	public void setMqExchange(String mqExchange) {
-		this.mqExchange = mqExchange;
+		PropertiesUtil.mqExchange = mqExchange;
 	}
 
 	/**
@@ -262,7 +264,7 @@ public class PropertiesUtil {
 
 	@Value("${union.url}")
 	public void setUnionUrl(String unionUrl) {
-		this.unionUrl = unionUrl;
+		PropertiesUtil.unionUrl = unionUrl;
 	}
 
 	/**
@@ -275,7 +277,7 @@ public class PropertiesUtil {
 
 	@Value("${member.url}")
 	public void setMemberUrl(String memberUrl) {
-		this.memberUrl = memberUrl;
+		PropertiesUtil.memberUrl = memberUrl;
 	}
 
 	/**
@@ -288,7 +290,7 @@ public class PropertiesUtil {
 
 	@Value("${member.signkey}")
 	public void setMemberSignKey(String memberSignKey) {
-		this.memberSignKey = memberSignKey;
+		PropertiesUtil.memberSignKey = memberSignKey;
 	}
 
 	public static Integer getDuofenBusId() {
@@ -297,7 +299,7 @@ public class PropertiesUtil {
 
 	@Value("${wx.duofen.busId}")
 	public void setDuofenBusId(Integer duofenBusId) {
-		this.duofenBusId = duofenBusId;
+		PropertiesUtil.duofenBusId = duofenBusId;
 	}
 
 	public static String getEncryptKey() {
@@ -306,7 +308,7 @@ public class PropertiesUtil {
 
 	@Value("${union.encryptKey}")
 	public void setEncryptKey(String encryptKey) {
-		this.encryptKey = encryptKey;
+		PropertiesUtil.encryptKey = encryptKey;
 	}
 
 	public static String getSocketKey() {
@@ -315,7 +317,7 @@ public class PropertiesUtil {
 
 	@Value("${socket.key}")
 	public void setSocketKey(String socketKey) {
-		this.socketKey = socketKey;
+		socketKey = socketKey;
 	}
 
 	public static String getUnionSignKey() {
@@ -324,7 +326,7 @@ public class PropertiesUtil {
 
 	@Value("${union.signkey}")
 	public void setUnionSignKey(String unionSignKey) {
-		this.unionSignKey = unionSignKey;
+		PropertiesUtil.unionSignKey = unionSignKey;
 	}
 
 
@@ -334,6 +336,32 @@ public class PropertiesUtil {
 
 	@Value("${spring.profiles.active}")
 	public void setProfiles(String profiles) {
-		this.profiles = profiles;
+		PropertiesUtil.profiles = profiles;
+	}
+
+
+	public static String getRedisNamePrefix() {
+		return redisNamePrefix;
+	}
+
+	public static void setDomainDf(String domainDf) {
+		PropertiesUtil.domainDf = domainDf;
+	}
+
+	public static String getWxmpSignkey() {
+		return wxmpSignkey;
+	}
+
+	public static void setWxmpSignkey(String wxmpSignkey) {
+		PropertiesUtil.wxmpSignkey = wxmpSignkey;
+	}
+
+	public static String getDuofenAppid() {
+		return duofenAppid;
+	}
+
+	@Value("${wx.duofen.appid}")
+	public static void setDuofenAppid(String duofenAppid) {
+		PropertiesUtil.duofenAppid = duofenAppid;
 	}
 }

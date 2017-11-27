@@ -4,22 +4,24 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by Administrator on 2017/8/22 0022.
+ * 地址服务api
+ * @author hongjiye
+ * Created by Administrator on 2017/11/25 0022.
  */
 public interface AddressService {
 
 	/**
 	 * 根据ids获取地址列表
-	 * @param param
+	 * @param ids	地址ids 逗号隔开
 	 * @return
 	 */
-	public List<Map> getByIds(Map<String, Object> param);
+	List<Map> getByIds(String ids);
 
 	/**
 	 * 根据city_code列表获取地址列表
-	 * @param param
+	 * @param city_codes city_code列表 逗号隔开
 	 * @return
 	 */
-	public List<Map> getByCityCode(Map<String, Object> param);
+	List<Map> getByCityCode(String city_codes);
 
 }

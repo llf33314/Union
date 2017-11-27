@@ -4,7 +4,9 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by Administrator on 2017/8/22 0022.
+ * 字典服务api
+ * @author hongjiye
+ * Created by Administrator on 2017/11/25 0022.
  */
 public interface IDictService {
 

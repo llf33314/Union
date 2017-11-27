@@ -1,16 +1,19 @@
 package com.gt.union.api.client.sms;
 
-import java.util.Map;
+import com.gt.union.api.amqp.entity.PhoneMessage;
+
 
 /**
- * Created by Administrator on 2017/8/22 0022.
+ * 短信服务api
+ * @author hongjiye
+ * Created by Administrator on 2017/11/25 0022.
  */
 public interface SmsService {
 
 	/**
 	 * 1：成功 0：失败
-	 * @param param
+	 * @param phoneMessage
 	 * @return
 	 */
-	public int sendSms(Map<String, Object> param);
+	int sendSms(PhoneMessage phoneMessage);
 }

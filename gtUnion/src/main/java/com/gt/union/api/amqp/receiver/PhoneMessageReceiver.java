@@ -63,9 +63,7 @@ public class PhoneMessageReceiver {
                 String msg = new String(message.getBody(), "UTF-8");
                 logger.info(msg);
                 PhoneMessage phoneMessage = JSONArray.parseObject(msg, PhoneMessage.class);
-                Map<String, Object> map = new HashMap<>(16);
-                map.put("reqdata", phoneMessage);
-                smsService.sendSms(map);
+                smsService.sendSms(phoneMessage);
                 //确认消息成功消费
                 channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
             }

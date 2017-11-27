@@ -4,23 +4,24 @@ import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.WxPublicUsers;
 
 /**
- * 商家信息 服务类
- * Created by Administrator on 2017/8/22 0022.
+ * 商家信息 服务类api
+ * @author hongjiye
+ * Created by Administrator on 2017/11/25 0022.
  */
 public interface IBusUserService {
 	/**
-	 * 根据id获取商家信息
-	 * @param id
+	 * 根据商家id获取商家信息
+	 * @param busId	商家id
 	 * @return
 	 */
-	public BusUser getBusUserById(Integer id);
+	BusUser getBusUserById(Integer busId);
 
 	/**
 	 * 根据账号名称获取商家信息
 	 * @param name
 	 * @return
 	 */
-	public BusUser getBusUserByName(String name);
+	BusUser getBusUserByName(String name);
 
 
 	/**
@@ -28,7 +29,7 @@ public interface IBusUserService {
 	 * @param busId
 	 * @return
 	 */
-	public WxPublicUsers getWxPublicUserByBusId(Integer busId);
+	WxPublicUsers getWxPublicUserByBusId(Integer busId);
 
 	/**
 	 *	获取公众号关注二维码永久链接
