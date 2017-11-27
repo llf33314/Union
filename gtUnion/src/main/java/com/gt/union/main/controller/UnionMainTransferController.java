@@ -6,7 +6,6 @@ import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
-import com.gt.union.main.entity.UnionMainTransfer;
 import com.gt.union.main.vo.TransferVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,7 +31,7 @@ public class UnionMainTransferController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "根据联盟id，分页获取联盟转移信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页获取盟主权限转移信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageByUnionId(HttpServletRequest request,
                                 Page page,
@@ -51,24 +50,13 @@ public class UnionMainTransferController {
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
-    @ApiOperation(value = "根据目标盟员id，转移联盟", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/toMemberId/{toMemberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public String transferByToMemberId(HttpServletRequest request,
-                                       @ApiParam(value = "目标盟员id", name = "toMemberId", required = true)
-                                       @PathVariable("toMemberId") Integer toMemberId) throws Exception {
-        BusUser busUser = SessionUtils.getLoginUser(request);
-        Integer busId = busUser.getId();
-        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
-        }
-        return GtJsonResult.instanceSuccessMsg().toString();
-    }
-
-    @ApiOperation(value = "根据转移id，撤回联盟转移", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{transferId}/revoke", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "撤回盟主权限转移", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{transferId}/unionId/{unionId}/revoke", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String revokeById(HttpServletRequest request,
                              @ApiParam(value = "转移id", name = "transferId", required = true)
-                             @PathVariable("transferId") Integer transferId) throws Exception {
+                             @PathVariable("transferId") Integer transferId,
+                             @ApiParam(value = "联盟id", name = "unionId", required = true)
+                             @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -78,5 +66,20 @@ public class UnionMainTransferController {
     }
 
     //-------------------------------------------------- post ----------------------------------------------------------
+
+    @ApiOperation(value = "转移盟主权限", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/toMemberId/{toMemberId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public String saveTransfer(HttpServletRequest request,
+                               @ApiParam(value = "联盟id", name = "unionId", required = true)
+                               @PathVariable("unionId") Integer unionId,
+                               @ApiParam(value = "目标盟员id", name = "toMemberId", required = true)
+                               @PathVariable("toMemberId") Integer toMemberId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        return GtJsonResult.instanceSuccessMsg().toString();
+    }
 
 }

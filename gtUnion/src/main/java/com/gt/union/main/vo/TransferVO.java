@@ -14,17 +14,17 @@ import io.swagger.annotations.ApiModelProperty;
 @ApiModel(value = "联盟转移")
 public class TransferVO {
     @ApiModelProperty(value = "转移id")
-    private Integer id;
+    private Integer transferId;
 
     @ApiModelProperty(value = "盟员")
     private UnionMember member;
 
-    public Integer getId() {
-        return id;
+    public Integer getTransferId() {
+        return transferId;
     }
 
-    public void setId(Integer id) {
-        this.id = id;
+    public void setTransferId(Integer transferId) {
+        this.transferId = transferId;
     }
 
     public UnionMember getMember() {

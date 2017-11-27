@@ -28,7 +28,7 @@ public class UnionCardSharingRatioController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "根据联盟卡活动id和联盟id，分页获取售卡分成比例", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页获取活动卡售卡分成比例", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageByActivityIdAndUnionId(HttpServletRequest request,
                                              Page page,

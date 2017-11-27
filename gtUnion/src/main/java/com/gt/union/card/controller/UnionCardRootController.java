@@ -11,7 +11,6 @@ import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
 import com.gt.union.main.entity.UnionMain;
-import com.gt.union.member.entity.UnionMember;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -33,11 +32,11 @@ public class UnionCardRootController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "首页-联盟卡-导出", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "首页导出联盟卡列表信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String exportByUnionId(HttpServletRequest request,
-                                  @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                  @RequestParam(value = "unionId") Integer unionId) throws Exception {
+    public String exportCardListInIndex(HttpServletRequest request,
+                                        @ApiParam(value = "联盟id", name = "unionId", required = true)
+                                        @RequestParam(value = "unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -46,9 +45,9 @@ public class UnionCardRootController {
         return GtJsonResult.instanceSuccessMsg("TODO").toString();
     }
 
-    @ApiOperation(value = "根据联盟id，分页获取根信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "首页分页获取联盟卡列表信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String pageByUnionId(HttpServletRequest request,
+    public String pageCardListInIndex(HttpServletRequest request,
                                 Page page,
                                 @ApiParam(value = "联盟id", name = "unionId", required = true)
                                 @RequestParam(value = "unionId") Integer unionId,
@@ -67,9 +66,9 @@ public class UnionCardRootController {
         return GtJsonResult.instanceSuccessMsg(page).toString();
     }
 
-    @ApiOperation(value = "根据根id和联盟id，获取联盟卡详情", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "获取联盟卡详情", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{rootId}/detail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getDetailByIdAndUnionId(HttpServletRequest request,
+    public String getCardDetailInIndex(HttpServletRequest request,
                                           @ApiParam(value = "根id", name = "rootId", required = true)
                                           @PathVariable("rootId") Integer rootId,
                                           @ApiParam(value = "联盟id", name = "unionId", required = true)

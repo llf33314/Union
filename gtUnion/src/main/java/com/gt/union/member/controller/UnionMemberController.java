@@ -28,11 +28,11 @@ public class UnionMemberController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "首页-联盟列表-导出", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "首页导出盟员列表信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String exportByUnionId(HttpServletRequest request,
-                                  @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                  @PathVariable("unionId") Integer unionId) throws Exception {
+    public String exportMemberListInIndex(HttpServletRequest request,
+                                          @ApiParam(value = "联盟id", name = "unionId", required = true)
+                                          @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -41,14 +41,14 @@ public class UnionMemberController {
         return GtJsonResult.instanceSuccessMsg("TODO").toString();
     }
 
-    @ApiOperation(value = "根据联盟id，分页获取盟员信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "首页分页获取盟员列表信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String pageByUnionId(HttpServletRequest request,
-                                Page page,
-                                @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                @PathVariable("unionId") Integer unionId,
-                                @ApiParam(value = "企业名称", name = "enterpriseName")
-                                @RequestParam(value = "enterpriseName", required = false) String enterpriseName) throws Exception {
+    public String pageMemberListInIndex(HttpServletRequest request,
+                                        Page page,
+                                        @ApiParam(value = "联盟id", name = "unionId", required = true)
+                                        @PathVariable("unionId") Integer unionId,
+                                        @ApiParam(value = "盟员名称", name = "memberName")
+                                        @RequestParam(value = "memberName", required = false) String memberName) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -60,9 +60,13 @@ public class UnionMemberController {
         return GtJsonResult.instanceSuccessMsg(page).toString();
     }
 
-    @ApiOperation(value = "根据id，获取盟员信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getById(HttpServletRequest request) throws Exception {
+    @ApiOperation(value = "获取盟员详情信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{memberId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String getByIdAndUnionId(HttpServletRequest request,
+                          @ApiParam(value = "盟员id", name = "memberId", required = true)
+                          @PathVariable(value = "memberId") Integer memberId,
+                          @ApiParam(value = "联盟id", name = "unionId", required = true)
+                          @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -73,16 +77,16 @@ public class UnionMemberController {
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
-    @ApiOperation(value = "根据联盟id，获取盟员信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "获取盟员信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getByUnionId(HttpServletRequest request,
                                @ApiParam(value = "联盟id", name = "unionId", required = true)
                                @PathVariable("unionId") Integer unionId) throws Exception {
-//        BusUser busUser = SessionUtils.getLoginUser(request);
-//        Integer busId = busUser.getId();
-//        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-//            busId = busUser.getPid();
-//        }
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
         // mock
         UnionMember result = MockUtil.get(UnionMember.class);
         return GtJsonResult.instanceSuccessMsg(result).toString();
@@ -90,9 +94,9 @@ public class UnionMemberController {
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
-    @ApiOperation(value = "根据联盟id和表单信息，更新盟员信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "更新盟员信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public String updateByUnionId(HttpServletRequest request,
+    public String updateMember(HttpServletRequest request,
                                   @ApiParam(value = "联盟id", name = "unionId", required = true)
                                   @PathVariable("unionId") Integer unionId,
                                   @ApiParam(value = "盟员", name = "member", required = true)

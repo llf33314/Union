@@ -29,16 +29,16 @@ public class UnionMemberJoinController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "根据联盟id，分页获取入盟申请", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页获取入盟申请", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageByUnionId(HttpServletRequest request,
                                 Page page,
                                 @ApiParam(value = "联盟id", name = "unionId", required = true)
                                 @PathVariable("unionId") Integer unionId,
                                 @ApiParam(value = "企业名称", name = "enterpriseName")
-                                @RequestParam(value = "enterpriseName") String enterpriseName,
+                                @RequestParam(value = "enterpriseName", required = false) String enterpriseName,
                                 @ApiParam(value = "负责人电话", name = "directorPhone")
-                                @RequestParam(value = "directorPhone") String directorPhone) throws Exception {
+                                @RequestParam(value = "directorPhone", required = false) String directorPhone) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -53,10 +53,12 @@ public class UnionMemberJoinController {
     //-------------------------------------------------- put -----------------------------------------------------------
 
     @ApiOperation(value = "入盟审核", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{joinId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{joinId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String passById(HttpServletRequest request,
                            @ApiParam(value = "入盟id", name = "joinId", required = true)
                            @PathVariable("joinId") Integer joinId,
+                           @ApiParam(value = "联盟id", name = "unionId", required = true)
+                           @PathVariable("unionId") Integer unionId,
                            @ApiParam(value = "是否通过", name = "isPass", required = true)
                            @RequestParam(value = "isPass") Integer isPass) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
@@ -69,7 +71,7 @@ public class UnionMemberJoinController {
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
-    @ApiOperation(value = "根据联盟id和表单信息，保存入盟信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "申请入盟或推荐入盟", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/type/{type}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String method(HttpServletRequest request,
                          @ApiParam(value = "联盟id", name = "unionId", required = true)
