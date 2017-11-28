@@ -45,9 +45,11 @@ public class WxPayServiceImpl implements WxPayService {
                 .append("&sendUrl=").append(sendUrl)
                 .append("&payWay=").append(payWay)
                 .append("&sourceType=").append(1);
+        if(CommonUtil.isNotEmpty(extend)){
+            builder.append("&extend=").append(JSON.toJSONString(extend));
+        }
         String param = builder.toString();
-        logger.info("联盟二维码支付请求参数：{}",param);
-        //TODO  extend字段传值
+        logger.info("二维码支付请求参数：{}",param);
         return  PropertiesUtil.getWxmpUrl() + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + param;
     }
 
@@ -69,13 +71,13 @@ public class WxPayServiceImpl implements WxPayService {
         payParams.setTotalFee(totalFee);
         payParams.setPayWay(payWay);
         payParams.setNotifyUrl(notifyUrl);
-        //TODO  extend字段传值
-        logger.info("联盟手机端支付请求参数：{}", JSON.toJSONString(payParams));
+        payParams.setExtend(extend);
+        logger.info("手机端支付请求参数：{}", JSON.toJSONString(payParams));
         String obj = null;
         try {
             obj = KeysUtil.getEncString(JSON.toJSONString(payParams));
         }catch (Exception e){
-            logger.error("联盟手机端支付错误：=======>",e);
+            logger.error("手机端支付错误：=======>",e);
         }
         return PropertiesUtil.getWxmpUrl() + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/payapi.do?obj=" + obj;
     }

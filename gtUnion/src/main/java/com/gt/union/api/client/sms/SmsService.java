@@ -11,9 +11,9 @@ import com.gt.union.api.amqp.entity.PhoneMessage;
 public interface SmsService {
 
 	/**
-	 * 1：成功 0：失败
+	 * true：成功 false：失败
 	 * @param phoneMessage
 	 * @return
 	 */
-	int sendSms(PhoneMessage phoneMessage);
+	boolean sendSms(PhoneMessage phoneMessage);
 }

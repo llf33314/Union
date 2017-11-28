@@ -57,7 +57,7 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public Member findByPhoneAndBusId(String phone, Integer busId) {
+	public Member getByPhoneAndBusId(String phone, Integer busId) {
 		logger.info("根据手机号：{}和商家id：{}获取用户信息", phone, busId);
 		String url = PropertiesUtil.getMemberUrl() + "/memberAPI/member/findMemberByPhone";
 		Map<String,Object> param = new HashMap<String,Object>();
@@ -73,7 +73,7 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public int bindMemberPhone(Integer busId, Integer memberId, String phone) {
+	public boolean bindMemberPhone(Integer busId, Integer memberId, String phone) {
 		String url = PropertiesUtil.getMemberUrl() + "/memberAPI/member/updateMemberPhoneByMemberId";
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("phone",phone);
@@ -84,7 +84,7 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public int loginMemberByPhone(String phone, Integer busId) {
+	public boolean loginMemberByPhone(String phone, Integer busId) {
 		String url = PropertiesUtil.getMemberUrl() + "/memberAPI/member/loginMemberByPhone";
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("phone",phone);
@@ -99,19 +99,19 @@ public class MemberServiceImpl implements MemberService {
 	 * @param url
 	 * @return
 	 */
-	private int httpRequestMemberApi(Map param, String url){
+	private boolean httpRequestMemberApi(Map param, String url){
 		try {
 			String data = SignHttpUtils.WxmppostByHttp(url,param,PropertiesUtil.getMemberSignKey());
 			if(StringUtil.isEmpty(data)){
-				return 0;
+				return false;
 			}
 			Map map = JSONObject.parseObject(data,Map.class);
 			if(!("0".equals(map.get("code").toString()))){
-				return 0;
+				return false;
 			}
 		}catch (Exception e){
-			return 0;
+			return false;
 		}
-		return 1;
+		return true;
 	}
 }

@@ -20,7 +20,7 @@ public class SocketServiceImpl implements SocketService{
 	private Logger logger = LoggerFactory.getLogger(SocketServiceImpl.class);
 
 	@Override
-	public int socketSendMessage(String pushName,String message,String pushStyle) {
+	public boolean socketSendMessage(String pushName,String message,String pushStyle) {
 		try {
 			Map<String,Object> params = new HashMap<>();
 			if(pushStyle == null){
@@ -33,9 +33,9 @@ public class SocketServiceImpl implements SocketService{
 			logger.info("socket推送参数：{}", JSON.toJSONString(params));
 			SignHttpUtils.WxmppostByHttp(PropertiesUtil.getWxmpUrl()+"/8A5DA52E/socket/getSocketApi.do", params, PropertiesUtil.getWxmpSignKey());
 		}catch (Exception e){
-			return 0;
+			return false;
 		}
-		return 1;
+		return true;
 	}
 }
 

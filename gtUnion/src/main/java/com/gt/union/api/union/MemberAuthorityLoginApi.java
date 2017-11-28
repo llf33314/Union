@@ -85,7 +85,7 @@ public class MemberAuthorityLoginApi {
 		queryMap.put("browser", browser);
 		queryMap.put("busId", busId);
 		queryMap.put("uclogin", ucLogin ? null : 1);
-		logger.info("queryMap={}", JSON.toJSONString(queryMap));
+		logger.info("手机端登录授权queryMap={}", JSON.toJSONString(queryMap));
 		return GtJsonResult.instanceSuccessMsg(null,PropertiesUtil.getWxmpUrl() + "/remoteUserAuthoriPhoneController/79B4DE7C/authorizeMemberNew.do?queryBody=" + JSON.toJSONString(queryMap));
 	}
 
@@ -135,10 +135,10 @@ public class MemberAuthorityLoginApi {
 		}
 		Map<String, Object> queryMap = new HashMap<>();
 		queryMap.put("returnUrl", reqUrl);
-		queryMap.put("browser", 1);
+		queryMap.put("browser", browser);
 		queryMap.put("uclogin", null);
 		queryMap.put("busId", PropertiesUtil.getDuofenBusId());
-		logger.info("queryMap=" + JSON.toJSONString(queryMap));
+		logger.info("手机端微信登录授权queryMap=" + JSON.toJSONString(queryMap));
 		return GtJsonResult.instanceSuccessMsg(null,PropertiesUtil.getWxmpUrl() + "/remoteUserAuthoriPhoneController/79B4DE7C/authorizeMemberNew.do?queryBody=" + JSON.toJSONString(queryMap));
 	}
 

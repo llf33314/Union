@@ -25,7 +25,7 @@ public class AddressServiceImpl implements AddressService {
 	private Logger logger = LoggerFactory.getLogger(AddressServiceImpl.class);
 
 	@Override
-	public List<Map> getByIds(String ids) {
+	public List<Map> listByIds(String ids) {
 		logger.info("根据ids获取地址列表，请求参数：{}",JSONObject.toJSONString(ids));
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/shopapi/6F6D9AD2/79B4DE7C/queryBasisCityIds.do";
 		try {
@@ -39,7 +39,7 @@ public class AddressServiceImpl implements AddressService {
 	}
 
 	@Override
-	public List<Map> getByCityCode(String city_codes) {
+	public List<Map> listByCityCode(String city_codes) {
 		logger.info("根据city_code列表获取地址列表，请求参数:{}", JSONObject.toJSONString(city_codes));
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/shopapi/6F6D9AD2/79B4DE7C/queryBasisByCodes.do";
 		try {

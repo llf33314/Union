@@ -26,8 +26,7 @@ public class ApiResultHandlerUtil {
 		}
 		Map map = JSONObject.parseObject(data,Map.class);
 		if(CommonUtil.isNotEmpty(map.get("data"))){
-			List<T> list = JSONArray.parseArray(map.get("data").toString(),clazz);
-			return list.get(0);
+			return JSONArray.parseObject(map.get("data").toString(),clazz);
 		}else {
 			return null;
 		}

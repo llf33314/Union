@@ -34,7 +34,7 @@ public interface MemberService {
 	 * @param busId		商家id
 	 * @return
 	 */
-	Member findByPhoneAndBusId(String phone, Integer busId);
+	Member getByPhoneAndBusId(String phone, Integer busId);
 
 	/**
 	 * 绑定粉丝用户手机号
@@ -43,7 +43,7 @@ public interface MemberService {
 	 * @param phone		手机号
 	 * @return	1：成功 0：失败
 	 */
-	int bindMemberPhone(Integer busId, Integer memberId, String phone);
+	boolean bindMemberPhone(Integer busId, Integer memberId, String phone);
 
 	/**
 	 * 粉丝用户手机号登录
@@ -51,5 +51,5 @@ public interface MemberService {
 	 * @param busId		商家id
 	 * @return	1：成功 0：失败
 	 */
-	int loginMemberByPhone(String phone, Integer busId);
+	boolean loginMemberByPhone(String phone, Integer busId);
 }
