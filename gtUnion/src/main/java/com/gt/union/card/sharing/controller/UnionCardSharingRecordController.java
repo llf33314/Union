@@ -31,16 +31,16 @@ public class UnionCardSharingRecordController {
 
     @ApiOperation(value = "分页获取售卡佣金分成记录信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String method(HttpServletRequest request,
-                         Page page,
-                         @ApiParam(value = "联盟id", name = "unionId", required = true)
-                         @PathVariable(value = "unionId") Integer unionId,
-                         @ApiParam(value = "联盟卡号", name = "cardNumber")
-                         @RequestParam(value = "cardNumber", required = false) String cardNumber,
-                         @ApiParam(value = "开始时间", name = "beginTime")
-                         @RequestParam(value = "beginTime", required = false) Date beginTime,
-                         @ApiParam(value = "结束时间", name = "endTime")
-                         @RequestParam(value = "endTime", required = false) Date endTime) throws Exception {
+    public String pageSharingRecordVOByUnionId(HttpServletRequest request,
+                                               Page page,
+                                               @ApiParam(value = "联盟id", name = "unionId", required = true)
+                                               @PathVariable(value = "unionId") Integer unionId,
+                                               @ApiParam(value = "联盟卡号", name = "cardNumber")
+                                               @RequestParam(value = "cardNumber", required = false) String cardNumber,
+                                               @ApiParam(value = "开始时间", name = "beginTime")
+                                               @RequestParam(value = "beginTime", required = false) Date beginTime,
+                                               @ApiParam(value = "结束时间", name = "endTime")
+                                               @RequestParam(value = "endTime", required = false) Date endTime) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {

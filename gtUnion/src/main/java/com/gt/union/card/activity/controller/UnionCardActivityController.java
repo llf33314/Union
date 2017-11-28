@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.card.activity.entity.UnionCardActivity;
+import com.gt.union.card.activity.vo.CardActivityBasicVO;
 import com.gt.union.card.activity.vo.CardActivityVO;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
@@ -29,22 +30,40 @@ public class UnionCardActivityController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页获取活动卡信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String pageByUnionId(HttpServletRequest request,
-                                Page page,
-                                @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                @PathVariable("unionId") Integer unionId) throws Exception {
+    @ApiOperation(value = "分页获取已参加且已通过的活动卡信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/basic/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String pageActivityBasicVOByUnionId(HttpServletRequest request,
+                                               Page page,
+                                               @ApiParam(value = "联盟id", name = "unionId", required = true)
+                                               @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
         // mock
-        List<CardActivityVO> result = MockUtil.list(CardActivityVO.class, page.getSize());
-        return GtJsonResult.instanceSuccessMsg(result).toString();
+        List<CardActivityBasicVO> voList = MockUtil.list(CardActivityBasicVO.class, page.getSize());
+        page.setRecords(voList);
+        return GtJsonResult.instanceSuccessMsg(page).toString();
     }
-    
+
+    @ApiOperation(value = "分页获取活动卡信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String pageActivityVOByUnionId(HttpServletRequest request,
+                                          Page page,
+                                          @ApiParam(value = "联盟id", name = "unionId", required = true)
+                                          @PathVariable("unionId") Integer unionId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        // mock
+        List<CardActivityVO> voList = MockUtil.list(CardActivityVO.class, page.getSize());
+        page.setRecords(voList);
+        return GtJsonResult.instanceSuccessMsg(page).toString();
+    }
+
     @ApiOperation(value = "获取联盟卡活动信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listByUnionId(HttpServletRequest request,
@@ -63,8 +82,8 @@ public class UnionCardActivityController {
     @ApiOperation(value = "获取联盟卡活动信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/consume", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listConsumeByUnionId(HttpServletRequest request,
-                                @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                @PathVariable("unionId") Integer unionId) throws Exception {
+                                       @ApiParam(value = "联盟id", name = "unionId", required = true)
+                                       @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -79,13 +98,30 @@ public class UnionCardActivityController {
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
-    @ApiOperation(value = "保存创建的活动", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "保存新建的活动", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public String save(HttpServletRequest request,
-                       @ApiParam(value = "联盟id", name = "unionId", required = true)
-                       @PathVariable("unionId") Integer unionId,
-                       @ApiParam(value = "表单信息", name = "activity", required = true)
-                       @RequestBody UnionCardActivity activity) throws Exception {
+    public String saveByUnionId(HttpServletRequest request,
+                                @ApiParam(value = "联盟id", name = "unionId", required = true)
+                                @PathVariable("unionId") Integer unionId,
+                                @ApiParam(value = "表单信息", name = "activity", required = true)
+                                @RequestBody UnionCardActivity activity) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        return GtJsonResult.instanceSuccessMsg().toString();
+    }
+
+    //------------------------------------------------- delete ---------------------------------------------------------
+
+    @ApiOperation(value = "删除活动", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{activityId}/unionId/{unionId}", method = RequestMethod.DELETE, produces = "application/json;charset=UTF-8")
+    public String removeByIdAndUnionId(HttpServletRequest request,
+                                       @ApiParam(value = "活动id", name = "activityId", required = true)
+                                       @PathVariable("activityId") Integer activityId,
+                                       @ApiParam(value = "联盟id", name = "unionId", required = true)
+                                       @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {

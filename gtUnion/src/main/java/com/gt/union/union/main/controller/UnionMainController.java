@@ -32,7 +32,7 @@ public class UnionMainController {
 
     @ApiOperation(value = "获取联盟基础信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{unionId}/basic", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getById(HttpServletRequest request,
+    public String getBasicVOById(HttpServletRequest request,
                           @ApiParam(value = "联盟id", name = "unionId", required = true)
                           @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
@@ -66,11 +66,11 @@ public class UnionMainController {
 
     @ApiOperation(value = "更新联盟基础信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{unionId}/basic", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public String updateById(HttpServletRequest request,
+    public String updateBasicVOById(HttpServletRequest request,
                              @ApiParam(value = "联盟id", name = "unionId", required = true)
                              @PathVariable("unionId") Integer unionId,
-                             @ApiParam(value = "表单信息", name = "unionBasicVO", required = true)
-                             @RequestBody UnionBasicVO unionBasicVO) throws Exception {
+                             @ApiParam(value = "表单信息", name = "basicVO", required = true)
+                             @RequestBody UnionBasicVO basicVO) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {

@@ -10,10 +10,7 @@ import com.gt.union.union.main.vo.UnionTransferVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -33,10 +30,10 @@ public class UnionMainTransferController {
 
     @ApiOperation(value = "分页获取盟主权限转移信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String pageByUnionId(HttpServletRequest request,
-                                Page page,
-                                @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                @PathVariable("unionId") Integer unionId) throws Exception {
+    public String pageTransferVOByUnionId(HttpServletRequest request,
+                                          Page page,
+                                          @ApiParam(value = "联盟id", name = "unionId", required = true)
+                                          @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -50,13 +47,30 @@ public class UnionMainTransferController {
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
+    @ApiOperation(value = "接受或拒绝盟主权限转移", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{transferId}/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    public String updateStatusByIdAndUnionId(HttpServletRequest request,
+                                             @ApiParam(value = "转移id", name = "transferId", required = true)
+                                             @PathVariable("transferId") Integer transferId,
+                                             @ApiParam(value = "联盟id", name = "unionId", required = true)
+                                             @PathVariable("unionId") Integer unionId,
+                                             @ApiParam(value = "是否接受(0:否 1:是)", name = "isAccept", required = true)
+                                             @RequestParam(value = "isAccept") Integer isAccept) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        return GtJsonResult.instanceSuccessMsg().toString();
+    }
+
     @ApiOperation(value = "撤回盟主权限转移", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{transferId}/unionId/{unionId}/revoke", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String revokeById(HttpServletRequest request,
-                             @ApiParam(value = "转移id", name = "transferId", required = true)
-                             @PathVariable("transferId") Integer transferId,
-                             @ApiParam(value = "联盟id", name = "unionId", required = true)
-                             @PathVariable("unionId") Integer unionId) throws Exception {
+    public String revokeByIdAndUnionId(HttpServletRequest request,
+                                       @ApiParam(value = "转移id", name = "transferId", required = true)
+                                       @PathVariable("transferId") Integer transferId,
+                                       @ApiParam(value = "联盟id", name = "unionId", required = true)
+                                       @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {

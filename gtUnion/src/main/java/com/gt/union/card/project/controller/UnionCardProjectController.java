@@ -94,11 +94,11 @@ public class UnionCardProjectController {
 
     @ApiOperation(value = "获取我的活动项目", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{projectId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getByIdAndUnionId(HttpServletRequest request,
-                                    @ApiParam(value = "活动项目id", name = "projectId", required = true)
-                                    @PathVariable("projectId") Integer projectId,
-                                    @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                    @PathVariable("unionId") Integer unionId) throws Exception {
+    public String getProjectItemVOByIdAndUnionId(HttpServletRequest request,
+                                                 @ApiParam(value = "活动项目id", name = "projectId", required = true)
+                                                 @PathVariable("projectId") Integer projectId,
+                                                 @ApiParam(value = "联盟id", name = "unionId", required = true)
+                                                 @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -114,12 +114,20 @@ public class UnionCardProjectController {
         result.setErpGoodsList(erpGoodsList);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
-    
+
     //-------------------------------------------------- put -----------------------------------------------------------
 
+    //-------------------------------------------------- post ----------------------------------------------------------
+
+    //------------------------------------------------- patch ----------------------------------------------------------
+
     @ApiOperation(value = "审核项目", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/projectCheck", method = RequestMethod.PATCH, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/projectCheck", method = RequestMethod.PATCH, produces = "application/json;charset=UTF-8")
     public String updateProjectCheck(HttpServletRequest request,
+                                     @ApiParam(value = "联盟卡活动id", name = "activityId", required = true)
+                                     @PathVariable("activityId") Integer activityId,
+                                     @ApiParam(value = "联盟id", name = "unionId", required = true)
+                                     @PathVariable("unionId") Integer unionId,
                                      @ApiParam(value = "是否通过(0:否 1:是)", name = "isPass", required = true)
                                      @RequestParam(value = "isPass") Integer isPass,
                                      @ApiParam(value = "活动项目id列表", name = "projectIdList", required = true)
@@ -131,7 +139,5 @@ public class UnionCardProjectController {
         }
         return GtJsonResult.instanceSuccessMsg().toString();
     }
-
-    //-------------------------------------------------- post ----------------------------------------------------------
 
 }

@@ -30,12 +30,12 @@ public class UnionCardSharingRatioController {
 
     @ApiOperation(value = "分页获取活动卡售卡分成比例", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String pageByActivityIdAndUnionId(HttpServletRequest request,
-                                             Page page,
-                                             @ApiParam(value = "联盟卡活动id", name = "activityId", required = true)
-                                             @PathVariable("activityId") Integer activityId,
-                                             @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                             @PathVariable("unionId") Integer unionId) throws Exception {
+    public String pageSharingRatioVOByActivityIdAndUnionId(HttpServletRequest request,
+                                                           Page page,
+                                                           @ApiParam(value = "联盟卡活动id", name = "activityId", required = true)
+                                                           @PathVariable("activityId") Integer activityId,
+                                                           @ApiParam(value = "联盟id", name = "unionId", required = true)
+                                                           @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -66,6 +66,11 @@ public class UnionCardSharingRatioController {
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
+    //-------------------------------------------------- post ----------------------------------------------------------
+    
+    
+    //------------------------------------------------- patch ----------------------------------------------------------
+
     @ApiOperation(value = "批量更新售卡分成比例", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}", method = RequestMethod.PATCH, produces = "application/json;charset=UTF-8")
     public String updateByActivityIdAndUnionId(HttpServletRequest request,
@@ -82,7 +87,5 @@ public class UnionCardSharingRatioController {
         }
         return GtJsonResult.instanceSuccessMsg().toString();
     }
-
-    //-------------------------------------------------- post ----------------------------------------------------------
-
+    
 }
