@@ -95,8 +95,10 @@ public class UnionMemberController {
     //-------------------------------------------------- put -----------------------------------------------------------
 
     @ApiOperation(value = "更新盟员信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{memberId}/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateByUnionId(HttpServletRequest request,
+                                  @ApiParam(value = "盟员id", name = "memberId", required = true)
+                                  @PathVariable("memberId") Integer memberId,
                                   @ApiParam(value = "联盟id", name = "unionId", required = true)
                                   @PathVariable("unionId") Integer unionId,
                                   @ApiParam(value = "盟员", name = "member", required = true)
@@ -110,8 +112,10 @@ public class UnionMemberController {
     }
 
     @ApiOperation(value = "更新盟员折扣信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/unionId/{unionId}/discount", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{memberId}/unionId/{unionId}/discount", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateDiscountByUnionId(HttpServletRequest request,
+                                          @ApiParam(value = "盟员id", name = "memberId", required = true)
+                                          @PathVariable("memberId") Integer memberId,
                                           @ApiParam(value = "联盟id", name = "unionId", required = true)
                                           @PathVariable("unionId") Integer unionId,
                                           @ApiParam(value = "折扣", name = "discount", required = true)

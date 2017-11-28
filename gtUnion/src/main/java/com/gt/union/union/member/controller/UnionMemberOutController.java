@@ -6,6 +6,7 @@ import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
+import com.gt.union.union.member.vo.MemberOutPeriodVO;
 import com.gt.union.union.member.vo.MemberOutVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -30,10 +31,10 @@ public class UnionMemberOutController {
 
     @ApiOperation(value = "分页获取退盟信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String pageByUnionId(HttpServletRequest request,
-                                Page page,
-                                @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                @PathVariable("unionId") Integer unionId) throws Exception {
+    public String pageOutVOByUnionId(HttpServletRequest request,
+                                     Page page,
+                                     @ApiParam(value = "联盟id", name = "unionId", required = true)
+                                     @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -57,7 +58,7 @@ public class UnionMemberOutController {
             busId = busUser.getPid();
         }
         // mock
-        List<MemberOutVO> voList = MockUtil.list(MemberOutVO.class, page.getSize());
+        List<MemberOutPeriodVO> voList = MockUtil.list(MemberOutPeriodVO.class, page.getSize());
         page.setRecords(voList);
         return GtJsonResult.instanceSuccessMsg(page).toString();
     }

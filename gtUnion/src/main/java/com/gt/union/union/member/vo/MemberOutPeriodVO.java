@@ -7,18 +7,21 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * 退盟申请
+ * 退盟过渡期
  *
  * @author linweicong
- * @version 2017-11-24 18:21:32
+ * @version 2017-11-28 18:04:13
  */
-@ApiModel(value = "退盟申请VO")
-public class MemberOutVO {
+@ApiModel(value = "退盟过渡期VO")
+public class MemberOutPeriodVO {
     @ApiModelProperty(value = "退盟申请")
     private UnionMemberOut memberOut;
 
     @ApiModelProperty(value = "退盟盟员")
     private UnionMember member;
+
+    @ApiModelProperty(value = "退盟期限天数")
+    private Integer periodDay;
 
     public UnionMemberOut getMemberOut() {
         return memberOut;
@@ -36,9 +39,16 @@ public class MemberOutVO {
         this.member = member;
     }
 
+    public Integer getPeriodDay() {
+        return periodDay;
+    }
+
+    public void setPeriodDay(Integer periodDay) {
+        this.periodDay = periodDay;
+    }
+
     @Override
     public String toString() {
         return JSONArray.toJSONString(this);
     }
-
 }
