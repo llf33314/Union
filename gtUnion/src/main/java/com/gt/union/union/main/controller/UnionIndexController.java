@@ -34,7 +34,7 @@ public class UnionIndexController {
 
     @ApiOperation(value = "首页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/index", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String index(HttpServletRequest request,
+    public String getIndexVO(HttpServletRequest request,
                         @ApiParam(value = "联盟id", name = "unionId")
                         @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);

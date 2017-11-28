@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.constraints.NotNull;
 
 /**
  * 联盟公告 前端控制器

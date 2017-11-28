@@ -33,9 +33,9 @@ public class UnionCardFanController {
 
     @ApiOperation(value = "导出联盟卡列表信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String exportCardListInIndex(HttpServletRequest request,
-                                        @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                        @RequestParam(value = "unionId") Integer unionId) throws Exception {
+    public String exportFanVOByUnionId(HttpServletRequest request,
+                                       @ApiParam(value = "联盟id", name = "unionId", required = true)
+                                       @RequestParam(value = "unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -46,14 +46,14 @@ public class UnionCardFanController {
 
     @ApiOperation(value = "分页获取联盟卡列表信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String page(HttpServletRequest request,
-                       Page page,
-                       @ApiParam(value = "联盟id", name = "unionId", required = true)
-                       @RequestParam(value = "unionId") Integer unionId,
-                       @ApiParam(value = "联盟卡号", name = "number")
-                       @RequestParam(value = "number", required = false) String number,
-                       @ApiParam(value = "手机号", name = "phone")
-                       @RequestParam(value = "phone", required = false) String phone) throws Exception {
+    public String pageFanVOByUnionId(HttpServletRequest request,
+                                     Page page,
+                                     @ApiParam(value = "联盟id", name = "unionId", required = true)
+                                     @RequestParam(value = "unionId") Integer unionId,
+                                     @ApiParam(value = "联盟卡号", name = "number")
+                                     @RequestParam(value = "number", required = false) String number,
+                                     @ApiParam(value = "手机号", name = "phone")
+                                     @RequestParam(value = "phone", required = false) String phone) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -67,11 +67,11 @@ public class UnionCardFanController {
 
     @ApiOperation(value = "获取联盟卡详情", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{fanId}/detail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getCardDetailInIndex(HttpServletRequest request,
-                                       @ApiParam(value = "联盟卡粉丝信息id", name = "fanId", required = true)
-                                       @PathVariable("fanId") Integer fanId,
-                                       @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                       @RequestParam(value = "unionId") Integer unionId) throws Exception {
+    public String getFanDetailVOByFanIdAndUnionId(HttpServletRequest request,
+                                                  @ApiParam(value = "联盟卡粉丝信息id", name = "fanId", required = true)
+                                                  @PathVariable("fanId") Integer fanId,
+                                                  @ApiParam(value = "联盟id", name = "unionId", required = true)
+                                                  @RequestParam(value = "unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {

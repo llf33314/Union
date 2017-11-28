@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @Api(description = "联盟卡购买记录")
 @RestController
-@RequestMapping("/unionCardApply")
+@RequestMapping("/unionCardRecord")
 public class UnionCardRecordController {
 
     //-------------------------------------------------- get -----------------------------------------------------------

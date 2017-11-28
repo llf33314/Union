@@ -29,8 +29,20 @@ public class IndexVO {
     @ApiModelProperty(value = "当前盟员")
     private UnionMember currentMember;
 
+    @ApiModelProperty(value = "当前联盟盟主")
+    private UnionMember ownerMember;
+
     @ApiModelProperty(value = "盟主转移")
     private UnionMainTransfer unionTransfer;
+
+    @ApiModelProperty(value = "联盟积分")
+    private Double integral;
+
+    @ApiModelProperty(value = "成员数")
+    private Integer memberCount;
+
+    @ApiModelProperty(value = "剩余盟员数")
+    private Integer memberSurplus;
 
     public UnionMain getMyCreateUnion() {
         return myCreateUnion;
@@ -64,12 +76,44 @@ public class IndexVO {
         this.currentMember = currentMember;
     }
 
+    public UnionMember getOwnerMember() {
+        return ownerMember;
+    }
+
+    public void setOwnerMember(UnionMember ownerMember) {
+        this.ownerMember = ownerMember;
+    }
+
     public UnionMainTransfer getUnionTransfer() {
         return unionTransfer;
     }
 
     public void setUnionTransfer(UnionMainTransfer unionTransfer) {
         this.unionTransfer = unionTransfer;
+    }
+
+    public Double getIntegral() {
+        return integral;
+    }
+
+    public void setIntegral(Double integral) {
+        this.integral = integral;
+    }
+
+    public Integer getMemberCount() {
+        return memberCount;
+    }
+
+    public void setMemberCount(Integer memberCount) {
+        this.memberCount = memberCount;
+    }
+
+    public Integer getMemberSurplus() {
+        return memberSurplus;
+    }
+
+    public void setMemberSurplus(Integer memberSurplus) {
+        this.memberSurplus = memberSurplus;
     }
 
     @Override
