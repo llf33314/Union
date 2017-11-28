@@ -223,8 +223,8 @@ CREATE TABLE `t_union_brokerage_withdrawal` (
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='佣金提现';
 
-DROP TABLE IF EXISTS `t_union_card_root`;
-CREATE TABLE `t_union_card_root` (
+DROP TABLE IF EXISTS `t_union_card_fan`;
+CREATE TABLE `t_union_card_fan` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `del_status` int(2) DEFAULT NULL COMMENT '是否删除(0:否 1:是)',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -232,7 +232,7 @@ CREATE TABLE `t_union_card_root` (
   `number` varchar(30) DEFAULT NULL COMMENT '卡号',
   `integral` double(8,2) DEFAULT '0.00' COMMENT '积分',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='联盟卡根信息';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='联盟卡粉丝信息';
 
 DROP TABLE IF EXISTS `t_union_card`;
 CREATE TABLE `t_union_card` (
@@ -244,7 +244,7 @@ CREATE TABLE `t_union_card` (
   `integral` double(8,2) DEFAULT '0.00' COMMENT '积分',
   `member_id` int(11) DEFAULT NULL COMMENT '盟员id',
   `union_id` int(11) DEFAULT NULL COMMENT '联盟id',
-  `root_id` int(11) DEFAULT NULL COMMENT '根id',
+  `fan_id` int(11) DEFAULT NULL COMMENT '联盟卡粉丝id',
   `activity_id` int(11) DEFAULT NULL COMMENT '活动id',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='联盟卡';
@@ -267,10 +267,10 @@ CREATE TABLE `t_union_card_activity` (
   `illustration` varchar(800) DEFAULT NULL COMMENT '说明',
   `is_project_check` int(2) DEFAULT NULL COMMENT '项目是否需要审核(0:否 1:是)',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='联盟卡活动';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='活动';
 
-DROP TABLE IF EXISTS `t_union_activity_project`;
-CREATE TABLE `t_union_activity_project` (
+DROP TABLE IF EXISTS `t_union_card_project`;
+CREATE TABLE `t_union_card_project` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `del_status` int(2) DEFAULT NULL COMMENT '是否删除(0:否 1:是)',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -280,63 +280,38 @@ CREATE TABLE `t_union_activity_project` (
   `member_id` int(11) DEFAULT NULL COMMENT '盟员id',
   `union_id` int(11) DEFAULT NULL COMMENT '联盟id',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='活动项目';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='项目';
 
-DROP TABLE IF EXISTS `t_union_activity_flow`;
-CREATE TABLE `t_union_activity_flow` (
+DROP TABLE IF EXISTS `t_union_card_project_flow`;
+CREATE TABLE `t_union_card_project_flow` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `del_status` int(2) DEFAULT NULL COMMENT '是否删除(0:否 1:是)',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `illustration` varchar(800) DEFAULT NULL COMMENT '说明',
-  `activity_project_id` int(11) DEFAULT NULL COMMENT '活动项目id',
+  `project_id` int(11) DEFAULT NULL COMMENT '项目id',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='活动项目流程';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='项目流程';
 
-DROP TABLE IF EXISTS `t_union_project_text`;
-CREATE TABLE `t_union_project_text` (
+DROP TABLE IF EXISTS `t_union_card_project_item`;
+CREATE TABLE `t_union_card_project_item` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `del_status` int(2) DEFAULT NULL COMMENT '是否删除(0:否 1:是)',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `modify_time` datetime DEFAULT NULL COMMENT '修改时间',
+  `type` int(2) DEFAULT NULL COMMENT '类型(1:非ERP文本优惠 2:ERP文本优惠 3:ERP商品优惠)',
   `name` varchar(100) DEFAULT NULL COMMENT '名称',
   `number` int(11) DEFAULT NULL COMMENT '数量',
-  `surplus_number` int(11) DEFAULT NULL COMMENT '剩余有效数量',
-  `activity_project_id` int(11) DEFAULT NULL COMMENT '活动项目id',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='非ERP文本项目';
-
-DROP TABLE IF EXISTS `t_union_project_erp_text`;
-CREATE TABLE `t_union_project_erp_text` (
-  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `del_status` int(2) DEFAULT NULL COMMENT '是否删除(0:否 1:是)',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `modify_time` datetime DEFAULT NULL COMMENT '修改时间',
-  `name` varchar(100) DEFAULT NULL COMMENT '名称',
-  `number` int(11) DEFAULT NULL COMMENT '数量',
-  `surplus_number` int(11) DEFAULT NULL COMMENT '剩余有效数量',
+  `size` varchar(100) DEFAULT NULL COMMENT '规格',
   `erp_type` int(2) DEFAULT NULL COMMENT 'ERP类型(1:车小算 2:样子)',
   `shop_id` int(11) DEFAULT NULL COMMENT '门店id',
   `erp_text_id` int(11) DEFAULT NULL COMMENT 'ERP系统的文本项目id',
-  `activity_project_id` int(11) DEFAULT NULL COMMENT '活动项目id',
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='ERP文本项目';
-
-DROP TABLE IF EXISTS `t_union_project_erp_goods`;
-CREATE TABLE `t_union_project_erp_goods` (
-  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
-  `del_status` int(2) DEFAULT NULL COMMENT '是否删除(0:否 1:是)',
-  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `modify_time` datetime DEFAULT NULL COMMENT '修改时间',
-  `number` int(11) DEFAULT NULL COMMENT '数量',
-  `surplus_number` int(11) DEFAULT NULL COMMENT '剩余有效数量',
-  `shop_id` int(11) DEFAULT NULL COMMENT '门店id',
   `erp_goods_id` int(11) DEFAULT NULL COMMENT 'ERP系统的商品项目id',
-  `activity_project_id` int(11) DEFAULT NULL COMMENT '活动项目id',
+  `project_id` int(11) DEFAULT NULL COMMENT '项目id',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='ERP商品项目';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='项目优惠';
 
-DROP TABLE IF EXISTS `t_union_card_apply`;
-CREATE TABLE `t_union_card_apply` (
+DROP TABLE IF EXISTS `t_union_card_record`;
+CREATE TABLE `t_union_card_record` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `del_status` int(2) DEFAULT NULL COMMENT '是否删除(0:否 1:是)',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
@@ -347,7 +322,7 @@ CREATE TABLE `t_union_card_apply` (
   `pay_status` int(2) DEFAULT NULL COMMENT '支付状态(1:未支付 2:支付成功 3:支付失败 4:已退款)',
   `pay_money` double(8,2) DEFAULT NULL COMMENT '支付金额',
   `card_id` int(11) DEFAULT NULL COMMENT '联盟卡id',
-  `root_id` int(11) DEFAULT NULL COMMENT '根id',
+  `fan_id` int(11) DEFAULT NULL COMMENT '联盟卡粉丝id',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='联盟卡购买记录';
 
@@ -412,11 +387,10 @@ CREATE TABLE `t_union_consume_project` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `type` int(2) DEFAULT NULL COMMENT '消费类型(1:线上 2:线下)',
   `consume_id` int(11) DEFAULT NULL COMMENT '核销消费id',
-  `project_text_id` int(11) DEFAULT NULL COMMENT '非ERP文本项目id',
-  `project_erp_text_id` int(11) DEFAULT NULL COMMENT 'ERP文本项目id',
-  `project_erp_goods_id` int(11) DEFAULT NULL COMMENT 'ERP商品项目id',
+  `project_item_id` int(11) DEFAULT NULL COMMENT '项目优惠id',
+  `project_id` int(11) DEFAULT NULL COMMENT '项目id',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='消费核销活动项目';
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='消费核销项目优惠';
 
 DROP TABLE IF EXISTS `t_union_verifier`;
 CREATE TABLE `t_union_verifier` (
