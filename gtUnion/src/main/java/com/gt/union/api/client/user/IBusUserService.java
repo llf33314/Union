@@ -3,6 +3,8 @@ package com.gt.union.api.client.user;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.WxPublicUsers;
 
+import java.util.Map;
+
 /**
  * 商家信息 服务类api
  * @author hongjiye
@@ -38,5 +40,12 @@ public interface IBusUserService {
 	 * @return
 	 */
 	String getWxPublicUserQRCode(Integer publicId, Integer busId);
+
+	/**
+	 * 根据商家id获取联盟权限
+	 * @param busId		商家id
+	 * @return authority：联盟权限 1：有 0：无  pay：是否支付 1：需要支付 0：不需支付  versionName:商家的联盟版本名称  无，盟员版，盟主版
+	 */
+	Map<String,Object> getUserUnionAuthority(Integer busId);
 
 }
