@@ -351,7 +351,7 @@ CREATE TABLE `t_union_card_sharing_record` (
   `union_id` int(11) DEFAULT NULL COMMENT '联盟id',
   `activity_id` int(11) DEFAULT NULL COMMENT '活动id',
   `card_id` int(11) DEFAULT NULL COMMENT '联盟卡id',
-  `root_id` int(11) DEFAULT NULL COMMENT '根id',
+  `fan_id` int(11) DEFAULT NULL COMMENT '联盟卡粉丝id',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='联盟卡售卡分成记录';
 
@@ -376,7 +376,7 @@ CREATE TABLE `t_union_consume` (
   `member_id` int(11) DEFAULT NULL COMMENT '盟员id',
   `union_id` int(11) DEFAULT NULL COMMENT '联盟id',
   `card_id` int(11) DEFAULT NULL COMMENT '联盟卡id',
-  `root_id` int(11) DEFAULT NULL COMMENT '根id',
+  `fan_id` int(11) DEFAULT NULL COMMENT '联盟卡粉丝id',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='消费核销';
 

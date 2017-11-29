@@ -86,7 +86,7 @@ public class UnionCardFanController {
 
     @ApiOperation(value = "根据卡号搜索", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/number/{number}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String searchByNumber(HttpServletRequest request,
+    public String getSearchVOByNumber(HttpServletRequest request,
                                  @ApiParam(value = "卡号", name = "number", required = true)
                                  @PathVariable("number") String number,
                                  @ApiParam(value = "联盟id", name = "unionId")
