@@ -118,7 +118,7 @@ public class UnionOpportunityController {
 
     @ApiOperation(value = "审核商机", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{opportunityId}/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public String checkOpportunity(HttpServletRequest request,
+    public String updateStatusByIdAndUnionId(HttpServletRequest request,
                                    @ApiParam(value = "商机id", name = "opportunityId", required = true)
                                    @PathVariable("opportunityId") Integer opportunityId,
                                    @ApiParam(value = "联盟id", name = "unionId", required = true)

@@ -56,10 +56,10 @@ public class UnionBrokeragePayController {
 
     @ApiOperation(value = "分页获取佣金支付明细信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/detail/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String pageBrokeragePayDetail(HttpServletRequest request,
-                                         Page page,
-                                         @ApiParam(value = "联盟id", name = "unionId")
-                                         @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
+    public String pagePayVo(HttpServletRequest request,
+                            Page page,
+                            @ApiParam(value = "联盟id", name = "unionId")
+                            @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -72,7 +72,7 @@ public class UnionBrokeragePayController {
     }
 
     @ApiOperation(value = "导出佣金支付明细信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/payDetail/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/detail/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String exportBrokeragePayDetail(HttpServletRequest request) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
@@ -84,11 +84,11 @@ public class UnionBrokeragePayController {
 
     @ApiOperation(value = "获取支付明细详情信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/detail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getDetail(HttpServletRequest request,
-                            @ApiParam(value = "联盟id", name = "unionId", required = true)
-                            @PathVariable("unionId") Integer unionId,
-                            @ApiParam(value = "盟员id", name = "memberId", required = true)
-                            @RequestParam(value = "memberId") Integer memberId) throws Exception {
+    public String getPayVo(HttpServletRequest request,
+                           @ApiParam(value = "联盟id", name = "unionId", required = true)
+                           @PathVariable("unionId") Integer unionId,
+                           @ApiParam(value = "盟员id", name = "memberId", required = true)
+                           @RequestParam(value = "memberId") Integer memberId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {

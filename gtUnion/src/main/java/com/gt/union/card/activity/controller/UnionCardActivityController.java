@@ -30,8 +30,8 @@ public class UnionCardActivityController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页获取已参加且已通过的活动卡信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/unionId/{unionId}/basic/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页获取已报名且通过的活动信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/pass/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageActivityBasicVOByUnionId(HttpServletRequest request,
                                                Page page,
                                                @ApiParam(value = "联盟id", name = "unionId", required = true)
@@ -83,7 +83,9 @@ public class UnionCardActivityController {
     @RequestMapping(value = "/unionId/{unionId}/consume", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listConsumeByUnionId(HttpServletRequest request,
                                        @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                       @PathVariable("unionId") Integer unionId) throws Exception {
+                                       @PathVariable("unionId") Integer unionId,
+                                       @ApiParam(value = "联盟卡粉丝Id", name = "fanId", required = true)
+                                       @RequestParam(value = "fanId") Integer fanId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
