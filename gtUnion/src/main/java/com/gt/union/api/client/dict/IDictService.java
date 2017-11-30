@@ -11,53 +11,41 @@ import java.util.Map;
 public interface IDictService {
 
 	/**
-	 * 获取默认折扣
-	 * @return
-	 */
-	public Double getDefaultDiscount();
-
-	/**
 	 * 获取最大可抵扣价格的百分比
 	 * @return
 	 */
-	public Double getDefaultMaxExchangePercent();
+	Double getMaxExchangePercent();
 
 	/**
-	 * 获取100元可抵扣多少积分
+	 * 获取消耗多少积分可以抵扣1元
 	 * @return
 	 */
-	public Double getExchangeIntegral();
+	Double getExchangeIntegral();
 
 	/**
 	 * 获取消费1元赠送多少积分
 	 * @return
 	 */
-	public Double getGiveIntegral();
+	Double getGiveIntegral();
 
 	/**
 	 * 获取盟员信息需要收集的选项
 	 * @return
 	 */
-	public List<Map> getUnionApplyInfoDict();
+	List<Map> listMemberApplyInfoDict();
 
 	/**
 	 * 获取创建联盟权限属性
 	 * @return
 	 */
-	public List<Map> getCreateUnionDict();
-
-	/**
-	 * 获取创建联盟套餐
-	 * @return
-	 */
-	public List<Map> getUnionCreatePackage();
+	List<Map> listCreateUnionDict();
 
 	/**
 	 * 根据商家等级获取商家等级名称
-	 * @param level
+	 * @param level	商家等级
 	 * @return
 	 */
-	public String getBusUserLevel(Integer level);
+	String getBusUserLevel(Integer level);
 
 
 }

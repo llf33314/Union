@@ -6,16 +6,17 @@ import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.WxPublicUsers;
 import com.gt.api.util.HttpClienUtils;
 import com.gt.api.util.sign.SignHttpUtils;
+import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.api.client.user.IBusUserService;
-import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
-import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -26,12 +27,17 @@ import java.util.Map;
 @Service
 public class BusUserServiceImpl implements IBusUserService {
 
+    private Logger logger = LoggerFactory.getLogger(BusUserServiceImpl.class);
+
     @Autowired
     private RedisCacheUtil redisCacheUtil;
 
+    @Autowired
+    private IDictService dictService;
 
     @Override
     public BusUser getBusUserById(Integer busId) {
+        logger.info("根据商家id获取商家信息busId：{}", busId);
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("userId", busId);
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/busUserApi/getBusUserApi.do";
@@ -45,6 +51,7 @@ public class BusUserServiceImpl implements IBusUserService {
 
     @Override
     public BusUser getBusUserByName(String name) {
+        logger.info("根据账号名称获取商家信息name：{}", name);
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("name", name);
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/busUserApi/getBusUserApi.do";
@@ -58,6 +65,7 @@ public class BusUserServiceImpl implements IBusUserService {
 
     @Override
     public WxPublicUsers getWxPublicUserByBusId(Integer busId) {
+        logger.info("根据商家id获取公众号信息busId：{}", busId);
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("reqdata", busId);
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/wxpublicapi/6F6D9AD2/79B4DE7C/selectByUserId.do";
@@ -71,6 +79,7 @@ public class BusUserServiceImpl implements IBusUserService {
 
 	@Override
 	public String getWxPublicUserQRCode(Integer publicId, Integer busId) {
+        logger.info("获取公众号关注二维码永久链接publicId：{}，busId：{}", publicId, busId);
         String codeKey = RedisKeyUtil.getWxPublicUserQRCodeKey(publicId, busId);
         if (this.redisCacheUtil.exists(codeKey)) {//（1）通过busId获取缓存中的busUser对象，如果存在，则直接返回
             String obj = this.redisCacheUtil.get(codeKey);
@@ -92,6 +101,31 @@ public class BusUserServiceImpl implements IBusUserService {
         }
 		return qrurl;
 	}
+
+    @Override
+    public Map<String, Object> getUserUnionAuthority(Integer busId) {
+        logger.info("获取创建联盟权限商家id：{}",busId);
+        BusUser user = this.getBusUserById(busId);
+        if(user == null){
+            return null;
+        }
+        List<Map> list = dictService.listCreateUnionDict();
+        if(CommonUtil.isEmpty(list)){
+            return null;
+        }
+        Map<String, Object> data = new HashMap<String, Object>();
+        for(Map map : list){
+            //商家等级
+            if(user.getLevel().toString().equals(map.get("item_key").toString())){
+                String itemValue = map.get("item_value").toString();
+                String[] items = itemValue.split(",");
+                data.put("authority",CommonUtil.toInteger(items[0]));
+                data.put("pay",CommonUtil.toInteger(items[1]));
+                data.put("versionName",CommonUtil.toInteger(items[2]));
+            }
+        }
+        return null;
+    }
 
 
 }

@@ -3,6 +3,7 @@ package com.gt.union.api.client.dict.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.gt.api.util.sign.SignHttpUtils;
 import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.common.constant.ConfigConstant;
@@ -30,7 +31,6 @@ public class DictServiceImpl implements IDictService {
 	 */
 	public static final String UNION_INFO_DICT = "1144";
 
-
 	/**
 	 * 创建联盟权限属性
 	 */
@@ -43,7 +43,7 @@ public class DictServiceImpl implements IDictService {
 
 
 	/**
-	 * 联盟积分抵扣规则 多少积分抵扣多少元
+	 * 联盟积分抵扣规则 多少积分抵扣1元
 	 */
 	private static String EXCHANGE_INTEGRAL_TYPE = "1185";
 
@@ -53,15 +53,6 @@ public class DictServiceImpl implements IDictService {
 	 */
 	private static String MAX_EXCHANGE_TYPE = "1186";
 
-	/**
-	 * 联盟默认折扣
-	 */
-	private static String DEFAULT_DISCOUNT_TYPE = "1187";
-
-	/**
-	 * 创建联盟套餐
-	 */
-	private static String UNION_CREATE_PACKAGE_TYPE = "E001";
 
 	/**
 	 * 商家会员等级
@@ -69,12 +60,7 @@ public class DictServiceImpl implements IDictService {
 	private static String BUS_USER_LEVEL_DESC_TYPE = "1004";
 
 	@Override
-	public Double getDefaultDiscount(){
-		return getItemDoubleValue(DEFAULT_DISCOUNT_TYPE);
-	}
-
-	@Override
-	public Double getDefaultMaxExchangePercent() {
+	public Double getMaxExchangePercent() {
 		return getItemDoubleValue(MAX_EXCHANGE_TYPE);
 	}
 
@@ -121,18 +107,13 @@ public class DictServiceImpl implements IDictService {
 	}
 
 	@Override
-	public List<Map> getUnionApplyInfoDict() {
+	public List<Map> listMemberApplyInfoDict() {
 		return getItemList(UNION_INFO_DICT);
 	}
 
 	@Override
-	public List<Map> getCreateUnionDict() {
+	public List<Map> listCreateUnionDict() {
 		return getItemList(CREATE_UNION_TYPE);
-	}
-
-	@Override
-	public List<Map> getUnionCreatePackage() {
-		return getItemList(UNION_CREATE_PACKAGE_TYPE);
 	}
 
 	@Override
@@ -167,7 +148,14 @@ public class DictServiceImpl implements IDictService {
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/dictApi/getDictApi.do";
 		try{
 			String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
-			Map item = ApiResultHandlerUtil.getDataObject(result,Map.class );
+			if(StringUtil.isEmpty(result)){
+				return null;
+			}
+			Map<String,Object> data= JSON.parseObject(result,Map.class);
+			if(CommonUtil.isEmpty(data.get("data"))){
+				return null;
+			}
+			Map item = JSON.parseObject(data.get("data").toString(),Map.class);
 			List<Map> dict = JSONArray.parseArray(item.get("dictJSON").toString(),Map.class);
 			if(ListUtil.isEmpty(dict)){
 				return null;
@@ -200,7 +188,14 @@ public class DictServiceImpl implements IDictService {
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/dictApi/getDictApi.do";
 		try{
 			String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
-			Map item = ApiResultHandlerUtil.getDataObject(result,Map.class );
+			if(StringUtil.isEmpty(result)){
+				return null;
+			}
+			Map<String,Object> data= JSON.parseObject(result,Map.class);
+			if(CommonUtil.isEmpty(data.get("data"))){
+				return null;
+			}
+			Map item = JSON.parseObject(data.get("data").toString(),Map.class);
 			List list = JSONArray.parseArray(item.get("dictJSON").toString(),Map.class);
 			if(ListUtil.isNotEmpty(list)){
 				redisCacheUtil.set(key, list);

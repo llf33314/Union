@@ -12,7 +12,7 @@ public interface SocketService {
 	 * @param pushName		推送的客户端key
 	 * @param message		推送内容		JSON转换后的数据
 	 * @param pushStyle		推送类型
-	 * @return	0：失败 1：成功
+	 * @return	false：失败 true：成功
 	 */
-	int socketSendMessage(String pushName,String message,String pushStyle);
+	boolean socketSendMessage(String pushName,String message,String pushStyle);
 }

@@ -22,21 +22,21 @@ import java.util.Map;
 public class SmsServiceImpl implements SmsService {
 
 	@Override
-	public int sendSms(PhoneMessage phoneMessage) {
+	public boolean sendSms(PhoneMessage phoneMessage) {
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/smsapi/6F6D9AD2/79B4DE7C/sendSmsOld.do";
 		try {
 			RequestUtils requestUtils = new RequestUtils<PhoneMessage>();
 			requestUtils.setReqdata(phoneMessage);
 			Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(requestUtils),url, Map.class, PropertiesUtil.getWxmpSignKey());
 			if(CommonUtil.isEmpty(result)){
-				return 0;
+				return false;
 			}
 			if(CommonUtil.toInteger(result.get("code")) != 0){
-				return 0;
+				return false;
 			}
 		}catch (Exception e){
-			return 0;
+			return false;
 		}
-		return 1;
+		return true;
 	}
 }

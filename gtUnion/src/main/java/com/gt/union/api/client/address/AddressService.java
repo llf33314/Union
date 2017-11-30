@@ -15,13 +15,13 @@ public interface AddressService {
 	 * @param ids	地址ids 逗号隔开
 	 * @return
 	 */
-	List<Map> getByIds(String ids);
+	List<Map> listByIds(String ids);
 
 	/**
 	 * 根据city_code列表获取地址列表
 	 * @param city_codes city_code列表 逗号隔开
 	 * @return
 	 */
-	List<Map> getByCityCode(String city_codes);
+	List<Map> listByCityCode(String city_codes);
 
 }
