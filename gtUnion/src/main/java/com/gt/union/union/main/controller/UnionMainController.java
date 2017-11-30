@@ -31,7 +31,7 @@ public class UnionMainController {
     //-------------------------------------------------- get -----------------------------------------------------------
 
     @ApiOperation(value = "获取联盟基础信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{unionId}/basic", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getBasicVOById(HttpServletRequest request,
                           @ApiParam(value = "联盟id", name = "unionId", required = true)
                           @PathVariable("unionId") Integer unionId) throws Exception {
@@ -65,7 +65,7 @@ public class UnionMainController {
     //-------------------------------------------------- put -----------------------------------------------------------
 
     @ApiOperation(value = "更新联盟基础信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{unionId}/basic", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateBasicVOById(HttpServletRequest request,
                              @ApiParam(value = "联盟id", name = "unionId", required = true)
                              @PathVariable("unionId") Integer unionId,
