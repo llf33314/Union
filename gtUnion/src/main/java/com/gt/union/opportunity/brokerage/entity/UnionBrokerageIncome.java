@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,8 +16,10 @@ import java.util.Date;
  * 佣金收入
  *
  * @author linweicong
- * @version 2017-11-24 09:21:28
+ * @version 2017-11-30 15:25:48
  */
+@ApiModel(value = "佣金收入")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @TableName("t_union_brokerage_income")
 public class UnionBrokerageIncome extends Model<UnionBrokerageIncome> {
     private static final long serialVersionUID = 1L;
@@ -22,60 +27,70 @@ public class UnionBrokerageIncome extends Model<UnionBrokerageIncome> {
     /**
      * 主键
      */
+    @ApiModelProperty(value = "主键")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
      * 是否删除(0:否 1:是)
      */
+    @ApiModelProperty(value = "是否删除(0:否 1:是)")
     @TableField("del_status")
     private Integer delStatus;
 
     /**
      * 创建时间
      */
+    @ApiModelProperty(value = "创建时间")
     @TableField("create_time")
     private Date createTime;
 
     /**
      * 类型(1:售卡 2:商机)
      */
+    @ApiModelProperty(value = "类型(1:售卡 2:商机)")
     @TableField("type")
     private Integer type;
 
     /**
      * 佣金金额
      */
+    @ApiModelProperty(value = "佣金金额")
     @TableField("money")
     private Double money;
 
     /**
      * 收入商家id
      */
+    @ApiModelProperty(value = "收入商家id")
     @TableField("bus_id")
     private Integer busId;
 
     /**
      * 收入盟员id
      */
+    @ApiModelProperty(value = "收入盟员id")
     @TableField("member_id")
     private Integer memberId;
 
     /**
      * 联盟id
      */
+    @ApiModelProperty(value = "联盟id")
     @TableField("union_id")
     private Integer unionId;
 
     /**
      * 联盟卡id
      */
+    @ApiModelProperty(value = "联盟卡id")
     @TableField("card_id")
     private Integer cardId;
 
     /**
      * 商机id
      */
+    @ApiModelProperty(value = "商机id")
     @TableField("opportunity_id")
     private Integer opportunityId;
 

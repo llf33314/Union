@@ -5,12 +5,12 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * 检查许可
+ * 检查联盟盟主服务
  *
  * @author linweicong
  * @version 2017-11-24 14:45:48
  */
-@ApiModel(value = "检查许可VO")
+@ApiModel(value = "检查联盟盟主服务VO")
 public class UnionPermitCheckVO {
     @ApiModelProperty(value = "是否需要购买(0:否 1:是)")
     private Integer isPay;

@@ -8,12 +8,12 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 
 /**
- * 联盟卡粉丝详情信息
+ * 首页-联盟卡-详情
  *
  * @author linweicong
  * @version 2017-11-27 11:29:12
  */
-@ApiModel(value = "联盟卡粉丝详情信息VO")
+@ApiModel(value = "首页-联盟卡-详情VO")
 public class CardFanDetailVO {
     @ApiModelProperty(value = "折扣卡")
     private UnionCard discountCard;

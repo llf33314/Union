@@ -6,26 +6,18 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * 联盟卡活动
+ * 办理联盟卡-查询联盟卡活动
  *
  * @author linweicong
- * @version 2017-11-28 14:14:07
+ * @version 2017-11-30 14:44:39
  */
-@ApiModel(value = "联盟卡活动VO")
-public class CardActivityBasicVO {
-    @ApiModelProperty(value = "活动状态(1:未开始 2:报名中 3:售卖中 4:已结束)")
-    private Integer activityStatus;
-
+@ApiModel(value = "办理联盟卡-查询联盟卡活动VO")
+public class CardActivityApplyVO {
     @ApiModelProperty(value = "联盟卡活动")
     private UnionCardActivity activity;
 
-    public Integer getActivityStatus() {
-        return activityStatus;
-    }
-
-    public void setActivityStatus(Integer activityStatus) {
-        this.activityStatus = activityStatus;
-    }
+    @ApiModelProperty(value = "服务项目数")
+    private Integer itemCount;
 
     public UnionCardActivity getActivity() {
         return activity;
@@ -33,6 +25,14 @@ public class CardActivityBasicVO {
 
     public void setActivity(UnionCardActivity activity) {
         this.activity = activity;
+    }
+
+    public Integer getItemCount() {
+        return itemCount;
+    }
+
+    public void setItemCount(Integer itemCount) {
+        this.itemCount = itemCount;
     }
 
     @Override

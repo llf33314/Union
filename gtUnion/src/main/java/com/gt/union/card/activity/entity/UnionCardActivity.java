@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,8 +16,10 @@ import java.util.Date;
  * 活动
  *
  * @author linweicong
- * @version 2017-11-23 17:39:04
+ * @version 2017-11-30 15:18:44
  */
+@ApiModel(value = "活动")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @TableName("t_union_card_activity")
 public class UnionCardActivity extends Model<UnionCardActivity> {
     private static final long serialVersionUID = 1L;
@@ -22,90 +27,105 @@ public class UnionCardActivity extends Model<UnionCardActivity> {
     /**
      * 主键
      */
+    @ApiModelProperty(value = "主键")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
      * 是否删除(0:否 1:是)
      */
+    @ApiModelProperty(value = "是否删除(0:否 1:是)")
     @TableField("del_status")
     private Integer delStatus;
 
     /**
      * 创建时间
      */
+    @ApiModelProperty(value = "创建时间")
     @TableField("create_time")
     private Date createTime;
 
     /**
      * 联盟id
      */
+    @ApiModelProperty(value = "联盟id")
     @TableField("union_id")
     private Integer unionId;
 
     /**
      * 名称
      */
+    @ApiModelProperty(value = "名称")
     @TableField("name")
     private String name;
 
     /**
      * 价格
      */
+    @ApiModelProperty(value = "价格")
     @TableField("price")
     private Double price;
 
     /**
      * 展示图
      */
+    @ApiModelProperty(value = "展示图")
     @TableField("img")
     private String img;
 
     /**
      * 发行量
      */
+    @ApiModelProperty(value = "发行量")
     @TableField("amount")
     private Integer amount;
 
     /**
      * 有效天数
      */
+    @ApiModelProperty(value = "有效天数")
     @TableField("validity_day")
     private Integer validityDay;
 
     /**
      * 报名开始时间
      */
+    @ApiModelProperty(value = "报名开始时间")
     @TableField("apply_begin_time")
     private Date applyBeginTime;
 
     /**
      * 报名结束时间
      */
+    @ApiModelProperty(value = "报名结束时间")
     @TableField("apply_end_time")
     private Date applyEndTime;
 
     /**
      * 售卡开始时间
      */
+    @ApiModelProperty(value = "售卡开始时间")
     @TableField("sell_begin_time")
     private Date sellBeginTime;
 
     /**
      * 售卡结束时间
      */
+    @ApiModelProperty(value = "售卡结束时间")
     @TableField("sell_end_time")
     private Date sellEndTime;
 
     /**
      * 说明
      */
+    @ApiModelProperty(value = "说明")
     @TableField("illustration")
     private String illustration;
 
     /**
      * 项目是否需要审核(0:否 1:是)
      */
+    @ApiModelProperty(value = "项目是否需要审核(0:否 1:是)")
     @TableField("is_project_check")
     private Integer isProjectCheck;
 

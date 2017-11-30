@@ -2,9 +2,9 @@ package com.gt.union.card.project.controller;
 
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
-import com.gt.union.card.project.entity.UnionCardProject;
 import com.gt.union.card.project.entity.UnionCardProjectItem;
-import com.gt.union.card.project.vo.CardProjectItemVO;
+import com.gt.union.card.project.vo.CardProjectCheckVO;
+import com.gt.union.card.project.vo.CardProjectJoinMemberVO;
 import com.gt.union.card.project.vo.CardProjectVO;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
@@ -31,88 +31,76 @@ public class UnionCardProjectController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "获取所有活动项目", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String listByUnionId(HttpServletRequest request,
-                                @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                @PathVariable("unionId") Integer unionId) throws Exception {
-        BusUser busUser = SessionUtils.getLoginUser(request);
-        Integer busId = busUser.getId();
-        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
-        }
-        // mock
-        List<UnionCardProject> result = MockUtil.list(UnionCardProject.class, 30);
-        return GtJsonResult.instanceSuccessMsg(result).toString();
-    }
-
-    @ApiOperation(value = "获取参与盟员数信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "获取活动卡设置中的参与盟员数信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/joinMember", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String listJoinMemberByActivityIdAndUnionId(HttpServletRequest request,
-                                                       @ApiParam(value = "联盟卡活动id", name = "activityId", required = true)
-                                                       @PathVariable("activityId") Integer activityId,
-                                                       @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                                       @PathVariable("unionId") Integer unionId) throws Exception {
+    public GtJsonResult<List<CardProjectJoinMemberVO>> listJoinMemberByActivityIdAndUnionId(
+            HttpServletRequest request,
+            @ApiParam(value = "联盟卡活动id", name = "activityId", required = true)
+            @PathVariable("activityId") Integer activityId,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
         // mock
-        List<CardProjectVO> result = new ArrayList<>();
+        List<CardProjectJoinMemberVO> result = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
-            CardProjectVO vo = MockUtil.get(CardProjectVO.class);
+            CardProjectJoinMemberVO vo = MockUtil.get(CardProjectJoinMemberVO.class);
             List<UnionCardProjectItem> itemList = MockUtil.list(UnionCardProjectItem.class, 3);
             vo.setItemList(itemList);
             result.add(vo);
         }
-        return GtJsonResult.instanceSuccessMsg(result).toString();
+        return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "获取项目审核信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "获取活动卡设置中的项目审核信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/projectCheck", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String listProjectCheckByActivityIdAndUnionId(HttpServletRequest request,
-                                                         @ApiParam(value = "联盟卡活动id", name = "activityId", required = true)
-                                                         @PathVariable("activityId") Integer activityId,
-                                                         @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                                         @PathVariable("unionId") Integer unionId) throws Exception {
+    public GtJsonResult<List<CardProjectCheckVO>> listProjectCheckByActivityIdAndUnionId(
+            HttpServletRequest request,
+            @ApiParam(value = "联盟卡活动id", name = "activityId", required = true)
+            @PathVariable("activityId") Integer activityId,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
         // mock
-        List<CardProjectVO> result = new ArrayList<>();
+        List<CardProjectCheckVO> result = new ArrayList<>();
         for (int i = 0; i < 20; i++) {
-            CardProjectVO vo = MockUtil.get(CardProjectVO.class);
+            CardProjectCheckVO vo = MockUtil.get(CardProjectCheckVO.class);
             List<UnionCardProjectItem> itemList = MockUtil.list(UnionCardProjectItem.class, 3);
             vo.setItemList(itemList);
             result.add(vo);
         }
-        return GtJsonResult.instanceSuccessMsg(result).toString();
+        return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "获取我的活动项目", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "获取我的活动项目信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{projectId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getProjectItemVOByIdAndUnionId(HttpServletRequest request,
-                                                 @ApiParam(value = "活动项目id", name = "projectId", required = true)
-                                                 @PathVariable("projectId") Integer projectId,
-                                                 @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                                 @PathVariable("unionId") Integer unionId) throws Exception {
+    public GtJsonResult<CardProjectVO> getProjectVOByIdAndUnionId(
+            HttpServletRequest request,
+            @ApiParam(value = "活动项目id", name = "projectId", required = true)
+            @PathVariable("projectId") Integer projectId,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
         // mock
-        CardProjectItemVO result = MockUtil.get(CardProjectItemVO.class);
+        CardProjectVO result = MockUtil.get(CardProjectVO.class);
         List<UnionCardProjectItem> nonErpTextList = MockUtil.list(UnionCardProjectItem.class, 10);
         result.setNonErpTextList(nonErpTextList);
         List<UnionCardProjectItem> erpTextList = MockUtil.list(UnionCardProjectItem.class, 10);
         result.setErpTextList(erpTextList);
         List<UnionCardProjectItem> erpGoodsList = MockUtil.list(UnionCardProjectItem.class, 10);
         result.setErpGoodsList(erpGoodsList);
-        return GtJsonResult.instanceSuccessMsg(result).toString();
+        return GtJsonResult.instanceSuccessMsg(result);
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
@@ -121,23 +109,24 @@ public class UnionCardProjectController {
 
     //------------------------------------------------- patch ----------------------------------------------------------
 
-    @ApiOperation(value = "审核项目", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "活动卡设置-审核项目", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/projectCheck", method = RequestMethod.PATCH, produces = "application/json;charset=UTF-8")
-    public String updateProjectCheck(HttpServletRequest request,
-                                     @ApiParam(value = "联盟卡活动id", name = "activityId", required = true)
-                                     @PathVariable("activityId") Integer activityId,
-                                     @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                     @PathVariable("unionId") Integer unionId,
-                                     @ApiParam(value = "是否通过(0:否 1:是)", name = "isPass", required = true)
-                                     @RequestParam(value = "isPass") Integer isPass,
-                                     @ApiParam(value = "活动项目id列表", name = "projectIdList", required = true)
-                                     @RequestBody List<Integer> projectIdList) throws Exception {
+    public GtJsonResult<String> updateProjectCheck(
+            HttpServletRequest request,
+            @ApiParam(value = "联盟卡活动id", name = "activityId", required = true)
+            @PathVariable("activityId") Integer activityId,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @PathVariable("unionId") Integer unionId,
+            @ApiParam(value = "是否通过(0:否 1:是)", name = "isPass", required = true)
+            @RequestParam(value = "isPass") Integer isPass,
+            @ApiParam(value = "活动项目id列表", name = "projectIdList", required = true)
+            @RequestBody List<Integer> projectIdList) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-        return GtJsonResult.instanceSuccessMsg().toString();
+        return GtJsonResult.instanceSuccessMsg();
     }
 
 }

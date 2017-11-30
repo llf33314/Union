@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,8 +16,10 @@ import java.util.Date;
  * 联盟创建
  *
  * @author linweicong
- * @version 2017-11-23 15:26:25
+ * @version 2017-11-30 15:28:06
  */
+@ApiModel(value = "联盟创建")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @TableName("t_union_main_create")
 public class UnionMainCreate extends Model<UnionMainCreate> {
     private static final long serialVersionUID = 1L;
@@ -22,36 +27,42 @@ public class UnionMainCreate extends Model<UnionMainCreate> {
     /**
      * 主键
      */
+    @ApiModelProperty(value = "主键")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
      * 是否删除(0:否 1:是)
      */
+    @ApiModelProperty(value = "是否删除(0:否 1:是)")
     @TableField("del_status")
     private Integer delStatus;
 
     /**
      * 创建时间
      */
+    @ApiModelProperty(value = "创建时间")
     @TableField("create_time")
     private Date createTime;
 
     /**
      * 商家id
      */
+    @ApiModelProperty(value = "商家id")
     @TableField("bus_id")
     private Integer busId;
 
     /**
      * 联盟id
      */
+    @ApiModelProperty(value = "联盟id")
     @TableField("union_id")
     private Integer unionId;
 
     /**
      * 联盟许可id
      */
+    @ApiModelProperty(value = "联盟许可id")
     @TableField("permit_id")
     private Integer permitId;
 

@@ -30,17 +30,17 @@ public class UnionMainPackageController {
 
     @ApiOperation(value = "获取盟主服务套餐", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String method(HttpServletRequest request) throws Exception {
+    public GtJsonResult<List<UnionMainPackage>> list(HttpServletRequest request) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-        // mocke
+        // mock
         List<UnionMainPackage> result = MockUtil.list(UnionMainPackage.class, 3);
-        return GtJsonResult.instanceSuccessMsg(result).toString();
+        return GtJsonResult.instanceSuccessMsg(result);
     }
-    
+
     //-------------------------------------------------- put -----------------------------------------------------------
 
     //-------------------------------------------------- post ----------------------------------------------------------

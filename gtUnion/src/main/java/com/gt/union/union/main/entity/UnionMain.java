@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,8 +16,10 @@ import java.util.Date;
  * 联盟
  *
  * @author linweicong
- * @version 2017-11-23 15:26:16
+ * @version 2017-11-30 15:28:06
  */
+@ApiModel(value = "联盟")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @TableName("t_union_main")
 public class UnionMain extends Model<UnionMain> {
     private static final long serialVersionUID = 1L;
@@ -22,66 +27,77 @@ public class UnionMain extends Model<UnionMain> {
     /**
      * 主表
      */
+    @ApiModelProperty(value = "主表")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
      * 是否删除(0:否 1:是)
      */
+    @ApiModelProperty(value = "是否删除(0:否 1:是)")
     @TableField("del_status")
     private Integer delStatus;
 
     /**
      * 创建时间
      */
+    @ApiModelProperty(value = "创建时间")
     @TableField("create_time")
     private Date createTime;
 
     /**
      * 修改时间
      */
+    @ApiModelProperty(value = "修改时间")
     @TableField("modify_time")
     private Date modifyTime;
 
     /**
      * 名称
      */
+    @ApiModelProperty(value = "名称")
     @TableField("name")
     private String name;
 
     /**
      * 图标
      */
+    @ApiModelProperty(value = "图标")
     @TableField("img")
     private String img;
 
     /**
      * 加盟方式(1:推荐 2:申请、推荐)
      */
+    @ApiModelProperty(value = "加盟方式(1:推荐 2:申请、推荐)")
     @TableField("join_type")
     private Integer joinType;
 
     /**
      * 说明
      */
+    @ApiModelProperty(value = "说明")
     @TableField("illustration")
     private String illustration;
 
     /**
      * 成员总数上限
      */
+    @ApiModelProperty(value = "成员总数上限")
     @TableField("member_limit")
     private Integer memberLimit;
 
     /**
      * 是否开启积分(0:否 1:是)
      */
+    @ApiModelProperty(value = "是否开启积分(0:否 1:是)")
     @TableField("is_integral")
     private Integer isIntegral;
 
     /**
      * 有效期
      */
+    @ApiModelProperty(value = "有效期")
     @TableField("validity")
     private Date validity;
 

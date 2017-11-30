@@ -10,12 +10,12 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 
 /**
- * 活动项目消费优惠
+ * 消费核销-项目优惠
  *
  * @author linweicong
  * @version 2017-11-27 14:42:43
  */
-@ApiModel(value = "活动项目消费优惠VO")
+@ApiModel(value = "消费核销-项目优惠VO")
 public class CardProjectItemConsumeVO {
     @ApiModelProperty(value = "项目优惠")
     private UnionCardProjectItem item;

@@ -1,17 +1,17 @@
-package com.gt.union.card.consume.vo;
+package com.gt.union.union.main.vo;
 
 import com.alibaba.fastjson.JSONArray;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * 消费核销-支付
+ * 购买联盟盟主服务-支付
  *
  * @author linweicong
  * @version 2017-11-30 15:58:33
  */
-@ApiModel(value = "消费核销-支付VO")
-public class ConsumePayVO {
+@ApiModel(value = "购买联盟盟主服务-支付VO")
+public class UnionPermitPayVO {
     @ApiModelProperty(value = "支付链接")
     private String payUrl;
 

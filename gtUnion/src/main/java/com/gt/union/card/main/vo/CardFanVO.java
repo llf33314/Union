@@ -6,12 +6,12 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * 联盟卡粉丝信息
+ * 首页-联盟卡
  *
  * @author linweicong
  * @version 2017-11-27 11:21:49
  */
-@ApiModel(value = "联盟卡粉丝信息VO")
+@ApiModel(value = "首页-联盟卡VO")
 public class CardFanVO {
     @ApiModelProperty(value = "联盟卡粉丝信息")
     private UnionCardFan fan;

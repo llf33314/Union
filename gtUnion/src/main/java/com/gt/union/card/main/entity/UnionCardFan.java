@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,8 +16,10 @@ import java.util.Date;
  * 联盟卡粉丝信息
  *
  * @author linweicong
- * @version 2017-11-23 17:39:13
+ * @version 2017-11-30 15:21:13
  */
+@ApiModel(value = "联盟卡粉丝信息")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @TableName("t_union_card_fan")
 public class UnionCardFan extends Model<UnionCardFan> {
     private static final long serialVersionUID = 1L;
@@ -22,36 +27,42 @@ public class UnionCardFan extends Model<UnionCardFan> {
     /**
      * 主键
      */
+    @ApiModelProperty(value = "主键")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
      * 是否删除(0:否 1:是)
      */
+    @ApiModelProperty(value = "是否删除(0:否 1:是)")
     @TableField("del_status")
     private Integer delStatus;
 
     /**
      * 创建时间
      */
+    @ApiModelProperty(value = "创建时间")
     @TableField("create_time")
     private Date createTime;
 
     /**
      * 手机号
      */
+    @ApiModelProperty(value = "手机号")
     @TableField("phone")
     private String phone;
 
     /**
      * 卡号
      */
+    @ApiModelProperty(value = "卡号")
     @TableField("number")
     private String number;
 
     /**
      * 积分
      */
+    @ApiModelProperty(value = "积分")
     @TableField("integral")
     private Double integral;
 

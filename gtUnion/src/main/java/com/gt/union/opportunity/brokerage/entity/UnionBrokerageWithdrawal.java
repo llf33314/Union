@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,8 +16,10 @@ import java.util.Date;
  * 佣金提现
  *
  * @author linweicong
- * @version 2017-11-24 09:21:28
+ * @version 2017-11-30 15:25:48
  */
+@ApiModel(value = "佣金提现")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @TableName("t_union_brokerage_withdrawal")
 public class UnionBrokerageWithdrawal extends Model<UnionBrokerageWithdrawal> {
     private static final long serialVersionUID = 1L;
@@ -22,42 +27,49 @@ public class UnionBrokerageWithdrawal extends Model<UnionBrokerageWithdrawal> {
     /**
      * 主键
      */
+    @ApiModelProperty(value = "主键")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
      * 是否删除(0:否 1:是)
      */
+    @ApiModelProperty(value = "是否删除(0:否 1:是)")
     @TableField("del_status")
     private Integer delStatus;
 
     /**
      * 提现时间
      */
+    @ApiModelProperty(value = "提现时间")
     @TableField("create_time")
     private Date createTime;
 
     /**
      * 提现商家id
      */
+    @ApiModelProperty(value = "提现商家id")
     @TableField("bus_id")
     private Integer busId;
 
     /**
      * 提现金额
      */
+    @ApiModelProperty(value = "提现金额")
     @TableField("money")
     private Double money;
 
     /**
      * 平台管理者id
      */
+    @ApiModelProperty(value = "平台管理者id")
     @TableField("verifier_id")
     private Integer verifierId;
 
     /**
      * 平台管理者名称
      */
+    @ApiModelProperty(value = "平台管理者名称")
     @TableField("verifier_name")
     private String verifierName;
 
