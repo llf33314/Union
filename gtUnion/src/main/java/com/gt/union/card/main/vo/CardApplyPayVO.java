@@ -1,62 +1,61 @@
-package com.gt.union.card.project.vo;
+package com.gt.union.card.main.vo;
 
 import com.alibaba.fastjson.JSONArray;
-import com.gt.union.card.project.entity.UnionCardProject;
+import com.gt.union.card.consume.entity.UnionConsume;
 import com.gt.union.card.project.entity.UnionCardProjectItem;
-import com.gt.union.union.member.entity.UnionMember;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.util.List;
 
 /**
- * 活动项目-区分ERP
+ * 消费核销记录
  *
  * @author linweicong
- * @version 2017-11-27 14:42:43
+ * @version 2017-11-29 14:18:17
  */
-@ApiModel(value = "活动项目-区分ERPVO")
-public class CardProjectItemVO {
-    @ApiModelProperty(value = "项目所属盟员")
-    private UnionMember member;
+@ApiModel(value = "消费核销记录VO")
+public class CardApplyPayVO {
+    @ApiModelProperty(value = "门店id")
+    private Integer shopId;
 
-    @ApiModelProperty(value = "活动项目")
-    private UnionCardProject project;
+    @ApiModelProperty(value = "消费核销信息")
+    private UnionConsume consume;
 
-    @ApiModelProperty(value = "是否ERP(0:否 1:是)")
-    private Integer isErp;
+    @ApiModelProperty(value = "联盟卡活动id")
+    private Integer activityId;
 
     @ApiModelProperty(value = "非ERP文本项目优惠列表")
     private List<UnionCardProjectItem> nonErpTextList;
 
-    @ApiModelProperty(value = "ERP文本项目优惠列表")
+    @ApiModelProperty(value = "ERP系统的文本项目优惠列表")
     private List<UnionCardProjectItem> erpTextList;
 
-    @ApiModelProperty(value = "ERP商品项目优惠列表")
+    @ApiModelProperty(value = "ERP系统的商品项目优惠列表")
     private List<UnionCardProjectItem> erpGoodsList;
 
-    public UnionMember getMember() {
-        return member;
+    public Integer getShopId() {
+        return shopId;
     }
 
-    public void setMember(UnionMember member) {
-        this.member = member;
+    public void setShopId(Integer shopId) {
+        this.shopId = shopId;
     }
 
-    public UnionCardProject getProject() {
-        return project;
+    public UnionConsume getConsume() {
+        return consume;
     }
 
-    public void setProject(UnionCardProject project) {
-        this.project = project;
+    public void setConsume(UnionConsume consume) {
+        this.consume = consume;
     }
 
-    public Integer getIsErp() {
-        return isErp;
+    public Integer getActivityId() {
+        return activityId;
     }
 
-    public void setIsErp(Integer isErp) {
-        this.isErp = isErp;
+    public void setActivityId(Integer activityId) {
+        this.activityId = activityId;
     }
 
     public List<UnionCardProjectItem> getNonErpTextList() {

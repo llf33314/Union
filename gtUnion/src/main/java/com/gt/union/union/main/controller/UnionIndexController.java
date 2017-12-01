@@ -34,9 +34,10 @@ public class UnionIndexController {
 
     @ApiOperation(value = "首页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/index", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getIndexVO(HttpServletRequest request,
-                        @ApiParam(value = "联盟id", name = "unionId")
-                        @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
+    public GtJsonResult<IndexVO> getIndexVO(
+            HttpServletRequest request,
+            @ApiParam(value = "联盟id", name = "unionId")
+            @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -50,7 +51,7 @@ public class UnionIndexController {
         result.setCurrentUnion(currentUnion);
         List<UnionMain> myJoinUnionList = MockUtil.list(UnionMain.class, 2);
         result.setMyJoinUnionList(myJoinUnionList);
-        return GtJsonResult.instanceSuccessMsg(result).toString();
+        return GtJsonResult.instanceSuccessMsg(result);
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------

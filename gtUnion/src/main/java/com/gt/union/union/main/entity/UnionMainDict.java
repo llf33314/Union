@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 
@@ -12,8 +15,10 @@ import java.io.Serializable;
  * 联盟入盟申请必填信息
  *
  * @author linweicong
- * @version 2017-11-23 15:26:25
+ * @version 2017-11-30 15:28:06
  */
+@ApiModel(value = "联盟入盟申请必填信息")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @TableName("t_union_main_dict")
 public class UnionMainDict extends Model<UnionMainDict> {
     private static final long serialVersionUID = 1L;
@@ -21,18 +26,21 @@ public class UnionMainDict extends Model<UnionMainDict> {
     /**
      * 主键
      */
+    @ApiModelProperty(value = "主键")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
      * 联盟id
      */
+    @ApiModelProperty(value = "联盟id")
     @TableField("union_id")
     private Integer unionId;
 
     /**
      * 字典关键字
      */
+    @ApiModelProperty(value = "字典关键字")
     @TableField("item_key")
     private String itemKey;
 

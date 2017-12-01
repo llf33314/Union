@@ -6,6 +6,7 @@ import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
+import com.gt.union.common.util.PageUtil;
 import com.gt.union.union.member.vo.MemberOutPeriodVO;
 import com.gt.union.union.member.vo.MemberOutVO;
 import io.swagger.annotations.Api;
@@ -31,10 +32,11 @@ public class UnionMemberOutController {
 
     @ApiOperation(value = "分页获取退盟信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String pageOutVOByUnionId(HttpServletRequest request,
-                                     Page page,
-                                     @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                     @PathVariable("unionId") Integer unionId) throws Exception {
+    public GtJsonResult<Page<MemberOutVO>> pageOutVOByUnionId(
+            HttpServletRequest request,
+            Page page,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -42,16 +44,18 @@ public class UnionMemberOutController {
         }
         // mock
         List<MemberOutVO> voList = MockUtil.list(MemberOutVO.class, page.getSize());
-        page.setRecords(voList);
-        return GtJsonResult.instanceSuccessMsg(page).toString();
+        Page<MemberOutVO> result = (Page<MemberOutVO>) page;
+        result = PageUtil.setRecord(result, voList);
+        return GtJsonResult.instanceSuccessMsg(result);
     }
 
     @ApiOperation(value = "分页获取退盟过渡期信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/period/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String pagePeriodByUnionId(HttpServletRequest request,
-                                      Page page,
-                                      @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                      @PathVariable("unionId") Integer unionId) throws Exception {
+    public GtJsonResult<Page<MemberOutPeriodVO>> pagePeriodByUnionId(
+            HttpServletRequest request,
+            Page page,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -59,57 +63,61 @@ public class UnionMemberOutController {
         }
         // mock
         List<MemberOutPeriodVO> voList = MockUtil.list(MemberOutPeriodVO.class, page.getSize());
-        page.setRecords(voList);
-        return GtJsonResult.instanceSuccessMsg(page).toString();
+        Page<MemberOutPeriodVO> result = (Page<MemberOutPeriodVO>) page;
+        result = PageUtil.setRecord(result, voList);
+        return GtJsonResult.instanceSuccessMsg(result);
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
     @ApiOperation(value = "审核退盟申请", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{outId}/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public String checkByIdAndUnionId(HttpServletRequest request,
-                                      @ApiParam(value = "退盟id", name = "outId", required = true)
-                                      @PathVariable("outId") Integer outId,
-                                      @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                      @PathVariable("unionId") Integer unionId,
-                                      @ApiParam(value = "是否通过(0:否 1:是)", name = "isPass", required = true)
-                                      @RequestParam(value = "isPass") Integer isPass) throws Exception {
+    public GtJsonResult<String> checkByIdAndUnionId(
+            HttpServletRequest request,
+            @ApiParam(value = "退盟id", name = "outId", required = true)
+            @PathVariable("outId") Integer outId,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @PathVariable("unionId") Integer unionId,
+            @ApiParam(value = "是否通过(0:否 1:是)", name = "isPass", required = true)
+            @RequestParam(value = "isPass") Integer isPass) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-        return GtJsonResult.instanceSuccessMsg().toString();
+        return GtJsonResult.instanceSuccessMsg();
     }
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
     @ApiOperation(value = "申请退盟", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public String saveByUnionId(HttpServletRequest request,
-                                @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                @PathVariable("unionId") Integer unionId,
-                                @ApiParam(value = "退盟理由", name = "reason", required = true) String reason) throws Exception {
+    public GtJsonResult<String> saveByUnionId(
+            HttpServletRequest request,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @PathVariable("unionId") Integer unionId,
+            @ApiParam(value = "退盟理由", name = "reason", required = true) String reason) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-        return GtJsonResult.instanceSuccessMsg().toString();
+        return GtJsonResult.instanceSuccessMsg();
     }
 
     @ApiOperation(value = "移除盟员", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/applyMemberId/{applyMemberId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public String saveByUnionIdAndApplyMemberId(HttpServletRequest request,
-                                                @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                                @PathVariable("unionId") Integer unionId,
-                                                @ApiParam(value = "盟员id", name = "applyMemberId", required = true)
-                                                @PathVariable("applyMemberId") Integer applyMemberId) throws Exception {
+    public GtJsonResult<String> saveByUnionIdAndApplyMemberId(
+            HttpServletRequest request,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @PathVariable("unionId") Integer unionId,
+            @ApiParam(value = "盟员id", name = "applyMemberId", required = true)
+            @PathVariable("applyMemberId") Integer applyMemberId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-        return GtJsonResult.instanceSuccessMsg().toString();
+        return GtJsonResult.instanceSuccessMsg();
     }
 }

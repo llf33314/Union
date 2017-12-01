@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,8 +16,10 @@ import java.util.Date;
  * 盟主服务套餐
  *
  * @author linweicong
- * @version 2017-11-23 15:26:16
+ * @version 2017-11-30 15:28:06
  */
+@ApiModel(value = "盟主服务套餐")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @TableName("t_union_main_package")
 public class UnionMainPackage extends Model<UnionMainPackage> {
     private static final long serialVersionUID = 1L;
@@ -22,48 +27,56 @@ public class UnionMainPackage extends Model<UnionMainPackage> {
     /**
      * 主键
      */
+    @ApiModelProperty(value = "主键")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
      * 是否删除(0:否 1:是)
      */
+    @ApiModelProperty(value = "是否删除(0:否 1:是)")
     @TableField("del_status")
     private Integer delStatus;
 
     /**
      * 创建时间
      */
+    @ApiModelProperty(value = "创建时间")
     @TableField("create_time")
     private Date createTime;
 
     /**
      * 年限
      */
+    @ApiModelProperty(value = "年限")
     @TableField("year")
     private Double year;
 
     /**
      * 收费金额
      */
+    @ApiModelProperty(value = "收费金额")
     @TableField("price")
     private Double price;
 
     /**
      * 商家等级
      */
+    @ApiModelProperty(value = "商家等级")
     @TableField("level")
     private Integer level;
 
     /**
      * 成员数
      */
+    @ApiModelProperty(value = "成员数")
     @TableField("number")
     private Integer number;
 
     /**
      * 年限描述
      */
+    @ApiModelProperty(value = "年限描述")
     @TableField("desc")
     private String desc;
 

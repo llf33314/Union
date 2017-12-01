@@ -10,6 +10,7 @@ import com.gt.union.card.main.vo.CardFanVO;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
+import com.gt.union.common.util.PageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -31,47 +32,51 @@ public class UnionCardFanController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "导出联盟卡列表信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String exportFanVOByUnionId(HttpServletRequest request,
-                                       @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                       @RequestParam(value = "unionId") Integer unionId) throws Exception {
-        BusUser busUser = SessionUtils.getLoginUser(request);
-        Integer busId = busUser.getId();
-        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
-        }
-        return GtJsonResult.instanceSuccessMsg("TODO").toString();
-    }
-
-    @ApiOperation(value = "分页获取联盟卡列表信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页获取首页-联盟卡中的信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String pageFanVOByUnionId(HttpServletRequest request,
-                                     Page page,
-                                     @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                     @RequestParam(value = "unionId") Integer unionId,
-                                     @ApiParam(value = "联盟卡号", name = "number")
-                                     @RequestParam(value = "number", required = false) String number,
-                                     @ApiParam(value = "手机号", name = "phone")
-                                     @RequestParam(value = "phone", required = false) String phone) throws Exception {
+    public GtJsonResult<Page<CardFanVO>> pageFanVOByUnionId(
+            HttpServletRequest request,
+            Page page,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @RequestParam(value = "unionId") Integer unionId,
+            @ApiParam(value = "联盟卡号", name = "number")
+            @RequestParam(value = "number", required = false) String number,
+            @ApiParam(value = "手机号", name = "phone")
+            @RequestParam(value = "phone", required = false) String phone) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
         // mock
-        List<CardFanVO> rootList = MockUtil.list(CardFanVO.class, page.getSize());
-        page.setRecords(rootList);
-        return GtJsonResult.instanceSuccessMsg(page).toString();
+        List<CardFanVO> fanVOList = MockUtil.list(CardFanVO.class, page.getSize());
+        Page<CardFanVO> result = (Page<CardFanVO>) page;
+        result = PageUtil.setRecord(result, fanVOList);
+        return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "获取联盟卡详情", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "导出首页-联盟卡中的信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public GtJsonResult<String> exportFanVOByUnionId(
+            HttpServletRequest request,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @RequestParam(value = "unionId") Integer unionId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        return GtJsonResult.instanceSuccessMsg("TODO");
+    }
+
+    @ApiOperation(value = "获取首页-联盟卡-详情信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{fanId}/detail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getFanDetailVOByFanIdAndUnionId(HttpServletRequest request,
-                                                  @ApiParam(value = "联盟卡粉丝信息id", name = "fanId", required = true)
-                                                  @PathVariable("fanId") Integer fanId,
-                                                  @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                                  @RequestParam(value = "unionId") Integer unionId) throws Exception {
+    public GtJsonResult<CardFanDetailVO> getFanDetailVOByFanId(
+            HttpServletRequest request,
+            @ApiParam(value = "联盟卡粉丝信息id", name = "fanId", required = true)
+            @PathVariable("fanId") Integer fanId,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @RequestParam(value = "unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -81,16 +86,17 @@ public class UnionCardFanController {
         CardFanDetailVO result = MockUtil.get(CardFanDetailVO.class);
         List<UnionCard> activityCardList = MockUtil.list(UnionCard.class, 20);
         result.setActivityCardList(activityCardList);
-        return GtJsonResult.instanceSuccessMsg(result).toString();
+        return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "根据卡号搜索", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/number/{number}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getSearchVOByNumber(HttpServletRequest request,
-                                 @ApiParam(value = "卡号", name = "number", required = true)
-                                 @PathVariable("number") String number,
-                                 @ApiParam(value = "联盟id", name = "unionId")
-                                 @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
+    @ApiOperation(value = "根据前台-消费核销中的联盟卡号或手机号搜索", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "search", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public GtJsonResult<CardFanSearchVO> getSearchVOByNumber(
+            HttpServletRequest request,
+            @ApiParam(value = "联盟卡号或手机号", name = "numberOrPhone", required = true)
+            @RequestParam(value = "numberOrPhone") String numberOrPhone,
+            @ApiParam(value = "联盟id", name = "unionId")
+            @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -98,7 +104,7 @@ public class UnionCardFanController {
         }
         // mock
         CardFanSearchVO result = MockUtil.get(CardFanSearchVO.class);
-        return GtJsonResult.instanceSuccessMsg(result).toString();
+        return GtJsonResult.instanceSuccessMsg(result);
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------

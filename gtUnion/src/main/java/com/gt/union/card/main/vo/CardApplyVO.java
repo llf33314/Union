@@ -1,7 +1,7 @@
 package com.gt.union.card.main.vo;
 
 import com.alibaba.fastjson.JSONArray;
-import com.gt.union.card.main.entity.UnionCardFan;
+import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.member.entity.UnionMember;
 import io.swagger.annotations.ApiModel;
@@ -10,46 +10,27 @@ import io.swagger.annotations.ApiModelProperty;
 import java.util.List;
 
 /**
- * 联盟卡卡号搜索
+ * 消费核销联盟卡
  *
  * @author linweicong
- * @version 2017-11-27 16:44:02
+ * @version 2017-11-30 14:30:38
  */
-@ApiModel(value = "联盟卡卡号搜索VO")
-public class CardFanSearchVO {
-    @ApiModelProperty(value = "联盟卡粉丝信息")
-    private UnionCardFan fan;
-
-    @ApiModelProperty(value = "联盟积分")
-    private Double integral;
-    
-    @ApiModelProperty(value = "可选联盟列表")
+@ApiModel(value = "消费核销联盟卡VO")
+public class CardApplyVO {
+    @ApiModelProperty(value = "联盟列表")
     private List<UnionMain> unionList;
-    
+
     @ApiModelProperty(value = "当前选中的联盟")
     private UnionMain currentUnion;
-    
+
     @ApiModelProperty(value = "当前选中联盟下的盟员身份")
     private UnionMember currentMember;
-    
-    @ApiModelProperty(value = "优惠项目是否可用(0:否 1:是)")
-    private Integer isProjectAvailable;
 
-    public UnionCardFan getFan() {
-        return fan;
-    }
+    @ApiModelProperty(value = "联盟卡活动列表")
+    private List<UnionCardActivity> activityList;
 
-    public void setFan(UnionCardFan fan) {
-        this.fan = fan;
-    }
-
-    public Double getIntegral() {
-        return integral;
-    }
-
-    public void setIntegral(Double integral) {
-        this.integral = integral;
-    }
+    @ApiModelProperty(value = "是否需要展示折扣卡(0:否 1:是)")
+    private Integer isDiscountCard;
 
     public List<UnionMain> getUnionList() {
         return unionList;
@@ -75,12 +56,20 @@ public class CardFanSearchVO {
         this.currentMember = currentMember;
     }
 
-    public Integer getIsProjectAvailable() {
-        return isProjectAvailable;
+    public List<UnionCardActivity> getActivityList() {
+        return activityList;
     }
 
-    public void setIsProjectAvailable(Integer isProjectAvailable) {
-        this.isProjectAvailable = isProjectAvailable;
+    public void setActivityList(List<UnionCardActivity> activityList) {
+        this.activityList = activityList;
+    }
+
+    public Integer getIsDiscountCard() {
+        return isDiscountCard;
+    }
+
+    public void setIsDiscountCard(Integer isDiscountCard) {
+        this.isDiscountCard = isDiscountCard;
     }
 
     @Override

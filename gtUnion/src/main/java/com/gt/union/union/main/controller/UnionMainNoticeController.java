@@ -12,7 +12,6 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.constraints.NotNull;
 
 /**
  * 联盟公告 前端控制器
@@ -29,9 +28,10 @@ public class UnionMainNoticeController {
 
     @ApiOperation(value = "获取联盟公告", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getByUnionId(HttpServletRequest request,
-                               @ApiParam(value = "联盟id", name = "unionId", required = true)
-                               @PathVariable("unionId") Integer unionId) throws Exception {
+    public GtJsonResult<UnionMainNotice> getByUnionId(
+            HttpServletRequest request,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -39,24 +39,25 @@ public class UnionMainNoticeController {
         }
         // mock
         UnionMainNotice result = MockUtil.get(UnionMainNotice.class);
-        return GtJsonResult.instanceSuccessMsg(result).toString();
+        return GtJsonResult.instanceSuccessMsg(result);
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
     @ApiOperation(value = "更新联盟公告", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public String updateContentByUnionId(HttpServletRequest request,
-                                         @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                         @PathVariable("unionId") Integer unionId,
-                                         @ApiParam(value = "公告内容", name = "content", required = true)
-                                         @RequestBody String content) throws Exception {
+    public GtJsonResult<String> updateContentByUnionId(
+            HttpServletRequest request,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @PathVariable("unionId") Integer unionId,
+            @ApiParam(value = "公告内容", name = "content", required = true)
+            @RequestBody String content) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-        return GtJsonResult.instanceSuccessMsg().toString();
+        return GtJsonResult.instanceSuccessMsg();
     }
 
     //-------------------------------------------------- post ----------------------------------------------------------

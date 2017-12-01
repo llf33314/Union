@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,8 +16,10 @@ import java.util.Date;
  * 盟员
  *
  * @author linweicong
- * @version 2017-11-23 10:22:05
+ * @version 2017-11-30 15:29:33
  */
+@ApiModel(value = "盟员")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @TableName("t_union_member")
 public class UnionMember extends Model<UnionMember> {
     private static final long serialVersionUID = 1L;
@@ -22,132 +27,154 @@ public class UnionMember extends Model<UnionMember> {
     /**
      * 主键
      */
+    @ApiModelProperty(value = "主键")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
      * 是否删除(0:否 1:是)
      */
+    @ApiModelProperty(value = "是否删除(0:否 1:是)")
     @TableField("del_status")
     private Integer delStatus;
 
     /**
      * 创建时间
      */
+    @ApiModelProperty(value = "创建时间")
     @TableField("create_time")
     private Date createTime;
 
     /**
      * 修改时间
      */
+    @ApiModelProperty(value = "修改时间")
     @TableField("modify_time")
     private Date modifyTime;
 
     /**
      * 联盟id
      */
+    @ApiModelProperty(value = "联盟id")
     @TableField("union_id")
     private Integer unionId;
 
     /**
      * 商家id
      */
+    @ApiModelProperty(value = "商家id")
     @TableField("bus_id")
     private Integer busId;
 
     /**
      * 是否盟主(0:否 1:是)
      */
+    @ApiModelProperty(value = "是否盟主(0:否 1:是)")
     @TableField("is_union_owner")
     private Integer isUnionOwner;
 
     /**
      * 盟员状态(1:申请入盟 2:已入盟 3:申请退盟 4:退盟过渡期)
      */
+    @ApiModelProperty(value = "盟员状态(1:申请入盟 2:已入盟 3:申请退盟 4:退盟过渡期)")
     @TableField("status")
     private Integer status;
 
     /**
      * 企业名称
      */
+    @ApiModelProperty(value = "企业名称")
     @TableField("enterprise_name")
     private String enterpriseName;
 
     /**
      * 企业地址
      */
+    @ApiModelProperty(value = "企业地址")
     @TableField("enterprise_address")
     private String enterpriseAddress;
 
     /**
      * 负责人名称
      */
+    @ApiModelProperty(value = "负责人名称")
     @TableField("director_name")
     private String directorName;
 
     /**
      * 负责人电话
      */
+    @ApiModelProperty(value = "负责人电话")
     @TableField("director_phone")
     private String directorPhone;
 
     /**
      * 负责人邮箱
      */
+    @ApiModelProperty(value = "负责人邮箱")
     @TableField("director_email")
     private String directorEmail;
 
     /**
      * 地址经度
      */
+    @ApiModelProperty(value = "地址经度")
     @TableField("address_longitude")
     private String addressLongitude;
 
     /**
      * 地址维度
      */
+    @ApiModelProperty(value = "地址维度")
     @TableField("address_latitude")
     private String addressLatitude;
 
     /**
      * 地址省份code
      */
+    @ApiModelProperty(value = "地址省份code")
     @TableField("address_province_code")
     private String addressProvinceCode;
 
     /**
      * 地址城市code
      */
+    @ApiModelProperty(value = "地址城市code")
     @TableField("address_city_code")
     private String addressCityCode;
 
     /**
      * 地址区code
      */
+    @ApiModelProperty(value = "地址区code")
     @TableField("address_district_code")
     private String addressDistrictCode;
 
     /**
      * 盟员退出是否短信通知(0:否 1:是)
      */
+    @ApiModelProperty(value = "盟员退出是否短信通知(0:否 1:是)")
     @TableField("is_member_out_notify")
     private Integer isMemberOutNotify;
 
     /**
      * 短信通知手机号
      */
+    @ApiModelProperty(value = "短信通知手机号")
     @TableField("notify_phone")
     private String notifyPhone;
 
     /**
      * 积分兑换率(百分比)
      */
+    @ApiModelProperty(value = "积分兑换率(百分比)")
     @TableField("integral_exchange_ratio")
     private Double integralExchangeRatio;
 
     /**
      * 统一折扣(折)
      */
+    @ApiModelProperty(value = "统一折扣(折)")
     @TableField("discount")
     private Double discount;
 

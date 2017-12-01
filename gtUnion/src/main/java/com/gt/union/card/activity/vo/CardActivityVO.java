@@ -7,12 +7,12 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * 活动卡
+ * 活动卡设置-活动
  *
  * @author linweicong
  * @version 2017-11-25 17:41:05
  */
-@ApiModel(value = "活动卡VO")
+@ApiModel(value = "活动卡设置-活动VO")
 public class CardActivityVO {
     @ApiModelProperty(value = "活动状态(1:未开始 2:报名中 3:售卖中 4:已结束)")
     private Integer activityStatus;

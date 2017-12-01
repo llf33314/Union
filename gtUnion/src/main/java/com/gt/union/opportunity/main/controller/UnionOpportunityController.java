@@ -6,6 +6,7 @@ import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
+import com.gt.union.common.util.PageUtil;
 import com.gt.union.opportunity.main.vo.OpportunityStatisticsDay;
 import com.gt.union.opportunity.main.vo.OpportunityStatisticsVO;
 import com.gt.union.opportunity.main.vo.OpportunityVO;
@@ -33,16 +34,17 @@ public class UnionOpportunityController {
 
     @ApiOperation(value = "分页获取我的商机信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/toMe/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String pageToMe(HttpServletRequest request,
-                           Page page,
-                           @ApiParam(value = "联盟id", name = "unionId")
-                           @RequestParam(value = "unionId", required = false) Integer unionId,
-                           @ApiParam(value = "(1:受理中 2:已接受 3:已拒绝)，多个用英文分号隔离", name = "acceptStatus")
-                           @RequestParam(value = "acceptStatus", required = false) String acceptStatus,
-                           @ApiParam(value = "客户名称", name = "clientName")
-                           @RequestParam(value = "clientName", required = false) String clientName,
-                           @ApiParam(value = "客户电话", name = "clientPhone")
-                           @RequestParam(value = "clientPhone", required = false) String clientPhone) throws Exception {
+    public GtJsonResult<Page<OpportunityVO>> pageToMe(
+            HttpServletRequest request,
+            Page page,
+            @ApiParam(value = "联盟id", name = "unionId")
+            @RequestParam(value = "unionId", required = false) Integer unionId,
+            @ApiParam(value = "(1:受理中 2:已接受 3:已拒绝)，多个用英文分号隔离", name = "acceptStatus")
+            @RequestParam(value = "acceptStatus", required = false) String acceptStatus,
+            @ApiParam(value = "客户名称", name = "clientName")
+            @RequestParam(value = "clientName", required = false) String clientName,
+            @ApiParam(value = "客户电话", name = "clientPhone")
+            @RequestParam(value = "clientPhone", required = false) String clientPhone) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -54,22 +56,24 @@ public class UnionOpportunityController {
             UnionMember fromMember = MockUtil.get(UnionMember.class);
             voList.get(i).setFromMember(fromMember);
         }
-        page.setRecords(voList);
-        return GtJsonResult.instanceSuccessMsg(page).toString();
+        Page<OpportunityVO> result = (Page<OpportunityVO>) page;
+        result = PageUtil.setRecord(result, voList);
+        return GtJsonResult.instanceSuccessMsg(result);
     }
 
     @ApiOperation(value = "分页获取我的商机推荐信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/fromMe/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String pageFromMe(HttpServletRequest request,
-                             Page page,
-                             @ApiParam(value = "联盟id", name = "unionId")
-                             @RequestParam(value = "unionId", required = false) Integer unionId,
-                             @ApiParam(value = "(1:受理中 2:已接受 3:已拒绝)，多个用英文分号隔离", name = "acceptStatus")
-                             @RequestParam(value = "acceptStatus", required = false) String acceptStatus,
-                             @ApiParam(value = "客户名称", name = "clientName")
-                             @RequestParam(value = "clientName", required = false) String clientName,
-                             @ApiParam(value = "客户电话", name = "clientPhone")
-                             @RequestParam(value = "clientPhone", required = false) String clientPhone) throws Exception {
+    public GtJsonResult<Page<OpportunityVO>> pageFromMe(
+            HttpServletRequest request,
+            Page page,
+            @ApiParam(value = "联盟id", name = "unionId")
+            @RequestParam(value = "unionId", required = false) Integer unionId,
+            @ApiParam(value = "(1:受理中 2:已接受 3:已拒绝)，多个用英文分号隔离", name = "acceptStatus")
+            @RequestParam(value = "acceptStatus", required = false) String acceptStatus,
+            @ApiParam(value = "客户名称", name = "clientName")
+            @RequestParam(value = "clientName", required = false) String clientName,
+            @ApiParam(value = "客户电话", name = "clientPhone")
+            @RequestParam(value = "clientPhone", required = false) String clientPhone) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -81,15 +85,17 @@ public class UnionOpportunityController {
             UnionMember toMember = MockUtil.get(UnionMember.class);
             voList.get(i).setToMember(toMember);
         }
-        page.setRecords(voList);
-        return GtJsonResult.instanceSuccessMsg(page).toString();
+        Page<OpportunityVO> result = (Page<OpportunityVO>) page;
+        result = PageUtil.setRecord(result, voList);
+        return GtJsonResult.instanceSuccessMsg(result);
     }
 
     @ApiOperation(value = "获取商机佣金统计数据", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/statistics", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getStatisticsByUnionId(HttpServletRequest request,
-                                         @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                         @PathVariable("unionId") Integer unionId) throws Exception {
+    public GtJsonResult<OpportunityStatisticsVO> getStatisticsByUnionId(
+            HttpServletRequest request,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -111,43 +117,45 @@ public class UnionOpportunityController {
         result.setSaturday(saturday);
         OpportunityStatisticsDay sunday = MockUtil.get(OpportunityStatisticsDay.class);
         result.setSunday(sunday);
-        return GtJsonResult.instanceSuccessMsg(result).toString();
+        return GtJsonResult.instanceSuccessMsg(result);
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
     @ApiOperation(value = "审核商机", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{opportunityId}/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public String updateStatusByIdAndUnionId(HttpServletRequest request,
-                                   @ApiParam(value = "商机id", name = "opportunityId", required = true)
-                                   @PathVariable("opportunityId") Integer opportunityId,
-                                   @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                   @PathVariable("unionId") Integer unionId,
-                                   @ApiParam(value = "是否接受(0:否 1:是)", name = "isPass", required = true)
-                                   @RequestParam(value = "isPass") Integer isPass) throws Exception {
+    public GtJsonResult<String> updateStatusByIdAndUnionId(
+            HttpServletRequest request,
+            @ApiParam(value = "商机id", name = "opportunityId", required = true)
+            @PathVariable("opportunityId") Integer opportunityId,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @PathVariable("unionId") Integer unionId,
+            @ApiParam(value = "是否接受(0:否 1:是)", name = "isPass", required = true)
+            @RequestParam(value = "isPass") Integer isPass) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-        return GtJsonResult.instanceSuccessMsg().toString();
+        return GtJsonResult.instanceSuccessMsg();
     }
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
     @ApiOperation(value = "推荐商机", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public String saveByUnionId(HttpServletRequest request,
-                                @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                @PathVariable("unionId") Integer unionId,
-                                @ApiParam(value = "表单信息", name = "opportunityVO", required = true)
-                                @RequestBody OpportunityVO opportunityVO) throws Exception {
+    public GtJsonResult<String> saveByUnionId(
+            HttpServletRequest request,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @PathVariable("unionId") Integer unionId,
+            @ApiParam(value = "表单信息", name = "opportunityVO", required = true)
+            @RequestBody OpportunityVO opportunityVO) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-        return GtJsonResult.instanceSuccessMsg().toString();
+        return GtJsonResult.instanceSuccessMsg();
     }
 
 }

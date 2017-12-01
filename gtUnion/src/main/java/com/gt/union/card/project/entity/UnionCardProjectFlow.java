@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,39 +16,46 @@ import java.util.Date;
  * 项目流程
  *
  * @author linweicong
- * @version 2017-11-24 16:48:44
+ * @version 2017-11-30 15:22:39
  */
-@TableName("t_union_activity_flow")
+@ApiModel(value = "项目流程")
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@TableName("t_union_card_project_flow")
 public class UnionCardProjectFlow extends Model<UnionCardProjectFlow> {
     private static final long serialVersionUID = 1L;
 
     /**
      * 主键
      */
-    @TableId(value = "id", type = IdType.AUTO)
+    @ApiModelProperty(value = "主键")
+    @TableId(value="id", type= IdType.AUTO)
     private Integer id;
 
     /**
      * 是否删除(0:否 1:是)
      */
+    @ApiModelProperty(value = "是否删除(0:否 1:是)")
     @TableField("del_status")
     private Integer delStatus;
 
     /**
      * 创建时间
      */
+    @ApiModelProperty(value = "创建时间")
     @TableField("create_time")
     private Date createTime;
 
     /**
      * 说明
      */
+    @ApiModelProperty(value = "说明")
     @TableField("illustration")
     private String illustration;
 
     /**
      * 项目id
      */
+    @ApiModelProperty(value = "项目id")
     @TableField("project_id")
     private Integer projectId;
 

@@ -4,6 +4,7 @@ import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
+import com.gt.union.common.util.MockUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,13 +28,15 @@ public class UnionBrokerageWithdrawalController {
 
     @ApiOperation(value = "获取可提现金额", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/available", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getAvailableMoney(HttpServletRequest request) throws Exception {
+    public GtJsonResult<Integer> getAvailableMoney(HttpServletRequest request) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-        return GtJsonResult.instanceSuccessMsg().toString();
+        // mock
+        Integer result = MockUtil.get(Integer.class);
+        return GtJsonResult.instanceSuccessMsg(result);
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------

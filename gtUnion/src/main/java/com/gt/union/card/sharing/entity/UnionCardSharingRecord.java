@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,8 +16,10 @@ import java.util.Date;
  * 联盟卡售卡分成记录
  *
  * @author linweicong
- * @version 2017-11-23 17:39:04
+ * @version 2017-11-30 15:23:49
  */
+@ApiModel(value = "联盟卡售卡分成记录")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @TableName("t_union_card_sharing_record")
 public class UnionCardSharingRecord extends Model<UnionCardSharingRecord> {
     private static final long serialVersionUID = 1L;
@@ -22,66 +27,77 @@ public class UnionCardSharingRecord extends Model<UnionCardSharingRecord> {
     /**
      * 主键
      */
+    @ApiModelProperty(value = "主键")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
      * 是否删除(0:否 1:是)
      */
+    @ApiModelProperty(value = "是否删除(0:否 1:是)")
     @TableField("del_status")
     private Integer delStatus;
 
     /**
      * 创建时间
      */
+    @ApiModelProperty(value = "创建时间")
     @TableField("create_time")
     private Date createTime;
 
     /**
      * 售卡价格
      */
+    @ApiModelProperty(value = "售卡价格")
     @TableField("sell_price")
     private Double sellPrice;
 
     /**
      * 分成比例
      */
+    @ApiModelProperty(value = "分成比例")
     @TableField("sharing_ratio")
     private Double sharingRatio;
 
     /**
      * 售卡分成
      */
+    @ApiModelProperty(value = "售卡分成")
     @TableField("sharing_money")
     private Double sharingMoney;
 
     /**
      * 盟员id
      */
+    @ApiModelProperty(value = "盟员id")
     @TableField("member_id")
     private Integer memberId;
 
     /**
      * 联盟id
      */
+    @ApiModelProperty(value = "联盟id")
     @TableField("union_id")
     private Integer unionId;
 
     /**
      * 活动id
      */
+    @ApiModelProperty(value = "活动id")
     @TableField("activity_id")
     private Integer activityId;
 
     /**
      * 联盟卡id
      */
+    @ApiModelProperty(value = "联盟卡id")
     @TableField("card_id")
     private Integer cardId;
 
     /**
      * 联盟卡粉丝id
      */
+    @ApiModelProperty(value = "联盟卡粉丝id")
     @TableField("fan_id")
     private Integer fanId;
 

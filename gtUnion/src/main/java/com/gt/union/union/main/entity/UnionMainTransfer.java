@@ -5,6 +5,9 @@ import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
 import com.baomidou.mybatisplus.annotations.TableName;
 import com.baomidou.mybatisplus.enums.IdType;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -13,8 +16,10 @@ import java.util.Date;
  * 联盟转移
  *
  * @author linweicong
- * @version 2017-11-23 15:26:25
+ * @version 2017-11-30 15:28:06
  */
+@ApiModel(value = "联盟转移")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 @TableName("t_union_main_transfer")
 public class UnionMainTransfer extends Model<UnionMainTransfer> {
     private static final long serialVersionUID = 1L;
@@ -22,48 +27,56 @@ public class UnionMainTransfer extends Model<UnionMainTransfer> {
     /**
      * 主键
      */
+    @ApiModelProperty(value = "主键")
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
      * 是否删除(0:否 1:是)
      */
+    @ApiModelProperty(value = "是否删除(0:否 1:是)")
     @TableField("del_status")
     private Integer delStatus;
 
     /**
      * 转移时间
      */
+    @ApiModelProperty(value = "转移时间")
     @TableField("create_time")
     private Date createTime;
 
     /**
      * 联盟id
      */
+    @ApiModelProperty(value = "联盟id")
     @TableField("union_id")
     private Integer unionId;
 
     /**
      * 转移前盟主盟员id
      */
+    @ApiModelProperty(value = "转移前盟主盟员id")
     @TableField("from_member_id")
     private Integer fromMemberId;
 
     /**
      * 转移后盟主盟员id
      */
+    @ApiModelProperty(value = "转移后盟主盟员id")
     @TableField("to_member_id")
     private Integer toMemberId;
 
     /**
      * 确认状态(1:确认中 2:已确认 3:已拒绝)
      */
+    @ApiModelProperty(value = "确认状态(1:确认中 2:已确认 3:已拒绝)")
     @TableField("confirm_status")
     private Integer confirmStatus;
 
     /**
      * 是否需要提示(0:否  1:是)
      */
+    @ApiModelProperty(value = "是否需要提示(0:否  1:是)")
     @TableField("is_advice")
     private Integer isAdvice;
 
