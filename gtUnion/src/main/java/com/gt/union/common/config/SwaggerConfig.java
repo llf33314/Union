@@ -94,4 +94,19 @@ public class SwaggerConfig {
                 .build();
     }
 
+    @Bean
+    public Docket h5GroupConfig() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("h5")
+                .apiInfo(new ApiInfoBuilder()
+                        .title("Restful文档接口服务平台-h5")
+                        .description("基于Swagger2实现")
+                        .version("3.1.0")
+                        .build())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.gt.union.h5"))
+                .paths(PathSelectors.any())
+                .build();
+    }
+
 }

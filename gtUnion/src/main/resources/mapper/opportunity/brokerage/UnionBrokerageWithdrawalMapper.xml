@@ -9,6 +9,7 @@
         <result column="create_time" property="createTime"/>
         <result column="bus_id" property="busId"/>
         <result column="money" property="money"/>
+        <result column="sys_order" property="sysOrder"/>
         <result column="verifier_id" property="verifierId"/>
         <result column="verifier_name" property="verifierName"/>
     </resultMap>

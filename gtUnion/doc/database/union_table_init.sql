@@ -218,6 +218,7 @@ CREATE TABLE `t_union_brokerage_withdrawal` (
   `create_time` datetime DEFAULT NULL COMMENT '提现时间',
   `bus_id` int(11) DEFAULT NULL COMMENT '提现商家id',
   `money` double(8,2) DEFAULT NULL COMMENT '提现金额',
+  `sys_order` varchar(100) DEFAULT NULL COMMENT '系统订单号',
   `verifier_id` int(11) DEFAULT NULL COMMENT '平台管理者id',
   `verifier_name` varchar(100) DEFAULT NULL COMMENT '平台管理者名称',
   PRIMARY KEY (`id`)

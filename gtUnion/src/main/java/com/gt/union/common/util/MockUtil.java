@@ -79,19 +79,13 @@ public class MockUtil {
 
     private static <T> T mock(Class<T> tClass, Map<String, List<Object>> field2SourceListMap) {
         Random random = new Random(System.currentTimeMillis());
-        Set<String> set = new HashSet<>();
-        return mockData(tClass, field2SourceListMap, random, set);
+        return mockData(tClass, field2SourceListMap, random);
     }
 
-    private static <T> T mockData(Class<T> clazz, Map<String, List<Object>> field2SourceListMap, Random random, Set<String> set) {
+    private static <T> T mockData(Class<T> clazz, Map<String, List<Object>> field2SourceListMap, Random random) {
         if (baseDataTypeSet.contains(clazz.getName())) {
             return (T) mockData4BaseDataType(clazz, random);
         }
-        if (set.contains(clazz.getName())) {
-            //防止A、B互相引用造成死循环
-            return null;
-        }
-        set.add(clazz.getName());
         T result;
         try {
             //防止构造函数私有而报错
@@ -116,17 +110,16 @@ public class MockUtil {
             }
             field.setAccessible(true);
             try {
-                Object obj = mockData4Field(field, field2SourceListMap, random, set);
+                Object obj = mockData4Field(field, field2SourceListMap, random);
                 field.set(result, obj);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
-
         }
         return result;
     }
 
-    private static Object mockData4Field(Field field, Map<String, List<Object>> field2SourceListMap, Random random, Set<String> set) {
+    private static Object mockData4Field(Field field, Map<String, List<Object>> field2SourceListMap, Random random) {
         if (field2SourceListMap != null && field2SourceListMap.containsKey(field.getName())) {
             //是否指定随机来源范围
             List<Object> sourceList = field2SourceListMap.get(field.getName());
@@ -136,7 +129,7 @@ public class MockUtil {
             //是否是基本数据类型
             return mockData4BaseDataType(field.getType(), random);
         }
-        return mockData(field.getType(), field2SourceListMap, random, set);
+        return mockData(field.getType(), field2SourceListMap, random);
     }
 
     private static Object mockData4BaseDataType(Class tClass, Random random) {

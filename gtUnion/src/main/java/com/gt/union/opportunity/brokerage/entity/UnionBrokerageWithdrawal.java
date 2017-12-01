@@ -60,6 +60,13 @@ public class UnionBrokerageWithdrawal extends Model<UnionBrokerageWithdrawal> {
     private Double money;
 
     /**
+     * 系统订单号
+     */
+    @ApiModelProperty(value = "系统订单号")
+    @TableField("sys_order")
+    private String sysOrder;
+    
+    /**
      * 平台管理者id
      */
     @ApiModelProperty(value = "平台管理者id")
@@ -112,6 +119,14 @@ public class UnionBrokerageWithdrawal extends Model<UnionBrokerageWithdrawal> {
 
     public void setMoney(Double money) {
         this.money = money;
+    }
+
+    public String getSysOrder() {
+        return sysOrder;
+    }
+
+    public void setSysOrder(String sysOrder) {
+        this.sysOrder = sysOrder;
     }
 
     public Integer getVerifierId() {
