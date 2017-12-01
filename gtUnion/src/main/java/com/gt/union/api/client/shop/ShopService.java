@@ -1,5 +1,6 @@
 package com.gt.union.api.client.shop;
 
+import com.gt.union.api.client.shop.vo.ShopVO;
 import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
 
 import java.util.List;
@@ -17,7 +18,7 @@ public interface ShopService {
 	 * @param busId        商家id
 	 * @return
 	 */
-	List<Map<String, Object>> listByBusId(Integer busId);
+	List<ShopVO> listByBusId(Integer busId);
 
 	/**
 	 * 根据门店id列表获取门店列表信息

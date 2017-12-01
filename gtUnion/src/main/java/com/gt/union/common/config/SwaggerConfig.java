@@ -94,6 +94,21 @@ public class SwaggerConfig {
                 .build();
     }
 
+
+    @Bean
+    public Docket unionApiGroupConfig() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("unionApi")
+                .apiInfo(new ApiInfoBuilder()
+                        .title("Restful文档接口服务平台-财务")
+                        .description("基于Swagger2实现")
+                        .version("3.1.0")
+                        .build())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.gt.union.api.controller"))
+                .paths(PathSelectors.any())
+                .build();
+    }
     @Bean
     public Docket h5GroupConfig() {
         return new Docket(DocumentationType.SWAGGER_2)

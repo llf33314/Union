@@ -48,4 +48,11 @@ public interface IBusUserService {
 	 */
 	Map<String,Object> getUserUnionAuthority(Integer busId);
 
+	/**
+	 * 根据手机号获取商家信息
+	 * @param phone		手机号
+	 * @return
+	 */
+	BusUser getBusUserByPhone(String phone);
+
 }

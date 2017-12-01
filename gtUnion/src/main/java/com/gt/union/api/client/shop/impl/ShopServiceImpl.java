@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.gt.api.util.HttpClienUtils;
 import com.gt.api.util.RequestUtils;
 import com.gt.union.api.client.shop.ShopService;
+import com.gt.union.api.client.shop.vo.ShopVO;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.util.ApiResultHandlerUtil;
 import com.gt.union.common.util.CommonUtil;
@@ -25,19 +26,19 @@ public class ShopServiceImpl implements ShopService {
 
 
 	@Override
-	public List<Map<String, Object>> listByBusId(Integer busId) {
+	public List<ShopVO> listByBusId(Integer busId) {
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/shopapi/6F6D9AD2/79B4DE7C/queryWxShopByBusId.do";
 		try {
 			RequestUtils req = new RequestUtils<Integer>();
 			req.setReqdata(busId);
 			String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(req),url, String.class, PropertiesUtil.getWxmpSignKey());
 			List<WsWxShopInfoExtend> list = ApiResultHandlerUtil.listDataObject(result,WsWxShopInfoExtend.class);
-			List<Map<String, Object>> dataList = new ArrayList<Map<String, Object>>();
+			List<ShopVO> dataList = new ArrayList<ShopVO>();
 			for(WsWxShopInfoExtend info : list){
-				Map<String,Object> map = new HashMap<String,Object>();
-				map.put("name",info.getBusinessName());
-				map.put("id",info.getId());
-				dataList.add(map);
+				ShopVO vo = new ShopVO();
+				vo.setName(info.getBusinessName());
+				vo.setId(info.getId());
+				dataList.add(vo);
 			}
 			return dataList;
 		}catch (Exception e){
