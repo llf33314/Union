@@ -9,6 +9,7 @@ import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PageUtil;
 import com.gt.union.opportunity.brokerage.vo.BrokerageOpportunityVO;
 import com.gt.union.opportunity.brokerage.vo.BrokeragePayVO;
+import com.gt.union.opportunity.main.entity.UnionOpportunity;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -30,9 +31,9 @@ public class UnionBrokeragePayController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页获取我需支付的商机佣金信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：获取我需支付的商机佣金信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/opportunity/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Page<BrokerageOpportunityVO>> pageBrokerage(
+    public GtJsonResult<Page<BrokerageOpportunityVO>> pageBrokerageOpportunityVO(
             HttpServletRequest request,
             Page page,
             @ApiParam(value = "联盟id", name = "unionId")
@@ -57,7 +58,7 @@ public class UnionBrokeragePayController {
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "分页获取佣金支付明细信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：获取商机佣金支付明细信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/detail/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<BrokeragePayVO>> pagePayVo(
             HttpServletRequest request,
@@ -71,12 +72,16 @@ public class UnionBrokeragePayController {
         }
         // mock
         List<BrokeragePayVO> voList = MockUtil.list(BrokeragePayVO.class, page.getSize());
+        for (int i = 0; i < voList.size(); i++) {
+            List<UnionOpportunity> opportunityList = MockUtil.list(UnionOpportunity.class, 20);
+            voList.get(i).setOpportunityList(opportunityList);
+        }
         Page<BrokeragePayVO> result = (Page<BrokeragePayVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "导出佣金支付明细信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "导出：商机佣金支付明细信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/detail/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> exportBrokeragePayDetail(HttpServletRequest request) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
@@ -87,7 +92,7 @@ public class UnionBrokeragePayController {
         return GtJsonResult.instanceSuccessMsg("TODO");
     }
 
-    @ApiOperation(value = "获取支付明细详情信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "获取商机佣金支付明细详情信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/detail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<BrokeragePayVO> getPayVo(
             HttpServletRequest request,
@@ -105,7 +110,7 @@ public class UnionBrokeragePayController {
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "导出支付明细详情信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "导出：商机佣金支付明细详情信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/detail/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> exportDetail(
             HttpServletRequest request,
@@ -127,12 +132,26 @@ public class UnionBrokeragePayController {
 
     //------------------------------------------------- patch ----------------------------------------------------------
 
-    @ApiOperation(value = "批量支付商机佣金", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "批量支付：商机佣金", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/opportunity", method = RequestMethod.PATCH, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> batchPay(
             HttpServletRequest request,
             @ApiParam(value = "商机id列表", name = "opportunityIdList", required = true)
             @RequestParam(value = "opportunityIdList") List<Integer> opportunityIdList) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        return GtJsonResult.instanceSuccessMsg();
+    }
+
+    @ApiOperation(value = "批量支付：商机佣金-回调", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/opportunity/callback", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public GtJsonResult updateCallback(
+            HttpServletRequest request,
+            @ApiParam(value = "商机id列表", name = "opportunityIdList", required = true)
+            @RequestParam(value = "opportunityIdList") String opportunityIdList) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {

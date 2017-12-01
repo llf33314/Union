@@ -28,7 +28,7 @@ public class UnionMainPackageController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "获取盟主服务套餐", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "列表：获取盟主服务套餐", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<List<UnionMainPackage>> list(HttpServletRequest request) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);

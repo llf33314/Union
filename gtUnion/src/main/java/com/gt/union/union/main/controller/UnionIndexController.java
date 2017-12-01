@@ -45,10 +45,6 @@ public class UnionIndexController {
         }
         // mock
         IndexVO result = MockUtil.get(IndexVO.class);
-        UnionMain myCreateUnion = MockUtil.get(UnionMain.class);
-        result.setMyCreateUnion(myCreateUnion);
-        UnionMain currentUnion = MockUtil.get(UnionMain.class);
-        result.setCurrentUnion(currentUnion);
         List<UnionMain> myJoinUnionList = MockUtil.list(UnionMain.class, 2);
         result.setMyJoinUnionList(myJoinUnionList);
         return GtJsonResult.instanceSuccessMsg(result);

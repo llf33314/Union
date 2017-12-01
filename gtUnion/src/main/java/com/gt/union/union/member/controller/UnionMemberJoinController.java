@@ -5,9 +5,7 @@ import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
-import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PageUtil;
-import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.vo.MemberJoinCreateVO;
 import com.gt.union.union.member.vo.MemberJoinVO;
 import io.swagger.annotations.Api;
@@ -32,7 +30,7 @@ public class UnionMemberJoinController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页获取入盟申请信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：获取入盟申请信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<MemberJoinVO>> pageJoinVOByUnionId(
             HttpServletRequest request,
@@ -50,12 +48,6 @@ public class UnionMemberJoinController {
         }
         // mock
         List<MemberJoinVO> voList = new ArrayList<>();
-        for (int i = 0; i < page.getSize(); i++) {
-            MemberJoinVO vo = MockUtil.get(MemberJoinVO.class);
-            List<UnionMember> memberList = MockUtil.list(UnionMember.class, 2);
-            vo.setJoinMember(memberList.get(0));
-            vo.setRecommendMember(memberList.get(1));
-        }
         Page<MemberJoinVO> result = (Page<MemberJoinVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -63,9 +55,9 @@ public class UnionMemberJoinController {
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
-    @ApiOperation(value = "入盟审核", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "通过或不通过入盟申请", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{joinId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> updateByIdAndUnionId(
+    public GtJsonResult<String> updateIsPassByIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "入盟申请id", name = "joinId", required = true)
             @PathVariable("joinId") Integer joinId,
@@ -85,7 +77,7 @@ public class UnionMemberJoinController {
 
     @ApiOperation(value = "申请入盟或推荐入盟", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/type/{type}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> saveJoinCreateVO(
+    public GtJsonResult<String> saveJoinCreateVOByUnionIdAndType(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId,

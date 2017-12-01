@@ -28,7 +28,7 @@ public class UnionCardProjectItemController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "获取消费核销中的项目优惠信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "列表：前台-联盟卡消费核销-开启优惠项目-优惠", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/consume", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<List<CardProjectItemConsumeVO>> listConsumeByActivityIdAndUnionId(
             HttpServletRequest request,
@@ -50,7 +50,7 @@ public class UnionCardProjectItemController {
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
-    @ApiOperation(value = "保存项目优惠", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "联盟卡设置-活动卡设置-我的活动项目-保存", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/save", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> saveProjectItemVOByActivityIdAndUnionId(
             HttpServletRequest request,
@@ -68,7 +68,7 @@ public class UnionCardProjectItemController {
         return GtJsonResult.instanceSuccessMsg();
     }
 
-    @ApiOperation(value = "保存项目优惠并提交", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "联盟卡设置-活动卡设置-我的活动项目-提交", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/commit", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> commitProjectItemVOByActivityIdAndUnionId(
             HttpServletRequest request,

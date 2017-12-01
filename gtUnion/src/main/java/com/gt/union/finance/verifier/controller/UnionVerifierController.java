@@ -27,7 +27,7 @@ public class UnionVerifierController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "获取所有平台管理者", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "列表：获取平台管理者", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<List<UnionVerifier>> list(HttpServletRequest request) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);

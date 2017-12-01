@@ -47,7 +47,7 @@ public class UnionMainCreateController {
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
-    @ApiOperation(value = "创建联盟", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "保存：创建联盟", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> save(
             HttpServletRequest request,

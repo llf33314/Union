@@ -6,6 +6,7 @@ import com.gt.api.util.SessionUtils;
 import com.gt.union.card.consume.vo.ConsumePayVO;
 import com.gt.union.card.consume.vo.ConsumeRecordVO;
 import com.gt.union.card.consume.vo.ConsumeVO;
+import com.gt.union.card.project.entity.UnionCardProjectItem;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
@@ -32,7 +33,7 @@ public class UnionConsumeController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页获取消费核销记录", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：获取消费核销记录", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/record/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<ConsumeVO>> pageConsumeVO(
             HttpServletRequest request,
@@ -56,12 +57,16 @@ public class UnionConsumeController {
         }
         // mock
         List<ConsumeVO> voList = MockUtil.list(ConsumeVO.class, page.getSize());
+        for (int i = 0; i < voList.size(); i++) {
+            List<UnionCardProjectItem> nonErpTextList = MockUtil.list(UnionCardProjectItem.class, 3);
+            voList.get(i).setNonErpTextList(nonErpTextList);
+        }
         Page<ConsumeVO> result = (Page<ConsumeVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "导出消费核销记录", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "导出：消费核销记录", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/record/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> exportConsumeVO(HttpServletRequest request) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
@@ -76,7 +81,7 @@ public class UnionConsumeController {
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
-    @ApiOperation(value = "消费核销支付", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "前台-联盟卡消费核销-支付", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/fanId/{fanId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public GtJsonResult<ConsumePayVO> savePayVOByUnionIdAndFanId(
             HttpServletRequest request,

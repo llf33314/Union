@@ -32,7 +32,7 @@ public class UnionOpportunityController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页获取我的商机信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：获取我的商机", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/toMe/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<OpportunityVO>> pageToMe(
             HttpServletRequest request,
@@ -52,16 +52,12 @@ public class UnionOpportunityController {
         }
         // mock
         List<OpportunityVO> voList = MockUtil.list(OpportunityVO.class, page.getSize());
-        for (int i = 0; i < voList.size(); i++) {
-            UnionMember fromMember = MockUtil.get(UnionMember.class);
-            voList.get(i).setFromMember(fromMember);
-        }
         Page<OpportunityVO> result = (Page<OpportunityVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "分页获取我的商机推荐信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：获取我的商机推荐", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/fromMe/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<OpportunityVO>> pageFromMe(
             HttpServletRequest request,
@@ -122,7 +118,7 @@ public class UnionOpportunityController {
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
-    @ApiOperation(value = "审核商机", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "接受或拒绝商机推荐", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{opportunityId}/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> updateStatusByIdAndUnionId(
             HttpServletRequest request,
@@ -144,7 +140,7 @@ public class UnionOpportunityController {
 
     @ApiOperation(value = "推荐商机", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> saveByUnionId(
+    public GtJsonResult<String> saveOpportunityVOByUnionId(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId,

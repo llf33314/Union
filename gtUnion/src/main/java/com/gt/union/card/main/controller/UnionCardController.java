@@ -2,11 +2,13 @@ package com.gt.union.card.main.controller;
 
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
+import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.main.vo.CardApplyPayVO;
 import com.gt.union.card.main.vo.CardApplyVO;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
+import com.gt.union.union.main.entity.UnionMain;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -28,7 +30,7 @@ public class UnionCardController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "获取办理联盟卡中的联盟和活动卡信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "前台-办理联盟卡-查询联盟和联盟卡", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/apply", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<List<CardApplyVO>> getCardApplyVO(
             HttpServletRequest request,
@@ -43,6 +45,12 @@ public class UnionCardController {
         }
         // mock
         List<CardApplyVO> result = MockUtil.list(CardApplyVO.class, 3);
+        for (int i = 0; i < result.size(); i++) {
+            List<UnionMain> unionList = MockUtil.list(UnionMain.class, 3);
+            result.get(i).setUnionList(unionList);
+            List<UnionCardActivity> activityList = MockUtil.list(UnionCardActivity.class, 3);
+            result.get(i).setActivityList(activityList);
+        }
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

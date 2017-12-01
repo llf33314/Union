@@ -11,6 +11,7 @@ import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PageUtil;
+import com.gt.union.union.main.entity.UnionMain;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -32,7 +33,7 @@ public class UnionCardFanController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页获取首页-联盟卡中的信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：首页-联盟卡", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<CardFanVO>> pageFanVOByUnionId(
             HttpServletRequest request,
@@ -55,7 +56,7 @@ public class UnionCardFanController {
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "导出首页-联盟卡中的信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "导出：首页-联盟卡", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> exportFanVOByUnionId(
             HttpServletRequest request,
@@ -69,7 +70,7 @@ public class UnionCardFanController {
         return GtJsonResult.instanceSuccessMsg("TODO");
     }
 
-    @ApiOperation(value = "获取首页-联盟卡-详情信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "首页-联盟卡-详情", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{fanId}/detail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<CardFanDetailVO> getFanDetailVOByFanId(
             HttpServletRequest request,
@@ -89,7 +90,7 @@ public class UnionCardFanController {
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "根据前台-消费核销中的联盟卡号或手机号搜索", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "前台-联盟卡消费核销-搜索", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "search", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<CardFanSearchVO> getSearchVOByNumber(
             HttpServletRequest request,
@@ -104,6 +105,8 @@ public class UnionCardFanController {
         }
         // mock
         CardFanSearchVO result = MockUtil.get(CardFanSearchVO.class);
+        List<UnionMain> unionList = MockUtil.list(UnionMain.class, 3);
+        result.setUnionList(unionList);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

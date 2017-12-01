@@ -29,7 +29,7 @@ public class UnionOpportunityRatioController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页获取商机佣金比例信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：获取商机佣金比例信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<OpportunityRatioVO>> pageRatioVOByUnionId(
             HttpServletRequest request,

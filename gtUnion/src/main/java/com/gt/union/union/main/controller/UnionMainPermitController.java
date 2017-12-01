@@ -49,4 +49,18 @@ public class UnionMainPermitController {
         return GtJsonResult.instanceSuccessMsg(payVO);
     }
 
+    @ApiOperation(value = "购买联盟盟主服务-支付-回调", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{permitId}/pay/callback", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public GtJsonResult updateCallbackByPermitId(
+            HttpServletRequest request,
+            @ApiParam(value = "联盟许可id", name = "permitId", required = true)
+            @PathVariable("permitId") Integer permitId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        return GtJsonResult.instanceSuccessMsg();
+    }
+
 }

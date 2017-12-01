@@ -32,9 +32,9 @@ public class UnionBrokerageIncomeController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页获取我的商机佣金收入信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：获取我的商机佣金收入信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/opportunity/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Page<BrokerageOpportunityVO>> pageOpportunity(
+    public GtJsonResult<Page<BrokerageOpportunityVO>> pageBrokerageOpportunityVO(
             HttpServletRequest request,
             Page page,
             @ApiParam(value = "联盟id", name = "unionId")

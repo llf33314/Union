@@ -29,14 +29,15 @@ public class UnionMemberController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页获取入盟和申请退盟状态的盟员信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：获取入盟和申请退盟状态的盟员信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/write/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Page<UnionMember>> pageWriteByUnionId(HttpServletRequest request,
-                                                              Page page,
-                                                              @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                                              @PathVariable("unionId") Integer unionId,
-                                                              @ApiParam(value = "盟员名称", name = "memberName")
-                                                              @RequestParam(value = "memberName", required = false) String memberName) throws Exception {
+    public GtJsonResult<Page<UnionMember>> pageWriteByUnionId(
+            HttpServletRequest request,
+            Page page,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @PathVariable("unionId") Integer unionId,
+            @ApiParam(value = "盟员名称", name = "memberName")
+            @RequestParam(value = "memberName", required = false) String memberName) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -49,7 +50,7 @@ public class UnionMemberController {
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "导出入盟和申请退盟状态的盟员信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "导出：入盟和申请退盟状态的盟员信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/write/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> exportByUnionId(
             HttpServletRequest request,
@@ -81,8 +82,8 @@ public class UnionMemberController {
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "获取盟员信息", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "获取商家的盟员信息", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/busUser", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<UnionMember> getByUnionId(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)

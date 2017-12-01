@@ -31,7 +31,7 @@ public class UnionCardProjectController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "获取活动卡设置中的参与盟员数信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "列表：联盟卡设置-活动卡设置-参与盟员数", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/joinMember", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<List<CardProjectJoinMemberVO>> listJoinMemberByActivityIdAndUnionId(
             HttpServletRequest request,
@@ -55,7 +55,7 @@ public class UnionCardProjectController {
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "获取活动卡设置中的项目审核信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "列表：列表：联盟卡设置-活动卡设置-项目审核", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/projectCheck", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<List<CardProjectCheckVO>> listProjectCheckByActivityIdAndUnionId(
             HttpServletRequest request,
@@ -79,7 +79,7 @@ public class UnionCardProjectController {
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "获取我的活动项目信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "联盟卡设置-活动卡设置-我的活动项目", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{projectId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<CardProjectVO> getProjectVOByIdAndUnionId(
             HttpServletRequest request,
@@ -109,9 +109,9 @@ public class UnionCardProjectController {
 
     //------------------------------------------------- patch ----------------------------------------------------------
 
-    @ApiOperation(value = "活动卡设置-审核项目", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "批量更新：联盟卡设置-活动卡设置-审核项目", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/projectCheck", method = RequestMethod.PATCH, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> updateProjectCheck(
+    public GtJsonResult<String> updateProjectCheckByActivityIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "联盟卡活动id", name = "activityId", required = true)
             @PathVariable("activityId") Integer activityId,

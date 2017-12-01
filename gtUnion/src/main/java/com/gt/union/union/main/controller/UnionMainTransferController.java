@@ -29,7 +29,7 @@ public class UnionMainTransferController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页获取联盟盟主权限转移信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：获取联盟盟主权限转移信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<UnionTransferVO>> pageTransferVOByUnionId(
             HttpServletRequest request,
@@ -69,7 +69,7 @@ public class UnionMainTransferController {
     }
 
     @ApiOperation(value = "撤回盟主权限转移", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{transferId}/unionId/{unionId}/revoke", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{transferId}/unionId/{unionId}/revoke", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> revokeByIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "转移id", name = "transferId", required = true)
@@ -88,7 +88,7 @@ public class UnionMainTransferController {
 
     @ApiOperation(value = "转移盟主权限", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/toMemberId/{toMemberId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> saveTransfer(
+    public GtJsonResult<String> saveByUnionIdAndToMemberId(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId,

@@ -29,7 +29,7 @@ public class UnionCardSharingRatioController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页获取活动卡售卡分成比例", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：售卡佣金分成管理-活动卡售卡分成比例-查看比例", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<CardSharingRatioVO>> pageSharingRatioVOByActivityIdAndUnionId(
             HttpServletRequest request,
@@ -50,7 +50,7 @@ public class UnionCardSharingRatioController {
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "获取活动卡售卡分成比例", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "列表：售卡佣金分成管理-活动卡售卡分成比例-查看比例-比例设置", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<List<CardSharingRatioVO>> listByActivityIdAndUnionId(
             HttpServletRequest request,
@@ -75,9 +75,9 @@ public class UnionCardSharingRatioController {
 
     //------------------------------------------------- patch ----------------------------------------------------------
 
-    @ApiOperation(value = "批量更新售卡分成比例", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "批量更新：售卡佣金分成管理-活动卡售卡分成比例-查看比例-比例设置", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}", method = RequestMethod.PATCH, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> updateByActivityIdAndUnionId(
+    public GtJsonResult<String> updateRatioByActivityIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "联盟卡活动id", name = "activityId", required = true)
             @PathVariable("activityId") Integer activityId,

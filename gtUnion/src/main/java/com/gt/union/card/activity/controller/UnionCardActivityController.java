@@ -30,7 +30,7 @@ public class UnionCardActivityController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页获取售卡分成比例中的活动卡信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：售卡佣金分成管理-活动卡售卡比例设置", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/sharingRatio/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<CardActivityStatusVO>> pageActivityStatusVOByUnionId(
             HttpServletRequest request,
@@ -49,7 +49,7 @@ public class UnionCardActivityController {
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "分页获取活动卡设置中的活动卡信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：联盟卡设置-活动卡设置", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<CardActivityVO>> pageActivityVOByUnionId(
             HttpServletRequest request,
@@ -68,7 +68,7 @@ public class UnionCardActivityController {
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "获取消费核销中开启优惠项目的活动卡信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "前台-联盟卡消费核销-开启优惠项目", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/consume", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<List<CardActivityConsumeVO>> listConsumeVOByUnionId(
             HttpServletRequest request,
@@ -86,7 +86,7 @@ public class UnionCardActivityController {
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "获取办理联盟卡中的活动卡信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "前台-办理联盟卡-查询联盟和联盟卡-查询活动卡", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{activityId}/unionId/{unionId}/apply", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<CardActivityApplyVO> getApplyVOByIdAndUnionId(
             HttpServletRequest request,
@@ -104,7 +104,7 @@ public class UnionCardActivityController {
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "获取办理联盟卡中的活动卡服务项目数详情信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "前台-办理联盟卡-查询联盟和联盟卡-查询活动卡-查询服务项目数", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{activityId}/unionId/{unionId}/apply/itemCount", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<CardActivityApplyItemVO> getApplyItemVOByIdAndUnionId(
             HttpServletRequest request,
@@ -127,7 +127,7 @@ public class UnionCardActivityController {
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
-    @ApiOperation(value = "保存新建的活动卡", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "联盟卡设置-活动卡设置-新增活动卡", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> saveByUnionId(
             HttpServletRequest request,
@@ -145,13 +145,14 @@ public class UnionCardActivityController {
 
     //------------------------------------------------- delete ---------------------------------------------------------
 
-    @ApiOperation(value = "删除活动卡", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "删除：联盟卡设置-活动卡设置", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{activityId}/unionId/{unionId}", method = RequestMethod.DELETE, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> removeByIdAndUnionId(HttpServletRequest request,
-                                                     @ApiParam(value = "活动id", name = "activityId", required = true)
-                                                     @PathVariable("activityId") Integer activityId,
-                                                     @ApiParam(value = "联盟id", name = "unionId", required = true)
-                                                     @PathVariable("unionId") Integer unionId) throws Exception {
+    public GtJsonResult<String> removeByIdAndUnionId(
+            HttpServletRequest request,
+            @ApiParam(value = "活动id", name = "activityId", required = true)
+            @PathVariable("activityId") Integer activityId,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
