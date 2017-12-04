@@ -12,6 +12,16 @@ import com.gt.union.union.main.entity.UnionMainNotice;
 public interface IUnionMainNoticeService extends IService<UnionMainNotice> {
     //***************************************** Domain Driven Design - get *********************************************
 
+    /**
+     * 根据商家id和联盟id，获取联盟公告信息
+     *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @return UnionMainNotice
+     * @throws Exception 统一处理异常
+     */
+    UnionMainNotice getByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
+
     //***************************************** Domain Driven Design - list ********************************************
 
     //***************************************** Domain Driven Design - save ********************************************
@@ -20,8 +30,20 @@ public interface IUnionMainNoticeService extends IService<UnionMainNotice> {
 
     //***************************************** Domain Driven Design - update ******************************************
 
+    /**
+     * 更新联盟公告
+     *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @param content 公告内容
+     * @throws Exception 统一处理异常
+     */
+    void updateContentByBusIdAndUnionId(Integer busId, Integer unionId, String content) throws Exception;
+
     //***************************************** Domain Driven Design - count *******************************************
 
     //***************************************** Domain Driven Design - boolean *****************************************
+
+    //***************************************** Domain Driven Design - filter ******************************************
 
 }

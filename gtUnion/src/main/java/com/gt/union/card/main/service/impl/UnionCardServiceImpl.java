@@ -9,12 +9,15 @@ import com.gt.union.card.main.service.IUnionCardService;
 import com.gt.union.card.main.util.UnionCardCacheUtil;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.ParamException;
+import com.gt.union.common.util.BigDecimalUtil;
+import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +36,35 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 
     //***************************************** Domain Driven Design - list ********************************************
 
+    @Override
+    public List<UnionCard> listValidByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
+        entityWrapper.ge("validity", DateUtil.getCurrentDate())
+                .eq("union_id", unionId)
+                .eq("del_status", CommonConstant.DEL_STATUS_NO);
+
+        return selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionCard> listValidByFanIdAndUnionId(Integer fanId, Integer unionId) throws Exception {
+        if (fanId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
+        entityWrapper.ge("validity", DateUtil.getCurrentDate())
+                .eq("fan_id", fanId)
+                .eq("union_id", unionId)
+                .eq("del_status", CommonConstant.COMMON_NO);
+
+        return selectList(entityWrapper);
+    }
+
     //***************************************** Domain Driven Design - save ********************************************
 
     //***************************************** Domain Driven Design - remove ******************************************
@@ -41,7 +73,59 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 
     //***************************************** Domain Driven Design - count *******************************************
 
+    @Override
+    public Double countIntegralByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCard> cardList = listValidByUnionId(unionId);
+        BigDecimal bigDecimal = BigDecimal.ZERO;
+        if (ListUtil.isNotEmpty(cardList)) {
+            for (UnionCard card : cardList) {
+                bigDecimal = BigDecimalUtil.add(bigDecimal, card.getIntegral());
+            }
+        }
+
+        return bigDecimal.doubleValue();
+    }
+
+    @Override
+    public Double countIntegralByFanIdAndUnionId(Integer fanId, Integer unionId) throws Exception {
+        if (fanId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCard> cardList = listValidByFanIdAndUnionId(fanId, unionId);
+        BigDecimal bigDecimal = BigDecimal.ZERO;
+        if (ListUtil.isNotEmpty(cardList)) {
+            for (UnionCard card : cardList) {
+                bigDecimal = BigDecimalUtil.add(bigDecimal, card.getIntegral());
+            }
+        }
+
+        return bigDecimal.doubleValue();
+    }
+
     //***************************************** Domain Driven Design - boolean *****************************************
+
+    //***************************************** Domain Driven Design - filter ******************************************
+
+    @Override
+    public List<UnionCard> filterByType(List<UnionCard> cardList, Integer type) throws Exception {
+        if (cardList == null || type == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCard> result = new ArrayList<>();
+        for (UnionCard card : cardList) {
+            if (type.equals(card.getType())) {
+                result.add(card);
+            }
+        }
+
+        return result;
+    }
 
     //***************************************** Object As a Service - get **********************************************
 

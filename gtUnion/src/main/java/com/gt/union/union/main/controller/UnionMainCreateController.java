@@ -3,6 +3,8 @@ package com.gt.union.union.main.controller;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
+import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
 import com.gt.union.union.main.vo.UnionCreateVO;
@@ -36,7 +38,7 @@ public class UnionMainCreateController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
         // mock
         UnionPermitCheckVO result = MockUtil.get(UnionPermitCheckVO.class);

@@ -3,12 +3,15 @@ package com.gt.union.union.main.controller;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
+import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
-import com.gt.union.common.util.MockUtil;
 import com.gt.union.union.main.entity.UnionMainNotice;
+import com.gt.union.union.main.service.IUnionMainNoticeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +26,8 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/unionMainNotice")
 public class UnionMainNoticeController {
+    @Autowired
+    private IUnionMainNoticeService unionMainNoticeService;
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
@@ -38,7 +43,8 @@ public class UnionMainNoticeController {
             busId = busUser.getPid();
         }
         // mock
-        UnionMainNotice result = MockUtil.get(UnionMainNotice.class);
+//        UnionMainNotice result = MockUtil.get(UnionMainNotice.class);
+        UnionMainNotice result = unionMainNoticeService.getByBusIdAndUnionId(busId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -55,8 +61,9 @@ public class UnionMainNoticeController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
+        unionMainNoticeService.updateContentByBusIdAndUnionId(busId, unionId, content );
         return GtJsonResult.instanceSuccessMsg();
     }
 

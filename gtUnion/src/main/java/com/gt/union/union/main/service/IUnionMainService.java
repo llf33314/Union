@@ -12,6 +12,15 @@ import com.gt.union.union.main.entity.UnionMain;
 public interface IUnionMainService extends IService<UnionMain> {
     //***************************************** Domain Driven Design - get *********************************************
 
+    /**
+     * 根据id获取联盟对象
+     *
+     * @param unionId 联盟id
+     * @return UnionMain
+     * @throws Exception 统一处理异常
+     */
+    UnionMain getById(Integer unionId) throws Exception;
+
     //***************************************** Domain Driven Design - list ********************************************
 
     //***************************************** Domain Driven Design - save ********************************************
@@ -23,5 +32,23 @@ public interface IUnionMainService extends IService<UnionMain> {
     //***************************************** Domain Driven Design - count *******************************************
 
     //***************************************** Domain Driven Design - boolean *****************************************
+
+    /**
+     * 判断联盟有效性
+     *
+     * @param unionId 联盟id
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean isUnionValid(Integer unionId) throws Exception;
+
+    /**
+     * 判断联盟有效性
+     *
+     * @param union 联盟
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean isUnionValid(UnionMain union) throws Exception;
 
 }

@@ -4,13 +4,20 @@ import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
+import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.StringUtil;
 import com.gt.union.union.main.entity.UnionMainNotice;
 import com.gt.union.union.main.mapper.UnionMainNoticeMapper;
 import com.gt.union.union.main.service.IUnionMainNoticeService;
+import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.main.util.UnionMainNoticeCacheUtil;
+import com.gt.union.union.member.constant.MemberConstant;
+import com.gt.union.union.member.entity.UnionMember;
+import com.gt.union.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +36,33 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
     @Autowired
     public RedisCacheUtil redisCacheUtil;
 
+    @Autowired
+    private IUnionMainService unionMainService;
+
+    @Autowired
+    private IUnionMemberService unionMemberService;
+
     //***************************************** Domain Driven Design - get *********************************************
+
+    @Override
+    public UnionMainNotice getByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
+        if (busId == null && unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        // （1）检查union有效性和member读权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+        }
+
+        List<UnionMainNotice> result = listByUnionId(unionId);
+
+        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
+    }
 
     //***************************************** Domain Driven Design - list ********************************************
 
@@ -38,6 +71,47 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
     //***************************************** Domain Driven Design - remove ******************************************
 
     //***************************************** Domain Driven Design - update ******************************************
+
+    @Override
+    public void updateContentByBusIdAndUnionId(Integer busId, Integer unionId, String content) throws Exception {
+        if (busId == null || unionId == null || content == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        // （1）判断union有效性和member写权限、盟主权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+        }
+        if (member.getIsUnionOwner() != MemberConstant.IS_UNION_OWNER_YES) {
+            throw new BusinessException(CommonConstant.UNION_NEED_OWNER);
+        }
+
+        // （2）要求公告内容不能为空，且字数不能超过50字
+        if (StringUtil.getStringLength(content) > 50) {
+            throw new BusinessException("公告内容字数不能大于50");
+        }
+
+        // （3）如果原公告不存在，则新增；否则，更新
+        List<UnionMainNotice> noticeList = listByUnionId(unionId);
+        if (ListUtil.isNotEmpty(noticeList)) {
+            UnionMainNotice updateNotice = new UnionMainNotice();
+            updateNotice.setId(noticeList.get(0).getId());
+            updateNotice.setModifyTime(DateUtil.getCurrentDate());
+            updateNotice.setContent(content);
+            update(updateNotice);
+        } else {
+            UnionMainNotice saveNotice = new UnionMainNotice();
+            saveNotice.setCreateTime(DateUtil.getCurrentDate());
+            saveNotice.setDelStatus(CommonConstant.DEL_STATUS_NO);
+            saveNotice.setUnionId(unionId);
+            saveNotice.setContent(content);
+            save(saveNotice);
+        }
+    }
 
     //***************************************** Domain Driven Design - count *******************************************
 
@@ -262,4 +336,5 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
         }
         return result;
     }
+
 }

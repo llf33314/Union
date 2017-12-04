@@ -27,7 +27,7 @@ import java.util.List;
 @Service
 public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMapper, UnionMemberJoin> implements IUnionMemberJoinService {
     @Autowired
-    public RedisCacheUtil redisCacheUtil;
+    private RedisCacheUtil redisCacheUtil;
 
     //***************************************** Domain Driven Design - get *********************************************
 

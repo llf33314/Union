@@ -8,6 +8,7 @@
         <result column="del_status" property="delStatus"/>
         <result column="create_time" property="createTime"/>
         <result column="type" property="type"/>
+        <result column="name" property="name"/>
         <result column="validity" property="validity"/>
         <result column="integral" property="integral"/>
         <result column="member_id" property="memberId"/>

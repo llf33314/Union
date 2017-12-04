@@ -31,6 +31,19 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
 
     //***************************************** Domain Driven Design - get *********************************************
 
+    @Override
+    public UnionMainTransfer getByUnionIdAndToMemberIdAndConfirmStatus(Integer unionId, Integer toMemberId, Integer confirmStatus) throws Exception {
+        if (unionId == null || toMemberId == null || confirmStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMainTransfer> result = listByUnionId(unionId);
+        result = filterByToMemberId(result, toMemberId);
+        result = filterByConfirmStatus(result, confirmStatus);
+
+        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
+    }
+
     //***************************************** Domain Driven Design - list ********************************************
 
     //***************************************** Domain Driven Design - save ********************************************
@@ -42,6 +55,40 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
     //***************************************** Domain Driven Design - count *******************************************
 
     //***************************************** Domain Driven Design - boolean *****************************************
+
+    //***************************************** Domain Driven Design - filter ******************************************\
+
+    @Override
+    public List<UnionMainTransfer> filterByToMemberId(List<UnionMainTransfer> transferList, Integer toMemberId) throws Exception {
+        if (transferList == null || toMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMainTransfer> result = new ArrayList<>();
+        for (UnionMainTransfer transfer : transferList) {
+            if (toMemberId.equals(transfer.getToMemberId())) {
+                result.add(transfer);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionMainTransfer> filterByConfirmStatus(List<UnionMainTransfer> transferList, Integer confirmStatus) throws Exception {
+        if (transferList == null || confirmStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMainTransfer> result = new ArrayList<>();
+        for (UnionMainTransfer transfer : transferList) {
+            if (confirmStatus.equals(transfer.getConfirmStatus())) {
+                result.add(transfer);
+            }
+        }
+
+        return result;
+    }
 
     //***************************************** Object As a Service - get **********************************************
 
@@ -350,4 +397,6 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
         }
         return result;
     }
+
+
 }

@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.ParamException;
+import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.union.main.entity.UnionMain;
@@ -43,8 +44,29 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
     //***************************************** Domain Driven Design - boolean *****************************************
 
+    @Override
+    public boolean isUnionValid(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        UnionMain union = getById(unionId);
+
+        return isUnionValid(union);
+    }
+
+    @Override
+    public boolean isUnionValid(UnionMain union) throws Exception {
+        if (union == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        return union.getValidity().compareTo(DateUtil.getCurrentDate()) >= 0;
+    }
+
     //***************************************** Object As a Service - get **********************************************
 
+    @Override
     public UnionMain getById(Integer id) throws Exception {
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
