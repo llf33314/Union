@@ -3,14 +3,24 @@ package com.gt.union.card.main.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.card.constant.CardConstant;
+import com.gt.union.card.main.entity.UnionCard;
 import com.gt.union.card.main.entity.UnionCardFan;
 import com.gt.union.card.main.mapper.UnionCardFanMapper;
 import com.gt.union.card.main.service.IUnionCardFanService;
+import com.gt.union.card.main.service.IUnionCardService;
 import com.gt.union.card.main.util.UnionCardFanCacheUtil;
+import com.gt.union.card.main.vo.CardFanDetailVO;
+import com.gt.union.card.main.vo.CardFanVO;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.StringUtil;
+import com.gt.union.union.main.service.IUnionMainService;
+import com.gt.union.union.member.entity.UnionMember;
+import com.gt.union.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,11 +37,108 @@ import java.util.List;
 @Service
 public class UnionCardFanServiceImpl extends ServiceImpl<UnionCardFanMapper, UnionCardFan> implements IUnionCardFanService {
     @Autowired
-    public RedisCacheUtil redisCacheUtil;
+    private RedisCacheUtil redisCacheUtil;
+
+    @Autowired
+    private IUnionMainService unionMainService;
+
+    @Autowired
+    private IUnionMemberService unionMemberService;
+
+    @Autowired
+    private IUnionCardService unionCardService;
 
     //***************************************** Domain Driven Design - get *********************************************
 
+    @Override
+    public CardFanDetailVO getFanDetailVOByIdAndBusIdAndUnionId(Integer fanId, Integer busId, Integer unionId) throws Exception {
+        if (fanId == null || busId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        // （1）	判断union有效性和member读权限
+        if (unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+        }
+        // （2）	判断fanId有效性
+        UnionCardFan fan = getById(fanId);
+        if (fan == null) {
+            throw new BusinessException("找不到粉丝信息");
+        }
+        // （3）	获取折扣卡和活动卡，活动卡按时间倒序排序
+        List<UnionCard> cardList = unionCardService.listValidByFanIdAndUnionId(fanId, unionId);
+        List<UnionCard> discountCardList = unionCardService.filterByType(cardList, CardConstant.CARD_TYPE_DISCOUNT);
+        CardFanDetailVO result = new CardFanDetailVO();
+        if (ListUtil.isNotEmpty(discountCardList)) {
+            UnionCard discountCard = discountCardList.get(0);
+            result.setDiscountCard(discountCard);
+            UnionMember discountCardMember = unionMemberService.getByIdAndUnionId(discountCard.getMemberId(), unionId);
+            result.setDiscount(discountCardMember != null ? discountCardMember.getDiscount() : null);
+        }
+        List<UnionCard> activityCardList = unionCardService.filterByType(cardList, CardConstant.CARD_TYPE_ACTIVITY);
+        result.setActivityCardList(activityCardList);
+        
+        return result;
+    }
+
     //***************************************** Domain Driven Design - list ********************************************
+
+    @Override
+    public List<CardFanVO> listCardFanVoByBusIdAndUnionId(Integer busId, Integer unionId, String optNumber, String optPhone) throws Exception {
+        if (busId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        // （1）	判断union有效性和member读权限
+        if (unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+        }
+
+        // （2）	获取union下的fan，要求fan在该union下有折扣卡
+        List<UnionCardFan> fanList = listWithDiscountCardByUnionId(unionId, optNumber, optPhone);
+
+        // （3）	统计联盟积分=指定联盟折扣卡积分+指定联盟活动卡积分
+        List<CardFanVO> result = new ArrayList<>();
+        for (UnionCardFan fan : fanList) {
+            CardFanVO fanVO = new CardFanVO();
+            fanVO.setFan(fan);
+            fanVO.setIntegral(unionCardService.countIntegralByFanIdAndUnionId(fan.getId(), unionId));
+            result.add(fanVO);
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionCardFan> listWithDiscountCardByUnionId(Integer unionId, String optNumber, String optPhone) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionCardFan> entityWrapper = new EntityWrapper<>();
+        entityWrapper.exists(" SELECT c.id FROM t_union_card c "
+                + " WHERE c.fan_id=t_union_card_fan.id "
+                + " AND c.union_id=" + unionId
+                + " AND c.type=" + CardConstant.CARD_TYPE_DISCOUNT
+                + " AND c.del_status=" + CommonConstant.COMMON_NO
+                + " AND c.validity >= now() ")
+                .eq("del_status", CommonConstant.COMMON_NO);
+        if (StringUtil.isNotEmpty(optNumber)) {
+            entityWrapper.like("number", optNumber);
+        }
+        if (StringUtil.isNotEmpty(optPhone)) {
+            entityWrapper.like("phone", optPhone);
+        }
+        return selectList(entityWrapper);
+    }
 
     //***************************************** Domain Driven Design - save ********************************************
 

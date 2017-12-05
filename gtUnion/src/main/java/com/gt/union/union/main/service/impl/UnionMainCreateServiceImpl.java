@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
@@ -11,6 +12,9 @@ import com.gt.union.union.main.entity.UnionMainCreate;
 import com.gt.union.union.main.mapper.UnionMainCreateMapper;
 import com.gt.union.union.main.service.IUnionMainCreateService;
 import com.gt.union.union.main.util.UnionMainCreateCacheUtil;
+import com.gt.union.union.main.vo.UnionPermitCheckVO;
+import com.gt.union.union.member.entity.UnionMember;
+import com.gt.union.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -27,10 +31,29 @@ import java.util.List;
 @Service
 public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMapper, UnionMainCreate> implements IUnionMainCreateService {
     @Autowired
-    public RedisCacheUtil redisCacheUtil;
+    private RedisCacheUtil redisCacheUtil;
+    
+    @Autowired
+    private IUnionMemberService unionMemberService;
 
     //***************************************** Domain Driven Design - get *********************************************
 
+    @Override
+    public UnionPermitCheckVO getPermitCheckVOByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        
+        // （1）	判断是否已是盟主，如果是，报错
+        UnionMember busOwnerMember = unionMemberService.getOwnerByBusId(busId);
+        if (busOwnerMember != null) {
+            throw new BusinessException("已具有盟主身份，无法同时创建多个联盟");
+        }
+        
+        // TODO
+        return null;
+    }
+    
     //***************************************** Domain Driven Design - list ********************************************
 
     //***************************************** Domain Driven Design - save ********************************************
@@ -350,4 +373,5 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         }
         return result;
     }
+    
 }

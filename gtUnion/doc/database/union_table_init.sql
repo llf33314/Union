@@ -241,6 +241,7 @@ CREATE TABLE `t_union_card` (
   `del_status` int(2) DEFAULT NULL COMMENT '是否删除(0:否 1:是)',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `type` int(2) DEFAULT NULL COMMENT '类型(1:折扣卡 2:活动卡)',
+  `name` VARCHAR(100) DEFAULT NULL COMMENT '名称',
   `validity` datetime DEFAULT NULL COMMENT '有效期',
   `integral` double(8,2) DEFAULT '0.00' COMMENT '积分',
   `member_id` int(11) DEFAULT NULL COMMENT '盟员id',

@@ -4,18 +4,25 @@ import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
+import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.union.main.service.IUnionMainService;
+import com.gt.union.union.member.constant.MemberConstant;
+import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.entity.UnionMemberOut;
 import com.gt.union.union.member.mapper.UnionMemberOutMapper;
 import com.gt.union.union.member.service.IUnionMemberOutService;
+import com.gt.union.union.member.service.IUnionMemberService;
 import com.gt.union.union.member.util.UnionMemberOutCacheUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,13 +34,131 @@ import java.util.List;
 @Service
 public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper, UnionMemberOut> implements IUnionMemberOutService {
     @Autowired
-    public RedisCacheUtil redisCacheUtil;
+    private RedisCacheUtil redisCacheUtil;
+
+    @Autowired
+    private IUnionMainService unionMainService;
+
+    @Autowired
+    private IUnionMemberService unionMemberService;
 
     //***************************************** Domain Driven Design - get *********************************************
+
+    @Override
+    public UnionMemberOut getByApplyMemberIdAndUnionId(Integer applyMemberId, Integer unionId) throws Exception {
+        if (applyMemberId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMemberOut> result = listByApplyMemberId(applyMemberId);
+        result = filterByUnionId(result, unionId);
+
+        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
+    }
 
     //***************************************** Domain Driven Design - list ********************************************
 
     //***************************************** Domain Driven Design - save ********************************************
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void saveByBusIdAndUnionIdAndApplyMemberId(Integer busId, Integer unionId, Integer applyMemberId) throws Exception {
+        if (busId == null || unionId == null || applyMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        // （1）	判断union有效性和member写权限、盟主权限
+        if (unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+        }
+        if (member.getIsUnionOwner() != MemberConstant.IS_UNION_OWNER_YES) {
+            throw new BusinessException(CommonConstant.UNION_NEED_OWNER);
+        }
+
+        // （2）	判断applyMemberId有效性
+        UnionMember applyMember = unionMemberService.getByIdAndUnionId(applyMemberId, unionId);
+        if (applyMember == null) {
+            throw new BusinessException("要移出的盟员不存在");
+        }
+
+        // （3）	判断applyMember状态，如果是入盟状态，则新增退盟申请并通过，并更新applyMember为退盟过渡期状态；
+        // 如果是申请退盟状态，则判断退盟申请是否存在，若不存在则新增，并自动通过退盟申请，且更新applyMember为退盟过渡期状态；
+        // 如果是退盟过渡期状态，则直接返回成功；
+        // 如果是其他状态，报错
+        boolean isSave = false;
+        boolean isUpdate = false;
+        UnionMemberOut existOut = null;
+        switch (applyMember.getStatus()) {
+            case MemberConstant.STATUS_IN:
+                isSave = true;
+                break;
+            case MemberConstant.STATUS_APPLY_OUT:
+                existOut = getByApplyMemberIdAndUnionId(applyMemberId, unionId);
+                if (existOut == null) {
+                    isSave = true;
+                } else {
+                    isUpdate = true;
+                }
+                break;
+            case MemberConstant.STATUS_OUT_PERIOD:
+                break;
+            default:
+                throw new BusinessException("盟员状态异常");
+        }
+
+        if (isSave) {
+            UnionMemberOut saveOut = new UnionMemberOut();
+            saveOut.setUnionId(unionId);
+            saveOut.setApplyMemberId(applyMemberId);
+            saveOut.setType(MemberConstant.OUT_TYPE_REMOVE);
+            saveOut.setApplyOutReason("盟主移出");
+            Date currentDate = DateUtil.getCurrentDate();
+            saveOut.setCreateTime(currentDate);
+            saveOut.setConfirmOutTime(currentDate);
+            saveOut.setActualOutTime(DateUtil.addDays(currentDate, 15));
+            saveOut.setDelStatus(CommonConstant.DEL_STATUS_NO);
+            save(saveOut);
+
+            UnionMember updateMember = new UnionMember();
+            updateMember.setId(applyMemberId);
+            updateMember.setStatus(MemberConstant.STATUS_OUT_PERIOD);
+            unionMemberService.update(updateMember);
+        } else if (isUpdate) {
+            UnionMemberOut updateOut = new UnionMemberOut();
+            updateOut.setId(existOut.getId());
+            Date currentDate = DateUtil.getCurrentDate();
+            updateOut.setConfirmOutTime(currentDate);
+            updateOut.setActualOutTime(DateUtil.addDays(currentDate, 15));
+            update(updateOut);
+
+            UnionMember updateMember = new UnionMember();
+            updateMember.setId(applyMemberId);
+            updateMember.setStatus(MemberConstant.STATUS_OUT_PERIOD);
+            unionMemberService.update(updateMember);
+        }
+
+
+        UnionMemberOut saveOut2 = new UnionMemberOut();
+        saveOut2.setUnionId(unionId);
+        saveOut2.setApplyMemberId(applyMemberId);
+        saveOut2.setType(MemberConstant.OUT_TYPE_REMOVE);
+        saveOut2.setApplyOutReason("盟主移出");
+        Date currentDate2 = DateUtil.getCurrentDate();
+        saveOut2.setCreateTime(currentDate2);
+        saveOut2.setConfirmOutTime(currentDate2);
+        saveOut2.setActualOutTime(DateUtil.addDays(currentDate2, 15));
+        saveOut2.setDelStatus(CommonConstant.DEL_STATUS_NO);
+        save(saveOut2);
+
+        UnionMember updateMember2 = new UnionMember();
+        updateMember2.setId(applyMemberId);
+        updateMember2.setStatus(MemberConstant.STATUS_OUT_PERIOD);
+        unionMemberService.update(updateMember2);
+    }
 
     //***************************************** Domain Driven Design - remove ******************************************
 
@@ -42,6 +167,24 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
     //***************************************** Domain Driven Design - count *******************************************
 
     //***************************************** Domain Driven Design - boolean *****************************************
+
+    //***************************************** Domain Driven Design - filter ******************************************
+
+    @Override
+    public List<UnionMemberOut> filterByUnionId(List<UnionMemberOut> outList, Integer unionId) throws Exception {
+        if (outList == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMemberOut> result = new ArrayList<>();
+        for (UnionMemberOut out : outList) {
+            if (unionId.equals(out.getUnionId())) {
+                result.add(out);
+            }
+        }
+
+        return result;
+    }
 
     //***************************************** Object As a Service - get **********************************************
 
@@ -306,4 +449,5 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         }
         return result;
     }
+
 }

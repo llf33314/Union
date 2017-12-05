@@ -7,6 +7,7 @@ import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
 import com.gt.union.h5.brokerage.vo.*;
 import com.gt.union.opportunity.brokerage.entity.UnionBrokerageWithdrawal;
+import com.gt.union.union.main.entity.UnionMain;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -27,6 +28,19 @@ import java.util.List;
 public class H5BrokerageController {
 
     //-------------------------------------------------- get ----------------------------------------------------------
+
+    @ApiOperation(value = "获取我的联盟列表", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/myUnion", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public GtJsonResult<List<UnionMain>> listMyUnion(HttpServletRequest request) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        // mock
+        List<UnionMain> result = MockUtil.list(UnionMain.class, 3);
+        return GtJsonResult.instanceSuccessMsg(result);
+    }
 
     @ApiOperation(value = "首页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "index", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
@@ -183,6 +197,36 @@ public class H5BrokerageController {
             HttpServletRequest request,
             @ApiParam(value = "商机id", name = "opportunityId", required = true)
             @RequestParam(value = "opportunityId") Integer opportunityId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        return GtJsonResult.instanceSuccessMsg();
+    }
+
+    @ApiOperation(value = "我需支付-未支付-去支付和一键支付-回调", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/pay/unpaid/callback", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public GtJsonResult updateCallback(
+            HttpServletRequest request,
+            @ApiParam(value = "商机id列表", name = "opportunityIdList", required = true)
+            @RequestParam(value = "opportunityIdList") String opportunityIdList) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        return GtJsonResult.instanceSuccessMsg();
+    }
+
+    //------------------------------------------------- patch ----------------------------------------------------------
+
+    @ApiOperation(value = "我需支付-未支付-去支付和一键支付", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/pay/unpaid", method = RequestMethod.PATCH, produces = "application/json;charset=UTF-8")
+    public GtJsonResult<String> batchPay(
+            HttpServletRequest request,
+            @ApiParam(value = "商机id列表", name = "opportunityIdList", required = true)
+            @RequestParam(value = "opportunityIdList") List<Integer> opportunityIdList) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {

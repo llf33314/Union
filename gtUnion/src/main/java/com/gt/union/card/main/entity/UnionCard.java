@@ -53,6 +53,13 @@ public class UnionCard extends Model<UnionCard> {
     private Integer type;
 
     /**
+     * 名称
+     */
+    @ApiModelProperty(value = "名称")
+    @TableField("name")
+    private String name;
+    
+    /**
      * 有效期
      */
     @ApiModelProperty(value = "有效期")
@@ -125,6 +132,14 @@ public class UnionCard extends Model<UnionCard> {
 
     public void setType(Integer type) {
         this.type = type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public Date getValidity() {
