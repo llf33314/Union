@@ -109,6 +109,8 @@ public class BusUserServiceImpl implements IBusUserService {
         if(user == null){
             return null;
         }
+        //商家版本名称
+        String busVersionName = dictService.getBusUserLevel(user.getLevel());
         List<Map> list = dictService.listCreateUnionDict();
         if(CommonUtil.isEmpty(list)){
             return null;
@@ -124,7 +126,8 @@ public class BusUserServiceImpl implements IBusUserService {
                 data.put("versionName",CommonUtil.toInteger(items[2]));
             }
         }
-        return null;
+        data.put("busVersionName",busVersionName);
+        return data;
     }
 
 	@Override

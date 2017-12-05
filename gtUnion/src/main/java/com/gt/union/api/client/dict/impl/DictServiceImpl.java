@@ -59,6 +59,11 @@ public class DictServiceImpl implements IDictService {
 	 */
 	private static String BUS_USER_LEVEL_DESC_TYPE = "1004";
 
+	/**
+	 * erp的分类属性
+	 */
+	private static String BUS_ERP_STYLE_TYPE = "1180";
+
 	@Override
 	public Double getMaxExchangePercent() {
 		return getItemDoubleValue(MAX_EXCHANGE_TYPE);
@@ -79,14 +84,7 @@ public class DictServiceImpl implements IDictService {
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/dictApi/getDictApi.do";
 		try{
 			String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
-			if(StringUtil.isEmpty(result)){
-				return null;
-			}
-			Map<String,Object> data= JSON.parseObject(result,Map.class);
-			if(CommonUtil.isEmpty(data.get("data"))){
-				return null;
-			}
-			Map item = JSON.parseObject(data.get("data").toString(),Map.class);
+			Map item = ApiResultHandlerUtil.getDataObject(result,Map.class);
 			List<Map> dict = JSONArray.parseArray(item.get("dictJSON").toString(),Map.class);
 			if(ListUtil.isEmpty(dict)){
 				return null;
@@ -114,6 +112,11 @@ public class DictServiceImpl implements IDictService {
 	@Override
 	public List<Map> listCreateUnionDict() {
 		return getItemList(CREATE_UNION_TYPE);
+	}
+
+	@Override
+	public List<Map> listErpStyle(){
+		return getItemList(BUS_ERP_STYLE_TYPE);
 	}
 
 	@Override
@@ -151,11 +154,7 @@ public class DictServiceImpl implements IDictService {
 			if(StringUtil.isEmpty(result)){
 				return null;
 			}
-			Map<String,Object> data= JSON.parseObject(result,Map.class);
-			if(CommonUtil.isEmpty(data.get("data"))){
-				return null;
-			}
-			Map item = JSON.parseObject(data.get("data").toString(),Map.class);
+			Map item = ApiResultHandlerUtil.getDataObject(result,Map.class);
 			List<Map> dict = JSONArray.parseArray(item.get("dictJSON").toString(),Map.class);
 			if(ListUtil.isEmpty(dict)){
 				return null;
@@ -188,14 +187,7 @@ public class DictServiceImpl implements IDictService {
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/dictApi/getDictApi.do";
 		try{
 			String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
-			if(StringUtil.isEmpty(result)){
-				return null;
-			}
-			Map<String,Object> data= JSON.parseObject(result,Map.class);
-			if(CommonUtil.isEmpty(data.get("data"))){
-				return null;
-			}
-			Map item = JSON.parseObject(data.get("data").toString(),Map.class);
+			Map item = ApiResultHandlerUtil.getDataObject(result,Map.class);
 			List list = JSONArray.parseArray(item.get("dictJSON").toString(),Map.class);
 			if(ListUtil.isNotEmpty(list)){
 				redisCacheUtil.set(key, list);
@@ -205,5 +197,8 @@ public class DictServiceImpl implements IDictService {
 			return null;
 		}
 	}
+
+
+
 
 }

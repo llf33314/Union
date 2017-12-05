@@ -41,6 +41,12 @@ public interface IDictService {
 	List<Map> listCreateUnionDict();
 
 	/**
+	 * 获取erp属性值
+	 * @return
+	 */
+	List<Map> listErpStyle();
+
+	/**
 	 * 根据商家等级获取商家等级名称
 	 * @param level	商家等级
 	 * @return
