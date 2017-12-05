@@ -1,14 +1,17 @@
 package com.gt.union.api.client.sms.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 import com.gt.api.util.HttpClienUtils;
 import com.gt.api.util.RequestUtils;
 import com.gt.union.api.amqp.entity.PhoneMessage;
 import com.gt.union.api.client.sms.SmsService;
-import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.PropertiesUtil;
-import org.springframework.beans.factory.annotation.Value;
+import com.gt.union.common.util.RedisCacheUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
@@ -21,8 +24,14 @@ import java.util.Map;
 @Service
 public class SmsServiceImpl implements SmsService {
 
+	private Logger logger = LoggerFactory.getLogger(SmsServiceImpl.class);
+
+	@Autowired
+	private RedisCacheUtil redisCacheUtil;
+
 	@Override
 	public boolean sendSms(PhoneMessage phoneMessage) {
+		logger.info("发送短信：{}", JSON.toJSONString(phoneMessage));
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/smsapi/6F6D9AD2/79B4DE7C/sendSmsOld.do";
 		try {
 			RequestUtils requestUtils = new RequestUtils<PhoneMessage>();
@@ -38,5 +47,22 @@ public class SmsServiceImpl implements SmsService {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public boolean checkPhoneCode(Integer type, String code, String phone) {
+		logger.info("短信验证码校验type：{}，code：{}，phone：{}", type, code, phone);
+		try{
+			String checkCode = redisCacheUtil.get(type + ":" + phone);
+			if(CommonUtil.isEmpty(checkCode)){
+				return false;
+			}
+			if(!checkCode.equals(code)){
+				return false;
+			}
+		}catch (Exception e){
+			return false;
+		}
+		return false;
 	}
 }

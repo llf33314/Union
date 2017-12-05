@@ -20,7 +20,7 @@ public class SocketServiceImpl implements SocketService{
 	private Logger logger = LoggerFactory.getLogger(SocketServiceImpl.class);
 
 	@Override
-	public boolean socketSendMessage(String pushName,String message,String pushStyle) {
+	public boolean socketCommonSendMessage(String socketKey,String message,String pushStyle) {
 		try {
 			Map<String,Object> params = new HashMap<>();
 			if(pushStyle == null){
@@ -29,7 +29,30 @@ public class SocketServiceImpl implements SocketService{
 				params.put("pushStyle",pushStyle);
 			}
 			params.put("pushMsg", message);
-			params.put("pushName",pushName);
+			params.put("pushName",socketKey);
+			logger.info("socket推送参数：{}", JSON.toJSONString(params));
+			SignHttpUtils.WxmppostByHttp(PropertiesUtil.getWxmpUrl()+"/8A5DA52E/socket/getSocketApi.do", params, PropertiesUtil.getWxmpSignKey());
+		}catch (Exception e){
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public boolean socketPaySendMessage(String socketKey, Integer status, String pushStyle) {
+		try {
+			Map<String,Object> params = new HashMap<>();
+			if(pushStyle == null){
+				params.put("pushStyle","");
+			}else {
+				params.put("pushStyle",pushStyle);
+			}
+			Map data = new HashMap<>();
+			data.put("status",status);
+			data.put("socketKey",socketKey);
+
+			params.put("pushMsg", JSON.toJSONString(data));
+			params.put("pushName",socketKey);
 			logger.info("socket推送参数：{}", JSON.toJSONString(params));
 			SignHttpUtils.WxmppostByHttp(PropertiesUtil.getWxmpUrl()+"/8A5DA52E/socket/getSocketApi.do", params, PropertiesUtil.getWxmpSignKey());
 		}catch (Exception e){
