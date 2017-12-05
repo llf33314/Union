@@ -1,10 +1,12 @@
 package com.gt.union.h5.brokerage.controller;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
+import com.gt.union.common.util.PageUtil;
 import com.gt.union.h5.brokerage.vo.*;
 import com.gt.union.opportunity.brokerage.entity.UnionBrokerageWithdrawal;
 import com.gt.union.union.main.entity.UnionMain;
@@ -65,83 +67,198 @@ public class H5BrokerageController {
         }
         // mock
         WithdrawalVO result = MockUtil.get(WithdrawalVO.class);
-        List<UnionBrokerageWithdrawal> withdrawalList = MockUtil.list(UnionBrokerageWithdrawal.class, 20);
-        result.setWithdrawalList(withdrawalList);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "我要提现-佣金明细-推荐佣金", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/withdrawal/detail/opportunity", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<OpportunityBrokerageDetailVO> getOpportunityBrokerageDetailVO(HttpServletRequest request) throws Exception {
+    @ApiOperation(value = "分页：我要提现-提现记录", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/withdrawal/history/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public GtJsonResult<Page<UnionBrokerageWithdrawal>> getWithdrawalHistory(
+            HttpServletRequest request,
+            Page page) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
         // mock
-        OpportunityBrokerageDetailVO result = MockUtil.get(OpportunityBrokerageDetailVO.class);
-        List<OpportunityBrokerage> paidOpportunityBrokerageList = MockUtil.list(OpportunityBrokerage.class, 20);
-        result.setPaidOpportunityBrokerageList(paidOpportunityBrokerageList);
+        List<UnionBrokerageWithdrawal> withdrawalList = MockUtil.list(UnionBrokerageWithdrawal.class, page.getSize());
+        Page<UnionBrokerageWithdrawal> result = (Page<UnionBrokerageWithdrawal>) page;
+        result = PageUtil.setRecord(result, withdrawalList);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "我要提现-佣金明细-售卡佣金", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/withdrawal/detail/card", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<CardBrokerageDetailVO> getCardBrokerageDetailVO(HttpServletRequest request) throws Exception {
+    @ApiOperation(value = "我要提现-佣金明细-推荐佣金-已支付的商机佣金总额", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/withdrawal/detail/opportunity/paidSum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public GtJsonResult<Double> getOpportunityBrokeragePaidSum(
+            HttpServletRequest request,
+            @ApiParam(value = "联盟id", name = "unionId")
+            @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
         // mock
-        CardBrokerageDetailVO result = MockUtil.get(CardBrokerageDetailVO.class);
-        List<CardBrokerage> cardBrokerageList = MockUtil.list(CardBrokerage.class, 20);
-        result.setCardBrokerageList(cardBrokerageList);
+        Double result = MockUtil.get(Double.class);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "我需支付-未支付", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/pay/unPaid", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<UnPaidOpportunityBrokerageVO> getUnPaidOpportunityBrokerageVO(HttpServletRequest request) throws Exception {
+    @ApiOperation(value = "分页：我要提现-佣金明细-推荐佣金-明细", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/withdrawal/detail/opportunity/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public GtJsonResult<Page<OpportunityBrokerageVO>> pageOpportunityBrokerageVO(
+            HttpServletRequest request,
+            Page page,
+            @ApiParam(value = "联盟id", name = "unionId")
+            @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
         // mock
-        UnPaidOpportunityBrokerageVO result = MockUtil.get(UnPaidOpportunityBrokerageVO.class);
-        List<OpportunityBrokerage> unPaidOpportunityBrokerageList = MockUtil.list(OpportunityBrokerage.class, 20);
-        result.setUnPaidOpportunityBrokerageList(unPaidOpportunityBrokerageList);
+        List<OpportunityBrokerageVO> voList = MockUtil.list(OpportunityBrokerageVO.class, page.getSize());
+        Page<OpportunityBrokerageVO> result = (Page<OpportunityBrokerageVO>) page;
+        result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "我需支付-已支付", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/pay/paid", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<PaidOpportunityBrokerageVO> getPaidOpportunityBrokerageVO(HttpServletRequest request) throws Exception {
+    @ApiOperation(value = "我要提现-佣金明细-售卡佣金-已支付的售卡佣金总额", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/withdrawal/detail/card/paidSum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public GtJsonResult<Double> getCardBrokeragePaidSum(
+            HttpServletRequest request,
+            @ApiParam(value = "联盟id", name = "unionId")
+            @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
         // mock
-        PaidOpportunityBrokerageVO result = MockUtil.get(PaidOpportunityBrokerageVO.class);
-        List<OpportunityBrokerage> paidOpportunityBrokerageList = MockUtil.list(OpportunityBrokerage.class, 20);
-        result.setPaidOpportunityBrokerageList(paidOpportunityBrokerageList);
+        Double result = MockUtil.get(Double.class);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "我未收佣金", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/unreceived", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<UnReceivedOpportunityBrokerageVO> getUnReceivedOpportunityBrokerageVO(HttpServletRequest request) throws Exception {
+    @ApiOperation(value = "分页：我要提现-佣金明细-售卡佣金-明细", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/withdrawal/detail/card/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public GtJsonResult<Page<CardBrokerageVO>> pageCardBrokerageVO(
+            HttpServletRequest request,
+            Page page,
+            @ApiParam(value = "联盟id", name = "unionId")
+            @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
         // mock
-        UnReceivedOpportunityBrokerageVO result = MockUtil.get(UnReceivedOpportunityBrokerageVO.class);
-        List<OpportunityBrokerage> unReceivedOpportunityBrokerageList = MockUtil.list(OpportunityBrokerage.class, 20);
-        result.setUnReceivedOpportunityBrokerageList(unReceivedOpportunityBrokerageList);
+        List<CardBrokerageVO> voList = MockUtil.list(CardBrokerageVO.class, page.getSize());
+        Page<CardBrokerageVO> result = (Page<CardBrokerageVO>) page;
+        result = PageUtil.setRecord(result, voList);
+        return GtJsonResult.instanceSuccessMsg(result);
+    }
+
+    @ApiOperation(value = "我需支付-未支付-佣金总额", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/pay/unPaid/sum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public GtJsonResult<Double> getUnPaidOpportunityBrokerageSum(
+            HttpServletRequest request,
+            @ApiParam(value = "联盟id", name = "unionId")
+            @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        // mock
+        Double result = MockUtil.get(Double.class);
+        return GtJsonResult.instanceSuccessMsg(result);
+    }
+
+    @ApiOperation(value = "分页：我需支付-未支付-明细", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/pay/unPaid/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public GtJsonResult<Page<OpportunityBrokerageVO>> pageUnPaidOpportunityBrokerageVO(
+            HttpServletRequest request,
+            Page page,
+            @ApiParam(value = "联盟id", name = "unionId")
+            @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        // mock
+        List<OpportunityBrokerageVO> voList = MockUtil.list(OpportunityBrokerageVO.class, page.getSize());
+        Page<OpportunityBrokerageVO> result = (Page<OpportunityBrokerageVO>) page;
+        result = PageUtil.setRecord(result, voList);
+        return GtJsonResult.instanceSuccessMsg(result);
+    }
+
+    @ApiOperation(value = "我需支付-已支付-佣金总额", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/pay/paid/sum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public GtJsonResult<Double> getPaidOpportunityBrokerageSum(
+            HttpServletRequest request,
+            @ApiParam(value = "联盟id", name = "unionId")
+            @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        // mock
+        Double result = MockUtil.get(Double.class);
+        return GtJsonResult.instanceSuccessMsg(result);
+    }
+
+    @ApiOperation(value = "分页：我需支付-已支付-明细", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/pay/paid/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public GtJsonResult<Page<OpportunityBrokerageVO>> pagePaidOpportunityBrokerageVO(
+            HttpServletRequest request,
+            Page page,
+            @ApiParam(value = "联盟id", name = "unionId")
+            @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        // mock
+        List<OpportunityBrokerageVO> voList = MockUtil.list(OpportunityBrokerageVO.class, page.getSize());
+        Page<OpportunityBrokerageVO> result = (Page<OpportunityBrokerageVO>) page;
+        result = PageUtil.setRecord(result, voList);
+        return GtJsonResult.instanceSuccessMsg(result);
+    }
+
+    @ApiOperation(value = "我未收佣金-佣金总额", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unreceived/sum", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public GtJsonResult<Double> getUnReceivedOpportunityBrokerageSum(
+            HttpServletRequest request,
+            @ApiParam(value = "联盟id", name = "unionId")
+            @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        // mock
+        Double result = MockUtil.get(Double.class);
+        return GtJsonResult.instanceSuccessMsg(result);
+    }
+
+    @ApiOperation(value = "分页：我未收佣金-明细", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unreceived/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public GtJsonResult<Page<OpportunityBrokerageVO>> pageUnReceivedOpportunityBrokerageVO(
+            HttpServletRequest request,
+            Page page,
+            @ApiParam(value = "联盟id", name = "unionId")
+            @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        // mock
+        List<OpportunityBrokerageVO> voList = MockUtil.list(OpportunityBrokerageVO.class, page.getSize());
+        Page<OpportunityBrokerageVO> result = (Page<OpportunityBrokerageVO>) page;
+        result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -206,7 +323,7 @@ public class H5BrokerageController {
     }
 
     @ApiOperation(value = "我需支付-未支付-去支付和一键支付-回调", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/pay/unpaid/callback", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/79B4DE7C/pay/unpaid/callback", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public GtJsonResult updateCallback(
             HttpServletRequest request,
             @ApiParam(value = "商机id列表", name = "opportunityIdList", required = true)

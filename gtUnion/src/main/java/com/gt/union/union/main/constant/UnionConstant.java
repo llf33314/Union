@@ -32,4 +32,19 @@ public interface UnionConstant {
      */
     int TRANSFER_CONFIRM_STATUS_REJECT = 3;
 
+    /**
+     * 盟主服务订单状态：未支付
+     */
+    int PERMIT_ORDER_STATUS_NOT_PAY = 1;
+    
+    /**
+     * 盟主服务订单状态：支付成功
+     */
+    int PERMIT_ORDER_STATUS_PAY_SUCCESS = 2;
+
+    /**
+     * 盟主服务订单状态：支付失败
+     */
+    int PERMIT_ORDER_STATUS_PAY_FAIL = 3;
+
 }

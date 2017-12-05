@@ -51,7 +51,7 @@ public class UnionMainController {
 
     @ApiOperation(value = "分页：获取其他有效的联盟", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/other/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Page<UnionMain>> pageOther(
+    public GtJsonResult<Page<UnionMainVO>> pageOther(
             HttpServletRequest request,
             Page page) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
@@ -60,15 +60,19 @@ public class UnionMainController {
             busId = busUser.getPid();
         }
         // mock
-        List<UnionMain> unionMainList = MockUtil.list(UnionMain.class, page.getSize());
-        Page<UnionMain> result = (Page<UnionMain>) page;
-        result = PageUtil.setRecord(result, unionMainList);
+        List<UnionMainVO> voList = MockUtil.list(UnionMainVO.class, page.getSize());
+        for (UnionMainVO vo : voList) {
+            List<UnionMainDict> itemList = MockUtil.list(UnionMainDict.class, 3);
+            vo.setItemList(itemList);
+        }
+        Page<UnionMainVO> result = (Page<UnionMainVO>) page;
+        result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
     @ApiOperation(value = "分页：获取我的有效的联盟", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/my/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Page<UnionMain>> pageMy(
+    public GtJsonResult<Page<UnionMainVO>> pageMy(
             HttpServletRequest request,
             Page page) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
@@ -77,9 +81,13 @@ public class UnionMainController {
             busId = busUser.getPid();
         }
         // mock
-        List<UnionMain> unionMainList = MockUtil.list(UnionMain.class, page.getSize());
-        Page<UnionMain> result = (Page<UnionMain>) page;
-        result = PageUtil.setRecord(result, unionMainList);
+        List<UnionMainVO> voList = MockUtil.list(UnionMainVO.class, page.getSize());
+        for (UnionMainVO vo : voList) {
+            List<UnionMainDict> itemList = MockUtil.list(UnionMainDict.class, 3);
+            vo.setItemList(itemList);
+        }
+        Page<UnionMainVO> result = (Page<UnionMainVO>) page;
+        result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

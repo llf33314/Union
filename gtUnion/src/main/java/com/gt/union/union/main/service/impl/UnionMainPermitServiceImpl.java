@@ -3,19 +3,25 @@ package com.gt.union.union.main.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.*;
+import com.gt.union.union.main.constant.UnionConstant;
+import com.gt.union.union.main.entity.UnionMainPackage;
 import com.gt.union.union.main.entity.UnionMainPermit;
 import com.gt.union.union.main.mapper.UnionMainPermitMapper;
+import com.gt.union.union.main.service.IUnionMainPackageService;
 import com.gt.union.union.main.service.IUnionMainPermitService;
 import com.gt.union.union.main.util.UnionMainPermitCacheUtil;
+import com.gt.union.union.main.vo.UnionPermitPayVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,13 +33,73 @@ import java.util.List;
 @Service
 public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMapper, UnionMainPermit> implements IUnionMainPermitService {
     @Autowired
-    public RedisCacheUtil redisCacheUtil;
+    private RedisCacheUtil redisCacheUtil;
+
+    @Autowired
+    private IUnionMainPackageService unionMainPackageService;
+
+    @Autowired
+    private WxPayService wxPayService;
 
     //***************************************** Domain Driven Design - get *********************************************
+
+    @Override
+    public UnionMainPermit getValidByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionMainPermit> entityWrapper = new EntityWrapper<>();
+        entityWrapper.ge("validity", DateUtil.getCurrentDate())
+                .eq("bus_id", busId)
+                .eq("del_status", CommonConstant.COMMON_NO);
+
+        return selectOne(entityWrapper);
+    }
 
     //***************************************** Domain Driven Design - list ********************************************
 
     //***************************************** Domain Driven Design - save ********************************************
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public UnionPermitPayVO saveByBusIdAndPackageId(Integer busId, Integer packageId) throws Exception {
+        if (busId == null || packageId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        // （1）	判断packageId有效性
+        UnionMainPackage unionPackage = unionMainPackageService.getById(packageId);
+        if (unionPackage == null) {
+            throw new BusinessException("找不到套餐信息");
+        }
+
+        // （2）	根据支付方式生成未支付状态的盟主服务记录
+        UnionMainPermit savePermit = new UnionMainPermit();
+        savePermit.setBusId(busId);
+        savePermit.setPackageId(packageId);
+        Date currentDate = DateUtil.getCurrentDate();
+        savePermit.setCreateTime(currentDate);
+        int validMonth = BigDecimalUtil.multiply(Double.valueOf(12), unionPackage.getYear()).intValue();
+        savePermit.setValidity(DateUtil.addMonths(currentDate, validMonth));
+        savePermit.setOrderMoney(unionPackage.getPrice());
+        savePermit.setOrderStatus(UnionConstant.PERMIT_ORDER_STATUS_NOT_PAY);
+        savePermit.setSysOrderNo("LM" + System.currentTimeMillis());
+        savePermit.setDelStatus(CommonConstant.COMMON_NO);
+        save(savePermit);
+
+        // （3）	调用接口，返回支付链接
+        UnionPermitPayVO result = new UnionPermitPayVO();
+        String notifyUrl = PropertiesUtil.getUnionUrl() + "/unionMainPermit/" + savePermit.getId() + "/pay/callback";
+        String payUrl = wxPayService.qrCodePay(savePermit.getOrderMoney(), null, savePermit.getSysOrderNo(),
+                null, CommonConstant.COMMON_NO, null, notifyUrl, CommonConstant.COMMON_NO,
+                null, 0, null);
+        result.setPayUrl(payUrl);
+        String socketKey = PropertiesUtil.getSocketKey() + "Permit_" + System.currentTimeMillis();
+        result.setSocketKey(socketKey);
+
+        return result;
+    }
 
     //***************************************** Domain Driven Design - remove ******************************************
 
@@ -112,6 +178,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
 
     //***************************************** Object As a Service - save *********************************************
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void save(UnionMainPermit newUnionMainPermit) throws Exception {
         if (newUnionMainPermit == null) {
@@ -306,4 +373,5 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         }
         return result;
     }
+
 }

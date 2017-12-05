@@ -14,7 +14,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @version 2017-12-01 14:37:42
  */
 @ApiModel(value = "售卡佣金")
-public class CardBrokerage {
+public class CardBrokerageVO {
     @ApiModelProperty(value = "联盟")
     private UnionMain union;
 

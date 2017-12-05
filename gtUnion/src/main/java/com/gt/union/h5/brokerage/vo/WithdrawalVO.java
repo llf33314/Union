@@ -1,11 +1,8 @@
 package com.gt.union.h5.brokerage.vo;
 
 import com.alibaba.fastjson.JSONArray;
-import com.gt.union.opportunity.brokerage.entity.UnionBrokerageWithdrawal;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import java.util.List;
 
 /**
  * 我要提现
@@ -29,9 +26,6 @@ public class WithdrawalVO {
 
     @ApiModelProperty(value = "历史佣金提现总额")
     private Double historyWithdrawal;
-
-    @ApiModelProperty(value = "提现记录")
-    private List<UnionBrokerageWithdrawal> withdrawalList;
 
     public Double getAvailableBrokerage() {
         return availableBrokerage;
@@ -71,14 +65,6 @@ public class WithdrawalVO {
 
     public void setHistoryWithdrawal(Double historyWithdrawal) {
         this.historyWithdrawal = historyWithdrawal;
-    }
-
-    public List<UnionBrokerageWithdrawal> getWithdrawalList() {
-        return withdrawalList;
-    }
-
-    public void setWithdrawalList(List<UnionBrokerageWithdrawal> withdrawalList) {
-        this.withdrawalList = withdrawalList;
     }
 
     @Override

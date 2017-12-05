@@ -53,6 +53,11 @@ public interface CommonConstant {
     String UNION_BUS_OVERDUE_MSG = "商家帐号已过期";
 
     /**
+     * 找不到商家帐号
+     */
+    String UNION_BUS_NOT_FOUND = "找不到商家帐号";
+    
+    /**
      * 联盟已过期
      */
     String UNION_INVALID = "联盟已过期";

@@ -137,10 +137,46 @@ public class DateUtil {
         }
     }
 
+    /**
+     * 加天数
+     *
+     * @param date   日期
+     * @param amount 天数
+     * @return Date
+     */
     public static Date addDays(Date date, Integer amount) {
         Calendar calendar = Calendar.getInstance();
         calendar.setTime(date);
         calendar.add(Calendar.DATE, amount);
         return calendar.getTime();
     }
+
+    /**
+     * 加月数
+     *
+     * @param date   日期
+     * @param amount 月数
+     * @return Date
+     */
+    public static Date addMonths(Date date, Integer amount) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.MONTH, amount);
+        return calendar.getTime();
+    }
+
+    /**
+     * 加年数
+     *
+     * @param date   日期
+     * @param amount 年数
+     * @return Date
+     */
+    public static Date addYears(Date date, Integer amount) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.add(Calendar.YEAR, amount);
+        return calendar.getTime();
+    }
+
 }

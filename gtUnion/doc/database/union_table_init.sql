@@ -90,10 +90,9 @@ CREATE TABLE `t_union_main_permit` (
   `validity` datetime DEFAULT NULL COMMENT '许可有效期',
   `order_money` double(10,2) DEFAULT NULL COMMENT '订单金额',
   `order_status` int(2) DEFAULT NULL COMMENT '订单状态(1:未支付 2:已支付 3:支付失败)',
-  `pay_type` int(2) DEFAULT NULL COMMENT '支付方式(1:微信支付 2:粉币支付 3:支付宝支付)',
+  `pay_type` int(2) DEFAULT NULL COMMENT '支付方式(1:微信支付 2:支付宝支付)',
   `sys_order_no` varchar(128) DEFAULT NULL COMMENT '内部订单号',
   `wx_order_no` varchar(128) DEFAULT NULL COMMENT '微信订单号',
-  `product_id` varchar(128) DEFAULT NULL COMMENT '产品号码',
   `alipay_order_no` varchar(128) DEFAULT NULL COMMENT '支付宝订单号',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='联盟许可';

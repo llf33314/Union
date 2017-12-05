@@ -5,12 +5,12 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * 入盟申请
+ * 保存入盟申请
  *
  * @author linweicong
  * @version 2017-11-24 15:36:11
  */
-@ApiModel(value = "入盟申请VO")
+@ApiModel(value = "保存入盟申请VO")
 public class MemberJoinCreateVO {
     @ApiModelProperty(value = "商家帐号")
     private String busUserName;

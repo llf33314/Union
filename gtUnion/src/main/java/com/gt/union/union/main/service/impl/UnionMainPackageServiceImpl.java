@@ -3,7 +3,10 @@ package com.gt.union.union.main.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.api.bean.session.BusUser;
+import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
@@ -11,12 +14,15 @@ import com.gt.union.union.main.entity.UnionMainPackage;
 import com.gt.union.union.main.mapper.UnionMainPackageMapper;
 import com.gt.union.union.main.service.IUnionMainPackageService;
 import com.gt.union.union.main.util.UnionMainPackageCacheUtil;
+import com.gt.union.union.main.vo.UnionPackageVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 盟主服务套餐 服务实现类
@@ -27,11 +33,65 @@ import java.util.List;
 @Service
 public class UnionMainPackageServiceImpl extends ServiceImpl<UnionMainPackageMapper, UnionMainPackage> implements IUnionMainPackageService {
     @Autowired
-    public RedisCacheUtil redisCacheUtil;
+    private RedisCacheUtil redisCacheUtil;
+
+    @Autowired
+    private IBusUserService busUserService;
 
     //***************************************** Domain Driven Design - get *********************************************
 
+    @Override
+    public UnionMainPackage getByLevel(Integer level) throws Exception {
+        if (level == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionMainPackage> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("level", level)
+                .eq("del_status", CommonConstant.COMMON_NO);
+
+        return selectOne(entityWrapper);
+    }
+
+    @Override
+    public UnionPackageVO getUnionPackageVOByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        UnionPackageVO result = new UnionPackageVO();
+
+        // TODO 这里少个接口
+        Map<String, String> basicMap = new HashMap<>(16);
+        result.setBusVersionName(basicMap.get("busVersionName"));
+        result.setUnionVersionName(basicMap.get("unionVersionName"));
+
+        BusUser busUser = busUserService.getBusUserById(busId);
+        if (busUser == null) {
+            throw new BusinessException(CommonConstant.UNION_BUS_NOT_FOUND);
+        }
+        List<UnionMainPackage> packageList = listByLevel(busUser.getLevel());
+        result.setPackageList(packageList);
+
+        return result;
+    }
+
+
     //***************************************** Domain Driven Design - list ********************************************
+
+    @Override
+    public List<UnionMainPackage> listByLevel(Integer level) throws Exception {
+        if (level == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionMainPackage> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("level", level)
+                .eq("del_status", CommonConstant.COMMON_NO)
+                .orderBy("year", true);
+
+        return selectList(entityWrapper);
+    }
 
     //***************************************** Domain Driven Design - save ********************************************
 
@@ -45,6 +105,7 @@ public class UnionMainPackageServiceImpl extends ServiceImpl<UnionMainPackageMap
 
     //***************************************** Object As a Service - get **********************************************
 
+    @Override
     public UnionMainPackage getById(Integer id) throws Exception {
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -218,4 +279,5 @@ public class UnionMainPackageServiceImpl extends ServiceImpl<UnionMainPackageMap
         }
         return result;
     }
+
 }

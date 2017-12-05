@@ -81,9 +81,9 @@ public class UnionMainPermit extends Model<UnionMainPermit> {
     private Integer orderStatus;
 
     /**
-     * 支付方式(1:微信支付 2:粉币支付 3:支付宝支付)
+     * 支付方式(1:微信支付 2:支付宝支付)
      */
-    @ApiModelProperty(value = "支付方式(1:微信支付 2:粉币支付 3:支付宝支付)")
+    @ApiModelProperty(value = "支付方式(1:微信支付 2:支付宝支付)")
     @TableField("pay_type")
     private Integer payType;
 
@@ -100,13 +100,6 @@ public class UnionMainPermit extends Model<UnionMainPermit> {
     @ApiModelProperty(value = "微信订单号")
     @TableField("wx_order_no")
     private String wxOrderNo;
-
-    /**
-     * 产品号码
-     */
-    @ApiModelProperty(value = "产品号码")
-    @TableField("product_id")
-    private String productId;
 
     /**
      * 支付宝订单号
@@ -202,14 +195,6 @@ public class UnionMainPermit extends Model<UnionMainPermit> {
 
     public void setWxOrderNo(String wxOrderNo) {
         this.wxOrderNo = wxOrderNo;
-    }
-
-    public String getProductId() {
-        return productId;
-    }
-
-    public void setProductId(String productId) {
-        this.productId = productId;
     }
 
     public String getAlipayOrderNo() {

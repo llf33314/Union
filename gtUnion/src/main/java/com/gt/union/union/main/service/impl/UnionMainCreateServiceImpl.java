@@ -3,14 +3,22 @@ package com.gt.union.union.main.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.api.bean.session.BusUser;
+import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
+import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.StringUtil;
 import com.gt.union.union.main.entity.UnionMainCreate;
+import com.gt.union.union.main.entity.UnionMainPackage;
+import com.gt.union.union.main.entity.UnionMainPermit;
 import com.gt.union.union.main.mapper.UnionMainCreateMapper;
 import com.gt.union.union.main.service.IUnionMainCreateService;
+import com.gt.union.union.main.service.IUnionMainPackageService;
+import com.gt.union.union.main.service.IUnionMainPermitService;
 import com.gt.union.union.main.util.UnionMainCreateCacheUtil;
 import com.gt.union.union.main.vo.UnionPermitCheckVO;
 import com.gt.union.union.member.entity.UnionMember;
@@ -19,8 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * 联盟创建 服务实现类
@@ -32,9 +39,18 @@ import java.util.List;
 public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMapper, UnionMainCreate> implements IUnionMainCreateService {
     @Autowired
     private RedisCacheUtil redisCacheUtil;
-    
+
     @Autowired
     private IUnionMemberService unionMemberService;
+
+    @Autowired
+    private IUnionMainPermitService unionMainPermitService;
+
+    @Autowired
+    private IBusUserService busUserService;
+
+    @Autowired
+    private IUnionMainPackageService unionMainPackageService;
 
     //***************************************** Domain Driven Design - get *********************************************
 
@@ -43,17 +59,64 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        
+
         // （1）	判断是否已是盟主，如果是，报错
         UnionMember busOwnerMember = unionMemberService.getOwnerByBusId(busId);
         if (busOwnerMember != null) {
             throw new BusinessException("已具有盟主身份，无法同时创建多个联盟");
         }
+
+        // （2）	判断是否有联盟基础服务（调接口），如果没有，报错
+        // TODO 这里少个接口
+        Map<String, String> basicMap = new HashMap<>(16);
+        String isAuthority = basicMap.get("isAuthority");
+        if (StringUtil.isEmpty(isAuthority) || isAuthority.equals(CommonConstant.COMMON_NO)) {
+            throw new BusinessException("不具有联盟基础服务");
+        }
+
+        // （3）	判断是否需要付费，
+        // 如果需要付费，判断是否已购买联盟盟主服务，如果已购买，则返回；如果未购买，则进入购买页面；
+        // 如果不需要付费，则判断是否已有免费联盟盟主服务，若没有则新增，返回
+        String isPay = basicMap.get("isPay");
+        UnionMainPermit permit = unionMainPermitService.getValidByBusId(busId);
+        UnionPermitCheckVO result = new UnionPermitCheckVO();
+        if (StringUtil.isEmpty(isPay) || isPay.equals(CommonConstant.COMMON_YES)) {
+            if (permit == null) {
+                result.setIsPay(CommonConstant.COMMON_YES);
+            } else {
+                result.setIsPay(CommonConstant.COMMON_NO);
+                result.setPermitId(permit.getId());
+            }
+        } else {
+            if (permit == null) {
+                BusUser busUser = busUserService.getBusUserById(busId);
+                if (busUser == null) {
+                    throw new BusinessException(CommonConstant.UNION_BUS_NOT_FOUND);
+                }
+                UnionMainPackage unionPackage = unionMainPackageService.getByLevel(busUser.getLevel());
+                if (unionPackage == null) {
+                    throw new BusinessException("找不到商家等级为" + busUser.getLevel() + "的联盟套餐");
+                }
+                UnionMainPermit savePermit = new UnionMainPermit();
+                savePermit.setBusId(busId);
+                Date currentDate = DateUtil.getCurrentDate();
+                savePermit.setCreateTime(currentDate);
+                savePermit.setValidity(DateUtil.addYears(currentDate, 10));
+                savePermit.setPackageId(unionPackage.getId());
+                savePermit.setDelStatus(CommonConstant.COMMON_NO);
+                unionMainPermitService.save(savePermit);
+
+                result.setIsPay(CommonConstant.COMMON_NO);
+                result.setPermitId(savePermit.getId());
+            } else {
+                result.setIsPay(CommonConstant.COMMON_NO);
+                result.setPermitId(permit.getId());
+            }
+        }
         
-        // TODO
-        return null;
+        return result;
     }
-    
+
     //***************************************** Domain Driven Design - list ********************************************
 
     //***************************************** Domain Driven Design - save ********************************************
@@ -373,5 +436,5 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         }
         return result;
     }
-    
+
 }
