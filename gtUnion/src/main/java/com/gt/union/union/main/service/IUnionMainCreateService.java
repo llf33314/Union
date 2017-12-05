@@ -2,6 +2,7 @@ package com.gt.union.union.main.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.union.main.entity.UnionMainCreate;
+import com.gt.union.union.main.vo.UnionCreateVO;
 import com.gt.union.union.main.vo.UnionPermitCheckVO;
 
 /**
@@ -15,15 +16,25 @@ public interface IUnionMainCreateService extends IService<UnionMainCreate> {
 
     /**
      * 检查联盟许可
+     *
      * @param busId 商家id
      * @return UnionPermitCheckVO
      * @throws Exception 统一处理异常
      */
     UnionPermitCheckVO getPermitCheckVOByBusId(Integer busId) throws Exception;
-    
+
     //***************************************** Domain Driven Design - list ********************************************
 
     //***************************************** Domain Driven Design - save ********************************************
+
+    /**
+     * 保存新建联盟
+     *
+     * @param busId 商家id
+     * @param vo    表单信息
+     * @throws Exception
+     */
+    void saveUnionCreateVOByBusId(Integer busId, UnionCreateVO vo) throws Exception;
 
     //***************************************** Domain Driven Design - remove ******************************************
 

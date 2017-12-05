@@ -6,9 +6,11 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
+import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.StringUtil;
+import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.member.constant.MemberConstant;
 import com.gt.union.union.member.entity.UnionMember;
@@ -237,6 +239,110 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
 
     //***************************************** Domain Driven Design - update ******************************************
 
+    @Override
+    public void updateByIdAndBusIdAndUnionId(Integer memberId, Integer busId, Integer unionId, UnionMember vo) throws Exception {
+        if (memberId == null || busId == null || unionId == null || vo == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member写权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = getWriteByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+        }
+        // （2）	判断memberId有效性
+        if (!member.getId().equals(memberId)) {
+            throw new BusinessException("参数memberId无效");
+        }
+        // （3）	校验表单
+        UnionMember updateMember = new UnionMember();
+        updateMember.setId(memberId);
+        updateMember.setModifyTime(DateUtil.getCurrentDate());
+        // （3-1）企业名称
+        String memberEnterpriseName = vo.getEnterpriseName();
+        if (StringUtil.isEmpty(memberEnterpriseName)) {
+            throw new BusinessException("企业名称不能为空");
+        }
+        if (StringUtil.getStringLength(memberEnterpriseName) > 10) {
+            throw new BusinessException("企业名称字数不能大于10");
+        }
+        updateMember.setEnterpriseName(memberEnterpriseName);
+        // （3-2）企业地址
+        String memberEnterpriseAddress = vo.getEnterpriseAddress();
+        if (StringUtil.isEmpty(memberEnterpriseAddress)) {
+            throw new BusinessException("企业地址不能为空");
+        }
+        updateMember.setEnterpriseAddress(memberEnterpriseAddress);
+        // （3-3）负责人名称
+        String memberDirectorName = vo.getDirectorName();
+        if (StringUtil.isEmpty(memberDirectorName)) {
+            throw new BusinessException("负责人名称不能为空");
+        }
+        if (StringUtil.getStringLength(memberDirectorName) > 10) {
+            throw new BusinessException("负责人名称字数不能大于10");
+        }
+        updateMember.setDirectorName(memberDirectorName);
+        // （3-4）负责人联系电话
+        String memberDirectorPhone = vo.getDirectorPhone();
+        if (StringUtil.isEmpty(memberDirectorPhone)) {
+            throw new BusinessException("负责人联系电话不能为空");
+        }
+        if (!StringUtil.isPhone(memberDirectorPhone)) {
+            throw new BusinessException("负责人联系电话参数值有误");
+        }
+        updateMember.setDirectorPhone(memberDirectorPhone);
+        // （3-5）负责人邮箱
+        String memberDirectorEmail = vo.getDirectorEmail();
+        if (StringUtil.isEmpty(memberDirectorEmail)) {
+            throw new BusinessException("负责人联系邮箱不能为空");
+        }
+        if (!StringUtil.isEmail(memberDirectorEmail)) {
+            throw new BusinessException("负责人联系邮箱参数值有误");
+        }
+        updateMember.setDirectorEmail(memberDirectorEmail);
+        // （3-6）地址经纬度
+        String memberAddressLongitude = vo.getAddressLongitude();
+        String memberAddressLatitude = vo.getAddressLatitude();
+        if (StringUtil.isEmpty(memberAddressLongitude) || StringUtil.isEmpty(memberAddressLatitude)) {
+            throw new BusinessException("地址经纬度不能为空");
+        }
+        updateMember.setAddressLongitude(memberAddressLongitude);
+        updateMember.setAddressLatitude(memberAddressLatitude);
+        // （3-7）地址编码
+        String memberAddressProvinceCode = vo.getAddressProvinceCode();
+        String memberAddressCityCode = vo.getAddressCityCode();
+        String memberAddressDistrictCode = vo.getAddressDistrictCode();
+        if (StringUtil.isEmpty(memberAddressProvinceCode) || StringUtil.isEmpty(memberAddressCityCode) || StringUtil.isEmpty(memberAddressDistrictCode)) {
+            throw new BusinessException("地址编码不能为空");
+        }
+        updateMember.setAddressProvinceCode(memberAddressProvinceCode);
+        updateMember.setAddressCityCode(memberAddressCityCode);
+        updateMember.setAddressDistrictCode(memberAddressDistrictCode);
+        // （3-8）短信通知手机
+        String memberNotifyPhone = vo.getNotifyPhone();
+        if (StringUtil.isEmpty(memberNotifyPhone)) {
+            throw new BusinessException("短信通知手机不能为空");
+        }
+        if (StringUtil.isPhone(memberNotifyPhone)) {
+            throw new BusinessException("短信通知手机参数值有误");
+        }
+        updateMember.setNotifyPhone(memberNotifyPhone);
+
+        // （4-14）积分抵扣率
+        UnionMain union = unionMainService.getById(unionId);
+        if (CommonConstant.COMMON_YES == union.getIsIntegral()) {
+            Double memberIntegralExchangeRatio = vo.getIntegralExchangeRatio();
+            if (memberIntegralExchangeRatio == null || memberIntegralExchangeRatio <= 0 || memberIntegralExchangeRatio > 30) {
+                throw new BusinessException("积分抵扣率不能小于等于0，且不能大于30");
+            }
+            updateMember.setIntegralExchangeRatio(memberIntegralExchangeRatio);
+        }
+        
+        update(updateMember);
+    }
+
     //***************************************** Domain Driven Design - count *******************************************
 
     //***************************************** Domain Driven Design - boolean *****************************************
@@ -360,6 +466,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
 
     //***************************************** Object As a Service - save *********************************************
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void save(UnionMember newUnionMember) throws Exception {
         if (newUnionMember == null) {

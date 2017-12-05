@@ -2,6 +2,7 @@ package com.gt.union.union.main.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.union.main.entity.UnionMain;
+import com.gt.union.union.main.vo.UnionMainVO;
 
 /**
  * 联盟 服务接口
@@ -21,13 +22,41 @@ public interface IUnionMainService extends IService<UnionMain> {
      */
     UnionMain getById(Integer unionId) throws Exception;
 
+    /**
+     * 根据联盟id，获取联盟基础信息
+     *
+     * @param unionId 联盟id
+     * @param busId   商家id
+     * @return UnionMainVO
+     * @throws Exception 统一处理异常
+     */
+    UnionMainVO getUnionMainVOByIdAndBusId(Integer unionId, Integer busId) throws Exception;
+
     //***************************************** Domain Driven Design - list ********************************************
 
     //***************************************** Domain Driven Design - save ********************************************
 
+    /**
+     * 保存新增联盟
+     *
+     * @param saveUnion 新增联盟
+     * @throws Exception Exception 统一处理异常
+     */
+    void save(UnionMain saveUnion) throws Exception;
+
     //***************************************** Domain Driven Design - remove ******************************************
 
     //***************************************** Domain Driven Design - update ******************************************
+
+    /**
+     * 更新联盟基础信息
+     *
+     * @param unionId 联盟id
+     * @param busId   商家id
+     * @param vo      更新内容
+     * @throws Exception 统一处理异常
+     */
+    void updateUnionMainVOByIdAndBusId(Integer unionId, Integer busId, UnionMainVO vo) throws Exception;
 
     //***************************************** Domain Driven Design - count *******************************************
 

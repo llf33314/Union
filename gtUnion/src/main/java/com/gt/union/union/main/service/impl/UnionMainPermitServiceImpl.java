@@ -1,6 +1,7 @@
 package com.gt.union.union.main.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.api.client.pay.WxPayService;
@@ -16,13 +17,12 @@ import com.gt.union.union.main.service.IUnionMainPackageService;
 import com.gt.union.union.main.service.IUnionMainPermitService;
 import com.gt.union.union.main.util.UnionMainPermitCacheUtil;
 import com.gt.union.union.main.vo.UnionPermitPayVO;
+import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 联盟许可 服务实现类
@@ -32,6 +32,9 @@ import java.util.List;
  */
 @Service
 public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMapper, UnionMainPermit> implements IUnionMainPermitService {
+
+    private Logger logger = Logger.getLogger(UnionMainPermitServiceImpl.class);
+
     @Autowired
     private RedisCacheUtil redisCacheUtil;
 
@@ -52,6 +55,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         EntityWrapper<UnionMainPermit> entityWrapper = new EntityWrapper<>();
         entityWrapper.ge("validity", DateUtil.getCurrentDate())
                 .eq("bus_id", busId)
+                .eq("order_status", UnionConstant.PERMIT_ORDER_STATUS_PAY_SUCCESS)
                 .eq("del_status", CommonConstant.COMMON_NO);
 
         return selectOne(entityWrapper);
@@ -90,12 +94,12 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
 
         // （3）	调用接口，返回支付链接
         UnionPermitPayVO result = new UnionPermitPayVO();
-        String notifyUrl = PropertiesUtil.getUnionUrl() + "/unionMainPermit/" + savePermit.getId() + "/pay/callback";
+        String socketKey = PropertiesUtil.getSocketKey() + "Permit_" + DateUtil.getSerialNumber();
+        String notifyUrl = PropertiesUtil.getUnionUrl() + "/unionMainPermit/" + savePermit.getId() + "/pay/callback?socketKey=" + socketKey;
         String payUrl = wxPayService.qrCodePay(savePermit.getOrderMoney(), null, savePermit.getSysOrderNo(),
                 null, CommonConstant.COMMON_NO, null, notifyUrl, CommonConstant.COMMON_NO,
                 null, 0, null);
         result.setPayUrl(payUrl);
-        String socketKey = PropertiesUtil.getSocketKey() + "Permit_" + System.currentTimeMillis();
         result.setSocketKey(socketKey);
 
         return result;
@@ -104,6 +108,66 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
     //***************************************** Domain Driven Design - remove ******************************************
 
     //***************************************** Domain Driven Design - update ******************************************
+
+    @Override
+    public String updateCallbackByPermitId(Integer permitId, String socketKey, String payType, String orderNo, Integer isSuccess) {
+        Map<String, Object> result = new HashMap<>(2);
+        if (permitId == null || socketKey == null || payType == null || orderNo == null || isSuccess == null) {
+            result.put("code", -1);
+            result.put("msg", "参数缺少");
+            return JSONObject.toJSONString(result);
+        }
+
+        // （1）	判断permitId有效性
+        UnionMainPermit permit;
+        try {
+            permit = getById(permitId);
+        } catch (Exception e) {
+            logger.error("", e);
+            result.put("code", -1);
+            result.put("msg", "根据参数permitId获取permit对象失败");
+            return JSONObject.toJSONString(result);
+        }
+        if (permit == null) {
+            result.put("code", -1);
+            result.put("msg", "参数permitId错误");
+            return JSONObject.toJSONString(result);
+        }
+        // （2）	如果permit不是未支付状态，则socket通知，并返回处理成功
+        // （3）	否则，更新permit为支付成功状态，且socket通知，并返回处理成功
+        Integer orderStatus = permit.getOrderStatus();
+        if (orderStatus == UnionConstant.PERMIT_ORDER_STATUS_PAY_SUCCESS
+                || orderStatus == UnionConstant.PERMIT_ORDER_STATUS_PAY_FAIL) {
+            // TODO socket通知
+            result.put("code", 0);
+            result.put("msg", "已处理过");
+            return JSONObject.toJSONString(result);
+        } else {
+            UnionMainPermit updatePermit = new UnionMainPermit();
+            updatePermit.setId(permitId);
+            updatePermit.setOrderStatus(isSuccess == CommonConstant.COMMON_YES
+                    ? UnionConstant.PERMIT_ORDER_STATUS_PAY_SUCCESS : UnionConstant.PERMIT_ORDER_STATUS_PAY_FAIL);
+            if (payType.equals("0")) {
+                updatePermit.setWxOrderNo(orderNo);
+            } else {
+                updatePermit.setAlipayOrderNo(orderNo);
+            }
+
+            try {
+                update(updatePermit);
+            } catch (Exception e) {
+                logger.error("", e);
+                result.put("code", -1);
+                result.put("msg", "更新permit对象失败");
+                return JSONObject.toJSONString(result);
+            }
+
+            // TODO socket通知
+            result.put("code", 0);
+            result.put("msg", "成功");
+            return JSONObject.toJSONString(result);
+        }
+    }
 
     //***************************************** Domain Driven Design - count *******************************************
 

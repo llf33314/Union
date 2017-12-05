@@ -124,17 +124,36 @@ public interface IUnionMemberService extends IService<UnionMember> {
 
     //***************************************** Domain Driven Design - save ********************************************
 
+    /**
+     * 保存新增盟员
+     *
+     * @param saveMember 新增盟员
+     * @throws Exception Exception
+     */
+    void save(UnionMember saveMember) throws Exception;
+
     //***************************************** Domain Driven Design - remove ******************************************
 
     //***************************************** Domain Driven Design - update ******************************************
 
     /**
-     * 自定义更新
+     * 更新盟员
      *
      * @param unionMember 盟员
      * @throws Exception 统一处理异常
      */
     void update(UnionMember unionMember) throws Exception;
+
+    /**
+     * 跟新盟员
+     *
+     * @param memberId     盟员id
+     * @param busId        商家id
+     * @param unionId      联盟id
+     * @param vo 更新内容
+     * @throws Exception 统一处理异常
+     */
+    void updateByIdAndBusIdAndUnionId(Integer memberId, Integer busId, Integer unionId, UnionMember vo) throws Exception;
 
     //***************************************** Domain Driven Design - count *******************************************
 

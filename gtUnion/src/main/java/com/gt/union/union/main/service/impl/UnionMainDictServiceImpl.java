@@ -68,6 +68,7 @@ public class UnionMainDictServiceImpl extends ServiceImpl<UnionMainDictMapper, U
 
     //***************************************** Object As a Service - list *********************************************
 
+    @Override
     public List<UnionMainDict> listByUnionId(Integer unionId) throws Exception {
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -99,6 +100,7 @@ public class UnionMainDictServiceImpl extends ServiceImpl<UnionMainDictMapper, U
         removeCache(newUnionMainDict);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveBatch(List<UnionMainDict> newUnionMainDictList) throws Exception {
         if (newUnionMainDictList == null) {

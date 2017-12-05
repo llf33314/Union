@@ -56,15 +56,16 @@ public class UnionMainCreateController {
 
     @ApiOperation(value = "保存：创建联盟", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> save(
+    public GtJsonResult<String> saveUnionCreateVO(
             HttpServletRequest request,
             @ApiParam(value = "表单信息", name = "unionCreateVO", required = true)
             @RequestBody UnionCreateVO unionCreateVO) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
+        unionMainCreateService.saveUnionCreateVOByBusId(busId, unionCreateVO);
         return GtJsonResult.instanceSuccessMsg();
     }
 }

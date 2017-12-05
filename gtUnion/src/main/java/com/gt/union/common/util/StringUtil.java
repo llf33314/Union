@@ -1,5 +1,7 @@
 package com.gt.union.common.util;
 
+import java.util.regex.Pattern;
+
 /**
  * 字符串工具类
  *
@@ -7,6 +9,9 @@ package com.gt.union.common.util;
  * @version 2017-11-22 17:45:00
  */
 public class StringUtil {
+    private static String PHONE_PATTERN = "^1[3|4|5|6|7|8][0-9][0-9]{8}$";
+    private static String EMAIL_PATTERN = "^[A-Za-z0-9\\u4e00-\\u9fa5]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$";
+
     /**
      * 判断字符串是否为空，如为空，则返回true，否则返回false
      *
@@ -54,5 +59,25 @@ public class StringUtil {
             }
         }       //进位取整
         return Math.ceil(valueLength);
+    }
+
+    /**
+     * 正则判断是否是手机号
+     *
+     * @param str 要判断的字符串
+     * @return boolean
+     */
+    public static boolean isPhone(String str) {
+        return Pattern.matches(PHONE_PATTERN, str);
+    }
+
+    /**
+     * 正则判断是否是邮箱
+     *
+     * @param str 要判断的字符串
+     * @return boolean
+     */
+    public static boolean isEmail(String str) {
+        return Pattern.matches(EMAIL_PATTERN, str);
     }
 }
