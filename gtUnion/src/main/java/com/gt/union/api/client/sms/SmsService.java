@@ -16,4 +16,13 @@ public interface SmsService {
 	 * @return
 	 */
 	boolean sendSms(PhoneMessage phoneMessage);
+
+	/**
+	 * 校验验证码
+	 * @param type	验证码模块类型 1：联盟卡登录 2：办理联盟卡 3：佣金平台登录 4：联盟卡绑定 5：佣金平台管理员
+	 * @param code	验证码
+	 * @param phone	手机号
+	 * @return
+	 */
+	boolean checkPhoneCode(Integer type, String code, String phone);
 }
