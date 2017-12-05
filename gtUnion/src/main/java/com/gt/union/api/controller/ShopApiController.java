@@ -35,7 +35,7 @@ public class ShopApiController {
 	@Autowired
 	private PhoneMessageSender sender;
 
-	@ApiOperation(value = "获取门店列表信息", produces = "application/json;charset=UTF-8")
+	@ApiOperation(value = "获取商家门店列表信息", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public GtJsonResult<List<ShopVO>> getBasicVOById(HttpServletRequest request) throws Exception {
 		BusUser busUser = SessionUtils.getLoginUser(request);

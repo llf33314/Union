@@ -44,7 +44,7 @@ public interface IBusUserService {
 	/**
 	 * 根据商家id获取联盟权限
 	 * @param busId		商家id
-	 * @return authority：联盟权限 1：有 0：无  pay：是否支付 1：需要支付 0：不需支付  versionName:商家的联盟版本名称  无，盟员版，盟主版
+	 * @return authority：联盟权限 1：有 0：无  pay：是否支付 1：需要支付 0：不需支付  versionName:商家的联盟版本名称  无，盟员版，盟主版   busVersionName：商家版本名称
 	 */
 	Map<String,Object> getUserUnionAuthority(Integer busId);
 
@@ -54,5 +54,7 @@ public interface IBusUserService {
 	 * @return
 	 */
 	BusUser getBusUserByPhone(String phone);
+
+
 
 }
