@@ -15,7 +15,6 @@
         <result column="pay_type" property="payType"/>
         <result column="sys_order_no" property="sysOrderNo"/>
         <result column="wx_order_no" property="wxOrderNo"/>
-        <result column="product_id" property="productId"/>
         <result column="alipay_order_no" property="alipayOrderNo"/>
     </resultMap>
 

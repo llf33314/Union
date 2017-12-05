@@ -3,18 +3,19 @@ package com.gt.union.union.main.controller;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
+import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
-import com.gt.union.common.util.MockUtil;
+import com.gt.union.union.main.service.IUnionMainPermitService;
 import com.gt.union.union.main.vo.UnionPermitPayVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 
 /**
  * 联盟许可 前端控制器
@@ -26,6 +27,9 @@ import javax.servlet.http.HttpServletRequest;
 @RestController
 @RequestMapping("/unionMainPermit")
 public class UnionMainPermitController {
+
+    @Autowired
+    private IUnionMainPermitService unionMainPermitService;
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
@@ -42,25 +46,22 @@ public class UnionMainPermitController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
         // mock
-        UnionPermitPayVO payVO = MockUtil.get(UnionPermitPayVO.class);
-        return GtJsonResult.instanceSuccessMsg(payVO);
+//        UnionPermitPayVO result = MockUtil.get(UnionPermitPayVO.class);
+        UnionPermitPayVO result = unionMainPermitService.saveByBusIdAndPackageId(busId, packageId);
+        return GtJsonResult.instanceSuccessMsg(result);
     }
 
     @ApiOperation(value = "购买联盟盟主服务-支付-回调", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{permitId}/pay/callback", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public GtJsonResult updateCallbackByPermitId(
-            HttpServletRequest request,
+    @RequestMapping(value = "/79B4DE7C/{permitId}/pay/callback", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public String updateCallbackByPermitId(
             @ApiParam(value = "联盟许可id", name = "permitId", required = true)
-            @PathVariable("permitId") Integer permitId) throws Exception {
-        BusUser busUser = SessionUtils.getLoginUser(request);
-        Integer busId = busUser.getId();
-        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
-        }
-        return GtJsonResult.instanceSuccessMsg();
+            @PathVariable("permitId") Integer permitId,
+            @RequestBody Map<String, Object> param) throws Exception {
+        
+        return "";
     }
 
 }
