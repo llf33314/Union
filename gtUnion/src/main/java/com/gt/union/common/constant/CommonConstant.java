@@ -60,7 +60,7 @@ public interface CommonConstant {
     /**
      * 联盟已过期
      */
-    String UNION_INVALID = "联盟已过期";
+    String UNION_INVALID = "联盟不存在或已过期";
 
     /**
      * 不具有读权限，只有已加盟、申请退盟状态和退盟过渡期才有，未加盟、申请加盟和已退盟不具有

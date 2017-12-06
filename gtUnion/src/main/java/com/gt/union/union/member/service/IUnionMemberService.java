@@ -53,25 +53,45 @@ public interface IUnionMemberService extends IService<UnionMember> {
     UnionMember getOwnerByBusId(Integer busId) throws Exception;
 
     /**
-     * 商家获取指定盟员信息
+     * controller专用：商家获取指定盟员信息
      *
      * @param memberId 盟员id
-     * @param busId    商家id
      * @param unionId  联盟id
+     * @param busId    商家id
      * @return UnionMember
      * @throws Exception 统一处理异常
      */
-    UnionMember getByIdAndBusIdAndUnionId(Integer memberId, Integer busId, Integer unionId) throws Exception;
+    UnionMember getByIdAndUnionIdAndBusId(Integer memberId, Integer unionId, Integer busId) throws Exception;
 
     /**
-     * 根据盟员id和联盟id，获取盟员信息
+     * 根据盟员id和联盟id，获取读权限盟员信息
      *
      * @param memberId 盟员id
      * @param unionId  联盟id
      * @return UnionMember
      * @throws Exception 统一处理异常
      */
-    UnionMember getByIdAndUnionId(Integer memberId, Integer unionId) throws Exception;
+    UnionMember getReadByIdAndUnionId(Integer memberId, Integer unionId) throws Exception;
+
+    /**
+     * 根据盟员id和联盟id，获取写权限盟员信息
+     *
+     * @param memberId 盟员id
+     * @param unionId  联盟id
+     * @return UnionMember
+     * @throws Exception 统一处理异常
+     */
+    UnionMember getWriteByIdAndUnionId(Integer memberId, Integer unionId) throws Exception;
+
+    /**
+     * 根据盟员id和联盟id，获取申请状态中的盟员信息
+     *
+     * @param memberId 盟员id
+     * @param unionId  联盟id
+     * @return UnionMember
+     * @throws Exception 统一处理异常
+     */
+    UnionMember getApplyByIdAndUnionId(Integer memberId, Integer unionId) throws Exception;
 
     //***************************************** Domain Driven Design - list ********************************************
 
@@ -112,7 +132,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     List<UnionMember> listWriteByUnionId(Integer unionId) throws Exception;
 
     /**
-     * 获取联盟中所有具有写权限的盟员身份信息，并按盟主>商家盟员>其他盟员，其他盟员按时间顺序排序
+     * controller专用：获取联盟中所有具有写权限的盟员身份信息，并按盟主>商家盟员>其他盟员，其他盟员按时间顺序排序
      *
      * @param busId         商家id
      * @param unionId       联盟id
@@ -145,17 +165,37 @@ public interface IUnionMemberService extends IService<UnionMember> {
     void update(UnionMember unionMember) throws Exception;
 
     /**
-     * 跟新盟员
+     * 更新盟员
      *
-     * @param memberId     盟员id
-     * @param busId        商家id
-     * @param unionId      联盟id
-     * @param vo 更新内容
+     * @param memberId 盟员id
+     * @param unionId  联盟id
+     * @param busId    商家id
+     * @param vo       更新内容
      * @throws Exception 统一处理异常
      */
-    void updateByIdAndBusIdAndUnionId(Integer memberId, Integer busId, Integer unionId, UnionMember vo) throws Exception;
+    void updateByIdAndUnionIdAndBusId(Integer memberId, Integer unionId, Integer busId, UnionMember vo) throws Exception;
+
+    /**
+     * 更新盟员折扣
+     *
+     * @param memberId 盟员id
+     * @param unionId  联盟id
+     * @param busId    商家id
+     * @param discount 折扣
+     * @throws Exception
+     */
+    void updateDiscountByIdAndUnionIdAndBusId(Integer memberId, Integer unionId, Integer busId, Double discount) throws Exception;
 
     //***************************************** Domain Driven Design - count *******************************************
+
+    /**
+     * 统计商家已入盟或创建的联盟盟员数
+     *
+     * @param busId 商家id
+     * @return Integer
+     * @throws Exception 统一处理异常
+     */
+    Integer countReadByBusId(Integer busId) throws Exception;
 
     //***************************************** Domain Driven Design - boolean *****************************************
 

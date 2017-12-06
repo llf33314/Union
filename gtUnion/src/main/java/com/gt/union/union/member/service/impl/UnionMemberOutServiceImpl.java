@@ -68,7 +68,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         }
 
         // （1）	判断union有效性和member写权限、盟主权限
-        if (unionMainService.isUnionValid(unionId)) {
+        if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
         UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
@@ -80,7 +80,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         }
 
         // （2）	判断applyMemberId有效性
-        UnionMember applyMember = unionMemberService.getByIdAndUnionId(applyMemberId, unionId);
+        UnionMember applyMember = unionMemberService.getReadByIdAndUnionId(applyMemberId, unionId);
         if (applyMember == null) {
             throw new BusinessException("要移出的盟员不存在");
         }

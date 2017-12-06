@@ -3,6 +3,7 @@ package com.gt.union.card.main.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.card.constant.CardConstant;
 import com.gt.union.card.main.entity.UnionCard;
 import com.gt.union.card.main.mapper.UnionCardMapper;
 import com.gt.union.card.main.service.IUnionCardService;
@@ -30,7 +31,7 @@ import java.util.List;
 @Service
 public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard> implements IUnionCardService {
     @Autowired
-    public RedisCacheUtil redisCacheUtil;
+    private RedisCacheUtil redisCacheUtil;
 
     //***************************************** Domain Driven Design - get *********************************************
 
@@ -63,6 +64,19 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 .eq("del_status", CommonConstant.COMMON_NO);
 
         return selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionCard> listByActivityIdAndUnionId(Integer activityId, Integer unionId) throws Exception {
+        if (activityId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCard> result = listByActivityId(activityId);
+        result = filterByType(result, CardConstant.CARD_TYPE_ACTIVITY);
+
+
+        return null;
     }
 
     //***************************************** Domain Driven Design - save ********************************************
@@ -107,6 +121,17 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         return bigDecimal.doubleValue();
     }
 
+    @Override
+    public Integer countByActivityIdAndUnionId(Integer activityId, Integer unionId) throws Exception {
+        if (activityId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCard> cardList = listByActivityIdAndUnionId(activityId, unionId);
+
+        return ListUtil.isNotEmpty(cardList) ? cardList.size() : 0;
+    }
+
     //***************************************** Domain Driven Design - boolean *****************************************
 
     //***************************************** Domain Driven Design - filter ******************************************
@@ -120,6 +145,22 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         List<UnionCard> result = new ArrayList<>();
         for (UnionCard card : cardList) {
             if (type.equals(card.getType())) {
+                result.add(card);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionCard> filterByUnionId(List<UnionCard> cardList, Integer unionId) throws Exception {
+        if (cardList == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCard> result = new ArrayList<>();
+        for (UnionCard card : cardList) {
+            if (unionId.equals(card.getUnionId())) {
                 result.add(card);
             }
         }

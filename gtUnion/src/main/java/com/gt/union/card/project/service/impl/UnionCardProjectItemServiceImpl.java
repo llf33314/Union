@@ -3,6 +3,7 @@ package com.gt.union.card.project.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.card.constant.CardConstant;
 import com.gt.union.card.project.entity.UnionCardProjectItem;
 import com.gt.union.card.project.mapper.UnionCardProjectItemMapper;
 import com.gt.union.card.project.service.IUnionCardProjectItemService;
@@ -32,6 +33,26 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
     //***************************************** Domain Driven Design - get *********************************************
 
     //***************************************** Domain Driven Design - list ********************************************
+
+    @Override
+    public List<UnionCardProjectItem> listItemByProjectId(Integer projectId) throws Exception {
+        if (projectId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCardProjectItem> result = new ArrayList<>();
+        List<UnionCardProjectItem> itemList = listByProjectId(projectId);
+        for (UnionCardProjectItem item : itemList) {
+            if (CardConstant.ITEM_TYPE_ERP_TEXT == item.getType()) {
+                // TODO 这里少了个接口
+            } else if (CardConstant.ITEM_TYPE_ERP_GOODS == item.getType()) {
+                // TODO 这里少了个接口
+            }
+            result.add(item);
+        }
+
+        return result;
+    }
 
     //***************************************** Domain Driven Design - save ********************************************
 
@@ -262,4 +283,5 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
         }
         return result;
     }
+
 }

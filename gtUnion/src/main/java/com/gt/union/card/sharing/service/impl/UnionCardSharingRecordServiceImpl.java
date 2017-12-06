@@ -3,20 +3,27 @@ package com.gt.union.card.sharing.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.card.main.entity.UnionCardFan;
+import com.gt.union.card.main.service.IUnionCardFanService;
 import com.gt.union.card.sharing.entity.UnionCardSharingRecord;
 import com.gt.union.card.sharing.mapper.UnionCardSharingRecordMapper;
 import com.gt.union.card.sharing.service.IUnionCardSharingRecordService;
 import com.gt.union.card.sharing.util.UnionCardSharingRecordCacheUtil;
+import com.gt.union.card.sharing.vo.CardSharingRecordVO;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.StringUtil;
+import com.gt.union.union.main.service.IUnionMainService;
+import com.gt.union.union.member.entity.UnionMember;
+import com.gt.union.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * 联盟卡售卡分成记录 服务实现类
@@ -27,11 +34,88 @@ import java.util.List;
 @Service
 public class UnionCardSharingRecordServiceImpl extends ServiceImpl<UnionCardSharingRecordMapper, UnionCardSharingRecord> implements IUnionCardSharingRecordService {
     @Autowired
-    public RedisCacheUtil redisCacheUtil;
+    private RedisCacheUtil redisCacheUtil;
+
+    @Autowired
+    private IUnionMainService unionMainService;
+
+    @Autowired
+    private IUnionMemberService unionMemberService;
+
+    @Autowired
+    private IUnionCardFanService unionCardFanService;
 
     //***************************************** Domain Driven Design - get *********************************************
 
     //***************************************** Domain Driven Design - list ********************************************
+
+    @Override
+    public List<CardSharingRecordVO> listCardSharingRecordVOByBusIdAndUnionId(
+            Integer busId, Integer unionId, String optCardNumber, Date optBeginTime, Date optEndTime) throws Exception {
+        if (busId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member读权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+        }
+
+        // （2）	按时间倒序排序
+        List<CardSharingRecordVO> result = new ArrayList<>();
+        List<UnionCardSharingRecord> recordList = listBySharingMemberIdAndUnionId(member.getId(), unionId);
+        if (ListUtil.isNotEmpty(recordList)) {
+            for (UnionCardSharingRecord record : recordList) {
+                if (optBeginTime != null && optBeginTime.compareTo(record.getCreateTime()) > 0) {
+                    continue;
+                }
+                if (optEndTime != null && optEndTime.compareTo(record.getCreateTime()) < 0) {
+                    continue;
+                }
+                Integer fanId = record.getFanId();
+                UnionCardFan fan = null;
+                if (StringUtil.isNotEmpty(optCardNumber)) {
+                    if (fanId == null) {
+                        continue;
+                    }
+                    fan = unionCardFanService.getById(fanId);
+                    if (fan == null || StringUtil.isEmpty(fan.getNumber()) || !fan.getNumber().contains(optCardNumber)) {
+                        continue;
+                    }
+                }
+                CardSharingRecordVO vo = new CardSharingRecordVO();
+                vo.setFan(fan);
+                vo.setSharingRecord(record);
+                UnionMember fromMember = unionMemberService.getReadByIdAndUnionId(record.getFromMemberId(), unionId);
+                vo.setMember(fromMember);
+                result.add(vo);
+            }
+        }
+        Collections.sort(result, new Comparator<CardSharingRecordVO>() {
+            @Override
+            public int compare(CardSharingRecordVO o1, CardSharingRecordVO o2) {
+                return o2.getSharingRecord().getCreateTime().compareTo(o1.getSharingRecord().getCreateTime());
+            }
+        });
+
+        return result;
+    }
+
+    @Override
+    public List<UnionCardSharingRecord> listBySharingMemberIdAndUnionId(Integer sharingMemberId, Integer unionId) throws Exception {
+        if (sharingMemberId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCardSharingRecord> result = listBySharingMemberId(sharingMemberId);
+        result = filterByUnionId(result, unionId);
+
+        return result;
+    }
+
 
     //***************************************** Domain Driven Design - save ********************************************
 
@@ -42,6 +126,24 @@ public class UnionCardSharingRecordServiceImpl extends ServiceImpl<UnionCardShar
     //***************************************** Domain Driven Design - count *******************************************
 
     //***************************************** Domain Driven Design - boolean *****************************************
+
+    //***************************************** Domain Driven Design - filter ******************************************
+
+    @Override
+    public List<UnionCardSharingRecord> filterByUnionId(List<UnionCardSharingRecord> recordList, Integer unionId) throws Exception {
+        if (recordList == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCardSharingRecord> result = new ArrayList<>();
+        for (UnionCardSharingRecord record : recordList) {
+            if (unionId.equals(record.getUnionId())) {
+                result.add(record);
+            }
+        }
+
+        return result;
+    }
 
     //***************************************** Object As a Service - get **********************************************
 
@@ -68,24 +170,45 @@ public class UnionCardSharingRecordServiceImpl extends ServiceImpl<UnionCardShar
 
     //***************************************** Object As a Service - list *********************************************
 
-    public List<UnionCardSharingRecord> listByMemberId(Integer memberId) throws Exception {
-        if (memberId == null) {
+    public List<UnionCardSharingRecord> listBySharingMemberId(Integer sharingMemberId) throws Exception {
+        if (sharingMemberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         List<UnionCardSharingRecord> result;
         // (1)cache
-        String memberIdKey = UnionCardSharingRecordCacheUtil.getMemberIdKey(memberId);
-        if (redisCacheUtil.exists(memberIdKey)) {
-            String tempStr = redisCacheUtil.get(memberIdKey);
+        String sharingMemberIdKey = UnionCardSharingRecordCacheUtil.getSharingMemberIdKey(sharingMemberId);
+        if (redisCacheUtil.exists(sharingMemberIdKey)) {
+            String tempStr = redisCacheUtil.get(sharingMemberIdKey);
             result = JSONArray.parseArray(tempStr, UnionCardSharingRecord.class);
             return result;
         }
         // (2)db
         EntityWrapper<UnionCardSharingRecord> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("member_id", memberId)
+        entityWrapper.eq("sharing_member_id", sharingMemberId)
                 .eq("del_status", CommonConstant.COMMON_NO);
         result = selectList(entityWrapper);
-        setCache(result, memberId, UnionCardSharingRecordCacheUtil.TYPE_MEMBER_ID);
+        setCache(result, sharingMemberId, UnionCardSharingRecordCacheUtil.TYPE_SHARING_MEMBER_ID);
+        return result;
+    }
+
+    public List<UnionCardSharingRecord> listByFromMemberId(Integer fromMemberId) throws Exception {
+        if (fromMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionCardSharingRecord> result;
+        // (1)cache
+        String fromMemberIdKey = UnionCardSharingRecordCacheUtil.getFromMemberIdKey(fromMemberId);
+        if (redisCacheUtil.exists(fromMemberIdKey)) {
+            String tempStr = redisCacheUtil.get(fromMemberIdKey);
+            result = JSONArray.parseArray(tempStr, UnionCardSharingRecord.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionCardSharingRecord> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("from_member_id", fromMemberId)
+                .eq("del_status", CommonConstant.COMMON_NO);
+        result = selectList(entityWrapper);
+        setCache(result, fromMemberId, UnionCardSharingRecordCacheUtil.TYPE_FROM_MEMBER_ID);
         return result;
     }
 
@@ -286,8 +409,11 @@ public class UnionCardSharingRecordServiceImpl extends ServiceImpl<UnionCardShar
         }
         String foreignIdKey = null;
         switch (foreignIdType) {
-            case UnionCardSharingRecordCacheUtil.TYPE_MEMBER_ID:
-                foreignIdKey = UnionCardSharingRecordCacheUtil.getMemberIdKey(foreignId);
+            case UnionCardSharingRecordCacheUtil.TYPE_SHARING_MEMBER_ID:
+                foreignIdKey = UnionCardSharingRecordCacheUtil.getSharingMemberIdKey(foreignId);
+                break;
+            case UnionCardSharingRecordCacheUtil.TYPE_FROM_MEMBER_ID:
+                foreignIdKey = UnionCardSharingRecordCacheUtil.getFromMemberIdKey(foreignId);
                 break;
             case UnionCardSharingRecordCacheUtil.TYPE_UNION_ID:
                 foreignIdKey = UnionCardSharingRecordCacheUtil.getUnionIdKey(foreignId);
@@ -317,10 +443,16 @@ public class UnionCardSharingRecordServiceImpl extends ServiceImpl<UnionCardShar
         String idKey = UnionCardSharingRecordCacheUtil.getIdKey(id);
         redisCacheUtil.remove(idKey);
 
-        Integer memberId = unionCardSharingRecord.getMemberId();
-        if (memberId != null) {
-            String memberIdKey = UnionCardSharingRecordCacheUtil.getMemberIdKey(memberId);
-            redisCacheUtil.remove(memberIdKey);
+        Integer sharingMemberId = unionCardSharingRecord.getSharingMemberId();
+        if (sharingMemberId != null) {
+            String sharingMemberIdKey = UnionCardSharingRecordCacheUtil.getSharingMemberIdKey(sharingMemberId);
+            redisCacheUtil.remove(sharingMemberIdKey);
+        }
+
+        Integer fromMemberId = unionCardSharingRecord.getFromMemberId();
+        if (fromMemberId != null) {
+            String fromMemberIdKey = UnionCardSharingRecordCacheUtil.getFromMemberIdKey(fromMemberId);
+            redisCacheUtil.remove(fromMemberIdKey);
         }
 
         Integer unionId = unionCardSharingRecord.getUnionId();
@@ -359,9 +491,14 @@ public class UnionCardSharingRecordServiceImpl extends ServiceImpl<UnionCardShar
         List<String> idKeyList = UnionCardSharingRecordCacheUtil.getIdKey(idList);
         redisCacheUtil.remove(idKeyList);
 
-        List<String> memberIdKeyList = getForeignIdKeyList(unionCardSharingRecordList, UnionCardSharingRecordCacheUtil.TYPE_MEMBER_ID);
-        if (ListUtil.isNotEmpty(memberIdKeyList)) {
-            redisCacheUtil.remove(memberIdKeyList);
+        List<String> sharingMemberIdKeyList = getForeignIdKeyList(unionCardSharingRecordList, UnionCardSharingRecordCacheUtil.TYPE_SHARING_MEMBER_ID);
+        if (ListUtil.isNotEmpty(sharingMemberIdKeyList)) {
+            redisCacheUtil.remove(sharingMemberIdKeyList);
+        }
+
+        List<String> fromMemberIdKeyList = getForeignIdKeyList(unionCardSharingRecordList, UnionCardSharingRecordCacheUtil.TYPE_FROM_MEMBER_ID);
+        if (ListUtil.isNotEmpty(fromMemberIdKeyList)) {
+            redisCacheUtil.remove(fromMemberIdKeyList);
         }
 
         List<String> unionIdKeyList = getForeignIdKeyList(unionCardSharingRecordList, UnionCardSharingRecordCacheUtil.TYPE_UNION_ID);
@@ -388,12 +525,21 @@ public class UnionCardSharingRecordServiceImpl extends ServiceImpl<UnionCardShar
     private List<String> getForeignIdKeyList(List<UnionCardSharingRecord> unionCardSharingRecordList, int foreignIdType) {
         List<String> result = new ArrayList<>();
         switch (foreignIdType) {
-            case UnionCardSharingRecordCacheUtil.TYPE_MEMBER_ID:
+            case UnionCardSharingRecordCacheUtil.TYPE_SHARING_MEMBER_ID:
                 for (UnionCardSharingRecord unionCardSharingRecord : unionCardSharingRecordList) {
-                    Integer memberId = unionCardSharingRecord.getMemberId();
-                    if (memberId != null) {
-                        String memberIdKey = UnionCardSharingRecordCacheUtil.getMemberIdKey(memberId);
-                        result.add(memberIdKey);
+                    Integer sharingMemberId = unionCardSharingRecord.getSharingMemberId();
+                    if (sharingMemberId != null) {
+                        String sharingMemberIdKey = UnionCardSharingRecordCacheUtil.getSharingMemberIdKey(sharingMemberId);
+                        result.add(sharingMemberIdKey);
+                    }
+                }
+                break;
+            case UnionCardSharingRecordCacheUtil.TYPE_FROM_MEMBER_ID:
+                for (UnionCardSharingRecord unionCardSharingRecord : unionCardSharingRecordList) {
+                    Integer fromMemberId = unionCardSharingRecord.getFromMemberId();
+                    if (fromMemberId != null) {
+                        String fromMemberIdKey = UnionCardSharingRecordCacheUtil.getFromMemberIdKey(fromMemberId);
+                        result.add(fromMemberIdKey);
                     }
                 }
                 break;
@@ -438,4 +584,5 @@ public class UnionCardSharingRecordServiceImpl extends ServiceImpl<UnionCardShar
         }
         return result;
     }
+
 }

@@ -3,6 +3,7 @@ package com.gt.union.card.sharing.controller;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
+import com.gt.union.card.sharing.service.IUnionCardSharingRecordService;
 import com.gt.union.card.sharing.vo.CardSharingRecordVO;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
@@ -11,6 +12,7 @@ import com.gt.union.common.util.PageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +29,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/unionCardSharingRecord")
 public class UnionCardSharingRecordController {
+    
+    @Autowired
+    private IUnionCardSharingRecordService unionCardSharingRecordService;
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
@@ -49,7 +54,8 @@ public class UnionCardSharingRecordController {
             busId = busUser.getPid();
         }
         // mock
-        List<CardSharingRecordVO> voList = MockUtil.list(CardSharingRecordVO.class, page.getSize());
+//        List<CardSharingRecordVO> voList = MockUtil.list(CardSharingRecordVO.class, page.getSize());
+        List<CardSharingRecordVO> voList = unionCardSharingRecordService.listCardSharingRecordVOByBusIdAndUnionId(busId, unionId, cardNumber, beginTime, endTime);
         Page<CardSharingRecordVO> result = (Page<CardSharingRecordVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);

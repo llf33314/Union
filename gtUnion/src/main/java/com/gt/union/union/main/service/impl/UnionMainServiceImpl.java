@@ -73,6 +73,40 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
     //***************************************** Domain Driven Design - list ********************************************
 
+    @Override
+    public List<UnionMainVO> listOtherValidByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	获取有效的memberList
+        List<UnionMember> memberList = unionMemberService.listReadByBusId(busId);
+        List<Integer> unionIdList = new ArrayList<>();
+        if (ListUtil.isNotEmpty(memberList)) {
+            for (UnionMember member : memberList) {
+                unionIdList.add(member.getUnionId());
+            }
+        }
+        // （2）	获取有效unionList
+        EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .ge("validity", DateUtil.getCurrentDate())
+                .notIn("id", unionIdList);
+
+        List<UnionMain> unionList = selectList(entityWrapper);
+        List<UnionMainVO> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(unionList)) {
+            for (UnionMain union : unionList) {
+                UnionMainVO vo = new UnionMainVO();
+                vo.setUnion(union);
+                List<UnionMainDict> itemList = unionMainDictService.listByUnionId(union.getId());
+                vo.setItemList(itemList);
+                result.add(vo);
+            }
+        }
+
+        return result;
+    }
+
     //***************************************** Domain Driven Design - save ********************************************
 
     //***************************************** Domain Driven Design - remove ******************************************
@@ -80,6 +114,24 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
     //***************************************** Domain Driven Design - update ******************************************
 
     //***************************************** Domain Driven Design - count *******************************************
+
+    @Override
+    public Integer countSurplusByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        UnionMain union = getById(unionId);
+        if (union == null) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        List<UnionMember> memberList = unionMemberService.listReadByUnionId(unionId);
+
+        Integer memberLimit = union.getMemberLimit();
+        memberLimit = memberLimit != null ? memberLimit : 0;
+        Integer memberCount = ListUtil.isNotEmpty(memberList) ? memberList.size() : 0;
+
+        return memberLimit - memberCount;
+    }
 
     //***************************************** Domain Driven Design - boolean *****************************************
 
@@ -97,7 +149,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
     @Override
     public boolean isUnionValid(UnionMain union) throws Exception {
         if (union == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
+            throw new ParamException(CommonConstant.UNION_INVALID);
         }
 
         return union.getValidity().compareTo(DateUtil.getCurrentDate()) >= 0;

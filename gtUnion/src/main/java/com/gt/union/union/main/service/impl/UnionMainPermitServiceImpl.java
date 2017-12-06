@@ -94,7 +94,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
 
         // （3）	调用接口，返回支付链接
         UnionPermitPayVO result = new UnionPermitPayVO();
-        String socketKey = PropertiesUtil.getSocketKey() + "Permit_" + DateUtil.getSerialNumber();
+        String socketKey = PropertiesUtil.getSocketKey() + "Permit_" + busId + "_" + DateUtil.getSerialNumber();
         String notifyUrl = PropertiesUtil.getUnionUrl() + "/unionMainPermit/" + savePermit.getId() + "/pay/callback?socketKey=" + socketKey;
         String payUrl = wxPayService.qrCodePay(savePermit.getOrderMoney(), null, savePermit.getSysOrderNo(),
                 null, CommonConstant.COMMON_NO, null, notifyUrl, CommonConstant.COMMON_NO,

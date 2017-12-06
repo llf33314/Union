@@ -76,12 +76,12 @@ public class UnionCardFanServiceImpl extends ServiceImpl<UnionCardFanMapper, Uni
         if (ListUtil.isNotEmpty(discountCardList)) {
             UnionCard discountCard = discountCardList.get(0);
             result.setDiscountCard(discountCard);
-            UnionMember discountCardMember = unionMemberService.getByIdAndUnionId(discountCard.getMemberId(), unionId);
+            UnionMember discountCardMember = unionMemberService.getReadByIdAndUnionId(discountCard.getMemberId(), unionId);
             result.setDiscount(discountCardMember != null ? discountCardMember.getDiscount() : null);
         }
         List<UnionCard> activityCardList = unionCardService.filterByType(cardList, CardConstant.CARD_TYPE_ACTIVITY);
         result.setActivityCardList(activityCardList);
-        
+
         return result;
     }
 
@@ -152,6 +152,7 @@ public class UnionCardFanServiceImpl extends ServiceImpl<UnionCardFanMapper, Uni
 
     //***************************************** Object As a Service - get **********************************************
 
+    @Override
     public UnionCardFan getById(Integer id) throws Exception {
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);

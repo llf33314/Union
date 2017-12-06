@@ -3,6 +3,7 @@ package com.gt.union.card.project.controller;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.card.project.entity.UnionCardProjectItem;
+import com.gt.union.card.project.service.IUnionCardProjectService;
 import com.gt.union.card.project.vo.CardProjectCheckVO;
 import com.gt.union.card.project.vo.CardProjectJoinMemberVO;
 import com.gt.union.card.project.vo.CardProjectVO;
@@ -12,6 +13,7 @@ import com.gt.union.common.util.MockUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -29,6 +31,9 @@ import java.util.List;
 @RequestMapping("/unionCardProject")
 public class UnionCardProjectController {
 
+    @Autowired
+    private IUnionCardProjectService unionCardProjectService;
+
     //-------------------------------------------------- get -----------------------------------------------------------
 
     @ApiOperation(value = "列表：联盟卡设置-活动卡设置-参与盟员数", produces = "application/json;charset=UTF-8")
@@ -45,13 +50,14 @@ public class UnionCardProjectController {
             busId = busUser.getPid();
         }
         // mock
-        List<CardProjectJoinMemberVO> result = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            CardProjectJoinMemberVO vo = MockUtil.get(CardProjectJoinMemberVO.class);
-            List<UnionCardProjectItem> itemList = MockUtil.list(UnionCardProjectItem.class, 3);
-            vo.setItemList(itemList);
-            result.add(vo);
-        }
+//        List<CardProjectJoinMemberVO> result = new ArrayList<>();
+//        for (int i = 0; i < 20; i++) {
+//            CardProjectJoinMemberVO vo = MockUtil.get(CardProjectJoinMemberVO.class);
+//            List<UnionCardProjectItem> itemList = MockUtil.list(UnionCardProjectItem.class, 3);
+//            vo.setItemList(itemList);
+//            result.add(vo);
+//        }
+        List<CardProjectJoinMemberVO> result = unionCardProjectService.listJoinMemberByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

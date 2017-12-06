@@ -91,8 +91,8 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    public UnionMember getByIdAndBusIdAndUnionId(Integer memberId, Integer busId, Integer unionId) throws Exception {
-        if (busId == null || memberId == null || unionId == null) {
+    public UnionMember getByIdAndUnionIdAndBusId(Integer memberId, Integer unionId, Integer busId) throws Exception {
+        if (memberId == null || unionId == null || busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
@@ -106,18 +106,57 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         }
 
         // （2）	判断memberId有效性
-        return getByIdAndUnionId(memberId, unionId);
+        return getReadByIdAndUnionId(memberId, unionId);
     }
 
     @Override
-    public UnionMember getByIdAndUnionId(Integer memberId, Integer unionId) throws Exception {
+    public UnionMember getReadByIdAndUnionId(Integer memberId, Integer unionId) throws Exception {
         if (memberId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
         UnionMember result = getById(memberId);
+        if (result != null) {
+            Integer status = result.getStatus();
+            boolean isReadValid = MemberConstant.STATUS_IN == status || MemberConstant.STATUS_APPLY_OUT == status || MemberConstant.STATUS_OUT_PERIOD == status;
+            if (unionId.equals(result.getUnionId()) && isReadValid) {
+                return result;
+            }
+        }
 
-        return unionId.equals(result.getUnionId()) ? result : null;
+        return null;
+    }
+
+    @Override
+    public UnionMember getWriteByIdAndUnionId(Integer memberId, Integer unionId) throws Exception {
+        if (memberId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        UnionMember result = getById(memberId);
+        if (result != null) {
+            Integer status = result.getStatus();
+            boolean isWriteValid = MemberConstant.STATUS_IN == status || MemberConstant.STATUS_APPLY_OUT == status;
+            if (unionId.equals(result.getUnionId()) && isWriteValid) {
+                return result;
+            }
+        }
+
+        return null;
+    }
+
+    @Override
+    public UnionMember getApplyByIdAndUnionId(Integer memberId, Integer unionId) throws Exception {
+        if (memberId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        UnionMember result = getById(memberId);
+        if (result != null) {
+            return unionId.equals(result.getUnionId()) && MemberConstant.STATUS_APPLY_IN == result.getStatus() ? result : null;
+        }
+
+        return null;
     }
 
     //***************************************** Domain Driven Design - list ********************************************
@@ -188,7 +227,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         }
 
         // （1）判断union有效性和member读权限
-        if (unionMainService.isUnionValid(unionId)) {
+        if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
         final UnionMember member = getReadByBusIdAndUnionId(busId, unionId);
@@ -240,8 +279,8 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     //***************************************** Domain Driven Design - update ******************************************
 
     @Override
-    public void updateByIdAndBusIdAndUnionId(Integer memberId, Integer busId, Integer unionId, UnionMember vo) throws Exception {
-        if (memberId == null || busId == null || unionId == null || vo == null) {
+    public void updateByIdAndUnionIdAndBusId(Integer memberId, Integer unionId, Integer busId, UnionMember vo) throws Exception {
+        if (memberId == null || unionId == null || busId == null || vo == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	判断union有效性和member写权限
@@ -339,11 +378,48 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             }
             updateMember.setIntegralExchangeRatio(memberIntegralExchangeRatio);
         }
-        
+
+        update(updateMember);
+    }
+
+    @Override
+    public void updateDiscountByIdAndUnionIdAndBusId(Integer memberId, Integer unionId, Integer busId, Double discount) throws Exception {
+        if (memberId == null || unionId == null || busId == null || discount == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member写权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = getWriteByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+        }
+        // （2）	判断memberId有效性
+        if (!member.getId().equals(memberId)) {
+            throw new BusinessException("参数memberId无效");
+        }
+        // （3）	要求折扣在(0,10)
+        if (discount <= 0 || discount >= 10) {
+            throw new BusinessException("折扣必须大于0且小于10");
+        }
+        UnionMember updateMember = new UnionMember();
+        updateMember.setId(memberId);
+        updateMember.setDiscount(discount);
         update(updateMember);
     }
 
     //***************************************** Domain Driven Design - count *******************************************
+
+    @Override
+    public Integer countReadByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMember> memberList = listReadByBusId(busId);
+        return ListUtil.isNotEmpty(memberList) ? memberList.size() : 0;
+    }
 
     //***************************************** Domain Driven Design - boolean *****************************************
 

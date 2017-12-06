@@ -67,13 +67,6 @@ public class UnionMemberJoin extends Model<UnionMemberJoin> {
     private Integer recommendMemberId;
 
     /**
-     * 是否同意推荐(0：不同意 1：同意)
-     */
-    @ApiModelProperty(value = "是否同意推荐(0：不同意 1：同意)")
-    @TableField("is_recommend_agree")
-    private Integer isRecommendAgree;
-
-    /**
      * 加入或推荐理由
      */
     @ApiModelProperty(value = "加入或推荐理由")
@@ -134,14 +127,6 @@ public class UnionMemberJoin extends Model<UnionMemberJoin> {
 
     public void setRecommendMemberId(Integer recommendMemberId) {
         this.recommendMemberId = recommendMemberId;
-    }
-
-    public Integer getIsRecommendAgree() {
-        return isRecommendAgree;
-    }
-
-    public void setIsRecommendAgree(Integer isRecommendAgree) {
-        this.isRecommendAgree = isRecommendAgree;
     }
 
     public String getReason() {

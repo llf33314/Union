@@ -57,4 +57,24 @@ public interface UnionConstant {
      */
     int PERMIT_ORDER_STATUS_PAY_FAIL = 3;
 
+    /**
+     * 入盟申请必填字段：负责人名称
+     */
+    String ITEM_KEY_DIRECTOR_NAME = "directorName";
+
+    /**
+     * 入盟申请必填字段：负责人联系电话
+     */
+    String ITEM_KEY_DIRECTOR_PHONE = "directorPhone";
+
+    /**
+     * 入盟申请必填字段：负责人邮箱
+     */
+    String ITEM_KEY_DIRECTOR_EMAIL = "directorEmail";
+
+    /**
+     * 入盟申请必填字段：理由
+     */
+    String ITEM_KEY_REASON = "reason";
+
 }

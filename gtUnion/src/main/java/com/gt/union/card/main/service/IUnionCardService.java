@@ -35,6 +35,15 @@ public interface IUnionCardService extends IService<UnionCard> {
      */
     List<UnionCard> listValidByFanIdAndUnionId(Integer fanId, Integer unionId) throws Exception;
 
+    /**
+     * 根据活动id和联盟id，获取活动卡信息
+     *
+     * @param activityId 活动id
+     * @param unionId    联盟id
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> listByActivityIdAndUnionId(Integer activityId, Integer unionId) throws Exception;
 
     //***************************************** Domain Driven Design - save ********************************************
 
@@ -63,6 +72,16 @@ public interface IUnionCardService extends IService<UnionCard> {
      */
     Double countIntegralByFanIdAndUnionId(Integer fanId, Integer unionId) throws Exception;
 
+    /**
+     * 根据活动id和联盟id，统计活动卡个数
+     *
+     * @param activityId 活动id
+     * @param unionId    联盟id
+     * @return Integer
+     * @throws Exception 统一处理异常
+     */
+    Integer countByActivityIdAndUnionId(Integer activityId, Integer unionId) throws Exception;
+
     //***************************************** Domain Driven Design - boolean *****************************************
 
     //***************************************** Domain Driven Design - filter ******************************************
@@ -70,10 +89,20 @@ public interface IUnionCardService extends IService<UnionCard> {
     /**
      * 根据联盟卡类型进行过滤
      *
-     * @param cardList 联盟卡列表
+     * @param cardList 数据源
      * @param type     类型
      * @return List<UnionCard>
      * @throws Exception 统一处理异常
      */
     List<UnionCard> filterByType(List<UnionCard> cardList, Integer type) throws Exception;
+
+    /**
+     * 根据联盟id进行过滤
+     *
+     * @param cardList 数据源
+     * @param unionId  联盟id
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> filterByUnionId(List<UnionCard> cardList, Integer unionId) throws Exception;
 }

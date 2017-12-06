@@ -2,6 +2,7 @@ package com.gt.union.union.main.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.union.main.entity.UnionMainTransfer;
+import com.gt.union.union.main.vo.UnionTransferVO;
 
 import java.util.List;
 
@@ -15,7 +16,7 @@ public interface IUnionMainTransferService extends IService<UnionMainTransfer> {
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
-     * 根据联盟id、目标盟员id和确认状态，获取盟主权限转移信息
+     * 根据联盟id、目标盟员id和确认状态，获取联盟权限转移信息
      *
      * @param unionId       联盟id
      * @param toMemberId    目标盟员id
@@ -25,13 +26,65 @@ public interface IUnionMainTransferService extends IService<UnionMainTransfer> {
      */
     UnionMainTransfer getByUnionIdAndToMemberIdAndConfirmStatus(Integer unionId, Integer toMemberId, Integer confirmStatus) throws Exception;
 
+    /**
+     * 根据联盟id和确认状态，获取联盟权限转移信息
+     *
+     * @param unionId       联盟id
+     * @param confirmStatus 确认状态
+     * @return UnionMainTransfer
+     * @throws Exception 统一处理异常
+     */
+    UnionMainTransfer getByUnionIdAndConfirmStatus(Integer unionId, Integer confirmStatus) throws Exception;
+
+    /**
+     * 根据联盟转移id、联盟id和确认状态，获取联盟权限转移信息
+     *
+     * @param transferId    联盟转移id
+     * @param unionId       联盟id
+     * @param confirmStatus 确认状态
+     * @return UnionMainTransfer
+     * @throws Exception 统一处理异常
+     */
+    UnionMainTransfer getByIdAndUnionIdAndConfirmStatus(Integer transferId, Integer unionId, Integer confirmStatus) throws Exception;
+
     //***************************************** Domain Driven Design - list ********************************************
 
+    /**
+     * 获取联盟盟主权限转移列表信息
+     *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @return List<UnionTransferVO>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionTransferVO> listUnionTransferVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
+
     //***************************************** Domain Driven Design - save ********************************************
+
+    /**
+     * 保存联盟盟主转移信息
+     *
+     * @param busId      商家id
+     * @param unionId    联盟id
+     * @param toMemberId 目标盟员id
+     * @throws Exception 统一处理异常
+     */
+    void saveByBusIdAndUnionIdAndToMemberId(Integer busId, Integer unionId, Integer toMemberId) throws Exception;
+
 
     //***************************************** Domain Driven Design - remove ******************************************
 
     //***************************************** Domain Driven Design - update ******************************************
+
+    /**
+     * 撤消联盟权限转移
+     *
+     * @param transferId 联盟权限转移id
+     * @param unionId    联盟id
+     * @param busId      商家id
+     * @throws Exception 统一处理异常
+     */
+    void revokeByIdAndUnionIdAndBusId(Integer transferId, Integer unionId, Integer busId) throws Exception;
 
     //***************************************** Domain Driven Design - count *******************************************
 

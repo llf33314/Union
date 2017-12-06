@@ -4,19 +4,29 @@ import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
+import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.StringUtil;
+import com.gt.union.union.main.constant.UnionConstant;
+import com.gt.union.union.main.entity.UnionMainPermit;
 import com.gt.union.union.main.entity.UnionMainTransfer;
 import com.gt.union.union.main.mapper.UnionMainTransferMapper;
+import com.gt.union.union.main.service.IUnionMainPermitService;
+import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.main.service.IUnionMainTransferService;
 import com.gt.union.union.main.util.UnionMainTransferCacheUtil;
+import com.gt.union.union.main.vo.UnionTransferVO;
+import com.gt.union.union.member.constant.MemberConstant;
+import com.gt.union.union.member.entity.UnionMember;
+import com.gt.union.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * 联盟转移 服务实现类
@@ -27,7 +37,16 @@ import java.util.List;
 @Service
 public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferMapper, UnionMainTransfer> implements IUnionMainTransferService {
     @Autowired
-    public RedisCacheUtil redisCacheUtil;
+    private RedisCacheUtil redisCacheUtil;
+
+    @Autowired
+    private IUnionMainService unionMainService;
+
+    @Autowired
+    private IUnionMemberService unionMemberService;
+
+    @Autowired
+    private IUnionMainPermitService unionMainPermitService;
 
     //***************************************** Domain Driven Design - get *********************************************
 
@@ -37,20 +56,177 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionMainTransfer> result = listByUnionId(unionId);
-        result = filterByToMemberId(result, toMemberId);
-        result = filterByConfirmStatus(result, confirmStatus);
+        EntityWrapper<UnionMainTransfer> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("union_id", unionId)
+                .eq("to_member_id", toMemberId)
+                .eq("confirm_status", confirmStatus)
+                .eq("del_status", CommonConstant.COMMON_NO);
 
-        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
+        return selectOne(entityWrapper);
     }
+
+    @Override
+    public UnionMainTransfer getByUnionIdAndConfirmStatus(Integer unionId, Integer confirmStatus) throws Exception {
+        if (unionId == null || confirmStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionMainTransfer> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("union_id", unionId)
+                .eq("confirm_status", confirmStatus)
+                .eq("del_status", CommonConstant.COMMON_NO);
+
+        return selectOne(entityWrapper);
+    }
+
+    @Override
+    public UnionMainTransfer getByIdAndUnionIdAndConfirmStatus(Integer transferId, Integer unionId, Integer confirmStatus) throws Exception {
+        if (transferId == null || unionId == null || confirmStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionMainTransfer> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("id", transferId)
+                .eq("union_id", unionId)
+                .eq("confirm_status", confirmStatus)
+                .eq("del_status", CommonConstant.COMMON_NO);
+
+        return selectOne(entityWrapper);
+    }
+
 
     //***************************************** Domain Driven Design - list ********************************************
 
+    @Override
+    public List<UnionTransferVO> listUnionTransferVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
+        if (busId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        // （1）	判断union有效性和member读权限、盟主权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+        }
+        if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
+            throw new BusinessException(CommonConstant.UNION_NEED_OWNER);
+        }
+        // （2）	按有转移id排第一，其他按时间顺序排序
+        List<UnionTransferVO> result = new ArrayList<>();
+        List<UnionMember> memberList = unionMemberService.listWriteByUnionId(unionId);
+        if (ListUtil.isNotEmpty(memberList)) {
+            for (UnionMember tempMember : memberList) {
+                UnionTransferVO vo = new UnionTransferVO();
+                vo.setMember(tempMember);
+                UnionMainTransfer transfer = getByUnionIdAndToMemberIdAndConfirmStatus(unionId, tempMember.getId(), UnionConstant.TRANSFER_CONFIRM_STATUS_PROCESS);
+                vo.setUnionTransfer(transfer);
+                result.add(vo);
+            }
+        }
+        Collections.sort(result, new Comparator<UnionTransferVO>() {
+            @Override
+            public int compare(UnionTransferVO o1, UnionTransferVO o2) {
+                if (o1.getUnionTransfer() != null) {
+                    return 1;
+                }
+                if (o2.getUnionTransfer() != null) {
+                    return -1;
+                }
+                return o2.getMember().getCreateTime().compareTo(o1.getMember().getCreateTime());
+            }
+        });
+
+        return result;
+    }
+
     //***************************************** Domain Driven Design - save ********************************************
+
+    @Override
+    public void saveByBusIdAndUnionIdAndToMemberId(Integer busId, Integer unionId, Integer toMemberId) throws Exception {
+        if (busId == null || unionId == null || toMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member写权限、盟主权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+        }
+        if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
+            throw new BusinessException(CommonConstant.UNION_NEED_OWNER);
+        }
+        // （2）	判断是否已存在其他转移申请，如果已存在，报错
+        UnionMainTransfer transfer = getByUnionIdAndConfirmStatus(unionId, UnionConstant.TRANSFER_CONFIRM_STATUS_PROCESS);
+        if (transfer != null) {
+            throw new BusinessException("已存在其他联盟权限转移记录，请撤消后再操作");
+        }
+        // （3）	判断toMemberId有效性，要求toMember要求是入盟或申请退盟状态，否则，报错
+        UnionMember toMember = unionMemberService.getWriteByIdAndUnionId(toMemberId, unionId);
+        if (toMember == null) {
+            throw new BusinessException("联盟权限转移的目标盟员不存在或已退盟");
+        }
+        // （4）	要求toMember不是另一联盟盟主，否则，报错
+        UnionMember toMemberOwner = unionMemberService.getOwnerByBusId(toMember.getBusId());
+        if (toMemberOwner != null) {
+            throw new BusinessException("联盟权限转移的目标盟员已是另一联盟的盟主");
+        }
+        // （5）	要求toMember具有联盟基础服务（调接口），否则，报错
+        // TODO 这里少个接口
+        Map<String, String> basicMap = new HashMap<>(16);
+        String isAuthority = basicMap.get("isAuthority");
+        if (StringUtil.isEmpty(isAuthority) || isAuthority.equals(CommonConstant.COMMON_NO)) {
+            throw new BusinessException("联盟权限转移的目标盟员不具有联盟基础服务");
+        }
+        // （6）	要求toMember具有联盟盟主服务，否则，报错
+        UnionMainPermit permit = unionMainPermitService.getValidByBusId(toMember.getBusId());
+        if (permit == null) {
+            throw new BusinessException("联盟权限转移的目标盟员不具有联盟盟主服务");
+        }
+
+        UnionMainTransfer saveTransfer = new UnionMainTransfer();
+        saveTransfer.setDelStatus(CommonConstant.COMMON_NO);
+        saveTransfer.setCreateTime(DateUtil.getCurrentDate());
+        saveTransfer.setUnionId(unionId);
+        saveTransfer.setFromMemberId(member.getId());
+        saveTransfer.setToMemberId(toMemberId);
+        saveTransfer.setConfirmStatus(UnionConstant.TRANSFER_CONFIRM_STATUS_PROCESS);
+        save(saveTransfer);
+    }
 
     //***************************************** Domain Driven Design - remove ******************************************
 
     //***************************************** Domain Driven Design - update ******************************************
+
+    @Override
+    public void revokeByIdAndUnionIdAndBusId(Integer transferId, Integer unionId, Integer busId) throws Exception {
+        if (transferId == null || unionId == null || busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member写权限、盟主权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+        }
+        if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
+            throw new BusinessException(CommonConstant.UNION_NEED_OWNER);
+        }
+        // （2）	判断transferId有效性，如果transfer不存在，则返回成功；如果transfer存在，则删除，并返回成功
+        UnionMainTransfer transfer = getByIdAndUnionIdAndConfirmStatus(transferId, unionId, UnionConstant.TRANSFER_CONFIRM_STATUS_PROCESS);
+        if (transfer != null) {
+            UnionMainTransfer updateTransfer = new UnionMainTransfer();
+            updateTransfer.setId(transferId);
+            updateTransfer.setDelStatus(CommonConstant.COMMON_YES);
+            update(updateTransfer);
+        }
+    }
 
     //***************************************** Domain Driven Design - count *******************************************
 

@@ -27,6 +27,15 @@ public interface IUnionCardFanService extends IService<UnionCardFan> {
      */
     CardFanDetailVO getFanDetailVOByIdAndBusIdAndUnionId(Integer fanId, Integer busId, Integer unionId) throws Exception;
 
+    /**
+     * 根据粉丝id，获取对象
+     *
+     * @param fanId 粉丝id
+     * @return UnionCardFan
+     * @throws Exception 统一处理异常
+     */
+    UnionCardFan getById(Integer fanId) throws Exception;
+
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
@@ -42,7 +51,7 @@ public interface IUnionCardFanService extends IService<UnionCardFan> {
     List<CardFanVO> listCardFanVoByBusIdAndUnionId(Integer busId, Integer unionId, String optNumber, String optPhone) throws Exception;
 
     /**
-     * 获取在指定联盟下具有有效折扣卡的粉丝信息
+     * controller专用：获取在指定联盟下具有有效折扣卡的粉丝信息
      *
      * @param unionId   联盟id
      * @param optNumber 联盟卡号

@@ -33,7 +33,6 @@ CREATE TABLE `t_union_member_join` (
   `type` int(2) DEFAULT NULL COMMENT '入盟类型(1:申请 2:推荐)',
   `apply_member_id` int(11) DEFAULT NULL COMMENT '入盟盟员id',
   `recommend_member_id` int(11) DEFAULT NULL COMMENT '推荐盟员id',
-  `is_recommend_agree` int(2) DEFAULT NULL COMMENT '是否同意推荐(0：不同意 1：同意)',
   `reason` varchar(200) DEFAULT NULL COMMENT '加入或推荐理由',
   `union_id` int(11) DEFAULT NULL COMMENT '联盟id',
   PRIMARY KEY (`id`)
@@ -138,7 +137,6 @@ CREATE TABLE `t_union_main_transfer` (
   `from_member_id` int(11) DEFAULT NULL COMMENT '转移前盟主盟员id',
   `to_member_id` int(11) DEFAULT NULL COMMENT '转移后盟主盟员id',
   `confirm_status` int(2) DEFAULT NULL COMMENT '确认状态(1:确认中 2:已确认 3:已拒绝)',
-  `is_advice` int(2) DEFAULT '0' COMMENT '是否需要提示(0:否  1:是)',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='联盟转移';
 
@@ -348,7 +346,8 @@ CREATE TABLE `t_union_card_sharing_record` (
   `sell_price` double(8,2) DEFAULT NULL COMMENT '售卡价格',
   `sharing_ratio` double(8,2) DEFAULT NULL COMMENT '分成比例',
   `sharing_money` double(8,2) DEFAULT NULL COMMENT '售卡分成',
-  `member_id` int(11) DEFAULT NULL COMMENT '盟员id',
+  `sharing_member_id` int(11) DEFAULT NULL COMMENT '分成盟员id',
+  `from_member_id` int(11) DEFAULT NULL COMMENT '售卡盟员id',
   `union_id` int(11) DEFAULT NULL COMMENT '联盟id',
   `activity_id` int(11) DEFAULT NULL COMMENT '活动id',
   `card_id` int(11) DEFAULT NULL COMMENT '联盟卡id',

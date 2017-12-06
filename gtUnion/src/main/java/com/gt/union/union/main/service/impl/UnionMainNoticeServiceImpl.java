@@ -34,7 +34,7 @@ import java.util.List;
 @Service
 public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMapper, UnionMainNotice> implements IUnionMainNoticeService {
     @Autowired
-    public RedisCacheUtil redisCacheUtil;
+    private RedisCacheUtil redisCacheUtil;
 
     @Autowired
     private IUnionMainService unionMainService;

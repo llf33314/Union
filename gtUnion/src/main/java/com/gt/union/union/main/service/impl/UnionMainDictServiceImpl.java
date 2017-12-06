@@ -27,11 +27,26 @@ import java.util.List;
 @Service
 public class UnionMainDictServiceImpl extends ServiceImpl<UnionMainDictMapper, UnionMainDict> implements IUnionMainDictService {
     @Autowired
-    public RedisCacheUtil redisCacheUtil;
+    private RedisCacheUtil redisCacheUtil;
 
     //***************************************** Domain Driven Design - get *********************************************
 
     //***************************************** Domain Driven Design - list ********************************************
+
+    @Override
+    public List<String> listItemKeyByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<String> result = new ArrayList<>();
+        List<UnionMainDict> itemList = listByUnionId(unionId);
+        if (ListUtil.isNotEmpty(itemList)) {
+            for (UnionMainDict item : itemList) {
+                result.add(item.getItemKey());
+            }
+        }
+        return result;
+    }
 
     //***************************************** Domain Driven Design - save ********************************************
 

@@ -25,6 +25,15 @@ public interface IUnionMainDictService extends IService<UnionMainDict> {
      */
     List<UnionMainDict> listByUnionId(Integer unionId) throws Exception;
 
+    /**
+     * 根据联盟id，获取入盟必填字段列表
+     *
+     * @param unionId unionId 联盟id
+     * @return List<String>
+     * @throws Exception 统一处理异常
+     */
+    List<String> listItemKeyByUnionId(Integer unionId) throws Exception;
+
     //***************************************** Domain Driven Design - save ********************************************
 
     /**

@@ -3,19 +3,35 @@ package com.gt.union.union.member.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.api.bean.session.BusUser;
+import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
+import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.StringUtil;
+import com.gt.union.union.main.constant.UnionConstant;
+import com.gt.union.union.main.service.IUnionMainDictService;
+import com.gt.union.union.main.service.IUnionMainService;
+import com.gt.union.union.member.constant.MemberConstant;
+import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.entity.UnionMemberJoin;
 import com.gt.union.union.member.mapper.UnionMemberJoinMapper;
 import com.gt.union.union.member.service.IUnionMemberJoinService;
+import com.gt.union.union.member.service.IUnionMemberService;
 import com.gt.union.union.member.util.UnionMemberJoinCacheUtil;
+import com.gt.union.union.member.vo.MemberJoinCreateVO;
+import com.gt.union.union.member.vo.MemberJoinVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -29,15 +45,279 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
     @Autowired
     private RedisCacheUtil redisCacheUtil;
 
+    @Autowired
+    private IUnionMainService unionMainService;
+
+    @Autowired
+    private IUnionMemberService unionMemberService;
+
+    @Autowired
+    private IUnionMainDictService unionMainDictService;
+
+    @Autowired
+    private IBusUserService busUserService;
+
     //***************************************** Domain Driven Design - get *********************************************
+
+    @Override
+    public UnionMemberJoin getByIdAndUnionId(Integer joinId, Integer unionId) throws Exception {
+        if (joinId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        UnionMemberJoin result = getById(joinId);
+
+        return result != null && unionId.equals(result.getUnionId()) ? result : null;
+    }
 
     //***************************************** Domain Driven Design - list ********************************************
 
+    @Override
+    public List<MemberJoinVO> listMemberJoinVOByBusIdAndUnionId(Integer buId, Integer unionId, String optMemberName, String optPhone) throws Exception {
+        if (buId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member读权限、盟主权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(buId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+        }
+        if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
+            throw new BusinessException(CommonConstant.UNION_NEED_OWNER);
+        }
+        // （2）	按时间顺序排序
+        List<MemberJoinVO> result = new ArrayList<>();
+        List<UnionMemberJoin> joinList = listByUnionId(unionId, MemberConstant.STATUS_APPLY_IN);
+        if (ListUtil.isNotEmpty(joinList)) {
+            for (UnionMemberJoin join : joinList) {
+                MemberJoinVO vo = new MemberJoinVO();
+                vo.setMemberJoin(join);
+                UnionMember joinMember = unionMemberService.getApplyByIdAndUnionId(join.getApplyMemberId(), join.getUnionId());
+                if (StringUtil.isNotEmpty(optMemberName)) {
+                    boolean isContinue = joinMember == null || StringUtil.isEmpty(joinMember.getEnterpriseName())
+                            || !joinMember.getEnterpriseName().contains(optMemberName);
+                    if (isContinue) {
+                        continue;
+                    }
+                    isContinue = StringUtil.isEmpty(joinMember.getDirectorPhone()) || !joinMember.getDirectorPhone().contains(optPhone);
+                    if (isContinue) {
+                        continue;
+                    }
+                }
+                vo.setJoinMember(joinMember);
+                if (MemberConstant.JOIN_TYPE_RECOMMEND == join.getType() && join.getRecommendMemberId() != null) {
+                    UnionMember recommendMember = unionMemberService.getReadByIdAndUnionId(join.getRecommendMemberId(), join.getUnionId());
+                    vo.setRecommendMember(recommendMember);
+                }
+                result.add(vo);
+            }
+        }
+        Collections.sort(result, new Comparator<MemberJoinVO>() {
+            @Override
+            public int compare(MemberJoinVO o1, MemberJoinVO o2) {
+                return o2.getMemberJoin().getCreateTime().compareTo(o1.getMemberJoin().getCreateTime());
+            }
+        });
+
+        return result;
+    }
+
+    @Override
+    public List<UnionMemberJoin> listByUnionId(Integer unionId, Integer memberStatus) throws Exception {
+        if (unionId == null || memberStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .eq("union_id", unionId)
+                .exists(" SELECT m.id FROM t_union_member m "
+                        + " WHERE m.del_status=" + CommonConstant.COMMON_NO
+                        + " AND m.union_id=" + unionId
+                        + " AND m.id=t_union_member_join.apply_member_id "
+                        + " AND m.status=" + memberStatus);
+
+        return selectList(entityWrapper);
+    }
+
     //***************************************** Domain Driven Design - save ********************************************
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void saveJoinCreateVOByBusIdAndUnionIdAndType(Integer busId, Integer unionId, Integer type, MemberJoinCreateVO vo) throws Exception {
+        if (busId == null || unionId == null || type == null || vo == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        // （2）	如果是推荐，判断member写权限
+        UnionMember member = null;
+        BusUser busUser = null;
+        if (MemberConstant.JOIN_TYPE_RECOMMEND == type) {
+            member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+            if (member == null) {
+                throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+            }
+            String busUserName = vo.getBusUserName();
+            if (StringUtil.isEmpty(busUserName)) {
+                throw new BusinessException("被推荐的盟员账号不能为空");
+            }
+            busUser = busUserService.getBusUserByName(busUserName);
+            if (busUser == null) {
+                throw new BusinessException("找不到被推荐的盟员账号");
+            }
+        }
+        // （3）	判断union剩余可加盟数
+        Integer unionSurplus = unionMainService.countSurplusByUnionId(unionId);
+        if (unionSurplus <= 0) {
+            throw new BusinessException("联盟已达成员总数上限，无法加入");
+        }
+        // （4）	判断商家已加盟数
+        Integer busMemberCount = unionMemberService.countReadByBusId(busId);
+        if (busMemberCount >= ConfigConstant.MAX_UNION_APPLY) {
+            throw new BusinessException("商家加盟数已达上限，无法加入");
+        }
+        // （5）	校验表单
+        List<String> itemKeyList = unionMainDictService.listItemKeyByUnionId(unionId);
+        UnionMember saveMember = new UnionMember();
+        saveMember.setDelStatus(CommonConstant.COMMON_NO);
+        saveMember.setCreateTime(DateUtil.getCurrentDate());
+        saveMember.setUnionId(unionId);
+        saveMember.setIsUnionOwner(MemberConstant.IS_UNION_OWNER_NO);
+        // （5-1）企业名称
+        String enterpriseName = vo.getEnterpriseName();
+        if (StringUtil.isEmpty(enterpriseName)) {
+            throw new BusinessException("企业名称不能为空");
+        }
+        if (StringUtil.getStringLength(enterpriseName) > 10) {
+            throw new BusinessException("企业名称字数不能超过10");
+        }
+        saveMember.setEnterpriseName(enterpriseName);
+        // （5-2）负责人名称
+        String directorName = vo.getDirectorName();
+        if (itemKeyList.contains(UnionConstant.ITEM_KEY_DIRECTOR_NAME)) {
+            if (StringUtil.isEmpty(directorName)) {
+                throw new BusinessException("负责人名称不能为空");
+            }
+        }
+        if (StringUtil.isNotEmpty(directorName) && StringUtil.getStringLength(directorName) > 10) {
+            throw new BusinessException("负责人名称字数不能超过10");
+        }
+        saveMember.setDirectorName(directorName);
+        // （5-3）负责人电话
+        String directorPhone = vo.getDirectorPhone();
+        if (itemKeyList.contains(UnionConstant.ITEM_KEY_DIRECTOR_PHONE)) {
+            if (StringUtil.isEmpty(directorPhone)) {
+                throw new BusinessException("负责人联系电话不能为空");
+            }
+        }
+        if (StringUtil.isNotEmpty(directorPhone) && !StringUtil.isPhone(directorPhone)) {
+            throw new BusinessException("负责人联系电话无效");
+        }
+        saveMember.setDirectorPhone(directorPhone);
+        // （5-4）负责人名称
+        String directorEmail = vo.getDirectorEmail();
+        if (itemKeyList.contains(UnionConstant.ITEM_KEY_DIRECTOR_EMAIL)) {
+            if (StringUtil.isEmpty(directorEmail)) {
+                throw new BusinessException("负责人邮箱不能为空");
+            }
+        }
+        if (StringUtil.isNotEmpty(directorEmail) && !StringUtil.isEmail(directorEmail)) {
+            throw new BusinessException("负责人邮箱无效");
+        }
+        saveMember.setDirectorEmail(directorEmail);
+        // （5-5）理由
+        UnionMemberJoin saveJoin = new UnionMemberJoin();
+        saveJoin.setDelStatus(CommonConstant.COMMON_NO);
+        saveJoin.setCreateTime(DateUtil.getCurrentDate());
+        saveJoin.setUnionId(unionId);
+        saveJoin.setType(type);
+        String reason = vo.getReason();
+        if (itemKeyList.contains(UnionConstant.ITEM_KEY_REASON)) {
+            if (StringUtil.isEmpty(reason)) {
+                throw new BusinessException("理由不能为空");
+            }
+        }
+        if (StringUtil.isNotEmpty(reason) && StringUtil.getStringLength(reason) > 20) {
+            throw new BusinessException("理由字数不能超过20");
+        }
+        saveJoin.setReason(reason);
+        // （6）	如果是推荐入盟，且是盟主操作，则直接入盟成功
+        if (MemberConstant.JOIN_TYPE_RECOMMEND == type) {
+            saveMember.setBusId(busUser.getId());
+            saveJoin.setRecommendMemberId(member.getId());
+            if (MemberConstant.IS_UNION_OWNER_YES == member.getIsUnionOwner()) {
+                saveMember.setStatus(MemberConstant.STATUS_IN);
+            } else {
+                saveMember.setStatus(MemberConstant.STATUS_APPLY_IN);
+            }
+        } else {
+            saveMember.setBusId(busId);
+            saveMember.setStatus(MemberConstant.STATUS_APPLY_IN);
+        }
+
+        // 事务操作
+        unionMemberService.save(saveMember);
+        saveJoin.setApplyMemberId(saveMember.getId());
+        save(saveJoin);
+    }
 
     //***************************************** Domain Driven Design - remove ******************************************
 
     //***************************************** Domain Driven Design - update ******************************************
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void updateStatusByIdAndUnionIdAndBusId(Integer joinId, Integer unionId, Integer busId, Integer isPass) throws Exception {
+        if (joinId == null || unionId == null || busId == null || isPass == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member写权限、盟主权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+        }
+        if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
+            throw new BusinessException(CommonConstant.UNION_NEED_OWNER);
+        }
+        // （2）	判断joinId有效性
+        UnionMemberJoin join = getByIdAndUnionId(joinId, unionId);
+        if (join == null) {
+            throw new BusinessException("联盟入盟申请不存在");
+        }
+        // （3）	判断joinMember状态，如果是申请状态，则进入下一步；如果是其他状态，返回成功
+        UnionMember joinMember = unionMemberService.getApplyByIdAndUnionId(join.getApplyMemberId(), unionId);
+        if (joinMember == null) {
+            return;
+        }
+        // （4）	判断union剩余可加盟数和商家已加盟数是否已达上限
+        Integer unionSurplus = unionMainService.countSurplusByUnionId(unionId);
+        if (unionSurplus <= 0) {
+            throw new BusinessException("联盟已达成员总数上限，无法通过");
+        }
+        Integer busMemberCount = unionMemberService.countReadByBusId(joinMember.getBusId());
+        if (busMemberCount >= ConfigConstant.MAX_UNION_APPLY) {
+            throw new BusinessException("申请者加盟数已达上限，无法通过");
+        }
+
+        // 事务操作
+        UnionMember updateMember = new UnionMember();
+        updateMember.setId(joinMember.getId());
+        if (CommonConstant.COMMON_YES == isPass) {
+            updateMember.setStatus(MemberConstant.STATUS_IN);
+        } else {
+            updateMember.setDelStatus(CommonConstant.COMMON_YES);
+        }
+        unionMemberService.update(updateMember);
+        removeById(joinId);
+    }
 
     //***************************************** Domain Driven Design - count *******************************************
 
@@ -350,4 +630,5 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         }
         return result;
     }
+
 }

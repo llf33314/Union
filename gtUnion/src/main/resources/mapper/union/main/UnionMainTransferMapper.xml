@@ -11,7 +11,6 @@
         <result column="from_member_id" property="fromMemberId"/>
         <result column="to_member_id" property="toMemberId"/>
         <result column="confirm_status" property="confirmStatus"/>
-        <result column="is_advice" property="isAdvice"/>
     </resultMap>
 
 </mapper>
