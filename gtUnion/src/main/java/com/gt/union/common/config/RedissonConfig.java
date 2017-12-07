@@ -35,8 +35,8 @@ public class RedissonConfig {
 	RedissonClient redissonSentinel() {
 		Config config = new Config();
 		config.useSentinelServers()
-				.setMasterName(redssionProperties.getMasterName())
 				.addSentinelAddress(redssionProperties.getSentinelAddresses())
+				.setMasterName(redssionProperties.getMasterName())
 				.setPassword(redssionProperties.getPassword())
 				.setTimeout(redssionProperties.getTimeout());
 		return Redisson.create(config);
