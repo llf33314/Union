@@ -43,39 +43,30 @@ spring:
 
   # redis配置
   redis:
-      host: 113.106.202.51
-      port: 6379
       password: gt@123456
-      timeout: 0
-      database: 0
-      pool:
-        max-active: 50
-        max-wait: -1
-        max-idle: 8
-        min-idle: 0
-      cluster:
-        nodes: 10.10.3.152:9001,10.10.3.154:9004,10.10.3.153:9002,10.10.3.152:9005,10.10.3.154:9003,10.10.3.153:9006
-        timeout: 30000
-        max-attempts: 3
-        password: Gu123123@
-        pool:
-          max-total: 8
-          max-idle: 8
-          min-idle: 0
-  #redis session共享配置
-  redis2:
-      host: 113.106.202.51
-      port: 6379
-      password: gt@123456
-      timeout: 0
+      timeout: 1000
       database: 3
       pool:
         max-active: 50
         max-wait: -1
-        max-idle: 8
+        max-idle: 20
         min-idle: 0
+        #redis集群配置
+      cluster:
+        nodes: 113.106.202.51:6379,113.106.202.50:9379,113.106.202.53:9379
+        max-attempts: 3
+        max-redirects: 3
+        #redis哨兵模式配置
+      sentinel:
+        nodes: 113.106.202.51:26379,113.106.202.50:29379,113.106.202.53:29379
+        master: mymaster
   session:
        store-type: redis
+
+redisson:
+  master-name: mymaster
+  password: gt@123456
+  sentinel-addresses: 113.106.202.51:26379,113.106.202.50:29379,113.106.202.53:29379
 
 # mybatis设置
 mybatis:
@@ -104,6 +95,7 @@ mq:
   uri: 183.47.242.4
   user: guest
   password: yf26609632
+
 
 #队列转换器
 exchange:
@@ -143,4 +135,8 @@ member:
   url: http://member.yifriend.net
   signkey: MV8MMFQUMU1HJ6F2GNH40ZFJJ7Q8LNVM
 
+jxc:
+  url: https://jxc.deeptel.com.cn
+  account: erp_7
+  pwd: 123456
 

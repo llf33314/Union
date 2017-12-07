@@ -19,6 +19,14 @@ public class RedisKeyUtil {
     }
 
     /**
+     * 获取进销存权限缓存key
+     * @return
+     */
+    public static final String getJxcAuthorityKey(){
+        return "jxc:authority";
+    }
+
+    /**
      * 字典类型
      *
      * @param itemKey
