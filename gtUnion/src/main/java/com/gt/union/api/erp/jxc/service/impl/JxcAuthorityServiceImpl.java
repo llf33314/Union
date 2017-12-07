@@ -37,12 +37,12 @@ public class JxcAuthorityServiceImpl implements JxcAuthorityService{
 			String token = tokens.getString("token");
 			if(StringUtil.isNotEmpty(token)){
 				String key = RedisKeyUtil.getJxcAuthorityKey();
-				redisCacheUtil.set(key, token, 7200L);
+				redisCacheUtil.set(key, token, 10800L);
 			}
 			return token;
 		} catch (Exception e) {
 			e.printStackTrace();
-			return null;
 		}
+		return null;
 	}
 }

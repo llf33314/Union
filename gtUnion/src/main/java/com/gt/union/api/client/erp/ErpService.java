@@ -8,7 +8,7 @@ public interface ErpService {
 	/**
 	 * 根据商家id获取erp列表
 	 * @param busId
-	 * @return
+	 * @return	erpmodel：erp类型
 	 */
 	List<Map> listErpByBusId(Integer busId);
 }
