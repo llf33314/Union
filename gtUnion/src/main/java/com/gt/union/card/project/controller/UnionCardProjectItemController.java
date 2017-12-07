@@ -2,14 +2,18 @@ package com.gt.union.card.project.controller;
 
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
+import com.gt.union.card.project.service.IUnionCardProjectItemService;
 import com.gt.union.card.project.vo.CardProjectItemConsumeVO;
 import com.gt.union.card.project.vo.CardProjectVO;
 import com.gt.union.common.constant.BusUserConstant;
+import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -25,6 +29,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/unionCardProjectItem")
 public class UnionCardProjectItemController {
+
+    @Autowired
+    private IUnionCardProjectItemService unionCardProjectItemService;
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
@@ -63,8 +70,9 @@ public class UnionCardProjectItemController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
+        unionCardProjectItemService.saveProjectItemVOByBusIdAndActivityIdAndUnionId(busId, activityId, unionId, projectItemVO);
         return GtJsonResult.instanceSuccessMsg();
     }
 
@@ -81,8 +89,9 @@ public class UnionCardProjectItemController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
+        unionCardProjectItemService.commitProjectItemVOByBusIdAndActivityIdAndUnionId(busId, activityId, unionId, projectItemVO);
         return GtJsonResult.instanceSuccessMsg();
     }
 }

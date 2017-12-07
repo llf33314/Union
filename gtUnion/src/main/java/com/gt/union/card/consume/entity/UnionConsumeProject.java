@@ -46,13 +46,6 @@ public class UnionConsumeProject extends Model<UnionConsumeProject> {
     private Date createTime;
 
     /**
-     * 消费类型(1:线上 2:线下)
-     */
-    @ApiModelProperty(value = "消费类型(1:线上 2:线下)")
-    @TableField("type")
-    private Integer type;
-
-    /**
      * 核销消费id
      */
     @ApiModelProperty(value = "核销消费id")
@@ -96,14 +89,6 @@ public class UnionConsumeProject extends Model<UnionConsumeProject> {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
-    }
-
-    public Integer getType() {
-        return type;
-    }
-
-    public void setType(Integer type) {
-        this.type = type;
     }
 
     public Integer getConsumeId() {

@@ -3,12 +3,13 @@ package com.gt.union.card.project.controller;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.card.project.entity.UnionCardProjectFlow;
+import com.gt.union.card.project.service.IUnionCardProjectFlowService;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
-import com.gt.union.common.util.MockUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -28,12 +29,17 @@ import java.util.List;
 @RequestMapping("/unionActivityFlow")
 public class UnionCardProjectFlowController {
 
+    @Autowired
+    private IUnionCardProjectFlowService unionCardProjectFlowService;
+
     //-------------------------------------------------- get -----------------------------------------------------------
 
     @ApiOperation(value = "联盟卡设置-活动卡设置-我的活动项目-审批记录", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/projectId/{projectId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/activityId/{activityId}/projectId/{projectId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<List<UnionCardProjectFlow>> listByProjectIdAndUnionId(
             HttpServletRequest request,
+            @ApiParam(value = "活动id", name = "activityId", required = true)
+            @PathVariable("activityId") Integer activityId,
             @ApiParam(value = "项目id", name = "projectId", required = true)
             @PathVariable("projectId") Integer projectId,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
@@ -44,7 +50,8 @@ public class UnionCardProjectFlowController {
             busId = busUser.getPid();
         }
         // mock
-        List<UnionCardProjectFlow> result = MockUtil.list(UnionCardProjectFlow.class, 20);
+//        List<UnionCardProjectFlow> result = MockUtil.list(UnionCardProjectFlow.class, 20);
+        List<UnionCardProjectFlow> result = unionCardProjectFlowService.listByBusIdAndActivityIdAndProjectIdAndUnionId(busId, activityId, projectId, unionId);
         return GtJsonResult.instanceSuccessMsg(result)
                 ;
     }
