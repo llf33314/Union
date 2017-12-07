@@ -9,6 +9,7 @@ import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.StringUtil;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.member.constant.MemberConstant;
 import com.gt.union.union.member.entity.UnionMember;
@@ -17,13 +18,13 @@ import com.gt.union.union.member.mapper.UnionMemberOutMapper;
 import com.gt.union.union.member.service.IUnionMemberOutService;
 import com.gt.union.union.member.service.IUnionMemberService;
 import com.gt.union.union.member.util.UnionMemberOutCacheUtil;
+import com.gt.union.union.member.vo.MemberOutPeriodVO;
+import com.gt.union.union.member.vo.MemberOutVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 退盟申请 服务实现类
@@ -56,7 +57,102 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         return ListUtil.isNotEmpty(result) ? result.get(0) : null;
     }
 
+    @Override
+    public UnionMemberOut getByIdAndUnionId(Integer outId, Integer unionId) throws Exception {
+        if (outId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        UnionMemberOut result = getById(outId);
+
+        return result != null && unionId.equals(result.getUnionId()) ? result : null;
+    }
+
     //***************************************** Domain Driven Design - list ********************************************
+
+    @Override
+    public List<MemberOutVO> listMemberOutVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
+        if (busId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member读权限、盟主权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+        }
+        if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
+            throw new BusinessException(CommonConstant.UNION_NEED_OWNER);
+        }
+        // （2）	获取union下所有退盟申请状态的member，获取对应的out
+        List<MemberOutVO> result = new ArrayList<>();
+        List<UnionMember> outMemberList = unionMemberService.listByUnionIdAndStatus(unionId, MemberConstant.STATUS_APPLY_OUT);
+        if (ListUtil.isNotEmpty(outMemberList)) {
+            for (UnionMember outMember : outMemberList) {
+                MemberOutVO vo = new MemberOutVO();
+                vo.setMember(outMember);
+
+                UnionMemberOut out = getByApplyMemberIdAndUnionId(outMember.getId(), unionId);
+                vo.setMemberOut(out);
+
+                result.add(vo);
+            }
+        }
+        // （3）	按时间倒序排序
+        Collections.sort(result, new Comparator<MemberOutVO>() {
+            @Override
+            public int compare(MemberOutVO o1, MemberOutVO o2) {
+                return o1.getMemberOut().getCreateTime().compareTo(o2.getMemberOut().getCreateTime());
+            }
+        });
+
+        return result;
+    }
+
+    @Override
+    public List<MemberOutPeriodVO> listMemberOutPeriodVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
+        if (busId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member读权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+        }
+        // （2）	获取union下所有退盟过渡期状态的member
+        List<MemberOutPeriodVO> result = new ArrayList<>();
+        Date currentDate = DateUtil.getCurrentDate();
+        List<UnionMember> periodMemberList = unionMemberService.listByUnionIdAndStatus(unionId, MemberConstant.STATUS_OUT_PERIOD);
+        if (ListUtil.isNotEmpty(periodMemberList)) {
+            for (UnionMember periodMember : periodMemberList) {
+                MemberOutPeriodVO vo = new MemberOutPeriodVO();
+                vo.setMember(periodMember);
+
+                UnionMemberOut out = getByApplyMemberIdAndUnionId(periodMember.getId(), unionId);
+                if (out == null) {
+                    throw new BusinessException("找不到退盟申请信息");
+                }
+                vo.setMemberOut(out);
+
+                vo.setPeriodDay(DateUtil.getPeriodIntervalDay(currentDate, out.getConfirmOutTime()));
+                result.add(vo);
+            }
+        }
+        // （3）	按确认时间顺序排序
+        Collections.sort(result, new Comparator<MemberOutPeriodVO>() {
+            @Override
+            public int compare(MemberOutPeriodVO o1, MemberOutPeriodVO o2) {
+                return o2.getMemberOut().getConfirmOutTime().compareTo(o1.getMemberOut().getConfirmOutTime());
+            }
+        });
+
+        return result;
+    }
 
     //***************************************** Domain Driven Design - save ********************************************
 
@@ -160,9 +256,142 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         unionMemberService.update(updateMember2);
     }
 
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void saveByBusIdAndUnionId(Integer busId, Integer unionId, String reason) throws Exception {
+        if (busId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member写权限、盟主权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+        }
+        // （2）	要求不能是盟主
+        if (MemberConstant.IS_UNION_OWNER_YES == member.getIsUnionOwner()) {
+            throw new BusinessException("盟主不能申请退盟");
+        }
+        // （3）	判断member状态
+        // 如果是入盟状态，则更新为退盟申请状态，且新增退盟申请信息；
+        // 如果是退盟申请状态，判断退盟申请是否存在，不存在则新增，存在则报错；
+        // 如果是其他状态，报错
+        Date currentDate = DateUtil.getCurrentDate();
+        if (MemberConstant.STATUS_IN == member.getStatus()) {
+            if (StringUtil.isEmpty(reason)) {
+                throw new BusinessException("退盟理由不能为空");
+            }
+
+            UnionMember updateMember = new UnionMember();
+            updateMember.setId(member.getId());
+            updateMember.setStatus(MemberConstant.STATUS_APPLY_OUT);
+
+            UnionMemberOut saveOut = new UnionMemberOut();
+            saveOut.setDelStatus(CommonConstant.COMMON_NO);
+            saveOut.setCreateTime(currentDate);
+            saveOut.setActualOutTime(currentDate);
+            saveOut.setType(MemberConstant.OUT_TYPE_APPLY);
+            saveOut.setApplyMemberId(member.getId());
+            saveOut.setUnionId(unionId);
+
+            unionMemberService.update(updateMember);
+            save(saveOut);
+        } else if (MemberConstant.STATUS_APPLY_OUT == member.getStatus()) {
+            UnionMemberOut out = getByApplyMemberIdAndUnionId(member.getId(), unionId);
+            if (out == null) {
+                if (StringUtil.isEmpty(reason)) {
+                    throw new BusinessException("退盟理由不能为空");
+                }
+
+                UnionMemberOut saveOut = new UnionMemberOut();
+                saveOut.setDelStatus(CommonConstant.COMMON_NO);
+                saveOut.setCreateTime(currentDate);
+                saveOut.setActualOutTime(currentDate);
+                saveOut.setType(MemberConstant.OUT_TYPE_APPLY);
+                saveOut.setApplyMemberId(member.getId());
+                saveOut.setUnionId(unionId);
+
+                save(saveOut);
+            } else {
+                throw new BusinessException("已存在退盟申请");
+            }
+        } else {
+            throw new BusinessException("退盟盟员状态异常");
+        }
+
+    }
+
     //***************************************** Domain Driven Design - remove ******************************************
 
     //***************************************** Domain Driven Design - update ******************************************
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void updateStatusByIdAndUnionIdAndBusId(Integer outId, Integer unionId, Integer busId, Integer isPass) throws Exception {
+        if (outId == null || unionId == null || busId == null || isPass == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member写权限、盟主权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+        }
+        if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
+            throw new BusinessException(CommonConstant.UNION_NEED_OWNER);
+        }
+        // （2）	判断outId有效性
+        UnionMemberOut out = getByIdAndUnionId(outId, unionId);
+        if (out == null) {
+            throw new BusinessException("找不到退盟申请信息");
+        }
+        // （3）	如果审核通过，则判断outMember状态
+        // 如果是退盟申请状态，则更新为退盟过渡期；
+        // 如果是退盟过渡期状态，则不操作outMember；
+        // 如果是其他状态，报错；
+        // （4）	如果审核不通过，则判断outMember状态
+        // 如果是退盟申请状态，则更新为入盟状态；
+        // 如果是入盟状态，则不操作outMember；
+        // 如果是其他状态，报错
+        UnionMember outMember = unionMemberService.getReadByIdAndUnionId(out.getApplyMemberId(), unionId);
+        if (outMember == null) {
+            throw new BusinessException("退盟盟员信息不存在");
+        }
+
+        if (CommonConstant.COMMON_YES == isPass) {
+            if (MemberConstant.STATUS_APPLY_OUT == outMember.getStatus()) {
+                UnionMember updateMember = new UnionMember();
+                updateMember.setId(outMember.getId());
+                updateMember.setStatus(MemberConstant.STATUS_OUT_PERIOD);
+
+                UnionMemberOut updateOut = new UnionMemberOut();
+                updateOut.setId(outId);
+                updateOut.setConfirmOutTime(DateUtil.getCurrentDate());
+                // TODO 定时任务删除无效盟员
+
+                unionMemberService.update(updateMember);
+                update(updateOut);
+            } else if (MemberConstant.STATUS_OUT_PERIOD != outMember.getStatus()) {
+                throw new BusinessException("退盟盟员状态异常");
+            }
+        } else {
+            if (MemberConstant.STATUS_APPLY_OUT == outMember.getStatus()) {
+                UnionMember updateMember = new UnionMember();
+                updateMember.setId(outMember.getId());
+                updateMember.setStatus(MemberConstant.STATUS_IN);
+
+                unionMemberService.update(updateMember);
+                removeById(outId);
+            } else if (MemberConstant.STATUS_IN != outMember.getStatus()) {
+                throw new BusinessException("退盟盟员状态异常");
+            }
+        }
+
+    }
 
     //***************************************** Domain Driven Design - count *******************************************
 

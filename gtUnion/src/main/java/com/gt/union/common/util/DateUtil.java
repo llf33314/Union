@@ -189,4 +189,47 @@ public class DateUtil {
         return getCurrentDateString(SERIAL_PATTERN);
     }
 
+    /**
+     * 获取退盟过渡期中剩余天数
+     *
+     * @param fromDate 当前时间
+     * @param toDate   确认退盟时间
+     * @return 相隔天数
+     */
+    public static Integer getPeriodIntervalDay(Date fromDate, Date toDate) {
+        Calendar fromCalendar = Calendar.getInstance();
+        fromCalendar.setTime(fromDate);
+
+        Calendar toCalendar = Calendar.getInstance();
+        toCalendar.setTime(toDate);
+
+        Integer intervalDay = toCalendar.get(Calendar.DAY_OF_YEAR) - fromCalendar.get(Calendar.DAY_OF_YEAR);
+
+        Integer toHour = toCalendar.get(Calendar.HOUR);
+        Integer fromHour = fromCalendar.get(Calendar.HOUR);
+        if (toHour > fromHour) {
+            intervalDay++;
+        } else if (toHour < fromHour) {
+            intervalDay--;
+        } else {
+            Integer toMinute = toCalendar.get(Calendar.MINUTE);
+            Integer fromMinute = fromCalendar.get(Calendar.MINUTE);
+            if (toMinute > fromMinute) {
+                intervalDay++;
+            } else if (toMinute < fromMinute) {
+                intervalDay--;
+            } else {
+                Integer toSecond = toCalendar.get(Calendar.SECOND);
+                Integer fromSecond = fromCalendar.get(Calendar.SECOND);
+                if (toSecond > fromHour) {
+                    intervalDay++;
+                } else if (toSecond < fromSecond) {
+                    intervalDay--;
+                }
+            }
+        }
+
+        return intervalDay < 0 ? 0 : intervalDay;
+    }
+
 }

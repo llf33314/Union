@@ -11,9 +11,12 @@ import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.union.main.constant.UnionConstant;
+import com.gt.union.union.main.entity.UnionMain;
+import com.gt.union.union.main.entity.UnionMainPackage;
 import com.gt.union.union.main.entity.UnionMainPermit;
 import com.gt.union.union.main.entity.UnionMainTransfer;
 import com.gt.union.union.main.mapper.UnionMainTransferMapper;
+import com.gt.union.union.main.service.IUnionMainPackageService;
 import com.gt.union.union.main.service.IUnionMainPermitService;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.main.service.IUnionMainTransferService;
@@ -47,6 +50,9 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
 
     @Autowired
     private IUnionMainPermitService unionMainPermitService;
+
+    @Autowired
+    private IUnionMainPackageService unionMainPackageService;
 
     //***************************************** Domain Driven Design - get *********************************************
 
@@ -224,6 +230,89 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
             UnionMainTransfer updateTransfer = new UnionMainTransfer();
             updateTransfer.setId(transferId);
             updateTransfer.setDelStatus(CommonConstant.COMMON_YES);
+            update(updateTransfer);
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void updateStatusByIdAndUnionIdAndBusId(Integer transferId, Integer unionId, Integer busId, Integer isAccept) throws Exception {
+        if (transferId == null || unionId == null || busId == null || isAccept == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member写权限、盟主权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+        }
+        // （2）	判断transferId有效性
+        UnionMainTransfer transfer = getByIdAndUnionIdAndConfirmStatus(transferId, unionId, UnionConstant.TRANSFER_CONFIRM_STATUS_PROCESS);
+        if (transfer == null) {
+            throw new BusinessException("联盟转移申请不存在或已处理");
+        }
+        // （3）	如果拒绝，则直接更新，并返回；
+        // 如果接受，则要求不是盟主、要求具有盟主基础服务（调接口）、要求具有有效的联盟盟主服务
+        if (CommonConstant.COMMON_YES == isAccept) {
+            UnionMember busOwnerMember = unionMemberService.getOwnerByBusId(busId);
+            if (busOwnerMember != null) {
+                throw new BusinessException("已经是盟主身份，无法同时成为多个联盟的盟主");
+            }
+
+            // TODO 这里少个接口
+            Map<String, String> basicMap = new HashMap<>(16);
+            String isAuthority = basicMap.get("isAuthority");
+            if (StringUtil.isEmpty(isAuthority) || isAuthority.equals(CommonConstant.COMMON_NO)) {
+                throw new BusinessException("不具有联盟基础服务");
+            }
+
+            UnionMainPermit permit = unionMainPermitService.getValidByBusId(busId);
+            if (permit == null) {
+                throw new BusinessException("不具有联盟盟主服务");
+            }
+
+            UnionMainPackage unionPackage = unionMainPackageService.getById(permit.getPackageId());
+            if (unionPackage == null) {
+                throw new BusinessException("找不到套餐信息");
+            }
+
+            UnionMember newOwner = new UnionMember();
+            newOwner.setId(member.getId());
+            newOwner.setIsUnionOwner(MemberConstant.IS_UNION_OWNER_YES);
+
+            UnionMember oldOwner = unionMemberService.getOwnerByUnionId(unionId);
+            if (oldOwner == null) {
+                throw new BusinessException("找不到盟主信息");
+            }
+            oldOwner.setId(oldOwner.getId());
+            oldOwner.setIsUnionOwner(MemberConstant.IS_UNION_OWNER_NO);
+
+            UnionMain union = unionMainService.getById(unionId);
+            UnionMain updateUnion = null;
+            if (unionPackage.getNumber() != null && union.getMemberLimit() != null && unionPackage.getNumber() > union.getMemberLimit()) {
+                updateUnion = new UnionMain();
+                updateUnion.setId(unionId);
+                updateUnion.setMemberLimit(unionPackage.getNumber());
+            }
+
+            UnionMainTransfer updateTransfer = new UnionMainTransfer();
+            updateTransfer.setId(transferId);
+            updateTransfer.setConfirmStatus(UnionConstant.TRANSFER_CONFIRM_STATUS_ACCEPT);
+
+            //事务操作
+            unionMemberService.update(oldOwner);
+            unionMemberService.update(newOwner);
+            if (updateUnion != null) {
+                unionMainService.update(updateUnion);
+            }
+            update(updateTransfer);
+        } else {
+            UnionMainTransfer updateTransfer = new UnionMainTransfer();
+            updateTransfer.setId(transferId);
+            updateTransfer.setConfirmStatus(UnionConstant.TRANSFER_CONFIRM_STATUS_REJECT);
+
             update(updateTransfer);
         }
     }

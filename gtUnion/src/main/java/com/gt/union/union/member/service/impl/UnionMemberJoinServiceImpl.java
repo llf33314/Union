@@ -95,7 +95,7 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
             for (UnionMemberJoin join : joinList) {
                 MemberJoinVO vo = new MemberJoinVO();
                 vo.setMemberJoin(join);
-                UnionMember joinMember = unionMemberService.getApplyByIdAndUnionId(join.getApplyMemberId(), join.getUnionId());
+                UnionMember joinMember = unionMemberService.getByIdAndUnionIdAndStatus(join.getApplyMemberId(), join.getUnionId(), MemberConstant.STATUS_APPLY_IN);
                 if (StringUtil.isNotEmpty(optMemberName)) {
                     boolean isContinue = joinMember == null || StringUtil.isEmpty(joinMember.getEnterpriseName())
                             || !joinMember.getEnterpriseName().contains(optMemberName);
@@ -293,7 +293,7 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
             throw new BusinessException("联盟入盟申请不存在");
         }
         // （3）	判断joinMember状态，如果是申请状态，则进入下一步；如果是其他状态，返回成功
-        UnionMember joinMember = unionMemberService.getApplyByIdAndUnionId(join.getApplyMemberId(), unionId);
+        UnionMember joinMember = unionMemberService.getByIdAndUnionIdAndStatus(join.getApplyMemberId(), unionId, MemberConstant.STATUS_APPLY_IN);
         if (joinMember == null) {
             return;
         }

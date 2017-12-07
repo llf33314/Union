@@ -146,14 +146,14 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    public UnionMember getApplyByIdAndUnionId(Integer memberId, Integer unionId) throws Exception {
-        if (memberId == null || unionId == null) {
+    public UnionMember getByIdAndUnionIdAndStatus(Integer memberId, Integer unionId, Integer status) throws Exception {
+        if (memberId == null || unionId == null || status == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
         UnionMember result = getById(memberId);
         if (result != null) {
-            return unionId.equals(result.getUnionId()) && MemberConstant.STATUS_APPLY_IN == result.getStatus() ? result : null;
+            return unionId.equals(result.getUnionId()) && status.equals(result.getStatus()) ? result : null;
         }
 
         return null;
@@ -174,7 +174,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         statusList.add(MemberConstant.STATUS_APPLY_OUT);
         statusList.add(MemberConstant.STATUS_OUT_PERIOD);
 
-        return filterByStatus(busMemberList, statusList);
+        return filterByStatusList(busMemberList, statusList);
     }
 
     @Override
@@ -188,7 +188,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         statusList.add(MemberConstant.STATUS_IN);
         statusList.add(MemberConstant.STATUS_APPLY_OUT);
 
-        return filterByStatus(busMemberList, statusList);
+        return filterByStatusList(busMemberList, statusList);
     }
 
     @Override
@@ -203,7 +203,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         statusList.add(MemberConstant.STATUS_APPLY_OUT);
         statusList.add(MemberConstant.STATUS_OUT_PERIOD);
 
-        return filterByStatus(unionMemberList, statusList);
+        return filterByStatusList(unionMemberList, statusList);
     }
 
     @Override
@@ -217,7 +217,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         statusList.add(MemberConstant.STATUS_IN);
         statusList.add(MemberConstant.STATUS_APPLY_OUT);
 
-        return filterByStatus(unionMemberList, statusList);
+        return filterByStatusList(unionMemberList, statusList);
     }
 
     @Override
@@ -270,6 +270,17 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         });
 
         return result;
+    }
+
+    @Override
+    public List<UnionMember> listByUnionIdAndStatus(Integer unionId, Integer status) throws Exception {
+        if (unionId == null || status == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMember> result = listByUnionId(unionId);
+        result = filterByStatus(result, status);
+        return null;
     }
 
     //***************************************** Domain Driven Design - save ********************************************
@@ -432,7 +443,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    public List<UnionMember> filterByStatus(List<UnionMember> memberList, List<Integer> statusList) throws Exception {
+    public List<UnionMember> filterByStatusList(List<UnionMember> memberList, List<Integer> statusList) throws Exception {
         if (memberList == null || statusList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -440,6 +451,22 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         List<UnionMember> result = new ArrayList<>();
         for (UnionMember member : memberList) {
             if (statusList.contains(member.getStatus())) {
+                result.add(member);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionMember> filterByStatus(List<UnionMember> memberList, Integer status) throws Exception {
+        if (memberList == null || status == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMember> result = new ArrayList<>();
+        for (UnionMember member : memberList) {
+            if (status.equals(member.getStatus())) {
                 result.add(member);
             }
         }

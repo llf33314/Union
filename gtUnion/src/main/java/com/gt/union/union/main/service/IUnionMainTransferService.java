@@ -86,6 +86,17 @@ public interface IUnionMainTransferService extends IService<UnionMainTransfer> {
      */
     void revokeByIdAndUnionIdAndBusId(Integer transferId, Integer unionId, Integer busId) throws Exception;
 
+    /**
+     * 接受或拒绝盟主权限转移
+     *
+     * @param transferId 盟主权限转移申请id
+     * @param unionId    联盟id
+     * @param busId      商家id
+     * @param isAccept     是否接受(0：否 1：是)
+     * @throws Exception 统一处理异常
+     */
+    void updateStatusByIdAndUnionIdAndBusId(Integer transferId, Integer unionId, Integer busId, Integer isAccept) throws Exception;
+
     //***************************************** Domain Driven Design - count *******************************************
 
     //***************************************** Domain Driven Design - boolean *****************************************

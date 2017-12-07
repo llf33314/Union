@@ -23,6 +23,7 @@ import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.StringUtil;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.member.constant.MemberConstant;
 import com.gt.union.union.member.entity.UnionMember;
@@ -207,6 +208,101 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
     }
 
     //***************************************** Domain Driven Design - save ********************************************
+
+    @Override
+    public void saveByBusIdAndUnionId(Integer busId, Integer unionId, UnionCardActivity vo) throws Exception {
+        if (busId == null || unionId == null || vo == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member写权限、盟主权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+        }
+        if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
+            throw new BusinessException(CommonConstant.UNION_NEED_OWNER);
+        }
+        // （2）	校验表单
+        UnionCardActivity saveActivity = new UnionCardActivity();
+        Date currentDate = DateUtil.getCurrentDate();
+        saveActivity.setCreateTime(currentDate);
+        saveActivity.setDelStatus(CommonConstant.COMMON_NO);
+        saveActivity.setUnionId(unionId);
+        // （2-1）名称
+        String name = vo.getName();
+        if (StringUtil.isEmpty(name)) {
+            throw new BusinessException("名称不能为空");
+        }
+        if (StringUtil.getStringLength(name) > 0) {
+            throw new BusinessException("名称字数不能大于10");
+        }
+        saveActivity.setName(name);
+        // （2-2）价格
+        Double price = vo.getPrice();
+        if (price == null || price <= 0) {
+            throw new BusinessException("价格不能为空，且不能小于0");
+        }
+        saveActivity.setPrice(price);
+        // （2-3）展示图
+        String img = vo.getImg();
+        if (StringUtil.isEmpty(img)) {
+            throw new BusinessException("展示图不能为空");
+        }
+        saveActivity.setImg(img);
+        // （2-4）发行量
+        Integer amount = vo.getAmount();
+        if (amount == null || amount <= 0) {
+            throw new BusinessException("发行量不能为空，且不能小于0");
+        }
+        saveActivity.setAmount(amount);
+        // （2-5）有效天数
+        Integer validityDay = vo.getValidityDay();
+        if (validityDay == null || validityDay <= 0) {
+            throw new BusinessException("有效天数不能为空，且不能小于0");
+        }
+        saveActivity.setValidityDay(validityDay);
+        // （2-6）报名开始时间
+        Date applyBeginTime = vo.getApplyBeginTime();
+        if (applyBeginTime == null || applyBeginTime.compareTo(currentDate) < 0) {
+            throw new BusinessException("报名开始时间不能为空，且必须不小于当前时间");
+        }
+        saveActivity.setApplyBeginTime(applyBeginTime);
+        // （2-7）报名结束时间
+        Date applyEndTime = vo.getApplyEndTime();
+        if (applyEndTime == null || applyEndTime.compareTo(applyBeginTime) < 0) {
+            throw new BusinessException("报名结束时间不能为空，且必须不小于报名开始时间");
+        }
+        saveActivity.setApplyEndTime(applyEndTime);
+        // （2-8）售卡开始时间
+        Date sellBeginTime = vo.getSellBeginTime();
+        if (sellBeginTime == null || sellBeginTime.compareTo(applyEndTime) < 0) {
+            throw new BusinessException("售卡开始时间不能为空，且必须不小于报名结束时间");
+        }
+        saveActivity.setSellBeginTime(sellBeginTime);
+        // （2-9）售卡结束时间
+        Date sellEndTime = vo.getSellEndTime();
+        if (sellEndTime == null || sellEndTime.compareTo(sellBeginTime) < 0) {
+            throw new BusinessException("售卡结束时间不能为空，且必须不小于售卡开始时间");
+        }
+        saveActivity.setSellEndTime(sellEndTime);
+        // （2-10）说明
+        String illustration = vo.getIllustration();
+        if (StringUtil.isEmpty(illustration)) {
+            throw new BusinessException("说明不能为空");
+        }
+        saveActivity.setIllustration(illustration);
+        // （2-11）项目是否需要审核
+        Integer isProjectCheck = vo.getIsProjectCheck();
+        if (isProjectCheck == null) {
+            throw new BusinessException("项目是否需要审核不能为空");
+        }
+        saveActivity.setIsProjectCheck(CommonConstant.COMMON_YES == isProjectCheck ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO);
+
+        save(saveActivity);
+    }
 
     //***************************************** Domain Driven Design - remove ******************************************
 

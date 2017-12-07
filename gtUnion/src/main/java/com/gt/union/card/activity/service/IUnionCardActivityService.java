@@ -59,6 +59,16 @@ public interface IUnionCardActivityService extends IService<UnionCardActivity> {
 
     //***************************************** Domain Driven Design - save ********************************************
 
+    /**
+     * 联盟卡设置-活动卡设置-新增活动卡
+     *
+     * @param busId    商家id
+     * @param unionId  联盟id
+     * @param vo 表单内容
+     * @throws Exception
+     */
+    void saveByBusIdAndUnionId(Integer busId, Integer unionId, UnionCardActivity vo) throws Exception;
+
     //***************************************** Domain Driven Design - remove ******************************************
 
     /**

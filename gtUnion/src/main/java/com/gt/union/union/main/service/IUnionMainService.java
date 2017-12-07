@@ -60,6 +60,14 @@ public interface IUnionMainService extends IService<UnionMain> {
     //***************************************** Domain Driven Design - update ******************************************
 
     /**
+     * 更新
+     *
+     * @param updateUnionMain 更新内容
+     * @throws Exception 统一处理异常
+     */
+    void update(UnionMain updateUnionMain) throws Exception;
+
+    /**
      * 更新联盟基础信息
      *
      * @param unionId 联盟id

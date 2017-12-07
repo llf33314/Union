@@ -244,6 +244,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
     //***************************************** Object As a Service - update *******************************************
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void update(UnionMain updateUnionMain) throws Exception {
         if (updateUnionMain == null) {

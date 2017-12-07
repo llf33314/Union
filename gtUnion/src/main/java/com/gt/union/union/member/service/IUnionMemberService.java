@@ -84,14 +84,16 @@ public interface IUnionMemberService extends IService<UnionMember> {
     UnionMember getWriteByIdAndUnionId(Integer memberId, Integer unionId) throws Exception;
 
     /**
-     * 根据盟员id和联盟id，获取申请状态中的盟员信息
+     * 根据盟员id、联盟id和盟员状态，获取申请状态中的盟员信息
      *
      * @param memberId 盟员id
      * @param unionId  联盟id
+     * @param status   盟员状态
      * @return UnionMember
      * @throws Exception 统一处理异常
      */
-    UnionMember getApplyByIdAndUnionId(Integer memberId, Integer unionId) throws Exception;
+    UnionMember getByIdAndUnionIdAndStatus(Integer memberId, Integer unionId, Integer status) throws Exception;
+
 
     //***************************************** Domain Driven Design - list ********************************************
 
@@ -141,6 +143,16 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @throws Exception 统一处理异常
      */
     List<UnionMember> listWriteByBusIdAndUnionId(Integer busId, Integer unionId, String optMemberName) throws Exception;
+
+    /**
+     * 根据联盟id和盟员状态，获取申请状态中的盟员信息
+     *
+     * @param unionId 联盟id
+     * @param status  盟员状态
+     * @return UnionMember
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> listByUnionIdAndStatus(Integer unionId, Integer status) throws Exception;
 
     //***************************************** Domain Driven Design - save ********************************************
 
@@ -212,14 +224,24 @@ public interface IUnionMemberService extends IService<UnionMember> {
     List<UnionMember> filterByIsUnionOwner(List<UnionMember> memberList, Integer isUnionOwner) throws Exception;
 
     /**
-     * 根据盟员状态进行过滤
+     * 根据盟员状态列表进行过滤
      *
      * @param memberList 盟员列表
      * @param statusList 状态列表
      * @return List<UnionMember>
      * @throws Exception 统一处理异常
      */
-    List<UnionMember> filterByStatus(List<UnionMember> memberList, List<Integer> statusList) throws Exception;
+    List<UnionMember> filterByStatusList(List<UnionMember> memberList, List<Integer> statusList) throws Exception;
+
+    /**
+     * 根据盟员状态进行过滤
+     *
+     * @param memberList 盟员列表
+     * @param status     状态
+     * @return List<UnionMember>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> filterByStatus(List<UnionMember> memberList, Integer status) throws Exception;
 
     /**
      * 根据联盟id进行过滤
