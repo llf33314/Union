@@ -53,12 +53,12 @@ spring:
         min-idle: 0
         #redis集群配置
       cluster:
-        nodes: 113.106.202.51:6379,113.106.202.50:9379,113.106.202.53:9379
+        nodes: 113.106.202.51:6379,113.106.202.50:9379,113.106.202.54:9379
         max-attempts: 3
         max-redirects: 3
         #redis哨兵模式配置
       sentinel:
-        nodes: 113.106.202.51:26379,113.106.202.50:29379,113.106.202.53:29379
+        nodes: 113.106.202.51:26379,113.106.202.50:29379,113.106.202.54:29379
         master: mymaster
   session:
        store-type: redis
@@ -69,7 +69,7 @@ spring:
 redisson:
   master-name: mymaster
   password: gt@123456
-  sentinel-addresses: redis://113.106.202.51:26379,redis://113.106.202.50:29379,redis://113.106.202.53:29379
+  sentinel-addresses: redis://113.106.202.51:26379,redis://113.106.202.50:29379,redis://113.106.202.54:29379
 
 # mybatis设置
 mybatis:
