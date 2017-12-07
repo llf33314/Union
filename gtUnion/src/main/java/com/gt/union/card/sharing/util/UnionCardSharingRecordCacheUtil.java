@@ -10,11 +10,12 @@ import java.util.List;
  * @version 2017-11-23 17:39:04
  */
 public class UnionCardSharingRecordCacheUtil {
-    public static final int TYPE_MEMBER_ID = 1;
-    public static final int TYPE_UNION_ID = 2;
-    public static final int TYPE_ACTIVITY_ID = 3;
-    public static final int TYPE_CARD_ID = 4;
-    public static final int TYPE_FAN_ID = 5;
+    public static final int TYPE_SHARING_MEMBER_ID = 1;
+    public static final int TYPE_FROM_MEMBER_ID = 2;
+    public static final int TYPE_UNION_ID = 3;
+    public static final int TYPE_ACTIVITY_ID = 4;
+    public static final int TYPE_CARD_ID = 5;
+    public static final int TYPE_FAN_ID = 6;
 
     public static String getIdKey(Integer id) {
         return "unionCardSharingRecord:" + id;
@@ -28,8 +29,12 @@ public class UnionCardSharingRecordCacheUtil {
         return result;
     }
 
-    public static String getMemberIdKey(Integer memberId) {
-        return "unionCardSharingRecord:memberId:" + memberId;
+    public static String getSharingMemberIdKey(Integer sharingMemberId) {
+        return "unionCardSharingRecord:sharingMemberId:" + sharingMemberId;
+    }
+
+    public static String getFromMemberIdKey(Integer fromMemberId) {
+        return "unionCardSharingRecord:fromMemberId:" + fromMemberId;
     }
 
     public static String getUnionIdKey(Integer unionId) {

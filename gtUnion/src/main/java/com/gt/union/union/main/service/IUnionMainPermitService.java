@@ -48,7 +48,18 @@ public interface IUnionMainPermitService extends IService<UnionMainPermit> {
 
     //***************************************** Domain Driven Design - update ******************************************
 
-    
+    /**
+     * 购买许可成功后的回调
+     *
+     * @param permitId  许可id
+     * @param socketKey socket关键字
+     * @param payType   支付类型
+     * @param orderNo   订单号
+     * @param isSuccess 是否成功
+     * @return
+     */
+    String updateCallbackByPermitId(Integer permitId, String socketKey, String payType, String orderNo, Integer isSuccess);
+
     //***************************************** Domain Driven Design - count *******************************************
 
     //***************************************** Domain Driven Design - boolean *****************************************

@@ -46,4 +46,14 @@ public interface MemberConstant {
      * 退盟类型：盟主移出
      */
     int OUT_TYPE_REMOVE = 2;
+
+    /**
+     * 入盟类型：申请
+     */
+    int JOIN_TYPE_APPLY = 1;
+
+    /**
+     * 入盟类型：推荐
+     */
+    int JOIN_TYPE_RECOMMEND = 2;
 }

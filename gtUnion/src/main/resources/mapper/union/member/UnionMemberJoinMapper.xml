@@ -10,7 +10,6 @@
         <result column="type" property="type"/>
         <result column="apply_member_id" property="applyMemberId"/>
         <result column="recommend_member_id" property="recommendMemberId"/>
-        <result column="is_recommend_agree" property="isRecommendAgree"/>
         <result column="reason" property="reason"/>
         <result column="union_id" property="unionId"/>
     </resultMap>

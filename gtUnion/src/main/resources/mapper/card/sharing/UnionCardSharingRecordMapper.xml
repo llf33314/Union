@@ -10,7 +10,8 @@
         <result column="sell_price" property="sellPrice"/>
         <result column="sharing_ratio" property="sharingRatio"/>
         <result column="sharing_money" property="sharingMoney"/>
-        <result column="member_id" property="memberId"/>
+        <result column="sharing_member_id" property="sharingMemberId"/>
+        <result column="from_member_id" property="fromMemberId"/>
         <result column="union_id" property="unionId"/>
         <result column="activity_id" property="activityId"/>
         <result column="card_id" property="cardId"/>

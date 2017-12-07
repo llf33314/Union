@@ -72,15 +72,7 @@ public class UnionMainTransfer extends Model<UnionMainTransfer> {
     @ApiModelProperty(value = "确认状态(1:确认中 2:已确认 3:已拒绝)")
     @TableField("confirm_status")
     private Integer confirmStatus;
-
-    /**
-     * 是否需要提示(0:否  1:是)
-     */
-    @ApiModelProperty(value = "是否需要提示(0:否  1:是)")
-    @TableField("is_advice")
-    private Integer isAdvice;
-
-
+    
     public Integer getId() {
         return id;
     }
@@ -135,14 +127,6 @@ public class UnionMainTransfer extends Model<UnionMainTransfer> {
 
     public void setConfirmStatus(Integer confirmStatus) {
         this.confirmStatus = confirmStatus;
-    }
-
-    public Integer getIsAdvice() {
-        return isAdvice;
-    }
-
-    public void setIsAdvice(Integer isAdvice) {
-        this.isAdvice = isAdvice;
     }
 
     @Override

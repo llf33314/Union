@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.card.activity.entity.UnionCardActivity;
+import com.gt.union.card.activity.service.IUnionCardActivityService;
 import com.gt.union.card.activity.vo.*;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
@@ -12,6 +13,7 @@ import com.gt.union.common.util.PageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,6 +30,9 @@ import java.util.List;
 @RequestMapping("/unionCardActivity")
 public class UnionCardActivityController {
 
+    @Autowired
+    private IUnionCardActivityService unionCardActivityService;
+
     //-------------------------------------------------- get -----------------------------------------------------------
 
     @ApiOperation(value = "分页：售卡佣金分成管理-活动卡售卡比例设置", produces = "application/json;charset=UTF-8")
@@ -43,7 +48,8 @@ public class UnionCardActivityController {
             busId = busUser.getPid();
         }
         // mock
-        List<CardActivityStatusVO> voList = MockUtil.list(CardActivityStatusVO.class, page.getSize());
+//        List<CardActivityStatusVO> voList = MockUtil.list(CardActivityStatusVO.class, page.getSize());
+        List<CardActivityStatusVO> voList = unionCardActivityService.listCardActivityStatusVOByBusIdAndUnionId(busId, unionId);
         Page<CardActivityStatusVO> result = (Page<CardActivityStatusVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -62,7 +68,8 @@ public class UnionCardActivityController {
             busId = busUser.getPid();
         }
         // mock
-        List<CardActivityVO> voList = MockUtil.list(CardActivityVO.class, page.getSize());
+//        List<CardActivityVO> voList = MockUtil.list(CardActivityVO.class, page.getSize());
+        List<CardActivityVO> voList = unionCardActivityService.listCardActivityVOByBusIdAndUnionId(busId, unionId);
         Page<CardActivityVO> result = (Page<CardActivityVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);

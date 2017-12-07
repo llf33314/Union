@@ -4,10 +4,11 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
+import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.ExportUtil;
 import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PageUtil;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.service.IUnionMainService;
@@ -126,7 +127,7 @@ public class UnionMemberController {
         }
         // mock
 //        UnionMember result = MockUtil.get(UnionMember.class);
-        UnionMember result = unionMemberService.getByIdAndBusIdAndUnionId(memberId, busId, unionId);
+        UnionMember result = unionMemberService.getByIdAndUnionIdAndBusId(memberId, unionId, busId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -142,7 +143,8 @@ public class UnionMemberController {
             busId = busUser.getPid();
         }
         // mock
-        UnionMember result = MockUtil.get(UnionMember.class);
+//        UnionMember result = MockUtil.get(UnionMember.class);
+        UnionMember result = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -161,8 +163,9 @@ public class UnionMemberController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
+        unionMemberService.updateByIdAndUnionIdAndBusId(memberId, unionId, busId, member);
         return GtJsonResult.instanceSuccessMsg();
     }
 
@@ -179,8 +182,9 @@ public class UnionMemberController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
+        unionMemberService.updateDiscountByIdAndUnionIdAndBusId(memberId, unionId, busId, discount);
         return GtJsonResult.instanceSuccessMsg();
     }
 

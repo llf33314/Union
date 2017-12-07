@@ -18,11 +18,6 @@ public interface ConfigConstant {
     int MAX_UNION_APPLY = 3;
 
     /**
-     * 最大优惠项目数
-     */
-    int MAX_PREFERENIAL_COUNT = 5;
-
-    /**
      * 短信model
      */
     int SMS_UNION_MODEL = 33;

@@ -12,15 +12,14 @@ import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.StringUtil;
-import com.gt.union.union.main.entity.UnionMainCreate;
-import com.gt.union.union.main.entity.UnionMainPackage;
-import com.gt.union.union.main.entity.UnionMainPermit;
+import com.gt.union.union.main.constant.UnionConstant;
+import com.gt.union.union.main.entity.*;
 import com.gt.union.union.main.mapper.UnionMainCreateMapper;
-import com.gt.union.union.main.service.IUnionMainCreateService;
-import com.gt.union.union.main.service.IUnionMainPackageService;
-import com.gt.union.union.main.service.IUnionMainPermitService;
+import com.gt.union.union.main.service.*;
 import com.gt.union.union.main.util.UnionMainCreateCacheUtil;
+import com.gt.union.union.main.vo.UnionCreateVO;
 import com.gt.union.union.main.vo.UnionPermitCheckVO;
+import com.gt.union.union.member.constant.MemberConstant;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +40,9 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
     private RedisCacheUtil redisCacheUtil;
 
     @Autowired
+    private IUnionMainService unionMainService;
+
+    @Autowired
     private IUnionMemberService unionMemberService;
 
     @Autowired
@@ -51,6 +53,9 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
 
     @Autowired
     private IUnionMainPackageService unionMainPackageService;
+
+    @Autowired
+    private IUnionMainDictService unionMainDictService;
 
     //***************************************** Domain Driven Design - get *********************************************
 
@@ -113,8 +118,195 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
                 result.setPermitId(permit.getId());
             }
         }
-        
+
         return result;
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void saveUnionCreateVOByBusId(Integer busId, UnionCreateVO vo) throws Exception {
+        if (busId == null || vo == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断是否已是盟主，如果是，报错
+        UnionMember busOwnerMember = unionMemberService.getOwnerByBusId(busId);
+        if (busOwnerMember != null) {
+            throw new BusinessException("已具有盟主身份，无法同时创建多个联盟");
+        }
+
+        // （2）	判断是否有联盟基础服务（调接口），如果不是，报错
+        // TODO 这里少个接口
+        Map<String, String> basicMap = new HashMap<>(16);
+        String isAuthority = basicMap.get("isAuthority");
+        if (StringUtil.isEmpty(isAuthority) || isAuthority.equals(CommonConstant.COMMON_NO)) {
+            throw new BusinessException("不具有联盟基础服务");
+        }
+
+        // （3）	判断联盟许可有效性
+        Integer permitId = vo.getPermitId();
+        if (permitId == null) {
+            throw new BusinessException("不具有联盟盟主服务");
+        }
+        UnionMainPermit permit = unionMainPermitService.getValidByBusId(busId);
+        if (permit == null || !permit.getId().equals(permitId)) {
+            throw new BusinessException("不具有联盟盟主服务");
+        }
+        UnionMainPackage unionPackage = unionMainPackageService.getById(permit.getPackageId());
+        if (unionPackage == null) {
+            throw new BusinessException("找不到许可对应的套餐");
+        }
+
+        Date currentDate = DateUtil.getCurrentDate();
+        // （4）	校验表单
+        UnionMain saveUnion = new UnionMain();
+        saveUnion.setDelStatus(CommonConstant.COMMON_NO);
+        saveUnion.setCreateTime(currentDate);
+        saveUnion.setValidity(permit.getValidity());
+        saveUnion.setMemberLimit(unionPackage.getNumber());
+        UnionMain voUnion = vo.getUnion();
+        if (voUnion == null) {
+            throw new BusinessException("请填写联盟设置信息");
+        }
+        // （4-1）联盟名称
+        String unionName = voUnion.getName();
+        if (StringUtil.isEmpty(unionName)) {
+            throw new BusinessException("联盟名称不能为空");
+        }
+        if (StringUtil.getStringLength(unionName) > 5) {
+            throw new BusinessException("联盟名称字数不能大于5");
+        }
+        saveUnion.setName(unionName);
+        // （4-2）联盟图标
+        String unionImg = voUnion.getImg();
+        if (StringUtil.isEmpty(unionImg)) {
+            throw new BusinessException("联盟图标不能为空");
+        }
+        saveUnion.setImg(unionImg);
+        // （4-3）联盟说明
+        String unionIllustration = voUnion.getIllustration();
+        if (StringUtil.isEmpty(unionIllustration)) {
+            throw new BusinessException("联盟说明不能为空");
+        }
+        if (StringUtil.getStringLength(unionIllustration) > 20) {
+            throw new BusinessException("联盟说明字数不能大于20");
+        }
+        saveUnion.setIllustration(unionIllustration);
+        // （4-4）加盟方式
+        Integer unionJoinType = voUnion.getJoinType();
+        if (unionJoinType == null) {
+            throw new BusinessException("加盟方式不能为空");
+        }
+        if (UnionConstant.JOIN_TYPE_RECOMMEND != unionJoinType && UnionConstant.JOIN_TYPE_APPLY_RECOMMEND != unionJoinType) {
+            throw new BusinessException("加盟方式参数值有误");
+        }
+        saveUnion.setJoinType(unionJoinType);
+        // （4-5）是否开启积分
+        Integer unionIsIntegral = voUnion.getIsIntegral();
+        if (unionIsIntegral == null) {
+            throw new BusinessException("是否开启积分不能为空");
+        }
+        if (CommonConstant.COMMON_NO != unionIsIntegral && CommonConstant.COMMON_YES != unionIsIntegral) {
+            throw new BusinessException("是否开启积分参数值有误");
+        }
+        saveUnion.setIsIntegral(unionIsIntegral);
+
+        UnionMember saveMember = new UnionMember();
+        saveMember.setDelStatus(CommonConstant.COMMON_NO);
+        saveMember.setBusId(busId);
+        saveMember.setStatus(MemberConstant.STATUS_IN);
+        saveMember.setIsUnionOwner(MemberConstant.IS_UNION_OWNER_YES);
+        UnionMember voMember = vo.getMember();
+        // （4-6）企业名称
+        String memberEnterpriseName = voMember.getEnterpriseName();
+        if (StringUtil.isEmpty(memberEnterpriseName)) {
+            throw new BusinessException("企业名称不能为空");
+        }
+        if (StringUtil.getStringLength(memberEnterpriseName) > 10) {
+            throw new BusinessException("企业名称字数不能大于10");
+        }
+        saveMember.setEnterpriseName(memberEnterpriseName);
+        // （4-7）企业地址
+        String memberEnterpriseAddress = voMember.getEnterpriseAddress();
+        if (StringUtil.isEmpty(memberEnterpriseAddress)) {
+            throw new BusinessException("企业地址不能为空");
+        }
+        saveMember.setEnterpriseAddress(memberEnterpriseAddress);
+        // （4-8）负责人名称
+        String memberDirectorName = voMember.getDirectorName();
+        if (StringUtil.isEmpty(memberDirectorName)) {
+            throw new BusinessException("负责人名称不能为空");
+        }
+        if (StringUtil.getStringLength(memberDirectorName) > 10) {
+            throw new BusinessException("负责人名称字数不能大于10");
+        }
+        saveMember.setDirectorName(memberDirectorName);
+        // （4-9）负责人联系电话
+        String memberDirectorPhone = voMember.getDirectorPhone();
+        if (StringUtil.isEmpty(memberDirectorPhone)) {
+            throw new BusinessException("负责人联系电话不能为空");
+        }
+        if (!StringUtil.isPhone(memberDirectorPhone)) {
+            throw new BusinessException("负责人联系电话参数值有误");
+        }
+        saveMember.setDirectorPhone(memberDirectorPhone);
+        // （4-10）负责人邮箱
+        String memberDirectorEmail = voMember.getDirectorEmail();
+        if (StringUtil.isEmpty(memberDirectorEmail)) {
+            throw new BusinessException("负责人联系邮箱不能为空");
+        }
+        if (!StringUtil.isEmail(memberDirectorEmail)) {
+            throw new BusinessException("负责人联系邮箱参数值有误");
+        }
+        saveMember.setDirectorEmail(memberDirectorEmail);
+        // （4-11）地址经纬度
+        String memberAddressLongitude = voMember.getAddressLongitude();
+        String memberAddressLatitude = voMember.getAddressLatitude();
+        if (StringUtil.isEmpty(memberAddressLongitude) || StringUtil.isEmpty(memberAddressLatitude)) {
+            throw new BusinessException("地址经纬度不能为空");
+        }
+        saveMember.setAddressLongitude(memberAddressLongitude);
+        saveMember.setAddressLatitude(memberAddressLatitude);
+        // （4-12）地址编码
+        String memberAddressProvinceCode = voMember.getAddressProvinceCode();
+        String memberAddressCityCode = voMember.getAddressCityCode();
+        String memberAddressDistrictCode = voMember.getAddressDistrictCode();
+        if (StringUtil.isEmpty(memberAddressProvinceCode) || StringUtil.isEmpty(memberAddressCityCode) || StringUtil.isEmpty(memberAddressDistrictCode)) {
+            throw new BusinessException("地址编码不能为空");
+        }
+        saveMember.setAddressProvinceCode(memberAddressProvinceCode);
+        saveMember.setAddressCityCode(memberAddressCityCode);
+        saveMember.setAddressDistrictCode(memberAddressDistrictCode);
+        // （4-13）短信通知手机
+        String memberNotifyPhone = voMember.getNotifyPhone();
+        if (StringUtil.isEmpty(memberNotifyPhone)) {
+            throw new BusinessException("短信通知手机不能为空");
+        }
+        if (StringUtil.isPhone(memberNotifyPhone)) {
+            throw new BusinessException("短信通知手机参数值有误");
+        }
+        saveMember.setNotifyPhone(memberNotifyPhone);
+
+        // （4-14）积分抵扣率
+        if (saveUnion.getIsIntegral() == CommonConstant.COMMON_YES) {
+            Double memberIntegralExchangeRatio = voMember.getIntegralExchangeRatio();
+            if (memberIntegralExchangeRatio == null || memberIntegralExchangeRatio <= 0 || memberIntegralExchangeRatio > 30) {
+                throw new BusinessException("积分抵扣率不能小于等于0，且不能大于30");
+            }
+            saveMember.setIntegralExchangeRatio(memberIntegralExchangeRatio);
+        }
+
+        List<UnionMainDict> saveDictList = vo.getItemList();
+        if (ListUtil.isEmpty(saveDictList)) {
+            throw new BusinessException("入盟收集信息不能为空");
+        }
+        // （5）事务操作
+        unionMainService.save(saveUnion);
+        saveMember.setUnionId(saveUnion.getId());
+        unionMemberService.save(saveMember);
+        for (UnionMainDict dict : saveDictList) {
+            dict.setUnionId(saveUnion.getId());
+        }
+        unionMainDictService.saveBatch(saveDictList);
     }
 
     //***************************************** Domain Driven Design - list ********************************************

@@ -67,11 +67,18 @@ public class UnionCardSharingRecord extends Model<UnionCardSharingRecord> {
     private Double sharingMoney;
 
     /**
-     * 盟员id
+     * 分成盟员id
      */
-    @ApiModelProperty(value = "盟员id")
-    @TableField("member_id")
-    private Integer memberId;
+    @ApiModelProperty(value = "分成盟员id")
+    @TableField("sharing_member_id")
+    private Integer sharingMemberId;
+
+    /**
+     * 售卡盟员id
+     */
+    @ApiModelProperty(value = "售卡盟员id")
+    @TableField("from_member_id")
+    private Integer fromMemberId;
 
     /**
      * 联盟id
@@ -150,12 +157,20 @@ public class UnionCardSharingRecord extends Model<UnionCardSharingRecord> {
         this.sharingMoney = sharingMoney;
     }
 
-    public Integer getMemberId() {
-        return memberId;
+    public Integer getSharingMemberId() {
+        return sharingMemberId;
     }
 
-    public void setMemberId(Integer memberId) {
-        this.memberId = memberId;
+    public void setSharingMemberId(Integer sharingMemberId) {
+        this.sharingMemberId = sharingMemberId;
+    }
+
+    public Integer getFromMemberId() {
+        return fromMemberId;
+    }
+
+    public void setFromMemberId(Integer fromMemberId) {
+        this.fromMemberId = fromMemberId;
     }
 
     public Integer getUnionId() {

@@ -18,6 +18,16 @@ public interface UnionConstant {
     int IS_INTEGRAL_NO = 0;
 
     /**
+     * 加盟方式：推荐
+     */
+    int JOIN_TYPE_RECOMMEND = 1;
+    
+    /**
+     * 加盟方式：申请、推荐
+     */
+    int JOIN_TYPE_APPLY_RECOMMEND = 2;
+
+    /**
      * 盟主转移申请确认状态：确认中
      */
     int TRANSFER_CONFIRM_STATUS_PROCESS = 1;
@@ -36,7 +46,7 @@ public interface UnionConstant {
      * 盟主服务订单状态：未支付
      */
     int PERMIT_ORDER_STATUS_NOT_PAY = 1;
-    
+
     /**
      * 盟主服务订单状态：支付成功
      */
@@ -46,5 +56,25 @@ public interface UnionConstant {
      * 盟主服务订单状态：支付失败
      */
     int PERMIT_ORDER_STATUS_PAY_FAIL = 3;
+
+    /**
+     * 入盟申请必填字段：负责人名称
+     */
+    String ITEM_KEY_DIRECTOR_NAME = "directorName";
+
+    /**
+     * 入盟申请必填字段：负责人联系电话
+     */
+    String ITEM_KEY_DIRECTOR_PHONE = "directorPhone";
+
+    /**
+     * 入盟申请必填字段：负责人邮箱
+     */
+    String ITEM_KEY_DIRECTOR_EMAIL = "directorEmail";
+
+    /**
+     * 入盟申请必填字段：理由
+     */
+    String ITEM_KEY_REASON = "reason";
 
 }

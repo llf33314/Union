@@ -4,17 +4,20 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
+import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.PageUtil;
+import com.gt.union.union.member.service.IUnionMemberJoinService;
 import com.gt.union.union.member.vo.MemberJoinCreateVO;
 import com.gt.union.union.member.vo.MemberJoinVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,6 +30,9 @@ import java.util.List;
 @RestController
 @RequestMapping("/unionMemberJoin")
 public class UnionMemberJoinController {
+
+    @Autowired
+    private IUnionMemberJoinService unionMemberJoinService;
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
@@ -47,7 +53,8 @@ public class UnionMemberJoinController {
             busId = busUser.getPid();
         }
         // mock
-        List<MemberJoinVO> voList = new ArrayList<>();
+//        List<MemberJoinVO> voList = new ArrayList<>();
+        List<MemberJoinVO> voList = unionMemberJoinService.listMemberJoinVOByBusIdAndUnionId(busId, unionId, memberName, phone);
         Page<MemberJoinVO> result = (Page<MemberJoinVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -57,7 +64,7 @@ public class UnionMemberJoinController {
 
     @ApiOperation(value = "通过或不通过入盟申请", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{joinId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> updateIsPassByIdAndUnionId(
+    public GtJsonResult<String> updateStatusByIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "入盟申请id", name = "joinId", required = true)
             @PathVariable("joinId") Integer joinId,
@@ -68,8 +75,9 @@ public class UnionMemberJoinController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
+        unionMemberJoinService.updateStatusByIdAndUnionIdAndBusId(joinId, unionId, busId, isPass);
         return GtJsonResult.instanceSuccessMsg();
     }
 
@@ -88,8 +96,9 @@ public class UnionMemberJoinController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
+        unionMemberJoinService.saveJoinCreateVOByBusIdAndUnionIdAndType(busId, unionId, type, joinCreateVO);
         return GtJsonResult.instanceSuccessMsg();
     }
 

@@ -14,6 +14,7 @@ import java.util.Date;
 public class DateUtil {
     public static final String DATE_PATTERN = "yyyy-MM-dd";
     public static final String DATETIME_PATTERN = "yyyy-MM-dd HH:mm:ss";
+    public static final String SERIAL_PATTERN = "yyyyMMddHHmmssSSS";
 
     /**
      * 获取当前时间
@@ -177,6 +178,15 @@ public class DateUtil {
         calendar.setTime(date);
         calendar.add(Calendar.YEAR, amount);
         return calendar.getTime();
+    }
+
+    /**
+     * 获取流水号格式的当前时间
+     *
+     * @return String
+     */
+    public static String getSerialNumber() {
+        return getCurrentDateString(SERIAL_PATTERN);
     }
 
 }
