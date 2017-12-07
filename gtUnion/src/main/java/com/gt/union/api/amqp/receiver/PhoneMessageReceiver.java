@@ -60,12 +60,17 @@ public class PhoneMessageReceiver {
 
             @Override
             public void onMessage(Message message, Channel channel) throws Exception {
-                String msg = new String(message.getBody(), "UTF-8");
-                logger.info(msg);
-                PhoneMessage phoneMessage = JSONArray.parseObject(msg, PhoneMessage.class);
-                smsService.sendSms(phoneMessage);
-                //确认消息成功消费
-                channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+                try{
+                    String msg = new String(message.getBody(), "UTF-8");
+                    logger.info(msg);
+                    PhoneMessage phoneMessage = JSONArray.parseObject(msg, PhoneMessage.class);
+//                    smsService.sendSms(phoneMessage);
+                }catch (Exception e){
+                    logger.error("错误");
+                }finally {
+                    //确认消息成功消费
+                    channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+                }
             }
         });
         return container;

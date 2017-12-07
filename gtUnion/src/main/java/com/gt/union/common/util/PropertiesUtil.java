@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class PropertiesUtil {
 
-
 	private static String resourceUrl;
 
 	private static String socketUrl;
@@ -28,12 +27,6 @@ public class PropertiesUtil {
 	private static String mqExchange;
 
 	private static String mqQueueName;
-
-	private static String redisIp;
-
-	private static Integer redisPort;
-
-	private static String redisPwd;
 
 	private static String redisNamePrefix;
 
@@ -60,6 +53,12 @@ public class PropertiesUtil {
 	private static String profiles;
 
 	private static String duofenAppid;
+
+	private static String jxcUrl;
+
+	private static String jxcAccount;
+
+	private static String jxcPwd;
 
 	/**
 	 * 获取资源访问地址
@@ -109,37 +108,12 @@ public class PropertiesUtil {
 		return mqExchange;
 	}
 
-
 	/**
 	 * 获取mq对列名称
 	 * @return
 	 */
 	public static String getMqQueueName() {
 		return mqQueueName;
-	}
-
-	/**
-	 * 获取redis ip地址
-	 * @return redisIp
-	 */
-	public static String getRedisIp() {
-		return redisIp;
-	}
-
-	/**
-	 * 获取redis密码
-	 * @return redisPwd
-	 */
-	public static String getRedisPwd() {
-		return redisPwd;
-	}
-
-	/**
-	 * 获取redis端口
-	 * @return redisPort
-	 */
-	public static Integer getRedisPort() {
-		return redisPort;
 	}
 
 	/**
@@ -166,10 +140,13 @@ public class PropertiesUtil {
 		return domainDf;
 	}
 
+	/**
+	 * 获取多粉公司名称
+	 * @return
+	 */
 	public static String getWxmpCompany() {
 		return wxmpCompany;
 	}
-
 
 	/**
 	 * 获取wxmp项目api密钥
@@ -177,6 +154,109 @@ public class PropertiesUtil {
 	 */
 	public static String getWxmpSignKey() {
 		return wxmpSignkey;
+	}
+
+	/**
+	 * 会员请求路径
+	 * @return
+	 */
+	public static String getMemberUrl() {
+		return memberUrl;
+	}
+
+	/**
+	 * 会员请求签名
+	 * @return
+	 */
+	public static String getMemberSignKey() {
+		return memberSignKey;
+	}
+
+	/**
+	 * 获取多粉商家id
+	 * @return
+	 */
+	public static Integer getDuofenBusId() {
+		return duofenBusId;
+	}
+
+	/**
+	 * 联盟加密密钥
+	 * @return
+	 */
+	public static String getEncryptKey() {
+		return encryptKey;
+	}
+
+	/**
+	 * sokcetkey前缀
+	 * @return
+	 */
+	public static String getSocketKey() {
+		return socketKey;
+	}
+
+	/**
+	 * 调用联盟接口签名key
+	 * @return
+	 */
+	public static String getUnionSignKey() {
+		return unionSignKey;
+	}
+
+	/**
+	 * 获取项目环境配置前缀
+	 * @return
+	 */
+	public static String getProfiles() {
+		return profiles;
+	}
+
+	/**
+	 * 获取wxmp签名key
+	 * @return
+	 */
+	public static String getWxmpSignkey() {
+		return wxmpSignkey;
+	}
+
+	/**
+	 * 获取多粉appid
+	 * @return
+	 */
+	public static String getDuofenAppid() {
+		return duofenAppid;
+	}
+
+	/**
+	 * 获取进销存地址
+	 * @return
+	 */
+	public static String getJxcUrl() {
+		return jxcUrl;
+	}
+
+	/**
+	 * 获取进销存账号
+	 * @return
+	 */
+	public static String getJxcAccount() {
+		return jxcAccount;
+	}
+
+	/**
+	 * 获取进销存密码
+	 * @return
+	 */
+	public static String getJxcPwd() {
+		return jxcPwd;
+	}
+	/**
+	 * 联盟路径
+	 * @return
+	 */
+	public static String getUnionUrl() {
+		return unionUrl;
 	}
 
 	@Value("${resource.url.prefix}")
@@ -204,21 +284,6 @@ public class PropertiesUtil {
 		PropertiesUtil.mqPassWord = mqPassWord;
 	}
 
-	@Value("${spring.redis.host}")
-	public void setRedisIp(String redisIp) {
-		PropertiesUtil.redisIp = redisIp;
-	}
-
-	@Value("${spring.redis.port}")
-	public void setRedisPort(Integer redisPort) {
-		PropertiesUtil.redisPort = redisPort;
-	}
-
-	@Value("${spring.redis.password}")
-	public void setRedisPwd(String redisPwd) {
-		redisPwd = redisPwd;
-	}
-
 	@Value("${redisNamePrefix}")
 	public void setRedisNamePrefix(String redisNamePrefix) {
 		PropertiesUtil.redisNamePrefix = redisNamePrefix;
@@ -236,7 +301,7 @@ public class PropertiesUtil {
 
 	@Value("${wxmp.signkey}")
 	public void setWxmpSignKey(String wxmpSignKey) {
-		wxmpSignkey = wxmpSignKey;
+		PropertiesUtil.wxmpSignkey = wxmpSignKey;
 	}
 
 	@Value("${wxmp.company}")
@@ -246,7 +311,7 @@ public class PropertiesUtil {
 
 	@Value("${queueName.union.queueName}")
 	public void setMqQueueName(String mqQueueName) {
-		mqQueueName = mqQueueName;
+		PropertiesUtil.mqQueueName = mqQueueName;
 	}
 
 	@Value("${exchange.union.exchange}")
@@ -254,56 +319,9 @@ public class PropertiesUtil {
 		PropertiesUtil.mqExchange = mqExchange;
 	}
 
-	/**
-	 * 联盟路径
-	 * @return
-	 */
-	public static String getUnionUrl() {
-		return unionUrl;
-	}
-
 	@Value("${union.url}")
 	public void setUnionUrl(String unionUrl) {
 		PropertiesUtil.unionUrl = unionUrl;
-	}
-
-	/**
-	 * 会员请求路径
-	 * @return
-	 */
-	public static String getMemberUrl() {
-		return memberUrl;
-	}
-
-	@Value("${member.url}")
-	public void setMemberUrl(String memberUrl) {
-		PropertiesUtil.memberUrl = memberUrl;
-	}
-
-	/**
-	 * 会员请求签名
-	 * @return
-	 */
-	public static String getMemberSignKey() {
-		return memberSignKey;
-	}
-
-	@Value("${member.signkey}")
-	public void setMemberSignKey(String memberSignKey) {
-		PropertiesUtil.memberSignKey = memberSignKey;
-	}
-
-	public static Integer getDuofenBusId() {
-		return duofenBusId;
-	}
-
-	@Value("${wx.duofen.busId}")
-	public void setDuofenBusId(Integer duofenBusId) {
-		PropertiesUtil.duofenBusId = duofenBusId;
-	}
-
-	public static String getEncryptKey() {
-		return encryptKey;
 	}
 
 	@Value("${union.encryptKey}")
@@ -311,27 +329,34 @@ public class PropertiesUtil {
 		PropertiesUtil.encryptKey = encryptKey;
 	}
 
-	public static String getSocketKey() {
-		return socketKey;
-	}
-
-	@Value("${socket.key}")
-	public void setSocketKey(String socketKey) {
-		socketKey = socketKey;
-	}
-
-	public static String getUnionSignKey() {
-		return unionSignKey;
-	}
-
 	@Value("${union.signkey}")
 	public void setUnionSignKey(String unionSignKey) {
 		PropertiesUtil.unionSignKey = unionSignKey;
 	}
 
+	@Value("${member.url}")
+	public void setMemberUrl(String memberUrl) {
+		PropertiesUtil.memberUrl = memberUrl;
+	}
 
-	public static String getProfiles() {
-		return profiles;
+	@Value("${member.signkey}")
+	public void setMemberSignKey(String memberSignKey) {
+		PropertiesUtil.memberSignKey = memberSignKey;
+	}
+
+	@Value("${wx.duofen.busId}")
+	public void setDuofenBusId(Integer duofenBusId) {
+		PropertiesUtil.duofenBusId = duofenBusId;
+	}
+
+	@Value("${wx.duofen.appid}")
+	public static void setDuofenAppid(String duofenAppid) {
+		PropertiesUtil.duofenAppid = duofenAppid;
+	}
+
+	@Value("${socket.key}")
+	public void setSocketKey(String socketKey) {
+		PropertiesUtil.socketKey = socketKey;
 	}
 
 	@Value("${spring.profiles.active}")
@@ -339,29 +364,20 @@ public class PropertiesUtil {
 		PropertiesUtil.profiles = profiles;
 	}
 
-
-	public static String getRedisNamePrefix() {
-		return redisNamePrefix;
+	@Value("${jxc.url}")
+	public void setJxcUrl(String jxcUrl) {
+		PropertiesUtil.jxcUrl = jxcUrl;
 	}
 
-	public static void setDomainDf(String domainDf) {
-		PropertiesUtil.domainDf = domainDf;
+	@Value("${jxc.account}")
+	public void setJxcAccount(String jxcAccount) {
+		PropertiesUtil.jxcAccount = jxcAccount;
 	}
 
-	public static String getWxmpSignkey() {
-		return wxmpSignkey;
+	@Value("${jxc.pwd}")
+	public void setJxcPwd(String jxcPwd) {
+		PropertiesUtil.jxcPwd = jxcPwd;
 	}
 
-	public static void setWxmpSignkey(String wxmpSignkey) {
-		PropertiesUtil.wxmpSignkey = wxmpSignkey;
-	}
 
-	public static String getDuofenAppid() {
-		return duofenAppid;
-	}
-
-	@Value("${wx.duofen.appid}")
-	public static void setDuofenAppid(String duofenAppid) {
-		PropertiesUtil.duofenAppid = duofenAppid;
-	}
 }
