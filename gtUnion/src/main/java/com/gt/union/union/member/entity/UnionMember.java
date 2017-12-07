@@ -130,27 +130,6 @@ public class UnionMember extends Model<UnionMember> {
     private String addressLatitude;
 
     /**
-     * 地址省份code
-     */
-    @ApiModelProperty(value = "地址省份code")
-    @TableField("address_province_code")
-    private String addressProvinceCode;
-
-    /**
-     * 地址城市code
-     */
-    @ApiModelProperty(value = "地址城市code")
-    @TableField("address_city_code")
-    private String addressCityCode;
-
-    /**
-     * 地址区code
-     */
-    @ApiModelProperty(value = "地址区code")
-    @TableField("address_district_code")
-    private String addressDistrictCode;
-
-    /**
      * 盟员退出是否短信通知(0:否 1:是)
      */
     @ApiModelProperty(value = "盟员退出是否短信通知(0:否 1:是)")
@@ -297,30 +276,6 @@ public class UnionMember extends Model<UnionMember> {
 
     public void setAddressLatitude(String addressLatitude) {
         this.addressLatitude = addressLatitude;
-    }
-
-    public String getAddressProvinceCode() {
-        return addressProvinceCode;
-    }
-
-    public void setAddressProvinceCode(String addressProvinceCode) {
-        this.addressProvinceCode = addressProvinceCode;
-    }
-
-    public String getAddressCityCode() {
-        return addressCityCode;
-    }
-
-    public void setAddressCityCode(String addressCityCode) {
-        this.addressCityCode = addressCityCode;
-    }
-
-    public String getAddressDistrictCode() {
-        return addressDistrictCode;
-    }
-
-    public void setAddressDistrictCode(String addressDistrictCode) {
-        this.addressDistrictCode = addressDistrictCode;
     }
 
     public Integer getIsMemberOutNotify() {

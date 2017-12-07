@@ -15,9 +15,6 @@ CREATE TABLE `t_union_member` (
   `director_email` varchar(50) DEFAULT NULL COMMENT '负责人邮箱',
   `address_longitude` varchar(50) DEFAULT NULL COMMENT '地址经度',
   `address_latitude` varchar(50) DEFAULT NULL COMMENT '地址维度',
-  `address_province_code` varchar(50) DEFAULT NULL COMMENT '地址省份code',
-  `address_city_code` varchar(50) DEFAULT NULL COMMENT '地址城市code',
-  `address_district_code` varchar(50) DEFAULT NULL COMMENT '地址区code',
   `is_member_out_notify` int(2) DEFAULT '1' COMMENT '盟员退出是否短信通知(0:否 1:是)',
   `notify_phone` varchar(20) DEFAULT NULL COMMENT '短信通知手机号',
   `integral_exchange_ratio` double(8,2) DEFAULT NULL COMMENT '积分兑换率(百分比)',
@@ -156,7 +153,6 @@ CREATE TABLE `t_union_opportunity` (
   `client_name` varchar(50) DEFAULT NULL COMMENT '客户姓名',
   `client_phone` varchar(20) DEFAULT NULL COMMENT '客户电话',
   `business_msg` varchar(500) DEFAULT NULL COMMENT '业务备注',
-  `is_urge_brokerage` int(2) DEFAULT '0' COMMENT '是否需要催促佣金(0:否 1:是)',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='商机';
 
@@ -385,7 +381,6 @@ CREATE TABLE `t_union_consume_project` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `del_status` int(2) DEFAULT NULL COMMENT '是否删除(0:否 1:是)',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
-  `type` int(2) DEFAULT NULL COMMENT '消费类型(1:线上 2:线下)',
   `consume_id` int(11) DEFAULT NULL COMMENT '核销消费id',
   `project_item_id` int(11) DEFAULT NULL COMMENT '项目优惠id',
   `project_id` int(11) DEFAULT NULL COMMENT '项目id',

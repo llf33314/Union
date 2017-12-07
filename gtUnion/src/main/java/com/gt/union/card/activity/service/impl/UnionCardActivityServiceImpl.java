@@ -12,6 +12,10 @@ import com.gt.union.card.activity.vo.CardActivityVO;
 import com.gt.union.card.constant.CardConstant;
 import com.gt.union.card.main.service.IUnionCardService;
 import com.gt.union.card.project.entity.UnionCardProject;
+import com.gt.union.card.project.entity.UnionCardProjectFlow;
+import com.gt.union.card.project.entity.UnionCardProjectItem;
+import com.gt.union.card.project.service.IUnionCardProjectFlowService;
+import com.gt.union.card.project.service.IUnionCardProjectItemService;
 import com.gt.union.card.project.service.IUnionCardProjectService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
@@ -51,6 +55,12 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
 
     @Autowired
     private IUnionCardService unionCardService;
+
+    @Autowired
+    private IUnionCardProjectItemService unionCardProjectItemService;
+
+    @Autowired
+    private IUnionCardProjectFlowService unionCardProjectFlowService;
 
     //***************************************** Domain Driven Design - get *********************************************
 
@@ -199,6 +209,64 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
     //***************************************** Domain Driven Design - save ********************************************
 
     //***************************************** Domain Driven Design - remove ******************************************
+
+    @Transactional(rollbackFor = Exception.class)
+    @Override
+    public void removeByIdAndUnionIdAndBusId(Integer activityId, Integer unionId, Integer busId) throws Exception {
+        if (activityId == null || unionId == null || busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member写权限、盟主权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+        }
+        if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
+            throw new BusinessException(CommonConstant.UNION_NEED_OWNER);
+        }
+        // （2）	判断activityId有效性
+        UnionCardActivity activity = getByIdAndUnionId(activityId, unionId);
+        if (activity == null) {
+            throw new BusinessException("找不到活动卡信息");
+        }
+        // （3）	要求活动在售卡开始之前
+        if (DateUtil.getCurrentDate().compareTo(activity.getSellBeginTime()) >= 0) {
+            throw new BusinessException("售卡开始后活动不能删除");
+        }
+
+        List<Integer> removeProjectIdtList = new ArrayList<>();
+        List<Integer> removeProjectItemIdList = new ArrayList<>();
+        List<Integer> removeProjectFlowIdList = new ArrayList<>();
+        List<UnionCardProject> projectList = unionCardProjectService.listByActivityIdAndUnionId(activityId, unionId);
+        if (ListUtil.isNotEmpty(projectList)) {
+            for (UnionCardProject project : projectList) {
+                removeProjectIdtList.add(project.getId());
+
+                List<UnionCardProjectItem> projectItemList = unionCardProjectItemService.listItemByProjectId(project.getId());
+                if (ListUtil.isNotEmpty(projectItemList)) {
+                    for (UnionCardProjectItem projectItem : projectItemList) {
+                        removeProjectItemIdList.add(projectItem.getId());
+                    }
+                }
+
+                List<UnionCardProjectFlow> projectFlowList = unionCardProjectFlowService.listByProjectId(project.getId());
+                if (ListUtil.isNotEmpty(projectFlowList)) {
+                    for (UnionCardProjectFlow projectFlow : projectFlowList) {
+                        removeProjectFlowIdList.add(projectFlow.getId());
+                    }
+                }
+            }
+        }
+
+        // 事务处理
+        removeById(activityId);
+        unionCardProjectService.removeBatchById(removeProjectIdtList);
+        unionCardProjectItemService.removeBatchById(removeProjectItemIdList);
+        unionCardProjectFlowService.removeBatchById(removeProjectFlowIdList);
+    }
 
     //***************************************** Domain Driven Design - update ******************************************
 

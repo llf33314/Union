@@ -1,6 +1,7 @@
 package com.gt.union.card.project.vo;
 
 import com.alibaba.fastjson.JSONArray;
+import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.project.entity.UnionCardProject;
 import com.gt.union.card.project.entity.UnionCardProjectItem;
 import com.gt.union.union.member.entity.UnionMember;
@@ -22,6 +23,9 @@ public class CardProjectVO {
 
     @ApiModelProperty(value = "活动项目")
     private UnionCardProject project;
+    
+    @ApiModelProperty(value = "活动")
+    private UnionCardActivity activity;
 
     @ApiModelProperty(value = "是否ERP(0:否 1:是)")
     private Integer isErp;
@@ -49,6 +53,14 @@ public class CardProjectVO {
 
     public void setProject(UnionCardProject project) {
         this.project = project;
+    }
+
+    public UnionCardActivity getActivity() {
+        return activity;
+    }
+
+    public void setActivity(UnionCardActivity activity) {
+        this.activity = activity;
     }
 
     public Integer getIsErp() {

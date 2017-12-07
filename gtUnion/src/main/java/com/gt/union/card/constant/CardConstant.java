@@ -48,6 +48,16 @@ public interface CardConstant {
     int ACTIVITY_STATUS_END = 5;
 
     /**
+     * 联盟卡活动是否需要审核：是
+     */
+    int ACTIVITY_IS_PROJECT_CHECK_YES = 1;
+
+    /**
+     * 联盟卡活动是否需要审核：否
+     */
+    int ACTIVITY_IS_PROJECT_CHECK_NO = 0;
+    
+    /**
      * 项目状态：未提交
      */
     int PROJECT_STATUS_NOT_COMMIT = 1;
@@ -81,4 +91,14 @@ public interface CardConstant {
      * 项目优惠类型：ERP商品优惠
      */
     int ITEM_TYPE_ERP_GOODS = 3;
+
+    /**
+     * 项目优惠ERP类型：车小算
+     */
+    int ITEM_ERP_TYPE_CARD = 1;
+
+    /**
+     * 项目优惠ERP类型：样子
+     */
+    int ITEM_ERP_TYPE_LOOK = 2;
 }

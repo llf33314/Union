@@ -266,17 +266,7 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         }
         saveMember.setAddressLongitude(memberAddressLongitude);
         saveMember.setAddressLatitude(memberAddressLatitude);
-        // （4-12）地址编码
-        String memberAddressProvinceCode = voMember.getAddressProvinceCode();
-        String memberAddressCityCode = voMember.getAddressCityCode();
-        String memberAddressDistrictCode = voMember.getAddressDistrictCode();
-        if (StringUtil.isEmpty(memberAddressProvinceCode) || StringUtil.isEmpty(memberAddressCityCode) || StringUtil.isEmpty(memberAddressDistrictCode)) {
-            throw new BusinessException("地址编码不能为空");
-        }
-        saveMember.setAddressProvinceCode(memberAddressProvinceCode);
-        saveMember.setAddressCityCode(memberAddressCityCode);
-        saveMember.setAddressDistrictCode(memberAddressDistrictCode);
-        // （4-13）短信通知手机
+        // （4-12）短信通知手机
         String memberNotifyPhone = voMember.getNotifyPhone();
         if (StringUtil.isEmpty(memberNotifyPhone)) {
             throw new BusinessException("短信通知手机不能为空");
@@ -286,7 +276,7 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         }
         saveMember.setNotifyPhone(memberNotifyPhone);
 
-        // （4-14）积分抵扣率
+        // （4-13）积分抵扣率
         if (saveUnion.getIsIntegral() == CommonConstant.COMMON_YES) {
             Double memberIntegralExchangeRatio = voMember.getIntegralExchangeRatio();
             if (memberIntegralExchangeRatio == null || memberIntegralExchangeRatio <= 0 || memberIntegralExchangeRatio > 30) {

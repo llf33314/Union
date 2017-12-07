@@ -264,6 +264,37 @@ public class H5BrokerageController {
 
 
     //-------------------------------------------------- put ----------------------------------------------------------
+
+    @ApiOperation(value = "我需支付-未支付-去支付", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/pay/unpaid/toPay", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    public GtJsonResult<String> toPay(
+            HttpServletRequest request,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @RequestParam(value = "unionId") Integer unionId,
+            @ApiParam(value = "商机id", name = "opportunityId", required = true)
+            @RequestParam(value = "opportunityId") List<Integer> opportunityId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        return GtJsonResult.instanceSuccessMsg();
+    }
+
+    @ApiOperation(value = "我需支付-未支付-一键支付", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/pay/unpaid/batchPay", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    public GtJsonResult<String> batchPay(
+            HttpServletRequest request,
+            @ApiParam(value = "联盟id", name = "unionId")
+            @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        return GtJsonResult.instanceSuccessMsg();
+    }
+
     //------------------------------------------------- post ----------------------------------------------------------
 
     @ApiOperation(value = "账号密码登录", produces = "application/json;charset=UTF-8")
@@ -336,19 +367,4 @@ public class H5BrokerageController {
         return GtJsonResult.instanceSuccessMsg();
     }
 
-    //------------------------------------------------- patch ----------------------------------------------------------
-
-    @ApiOperation(value = "我需支付-未支付-去支付和一键支付", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/pay/unpaid", method = RequestMethod.PATCH, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> batchPay(
-            HttpServletRequest request,
-            @ApiParam(value = "商机id列表", name = "opportunityIdList", required = true)
-            @RequestParam(value = "opportunityIdList") List<Integer> opportunityIdList) throws Exception {
-        BusUser busUser = SessionUtils.getLoginUser(request);
-        Integer busId = busUser.getId();
-        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
-        }
-        return GtJsonResult.instanceSuccessMsg();
-    }
 }
