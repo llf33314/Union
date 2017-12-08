@@ -9,6 +9,7 @@ import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.ExportUtil;
 import com.gt.union.common.util.ListUtil;
+import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PageUtil;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.service.IUnionMainService;
@@ -146,6 +147,22 @@ public class UnionMemberController {
 //        UnionMember result = MockUtil.get(UnionMember.class);
         UnionMember result = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
+    }
+
+    @ApiOperation(value = "获取指定联盟下具有写权限的但不包括我的盟员列表", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/write/other", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public GtJsonResult listOtherWriteByUnionId(
+            HttpServletRequest request,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @PathVariable("unionId") Integer unionId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        List<UnionMember> result = MockUtil.list(UnionMember.class, 30);
+//        List<UnionMember> result = unionMemberService.listOtherWriteByBusIdAndUnionId(busId, unionId);
+        return GtJsonResult.instanceSuccessMsg();
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------

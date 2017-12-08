@@ -99,6 +99,24 @@ public class UnionMainController {
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
+    @ApiOperation(value = "获取我的有效的联盟", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/my", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public GtJsonResult<List<UnionMainVO>> listMy(HttpServletRequest request) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        // mock
+        List<UnionMainVO> result = MockUtil.list(UnionMainVO.class, 3);
+        for (UnionMainVO vo : result) {
+            List<UnionMainDict> itemList = MockUtil.list(UnionMainDict.class, 3);
+            vo.setItemList(itemList);
+        }
+//        List<UnionMainVO> result = unionMainService.listMyValidByBusId(busId);
+        return GtJsonResult.instanceSuccessMsg(result);
+    }
+
     //-------------------------------------------------- put -----------------------------------------------------------
 
     @ApiOperation(value = "更新联盟信息", produces = "application/json;charset=UTF-8")

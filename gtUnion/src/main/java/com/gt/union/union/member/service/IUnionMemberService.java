@@ -94,6 +94,14 @@ public interface IUnionMemberService extends IService<UnionMember> {
      */
     UnionMember getByIdAndUnionIdAndStatus(Integer memberId, Integer unionId, Integer status) throws Exception;
 
+    /**
+     * 根据id，获取对象
+     *
+     * @param memberId id
+     * @return UnionMember
+     * @throws Exception 统一处理异常
+     */
+    UnionMember getById(Integer memberId) throws Exception;
 
     //***************************************** Domain Driven Design - list ********************************************
 
@@ -153,6 +161,26 @@ public interface IUnionMemberService extends IService<UnionMember> {
      * @throws Exception 统一处理异常
      */
     List<UnionMember> listByUnionIdAndStatus(Integer unionId, Integer status) throws Exception;
+
+    /**
+     * 获取指定联盟下具有写权限的但不包括我的盟员列表
+     *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @return List<UnionMember>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> listOtherWriteByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
+
+    /**
+     * 获取指定联盟下具有读权限的但不包括我的盟员列表
+     *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @return List<UnionMember>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> listOtherReadByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
 
     //***************************************** Domain Driven Design - save ********************************************
 

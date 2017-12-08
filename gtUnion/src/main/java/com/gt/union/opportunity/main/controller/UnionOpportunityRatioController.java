@@ -4,13 +4,16 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
+import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
-import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PageUtil;
+import com.gt.union.opportunity.main.service.IUnionOpportunityRatioService;
 import com.gt.union.opportunity.main.vo.OpportunityRatioVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +30,9 @@ import java.util.List;
 @RequestMapping("/unionOpportunityRatio")
 public class UnionOpportunityRatioController {
 
+    @Autowired
+    private IUnionOpportunityRatioService unionOpportunityRatioService;
+
     //-------------------------------------------------- get -----------------------------------------------------------
 
     @ApiOperation(value = "分页：获取商机佣金比例信息", produces = "application/json;charset=UTF-8")
@@ -42,7 +48,8 @@ public class UnionOpportunityRatioController {
             busId = busUser.getPid();
         }
         // mock
-        List<OpportunityRatioVO> voList = MockUtil.list(OpportunityRatioVO.class, page.getSize());
+//        List<OpportunityRatioVO> voList = MockUtil.list(OpportunityRatioVO.class, page.getSize());
+        List<OpportunityRatioVO> voList = unionOpportunityRatioService.listOpportunityRatioVOByBusIdAndUnionId(busId, unionId);
         Page<OpportunityRatioVO> result = (Page<OpportunityRatioVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -63,8 +70,9 @@ public class UnionOpportunityRatioController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
+        unionOpportunityRatioService.updateRatioByBusIdAndUnionIdAndToMemberId(busId, unionId, toMemberId, ratio);
         return GtJsonResult.instanceSuccessMsg();
     }
 

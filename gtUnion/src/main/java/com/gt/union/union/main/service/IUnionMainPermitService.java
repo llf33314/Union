@@ -56,7 +56,7 @@ public interface IUnionMainPermitService extends IService<UnionMainPermit> {
      * @param payType   支付类型
      * @param orderNo   订单号
      * @param isSuccess 是否成功
-     * @return
+     * @return String
      */
     String updateCallbackByPermitId(Integer permitId, String socketKey, String payType, String orderNo, Integer isSuccess);
 

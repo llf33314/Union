@@ -232,4 +232,14 @@ public class DateUtil {
         return intervalDay < 0 ? 0 : intervalDay;
     }
 
+    /**
+     * 获取本周星期一的日期
+     *
+     * @return Date
+     */
+    public static Date getMondayInWeek() {
+        int offset = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 2 + 7) % 7;
+        return DateUtil.addDays(DateUtil.getCurrentDate(), 0 - offset);
+    }
+
 }

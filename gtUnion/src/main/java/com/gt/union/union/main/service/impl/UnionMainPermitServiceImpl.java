@@ -55,7 +55,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         EntityWrapper<UnionMainPermit> entityWrapper = new EntityWrapper<>();
         entityWrapper.ge("validity", DateUtil.getCurrentDate())
                 .eq("bus_id", busId)
-                .eq("order_status", UnionConstant.PERMIT_ORDER_STATUS_PAY_SUCCESS)
+                .eq("order_status", UnionConstant.PERMIT_ORDER_STATUS_SUCCESS)
                 .eq("del_status", CommonConstant.COMMON_NO);
 
         return selectOne(entityWrapper);
@@ -87,15 +87,16 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         int validMonth = BigDecimalUtil.multiply(Double.valueOf(12), unionPackage.getYear()).intValue();
         savePermit.setValidity(DateUtil.addMonths(currentDate, validMonth));
         savePermit.setOrderMoney(unionPackage.getPrice());
-        savePermit.setOrderStatus(UnionConstant.PERMIT_ORDER_STATUS_NOT_PAY);
-        savePermit.setSysOrderNo("LM" + System.currentTimeMillis());
+        savePermit.setOrderStatus(UnionConstant.PERMIT_ORDER_STATUS_PAYING);
+        String orderNo = "Permit_" + busId + "_" + DateUtil.getSerialNumber();
+        savePermit.setSysOrderNo("LM_" + orderNo);
         savePermit.setDelStatus(CommonConstant.COMMON_NO);
         save(savePermit);
 
         // （3）	调用接口，返回支付链接
         UnionPermitPayVO result = new UnionPermitPayVO();
-        String socketKey = PropertiesUtil.getSocketKey() + "Permit_" + busId + "_" + DateUtil.getSerialNumber();
-        String notifyUrl = PropertiesUtil.getUnionUrl() + "/unionMainPermit/" + savePermit.getId() + "/pay/callback?socketKey=" + socketKey;
+        String socketKey = PropertiesUtil.getSocketKey() + orderNo;
+        String notifyUrl = PropertiesUtil.getUnionUrl() + "/unionMainPermit/79B4DE7C/" + savePermit.getId() + "/pay/callback?socketKey=" + socketKey;
         String payUrl = wxPayService.qrCodePay(savePermit.getOrderMoney(), null, savePermit.getSysOrderNo(),
                 null, CommonConstant.COMMON_NO, null, notifyUrl, CommonConstant.COMMON_NO,
                 null, 0, null);
@@ -136,8 +137,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         // （2）	如果permit不是未支付状态，则socket通知，并返回处理成功
         // （3）	否则，更新permit为支付成功状态，且socket通知，并返回处理成功
         Integer orderStatus = permit.getOrderStatus();
-        if (orderStatus == UnionConstant.PERMIT_ORDER_STATUS_PAY_SUCCESS
-                || orderStatus == UnionConstant.PERMIT_ORDER_STATUS_PAY_FAIL) {
+        if (orderStatus == UnionConstant.PERMIT_ORDER_STATUS_SUCCESS || orderStatus == UnionConstant.PERMIT_ORDER_STATUS_FAIL) {
             // TODO socket通知
             result.put("code", 0);
             result.put("msg", "已处理过");
@@ -145,8 +145,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         } else {
             UnionMainPermit updatePermit = new UnionMainPermit();
             updatePermit.setId(permitId);
-            updatePermit.setOrderStatus(isSuccess == CommonConstant.COMMON_YES
-                    ? UnionConstant.PERMIT_ORDER_STATUS_PAY_SUCCESS : UnionConstant.PERMIT_ORDER_STATUS_PAY_FAIL);
+            updatePermit.setOrderStatus(isSuccess == CommonConstant.COMMON_YES ? UnionConstant.PERMIT_ORDER_STATUS_SUCCESS : UnionConstant.PERMIT_ORDER_STATUS_FAIL);
             if (payType.equals("0")) {
                 updatePermit.setWxOrderNo(orderNo);
             } else {

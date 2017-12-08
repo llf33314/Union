@@ -4,18 +4,26 @@ import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
+import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.opportunity.main.entity.UnionOpportunityRatio;
 import com.gt.union.opportunity.main.mapper.UnionOpportunityRatioMapper;
 import com.gt.union.opportunity.main.service.IUnionOpportunityRatioService;
 import com.gt.union.opportunity.main.util.UnionOpportunityRatioCacheUtil;
+import com.gt.union.opportunity.main.vo.OpportunityRatioVO;
+import com.gt.union.union.main.service.IUnionMainService;
+import com.gt.union.union.member.entity.UnionMember;
+import com.gt.union.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -27,11 +35,70 @@ import java.util.List;
 @Service
 public class UnionOpportunityRatioServiceImpl extends ServiceImpl<UnionOpportunityRatioMapper, UnionOpportunityRatio> implements IUnionOpportunityRatioService {
     @Autowired
-    public RedisCacheUtil redisCacheUtil;
+    private RedisCacheUtil redisCacheUtil;
+
+    @Autowired
+    private IUnionMainService unionMainService;
+
+    @Autowired
+    private IUnionMemberService unionMemberService;
 
     //***************************************** Domain Driven Design - get *********************************************
 
+    @Override
+    public UnionOpportunityRatio getByFromMemberIdAndToMemberIdAndUnionId(Integer fromMemberId, Integer toMemberId, Integer unionId) throws Exception {
+        if (fromMemberId == null || toMemberId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionOpportunityRatio> result = listByToMemberId(toMemberId);
+        result = filterByFromMemberId(result, fromMemberId);
+        result = filterByUnionId(result, unionId);
+
+        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
+    }
+
     //***************************************** Domain Driven Design - list ********************************************
+
+    @Override
+    public List<OpportunityRatioVO> listOpportunityRatioVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
+        if (busId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member读权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+        }
+        // （2）	获取所有，但不包括自己的member列表
+        List<OpportunityRatioVO> result = new ArrayList<>();
+        List<UnionMember> otherMemberList = unionMemberService.listOtherReadByBusIdAndUnionId(busId, unionId);
+        if (ListUtil.isNotEmpty(otherMemberList)) {
+            for (UnionMember otherMember : otherMemberList) {
+                OpportunityRatioVO vo = new OpportunityRatioVO();
+                vo.setMember(otherMember);
+
+                UnionOpportunityRatio ratioFromMe = getByFromMemberIdAndToMemberIdAndUnionId(member.getId(), otherMember.getId(), unionId);
+                vo.setRatioFromMe(ratioFromMe != null ? ratioFromMe.getRatio() : null);
+
+                UnionOpportunityRatio ratioToMe = getByFromMemberIdAndToMemberIdAndUnionId(otherMember.getId(), member.getId(), unionId);
+                vo.setRatioToMe(ratioToMe != null ? ratioToMe.getRatio() : null);
+                result.add(vo);
+            }
+        }
+        // （3）	按时间顺序排序
+        Collections.sort(result, new Comparator<OpportunityRatioVO>() {
+            @Override
+            public int compare(OpportunityRatioVO o1, OpportunityRatioVO o2) {
+                return o2.getMember().getCreateTime().compareTo(o1.getMember().getCreateTime());
+            }
+        });
+        return result;
+    }
+
 
     //***************************************** Domain Driven Design - save ********************************************
 
@@ -39,9 +106,91 @@ public class UnionOpportunityRatioServiceImpl extends ServiceImpl<UnionOpportuni
 
     //***************************************** Domain Driven Design - update ******************************************
 
+    @Override
+    public void updateRatioByBusIdAndUnionIdAndToMemberId(Integer busId, Integer unionId, Integer toMemberId, Double ratio) throws Exception {
+        if (busId == null || unionId == null || toMemberId == null || ratio == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member写权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+        }
+        // （2）	判断toMemberId有效性
+        UnionMember toMember = unionMemberService.getReadByIdAndUnionId(toMemberId, unionId);
+        if (toMember == null) {
+            throw new BusinessException("找不到盟员信息");
+        }
+        // （3）	要求ratio在(0, 100)
+        if (ratio <= 0 || ratio >= 100) {
+            throw new BusinessException("比例必须在0至100之间");
+        }
+        // （4）	如果存在原设置，则更新，否则新增
+        UnionOpportunityRatio oldRatio = getByFromMemberIdAndToMemberIdAndUnionId(member.getId(), toMemberId, unionId);
+        if (oldRatio != null) {
+            UnionOpportunityRatio updateRatio = new UnionOpportunityRatio();
+            updateRatio.setId(oldRatio.getId());
+            updateRatio.setModifyTime(DateUtil.getCurrentDate());
+            updateRatio.setRatio(ratio);
+
+            update(updateRatio);
+        } else {
+            UnionOpportunityRatio saveRatio = new UnionOpportunityRatio();
+            saveRatio.setDelStatus(CommonConstant.COMMON_NO);
+            saveRatio.setCreateTime(DateUtil.getCurrentDate());
+            saveRatio.setFromMemberId(member.getId());
+            saveRatio.setToMemberId(toMemberId);
+            saveRatio.setUnionId(unionId);
+            saveRatio.setRatio(ratio);
+
+            save(saveRatio);
+        }
+    }
+
     //***************************************** Domain Driven Design - count *******************************************
 
     //***************************************** Domain Driven Design - boolean *****************************************
+
+    //***************************************** Domain Driven Design - filter ******************************************
+
+    @Override
+    public List<UnionOpportunityRatio> filterByFromMemberId(List<UnionOpportunityRatio> ratioList, Integer fromMemberId) throws Exception {
+        if (ratioList == null || fromMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionOpportunityRatio> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(ratioList)) {
+            for (UnionOpportunityRatio ratio : ratioList) {
+                if (fromMemberId.equals(ratio.getFromMemberId())) {
+                    result.add(ratio);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionOpportunityRatio> filterByUnionId(List<UnionOpportunityRatio> ratioList, Integer unionId) throws Exception {
+        if (ratioList == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionOpportunityRatio> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(ratioList)) {
+            for (UnionOpportunityRatio ratio : ratioList) {
+                if (unionId.equals(ratio.getUnionId())) {
+                    result.add(ratio);
+                }
+            }
+        }
+
+        return result;
+    }
 
     //***************************************** Object As a Service - get **********************************************
 
@@ -350,4 +499,5 @@ public class UnionOpportunityRatioServiceImpl extends ServiceImpl<UnionOpportuni
         }
         return result;
     }
+
 }

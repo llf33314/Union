@@ -68,7 +68,7 @@ public class UnionMainPermitController {
             @ApiParam(value = "socket关键字", name = "socketKey", required = true)
             @RequestParam(value = "socketKey") String socketKey,
             @RequestBody Map<String, Object> param) throws Exception {
-        /// debug
+        // debug
         logger.debug(JSONObject.toJSONString(param));
 
         Object objPayType = param.get("payType");
