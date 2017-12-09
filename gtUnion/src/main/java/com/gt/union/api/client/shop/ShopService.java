@@ -26,4 +26,11 @@ public interface ShopService {
 	 * @return
 	 */
 	List<WsWxShopInfoExtend> listByIds(List<Integer> list);
+
+	/**
+	 * 根据门店id获取门店列表信息
+	 * @param id	门店id
+	 * @return
+	 */
+	WsWxShopInfoExtend getById(Integer id);
 }

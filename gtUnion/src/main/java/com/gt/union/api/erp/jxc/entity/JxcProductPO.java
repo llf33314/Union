@@ -1,5 +1,9 @@
 package com.gt.union.api.erp.jxc.entity;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -7,76 +11,91 @@ import java.util.List;
  * @author hongjiye
  * @time 2017-12-07 15:04
  **/
+@ApiModel(value = "进销存商品实体")
 public class JxcProductPO {
 
 	/**
 	 * 商品id
 	 */
+	@ApiModelProperty(value = "商品id")
 	private Integer id;
 
 	/**
 	 * 商品名称
 	 */
+	@ApiModelProperty(value = "商品名称")
 	private String name;
 
 	/**
 	 * 商品条码
 	 */
+	@ApiModelProperty(value = "商品条码")
 	private String barCode;
 
 	/**
 	 * 库存数量
 	 */
+	@ApiModelProperty(value = "库存数量")
 	private Integer amount;
 
 	/**
 	 * 商品编码
 	 */
+	@ApiModelProperty(value = "商品编码")
 	private String proCode;
 
 	/**
 	 * 商品主单位名称
 	 */
+	@ApiModelProperty(value = "商品主单位名称")
 	private String unitName;
 
 	/**
 	 * 商品规格
 	 */
+	@ApiModelProperty(value = "商品规格")
 	private String spec;
 
 	/**
 	 * 商品主单位id
 	 */
+	@ApiModelProperty(value = "商品主单位id")
 	private Integer unitId;
 
 	/**
 	 * 商品分类名称
 	 */
+	@ApiModelProperty(value = "商品分类名称")
 	private String type;
 
 	/**
 	 * 所属门店名称
 	 */
+	@ApiModelProperty(value = "所属门店名称")
 	private String warehouse;
 
 	/**
 	 * 零售价(元)
 	 */
+	@ApiModelProperty(value = "零售价(元)")
 	private Double retailPrice;
 
 	/**
 	 * 成本价(元)
 	 */
+	@ApiModelProperty(value = "成本价(元)")
 	private Double costPrice;
 
 	/**
 	 * 是否允许打折 true：允许  false：否
 	 */
+	@ApiModelProperty(value = "是否允许打折 true：允许  false：否")
 	private Boolean discount;
 
 	/**
 	 * 商品副单位列表
 	 */
+	@ApiModelProperty(value = "商品副单位列表")
 	private List<JxcProductUnitPO> viceUnits;
 
 	public Integer getId() {

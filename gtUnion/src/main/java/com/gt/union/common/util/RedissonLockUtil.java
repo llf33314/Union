@@ -51,4 +51,9 @@ public class RedissonLockUtil {
 	public static void setRedissLock(DistributedLocker redissLock) {
 		RedissonLockUtil.redissLock = redissLock;
 	}
+
+	public static boolean tryLock(String lockKey, long waitTime, long leaseTime, TimeUnit unit){
+		return redissLock.tryLock(lockKey, waitTime, leaseTime, unit);
+	}
+
 }

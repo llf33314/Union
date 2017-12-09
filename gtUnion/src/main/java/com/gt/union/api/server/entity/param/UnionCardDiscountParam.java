@@ -1,4 +1,4 @@
-package com.gt.union.api.entity.param;
+package com.gt.union.api.server.entity.param;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -9,17 +9,17 @@ import java.io.Serializable;
 /**
  * Created by Administrator on 2017/9/13 0013.
  */
-@ApiModel( value = "UnionPhoneCodeParam", description = "其他模块线上获取验证码参数实体" )
+@ApiModel( value = "UnionCardDiscountParam", description = "其他模块线上获取联盟卡折扣参数实体" )
 @Data
-public class UnionPhoneCodeParam implements Serializable {
+public class UnionCardDiscountParam implements Serializable {
 
 	@ApiModelProperty( value = "粉丝用户id", required = true)
 	private Integer memberId;
 
-	@ApiModelProperty( value = "商家id", required = true)
+	@ApiModelProperty( value = "消费的商家id", required = true)
 	private Integer busId;
 
-	@ApiModelProperty( value = "粉丝用户的手机号", required = true)
+	@ApiModelProperty( value = "粉丝用户的手机号，可以为空", required = true)
 	private String phone;
 
 	public Integer getMemberId() {

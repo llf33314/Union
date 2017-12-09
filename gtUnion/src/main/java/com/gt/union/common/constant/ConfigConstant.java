@@ -10,8 +10,6 @@ import com.gt.union.common.util.PropertiesUtil;
  */
 public interface ConfigConstant {
 
-    /*****佣金平台管理员session key****/
-    String VERIFIER = "verifier";
     /**
      * 最大加入联盟数
      */
@@ -33,19 +31,9 @@ public interface ConfigConstant {
     int ENTERPRISE_PAY_MODEL = 13;
 
     /**
-     * 省级
+     * 公众号二维码链接model
      */
-    String PROVIENCE_LEVEL = "2";
-
-    /**
-     * 市级
-     */
-    String CITY_LEVEL = "3";
-
-    /**
-     * 区级
-     */
-    String DISTRICT_LEVEL = "4";
+    int WXPUBLIC_QRCODE_MODEL = 10;
 
     /**
      * 创建联盟支付内部订单前缀
@@ -88,39 +76,9 @@ public interface ConfigConstant {
 //	String DEVELOPER_PHONE = "13923639694";
 
     /**
-     * wxmp项目的密钥
-     */
-    String WXMP_SIGN_KEY = PropertiesUtil.getWxmpSignKey();
-
-    /**
-     * wxmp公司名称
-     */
-    String WXMP_COMPANY = PropertiesUtil.getWxmpCompany();
-
-    /**
-     * wxmp根路径
-     */
-    String WXMP_ROOT_URL = PropertiesUtil.getWxmpUrl();
-
-    /**
-     * wxmp请求密钥
-     */
-    String WXMP_SIGNKEY = PropertiesUtil.getWxmpSignKey();
-
-    /**
-     * wxmp多粉商家id  正式：2274
-     */
-    Integer WXMP_DUOFEN_BUSID = PropertiesUtil.getDuofenBusId();
-
-    /**
      * 联盟根路径
      */
     String UNION_ROOT_URL = PropertiesUtil.getUnionUrl();
-
-    /**
-     * 联盟接口秘钥
-     */
-    String UNION_SIGNKEY = PropertiesUtil.getUnionSignKey();
 
     /**
      * 联盟卡手机端路径
@@ -133,44 +91,8 @@ public interface ConfigConstant {
     String UNION_PHONE_BROKERAGE_ROOT_URL = UNION_ROOT_URL + "/brokeragePhone/#/";
 
     /**
-     * 联盟加密秘钥
+     * 联盟erp项目类型
      */
-    String UNION_ENCRYPTKEY = PropertiesUtil.getEncryptKey();
-
-    /**
-     * redis key前缀
-     */
-    String UNION_REDIS_NAME_PREFIX = PropertiesUtil.redisNamePrefix();
-
-    /**
-     * 会员请求密钥
-     */
-    String MEMBER_SIGNKEY = PropertiesUtil.getMemberSignKey();
-
-    /**
-     * 会员请求路径
-     */
-    String MEMBER_ROOT_URL = PropertiesUtil.getMemberUrl();
-
-    /**
-     * socket url
-     */
-    String SOCKET_URL = PropertiesUtil.getSocketUrl();
-
-    /**
-     * socket key
-     */
-    String SOCKET_KEY = PropertiesUtil.getSocketKey();
-
-    /**
-     * profiles
-     */
-    String PROFILES = PropertiesUtil.getProfiles();
-
-    /**
-     * 公众号二维码链接model
-     */
-    int WXPUBLIC_QRCODE_MODEL = 10;
-
+    String[] UNION_USER_ERP_TYPE = {"2"};
 }
 

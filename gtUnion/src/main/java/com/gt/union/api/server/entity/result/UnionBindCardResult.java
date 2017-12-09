@@ -1,30 +1,30 @@
-package com.gt.union.api.entity.result;
+package com.gt.union.api.server.entity.result;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
 
 /**
- * Created by Administrator on 2017/9/4 0004.
+ * Created by Administrator on 2017/9/2 0002.
  */
-@ApiModel( value = "UnionConsumeResult", description = "联盟卡核销结果实体" )
+@ApiModel( value = "UnionBindCardResult", description = "绑定联盟卡结果实体" )
 @Data
-public class UnionConsumeResult {
+public class UnionBindCardResult {
 
 	@ApiModelProperty(value = "提示信息")
 	private String message;
 
-	@ApiModelProperty(value = "消费状态 true：成功 false：失败")
+	@ApiModelProperty(value = "绑定状态 true：成功 false：失败")
 	private boolean success;
 
-	public UnionConsumeResult(boolean success, String message){
+	public UnionBindCardResult(boolean success, String message){
 		this.success = success;
 		this.message = message;
 	}
 
-	public UnionConsumeResult(){
+	public UnionBindCardResult(){
 		this.success = false;
-		this.message = "核销失败";
+		this.message = "绑定失败";
 	}
 
 	public String getMessage() {

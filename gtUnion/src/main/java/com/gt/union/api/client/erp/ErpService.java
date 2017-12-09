@@ -1,5 +1,7 @@
 package com.gt.union.api.client.erp;
 
+import com.gt.union.api.client.erp.vo.ErpModelVO;
+
 import java.util.List;
 import java.util.Map;
 
@@ -10,5 +12,5 @@ public interface ErpService {
 	 * @param busId
 	 * @return	erpmodel：erp类型
 	 */
-	List<Map> listErpByBusId(Integer busId);
+	List<ErpModelVO> listErpByBusId(Integer busId);
 }

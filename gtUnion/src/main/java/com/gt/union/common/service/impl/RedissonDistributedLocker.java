@@ -43,4 +43,14 @@ public class RedissonDistributedLocker implements DistributedLocker {
 	public void setRedissonClient(RedissonClient redissonClient) {
 		this.redissonClient = redissonClient;
 	}
+
+	@Override
+	public boolean tryLock(String lockKey, long waitTime, long leaseTime, TimeUnit unit) {
+		RLock lock = redissonClient.getLock(lockKey);
+		try{
+			return lock.tryLock(waitTime, leaseTime, unit);
+		}catch (Exception e){
+			return false;
+		}
+	}
 }
