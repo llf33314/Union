@@ -19,6 +19,7 @@
         <result column="verifier_id" property="verifierId"/>
         <result column="order_no" property="orderNo"/>
         <result column="wx_order_no" property="wxOrderNo"/>
+        <result column="alipay_order_no" property="alipayOrderNo"/>
     </resultMap>
 
 </mapper>

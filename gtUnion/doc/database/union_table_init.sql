@@ -201,6 +201,7 @@ CREATE TABLE `t_union_brokerage_pay` (
   `verifier_id` int(11) DEFAULT NULL COMMENT '平台管理员id',
   `order_no` varchar(60) DEFAULT NULL COMMENT '订单号',
   `wx_order_no` varchar(60) DEFAULT NULL COMMENT '微信订单编号',
+  `alipay_order_no` varchar(60) DEFAULT NULL COMMENT '支付宝订单编号',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='佣金支出';
 

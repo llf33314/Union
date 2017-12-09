@@ -340,7 +340,7 @@ public class H5BrokerageController {
     }
 
     @ApiOperation(value = "我未收佣金-催促", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/unreceived/urge", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unreceived/urge", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> urgeUnreceived(
             HttpServletRequest request,
             @ApiParam(value = "商机id", name = "opportunityId", required = true)

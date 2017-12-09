@@ -45,6 +45,15 @@ public interface IUnionMainService extends IService<UnionMain> {
      */
     List<UnionMainVO> listOtherValidByBusId(Integer busId) throws Exception;
 
+    /**
+     * 获取我的有效的联盟
+     *
+     * @param busId 商家id
+     * @return List<UnionMainVO>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMainVO> listMyValidByBusId(Integer busId) throws Exception;
+
     //***************************************** Domain Driven Design - save ********************************************
 
     /**

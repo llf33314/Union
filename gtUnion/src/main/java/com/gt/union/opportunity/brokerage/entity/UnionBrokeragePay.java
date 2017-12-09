@@ -129,6 +129,12 @@ public class UnionBrokeragePay extends Model<UnionBrokeragePay> {
     @TableField("wx_order_no")
     private String wxOrderNo;
 
+    /**
+     * 支付宝订单编号
+     */
+    @ApiModelProperty(value = "支付宝订单编号")
+    @TableField("alipay_order_no")
+    private String alipayOrderNo;
 
     public Integer getId() {
         return id;
@@ -248,6 +254,14 @@ public class UnionBrokeragePay extends Model<UnionBrokeragePay> {
 
     public void setWxOrderNo(String wxOrderNo) {
         this.wxOrderNo = wxOrderNo;
+    }
+
+    public String getAlipayOrderNo() {
+        return alipayOrderNo;
+    }
+
+    public void setAlipayOrderNo(String alipayOrderNo) {
+        this.alipayOrderNo = alipayOrderNo;
     }
 
     @Override

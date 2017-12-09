@@ -15,7 +15,7 @@ public class OpportunityStatisticsVO {
     @ApiModelProperty(value = "未支付佣金收入")
     private Double unPaidIncome;
 
-    @ApiModelProperty(value = "已收入佣金收入")
+    @ApiModelProperty(value = "已支付佣金收入")
     private Double paidIncome;
 
     @ApiModelProperty(value = "总收入")

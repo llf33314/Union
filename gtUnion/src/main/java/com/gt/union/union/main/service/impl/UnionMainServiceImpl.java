@@ -107,6 +107,40 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         return result;
     }
 
+    @Override
+    public List<UnionMainVO> listMyValidByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	获取有效的memberList
+        List<UnionMember> memberList = unionMemberService.listReadByBusId(busId);
+        List<Integer> unionIdList = new ArrayList<>();
+        if (ListUtil.isNotEmpty(memberList)) {
+            for (UnionMember member : memberList) {
+                unionIdList.add(member.getUnionId());
+            }
+        }
+        // （2）	获取有效unionList
+        EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .ge("validity", DateUtil.getCurrentDate())
+                .in("id", unionIdList);
+
+        List<UnionMain> unionList = selectList(entityWrapper);
+        List<UnionMainVO> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(unionList)) {
+            for (UnionMain union : unionList) {
+                UnionMainVO vo = new UnionMainVO();
+                vo.setUnion(union);
+                List<UnionMainDict> itemList = unionMainDictService.listByUnionId(union.getId());
+                vo.setItemList(itemList);
+                result.add(vo);
+            }
+        }
+
+        return result;
+    }
+
     //***************************************** Domain Driven Design - save ********************************************
 
     //***************************************** Domain Driven Design - remove ******************************************

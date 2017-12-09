@@ -283,6 +283,62 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         return null;
     }
 
+    @Override
+    public List<UnionMember> listOtherWriteByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
+        if (busId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        // （2）获取商家在union的member
+        UnionMember member = getReadByBusIdAndUnionId(busId, unionId);
+        // （3）获取union下writeMember，过滤掉member
+        List<UnionMember> result = new ArrayList<>();
+        List<UnionMember> writeMemberList = listWriteByUnionId(unionId);
+        if (member == null) {
+            result = writeMemberList;
+        } else if (ListUtil.isNotEmpty(writeMemberList)) {
+            Integer memberId = member.getId();
+            for (UnionMember writeMember : writeMemberList) {
+                if (!memberId.equals(writeMember.getId())) {
+                    result.add(writeMember);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionMember> listOtherReadByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
+        if (busId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        // （2）获取商家在union的member
+        UnionMember member = getReadByBusIdAndUnionId(busId, unionId);
+        // （3）获取union下writeMember，过滤掉member
+        List<UnionMember> result = new ArrayList<>();
+        List<UnionMember> readMemberList = listReadByUnionId(unionId);
+        if (member == null) {
+            result= readMemberList;
+        } else if (ListUtil.isNotEmpty(readMemberList)) {
+            Integer memberId = member.getId();
+            for (UnionMember readMember : readMemberList) {
+                if (!memberId.equals(readMember.getId())) {
+                    result.add(readMember);
+                }
+            }
+        }
+
+        return result;
+    }
+
     //***************************************** Domain Driven Design - save ********************************************
 
     //***************************************** Domain Driven Design - remove ******************************************
@@ -492,7 +548,8 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
 
     //***************************************** Object As a Service - get **********************************************
 
-    private UnionMember getById(Integer id) throws Exception {
+    @Override
+    public UnionMember getById(Integer id) throws Exception {
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }

@@ -4,16 +4,17 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
+import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
-import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PageUtil;
-import com.gt.union.opportunity.main.vo.OpportunityStatisticsDay;
+import com.gt.union.opportunity.main.service.IUnionOpportunityService;
 import com.gt.union.opportunity.main.vo.OpportunityStatisticsVO;
 import com.gt.union.opportunity.main.vo.OpportunityVO;
-import com.gt.union.union.member.entity.UnionMember;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,6 +31,9 @@ import java.util.List;
 @RequestMapping("/unionOpportunity")
 public class UnionOpportunityController {
 
+    @Autowired
+    private IUnionOpportunityService unionOpportunityService;
+
     //-------------------------------------------------- get -----------------------------------------------------------
 
     @ApiOperation(value = "分页：获取我的商机", produces = "application/json;charset=UTF-8")
@@ -39,7 +43,7 @@ public class UnionOpportunityController {
             Page page,
             @ApiParam(value = "联盟id", name = "unionId")
             @RequestParam(value = "unionId", required = false) Integer unionId,
-            @ApiParam(value = "(1:受理中 2:已接受 3:已拒绝)，多个用英文分号隔离", name = "acceptStatus")
+            @ApiParam(value = "受理状态(1:受理中 2:已接受 3:已拒绝)，多个用英文分号隔离", name = "acceptStatus")
             @RequestParam(value = "acceptStatus", required = false) String acceptStatus,
             @ApiParam(value = "客户名称", name = "clientName")
             @RequestParam(value = "clientName", required = false) String clientName,
@@ -51,7 +55,8 @@ public class UnionOpportunityController {
             busId = busUser.getPid();
         }
         // mock
-        List<OpportunityVO> voList = MockUtil.list(OpportunityVO.class, page.getSize());
+//        List<OpportunityVO> voList = MockUtil.list(OpportunityVO.class, page.getSize());
+        List<OpportunityVO> voList = unionOpportunityService.listToMeByBusId(busId, unionId, acceptStatus, clientName, clientPhone);
         Page<OpportunityVO> result = (Page<OpportunityVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -64,7 +69,7 @@ public class UnionOpportunityController {
             Page page,
             @ApiParam(value = "联盟id", name = "unionId")
             @RequestParam(value = "unionId", required = false) Integer unionId,
-            @ApiParam(value = "(1:受理中 2:已接受 3:已拒绝)，多个用英文分号隔离", name = "acceptStatus")
+            @ApiParam(value = "受理状态(1:受理中 2:已接受 3:已拒绝)，多个用英文分号隔离", name = "acceptStatus")
             @RequestParam(value = "acceptStatus", required = false) String acceptStatus,
             @ApiParam(value = "客户名称", name = "clientName")
             @RequestParam(value = "clientName", required = false) String clientName,
@@ -76,11 +81,8 @@ public class UnionOpportunityController {
             busId = busUser.getPid();
         }
         // mock
-        List<OpportunityVO> voList = MockUtil.list(OpportunityVO.class, page.getSize());
-        for (int i = 0; i < voList.size(); i++) {
-            UnionMember toMember = MockUtil.get(UnionMember.class);
-            voList.get(i).setToMember(toMember);
-        }
+//        List<OpportunityVO> voList = MockUtil.list(OpportunityVO.class, page.getSize());
+        List<OpportunityVO> voList = unionOpportunityService.listFromMeByBusId(busId, unionId, acceptStatus, clientName, clientPhone);
         Page<OpportunityVO> result = (Page<OpportunityVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -98,21 +100,22 @@ public class UnionOpportunityController {
             busId = busUser.getPid();
         }
         // mock
-        OpportunityStatisticsVO result = MockUtil.get(OpportunityStatisticsVO.class);
-        OpportunityStatisticsDay monday = MockUtil.get(OpportunityStatisticsDay.class);
-        result.setMonday(monday);
-        OpportunityStatisticsDay tuesday = MockUtil.get(OpportunityStatisticsDay.class);
-        result.setTuesday(tuesday);
-        OpportunityStatisticsDay wednesday = MockUtil.get(OpportunityStatisticsDay.class);
-        result.setWednesday(wednesday);
-        OpportunityStatisticsDay thursday = MockUtil.get(OpportunityStatisticsDay.class);
-        result.setThursday(thursday);
-        OpportunityStatisticsDay friday = MockUtil.get(OpportunityStatisticsDay.class);
-        result.setFriday(friday);
-        OpportunityStatisticsDay saturday = MockUtil.get(OpportunityStatisticsDay.class);
-        result.setSaturday(saturday);
-        OpportunityStatisticsDay sunday = MockUtil.get(OpportunityStatisticsDay.class);
-        result.setSunday(sunday);
+//        OpportunityStatisticsVO result = MockUtil.get(OpportunityStatisticsVO.class);
+//        OpportunityStatisticsDay monday = MockUtil.get(OpportunityStatisticsDay.class);
+//        result.setMonday(monday);
+//        OpportunityStatisticsDay tuesday = MockUtil.get(OpportunityStatisticsDay.class);
+//        result.setTuesday(tuesday);
+//        OpportunityStatisticsDay wednesday = MockUtil.get(OpportunityStatisticsDay.class);
+//        result.setWednesday(wednesday);
+//        OpportunityStatisticsDay thursday = MockUtil.get(OpportunityStatisticsDay.class);
+//        result.setThursday(thursday);
+//        OpportunityStatisticsDay friday = MockUtil.get(OpportunityStatisticsDay.class);
+//        result.setFriday(friday);
+//        OpportunityStatisticsDay saturday = MockUtil.get(OpportunityStatisticsDay.class);
+//        result.setSaturday(saturday);
+//        OpportunityStatisticsDay sunday = MockUtil.get(OpportunityStatisticsDay.class);
+//        result.setSunday(sunday);
+        OpportunityStatisticsVO result = unionOpportunityService.getOpportunityStatisticsVOByBusIdAndUnionId(busId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -127,12 +130,15 @@ public class UnionOpportunityController {
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId,
             @ApiParam(value = "是否接受(0:否 1:是)", name = "isPass", required = true)
-            @RequestParam(value = "isPass") Integer isPass) throws Exception {
+            @RequestParam(value = "isAccept") Integer isAccept,
+            @ApiParam(value = "受理金额，接受时必填", name = "acceptPrice")
+            @RequestParam(value = "acceptPrice", required = false) Double acceptPrice) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
+        unionOpportunityService.updateStatusByIdAndUnionIdAndBusId(opportunityId, unionId, busId, isAccept, acceptPrice);
         return GtJsonResult.instanceSuccessMsg();
     }
 
@@ -149,8 +155,9 @@ public class UnionOpportunityController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
+        unionOpportunityService.saveOpportunityVOByBusIdAndUnionId(busId, unionId, opportunityVO);
         return GtJsonResult.instanceSuccessMsg();
     }
 
