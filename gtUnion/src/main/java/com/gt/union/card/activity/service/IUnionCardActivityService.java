@@ -2,6 +2,7 @@ package com.gt.union.card.activity.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.card.activity.entity.UnionCardActivity;
+import com.gt.union.card.activity.vo.CardActivityConsumeVO;
 import com.gt.union.card.activity.vo.CardActivityStatusVO;
 import com.gt.union.card.activity.vo.CardActivityVO;
 
@@ -57,14 +58,25 @@ public interface IUnionCardActivityService extends IService<UnionCardActivity> {
      */
     List<CardActivityVO> listCardActivityVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
 
+    /**
+     * 前台-联盟卡消费核销-开启优惠项目
+     *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @param fanId   粉丝id
+     * @return List<CardActivityConsumeVO>
+     * @throws Exception 统一处理异常
+     */
+    List<CardActivityConsumeVO> listCardActivityConsumeVOByBusIdAndUnionIdAndFanId(Integer busId, Integer unionId, Integer fanId) throws Exception;
+    
     //***************************************** Domain Driven Design - save ********************************************
 
     /**
      * 联盟卡设置-活动卡设置-新增活动卡
      *
-     * @param busId    商家id
-     * @param unionId  联盟id
-     * @param vo 表单内容
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @param vo      表单内容
      * @throws Exception
      */
     void saveByBusIdAndUnionId(Integer busId, Integer unionId, UnionCardActivity vo) throws Exception;

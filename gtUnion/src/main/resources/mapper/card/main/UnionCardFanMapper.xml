@@ -9,7 +9,6 @@
         <result column="create_time" property="createTime"/>
         <result column="phone" property="phone"/>
         <result column="number" property="number"/>
-        <result column="integral" property="integral"/>
     </resultMap>
 
 </mapper>

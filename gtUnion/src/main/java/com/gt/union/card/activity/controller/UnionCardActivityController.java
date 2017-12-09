@@ -79,7 +79,7 @@ public class UnionCardActivityController {
 
     @ApiOperation(value = "前台-联盟卡消费核销-开启优惠项目", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/consume", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<List<CardActivityConsumeVO>> listConsumeVOByUnionId(
+    public GtJsonResult<List<CardActivityConsumeVO>> listCardActivityConsumeVOByUnionIdAndFanId(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId,
@@ -91,7 +91,8 @@ public class UnionCardActivityController {
             busId = busUser.getPid();
         }
         // mock
-        List<CardActivityConsumeVO> result = MockUtil.list(CardActivityConsumeVO.class, 20);
+//        List<CardActivityConsumeVO> result = MockUtil.list(CardActivityConsumeVO.class, 20);
+        List<CardActivityConsumeVO> result = unionCardActivityService.listCardActivityConsumeVOByBusIdAndUnionIdAndFanId(busId, unionId, fanId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

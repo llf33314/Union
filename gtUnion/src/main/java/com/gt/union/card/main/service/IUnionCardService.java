@@ -36,6 +36,17 @@ public interface IUnionCardService extends IService<UnionCard> {
     List<UnionCard> listValidByFanIdAndUnionId(Integer fanId, Integer unionId) throws Exception;
 
     /**
+     * 根据粉丝id、联盟id和联盟卡类型，获取有效的联盟卡信息
+     *
+     * @param fanId   粉丝id
+     * @param unionId 联盟id
+     * @param type    联盟卡类型
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> listValidByFanIdAndUnionIdAndType(Integer fanId, Integer unionId, Integer type) throws Exception;
+
+    /**
      * 根据活动id和联盟id，获取活动卡信息
      *
      * @param activityId 活动id
@@ -45,6 +56,15 @@ public interface IUnionCardService extends IService<UnionCard> {
      */
     List<UnionCard> listByActivityIdAndUnionId(Integer activityId, Integer unionId) throws Exception;
 
+    /**
+     * 根据粉丝id，获取有效的联盟卡信息
+     *
+     * @param fanId 粉丝id
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> listValidByFanId(Integer fanId) throws Exception;
+
     //***************************************** Domain Driven Design - save ********************************************
 
     //***************************************** Domain Driven Design - remove ******************************************
@@ -52,25 +72,6 @@ public interface IUnionCardService extends IService<UnionCard> {
     //***************************************** Domain Driven Design - update ******************************************
 
     //***************************************** Domain Driven Design - count *******************************************
-
-    /**
-     * 统计联盟积分
-     *
-     * @param unionId 联盟id
-     * @return Double
-     * @throws Exception 统一处理异常
-     */
-    Double countIntegralByUnionId(Integer unionId) throws Exception;
-
-    /**
-     * 统计粉丝的联盟积分
-     *
-     * @param fanId   粉丝id
-     * @param unionId 联盟id
-     * @return Double
-     * @throws Exception 统一处理异常
-     */
-    Double countIntegralByFanIdAndUnionId(Integer fanId, Integer unionId) throws Exception;
 
     /**
      * 根据活动id和联盟id，统计活动卡个数
@@ -83,6 +84,17 @@ public interface IUnionCardService extends IService<UnionCard> {
     Integer countByActivityIdAndUnionId(Integer activityId, Integer unionId) throws Exception;
 
     //***************************************** Domain Driven Design - boolean *****************************************
+
+    /**
+     * 根据粉丝id、联盟id和联盟卡类型，判断是否存在有效的联盟卡信息
+     *
+     * @param fanId   粉丝id
+     * @param unionId 联盟id
+     * @param type    联盟卡类型
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean existValidByFanIdAndUnionIdAndType(Integer fanId, Integer unionId, Integer type) throws Exception;
 
     //***************************************** Domain Driven Design - filter ******************************************
 

@@ -1,5 +1,6 @@
 package com.gt.union.union.main.service.impl;
 
+import com.gt.union.card.main.service.IUnionCardIntegralService;
 import com.gt.union.card.main.service.IUnionCardService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.ParamException;
@@ -39,6 +40,9 @@ public class UnionIndexServiceImpl implements IUnionIndexService {
 
     @Autowired
     private IUnionMainTransferService unionMainTransferService;
+    
+    @Autowired
+    private IUnionCardIntegralService unionCardIntegralService;
 
     @Override
     public IndexVO getIndexVOByBusId(Integer busId, Integer optUnionId) throws Exception {
@@ -108,7 +112,7 @@ public class UnionIndexServiceImpl implements IUnionIndexService {
             result.setMemberSurplus(currentUnion.getMemberLimit() - unionReadMemberList.size());
 
             if (UnionConstant.IS_INTEGRAL_YES == currentUnion.getIsIntegral()) {
-                result.setIntegral(unionCardService.countIntegralByUnionId(currentUnion.getId()));
+                result.setIntegral(unionCardIntegralService.countIntegralByUnionId(currentUnion.getId()));
             }
 
             UnionMainTransfer transfer = unionMainTransferService.getByUnionIdAndToMemberIdAndConfirmStatus(currentUnion.getId(), currentMember.getId(), UnionConstant.TRANSFER_CONFIRM_STATUS_PROCESS);

@@ -5,6 +5,7 @@ import com.gt.union.card.consume.entity.UnionConsume;
 import com.gt.union.card.project.entity.UnionCardProjectItem;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ public class ConsumeRecordVO {
 
     @ApiModelProperty(value = "消费核销信息")
     private UnionConsume consume;
-
+    
     @ApiModelProperty(value = "联盟卡活动id")
     private Integer activityId;
 

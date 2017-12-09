@@ -10,7 +10,6 @@
         <result column="type" property="type"/>
         <result column="name" property="name"/>
         <result column="validity" property="validity"/>
-        <result column="integral" property="integral"/>
         <result column="member_id" property="memberId"/>
         <result column="union_id" property="unionId"/>
         <result column="fan_id" property="fanId"/>

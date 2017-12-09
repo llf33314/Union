@@ -3,6 +3,7 @@ package com.gt.union.card.main.service;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.card.main.entity.UnionCardFan;
 import com.gt.union.card.main.vo.CardFanDetailVO;
+import com.gt.union.card.main.vo.CardFanSearchVO;
 import com.gt.union.card.main.vo.CardFanVO;
 
 import java.util.List;
@@ -35,6 +36,26 @@ public interface IUnionCardFanService extends IService<UnionCardFan> {
      * @throws Exception 统一处理异常
      */
     UnionCardFan getById(Integer fanId) throws Exception;
+
+    /**
+     * 前台-联盟卡消费核销-搜索
+     *
+     * @param busId 商家id
+     * @param numberOrPhone 联盟卡号或手机号
+     * @param optUnionId    联盟id
+     * @return CardFanSearchVO
+     * @throws Exception 统一处理异常
+     */
+    CardFanSearchVO getCardFanSearchVOByBusId(Integer busId, String numberOrPhone, Integer optUnionId) throws Exception;
+
+    /**
+     * 根据联盟卡号或手机号，获取粉丝信息
+     *
+     * @param numberOrPhone 联盟卡号或手机号
+     * @return UnionCardFan
+     * @throws Exception 统一处理异常
+     */
+    UnionCardFan getByNumberOrPhone(String numberOrPhone) throws Exception;
 
     //***************************************** Domain Driven Design - list ********************************************
 

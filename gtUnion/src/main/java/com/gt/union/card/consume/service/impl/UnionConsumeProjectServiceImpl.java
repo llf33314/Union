@@ -27,12 +27,12 @@ import java.util.List;
 @Service
 public class UnionConsumeProjectServiceImpl extends ServiceImpl<UnionConsumeProjectMapper, UnionConsumeProject> implements IUnionConsumeProjectService {
     @Autowired
-    public RedisCacheUtil redisCacheUtil;
+    private RedisCacheUtil redisCacheUtil;
 
     //***************************************** Domain Driven Design - get *********************************************
 
     //***************************************** Domain Driven Design - list ********************************************
-
+    
     //***************************************** Domain Driven Design - save ********************************************
 
     //***************************************** Domain Driven Design - remove ******************************************
@@ -41,6 +41,20 @@ public class UnionConsumeProjectServiceImpl extends ServiceImpl<UnionConsumeProj
 
     //***************************************** Domain Driven Design - count *******************************************
 
+    @Override
+    public Integer countByProjectIdAndProjectItemId(Integer projectId, Integer projectItemId) throws Exception {
+        if (projectId == null || projectItemId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        
+        EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .eq("project_id", projectId)
+                .eq("project_item_id", projectItemId);
+        
+        return selectCount(entityWrapper);
+    }
+    
     //***************************************** Domain Driven Design - boolean *****************************************
 
     //***************************************** Object As a Service - get **********************************************
@@ -68,6 +82,29 @@ public class UnionConsumeProjectServiceImpl extends ServiceImpl<UnionConsumeProj
 
     //***************************************** Object As a Service - list *********************************************
 
+    @Override
+    public List<UnionConsumeProject> listByConsumeId(Integer consumeId) throws Exception {
+        if (consumeId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionConsumeProject> result;
+        // (1)cache
+        String consumeIdKey = UnionConsumeProjectCacheUtil.getConsumeIdKey(consumeId);
+        if (redisCacheUtil.exists(consumeIdKey)) {
+            String tempStr = redisCacheUtil.get(consumeIdKey);
+            result = JSONArray.parseArray(tempStr, UnionConsumeProject.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("consume_id", consumeId)
+                .eq("del_status", CommonConstant.COMMON_NO);
+        result = selectList(entityWrapper);
+        setCache(result, consumeId, UnionConsumeProjectCacheUtil.TYPE_CONSUME_ID);
+        return result;
+    }
+    
     public List<UnionConsumeProject> listByProjectItemId(Integer projectItemId) throws Exception {
         if (projectItemId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -121,6 +158,7 @@ public class UnionConsumeProjectServiceImpl extends ServiceImpl<UnionConsumeProj
         removeCache(newUnionConsumeProject);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveBatch(List<UnionConsumeProject> newUnionConsumeProjectList) throws Exception {
         if (newUnionConsumeProjectList == null) {
@@ -223,6 +261,9 @@ public class UnionConsumeProjectServiceImpl extends ServiceImpl<UnionConsumeProj
         }
         String foreignIdKey = null;
         switch (foreignIdType) {
+            case UnionConsumeProjectCacheUtil.TYPE_CONSUME_ID:
+                foreignIdKey = UnionConsumeProjectCacheUtil.getConsumeIdKey(foreignId);
+                break;
             case UnionConsumeProjectCacheUtil.TYPE_PROJECT_ITEM_ID:
                 foreignIdKey = UnionConsumeProjectCacheUtil.getProjectItemIdKey(foreignId);
                 break;
@@ -245,6 +286,12 @@ public class UnionConsumeProjectServiceImpl extends ServiceImpl<UnionConsumeProj
         String idKey = UnionConsumeProjectCacheUtil.getIdKey(id);
         redisCacheUtil.remove(idKey);
 
+        Integer consumeId = unionConsumeProject.getConsumeId();
+        if (consumeId != null) {
+            String consumeIdKey = UnionConsumeProjectCacheUtil.getConsumeIdKey(consumeId);
+            redisCacheUtil.remove(consumeIdKey);
+        }
+        
         Integer projectItemId = unionConsumeProject.getProjectItemId();
         if (projectItemId != null) {
             String projectItemIdKey = UnionConsumeProjectCacheUtil.getProjectItemIdKey(projectItemId);
@@ -269,6 +316,11 @@ public class UnionConsumeProjectServiceImpl extends ServiceImpl<UnionConsumeProj
         List<String> idKeyList = UnionConsumeProjectCacheUtil.getIdKey(idList);
         redisCacheUtil.remove(idKeyList);
 
+        List<String> consumeIdKeyList = getForeignIdKeyList(unionConsumeProjectList, UnionConsumeProjectCacheUtil.TYPE_CONSUME_ID);
+        if (ListUtil.isNotEmpty(consumeIdKeyList)) {
+            redisCacheUtil.remove(consumeIdKeyList);
+        }
+        
         List<String> projectItemIdKeyList = getForeignIdKeyList(unionConsumeProjectList, UnionConsumeProjectCacheUtil.TYPE_PROJECT_ITEM_ID);
         if (ListUtil.isNotEmpty(projectItemIdKeyList)) {
             redisCacheUtil.remove(projectItemIdKeyList);
@@ -283,6 +335,15 @@ public class UnionConsumeProjectServiceImpl extends ServiceImpl<UnionConsumeProj
     private List<String> getForeignIdKeyList(List<UnionConsumeProject> unionConsumeProjectList, int foreignIdType) {
         List<String> result = new ArrayList<>();
         switch (foreignIdType) {
+            case UnionConsumeProjectCacheUtil.TYPE_CONSUME_ID:
+                for (UnionConsumeProject unionConsumeProject : unionConsumeProjectList) {
+                    Integer consumeId = unionConsumeProject.getConsumeId();
+                    if (consumeId != null) {
+                        String consumeIdKey = UnionConsumeProjectCacheUtil.getConsumeIdKey(consumeId);
+                        result.add(consumeIdKey);
+                    }
+                }
+                break;
             case UnionConsumeProjectCacheUtil.TYPE_PROJECT_ITEM_ID:
                 for (UnionConsumeProject unionConsumeProject : unionConsumeProjectList) {
                     Integer projectItemId = unionConsumeProject.getProjectItemId();
@@ -306,4 +367,5 @@ public class UnionConsumeProjectServiceImpl extends ServiceImpl<UnionConsumeProj
         }
         return result;
     }
+    
 }

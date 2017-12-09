@@ -7,9 +7,13 @@ import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.activity.mapper.UnionCardActivityMapper;
 import com.gt.union.card.activity.service.IUnionCardActivityService;
 import com.gt.union.card.activity.util.UnionCardActivityCacheUtil;
+import com.gt.union.card.activity.vo.CardActivityConsumeVO;
 import com.gt.union.card.activity.vo.CardActivityStatusVO;
 import com.gt.union.card.activity.vo.CardActivityVO;
 import com.gt.union.card.constant.CardConstant;
+import com.gt.union.card.main.entity.UnionCard;
+import com.gt.union.card.main.entity.UnionCardFan;
+import com.gt.union.card.main.service.IUnionCardFanService;
 import com.gt.union.card.main.service.IUnionCardService;
 import com.gt.union.card.project.entity.UnionCardProject;
 import com.gt.union.card.project.entity.UnionCardProjectFlow;
@@ -62,6 +66,9 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
 
     @Autowired
     private IUnionCardProjectFlowService unionCardProjectFlowService;
+
+    @Autowired
+    private IUnionCardFanService unionCardFanService;
 
     //***************************************** Domain Driven Design - get *********************************************
 
@@ -204,6 +211,42 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
                 return o1.getActivity().getCreateTime().compareTo(o2.getActivity().getCreateTime());
             }
         });
+        return result;
+    }
+
+    @Override
+    public List<CardActivityConsumeVO> listCardActivityConsumeVOByBusIdAndUnionIdAndFanId(Integer busId, Integer unionId, Integer fanId) throws Exception {
+        if (busId == null || unionId == null || fanId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member读权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+        }
+        // （2）	判断fanId有效性
+        UnionCardFan fan = unionCardFanService.getById(fanId);
+        if (fan == null) {
+            throw new BusinessException("找不到粉丝信息");
+        }
+        // （3）	获取粉丝所有有效的活动卡信息
+        List<CardActivityConsumeVO> result = new ArrayList<>();
+        List<UnionCard> validActivityCardList = unionCardService.listValidByFanIdAndUnionIdAndType(fanId, unionId, CardConstant.CARD_TYPE_ACTIVITY);
+        if (ListUtil.isNotEmpty(validActivityCardList)) {
+            for (UnionCard validActivityCard : validActivityCardList) {
+                CardActivityConsumeVO vo = new CardActivityConsumeVO();
+                vo.setActivityCard(validActivityCard);
+
+                UnionCardActivity validActivity = getByIdAndUnionId(validActivityCard.getActivityId(), unionId);
+                vo.setActivity(validActivity);
+
+                result.add(vo);
+            }
+        }
+
         return result;
     }
 

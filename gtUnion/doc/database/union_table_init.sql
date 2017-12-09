@@ -225,9 +225,19 @@ CREATE TABLE `t_union_card_fan` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `phone` varchar(30) DEFAULT NULL COMMENT '手机号',
   `number` varchar(30) DEFAULT NULL COMMENT '卡号',
-  `integral` double(8,2) DEFAULT '0.00' COMMENT '积分',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='联盟卡粉丝信息';
+
+DROP TABLE IF EXISTS `t_union_card_integral`;
+CREATE TABLE `t_union_card_integral` (
+  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `del_status` int(2) DEFAULT NULL COMMENT '是否删除(0:否 1:是)',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
+  `fan_id` int(11) DEFAULT NULL COMMENT '粉丝id',
+  `union_id` int(11) DEFAULT NULL COMMENT '联盟id',
+  `integral` double(8,2) DEFAULT '0.00' COMMENT '可用积分',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='联盟积分';
 
 DROP TABLE IF EXISTS `t_union_card`;
 CREATE TABLE `t_union_card` (
@@ -237,7 +247,6 @@ CREATE TABLE `t_union_card` (
   `type` int(2) DEFAULT NULL COMMENT '类型(1:折扣卡 2:活动卡)',
   `name` VARCHAR(100) DEFAULT NULL COMMENT '名称',
   `validity` datetime DEFAULT NULL COMMENT '有效期',
-  `integral` double(8,2) DEFAULT '0.00' COMMENT '积分',
   `member_id` int(11) DEFAULT NULL COMMENT '盟员id',
   `union_id` int(11) DEFAULT NULL COMMENT '联盟id',
   `fan_id` int(11) DEFAULT NULL COMMENT '联盟卡粉丝id',
@@ -362,10 +371,11 @@ CREATE TABLE `t_union_consume` (
   `pay_money` double(8,2) DEFAULT NULL COMMENT '支付金额',
   `pay_type` int(8) DEFAULT NULL COMMENT '支付方式(0:现金 1:微信 2:支付宝)',
   `pay_status` int(2) DEFAULT NULL COMMENT '支付状态(1:未支付 2:已支付 3:已退款)',
-  `use_integral` int(11) DEFAULT 0 COMMENT '使用积分额',
-  `give_integral` int(11) DEFAULT 0 COMMENT '赠送积分额',
+  `use_integral` double(8,2) DEFAULT NULL COMMENT '使用积分额',
+  `give_integral` double(8,2) DEFAULT NULL COMMENT '赠送积分额',
   `order_no` varchar(128) DEFAULT NULL COMMENT '订单号',
   `wx_order_no` varchar(128) DEFAULT NULL COMMENT '微信订单号',
+  `alipay_order_no` varchar(128) DEFAULT NULL COMMENT '支付宝订单号',
   `business_type` int(2) DEFAULT NULL COMMENT '消费行业类型(0:线下 >0:其他行业)',
   `business_desc` varchar(200) DEFAULT NULL COMMENT '行业消费描述',
   `business_order_id` int(11) DEFAULT NULL COMMENT '行业订单id',

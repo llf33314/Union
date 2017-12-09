@@ -16,6 +16,7 @@
         <result column="give_integral" property="giveIntegral"/>
         <result column="order_no" property="orderNo"/>
         <result column="wx_order_no" property="wxOrderNo"/>
+        <result column="alipay_order_no" property="alipayOrderNo"/>
         <result column="business_type" property="businessType"/>
         <result column="business_desc" property="businessDesc"/>
         <result column="business_order_id" property="businessOrderId"/>

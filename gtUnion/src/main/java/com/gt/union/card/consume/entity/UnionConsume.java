@@ -85,14 +85,14 @@ public class UnionConsume extends Model<UnionConsume> {
      */
     @ApiModelProperty(value = "使用积分额")
     @TableField("use_integral")
-    private Integer useIntegral;
+    private Double useIntegral;
 
     /**
      * 赠送积分额
      */
     @ApiModelProperty(value = "赠送积分额")
     @TableField("give_integral")
-    private Integer giveIntegral;
+    private Double giveIntegral;
 
     /**
      * 订单号
@@ -107,6 +107,13 @@ public class UnionConsume extends Model<UnionConsume> {
     @ApiModelProperty(value = "微信订单号")
     @TableField("wx_order_no")
     private String wxOrderNo;
+
+    /**
+     * 支付宝订单号
+     */
+    @ApiModelProperty(value = "支付宝订单号")
+    @TableField("alipay_order_no")
+    private String alipayOrderNo;
 
     /**
      * 消费行业类型(0:线下 >0:其他行业)
@@ -229,19 +236,19 @@ public class UnionConsume extends Model<UnionConsume> {
         this.payStatus = payStatus;
     }
 
-    public Integer getUseIntegral() {
+    public Double getUseIntegral() {
         return useIntegral;
     }
 
-    public void setUseIntegral(Integer useIntegral) {
+    public void setUseIntegral(Double useIntegral) {
         this.useIntegral = useIntegral;
     }
 
-    public Integer getGiveIntegral() {
+    public Double getGiveIntegral() {
         return giveIntegral;
     }
 
-    public void setGiveIntegral(Integer giveIntegral) {
+    public void setGiveIntegral(Double giveIntegral) {
         this.giveIntegral = giveIntegral;
     }
 
@@ -259,6 +266,14 @@ public class UnionConsume extends Model<UnionConsume> {
 
     public void setWxOrderNo(String wxOrderNo) {
         this.wxOrderNo = wxOrderNo;
+    }
+
+    public String getAlipayOrderNo() {
+        return alipayOrderNo;
+    }
+
+    public void setAlipayOrderNo(String alipayOrderNo) {
+        this.alipayOrderNo = alipayOrderNo;
     }
 
     public Integer getBusinessType() {

@@ -6,12 +6,14 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.activity.service.IUnionCardActivityService;
 import com.gt.union.card.constant.CardConstant;
+import com.gt.union.card.consume.service.IUnionConsumeProjectService;
 import com.gt.union.card.project.entity.UnionCardProject;
 import com.gt.union.card.project.entity.UnionCardProjectItem;
 import com.gt.union.card.project.mapper.UnionCardProjectItemMapper;
 import com.gt.union.card.project.service.IUnionCardProjectItemService;
 import com.gt.union.card.project.service.IUnionCardProjectService;
 import com.gt.union.card.project.util.UnionCardProjectItemCacheUtil;
+import com.gt.union.card.project.vo.CardProjectItemConsumeVO;
 import com.gt.union.card.project.vo.CardProjectVO;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
@@ -27,9 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * 项目优惠 服务实现类
@@ -53,6 +53,9 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
 
     @Autowired
     private IUnionCardProjectService unionCardProjectService;
+
+    @Autowired
+    private IUnionConsumeProjectService unionConsumeProjectService;
 
     //***************************************** Domain Driven Design - get *********************************************
 
@@ -86,6 +89,59 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
 
         List<UnionCardProjectItem> result = listItemByProjectId(projectId);
         result = filterByType(result, type);
+
+        return result;
+    }
+
+    @Override
+    public List<CardProjectItemConsumeVO> listCardProjectItemConsumeVOByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception {
+        if (busId == null || unionId == null || activityId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member读权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+        }
+        // （2）	判断activityId有效性
+        UnionCardActivity activity = unionCardActivityService.getByIdAndUnionId(activityId, unionId);
+        if (activity == null) {
+            throw new BusinessException("找不到活动卡信息");
+        }
+        // （3）	获取activity关联的非ERP文本项目优惠列表
+        // （4）	过滤掉可使用数量为0的项目优惠
+        List<CardProjectItemConsumeVO> result = new ArrayList<>();
+        List<UnionCardProject> projectList = unionCardProjectService.listByActivityIdAndUnionIdAndStatus(activityId, unionId, CardConstant.PROJECT_STATUS_ACCEPT);
+        if (ListUtil.isNotEmpty(projectList)) {
+            for (UnionCardProject project : projectList) {
+                List<UnionCardProjectItem> textItemList = listItemByProjectIdAndType(project.getId(), CardConstant.ITEM_TYPE_TEXT);
+
+                if (ListUtil.isNotEmpty(textItemList)) {
+                    for (UnionCardProjectItem textItem : textItemList) {
+                        Integer consumeItemCount = unionConsumeProjectService.countByProjectIdAndProjectItemId(project.getId(), textItem.getId());
+                        Integer textItemNumber = textItem.getNumber() != null ? textItem.getNumber() : 0;
+                        Integer surplusItemCount = textItemNumber - consumeItemCount;
+
+                        if (surplusItemCount > 0) {
+                            CardProjectItemConsumeVO vo = new CardProjectItemConsumeVO();
+                            vo.setItem(textItem);
+                            vo.setAvailableCount(surplusItemCount);
+                            result.add(vo);
+                        }
+                    }
+                }
+            }
+        }
+        // （5）	按时间顺序排序
+        Collections.sort(result, new Comparator<CardProjectItemConsumeVO>() {
+            @Override
+            public int compare(CardProjectItemConsumeVO o1, CardProjectItemConsumeVO o2) {
+                return o2.getItem().getCreateTime().compareTo(o1.getItem().getCreateTime());
+            }
+        });
 
         return result;
     }
@@ -437,6 +493,7 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
 
     //***************************************** Object As a Service - get **********************************************
 
+    @Override
     public UnionCardProjectItem getById(Integer id) throws Exception {
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);

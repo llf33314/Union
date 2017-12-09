@@ -67,13 +67,6 @@ public class UnionCard extends Model<UnionCard> {
     private Date validity;
 
     /**
-     * 积分
-     */
-    @ApiModelProperty(value = "积分")
-    @TableField("integral")
-    private Double integral;
-
-    /**
      * 盟员id
      */
     @ApiModelProperty(value = "盟员id")
@@ -148,14 +141,6 @@ public class UnionCard extends Model<UnionCard> {
 
     public void setValidity(Date validity) {
         this.validity = validity;
-    }
-
-    public Double getIntegral() {
-        return integral;
-    }
-
-    public void setIntegral(Double integral) {
-        this.integral = integral;
     }
 
     public Integer getMemberId() {

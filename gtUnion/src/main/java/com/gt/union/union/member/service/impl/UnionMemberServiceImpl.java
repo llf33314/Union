@@ -3,6 +3,7 @@ package com.gt.union.union.member.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
@@ -39,6 +40,9 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
 
     @Autowired
     private IUnionMainService unionMainService;
+    
+    @Autowired
+    private IDictService dictService;
 
     //***************************************** Domain Driven Design - get *********************************************
 
@@ -430,8 +434,9 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         UnionMain union = unionMainService.getById(unionId);
         if (CommonConstant.COMMON_YES == union.getIsIntegral()) {
             Double memberIntegralExchangeRatio = vo.getIntegralExchangeRatio();
-            if (memberIntegralExchangeRatio == null || memberIntegralExchangeRatio <= 0 || memberIntegralExchangeRatio > 30) {
-                throw new BusinessException("积分抵扣率不能小于等于0，且不能大于30");
+            Double maxIntegralExchange = dictService.getMaxExchangePercent();
+            if (memberIntegralExchangeRatio == null || memberIntegralExchangeRatio <= 0 || memberIntegralExchangeRatio > maxIntegralExchange) {
+                throw new BusinessException("积分抵扣率不能小于等于0，且不能大于" + maxIntegralExchange);
             }
             updateMember.setIntegralExchangeRatio(memberIntegralExchangeRatio);
         }

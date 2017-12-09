@@ -3,7 +3,6 @@ package com.gt.union.card.main.controller;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
-import com.gt.union.card.main.entity.UnionCard;
 import com.gt.union.card.main.service.IUnionCardFanService;
 import com.gt.union.card.main.vo.CardFanDetailVO;
 import com.gt.union.card.main.vo.CardFanSearchVO;
@@ -12,7 +11,6 @@ import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.ExportUtil;
 import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PageUtil;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.service.IUnionMainService;
@@ -135,7 +133,7 @@ public class UnionCardFanController {
 
     @ApiOperation(value = "前台-联盟卡消费核销-搜索", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "search", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<CardFanSearchVO> getSearchVOByNumber(
+    public GtJsonResult<CardFanSearchVO> getSearchVO(
             HttpServletRequest request,
             @ApiParam(value = "联盟卡号或手机号", name = "numberOrPhone", required = true)
             @RequestParam(value = "numberOrPhone") String numberOrPhone,
@@ -147,9 +145,10 @@ public class UnionCardFanController {
             busId = busUser.getPid();
         }
         // mock
-        CardFanSearchVO result = MockUtil.get(CardFanSearchVO.class);
-        List<UnionMain> unionList = MockUtil.list(UnionMain.class, 3);
-        result.setUnionList(unionList);
+//        CardFanSearchVO result = MockUtil.get(CardFanSearchVO.class);
+//        List<UnionMain> unionList = MockUtil.list(UnionMain.class, 3);
+//        result.setUnionList(unionList);
+        CardFanSearchVO result = unionCardFanService.getCardFanSearchVOByBusId(busId, numberOrPhone, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

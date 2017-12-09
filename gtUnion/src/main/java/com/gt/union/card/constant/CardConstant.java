@@ -56,7 +56,7 @@ public interface CardConstant {
      * 联盟卡活动是否需要审核：否
      */
     int ACTIVITY_IS_PROJECT_CHECK_NO = 0;
-    
+
     /**
      * 项目状态：未提交
      */
@@ -101,4 +101,60 @@ public interface CardConstant {
      * 项目优惠ERP类型：样子
      */
     int ITEM_ERP_TYPE_LOOK = 2;
+
+    /**
+     * 消费类型：线上
+     */
+    int CONSUME_TYPE_ONLINE = 1;
+
+    /**
+     * 消费类型：线下
+     */
+    int CONSUME_TYPE_OFFLINE = 2;
+
+    /**
+     * 消费核销支付方式：现金
+     */
+    int CONSUME_PAY_TYPE_CASH = 0;
+
+    /**
+     * 消费核销支付方式：微信
+     */
+    int CONSUME_PAY_TYPE_WX = 1;
+
+    /**
+     * 消费核销支付方式：支付宝
+     */
+    int CONSUME_PAY_TYPE_ALIPAY = 2;
+
+    /**
+     * 消费核销支付状态：未支付
+     */
+    int CONSUME_PAY_STATUS_PAYING = 1;
+
+    /**
+     * 消费核销支付状态：支付成功
+     */
+    int CONSUME_PAY_STATUS_SUCCESS = 2;
+
+    /**
+     * 消费核销支付状态：已退款
+     */
+    int CONSUME_PAY_STATUS_FAIL = 3;
+
+    /**
+     * 消费核销表单支付方式：现金
+     */
+    int CONSUME_VO_PAY_TYPE_CASH = 1;
+
+    /**
+     * 消费核销表单支付方式：扫码支付
+     */
+    int CONSUME_VO_PAY_TYPE_CODE = 2;
+
+    /**
+     * 消费核销行业类型：线下
+     */
+    int CONSUME_BUSINESS_TYPE_OFFLINE = 0;
+
 }

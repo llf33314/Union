@@ -23,6 +23,9 @@ public class CardFanSearchVO {
     @ApiModelProperty(value = "联盟积分")
     private Double integral;
     
+    @ApiModelProperty(value = "消耗多少积分可抵扣1元")
+    private Double exchangeIntegral;
+    
     @ApiModelProperty(value = "可选联盟列表")
     private List<UnionMain> unionList;
     
@@ -49,6 +52,14 @@ public class CardFanSearchVO {
 
     public void setIntegral(Double integral) {
         this.integral = integral;
+    }
+
+    public Double getExchangeIntegral() {
+        return exchangeIntegral;
+    }
+
+    public void setExchangeIntegral(Double exchangeIntegral) {
+        this.exchangeIntegral = exchangeIntegral;
     }
 
     public List<UnionMain> getUnionList() {

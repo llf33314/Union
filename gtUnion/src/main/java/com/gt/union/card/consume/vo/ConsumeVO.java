@@ -31,7 +31,7 @@ public class ConsumeVO {
     private UnionConsume consume;
 
     @ApiModelProperty(value = "非ERP文本项目优惠列表")
-    private List<UnionCardProjectItem> nonErpTextList;
+    private List<UnionCardProjectItem> textList;
 
     public UnionMain getUnion() {
         return union;
@@ -65,12 +65,12 @@ public class ConsumeVO {
         this.consume = consume;
     }
 
-    public List<UnionCardProjectItem> getNonErpTextList() {
-        return nonErpTextList;
+    public List<UnionCardProjectItem> getTextList() {
+        return textList;
     }
 
-    public void setNonErpTextList(List<UnionCardProjectItem> nonErpTextList) {
-        this.nonErpTextList = nonErpTextList;
+    public void setTextList(List<UnionCardProjectItem> textList) {
+        this.textList = textList;
     }
 
     @Override

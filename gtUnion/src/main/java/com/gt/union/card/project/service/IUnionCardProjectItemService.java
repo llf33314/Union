@@ -2,6 +2,7 @@ package com.gt.union.card.project.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.card.project.entity.UnionCardProjectItem;
+import com.gt.union.card.project.vo.CardProjectItemConsumeVO;
 import com.gt.union.card.project.vo.CardProjectVO;
 
 import java.util.List;
@@ -14,6 +15,15 @@ import java.util.List;
  */
 public interface IUnionCardProjectItemService extends IService<UnionCardProjectItem> {
     //***************************************** Domain Driven Design - get *********************************************
+
+    /**
+     * 根据id，获取对象
+     *
+     * @param id id
+     * @return UnionCardProjectItem
+     * @throws Exception 统一处理异常
+     */
+    UnionCardProjectItem getById(Integer id) throws Exception;
 
     //***************************************** Domain Driven Design - list ********************************************
 
@@ -35,6 +45,17 @@ public interface IUnionCardProjectItemService extends IService<UnionCardProjectI
      * @throws Exception 统一处理异常
      */
     List<UnionCardProjectItem> listItemByProjectIdAndType(Integer projectId, Integer type) throws Exception;
+
+    /**
+     * 列表：前台-联盟卡消费核销-开启优惠项目-优惠
+     *
+     * @param busId      商家id
+     * @param unionId    联盟id
+     * @param activityId 活动id
+     * @return List<CardProjectItemConsumeVO>
+     * @throws Exception 统一处理异常
+     */
+    List<CardProjectItemConsumeVO> listCardProjectItemConsumeVOByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception;
 
     //***************************************** Domain Driven Design - save ********************************************
 

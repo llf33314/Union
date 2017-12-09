@@ -9,7 +9,6 @@ import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
-import com.gt.union.common.util.MockUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -37,7 +36,7 @@ public class UnionCardProjectItemController {
 
     @ApiOperation(value = "列表：前台-联盟卡消费核销-开启优惠项目-优惠", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/consume", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<List<CardProjectItemConsumeVO>> listConsumeByActivityIdAndUnionId(
+    public GtJsonResult<List<CardProjectItemConsumeVO>> listCardProjectItemConsumeVOByActivityIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "活动id", name = "activityId", required = true)
             @PathVariable("activityId") Integer activityId,
@@ -49,7 +48,8 @@ public class UnionCardProjectItemController {
             busId = busUser.getPid();
         }
         // mock
-        List<CardProjectItemConsumeVO> result = MockUtil.list(CardProjectItemConsumeVO.class, 20);
+//        List<CardProjectItemConsumeVO> result = MockUtil.list(CardProjectItemConsumeVO.class, 20);
+        List<CardProjectItemConsumeVO> result = unionCardProjectItemService.listCardProjectItemConsumeVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

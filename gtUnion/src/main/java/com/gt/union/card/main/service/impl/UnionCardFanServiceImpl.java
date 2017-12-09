@@ -3,14 +3,17 @@ package com.gt.union.card.main.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.card.constant.CardConstant;
 import com.gt.union.card.main.entity.UnionCard;
 import com.gt.union.card.main.entity.UnionCardFan;
 import com.gt.union.card.main.mapper.UnionCardFanMapper;
 import com.gt.union.card.main.service.IUnionCardFanService;
+import com.gt.union.card.main.service.IUnionCardIntegralService;
 import com.gt.union.card.main.service.IUnionCardService;
 import com.gt.union.card.main.util.UnionCardFanCacheUtil;
 import com.gt.union.card.main.vo.CardFanDetailVO;
+import com.gt.union.card.main.vo.CardFanSearchVO;
 import com.gt.union.card.main.vo.CardFanVO;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
@@ -18,7 +21,9 @@ import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.StringUtil;
+import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.service.IUnionMainService;
+import com.gt.union.union.main.vo.UnionMainVO;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,6 +52,12 @@ public class UnionCardFanServiceImpl extends ServiceImpl<UnionCardFanMapper, Uni
 
     @Autowired
     private IUnionCardService unionCardService;
+
+    @Autowired
+    private IUnionCardIntegralService unionCardIntegralService;
+
+    @Autowired
+    private IDictService dictService;
 
     //***************************************** Domain Driven Design - get *********************************************
 
@@ -110,7 +121,7 @@ public class UnionCardFanServiceImpl extends ServiceImpl<UnionCardFanMapper, Uni
         for (UnionCardFan fan : fanList) {
             CardFanVO fanVO = new CardFanVO();
             fanVO.setFan(fan);
-            fanVO.setIntegral(unionCardService.countIntegralByFanIdAndUnionId(fan.getId(), unionId));
+            fanVO.setIntegral(unionCardIntegralService.countIntegralByFanIdAndUnionId(fan.getId(), unionId));
             result.add(fanVO);
         }
 
@@ -172,6 +183,86 @@ public class UnionCardFanServiceImpl extends ServiceImpl<UnionCardFanMapper, Uni
         result = selectOne(entityWrapper);
         setCache(result, id);
         return result;
+    }
+
+    @Override
+    public CardFanSearchVO getCardFanSearchVOByBusId(Integer busId, String numberOrPhone, Integer optUnionId) throws Exception {
+        if (busId == null || numberOrPhone == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断numberOrPhone有效性
+        UnionCardFan fan = getByNumberOrPhone(numberOrPhone);
+        if (fan == null) {
+            return null;
+        }
+        // （2）	获取商家所有有效的unionList
+        List<UnionMainVO> busUnionList = unionMainService.listMyValidByBusId(busId);
+        List<Integer> busUnionIdList = new ArrayList<>();
+        if (ListUtil.isNotEmpty(busUnionList)) {
+            for (UnionMainVO union : busUnionList) {
+                busUnionIdList.add(union.getUnion().getId());
+            }
+        }
+        // （3）	过滤掉一些粉丝没办折扣卡的union
+        List<UnionCard> cardList = unionCardService.listValidByFanId(fan.getId());
+        List<Integer> fanUnionIdList = new ArrayList<>();
+        if (ListUtil.isNotEmpty(cardList)) {
+            for (UnionCard card : cardList) {
+                fanUnionIdList.add(card.getUnionId());
+            }
+        }
+        List<Integer> validUnionIdList = ListUtil.intersection(busUnionIdList, fanUnionIdList);
+        // （4）	如果没有剩余的union，则返回，否则，进行下一步
+        if (ListUtil.isEmpty(validUnionIdList)) {
+            return null;
+        }
+        // （5）	判断unionId是否在剩余的union中，如果是，则当前联盟为该union，否则默认为第一个union
+        CardFanSearchVO result = new CardFanSearchVO();
+        result.setFan(fan);
+        List<UnionMain> validUnionList = new ArrayList<>();
+        for (Integer validUnionId : validUnionIdList) {
+            UnionMain validUnion = unionMainService.getById(validUnionId);
+            validUnionList.add(validUnion);
+        }
+        result.setUnionList(validUnionList);
+
+        Integer currentUnionId = optUnionId != null && validUnionIdList.contains(optUnionId) ? optUnionId : validUnionIdList.get(0);
+        UnionMain currentUnion = unionMainService.getById(currentUnionId);
+        result.setCurrentUnion(currentUnion);
+
+        // （6）	获取union对应的member，获得折扣信息
+        UnionMember currentMember = unionMemberService.getReadByBusIdAndUnionId(busId, currentUnionId);
+        result.setCurrentMember(currentMember);
+
+        // （7）	获取粉丝联盟积分
+        Double unionIntegral = unionCardIntegralService.countIntegralByFanIdAndUnionId(fan.getId(), currentUnionId);
+        result.setIntegral(unionIntegral);
+
+        // （8）	如果粉丝在union下的存在有效的活动卡，则优惠项目可用；否则，不可用
+        boolean isProjectAvailable = unionCardService.existValidByFanIdAndUnionIdAndType(fan.getId(), currentUnionId, CardConstant.CARD_TYPE_ACTIVITY);
+        result.setIsProjectAvailable(isProjectAvailable ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO);
+
+        // （9）	获取消费多少积分可以抵扣1元配置
+        Double exchangeIntegral = dictService.getExchangeIntegral();
+        result.setExchangeIntegral(exchangeIntegral);
+
+        return result;
+    }
+
+    @Override
+    public UnionCardFan getByNumberOrPhone(String numberOrPhone) throws Exception {
+        if (numberOrPhone == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionCardFan> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .andNew()
+                .eq("number", numberOrPhone)
+                .or()
+                .eq("phone", numberOrPhone);
+
+        return selectOne(entityWrapper);
     }
 
     //***************************************** Object As a Service - list *********************************************

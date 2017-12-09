@@ -67,6 +67,18 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     }
 
     @Override
+    public List<UnionCard> listValidByFanIdAndUnionIdAndType(Integer fanId, Integer unionId, Integer type) throws Exception {
+        if (fanId == null || unionId == null || type == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        
+        List<UnionCard> result = listValidByFanIdAndUnionId(fanId, unionId);
+        result = filterByType(result, type);
+        
+        return result;
+    }
+
+    @Override
     public List<UnionCard> listByActivityIdAndUnionId(Integer activityId, Integer unionId) throws Exception {
         if (activityId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -74,9 +86,23 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 
         List<UnionCard> result = listByActivityId(activityId);
         result = filterByType(result, CardConstant.CARD_TYPE_ACTIVITY);
+        result = filterByUnionId(result, unionId);
 
+        return result;
+    }
 
-        return null;
+    @Override
+    public List<UnionCard> listValidByFanId(Integer fanId) throws Exception {
+        if (fanId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        
+        EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .eq("fan_id", fanId)
+                .le("validity", DateUtil.getCurrentDate());
+        
+        return selectList(entityWrapper);
     }
 
     //***************************************** Domain Driven Design - save ********************************************
@@ -86,40 +112,6 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     //***************************************** Domain Driven Design - update ******************************************
 
     //***************************************** Domain Driven Design - count *******************************************
-
-    @Override
-    public Double countIntegralByUnionId(Integer unionId) throws Exception {
-        if (unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionCard> cardList = listValidByUnionId(unionId);
-        BigDecimal bigDecimal = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(cardList)) {
-            for (UnionCard card : cardList) {
-                bigDecimal = BigDecimalUtil.add(bigDecimal, card.getIntegral());
-            }
-        }
-
-        return bigDecimal.doubleValue();
-    }
-
-    @Override
-    public Double countIntegralByFanIdAndUnionId(Integer fanId, Integer unionId) throws Exception {
-        if (fanId == null || unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionCard> cardList = listValidByFanIdAndUnionId(fanId, unionId);
-        BigDecimal bigDecimal = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(cardList)) {
-            for (UnionCard card : cardList) {
-                bigDecimal = BigDecimalUtil.add(bigDecimal, card.getIntegral());
-            }
-        }
-
-        return bigDecimal.doubleValue();
-    }
 
     @Override
     public Integer countByActivityIdAndUnionId(Integer activityId, Integer unionId) throws Exception {
@@ -134,6 +126,17 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 
     //***************************************** Domain Driven Design - boolean *****************************************
 
+    @Override
+    public boolean existValidByFanIdAndUnionIdAndType(Integer fanId, Integer unionId, Integer type) throws Exception {
+        if (fanId == null || unionId == null || type == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        
+        List<UnionCard> cardList = listValidByFanIdAndUnionIdAndType(fanId, unionId, type);
+        
+        return ListUtil.isNotEmpty(cardList);
+    }
+    
     //***************************************** Domain Driven Design - filter ******************************************
 
     @Override
