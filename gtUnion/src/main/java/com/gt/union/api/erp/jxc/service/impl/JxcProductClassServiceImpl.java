@@ -30,7 +30,7 @@ public class JxcProductClassServiceImpl implements JxcProductClassService {
 
 	@Override
 	public List<JxcProductClassPO> listProductClassByBusId(Integer busId) {
-		logger.info("根据商家id查询商品分类列表：{}",busId);
+		logger.info("根据商家id查询进销存商品分类列表：{}",busId);
 		String url = PropertiesUtil.getJxcUrl() + "/erp/order/news/basic/product/type/" + busId;
 		String key = RedisKeyUtil.getJxcAuthorityKey();
 		try {
@@ -43,6 +43,7 @@ public class JxcProductClassServiceImpl implements JxcProductClassService {
 			List<JxcProductClassPO> data = JSONArray.parseArray(jsonObject.getJSONArray("data").toJSONString(), JxcProductClassPO.class);
 			return data;
 		} catch (Exception e) {
+			logger.error("根据商家id查询进销存商品分类列表错误", e);
 			e.printStackTrace();
 		}
 		return null;

@@ -1,5 +1,8 @@
 package com.gt.union.api.erp.jxc.entity;
 
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
 import java.util.Date;
 import java.util.List;
 
@@ -8,41 +11,49 @@ import java.util.List;
  * @author hongjiye
  * @time 2017-12-07 11:53
  **/
+@ApiModel(value = "进销存商品分类")
 public class JxcProductClassPO {
 
 	/**
 	 * 分类id
 	 */
+	@ApiModelProperty(value = "分类id")
 	private Integer id;
 
 	/**
 	 * 分类名称
 	 */
+	@ApiModelProperty(value = "分类名称")
 	private String name;
 
 	/**
 	 * 创建分类时间字符串  yyyy-MM-DD HH:mm
 	 */
+	@ApiModelProperty(value = "创建分类时间字符串")
 	private String createDateStr;
 
 	/**
 	 * 创建分类时间
 	 */
+	@ApiModelProperty(value = "创建分类时间")
 	private Date createDate;
 
 	/**
 	 * 是否下架(商品按分类下架使用)  true：未下架 可以使用
 	 */
+	@ApiModelProperty(value = "是否下架(商品按分类下架使用)  true：未下架 可以使用")
 	private Boolean sold;
 
 	/**
 	 * 是否删除  true：未删除
 	 */
+	@ApiModelProperty(value = "是否删除  true：未删除")
 	private Boolean status;
 
 	/**
 	 * 子分类
 	 */
+	@ApiModelProperty(value = "子分类")
 	private List<JxcProductClassPO> chlid;
 
 	public Integer getId() {

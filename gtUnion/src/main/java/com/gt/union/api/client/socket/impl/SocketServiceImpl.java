@@ -33,6 +33,7 @@ public class SocketServiceImpl implements SocketService{
 			logger.info("socket推送参数：{}", JSON.toJSONString(params));
 			SignHttpUtils.WxmppostByHttp(PropertiesUtil.getWxmpUrl()+"/8A5DA52E/socket/getSocketApi.do", params, PropertiesUtil.getWxmpSignKey());
 		}catch (Exception e){
+			logger.error("socket公用推送错误",e);
 			return false;
 		}
 		return true;
@@ -56,6 +57,7 @@ public class SocketServiceImpl implements SocketService{
 			logger.info("socket推送参数：{}", JSON.toJSONString(params));
 			SignHttpUtils.WxmppostByHttp(PropertiesUtil.getWxmpUrl()+"/8A5DA52E/socket/getSocketApi.do", params, PropertiesUtil.getWxmpSignKey());
 		}catch (Exception e){
+			logger.error("socket支付推送错误",e);
 			return false;
 		}
 		return true;

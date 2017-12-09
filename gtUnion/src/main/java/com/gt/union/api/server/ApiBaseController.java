@@ -5,7 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.gt.api.bean.sign.SignBean;
 import com.gt.api.bean.sign.SignEnum;
 import com.gt.api.util.KeysUtil;
-import com.gt.union.api.entity.param.RequestApiParam;
+import com.gt.union.api.server.entity.param.RequestApiParam;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.util.PropertiesUtil;
 import com.gt.union.common.util.StringUtil;

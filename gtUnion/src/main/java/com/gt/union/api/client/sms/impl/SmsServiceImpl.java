@@ -44,6 +44,7 @@ public class SmsServiceImpl implements SmsService {
 				return false;
 			}
 		}catch (Exception e){
+			logger.error("发送短信错误", e);
 			return false;
 		}
 		return true;
@@ -61,6 +62,7 @@ public class SmsServiceImpl implements SmsService {
 				return false;
 			}
 		}catch (Exception e){
+			logger.error("短信验证码校验错误", e);
 			return false;
 		}
 		return false;

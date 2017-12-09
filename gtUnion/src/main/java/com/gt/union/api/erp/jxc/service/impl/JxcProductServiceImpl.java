@@ -37,8 +37,8 @@ public class JxcProductServiceImpl implements JxcProductService{
 	public Page<List<JxcProductPO>> listProductByShopIdAndClassIdAndSearchPage(Integer shopId, Integer classId, String search, Integer pageIndex, Integer pageCount) {
 		String url = PropertiesUtil.getJxcUrl() + "/erp/order/news/all/invenotry";
 		String key = RedisKeyUtil.getJxcAuthorityKey();
+		Page page = new Page<>();
 		try {
-			Page page = new Page<>();
 			String token = redisCacheUtil.get(key);
 			if(CommonUtil.isNotEmpty(token)){
 				token = JSON.parseObject(token,String.class);
@@ -61,10 +61,9 @@ public class JxcProductServiceImpl implements JxcProductService{
 			page.setSearchCount(false);
 			page.setSize(CommonUtil.toInteger(jsonObject.get("size")));
 			page.setTotal(CommonUtil.toInteger(jsonObject.get("totalElements")));
-			return page;
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return null;
+		return page;
 	}
 }

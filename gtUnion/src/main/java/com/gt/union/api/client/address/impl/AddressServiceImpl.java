@@ -34,6 +34,7 @@ public class AddressServiceImpl implements AddressService {
 			String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param),url, String.class, PropertiesUtil.getWxmpSignKey());
 			return ApiResultHandlerUtil.listDataObject(result, Map.class);
 		}catch (Exception e){
+			logger.error("根据ids获取地址列表错误",e);
 			return null;
 		}
 	}
@@ -48,6 +49,7 @@ public class AddressServiceImpl implements AddressService {
 			String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param),url, String.class, PropertiesUtil.getWxmpSignKey());
 			return ApiResultHandlerUtil.listDataObject(result, Map.class);
 		}catch (Exception e){
+			logger.error("根据city_code列表获取地址列表错误",e);
 			return null;
 		}
 	}

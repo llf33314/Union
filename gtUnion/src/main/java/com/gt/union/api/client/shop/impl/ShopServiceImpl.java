@@ -7,6 +7,7 @@ import com.gt.api.util.RequestUtils;
 import com.gt.union.api.client.shop.ShopService;
 import com.gt.union.api.client.shop.vo.ShopVO;
 import com.gt.union.common.util.ApiResultHandlerUtil;
+import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.PropertiesUtil;
 import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
 import org.slf4j.Logger;
@@ -45,6 +46,7 @@ public class ShopServiceImpl implements ShopService {
 			}
 			return dataList;
 		}catch (Exception e){
+			logger.error("根据商家id获取门店列表信息错误", e);
 			return null;
 		}
 	}
@@ -60,6 +62,25 @@ public class ShopServiceImpl implements ShopService {
 			List<WsWxShopInfoExtend> shops = ApiResultHandlerUtil.listDataObject(result,WsWxShopInfoExtend.class);
 			return shops;
 		}catch (Exception e){
+			logger.error("根据门店id列表获取门店列表信息错误", e);
+			return null;
+		}
+	}
+
+	@Override
+	public WsWxShopInfoExtend getById(Integer id) {
+		logger.info("根据门店id获取门店信息，id:{}", JSON.toJSONString(id));
+		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/shopapi/6F6D9AD2/79B4DE7C/findByIds.do";
+		try {
+			List<Integer> list = new ArrayList<Integer>();
+			list.add(id);
+			RequestUtils req = new RequestUtils<Integer>();
+			req.setReqdata(list);
+			String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(req),url, String.class, PropertiesUtil.getWxmpSignKey());
+			List<WsWxShopInfoExtend> shops = ApiResultHandlerUtil.listDataObject(result,WsWxShopInfoExtend.class);
+			return CommonUtil.isNotEmpty(shops) ? shops.get(0) : null;
+		}catch (Exception e){
+			logger.error("根据门店id列表获取门店列表信息错误", e);
 			return null;
 		}
 	}

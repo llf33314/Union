@@ -1,4 +1,4 @@
-package com.gt.union.api.entity.param;
+package com.gt.union.api.server.entity.param;
 
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;

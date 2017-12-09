@@ -7,6 +7,7 @@ import com.gt.api.util.KeysUtil;
 import com.gt.api.util.RequestUtils;
 import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.common.constant.ConfigConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.PropertiesUtil;
@@ -73,7 +74,7 @@ public class WxPayServiceImpl implements WxPayService {
         payParams.setNotifyUrl(notifyUrl);
         payParams.setExtend(extend);
         logger.info("手机端支付请求参数：{}", JSON.toJSONString(payParams));
-        String obj = null;
+        String obj = "";
         try {
             obj = KeysUtil.getEncString(JSON.toJSONString(payParams));
         }catch (Exception e){
