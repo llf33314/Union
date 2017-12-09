@@ -9,14 +9,12 @@ import com.gt.union.card.consume.service.IUnionConsumeService;
 import com.gt.union.card.consume.vo.ConsumePayVO;
 import com.gt.union.card.consume.vo.ConsumePostVO;
 import com.gt.union.card.consume.vo.ConsumeVO;
+import com.gt.union.card.project.entity.UnionCardProjectItem;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
-import com.gt.union.common.util.ExportUtil;
-import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.PageUtil;
-import com.gt.union.common.util.StringUtil;
+import com.gt.union.common.util.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -73,12 +71,12 @@ public class UnionConsumeController {
             busId = busUser.getPid();
         }
         // mock
-//        List<ConsumeVO> voList = MockUtil.list(ConsumeVO.class, page.getSize());
-//        for (int i = 0; i < voList.size(); i++) {
-//            List<UnionCardProjectItem> nonErpTextList = MockUtil.list(UnionCardProjectItem.class, 3);
-//            voList.get(i).setTextList(nonErpTextList);
-//        }
-        List<ConsumeVO> voList = unionConsumeService.listConsumeVOByBusId(busId, unionId, shopId, cardNumber, phone, beginTime, endTime);
+        List<ConsumeVO> voList = MockUtil.list(ConsumeVO.class, page.getSize());
+        for (int i = 0; i < voList.size(); i++) {
+            List<UnionCardProjectItem> nonErpTextList = MockUtil.list(UnionCardProjectItem.class, 3);
+            voList.get(i).setTextList(nonErpTextList);
+        }
+//        List<ConsumeVO> voList = unionConsumeService.listConsumeVOByBusId(busId, unionId, shopId, cardNumber, phone, beginTime, endTime);
         Page<ConsumeVO> result = (Page<ConsumeVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -169,8 +167,8 @@ public class UnionConsumeController {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
         // mock
-//        ConsumePayVO result = MockUtil.get(ConsumePayVO.class);
-        ConsumePayVO result = unionConsumeService.saveConsumePayVOByBusIdAndUnionIdAndFanId(busId, unionId, fanId, postVO);
+        ConsumePayVO result = MockUtil.get(ConsumePayVO.class);
+//        ConsumePayVO result = unionConsumeService.saveConsumePayVOByBusIdAndUnionIdAndFanId(busId, unionId, fanId, postVO);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

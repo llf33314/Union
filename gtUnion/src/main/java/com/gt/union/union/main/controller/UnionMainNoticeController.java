@@ -6,6 +6,7 @@ import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
+import com.gt.union.common.util.MockUtil;
 import com.gt.union.union.main.entity.UnionMainNotice;
 import com.gt.union.union.main.service.IUnionMainNoticeService;
 import io.swagger.annotations.Api;
@@ -43,8 +44,8 @@ public class UnionMainNoticeController {
             busId = busUser.getPid();
         }
         // mock
-//        UnionMainNotice result = MockUtil.get(UnionMainNotice.class);
-        UnionMainNotice result = unionMainNoticeService.getByBusIdAndUnionId(busId, unionId);
+        UnionMainNotice result = MockUtil.get(UnionMainNotice.class);
+//        UnionMainNotice result = unionMainNoticeService.getByBusIdAndUnionId(busId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -63,7 +64,7 @@ public class UnionMainNoticeController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionMainNoticeService.updateContentByBusIdAndUnionId(busId, unionId, content );
+//        unionMainNoticeService.updateContentByBusIdAndUnionId(busId, unionId, content );
         return GtJsonResult.instanceSuccessMsg();
     }
 

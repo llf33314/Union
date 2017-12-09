@@ -7,6 +7,7 @@ import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
+import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PageUtil;
 import com.gt.union.opportunity.main.service.IUnionOpportunityRatioService;
 import com.gt.union.opportunity.main.vo.OpportunityRatioVO;
@@ -48,8 +49,8 @@ public class UnionOpportunityRatioController {
             busId = busUser.getPid();
         }
         // mock
-//        List<OpportunityRatioVO> voList = MockUtil.list(OpportunityRatioVO.class, page.getSize());
-        List<OpportunityRatioVO> voList = unionOpportunityRatioService.listOpportunityRatioVOByBusIdAndUnionId(busId, unionId);
+        List<OpportunityRatioVO> voList = MockUtil.list(OpportunityRatioVO.class, page.getSize());
+//        List<OpportunityRatioVO> voList = unionOpportunityRatioService.listOpportunityRatioVOByBusIdAndUnionId(busId, unionId);
         Page<OpportunityRatioVO> result = (Page<OpportunityRatioVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -72,7 +73,7 @@ public class UnionOpportunityRatioController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionOpportunityRatioService.updateRatioByBusIdAndUnionIdAndToMemberId(busId, unionId, toMemberId, ratio);
+//        unionOpportunityRatioService.updateRatioByBusIdAndUnionIdAndToMemberId(busId, unionId, toMemberId, ratio);
         return GtJsonResult.instanceSuccessMsg();
     }
 

@@ -5,6 +5,7 @@ import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
+import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PageUtil;
 import com.gt.union.opportunity.brokerage.service.IUnionBrokerageIncomeService;
 import com.gt.union.opportunity.brokerage.vo.BrokerageOpportunityVO;
@@ -57,8 +58,8 @@ public class UnionBrokerageIncomeController {
             busId = busUser.getPid();
         }
         // mock
-//        List<BrokerageOpportunityVO> voList = MockUtil.list(BrokerageOpportunityVO.class, page.getSize());
-        List<BrokerageOpportunityVO> voList = unionBrokerageIncomeService.listBrokerageOpportunityVOByBusId(busId, unionId, toMemberId, isClose, clientName, clientPhone);
+        List<BrokerageOpportunityVO> voList = MockUtil.list(BrokerageOpportunityVO.class, page.getSize());
+//        List<BrokerageOpportunityVO> voList = unionBrokerageIncomeService.listBrokerageOpportunityVOByBusId(busId, unionId, toMemberId, isClose, clientName, clientPhone);
         Page<BrokerageOpportunityVO> result = (Page<BrokerageOpportunityVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);

@@ -3,6 +3,7 @@ package com.gt.union.card.main.controller;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
+import com.gt.union.card.main.entity.UnionCard;
 import com.gt.union.card.main.service.IUnionCardFanService;
 import com.gt.union.card.main.vo.CardFanDetailVO;
 import com.gt.union.card.main.vo.CardFanSearchVO;
@@ -11,6 +12,7 @@ import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.ExportUtil;
 import com.gt.union.common.util.ListUtil;
+import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PageUtil;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.service.IUnionMainService;
@@ -61,8 +63,8 @@ public class UnionCardFanController {
             busId = busUser.getPid();
         }
         // mock
-//        List<CardFanVO> fanVOList = MockUtil.list(CardFanVO.class, page.getSize());
-        List<CardFanVO> fanVOList = unionCardFanService.listCardFanVoByBusIdAndUnionId(busId, unionId, optNumber, optPhone);
+        List<CardFanVO> fanVOList = MockUtil.list(CardFanVO.class, page.getSize());
+//        List<CardFanVO> fanVOList = unionCardFanService.listCardFanVoByBusIdAndUnionId(busId, unionId, optNumber, optPhone);
         Page<CardFanVO> result = (Page<CardFanVO>) page;
         result = PageUtil.setRecord(result, fanVOList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -124,10 +126,10 @@ public class UnionCardFanController {
             busId = busUser.getPid();
         }
         // mock
-//        CardFanDetailVO result = MockUtil.get(CardFanDetailVO.class);
-//        List<UnionCard> activityCardList = MockUtil.list(UnionCard.class, 20);
-//        result.setActivityCardList(activityCardList);
-        CardFanDetailVO result = unionCardFanService.getFanDetailVOByIdAndBusIdAndUnionId(fanId, busId, unionId);
+        CardFanDetailVO result = MockUtil.get(CardFanDetailVO.class);
+        List<UnionCard> activityCardList = MockUtil.list(UnionCard.class, 20);
+        result.setActivityCardList(activityCardList);
+//        CardFanDetailVO result = unionCardFanService.getFanDetailVOByIdAndBusIdAndUnionId(fanId, busId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -145,10 +147,10 @@ public class UnionCardFanController {
             busId = busUser.getPid();
         }
         // mock
-//        CardFanSearchVO result = MockUtil.get(CardFanSearchVO.class);
-//        List<UnionMain> unionList = MockUtil.list(UnionMain.class, 3);
-//        result.setUnionList(unionList);
-        CardFanSearchVO result = unionCardFanService.getCardFanSearchVOByBusId(busId, numberOrPhone, unionId);
+        CardFanSearchVO result = MockUtil.get(CardFanSearchVO.class);
+        List<UnionMain> unionList = MockUtil.list(UnionMain.class, 3);
+        result.setUnionList(unionList);
+//        CardFanSearchVO result = unionCardFanService.getCardFanSearchVOByBusId(busId, numberOrPhone, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

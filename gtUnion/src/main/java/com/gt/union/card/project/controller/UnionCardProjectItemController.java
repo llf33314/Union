@@ -9,6 +9,7 @@ import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
+import com.gt.union.common.util.MockUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -48,8 +49,8 @@ public class UnionCardProjectItemController {
             busId = busUser.getPid();
         }
         // mock
-//        List<CardProjectItemConsumeVO> result = MockUtil.list(CardProjectItemConsumeVO.class, 20);
-        List<CardProjectItemConsumeVO> result = unionCardProjectItemService.listCardProjectItemConsumeVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
+        List<CardProjectItemConsumeVO> result = MockUtil.list(CardProjectItemConsumeVO.class, 20);
+//        List<CardProjectItemConsumeVO> result = unionCardProjectItemService.listCardProjectItemConsumeVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -91,7 +92,7 @@ public class UnionCardProjectItemController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionCardProjectItemService.commitProjectItemVOByBusIdAndActivityIdAndUnionId(busId, activityId, unionId, projectItemVO);
+//        unionCardProjectItemService.commitProjectItemVOByBusIdAndActivityIdAndUnionId(busId, activityId, unionId, projectItemVO);
         return GtJsonResult.instanceSuccessMsg();
     }
 }

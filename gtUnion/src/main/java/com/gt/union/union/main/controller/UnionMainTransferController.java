@@ -7,6 +7,7 @@ import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
+import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PageUtil;
 import com.gt.union.union.main.service.IUnionMainTransferService;
 import com.gt.union.union.main.vo.UnionTransferVO;
@@ -48,11 +49,11 @@ public class UnionMainTransferController {
             busId = busUser.getPid();
         }
         // mock
-//        List<UnionTransferVO> voList = MockUtil.list(UnionTransferVO.class, page.getSize());
-//        Page<UnionTransferVO> result = (Page<UnionTransferVO>) page;
-//        result = PageUtil.setRecord(result, voList);
-        List<UnionTransferVO> voList = unionMainTransferService.listUnionTransferVOByBusIdAndUnionId(busId, unionId);
+        List<UnionTransferVO> voList = MockUtil.list(UnionTransferVO.class, page.getSize());
         Page<UnionTransferVO> result = (Page<UnionTransferVO>) page;
+        result = PageUtil.setRecord(result, voList);
+//        List<UnionTransferVO> voList = unionMainTransferService.listUnionTransferVOByBusIdAndUnionId(busId, unionId);
+//        Page<UnionTransferVO> result = (Page<UnionTransferVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
     }
@@ -74,7 +75,7 @@ public class UnionMainTransferController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionMainTransferService.updateStatusByIdAndUnionIdAndBusId(transferId, unionId, busId, isAccept);
+//        unionMainTransferService.updateStatusByIdAndUnionIdAndBusId(transferId, unionId, busId, isAccept);
         return GtJsonResult.instanceSuccessMsg();
     }
 
@@ -91,7 +92,7 @@ public class UnionMainTransferController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionMainTransferService.revokeByIdAndUnionIdAndBusId(transferId, unionId, busId);
+//        unionMainTransferService.revokeByIdAndUnionIdAndBusId(transferId, unionId, busId);
         return GtJsonResult.instanceSuccessMsg();
     }
 
@@ -110,7 +111,7 @@ public class UnionMainTransferController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionMainTransferService.saveByBusIdAndUnionIdAndToMemberId(busId, unionId, toMemberId);
+//        unionMainTransferService.saveByBusIdAndUnionIdAndToMemberId(busId, unionId, toMemberId);
         return GtJsonResult.instanceSuccessMsg();
     }
 

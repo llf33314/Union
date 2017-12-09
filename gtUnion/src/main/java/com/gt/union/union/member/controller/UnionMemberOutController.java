@@ -7,6 +7,7 @@ import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
+import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PageUtil;
 import com.gt.union.union.member.service.IUnionMemberOutService;
 import com.gt.union.union.member.vo.MemberOutPeriodVO;
@@ -49,8 +50,8 @@ public class UnionMemberOutController {
             busId = busUser.getPid();
         }
         // mock
-//        List<MemberOutVO> voList = MockUtil.list(MemberOutVO.class, page.getSize());
-        List<MemberOutVO> voList = unionMemberOutService.listMemberOutVOByBusIdAndUnionId(busId, unionId);
+        List<MemberOutVO> voList = MockUtil.list(MemberOutVO.class, page.getSize());
+//        List<MemberOutVO> voList = unionMemberOutService.listMemberOutVOByBusIdAndUnionId(busId, unionId);
         Page<MemberOutVO> result = (Page<MemberOutVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -69,8 +70,8 @@ public class UnionMemberOutController {
             busId = busUser.getPid();
         }
         // mock
-//        List<MemberOutPeriodVO> voList = MockUtil.list(MemberOutPeriodVO.class, page.getSize());
-        List<MemberOutPeriodVO> voList = unionMemberOutService.listMemberOutPeriodVOByBusIdAndUnionId(busId, unionId);
+        List<MemberOutPeriodVO> voList = MockUtil.list(MemberOutPeriodVO.class, page.getSize());
+//        List<MemberOutPeriodVO> voList = unionMemberOutService.listMemberOutPeriodVOByBusIdAndUnionId(busId, unionId);
         Page<MemberOutPeriodVO> result = (Page<MemberOutPeriodVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -93,7 +94,7 @@ public class UnionMemberOutController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionMemberOutService.updateStatusByIdAndUnionIdAndBusId(outId, unionId, busId, isPass);
+//        unionMemberOutService.updateStatusByIdAndUnionIdAndBusId(outId, unionId, busId, isPass);
         return GtJsonResult.instanceSuccessMsg();
     }
 
@@ -111,7 +112,7 @@ public class UnionMemberOutController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionMemberOutService.saveByBusIdAndUnionId(busId, unionId, reason);
+//        unionMemberOutService.saveByBusIdAndUnionId(busId, unionId, reason);
         return GtJsonResult.instanceSuccessMsg();
     }
 
@@ -129,7 +130,7 @@ public class UnionMemberOutController {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
 
-        unionMemberOutService.saveByBusIdAndUnionIdAndApplyMemberId(busId, unionId, applyMemberId);
+//        unionMemberOutService.saveByBusIdAndUnionIdAndApplyMemberId(busId, unionId, applyMemberId);
         return GtJsonResult.instanceSuccessMsg();
     }
 }

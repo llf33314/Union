@@ -7,6 +7,7 @@ import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
+import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PageUtil;
 import com.gt.union.union.member.service.IUnionMemberJoinService;
 import com.gt.union.union.member.vo.MemberJoinCreateVO;
@@ -18,6 +19,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,8 +55,8 @@ public class UnionMemberJoinController {
             busId = busUser.getPid();
         }
         // mock
-//        List<MemberJoinVO> voList = new ArrayList<>();
-        List<MemberJoinVO> voList = unionMemberJoinService.listMemberJoinVOByBusIdAndUnionId(busId, unionId, memberName, phone);
+        List<MemberJoinVO> voList = MockUtil.list(MemberJoinVO.class, page.getSize());
+//        List<MemberJoinVO> voList = unionMemberJoinService.listMemberJoinVOByBusIdAndUnionId(busId, unionId, memberName, phone);
         Page<MemberJoinVO> result = (Page<MemberJoinVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -77,7 +79,7 @@ public class UnionMemberJoinController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionMemberJoinService.updateStatusByIdAndUnionIdAndBusId(joinId, unionId, busId, isPass);
+//        unionMemberJoinService.updateStatusByIdAndUnionIdAndBusId(joinId, unionId, busId, isPass);
         return GtJsonResult.instanceSuccessMsg();
     }
 
@@ -98,7 +100,7 @@ public class UnionMemberJoinController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionMemberJoinService.saveJoinCreateVOByBusIdAndUnionIdAndType(busId, unionId, type, joinCreateVO);
+//        unionMemberJoinService.saveJoinCreateVOByBusIdAndUnionIdAndType(busId, unionId, type, joinCreateVO);
         return GtJsonResult.instanceSuccessMsg();
     }
 

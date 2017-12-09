@@ -59,9 +59,8 @@ public class UnionMemberController {
             busId = busUser.getPid();
         }
         // mock
-//        List<UnionMember> memberList = MockUtil.list(UnionMember.class, page.getSize());
-//        Page<UnionMember> result = (Page<UnionMember>) page;
-        List<UnionMember> memberList = unionMemberService.listWriteByBusIdAndUnionId(busId, unionId, optMemberName);
+        List<UnionMember> memberList = MockUtil.list(UnionMember.class, page.getSize());
+//        List<UnionMember> memberList = unionMemberService.listWriteByBusIdAndUnionId(busId, unionId, optMemberName);
         Page<UnionMember> result = (Page<UnionMember>) page;
         result = PageUtil.setRecord(result, memberList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -127,8 +126,8 @@ public class UnionMemberController {
             busId = busUser.getPid();
         }
         // mock
-//        UnionMember result = MockUtil.get(UnionMember.class);
-        UnionMember result = unionMemberService.getByIdAndUnionIdAndBusId(memberId, unionId, busId);
+        UnionMember result = MockUtil.get(UnionMember.class);
+//        UnionMember result = unionMemberService.getByIdAndUnionIdAndBusId(memberId, unionId, busId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -144,8 +143,8 @@ public class UnionMemberController {
             busId = busUser.getPid();
         }
         // mock
-//        UnionMember result = MockUtil.get(UnionMember.class);
-        UnionMember result = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        UnionMember result = MockUtil.get(UnionMember.class);
+//        UnionMember result = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -182,7 +181,7 @@ public class UnionMemberController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionMemberService.updateByIdAndUnionIdAndBusId(memberId, unionId, busId, member);
+//        unionMemberService.updateByIdAndUnionIdAndBusId(memberId, unionId, busId, member);
         return GtJsonResult.instanceSuccessMsg();
     }
 
@@ -201,7 +200,7 @@ public class UnionMemberController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionMemberService.updateDiscountByIdAndUnionIdAndBusId(memberId, unionId, busId, discount);
+//        unionMemberService.updateDiscountByIdAndUnionIdAndBusId(memberId, unionId, busId, discount);
         return GtJsonResult.instanceSuccessMsg();
     }
 

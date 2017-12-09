@@ -7,8 +7,10 @@ import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
+import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PageUtil;
 import com.gt.union.opportunity.main.service.IUnionOpportunityService;
+import com.gt.union.opportunity.main.vo.OpportunityStatisticsDay;
 import com.gt.union.opportunity.main.vo.OpportunityStatisticsVO;
 import com.gt.union.opportunity.main.vo.OpportunityVO;
 import io.swagger.annotations.Api;
@@ -55,8 +57,8 @@ public class UnionOpportunityController {
             busId = busUser.getPid();
         }
         // mock
-//        List<OpportunityVO> voList = MockUtil.list(OpportunityVO.class, page.getSize());
-        List<OpportunityVO> voList = unionOpportunityService.listToMeByBusId(busId, unionId, acceptStatus, clientName, clientPhone);
+        List<OpportunityVO> voList = MockUtil.list(OpportunityVO.class, page.getSize());
+//        List<OpportunityVO> voList = unionOpportunityService.listToMeByBusId(busId, unionId, acceptStatus, clientName, clientPhone);
         Page<OpportunityVO> result = (Page<OpportunityVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -81,8 +83,8 @@ public class UnionOpportunityController {
             busId = busUser.getPid();
         }
         // mock
-//        List<OpportunityVO> voList = MockUtil.list(OpportunityVO.class, page.getSize());
-        List<OpportunityVO> voList = unionOpportunityService.listFromMeByBusId(busId, unionId, acceptStatus, clientName, clientPhone);
+        List<OpportunityVO> voList = MockUtil.list(OpportunityVO.class, page.getSize());
+//        List<OpportunityVO> voList = unionOpportunityService.listFromMeByBusId(busId, unionId, acceptStatus, clientName, clientPhone);
         Page<OpportunityVO> result = (Page<OpportunityVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -100,22 +102,22 @@ public class UnionOpportunityController {
             busId = busUser.getPid();
         }
         // mock
-//        OpportunityStatisticsVO result = MockUtil.get(OpportunityStatisticsVO.class);
-//        OpportunityStatisticsDay monday = MockUtil.get(OpportunityStatisticsDay.class);
-//        result.setMonday(monday);
-//        OpportunityStatisticsDay tuesday = MockUtil.get(OpportunityStatisticsDay.class);
-//        result.setTuesday(tuesday);
-//        OpportunityStatisticsDay wednesday = MockUtil.get(OpportunityStatisticsDay.class);
-//        result.setWednesday(wednesday);
-//        OpportunityStatisticsDay thursday = MockUtil.get(OpportunityStatisticsDay.class);
-//        result.setThursday(thursday);
-//        OpportunityStatisticsDay friday = MockUtil.get(OpportunityStatisticsDay.class);
-//        result.setFriday(friday);
-//        OpportunityStatisticsDay saturday = MockUtil.get(OpportunityStatisticsDay.class);
-//        result.setSaturday(saturday);
-//        OpportunityStatisticsDay sunday = MockUtil.get(OpportunityStatisticsDay.class);
-//        result.setSunday(sunday);
-        OpportunityStatisticsVO result = unionOpportunityService.getOpportunityStatisticsVOByBusIdAndUnionId(busId, unionId);
+        OpportunityStatisticsVO result = MockUtil.get(OpportunityStatisticsVO.class);
+        OpportunityStatisticsDay monday = MockUtil.get(OpportunityStatisticsDay.class);
+        result.setMonday(monday);
+        OpportunityStatisticsDay tuesday = MockUtil.get(OpportunityStatisticsDay.class);
+        result.setTuesday(tuesday);
+        OpportunityStatisticsDay wednesday = MockUtil.get(OpportunityStatisticsDay.class);
+        result.setWednesday(wednesday);
+        OpportunityStatisticsDay thursday = MockUtil.get(OpportunityStatisticsDay.class);
+        result.setThursday(thursday);
+        OpportunityStatisticsDay friday = MockUtil.get(OpportunityStatisticsDay.class);
+        result.setFriday(friday);
+        OpportunityStatisticsDay saturday = MockUtil.get(OpportunityStatisticsDay.class);
+        result.setSaturday(saturday);
+        OpportunityStatisticsDay sunday = MockUtil.get(OpportunityStatisticsDay.class);
+        result.setSunday(sunday);
+//        OpportunityStatisticsVO result = unionOpportunityService.getOpportunityStatisticsVOByBusIdAndUnionId(busId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -138,7 +140,7 @@ public class UnionOpportunityController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionOpportunityService.updateStatusByIdAndUnionIdAndBusId(opportunityId, unionId, busId, isAccept, acceptPrice);
+//        unionOpportunityService.updateStatusByIdAndUnionIdAndBusId(opportunityId, unionId, busId, isAccept, acceptPrice);
         return GtJsonResult.instanceSuccessMsg();
     }
 
@@ -157,7 +159,7 @@ public class UnionOpportunityController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionOpportunityService.saveOpportunityVOByBusIdAndUnionId(busId, unionId, opportunityVO);
+//        unionOpportunityService.saveOpportunityVOByBusIdAndUnionId(busId, unionId, opportunityVO);
         return GtJsonResult.instanceSuccessMsg();
     }
 

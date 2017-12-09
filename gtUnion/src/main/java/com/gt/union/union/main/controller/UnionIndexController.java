@@ -4,6 +4,8 @@ import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
+import com.gt.union.common.util.MockUtil;
+import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.service.IUnionIndexService;
 import com.gt.union.union.main.vo.IndexVO;
 import io.swagger.annotations.Api;
@@ -16,6 +18,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * 首页 前端控制器
@@ -46,11 +49,11 @@ public class UnionIndexController {
             busId = busUser.getPid();
         }
         // mock
-//        IndexVO result = MockUtil.get(IndexVO.class);
-//        List<UnionMain> myJoinUnionList = MockUtil.list(UnionMain.class, 2);
-//        result.setMyJoinUnionList(myJoinUnionList);
+        IndexVO result = MockUtil.get(IndexVO.class);
+        List<UnionMain> myJoinUnionList = MockUtil.list(UnionMain.class, 2);
+        result.setMyJoinUnionList(myJoinUnionList);
 
-        IndexVO result = unionIndexService.getIndexVOByBusId(busId, unionId);
+//        IndexVO result = unionIndexService.getIndexVOByBusId(busId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

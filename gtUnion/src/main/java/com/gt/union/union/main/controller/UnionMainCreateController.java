@@ -6,6 +6,7 @@ import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
+import com.gt.union.common.util.MockUtil;
 import com.gt.union.union.main.service.IUnionMainCreateService;
 import com.gt.union.union.main.vo.UnionCreateVO;
 import com.gt.union.union.main.vo.UnionPermitCheckVO;
@@ -45,8 +46,8 @@ public class UnionMainCreateController {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
         // mock
-//        UnionPermitCheckVO result = MockUtil.get(UnionPermitCheckVO.class);
-        UnionPermitCheckVO result = unionMainCreateService.getPermitCheckVOByBusId(busId);
+        UnionPermitCheckVO result = MockUtil.get(UnionPermitCheckVO.class);
+//        UnionPermitCheckVO result = unionMainCreateService.getPermitCheckVOByBusId(busId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -65,7 +66,7 @@ public class UnionMainCreateController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionMainCreateService.saveUnionCreateVOByBusId(busId, unionCreateVO);
+//        unionMainCreateService.saveUnionCreateVOByBusId(busId, unionCreateVO);
         return GtJsonResult.instanceSuccessMsg();
     }
 }

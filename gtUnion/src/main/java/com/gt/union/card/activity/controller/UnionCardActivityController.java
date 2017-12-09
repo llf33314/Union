@@ -50,8 +50,8 @@ public class UnionCardActivityController {
             busId = busUser.getPid();
         }
         // mock
-//        List<CardActivityStatusVO> voList = MockUtil.list(CardActivityStatusVO.class, page.getSize());
-        List<CardActivityStatusVO> voList = unionCardActivityService.listCardActivityStatusVOByBusIdAndUnionId(busId, unionId);
+        List<CardActivityStatusVO> voList = MockUtil.list(CardActivityStatusVO.class, page.getSize());
+//        List<CardActivityStatusVO> voList = unionCardActivityService.listCardActivityStatusVOByBusIdAndUnionId(busId, unionId);
         Page<CardActivityStatusVO> result = (Page<CardActivityStatusVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -70,8 +70,8 @@ public class UnionCardActivityController {
             busId = busUser.getPid();
         }
         // mock
-//        List<CardActivityVO> voList = MockUtil.list(CardActivityVO.class, page.getSize());
-        List<CardActivityVO> voList = unionCardActivityService.listCardActivityVOByBusIdAndUnionId(busId, unionId);
+        List<CardActivityVO> voList = MockUtil.list(CardActivityVO.class, page.getSize());
+//        List<CardActivityVO> voList = unionCardActivityService.listCardActivityVOByBusIdAndUnionId(busId, unionId);
         Page<CardActivityVO> result = (Page<CardActivityVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -91,8 +91,8 @@ public class UnionCardActivityController {
             busId = busUser.getPid();
         }
         // mock
-//        List<CardActivityConsumeVO> result = MockUtil.list(CardActivityConsumeVO.class, 20);
-        List<CardActivityConsumeVO> result = unionCardActivityService.listCardActivityConsumeVOByBusIdAndUnionIdAndFanId(busId, unionId, fanId);
+        List<CardActivityConsumeVO> result = MockUtil.list(CardActivityConsumeVO.class, 20);
+//        List<CardActivityConsumeVO> result = unionCardActivityService.listCardActivityConsumeVOByBusIdAndUnionIdAndFanId(busId, unionId, fanId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -150,7 +150,7 @@ public class UnionCardActivityController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionCardActivityService.saveByBusIdAndUnionId(busId, unionId, activity);
+//        unionCardActivityService.saveByBusIdAndUnionId(busId, unionId, activity);
         return GtJsonResult.instanceSuccessMsg();
     }
 
@@ -169,7 +169,7 @@ public class UnionCardActivityController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionCardActivityService.removeByIdAndUnionIdAndBusId(activityId, unionId, busId);
+//        unionCardActivityService.removeByIdAndUnionIdAndBusId(activityId, unionId, busId);
         return GtJsonResult.instanceSuccessMsg();
     }
 
