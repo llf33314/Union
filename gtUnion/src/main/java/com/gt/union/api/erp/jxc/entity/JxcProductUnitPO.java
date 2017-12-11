@@ -25,7 +25,7 @@ public class JxcProductUnitPO {
 	/**
 	 * 销售单价
 	 */
-	@ApiModelProperty(value = "销售单价")
+	@ApiModelProperty(value = "销售单价（元）")
 	private Double unitPrice;
 
 	/**

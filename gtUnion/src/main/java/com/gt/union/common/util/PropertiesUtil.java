@@ -350,7 +350,7 @@ public class PropertiesUtil {
 	}
 
 	@Value("${wx.duofen.appid}")
-	public static void setDuofenAppid(String duofenAppid) {
+	public void setDuofenAppid(String duofenAppid) {
 		PropertiesUtil.duofenAppid = duofenAppid;
 	}
 
