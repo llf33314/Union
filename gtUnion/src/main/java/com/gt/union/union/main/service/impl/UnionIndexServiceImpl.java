@@ -40,7 +40,7 @@ public class UnionIndexServiceImpl implements IUnionIndexService {
 
     @Autowired
     private IUnionMainTransferService unionMainTransferService;
-    
+
     @Autowired
     private IUnionCardIntegralService unionCardIntegralService;
 
@@ -51,6 +51,7 @@ public class UnionIndexServiceImpl implements IUnionIndexService {
         }
 
         IndexVO result = new IndexVO();
+
         // （1）获取创建的联盟
         List<UnionMember> busReadMemberList = unionMemberService.listReadByBusId(busId);
         List<UnionMember> busCreateMemberList = unionMemberService.filterByIsUnionOwner(busReadMemberList, MemberConstant.IS_UNION_OWNER_YES);
@@ -59,6 +60,7 @@ public class UnionIndexServiceImpl implements IUnionIndexService {
             UnionMain busCreateUnion = unionMainService.getById(busCreateMember.getUnionId());
             result.setMyCreateUnion(busCreateUnion);
         }
+
         // （2）获取加入的联盟
         List<UnionMember> busJoinMemberList = unionMemberService.filterByIsUnionOwner(busReadMemberList, MemberConstant.IS_UNION_OWNER_NO);
         if (ListUtil.isNotEmpty(busJoinMemberList)) {
@@ -69,19 +71,20 @@ public class UnionIndexServiceImpl implements IUnionIndexService {
             }
             result.setMyJoinUnionList(busJoinUnionList);
         }
+
         // （3）如果存在unionId，则当前联盟为指定union；
         // 否则，如果存在创建的联盟，则当前联盟为创建的联盟；
         // 如果不存在创建的联盟，则当前联盟为第一个加入的联盟
         UnionMain currentUnion = null;
         if (optUnionId != null) {
             boolean isFound = false;
-            if (result.getMyCreateUnion() != null && result.getMyCreateUnion().getId().equals(optUnionId)) {
+            if (result.getMyCreateUnion() != null && optUnionId.equals(result.getMyCreateUnion().getId())) {
                 currentUnion = result.getMyCreateUnion();
                 isFound = true;
             }
             if (!isFound && ListUtil.isNotEmpty(result.getMyJoinUnionList())) {
                 for (UnionMain joinUnion : result.getMyJoinUnionList()) {
-                    if (joinUnion.getId().equals(optUnionId)) {
+                    if (optUnionId.equals(joinUnion.getId())) {
                         currentUnion = joinUnion;
                         break;
                     }
@@ -98,24 +101,24 @@ public class UnionIndexServiceImpl implements IUnionIndexService {
         // （4）如果存在当前联盟，则获取商家对应的盟员信息、联盟盟主、联盟积分、联盟成员数、联盟剩余盟员数，以及联盟转移申请信息
         if (currentUnion != null) {
             result.setCurrentUnion(currentUnion);
+            Integer currentUnionId = currentUnion.getId();
 
-            UnionMember currentMember = unionMemberService.getReadByBusIdAndUnionId(busId, currentUnion.getId());
+            UnionMember currentMember = unionMemberService.getReadByBusIdAndUnionId(busId, currentUnionId);
             result.setCurrentMember(currentMember);
 
-            List<UnionMember> unionReadMemberList = unionMemberService.listReadByUnionId(currentUnion.getId());
-            List<UnionMember> unionOwnerMemberList = unionMemberService.filterByIsUnionOwner(unionReadMemberList, MemberConstant.IS_UNION_OWNER_YES);
-            if (ListUtil.isNotEmpty(unionOwnerMemberList)) {
-                result.setOwnerMember(unionOwnerMemberList.get(0));
-            }
+            result.setOwnerMember(unionMemberService.getOwnerByUnionId(currentUnionId));
 
-            result.setMemberCount(unionReadMemberList.size());
-            result.setMemberSurplus(currentUnion.getMemberLimit() - unionReadMemberList.size());
+            Integer readMemberCount = unionMemberService.countReadByUnionId(currentUnionId);
+            result.setMemberCount(readMemberCount);
+            Integer memberLimit = currentUnion.getMemberLimit();
+            memberLimit = memberLimit != null ? memberLimit : 0;
+            result.setMemberSurplus(memberLimit - readMemberCount);
 
             if (UnionConstant.IS_INTEGRAL_YES == currentUnion.getIsIntegral()) {
-                result.setIntegral(unionCardIntegralService.countIntegralByUnionId(currentUnion.getId()));
+                result.setIntegral(unionCardIntegralService.countIntegralByUnionId(currentUnionId));
             }
 
-            UnionMainTransfer transfer = unionMainTransferService.getByUnionIdAndToMemberIdAndConfirmStatus(currentUnion.getId(), currentMember.getId(), UnionConstant.TRANSFER_CONFIRM_STATUS_PROCESS);
+            UnionMainTransfer transfer = unionMainTransferService.getByUnionIdAndToMemberIdAndConfirmStatus(currentUnionId, currentMember.getId(), UnionConstant.TRANSFER_CONFIRM_STATUS_PROCESS);
             result.setUnionTransfer(transfer);
         }
 

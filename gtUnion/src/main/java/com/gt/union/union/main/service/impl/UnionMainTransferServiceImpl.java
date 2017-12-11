@@ -3,13 +3,12 @@ package com.gt.union.union.main.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.api.bean.session.BusUser;
+import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.DateUtil;
-import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.RedisCacheUtil;
-import com.gt.union.common.util.StringUtil;
+import com.gt.union.common.util.*;
 import com.gt.union.union.main.constant.UnionConstant;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.entity.UnionMainPackage;
@@ -54,6 +53,9 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
     @Autowired
     private IUnionMainPackageService unionMainPackageService;
 
+    @Autowired
+    private IBusUserService busUserService;
+
     //***************************************** Domain Driven Design - get *********************************************
 
     @Override
@@ -62,13 +64,11 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        EntityWrapper<UnionMainTransfer> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("union_id", unionId)
-                .eq("to_member_id", toMemberId)
-                .eq("confirm_status", confirmStatus)
-                .eq("del_status", CommonConstant.COMMON_NO);
+        List<UnionMainTransfer> result = listByUnionId(unionId);
+        result = filterByToMemberId(result, toMemberId);
+        result = filterByConfirmStatus(result, confirmStatus);
 
-        return selectOne(entityWrapper);
+        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
     }
 
     @Override
@@ -77,12 +77,10 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        EntityWrapper<UnionMainTransfer> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("union_id", unionId)
-                .eq("confirm_status", confirmStatus)
-                .eq("del_status", CommonConstant.COMMON_NO);
+        List<UnionMainTransfer> result = listByUnionId(unionId);
+        result = filterByConfirmStatus(result, confirmStatus);
 
-        return selectOne(entityWrapper);
+        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
     }
 
     @Override
@@ -91,13 +89,9 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        EntityWrapper<UnionMainTransfer> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("id", transferId)
-                .eq("union_id", unionId)
-                .eq("confirm_status", confirmStatus)
-                .eq("del_status", CommonConstant.COMMON_NO);
+        UnionMainTransfer result = getById(transferId);
 
-        return selectOne(entityWrapper);
+        return result != null && unionId.equals(result.getUnionId()) && confirmStatus.equals(result.getConfirmStatus()) ? result : null;
     }
 
 
@@ -122,13 +116,15 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
         }
         // （2）	按有转移id排第一，其他按时间顺序排序
         List<UnionTransferVO> result = new ArrayList<>();
-        List<UnionMember> memberList = unionMemberService.listWriteByUnionId(unionId);
-        if (ListUtil.isNotEmpty(memberList)) {
-            for (UnionMember tempMember : memberList) {
+        List<UnionMember> writeMemberList = unionMemberService.listWriteByUnionId(unionId);
+        if (ListUtil.isNotEmpty(writeMemberList)) {
+            for (UnionMember writeMember : writeMemberList) {
                 UnionTransferVO vo = new UnionTransferVO();
-                vo.setMember(tempMember);
-                UnionMainTransfer transfer = getByUnionIdAndToMemberIdAndConfirmStatus(unionId, tempMember.getId(), UnionConstant.TRANSFER_CONFIRM_STATUS_PROCESS);
+                vo.setMember(writeMember);
+
+                UnionMainTransfer transfer = getByUnionIdAndToMemberIdAndConfirmStatus(unionId, writeMember.getId(), UnionConstant.TRANSFER_CONFIRM_STATUS_PROCESS);
                 vo.setUnionTransfer(transfer);
+
                 result.add(vo);
             }
         }
@@ -151,6 +147,7 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
     //***************************************** Domain Driven Design - save ********************************************
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveByBusIdAndUnionIdAndToMemberId(Integer busId, Integer unionId, Integer toMemberId) throws Exception {
         if (busId == null || unionId == null || toMemberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -169,29 +166,36 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
         // （2）	判断是否已存在其他转移申请，如果已存在，报错
         UnionMainTransfer transfer = getByUnionIdAndConfirmStatus(unionId, UnionConstant.TRANSFER_CONFIRM_STATUS_PROCESS);
         if (transfer != null) {
-            throw new BusinessException("已存在其他联盟权限转移记录，请撤消后再操作");
+            throw new BusinessException("已存在其他盟主权限转移申请，请撤消后再操作");
         }
-        // （3）	判断toMemberId有效性，要求toMember要求是入盟或申请退盟状态，否则，报错
+        // （3）	判断toMemberId有效性，要求toMember是入盟或申请退盟状态，否则，报错
         UnionMember toMember = unionMemberService.getWriteByIdAndUnionId(toMemberId, unionId);
         if (toMember == null) {
-            throw new BusinessException("联盟权限转移的目标盟员不存在或已退盟");
+            throw new BusinessException("盟主权限转移的目标盟员不存在，或处于退盟过渡期，或已退盟");
         }
         // （4）	要求toMember不是另一联盟盟主，否则，报错
         UnionMember toMemberOwner = unionMemberService.getOwnerByBusId(toMember.getBusId());
         if (toMemberOwner != null) {
-            throw new BusinessException("联盟权限转移的目标盟员已是另一联盟的盟主");
+            throw new BusinessException("盟主权限转移的目标盟员已经是另一个联盟的盟主");
         }
         // （5）	要求toMember具有联盟基础服务（调接口），否则，报错
-        // TODO 这里少个接口
-        Map<String, String> basicMap = new HashMap<>(16);
-        String isAuthority = basicMap.get("isAuthority");
-        if (StringUtil.isEmpty(isAuthority) || isAuthority.equals(CommonConstant.COMMON_NO)) {
-            throw new BusinessException("联盟权限转移的目标盟员不具有联盟基础服务");
+        Map<String, Object> basicMap = busUserService.getUserUnionAuthority(busId);
+        if (basicMap == null) {
+            throw new BusinessException("盟主权限转移的目标盟员不具有联盟基础服务(null)");
+        }
+        Object objAuthority = basicMap.get("authority");
+        Integer hasAuthority = objAuthority != null ? Integer.valueOf(objAuthority.toString()) : CommonConstant.COMMON_NO;
+        if (CommonConstant.COMMON_YES != hasAuthority) {
+            throw new BusinessException("盟主权限转移的目标盟员不具有联盟基础服务(" + hasAuthority + ")");
         }
         // （6）	要求toMember具有联盟盟主服务，否则，报错
         UnionMainPermit permit = unionMainPermitService.getValidByBusId(toMember.getBusId());
         if (permit == null) {
-            throw new BusinessException("联盟权限转移的目标盟员不具有联盟盟主服务");
+            Object objPay = basicMap.get("pay");
+            Integer needPay = objPay != null ? Integer.valueOf(objPay.toString()) : CommonConstant.COMMON_YES;
+            if (CommonConstant.COMMON_NO != needPay) {
+                throw new BusinessException("盟主权限转移的目标盟员不具有联盟盟主服务");
+            }
         }
 
         UnionMainTransfer saveTransfer = new UnionMainTransfer();
@@ -209,8 +213,8 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
     //***************************************** Domain Driven Design - update ******************************************
 
     @Override
-    public void revokeByIdAndUnionIdAndBusId(Integer transferId, Integer unionId, Integer busId) throws Exception {
-        if (transferId == null || unionId == null || busId == null) {
+    public void revokeByBusIdAndIdAndUnionId(Integer busId, Integer transferId, Integer unionId) throws Exception {
+        if (busId == null || transferId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	判断union有效性和member写权限、盟主权限
@@ -224,7 +228,9 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
         if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
             throw new BusinessException(CommonConstant.UNION_NEED_OWNER);
         }
-        // （2）	判断transferId有效性，如果transfer不存在，则返回成功；如果transfer存在，则删除，并返回成功
+        // （2）	判断transferId有效性
+        // 如果transfer不存在，则返回成功；
+        // 如果transfer存在，则删除，并返回成功
         UnionMainTransfer transfer = getByIdAndUnionIdAndConfirmStatus(transferId, unionId, UnionConstant.TRANSFER_CONFIRM_STATUS_PROCESS);
         if (transfer != null) {
             UnionMainTransfer updateTransfer = new UnionMainTransfer();
@@ -233,14 +239,14 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
             update(updateTransfer);
         }
     }
-
-    @Transactional(rollbackFor = Exception.class)
+    
     @Override
-    public void updateStatusByIdAndUnionIdAndBusId(Integer transferId, Integer unionId, Integer busId, Integer isAccept) throws Exception {
-        if (transferId == null || unionId == null || busId == null || isAccept == null) {
+    @Transactional(rollbackFor = Exception.class)
+    public void updateAcceptByBusIdAndIdAndUnionId(Integer busId, Integer transferId, Integer unionId, Integer isAccept) throws Exception {
+        if (busId == null || transferId == null || unionId == null || isAccept == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member写权限、盟主权限
+        // （1）	判断union有效性和member写权限
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
@@ -251,7 +257,7 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
         // （2）	判断transferId有效性
         UnionMainTransfer transfer = getByIdAndUnionIdAndConfirmStatus(transferId, unionId, UnionConstant.TRANSFER_CONFIRM_STATUS_PROCESS);
         if (transfer == null) {
-            throw new BusinessException("联盟转移申请不存在或已处理");
+            throw new BusinessException("盟主权限转移申请不存在或已处理");
         }
         // （3）	如果拒绝，则直接更新，并返回；
         // 如果接受，则要求不是盟主、要求具有盟主基础服务（调接口）、要求具有有效的联盟盟主服务
@@ -261,18 +267,40 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
                 throw new BusinessException("已经是盟主身份，无法同时成为多个联盟的盟主");
             }
 
-            // TODO 这里少个接口
-            Map<String, String> basicMap = new HashMap<>(16);
-            String isAuthority = basicMap.get("isAuthority");
-            if (StringUtil.isEmpty(isAuthority) || isAuthority.equals(CommonConstant.COMMON_NO)) {
-                throw new BusinessException("不具有联盟基础服务");
+            Map<String, Object> basicMap = busUserService.getUserUnionAuthority(busId);
+            if (basicMap == null) {
+                throw new BusinessException("不具有联盟基础服务(null)");
             }
-
+            Object objAuthority = basicMap.get("authority");
+            Integer hasAuthority = objAuthority != null ? Integer.valueOf(objAuthority.toString()) : CommonConstant.COMMON_NO;
+            if (CommonConstant.COMMON_YES != hasAuthority) {
+                throw new BusinessException("不具有联盟基础服务(" + hasAuthority + ")");
+            }
             UnionMainPermit permit = unionMainPermitService.getValidByBusId(busId);
             if (permit == null) {
-                throw new BusinessException("不具有联盟盟主服务");
+                Object objPay = basicMap.get("pay");
+                Integer needPay = objPay != null ? Integer.valueOf(objPay.toString()) : CommonConstant.COMMON_YES;
+                if (CommonConstant.COMMON_NO == needPay) {
+                    BusUser busUser = busUserService.getBusUserById(busId);
+                    if (busUser == null) {
+                        throw new BusinessException("找不到商家信息");
+                    }
+                    UnionMainPackage unionPackage = unionMainPackageService.getByLevel(busUser.getLevel());
+                    if (unionPackage == null) {
+                        throw new BusinessException("找不到套餐信息(商家等级为" + busUser.getLevel() + ")");
+                    }
+                    permit = new UnionMainPermit();
+                    permit.setDelStatus(CommonConstant.COMMON_NO);
+                    Date currentDate = DateUtil.getCurrentDate();
+                    permit.setCreateTime(currentDate);
+                    permit.setBusId(busId);
+                    permit.setPackageId(unionPackage.getId());
+                    int validMonth = BigDecimalUtil.multiply(Double.valueOf(12), unionPackage.getYear()).intValue();
+                    permit.setValidity(DateUtil.addMonths(currentDate, validMonth));
+                    unionMainPermitService.save(permit);
+                }
             }
-
+            
             UnionMainPackage unionPackage = unionMainPackageService.getById(permit.getPackageId());
             if (unionPackage == null) {
                 throw new BusinessException("找不到套餐信息");

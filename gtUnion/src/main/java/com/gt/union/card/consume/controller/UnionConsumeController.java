@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
-import com.gt.union.card.CardConstant;
+import com.gt.union.card.consume.constant.ConsumeConstant;
 import com.gt.union.card.consume.service.IUnionConsumeService;
 import com.gt.union.card.consume.vo.ConsumePayVO;
 import com.gt.union.card.consume.vo.ConsumePostVO;
@@ -132,9 +132,9 @@ public class UnionConsumeController {
                 // 支付状态
                 HSSFCell payStatusCell = row.createCell(cellIndex++);
                 Integer payStatus = vo.getConsume().getPayStatus();
-                payStatusCell.setCellValue(CardConstant.CONSUME_PAY_STATUS_PAYING == payStatus ? "支付中"
-                        : CardConstant.CONSUME_PAY_STATUS_SUCCESS == payStatus ? "已支付"
-                        : CardConstant.CONSUME_PAY_STATUS_FAIL == payStatus ? "已退款" : "");
+                payStatusCell.setCellValue(ConsumeConstant.PAY_STATUS_PAYING == payStatus ? "支付中"
+                        : ConsumeConstant.PAY_STATUS_SUCCESS == payStatus ? "已支付"
+                        : ConsumeConstant.PAY_STATUS_FAIL == payStatus ? "已退款" : "");
                 payStatusCell.setCellStyle(centerCellStyle);
                 // 消费时间
                 HSSFCell consumeTimeCell = row.createCell(cellIndex);

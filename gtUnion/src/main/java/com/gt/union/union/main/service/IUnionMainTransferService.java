@@ -16,7 +16,7 @@ public interface IUnionMainTransferService extends IService<UnionMainTransfer> {
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
-     * 根据联盟id、目标盟员id和确认状态，获取联盟权限转移信息
+     * 获取盟主权限转移信息
      *
      * @param unionId       联盟id
      * @param toMemberId    目标盟员id
@@ -27,7 +27,7 @@ public interface IUnionMainTransferService extends IService<UnionMainTransfer> {
     UnionMainTransfer getByUnionIdAndToMemberIdAndConfirmStatus(Integer unionId, Integer toMemberId, Integer confirmStatus) throws Exception;
 
     /**
-     * 根据联盟id和确认状态，获取联盟权限转移信息
+     * 获取盟主权限转移信息
      *
      * @param unionId       联盟id
      * @param confirmStatus 确认状态
@@ -37,7 +37,7 @@ public interface IUnionMainTransferService extends IService<UnionMainTransfer> {
     UnionMainTransfer getByUnionIdAndConfirmStatus(Integer unionId, Integer confirmStatus) throws Exception;
 
     /**
-     * 根据联盟转移id、联盟id和确认状态，获取联盟权限转移信息
+     * 获取盟主权限转移信息
      *
      * @param transferId    联盟转移id
      * @param unionId       联盟id
@@ -50,7 +50,7 @@ public interface IUnionMainTransferService extends IService<UnionMainTransfer> {
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 获取联盟盟主权限转移列表信息
+     * 商家获取盟主权限转移信息
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -62,7 +62,7 @@ public interface IUnionMainTransferService extends IService<UnionMainTransfer> {
     //***************************************** Domain Driven Design - save ********************************************
 
     /**
-     * 保存联盟盟主转移信息
+     * 商家保存盟主权限转移信息
      *
      * @param busId      商家id
      * @param unionId    联盟id
@@ -77,25 +77,25 @@ public interface IUnionMainTransferService extends IService<UnionMainTransfer> {
     //***************************************** Domain Driven Design - update ******************************************
 
     /**
-     * 撤消联盟权限转移
+     * 撤消盟主权限转移
      *
+     * @param busId      商家id
      * @param transferId 联盟权限转移id
      * @param unionId    联盟id
-     * @param busId      商家id
      * @throws Exception 统一处理异常
      */
-    void revokeByIdAndUnionIdAndBusId(Integer transferId, Integer unionId, Integer busId) throws Exception;
+    void revokeByBusIdAndIdAndUnionId(Integer busId, Integer transferId, Integer unionId) throws Exception;
 
     /**
      * 接受或拒绝盟主权限转移
      *
+     * @param busId      商家id
      * @param transferId 盟主权限转移申请id
      * @param unionId    联盟id
-     * @param busId      商家id
-     * @param isAccept     是否接受(0：否 1：是)
+     * @param isAccept   是否接受(0：否 1：是)
      * @throws Exception 统一处理异常
      */
-    void updateStatusByIdAndUnionIdAndBusId(Integer transferId, Integer unionId, Integer busId, Integer isAccept) throws Exception;
+    void updateAcceptByBusIdAndIdAndUnionId(Integer busId, Integer transferId, Integer unionId, Integer isAccept) throws Exception;
 
     //***************************************** Domain Driven Design - count *******************************************
 

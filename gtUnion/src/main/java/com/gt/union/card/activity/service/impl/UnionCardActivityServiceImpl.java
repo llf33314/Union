@@ -3,7 +3,7 @@ package com.gt.union.card.activity.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.gt.union.card.CardConstant;
+import com.gt.union.card.activity.constant.ActivityConstant;
 import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.activity.mapper.UnionCardActivityMapper;
 import com.gt.union.card.activity.service.IUnionCardActivityService;
@@ -12,10 +12,12 @@ import com.gt.union.card.activity.vo.CardActivityApplyVO;
 import com.gt.union.card.activity.vo.CardActivityConsumeVO;
 import com.gt.union.card.activity.vo.CardActivityStatusVO;
 import com.gt.union.card.activity.vo.CardActivityVO;
+import com.gt.union.card.main.constant.CardConstant;
 import com.gt.union.card.main.entity.UnionCard;
 import com.gt.union.card.main.entity.UnionCardFan;
 import com.gt.union.card.main.service.IUnionCardFanService;
 import com.gt.union.card.main.service.IUnionCardService;
+import com.gt.union.card.project.constant.ProjectConstant;
 import com.gt.union.card.project.entity.UnionCardProject;
 import com.gt.union.card.project.entity.UnionCardProjectFlow;
 import com.gt.union.card.project.entity.UnionCardProjectItem;
@@ -92,15 +94,15 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
 
         Date currentDate = DateUtil.getCurrentDate();
         if (currentDate.compareTo(activity.getSellEndTime()) > 0) {
-            return CardConstant.ACTIVITY_STATUS_END;
+            return ActivityConstant.STATUS_END;
         } else if (currentDate.compareTo(activity.getSellBeginTime()) > 0) {
-            return CardConstant.ACTIVITY_STATUS_SELLING;
+            return ActivityConstant.STATUS_SELLING;
         } else if (currentDate.compareTo(activity.getApplyEndTime()) > 0) {
-            return CardConstant.ACTIVITY_STATUS_BEFORE_SELL;
+            return ActivityConstant.STATUS_BEFORE_SELL;
         } else if (currentDate.compareTo(activity.getApplyBeginTime()) > 0) {
-            return CardConstant.ACTIVITY_STATUS_APPLYING;
+            return ActivityConstant.STATUS_APPLYING;
         } else {
-            return CardConstant.ACTIVITY_STATUS_BEFORE_APPLY;
+            return ActivityConstant.STATUS_BEFORE_APPLY;
         }
     }
 
@@ -152,7 +154,7 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
         if (MemberConstant.IS_UNION_OWNER_YES == member.getIsUnionOwner()) {
             activityList = listByUnionId(unionId);
         } else {
-            List<UnionCardProject> projectList = unionCardProjectService.listByMemberIdAndUnionIdAndStatus(member.getId(), unionId, CardConstant.PROJECT_STATUS_ACCEPT);
+            List<UnionCardProject> projectList = unionCardProjectService.listByMemberIdAndUnionIdAndStatus(member.getId(), unionId, ProjectConstant.STATUS_ACCEPT);
             if (ListUtil.isNotEmpty(projectList)) {
                 activityList = new ArrayList<>();
                 for (UnionCardProject project : projectList) {
@@ -209,7 +211,7 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
 
 
                 if (currentDate.compareTo(activity.getApplyBeginTime()) > 0) {
-                    Integer joinMemberCount = unionCardProjectService.countByActivityIdAndUnionIdAndStatus(activity.getId(), unionId, CardConstant.PROJECT_STATUS_ACCEPT);
+                    Integer joinMemberCount = unionCardProjectService.countByActivityIdAndUnionIdAndStatus(activity.getId(), unionId, ProjectConstant.STATUS_ACCEPT);
                     vo.setJoinMemberCount(joinMemberCount);
 
                     UnionCardProject project = unionCardProjectService.getByActivityIdAndMemberIdAndUnionId(activity.getId(), member.getId(), unionId);
@@ -217,8 +219,8 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
                 }
 
                 //（3）	如果在报名中，则有待审核数量
-                if (CardConstant.ACTIVITY_STATUS_APPLYING == activityStatus) {
-                    Integer projectCheckCount = unionCardProjectService.countByActivityIdAndUnionIdAndStatus(activity.getId(), unionId, CardConstant.PROJECT_STATUS_COMMITTED);
+                if (ActivityConstant.STATUS_APPLYING == activityStatus) {
+                    Integer projectCheckCount = unionCardProjectService.countByActivityIdAndUnionIdAndStatus(activity.getId(), unionId, ProjectConstant.STATUS_COMMITTED);
                     vo.setProjectCheckCount(projectCheckCount);
                 }
 
@@ -261,7 +263,7 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
         }
         // （3）	获取粉丝所有有效的活动卡信息
         List<CardActivityConsumeVO> result = new ArrayList<>();
-        List<UnionCard> validActivityCardList = unionCardService.listValidByFanIdAndUnionIdAndType(fanId, unionId, CardConstant.CARD_TYPE_ACTIVITY);
+        List<UnionCard> validActivityCardList = unionCardService.listValidByFanIdAndUnionIdAndType(fanId, unionId, CardConstant.TYPE_ACTIVITY);
         if (ListUtil.isNotEmpty(validActivityCardList)) {
             for (UnionCard validActivityCard : validActivityCardList) {
                 CardActivityConsumeVO vo = new CardActivityConsumeVO();

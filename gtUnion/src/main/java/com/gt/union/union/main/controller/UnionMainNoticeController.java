@@ -45,7 +45,7 @@ public class UnionMainNoticeController {
         }
         // mock
         UnionMainNotice result = MockUtil.get(UnionMainNotice.class);
-//        UnionMainNotice result = unionMainNoticeService.getByBusIdAndUnionId(busId, unionId);
+        UnionMainNotice result2 = unionMainNoticeService.getByBusIdAndUnionId(busId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -64,7 +64,7 @@ public class UnionMainNoticeController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-//        unionMainNoticeService.updateContentByBusIdAndUnionId(busId, unionId, content );
+        unionMainNoticeService.updateContentByBusIdAndUnionId(busId, unionId, content);
         return GtJsonResult.instanceSuccessMsg();
     }
 

@@ -2,7 +2,7 @@ package com.gt.union.union.main.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.union.main.entity.UnionMain;
-import com.gt.union.union.main.vo.UnionMainVO;
+import com.gt.union.union.main.vo.UnionVO;
 
 import java.util.List;
 
@@ -16,7 +16,17 @@ public interface IUnionMainService extends IService<UnionMain> {
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
-     * 根据id获取联盟对象
+     * 商家获取联盟基础信息
+     *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @return UnionVO
+     * @throws Exception 统一处理异常
+     */
+    UnionVO getVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
+
+    /**
+     * 获取联盟信息
      *
      * @param unionId 联盟id
      * @return UnionMain
@@ -24,42 +34,23 @@ public interface IUnionMainService extends IService<UnionMain> {
      */
     UnionMain getById(Integer unionId) throws Exception;
 
-    /**
-     * 根据联盟id，获取联盟基础信息
-     *
-     * @param unionId 联盟id
-     * @param busId   商家id
-     * @return UnionMainVO
-     * @throws Exception 统一处理异常
-     */
-    UnionMainVO getUnionMainVOByIdAndBusId(Integer unionId, Integer busId) throws Exception;
-
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 获取其他有效的联盟
+     * 获取商家所有有效的联盟信息
      *
      * @param busId 商家id
-     * @return List<UnionMainVO>
+     * @return ist<UnionMain>
      * @throws Exception 统一处理异常
      */
-    List<UnionMainVO> listOtherValidByBusId(Integer busId) throws Exception;
-
-    /**
-     * 获取我的有效的联盟
-     *
-     * @param busId 商家id
-     * @return List<UnionMainVO>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionMainVO> listMyValidByBusId(Integer busId) throws Exception;
+    List<UnionMain> listMyValidByBusId(Integer busId) throws Exception;
 
     //***************************************** Domain Driven Design - save ********************************************
 
     /**
-     * 保存新增联盟
+     * 保存联盟信息
      *
-     * @param saveUnion 新增联盟
+     * @param saveUnion 联盟信息
      * @throws Exception Exception 统一处理异常
      */
     void save(UnionMain saveUnion) throws Exception;
@@ -69,22 +60,22 @@ public interface IUnionMainService extends IService<UnionMain> {
     //***************************************** Domain Driven Design - update ******************************************
 
     /**
-     * 更新
+     * 更新联盟信息
      *
-     * @param updateUnionMain 更新内容
+     * @param updateUnionMain 联盟信息
      * @throws Exception 统一处理异常
      */
     void update(UnionMain updateUnionMain) throws Exception;
 
     /**
-     * 更新联盟基础信息
+     * 我的联盟-联盟设置-基础设置-保存
      *
-     * @param unionId 联盟id
      * @param busId   商家id
+     * @param unionId 联盟id
      * @param vo      更新内容
      * @throws Exception 统一处理异常
      */
-    void updateUnionMainVOByIdAndBusId(Integer unionId, Integer busId, UnionMainVO vo) throws Exception;
+    void updateUnionVOByBusIdAndId(Integer busId, Integer unionId, UnionVO vo) throws Exception;
 
     //***************************************** Domain Driven Design - count *******************************************
 

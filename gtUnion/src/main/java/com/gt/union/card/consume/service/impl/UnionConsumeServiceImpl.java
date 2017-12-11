@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.shop.ShopService;
-import com.gt.union.card.CardConstant;
+import com.gt.union.card.consume.constant.ConsumeConstant;
 import com.gt.union.card.consume.entity.UnionConsume;
 import com.gt.union.card.consume.entity.UnionConsumeProject;
 import com.gt.union.card.consume.mapper.UnionConsumeMapper;
@@ -29,8 +29,8 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
+import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.service.IUnionMainService;
-import com.gt.union.union.main.vo.UnionMainVO;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
 import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
@@ -97,11 +97,11 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
         }
         List<ConsumeVO> result = new ArrayList<>();
         // （1）	获取我的所有有效的union
-        List<UnionMainVO> validUnionList = unionMainService.listMyValidByBusId(busId);
+        List<UnionMain> validUnionList = unionMainService.listMyValidByBusId(busId);
         List<Integer> validUnionIdList = new ArrayList<>();
         if (ListUtil.isNotEmpty(validUnionList)) {
-            for (UnionMainVO validUnion : validUnionList) {
-                Integer validUnionId = validUnion.getUnion().getId();
+            for (UnionMain validUnion : validUnionList) {
+                Integer validUnionId = validUnion.getId();
                 if (optUnionId != null && !optUnionId.equals(validUnionId)) {
                     continue;
                 }
@@ -262,15 +262,15 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
         saveConsume.setPayMoney(payMoney.doubleValue());
         String orderNo = "Consume_" + busId + "_" + DateUtil.getSerialNumber();
         saveConsume.setOrderNo("LM_" + orderNo);
-        saveConsume.setType(CardConstant.CONSUME_TYPE_OFFLINE);
-        saveConsume.setBusinessType(CardConstant.CONSUME_BUSINESS_TYPE_OFFLINE);
+        saveConsume.setType(ConsumeConstant.TYPE_OFFLINE);
+        saveConsume.setBusinessType(ConsumeConstant.BUSINESS_TYPE_OFFLINE);
         ConsumePayVO result = new ConsumePayVO();
-        if (CardConstant.CONSUME_VO_PAY_TYPE_CASH == voConsume.getPayType()) {
-            saveConsume.setPayType(CardConstant.CONSUME_PAY_TYPE_CASH);
-            saveConsume.setPayStatus(CardConstant.CONSUME_PAY_STATUS_SUCCESS);
+        if (ConsumeConstant.VO_PAY_TYPE_CASH == voConsume.getPayType()) {
+            saveConsume.setPayType(ConsumeConstant.PAY_TYPE_CASH);
+            saveConsume.setPayStatus(ConsumeConstant.PAY_STATUS_SUCCESS);
             save(saveConsume);
         } else {
-            saveConsume.setPayType(CardConstant.CONSUME_PAY_STATUS_PAYING);
+            saveConsume.setPayType(ConsumeConstant.PAY_STATUS_PAYING);
             save(saveConsume);
 
             String socketKey = PropertiesUtil.getSocketKey() + orderNo;
@@ -361,7 +361,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
         // （2）	如果permit不是未支付状态，则socket通知，并返回处理成功
         // （3）	否则，更新permit为支付成功状态，且socket通知，并返回处理成功
         Integer payStatus = consume.getPayStatus();
-        if (payStatus == CardConstant.CONSUME_PAY_STATUS_SUCCESS || payStatus == CardConstant.CONSUME_PAY_STATUS_FAIL) {
+        if (payStatus == ConsumeConstant.PAY_STATUS_SUCCESS || payStatus == ConsumeConstant.PAY_STATUS_FAIL) {
             // TODO socket通知
             result.put("code", 0);
             result.put("msg", "已处理过");
@@ -369,7 +369,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
         } else {
             UnionConsume updateConsume = new UnionConsume();
             updateConsume.setId(consumeId);
-            updateConsume.setPayStatus(isSuccess == CommonConstant.COMMON_YES ? CardConstant.CONSUME_PAY_STATUS_SUCCESS : CardConstant.CONSUME_PAY_STATUS_FAIL);
+            updateConsume.setPayStatus(isSuccess == CommonConstant.COMMON_YES ? ConsumeConstant.PAY_STATUS_SUCCESS : ConsumeConstant.PAY_STATUS_FAIL);
             if (payType.equals("0")) {
                 updateConsume.setWxOrderNo(orderNo);
             } else {

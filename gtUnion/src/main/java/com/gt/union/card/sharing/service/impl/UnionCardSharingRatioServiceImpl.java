@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.activity.service.IUnionCardActivityService;
-import com.gt.union.card.CardConstant;
+import com.gt.union.card.project.constant.ProjectConstant;
 import com.gt.union.card.project.entity.UnionCardProject;
 import com.gt.union.card.project.service.IUnionCardProjectService;
 import com.gt.union.card.sharing.entity.UnionCardSharingRatio;
@@ -92,7 +92,7 @@ public class UnionCardSharingRatioServiceImpl extends ServiceImpl<UnionCardShari
         }
         // （3）	获取已报名活动且项目已通过的member和member对应的售卡分成比例
         List<CardSharingRatioVO> result = new ArrayList<>();
-        List<UnionCardProject> projectList = unionCardProjectService.listByActivityIdAndUnionIdAndStatus(activityId, unionId, CardConstant.PROJECT_STATUS_ACCEPT);
+        List<UnionCardProject> projectList = unionCardProjectService.listByActivityIdAndUnionIdAndStatus(activityId, unionId, ProjectConstant.STATUS_ACCEPT);
         if (ListUtil.isNotEmpty(projectList)) {
             for (UnionCardProject project : projectList) {
                 CardSharingRatioVO vo = new CardSharingRatioVO();
@@ -154,7 +154,7 @@ public class UnionCardSharingRatioServiceImpl extends ServiceImpl<UnionCardShari
             Integer memberId = vo.getMember().getId();
             UnionCardSharingRatio dbRatio = getByActivityIdAndMemberIdAndUnionId(activityId, memberId, unionId);
             if (dbRatio != null) {
-                UnionCardSharingRatio updateRatio= new UnionCardSharingRatio();
+                UnionCardSharingRatio updateRatio = new UnionCardSharingRatio();
                 updateRatio.setId(dbRatio.getId());
                 updateRatio.setModifyTime(DateUtil.getCurrentDate());
                 updateRatio.setRatio(ratio);
@@ -174,12 +174,12 @@ public class UnionCardSharingRatioServiceImpl extends ServiceImpl<UnionCardShari
         if (bdRatioSum.doubleValue() != 100) {
             throw new BusinessException("售卡分成比例之和必须等于100");
         }
-        
+
         // 事务操作
         updateBatch(updateRatioList);
         saveBatch(saveRatioList);
     }
-    
+
     //***************************************** Domain Driven Design - count *******************************************
 
     //***************************************** Domain Driven Design - boolean *****************************************
