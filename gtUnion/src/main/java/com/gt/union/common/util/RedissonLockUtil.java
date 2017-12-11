@@ -52,6 +52,14 @@ public class RedissonLockUtil {
 		RedissonLockUtil.redissLock = redissLock;
 	}
 
+	/**
+	 * 获取锁
+	 * @param lockKey
+	 * @param waitTime	等待获取锁的时间
+	 * @param leaseTime	在没有手动释放锁的情况， 多长时间后自动释放锁
+	 * @param unit		时间单位
+	 * @return
+	 */
 	public static boolean tryLock(String lockKey, long waitTime, long leaseTime, TimeUnit unit){
 		return redissLock.tryLock(lockKey, waitTime, leaseTime, unit);
 	}

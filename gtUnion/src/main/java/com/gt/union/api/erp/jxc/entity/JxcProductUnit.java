@@ -8,7 +8,7 @@ import io.swagger.annotations.ApiModelProperty;
  * @time 2017-12-07 15:07
  **/
 @ApiModel(value = "进销存商品副单位实体")
-public class JxcProductUnitPO {
+public class JxcProductUnit {
 
 	/**
 	 * 副单位id

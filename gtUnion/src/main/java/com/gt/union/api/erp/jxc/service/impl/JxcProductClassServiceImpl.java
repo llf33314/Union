@@ -3,8 +3,7 @@ package com.gt.union.api.erp.jxc.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.gt.union.api.erp.jxc.entity.JxcProductClassPO;
-import com.gt.union.api.erp.jxc.service.JxcAuthorityService;
+import com.gt.union.api.erp.jxc.entity.JxcProductClass;
 import com.gt.union.api.erp.jxc.service.JxcProductClassService;
 import com.gt.union.api.erp.jxc.util.HttpClientUtil;
 import com.gt.union.common.util.*;
@@ -29,7 +28,7 @@ public class JxcProductClassServiceImpl implements JxcProductClassService {
 	private RedisCacheUtil redisCacheUtil;
 
 	@Override
-	public List<JxcProductClassPO> listProductClassByBusId(Integer busId) {
+	public List<JxcProductClass> listProductClassByBusId(Integer busId) {
 		logger.info("根据商家id查询进销存商品分类列表：{}",busId);
 		String url = PropertiesUtil.getJxcUrl() + "/erp/order/news/basic/product/type/" + busId;
 		String key = RedisKeyUtil.getJxcAuthorityKey();
@@ -40,7 +39,7 @@ public class JxcProductClassServiceImpl implements JxcProductClassService {
 			}
 			String result = HttpClientUtil.httpGetRequest(url, null, token);
 			JSONObject jsonObject = JSONObject.parseObject(result);
-			List<JxcProductClassPO> data = JSONArray.parseArray(jsonObject.getJSONArray("data").toJSONString(), JxcProductClassPO.class);
+			List<JxcProductClass> data = JSONArray.parseArray(jsonObject.getJSONArray("data").toJSONString(), JxcProductClass.class);
 			return data;
 		} catch (Exception e) {
 			logger.error("根据商家id查询进销存商品分类列表错误", e);

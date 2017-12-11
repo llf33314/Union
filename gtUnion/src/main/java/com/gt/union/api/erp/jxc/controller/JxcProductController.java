@@ -3,15 +3,12 @@ package com.gt.union.api.erp.jxc.controller;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
-import com.gt.union.api.erp.jxc.entity.JxcProductPO;
+import com.gt.union.api.erp.jxc.entity.JxcProduct;
 import com.gt.union.api.erp.jxc.service.JxcProductService;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
-import com.gt.union.common.util.MockUtil;
-import com.gt.union.common.util.PageUtil;
-import com.gt.union.opportunity.brokerage.vo.BrokerageOpportunityVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -38,7 +35,7 @@ public class JxcProductController {
 
 	@ApiOperation(value = "分页：获取商家进销存商品信息", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/list/jxcProduct", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public GtJsonResult<Page<List<JxcProductPO>>> listJxcProductPage(
+	public GtJsonResult<Page<List<JxcProduct>>> listJxcProductPage(
 			HttpServletRequest request, Page page,
 			@ApiParam(value = "门店id", name = "shopId", required = true)
 			@RequestParam(value = "shopId") Integer shopId,
@@ -50,7 +47,7 @@ public class JxcProductController {
 		if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
 			throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
 		}
-		Page<List<JxcProductPO>> resultPage = jxcProductService.listProductByShopIdAndClassIdAndSearchPage(shopId, classId, search, page.getCurrent(), page.getSize());
+		Page<List<JxcProduct>> resultPage = jxcProductService.listProductByShopIdAndClassIdAndSearchPage(shopId, classId, search, page.getCurrent(), page.getSize());
 		return GtJsonResult.instanceSuccessMsg(resultPage);
 	}
 

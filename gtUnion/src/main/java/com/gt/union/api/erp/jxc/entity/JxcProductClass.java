@@ -12,7 +12,7 @@ import java.util.List;
  * @time 2017-12-07 11:53
  **/
 @ApiModel(value = "进销存商品分类")
-public class JxcProductClassPO {
+public class JxcProductClass {
 
 	/**
 	 * 分类id
@@ -54,7 +54,7 @@ public class JxcProductClassPO {
 	 * 子分类
 	 */
 	@ApiModelProperty(value = "子分类")
-	private List<JxcProductClassPO> chlid;
+	private List<JxcProductClass> chlid;
 
 	public Integer getId() {
 		return id;
@@ -104,17 +104,17 @@ public class JxcProductClassPO {
 		this.status = status;
 	}
 
-	public List<JxcProductClassPO> getChlid() {
+	public List<JxcProductClass> getChlid() {
 		return chlid;
 	}
 
-	public void setChlid(List<JxcProductClassPO> chlid) {
+	public void setChlid(List<JxcProductClass> chlid) {
 		this.chlid = chlid;
 	}
 
 	@Override
 	public String toString() {
-		return "JxcProductClassPO{" +
+		return "JxcProductClass{" +
 				"id=" + id +
 				", name='" + name + '\'' +
 				", createDateStr='" + createDateStr + '\'' +
