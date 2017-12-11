@@ -6,8 +6,8 @@ import com.gt.api.util.HttpClienUtils;
 import com.gt.api.util.KeysUtil;
 import com.gt.api.util.RequestUtils;
 import com.gt.union.api.client.pay.WxPayService;
+import com.gt.union.api.client.pay.entity.PayParam;
 import com.gt.union.common.constant.ConfigConstant;
-import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.PropertiesUtil;
@@ -29,25 +29,24 @@ public class WxPayServiceImpl implements WxPayService {
     private Logger logger = LoggerFactory.getLogger(WxPayServiceImpl.class);
 
     @Override
-    public String qrCodePay(Double totalFee, Integer appidType, String orderNum, String desc, Integer isreturn, String returnUrl, String notifyUrl, Integer isSendMessage,
-                            String sendUrl, Integer payWay, Map extend){
+    public String qrCodePay(PayParam payParam){
         StringBuilder builder = new StringBuilder("?");
-        builder.append("totalFee=").append(totalFee)
+        builder.append("totalFee=").append(payParam.getTotalFee())
                 .append("&model=").append(ConfigConstant.PAY_MODEL)
                 .append("&busId=").append(PropertiesUtil.getDuofenBusId())
-                .append("&appidType=").append(appidType)
+                .append("&appidType=").append(payParam.getAppidType())
                 .append("&appid=").append(PropertiesUtil.getDuofenAppid())
-                .append("&orderNum=").append(orderNum)
-                .append("&desc=").append(desc)
-                .append("&isreturn=").append(isreturn)
-                .append("&returnUrl=").append(returnUrl)
-                .append("&notifyUrl=").append(notifyUrl)
-                .append("&isSendMessage=").append(isSendMessage)
-                .append("&sendUrl=").append(sendUrl)
-                .append("&payWay=").append(payWay)
+                .append("&orderNum=").append(payParam.getOrderNum())
+                .append("&desc=").append(payParam.getDesc())
+                .append("&isreturn=").append(payParam.getIsreturn())
+                .append("&returnUrl=").append(payParam.getReturnUrl())
+                .append("&notifyUrl=").append(payParam.getNotifyUrl())
+                .append("&isSendMessage=").append(payParam.getIsSendMessage())
+                .append("&sendUrl=").append(payParam.getSendUrl())
+                .append("&payWay=").append(payParam.getPayWay())
                 .append("&sourceType=").append(1);
-        if(CommonUtil.isNotEmpty(extend)){
-            builder.append("&extend=").append(JSON.toJSONString(extend));
+        if(CommonUtil.isNotEmpty(payParam.getExtend())){
+            builder.append("&extend=").append(JSON.toJSONString(payParam.getExtend()));
         }
         String param = builder.toString();
         logger.info("二维码支付请求参数：{}",param);
@@ -55,28 +54,27 @@ public class WxPayServiceImpl implements WxPayService {
     }
 
     @Override
-    public String pay(Double totalFee, Integer appidType, String orderNum, String desc, Integer isreturn, String returnUrl, String notifyUrl, Integer isSendMessage,
-                      String sendUrl, Integer payWay, Map extend){
-        SubQrPayParams payParams = new SubQrPayParams();
-        payParams.setAppid(PropertiesUtil.getDuofenAppid());
-        payParams.setAppidType(appidType);
-        payParams.setBusId(PropertiesUtil.getDuofenBusId());
-        payParams.setDesc(desc);
-        payParams.setIsreturn(isreturn);
-        payParams.setReturnUrl(returnUrl);
-        payParams.setIsSendMessage(isSendMessage);
-        payParams.setSendUrl(sendUrl);
-        payParams.setModel(ConfigConstant.PAY_MODEL);
-        payParams.setSourceType(1);
-        payParams.setOrderNum(orderNum);
-        payParams.setTotalFee(totalFee);
-        payParams.setPayWay(payWay);
-        payParams.setNotifyUrl(notifyUrl);
-        payParams.setExtend(extend);
-        logger.info("手机端支付请求参数：{}", JSON.toJSONString(payParams));
+    public String pay(PayParam payParam){
+        SubQrPayParams subQrPayParams = new SubQrPayParams();
+        subQrPayParams.setAppid(PropertiesUtil.getDuofenAppid());
+        subQrPayParams.setAppidType(payParam.getAppidType());
+        subQrPayParams.setBusId(PropertiesUtil.getDuofenBusId());
+        subQrPayParams.setDesc(payParam.getDesc());
+        subQrPayParams.setIsreturn(payParam.getIsreturn());
+        subQrPayParams.setReturnUrl(payParam.getReturnUrl());
+        subQrPayParams.setIsSendMessage(payParam.getIsSendMessage());
+        subQrPayParams.setSendUrl(payParam.getSendUrl());
+        subQrPayParams.setModel(ConfigConstant.PAY_MODEL);
+        subQrPayParams.setSourceType(1);
+        subQrPayParams.setOrderNum(payParam.getOrderNum());
+        subQrPayParams.setTotalFee(payParam.getTotalFee());
+        subQrPayParams.setPayWay(payParam.getPayWay());
+        subQrPayParams.setNotifyUrl(payParam.getNotifyUrl());
+        subQrPayParams.setExtend(payParam.getExtend());
+        logger.info("手机端支付请求参数：{}", JSON.toJSONString(subQrPayParams));
         String obj = "";
         try {
-            obj = KeysUtil.getEncString(JSON.toJSONString(payParams));
+            obj = KeysUtil.getEncString(JSON.toJSONString(subQrPayParams));
         }catch (Exception e){
             logger.error("手机端支付错误：=======>",e);
         }
