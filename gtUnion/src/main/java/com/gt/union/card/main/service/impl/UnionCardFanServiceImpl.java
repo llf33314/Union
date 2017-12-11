@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.api.client.dict.IDictService;
-import com.gt.union.card.CardConstant;
+import com.gt.union.card.main.constant.CardConstant;
 import com.gt.union.card.main.entity.UnionCard;
 import com.gt.union.card.main.entity.UnionCardFan;
 import com.gt.union.card.main.mapper.UnionCardFanMapper;
@@ -23,7 +23,6 @@ import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.service.IUnionMainService;
-import com.gt.union.union.main.vo.UnionMainVO;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -82,7 +81,7 @@ public class UnionCardFanServiceImpl extends ServiceImpl<UnionCardFanMapper, Uni
         }
         // （3）	获取折扣卡和活动卡，活动卡按时间倒序排序
         List<UnionCard> cardList = unionCardService.listValidByFanIdAndUnionId(fanId, unionId);
-        List<UnionCard> discountCardList = unionCardService.filterByType(cardList, CardConstant.CARD_TYPE_DISCOUNT);
+        List<UnionCard> discountCardList = unionCardService.filterByType(cardList, CardConstant.TYPE_DISCOUNT);
         CardFanDetailVO result = new CardFanDetailVO();
         if (ListUtil.isNotEmpty(discountCardList)) {
             UnionCard discountCard = discountCardList.get(0);
@@ -90,7 +89,7 @@ public class UnionCardFanServiceImpl extends ServiceImpl<UnionCardFanMapper, Uni
             UnionMember discountCardMember = unionMemberService.getReadByIdAndUnionId(discountCard.getMemberId(), unionId);
             result.setDiscount(discountCardMember != null ? discountCardMember.getDiscount() : null);
         }
-        List<UnionCard> activityCardList = unionCardService.filterByType(cardList, CardConstant.CARD_TYPE_ACTIVITY);
+        List<UnionCard> activityCardList = unionCardService.filterByType(cardList, CardConstant.TYPE_ACTIVITY);
         result.setActivityCardList(activityCardList);
 
         return result;
@@ -138,7 +137,7 @@ public class UnionCardFanServiceImpl extends ServiceImpl<UnionCardFanMapper, Uni
         entityWrapper.exists(" SELECT c.id FROM t_union_card c "
                 + " WHERE c.fan_id=t_union_card_fan.id "
                 + " AND c.union_id=" + unionId
-                + " AND c.type=" + CardConstant.CARD_TYPE_DISCOUNT
+                + " AND c.type=" + CardConstant.TYPE_DISCOUNT
                 + " AND c.del_status=" + CommonConstant.COMMON_NO
                 + " AND c.validity >= now() ")
                 .eq("del_status", CommonConstant.COMMON_NO);
@@ -196,11 +195,11 @@ public class UnionCardFanServiceImpl extends ServiceImpl<UnionCardFanMapper, Uni
             return null;
         }
         // （2）	获取商家所有有效的unionList
-        List<UnionMainVO> busUnionList = unionMainService.listMyValidByBusId(busId);
+        List<UnionMain> busUnionList = unionMainService.listMyValidByBusId(busId);
         List<Integer> busUnionIdList = new ArrayList<>();
         if (ListUtil.isNotEmpty(busUnionList)) {
-            for (UnionMainVO union : busUnionList) {
-                busUnionIdList.add(union.getUnion().getId());
+            for (UnionMain union : busUnionList) {
+                busUnionIdList.add(union.getId());
             }
         }
         // （3）	过滤掉一些粉丝没办折扣卡的union
@@ -239,7 +238,7 @@ public class UnionCardFanServiceImpl extends ServiceImpl<UnionCardFanMapper, Uni
         result.setIntegral(unionIntegral);
 
         // （8）	如果粉丝在union下的存在有效的活动卡，则优惠项目可用；否则，不可用
-        boolean isProjectAvailable = unionCardService.existValidByFanIdAndUnionIdAndType(fan.getId(), currentUnionId, CardConstant.CARD_TYPE_ACTIVITY);
+        boolean isProjectAvailable = unionCardService.existValidByFanIdAndUnionIdAndType(fan.getId(), currentUnionId, CardConstant.TYPE_ACTIVITY);
         result.setIsProjectAvailable(isProjectAvailable ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO);
 
         // （9）	获取消费多少积分可以抵扣1元配置

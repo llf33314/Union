@@ -53,7 +53,7 @@ public class UnionIndexController {
         List<UnionMain> myJoinUnionList = MockUtil.list(UnionMain.class, 2);
         result.setMyJoinUnionList(myJoinUnionList);
 
-//        IndexVO result = unionIndexService.getIndexVOByBusId(busId, unionId);
+        IndexVO result2 = unionIndexService.getIndexVOByBusId(busId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

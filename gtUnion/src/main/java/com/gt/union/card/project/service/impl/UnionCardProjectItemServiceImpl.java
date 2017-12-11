@@ -3,10 +3,11 @@ package com.gt.union.card.project.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
-import com.gt.union.card.CardConstant;
+import com.gt.union.card.activity.constant.ActivityConstant;
 import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.activity.service.IUnionCardActivityService;
 import com.gt.union.card.consume.service.IUnionConsumeProjectService;
+import com.gt.union.card.project.constant.ProjectConstant;
 import com.gt.union.card.project.entity.UnionCardProject;
 import com.gt.union.card.project.entity.UnionCardProjectItem;
 import com.gt.union.card.project.mapper.UnionCardProjectItemMapper;
@@ -70,9 +71,9 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
         List<UnionCardProjectItem> result = new ArrayList<>();
         List<UnionCardProjectItem> itemList = listByProjectId(projectId);
         for (UnionCardProjectItem item : itemList) {
-            if (CardConstant.ITEM_TYPE_ERP_TEXT == item.getType()) {
+            if (ProjectConstant.TYPE_ERP_TEXT == item.getType()) {
                 // TODO 这里少了个接口
-            } else if (CardConstant.ITEM_TYPE_ERP_GOODS == item.getType()) {
+            } else if (ProjectConstant.TYPE_ERP_GOODS == item.getType()) {
                 // TODO 这里少了个接口
             }
             result.add(item);
@@ -114,10 +115,10 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
         // （3）	获取activity关联的非ERP文本项目优惠列表
         // （4）	过滤掉可使用数量为0的项目优惠
         List<CardProjectItemConsumeVO> result = new ArrayList<>();
-        List<UnionCardProject> projectList = unionCardProjectService.listByActivityIdAndUnionIdAndStatus(activityId, unionId, CardConstant.PROJECT_STATUS_ACCEPT);
+        List<UnionCardProject> projectList = unionCardProjectService.listByActivityIdAndUnionIdAndStatus(activityId, unionId, ProjectConstant.STATUS_ACCEPT);
         if (ListUtil.isNotEmpty(projectList)) {
             for (UnionCardProject project : projectList) {
-                List<UnionCardProjectItem> textItemList = listItemByProjectIdAndType(project.getId(), CardConstant.ITEM_TYPE_TEXT);
+                List<UnionCardProjectItem> textItemList = listItemByProjectIdAndType(project.getId(), ProjectConstant.TYPE_TEXT);
 
                 if (ListUtil.isNotEmpty(textItemList)) {
                     for (UnionCardProjectItem textItem : textItemList) {
@@ -170,7 +171,7 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
         }
         // （3）	要求活动在报名中状态
         Integer activityStatus = unionCardActivityService.getStatus(activity);
-        if (CardConstant.ACTIVITY_STATUS_APPLYING != activityStatus) {
+        if (ActivityConstant.STATUS_APPLYING != activityStatus) {
             throw new BusinessException("活动卡不在报名中状态，无法操作");
         }
         // （4）	判断是否已有活动项目
@@ -182,16 +183,16 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
         UnionCardProject project = unionCardProjectService.getByActivityIdAndMemberIdAndUnionId(activityId, member.getId(), unionId);
         Date currentDate = DateUtil.getCurrentDate();
         if (project != null) {
-            if (CardConstant.PROJECT_STATUS_COMMITTED == project.getStatus()) {
+            if (ProjectConstant.STATUS_COMMITTED == project.getStatus()) {
                 throw new BusinessException("活动项目已提交");
             }
-            if (CardConstant.PROJECT_STATUS_ACCEPT == project.getStatus()) {
+            if (ProjectConstant.STATUS_ACCEPT == project.getStatus()) {
                 throw new BusinessException("活动项目已审核通过");
             }
             updateProject = new UnionCardProject();
             updateProject.setId(project.getId());
             updateProject.setModifyTime(currentDate);
-            updateProject.setStatus(CardConstant.PROJECT_STATUS_NOT_COMMIT);
+            updateProject.setStatus(ProjectConstant.STATUS_NOT_COMMIT);
 
             List<UnionCardProjectItem> removeItemList = listByProjectId(project.getId());
             removeItemIdList = new ArrayList<>();
@@ -207,7 +208,7 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
             saveProject.setActivityId(activityId);
             saveProject.setMemberId(member.getId());
             saveProject.setUnionId(unionId);
-            saveProject.setStatus(CardConstant.PROJECT_STATUS_NOT_COMMIT);
+            saveProject.setStatus(ProjectConstant.STATUS_NOT_COMMIT);
         }
 
         List<UnionCardProjectItem> saveItemList = listItemByVO(vo);
@@ -252,7 +253,7 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
         }
         // （3）	要求活动在报名中状态
         Integer activityStatus = unionCardActivityService.getStatus(activity);
-        if (CardConstant.ACTIVITY_STATUS_APPLYING != activityStatus) {
+        if (ActivityConstant.STATUS_APPLYING != activityStatus) {
             throw new BusinessException("活动卡不在报名中状态，无法操作");
         }
         // （4）	判断是否已有活动项目
@@ -264,17 +265,17 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
         UnionCardProject project = unionCardProjectService.getByActivityIdAndMemberIdAndUnionId(activityId, member.getId(), unionId);
         Date currentDate = DateUtil.getCurrentDate();
         if (project != null) {
-            if (CardConstant.PROJECT_STATUS_COMMITTED == project.getStatus()) {
+            if (ProjectConstant.STATUS_COMMITTED == project.getStatus()) {
                 throw new BusinessException("活动项目已提交");
             }
-            if (CardConstant.PROJECT_STATUS_ACCEPT == project.getStatus()) {
+            if (ProjectConstant.STATUS_ACCEPT == project.getStatus()) {
                 throw new BusinessException("活动项目已审核通过");
             }
             updateProject = new UnionCardProject();
             updateProject.setId(project.getId());
             updateProject.setModifyTime(currentDate);
-            updateProject.setStatus(CardConstant.ACTIVITY_IS_PROJECT_CHECK_YES == activity.getIsProjectCheck()
-                    ? CardConstant.PROJECT_STATUS_COMMITTED : CardConstant.PROJECT_STATUS_ACCEPT);
+            updateProject.setStatus(ActivityConstant.IS_PROJECT_CHECK_YES == activity.getIsProjectCheck()
+                    ? ProjectConstant.STATUS_COMMITTED : ProjectConstant.STATUS_ACCEPT);
 
             List<UnionCardProjectItem> removeItemList = listByProjectId(project.getId());
             removeItemIdList = new ArrayList<>();
@@ -290,8 +291,8 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
             saveProject.setActivityId(activityId);
             saveProject.setMemberId(member.getId());
             saveProject.setUnionId(unionId);
-            saveProject.setStatus(CardConstant.ACTIVITY_IS_PROJECT_CHECK_YES == activity.getIsProjectCheck()
-                    ? CardConstant.PROJECT_STATUS_COMMITTED : CardConstant.PROJECT_STATUS_ACCEPT);
+            saveProject.setStatus(ActivityConstant.IS_PROJECT_CHECK_YES == activity.getIsProjectCheck()
+                    ? ProjectConstant.STATUS_COMMITTED : ProjectConstant.STATUS_ACCEPT);
         }
 
         List<UnionCardProjectItem> saveItemList = listItemByVO(vo);
@@ -340,7 +341,7 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
                 UnionCardProjectItem saveItem = new UnionCardProjectItem();
                 saveItem.setDelStatus(CommonConstant.COMMON_NO);
                 saveItem.setCreateTime(currentDate);
-                saveItem.setType(CardConstant.ITEM_TYPE_TEXT);
+                saveItem.setType(ProjectConstant.TYPE_TEXT);
 
                 String name = text.getName();
                 if (StringUtil.isEmpty(name)) {
@@ -371,7 +372,7 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
                 UnionCardProjectItem saveItem = new UnionCardProjectItem();
                 saveItem.setDelStatus(CommonConstant.COMMON_NO);
                 saveItem.setCreateTime(currentDate);
-                saveItem.setType(CardConstant.ITEM_TYPE_ERP_TEXT);
+                saveItem.setType(ProjectConstant.TYPE_ERP_TEXT);
 
                 Integer erpType = erpText.getErpType();
                 if (erpType == null) {
@@ -420,7 +421,7 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
                 UnionCardProjectItem saveItem = new UnionCardProjectItem();
                 saveItem.setDelStatus(CommonConstant.COMMON_NO);
                 saveItem.setCreateTime(currentDate);
-                saveItem.setType(CardConstant.ITEM_TYPE_ERP_GOODS);
+                saveItem.setType(ProjectConstant.TYPE_ERP_GOODS);
 
                 Integer erpType = erpGoods.getErpType();
                 if (erpType == null) {
@@ -605,7 +606,7 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCardProject> projectList = unionCardProjectService.listByActivityIdAndUnionIdAndStatus(activityId, unionId, CardConstant.PROJECT_STATUS_ACCEPT);
+        List<UnionCardProject> projectList = unionCardProjectService.listByActivityIdAndUnionIdAndStatus(activityId, unionId, ProjectConstant.STATUS_ACCEPT);
         if (ListUtil.isEmpty(projectList)) {
             return 0;
         }

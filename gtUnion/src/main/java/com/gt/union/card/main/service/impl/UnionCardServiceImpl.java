@@ -4,9 +4,10 @@ import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.api.client.pay.WxPayService;
-import com.gt.union.card.CardConstant;
+import com.gt.union.card.activity.constant.ActivityConstant;
 import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.activity.service.IUnionCardActivityService;
+import com.gt.union.card.main.constant.CardConstant;
 import com.gt.union.card.main.entity.UnionCard;
 import com.gt.union.card.main.entity.UnionCardFan;
 import com.gt.union.card.main.mapper.UnionCardMapper;
@@ -15,6 +16,7 @@ import com.gt.union.card.main.service.IUnionCardService;
 import com.gt.union.card.main.util.UnionCardCacheUtil;
 import com.gt.union.card.main.vo.CardApplyVO;
 import com.gt.union.card.main.vo.CardSocketVO;
+import com.gt.union.card.project.constant.ProjectConstant;
 import com.gt.union.card.project.entity.UnionCardProject;
 import com.gt.union.card.project.service.IUnionCardProjectService;
 import com.gt.union.common.constant.CommonConstant;
@@ -23,7 +25,6 @@ import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.service.IUnionMainService;
-import com.gt.union.union.main.vo.UnionMainVO;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -77,28 +78,28 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             throw new BusinessException("找不到粉丝信息");
         }
         // （2）	获取商家有效的union
-        List<UnionMainVO> busUnionList = unionMainService.listMyValidByBusId(busId);
+        List<UnionMain> busUnionList = unionMainService.listMyValidByBusId(busId);
         // （3）	过滤掉粉丝已办卡，且商家没有新活动卡的union
         List<UnionMain> optionUnionList = new ArrayList<>();
         if (ListUtil.isNotEmpty(busUnionList)) {
-            for (UnionMainVO unionVO : busUnionList) {
-                Integer unionId = unionVO.getUnion().getId();
+            for (UnionMain union : busUnionList) {
+                Integer unionId = union.getId();
                 UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
                 if (member == null) {
                     throw new BusinessException("找不到盟员信息");
                 }
                 UnionCard discountCard = getDiscountCardByFanIdAndUnionId(fanId, unionId);
                 if (discountCard == null) {
-                    optionUnionList.add(unionVO.getUnion());
+                    optionUnionList.add(union);
                 } else {
-                    List<UnionCardActivity> sellingActivityCardList = unionCardActivityService.listByUnionIdAndStatus(unionId, CardConstant.ACTIVITY_STATUS_SELLING);
+                    List<UnionCardActivity> sellingActivityCardList = unionCardActivityService.listByUnionIdAndStatus(unionId, ActivityConstant.STATUS_SELLING);
                     if (ListUtil.isNotEmpty(sellingActivityCardList)) {
                         for (UnionCardActivity activity : sellingActivityCardList) {
                             UnionCardProject project = unionCardProjectService.getByActivityIdAndMemberIdAndUnionId(activity.getId(), member.getId(), unionId);
-                            if (project != null && CardConstant.PROJECT_STATUS_ACCEPT == project.getStatus()) {
+                            if (project != null && ProjectConstant.STATUS_ACCEPT == project.getStatus()) {
                                 UnionCard activityCard = getActivityCardByFanIdAndActivityIdAndUnionId(fanId, activity.getId(), unionId);
                                 if (activityCard == null) {
-                                    optionUnionList.add(unionVO.getUnion());
+                                    optionUnionList.add(union);
                                     break;
                                 }
                             }
@@ -134,12 +135,12 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         if (discountCard == null) {
             result.setIsDiscountCard(CommonConstant.COMMON_YES);
         } else {
-            List<UnionCardActivity> sellingActivityCardList = unionCardActivityService.listByUnionIdAndStatus(currentUnion.getId(), CardConstant.ACTIVITY_STATUS_SELLING);
+            List<UnionCardActivity> sellingActivityCardList = unionCardActivityService.listByUnionIdAndStatus(currentUnion.getId(), ActivityConstant.STATUS_SELLING);
             if (ListUtil.isNotEmpty(sellingActivityCardList)) {
                 List<UnionCardActivity> activityList = new ArrayList<>();
                 for (UnionCardActivity activity : sellingActivityCardList) {
                     UnionCardProject project = unionCardProjectService.getByActivityIdAndMemberIdAndUnionId(activity.getId(), currentMember.getId(), currentUnion.getId());
-                    if (project != null && CardConstant.PROJECT_STATUS_ACCEPT == project.getStatus()) {
+                    if (project != null && ProjectConstant.STATUS_ACCEPT == project.getStatus()) {
                         UnionCard activityCard = getActivityCardByFanIdAndActivityIdAndUnionId(fanId, activity.getId(), currentUnion.getId());
                         if (activityCard != null) {
                             continue;
@@ -163,7 +164,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCard> cardList = listValidByFanIdAndUnionIdAndType(fanId, unionId, CardConstant.CARD_TYPE_DISCOUNT);
+        List<UnionCard> cardList = listValidByFanIdAndUnionIdAndType(fanId, unionId, CardConstant.TYPE_DISCOUNT);
 
         return ListUtil.isNotEmpty(cardList) ? cardList.get(0) : null;
     }
@@ -236,7 +237,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         }
 
         List<UnionCard> result = listByActivityId(activityId);
-        result = filterByType(result, CardConstant.CARD_TYPE_ACTIVITY);
+        result = filterByType(result, CardConstant.TYPE_ACTIVITY);
         result = filterByUnionId(result, unionId);
 
         return result;
@@ -285,7 +286,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             saveDiscountCard = new UnionCard();
             saveDiscountCard.setDelStatus(CommonConstant.DEL_STATUS_NO);
             saveDiscountCard.setCreateTime(currentDate);
-            saveDiscountCard.setType(CardConstant.CARD_TYPE_DISCOUNT);
+            saveDiscountCard.setType(CardConstant.TYPE_DISCOUNT);
             saveDiscountCard.setFanId(fanId);
             saveDiscountCard.setMemberId(member.getId());
             saveDiscountCard.setUnionId(unionId);
@@ -307,7 +308,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             if (activity == null) {
                 throw new BusinessException("找不到活动卡信息");
             }
-            if (CardConstant.ACTIVITY_STATUS_SELLING != unionCardActivityService.getStatus(activity)) {
+            if (ActivityConstant.STATUS_SELLING != unionCardActivityService.getStatus(activity)) {
                 throw new BusinessException("活动卡不在售卡状态");
             }
             Integer activityCardCount = countByActivityIdAndUnionId(activityId, unionId);
@@ -317,7 +318,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             UnionCard saveActivityCard = new UnionCard();
             saveActivityCard.setDelStatus(CommonConstant.DEL_STATUS_NO);
             saveActivityCard.setCreateTime(currentDate);
-            saveActivityCard.setType(CardConstant.CARD_TYPE_ACTIVITY);
+            saveActivityCard.setType(CardConstant.TYPE_ACTIVITY);
             saveActivityCard.setFanId(fanId);
             saveActivityCard.setMemberId(member.getId());
             saveActivityCard.setUnionId(unionId);

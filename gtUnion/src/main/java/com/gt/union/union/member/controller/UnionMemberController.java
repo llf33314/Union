@@ -1,5 +1,6 @@
 package com.gt.union.union.member.controller;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
@@ -60,7 +61,8 @@ public class UnionMemberController {
         }
         // mock
         List<UnionMember> memberList = MockUtil.list(UnionMember.class, page.getSize());
-//        List<UnionMember> memberList = unionMemberService.listWriteByBusIdAndUnionId(busId, unionId, optMemberName);
+        List<UnionMember> memberList2 = unionMemberService.listWriteByBusIdAndUnionId(busId, unionId, optMemberName);
+        
         Page<UnionMember> result = (Page<UnionMember>) page;
         result = PageUtil.setRecord(result, memberList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -68,7 +70,7 @@ public class UnionMemberController {
 
     @ApiOperation(value = "导出：入盟和申请退盟状态的盟员信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/write/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public void exportByUnionId(
+    public void exportWriteByUnionId(
             HttpServletRequest request,
             HttpServletResponse response,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
@@ -127,7 +129,7 @@ public class UnionMemberController {
         }
         // mock
         UnionMember result = MockUtil.get(UnionMember.class);
-//        UnionMember result = unionMemberService.getByIdAndUnionIdAndBusId(memberId, unionId, busId);
+        UnionMember result2 = unionMemberService.getByBusIdAndIdAndUnionId(busId, memberId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

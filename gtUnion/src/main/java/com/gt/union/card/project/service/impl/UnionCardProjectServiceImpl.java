@@ -3,9 +3,10 @@ package com.gt.union.card.project.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.card.activity.constant.ActivityConstant;
 import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.activity.service.IUnionCardActivityService;
-import com.gt.union.card.CardConstant;
+import com.gt.union.card.project.constant.ProjectConstant;
 import com.gt.union.card.project.entity.UnionCardProject;
 import com.gt.union.card.project.entity.UnionCardProjectFlow;
 import com.gt.union.card.project.entity.UnionCardProjectItem;
@@ -118,13 +119,13 @@ public class UnionCardProjectServiceImpl extends ServiceImpl<UnionCardProjectMap
         Integer isErp = CommonConstant.COMMON_YES;
         result.setIsErp(isErp);
         if (CommonConstant.COMMON_YES == isErp) {
-            List<UnionCardProjectItem> erpTextList = unionCardProjectItemService.listItemByProjectIdAndType(projectId, CardConstant.ITEM_TYPE_ERP_TEXT);
+            List<UnionCardProjectItem> erpTextList = unionCardProjectItemService.listItemByProjectIdAndType(projectId, ProjectConstant.TYPE_ERP_TEXT);
             result.setErpTextList(erpTextList);
 
-            List<UnionCardProjectItem> erpGoodsList = unionCardProjectItemService.listItemByProjectIdAndType(projectId, CardConstant.ITEM_TYPE_ERP_GOODS);
+            List<UnionCardProjectItem> erpGoodsList = unionCardProjectItemService.listItemByProjectIdAndType(projectId, ProjectConstant.TYPE_ERP_GOODS);
             result.setErpGoodsList(erpGoodsList);
         } else {
-            List<UnionCardProjectItem> textList = unionCardProjectItemService.listItemByProjectIdAndType(projectId, CardConstant.ITEM_TYPE_TEXT);
+            List<UnionCardProjectItem> textList = unionCardProjectItemService.listItemByProjectIdAndType(projectId, ProjectConstant.TYPE_TEXT);
             result.setNonErpTextList(textList);
         }
 
@@ -190,7 +191,7 @@ public class UnionCardProjectServiceImpl extends ServiceImpl<UnionCardProjectMap
         }
         // （3）	要求已报名活动且项目已通过
         List<CardProjectJoinMemberVO> result = new ArrayList<>();
-        List<UnionCardProject> projectList = listByActivityIdAndUnionIdAndStatus(activityId, unionId, CardConstant.PROJECT_STATUS_COMMITTED);
+        List<UnionCardProject> projectList = listByActivityIdAndUnionIdAndStatus(activityId, unionId, ProjectConstant.STATUS_COMMITTED);
         if (ListUtil.isNotEmpty(projectList)) {
             for (UnionCardProject project : projectList) {
                 CardProjectJoinMemberVO vo = new CardProjectJoinMemberVO();
@@ -238,12 +239,12 @@ public class UnionCardProjectServiceImpl extends ServiceImpl<UnionCardProjectMap
         }
         // （3）	要求活动在报名中状态
         Integer activityStatus = unionCardActivityService.getStatus(activity);
-        if (CardConstant.ACTIVITY_STATUS_APPLYING != activityStatus) {
+        if (ActivityConstant.STATUS_APPLYING != activityStatus) {
             throw new BusinessException("活动卡不在报名中状态");
         }
         // （4）	要求已报名活动且项目是审核中状态
         List<CardProjectCheckVO> result = new ArrayList<>();
-        List<UnionCardProject> projectList = listByActivityIdAndUnionIdAndStatus(activityId, unionId, CardConstant.PROJECT_STATUS_COMMITTED);
+        List<UnionCardProject> projectList = listByActivityIdAndUnionIdAndStatus(activityId, unionId, ProjectConstant.STATUS_COMMITTED);
         if (ListUtil.isNotEmpty(projectList)) {
             for (UnionCardProject project : projectList) {
                 CardProjectCheckVO vo = new CardProjectCheckVO();
@@ -298,7 +299,7 @@ public class UnionCardProjectServiceImpl extends ServiceImpl<UnionCardProjectMap
         }
         // （3）	要求活动在报名中状态
         Integer activityStatus = unionCardActivityService.getStatus(activity);
-        if (CardConstant.ACTIVITY_STATUS_APPLYING != activityStatus) {
+        if (ActivityConstant.STATUS_APPLYING != activityStatus) {
             throw new BusinessException("活动卡不在报名中状态");
         }
         // （4）	不通过时要求理由不能为空
@@ -315,13 +316,13 @@ public class UnionCardProjectServiceImpl extends ServiceImpl<UnionCardProjectMap
                 if (project == null) {
                     throw new BusinessException("找不到要审核的项目信息");
                 }
-                if (CardConstant.PROJECT_STATUS_COMMITTED != project.getStatus()) {
+                if (ProjectConstant.STATUS_COMMITTED != project.getStatus()) {
                     throw new BusinessException("项目不在可审核状态");
                 }
 
                 UnionCardProject updateProject = new UnionCardProject();
                 updateProject.setId(projectId);
-                updateProject.setStatus(CommonConstant.COMMON_YES == isPass ? CardConstant.PROJECT_STATUS_ACCEPT : CardConstant.PROJECT_STATUS_REJECT);
+                updateProject.setStatus(CommonConstant.COMMON_YES == isPass ? ProjectConstant.STATUS_ACCEPT : ProjectConstant.STATUS_REJECT);
                 updateProjectList.add(updateProject);
 
                 UnionCardProjectFlow saveFlow = new UnionCardProjectFlow();

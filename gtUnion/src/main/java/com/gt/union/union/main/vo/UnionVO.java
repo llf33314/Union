@@ -15,7 +15,7 @@ import java.util.List;
  * @version 2017-11-25 16:51:15
  */
 @ApiModel(value = "联盟基础信息VO")
-public class UnionMainVO {
+public class UnionVO {
     @ApiModelProperty(value = "联盟主信息")
     private UnionMain union;
 

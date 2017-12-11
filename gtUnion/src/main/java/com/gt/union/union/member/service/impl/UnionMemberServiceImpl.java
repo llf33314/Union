@@ -2,6 +2,7 @@ package com.gt.union.union.member.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.common.constant.CommonConstant;
@@ -40,7 +41,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
 
     @Autowired
     private IUnionMainService unionMainService;
-    
+
     @Autowired
     private IDictService dictService;
 
@@ -50,6 +51,9 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     public UnionMember getReadByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
         }
 
         List<UnionMember> result = listReadByBusId(busId);
@@ -63,21 +67,12 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
 
         List<UnionMember> result = listWriteByBusId(busId);
         result = filterByUnionId(result, unionId);
-
-        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
-    }
-
-    @Override
-    public UnionMember getOwnerByUnionId(Integer unionId) throws Exception {
-        if (unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionMember> result = listByUnionId(unionId);
-        result = filterByIsUnionOwner(result, MemberConstant.IS_UNION_OWNER_YES);
 
         return ListUtil.isNotEmpty(result) ? result.get(0) : null;
     }
@@ -95,13 +90,13 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    public UnionMember getByIdAndUnionIdAndBusId(Integer memberId, Integer unionId, Integer busId) throws Exception {
-        if (memberId == null || unionId == null || busId == null) {
+    public UnionMember getByBusIdAndIdAndUnionId(Integer busId, Integer memberId, Integer unionId) throws Exception {
+        if (busId == null || memberId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
         // （1）	判断union有效性和member读权限
-        if (unionMainService.isUnionValid(unionId)) {
+        if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
         UnionMember busMember = getReadByBusIdAndUnionId(busId, unionId);
@@ -112,6 +107,19 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         // （2）	判断memberId有效性
         return getReadByIdAndUnionId(memberId, unionId);
     }
+
+    @Override
+    public UnionMember getOwnerByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMember> result = listByUnionId(unionId);
+        result = filterByIsUnionOwner(result, MemberConstant.IS_UNION_OWNER_YES);
+
+        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
+    }
+
 
     @Override
     public UnionMember getReadByIdAndUnionId(Integer memberId, Integer unionId) throws Exception {
@@ -156,15 +164,20 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         }
 
         UnionMember result = getById(memberId);
-        if (result != null) {
-            return unionId.equals(result.getUnionId()) && status.equals(result.getStatus()) ? result : null;
-        }
 
-        return null;
+        return result != null && unionId.equals(result.getUnionId()) && status.equals(result.getStatus()) ? result : null;
     }
 
     //***************************************** Domain Driven Design - list ********************************************
 
+    @Override
+    public Page<UnionMember> pageSupport(Page page, EntityWrapper<UnionMember> entityWrapper) throws Exception {
+        if (page == null || entityWrapper == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        return selectPage(page, entityWrapper);
+    }
 
     @Override
     public List<UnionMember> listReadByBusId(Integer busId) throws Exception {
@@ -172,13 +185,13 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionMember> busMemberList = listByBusId(busId);
+        List<UnionMember> result = listByBusId(busId);
         List<Integer> statusList = new ArrayList<>();
         statusList.add(MemberConstant.STATUS_IN);
         statusList.add(MemberConstant.STATUS_APPLY_OUT);
         statusList.add(MemberConstant.STATUS_OUT_PERIOD);
 
-        return filterByStatusList(busMemberList, statusList);
+        return filterByStatusList(result, statusList);
     }
 
     @Override
@@ -187,41 +200,12 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionMember> busMemberList = listByBusId(busId);
+        List<UnionMember> result = listByBusId(busId);
         List<Integer> statusList = new ArrayList<>();
         statusList.add(MemberConstant.STATUS_IN);
         statusList.add(MemberConstant.STATUS_APPLY_OUT);
 
-        return filterByStatusList(busMemberList, statusList);
-    }
-
-    @Override
-    public List<UnionMember> listReadByUnionId(Integer unionId) throws Exception {
-        if (unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionMember> unionMemberList = listByUnionId(unionId);
-        List<Integer> statusList = new ArrayList<>();
-        statusList.add(MemberConstant.STATUS_IN);
-        statusList.add(MemberConstant.STATUS_APPLY_OUT);
-        statusList.add(MemberConstant.STATUS_OUT_PERIOD);
-
-        return filterByStatusList(unionMemberList, statusList);
-    }
-
-    @Override
-    public List<UnionMember> listWriteByUnionId(Integer unionId) throws Exception {
-        if (unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionMember> unionMemberList = listByUnionId(unionId);
-        List<Integer> statusList = new ArrayList<>();
-        statusList.add(MemberConstant.STATUS_IN);
-        statusList.add(MemberConstant.STATUS_APPLY_OUT);
-
-        return filterByStatusList(unionMemberList, statusList);
+        return filterByStatusList(result, statusList);
     }
 
     @Override
@@ -238,10 +222,8 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_READ_REJECT);
         }
-
         // （2）	获取union下所有入盟状态和退盟申请状态的member
         List<UnionMember> result = listWriteByUnionId(unionId);
-
         // （3）	如果memberName不为空，则过滤member
         if (StringUtil.isNotEmpty(optMemberName)) {
             List<UnionMember> tempMemberList = new ArrayList<>();
@@ -252,7 +234,6 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             }
             result = tempMemberList;
         }
-
         // （4）	按盟主>商家盟员>其他盟员，其他盟员按时间顺序排序
         Collections.sort(result, new Comparator<UnionMember>() {
             @Override
@@ -277,17 +258,6 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    public List<UnionMember> listByUnionIdAndStatus(Integer unionId, Integer status) throws Exception {
-        if (unionId == null || status == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionMember> result = listByUnionId(unionId);
-        result = filterByStatus(result, status);
-        return null;
-    }
-
-    @Override
     public List<UnionMember> listOtherWriteByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -299,20 +269,9 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         // （2）获取商家在union的member
         UnionMember member = getReadByBusIdAndUnionId(busId, unionId);
         // （3）获取union下writeMember，过滤掉member
-        List<UnionMember> result = new ArrayList<>();
-        List<UnionMember> writeMemberList = listWriteByUnionId(unionId);
-        if (member == null) {
-            result = writeMemberList;
-        } else if (ListUtil.isNotEmpty(writeMemberList)) {
-            Integer memberId = member.getId();
-            for (UnionMember writeMember : writeMemberList) {
-                if (!memberId.equals(writeMember.getId())) {
-                    result.add(writeMember);
-                }
-            }
-        }
+        List<UnionMember> result = listWriteByUnionId(unionId);
 
-        return result;
+        return member == null ? result : filterById(result, member.getId());
     }
 
     @Override
@@ -327,18 +286,48 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         // （2）获取商家在union的member
         UnionMember member = getReadByBusIdAndUnionId(busId, unionId);
         // （3）获取union下writeMember，过滤掉member
-        List<UnionMember> result = new ArrayList<>();
-        List<UnionMember> readMemberList = listReadByUnionId(unionId);
-        if (member == null) {
-            result= readMemberList;
-        } else if (ListUtil.isNotEmpty(readMemberList)) {
-            Integer memberId = member.getId();
-            for (UnionMember readMember : readMemberList) {
-                if (!memberId.equals(readMember.getId())) {
-                    result.add(readMember);
-                }
-            }
+        List<UnionMember> result = listReadByUnionId(unionId);
+
+        return member == null ? result : filterById(result, member.getId());
+    }
+
+    @Override
+    public List<UnionMember> listReadByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+
+        List<UnionMember> result = listByUnionId(unionId);
+        List<Integer> statusList = new ArrayList<>();
+        statusList.add(MemberConstant.STATUS_IN);
+        statusList.add(MemberConstant.STATUS_APPLY_OUT);
+        statusList.add(MemberConstant.STATUS_OUT_PERIOD);
+
+        return filterByStatusList(result, statusList);
+    }
+
+    @Override
+    public List<UnionMember> listWriteByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMember> result = listByUnionId(unionId);
+        List<Integer> statusList = new ArrayList<>();
+        statusList.add(MemberConstant.STATUS_IN);
+        statusList.add(MemberConstant.STATUS_APPLY_OUT);
+
+        return filterByStatusList(result, statusList);
+    }
+
+    @Override
+    public List<UnionMember> listByUnionIdAndStatus(Integer unionId, Integer status) throws Exception {
+        if (unionId == null || status == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMember> result = listByUnionId(unionId);
+        result = filterByStatus(result, status);
 
         return result;
     }
@@ -350,8 +339,8 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     //***************************************** Domain Driven Design - update ******************************************
 
     @Override
-    public void updateByIdAndUnionIdAndBusId(Integer memberId, Integer unionId, Integer busId, UnionMember vo) throws Exception {
-        if (memberId == null || unionId == null || busId == null || vo == null) {
+    public void updateByBusIdAndIdAndUnionId(Integer busId, Integer memberId, Integer unionId, UnionMember vo) throws Exception {
+        if (busId == null || memberId == null || unionId == null || vo == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	判断union有效性和member写权限
@@ -363,8 +352,8 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
         }
         // （2）	判断memberId有效性
-        if (!member.getId().equals(memberId)) {
-            throw new BusinessException("参数memberId无效");
+        if (!memberId.equals(member.getId())) {
+            throw new BusinessException("无法更新id为" + memberId + "的盟员信息");
         }
         // （3）	校验表单
         UnionMember updateMember = new UnionMember();
@@ -400,7 +389,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             throw new BusinessException("负责人联系电话不能为空");
         }
         if (!StringUtil.isPhone(memberDirectorPhone)) {
-            throw new BusinessException("负责人联系电话参数值有误");
+            throw new BusinessException("负责人联系电话格式不对，不是有效的联系电话");
         }
         updateMember.setDirectorPhone(memberDirectorPhone);
         // （3-5）负责人邮箱
@@ -409,7 +398,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             throw new BusinessException("负责人联系邮箱不能为空");
         }
         if (!StringUtil.isEmail(memberDirectorEmail)) {
-            throw new BusinessException("负责人联系邮箱参数值有误");
+            throw new BusinessException("负责人联系邮箱格式不对，不是有效的联系邮箱");
         }
         updateMember.setDirectorEmail(memberDirectorEmail);
         // （3-6）地址经纬度
@@ -426,17 +415,16 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             throw new BusinessException("短信通知手机不能为空");
         }
         if (StringUtil.isPhone(memberNotifyPhone)) {
-            throw new BusinessException("短信通知手机参数值有误");
+            throw new BusinessException("短信通知手机格式不对，不是有效的手机号");
         }
         updateMember.setNotifyPhone(memberNotifyPhone);
-
-        // （3-8）积分抵扣率
+        // （3-8）如果联盟开启积分，则校验积分抵扣率
         UnionMain union = unionMainService.getById(unionId);
         if (CommonConstant.COMMON_YES == union.getIsIntegral()) {
             Double memberIntegralExchangeRatio = vo.getIntegralExchangeRatio();
             Double maxIntegralExchange = dictService.getMaxExchangePercent();
             if (memberIntegralExchangeRatio == null || memberIntegralExchangeRatio <= 0 || memberIntegralExchangeRatio > maxIntegralExchange) {
-                throw new BusinessException("积分抵扣率不能小于等于0，且不能大于" + maxIntegralExchange);
+                throw new BusinessException("积分抵扣率不能小于等于0，且不能大于" + maxIntegralExchange * 100);
             }
             updateMember.setIntegralExchangeRatio(memberIntegralExchangeRatio);
         }
@@ -445,8 +433,8 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    public void updateDiscountByIdAndUnionIdAndBusId(Integer memberId, Integer unionId, Integer busId, Double discount) throws Exception {
-        if (memberId == null || unionId == null || busId == null || discount == null) {
+    public void updateDiscountByBusIdAndIdAndUnionId(Integer busId, Integer memberId, Integer unionId, Double discount) throws Exception {
+        if (busId == null || memberId == null || unionId == null || discount == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	判断union有效性和member写权限
@@ -458,13 +446,14 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
         }
         // （2）	判断memberId有效性
-        if (!member.getId().equals(memberId)) {
-            throw new BusinessException("参数memberId无效");
+        if (!memberId.equals(member.getId())) {
+            throw new BusinessException("无法更新id为" + memberId + "的盟员折扣信息");
         }
         // （3）	要求折扣在(0,10)
-        if (discount <= 0 || discount >= 10) {
+        if (discount <= 0 || discount >= 1) {
             throw new BusinessException("折扣必须大于0且小于10");
         }
+
         UnionMember updateMember = new UnionMember();
         updateMember.setId(memberId);
         updateMember.setDiscount(discount);
@@ -480,12 +469,42 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         }
 
         List<UnionMember> memberList = listReadByBusId(busId);
+
         return ListUtil.isNotEmpty(memberList) ? memberList.size() : 0;
+    }
+
+    @Override
+    public Integer countReadByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMember> result = listReadByUnionId(unionId);
+
+        return ListUtil.isNotEmpty(result) ? result.size() : 0;
     }
 
     //***************************************** Domain Driven Design - boolean *****************************************
 
     //***************************************** Domain Driven Design - filter ******************************************
+
+    @Override
+    public List<UnionMember> filterById(List<UnionMember> memberList, Integer memberId) throws Exception {
+        if (memberList == null || memberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMember> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(memberList)) {
+            for (UnionMember member : memberList) {
+                if (memberId.equals(member.getId())) {
+                    result.add(member);
+                }
+            }
+        }
+
+        return result;
+    }
 
     @Override
     public List<UnionMember> filterByIsUnionOwner(List<UnionMember> memberList, Integer isUnionOwner) throws Exception {
