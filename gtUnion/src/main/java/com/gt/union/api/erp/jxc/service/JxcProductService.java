@@ -1,7 +1,7 @@
 package com.gt.union.api.erp.jxc.service;
 
 import com.baomidou.mybatisplus.plugins.Page;
-import com.gt.union.api.erp.jxc.entity.JxcProductPO;
+import com.gt.union.api.erp.jxc.entity.JxcProduct;
 
 import java.util.List;
 
@@ -22,6 +22,6 @@ public interface JxcProductService {
 	 * @param pageCount        每页查询条数
 	 * @return
 	 */
-	Page<List<JxcProductPO>> listProductByShopIdAndClassIdAndSearchPage(Integer shopId, Integer classId, String search, Integer pageIndex, Integer pageCount);
+	Page<List<JxcProduct>> listProductByShopIdAndClassIdAndSearchPage(Integer shopId, Integer classId, String search, Integer pageIndex, Integer pageCount);
 
 }

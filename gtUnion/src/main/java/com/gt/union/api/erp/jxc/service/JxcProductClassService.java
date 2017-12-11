@@ -1,6 +1,6 @@
 package com.gt.union.api.erp.jxc.service;
 
-import com.gt.union.api.erp.jxc.entity.JxcProductClassPO;
+import com.gt.union.api.erp.jxc.entity.JxcProductClass;
 
 import java.util.List;
 
@@ -16,5 +16,5 @@ public interface JxcProductClassService {
 	 * @param busId
 	 * @return
 	 */
-	List<JxcProductClassPO> listProductClassByBusId(Integer busId);
+	List<JxcProductClass> listProductClassByBusId(Integer busId);
 }

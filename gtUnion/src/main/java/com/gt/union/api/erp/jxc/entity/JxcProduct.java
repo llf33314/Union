@@ -3,7 +3,6 @@ package com.gt.union.api.erp.jxc.entity;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
-import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -12,7 +11,7 @@ import java.util.List;
  * @time 2017-12-07 15:04
  **/
 @ApiModel(value = "进销存商品实体")
-public class JxcProductPO {
+public class JxcProduct {
 
 	/**
 	 * 商品id
@@ -96,7 +95,7 @@ public class JxcProductPO {
 	 * 商品副单位列表
 	 */
 	@ApiModelProperty(value = "商品副单位列表")
-	private List<JxcProductUnitPO> viceUnits;
+	private List<JxcProductUnit> viceUnits;
 
 	public Integer getId() {
 		return id;
@@ -202,11 +201,11 @@ public class JxcProductPO {
 		this.discount = discount;
 	}
 
-	public List<JxcProductUnitPO> getViceUnits() {
+	public List<JxcProductUnit> getViceUnits() {
 		return viceUnits;
 	}
 
-	public void setViceUnits(List<JxcProductUnitPO> viceUnits) {
+	public void setViceUnits(List<JxcProductUnit> viceUnits) {
 		this.viceUnits = viceUnits;
 	}
 }

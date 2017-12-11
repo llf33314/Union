@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.gt.union.api.erp.jxc.entity.JxcProductPO;
+import com.gt.union.api.erp.jxc.entity.JxcProduct;
 import com.gt.union.api.erp.jxc.service.JxcProductService;
 import com.gt.union.api.erp.jxc.util.HttpClientUtil;
 import com.gt.union.common.util.CommonUtil;
@@ -34,7 +34,7 @@ public class JxcProductServiceImpl implements JxcProductService{
 	private RedisCacheUtil redisCacheUtil;
 
 	@Override
-	public Page<List<JxcProductPO>> listProductByShopIdAndClassIdAndSearchPage(Integer shopId, Integer classId, String search, Integer pageIndex, Integer pageCount) {
+	public Page<List<JxcProduct>> listProductByShopIdAndClassIdAndSearchPage(Integer shopId, Integer classId, String search, Integer pageIndex, Integer pageCount) {
 		String url = PropertiesUtil.getJxcUrl() + "/erp/order/news/all/invenotry";
 		String key = RedisKeyUtil.getJxcAuthorityKey();
 		Page page = new Page<>();
@@ -55,7 +55,7 @@ public class JxcProductServiceImpl implements JxcProductService{
 			JSONObject jsonObject = JSONObject.parseObject(result);
 			String data = jsonObject.getJSONObject("data").toJSONString();
 			jsonObject = JSONObject.parseObject(data);
-			List<JxcProductPO> list = JSONArray.parseArray(jsonObject.getString("content"), JxcProductPO.class);
+			List<JxcProduct> list = JSONArray.parseArray(jsonObject.getString("content"), JxcProduct.class);
 			page.setRecords(list);
 			page.setCurrent(pageIndex);
 			page.setSearchCount(false);
