@@ -61,7 +61,7 @@ public interface MemberService {
 	 * @param busId		登录授权的商家id
 	 * @param ucLogin	是否可以在uc登录  false：不能在uc登录 true：可以在uc登录
 	 * @param reqUrl	请求的url，即授权登录后重定向的链接
-	 * @param ucLoginUrl	自定义uc登录的地址 如果没有自定义的，可以不填
+	 * @param ucLoginUrl	自定义uc登录的地址 如果没有自定义的，可以不填（默认会员登录地址）
 	 * @return
 	 * @throws Exception
 	 */
@@ -70,7 +70,7 @@ public interface MemberService {
 	/**
 	 * 微信授权（多粉账号）登录
 	 * @param request
-	 * @param reqUrl	授权收重定向的地址
+	 * @param reqUrl	授权后重定向的地址
 	 * @return
 	 * @throws Exception
 	 */
