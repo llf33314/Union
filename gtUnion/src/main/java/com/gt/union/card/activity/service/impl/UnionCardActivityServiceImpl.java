@@ -3,14 +3,15 @@ package com.gt.union.card.activity.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.card.CardConstant;
 import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.activity.mapper.UnionCardActivityMapper;
 import com.gt.union.card.activity.service.IUnionCardActivityService;
 import com.gt.union.card.activity.util.UnionCardActivityCacheUtil;
+import com.gt.union.card.activity.vo.CardActivityApplyVO;
 import com.gt.union.card.activity.vo.CardActivityConsumeVO;
 import com.gt.union.card.activity.vo.CardActivityStatusVO;
 import com.gt.union.card.activity.vo.CardActivityVO;
-import com.gt.union.card.constant.CardConstant;
 import com.gt.union.card.main.entity.UnionCard;
 import com.gt.union.card.main.entity.UnionCardFan;
 import com.gt.union.card.main.service.IUnionCardFanService;
@@ -101,6 +102,32 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
         } else {
             return CardConstant.ACTIVITY_STATUS_BEFORE_APPLY;
         }
+    }
+
+    @Override
+    public CardActivityApplyVO getCardActivityApplyVOByIdAndUnionIdAndBusId(Integer activityId, Integer unionId, Integer busId) throws Exception {
+        if (activityId == null || unionId == null || busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member读权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+        }
+        // （2）	判断activityId有效性
+        UnionCardActivity activity = getByIdAndUnionId(activityId, unionId);
+        if (activity == null) {
+            throw new BusinessException("找不到活动卡信息");
+        }
+        // （3）	统计服务项目数
+        CardActivityApplyVO result = new CardActivityApplyVO();
+        result.setActivity(activity);
+        result.setItemCount(unionCardProjectItemService.countCommittedByUnionIdAndActivityId(unionId, activityId));
+
+        return result;
     }
 
     //***************************************** Domain Driven Design - list ********************************************
@@ -244,6 +271,25 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
                 vo.setActivity(validActivity);
 
                 result.add(vo);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionCardActivity> listByUnionIdAndStatus(Integer unionId, Integer status) throws Exception {
+        if (unionId == null || status == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCardActivity> result = new ArrayList<>();
+        List<UnionCardActivity> activityList = listByUnionId(unionId);
+        if (ListUtil.isNotEmpty(activityList)) {
+            for (UnionCardActivity activity : activityList) {
+                if (status.equals(getStatus(activity))) {
+                    result.add(activity);
+                }
             }
         }
 

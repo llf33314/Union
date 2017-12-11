@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
-import com.gt.union.card.constant.CardConstant;
+import com.gt.union.card.CardConstant;
 import com.gt.union.card.consume.service.IUnionConsumeService;
 import com.gt.union.card.consume.vo.ConsumePayVO;
 import com.gt.union.card.consume.vo.ConsumePostVO;

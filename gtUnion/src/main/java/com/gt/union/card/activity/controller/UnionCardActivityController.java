@@ -111,6 +111,7 @@ public class UnionCardActivityController {
         }
         // mock
         CardActivityApplyVO result = MockUtil.get(CardActivityApplyVO.class);
+//        CardActivityApplyVO result = unionCardActivityService.getCardActivityApplyVOByIdAndUnionIdAndBusId(activityId, unionId, busId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

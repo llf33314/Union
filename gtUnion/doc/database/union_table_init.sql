@@ -322,7 +322,7 @@ CREATE TABLE `t_union_card_record` (
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `order_no` varchar(60) DEFAULT NULL COMMENT '订单号',
   `wx_order_no` varchar(60) DEFAULT NULL COMMENT '微信订单号',
-  `order_desc` varchar(100) DEFAULT NULL COMMENT '订单描述',
+  `alipay_order_no` varchar(100) DEFAULT NULL COMMENT '支付宝订单号',
   `pay_type` int(2) DEFAULT NULL COMMENT '支付类型(1:微信支付 2:支付宝支付)',
   `pay_status` int(2) DEFAULT NULL COMMENT '支付状态(1:未支付 2:支付成功 3:支付失败 4:已退款)',
   `pay_money` double(8,2) DEFAULT NULL COMMENT '支付金额',

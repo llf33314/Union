@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.shop.ShopService;
-import com.gt.union.card.constant.CardConstant;
+import com.gt.union.card.CardConstant;
 import com.gt.union.card.consume.entity.UnionConsume;
 import com.gt.union.card.consume.entity.UnionConsumeProject;
 import com.gt.union.card.consume.mapper.UnionConsumeMapper;

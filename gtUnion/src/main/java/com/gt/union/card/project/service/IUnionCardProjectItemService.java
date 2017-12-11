@@ -95,6 +95,16 @@ public interface IUnionCardProjectItemService extends IService<UnionCardProjectI
 
     //***************************************** Domain Driven Design - count *******************************************
 
+    /**
+     * 根据联盟id和活动id，统计已提交通过的项目优惠个数;
+     *
+     * @param unionId    联盟id
+     * @param activityId 活动id
+     * @return Integer
+     * @throws Exception 统一处理异常
+     */
+    Integer countCommittedByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception;
+
     //***************************************** Domain Driven Design - boolean *****************************************
 
     //***************************************** Domain Driven Design - filter ******************************************

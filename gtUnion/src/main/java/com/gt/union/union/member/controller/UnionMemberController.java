@@ -161,7 +161,7 @@ public class UnionMemberController {
         }
         List<UnionMember> result = MockUtil.list(UnionMember.class, 30);
 //        List<UnionMember> result = unionMemberService.listOtherWriteByBusIdAndUnionId(busId, unionId);
-        return GtJsonResult.instanceSuccessMsg();
+        return GtJsonResult.instanceSuccessMsg(result);
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------

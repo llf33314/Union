@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.activity.service.IUnionCardActivityService;
-import com.gt.union.card.constant.CardConstant;
+import com.gt.union.card.CardConstant;
 import com.gt.union.card.project.entity.UnionCardProject;
 import com.gt.union.card.project.service.IUnionCardProjectService;
 import com.gt.union.card.sharing.entity.UnionCardSharingRatio;

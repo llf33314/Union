@@ -131,7 +131,7 @@ public class UnionOpportunityController {
             @PathVariable("opportunityId") Integer opportunityId,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId,
-            @ApiParam(value = "是否接受(0:否 1:是)", name = "isPass", required = true)
+            @ApiParam(value = "是否接受(0:否 1:是)", name = "isAccept", required = true)
             @RequestParam(value = "isAccept") Integer isAccept,
             @ApiParam(value = "受理金额，接受时必填", name = "acceptPrice")
             @RequestParam(value = "acceptPrice", required = false) Double acceptPrice) throws Exception {

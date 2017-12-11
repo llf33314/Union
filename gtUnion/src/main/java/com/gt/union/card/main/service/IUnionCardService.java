@@ -2,6 +2,8 @@ package com.gt.union.card.main.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.card.main.entity.UnionCard;
+import com.gt.union.card.main.vo.CardApplyVO;
+import com.gt.union.card.main.vo.CardSocketVO;
 
 import java.util.List;
 
@@ -13,6 +15,38 @@ import java.util.List;
  */
 public interface IUnionCardService extends IService<UnionCard> {
     //***************************************** Domain Driven Design - get *********************************************
+
+    /**
+     * 前台-办理联盟卡-查询联盟和联盟卡
+     *
+     * @param busId      商家id
+     * @param fanId      粉丝id
+     * @param optUnionId 联盟id
+     * @return CardApplyVO
+     * @throws Exception 统一处理异常
+     */
+    CardApplyVO getCardApplyVOByBusIdAndFanId(Integer busId, Integer fanId, Integer optUnionId) throws Exception;
+
+    /**
+     * 根据粉丝id和联盟id，获取折扣卡信息
+     *
+     * @param fanId   粉丝id
+     * @param unionId 联盟id
+     * @return UnionCard
+     * @throws Exception 统一处理异常
+     */
+    UnionCard getDiscountCardByFanIdAndUnionId(Integer fanId, Integer unionId) throws Exception;
+
+    /**
+     * 根据粉丝id、活动id和联盟id，获取折扣卡信息
+     *
+     * @param fanId      粉丝id
+     * @param activityId 活动id
+     * @param unionId    联盟id
+     * @return UnionCard
+     * @throws Exception 统一处理异常
+     */
+    UnionCard getActivityCardByFanIdAndActivityIdAndUnionId(Integer fanId, Integer activityId, Integer unionId) throws Exception;
 
     //***************************************** Domain Driven Design - list ********************************************
 
@@ -66,6 +100,18 @@ public interface IUnionCardService extends IService<UnionCard> {
     List<UnionCard> listValidByFanId(Integer fanId) throws Exception;
 
     //***************************************** Domain Driven Design - save ********************************************
+
+    /**
+     * 保存办理联盟卡信息
+     *
+     * @param busId          商家id
+     * @param fanId          粉丝id
+     * @param unionId        联盟id
+     * @param activityIdList 活动id列表
+     * @return CardSocketVO
+     * @throws Exception 统一处理异常
+     */
+    CardSocketVO saveApplyByBusIdAndFanIdAndUnionId(Integer busId, Integer fanId, Integer unionId, List<Integer> activityIdList) throws Exception;
 
     //***************************************** Domain Driven Design - remove ******************************************
 

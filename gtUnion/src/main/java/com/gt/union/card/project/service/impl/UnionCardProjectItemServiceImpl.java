@@ -3,9 +3,9 @@ package com.gt.union.card.project.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.card.CardConstant;
 import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.activity.service.IUnionCardActivityService;
-import com.gt.union.card.constant.CardConstant;
 import com.gt.union.card.consume.service.IUnionConsumeProjectService;
 import com.gt.union.card.project.entity.UnionCardProject;
 import com.gt.union.card.project.entity.UnionCardProjectItem;
@@ -597,6 +597,28 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
             removeUnionCardProjectItemList.add(removeUnionCardProjectItem);
         }
         updateBatchById(removeUnionCardProjectItemList);
+    }
+
+    @Override
+    public Integer countCommittedByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception {
+        if (unionId == null || activityId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCardProject> projectList = unionCardProjectService.listByActivityIdAndUnionIdAndStatus(activityId, unionId, CardConstant.PROJECT_STATUS_ACCEPT);
+        if (ListUtil.isEmpty(projectList)) {
+            return 0;
+        }
+        List<Integer> projectIdList = new ArrayList<>();
+        for (UnionCardProject project : projectList) {
+            projectIdList.add(project.getId());
+        }
+
+        EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .in("project_id", projectIdList);
+
+        return selectCount(entityWrapper);
     }
 
     //***************************************** Object As a Service - update *******************************************

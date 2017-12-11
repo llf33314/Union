@@ -2,6 +2,7 @@ package com.gt.union.card.activity.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.card.activity.entity.UnionCardActivity;
+import com.gt.union.card.activity.vo.CardActivityApplyVO;
 import com.gt.union.card.activity.vo.CardActivityConsumeVO;
 import com.gt.union.card.activity.vo.CardActivityStatusVO;
 import com.gt.union.card.activity.vo.CardActivityVO;
@@ -36,6 +37,17 @@ public interface IUnionCardActivityService extends IService<UnionCardActivity> {
      */
     Integer getStatus(UnionCardActivity activity) throws Exception;
 
+    /**
+     * 前台-办理联盟卡-查询联盟和联盟卡-查询活动卡
+     *
+     * @param activityId 活动id
+     * @param unionId    联盟id
+     * @param busId      商家id
+     * @return CardActivityApplyVO
+     * @throws Exception 统一处理异常
+     */
+    CardActivityApplyVO getCardActivityApplyVOByIdAndUnionIdAndBusId(Integer activityId, Integer unionId, Integer busId) throws Exception;
+
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
@@ -68,7 +80,17 @@ public interface IUnionCardActivityService extends IService<UnionCardActivity> {
      * @throws Exception 统一处理异常
      */
     List<CardActivityConsumeVO> listCardActivityConsumeVOByBusIdAndUnionIdAndFanId(Integer busId, Integer unionId, Integer fanId) throws Exception;
-    
+
+    /**
+     * 根据联盟id和活动卡状态，获取活动卡信息
+     *
+     * @param unionId 联盟id
+     * @param status  活动卡状态
+     * @return List<UnionCardActivity>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardActivity> listByUnionIdAndStatus(Integer unionId, Integer status) throws Exception;
+
     //***************************************** Domain Driven Design - save ********************************************
 
     /**
@@ -77,7 +99,7 @@ public interface IUnionCardActivityService extends IService<UnionCardActivity> {
      * @param busId   商家id
      * @param unionId 联盟id
      * @param vo      表单内容
-     * @throws Exception
+     * @throws Exception 统一处理异常
      */
     void saveByBusIdAndUnionId(Integer busId, Integer unionId, UnionCardActivity vo) throws Exception;
 

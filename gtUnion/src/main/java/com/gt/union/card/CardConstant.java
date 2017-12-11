@@ -1,4 +1,4 @@
-package com.gt.union.card.constant;
+package com.gt.union.card;
 
 /**
  * 联盟卡常量接口

@@ -60,11 +60,11 @@ public class UnionCardRecord extends Model<UnionCardRecord> {
     private String wxOrderNo;
 
     /**
-     * 订单描述
+     * 支付宝订单号
      */
-    @ApiModelProperty(value = "订单描述")
-    @TableField("order_desc")
-    private String orderDesc;
+    @ApiModelProperty(value = "支付宝订单号")
+    @TableField("alipay_order_no")
+    private String alipayOrderNo;
 
     /**
      * 支付类型(1:微信支付 2:支付宝支付)
@@ -142,12 +142,12 @@ public class UnionCardRecord extends Model<UnionCardRecord> {
         this.wxOrderNo = wxOrderNo;
     }
 
-    public String getOrderDesc() {
-        return orderDesc;
+    public String getAlipayOrderNo() {
+        return alipayOrderNo;
     }
 
-    public void setOrderDesc(String orderDesc) {
-        this.orderDesc = orderDesc;
+    public void setAlipayOrderNo(String alipayOrderNo) {
+        this.alipayOrderNo = alipayOrderNo;
     }
 
     public Integer getPayType() {
