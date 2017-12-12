@@ -2,14 +2,9 @@ package com.gt.union.api.controller;
 
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
-import com.gt.union.api.amqp.entity.PhoneMessage;
-import com.gt.union.api.amqp.sender.PhoneMessageSender;
 import com.gt.union.api.client.shop.ShopService;
 import com.gt.union.api.client.shop.vo.ShopVO;
 import com.gt.union.common.response.GtJsonResult;
-import com.gt.union.common.util.RedissonLockUtil;
-import com.gt.union.union.main.entity.UnionMainNotice;
-import com.gt.union.union.main.service.IUnionMainNoticeService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -19,11 +14,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Date;
 import java.util.List;
 
 /**
- * 门店信息RestApi
+ * 商家门店信息RestApi
  * @author hongjiye
  * @time 2017-11-30 11:03
  **/
@@ -32,7 +26,7 @@ import java.util.List;
 @RequestMapping("/api/shop")
 public class ShopApiController {
 
-	@ApiParam
+	@Autowired
 	private ShopService shopService;
 
 	@ApiOperation(value = "获取商家门店列表信息", produces = "application/json;charset=UTF-8")
