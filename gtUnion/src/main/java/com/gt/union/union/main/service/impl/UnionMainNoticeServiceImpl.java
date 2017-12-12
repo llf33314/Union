@@ -59,6 +59,15 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
             throw new BusinessException(CommonConstant.UNION_READ_REJECT);
         }
 
+        return getByUnionId(unionId);
+    }
+
+    @Override
+    public UnionMainNotice getByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);   
+        }
+
         List<UnionMainNotice> result = listByUnionId(unionId);
 
         return ListUtil.isNotEmpty(result) ? result.get(0) : null;
@@ -91,22 +100,22 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
         }
 
         // （2）要求公告内容不能为空，且字数不能超过50字
-        if (StringUtil.getStringLength(content) > 50) {
-            throw new BusinessException("公告内容字数不能大于50");
+        if (StringUtil.isEmpty(content) || StringUtil.getStringLength(content) > 50) {
+            throw new BusinessException("公告内容不能为空，且字数不能大于50");
         }
 
         // （3）如果原公告不存在，则新增；否则，更新
-        List<UnionMainNotice> noticeList = listByUnionId(unionId);
-        if (ListUtil.isNotEmpty(noticeList)) {
+        UnionMainNotice notice = getByUnionId(unionId);
+        if (notice != null) {
             UnionMainNotice updateNotice = new UnionMainNotice();
-            updateNotice.setId(noticeList.get(0).getId());
+            updateNotice.setId(notice.getId());
             updateNotice.setModifyTime(DateUtil.getCurrentDate());
             updateNotice.setContent(content);
             update(updateNotice);
         } else {
             UnionMainNotice saveNotice = new UnionMainNotice();
-            saveNotice.setCreateTime(DateUtil.getCurrentDate());
             saveNotice.setDelStatus(CommonConstant.DEL_STATUS_NO);
+            saveNotice.setCreateTime(DateUtil.getCurrentDate());
             saveNotice.setUnionId(unionId);
             saveNotice.setContent(content);
             save(saveNotice);

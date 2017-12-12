@@ -27,9 +27,6 @@ public class BrokerageOpportunityVO {
     @ApiModelProperty(value = "所属联盟")
     private UnionMain union;
 
-    @ApiModelProperty(value = "是否已结算(0:否 1:是)")
-    private Integer isClose;
-
     public UnionOpportunity getOpportunity() {
         return opportunity;
     }
@@ -60,14 +57,6 @@ public class BrokerageOpportunityVO {
 
     public void setUnion(UnionMain union) {
         this.union = union;
-    }
-
-    public Integer getIsClose() {
-        return isClose;
-    }
-
-    public void setIsClose(Integer isClose) {
-        this.isClose = isClose;
     }
 
     @Override

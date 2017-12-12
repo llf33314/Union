@@ -16,14 +16,14 @@ public interface IUnionMainService extends IService<UnionMain> {
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
-     * 商家获取联盟基础信息
+     * 获取联盟基础信息
      *
      * @param busId   商家id
      * @param unionId 联盟id
      * @return UnionVO
      * @throws Exception 统一处理异常
      */
-    UnionVO getVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
+    UnionVO getUnionVOByBusIdAndId(Integer busId, Integer unionId) throws Exception;
 
     /**
      * 获取联盟信息
@@ -37,7 +37,16 @@ public interface IUnionMainService extends IService<UnionMain> {
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 获取商家所有有效的联盟信息
+     * 加入联盟-分页
+     *
+     * @param busId 商家id
+     * @return List<UnionMain>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMain> listOtherValidByBusId(Integer busId) throws Exception;
+
+    /**
+     * 辅助接口：获取我的联盟列表
      *
      * @param busId 商家id
      * @return ist<UnionMain>
@@ -48,9 +57,9 @@ public interface IUnionMainService extends IService<UnionMain> {
     //***************************************** Domain Driven Design - save ********************************************
 
     /**
-     * 保存联盟信息
+     * 保存
      *
-     * @param saveUnion 联盟信息
+     * @param saveUnion 保存内容
      * @throws Exception Exception 统一处理异常
      */
     void save(UnionMain saveUnion) throws Exception;
@@ -60,15 +69,15 @@ public interface IUnionMainService extends IService<UnionMain> {
     //***************************************** Domain Driven Design - update ******************************************
 
     /**
-     * 更新联盟信息
+     * 更新
      *
-     * @param updateUnionMain 联盟信息
+     * @param updateUnionMain 更新内容
      * @throws Exception 统一处理异常
      */
     void update(UnionMain updateUnionMain) throws Exception;
 
     /**
-     * 我的联盟-联盟设置-基础设置-保存
+     * 联盟设置-联盟基本信息-更新
      *
      * @param busId   商家id
      * @param unionId 联盟id

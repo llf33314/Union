@@ -29,10 +29,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * 入盟申请 服务实现类
@@ -90,28 +87,34 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         }
         // （2）	按时间顺序排序
         List<MemberJoinVO> result = new ArrayList<>();
-        List<UnionMemberJoin> joinList = listByUnionId(unionId, MemberConstant.STATUS_APPLY_IN);
+        List<UnionMemberJoin> joinList = listByUnionId(unionId);
         if (ListUtil.isNotEmpty(joinList)) {
             for (UnionMemberJoin join : joinList) {
                 MemberJoinVO vo = new MemberJoinVO();
                 vo.setMemberJoin(join);
+
                 UnionMember joinMember = unionMemberService.getByIdAndUnionIdAndStatus(join.getApplyMemberId(), join.getUnionId(), MemberConstant.STATUS_APPLY_IN);
+                boolean isContinue;
                 if (StringUtil.isNotEmpty(optMemberName)) {
-                    boolean isContinue = joinMember == null || StringUtil.isEmpty(joinMember.getEnterpriseName())
+                    isContinue = joinMember == null || StringUtil.isEmpty(joinMember.getEnterpriseName())
                             || !joinMember.getEnterpriseName().contains(optMemberName);
                     if (isContinue) {
                         continue;
                     }
+                }
+                if (StringUtil.isNotEmpty(optPhone)) {
                     isContinue = StringUtil.isEmpty(joinMember.getDirectorPhone()) || !joinMember.getDirectorPhone().contains(optPhone);
                     if (isContinue) {
                         continue;
                     }
                 }
                 vo.setJoinMember(joinMember);
+
                 if (MemberConstant.JOIN_TYPE_RECOMMEND == join.getType() && join.getRecommendMemberId() != null) {
                     UnionMember recommendMember = unionMemberService.getReadByIdAndUnionId(join.getRecommendMemberId(), join.getUnionId());
                     vo.setRecommendMember(recommendMember);
                 }
+
                 result.add(vo);
             }
         }
@@ -125,27 +128,10 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         return result;
     }
 
-    @Override
-    public List<UnionMemberJoin> listByUnionId(Integer unionId, Integer memberStatus) throws Exception {
-        if (unionId == null || memberStatus == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .eq("union_id", unionId)
-                .exists(" SELECT m.id FROM t_union_member m "
-                        + " WHERE m.del_status=" + CommonConstant.COMMON_NO
-                        + " AND m.union_id=" + unionId
-                        + " AND m.id=t_union_member_join.apply_member_id "
-                        + " AND m.status=" + memberStatus);
-
-        return selectList(entityWrapper);
-    }
-
     //***************************************** Domain Driven Design - save ********************************************
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveJoinCreateVOByBusIdAndUnionIdAndType(Integer busId, Integer unionId, Integer type, MemberJoinCreateVO vo) throws Exception {
         if (busId == null || unionId == null || type == null || vo == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -183,9 +169,10 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         }
         // （5）	校验表单
         List<String> itemKeyList = unionMainDictService.listItemKeyByUnionId(unionId);
+        Date currentDate = DateUtil.getCurrentDate();
         UnionMember saveMember = new UnionMember();
         saveMember.setDelStatus(CommonConstant.COMMON_NO);
-        saveMember.setCreateTime(DateUtil.getCurrentDate());
+        saveMember.setCreateTime(currentDate);
         saveMember.setUnionId(unionId);
         saveMember.setIsUnionOwner(MemberConstant.IS_UNION_OWNER_NO);
         // （5-1）企业名称
@@ -199,10 +186,8 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         saveMember.setEnterpriseName(enterpriseName);
         // （5-2）负责人名称
         String directorName = vo.getDirectorName();
-        if (itemKeyList.contains(UnionConstant.ITEM_KEY_DIRECTOR_NAME)) {
-            if (StringUtil.isEmpty(directorName)) {
-                throw new BusinessException("负责人名称不能为空");
-            }
+        if (itemKeyList.contains(UnionConstant.ITEM_KEY_DIRECTOR_NAME) && StringUtil.isEmpty(directorName)) {
+            throw new BusinessException("负责人名称不能为空");
         }
         if (StringUtil.isNotEmpty(directorName) && StringUtil.getStringLength(directorName) > 10) {
             throw new BusinessException("负责人名称字数不能超过10");
@@ -210,10 +195,8 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         saveMember.setDirectorName(directorName);
         // （5-3）负责人电话
         String directorPhone = vo.getDirectorPhone();
-        if (itemKeyList.contains(UnionConstant.ITEM_KEY_DIRECTOR_PHONE)) {
-            if (StringUtil.isEmpty(directorPhone)) {
-                throw new BusinessException("负责人联系电话不能为空");
-            }
+        if (itemKeyList.contains(UnionConstant.ITEM_KEY_DIRECTOR_PHONE) && StringUtil.isEmpty(directorPhone)) {
+            throw new BusinessException("负责人联系电话不能为空");
         }
         if (StringUtil.isNotEmpty(directorPhone) && !StringUtil.isPhone(directorPhone)) {
             throw new BusinessException("负责人联系电话无效");
@@ -221,10 +204,8 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         saveMember.setDirectorPhone(directorPhone);
         // （5-4）负责人名称
         String directorEmail = vo.getDirectorEmail();
-        if (itemKeyList.contains(UnionConstant.ITEM_KEY_DIRECTOR_EMAIL)) {
-            if (StringUtil.isEmpty(directorEmail)) {
-                throw new BusinessException("负责人邮箱不能为空");
-            }
+        if (itemKeyList.contains(UnionConstant.ITEM_KEY_DIRECTOR_EMAIL) && StringUtil.isEmpty(directorEmail)) {
+            throw new BusinessException("负责人邮箱不能为空");
         }
         if (StringUtil.isNotEmpty(directorEmail) && !StringUtil.isEmail(directorEmail)) {
             throw new BusinessException("负责人邮箱无效");
@@ -233,14 +214,12 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         // （5-5）理由
         UnionMemberJoin saveJoin = new UnionMemberJoin();
         saveJoin.setDelStatus(CommonConstant.COMMON_NO);
-        saveJoin.setCreateTime(DateUtil.getCurrentDate());
+        saveJoin.setCreateTime(currentDate);
         saveJoin.setUnionId(unionId);
         saveJoin.setType(type);
         String reason = vo.getReason();
-        if (itemKeyList.contains(UnionConstant.ITEM_KEY_REASON)) {
-            if (StringUtil.isEmpty(reason)) {
-                throw new BusinessException("理由不能为空");
-            }
+        if (itemKeyList.contains(UnionConstant.ITEM_KEY_REASON) && StringUtil.isEmpty(reason)) {
+            throw new BusinessException("理由不能为空");
         }
         if (StringUtil.isNotEmpty(reason) && StringUtil.getStringLength(reason) > 20) {
             throw new BusinessException("理由字数不能超过20");
@@ -270,10 +249,10 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
 
     //***************************************** Domain Driven Design - update ******************************************
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
-    public void updateStatusByIdAndUnionIdAndBusId(Integer joinId, Integer unionId, Integer busId, Integer isPass) throws Exception {
-        if (joinId == null || unionId == null || busId == null || isPass == null) {
+    @Transactional(rollbackFor = Exception.class)
+    public void updateStatusByBusIdAndIdAndUnionId(Integer busId, Integer joinId, Integer unionId, Integer isPass) throws Exception {
+        if (busId == null || joinId == null || unionId == null || isPass == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	判断union有效性和member写权限、盟主权限

@@ -15,7 +15,7 @@ public interface IUnionMainCreateService extends IService<UnionMainCreate> {
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
-     * 检查联盟许可
+     * 创建联盟-检查联盟许可
      *
      * @param busId 商家id
      * @return UnionPermitCheckVO
@@ -28,11 +28,11 @@ public interface IUnionMainCreateService extends IService<UnionMainCreate> {
     //***************************************** Domain Driven Design - save ********************************************
 
     /**
-     * 保存新建联盟
+     * 创建联盟-保存
      *
      * @param busId 商家id
      * @param vo    表单信息
-     * @throws Exception
+     * @throws Exception 统一处理异常
      */
     void saveUnionCreateVOByBusId(Integer busId, UnionCreateVO vo) throws Exception;
 

@@ -38,7 +38,7 @@ public class UnionMemberJoinController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页：获取入盟申请信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "入盟审核-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<MemberJoinVO>> pageJoinVOByUnionId(
             HttpServletRequest request,
@@ -56,7 +56,7 @@ public class UnionMemberJoinController {
         }
         // mock
         List<MemberJoinVO> voList = MockUtil.list(MemberJoinVO.class, page.getSize());
-//        List<MemberJoinVO> voList = unionMemberJoinService.listMemberJoinVOByBusIdAndUnionId(busId, unionId, memberName, phone);
+        List<MemberJoinVO> voList2 = unionMemberJoinService.listMemberJoinVOByBusIdAndUnionId(busId, unionId, memberName, phone);
         Page<MemberJoinVO> result = (Page<MemberJoinVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -64,7 +64,7 @@ public class UnionMemberJoinController {
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
-    @ApiOperation(value = "通过或不通过入盟申请", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "入盟审核-分页-通过或不通过", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{joinId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> updateStatusByIdAndUnionId(
             HttpServletRequest request,
@@ -79,13 +79,13 @@ public class UnionMemberJoinController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-//        unionMemberJoinService.updateStatusByIdAndUnionIdAndBusId(joinId, unionId, busId, isPass);
+        unionMemberJoinService.updateStatusByBusIdAndIdAndUnionId(busId, joinId, unionId, isPass);
         return GtJsonResult.instanceSuccessMsg();
     }
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
-    @ApiOperation(value = "申请入盟或推荐入盟", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "加入联盟-保存；推荐入盟", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/type/{type}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> saveJoinCreateVOByUnionIdAndType(
             HttpServletRequest request,
@@ -100,7 +100,7 @@ public class UnionMemberJoinController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-//        unionMemberJoinService.saveJoinCreateVOByBusIdAndUnionIdAndType(busId, unionId, type, joinCreateVO);
+        unionMemberJoinService.saveJoinCreateVOByBusIdAndUnionIdAndType(busId, unionId, type, joinCreateVO);
         return GtJsonResult.instanceSuccessMsg();
     }
 

@@ -17,7 +17,7 @@ public interface IUnionMemberJoinService extends IService<UnionMemberJoin> {
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
-     * 根据入盟申请id和联盟id，获取入盟申请信息
+     * 获取入盟申请信息
      *
      * @param joinId  入盟申请id
      * @param unionId 联盟id
@@ -29,7 +29,7 @@ public interface IUnionMemberJoinService extends IService<UnionMemberJoin> {
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 获取联盟入盟申请信息
+     * 入盟审核-分页
      *
      * @param buId          商家id
      * @param unionId       联盟id
@@ -40,20 +40,10 @@ public interface IUnionMemberJoinService extends IService<UnionMemberJoin> {
      */
     List<MemberJoinVO> listMemberJoinVOByBusIdAndUnionId(Integer buId, Integer unionId, String optMemberName, String optPhone) throws Exception;
 
-    /**
-     * 获取联盟入盟申请信息
-     *
-     * @param unionId      联盟id
-     * @param memberStatus 申请入盟的盟员状态
-     * @return List<UnionMemberJoin>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionMemberJoin> listByUnionId(Integer unionId, Integer memberStatus) throws Exception;
-
     //***************************************** Domain Driven Design - save ********************************************
 
     /**
-     * 保存入盟申请或推荐入盟申请信息
+     * 加入联盟-保存；推荐入盟
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -70,13 +60,13 @@ public interface IUnionMemberJoinService extends IService<UnionMemberJoin> {
     /**
      * 通过或不通过入盟申请
      *
+     * @param busId   商家id
      * @param joinId  入盟申请id
      * @param unionId 联盟id
-     * @param busId   商家id
      * @param isPass  是否通过(0：否 1：是)
      * @throws Exception 统一处理异常
      */
-    void updateStatusByIdAndUnionIdAndBusId(Integer joinId, Integer unionId, Integer busId, Integer isPass) throws Exception;
+    void updateStatusByBusIdAndIdAndUnionId(Integer busId, Integer joinId, Integer unionId, Integer isPass) throws Exception;
 
     //***************************************** Domain Driven Design - count *******************************************
 

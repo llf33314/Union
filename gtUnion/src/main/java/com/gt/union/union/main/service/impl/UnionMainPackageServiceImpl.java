@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.api.bean.session.BusUser;
+import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
@@ -20,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -37,6 +37,9 @@ public class UnionMainPackageServiceImpl extends ServiceImpl<UnionMainPackageMap
 
     @Autowired
     private IBusUserService busUserService;
+
+    @Autowired
+    private IDictService dictService;
 
     //***************************************** Domain Driven Design - get *********************************************
 
@@ -61,15 +64,19 @@ public class UnionMainPackageServiceImpl extends ServiceImpl<UnionMainPackageMap
 
         UnionPackageVO result = new UnionPackageVO();
 
-        // TODO 这里少个接口
-        Map<String, String> basicMap = new HashMap<>(16);
-        result.setBusVersionName(basicMap.get("busVersionName"));
-        result.setUnionVersionName(basicMap.get("unionVersionName"));
-
         BusUser busUser = busUserService.getBusUserById(busId);
         if (busUser == null) {
             throw new BusinessException(CommonConstant.UNION_BUS_NOT_FOUND);
         }
+        String busVersionName = dictService.getBusUserLevel(busUser.getLevel());
+        result.setBusVersionName(busVersionName);
+
+        Map<String, Object> basicMap = busUserService.getUserUnionAuthority(busId);
+        if (basicMap != null && basicMap.get("versionName") != null) {
+            String unionVersionName = basicMap.get("versionName").toString();
+            result.setUnionVersionName(unionVersionName);
+        }
+
         List<UnionMainPackage> packageList = listByLevel(busUser.getLevel());
         result.setPackageList(packageList);
 

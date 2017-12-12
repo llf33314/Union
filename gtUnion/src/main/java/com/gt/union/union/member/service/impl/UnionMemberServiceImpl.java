@@ -2,7 +2,6 @@ package com.gt.union.union.member.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.common.constant.CommonConstant;
@@ -171,15 +170,6 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     //***************************************** Domain Driven Design - list ********************************************
 
     @Override
-    public Page<UnionMember> pageSupport(Page page, EntityWrapper<UnionMember> entityWrapper) throws Exception {
-        if (page == null || entityWrapper == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        return selectPage(page, entityWrapper);
-    }
-
-    @Override
     public List<UnionMember> listReadByBusId(Integer busId) throws Exception {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -195,6 +185,23 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
+    public List<Integer> listReadIdByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<Integer> result = new ArrayList<>();
+        List<UnionMember> memberList = listReadByBusId(busId);
+        if (ListUtil.isNotEmpty(memberList)) {
+            for (UnionMember member : memberList) {
+                result.add(member.getId());
+            }
+        }
+
+        return result;
+    }
+
+    @Override
     public List<UnionMember> listWriteByBusId(Integer busId) throws Exception {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -206,6 +213,23 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         statusList.add(MemberConstant.STATUS_APPLY_OUT);
 
         return filterByStatusList(result, statusList);
+    }
+
+    @Override
+    public List<Integer> listWriteIdByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<Integer> result = new ArrayList<>();
+        List<UnionMember> memberList = listWriteByBusId(busId);
+        if (ListUtil.isNotEmpty(memberList)) {
+            for (UnionMember member : memberList) {
+                result.add(member.getId());
+            }
+        }
+
+        return result;
     }
 
     @Override
@@ -353,7 +377,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         }
         // （2）	判断memberId有效性
         if (!memberId.equals(member.getId())) {
-            throw new BusinessException("无法更新id为" + memberId + "的盟员信息");
+            throw new BusinessException("无法更新其他盟员信息");
         }
         // （3）	校验表单
         UnionMember updateMember = new UnionMember();
@@ -447,7 +471,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         }
         // （2）	判断memberId有效性
         if (!memberId.equals(member.getId())) {
-            throw new BusinessException("无法更新id为" + memberId + "的盟员折扣信息");
+            throw new BusinessException("无法更新其他盟员的折扣信息");
         }
         // （3）	要求折扣在(0,10)
         if (discount <= 0 || discount >= 1) {

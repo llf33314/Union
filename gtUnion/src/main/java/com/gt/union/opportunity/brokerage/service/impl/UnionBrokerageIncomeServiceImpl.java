@@ -7,14 +7,18 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.StringUtil;
 import com.gt.union.opportunity.brokerage.entity.UnionBrokerageIncome;
 import com.gt.union.opportunity.brokerage.mapper.UnionBrokerageIncomeMapper;
 import com.gt.union.opportunity.brokerage.service.IUnionBrokerageIncomeService;
 import com.gt.union.opportunity.brokerage.util.UnionBrokerageIncomeCacheUtil;
 import com.gt.union.opportunity.brokerage.vo.BrokerageOpportunityVO;
 import com.gt.union.opportunity.main.constant.OpportunityConstant;
+import com.gt.union.opportunity.main.entity.UnionOpportunity;
 import com.gt.union.opportunity.main.service.IUnionOpportunityService;
-import com.gt.union.opportunity.main.vo.OpportunityVO;
+import com.gt.union.union.main.service.IUnionMainService;
+import com.gt.union.union.member.entity.UnionMember;
+import com.gt.union.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -38,11 +42,17 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
     @Autowired
     private IUnionOpportunityService unionOpportunityService;
 
+    @Autowired
+    private IUnionMemberService unionMemberService;
+
+    @Autowired
+    private IUnionMainService unionMainService;
+
     //***************************************** Domain Driven Design - get *********************************************
 
     @Override
-    public UnionBrokerageIncome getByMemberIdAndUnionIdAndOpportunityId(Integer memberId, Integer unionId, Integer opportunityId) throws Exception {
-        if (memberId == null || unionId == null || opportunityId == null) {
+    public UnionBrokerageIncome getByUnionIdAndMemberIdAndOpportunityId(Integer unionId, Integer memberId, Integer opportunityId) throws Exception {
+        if (unionId == null || memberId == null || opportunityId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
@@ -60,43 +70,22 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）获取已被接受的商机推荐
-        List<OpportunityVO> opportunityVOList = unionOpportunityService.listFromMeByBusId(busId, optUnionId,
-                String.valueOf(OpportunityConstant.OPPORTUNITY_ACCEPT_STATUS_CONFIRMED), optClientName, optClientPhone);
-        // （2）	按已结算状态顺序(未>已)，时间倒序排序
-        List<BrokerageOpportunityVO> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(opportunityVOList)) {
-            for (OpportunityVO opportunityVO : opportunityVOList) {
-                BrokerageOpportunityVO vo = new BrokerageOpportunityVO();
-                vo.setOpportunity(opportunityVO.getOpportunity());
-                vo.setFromMember(opportunityVO.getFromMember());
-                vo.setToMember(opportunityVO.getToMember());
-                vo.setUnion(opportunityVO.getUnion());
-
-                boolean existIncome = existByMemberIdAndUnionIdAndOpportunityId(vo.getFromMember().getId(), vo.getFromMember().getUnionId(), vo.getOpportunity().getId());
-                if (optIsClose != null) {
-                    boolean isOK = (CommonConstant.COMMON_YES == optIsClose && existIncome) || (CommonConstant.COMMON_NO == optIsClose && !existIncome);
-                    if (!isOK) {
-                        continue;
-                    }
-                }
-                vo.setIsClose(existIncome ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO);
-                result.add(vo);
-            }
+        // （1）	获取商家所有有效的盟员列表
+        List<Integer> readMemberIdList = unionMemberService.listReadIdByBusId(busId);
+        // （2）获取已被接受的商机推荐
+        List<UnionOpportunity> opportunityList = unionOpportunityService.listByFromMemberIdList(readMemberIdList);
+        opportunityList = unionOpportunityService.filterByAcceptStatus(opportunityList, OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
+        if (optToMemberId != null) {
+            opportunityList = unionOpportunityService.filterByToMemberId(opportunityList, optToMemberId);
         }
-        Collections.sort(result, new Comparator<BrokerageOpportunityVO>() {
-            @Override
-            public int compare(BrokerageOpportunityVO o1, BrokerageOpportunityVO o2) {
-                if (o1.getIsClose().compareTo(o2.getIsClose()) < 0) {
-                    return 1;
-                } else if (o1.getIsClose().compareTo(o2.getIsClose()) > 0) {
-                    return -1;
-                }
-                return o1.getOpportunity().getCreateTime().compareTo(o2.getOpportunity().getCreateTime());
-            }
-        });
-
-        return result;
+        if (StringUtil.isNotEmpty(optClientName)) {
+            opportunityList = unionOpportunityService.filterByLikeClientName(opportunityList, optClientName);
+        }
+        if (StringUtil.isNotEmpty(optClientPhone)) {
+            opportunityList = unionOpportunityService.filterByLikeClientPhone(opportunityList, optClientPhone);
+        }
+        // （2）	按已结算状态顺序(未>已)，时间倒序排序
+        return unionOpportunityService.listBrokerageOpportunityVO(opportunityList);
     }
 
 
@@ -111,12 +100,12 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
     //***************************************** Domain Driven Design - boolean *****************************************
 
     @Override
-    public boolean existByMemberIdAndUnionIdAndOpportunityId(Integer memberId, Integer unionId, Integer opportunityId) throws Exception {
-        if (memberId == null || unionId == null || opportunityId == null) {
+    public boolean existByUnionIdAndMemberIdAndOpportunityId(Integer unionId, Integer memberId, Integer opportunityId) throws Exception {
+        if (unionId == null || memberId == null || opportunityId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        return getByMemberIdAndUnionIdAndOpportunityId(memberId, unionId, opportunityId) != null;
+        return getByUnionIdAndMemberIdAndOpportunityId(unionId, memberId, opportunityId) != null;
     }
 
     //***************************************** Domain Driven Design - filter ******************************************
@@ -298,6 +287,7 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
         removeCache(newUnionBrokerageIncome);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveBatch(List<UnionBrokerageIncome> newUnionBrokerageIncomeList) throws Exception {
         if (newUnionBrokerageIncomeList == null) {

@@ -5,13 +5,13 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 /**
- * 购买联盟盟主服务-支付
+ * 联盟支付
  *
  * @author linweicong
  * @version 2017-11-30 15:58:33
  */
-@ApiModel(value = "购买联盟盟主服务-支付VO")
-public class UnionPermitPayVO {
+@ApiModel(value = "联盟支付VO")
+public class UnionPayVO {
     @ApiModelProperty(value = "支付链接")
     private String payUrl;
 

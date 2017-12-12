@@ -37,7 +37,7 @@ public class UnionMainCreateController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "检查许可", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "创建联盟-检查联盟许可", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/checkPermit", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<UnionPermitCheckVO> getPermitCheckVO(HttpServletRequest request) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
@@ -47,7 +47,7 @@ public class UnionMainCreateController {
         }
         // mock
         UnionPermitCheckVO result = MockUtil.get(UnionPermitCheckVO.class);
-//        UnionPermitCheckVO result = unionMainCreateService.getPermitCheckVOByBusId(busId);
+        UnionPermitCheckVO result2 = unionMainCreateService.getPermitCheckVOByBusId(busId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -55,7 +55,7 @@ public class UnionMainCreateController {
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
-    @ApiOperation(value = "保存：创建联盟", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "创建联盟-保存", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> saveUnionCreateVO(
             HttpServletRequest request,
@@ -66,7 +66,7 @@ public class UnionMainCreateController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-//        unionMainCreateService.saveUnionCreateVOByBusId(busId, unionCreateVO);
+        unionMainCreateService.saveUnionCreateVOByBusId(busId, unionCreateVO);
         return GtJsonResult.instanceSuccessMsg();
     }
 }

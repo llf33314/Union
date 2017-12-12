@@ -45,7 +45,7 @@ public class UnionMemberController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页：获取入盟和申请退盟状态的盟员信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "首页-盟员列表-分页；联盟卡设置-折扣卡设置-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/write/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<UnionMember>> pageWriteByUnionId(
             HttpServletRequest request,
@@ -114,7 +114,7 @@ public class UnionMemberController {
         ExportUtil.responseExport(response, workbook, fileName);
     }
 
-    @ApiOperation(value = "获取盟员信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "首页-盟员列表-分页-详情", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{memberId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<UnionMember> getByIdAndUnionId(
             HttpServletRequest request,
@@ -133,7 +133,7 @@ public class UnionMemberController {
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "获取商家的盟员信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "联盟设置-基础设置；联盟卡设置-折扣卡设置-折扣设置", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/busUser", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<UnionMember> getByUnionId(
             HttpServletRequest request,
@@ -146,11 +146,11 @@ public class UnionMemberController {
         }
         // mock
         UnionMember result = MockUtil.get(UnionMember.class);
-//        UnionMember result = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        UnionMember result2 = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "获取指定联盟下具有写权限的但不包括我的盟员列表", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "辅助接口：获取指定联盟下具有写权限的但不包括我的盟员列表", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/write/other", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult listOtherWriteByUnionId(
             HttpServletRequest request,
@@ -162,13 +162,13 @@ public class UnionMemberController {
             busId = busUser.getPid();
         }
         List<UnionMember> result = MockUtil.list(UnionMember.class, 30);
-//        List<UnionMember> result = unionMemberService.listOtherWriteByBusIdAndUnionId(busId, unionId);
+        List<UnionMember> result2 = unionMemberService.listOtherWriteByBusIdAndUnionId(busId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
-    @ApiOperation(value = "更新盟员信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "联盟设置-基础设置-更新", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{memberId}/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> updateByUnionId(
             HttpServletRequest request,
@@ -183,11 +183,11 @@ public class UnionMemberController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-//        unionMemberService.updateByIdAndUnionIdAndBusId(memberId, unionId, busId, member);
+        unionMemberService.updateByBusIdAndIdAndUnionId(busId, memberId, unionId, member);
         return GtJsonResult.instanceSuccessMsg();
     }
 
-    @ApiOperation(value = "更新盟员折扣信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "联盟卡设置-折扣卡设置-折扣设置-更新", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{memberId}/unionId/{unionId}/discount", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> updateDiscountByIdAndUnionId(
             HttpServletRequest request,
@@ -202,7 +202,7 @@ public class UnionMemberController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-//        unionMemberService.updateDiscountByIdAndUnionIdAndBusId(memberId, unionId, busId, discount);
+        unionMemberService.updateDiscountByBusIdAndIdAndUnionId(busId, memberId, unionId, discount);
         return GtJsonResult.instanceSuccessMsg();
     }
 

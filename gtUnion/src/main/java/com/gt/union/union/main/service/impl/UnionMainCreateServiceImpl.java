@@ -4,14 +4,13 @@ import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.api.bean.session.BusUser;
+import com.gt.union.api.client.dict.IDictService;
+import com.gt.union.api.client.dict.impl.DictServiceImpl;
 import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.DateUtil;
-import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.RedisCacheUtil;
-import com.gt.union.common.util.StringUtil;
+import com.gt.union.common.util.*;
 import com.gt.union.union.main.constant.UnionConstant;
 import com.gt.union.union.main.entity.*;
 import com.gt.union.union.main.mapper.UnionMainCreateMapper;
@@ -56,6 +55,9 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
 
     @Autowired
     private IUnionMainDictService unionMainDictService;
+    
+    @Autowired
+    private IDictService dictService;
 
     //***************************************** Domain Driven Design - get *********************************************
 
@@ -72,20 +74,24 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         }
 
         // （2）	判断是否有联盟基础服务（调接口），如果没有，报错
-        // TODO 这里少个接口
-        Map<String, String> basicMap = new HashMap<>(16);
-        String isAuthority = basicMap.get("isAuthority");
-        if (StringUtil.isEmpty(isAuthority) || isAuthority.equals(CommonConstant.COMMON_NO)) {
+        Map<String, Object> basicMap = busUserService.getUserUnionAuthority(busId);
+        if (basicMap == null) {
+            throw new BusinessException("不具有联盟基础服务");
+        }
+        Object objAuthority = basicMap.get("authority");
+        Integer hasAuthority = objAuthority != null ? Integer.valueOf(objAuthority.toString()) : CommonConstant.COMMON_NO;
+        if (CommonConstant.COMMON_YES != hasAuthority) {
             throw new BusinessException("不具有联盟基础服务");
         }
 
         // （3）	判断是否需要付费，
         // 如果需要付费，判断是否已购买联盟盟主服务，如果已购买，则返回；如果未购买，则进入购买页面；
         // 如果不需要付费，则判断是否已有免费联盟盟主服务，若没有则新增，返回
-        String isPay = basicMap.get("isPay");
         UnionMainPermit permit = unionMainPermitService.getValidByBusId(busId);
         UnionPermitCheckVO result = new UnionPermitCheckVO();
-        if (StringUtil.isEmpty(isPay) || isPay.equals(CommonConstant.COMMON_YES)) {
+        Object objPay = basicMap.get("pay");
+        Integer needPay = objPay != null ? Integer.valueOf(objPay.toString()) : CommonConstant.COMMON_YES;
+        if (CommonConstant.COMMON_YES == needPay) {
             if (permit == null) {
                 result.setIsPay(CommonConstant.COMMON_YES);
             } else {
@@ -103,12 +109,12 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
                     throw new BusinessException("找不到商家等级为" + busUser.getLevel() + "的联盟套餐");
                 }
                 UnionMainPermit savePermit = new UnionMainPermit();
-                savePermit.setBusId(busId);
+                savePermit.setDelStatus(CommonConstant.COMMON_NO);
                 Date currentDate = DateUtil.getCurrentDate();
                 savePermit.setCreateTime(currentDate);
-                savePermit.setValidity(DateUtil.addYears(currentDate, 10));
+                savePermit.setBusId(busId);
+                savePermit.setValidity(busUser.getEndTime());
                 savePermit.setPackageId(unionPackage.getId());
-                savePermit.setDelStatus(CommonConstant.COMMON_NO);
                 unionMainPermitService.save(savePermit);
 
                 result.setIsPay(CommonConstant.COMMON_NO);
@@ -121,6 +127,10 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
 
         return result;
     }
+
+    //***************************************** Domain Driven Design - list ********************************************
+
+    //***************************************** Domain Driven Design - save ********************************************
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -135,10 +145,13 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         }
 
         // （2）	判断是否有联盟基础服务（调接口），如果不是，报错
-        // TODO 这里少个接口
-        Map<String, String> basicMap = new HashMap<>(16);
-        String isAuthority = basicMap.get("isAuthority");
-        if (StringUtil.isEmpty(isAuthority) || isAuthority.equals(CommonConstant.COMMON_NO)) {
+        Map<String, Object> basicMap = busUserService.getUserUnionAuthority(busId);
+        if (basicMap == null) {
+            throw new BusinessException("不具有联盟基础服务");
+        }
+        Object objAuthority = basicMap.get("authority");
+        Integer hasAuthority = objAuthority != null ? Integer.valueOf(objAuthority.toString()) : CommonConstant.COMMON_NO;
+        if (CommonConstant.COMMON_YES != hasAuthority) {
             throw new BusinessException("不具有联盟基础服务");
         }
 
@@ -212,6 +225,7 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
 
         UnionMember saveMember = new UnionMember();
         saveMember.setDelStatus(CommonConstant.COMMON_NO);
+        saveMember.setCreateTime(currentDate);
         saveMember.setBusId(busId);
         saveMember.setStatus(MemberConstant.STATUS_IN);
         saveMember.setIsUnionOwner(MemberConstant.IS_UNION_OWNER_YES);
@@ -279,8 +293,9 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         // （4-13）积分抵扣率
         if (saveUnion.getIsIntegral() == CommonConstant.COMMON_YES) {
             Double memberIntegralExchangeRatio = voMember.getIntegralExchangeRatio();
-            if (memberIntegralExchangeRatio == null || memberIntegralExchangeRatio <= 0 || memberIntegralExchangeRatio > 30) {
-                throw new BusinessException("积分抵扣率不能小于等于0，且不能大于30");
+            Double maxIntegralExchange = dictService.getMaxExchangePercent();
+            if (memberIntegralExchangeRatio == null || memberIntegralExchangeRatio <= 0 || memberIntegralExchangeRatio > maxIntegralExchange) {
+                throw new BusinessException("积分抵扣率不能小于等于0，且不能大于" + maxIntegralExchange * 100);
             }
             saveMember.setIntegralExchangeRatio(memberIntegralExchangeRatio);
         }
@@ -298,11 +313,7 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         }
         unionMainDictService.saveBatch(saveDictList);
     }
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    //***************************************** Domain Driven Design - save ********************************************
-
+    
     //***************************************** Domain Driven Design - remove ******************************************
 
     //***************************************** Domain Driven Design - update ******************************************

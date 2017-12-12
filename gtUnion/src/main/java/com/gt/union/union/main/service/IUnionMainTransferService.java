@@ -50,7 +50,7 @@ public interface IUnionMainTransferService extends IService<UnionMainTransfer> {
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 商家获取盟主权限转移信息
+     * 联盟设置-盟主权限转移-分页
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -62,7 +62,7 @@ public interface IUnionMainTransferService extends IService<UnionMainTransfer> {
     //***************************************** Domain Driven Design - save ********************************************
 
     /**
-     * 商家保存盟主权限转移信息
+     * 联盟设置-盟主权限转移-分页-转移
      *
      * @param busId      商家id
      * @param unionId    联盟id
@@ -77,7 +77,7 @@ public interface IUnionMainTransferService extends IService<UnionMainTransfer> {
     //***************************************** Domain Driven Design - update ******************************************
 
     /**
-     * 撤消盟主权限转移
+     * 联盟设置-盟主权限转移-分页-撤销
      *
      * @param busId      商家id
      * @param transferId 联盟权限转移id
@@ -87,7 +87,7 @@ public interface IUnionMainTransferService extends IService<UnionMainTransfer> {
     void revokeByBusIdAndIdAndUnionId(Integer busId, Integer transferId, Integer unionId) throws Exception;
 
     /**
-     * 接受或拒绝盟主权限转移
+     * 盟主权限转移-接受或拒绝
      *
      * @param busId      商家id
      * @param transferId 盟主权限转移申请id

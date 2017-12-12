@@ -13,7 +13,7 @@ public interface IUnionMainNoticeService extends IService<UnionMainNotice> {
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
-     * 商家获取联盟公告信息
+     * 首页-联盟公告
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -21,6 +21,15 @@ public interface IUnionMainNoticeService extends IService<UnionMainNotice> {
      * @throws Exception 统一处理异常
      */
     UnionMainNotice getByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
+
+    /**
+     * 获取联盟公告信息
+     *
+     * @param unionId 联盟id
+     * @return UnionMainNotice
+     * @throws Exception 统一处理异常
+     */
+    UnionMainNotice getByUnionId(Integer unionId) throws Exception;
 
     //***************************************** Domain Driven Design - list ********************************************
 
@@ -31,7 +40,7 @@ public interface IUnionMainNoticeService extends IService<UnionMainNotice> {
     //***************************************** Domain Driven Design - update ******************************************
 
     /**
-     * 商家更新公告信息
+     * 首页-联盟公告-更新
      *
      * @param busId   商家id
      * @param unionId 联盟id

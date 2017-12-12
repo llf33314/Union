@@ -36,7 +36,7 @@ public class UnionMainTransferController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页：获取盟主权限转移信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "联盟设置-盟主权限转移-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<UnionTransferVO>> pageTransferVOByUnionId(
             HttpServletRequest request,
@@ -50,17 +50,16 @@ public class UnionMainTransferController {
         }
         // mock
         List<UnionTransferVO> voList = MockUtil.list(UnionTransferVO.class, page.getSize());
+        List<UnionTransferVO> voList2 = unionMainTransferService.listUnionTransferVOByBusIdAndUnionId(busId, unionId);
         Page<UnionTransferVO> result = (Page<UnionTransferVO>) page;
         result = PageUtil.setRecord(result, voList);
-//        List<UnionTransferVO> voList = unionMainTransferService.listUnionTransferVOByBusIdAndUnionId(busId, unionId);
-//        Page<UnionTransferVO> result = (Page<UnionTransferVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
-    @ApiOperation(value = "接受或拒绝盟主权限转移", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "盟主权限转移-接受或拒绝", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{transferId}/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> updateStatusByIdAndUnionId(
             HttpServletRequest request,
@@ -75,11 +74,11 @@ public class UnionMainTransferController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-//        unionMainTransferService.updateStatusByIdAndUnionIdAndBusId(transferId, unionId, busId, isAccept);
+        unionMainTransferService.updateAcceptByBusIdAndIdAndUnionId(busId, transferId, unionId, isAccept);
         return GtJsonResult.instanceSuccessMsg();
     }
 
-    @ApiOperation(value = "撤回盟主权限转移", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "联盟设置-盟主权限转移-分页-撤销", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{transferId}/unionId/{unionId}/revoke", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> revokeByIdAndUnionId(
             HttpServletRequest request,
@@ -92,13 +91,13 @@ public class UnionMainTransferController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-//        unionMainTransferService.revokeByIdAndUnionIdAndBusId(transferId, unionId, busId);
+        unionMainTransferService.revokeByBusIdAndIdAndUnionId(busId, transferId, unionId);
         return GtJsonResult.instanceSuccessMsg();
     }
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
-    @ApiOperation(value = "转移盟主权限", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "联盟设置-盟主权限转移-分页-转移", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/toMemberId/{toMemberId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> saveByUnionIdAndToMemberId(
             HttpServletRequest request,
@@ -111,7 +110,7 @@ public class UnionMainTransferController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-//        unionMainTransferService.saveByBusIdAndUnionIdAndToMemberId(busId, unionId, toMemberId);
+        unionMainTransferService.saveByBusIdAndUnionIdAndToMemberId(busId, unionId, toMemberId);
         return GtJsonResult.instanceSuccessMsg();
     }
 

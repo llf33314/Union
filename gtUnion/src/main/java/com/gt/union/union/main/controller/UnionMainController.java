@@ -9,6 +9,7 @@ import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PageUtil;
+import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.entity.UnionMainDict;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.main.vo.UnionVO;
@@ -37,7 +38,7 @@ public class UnionMainController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "获取联盟信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "联盟设置-联盟基本信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<UnionVO> getUnionMainVOById(
             HttpServletRequest request,
@@ -52,13 +53,13 @@ public class UnionMainController {
         UnionVO result = MockUtil.get(UnionVO.class);
         List<UnionMainDict> itemList = MockUtil.list(UnionMainDict.class, 3);
         result.setItemList(itemList);
-//        UnionVO result = unionMainService.getUnionMainVOByIdAndBusId(unionId, busId);
+        UnionVO result2 = unionMainService.getUnionVOByBusIdAndId(busId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "分页：获取其他有效的联盟", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "加入联盟-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/other/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Page<UnionVO>> pageOther(
+    public GtJsonResult<Page<UnionMain>> pageOther(
             HttpServletRequest request,
             Page page) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
@@ -67,59 +68,30 @@ public class UnionMainController {
             busId = busUser.getPid();
         }
         // mock
-        List<UnionVO> voList = MockUtil.list(UnionVO.class, page.getSize());
-        for (UnionVO vo : voList) {
-            List<UnionMainDict> itemList = MockUtil.list(UnionMainDict.class, 3);
-            vo.setItemList(itemList);
-        }
-//        List<UnionVO> voList = unionMainService.listOtherValidByBusId(busId);
-        Page<UnionVO> result = (Page<UnionVO>) page;
+        List<UnionMain> voList = MockUtil.list(UnionMain.class, page.getSize());
+        List<UnionMain> voList2 = unionMainService.listOtherValidByBusId(busId);
+        Page<UnionMain> result = (Page<UnionMain>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "分页：获取我的有效的联盟", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/my/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Page<UnionVO>> pageMy(
-            HttpServletRequest request,
-            Page page) throws Exception {
-        BusUser busUser = SessionUtils.getLoginUser(request);
-        Integer busId = busUser.getId();
-        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
-        }
-        // mock
-        List<UnionVO> voList = MockUtil.list(UnionVO.class, page.getSize());
-        for (UnionVO vo : voList) {
-            List<UnionMainDict> itemList = MockUtil.list(UnionMainDict.class, 3);
-            vo.setItemList(itemList);
-        }
-        Page<UnionVO> result = (Page<UnionVO>) page;
-        result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result);
-    }
-
-    @ApiOperation(value = "获取我的有效的联盟", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "辅助接口：获取我的联盟列表", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/my", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<List<UnionVO>> listMy(HttpServletRequest request) throws Exception {
+    public GtJsonResult<List<UnionMain>> listMy(HttpServletRequest request) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
         // mock
-        List<UnionVO> result = MockUtil.list(UnionVO.class, 3);
-        for (UnionVO vo : result) {
-            List<UnionMainDict> itemList = MockUtil.list(UnionMainDict.class, 3);
-            vo.setItemList(itemList);
-        }
-//        List<UnionVO> result = unionMainService.listMyValidByBusId(busId);
+        List<UnionMain> result = MockUtil.list(UnionMain.class, 3);
+        List<UnionMain> result2 = unionMainService.listMyValidByBusId(busId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
-    @ApiOperation(value = "更新联盟信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "联盟设置-联盟基本信息-更新", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> updateUnionMainVOById(
             HttpServletRequest request,
@@ -132,7 +104,7 @@ public class UnionMainController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-//        unionMainService.updateUnionMainVOByIdAndBusId(unionId, busId, unionMainVO);
+        unionMainService.updateUnionVOByBusIdAndId(busId, unionId, unionMainVO);
         return GtJsonResult.instanceSuccessMsg();
     }
 

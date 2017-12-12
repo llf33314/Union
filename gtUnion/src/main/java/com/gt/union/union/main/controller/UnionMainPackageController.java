@@ -34,7 +34,7 @@ public class UnionMainPackageController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "列表：获取盟主服务套餐", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "创建联盟-购买盟主服务", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/option", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<UnionPackageVO> getUnionPackageVO(HttpServletRequest request) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
@@ -46,7 +46,7 @@ public class UnionMainPackageController {
         UnionPackageVO result = MockUtil.get(UnionPackageVO.class);
         List<UnionMainPackage> packageList = MockUtil.list(UnionMainPackage.class, 3);
         result.setPackageList(packageList);
-//        UnionPackageVO result = unionMainPackageService.getUnionPackageVOByBusId(busId);
+        UnionPackageVO result2 = unionMainPackageService.getUnionPackageVOByBusId(busId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

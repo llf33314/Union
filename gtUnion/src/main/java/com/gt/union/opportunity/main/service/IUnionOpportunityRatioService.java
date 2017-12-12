@@ -16,20 +16,20 @@ public interface IUnionOpportunityRatioService extends IService<UnionOpportunity
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
-     * 根据设置佣金比率盟员id、受惠佣金比率盟员id和联盟id，获取商机佣金比例信息
+     * 获取商机佣金比例信息
      *
+     * @param unionId      联盟id
      * @param fromMemberId 设置佣金比率盟员id
      * @param toMemberId   受惠佣金比率盟员id
-     * @param unionId      联盟id
      * @return UnionOpportunityRatio
      * @throws Exception 统一处理异常
      */
-    UnionOpportunityRatio getByFromMemberIdAndToMemberIdAndUnionId(Integer fromMemberId, Integer toMemberId, Integer unionId) throws Exception;
+    UnionOpportunityRatio getByUnionIdAndFromMemberIdAndToMemberId(Integer unionId, Integer fromMemberId, Integer toMemberId) throws Exception;
 
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 分页：获取商机佣金比例信息
+     * 商机佣金比例设置-分页
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -45,7 +45,7 @@ public interface IUnionOpportunityRatioService extends IService<UnionOpportunity
     //***************************************** Domain Driven Design - update ******************************************
 
     /**
-     * 设置佣金比例
+     * 商机佣金比例设置-设置佣金比例
      *
      * @param busId      商家id
      * @param unionId    联盟id
@@ -70,6 +70,16 @@ public interface IUnionOpportunityRatioService extends IService<UnionOpportunity
      * @throws Exception 统一处理异常
      */
     List<UnionOpportunityRatio> filterByFromMemberId(List<UnionOpportunityRatio> ratioList, Integer fromMemberId) throws Exception;
+
+    /**
+     * 根据受惠佣金比率盟员id进行过滤
+     *
+     * @param ratioList  数据源
+     * @param toMemberId 设置佣金比率盟员id
+     * @return List<UnionOpportunityRatio>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionOpportunityRatio> filterByToMemberId(List<UnionOpportunityRatio> ratioList, Integer toMemberId) throws Exception;
 
     /**
      * 根据联盟id进行过滤

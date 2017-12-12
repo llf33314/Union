@@ -38,7 +38,7 @@ public class UnionOpportunityController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页：获取我的商机", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "我的商机-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/toMe/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<OpportunityVO>> pageToMe(
             HttpServletRequest request,
@@ -58,13 +58,13 @@ public class UnionOpportunityController {
         }
         // mock
         List<OpportunityVO> voList = MockUtil.list(OpportunityVO.class, page.getSize());
-//        List<OpportunityVO> voList = unionOpportunityService.listToMeByBusId(busId, unionId, acceptStatus, clientName, clientPhone);
+        List<OpportunityVO> voList2 = unionOpportunityService.listToMeByBusId(busId, unionId, acceptStatus, clientName, clientPhone);
         Page<OpportunityVO> result = (Page<OpportunityVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "分页：获取我的商机推荐", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "我要推荐-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/fromMe/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<OpportunityVO>> pageFromMe(
             HttpServletRequest request,
@@ -84,13 +84,13 @@ public class UnionOpportunityController {
         }
         // mock
         List<OpportunityVO> voList = MockUtil.list(OpportunityVO.class, page.getSize());
-//        List<OpportunityVO> voList = unionOpportunityService.listFromMeByBusId(busId, unionId, acceptStatus, clientName, clientPhone);
+        List<OpportunityVO> voList2 = unionOpportunityService.listFromMeByBusId(busId, unionId, acceptStatus, clientName, clientPhone);
         Page<OpportunityVO> result = (Page<OpportunityVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "获取商机佣金统计数据", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "数据统计图", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/statistics", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<OpportunityStatisticsVO> getStatisticsByUnionId(
             HttpServletRequest request,
@@ -117,13 +117,13 @@ public class UnionOpportunityController {
         result.setSaturday(saturday);
         OpportunityStatisticsDay sunday = MockUtil.get(OpportunityStatisticsDay.class);
         result.setSunday(sunday);
-//        OpportunityStatisticsVO result = unionOpportunityService.getOpportunityStatisticsVOByBusIdAndUnionId(busId, unionId);
+        OpportunityStatisticsVO result2 = unionOpportunityService.getOpportunityStatisticsVOByBusIdAndUnionId(busId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
-    @ApiOperation(value = "接受或拒绝商机推荐", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "我的商机-分页-接受或拒绝", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{opportunityId}/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> updateStatusByIdAndUnionId(
             HttpServletRequest request,
@@ -140,13 +140,13 @@ public class UnionOpportunityController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-//        unionOpportunityService.updateStatusByIdAndUnionIdAndBusId(opportunityId, unionId, busId, isAccept, acceptPrice);
+        unionOpportunityService.updateStatusByBusIdAndIdAndUnionId(busId, opportunityId, unionId, isAccept, acceptPrice);
         return GtJsonResult.instanceSuccessMsg();
     }
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
-    @ApiOperation(value = "推荐商机", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "我要推荐-我要推荐", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> saveOpportunityVOByUnionId(
             HttpServletRequest request,
@@ -159,7 +159,7 @@ public class UnionOpportunityController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-//        unionOpportunityService.saveOpportunityVOByBusIdAndUnionId(busId, unionId, opportunityVO);
+        unionOpportunityService.saveOpportunityVOByBusIdAndUnionId(busId, unionId, opportunityVO);
         return GtJsonResult.instanceSuccessMsg();
     }
 

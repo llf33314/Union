@@ -36,7 +36,7 @@ public class UnionOpportunityRatioController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页：获取商机佣金比例信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "商机佣金比例设置-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<OpportunityRatioVO>> pageRatioVOByUnionId(
             HttpServletRequest request,
@@ -50,7 +50,7 @@ public class UnionOpportunityRatioController {
         }
         // mock
         List<OpportunityRatioVO> voList = MockUtil.list(OpportunityRatioVO.class, page.getSize());
-//        List<OpportunityRatioVO> voList = unionOpportunityRatioService.listOpportunityRatioVOByBusIdAndUnionId(busId, unionId);
+        List<OpportunityRatioVO> voList2 = unionOpportunityRatioService.listOpportunityRatioVOByBusIdAndUnionId(busId, unionId);
         Page<OpportunityRatioVO> result = (Page<OpportunityRatioVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -58,7 +58,7 @@ public class UnionOpportunityRatioController {
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
-    @ApiOperation(value = "设置佣金比例", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "商机佣金比例设置-设置佣金比例", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/toMemberId/{toMemberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> updateRatioByUnionIdAndToMemberId(
             HttpServletRequest request,
@@ -73,7 +73,7 @@ public class UnionOpportunityRatioController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-//        unionOpportunityRatioService.updateRatioByBusIdAndUnionIdAndToMemberId(busId, unionId, toMemberId, ratio);
+        unionOpportunityRatioService.updateRatioByBusIdAndUnionIdAndToMemberId(busId, unionId, toMemberId, ratio);
         return GtJsonResult.instanceSuccessMsg();
     }
 

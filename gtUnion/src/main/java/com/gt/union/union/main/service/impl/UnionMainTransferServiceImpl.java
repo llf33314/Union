@@ -181,7 +181,7 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
         // （5）	要求toMember具有联盟基础服务（调接口），否则，报错
         Map<String, Object> basicMap = busUserService.getUserUnionAuthority(busId);
         if (basicMap == null) {
-            throw new BusinessException("盟主权限转移的目标盟员不具有联盟基础服务(null)");
+            throw new BusinessException("盟主权限转移的目标盟员不具有联盟基础服务");
         }
         Object objAuthority = basicMap.get("authority");
         Integer hasAuthority = objAuthority != null ? Integer.valueOf(objAuthority.toString()) : CommonConstant.COMMON_NO;
@@ -233,10 +233,7 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
         // 如果transfer存在，则删除，并返回成功
         UnionMainTransfer transfer = getByIdAndUnionIdAndConfirmStatus(transferId, unionId, UnionConstant.TRANSFER_CONFIRM_STATUS_PROCESS);
         if (transfer != null) {
-            UnionMainTransfer updateTransfer = new UnionMainTransfer();
-            updateTransfer.setId(transferId);
-            updateTransfer.setDelStatus(CommonConstant.COMMON_YES);
-            update(updateTransfer);
+            removeById(transferId);
         }
     }
     
@@ -269,12 +266,12 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
 
             Map<String, Object> basicMap = busUserService.getUserUnionAuthority(busId);
             if (basicMap == null) {
-                throw new BusinessException("不具有联盟基础服务(null)");
+                throw new BusinessException("不具有联盟基础服务");
             }
             Object objAuthority = basicMap.get("authority");
             Integer hasAuthority = objAuthority != null ? Integer.valueOf(objAuthority.toString()) : CommonConstant.COMMON_NO;
             if (CommonConstant.COMMON_YES != hasAuthority) {
-                throw new BusinessException("不具有联盟基础服务(" + hasAuthority + ")");
+                throw new BusinessException("不具有联盟基础服务");
             }
             UnionMainPermit permit = unionMainPermitService.getValidByBusId(busId);
             if (permit == null) {
@@ -287,16 +284,14 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
                     }
                     UnionMainPackage unionPackage = unionMainPackageService.getByLevel(busUser.getLevel());
                     if (unionPackage == null) {
-                        throw new BusinessException("找不到套餐信息(商家等级为" + busUser.getLevel() + ")");
+                        throw new BusinessException("找不到套餐信息");
                     }
                     permit = new UnionMainPermit();
                     permit.setDelStatus(CommonConstant.COMMON_NO);
-                    Date currentDate = DateUtil.getCurrentDate();
-                    permit.setCreateTime(currentDate);
+                    permit.setCreateTime(DateUtil.getCurrentDate());
                     permit.setBusId(busId);
                     permit.setPackageId(unionPackage.getId());
-                    int validMonth = BigDecimalUtil.multiply(Double.valueOf(12), unionPackage.getYear()).intValue();
-                    permit.setValidity(DateUtil.addMonths(currentDate, validMonth));
+                    permit.setValidity(busUser.getEndTime());
                     unionMainPermitService.save(permit);
                 }
             }
@@ -323,6 +318,7 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
                 updateUnion = new UnionMain();
                 updateUnion.setId(unionId);
                 updateUnion.setMemberLimit(unionPackage.getNumber());
+                updateUnion.setValidity(permit.getValidity());
             }
 
             UnionMainTransfer updateTransfer = new UnionMainTransfer();
