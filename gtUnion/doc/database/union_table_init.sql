@@ -153,6 +153,7 @@ CREATE TABLE `t_union_opportunity` (
   `client_name` varchar(50) DEFAULT NULL COMMENT '客户姓名',
   `client_phone` varchar(20) DEFAULT NULL COMMENT '客户电话',
   `business_msg` varchar(500) DEFAULT NULL COMMENT '业务备注',
+  `is_close` int(2) DEFAULT NULL COMMENT '是否已结算(0:否 1:是)',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='商机';
 
