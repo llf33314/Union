@@ -28,7 +28,7 @@ import java.util.Map;
 @Api(description = "erp公共pai")
 @RestController
 @RequestMapping("/api/erp")
-public class ErpController {
+public class ErpApiController {
 
 	@Autowired
 	private ErpService erpService;
