@@ -35,11 +35,12 @@ public interface IBusUserService {
 
 	/**
 	 *	获取公众号关注二维码永久链接
-	 * @param publicId	公众id
-	 * @param busId		商家id
+	 * @param publicId    公众id
+	 * @param busId        商家id
+	 * @param extendId		socket推送业务id
 	 * @return
 	 */
-	String getWxPublicUserQRCode(Integer publicId, Integer busId);
+	String getWxPublicUserQRCode(Integer publicId, Integer busId, Integer extendId);
 
 	/**
 	 * 根据商家id获取联盟权限
