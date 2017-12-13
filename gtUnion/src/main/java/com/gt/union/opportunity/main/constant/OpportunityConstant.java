@@ -10,15 +10,25 @@ public interface OpportunityConstant {
     /**
      * 商机受理状态：受理中
      */
-    int OPPORTUNITY_ACCEPT_STATUS_CONFIRMING = 1;
+    int ACCEPT_STATUS_CONFIRMING = 1;
 
     /**
      * 商机受理状态：已接受
      */
-    int OPPORTUNITY_ACCEPT_STATUS_CONFIRMED = 2;
+    int ACCEPT_STATUS_CONFIRMED = 2;
 
     /**
      * 商机受理状态：已拒绝
      */
-    int OPPORTUNITY_ACCEPT_STATUS_REJECT = 3;
+    int ACCEPT_STATUS_REJECT = 3;
+
+    /**
+     * 是否已结算：否
+     */
+    int IS_CLOSE_NO = 0;
+
+    /**
+     * 是否已结算：是
+     */
+    int IS_CLOSE_YES = 1;
 }

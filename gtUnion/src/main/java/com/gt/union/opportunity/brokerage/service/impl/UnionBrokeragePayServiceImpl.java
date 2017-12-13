@@ -5,6 +5,8 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.api.client.pay.WxPayService;
+import com.gt.union.api.client.pay.entity.PayParam;
+import com.gt.union.api.client.socket.SocketService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
@@ -18,13 +20,12 @@ import com.gt.union.opportunity.brokerage.service.IUnionBrokeragePayService;
 import com.gt.union.opportunity.brokerage.util.UnionBrokeragePayCacheUtil;
 import com.gt.union.opportunity.brokerage.vo.BrokerageOpportunityVO;
 import com.gt.union.opportunity.brokerage.vo.BrokeragePayVO;
-import com.gt.union.opportunity.brokerage.vo.OpportunityBrokeragePayVO;
 import com.gt.union.opportunity.main.constant.OpportunityConstant;
 import com.gt.union.opportunity.main.entity.UnionOpportunity;
 import com.gt.union.opportunity.main.service.IUnionOpportunityService;
-import com.gt.union.opportunity.main.vo.OpportunityVO;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.service.IUnionMainService;
+import com.gt.union.union.main.vo.UnionPayVO;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
 import org.apache.log4j.Logger;
@@ -63,6 +64,9 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
 
     @Autowired
     private WxPayService wxPayService;
+
+    @Autowired
+    private SocketService socketService;
 
     //***************************************** Domain Driven Design - get *********************************************
 
@@ -133,43 +137,22 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）获取已被接受的商机推荐
-        List<OpportunityVO> opportunityVOList = unionOpportunityService.listToMeByBusId(busId, optUnionId,
-                String.valueOf(OpportunityConstant.OPPORTUNITY_ACCEPT_STATUS_CONFIRMED), optClientName, optClientPhone);
-        // （2）	按已结算状态顺序(未>已)，时间倒序排序
-        List<BrokerageOpportunityVO> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(opportunityVOList)) {
-            for (OpportunityVO opportunityVO : opportunityVOList) {
-                BrokerageOpportunityVO vo = new BrokerageOpportunityVO();
-                vo.setOpportunity(opportunityVO.getOpportunity());
-                vo.setFromMember(opportunityVO.getFromMember());
-                vo.setToMember(opportunityVO.getToMember());
-                vo.setUnion(opportunityVO.getUnion());
-
-                boolean existIncome = unionBrokerageIncomeService.existByMemberIdAndUnionIdAndOpportunityId(vo.getFromMember().getId(), vo.getFromMember().getUnionId(), vo.getOpportunity().getId());
-                if (optIsClose != null) {
-                    boolean isOK = (CommonConstant.COMMON_YES == optIsClose && existIncome) || (CommonConstant.COMMON_NO == optIsClose && !existIncome);
-                    if (!isOK) {
-                        continue;
-                    }
-                }
-                vo.setIsClose(existIncome ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO);
-                result.add(vo);
-            }
+        // （1）	获取商家所有有效的盟员列表
+        List<Integer> readMemberIdList = unionMemberService.listReadIdByBusId(busId);
+        // （2）获取已被接受的商机推荐
+        List<UnionOpportunity> opportunityList = unionOpportunityService.listByToMemberIdList(readMemberIdList);
+        opportunityList = unionOpportunityService.filterByAcceptStatus(opportunityList, OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
+        if (optFromMemberId != null) {
+            opportunityList = unionOpportunityService.filterByFromMemberId(opportunityList, optFromMemberId);
         }
-        Collections.sort(result, new Comparator<BrokerageOpportunityVO>() {
-            @Override
-            public int compare(BrokerageOpportunityVO o1, BrokerageOpportunityVO o2) {
-                if (o1.getIsClose().compareTo(o2.getIsClose()) < 0) {
-                    return 1;
-                } else if (o1.getIsClose().compareTo(o2.getIsClose()) > 0) {
-                    return -1;
-                }
-                return o1.getOpportunity().getCreateTime().compareTo(o2.getOpportunity().getCreateTime());
-            }
-        });
-
-        return result;
+        if (StringUtil.isNotEmpty(optClientName)) {
+            opportunityList = unionOpportunityService.filterByLikeClientName(opportunityList, optClientName);
+        }
+        if (StringUtil.isNotEmpty(optClientPhone)) {
+            opportunityList = unionOpportunityService.filterByLikeClientPhone(opportunityList, optClientPhone);
+        }
+        // （3）	按已结算状态顺序(未>已)，时间倒序排序]
+        return unionOpportunityService.listBrokerageOpportunityVO(opportunityList);
     }
 
     @Override
@@ -178,23 +161,35 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	获取所有有效的member
-        List<UnionMember> memberList = unionMemberService.listReadByBusId(busId);
-        List<Integer> unionIdList = new ArrayList<>();
-        if (ListUtil.isNotEmpty(memberList)) {
-            for (UnionMember member : memberList) {
-                Integer unionId = member.getUnionId();
-                if (!unionMainService.isUnionValid(unionId)) {
+        List<UnionMember> readMemberList = unionMemberService.listReadByBusId(busId);
+        List<Integer> readMemberIdList = new ArrayList<>();
+        if (ListUtil.isNotEmpty(readMemberList)) {
+            for (UnionMember readMember : readMemberList) {
+                if (optUnionId != null && !optUnionId.equals(readMember.getUnionId())) {
                     continue;
                 }
-                if (optUnionId != null && !optUnionId.equals(unionId)) {
-                    continue;
-                }
-                unionIdList.add(unionId);
+                readMemberIdList.add(readMember.getId());
             }
         }
         // （2）	获取所有与我有商机佣金往来的盟员id列表
+        Set<Integer> memberIdSet = new HashSet<>();
+        List<UnionOpportunity> fromMeOpportunityList = unionOpportunityService.listByFromMemberIdList(readMemberIdList);
+        fromMeOpportunityList = unionOpportunityService.filterByAcceptStatus(fromMeOpportunityList, OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
+        if (ListUtil.isNotEmpty(fromMeOpportunityList)) {
+            for (UnionOpportunity opportunity : fromMeOpportunityList) {
+                memberIdSet.add(opportunity.getToMemberId());
+            }
+        }
+        List<UnionOpportunity> toMeOpportunityList = unionOpportunityService.listByToMemberIdList(readMemberIdList);
+        toMeOpportunityList = unionOpportunityService.filterByAcceptStatus(toMeOpportunityList, OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
+        if (ListUtil.isNotEmpty(toMeOpportunityList)) {
+            for (UnionOpportunity opportunity : toMeOpportunityList) {
+                memberIdSet.add(opportunity.getFromMemberId());
+            }
+        }
+        List<Integer> memberIdList = ListUtil.toList(memberIdSet);
+        // （3）	按联盟创建时间顺序、盟员创建时间顺序排序
         List<BrokeragePayVO> result = new ArrayList<>();
-        List<Integer> memberIdList = listMemberIdByUnionIdListAndStatus(unionIdList, BrokerageConstant.PAY_STATUS_SUCCESS, busId);
         if (ListUtil.isNotEmpty(memberIdList)) {
             for (Integer memberId : memberIdList) {
                 UnionMember member = unionMemberService.getById(memberId);
@@ -214,14 +209,14 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
                 result.add(vo);
             }
         }
-        // （3）	按联盟创建时间顺序、盟员创建时间顺序排序
+
         Collections.sort(result, new Comparator<BrokeragePayVO>() {
             @Override
             public int compare(BrokeragePayVO o1, BrokeragePayVO o2) {
-                int unionCompare = o1.getUnion().getCreateTime().compareTo(o2.getUnion().getCreateTime());
-                if (unionCompare > 0) {
+                int c = o1.getUnion().getCreateTime().compareTo(o2.getUnion().getCreateTime());
+                if (c > 0) {
                     return -1;
-                } else if (unionCompare < 0) {
+                } else if (c < 0) {
                     return 1;
                 }
 
@@ -233,53 +228,16 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
     }
 
     @Override
-    public List<Integer> listMemberIdByUnionIdListAndStatus(List<Integer> unionIdList, Integer status, Integer fromBusIdOrToBusId) throws Exception {
-        if (unionIdList == null || status == null || fromBusIdOrToBusId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        Set<Integer> result = new HashSet<>();
-
-        EntityWrapper<UnionBrokeragePay> fromBusIdEW = new EntityWrapper<>();
-        fromBusIdEW.eq("del_status", CommonConstant.COMMON_NO)
-                .eq("status", status)
-                .eq("from_bus_id", fromBusIdOrToBusId)
-                .in("union_id", unionIdList);
-        List<UnionBrokeragePay> fromBusIdPayList = selectList(fromBusIdEW);
-        if (ListUtil.isNotEmpty(fromBusIdPayList)) {
-            for (UnionBrokeragePay pay : fromBusIdPayList) {
-                result.add(pay.getToMemberId());
-            }
-        }
-
-        EntityWrapper<UnionBrokeragePay> toBusIdEW = new EntityWrapper<>();
-        toBusIdEW.eq("del_status", CommonConstant.COMMON_NO)
-                .eq("status", status)
-                .eq("to_bus_id", fromBusIdOrToBusId)
-                .in("union_id", unionIdList);
-        List<UnionBrokeragePay> toBusIdPayList = selectList(toBusIdEW);
-        if (ListUtil.isNotEmpty(toBusIdPayList)) {
-            for (UnionBrokeragePay pay : toBusIdPayList) {
-                result.add(pay.getFromMemberId());
-            }
-        }
-
-        return ListUtil.toList(result);
-    }
-
-    @Override
     public List<UnionBrokeragePay> listByFromBusIdAndToBusIdAndStatus(Integer fromBusId, Integer toBusId, Integer status) throws Exception {
         if (fromBusId == null || toBusId == null || status == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .eq("from_bus_id", fromBusId)
-                .eq("to_bus_id", toBusId)
-                .eq("status", status);
+        List<UnionBrokeragePay> result = listByFromBusId(fromBusId);
+        result = filterByToBusId(result, toBusId);
+        result = filterByStatus(result, status);
 
-        return selectList(entityWrapper);
+        return result;
     }
 
 
@@ -289,9 +247,9 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
 
     //***************************************** Domain Driven Design - update ******************************************
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
-    public OpportunityBrokeragePayVO batchPayByBusId(Integer busId, List<Integer> opportunityIdList) throws Exception {
+    @Transactional(rollbackFor = Exception.class)
+    public UnionPayVO batchPayByBusId(Integer busId, List<Integer> opportunityIdList) throws Exception {
         if (busId == null || opportunityIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -299,7 +257,7 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
         List<UnionBrokeragePay> savePayList = new ArrayList<>();
         BigDecimal brokerageSum = BigDecimal.ZERO;
         Date currentDate = DateUtil.getCurrentDate();
-        String orderNo = "Brokerage_" + busId + "_" + DateUtil.getSerialNumber();
+        String orderNo = "LM_Brokerage_" + busId + "_" + DateUtil.getSerialNumber();
         if (ListUtil.isNotEmpty(opportunityIdList)) {
             for (Integer opportunityId : opportunityIdList) {
                 UnionOpportunity opportunity = unionOpportunityService.getById(opportunityId);
@@ -316,14 +274,14 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
                 }
                 UnionMember toMember = unionMemberService.getWriteByBusIdAndUnionId(opportunity.getToMemberId(), opportunity.getUnionId());
                 if (toMember == null || !toMember.getId().equals(member.getId())) {
-                    throw new BusinessException("无法替人支付");
+                    throw new BusinessException("找不到商机接受者信息或信息不匹配");
                 }
                 UnionMember fromMember = unionMemberService.getReadByIdAndUnionId(opportunity.getFromMemberId(), opportunity.getUnionId());
                 if (fromMember == null) {
-                    throw new BusinessException("找不到商机的推荐者");
+                    throw new BusinessException("找不到商机推荐者信息");
                 }
                 // （3）	如果已付款过，则报错
-                if (existByOpportunityIdAndUnionIdAndStatus(opportunityId, opportunity.getUnionId(), BrokerageConstant.PAY_STATUS_SUCCESS)) {
+                if (existByUnionIdAndOpportunityIdAndStatus(opportunity.getUnionId(), opportunityId, BrokerageConstant.PAY_STATUS_SUCCESS)) {
                     throw new BusinessException("重复支付");
                 }
 
@@ -338,7 +296,7 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
                 savePay.setUnionId(opportunity.getUnionId());
                 savePay.setFromBusId(fromMember.getBusId());
                 savePay.setToBusId(toMember.getBusId());
-                savePay.setOrderNo("LM_" + orderNo);
+                savePay.setOrderNo(orderNo);
                 savePayList.add(savePay);
             }
         }
@@ -353,12 +311,19 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
             sbPayIds.append(pay.getId()).append(",");
         }
         String payIds = sbPayIds.toString().substring(0, sbPayIds.toString().length() - 1);
-        OpportunityBrokeragePayVO result = new OpportunityBrokeragePayVO();
+        UnionPayVO result = new UnionPayVO();
         String socketKey = PropertiesUtil.getSocketKey() + orderNo;
-        String notifyUrl = PropertiesUtil.getUnionUrl() + "/unionBrokeragePay/79B4DE7C/opportunity/callback?socketKey=" + socketKey + "&payIds=" + payIds;
-        String payUrl = wxPayService.qrCodePay(brokerageSum.doubleValue(), null, "LM_" + orderNo,
-                null, CommonConstant.COMMON_NO, null, notifyUrl, CommonConstant.COMMON_NO,
-                null, 0, null);
+        String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/opportunity?socketKey=" + socketKey + "&ids=" + payIds;
+
+        PayParam payParam = new PayParam();
+        payParam.setTotalFee(brokerageSum.doubleValue());
+        payParam.setOrderNum(orderNo);
+        payParam.setIsreturn(CommonConstant.COMMON_NO);
+        payParam.setNotifyUrl(notifyUrl);
+        payParam.setIsSendMessage(CommonConstant.COMMON_NO);
+        payParam.setPayWay(0);
+        String payUrl = wxPayService.qrCodePay(payParam);
+
         result.setPayUrl(payUrl);
         result.setSocketKey(socketKey);
 
@@ -378,15 +343,15 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
         try {
             List<UnionBrokeragePay> updatePayList = new ArrayList<>();
             List<UnionBrokerageIncome> saveIncomeList = new ArrayList<>();
+            List<UnionOpportunity> updateOpportunityList = new ArrayList<>();
             boolean isRepeat = false;
             Date currentDate = DateUtil.getCurrentDate();
             String[] payIdArray = payIds.split(",");
             for (String payId : payIdArray) {
                 UnionBrokeragePay pay = getById(Integer.valueOf(payId));
                 if (pay == null) {
-                    // TODO socket通知
                     result.put("code", -1);
-                    result.put("msg", "参数permitId错误");
+                    result.put("msg", "找不到商机佣金付款信息");
                     return JSONObject.toJSONString(result);
                 }
 
@@ -398,7 +363,7 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
 
                 UnionBrokeragePay updatePay = new UnionBrokeragePay();
                 updatePay.setId(pay.getId());
-                updatePay.setStatus(isSuccess == CommonConstant.COMMON_YES ? BrokerageConstant.PAY_STATUS_SUCCESS : BrokerageConstant.PAY_STATUS_FAIL);
+                updatePay.setStatus(CommonConstant.COMMON_YES == isSuccess ? BrokerageConstant.PAY_STATUS_SUCCESS : BrokerageConstant.PAY_STATUS_FAIL);
                 if (payType.equals("0")) {
                     updatePay.setType(BrokerageConstant.PAY_TYPE_WX);
                     updatePay.setWxOrderNo(orderNo);
@@ -417,11 +382,24 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
                 saveIncome.setUnionId(pay.getUnionId());
                 saveIncome.setOpportunityId(pay.getOpportunityId());
                 saveIncomeList.add(saveIncome);
+
+                if (CommonConstant.COMMON_YES == isSuccess) {
+                    UnionOpportunity opportunity = unionOpportunityService.getById(pay.getOpportunityId());
+                    if (opportunity == null) {
+                        result.put("code", -1);
+                        result.put("msg", "找不到商机信息");
+                        return JSONObject.toJSONString(result);
+                    }
+                    UnionOpportunity updateOpportunity = new UnionOpportunity();
+                    updateOpportunity.setId(opportunity.getId());
+                    updateOpportunity.setIsClose(CommonConstant.COMMON_YES);
+                    updateOpportunityList.add(updateOpportunity);
+
+                }
             }
 
             // （2）	如果payIds的支付状态存在已处理，则直接返回成功
             if (isRepeat) {
-                // TODO socket通知
                 result.put("code", 0);
                 result.put("msg", "重复处理");
                 return JSONObject.toJSONString(result);
@@ -429,13 +407,16 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
 
             updateBatch(updatePayList);
             unionBrokerageIncomeService.saveBatch(saveIncomeList);
+            if (ListUtil.isNotEmpty(updateOpportunityList)) {
+                unionOpportunityService.updateBatch(updateOpportunityList);
+            }
 
-            // TODO socket通知
+            // socket通知
+            socketService.socketPaySendMessage(socketKey, isSuccess, null);
             result.put("code", 0);
             result.put("msg", "成功");
             return JSONObject.toJSONString(result);
         } catch (Exception e) {
-            // TODO socket通知
             logger.error("", e);
             result.put("code", -1);
             result.put("msg", e.getMessage());
@@ -466,15 +447,16 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
     //***************************************** Domain Driven Design - boolean *****************************************
 
     @Override
-    public boolean existByOpportunityIdAndUnionIdAndStatus(Integer opportunityId, Integer unionId, Integer status) throws Exception {
-        if (opportunityId == null || unionId == null) {
+    public boolean existByUnionIdAndOpportunityIdAndStatus(Integer unionId, Integer opportunityId, Integer status) throws Exception {
+        if (unionId == null || opportunityId == null || status == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionBrokeragePay> result = listByOpportunityId(opportunityId);
-        result = filterByUnionId(result, unionId);
+        List<UnionBrokeragePay> result = listByUnionId(unionId);
+        result = filterByOpportunityId(result, opportunityId);
+        result = filterByStatus(result, status);
 
-        return ListUtil.isNotEmpty(result) && status.equals(result.get(0).getStatus());
+        return ListUtil.isNotEmpty(result);
     }
 
     //***************************************** Domain Driven Design - filter ******************************************
@@ -489,6 +471,60 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
         if (ListUtil.isNotEmpty(payList)) {
             for (UnionBrokeragePay pay : payList) {
                 if (unionId.equals(pay.getUnionId())) {
+                    result.add(pay);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionBrokeragePay> filterByOpportunityId(List<UnionBrokeragePay> payList, Integer opportunityId) throws Exception {
+        if (payList == null || opportunityId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionBrokeragePay> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(payList)) {
+            for (UnionBrokeragePay pay : payList) {
+                if (opportunityId.equals(pay.getOpportunityId())) {
+                    result.add(pay);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionBrokeragePay> filterByStatus(List<UnionBrokeragePay> payList, Integer status) throws Exception {
+        if (payList == null || status == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionBrokeragePay> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(payList)) {
+            for (UnionBrokeragePay pay : payList) {
+                if (status.equals(pay.getStatus())) {
+                    result.add(pay);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionBrokeragePay> filterByToBusId(List<UnionBrokeragePay> payList, Integer toBusId) throws Exception {
+        if (payList == null || toBusId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionBrokeragePay> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(payList)) {
+            for (UnionBrokeragePay pay : payList) {
+                if (toBusId.equals(pay.getToBusId())) {
                     result.add(pay);
                 }
             }

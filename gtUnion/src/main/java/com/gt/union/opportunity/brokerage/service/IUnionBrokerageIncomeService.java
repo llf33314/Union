@@ -16,20 +16,20 @@ public interface IUnionBrokerageIncomeService extends IService<UnionBrokerageInc
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
-     * 根据盟员id、联盟id和商机id，获取商机佣金收入
+     * 获取商机佣金收入信息
      *
-     * @param memberId      盟员id
      * @param unionId       联盟id
+     * @param memberId      盟员id
      * @param opportunityId 商机id
      * @return boolean
      * @throws Exception 统一处理异常
      */
-    UnionBrokerageIncome getByMemberIdAndUnionIdAndOpportunityId(Integer memberId, Integer unionId, Integer opportunityId) throws Exception;
+    UnionBrokerageIncome getByUnionIdAndMemberIdAndOpportunityId(Integer unionId, Integer memberId, Integer opportunityId) throws Exception;
 
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 分页：获取我的商机佣金收入信息
+     * 佣金结算-我的佣金收入-分页
      *
      * @param busId          商家id
      * @param optUnionId     联盟id
@@ -62,15 +62,15 @@ public interface IUnionBrokerageIncomeService extends IService<UnionBrokerageInc
     //***************************************** Domain Driven Design - boolean *****************************************
 
     /**
-     * 根据盟员id、联盟id和商机id，判断是否存在
+     * 判断商机佣金收入是否存在
      *
-     * @param memberId      盟员id
      * @param unionId       联盟id
+     * @param memberId      盟员id
      * @param opportunityId 商机id
      * @return boolean
      * @throws Exception 统一处理异常
      */
-    boolean existByMemberIdAndUnionIdAndOpportunityId(Integer memberId, Integer unionId, Integer opportunityId) throws Exception;
+    boolean existByUnionIdAndMemberIdAndOpportunityId(Integer unionId, Integer memberId, Integer opportunityId) throws Exception;
 
     //***************************************** Domain Driven Design - filter ******************************************
 

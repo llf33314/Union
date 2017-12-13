@@ -17,17 +17,17 @@ public interface IUnionMemberOutService extends IService<UnionMemberOut> {
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
-     * 根据退盟盟员id和联盟id，获取退盟申请信息
+     * 获取退盟申请信息
      *
-     * @param applyMemberId 退盟盟员id
      * @param unionId       联盟id
+     * @param applyMemberId 退盟盟员id
      * @return UnionMemberOut
      * @throws Exception 统一处理异常
      */
-    UnionMemberOut getByApplyMemberIdAndUnionId(Integer applyMemberId, Integer unionId) throws Exception;
+    UnionMemberOut getByUnionIdAndApplyMemberId(Integer unionId, Integer applyMemberId) throws Exception;
 
     /**
-     * 根据退盟申请id和联盟id，获取退盟申请信息
+     * 获取退盟申请信息
      *
      * @param outId   退盟申请id
      * @param unionId 联盟id
@@ -39,7 +39,7 @@ public interface IUnionMemberOutService extends IService<UnionMemberOut> {
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 分页：获取退盟申请信息
+     * 退盟管理-退盟审核-分页
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -49,7 +49,7 @@ public interface IUnionMemberOutService extends IService<UnionMemberOut> {
     List<MemberOutVO> listMemberOutVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
 
     /**
-     * 分页：获取退盟过渡期信息
+     * 退盟管理-退盟过渡期-分页
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -61,7 +61,7 @@ public interface IUnionMemberOutService extends IService<UnionMemberOut> {
     //***************************************** Domain Driven Design - save ********************************************
 
     /**
-     * 盟主移出盟员
+     * 首页-盟员列表-分页-移出
      *
      * @param busId         商家id
      * @param unionId       联盟id
@@ -71,7 +71,7 @@ public interface IUnionMemberOutService extends IService<UnionMemberOut> {
     void saveByBusIdAndUnionIdAndApplyMemberId(Integer busId, Integer unionId, Integer applyMemberId) throws Exception;
 
     /**
-     * 申请退盟
+     * 退盟管理-退盟过渡期-退盟申请
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -85,15 +85,15 @@ public interface IUnionMemberOutService extends IService<UnionMemberOut> {
     //***************************************** Domain Driven Design - update ******************************************
 
     /**
-     * 审核退盟申请
+     * 退盟管理-退盟审核-分页-通过或拒绝
      *
+     * @param busId   商家id
      * @param outId   退盟申请id
      * @param unionId 联盟id
-     * @param busId   商家id
      * @param isPass  是否通过(0：否 1：是)
      * @throws Exception 统一处理异常
      */
-    void updateStatusByIdAndUnionIdAndBusId(Integer outId, Integer unionId, Integer busId, Integer isPass) throws Exception;
+    void updateStatusByBusIdAndIdAndUnionId(Integer busId, Integer outId, Integer unionId, Integer isPass) throws Exception;
 
     //***************************************** Domain Driven Design - count *******************************************
 
@@ -102,13 +102,13 @@ public interface IUnionMemberOutService extends IService<UnionMemberOut> {
     //***************************************** Domain Driven Design - filter ******************************************
 
     /**
-     * 根据联盟id进行过滤
+     * 根据退盟盟员id进行过滤
      *
-     * @param outList 退盟申请列表
-     * @param unionId 联盟id
+     * @param outList       退盟申请列表
+     * @param applyMemberId 退盟盟员id
      * @return List<UnionMemberOut>
      * @throws Exception 统一处理异常
      */
-    List<UnionMemberOut> filterByUnionId(List<UnionMemberOut> outList, Integer unionId) throws Exception;
+    List<UnionMemberOut> filterByApplyMemberId(List<UnionMemberOut> outList, Integer applyMemberId) throws Exception;
 
 }

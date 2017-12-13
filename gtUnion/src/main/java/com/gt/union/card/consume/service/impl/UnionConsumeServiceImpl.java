@@ -275,10 +275,10 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 
             String socketKey = PropertiesUtil.getSocketKey() + orderNo;
             String notifyUrl = PropertiesUtil.getUnionUrl() + "/unionConsume/79B4DE7C/" + saveConsume.getId() + "/callback?socketKey=" + socketKey;
-            String payUrl = wxPayService.qrCodePay(saveConsume.getPayMoney(), null, saveConsume.getOrderNo(),
-                    null, CommonConstant.COMMON_NO, null, notifyUrl, CommonConstant.COMMON_NO,
-                    null, 0, null);
-            result.setPayUrl(payUrl);
+//            String payUrl = wxPayService.qrCodePay(saveConsume.getPayMoney(), null, saveConsume.getOrderNo(),
+//                    null, CommonConstant.COMMON_NO, null, notifyUrl, CommonConstant.COMMON_NO,
+//                    null, 0, null);
+//            result.setPayUrl(payUrl);
             result.setSocketKey(socketKey);
         }
 

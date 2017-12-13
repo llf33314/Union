@@ -46,13 +46,13 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
     //***************************************** Domain Driven Design - get *********************************************
 
     @Override
-    public UnionMemberOut getByApplyMemberIdAndUnionId(Integer applyMemberId, Integer unionId) throws Exception {
-        if (applyMemberId == null || unionId == null) {
+    public UnionMemberOut getByUnionIdAndApplyMemberId(Integer unionId, Integer applyMemberId) throws Exception {
+        if (unionId == null || applyMemberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionMemberOut> result = listByApplyMemberId(applyMemberId);
-        result = filterByUnionId(result, unionId);
+        List<UnionMemberOut> result = listByUnionId(unionId);
+        result = filterByApplyMemberId(result, applyMemberId);
 
         return ListUtil.isNotEmpty(result) ? result.get(0) : null;
     }
@@ -94,7 +94,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
                 MemberOutVO vo = new MemberOutVO();
                 vo.setMember(outMember);
 
-                UnionMemberOut out = getByApplyMemberIdAndUnionId(outMember.getId(), unionId);
+                UnionMemberOut out = getByUnionIdAndApplyMemberId(unionId, outMember.getId());
                 vo.setMemberOut(out);
 
                 result.add(vo);
@@ -133,9 +133,9 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
                 MemberOutPeriodVO vo = new MemberOutPeriodVO();
                 vo.setMember(periodMember);
 
-                UnionMemberOut out = getByApplyMemberIdAndUnionId(periodMember.getId(), unionId);
+                UnionMemberOut out = getByUnionIdAndApplyMemberId(unionId, periodMember.getId());
                 if (out == null) {
-                    throw new BusinessException("找不到退盟申请信息");
+                    throw new BusinessException("找不到退盟申请信息(memberId:" + periodMember.getId() + ";unionId:" + unionId);
                 }
                 vo.setMemberOut(out);
 
@@ -156,8 +156,8 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
 
     //***************************************** Domain Driven Design - save ********************************************
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveByBusIdAndUnionIdAndApplyMemberId(Integer busId, Integer unionId, Integer applyMemberId) throws Exception {
         if (busId == null || unionId == null || applyMemberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -171,7 +171,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
         }
-        if (member.getIsUnionOwner() != MemberConstant.IS_UNION_OWNER_YES) {
+        if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
             throw new BusinessException(CommonConstant.UNION_NEED_OWNER);
         }
 
@@ -193,7 +193,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
                 isSave = true;
                 break;
             case MemberConstant.STATUS_APPLY_OUT:
-                existOut = getByApplyMemberIdAndUnionId(applyMemberId, unionId);
+                existOut = getByUnionIdAndApplyMemberId(unionId, applyMemberId);
                 if (existOut == null) {
                     isSave = true;
                 } else {
@@ -213,10 +213,10 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
             saveOut.setType(MemberConstant.OUT_TYPE_REMOVE);
             saveOut.setApplyOutReason("盟主移出");
             Date currentDate = DateUtil.getCurrentDate();
+            saveOut.setDelStatus(CommonConstant.DEL_STATUS_NO);
             saveOut.setCreateTime(currentDate);
             saveOut.setConfirmOutTime(currentDate);
             saveOut.setActualOutTime(DateUtil.addDays(currentDate, 15));
-            saveOut.setDelStatus(CommonConstant.DEL_STATUS_NO);
             save(saveOut);
 
             UnionMember updateMember = new UnionMember();
@@ -236,28 +236,10 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
             updateMember.setStatus(MemberConstant.STATUS_OUT_PERIOD);
             unionMemberService.update(updateMember);
         }
-
-
-        UnionMemberOut saveOut2 = new UnionMemberOut();
-        saveOut2.setUnionId(unionId);
-        saveOut2.setApplyMemberId(applyMemberId);
-        saveOut2.setType(MemberConstant.OUT_TYPE_REMOVE);
-        saveOut2.setApplyOutReason("盟主移出");
-        Date currentDate2 = DateUtil.getCurrentDate();
-        saveOut2.setCreateTime(currentDate2);
-        saveOut2.setConfirmOutTime(currentDate2);
-        saveOut2.setActualOutTime(DateUtil.addDays(currentDate2, 15));
-        saveOut2.setDelStatus(CommonConstant.DEL_STATUS_NO);
-        save(saveOut2);
-
-        UnionMember updateMember2 = new UnionMember();
-        updateMember2.setId(applyMemberId);
-        updateMember2.setStatus(MemberConstant.STATUS_OUT_PERIOD);
-        unionMemberService.update(updateMember2);
     }
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveByBusIdAndUnionId(Integer busId, Integer unionId, String reason) throws Exception {
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -291,15 +273,15 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
             UnionMemberOut saveOut = new UnionMemberOut();
             saveOut.setDelStatus(CommonConstant.COMMON_NO);
             saveOut.setCreateTime(currentDate);
-            saveOut.setActualOutTime(currentDate);
             saveOut.setType(MemberConstant.OUT_TYPE_APPLY);
-            saveOut.setApplyMemberId(member.getId());
             saveOut.setUnionId(unionId);
+            saveOut.setApplyMemberId(member.getId());
+            saveOut.setApplyOutReason(reason);
 
             unionMemberService.update(updateMember);
             save(saveOut);
         } else if (MemberConstant.STATUS_APPLY_OUT == member.getStatus()) {
-            UnionMemberOut out = getByApplyMemberIdAndUnionId(member.getId(), unionId);
+            UnionMemberOut out = getByUnionIdAndApplyMemberId(unionId, member.getId());
             if (out == null) {
                 if (StringUtil.isEmpty(reason)) {
                     throw new BusinessException("退盟理由不能为空");
@@ -308,10 +290,10 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
                 UnionMemberOut saveOut = new UnionMemberOut();
                 saveOut.setDelStatus(CommonConstant.COMMON_NO);
                 saveOut.setCreateTime(currentDate);
-                saveOut.setActualOutTime(currentDate);
                 saveOut.setType(MemberConstant.OUT_TYPE_APPLY);
-                saveOut.setApplyMemberId(member.getId());
                 saveOut.setUnionId(unionId);
+                saveOut.setApplyMemberId(member.getId());
+                saveOut.setApplyOutReason(reason);
 
                 save(saveOut);
             } else {
@@ -327,10 +309,10 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
 
     //***************************************** Domain Driven Design - update ******************************************
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
-    public void updateStatusByIdAndUnionIdAndBusId(Integer outId, Integer unionId, Integer busId, Integer isPass) throws Exception {
-        if (outId == null || unionId == null || busId == null || isPass == null) {
+    @Transactional(rollbackFor = Exception.class)
+    public void updateStatusByBusIdAndIdAndUnionId(Integer busId, Integer outId, Integer unionId, Integer isPass) throws Exception {
+        if (busId == null || outId == null || unionId == null || isPass == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	判断union有效性和member写权限、盟主权限
@@ -359,7 +341,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         // 如果是其他状态，报错
         UnionMember outMember = unionMemberService.getReadByIdAndUnionId(out.getApplyMemberId(), unionId);
         if (outMember == null) {
-            throw new BusinessException("退盟盟员信息不存在");
+            throw new BusinessException("找不到退盟盟员信息)");
         }
 
         if (CommonConstant.COMMON_YES == isPass) {
@@ -371,7 +353,6 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
                 UnionMemberOut updateOut = new UnionMemberOut();
                 updateOut.setId(outId);
                 updateOut.setConfirmOutTime(DateUtil.getCurrentDate());
-                // TODO 定时任务删除无效盟员
 
                 unionMemberService.update(updateMember);
                 update(updateOut);
@@ -400,14 +381,14 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
     //***************************************** Domain Driven Design - filter ******************************************
 
     @Override
-    public List<UnionMemberOut> filterByUnionId(List<UnionMemberOut> outList, Integer unionId) throws Exception {
-        if (outList == null || unionId == null) {
+    public List<UnionMemberOut> filterByApplyMemberId(List<UnionMemberOut> outList, Integer applyMemberId) throws Exception {
+        if (outList == null || applyMemberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
         List<UnionMemberOut> result = new ArrayList<>();
         for (UnionMemberOut out : outList) {
-            if (unionId.equals(out.getUnionId())) {
+            if (applyMemberId.equals(out.getApplyMemberId())) {
                 result.add(out);
             }
         }

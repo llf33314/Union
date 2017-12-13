@@ -1,6 +1,5 @@
 package com.gt.union.opportunity.brokerage.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
@@ -8,12 +7,15 @@ import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
-import com.gt.union.common.util.*;
+import com.gt.union.common.util.ExportUtil;
+import com.gt.union.common.util.ListUtil;
+import com.gt.union.common.util.MockUtil;
+import com.gt.union.common.util.PageUtil;
 import com.gt.union.opportunity.brokerage.service.IUnionBrokeragePayService;
 import com.gt.union.opportunity.brokerage.vo.BrokerageOpportunityVO;
 import com.gt.union.opportunity.brokerage.vo.BrokeragePayVO;
-import com.gt.union.opportunity.brokerage.vo.OpportunityBrokeragePayVO;
 import com.gt.union.opportunity.main.entity.UnionOpportunity;
+import com.gt.union.union.main.vo.UnionPayVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -24,9 +26,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 佣金支出 前端控制器
@@ -46,7 +46,7 @@ public class UnionBrokeragePayController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页：获取我需支付的商机佣金信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "佣金结算-我需支付的佣金-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/opportunity/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<BrokerageOpportunityVO>> pageBrokerageOpportunityVO(
             HttpServletRequest request,
@@ -68,13 +68,13 @@ public class UnionBrokeragePayController {
         }
         // mock
         List<BrokerageOpportunityVO> voList = MockUtil.list(BrokerageOpportunityVO.class, page.getSize());
-//        List<BrokerageOpportunityVO> voList = unionBrokeragePayService.listBrokerageOpportunityVOByBusId(busId, unionId, fromMemberId, isClose, clientName, clientPhone);
+        List<BrokerageOpportunityVO> voList2 = unionBrokeragePayService.listBrokerageOpportunityVOByBusId(busId, unionId, fromMemberId, isClose, clientName, clientPhone);
         Page<BrokerageOpportunityVO> result = (Page<BrokerageOpportunityVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "分页：获取商机佣金支付明细信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "佣金结算-支付明细-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/detail/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<BrokeragePayVO>> pagePayVo(
             HttpServletRequest request,
@@ -92,13 +92,13 @@ public class UnionBrokeragePayController {
             List<UnionOpportunity> opportunityList = MockUtil.list(UnionOpportunity.class, 20);
             voList.get(i).setOpportunityList(opportunityList);
         }
-//        List<BrokeragePayVO> voList = unionBrokeragePayService.listBrokeragePayVOByBusId(busId, unionId);
+        List<BrokeragePayVO> voList2 = unionBrokeragePayService.listBrokeragePayVOByBusId(busId, unionId);
         Page<BrokeragePayVO> result = (Page<BrokeragePayVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "导出：商机佣金支付明细信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "佣金结算-支付明细-导出", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/detail/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public void exportBrokeragePayDetail(HttpServletRequest request, HttpServletResponse response) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
@@ -134,7 +134,7 @@ public class UnionBrokeragePayController {
         ExportUtil.responseExport(response, workbook, fileName);
     }
 
-    @ApiOperation(value = "获取商机佣金支付明细详情信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "佣金结算-支付明细-详情", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/detail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<BrokeragePayVO> getPayVo(
             HttpServletRequest request,
@@ -149,11 +149,11 @@ public class UnionBrokeragePayController {
         }
         // mock
         BrokeragePayVO result = MockUtil.get(BrokeragePayVO.class);
-//        BrokeragePayVO result = unionBrokeragePayService.getBrokeragePayVOByBusIdAndUnionIdAndMemberId(busId, unionId, memberId);
+        BrokeragePayVO result2 = unionBrokeragePayService.getBrokeragePayVOByBusIdAndUnionIdAndMemberId(busId, unionId, memberId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "导出：商机佣金支付明细详情信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "佣金结算-支付明细-详情-导出", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/detail/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public void exportDetail(
             HttpServletRequest request,
@@ -202,9 +202,9 @@ public class UnionBrokeragePayController {
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
-    @ApiOperation(value = "批量支付：商机佣金", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "佣金结算-我需支付的佣金-批量支付", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/opportunity", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<OpportunityBrokeragePayVO> batchPay(
+    public GtJsonResult<UnionPayVO> batchPay(
             HttpServletRequest request,
             @ApiParam(value = "商机id列表", name = "opportunityIdList", required = true)
             @RequestParam(value = "opportunityIdList") List<Integer> opportunityIdList) throws Exception {
@@ -214,58 +214,11 @@ public class UnionBrokeragePayController {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
         // mock
-        OpportunityBrokeragePayVO result = MockUtil.get(OpportunityBrokeragePayVO.class);
-//        OpportunityBrokeragePayVO result = unionBrokeragePayService.batchPayByBusId(busId, opportunityIdList);
+        UnionPayVO result = MockUtil.get(UnionPayVO.class);
+        UnionPayVO result2 = unionBrokeragePayService.batchPayByBusId(busId, opportunityIdList);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
     //-------------------------------------------------- post ----------------------------------------------------------
-
-    @ApiOperation(value = "批量支付：商机佣金-回调", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/79B4DE7C/opportunity/callback", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public String updateCallback(
-            @ApiParam(value = "socket关键字", name = "socketKey", required = true)
-            @RequestParam(value = "socketKey") String socketKey,
-            @ApiParam(value = "商机佣金支付ids", name = "payIds", required = true)
-            @RequestParam(value = "payIds") String payIds,
-            @RequestBody Map<String, Object> param) throws Exception {
-        // debug
-        logger.debug(JSONObject.toJSONString(param));
-
-        Object objPayType = param.get("payType");
-        String payType = objPayType != null ? objPayType.toString().trim() : "";
-        boolean isPayTypeValid = StringUtil.isNotEmpty(payType) && ("0".equals(payType) || "1".equals(payType));
-        if (!isPayTypeValid) {
-            Map<String, Object> result = new HashMap<>(2);
-            result.put("code", -1);
-            result.put("msg", "payType参数无效");
-            return JSONObject.toJSONString(result);
-        }
-
-        String orderNo;
-        Integer isSuccess;
-        if ("0".equals(payType)) {
-            // 微信支付
-            Object objOrderNo = param.get("transaction_id");
-            orderNo = objOrderNo != null ? objOrderNo.toString().trim() : "";
-
-            Object objResultCode = param.get("result_code");
-            String resultCode = objResultCode != null ? objResultCode.toString().trim() : "";
-            Object objReturnCode = param.get("return_code");
-            String returnCode = objReturnCode != null ? objReturnCode.toString().trim() : "";
-            isSuccess = "SUCCESS".equals(resultCode.toUpperCase()) && "SUCCESS".equals(returnCode.toUpperCase())
-                    ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO;
-        } else {
-            // 支付宝支付
-            Object objOrderNo = param.get("trade_no");
-            orderNo = objOrderNo != null ? objOrderNo.toString().trim() : "";
-
-            Object objTradeStatus = param.get("trade_status");
-            String tradeStatus = objTradeStatus != null ? objTradeStatus.toString().trim() : "";
-            isSuccess = "TRADE_SUCCESS".equals(tradeStatus.toUpperCase()) ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO;
-        }
-
-        return unionBrokeragePayService.updateCallbackByIds(payIds, socketKey, payType, orderNo, isSuccess);
-    }
 
 }

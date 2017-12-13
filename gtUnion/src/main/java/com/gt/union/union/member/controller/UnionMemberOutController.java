@@ -37,7 +37,7 @@ public class UnionMemberOutController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页：获取退盟申请信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "退盟管理-退盟审核-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<MemberOutVO>> pageOutVOByUnionId(
             HttpServletRequest request,
@@ -51,13 +51,13 @@ public class UnionMemberOutController {
         }
         // mock
         List<MemberOutVO> voList = MockUtil.list(MemberOutVO.class, page.getSize());
-//        List<MemberOutVO> voList = unionMemberOutService.listMemberOutVOByBusIdAndUnionId(busId, unionId);
+        List<MemberOutVO> voList2 = unionMemberOutService.listMemberOutVOByBusIdAndUnionId(busId, unionId);
         Page<MemberOutVO> result = (Page<MemberOutVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "分页：获取退盟过渡期信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "退盟管理-退盟过渡期-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/period/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<MemberOutPeriodVO>> pagePeriodByUnionId(
             HttpServletRequest request,
@@ -71,7 +71,7 @@ public class UnionMemberOutController {
         }
         // mock
         List<MemberOutPeriodVO> voList = MockUtil.list(MemberOutPeriodVO.class, page.getSize());
-//        List<MemberOutPeriodVO> voList = unionMemberOutService.listMemberOutPeriodVOByBusIdAndUnionId(busId, unionId);
+        List<MemberOutPeriodVO> voList2 = unionMemberOutService.listMemberOutPeriodVOByBusIdAndUnionId(busId, unionId);
         Page<MemberOutPeriodVO> result = (Page<MemberOutPeriodVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -79,7 +79,7 @@ public class UnionMemberOutController {
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
-    @ApiOperation(value = "审核退盟申请", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "退盟管理-退盟审核-分页-通过或拒绝", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{outId}/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> updateStatusByIdAndUnionId(
             HttpServletRequest request,
@@ -94,13 +94,13 @@ public class UnionMemberOutController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-//        unionMemberOutService.updateStatusByIdAndUnionIdAndBusId(outId, unionId, busId, isPass);
+        unionMemberOutService.updateStatusByBusIdAndIdAndUnionId(busId, outId, unionId, isPass);
         return GtJsonResult.instanceSuccessMsg();
     }
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
-    @ApiOperation(value = "申请退盟", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "退盟管理-退盟过渡期-退盟申请", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> saveByUnionId(
             HttpServletRequest request,
@@ -112,11 +112,11 @@ public class UnionMemberOutController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-//        unionMemberOutService.saveByBusIdAndUnionId(busId, unionId, reason);
+        unionMemberOutService.saveByBusIdAndUnionId(busId, unionId, reason);
         return GtJsonResult.instanceSuccessMsg();
     }
 
-    @ApiOperation(value = "盟主移出盟员", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "首页-盟员列表-分页-移出", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/applyMemberId/{applyMemberId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> saveByUnionIdAndApplyMemberId(
             HttpServletRequest request,
@@ -130,7 +130,7 @@ public class UnionMemberOutController {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
 
-//        unionMemberOutService.saveByBusIdAndUnionIdAndApplyMemberId(busId, unionId, applyMemberId);
+        unionMemberOutService.saveByBusIdAndUnionIdAndApplyMemberId(busId, unionId, applyMemberId);
         return GtJsonResult.instanceSuccessMsg();
     }
 }

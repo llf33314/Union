@@ -48,7 +48,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
     //***************************************** Domain Driven Design - get *********************************************
 
     @Override
-    public UnionVO getVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
+    public UnionVO getUnionVOByBusIdAndId(Integer busId, Integer unionId) throws Exception {
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -64,6 +64,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         UnionVO result = new UnionVO();
         UnionMain union = getById(unionId);
         result.setUnion(union);
+        
         List<UnionMainDict> itemList = unionMainDictService.listByUnionId(unionId);
         result.setItemList(itemList);
 
@@ -72,6 +73,8 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
     //***************************************** Domain Driven Design - list ********************************************
 
+    
+    
     //***************************************** Domain Driven Design - save ********************************************
 
     //***************************************** Domain Driven Design - remove ******************************************
@@ -155,7 +158,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         List<UnionMainDict> saveDictList = vo.getItemList();
         for (UnionMainDict dict : saveDictList) {
             if (!dict.getUnionId().equals(unionId)) {
-                throw new BusinessException("入盟申请必填信息不能绑定到id为" + dict.getUnionId() + "的联盟中");
+                throw new BusinessException("入盟申请必填信息不能绑定到其他联盟中");
             }
         }
 
@@ -233,6 +236,28 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
     //***************************************** Object As a Service - list *********************************************
 
+    @Override
+    public List<UnionMain> listOtherValidByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        
+        List<Integer> unionIdList = new ArrayList<>();
+        List<UnionMember> readMemberList = unionMemberService.listReadByBusId(busId);
+        if (ListUtil.isNotEmpty(readMemberList)) {
+            for (UnionMember readMember : readMemberList) {
+                unionIdList.add(readMember.getUnionId());
+            }
+        }
+        
+        EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .gt("validity", DateUtil.getCurrentDate())
+                .notIn("id", unionIdList);
+        
+        return selectList(entityWrapper);
+    }
+    
     @Override
     public List<UnionMain> listMyValidByBusId(Integer busId) throws Exception {
         if (busId == null) {

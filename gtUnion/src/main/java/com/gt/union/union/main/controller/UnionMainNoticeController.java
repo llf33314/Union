@@ -32,7 +32,7 @@ public class UnionMainNoticeController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "获取联盟公告", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "首页-联盟公告", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<UnionMainNotice> getByUnionId(
             HttpServletRequest request,
@@ -51,7 +51,7 @@ public class UnionMainNoticeController {
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
-    @ApiOperation(value = "更新联盟公告", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "首页-联盟公告-更新", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> updateContentByUnionId(
             HttpServletRequest request,

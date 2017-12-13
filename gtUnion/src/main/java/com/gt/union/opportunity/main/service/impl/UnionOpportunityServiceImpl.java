@@ -7,7 +7,7 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
-import com.gt.union.opportunity.brokerage.constant.BrokerageConstant;
+import com.gt.union.opportunity.brokerage.vo.BrokerageOpportunityVO;
 import com.gt.union.opportunity.main.constant.OpportunityConstant;
 import com.gt.union.opportunity.main.entity.UnionOpportunity;
 import com.gt.union.opportunity.main.entity.UnionOpportunityRatio;
@@ -78,19 +78,20 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         // （2）	获取已接受的给我的商机，区分是否已支付
         OpportunityStatisticsVO result = new OpportunityStatisticsVO();
 
+        List<UnionOpportunity> incomeOpportunityList = listByUnionIdAndFromMemberIdAndAcceptStatus(unionId, member.getId(), OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
+        List<UnionOpportunity> paidIncomeOpportunityList = filterByIsClose(incomeOpportunityList, OpportunityConstant.IS_CLOSE_YES);
         BigDecimal paidIncome = BigDecimal.ZERO;
-        List<UnionOpportunity> paidToMeOpportunityList = listAcceptConfirmedByToMemberIdAndUnionId(member.getId(), unionId, CommonConstant.COMMON_YES);
-        if (ListUtil.isNotEmpty(paidToMeOpportunityList)) {
-            for (UnionOpportunity opportunity : paidToMeOpportunityList) {
+        if (ListUtil.isNotEmpty(paidIncomeOpportunityList)) {
+            for (UnionOpportunity opportunity : paidIncomeOpportunityList) {
                 paidIncome = BigDecimalUtil.add(paidIncome, opportunity.getBrokerageMoney());
             }
         }
         result.setPaidIncome(paidIncome.doubleValue());
 
+        List<UnionOpportunity> unPaidIncomeOpportunityList = filterByIsClose(incomeOpportunityList, OpportunityConstant.IS_CLOSE_NO);
         BigDecimal unPaidIncome = BigDecimal.ZERO;
-        List<UnionOpportunity> unPaidToMeOpportunityList = listAcceptConfirmedByToMemberIdAndUnionId(member.getId(), unionId, CommonConstant.COMMON_NO);
-        if (ListUtil.isNotEmpty(unPaidToMeOpportunityList)) {
-            for (UnionOpportunity opportunity : paidToMeOpportunityList) {
+        if (ListUtil.isNotEmpty(unPaidIncomeOpportunityList)) {
+            for (UnionOpportunity opportunity : unPaidIncomeOpportunityList) {
                 unPaidIncome = BigDecimalUtil.add(unPaidIncome, opportunity.getBrokerageMoney());
             }
         }
@@ -100,19 +101,20 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         result.setPaidIncomePercent(BigDecimalUtil.divide(paidIncome, incomeSum, 4).doubleValue());
         result.setUnPaidIncomePercent(BigDecimalUtil.divide(unPaidIncome, incomeSum, 4).doubleValue());
         // （3）	获取已接受的我给的商机，区分是否已支付
+        List<UnionOpportunity> expenseOpportunityList = listByUnionIdAndToMemberIdAndAcceptStatus(unionId, member.getId(), OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
+        List<UnionOpportunity> paidExpenseOpportunityList = filterByIsClose(expenseOpportunityList, OpportunityConstant.IS_CLOSE_YES);
         BigDecimal paidExpense = BigDecimal.ZERO;
-        List<UnionOpportunity> paidFromMeOpportunityList = listAcceptConfirmedByFromMemberIdAndUnionId(member.getId(), unionId, CommonConstant.COMMON_YES);
-        if (ListUtil.isNotEmpty(paidFromMeOpportunityList)) {
-            for (UnionOpportunity opportunity : paidFromMeOpportunityList) {
+        if (ListUtil.isNotEmpty(paidExpenseOpportunityList)) {
+            for (UnionOpportunity opportunity : paidExpenseOpportunityList) {
                 paidExpense = BigDecimalUtil.add(paidExpense, opportunity.getBrokerageMoney());
             }
         }
         result.setPaidExpense(paidExpense.doubleValue());
 
+        List<UnionOpportunity> unPaidExpenseOpportunityList = filterByIsClose(expenseOpportunityList, OpportunityConstant.IS_CLOSE_NO);
         BigDecimal unPaidExpense = BigDecimal.ZERO;
-        List<UnionOpportunity> unPaidFromMeOpportunityList = listAcceptConfirmedByFromMemberIdAndUnionId(member.getId(), unionId, CommonConstant.COMMON_NO);
-        if (ListUtil.isNotEmpty(unPaidFromMeOpportunityList)) {
-            for (UnionOpportunity opportunity : unPaidFromMeOpportunityList) {
+        if (ListUtil.isNotEmpty(unPaidExpenseOpportunityList)) {
+            for (UnionOpportunity opportunity : unPaidExpenseOpportunityList) {
                 unPaidExpense = BigDecimalUtil.add(unPaidExpense, opportunity.getBrokerageMoney());
             }
         }
@@ -122,173 +124,55 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         result.setPaidExpensePercent(BigDecimalUtil.divide(unPaidExpense, expenseSum, 4).doubleValue());
         result.setUnPaidExpensePercent(BigDecimalUtil.divide(unPaidExpense, expenseSum, 4).doubleValue());
         // （4）	获取一周内商机收支信息
-        // （4-1）周一
-        OpportunityStatisticsDay mondayStatistic = new OpportunityStatisticsDay();
-        Date monday = DateUtil.getMondayInWeek();
-        String strMonday = DateUtil.getDateString(monday, DateUtil.DATE_PATTERN);
-        Date beginDate = DateUtil.parseDate(strMonday + " 00:00:00", DateUtil.DATETIME_PATTERN);
-        Date endDate = DateUtil.parseDate(strMonday + " 23:59:59", DateUtil.DATETIME_PATTERN);
-        List<UnionOpportunity> mondayIncomeOpportunityList = filterBetweenTime(paidFromMeOpportunityList, beginDate, endDate);
-        BigDecimal mondayIncome = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(mondayIncomeOpportunityList)) {
-            for (UnionOpportunity opportunity : mondayIncomeOpportunityList) {
-                mondayIncome = BigDecimalUtil.add(mondayIncome, opportunity.getBrokerageMoney());
+        Date indexDay = DateUtil.getMondayInWeek();
+        for (int i = 0; i < 7; i++) {
+            OpportunityStatisticsDay dayStatistic = new OpportunityStatisticsDay();
+            String strDay = DateUtil.getDateString(indexDay, DateUtil.DATE_PATTERN);
+            Date beginDate = DateUtil.parseDate(indexDay + " 00:00:00", DateUtil.DATETIME_PATTERN);
+            Date endDate = DateUtil.parseDate(indexDay + " 23:59:59", DateUtil.DATETIME_PATTERN);
+            List<UnionOpportunity> dayIncomeOpportunityList = filterBetweenTime(paidIncomeOpportunityList, beginDate, endDate);
+            BigDecimal dayIncome = BigDecimal.ZERO;
+            if (ListUtil.isNotEmpty(dayIncomeOpportunityList)) {
+                for (UnionOpportunity opportunity : dayIncomeOpportunityList) {
+                    dayIncome = BigDecimalUtil.add(dayIncome, opportunity.getBrokerageMoney());
+                }
             }
-        }
-        mondayStatistic.setPaidIncome(mondayIncome.doubleValue());
-        List<UnionOpportunity> mondayExpenseOpportunityList = filterBetweenTime(paidToMeOpportunityList, beginDate, endDate);
-        BigDecimal mondayExpense = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(mondayExpenseOpportunityList)) {
-            for (UnionOpportunity opportunity : mondayExpenseOpportunityList) {
-                mondayExpense = BigDecimalUtil.add(mondayExpense, opportunity.getBrokerageMoney());
+            dayStatistic.setPaidIncome(dayIncome.doubleValue());
+            List<UnionOpportunity> dayExpenseOpportunityList = filterBetweenTime(paidExpenseOpportunityList, beginDate, endDate);
+            BigDecimal dayExpense = BigDecimal.ZERO;
+            if (ListUtil.isNotEmpty(dayExpenseOpportunityList)) {
+                for (UnionOpportunity opportunity : dayExpenseOpportunityList) {
+                    dayExpense = BigDecimalUtil.add(dayExpense, opportunity.getBrokerageMoney());
+                }
             }
-        }
-        mondayStatistic.setPaidExpense(mondayExpense.doubleValue());
-        result.setMonday(mondayStatistic);
-
-        // （4-1）周二
-        OpportunityStatisticsDay tuesdayStatistic = new OpportunityStatisticsDay();
-        Date tuesday = DateUtil.addDays(monday, 1);
-        strMonday = DateUtil.getDateString(tuesday, DateUtil.DATE_PATTERN);
-        beginDate = DateUtil.parseDate(strMonday + " 00:00:00", DateUtil.DATETIME_PATTERN);
-        endDate = DateUtil.parseDate(strMonday + " 23:59:59", DateUtil.DATETIME_PATTERN);
-        List<UnionOpportunity> tuesdayIncomeOpportunityList = filterBetweenTime(paidFromMeOpportunityList, beginDate, endDate);
-        BigDecimal tuesdayIncome = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(tuesdayIncomeOpportunityList)) {
-            for (UnionOpportunity opportunity : tuesdayIncomeOpportunityList) {
-                tuesdayIncome = BigDecimalUtil.add(tuesdayIncome, opportunity.getBrokerageMoney());
+            dayStatistic.setPaidExpense(dayExpense.doubleValue());
+            switch (i) {
+                case 0:
+                    result.setMonday(dayStatistic);
+                    break;
+                case 1:
+                    result.setTuesday(dayStatistic);
+                    break;
+                case 2:
+                    result.setWednesday(dayStatistic);
+                    break;
+                case 3:
+                    result.setThursday(dayStatistic);
+                    break;
+                case 4:
+                    result.setFriday(dayStatistic);
+                    break;
+                case 5:
+                    result.setSaturday(dayStatistic);
+                    break;
+                case 6:
+                    result.setSunday(dayStatistic);
+                    break;
+                default:
+                    break;
             }
+            indexDay = DateUtil.addDays(indexDay, 1);
         }
-        tuesdayStatistic.setPaidIncome(tuesdayIncome.doubleValue());
-        List<UnionOpportunity> tuesdayExpenseOpportunityList = filterBetweenTime(paidToMeOpportunityList, beginDate, endDate);
-        BigDecimal tuesdayExpense = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(tuesdayExpenseOpportunityList)) {
-            for (UnionOpportunity opportunity : tuesdayExpenseOpportunityList) {
-                tuesdayExpense = BigDecimalUtil.add(tuesdayExpense, opportunity.getBrokerageMoney());
-            }
-        }
-        tuesdayStatistic.setPaidExpense(tuesdayExpense.doubleValue());
-        result.setTuesday(tuesdayStatistic);
-
-        // （4-1）周三
-        OpportunityStatisticsDay wednesdayStatistic = new OpportunityStatisticsDay();
-        Date wednesday = DateUtil.addDays(tuesday, 1);
-        strMonday = DateUtil.getDateString(wednesday, DateUtil.DATE_PATTERN);
-        beginDate = DateUtil.parseDate(strMonday + " 00:00:00", DateUtil.DATETIME_PATTERN);
-        endDate = DateUtil.parseDate(strMonday + " 23:59:59", DateUtil.DATETIME_PATTERN);
-        List<UnionOpportunity> wednesdayIncomeOpportunityList = filterBetweenTime(paidFromMeOpportunityList, beginDate, endDate);
-        BigDecimal wednesdayIncome = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(wednesdayIncomeOpportunityList)) {
-            for (UnionOpportunity opportunity : wednesdayIncomeOpportunityList) {
-                wednesdayIncome = BigDecimalUtil.add(wednesdayIncome, opportunity.getBrokerageMoney());
-            }
-        }
-        wednesdayStatistic.setPaidIncome(wednesdayIncome.doubleValue());
-        List<UnionOpportunity> wednesdayExpenseOpportunityList = filterBetweenTime(paidToMeOpportunityList, beginDate, endDate);
-        BigDecimal wednesdayExpense = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(wednesdayExpenseOpportunityList)) {
-            for (UnionOpportunity opportunity : wednesdayExpenseOpportunityList) {
-                wednesdayExpense = BigDecimalUtil.add(wednesdayExpense, opportunity.getBrokerageMoney());
-            }
-        }
-        wednesdayStatistic.setPaidExpense(wednesdayExpense.doubleValue());
-        result.setWednesday(wednesdayStatistic);
-
-        // （4-1）周四
-        OpportunityStatisticsDay thursdayStatistic = new OpportunityStatisticsDay();
-        Date thursday = DateUtil.addDays(wednesday, 1);
-        strMonday = DateUtil.getDateString(thursday, DateUtil.DATE_PATTERN);
-        beginDate = DateUtil.parseDate(strMonday + " 00:00:00", DateUtil.DATETIME_PATTERN);
-        endDate = DateUtil.parseDate(strMonday + " 23:59:59", DateUtil.DATETIME_PATTERN);
-        List<UnionOpportunity> thursdayIncomeOpportunityList = filterBetweenTime(paidFromMeOpportunityList, beginDate, endDate);
-        BigDecimal thursdayIncome = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(thursdayIncomeOpportunityList)) {
-            for (UnionOpportunity opportunity : thursdayIncomeOpportunityList) {
-                thursdayIncome = BigDecimalUtil.add(thursdayIncome, opportunity.getBrokerageMoney());
-            }
-        }
-        thursdayStatistic.setPaidIncome(thursdayIncome.doubleValue());
-        List<UnionOpportunity> thursdayExpenseOpportunityList = filterBetweenTime(paidToMeOpportunityList, beginDate, endDate);
-        BigDecimal thursdayExpense = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(thursdayExpenseOpportunityList)) {
-            for (UnionOpportunity opportunity : thursdayExpenseOpportunityList) {
-                thursdayExpense = BigDecimalUtil.add(thursdayExpense, opportunity.getBrokerageMoney());
-            }
-        }
-        thursdayStatistic.setPaidExpense(thursdayExpense.doubleValue());
-        result.setThursday(thursdayStatistic);
-
-        // （4-1）周五
-        OpportunityStatisticsDay fridayStatistic = new OpportunityStatisticsDay();
-        Date friday = DateUtil.addDays(thursday, 1);
-        strMonday = DateUtil.getDateString(friday, DateUtil.DATE_PATTERN);
-        beginDate = DateUtil.parseDate(strMonday + " 00:00:00", DateUtil.DATETIME_PATTERN);
-        endDate = DateUtil.parseDate(strMonday + " 23:59:59", DateUtil.DATETIME_PATTERN);
-        List<UnionOpportunity> fridayIncomeOpportunityList = filterBetweenTime(paidFromMeOpportunityList, beginDate, endDate);
-        BigDecimal fridayIncome = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(fridayIncomeOpportunityList)) {
-            for (UnionOpportunity opportunity : fridayIncomeOpportunityList) {
-                fridayIncome = BigDecimalUtil.add(fridayIncome, opportunity.getBrokerageMoney());
-            }
-        }
-        fridayStatistic.setPaidIncome(fridayIncome.doubleValue());
-        List<UnionOpportunity> fridayExpenseOpportunityList = filterBetweenTime(paidToMeOpportunityList, beginDate, endDate);
-        BigDecimal fridayExpense = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(fridayExpenseOpportunityList)) {
-            for (UnionOpportunity opportunity : fridayExpenseOpportunityList) {
-                fridayExpense = BigDecimalUtil.add(fridayExpense, opportunity.getBrokerageMoney());
-            }
-        }
-        fridayStatistic.setPaidExpense(fridayExpense.doubleValue());
-        result.setFriday(fridayStatistic);
-
-        // （4-1）周六
-        OpportunityStatisticsDay saturdayStatistic = new OpportunityStatisticsDay();
-        Date saturday = DateUtil.addDays(friday, 1);
-        strMonday = DateUtil.getDateString(saturday, DateUtil.DATE_PATTERN);
-        beginDate = DateUtil.parseDate(strMonday + " 00:00:00", DateUtil.DATETIME_PATTERN);
-        endDate = DateUtil.parseDate(strMonday + " 23:59:59", DateUtil.DATETIME_PATTERN);
-        List<UnionOpportunity> saturdayIncomeOpportunityList = filterBetweenTime(paidFromMeOpportunityList, beginDate, endDate);
-        BigDecimal saturdayIncome = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(saturdayIncomeOpportunityList)) {
-            for (UnionOpportunity opportunity : saturdayIncomeOpportunityList) {
-                saturdayIncome = BigDecimalUtil.add(saturdayIncome, opportunity.getBrokerageMoney());
-            }
-        }
-        saturdayStatistic.setPaidIncome(saturdayIncome.doubleValue());
-        List<UnionOpportunity> saturdayExpenseOpportunityList = filterBetweenTime(paidToMeOpportunityList, beginDate, endDate);
-        BigDecimal saturdayExpense = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(saturdayExpenseOpportunityList)) {
-            for (UnionOpportunity opportunity : saturdayExpenseOpportunityList) {
-                saturdayExpense = BigDecimalUtil.add(saturdayExpense, opportunity.getBrokerageMoney());
-            }
-        }
-        saturdayStatistic.setPaidExpense(saturdayExpense.doubleValue());
-        result.setSaturday(saturdayStatistic);
-
-        // （4-1）周二
-        OpportunityStatisticsDay sundayStatistic = new OpportunityStatisticsDay();
-        Date sunday = DateUtil.addDays(saturday, 1);
-        strMonday = DateUtil.getDateString(sunday, DateUtil.DATE_PATTERN);
-        beginDate = DateUtil.parseDate(strMonday + " 00:00:00", DateUtil.DATETIME_PATTERN);
-        endDate = DateUtil.parseDate(strMonday + " 23:59:59", DateUtil.DATETIME_PATTERN);
-        List<UnionOpportunity> sundayIncomeOpportunityList = filterBetweenTime(paidFromMeOpportunityList, beginDate, endDate);
-        BigDecimal sundayIncome = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(sundayIncomeOpportunityList)) {
-            for (UnionOpportunity opportunity : sundayIncomeOpportunityList) {
-                sundayIncome = BigDecimalUtil.add(sundayIncome, opportunity.getBrokerageMoney());
-            }
-        }
-        sundayStatistic.setPaidIncome(sundayIncome.doubleValue());
-        List<UnionOpportunity> sundayExpenseOpportunityList = filterBetweenTime(paidToMeOpportunityList, beginDate, endDate);
-        BigDecimal sundayExpense = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(sundayExpenseOpportunityList)) {
-            for (UnionOpportunity opportunity : sundayExpenseOpportunityList) {
-                sundayExpense = BigDecimalUtil.add(sundayExpense, opportunity.getBrokerageMoney());
-            }
-        }
-        sundayStatistic.setPaidExpense(sundayExpense.doubleValue());
-        result.setSunday(sundayStatistic);
 
         return result;
     }
@@ -319,17 +203,26 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 toMemberIdList.add(member.getId());
             }
         }
-        // （3）	按受理状态顺序、创建时间倒序排序
-        List<OpportunityVO> result = new ArrayList<>();
-        List<Integer> acceptStatusList = null;
-        if (StringUtil.isNotEmpty(optAcceptStatus)) {
-            acceptStatusList = new ArrayList<>();
-            String[] acceptStatusArray = optAcceptStatus.trim().split(";");
-            for (String acceptStatus : acceptStatusArray) {
-                acceptStatusList.add(Integer.valueOf(acceptStatus.trim()));
-            }
+        List<UnionOpportunity> opportunityList = listByToMemberIdList(toMemberIdList);
+        List<Integer> acceptStatusList = getAcceptStatusList(optAcceptStatus);
+        if (ListUtil.isNotEmpty(acceptStatusList)) {
+            opportunityList = filterByAcceptStatusList(opportunityList, acceptStatusList);
         }
-        List<UnionOpportunity> opportunityList = listByToMemberIdList(toMemberIdList, acceptStatusList, optClientName, optClientPhone);
+        if (StringUtil.isNotEmpty(optClientName)) {
+            opportunityList = filterByLikeClientName(opportunityList, optClientName);
+        }
+        if (StringUtil.isNotEmpty(optClientPhone)) {
+            opportunityList = filterByLikeClientPhone(opportunityList, optClientPhone);
+        }
+        // （3）	按受理状态顺序、创建时间倒序排序
+        List<OpportunityVO> result = getOpportunityVOList(opportunityList);
+        sortByAcceptStatus(result);
+
+        return result;
+    }
+
+    private List<OpportunityVO> getOpportunityVOList(List<UnionOpportunity> opportunityList) throws Exception {
+        List<OpportunityVO> result = new ArrayList<>();
         if (ListUtil.isNotEmpty(opportunityList)) {
             for (UnionOpportunity opportunity : opportunityList) {
                 OpportunityVO vo = new OpportunityVO();
@@ -350,6 +243,10 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 result.add(vo);
             }
         }
+        return result;
+    }
+
+    private void sortByAcceptStatus(List<OpportunityVO> result) {
         Collections.sort(result, new Comparator<OpportunityVO>() {
             @Override
             public int compare(OpportunityVO o1, OpportunityVO o2) {
@@ -364,31 +261,20 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 return o1.getOpportunity().getCreateTime().compareTo(o2.getOpportunity().getCreateTime());
             }
         });
-
-        return result;
     }
 
     @Override
-    public List<UnionOpportunity> listByToMemberIdList(List<Integer> toMemberIdList, List<Integer> optAcceptStatusList,
-                                                       String optClientName, String optClientPhone) throws Exception {
+    public List<UnionOpportunity> listByToMemberIdList(List<Integer> toMemberIdList) throws Exception {
         if (toMemberIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .in("to_member_id", toMemberIdList);
-        if (ListUtil.isNotEmpty(optAcceptStatusList)) {
-            entityWrapper.in("accept_status", optAcceptStatusList);
-        }
-        if (StringUtil.isNotEmpty(optClientName)) {
-            entityWrapper.like("client_name", optClientName);
-        }
-        if (StringUtil.isNotEmpty(optClientPhone)) {
-            entityWrapper.like("client_phone", optClientPhone);
+        List<UnionOpportunity> result = new ArrayList<>();
+        for (Integer toMemberId : toMemberIdList) {
+            result.addAll(listByToMemberId(toMemberId));
         }
 
-        return selectList(entityWrapper);
+        return result;
     }
 
     @Override
@@ -415,132 +301,109 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 fromMemberIdList.add(member.getId());
             }
         }
+        List<UnionOpportunity> opportunityList = listByFromMemberIdList(fromMemberIdList);
+        List<Integer> acceptStatusList = getAcceptStatusList(optAcceptStatus);
+        if (ListUtil.isNotEmpty(acceptStatusList)) {
+            opportunityList = filterByAcceptStatusList(opportunityList, acceptStatusList);
+        }
+        if (StringUtil.isNotEmpty(optClientName)) {
+            opportunityList = filterByLikeClientName(opportunityList, optClientName);
+        }
+        if (StringUtil.isNotEmpty(optClientPhone)) {
+            opportunityList = filterByLikeClientPhone(opportunityList, optClientPhone);
+        }
         // （3）	按受理状态顺序、创建时间倒序排序
-        List<OpportunityVO> result = new ArrayList<>();
-        List<Integer> acceptStatusList = null;
+        List<OpportunityVO> result = getOpportunityVOList(opportunityList);
+        sortByAcceptStatus(result);
+
+        return result;
+    }
+
+    private List<Integer> getAcceptStatusList(String optAcceptStatus) {
+        List<Integer> result = null;
         if (StringUtil.isNotEmpty(optAcceptStatus)) {
-            acceptStatusList = new ArrayList<>();
+            result = new ArrayList<>();
             String[] acceptStatusArray = optAcceptStatus.trim().split(";");
             for (String acceptStatus : acceptStatusArray) {
-                acceptStatusList.add(Integer.valueOf(acceptStatus.trim()));
+                result.add(Integer.valueOf(acceptStatus.trim()));
             }
         }
-        List<UnionOpportunity> opportunityList = listByFromMemberIdList(fromMemberIdList, acceptStatusList, optClientName, optClientPhone);
-        if (ListUtil.isNotEmpty(opportunityList)) {
-            for (UnionOpportunity opportunity : opportunityList) {
-                OpportunityVO vo = new OpportunityVO();
-                vo.setOpportunity(opportunity);
+        return result;
+    }
 
-                UnionMain union = unionMainService.getById(opportunity.getUnionId());
-                if (!unionMainService.isUnionValid(union)) {
-                    continue;
-                }
-                vo.setUnion(union);
-
-                UnionMember fromMember = unionMemberService.getReadByIdAndUnionId(opportunity.getFromMemberId(), union.getId());
-                vo.setFromMember(fromMember);
-
-                UnionMember toMember = unionMemberService.getReadByIdAndUnionId(opportunity.getToMemberId(), union.getId());
-                vo.setToMember(toMember);
-
-                result.add(vo);
-            }
+    @Override
+    public List<UnionOpportunity> listByFromMemberIdList(List<Integer> fromMemberIdList) throws Exception {
+        if (fromMemberIdList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        Collections.sort(result, new Comparator<OpportunityVO>() {
-            @Override
-            public int compare(OpportunityVO o1, OpportunityVO o2) {
-                int acceptStatusOrder = o1.getOpportunity().getAcceptStatus().compareTo(o2.getOpportunity().getAcceptStatus());
-                if (acceptStatusOrder < 0) {
-                    return 1;
-                }
-                if (acceptStatusOrder > 0) {
-                    return -1;
-                }
 
-                return o1.getOpportunity().getCreateTime().compareTo(o2.getOpportunity().getCreateTime());
-            }
-        });
+        List<UnionOpportunity> result = new ArrayList<>();
+        for (Integer fromMemberId : fromMemberIdList) {
+            result.addAll(listByToMemberId(fromMemberId));
+        }
 
         return result;
     }
 
     @Override
-    public List<UnionOpportunity> listByFromMemberIdList(List<Integer> fromMemberIdList, List<Integer> optAcceptStatusList, String optClientName, String optClientPhone) throws Exception {
-        if (fromMemberIdList == null) {
+    public List<UnionOpportunity> listByUnionIdAndToMemberIdAndAcceptStatus(Integer unionId, Integer toMemberId, Integer acceptStatus) throws Exception {
+        if (unionId == null || toMemberId == null || acceptStatus == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .in("from_member_id", fromMemberIdList);
-        if (ListUtil.isNotEmpty(optAcceptStatusList)) {
-            entityWrapper.in("accept_status", optAcceptStatusList);
-        }
-        if (StringUtil.isNotEmpty(optClientName)) {
-            entityWrapper.like("client_name", optClientName);
-        }
-        if (StringUtil.isNotEmpty(optClientPhone)) {
-            entityWrapper.like("client_phone", optClientPhone);
-        }
+        List<UnionOpportunity> result = listByToMemberId(toMemberId);
+        result = filterByUnionId(result, unionId);
+        result = filterByAcceptStatus(result, acceptStatus);
 
-        return selectList(entityWrapper);
+        return result;
     }
 
     @Override
-    public List<UnionOpportunity> listAcceptConfirmedByToMemberIdAndUnionId(Integer toMemberId, Integer unionId, Integer optIsPay) throws Exception {
-        if (toMemberId == null || unionId == null) {
+    public List<UnionOpportunity> listByUnionIdAndFromMemberIdAndAcceptStatus(Integer unionId, Integer fromMemberId, Integer acceptStatus) throws Exception {
+        if (unionId == null || fromMemberId == null || acceptStatus == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .eq("accept_status", OpportunityConstant.OPPORTUNITY_ACCEPT_STATUS_CONFIRMED)
-                .eq("to_member_id", toMemberId)
-                .eq("union_id", unionId);
-        if (optIsPay != null) {
-            if (CommonConstant.COMMON_YES == optIsPay) {
-                entityWrapper.exists(" SELECT p.id FROM t_union_brokerage_pay p "
-                        + " WHERE p.del_status=" + CommonConstant.COMMON_NO
-                        + " AND p.opportunity_id = t_union_opportunity.id"
-                        + " AND p.status=" + BrokerageConstant.PAY_STATUS_SUCCESS);
-            } else {
-                entityWrapper.notExists(" SELECT p.id FROM t_union_brokerage_pay p "
-                        + " WHERE p.del_status=" + CommonConstant.COMMON_NO
-                        + " AND p.opportunity_id = t_union_opportunity.id"
-                        + " AND p.status=" + BrokerageConstant.PAY_STATUS_SUCCESS);
-            }
-        }
+        List<UnionOpportunity> result = listByFromMemberId(fromMemberId);
+        result = filterByUnionId(result, unionId);
+        result = filterByAcceptStatus(result, acceptStatus);
 
-        return selectList(entityWrapper);
+        return result;
     }
 
     @Override
-    public List<UnionOpportunity> listAcceptConfirmedByFromMemberIdAndUnionId(Integer fromMemberId, Integer unionId, Integer optIsPay) throws Exception {
-        if (fromMemberId == null || unionId == null) {
+    public List<BrokerageOpportunityVO> listBrokerageOpportunityVO(List<UnionOpportunity> opportunityList) throws Exception {
+        if (opportunityList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .eq("accept_status", OpportunityConstant.OPPORTUNITY_ACCEPT_STATUS_CONFIRMED)
-                .eq("from_member_id", fromMemberId)
-                .eq("union_id", unionId);
-        if (optIsPay != null) {
-            if (CommonConstant.COMMON_YES == optIsPay) {
-                entityWrapper.exists(" SELECT p.id FROM t_union_brokerage_pay p "
-                        + " WHERE p.del_status=" + CommonConstant.COMMON_NO
-                        + " AND p.opportunity_id = t_union_opportunity.id"
-                        + " AND p.status=" + BrokerageConstant.PAY_STATUS_SUCCESS);
-            } else {
-                entityWrapper.notExists(" SELECT p.id FROM t_union_brokerage_pay p "
-                        + " WHERE p.del_status=" + CommonConstant.COMMON_NO
-                        + " AND p.opportunity_id = t_union_opportunity.id"
-                        + " AND p.status=" + BrokerageConstant.PAY_STATUS_SUCCESS);
+        List<BrokerageOpportunityVO> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(opportunityList)) {
+            for (UnionOpportunity opportunity : opportunityList) {
+                BrokerageOpportunityVO vo = new BrokerageOpportunityVO();
+                vo.setOpportunity(opportunity);
+                vo.setFromMember(unionMemberService.getReadByIdAndUnionId(opportunity.getFromMemberId(), opportunity.getUnionId()));
+                vo.setToMember(unionMemberService.getReadByIdAndUnionId(opportunity.getToMemberId(), opportunity.getUnionId()));
+                vo.setUnion(unionMainService.getById(opportunity.getUnionId()));
+                result.add(vo);
             }
         }
-
-        return selectList(entityWrapper);
+        Collections.sort(result, new Comparator<BrokerageOpportunityVO>() {
+            @Override
+            public int compare(BrokerageOpportunityVO o1, BrokerageOpportunityVO o2) {
+                int c = o1.getOpportunity().getIsClose().compareTo(o2.getOpportunity().getIsClose());
+                if (c < 0) {
+                    return 1;
+                } else if (c > 0) {
+                    return -1;
+                }
+                return o1.getOpportunity().getCreateTime().compareTo(o2.getOpportunity().getCreateTime());
+            }
+        });
+        
+        return result;
     }
+
 
     //***************************************** Domain Driven Design - save ********************************************
 
@@ -561,7 +424,8 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         UnionOpportunity saveOpportunity = new UnionOpportunity();
         saveOpportunity.setDelStatus(CommonConstant.DEL_STATUS_NO);
         saveOpportunity.setCreateTime(DateUtil.getCurrentDate());
-        saveOpportunity.setAcceptStatus(OpportunityConstant.OPPORTUNITY_ACCEPT_STATUS_CONFIRMING);
+        saveOpportunity.setAcceptStatus(OpportunityConstant.ACCEPT_STATUS_CONFIRMING);
+        saveOpportunity.setIsClose(OpportunityConstant.IS_CLOSE_NO);
 
         Integer toMemberId = vo.getToMember() != null ? vo.getToMember().getId() : null;
         if (toMemberId == null) {
@@ -602,7 +466,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
     //***************************************** Domain Driven Design - update ******************************************
 
     @Override
-    public void updateStatusByIdAndUnionIdAndBusId(Integer opportunityId, Integer unionId, Integer busId, Integer isAccept, Double acceptPrice) throws Exception {
+    public void updateStatusByBusIdAndIdAndUnionId(Integer busId, Integer opportunityId, Integer unionId, Integer isAccept, Double acceptPrice) throws Exception {
         if (opportunityId == null || unionId == null || busId == null || isAccept == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -620,7 +484,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
             throw new BusinessException("找不到商机信息");
         }
         // （3）	要求opportunity为未处理状态，否则，报错
-        if (OpportunityConstant.OPPORTUNITY_ACCEPT_STATUS_CONFIRMING != opportunity.getAcceptStatus()) {
+        if (OpportunityConstant.ACCEPT_STATUS_CONFIRMING != opportunity.getAcceptStatus()) {
             throw new BusinessException("商机已处理");
         }
         // （4）	接受时受理金额不能为空，且需大于0
@@ -629,18 +493,17 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
             if (acceptPrice == null || acceptPrice <= 0) {
                 throw new BusinessException("接受商机时受理金额不能为空，且必须大于0");
             }
-            UnionOpportunityRatio ratio = opportunityRatioService.getByFromMemberIdAndToMemberIdAndUnionId(member.getId(), opportunity.getFromMemberId(), unionId);
+            UnionOpportunityRatio ratio = opportunityRatioService.getByUnionIdAndFromMemberIdAndToMemberId(unionId, member.getId(), opportunity.getFromMemberId());
             if (ratio == null) {
                 throw new BusinessException("没有对商机推荐者设置佣金比例");
             }
             updateOpportunity.setId(opportunityId);
-            updateOpportunity.setAcceptStatus(OpportunityConstant.OPPORTUNITY_ACCEPT_STATUS_CONFIRMED);
+            updateOpportunity.setAcceptStatus(OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
             updateOpportunity.setAcceptPrice(acceptPrice);
-            BigDecimal brokerageRatio = BigDecimalUtil.divide(ratio.getRatio(), Double.valueOf(100));
-            updateOpportunity.setBrokerageMoney(BigDecimalUtil.multiply(acceptPrice, brokerageRatio).doubleValue());
+            updateOpportunity.setBrokerageMoney(BigDecimalUtil.multiply(acceptPrice, ratio.getRatio()).doubleValue());
         } else {
             updateOpportunity.setId(opportunityId);
-            updateOpportunity.setAcceptStatus(OpportunityConstant.OPPORTUNITY_ACCEPT_STATUS_REJECT);
+            updateOpportunity.setAcceptStatus(OpportunityConstant.ACCEPT_STATUS_REJECT);
         }
 
         update(updateOpportunity);
@@ -651,6 +514,60 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
     //***************************************** Domain Driven Design - boolean *****************************************
 
     //***************************************** Domain Driven Design - filter ******************************************
+
+    @Override
+    public List<UnionOpportunity> filterByUnionId(List<UnionOpportunity> opportunityList, Integer unionId) throws Exception {
+        if (opportunityList == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionOpportunity> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(opportunityList)) {
+            for (UnionOpportunity opportunity : opportunityList) {
+                if (unionId.equals(opportunity.getUnionId())) {
+                    result.add(opportunity);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionOpportunity> filterByAcceptStatus(List<UnionOpportunity> opportunityList, Integer acceptStatus) throws Exception {
+        if (opportunityList == null || acceptStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionOpportunity> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(opportunityList)) {
+            for (UnionOpportunity opportunity : opportunityList) {
+                if (acceptStatus.equals(opportunity.getAcceptStatus())) {
+                    result.add(opportunity);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionOpportunity> filterByIsClose(List<UnionOpportunity> opportunityList, Integer isClose) throws Exception {
+        if (opportunityList == null || isClose == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionOpportunity> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(opportunityList)) {
+            for (UnionOpportunity opportunity : opportunityList) {
+                if (isClose.equals(opportunity.getIsClose())) {
+                    result.add(opportunity);
+                }
+            }
+        }
+
+        return result;
+    }
 
     @Override
     public List<UnionOpportunity> filterBetweenTime(List<UnionOpportunity> opportunityList, Date optBeginTime, Date optEndTime) throws Exception {
@@ -671,6 +588,96 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
             }
         }
 
+        return result;
+    }
+
+    @Override
+    public List<UnionOpportunity> filterByAcceptStatusList(List<UnionOpportunity> opportunityList, List<Integer> optAcceptStatusList) throws Exception {
+        if (opportunityList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionOpportunity> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(opportunityList)) {
+            for (UnionOpportunity opportunity : opportunityList) {
+                if (optAcceptStatusList.contains(opportunity.getAcceptStatus())) {
+                    result.add(opportunity);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionOpportunity> filterByLikeClientName(List<UnionOpportunity> opportunityList, String likeClientName) throws Exception {
+        if (opportunityList == null || likeClientName == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionOpportunity> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(opportunityList)) {
+            for (UnionOpportunity opportunity : opportunityList) {
+                if (StringUtil.isNotEmpty(opportunity.getClientName()) && opportunity.getClientName().contains(likeClientName)) {
+                    result.add(opportunity);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionOpportunity> filterByLikeClientPhone(List<UnionOpportunity> opportunityList, String likeClientPhone) throws Exception {
+        if (opportunityList == null || likeClientPhone == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionOpportunity> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(opportunityList)) {
+            for (UnionOpportunity opportunity : opportunityList) {
+                if (StringUtil.isNotEmpty(opportunity.getClientPhone()) && opportunity.getClientPhone().contains(likeClientPhone)) {
+                    result.add(opportunity);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionOpportunity> filterByToMemberId(List<UnionOpportunity> opportunityList, Integer toMemberId) throws Exception {
+        if (opportunityList == null || toMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionOpportunity> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(opportunityList)) {
+            for (UnionOpportunity opportunity : opportunityList) {
+                if (toMemberId.equals(opportunity.getToMemberId())) {
+                    result.add(opportunity);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionOpportunity> filterByFromMemberId(List<UnionOpportunity> opportunityList, Integer fromMemberId) throws Exception {
+        if (opportunityList == null || fromMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        
+        List<UnionOpportunity> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(opportunityList)) {
+            for (UnionOpportunity opportunity : opportunityList) {
+                if (fromMemberId.equals(opportunity.getFromMemberId())) {
+                    result.add(opportunity);
+                }
+            }
+        }
+        
         return result;
     }
 
@@ -838,6 +845,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         updateById(updateUnionOpportunity);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateBatch(List<UnionOpportunity> updateUnionOpportunityList) throws Exception {
         if (updateUnionOpportunityList == null) {

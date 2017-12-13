@@ -17,7 +17,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
-     * 商家获取在指定联盟下具有读权限的盟员信息
+     * 联盟设置-基础设置；联盟卡设置-折扣卡设置-折扣设置
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -27,7 +27,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     UnionMember getReadByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
 
     /**
-     * 商家获取在指定联盟下具有写权限的盟员信息
+     * 获取具有写权限的盟员信息
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -37,7 +37,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     UnionMember getWriteByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
 
     /**
-     * 商家获取具有盟主身份的盟员信息
+     * 获取盟主信息
      *
      * @param busId 商家id
      * @return UnionMember
@@ -46,7 +46,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     UnionMember getOwnerByBusId(Integer busId) throws Exception;
 
     /**
-     * 商家获取在指定联盟下的指定盟员信息
+     * 首页-盟员列表-分页-详情
      *
      * @param busId    商家id
      * @param memberId 盟员id
@@ -57,7 +57,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     UnionMember getByBusIdAndIdAndUnionId(Integer busId, Integer memberId, Integer unionId) throws Exception;
 
     /**
-     * 获取指定联盟的盟主信息
+     * 获取盟主信息
      *
      * @param unionId 联盟id
      * @return UnionMember
@@ -66,7 +66,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     UnionMember getOwnerByUnionId(Integer unionId) throws Exception;
 
     /**
-     * 获取在指定联盟下具有读权限的指定盟员信息
+     * 获取具有读权限的盟员信息
      *
      * @param memberId 盟员id
      * @param unionId  联盟id
@@ -76,7 +76,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     UnionMember getReadByIdAndUnionId(Integer memberId, Integer unionId) throws Exception;
 
     /**
-     * 获取在指定联盟下具有写权限的指定盟员信息
+     * 获取具有写权限的盟员信息
      *
      * @param memberId 盟员id
      * @param unionId  联盟id
@@ -86,7 +86,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     UnionMember getWriteByIdAndUnionId(Integer memberId, Integer unionId) throws Exception;
 
     /**
-     * 获取在指定联盟下指定盟员状态的指定盟员信息
+     * 获取盟员信息
      *
      * @param memberId 盟员id
      * @param unionId  联盟id
@@ -97,7 +97,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     UnionMember getByIdAndUnionIdAndStatus(Integer memberId, Integer unionId, Integer status) throws Exception;
 
     /**
-     * 获取指定盟员信息
+     * 获取盟员信息
      *
      * @param memberId id
      * @return UnionMember
@@ -108,17 +108,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 分页支持
-     *
-     * @param page          分页对象
-     * @param entityWrapper 条件
-     * @return Page<UnionMember>
-     * @throws Exception 统一处理异常
-     */
-    Page<UnionMember> pageSupport(Page page, EntityWrapper<UnionMember> entityWrapper) throws Exception;
-
-    /**
-     * 商家获取所有具有读权限的盟员信息
+     * 获取具有读权限的盟员列表信息
      *
      * @param busId 商家id
      * @return List<UnionMember>
@@ -127,7 +117,16 @@ public interface IUnionMemberService extends IService<UnionMember> {
     List<UnionMember> listReadByBusId(Integer busId) throws Exception;
 
     /**
-     * 商家获取所有具有写权限的盟员信息
+     * 获取具有读权限的盟员id列表信息
+     *
+     * @param busId 商家id
+     * @return List<Integer>
+     * @throws Exception 统一处理异常
+     */
+    List<Integer> listReadIdByBusId(Integer busId) throws Exception;
+
+    /**
+     * 获取具有写权限的盟员列表信息
      *
      * @param busId 商家id
      * @return List<UnionMember>
@@ -136,7 +135,16 @@ public interface IUnionMemberService extends IService<UnionMember> {
     List<UnionMember> listWriteByBusId(Integer busId) throws Exception;
 
     /**
-     * 商家获取指定联盟下具有写权限的盟员信息，且可根据盟员名称进行过滤
+     * 获取具有写权限的盟员id列表信息
+     *
+     * @param busId 商家id
+     * @return List<Integer>
+     * @throws Exception 统一处理异常
+     */
+    List<Integer> listWriteIdByBusId(Integer busId) throws Exception;
+
+    /**
+     * 首页-盟员列表-分页；联盟卡设置-折扣卡设置-分页
      *
      * @param busId         商家id
      * @param unionId       联盟id
@@ -147,7 +155,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     List<UnionMember> listWriteByBusIdAndUnionId(Integer busId, Integer unionId, String optMemberName) throws Exception;
 
     /**
-     * 商家获取在指定联盟下其他具有写权限的盟员信息
+     * 辅助接口：获取指定联盟下具有写权限的但不包括我的盟员列表
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -157,7 +165,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     List<UnionMember> listOtherWriteByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
 
     /**
-     * 商家获取在指定联盟下其他具有读权限的盟员信息
+     * 获取其他具有读权限的盟员列表信息
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -167,7 +175,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     List<UnionMember> listOtherReadByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
 
     /**
-     * 获取指定联盟下所有具有读权限的盟员信息
+     * 获取具有读权限的盟员列表信息
      *
      * @param unionId 联盟id
      * @return List<UnionMember>
@@ -176,7 +184,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     List<UnionMember> listReadByUnionId(Integer unionId) throws Exception;
 
     /**
-     * 获取指定联盟下所有具有写权限的盟员信息
+     * 获取具有写权限的盟员列表信息
      *
      * @param unionId 联盟id
      * @return List<UnionMember>
@@ -185,7 +193,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     List<UnionMember> listWriteByUnionId(Integer unionId) throws Exception;
 
     /**
-     * 获取在指定联盟下指定盟员状态的盟员信息
+     * 获取盟员列表信息
      *
      * @param unionId 联盟id
      * @param status  盟员状态
@@ -217,7 +225,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     void update(UnionMember unionMember) throws Exception;
 
     /**
-     * 商家更新盟员信息
+     * 联盟设置-基础设置-更新
      *
      * @param busId    商家id
      * @param memberId 盟员id
@@ -228,7 +236,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     void updateByBusIdAndIdAndUnionId(Integer busId, Integer memberId, Integer unionId, UnionMember vo) throws Exception;
 
     /**
-     * 商家更新盟员折扣
+     * 联盟卡设置-折扣卡设置-折扣设置-更新
      *
      * @param busId    商家id
      * @param memberId 盟员id
@@ -241,7 +249,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     //***************************************** Domain Driven Design - count *******************************************
 
     /**
-     * 统计商家具有读权限的盟员个数
+     * 统计具有读权限的盟员个数
      *
      * @param busId 商家id
      * @return Integer
@@ -250,7 +258,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     Integer countReadByBusId(Integer busId) throws Exception;
 
     /**
-     * 统计在指定联盟下具有读权限的盟员个数
+     * 统计具有读权限的盟员个数
      *
      * @param unionId 联盟id
      * @return Integer

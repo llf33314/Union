@@ -337,10 +337,10 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         CardSocketVO result = new CardSocketVO();
         String socketKey = PropertiesUtil.getSocketKey() + orderNo;
         String notifyUrl = PropertiesUtil.getUnionUrl() + "/unionCard/79B4DE7C/callback?socketKey=" + socketKey;
-        String payUrl = wxPayService.qrCodePay(payMoneySum.doubleValue(), null, "LM_" + orderNo,
-                null, CommonConstant.COMMON_NO, null, notifyUrl, CommonConstant.COMMON_NO,
-                null, 0, null);
-        result.setPayUrl(payUrl);
+//        String payUrl = wxPayService.qrCodePay(payMoneySum.doubleValue(), null, "LM_" + orderNo,
+//                null, CommonConstant.COMMON_NO, null, notifyUrl, CommonConstant.COMMON_NO,
+//                null, 0, null);
+//        result.setPayUrl(payUrl);
         result.setSocketKey(socketKey);
 
         return result;

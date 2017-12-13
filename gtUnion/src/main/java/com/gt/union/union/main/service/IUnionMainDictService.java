@@ -17,7 +17,7 @@ public interface IUnionMainDictService extends IService<UnionMainDict> {
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 根据联盟id，获取入盟必填信息列表
+     * 获取入盟必填列表信息
      *
      * @param unionId 联盟id
      * @return List<UnionMainDict>
@@ -26,7 +26,7 @@ public interface IUnionMainDictService extends IService<UnionMainDict> {
     List<UnionMainDict> listByUnionId(Integer unionId) throws Exception;
 
     /**
-     * 根据联盟id，获取入盟必填字段列表
+     * 获取入盟必填字段列表信息
      *
      * @param unionId unionId 联盟id
      * @return List<String>
@@ -37,9 +37,9 @@ public interface IUnionMainDictService extends IService<UnionMainDict> {
     //***************************************** Domain Driven Design - save ********************************************
 
     /**
-     * 批量保存新增入盟必填信息
+     * 批量保存
      *
-     * @param saveDictList 新增入盟必填信息列表
+     * @param saveDictList 保存内容
      * @throws Exception 统一处理异常
      */
     void saveBatch(List<UnionMainDict> saveDictList) throws Exception;
@@ -49,7 +49,7 @@ public interface IUnionMainDictService extends IService<UnionMainDict> {
     /**
      * 批量删除
      *
-     * @param idList id列表
+     * @param idList 删除内容
      * @throws Exception 统一处理异常
      */
     void removeBatchById(List<Integer> idList) throws Exception;

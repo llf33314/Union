@@ -123,11 +123,11 @@ public class UnionOpportunity extends Model<UnionOpportunity> {
     private String businessMsg;
 
     /**
-     * 是否需要催促佣金(0:否 1:是)
+     * 是否已结算(0:否 1:是)
      */
-    @ApiModelProperty(value = "是否需要催促佣金(0:否 1:是)")
-    @TableField("is_urge_brokerage")
-    private Integer isUrgeBrokerage;
+    @ApiModelProperty(value = "是否已结算(0:否 1:是)")
+    @TableField("is_close")
+    private Integer isClose;
 
 
     public Integer getId() {
@@ -242,12 +242,12 @@ public class UnionOpportunity extends Model<UnionOpportunity> {
         this.businessMsg = businessMsg;
     }
 
-    public Integer getIsUrgeBrokerage() {
-        return isUrgeBrokerage;
+    public Integer getIsClose() {
+        return isClose;
     }
 
-    public void setIsUrgeBrokerage(Integer isUrgeBrokerage) {
-        this.isUrgeBrokerage = isUrgeBrokerage;
+    public void setIsClose(Integer isClose) {
+        this.isClose = isClose;
     }
 
     @Override

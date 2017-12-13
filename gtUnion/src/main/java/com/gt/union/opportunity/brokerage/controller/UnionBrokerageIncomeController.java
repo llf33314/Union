@@ -37,7 +37,7 @@ public class UnionBrokerageIncomeController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页：获取我的商机佣金收入信息", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "佣金结算-我的佣金收入-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/opportunity/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<BrokerageOpportunityVO>> pageBrokerageOpportunityVO(
             HttpServletRequest request,
@@ -59,7 +59,7 @@ public class UnionBrokerageIncomeController {
         }
         // mock
         List<BrokerageOpportunityVO> voList = MockUtil.list(BrokerageOpportunityVO.class, page.getSize());
-//        List<BrokerageOpportunityVO> voList = unionBrokerageIncomeService.listBrokerageOpportunityVOByBusId(busId, unionId, toMemberId, isClose, clientName, clientPhone);
+        List<BrokerageOpportunityVO> voList2 = unionBrokerageIncomeService.listBrokerageOpportunityVOByBusId(busId, unionId, toMemberId, isClose, clientName, clientPhone);
         Page<BrokerageOpportunityVO> result = (Page<BrokerageOpportunityVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);

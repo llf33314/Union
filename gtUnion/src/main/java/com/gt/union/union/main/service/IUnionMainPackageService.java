@@ -16,7 +16,7 @@ public interface IUnionMainPackageService extends IService<UnionMainPackage> {
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
-     * 根据id获取对象
+     * 获取套餐信息
      *
      * @param packageId 套餐id
      * @return UnionMainPackage
@@ -25,7 +25,7 @@ public interface IUnionMainPackageService extends IService<UnionMainPackage> {
     UnionMainPackage getById(Integer packageId) throws Exception;
 
     /**
-     * 根据等级获取套餐
+     * 获取套餐信息
      *
      * @param level 等级
      * @return UnionMainPackage
@@ -34,7 +34,7 @@ public interface IUnionMainPackageService extends IService<UnionMainPackage> {
     UnionMainPackage getByLevel(Integer level) throws Exception;
 
     /**
-     * 获取盟主套餐列表
+     * 创建联盟-购买盟主服务
      *
      * @param busId 商家id
      * @return UnionPackageVO
@@ -45,7 +45,7 @@ public interface IUnionMainPackageService extends IService<UnionMainPackage> {
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 根据等级获取套餐
+     * 获取套餐列表信息
      *
      * @param level 等级
      * @return UnionMainPackage
