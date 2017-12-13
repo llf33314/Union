@@ -64,12 +64,12 @@ public class BusUserApiController {
 					  @PathVariable(value = "publicId") Integer publicId) throws Exception {
 		BusUser busUser = SessionUtils.getLoginUser(request);
 		Integer busId = busUser.getId();
+		Integer extendId = busId;
 		if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
 			busId = busUser.getPid();
 		}
-		String random = "1" + RandomKit.getRandomString(8,0);
-		String socketKey = PropertiesUtil.getSocketKey() + "qrCode_" + random;
-		String qrCodeUrl = busUserService.getWxPublicUserQRCode(publicId, busId, Integer.valueOf(random));
+		String socketKey = PropertiesUtil.getSocketKey() + "qrCode_" + extendId;
+		String qrCodeUrl = busUserService.getWxPublicUserQRCode(publicId, busId, extendId);
 		Map<String,Object> data = new HashMap<String,Object>();
 		data.put("qrCodeUrl", qrCodeUrl);
 		data.put("qrCodeSocketKey", socketKey);
