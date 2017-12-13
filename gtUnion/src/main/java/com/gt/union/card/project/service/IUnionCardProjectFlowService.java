@@ -26,16 +26,16 @@ public interface IUnionCardProjectFlowService extends IService<UnionCardProjectF
     List<UnionCardProjectFlow> listByProjectId(Integer projectId) throws Exception;
 
     /**
-     * 联盟卡设置-活动卡设置-我的活动项目-审批记录
+     * 联盟卡设置-活动卡设置-分页-我的活动项目-审批记录
      *
      * @param busId      商家id
+     * @param unionId    联盟id
      * @param activityId 活动id
      * @param projectId  项目id
-     * @param unionId    联盟id
      * @return List<UnionCardProjectFlow>
      * @throws Exception 统一处理异常
      */
-    List<UnionCardProjectFlow> listByBusIdAndActivityIdAndProjectIdAndUnionId(Integer busId, Integer activityId, Integer projectId, Integer unionId) throws Exception;
+    List<UnionCardProjectFlow> listByBusIdAndUnionIdAndActivityIdAndProjectId(Integer busId, Integer unionId, Integer activityId, Integer projectId) throws Exception;
 
     //***************************************** Domain Driven Design - save ********************************************
 

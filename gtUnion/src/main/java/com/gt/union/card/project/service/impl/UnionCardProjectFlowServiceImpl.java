@@ -51,8 +51,8 @@ public class UnionCardProjectFlowServiceImpl extends ServiceImpl<UnionCardProjec
     //***************************************** Domain Driven Design - list ********************************************
 
     @Override
-    public List<UnionCardProjectFlow> listByBusIdAndActivityIdAndProjectIdAndUnionId(Integer busId, Integer activityId, Integer projectId, Integer unionId) throws Exception {
-        if (busId == null || activityId == null || projectId == null || unionId == null) {
+    public List<UnionCardProjectFlow> listByBusIdAndUnionIdAndActivityIdAndProjectId(Integer busId, Integer unionId, Integer activityId, Integer projectId) throws Exception {
+        if (busId == null || unionId == null || activityId == null || projectId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	判断union有效性和member读权限
@@ -64,7 +64,7 @@ public class UnionCardProjectFlowServiceImpl extends ServiceImpl<UnionCardProjec
             throw new BusinessException(CommonConstant.UNION_READ_REJECT);
         }
         // （2）	判断projectId有效性
-        UnionCardProject project = unionCardProjectService.getByIdAndActivityIdAndUnionId(projectId, activityId, unionId);
+        UnionCardProject project = unionCardProjectService.getByIdAndUnionIdAndActivityId(projectId, unionId, activityId);
         if (project == null) {
             throw new BusinessException("找不到活动项目信息");
         }

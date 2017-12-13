@@ -1,10 +1,11 @@
 package com.gt.union.union.main.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import com.gt.union.card.consume.service.IUnionConsumeService;
+import com.gt.union.card.main.service.IUnionCardService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.opportunity.brokerage.service.IUnionBrokeragePayService;
-import com.gt.union.opportunity.main.service.IUnionOpportunityService;
 import com.gt.union.union.main.service.IUnionMainPermitService;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,9 +28,15 @@ public class UnionCallBackController {
 
     @Autowired
     private IUnionMainPermitService unionMainPermitService;
-    
+
     @Autowired
     private IUnionBrokeragePayService unionBrokeragePayService;
+
+    @Autowired
+    private IUnionConsumeService unionConsumeService;
+
+    @Autowired
+    private IUnionCardService unionCardService;
 
     //支付后回调
     @RequestMapping(value = "/79B4DE7C/{model}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
@@ -79,6 +86,10 @@ public class UnionCallBackController {
                 return unionMainPermitService.updateCallbackById(ids, socketKey, payType, orderNo, isSuccess);
             case "opportunity":
                 return unionBrokeragePayService.updateCallbackByIds(ids, socketKey, payType, orderNo, isSuccess);
+            case "consume":
+                return unionConsumeService.updateCallbackById(ids, socketKey, payType, orderNo, isSuccess);
+            case "card":
+                return unionCardService.updateCallbackByIds(ids, socketKey, payType, orderNo, isSuccess);
             default:
                 Map<String, Object> result = new HashMap<>(2);
                 result.put("code", -1);

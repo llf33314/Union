@@ -36,7 +36,7 @@ public class UnionCardSharingRatioController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页：售卡佣金分成管理-活动卡售卡分成比例-查看比例", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "售卡佣金分成管理-活动卡售卡比例设置-分页-查看比例", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<CardSharingRatioVO>> pageSharingRatioVOByActivityIdAndUnionId(
             HttpServletRequest request,
@@ -52,13 +52,13 @@ public class UnionCardSharingRatioController {
         }
         // mock
         List<CardSharingRatioVO> voList = MockUtil.list(CardSharingRatioVO.class, page.getSize());
-//        List<CardSharingRatioVO> voList = unionCardSharingRatioService.listCardSharingRatioVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
+        List<CardSharingRatioVO> voList2 = unionCardSharingRatioService.listCardSharingRatioVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
         Page<CardSharingRatioVO> result = (Page<CardSharingRatioVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "列表：售卡佣金分成管理-活动卡售卡分成比例-查看比例-比例设置", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "售卡佣金分成管理-活动卡售卡比例设置-分页-查看比例-比例设置", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<List<CardSharingRatioVO>> listByActivityIdAndUnionId(
             HttpServletRequest request,
@@ -73,12 +73,13 @@ public class UnionCardSharingRatioController {
         }
         // mock
         List<CardSharingRatioVO> result = MockUtil.list(CardSharingRatioVO.class, 20);
+        List<CardSharingRatioVO> voList2 = unionCardSharingRatioService.listCardSharingRatioVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
-    @ApiOperation(value = "批量更新：售卡佣金分成管理-活动卡售卡分成比例-查看比例-比例设置", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "售卡佣金分成管理-活动卡售卡比例设置-分页-查看比例-比例设置-更新", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> updateRatioByActivityIdAndUnionId(
             HttpServletRequest request,
@@ -93,7 +94,7 @@ public class UnionCardSharingRatioController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-//        unionCardSharingRatioService.updateRatioByBusIdAndUnionIdAndActivityId(busId, unionId, activityId, ratioList);
+        unionCardSharingRatioService.updateRatioByBusIdAndUnionIdAndActivityId(busId, unionId, activityId, ratioList);
         return GtJsonResult.instanceSuccessMsg();
     }
 

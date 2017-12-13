@@ -327,8 +327,11 @@ CREATE TABLE `t_union_card_record` (
   `pay_type` int(2) DEFAULT NULL COMMENT '支付类型(1:微信支付 2:支付宝支付)',
   `pay_status` int(2) DEFAULT NULL COMMENT '支付状态(1:未支付 2:支付成功 3:支付失败 4:已退款)',
   `pay_money` double(8,2) DEFAULT NULL COMMENT '支付金额',
+  `activity_id` int(11) DEFAULT NULL COMMENT '活动id',
   `card_id` int(11) DEFAULT NULL COMMENT '联盟卡id',
   `fan_id` int(11) DEFAULT NULL COMMENT '联盟卡粉丝id',
+  `member_id` int(11) DEFAULT NULL COMMENT '盟员id',
+  `union_id` int(11) DEFAULT NULL COMMENT '联盟id',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='联盟卡购买记录';
 

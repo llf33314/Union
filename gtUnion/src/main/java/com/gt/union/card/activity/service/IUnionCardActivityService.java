@@ -2,10 +2,7 @@ package com.gt.union.card.activity.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.card.activity.entity.UnionCardActivity;
-import com.gt.union.card.activity.vo.CardActivityApplyVO;
-import com.gt.union.card.activity.vo.CardActivityConsumeVO;
-import com.gt.union.card.activity.vo.CardActivityStatusVO;
-import com.gt.union.card.activity.vo.CardActivityVO;
+import com.gt.union.card.activity.vo.*;
 
 import java.util.List;
 
@@ -19,7 +16,7 @@ public interface IUnionCardActivityService extends IService<UnionCardActivity> {
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
-     * 根据活动id和联盟id，获取活动信息
+     * 获取活动信息
      *
      * @param activityId 活动id
      * @param unionId    联盟id
@@ -38,20 +35,20 @@ public interface IUnionCardActivityService extends IService<UnionCardActivity> {
     Integer getStatus(UnionCardActivity activity) throws Exception;
 
     /**
-     * 前台-办理联盟卡-查询联盟和联盟卡-查询活动卡
+     * 前台-办理联盟卡-查询联盟和联盟卡-查询联盟卡活动
      *
+     * @param busId      商家id
      * @param activityId 活动id
      * @param unionId    联盟id
-     * @param busId      商家id
      * @return CardActivityApplyVO
      * @throws Exception 统一处理异常
      */
-    CardActivityApplyVO getCardActivityApplyVOByIdAndUnionIdAndBusId(Integer activityId, Integer unionId, Integer busId) throws Exception;
+    CardActivityApplyVO getCardActivityApplyVOByBusIdAndIdAndUnionId(Integer busId, Integer activityId, Integer unionId) throws Exception;
 
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 分页：售卡佣金分成管理-活动卡售卡比例设置
+     * 售卡佣金分成管理-活动卡售卡比例设置-分页
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -61,7 +58,7 @@ public interface IUnionCardActivityService extends IService<UnionCardActivity> {
     List<CardActivityStatusVO> listCardActivityStatusVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
 
     /**
-     * 分页：联盟卡设置-活动卡设置
+     * 联盟卡设置-活动卡设置-分页
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -71,7 +68,7 @@ public interface IUnionCardActivityService extends IService<UnionCardActivity> {
     List<CardActivityVO> listCardActivityVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
 
     /**
-     * 前台-联盟卡消费核销-开启优惠项目
+     * 前台-联盟卡消费核销-开启优惠项目-查询活动卡列表
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -82,7 +79,7 @@ public interface IUnionCardActivityService extends IService<UnionCardActivity> {
     List<CardActivityConsumeVO> listCardActivityConsumeVOByBusIdAndUnionIdAndFanId(Integer busId, Integer unionId, Integer fanId) throws Exception;
 
     /**
-     * 根据联盟id和活动卡状态，获取活动卡信息
+     * 获取活动卡列表信息
      *
      * @param unionId 联盟id
      * @param status  活动卡状态
@@ -90,6 +87,17 @@ public interface IUnionCardActivityService extends IService<UnionCardActivity> {
      * @throws Exception 统一处理异常
      */
     List<UnionCardActivity> listByUnionIdAndStatus(Integer unionId, Integer status) throws Exception;
+
+    /**
+     * 前台-办理联盟卡-查询联盟和联盟卡-查询联盟卡活动-查询服务项目数
+     *
+     * @param busId      商家id
+     * @param activityId 活动id
+     * @param unionId    联盟id
+     * @return List<CardActivityApplyItemVO>
+     * @throws Exception 统一处理异常
+     */
+    List<CardActivityApplyItemVO> listCardActivityApplyItemVOByBusIdAndIdAndUnionId(Integer busId, Integer activityId, Integer unionId) throws Exception;
 
     //***************************************** Domain Driven Design - save ********************************************
 
@@ -106,14 +114,14 @@ public interface IUnionCardActivityService extends IService<UnionCardActivity> {
     //***************************************** Domain Driven Design - remove ******************************************
 
     /**
-     * 删除：联盟卡设置-活动卡设置
+     * 联盟卡设置-活动卡设置-分页-删除
      *
+     * @param busId      商家id
      * @param activityId 活动id
      * @param unionId    联盟id
-     * @param busId      商家id
      * @throws Exception 统一处理异常
      */
-    void removeByIdAndUnionIdAndBusId(Integer activityId, Integer unionId, Integer busId) throws Exception;
+    void removeByBusIdAndIdAndUnionId(Integer busId, Integer activityId, Integer unionId) throws Exception;
 
     //***************************************** Domain Driven Design - update ******************************************
 

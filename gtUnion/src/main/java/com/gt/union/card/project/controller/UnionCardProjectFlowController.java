@@ -35,7 +35,7 @@ public class UnionCardProjectFlowController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "联盟卡设置-活动卡设置-我的活动项目-审批记录", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "联盟卡设置-活动卡设置-分页-我的活动项目-审批记录", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/projectId/{projectId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<List<UnionCardProjectFlow>> listByProjectIdAndUnionId(
             HttpServletRequest request,
@@ -52,7 +52,7 @@ public class UnionCardProjectFlowController {
         }
         // mock
         List<UnionCardProjectFlow> result = MockUtil.list(UnionCardProjectFlow.class, 20);
-//        List<UnionCardProjectFlow> result = unionCardProjectFlowService.listByBusIdAndActivityIdAndProjectIdAndUnionId(busId, activityId, projectId, unionId);
+        List<UnionCardProjectFlow> result2 = unionCardProjectFlowService.listByBusIdAndUnionIdAndActivityIdAndProjectId(busId, unionId, activityId, projectId);
         return GtJsonResult.instanceSuccessMsg(result)
                 ;
     }

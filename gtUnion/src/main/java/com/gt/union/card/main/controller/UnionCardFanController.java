@@ -46,7 +46,7 @@ public class UnionCardFanController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页：首页-联盟卡", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "首页-联盟卡-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<CardFanVO>> pageFanVOByUnionId(
             HttpServletRequest request,
@@ -64,13 +64,13 @@ public class UnionCardFanController {
         }
         // mock
         List<CardFanVO> fanVOList = MockUtil.list(CardFanVO.class, page.getSize());
-//        List<CardFanVO> fanVOList = unionCardFanService.listCardFanVoByBusIdAndUnionId(busId, unionId, optNumber, optPhone);
+        List<CardFanVO> fanVOList2 = unionCardFanService.listCardFanVoByBusIdAndUnionId(busId, unionId, optNumber, optPhone);
         Page<CardFanVO> result = (Page<CardFanVO>) page;
         result = PageUtil.setRecord(result, fanVOList);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "导出：首页-联盟卡", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "首页-联盟卡-导出", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public void exportFanVOByUnionId(
             HttpServletRequest request,
@@ -112,7 +112,7 @@ public class UnionCardFanController {
         ExportUtil.responseExport(response, workbook, fileName);
     }
 
-    @ApiOperation(value = "首页-联盟卡-详情", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "首页-联盟卡-分页-详情", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{fanId}/detail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<CardFanDetailVO> getFanDetailVOIdAndUnionId(
             HttpServletRequest request,
@@ -129,12 +129,12 @@ public class UnionCardFanController {
         CardFanDetailVO result = MockUtil.get(CardFanDetailVO.class);
         List<UnionCard> activityCardList = MockUtil.list(UnionCard.class, 20);
         result.setActivityCardList(activityCardList);
-//        CardFanDetailVO result = unionCardFanService.getFanDetailVOByIdAndBusIdAndUnionId(fanId, busId, unionId);
+        CardFanDetailVO result2 = unionCardFanService.getFanDetailVOByBusIdAndIdAndUnionId(busId, fanId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
     @ApiOperation(value = "前台-联盟卡消费核销-搜索", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "search", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<CardFanSearchVO> getSearchVO(
             HttpServletRequest request,
             @ApiParam(value = "联盟卡号或手机号", name = "numberOrPhone", required = true)
@@ -150,7 +150,7 @@ public class UnionCardFanController {
         CardFanSearchVO result = MockUtil.get(CardFanSearchVO.class);
         List<UnionMain> unionList = MockUtil.list(UnionMain.class, 3);
         result.setUnionList(unionList);
-//        CardFanSearchVO result = unionCardFanService.getCardFanSearchVOByBusId(busId, numberOrPhone, unionId);
+        CardFanSearchVO result2 = unionCardFanService.getCardFanSearchVOByBusId(busId, numberOrPhone, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

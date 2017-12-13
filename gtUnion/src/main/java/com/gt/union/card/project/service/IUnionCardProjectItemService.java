@@ -17,37 +17,47 @@ public interface IUnionCardProjectItemService extends IService<UnionCardProjectI
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
-     * 根据id，获取对象
+     * 获取优惠信息
      *
-     * @param id id
+     * @param id 优惠id
      * @return UnionCardProjectItem
      * @throws Exception 统一处理异常
      */
     UnionCardProjectItem getById(Integer id) throws Exception;
 
+    /**
+     * 获取优惠信息
+     *
+     * @param itemId    优惠id
+     * @param projectId 项目id
+     * @return UnionCardProjectItem
+     * @throws Exception 统一处理异常
+     */
+    UnionCardProjectItem getByIdAndProjectId(Integer itemId, Integer projectId) throws Exception;
+
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 根据项目id，获取名称来自接口的优惠信息
+     * 获取优惠列表信息
      *
      * @param projectId 项目id
      * @return List<UnionCardProjectItem>
      * @throws Exception 统一处理异常
      */
-    List<UnionCardProjectItem> listItemByProjectId(Integer projectId) throws Exception;
+    List<UnionCardProjectItem> listByProjectId(Integer projectId) throws Exception;
 
     /**
-     * 根据项目id和类型，获取名称来自接口的优惠信息
+     * 获取优惠列表信息
      *
      * @param projectId 项目id
      * @param type      类型
      * @return List<UnionCardProjectItem>
      * @throws Exception 统一处理异常
      */
-    List<UnionCardProjectItem> listItemByProjectIdAndType(Integer projectId, Integer type) throws Exception;
+    List<UnionCardProjectItem> listByProjectIdAndType(Integer projectId, Integer type) throws Exception;
 
     /**
-     * 列表：前台-联盟卡消费核销-开启优惠项目-优惠
+     * 前台-联盟卡消费核销-开启优惠项目-查询活动项目优惠列表
      *
      * @param busId      商家id
      * @param unionId    联盟id
@@ -60,26 +70,26 @@ public interface IUnionCardProjectItemService extends IService<UnionCardProjectI
     //***************************************** Domain Driven Design - save ********************************************
 
     /**
-     * 联盟卡设置-活动卡设置-我的活动项目-保存
+     * 联盟卡设置-活动卡设置-分页-我的活动项目-ERP和非ERP-保存
      *
      * @param busId      商家id
-     * @param activityId 活动id
      * @param unionId    联盟id
+     * @param activityId 活动id
      * @param vo         表单内容
      * @throws Exception 统一处理异常
      */
-    void saveProjectItemVOByBusIdAndActivityIdAndUnionId(Integer busId, Integer activityId, Integer unionId, CardProjectVO vo) throws Exception;
+    void saveProjectItemVOByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId, CardProjectVO vo) throws Exception;
 
     /**
-     * 联盟卡设置-活动卡设置-我的活动项目-提交
+     * 联盟卡设置-活动卡设置-分页-我的活动项目-ERP和非ERP-提交
      *
      * @param busId      商家id
-     * @param activityId 活动id
      * @param unionId    联盟id
+     * @param activityId 活动id
      * @param vo         表单内容
      * @throws Exception 统一处理异常
      */
-    void commitProjectItemVOByBusIdAndActivityIdAndUnionId(Integer busId, Integer activityId, Integer unionId, CardProjectVO vo) throws Exception;
+    void commitProjectItemVOByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId, CardProjectVO vo) throws Exception;
 
     //***************************************** Domain Driven Design - remove ******************************************
 
@@ -96,7 +106,16 @@ public interface IUnionCardProjectItemService extends IService<UnionCardProjectI
     //***************************************** Domain Driven Design - count *******************************************
 
     /**
-     * 根据联盟id和活动id，统计已提交通过的项目优惠个数;
+     * 统计项目优惠个数
+     *
+     * @param projectId 项目id
+     * @return Integer
+     * @throws Exception 统一处理异常
+     */
+    Integer countByProjectId(Integer projectId) throws Exception;
+
+    /**
+     * 统计已提交通过的项目优惠个数;
      *
      * @param unionId    联盟id
      * @param activityId 活动id

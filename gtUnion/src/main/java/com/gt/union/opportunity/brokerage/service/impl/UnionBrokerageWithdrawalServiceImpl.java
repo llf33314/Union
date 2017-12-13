@@ -27,7 +27,7 @@ import java.util.List;
 @Service
 public class UnionBrokerageWithdrawalServiceImpl extends ServiceImpl<UnionBrokerageWithdrawalMapper, UnionBrokerageWithdrawal> implements IUnionBrokerageWithdrawalService {
     @Autowired
-    public RedisCacheUtil redisCacheUtil;
+    private RedisCacheUtil redisCacheUtil;
 
     //***************************************** Domain Driven Design - get *********************************************
 

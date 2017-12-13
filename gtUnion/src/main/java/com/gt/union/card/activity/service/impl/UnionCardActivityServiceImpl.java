@@ -8,10 +8,7 @@ import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.activity.mapper.UnionCardActivityMapper;
 import com.gt.union.card.activity.service.IUnionCardActivityService;
 import com.gt.union.card.activity.util.UnionCardActivityCacheUtil;
-import com.gt.union.card.activity.vo.CardActivityApplyVO;
-import com.gt.union.card.activity.vo.CardActivityConsumeVO;
-import com.gt.union.card.activity.vo.CardActivityStatusVO;
-import com.gt.union.card.activity.vo.CardActivityVO;
+import com.gt.union.card.activity.vo.*;
 import com.gt.union.card.main.constant.CardConstant;
 import com.gt.union.card.main.entity.UnionCard;
 import com.gt.union.card.main.entity.UnionCardFan;
@@ -107,8 +104,8 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
     }
 
     @Override
-    public CardActivityApplyVO getCardActivityApplyVOByIdAndUnionIdAndBusId(Integer activityId, Integer unionId, Integer busId) throws Exception {
-        if (activityId == null || unionId == null || busId == null) {
+    public CardActivityApplyVO getCardActivityApplyVOByBusIdAndIdAndUnionId(Integer busId, Integer activityId, Integer unionId) throws Exception {
+        if (busId == null || activityId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	判断union有效性和member读权限
@@ -154,7 +151,7 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
         if (MemberConstant.IS_UNION_OWNER_YES == member.getIsUnionOwner()) {
             activityList = listByUnionId(unionId);
         } else {
-            List<UnionCardProject> projectList = unionCardProjectService.listByMemberIdAndUnionIdAndStatus(member.getId(), unionId, ProjectConstant.STATUS_ACCEPT);
+            List<UnionCardProject> projectList = unionCardProjectService.listByUnionIdAndMemberIdAndStatus(unionId, member.getId(), ProjectConstant.STATUS_ACCEPT);
             if (ListUtil.isNotEmpty(projectList)) {
                 activityList = new ArrayList<>();
                 for (UnionCardProject project : projectList) {
@@ -211,22 +208,22 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
 
 
                 if (currentDate.compareTo(activity.getApplyBeginTime()) > 0) {
-                    Integer joinMemberCount = unionCardProjectService.countByActivityIdAndUnionIdAndStatus(activity.getId(), unionId, ProjectConstant.STATUS_ACCEPT);
+                    Integer joinMemberCount = unionCardProjectService.countByUnionIdAndActivityIdAndStatus(unionId, activity.getId(), ProjectConstant.STATUS_ACCEPT);
                     vo.setJoinMemberCount(joinMemberCount);
 
-                    UnionCardProject project = unionCardProjectService.getByActivityIdAndMemberIdAndUnionId(activity.getId(), member.getId(), unionId);
+                    UnionCardProject project = unionCardProjectService.getByUnionIdAndMemberIdAndActivityId(unionId, member.getId(), activity.getId());
                     vo.setProject(project);
                 }
 
                 //（3）	如果在报名中，则有待审核数量
                 if (ActivityConstant.STATUS_APPLYING == activityStatus) {
-                    Integer projectCheckCount = unionCardProjectService.countByActivityIdAndUnionIdAndStatus(activity.getId(), unionId, ProjectConstant.STATUS_COMMITTED);
+                    Integer projectCheckCount = unionCardProjectService.countByUnionIdAndActivityIdAndStatus(unionId, activity.getId(), ProjectConstant.STATUS_COMMITTED);
                     vo.setProjectCheckCount(projectCheckCount);
                 }
 
                 // （4）如果在售卖开始后，则有已售活动卡数量
                 if (currentDate.compareTo(activity.getSellBeginTime()) > 0) {
-                    Integer cardSellCount = unionCardService.countByActivityIdAndUnionId(activity.getId(), unionId);
+                    Integer cardSellCount = unionCardService.countByUnionIdAndActivityId(unionId, activity.getId());
                     vo.setCardSellCount(cardSellCount);
                 }
                 result.add(vo);
@@ -263,7 +260,7 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
         }
         // （3）	获取粉丝所有有效的活动卡信息
         List<CardActivityConsumeVO> result = new ArrayList<>();
-        List<UnionCard> validActivityCardList = unionCardService.listValidByFanIdAndUnionIdAndType(fanId, unionId, CardConstant.TYPE_ACTIVITY);
+        List<UnionCard> validActivityCardList = unionCardService.listValidByUnionIdAndFanIdAndType(unionId, fanId, CardConstant.TYPE_ACTIVITY);
         if (ListUtil.isNotEmpty(validActivityCardList)) {
             for (UnionCard validActivityCard : validActivityCardList) {
                 CardActivityConsumeVO vo = new CardActivityConsumeVO();
@@ -292,6 +289,50 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
                 if (status.equals(getStatus(activity))) {
                     result.add(activity);
                 }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<CardActivityApplyItemVO> listCardActivityApplyItemVOByBusIdAndIdAndUnionId(Integer busId, Integer activityId, Integer unionId) throws Exception {
+        if (busId == null || activityId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member读权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+        }
+        // （2）	判断activityId有效性
+        UnionCardActivity activity = getByIdAndUnionId(activityId, unionId);
+        if (activity == null) {
+            throw new BusinessException("找不到活动信息");
+        }
+        // （3）	获取已提交通过的活动项目
+        // （4）	按时间顺序排序
+        List<CardActivityApplyItemVO> result = new ArrayList<>();
+        List<UnionCardProject> projectList = unionCardProjectService.listByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
+        if (ListUtil.isNotEmpty(projectList)) {
+            Collections.sort(projectList, new Comparator<UnionCardProject>() {
+                @Override
+                public int compare(UnionCardProject o1, UnionCardProject o2) {
+                    return o2.getCreateTime().compareTo(o1.getCreateTime());
+                }
+            });
+            for (UnionCardProject project : projectList) {
+                CardActivityApplyItemVO vo = new CardActivityApplyItemVO();
+                UnionMember projectMember = unionMemberService.getReadByIdAndUnionId(project.getMemberId(), project.getUnionId());
+                vo.setMember(projectMember);
+
+                List<UnionCardProjectItem> itemList = unionCardProjectItemService.listByProjectId(project.getId());
+                vo.setItemList(itemList);
+
+                result.add(vo);
             }
         }
 
@@ -397,10 +438,10 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
 
     //***************************************** Domain Driven Design - remove ******************************************
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
-    public void removeByIdAndUnionIdAndBusId(Integer activityId, Integer unionId, Integer busId) throws Exception {
-        if (activityId == null || unionId == null || busId == null) {
+    @Transactional(rollbackFor = Exception.class)
+    public void removeByBusIdAndIdAndUnionId(Integer busId, Integer activityId, Integer unionId) throws Exception {
+        if (busId == null || activityId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	判断union有效性和member写权限、盟主权限
@@ -427,12 +468,12 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
         List<Integer> removeProjectIdtList = new ArrayList<>();
         List<Integer> removeProjectItemIdList = new ArrayList<>();
         List<Integer> removeProjectFlowIdList = new ArrayList<>();
-        List<UnionCardProject> projectList = unionCardProjectService.listByActivityIdAndUnionId(activityId, unionId);
+        List<UnionCardProject> projectList = unionCardProjectService.listByUnionIdAndActivityId(unionId, activityId);
         if (ListUtil.isNotEmpty(projectList)) {
             for (UnionCardProject project : projectList) {
                 removeProjectIdtList.add(project.getId());
 
-                List<UnionCardProjectItem> projectItemList = unionCardProjectItemService.listItemByProjectId(project.getId());
+                List<UnionCardProjectItem> projectItemList = unionCardProjectItemService.listByProjectId(project.getId());
                 if (ListUtil.isNotEmpty(projectItemList)) {
                     for (UnionCardProjectItem projectItem : projectItemList) {
                         removeProjectItemIdList.add(projectItem.getId());

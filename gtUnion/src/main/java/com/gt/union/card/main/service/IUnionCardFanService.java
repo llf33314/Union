@@ -18,18 +18,18 @@ public interface IUnionCardFanService extends IService<UnionCardFan> {
     //***************************************** Domain Driven Design - get *****************************************
 
     /**
-     * 首页-联盟卡-详情
+     * 首页-联盟卡-分页-详情
      *
-     * @param fanId   粉丝id
      * @param busId   商家id
+     * @param fanId   粉丝id
      * @param unionId 联盟id
      * @return CardFanDetailVO
      * @throws Exception 统一处理异常
      */
-    CardFanDetailVO getFanDetailVOByIdAndBusIdAndUnionId(Integer fanId, Integer busId, Integer unionId) throws Exception;
+    CardFanDetailVO getFanDetailVOByBusIdAndIdAndUnionId(Integer busId, Integer fanId, Integer unionId) throws Exception;
 
     /**
-     * 根据粉丝id，获取对象
+     * 获取粉丝信息
      *
      * @param fanId 粉丝id
      * @return UnionCardFan
@@ -40,7 +40,7 @@ public interface IUnionCardFanService extends IService<UnionCardFan> {
     /**
      * 前台-联盟卡消费核销-搜索
      *
-     * @param busId 商家id
+     * @param busId         商家id
      * @param numberOrPhone 联盟卡号或手机号
      * @param optUnionId    联盟id
      * @return CardFanSearchVO
@@ -49,7 +49,7 @@ public interface IUnionCardFanService extends IService<UnionCardFan> {
     CardFanSearchVO getCardFanSearchVOByBusId(Integer busId, String numberOrPhone, Integer optUnionId) throws Exception;
 
     /**
-     * 根据联盟卡号或手机号，获取粉丝信息
+     * 获取粉丝信息
      *
      * @param numberOrPhone 联盟卡号或手机号
      * @return UnionCardFan
@@ -57,10 +57,19 @@ public interface IUnionCardFanService extends IService<UnionCardFan> {
      */
     UnionCardFan getByNumberOrPhone(String numberOrPhone) throws Exception;
 
+    /**
+     * 获取粉丝信息
+     *
+     * @param phone 手机号
+     * @return UnionCardFan
+     * @throws Exception 统一处理异常
+     */
+    UnionCardFan getByPhone(String phone) throws Exception;
+
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 分页：首页-联盟卡
+     * 首页-联盟卡-分页；首页-联盟卡-导出
      *
      * @param busId     商家id
      * @param unionId   联盟id
@@ -72,7 +81,7 @@ public interface IUnionCardFanService extends IService<UnionCardFan> {
     List<CardFanVO> listCardFanVoByBusIdAndUnionId(Integer busId, Integer unionId, String optNumber, String optPhone) throws Exception;
 
     /**
-     * controller专用：获取在指定联盟下具有有效折扣卡的粉丝信息
+     * 获取具有有效折扣卡的粉丝信息
      *
      * @param unionId   联盟id
      * @param optNumber 联盟卡号
@@ -80,9 +89,17 @@ public interface IUnionCardFanService extends IService<UnionCardFan> {
      * @return List<UnionCardFan>
      * @throws Exception 统一处理异常
      */
-    List<UnionCardFan> listWithDiscountCardByUnionId(Integer unionId, String optNumber, String optPhone) throws Exception;
+    List<UnionCardFan> listWithValidDiscountCardByUnionId(Integer unionId, String optNumber, String optPhone) throws Exception;
 
     //***************************************** Domain Driven Design - save ********************************************
+
+    /**
+     * 保存
+     *
+     * @param newUnionCardRoot 保存内容
+     * @throws Exception 统一处理异常
+     */
+    void save(UnionCardFan newUnionCardRoot) throws Exception;
 
     //***************************************** Domain Driven Design - remove ******************************************
 

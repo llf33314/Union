@@ -371,30 +371,24 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
                     updatePay.setType(BrokerageConstant.PAY_TYPE_ALIPAY);
                     updatePay.setAlipayOrderNo(orderNo);
                 }
-
-                UnionBrokerageIncome saveIncome = new UnionBrokerageIncome();
-                saveIncome.setDelStatus(CommonConstant.DEL_STATUS_NO);
-                saveIncome.setCreateTime(currentDate);
-                saveIncome.setType(BrokerageConstant.INCOME_TYPE_OPPORTUNITY);
-                saveIncome.setMoney(pay.getMoney());
-                saveIncome.setBusId(pay.getToBusId());
-                saveIncome.setMemberId(pay.getToMemberId());
-                saveIncome.setUnionId(pay.getUnionId());
-                saveIncome.setOpportunityId(pay.getOpportunityId());
-                saveIncomeList.add(saveIncome);
-
+                updatePayList.add(updatePay);
+                
                 if (CommonConstant.COMMON_YES == isSuccess) {
-                    UnionOpportunity opportunity = unionOpportunityService.getById(pay.getOpportunityId());
-                    if (opportunity == null) {
-                        result.put("code", -1);
-                        result.put("msg", "找不到商机信息");
-                        return JSONObject.toJSONString(result);
-                    }
+                    UnionBrokerageIncome saveIncome = new UnionBrokerageIncome();
+                    saveIncome.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                    saveIncome.setCreateTime(currentDate);
+                    saveIncome.setType(BrokerageConstant.INCOME_TYPE_OPPORTUNITY);
+                    saveIncome.setMoney(pay.getMoney());
+                    saveIncome.setBusId(pay.getToBusId());
+                    saveIncome.setMemberId(pay.getToMemberId());
+                    saveIncome.setUnionId(pay.getUnionId());
+                    saveIncome.setOpportunityId(pay.getOpportunityId());
+                    saveIncomeList.add(saveIncome);
+                    
                     UnionOpportunity updateOpportunity = new UnionOpportunity();
-                    updateOpportunity.setId(opportunity.getId());
+                    updateOpportunity.setId(pay.getOpportunityId());
                     updateOpportunity.setIsClose(CommonConstant.COMMON_YES);
                     updateOpportunityList.add(updateOpportunity);
-
                 }
             }
 
@@ -422,8 +416,9 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
             result.put("msg", e.getMessage());
             return JSONObject.toJSONString(result);
         }
-
     }
+
+    //***************************************** Domain Driven Design - count *******************************************
 
     @Override
     public Double sumMoneyByFromBusIdAndToBusIdAndStatus(Integer fromBusId, Integer toBusId, Integer status) throws Exception {
@@ -441,9 +436,7 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
 
         return result.doubleValue();
     }
-
-    //***************************************** Domain Driven Design - count *******************************************
-
+    
     //***************************************** Domain Driven Design - boolean *****************************************
 
     @Override

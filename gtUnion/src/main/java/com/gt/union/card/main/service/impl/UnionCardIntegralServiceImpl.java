@@ -35,12 +35,12 @@ public class UnionCardIntegralServiceImpl extends ServiceImpl<UnionCardIntegralM
     //***************************************** Domain Driven Design - get *********************************************
 
     @Override
-    public UnionCardIntegral getByFanIdAndUnionId(Integer fanId, Integer unionId) throws Exception {
-        if (fanId == null || unionId == null) {
+    public UnionCardIntegral getByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception {
+        if (unionId == null || fanId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCardIntegral> result = listByFanIdAndUnionId(fanId, unionId);
+        List<UnionCardIntegral> result = listByUnionIdAndFanId(unionId, fanId);
 
         return ListUtil.isNotEmpty(result) ? result.get(0) : null;
     }
@@ -48,8 +48,8 @@ public class UnionCardIntegralServiceImpl extends ServiceImpl<UnionCardIntegralM
     //***************************************** Domain Driven Design - list ********************************************
 
     @Override
-    public List<UnionCardIntegral> listByFanIdAndUnionId(Integer fanId, Integer unionId) throws Exception {
-        if (fanId == null || unionId == null) {
+    public List<UnionCardIntegral> listByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception {
+        if (unionId == null || fanId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         
@@ -68,13 +68,13 @@ public class UnionCardIntegralServiceImpl extends ServiceImpl<UnionCardIntegralM
     //***************************************** Domain Driven Design - count *******************************************
 
     @Override
-    public Double countIntegralByFanIdAndUnionId(Integer fanId, Integer unionId) throws Exception {
-        if (fanId == null || unionId == null) {
+    public Double countIntegralByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception {
+        if (unionId == null || fanId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
         BigDecimal result = BigDecimal.ZERO;
-        List<UnionCardIntegral> integralList = listByFanIdAndUnionId(fanId, unionId);
+        List<UnionCardIntegral> integralList = listByUnionIdAndFanId(unionId, fanId);
         if (ListUtil.isNotEmpty(integralList)) {
             for (UnionCardIntegral integral : integralList) {
                 result = BigDecimalUtil.add(result, integral.getIntegral());

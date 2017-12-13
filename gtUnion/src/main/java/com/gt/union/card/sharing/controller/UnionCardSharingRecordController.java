@@ -35,7 +35,7 @@ public class UnionCardSharingRecordController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页：获取售卡佣金分成记录", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "售卡佣金分成管理-售卡分成记录-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<Page<CardSharingRecordVO>> pageSharingRecordVOByUnionId(
             HttpServletRequest request,
@@ -55,7 +55,7 @@ public class UnionCardSharingRecordController {
         }
         // mock
         List<CardSharingRecordVO> voList = MockUtil.list(CardSharingRecordVO.class, page.getSize());
-//        List<CardSharingRecordVO> voList = unionCardSharingRecordService.listCardSharingRecordVOByBusIdAndUnionId(busId, unionId, cardNumber, beginTime, endTime);
+        List<CardSharingRecordVO> voList2 = unionCardSharingRecordService.listCardSharingRecordVOByBusIdAndUnionId(busId, unionId, cardNumber, beginTime, endTime);
         Page<CardSharingRecordVO> result = (Page<CardSharingRecordVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);

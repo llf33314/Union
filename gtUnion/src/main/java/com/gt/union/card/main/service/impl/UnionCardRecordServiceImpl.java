@@ -45,6 +45,7 @@ public class UnionCardRecordServiceImpl extends ServiceImpl<UnionCardRecordMappe
 
     //***************************************** Object As a Service - get **********************************************
 
+    @Override
     public UnionCardRecord getById(Integer id) throws Exception {
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -121,6 +122,7 @@ public class UnionCardRecordServiceImpl extends ServiceImpl<UnionCardRecordMappe
         removeCache(newUnionCardApply);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveBatch(List<UnionCardRecord> newUnionCardApplyList) throws Exception {
         if (newUnionCardApplyList == null) {
@@ -185,6 +187,7 @@ public class UnionCardRecordServiceImpl extends ServiceImpl<UnionCardRecordMappe
         updateById(updateUnionCardApply);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateBatch(List<UnionCardRecord> updateUnionCardApplyList) throws Exception {
         if (updateUnionCardApplyList == null) {

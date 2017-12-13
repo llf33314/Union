@@ -2,8 +2,10 @@ package com.gt.union.card.main.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.card.main.entity.UnionCard;
+import com.gt.union.card.main.entity.UnionCardFan;
 import com.gt.union.card.main.vo.CardApplyVO;
-import com.gt.union.card.main.vo.CardSocketVO;
+import com.gt.union.card.main.vo.CardPhoneVO;
+import com.gt.union.union.main.vo.UnionPayVO;
 
 import java.util.List;
 
@@ -28,30 +30,30 @@ public interface IUnionCardService extends IService<UnionCard> {
     CardApplyVO getCardApplyVOByBusIdAndFanId(Integer busId, Integer fanId, Integer optUnionId) throws Exception;
 
     /**
-     * 根据粉丝id和联盟id，获取折扣卡信息
+     * 获取有效的折扣卡信息
      *
-     * @param fanId   粉丝id
      * @param unionId 联盟id
+     * @param fanId   粉丝id
      * @return UnionCard
      * @throws Exception 统一处理异常
      */
-    UnionCard getDiscountCardByFanIdAndUnionId(Integer fanId, Integer unionId) throws Exception;
+    UnionCard getValidDiscountCardByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception;
 
     /**
-     * 根据粉丝id、活动id和联盟id，获取折扣卡信息
+     * 获取有效的折扣卡信息
      *
+     * @param unionId    联盟id
      * @param fanId      粉丝id
      * @param activityId 活动id
-     * @param unionId    联盟id
      * @return UnionCard
      * @throws Exception 统一处理异常
      */
-    UnionCard getActivityCardByFanIdAndActivityIdAndUnionId(Integer fanId, Integer activityId, Integer unionId) throws Exception;
+    UnionCard getValidActivityCardByUnionIdAndFanIdAndActivityId(Integer unionId, Integer fanId, Integer activityId) throws Exception;
 
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 根据联盟id，获取有效的联盟卡信息
+     * 获取有效的联盟卡列表信息
      *
      * @param unionId 联盟id
      * @return List<UnionCard>
@@ -60,38 +62,38 @@ public interface IUnionCardService extends IService<UnionCard> {
     List<UnionCard> listValidByUnionId(Integer unionId) throws Exception;
 
     /**
-     * 根据粉丝id和联盟id，获取有效的联盟卡信息
+     * 获取有效的联盟卡列表信息
      *
-     * @param fanId   粉丝id
      * @param unionId 联盟id
+     * @param fanId   粉丝id
      * @return List<UnionCard>
      * @throws Exception 统一处理异常
      */
-    List<UnionCard> listValidByFanIdAndUnionId(Integer fanId, Integer unionId) throws Exception;
+    List<UnionCard> listValidByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception;
 
     /**
-     * 根据粉丝id、联盟id和联盟卡类型，获取有效的联盟卡信息
+     * 获取有效的联盟卡列表信息
      *
-     * @param fanId   粉丝id
      * @param unionId 联盟id
+     * @param fanId   粉丝id
      * @param type    联盟卡类型
      * @return List<UnionCard>
      * @throws Exception 统一处理异常
      */
-    List<UnionCard> listValidByFanIdAndUnionIdAndType(Integer fanId, Integer unionId, Integer type) throws Exception;
+    List<UnionCard> listValidByUnionIdAndFanIdAndType(Integer unionId, Integer fanId, Integer type) throws Exception;
 
     /**
-     * 根据活动id和联盟id，获取活动卡信息
+     * 获取有效的联盟卡列表信息
      *
-     * @param activityId 活动id
      * @param unionId    联盟id
+     * @param activityId 活动id
      * @return List<UnionCard>
      * @throws Exception 统一处理异常
      */
-    List<UnionCard> listByActivityIdAndUnionId(Integer activityId, Integer unionId) throws Exception;
+    List<UnionCard> listValidByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception;
 
     /**
-     * 根据粉丝id，获取有效的联盟卡信息
+     * 获取有效的联盟卡列表信息
      *
      * @param fanId 粉丝id
      * @return List<UnionCard>
@@ -102,45 +104,66 @@ public interface IUnionCardService extends IService<UnionCard> {
     //***************************************** Domain Driven Design - save ********************************************
 
     /**
-     * 保存办理联盟卡信息
+     * 前台-办理联盟卡-确定
      *
      * @param busId          商家id
-     * @param fanId          粉丝id
      * @param unionId        联盟id
+     * @param fanId          粉丝id
      * @param activityIdList 活动id列表
-     * @return CardSocketVO
+     * @return UnionPayVO
      * @throws Exception 统一处理异常
      */
-    CardSocketVO saveApplyByBusIdAndFanIdAndUnionId(Integer busId, Integer fanId, Integer unionId, List<Integer> activityIdList) throws Exception;
+    UnionPayVO saveApplyByBusIdAndUnionIdAndFanId(Integer busId, Integer unionId, Integer fanId, List<Integer> activityIdList) throws Exception;
+
+    /**
+     * 前台-办理联盟卡-校验手机验证码
+     *
+     * @param vo 表单内容
+     * @return UnionCardFan
+     * @throws Exception 统一处理异常
+     */
+    UnionCardFan checkCardPhoneVO(CardPhoneVO vo) throws Exception;
 
     //***************************************** Domain Driven Design - remove ******************************************
 
     //***************************************** Domain Driven Design - update ******************************************
 
+    /**
+     * 前台-办理联盟卡-确定-回调
+     *
+     * @param recordIds 购买联盟卡支付ids
+     * @param socketKey socket关键字
+     * @param payType   支付类型
+     * @param orderNo   订单号
+     * @param isSuccess 是否成功
+     * @return String
+     */
+    String updateCallbackByIds(String recordIds, String socketKey, String payType, String orderNo, Integer isSuccess);
+
     //***************************************** Domain Driven Design - count *******************************************
 
     /**
-     * 根据活动id和联盟id，统计活动卡个数
+     * 统计活动卡数量
      *
-     * @param activityId 活动id
      * @param unionId    联盟id
+     * @param activityId 活动id
      * @return Integer
      * @throws Exception 统一处理异常
      */
-    Integer countByActivityIdAndUnionId(Integer activityId, Integer unionId) throws Exception;
+    Integer countByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception;
 
     //***************************************** Domain Driven Design - boolean *****************************************
 
     /**
-     * 根据粉丝id、联盟id和联盟卡类型，判断是否存在有效的联盟卡信息
+     * 判断是否存在有效的联盟卡信息
      *
-     * @param fanId   粉丝id
      * @param unionId 联盟id
+     * @param fanId   粉丝id
      * @param type    联盟卡类型
      * @return boolean
      * @throws Exception 统一处理异常
      */
-    boolean existValidByFanIdAndUnionIdAndType(Integer fanId, Integer unionId, Integer type) throws Exception;
+    boolean existValidByUnionIdAndFanIdAndType(Integer unionId, Integer fanId, Integer type) throws Exception;
 
     //***************************************** Domain Driven Design - filter ******************************************
 
@@ -163,4 +186,13 @@ public interface IUnionCardService extends IService<UnionCard> {
      * @throws Exception 统一处理异常
      */
     List<UnionCard> filterByUnionId(List<UnionCard> cardList, Integer unionId) throws Exception;
+
+    /**
+     * 过滤掉过期的联盟卡
+     *
+     * @param cardList 数据源
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> filterByValidity(List<UnionCard> cardList) throws Exception;
 }

@@ -19,7 +19,7 @@ public interface IUnionCardSharingRecordService extends IService<UnionCardSharin
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 根据商家id和联盟id，获取商家的售卡佣金分成记录
+     * 售卡佣金分成管理-售卡分成记录-分页
      *
      * @param busId         商家id
      * @param unionId       联盟id
@@ -33,16 +33,24 @@ public interface IUnionCardSharingRecordService extends IService<UnionCardSharin
             Integer busId, Integer unionId, String optCardNumber, Date optBeginTime, Date optEndTime) throws Exception;
 
     /**
-     * 根据分成盟员id和联盟id，获取售卡佣金分成记录
+     * 获取售卡佣金分成记录
      *
+     * @param unionId         联盟id
      * @param sharingMemberId 分成盟员id
-     * @param unionId  联盟id
      * @return List<UnionCardSharingRecord>
      * @throws Exception 统一处理异常
      */
-    List<UnionCardSharingRecord> listBySharingMemberIdAndUnionId(Integer sharingMemberId, Integer unionId) throws Exception;
+    List<UnionCardSharingRecord> listByUnionIdAndSharingMemberId(Integer unionId, Integer sharingMemberId) throws Exception;
 
     //***************************************** Domain Driven Design - save ********************************************
+
+    /**
+     * 批量保存
+     *
+     * @param newUnionCardSharingRecordList 保存内容
+     * @throws Exception 统一处理异常
+     */
+    void saveBatch(List<UnionCardSharingRecord> newUnionCardSharingRecordList) throws Exception;
 
     //***************************************** Domain Driven Design - remove ******************************************
 

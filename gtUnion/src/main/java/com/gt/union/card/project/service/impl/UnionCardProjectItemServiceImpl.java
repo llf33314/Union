@@ -3,6 +3,7 @@ package com.gt.union.card.project.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.api.client.erp.ErpService;
 import com.gt.union.card.activity.constant.ActivityConstant;
 import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.activity.service.IUnionCardActivityService;
@@ -58,37 +59,31 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
     @Autowired
     private IUnionConsumeProjectService unionConsumeProjectService;
 
+    @Autowired
+    private ErpService erpService;
+
     //***************************************** Domain Driven Design - get *********************************************
+
+    @Override
+    public UnionCardProjectItem getByIdAndProjectId(Integer itemId, Integer projectId) throws Exception {
+        if (itemId == null || projectId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        UnionCardProjectItem result = getById(itemId);
+
+        return result != null && projectId.equals(result.getProjectId()) ? result : null;
+    }
 
     //***************************************** Domain Driven Design - list ********************************************
 
     @Override
-    public List<UnionCardProjectItem> listItemByProjectId(Integer projectId) throws Exception {
-        if (projectId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionCardProjectItem> result = new ArrayList<>();
-        List<UnionCardProjectItem> itemList = listByProjectId(projectId);
-        for (UnionCardProjectItem item : itemList) {
-            if (ProjectConstant.TYPE_ERP_TEXT == item.getType()) {
-                // TODO 这里少了个接口
-            } else if (ProjectConstant.TYPE_ERP_GOODS == item.getType()) {
-                // TODO 这里少了个接口
-            }
-            result.add(item);
-        }
-
-        return result;
-    }
-
-    @Override
-    public List<UnionCardProjectItem> listItemByProjectIdAndType(Integer projectId, Integer type) throws Exception {
+    public List<UnionCardProjectItem> listByProjectIdAndType(Integer projectId, Integer type) throws Exception {
         if (projectId == null || type == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCardProjectItem> result = listItemByProjectId(projectId);
+        List<UnionCardProjectItem> result = listByProjectId(projectId);
         result = filterByType(result, type);
 
         return result;
@@ -110,15 +105,15 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
         // （2）	判断activityId有效性
         UnionCardActivity activity = unionCardActivityService.getByIdAndUnionId(activityId, unionId);
         if (activity == null) {
-            throw new BusinessException("找不到活动卡信息");
+            throw new BusinessException("找不到活动信息");
         }
         // （3）	获取activity关联的非ERP文本项目优惠列表
         // （4）	过滤掉可使用数量为0的项目优惠
         List<CardProjectItemConsumeVO> result = new ArrayList<>();
-        List<UnionCardProject> projectList = unionCardProjectService.listByActivityIdAndUnionIdAndStatus(activityId, unionId, ProjectConstant.STATUS_ACCEPT);
+        List<UnionCardProject> projectList = unionCardProjectService.listByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
         if (ListUtil.isNotEmpty(projectList)) {
             for (UnionCardProject project : projectList) {
-                List<UnionCardProjectItem> textItemList = listItemByProjectIdAndType(project.getId(), ProjectConstant.TYPE_TEXT);
+                List<UnionCardProjectItem> textItemList = listByProjectIdAndType(project.getId(), ProjectConstant.TYPE_TEXT);
 
                 if (ListUtil.isNotEmpty(textItemList)) {
                     for (UnionCardProjectItem textItem : textItemList) {
@@ -150,10 +145,10 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
 
     //***************************************** Domain Driven Design - save ********************************************
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
-    public void saveProjectItemVOByBusIdAndActivityIdAndUnionId(Integer busId, Integer activityId, Integer unionId, CardProjectVO vo) throws Exception {
-        if (busId == null || activityId == null || unionId == null || vo == null) {
+    @Transactional(rollbackFor = Exception.class)
+    public void saveProjectItemVOByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId, CardProjectVO vo) throws Exception {
+        if (busId == null || unionId == null || activityId == null || vo == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	判断union有效性和member写权限
@@ -167,7 +162,7 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
         // （2）	判断activityId有效性
         UnionCardActivity activity = unionCardActivityService.getByIdAndUnionId(activityId, unionId);
         if (activity == null) {
-            throw new BusinessException("找不到活动卡信息");
+            throw new BusinessException("找不到活动信息");
         }
         // （3）	要求活动在报名中状态
         Integer activityStatus = unionCardActivityService.getStatus(activity);
@@ -180,7 +175,7 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
         UnionCardProject updateProject = null;
         UnionCardProject saveProject = null;
         List<Integer> removeItemIdList = null;
-        UnionCardProject project = unionCardProjectService.getByActivityIdAndMemberIdAndUnionId(activityId, member.getId(), unionId);
+        UnionCardProject project = unionCardProjectService.getByUnionIdAndMemberIdAndActivityId(unionId, member.getId(), activityId);
         Date currentDate = DateUtil.getCurrentDate();
         if (project != null) {
             if (ProjectConstant.STATUS_COMMITTED == project.getStatus()) {
@@ -211,7 +206,7 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
             saveProject.setStatus(ProjectConstant.STATUS_NOT_COMMIT);
         }
 
-        List<UnionCardProjectItem> saveItemList = listItemByVO(vo);
+        List<UnionCardProjectItem> saveItemList = listItemByVO(vo, busId);
 
         // 事务操作
         if (project == null) {
@@ -232,10 +227,10 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
         }
     }
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
-    public void commitProjectItemVOByBusIdAndActivityIdAndUnionId(Integer busId, Integer activityId, Integer unionId, CardProjectVO vo) throws Exception {
-        if (busId == null || activityId == null || unionId == null || vo == null) {
+    @Transactional(rollbackFor = Exception.class)
+    public void commitProjectItemVOByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId, CardProjectVO vo) throws Exception {
+        if (busId == null || unionId == null || activityId == null || vo == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	判断union有效性和member写权限
@@ -262,7 +257,7 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
         UnionCardProject updateProject = null;
         UnionCardProject saveProject = null;
         List<Integer> removeItemIdList = null;
-        UnionCardProject project = unionCardProjectService.getByActivityIdAndMemberIdAndUnionId(activityId, member.getId(), unionId);
+        UnionCardProject project = unionCardProjectService.getByUnionIdAndMemberIdAndActivityId(unionId, member.getId(), activityId);
         Date currentDate = DateUtil.getCurrentDate();
         if (project != null) {
             if (ProjectConstant.STATUS_COMMITTED == project.getStatus()) {
@@ -295,7 +290,7 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
                     ? ProjectConstant.STATUS_COMMITTED : ProjectConstant.STATUS_ACCEPT);
         }
 
-        List<UnionCardProjectItem> saveItemList = listItemByVO(vo);
+        List<UnionCardProjectItem> saveItemList = listItemByVO(vo, busId);
 
         // 事务操作
         if (project != null) {
@@ -316,11 +311,10 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
         }
     }
 
-    private List<UnionCardProjectItem> listItemByVO(CardProjectVO vo) throws Exception {
+    private List<UnionCardProjectItem> listItemByVO(CardProjectVO vo, Integer busId) throws Exception {
         List<UnionCardProjectItem> result = new ArrayList<>();
 
-        // TODO 这里少个接口
-        Integer isErp = CommonConstant.COMMON_YES;
+        Integer isErp = ListUtil.isNotEmpty(erpService.listErpByBusId(busId)) ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO;
         if (CommonConstant.COMMON_YES == isErp) {
             result.addAll(listErpTextByVO(vo));
             result.addAll(listErpGoodsByVO(vo));
@@ -472,6 +466,35 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
 
     //***************************************** Domain Driven Design - count *******************************************
 
+    @Override
+    public Integer countByProjectId(Integer projectId) throws Exception {
+        if (projectId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCardProjectItem> result = listByProjectId(projectId);
+
+        return ListUtil.isNotEmpty(result) ? result.size() : 0;
+    }
+
+    @Override
+    public Integer countCommittedByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception {
+        if (unionId == null || activityId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCardProject> projectList = unionCardProjectService.listByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
+        if (ListUtil.isEmpty(projectList)) {
+            return 0;
+        }
+        Integer result = 0;
+        for (UnionCardProject project : projectList) {
+            result += countByProjectId(project.getId());
+        }
+
+        return result;
+    }
+
     //***************************************** Domain Driven Design - boolean *****************************************
 
     //***************************************** Domain Driven Design - filter ******************************************
@@ -518,6 +541,7 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
 
     //***************************************** Object As a Service - list *********************************************
 
+    @Override
     public List<UnionCardProjectItem> listByProjectId(Integer projectId) throws Exception {
         if (projectId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -598,28 +622,6 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
             removeUnionCardProjectItemList.add(removeUnionCardProjectItem);
         }
         updateBatchById(removeUnionCardProjectItemList);
-    }
-
-    @Override
-    public Integer countCommittedByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception {
-        if (unionId == null || activityId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionCardProject> projectList = unionCardProjectService.listByActivityIdAndUnionIdAndStatus(activityId, unionId, ProjectConstant.STATUS_ACCEPT);
-        if (ListUtil.isEmpty(projectList)) {
-            return 0;
-        }
-        List<Integer> projectIdList = new ArrayList<>();
-        for (UnionCardProject project : projectList) {
-            projectIdList.add(project.getId());
-        }
-
-        EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .in("project_id", projectIdList);
-
-        return selectCount(entityWrapper);
     }
 
     //***************************************** Object As a Service - update *******************************************

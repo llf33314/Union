@@ -16,20 +16,20 @@ public interface IUnionCardSharingRatioService extends IService<UnionCardSharing
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
-     * 根据活动id、盟员id和联盟id，获取售卡分成佣金信息
+     * 获取售卡分成佣金信息
      *
-     * @param activityId 活动id
-     * @param memberId   盟员id
      * @param unionId    联盟id
+     * @param memberId   盟员id
+     * @param activityId 活动id
      * @return UnionCardSharingRatio
      * @throws Exception 统一处理异常
      */
-    UnionCardSharingRatio getByActivityIdAndMemberIdAndUnionId(Integer activityId, Integer memberId, Integer unionId) throws Exception;
+    UnionCardSharingRatio getByUnionIdAndMemberIdAndActivityId(Integer unionId, Integer memberId, Integer activityId) throws Exception;
 
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 分页：售卡佣金分成管理-活动卡售卡分成比例-查看比例
+     * 售卡佣金分成管理-活动卡售卡比例设置-分页-查看比例；售卡佣金分成管理-活动卡售卡比例设置-分页-查看比例-比例设置
      *
      * @param busId      商家id
      * @param unionId    联盟id
@@ -39,6 +39,16 @@ public interface IUnionCardSharingRatioService extends IService<UnionCardSharing
      */
     List<CardSharingRatioVO> listCardSharingRatioVOByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception;
 
+    /**
+     * 获取售卡分成比例列表信息
+     *
+     * @param unionId    联盟id
+     * @param activityId 活动id
+     * @return List<UnionCardSharingRatio>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardSharingRatio> listByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception;
+
     //***************************************** Domain Driven Design - save ********************************************
 
     //***************************************** Domain Driven Design - remove ******************************************
@@ -46,7 +56,7 @@ public interface IUnionCardSharingRatioService extends IService<UnionCardSharing
     //***************************************** Domain Driven Design - update ******************************************
 
     /**
-     * 批量更新：售卡佣金分成管理-活动卡售卡分成比例-查看比例-比例设置
+     * 售卡佣金分成管理-活动卡售卡比例设置-分页-查看比例-比例设置-更新
      *
      * @param busId      商家id
      * @param unionId    联盟id

@@ -15,29 +15,29 @@ public interface IUnionCardIntegralService extends IService<UnionCardIntegral> {
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
-     * 根据粉丝id和联盟id，获取联盟积分信息
+     * 获取联盟积分信息
      *
-     * @param fanId   粉丝id
      * @param unionId 联盟id
+     * @param fanId   粉丝id
      * @return UnionCardIntegral
      * @throws Exception 统一处理异常
      */
-    UnionCardIntegral getByFanIdAndUnionId(Integer fanId, Integer unionId) throws Exception;
+    UnionCardIntegral getByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception;
 
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 根据粉丝id和联盟id，获取联盟积分信息
+     * 获取联盟积分列表信息
      *
-     * @param fanId   粉丝id
      * @param unionId 联盟id
+     * @param fanId   粉丝id
      * @return UnionCardIntegral
      * @throws Exception 统一处理异常
      */
-    List<UnionCardIntegral> listByFanIdAndUnionId(Integer fanId, Integer unionId) throws Exception;
+    List<UnionCardIntegral> listByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception;
 
     /**
-     * 根据粉丝id，获取联盟积分信息
+     * 获取联盟积分列表信息
      *
      * @param fanId 粉丝id
      * @return UnionCardIntegral
@@ -50,7 +50,7 @@ public interface IUnionCardIntegralService extends IService<UnionCardIntegral> {
     /**
      * 保存
      *
-     * @param newUnionCardIntegral 内容
+     * @param newUnionCardIntegral 保存内容
      * @throws Exception 统一处理异常
      */
     void save(UnionCardIntegral newUnionCardIntegral) throws Exception;
@@ -62,7 +62,7 @@ public interface IUnionCardIntegralService extends IService<UnionCardIntegral> {
     /**
      * 更新
      *
-     * @param updateUnionCardIntegral 内容
+     * @param updateUnionCardIntegral 更新内容
      * @throws Exception 统一处理异常
      */
     void update(UnionCardIntegral updateUnionCardIntegral) throws Exception;
@@ -70,17 +70,17 @@ public interface IUnionCardIntegralService extends IService<UnionCardIntegral> {
     //***************************************** Domain Driven Design - count *******************************************
 
     /**
-     * 根据粉丝id和联盟id，统计积分信息
+     * 统计联盟积分信息
      *
-     * @param fanId   粉丝id
      * @param unionId 联盟id
+     * @param fanId   粉丝id
      * @return UnionCardIntegral
      * @throws Exception 统一处理异常
      */
-    Double countIntegralByFanIdAndUnionId(Integer fanId, Integer unionId) throws Exception;
+    Double countIntegralByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception;
 
     /**
-     * 根据粉丝id，获取积分信息
+     * 统计联盟积分信息
      *
      * @param fanId 粉丝id
      * @return UnionCardIntegral
@@ -89,7 +89,7 @@ public interface IUnionCardIntegralService extends IService<UnionCardIntegral> {
     Double countIntegralByFanId(Integer fanId) throws Exception;
 
     /**
-     * 根据联盟id，获取积分信息
+     * 统计联盟积分信息
      *
      * @param unionId 联盟id
      * @return UnionCardIntegral

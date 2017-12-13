@@ -88,6 +88,13 @@ public class UnionCardRecord extends Model<UnionCardRecord> {
     private Double payMoney;
 
     /**
+     * 活动id
+     */
+    @ApiModelProperty(value = "活动id")
+    @TableField("activity_id")
+    private Integer activityId;
+
+    /**
      * 联盟卡id
      */
     @ApiModelProperty(value = "联盟卡id")
@@ -101,6 +108,19 @@ public class UnionCardRecord extends Model<UnionCardRecord> {
     @TableField("fan_id")
     private Integer fanId;
 
+    /**
+     * 盟员id
+     */
+    @ApiModelProperty(value = "盟员id")
+    @TableField("member_id")
+    private Integer memberId;
+    
+    /**
+     * 联盟id
+     */
+    @ApiModelProperty(value = "联盟id")
+    @TableField("union_id")
+    private Integer unionId;
 
     public Integer getId() {
         return id;
@@ -174,6 +194,14 @@ public class UnionCardRecord extends Model<UnionCardRecord> {
         this.payMoney = payMoney;
     }
 
+    public Integer getActivityId() {
+        return activityId;
+    }
+
+    public void setActivityId(Integer activityId) {
+        this.activityId = activityId;
+    }
+
     public Integer getCardId() {
         return cardId;
     }
@@ -188,6 +216,22 @@ public class UnionCardRecord extends Model<UnionCardRecord> {
 
     public void setFanId(Integer fanId) {
         this.fanId = fanId;
+    }
+
+    public Integer getMemberId() {
+        return memberId;
+    }
+
+    public void setMemberId(Integer memberId) {
+        this.memberId = memberId;
+    }
+
+    public Integer getUnionId() {
+        return unionId;
+    }
+
+    public void setUnionId(Integer unionId) {
+        this.unionId = unionId;
     }
 
     @Override

@@ -66,7 +66,7 @@ public class UnionCardSharingRecordServiceImpl extends ServiceImpl<UnionCardShar
 
         // （2）	按时间倒序排序
         List<CardSharingRecordVO> result = new ArrayList<>();
-        List<UnionCardSharingRecord> recordList = listBySharingMemberIdAndUnionId(member.getId(), unionId);
+        List<UnionCardSharingRecord> recordList = listByUnionIdAndSharingMemberId(unionId, member.getId());
         if (ListUtil.isNotEmpty(recordList)) {
             for (UnionCardSharingRecord record : recordList) {
                 if (optBeginTime != null && optBeginTime.compareTo(record.getCreateTime()) > 0) {
@@ -105,8 +105,8 @@ public class UnionCardSharingRecordServiceImpl extends ServiceImpl<UnionCardShar
     }
 
     @Override
-    public List<UnionCardSharingRecord> listBySharingMemberIdAndUnionId(Integer sharingMemberId, Integer unionId) throws Exception {
-        if (sharingMemberId == null || unionId == null) {
+    public List<UnionCardSharingRecord> listByUnionIdAndSharingMemberId(Integer unionId, Integer sharingMemberId) throws Exception {
+        if (unionId == null || sharingMemberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
@@ -307,6 +307,7 @@ public class UnionCardSharingRecordServiceImpl extends ServiceImpl<UnionCardShar
         removeCache(newUnionCardSharingRecord);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void saveBatch(List<UnionCardSharingRecord> newUnionCardSharingRecordList) throws Exception {
         if (newUnionCardSharingRecordList == null) {

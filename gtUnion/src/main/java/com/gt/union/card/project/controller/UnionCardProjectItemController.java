@@ -35,7 +35,7 @@ public class UnionCardProjectItemController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "列表：前台-联盟卡消费核销-开启优惠项目-优惠", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "前台-联盟卡消费核销-开启优惠项目-查询活动项目优惠列表", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/consume", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<List<CardProjectItemConsumeVO>> listCardProjectItemConsumeVOByActivityIdAndUnionId(
             HttpServletRequest request,
@@ -50,7 +50,7 @@ public class UnionCardProjectItemController {
         }
         // mock
         List<CardProjectItemConsumeVO> result = MockUtil.list(CardProjectItemConsumeVO.class, 20);
-//        List<CardProjectItemConsumeVO> result = unionCardProjectItemService.listCardProjectItemConsumeVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
+        List<CardProjectItemConsumeVO> result2 = unionCardProjectItemService.listCardProjectItemConsumeVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -58,7 +58,7 @@ public class UnionCardProjectItemController {
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
-    @ApiOperation(value = "联盟卡设置-活动卡设置-我的活动项目-保存", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "联盟卡设置-活动卡设置-分页-我的活动项目-ERP和非ERP-保存", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/save", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> saveProjectItemVOByActivityIdAndUnionId(
             HttpServletRequest request,
@@ -73,11 +73,11 @@ public class UnionCardProjectItemController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionCardProjectItemService.saveProjectItemVOByBusIdAndActivityIdAndUnionId(busId, activityId, unionId, projectItemVO);
+        unionCardProjectItemService.saveProjectItemVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId, projectItemVO);
         return GtJsonResult.instanceSuccessMsg();
     }
 
-    @ApiOperation(value = "联盟卡设置-活动卡设置-我的活动项目-提交", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "联盟卡设置-活动卡设置-分页-我的活动项目-ERP和非ERP-提交", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/commit", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> commitProjectItemVOByActivityIdAndUnionId(
             HttpServletRequest request,
@@ -92,7 +92,7 @@ public class UnionCardProjectItemController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-//        unionCardProjectItemService.commitProjectItemVOByBusIdAndActivityIdAndUnionId(busId, activityId, unionId, projectItemVO);
+        unionCardProjectItemService.commitProjectItemVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId, projectItemVO);
         return GtJsonResult.instanceSuccessMsg();
     }
 }

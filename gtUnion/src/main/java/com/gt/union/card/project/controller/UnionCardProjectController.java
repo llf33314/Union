@@ -39,7 +39,7 @@ public class UnionCardProjectController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "列表：联盟卡设置-活动卡设置-参与盟员数", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "联盟卡设置-活动卡设置-分页-参与盟员数", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/joinMember", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<List<CardProjectJoinMemberVO>> listJoinMemberByActivityIdAndUnionId(
             HttpServletRequest request,
@@ -60,11 +60,11 @@ public class UnionCardProjectController {
             vo.setItemList(itemList);
             result.add(vo);
         }
-//        List<CardProjectJoinMemberVO> result = unionCardProjectService.listJoinMemberByBusIdAndActivityIdAndUnionId(busId, activityId, unionId);
+        List<CardProjectJoinMemberVO> result2 = unionCardProjectService.listJoinMemberByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "列表：联盟卡设置-活动卡设置-项目审核", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "联盟卡设置-活动卡设置-分页-审核项目", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/projectCheck", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<List<CardProjectCheckVO>> listProjectCheckByActivityIdAndUnionId(
             HttpServletRequest request,
@@ -85,11 +85,11 @@ public class UnionCardProjectController {
             vo.setItemList(itemList);
             result.add(vo);
         }
-//        List<CardProjectCheckVO> result = unionCardProjectService.listProjectCheckByBusIdAndActivityIdAndUnionId(busId, activityId, unionId);
+        List<CardProjectCheckVO> result2 = unionCardProjectService.listProjectCheckByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
-    @ApiOperation(value = "联盟卡设置-活动卡设置-我的活动项目", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "联盟卡设置-活动卡设置-分页-我的活动项目-ERP和非ERP", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{projectId}/activityId/{activityId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<CardProjectVO> getProjectVOByIdAndUnionId(
             HttpServletRequest request,
@@ -112,13 +112,13 @@ public class UnionCardProjectController {
         result.setErpTextList(erpTextList);
         List<UnionCardProjectItem> erpGoodsList = MockUtil.list(UnionCardProjectItem.class, 10);
         result.setErpGoodsList(erpGoodsList);
-//        CardProjectVO result = unionCardProjectService.getProjectVOByIdAndActivityIdAndUnionIdAndBusId(projectId, activityId, unionId, busId);
+        CardProjectVO result2 = unionCardProjectService.getProjectVOByBusIdAndIdAndUnionIdAndActivityId(busId, projectId, unionId, activityId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
-    @ApiOperation(value = "批量更新：联盟卡设置-活动卡设置-审核项目", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "联盟卡设置-活动卡设置-分页-审核项目-通过或不通过", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/projectCheck", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public GtJsonResult<String> updateProjectCheckByActivityIdAndUnionId(
             HttpServletRequest request,
@@ -135,7 +135,7 @@ public class UnionCardProjectController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-//        unionCardProjectService.updateProjectCheckByBusIdAndActivityIdAndUnionId(busId, activityId, unionId, isPass, updateVO);
+        unionCardProjectService.updateProjectCheckByBusIdAndUnionIdAndActivityId(busId, unionId, activityId, isPass, updateVO);
         return GtJsonResult.instanceSuccessMsg();
     }
 

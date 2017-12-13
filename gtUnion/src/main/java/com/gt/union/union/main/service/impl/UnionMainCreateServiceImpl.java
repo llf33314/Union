@@ -132,8 +132,8 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
 
     //***************************************** Domain Driven Design - save ********************************************
 
-    @Transactional(rollbackFor = Exception.class)
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveUnionCreateVOByBusId(Integer busId, UnionCreateVO vo) throws Exception {
         if (busId == null || vo == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
