@@ -31,7 +31,7 @@ public class ShopApiController {
 
 	@ApiOperation(value = "获取商家门店列表信息", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/list", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public GtJsonResult<List<ShopVO>> getBasicVOById(HttpServletRequest request) throws Exception {
+	public GtJsonResult<List<ShopVO>> listShopByBusId(HttpServletRequest request) throws Exception {
 		BusUser busUser = SessionUtils.getLoginUser(request);
 		Integer busId = busUser.getId();
 		List<ShopVO> list = shopService.listByBusId(busId);

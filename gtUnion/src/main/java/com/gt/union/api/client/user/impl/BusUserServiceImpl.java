@@ -81,7 +81,7 @@ public class BusUserServiceImpl implements IBusUserService {
     }
 
 	@Override
-	public String getWxPublicUserQRCode(Integer publicId, Integer busId) {
+	public String getWxPublicUserQRCode(Integer publicId, Integer busId, Integer extendId) {
         logger.info("获取公众号关注二维码永久链接publicId：{}，busId：{}", publicId, busId);
         String codeKey = RedisKeyUtil.getWxPublicUserQRCodeKey(publicId, busId);
         if (this.redisCacheUtil.exists(codeKey)) {//（1）通过busId获取缓存中的busUser对象，如果存在，则直接返回
@@ -93,7 +93,7 @@ public class BusUserServiceImpl implements IBusUserService {
         Map<String, Object> data = new HashMap<String, Object>();
         data.put("publicId", publicId);
         data.put("model", ConfigConstant.WXPUBLIC_QRCODE_MODEL);
-        data.put("externalId", busId);
+        data.put("externalId", extendId);
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("reqdata", data);
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/wxpublicapi/6F6D9AD2/79B4DE7C/newqrcodeCreateFinal.do";
