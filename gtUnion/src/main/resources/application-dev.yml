@@ -103,11 +103,11 @@ mq:
 #队列转换器
 exchange:
   union:
-    exchange: union_exchange
+    exchange: union_exchange_1
 #队列名称
 queueName:
   union:
-    queueName: union_routingKey_phone_message
+    queueName: union_routingKey_phone_message_1
 
 
 #redis:
