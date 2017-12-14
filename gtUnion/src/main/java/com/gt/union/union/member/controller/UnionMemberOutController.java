@@ -7,7 +7,6 @@ import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
-import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PageUtil;
 import com.gt.union.union.member.service.IUnionMemberOutService;
 import com.gt.union.union.member.vo.MemberOutPeriodVO;
@@ -50,8 +49,8 @@ public class UnionMemberOutController {
             busId = busUser.getPid();
         }
         // mock
-        List<MemberOutVO> voList = MockUtil.list(MemberOutVO.class, page.getSize());
-        List<MemberOutVO> voList2 = unionMemberOutService.listMemberOutVOByBusIdAndUnionId(busId, unionId);
+//        List<MemberOutVO> voList = MockUtil.list(MemberOutVO.class, page.getSize());
+        List<MemberOutVO> voList = unionMemberOutService.listMemberOutVOByBusIdAndUnionId(busId, unionId);
         Page<MemberOutVO> result = (Page<MemberOutVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -70,8 +69,8 @@ public class UnionMemberOutController {
             busId = busUser.getPid();
         }
         // mock
-        List<MemberOutPeriodVO> voList = MockUtil.list(MemberOutPeriodVO.class, page.getSize());
-        List<MemberOutPeriodVO> voList2 = unionMemberOutService.listMemberOutPeriodVOByBusIdAndUnionId(busId, unionId);
+//        List<MemberOutPeriodVO> voList = MockUtil.list(MemberOutPeriodVO.class, page.getSize());
+        List<MemberOutPeriodVO> voList = unionMemberOutService.listMemberOutPeriodVOByBusIdAndUnionId(busId, unionId);
         Page<MemberOutPeriodVO> result = (Page<MemberOutPeriodVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);

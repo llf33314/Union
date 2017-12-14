@@ -54,8 +54,8 @@ public class UnionCardSharingRecordController {
             busId = busUser.getPid();
         }
         // mock
-        List<CardSharingRecordVO> voList = MockUtil.list(CardSharingRecordVO.class, page.getSize());
-        List<CardSharingRecordVO> voList2 = unionCardSharingRecordService.listCardSharingRecordVOByBusIdAndUnionId(busId, unionId, cardNumber, beginTime, endTime);
+//        List<CardSharingRecordVO> voList = MockUtil.list(CardSharingRecordVO.class, page.getSize());
+        List<CardSharingRecordVO> voList = unionCardSharingRecordService.listCardSharingRecordVOByBusIdAndUnionId(busId, unionId, cardNumber, beginTime, endTime);
         Page<CardSharingRecordVO> result = (Page<CardSharingRecordVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);

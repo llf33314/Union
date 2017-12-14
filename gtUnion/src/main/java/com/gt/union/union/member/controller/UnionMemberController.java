@@ -60,8 +60,8 @@ public class UnionMemberController {
             busId = busUser.getPid();
         }
         // mock
-        List<UnionMember> memberList = MockUtil.list(UnionMember.class, page.getSize());
-        List<UnionMember> memberList2 = unionMemberService.listWriteByBusIdAndUnionId(busId, unionId, optMemberName);
+//        List<UnionMember> memberList = MockUtil.list(UnionMember.class, page.getSize());
+        List<UnionMember> memberList = unionMemberService.listWriteByBusIdAndUnionId(busId, unionId, optMemberName);
         
         Page<UnionMember> result = (Page<UnionMember>) page;
         result = PageUtil.setRecord(result, memberList);
@@ -128,8 +128,8 @@ public class UnionMemberController {
             busId = busUser.getPid();
         }
         // mock
-        UnionMember result = MockUtil.get(UnionMember.class);
-        UnionMember result2 = unionMemberService.getByBusIdAndIdAndUnionId(busId, memberId, unionId);
+//        UnionMember result = MockUtil.get(UnionMember.class);
+        UnionMember result = unionMemberService.getByBusIdAndIdAndUnionId(busId, memberId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -145,8 +145,8 @@ public class UnionMemberController {
             busId = busUser.getPid();
         }
         // mock
-        UnionMember result = MockUtil.get(UnionMember.class);
-        UnionMember result2 = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+//        UnionMember result = MockUtil.get(UnionMember.class);
+        UnionMember result = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -161,8 +161,8 @@ public class UnionMemberController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-        List<UnionMember> result = MockUtil.list(UnionMember.class, 30);
-        List<UnionMember> result2 = unionMemberService.listOtherWriteByBusIdAndUnionId(busId, unionId);
+//        List<UnionMember> result = MockUtil.list(UnionMember.class, 30);
+        List<UnionMember> result = unionMemberService.listOtherWriteByBusIdAndUnionId(busId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

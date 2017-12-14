@@ -46,8 +46,8 @@ public class UnionMainCreateController {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
         // mock
-        UnionPermitCheckVO result = MockUtil.get(UnionPermitCheckVO.class);
-        UnionPermitCheckVO result2 = unionMainCreateService.getPermitCheckVOByBusId(busId);
+//        UnionPermitCheckVO result = MockUtil.get(UnionPermitCheckVO.class);
+        UnionPermitCheckVO result = unionMainCreateService.getPermitCheckVOByBusId(busId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

@@ -49,10 +49,9 @@ public class UnionMainTransferController {
             busId = busUser.getPid();
         }
         // mock
-        List<UnionTransferVO> voList = MockUtil.list(UnionTransferVO.class, page.getSize());
-        List<UnionTransferVO> voList2 = unionMainTransferService.listUnionTransferVOByBusIdAndUnionId(busId, unionId);
+//        List<UnionTransferVO> voList = MockUtil.list(UnionTransferVO.class, page.getSize());
+        List<UnionTransferVO> voList = unionMainTransferService.listUnionTransferVOByBusIdAndUnionId(busId, unionId);
         Page<UnionTransferVO> result = (Page<UnionTransferVO>) page;
-        result = PageUtil.setRecord(result, voList);
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
     }

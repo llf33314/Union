@@ -67,8 +67,8 @@ public class UnionBrokeragePayController {
             busId = busUser.getPid();
         }
         // mock
-        List<BrokerageOpportunityVO> voList = MockUtil.list(BrokerageOpportunityVO.class, page.getSize());
-        List<BrokerageOpportunityVO> voList2 = unionBrokeragePayService.listBrokerageOpportunityVOByBusId(busId, unionId, fromMemberId, isClose, clientName, clientPhone);
+//        List<BrokerageOpportunityVO> voList = MockUtil.list(BrokerageOpportunityVO.class, page.getSize());
+        List<BrokerageOpportunityVO> voList = unionBrokeragePayService.listBrokerageOpportunityVOByBusId(busId, unionId, fromMemberId, isClose, clientName, clientPhone);
         Page<BrokerageOpportunityVO> result = (Page<BrokerageOpportunityVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -87,12 +87,12 @@ public class UnionBrokeragePayController {
             busId = busUser.getPid();
         }
         // mock
-        List<BrokeragePayVO> voList = MockUtil.list(BrokeragePayVO.class, page.getSize());
-        for (int i = 0; i < voList.size(); i++) {
-            List<UnionOpportunity> opportunityList = MockUtil.list(UnionOpportunity.class, 20);
-            voList.get(i).setOpportunityList(opportunityList);
-        }
-        List<BrokeragePayVO> voList2 = unionBrokeragePayService.listBrokeragePayVOByBusId(busId, unionId);
+//        List<BrokeragePayVO> voList = MockUtil.list(BrokeragePayVO.class, page.getSize());
+//        for (int i = 0; i < voList.size(); i++) {
+//            List<UnionOpportunity> opportunityList = MockUtil.list(UnionOpportunity.class, 20);
+//            voList.get(i).setOpportunityList(opportunityList);
+//        }
+        List<BrokeragePayVO> voList = unionBrokeragePayService.listBrokeragePayVOByBusId(busId, unionId);
         Page<BrokeragePayVO> result = (Page<BrokeragePayVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -148,8 +148,8 @@ public class UnionBrokeragePayController {
             busId = busUser.getPid();
         }
         // mock
-        BrokeragePayVO result = MockUtil.get(BrokeragePayVO.class);
-        BrokeragePayVO result2 = unionBrokeragePayService.getBrokeragePayVOByBusIdAndUnionIdAndMemberId(busId, unionId, memberId);
+//        BrokeragePayVO result = MockUtil.get(BrokeragePayVO.class);
+        BrokeragePayVO result = unionBrokeragePayService.getBrokeragePayVOByBusIdAndUnionIdAndMemberId(busId, unionId, memberId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -214,8 +214,8 @@ public class UnionBrokeragePayController {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
         // mock
-        UnionPayVO result = MockUtil.get(UnionPayVO.class);
-        UnionPayVO result2 = unionBrokeragePayService.batchPayByBusId(busId, opportunityIdList);
+//        UnionPayVO result = MockUtil.get(UnionPayVO.class);
+        UnionPayVO result = unionBrokeragePayService.batchPayByBusId(busId, opportunityIdList);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

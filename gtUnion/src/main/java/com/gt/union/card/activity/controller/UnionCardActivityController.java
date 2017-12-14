@@ -50,8 +50,8 @@ public class UnionCardActivityController {
             busId = busUser.getPid();
         }
         // mock
-        List<CardActivityStatusVO> voList = MockUtil.list(CardActivityStatusVO.class, page.getSize());
-        List<CardActivityStatusVO> voList2 = unionCardActivityService.listCardActivityStatusVOByBusIdAndUnionId(busId, unionId);
+//        List<CardActivityStatusVO> voList = MockUtil.list(CardActivityStatusVO.class, page.getSize());
+        List<CardActivityStatusVO> voList = unionCardActivityService.listCardActivityStatusVOByBusIdAndUnionId(busId, unionId);
         Page<CardActivityStatusVO> result = (Page<CardActivityStatusVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -70,8 +70,8 @@ public class UnionCardActivityController {
             busId = busUser.getPid();
         }
         // mock
-        List<CardActivityVO> voList = MockUtil.list(CardActivityVO.class, page.getSize());
-        List<CardActivityVO> voList2 = unionCardActivityService.listCardActivityVOByBusIdAndUnionId(busId, unionId);
+//        List<CardActivityVO> voList = MockUtil.list(CardActivityVO.class, page.getSize());
+        List<CardActivityVO> voList = unionCardActivityService.listCardActivityVOByBusIdAndUnionId(busId, unionId);
         Page<CardActivityVO> result = (Page<CardActivityVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -91,8 +91,8 @@ public class UnionCardActivityController {
             busId = busUser.getPid();
         }
         // mock
-        List<CardActivityConsumeVO> result = MockUtil.list(CardActivityConsumeVO.class, 20);
-        List<CardActivityConsumeVO> result2 = unionCardActivityService.listCardActivityConsumeVOByBusIdAndUnionIdAndFanId(busId, unionId, fanId);
+//        List<CardActivityConsumeVO> result = MockUtil.list(CardActivityConsumeVO.class, 20);
+        List<CardActivityConsumeVO> result = unionCardActivityService.listCardActivityConsumeVOByBusIdAndUnionIdAndFanId(busId, unionId, fanId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -110,8 +110,8 @@ public class UnionCardActivityController {
             busId = busUser.getPid();
         }
         // mock
-        CardActivityApplyVO result = MockUtil.get(CardActivityApplyVO.class);
-        CardActivityApplyVO result2 = unionCardActivityService.getCardActivityApplyVOByBusIdAndIdAndUnionId(busId, activityId, unionId);
+//        CardActivityApplyVO result = MockUtil.get(CardActivityApplyVO.class);
+        CardActivityApplyVO result = unionCardActivityService.getCardActivityApplyVOByBusIdAndIdAndUnionId(busId, activityId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -129,8 +129,8 @@ public class UnionCardActivityController {
             busId = busUser.getPid();
         }
         // mock
-        List<CardActivityApplyItemVO> result = MockUtil.list(CardActivityApplyItemVO.class, 20);
-        List<CardActivityApplyItemVO> result2 = unionCardActivityService.listCardActivityApplyItemVOByBusIdAndIdAndUnionId(busId, activityId, unionId);
+//        List<CardActivityApplyItemVO> result = MockUtil.list(CardActivityApplyItemVO.class, 20);
+        List<CardActivityApplyItemVO> result = unionCardActivityService.listCardActivityApplyItemVOByBusIdAndIdAndUnionId(busId, activityId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
