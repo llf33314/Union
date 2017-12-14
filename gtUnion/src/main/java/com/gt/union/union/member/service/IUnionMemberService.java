@@ -1,9 +1,8 @@
 package com.gt.union.union.member.service;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.union.member.entity.UnionMember;
+import com.gt.union.union.member.vo.MemberVO;
 
 import java.util.List;
 
@@ -18,6 +17,16 @@ public interface IUnionMemberService extends IService<UnionMember> {
 
     /**
      * 联盟设置-基础设置；联盟卡设置-折扣卡设置-折扣设置
+     *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @return UnionMember
+     * @throws Exception 统一处理异常
+     */
+    MemberVO getMemberVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
+
+    /**
+     * 获取具有读权限的盟员信息
      *
      * @param busId   商家id
      * @param unionId 联盟id
