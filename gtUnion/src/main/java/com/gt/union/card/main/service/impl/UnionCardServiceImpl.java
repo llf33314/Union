@@ -362,7 +362,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         saveBatch(saveCardList);
         // （6）	新增未付款的联盟卡购买记录，并返回支付链接
         List<UnionCardRecord> saveCardRecordList = new ArrayList<>();
-        String orderNo = "LM_Card_" + busId + "_" + DateUtil.getSerialNumber();
+        String orderNo = "LM_Ca_" + DateUtil.getSerialNumber();
         for (UnionCard saveCard : saveCardList) {
             if (CardConstant.TYPE_ACTIVITY != saveCard.getType()) {
                 continue;

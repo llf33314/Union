@@ -94,7 +94,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         savePermit.setPackageId(packageId);
         savePermit.setOrderMoney(unionPackage.getPrice());
         savePermit.setOrderStatus(UnionConstant.PERMIT_ORDER_STATUS_PAYING);
-        String orderNo = "LM_Permit_" + busId + "_" + DateUtil.getSerialNumber();
+        String orderNo = "LM_P_" + DateUtil.getSerialNumber();
         savePermit.setSysOrderNo(orderNo);
         save(savePermit);
 
