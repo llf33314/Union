@@ -86,18 +86,18 @@ public class UnionMainController {
 
     @ApiOperation(value = "辅助接口：获取我的联盟列表", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/my", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<List<UnionMain>> listMy(HttpServletRequest request) throws Exception {
+    public GtJsonResult<List<UnionVO>> listMy(HttpServletRequest request) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
         // mock
-        List<UnionMain> result;
+        List<UnionVO> result;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            result = MockUtil.list(UnionMain.class, 3);
+            result = MockUtil.list(UnionVO.class, 3);
         } else {
-            result = unionMainService.listMyValidByBusId(busId);
+            result = unionMainService.listUnionVOByBusId(busId);
         }
         return GtJsonResult.instanceSuccessMsg(result);
     }

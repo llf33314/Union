@@ -64,7 +64,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         UnionVO result = new UnionVO();
         UnionMain union = getById(unionId);
         result.setUnion(union);
-        
+
         List<UnionMainDict> itemList = unionMainDictService.listByUnionId(unionId);
         result.setItemList(itemList);
 
@@ -73,8 +73,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
     //***************************************** Domain Driven Design - list ********************************************
 
-    
-    
+
     //***************************************** Domain Driven Design - save ********************************************
 
     //***************************************** Domain Driven Design - remove ******************************************
@@ -241,7 +240,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        
+
         List<Integer> unionIdList = new ArrayList<>();
         List<UnionMember> readMemberList = unionMemberService.listReadByBusId(busId);
         if (ListUtil.isNotEmpty(readMemberList)) {
@@ -249,21 +248,21 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
                 unionIdList.add(readMember.getUnionId());
             }
         }
-        
+
         EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
                 .gt("validity", DateUtil.getCurrentDate())
                 .notIn("id", unionIdList);
-        
+
         return selectList(entityWrapper);
     }
-    
+
     @Override
     public List<UnionMain> listMyValidByBusId(Integer busId) throws Exception {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        
+
         List<UnionMain> result = new ArrayList<>();
         List<UnionMember> readMemberList = unionMemberService.listReadByBusId(busId);
         if (ListUtil.isNotEmpty(readMemberList)) {
@@ -274,10 +273,34 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
                 }
             }
         }
-        
+
         return result;
     }
-    
+
+    @Override
+    public List<UnionVO> listUnionVOByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionVO> result = new ArrayList<>();
+        List<UnionMember> readMemberList = unionMemberService.listReadByBusId(busId);
+        if (ListUtil.isNotEmpty(readMemberList)) {
+            for (UnionMember readMember : readMemberList) {
+                UnionMain union = getById(readMember.getUnionId());
+                if (isUnionValid(union)) {
+                    UnionVO vo = new UnionVO();
+                    vo.setUnion(union);
+
+                    List<UnionMainDict> itemList = unionMainDictService.listByUnionId(union.getId());
+                    vo.setItemList(itemList);
+                }
+            }
+        }
+
+        return result;
+    }
+
     //***************************************** Object As a Service - save *********************************************
 
     @Override
