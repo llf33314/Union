@@ -54,13 +54,13 @@ public class UnionCardController {
             busId = busUser.getPid();
         }
         // mock
-        CardApplyVO result = MockUtil.get(CardApplyVO.class);
-        List<UnionMain> unionList = MockUtil.list(UnionMain.class, 3);
-        result.setUnionList(unionList);
-        List<UnionCardActivity> activityList = MockUtil.list(UnionCardActivity.class, 3);
-        result.setActivityList(activityList);
+//        CardApplyVO result = MockUtil.get(CardApplyVO.class);
+//        List<UnionMain> unionList = MockUtil.list(UnionMain.class, 3);
+//        result.setUnionList(unionList);
+//        List<UnionCardActivity> activityList = MockUtil.list(UnionCardActivity.class, 3);
+//        result.setActivityList(activityList);
 
-        CardApplyVO result2 = unionCardService.getCardApplyVOByBusIdAndFanId(busId, fanId, unionId);
+        CardApplyVO result = unionCardService.getCardApplyVOByBusIdAndFanId(busId, fanId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -79,8 +79,8 @@ public class UnionCardController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        UnionCardFan result = MockUtil.get(UnionCardFan.class);
-        UnionCardFan result2 = unionCardService.checkCardPhoneVO(vo);
+//        UnionCardFan result = MockUtil.get(UnionCardFan.class);
+        UnionCardFan result = unionCardService.checkCardPhoneVO(vo);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -101,8 +101,8 @@ public class UnionCardController {
         }
 
         // mock
-        UnionPayVO result = MockUtil.get(UnionPayVO.class);
-        UnionPayVO result2 = unionCardService.saveApplyByBusIdAndUnionIdAndFanId(busId, unionId, fanId, activityIdList);
+//        UnionPayVO result = MockUtil.get(UnionPayVO.class);
+        UnionPayVO result = unionCardService.saveApplyByBusIdAndUnionIdAndFanId(busId, unionId, fanId, activityIdList);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

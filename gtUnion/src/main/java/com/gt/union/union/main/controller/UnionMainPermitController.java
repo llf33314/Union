@@ -52,8 +52,8 @@ public class UnionMainPermitController {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
         // mock
-        UnionPayVO result = MockUtil.get(UnionPayVO.class);
-        UnionPayVO result2 = unionMainPermitService.saveByBusIdAndPackageId(busId, packageId);
+//        UnionPayVO result = MockUtil.get(UnionPayVO.class);
+        UnionPayVO result = unionMainPermitService.saveByBusIdAndPackageId(busId, packageId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

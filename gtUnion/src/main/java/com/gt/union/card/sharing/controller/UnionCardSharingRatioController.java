@@ -51,8 +51,8 @@ public class UnionCardSharingRatioController {
             busId = busUser.getPid();
         }
         // mock
-        List<CardSharingRatioVO> voList = MockUtil.list(CardSharingRatioVO.class, page.getSize());
-        List<CardSharingRatioVO> voList2 = unionCardSharingRatioService.listCardSharingRatioVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
+//        List<CardSharingRatioVO> voList = MockUtil.list(CardSharingRatioVO.class, page.getSize());
+        List<CardSharingRatioVO> voList = unionCardSharingRatioService.listCardSharingRatioVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
         Page<CardSharingRatioVO> result = (Page<CardSharingRatioVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -72,8 +72,8 @@ public class UnionCardSharingRatioController {
             busId = busUser.getPid();
         }
         // mock
-        List<CardSharingRatioVO> result = MockUtil.list(CardSharingRatioVO.class, 20);
-        List<CardSharingRatioVO> voList2 = unionCardSharingRatioService.listCardSharingRatioVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
+//        List<CardSharingRatioVO> result = MockUtil.list(CardSharingRatioVO.class, 20);
+        List<CardSharingRatioVO> result = unionCardSharingRatioService.listCardSharingRatioVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

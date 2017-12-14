@@ -43,10 +43,10 @@ public class UnionMainPackageController {
             busId = busUser.getPid();
         }
         // mock
-        UnionPackageVO result = MockUtil.get(UnionPackageVO.class);
-        List<UnionMainPackage> packageList = MockUtil.list(UnionMainPackage.class, 3);
-        result.setPackageList(packageList);
-        UnionPackageVO result2 = unionMainPackageService.getUnionPackageVOByBusId(busId);
+//        UnionPackageVO result = MockUtil.get(UnionPackageVO.class);
+//        List<UnionMainPackage> packageList = MockUtil.list(UnionMainPackage.class, 3);
+//        result.setPackageList(packageList);
+        UnionPackageVO result = unionMainPackageService.getUnionPackageVOByBusId(busId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

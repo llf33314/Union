@@ -53,14 +53,14 @@ public class UnionCardProjectController {
             busId = busUser.getPid();
         }
         // mock
-        List<CardProjectJoinMemberVO> result = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            CardProjectJoinMemberVO vo = MockUtil.get(CardProjectJoinMemberVO.class);
-            List<UnionCardProjectItem> itemList = MockUtil.list(UnionCardProjectItem.class, 3);
-            vo.setItemList(itemList);
-            result.add(vo);
-        }
-        List<CardProjectJoinMemberVO> result2 = unionCardProjectService.listJoinMemberByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
+//        List<CardProjectJoinMemberVO> result = new ArrayList<>();
+//        for (int i = 0; i < 20; i++) {
+//            CardProjectJoinMemberVO vo = MockUtil.get(CardProjectJoinMemberVO.class);
+//            List<UnionCardProjectItem> itemList = MockUtil.list(UnionCardProjectItem.class, 3);
+//            vo.setItemList(itemList);
+//            result.add(vo);
+//        }
+        List<CardProjectJoinMemberVO> result = unionCardProjectService.listJoinMemberByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -78,14 +78,14 @@ public class UnionCardProjectController {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
         // mock
-        List<CardProjectCheckVO> result = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
-            CardProjectCheckVO vo = MockUtil.get(CardProjectCheckVO.class);
-            List<UnionCardProjectItem> itemList = MockUtil.list(UnionCardProjectItem.class, 3);
-            vo.setItemList(itemList);
-            result.add(vo);
-        }
-        List<CardProjectCheckVO> result2 = unionCardProjectService.listProjectCheckByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
+//        List<CardProjectCheckVO> result = new ArrayList<>();
+//        for (int i = 0; i < 20; i++) {
+//            CardProjectCheckVO vo = MockUtil.get(CardProjectCheckVO.class);
+//            List<UnionCardProjectItem> itemList = MockUtil.list(UnionCardProjectItem.class, 3);
+//            vo.setItemList(itemList);
+//            result.add(vo);
+//        }
+        List<CardProjectCheckVO> result = unionCardProjectService.listProjectCheckByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -105,14 +105,14 @@ public class UnionCardProjectController {
             busId = busUser.getPid();
         }
         // mock
-        CardProjectVO result = MockUtil.get(CardProjectVO.class);
-        List<UnionCardProjectItem> nonErpTextList = MockUtil.list(UnionCardProjectItem.class, 10);
-        result.setNonErpTextList(nonErpTextList);
-        List<UnionCardProjectItem> erpTextList = MockUtil.list(UnionCardProjectItem.class, 10);
-        result.setErpTextList(erpTextList);
-        List<UnionCardProjectItem> erpGoodsList = MockUtil.list(UnionCardProjectItem.class, 10);
-        result.setErpGoodsList(erpGoodsList);
-        CardProjectVO result2 = unionCardProjectService.getProjectVOByBusIdAndIdAndUnionIdAndActivityId(busId, projectId, unionId, activityId);
+//        CardProjectVO result = MockUtil.get(CardProjectVO.class);
+//        List<UnionCardProjectItem> nonErpTextList = MockUtil.list(UnionCardProjectItem.class, 10);
+//        result.setNonErpTextList(nonErpTextList);
+//        List<UnionCardProjectItem> erpTextList = MockUtil.list(UnionCardProjectItem.class, 10);
+//        result.setErpTextList(erpTextList);
+//        List<UnionCardProjectItem> erpGoodsList = MockUtil.list(UnionCardProjectItem.class, 10);
+//        result.setErpGoodsList(erpGoodsList);
+        CardProjectVO result = unionCardProjectService.getProjectVOByBusIdAndIdAndUnionIdAndActivityId(busId, projectId, unionId, activityId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

@@ -50,10 +50,10 @@ public class UnionMainController {
             busId = busUser.getPid();
         }
         // mock
-        UnionVO result = MockUtil.get(UnionVO.class);
-        List<UnionMainDict> itemList = MockUtil.list(UnionMainDict.class, 3);
-        result.setItemList(itemList);
-        UnionVO result2 = unionMainService.getUnionVOByBusIdAndId(busId, unionId);
+//        UnionVO result = MockUtil.get(UnionVO.class);
+//        List<UnionMainDict> itemList = MockUtil.list(UnionMainDict.class, 3);
+//        result.setItemList(itemList);
+        UnionVO result = unionMainService.getUnionVOByBusIdAndId(busId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -68,8 +68,8 @@ public class UnionMainController {
             busId = busUser.getPid();
         }
         // mock
-        List<UnionMain> voList = MockUtil.list(UnionMain.class, page.getSize());
-        List<UnionMain> voList2 = unionMainService.listOtherValidByBusId(busId);
+//        List<UnionMain> voList = MockUtil.list(UnionMain.class, page.getSize());
+        List<UnionMain> voList = unionMainService.listOtherValidByBusId(busId);
         Page<UnionMain> result = (Page<UnionMain>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -84,8 +84,8 @@ public class UnionMainController {
             busId = busUser.getPid();
         }
         // mock
-        List<UnionMain> result = MockUtil.list(UnionMain.class, 3);
-        List<UnionMain> result2 = unionMainService.listMyValidByBusId(busId);
+//        List<UnionMain> result = MockUtil.list(UnionMain.class, 3);
+        List<UnionMain> result = unionMainService.listMyValidByBusId(busId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

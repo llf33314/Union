@@ -55,8 +55,8 @@ public class UnionMemberJoinController {
             busId = busUser.getPid();
         }
         // mock
-        List<MemberJoinVO> voList = MockUtil.list(MemberJoinVO.class, page.getSize());
-        List<MemberJoinVO> voList2 = unionMemberJoinService.listMemberJoinVOByBusIdAndUnionId(busId, unionId, memberName, phone);
+//        List<MemberJoinVO> voList = MockUtil.list(MemberJoinVO.class, page.getSize());
+        List<MemberJoinVO> voList = unionMemberJoinService.listMemberJoinVOByBusIdAndUnionId(busId, unionId, memberName, phone);
         Page<MemberJoinVO> result = (Page<MemberJoinVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);

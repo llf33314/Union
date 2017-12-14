@@ -49,8 +49,8 @@ public class UnionOpportunityRatioController {
             busId = busUser.getPid();
         }
         // mock
-        List<OpportunityRatioVO> voList = MockUtil.list(OpportunityRatioVO.class, page.getSize());
-        List<OpportunityRatioVO> voList2 = unionOpportunityRatioService.listOpportunityRatioVOByBusIdAndUnionId(busId, unionId);
+//        List<OpportunityRatioVO> voList = MockUtil.list(OpportunityRatioVO.class, page.getSize());
+        List<OpportunityRatioVO> voList = unionOpportunityRatioService.listOpportunityRatioVOByBusIdAndUnionId(busId, unionId);
         Page<OpportunityRatioVO> result = (Page<OpportunityRatioVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);

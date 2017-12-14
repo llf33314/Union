@@ -63,10 +63,10 @@ public class UnionCardFanController {
             busId = busUser.getPid();
         }
         // mock
-        List<CardFanVO> fanVOList = MockUtil.list(CardFanVO.class, page.getSize());
-        List<CardFanVO> fanVOList2 = unionCardFanService.listCardFanVoByBusIdAndUnionId(busId, unionId, optNumber, optPhone);
+//        List<CardFanVO> voList = MockUtil.list(CardFanVO.class, page.getSize());
+        List<CardFanVO> voList = unionCardFanService.listCardFanVoByBusIdAndUnionId(busId, unionId, optNumber, optPhone);
         Page<CardFanVO> result = (Page<CardFanVO>) page;
-        result = PageUtil.setRecord(result, fanVOList);
+        result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -126,10 +126,10 @@ public class UnionCardFanController {
             busId = busUser.getPid();
         }
         // mock
-        CardFanDetailVO result = MockUtil.get(CardFanDetailVO.class);
-        List<UnionCard> activityCardList = MockUtil.list(UnionCard.class, 20);
-        result.setActivityCardList(activityCardList);
-        CardFanDetailVO result2 = unionCardFanService.getFanDetailVOByBusIdAndIdAndUnionId(busId, fanId, unionId);
+//        CardFanDetailVO result = MockUtil.get(CardFanDetailVO.class);
+//        List<UnionCard> activityCardList = MockUtil.list(UnionCard.class, 20);
+//        result.setActivityCardList(activityCardList);
+        CardFanDetailVO result = unionCardFanService.getFanDetailVOByBusIdAndIdAndUnionId(busId, fanId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -147,10 +147,10 @@ public class UnionCardFanController {
             busId = busUser.getPid();
         }
         // mock
-        CardFanSearchVO result = MockUtil.get(CardFanSearchVO.class);
-        List<UnionMain> unionList = MockUtil.list(UnionMain.class, 3);
-        result.setUnionList(unionList);
-        CardFanSearchVO result2 = unionCardFanService.getCardFanSearchVOByBusId(busId, numberOrPhone, unionId);
+//        CardFanSearchVO result = MockUtil.get(CardFanSearchVO.class);
+//        List<UnionMain> unionList = MockUtil.list(UnionMain.class, 3);
+//        result.setUnionList(unionList);
+        CardFanSearchVO result = unionCardFanService.getCardFanSearchVOByBusId(busId, numberOrPhone, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

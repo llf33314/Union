@@ -44,8 +44,8 @@ public class UnionMainNoticeController {
             busId = busUser.getPid();
         }
         // mock
-        UnionMainNotice result = MockUtil.get(UnionMainNotice.class);
-        UnionMainNotice result2 = unionMainNoticeService.getByBusIdAndUnionId(busId, unionId);
+//        UnionMainNotice result = MockUtil.get(UnionMainNotice.class);
+        UnionMainNotice result = unionMainNoticeService.getByBusIdAndUnionId(busId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

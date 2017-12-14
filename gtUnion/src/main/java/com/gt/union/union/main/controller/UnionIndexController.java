@@ -49,11 +49,11 @@ public class UnionIndexController {
             busId = busUser.getPid();
         }
         // mock
-        IndexVO result = MockUtil.get(IndexVO.class);
-        List<UnionMain> myJoinUnionList = MockUtil.list(UnionMain.class, 2);
-        result.setMyJoinUnionList(myJoinUnionList);
+//        IndexVO result = MockUtil.get(IndexVO.class);
+//        List<UnionMain> myJoinUnionList = MockUtil.list(UnionMain.class, 2);
+//        result.setMyJoinUnionList(myJoinUnionList);
 
-        IndexVO result2 = unionIndexService.getIndexVOByBusId(busId, unionId);
+        IndexVO result = unionIndexService.getIndexVOByBusId(busId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

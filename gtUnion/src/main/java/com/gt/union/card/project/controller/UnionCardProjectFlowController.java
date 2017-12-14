@@ -51,8 +51,8 @@ public class UnionCardProjectFlowController {
             busId = busUser.getPid();
         }
         // mock
-        List<UnionCardProjectFlow> result = MockUtil.list(UnionCardProjectFlow.class, 20);
-        List<UnionCardProjectFlow> result2 = unionCardProjectFlowService.listByBusIdAndUnionIdAndActivityIdAndProjectId(busId, unionId, activityId, projectId);
+//        List<UnionCardProjectFlow> result = MockUtil.list(UnionCardProjectFlow.class, 20);
+        List<UnionCardProjectFlow> result = unionCardProjectFlowService.listByBusIdAndUnionIdAndActivityIdAndProjectId(busId, unionId, activityId, projectId);
         return GtJsonResult.instanceSuccessMsg(result)
                 ;
     }
