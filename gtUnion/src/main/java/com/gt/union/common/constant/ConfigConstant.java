@@ -91,6 +91,7 @@ public interface ConfigConstant {
     String UNION_PHONE_BROKERAGE_ROOT_URL = UNION_ROOT_URL + "/brokeragePhone/#/";
 
     /**
+     * 2：车小算
      * 联盟erp项目类型
      */
     String[] UNION_USER_ERP_TYPE = {"2"};
