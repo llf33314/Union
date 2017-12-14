@@ -5,6 +5,7 @@ import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.ExportUtil;
@@ -67,8 +68,12 @@ public class UnionBrokeragePayController {
             busId = busUser.getPid();
         }
         // mock
-//        List<BrokerageOpportunityVO> voList = MockUtil.list(BrokerageOpportunityVO.class, page.getSize());
-        List<BrokerageOpportunityVO> voList = unionBrokeragePayService.listBrokerageOpportunityVOByBusId(busId, unionId, fromMemberId, isClose, clientName, clientPhone);
+        List<BrokerageOpportunityVO> voList;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            voList = MockUtil.list(BrokerageOpportunityVO.class, page.getSize());
+        } else {
+            voList = unionBrokeragePayService.listBrokerageOpportunityVOByBusId(busId, unionId, fromMemberId, isClose, clientName, clientPhone);
+        }
         Page<BrokerageOpportunityVO> result = (Page<BrokerageOpportunityVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -87,12 +92,16 @@ public class UnionBrokeragePayController {
             busId = busUser.getPid();
         }
         // mock
-//        List<BrokeragePayVO> voList = MockUtil.list(BrokeragePayVO.class, page.getSize());
-//        for (int i = 0; i < voList.size(); i++) {
-//            List<UnionOpportunity> opportunityList = MockUtil.list(UnionOpportunity.class, 20);
-//            voList.get(i).setOpportunityList(opportunityList);
-//        }
-        List<BrokeragePayVO> voList = unionBrokeragePayService.listBrokeragePayVOByBusId(busId, unionId);
+        List<BrokeragePayVO> voList;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            voList = MockUtil.list(BrokeragePayVO.class, page.getSize());
+            for (int i = 0; i < voList.size(); i++) {
+                List<UnionOpportunity> opportunityList = MockUtil.list(UnionOpportunity.class, 20);
+                voList.get(i).setOpportunityList(opportunityList);
+            }
+        } else {
+            voList = unionBrokeragePayService.listBrokeragePayVOByBusId(busId, unionId);
+        }
         Page<BrokeragePayVO> result = (Page<BrokeragePayVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -106,7 +115,16 @@ public class UnionBrokeragePayController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-        List<BrokeragePayVO> voList = unionBrokeragePayService.listBrokeragePayVOByBusId(busId, null);
+        List<BrokeragePayVO> voList;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            voList = MockUtil.list(BrokeragePayVO.class, 20);
+            for (int i = 0; i < voList.size(); i++) {
+                List<UnionOpportunity> opportunityList = MockUtil.list(UnionOpportunity.class, 20);
+                voList.get(i).setOpportunityList(opportunityList);
+            }
+        } else {
+            voList = unionBrokeragePayService.listBrokeragePayVOByBusId(busId, null);
+        }
         String[] titles = new String[]{"所属联盟", "盟员名称", "商机往来金额(元)"};
         HSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);
         HSSFSheet sheet = workbook.getSheetAt(0);
@@ -148,8 +166,12 @@ public class UnionBrokeragePayController {
             busId = busUser.getPid();
         }
         // mock
-//        BrokeragePayVO result = MockUtil.get(BrokeragePayVO.class);
-        BrokeragePayVO result = unionBrokeragePayService.getBrokeragePayVOByBusIdAndUnionIdAndMemberId(busId, unionId, memberId);
+        BrokeragePayVO result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.get(BrokeragePayVO.class);
+        } else {
+            result = unionBrokeragePayService.getBrokeragePayVOByBusIdAndUnionIdAndMemberId(busId, unionId, memberId);
+        }
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -167,7 +189,12 @@ public class UnionBrokeragePayController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-        BrokeragePayVO result = unionBrokeragePayService.getBrokeragePayVOByBusIdAndUnionIdAndMemberId(busId, unionId, memberId);
+        BrokeragePayVO result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.get(BrokeragePayVO.class);
+        } else {
+            result = unionBrokeragePayService.getBrokeragePayVOByBusIdAndUnionIdAndMemberId(busId, unionId, memberId);
+        }
         List<UnionOpportunity> opportunityList = result.getOpportunityList();
         String[] titles = new String[]{"时间", "顾客姓名", "电话", "佣金(元)"};
         HSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);
@@ -214,8 +241,12 @@ public class UnionBrokeragePayController {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
         // mock
-//        UnionPayVO result = MockUtil.get(UnionPayVO.class);
-        UnionPayVO result = unionBrokeragePayService.batchPayByBusId(busId, opportunityIdList);
+        UnionPayVO result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.get(UnionPayVO.class);
+        } else {
+            result = unionBrokeragePayService.batchPayByBusId(busId, opportunityIdList);
+        }
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

@@ -7,6 +7,7 @@ import com.gt.union.card.sharing.service.IUnionCardSharingRatioService;
 import com.gt.union.card.sharing.vo.CardSharingRatioVO;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
@@ -51,8 +52,12 @@ public class UnionCardSharingRatioController {
             busId = busUser.getPid();
         }
         // mock
-//        List<CardSharingRatioVO> voList = MockUtil.list(CardSharingRatioVO.class, page.getSize());
-        List<CardSharingRatioVO> voList = unionCardSharingRatioService.listCardSharingRatioVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
+        List<CardSharingRatioVO> voList;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            voList = MockUtil.list(CardSharingRatioVO.class, page.getSize());
+        } else {
+            voList = unionCardSharingRatioService.listCardSharingRatioVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
+        }
         Page<CardSharingRatioVO> result = (Page<CardSharingRatioVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -72,8 +77,12 @@ public class UnionCardSharingRatioController {
             busId = busUser.getPid();
         }
         // mock
-//        List<CardSharingRatioVO> result = MockUtil.list(CardSharingRatioVO.class, 20);
-        List<CardSharingRatioVO> result = unionCardSharingRatioService.listCardSharingRatioVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
+        List<CardSharingRatioVO> result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.list(CardSharingRatioVO.class, 20);
+        } else {
+            result = unionCardSharingRatioService.listCardSharingRatioVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
+        }
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -94,7 +103,9 @@ public class UnionCardSharingRatioController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionCardSharingRatioService.updateRatioByBusIdAndUnionIdAndActivityId(busId, unionId, activityId, ratioList);
+        if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
+            unionCardSharingRatioService.updateRatioByBusIdAndUnionIdAndActivityId(busId, unionId, activityId, ratioList);
+        }
         return GtJsonResult.instanceSuccessMsg();
     }
 

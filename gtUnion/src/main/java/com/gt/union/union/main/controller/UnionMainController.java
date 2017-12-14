@@ -5,6 +5,7 @@ import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
@@ -50,10 +51,14 @@ public class UnionMainController {
             busId = busUser.getPid();
         }
         // mock
-//        UnionVO result = MockUtil.get(UnionVO.class);
-//        List<UnionMainDict> itemList = MockUtil.list(UnionMainDict.class, 3);
-//        result.setItemList(itemList);
-        UnionVO result = unionMainService.getUnionVOByBusIdAndId(busId, unionId);
+        UnionVO result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.get(UnionVO.class);
+            List<UnionMainDict> itemList = MockUtil.list(UnionMainDict.class, 3);
+            result.setItemList(itemList);
+        } else {
+            result = unionMainService.getUnionVOByBusIdAndId(busId, unionId);
+        }
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -68,8 +73,12 @@ public class UnionMainController {
             busId = busUser.getPid();
         }
         // mock
-//        List<UnionMain> voList = MockUtil.list(UnionMain.class, page.getSize());
-        List<UnionMain> voList = unionMainService.listOtherValidByBusId(busId);
+        List<UnionMain> voList;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            voList = MockUtil.list(UnionMain.class, page.getSize());
+        } else {
+            voList = unionMainService.listOtherValidByBusId(busId);
+        }
         Page<UnionMain> result = (Page<UnionMain>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -84,8 +93,12 @@ public class UnionMainController {
             busId = busUser.getPid();
         }
         // mock
-//        List<UnionMain> result = MockUtil.list(UnionMain.class, 3);
-        List<UnionMain> result = unionMainService.listMyValidByBusId(busId);
+        List<UnionMain> result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.list(UnionMain.class, 3);
+        } else {
+            result = unionMainService.listMyValidByBusId(busId);
+        }
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -104,7 +117,9 @@ public class UnionMainController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionMainService.updateUnionVOByBusIdAndId(busId, unionId, unionMainVO);
+        if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
+            unionMainService.updateUnionVOByBusIdAndId(busId, unionId, unionMainVO);
+        }
         return GtJsonResult.instanceSuccessMsg();
     }
 

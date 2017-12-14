@@ -3,6 +3,8 @@ package com.gt.union.union.main.controller;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
+import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
 import com.gt.union.union.main.entity.UnionMain;
@@ -49,11 +51,15 @@ public class UnionIndexController {
             busId = busUser.getPid();
         }
         // mock
-//        IndexVO result = MockUtil.get(IndexVO.class);
-//        List<UnionMain> myJoinUnionList = MockUtil.list(UnionMain.class, 2);
-//        result.setMyJoinUnionList(myJoinUnionList);
+        IndexVO result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.get(IndexVO.class);
+            List<UnionMain> myJoinUnionList = MockUtil.list(UnionMain.class, 2);
+            result.setMyJoinUnionList(myJoinUnionList);
+        } else {
+            result = unionIndexService.getIndexVOByBusId(busId, unionId);
+        }
 
-        IndexVO result = unionIndexService.getIndexVOByBusId(busId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

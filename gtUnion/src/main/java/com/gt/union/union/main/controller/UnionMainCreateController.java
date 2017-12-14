@@ -4,6 +4,7 @@ import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
@@ -46,8 +47,12 @@ public class UnionMainCreateController {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
         // mock
-//        UnionPermitCheckVO result = MockUtil.get(UnionPermitCheckVO.class);
-        UnionPermitCheckVO result = unionMainCreateService.getPermitCheckVOByBusId(busId);
+        UnionPermitCheckVO result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.get(UnionPermitCheckVO.class);
+        } else {
+            result = unionMainCreateService.getPermitCheckVOByBusId(busId);
+        }
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -66,7 +71,9 @@ public class UnionMainCreateController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionMainCreateService.saveUnionCreateVOByBusId(busId, unionCreateVO);
+        if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
+            unionMainCreateService.saveUnionCreateVOByBusId(busId, unionCreateVO);
+        }
         return GtJsonResult.instanceSuccessMsg();
     }
 }

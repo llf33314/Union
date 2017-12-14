@@ -7,6 +7,7 @@ import com.gt.union.card.project.vo.CardProjectItemConsumeVO;
 import com.gt.union.card.project.vo.CardProjectVO;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
@@ -49,8 +50,12 @@ public class UnionCardProjectItemController {
             busId = busUser.getPid();
         }
         // mock
-//        List<CardProjectItemConsumeVO> result = MockUtil.list(CardProjectItemConsumeVO.class, 20);
-        List<CardProjectItemConsumeVO> result = unionCardProjectItemService.listCardProjectItemConsumeVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
+        List<CardProjectItemConsumeVO> result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.list(CardProjectItemConsumeVO.class, 20);
+        } else {
+            result = unionCardProjectItemService.listCardProjectItemConsumeVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
+        }
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -73,7 +78,9 @@ public class UnionCardProjectItemController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionCardProjectItemService.saveProjectItemVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId, projectItemVO);
+        if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
+            unionCardProjectItemService.saveProjectItemVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId, projectItemVO);
+        }
         return GtJsonResult.instanceSuccessMsg();
     }
 
@@ -92,7 +99,9 @@ public class UnionCardProjectItemController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionCardProjectItemService.commitProjectItemVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId, projectItemVO);
+        if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
+            unionCardProjectItemService.commitProjectItemVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId, projectItemVO);
+        }
         return GtJsonResult.instanceSuccessMsg();
     }
 }

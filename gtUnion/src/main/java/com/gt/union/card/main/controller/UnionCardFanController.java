@@ -9,6 +9,8 @@ import com.gt.union.card.main.vo.CardFanDetailVO;
 import com.gt.union.card.main.vo.CardFanSearchVO;
 import com.gt.union.card.main.vo.CardFanVO;
 import com.gt.union.common.constant.BusUserConstant;
+import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.ExportUtil;
 import com.gt.union.common.util.ListUtil;
@@ -63,8 +65,12 @@ public class UnionCardFanController {
             busId = busUser.getPid();
         }
         // mock
-//        List<CardFanVO> voList = MockUtil.list(CardFanVO.class, page.getSize());
-        List<CardFanVO> voList = unionCardFanService.listCardFanVoByBusIdAndUnionId(busId, unionId, optNumber, optPhone);
+        List<CardFanVO> voList;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            voList = MockUtil.list(CardFanVO.class, page.getSize());
+        } else {
+            voList = unionCardFanService.listCardFanVoByBusIdAndUnionId(busId, unionId, optNumber, optPhone);
+        }
         Page<CardFanVO> result = (Page<CardFanVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -83,27 +89,32 @@ public class UnionCardFanController {
             busId = busUser.getPid();
         }
 
-        List<CardFanVO> fanVOList = unionCardFanService.listCardFanVoByBusIdAndUnionId(busId, unionId, null, null);
+        List<CardFanVO> voList;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            voList = MockUtil.list(CardFanVO.class, 20);
+        } else {
+            voList = unionCardFanService.listCardFanVoByBusIdAndUnionId(busId, unionId, null, null);
+        }
         String[] titles = new String[]{"盟员卡号", "手机号", "联盟积分"};
         HSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);
         HSSFSheet sheet = workbook.getSheetAt(0);
-        if (ListUtil.isNotEmpty(fanVOList)) {
+        if (ListUtil.isNotEmpty(voList)) {
             int rowIndex = 1;
             HSSFCellStyle centerCellStyle = ExportUtil.newHSSFCellStyle(workbook, HSSFCellStyle.ALIGN_CENTER);
-            for (CardFanVO cardFanVO : fanVOList) {
+            for (CardFanVO vo : voList) {
                 HSSFRow row = sheet.createRow(rowIndex++);
                 int cellIndex = 0;
                 // 盟员卡号
                 HSSFCell cardNumberCell = row.createCell(cellIndex++);
-                cardNumberCell.setCellValue(cardFanVO.getFan().getNumber());
+                cardNumberCell.setCellValue(vo.getFan().getNumber());
                 cardNumberCell.setCellStyle(centerCellStyle);
                 // 手机号
                 HSSFCell phoneCell = row.createCell(cellIndex++);
-                phoneCell.setCellValue(cardFanVO.getFan().getPhone());
+                phoneCell.setCellValue(vo.getFan().getPhone());
                 phoneCell.setCellStyle(centerCellStyle);
                 // 联盟积分
                 HSSFCell integralCell = row.createCell(cellIndex);
-                integralCell.setCellValue(cardFanVO.getIntegral());
+                integralCell.setCellValue(vo.getIntegral());
                 integralCell.setCellStyle(centerCellStyle);
             }
         }
@@ -126,10 +137,14 @@ public class UnionCardFanController {
             busId = busUser.getPid();
         }
         // mock
-//        CardFanDetailVO result = MockUtil.get(CardFanDetailVO.class);
-//        List<UnionCard> activityCardList = MockUtil.list(UnionCard.class, 20);
-//        result.setActivityCardList(activityCardList);
-        CardFanDetailVO result = unionCardFanService.getFanDetailVOByBusIdAndIdAndUnionId(busId, fanId, unionId);
+        CardFanDetailVO result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.get(CardFanDetailVO.class);
+            List<UnionCard> activityCardList = MockUtil.list(UnionCard.class, 20);
+            result.setActivityCardList(activityCardList);
+        } else {
+            result = unionCardFanService.getFanDetailVOByBusIdAndIdAndUnionId(busId, fanId, unionId);
+        }
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -147,10 +162,14 @@ public class UnionCardFanController {
             busId = busUser.getPid();
         }
         // mock
-//        CardFanSearchVO result = MockUtil.get(CardFanSearchVO.class);
-//        List<UnionMain> unionList = MockUtil.list(UnionMain.class, 3);
-//        result.setUnionList(unionList);
-        CardFanSearchVO result = unionCardFanService.getCardFanSearchVOByBusId(busId, numberOrPhone, unionId);
+        CardFanSearchVO result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.get(CardFanSearchVO.class);
+            List<UnionMain> unionList = MockUtil.list(UnionMain.class, 3);
+            result.setUnionList(unionList);
+        } else {
+            result = unionCardFanService.getCardFanSearchVOByBusId(busId, numberOrPhone, unionId);
+        }
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

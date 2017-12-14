@@ -5,6 +5,7 @@ import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
@@ -19,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -55,8 +55,12 @@ public class UnionMemberJoinController {
             busId = busUser.getPid();
         }
         // mock
-//        List<MemberJoinVO> voList = MockUtil.list(MemberJoinVO.class, page.getSize());
-        List<MemberJoinVO> voList = unionMemberJoinService.listMemberJoinVOByBusIdAndUnionId(busId, unionId, memberName, phone);
+        List<MemberJoinVO> voList;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            voList = MockUtil.list(MemberJoinVO.class, page.getSize());
+        } else {
+            voList = unionMemberJoinService.listMemberJoinVOByBusIdAndUnionId(busId, unionId, memberName, phone);
+        }
         Page<MemberJoinVO> result = (Page<MemberJoinVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -79,7 +83,9 @@ public class UnionMemberJoinController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionMemberJoinService.updateStatusByBusIdAndIdAndUnionId(busId, joinId, unionId, isPass);
+        if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
+            unionMemberJoinService.updateStatusByBusIdAndIdAndUnionId(busId, joinId, unionId, isPass);
+        }
         return GtJsonResult.instanceSuccessMsg();
     }
 
@@ -100,7 +106,9 @@ public class UnionMemberJoinController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionMemberJoinService.saveJoinCreateVOByBusIdAndUnionIdAndType(busId, unionId, type, joinCreateVO);
+        if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
+            unionMemberJoinService.saveJoinCreateVOByBusIdAndUnionIdAndType(busId, unionId, type, joinCreateVO);
+        }
         return GtJsonResult.instanceSuccessMsg();
     }
 

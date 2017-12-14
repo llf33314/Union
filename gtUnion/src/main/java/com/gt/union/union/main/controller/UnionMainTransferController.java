@@ -5,6 +5,7 @@ import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
@@ -49,8 +50,12 @@ public class UnionMainTransferController {
             busId = busUser.getPid();
         }
         // mock
-//        List<UnionTransferVO> voList = MockUtil.list(UnionTransferVO.class, page.getSize());
-        List<UnionTransferVO> voList = unionMainTransferService.listUnionTransferVOByBusIdAndUnionId(busId, unionId);
+        List<UnionTransferVO> voList;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            voList = MockUtil.list(UnionTransferVO.class, page.getSize());
+        } else {
+            voList = unionMainTransferService.listUnionTransferVOByBusIdAndUnionId(busId, unionId);
+        }
         Page<UnionTransferVO> result = (Page<UnionTransferVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -73,7 +78,9 @@ public class UnionMainTransferController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionMainTransferService.updateAcceptByBusIdAndIdAndUnionId(busId, transferId, unionId, isAccept);
+        if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
+            unionMainTransferService.updateAcceptByBusIdAndIdAndUnionId(busId, transferId, unionId, isAccept);
+        }
         return GtJsonResult.instanceSuccessMsg();
     }
 
@@ -90,7 +97,9 @@ public class UnionMainTransferController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionMainTransferService.revokeByBusIdAndIdAndUnionId(busId, transferId, unionId);
+        if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
+            unionMainTransferService.revokeByBusIdAndIdAndUnionId(busId, transferId, unionId);
+        }
         return GtJsonResult.instanceSuccessMsg();
     }
 
@@ -109,7 +118,9 @@ public class UnionMainTransferController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionMainTransferService.saveByBusIdAndUnionIdAndToMemberId(busId, unionId, toMemberId);
+        if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
+            unionMainTransferService.saveByBusIdAndUnionIdAndToMemberId(busId, unionId, toMemberId);
+        }
         return GtJsonResult.instanceSuccessMsg();
     }
 

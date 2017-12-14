@@ -4,6 +4,8 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
+import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PageUtil;
@@ -58,8 +60,12 @@ public class UnionBrokerageIncomeController {
             busId = busUser.getPid();
         }
         // mock
-//        List<BrokerageOpportunityVO> voList = MockUtil.list(BrokerageOpportunityVO.class, page.getSize());
-        List<BrokerageOpportunityVO> voList = unionBrokerageIncomeService.listBrokerageOpportunityVOByBusId(busId, unionId, toMemberId, isClose, clientName, clientPhone);
+        List<BrokerageOpportunityVO> voList;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            voList = MockUtil.list(BrokerageOpportunityVO.class, page.getSize());
+        } else {
+            voList = unionBrokerageIncomeService.listBrokerageOpportunityVOByBusId(busId, unionId, toMemberId, isClose, clientName, clientPhone);
+        }
         Page<BrokerageOpportunityVO> result = (Page<BrokerageOpportunityVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
