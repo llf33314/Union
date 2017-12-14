@@ -43,7 +43,6 @@ public class UnionCallBackController {
     public String updateCallbackByPermitId(
             @PathVariable("model") String model,
             @RequestParam(value = "socketKey") String socketKey,
-            @RequestParam(value = "ids") String ids,
             @RequestBody Map<String, Object> param) throws Exception {
         // debug
         logger.debug(JSONObject.toJSONString(param));
@@ -83,13 +82,13 @@ public class UnionCallBackController {
 
         switch (model.toLowerCase()) {
             case "permit":
-                return unionMainPermitService.updateCallbackById(ids, socketKey, payType, orderNo, isSuccess);
+                return unionMainPermitService.updateCallbackByOrderNo(socketKey, payType, orderNo, isSuccess);
             case "opportunity":
-                return unionBrokeragePayService.updateCallbackByIds(ids, socketKey, payType, orderNo, isSuccess);
+                return unionBrokeragePayService.updateCallbackByOrderNo(socketKey, payType, orderNo, isSuccess);
             case "consume":
-                return unionConsumeService.updateCallbackById(ids, socketKey, payType, orderNo, isSuccess);
+                return unionConsumeService.updateCallbackByOrderNo(socketKey, payType, orderNo, isSuccess);
             case "card":
-                return unionCardService.updateCallbackByIds(ids, socketKey, payType, orderNo, isSuccess);
+                return unionCardService.updateCallbackByOrderNo(socketKey, payType, orderNo, isSuccess);
             default:
                 Map<String, Object> result = new HashMap<>(2);
                 result.put("code", -1);

@@ -25,6 +25,15 @@ public interface IUnionCardRecordService extends IService<UnionCardRecord> {
 
     //***************************************** Domain Driven Design - list ********************************************
 
+    /**
+     * 获取联盟卡购买记录列表信息
+     *
+     * @param orderNo 订单号
+     * @return UnionCardRecord
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardRecord> listByOrderNo(String orderNo) throws Exception;
+
     //***************************************** Domain Driven Design - save ********************************************
 
     /**

@@ -22,6 +22,15 @@ public interface IUnionMainPermitService extends IService<UnionMainPermit> {
      */
     UnionMainPermit getValidByBusId(Integer busId) throws Exception;
 
+    /**
+     * 获取联盟许可信息
+     *
+     * @param sysOrderNo 订单号
+     * @return UnionMainPermit
+     * @throws Exception 统一处理异常
+     */
+    UnionMainPermit getBySysOrderNo(String sysOrderNo) throws Exception;
+
     //***************************************** Domain Driven Design - list ********************************************
 
     //***************************************** Domain Driven Design - save ********************************************
@@ -51,14 +60,13 @@ public interface IUnionMainPermitService extends IService<UnionMainPermit> {
     /**
      * 创建联盟-购买盟主服务-支付-回调
      *
-     * @param permitId  许可id
      * @param socketKey socket关键字
      * @param payType   支付类型
      * @param orderNo   订单号
      * @param isSuccess 是否成功
      * @return String 返回结果
      */
-    String updateCallbackById(String permitId, String socketKey, String payType, String orderNo, Integer isSuccess);
+    String updateCallbackByOrderNo(String socketKey, String payType, String orderNo, Integer isSuccess);
 
     //***************************************** Domain Driven Design - count *******************************************
 
