@@ -74,8 +74,7 @@ public class UnionMainDictServiceImpl extends ServiceImpl<UnionMainDictMapper, U
         }
         // (2)db
         EntityWrapper<UnionMainDict> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("id", id)
-                .eq("del_status", CommonConstant.DEL_STATUS_NO);
+        entityWrapper.eq("id", id);
         result = selectOne(entityWrapper);
         setCache(result, id);
         return result;
