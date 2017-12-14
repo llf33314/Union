@@ -3,6 +3,8 @@ package com.gt.union.opportunity.main.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.api.amqp.entity.PhoneMessage;
+import com.gt.union.api.amqp.sender.PhoneMessageSender;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
@@ -48,6 +50,9 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
 
     @Autowired
     private IUnionOpportunityRatioService opportunityRatioService;
+
+    @Autowired
+    private PhoneMessageSender phoneMessageSender;
 
     //***************************************** Domain Driven Design - get *********************************************
 
@@ -400,7 +405,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 return o1.getOpportunity().getCreateTime().compareTo(o2.getOpportunity().getCreateTime());
             }
         });
-        
+
         return result;
     }
 
@@ -413,7 +418,8 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	判断union有效性和member写权限
-        if (!unionMainService.isUnionValid(unionId)) {
+        UnionMain union = unionMainService.getById(unionId);
+        if (!unionMainService.isUnionValid(union)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
         UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
@@ -459,6 +465,13 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         saveOpportunity.setBusinessMsg(businessMsg);
 
         save(saveOpportunity);
+
+        // （3）发送短信通知
+        String phone = StringUtil.isNotEmpty(toMember.getNotifyPhone()) ? toMember.getNotifyPhone() : toMember.getDirectorPhone();
+        String content = "\"" + union.getName() + "\"的盟员\""
+                + member.getEnterpriseName() + "\"为你推荐了客户，请到商机消息处查看。客户信息："
+                + clientName + "，" + clientPhone + "，" + businessMsg;
+        phoneMessageSender.sendMsg(new PhoneMessage(toMember.getBusId(), phone, content));
     }
 
     //***************************************** Domain Driven Design - remove ******************************************
@@ -471,7 +484,8 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	判断union有效性和member写权限
-        if (!unionMainService.isUnionValid(unionId)) {
+        UnionMain union = unionMainService.getById(unionId);
+        if (!unionMainService.isUnionValid(union)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
         UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
@@ -507,6 +521,19 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         }
 
         update(updateOpportunity);
+        // （5）发送短信通知
+        UnionMember fromMember = unionMemberService.getReadByIdAndUnionId(opportunity.getFromMemberId(), unionId);
+        if (fromMember != null) {
+            String phone = StringUtil.isNotEmpty(fromMember.getNotifyPhone()) ? fromMember.getNotifyPhone() : fromMember.getDirectorPhone();
+            String content = "\"" + union.getName() + "\"的盟员\""
+                    + member.getEnterpriseName() + "\""
+                    + (CommonConstant.COMMON_YES == isAccept ? "已接受" : "已拒绝")
+                    + "了您推荐的商机消息。客户信息："
+                    + opportunity.getClientName() + "，"
+                    + opportunity.getClientPhone() + "，"
+                    + opportunity.getBusinessMsg();
+            phoneMessageSender.sendMsg(new PhoneMessage(fromMember.getBusId(), phone, content));
+        }
     }
 
     //***************************************** Domain Driven Design - count *******************************************
@@ -668,7 +695,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         if (opportunityList == null || fromMemberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        
+
         List<UnionOpportunity> result = new ArrayList<>();
         if (ListUtil.isNotEmpty(opportunityList)) {
             for (UnionOpportunity opportunity : opportunityList) {
@@ -677,7 +704,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 }
             }
         }
-        
+
         return result;
     }
 
