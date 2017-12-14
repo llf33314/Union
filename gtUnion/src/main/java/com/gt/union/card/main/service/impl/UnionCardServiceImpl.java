@@ -30,6 +30,7 @@ import com.gt.union.card.sharing.entity.UnionCardSharingRecord;
 import com.gt.union.card.sharing.service.IUnionCardSharingRatioService;
 import com.gt.union.card.sharing.service.IUnionCardSharingRecordService;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.constant.SmsCodeConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
@@ -362,7 +363,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         saveBatch(saveCardList);
         // （6）	新增未付款的联盟卡购买记录，并返回支付链接
         List<UnionCardRecord> saveCardRecordList = new ArrayList<>();
-        String orderNo = "LM_Ca_" + DateUtil.getSerialNumber();
+        String orderNo = "LM" + ConfigConstant.PAY_MODEL_CARD + DateUtil.getSerialNumber();
         for (UnionCard saveCard : saveCardList) {
             if (CardConstant.TYPE_ACTIVITY != saveCard.getType()) {
                 continue;
@@ -403,6 +404,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         payParam.setNotifyUrl(notifyUrl);
         payParam.setIsSendMessage(CommonConstant.COMMON_NO);
         payParam.setPayWay(0);
+        payParam.setDesc("card" + busId);
         String payUrl = wxPayService.qrCodePay(payParam);
 
         result.setPayUrl(payUrl);

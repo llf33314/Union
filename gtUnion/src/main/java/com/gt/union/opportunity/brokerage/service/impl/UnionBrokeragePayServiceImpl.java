@@ -8,6 +8,7 @@ import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.pay.entity.PayParam;
 import com.gt.union.api.client.socket.SocketService;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
@@ -257,7 +258,7 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
         List<UnionBrokeragePay> savePayList = new ArrayList<>();
         BigDecimal brokerageSum = BigDecimal.ZERO;
         Date currentDate = DateUtil.getCurrentDate();
-        String orderNo = "LM_B_" + DateUtil.getSerialNumber();
+        String orderNo = "LM" + ConfigConstant.PAY_MODEL_OPPORTUNITY + DateUtil.getSerialNumber();
         if (ListUtil.isNotEmpty(opportunityIdList)) {
             for (Integer opportunityId : opportunityIdList) {
                 UnionOpportunity opportunity = unionOpportunityService.getById(opportunityId);
@@ -322,6 +323,7 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
         payParam.setNotifyUrl(notifyUrl);
         payParam.setIsSendMessage(CommonConstant.COMMON_NO);
         payParam.setPayWay(0);
+        payParam.setDesc("opportunity" + busId);
         String payUrl = wxPayService.qrCodePay(payParam);
 
         result.setPayUrl(payUrl);
@@ -372,7 +374,7 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
                     updatePay.setAlipayOrderNo(orderNo);
                 }
                 updatePayList.add(updatePay);
-                
+
                 if (CommonConstant.COMMON_YES == isSuccess) {
                     UnionBrokerageIncome saveIncome = new UnionBrokerageIncome();
                     saveIncome.setDelStatus(CommonConstant.DEL_STATUS_NO);
@@ -384,7 +386,7 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
                     saveIncome.setUnionId(pay.getUnionId());
                     saveIncome.setOpportunityId(pay.getOpportunityId());
                     saveIncomeList.add(saveIncome);
-                    
+
                     UnionOpportunity updateOpportunity = new UnionOpportunity();
                     updateOpportunity.setId(pay.getOpportunityId());
                     updateOpportunity.setIsClose(CommonConstant.COMMON_YES);
@@ -436,7 +438,7 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
 
         return result.doubleValue();
     }
-    
+
     //***************************************** Domain Driven Design - boolean *****************************************
 
     @Override

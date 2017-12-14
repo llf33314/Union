@@ -28,6 +28,7 @@ import com.gt.union.card.project.entity.UnionCardProjectItem;
 import com.gt.union.card.project.service.IUnionCardProjectItemService;
 import com.gt.union.card.project.service.IUnionCardProjectService;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
@@ -308,7 +309,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
             }
         }
 
-        String orderNo = "LM_Consume_" + busId + "_" + DateUtil.getSerialNumber();
+        String orderNo = "LM" + ConfigConstant.PAY_MODEL_CONSUME + DateUtil.getSerialNumber();
         saveConsume.setOrderNo(orderNo);
         saveConsume.setType(ConsumeConstant.TYPE_OFFLINE);
         saveConsume.setBusinessType(ConsumeConstant.BUSINESS_TYPE_OFFLINE);
@@ -331,6 +332,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
             payParam.setNotifyUrl(notifyUrl);
             payParam.setIsSendMessage(CommonConstant.COMMON_NO);
             payParam.setPayWay(0);
+            payParam.setDesc("consume" + busId);
             String payUrl = wxPayService.qrCodePay(payParam);
 
             result.setPayUrl(payUrl);

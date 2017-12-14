@@ -8,6 +8,7 @@ import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.pay.entity.PayParam;
 import com.gt.union.api.client.socket.SocketService;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
@@ -94,7 +95,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         savePermit.setPackageId(packageId);
         savePermit.setOrderMoney(unionPackage.getPrice());
         savePermit.setOrderStatus(UnionConstant.PERMIT_ORDER_STATUS_PAYING);
-        String orderNo = "LM_P_" + DateUtil.getSerialNumber();
+        String orderNo = "LM" + ConfigConstant.PAY_MODEL_PERMIT + DateUtil.getSerialNumber();
         savePermit.setSysOrderNo(orderNo);
         save(savePermit);
 
@@ -110,6 +111,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         payParam.setNotifyUrl(notifyUrl);
         payParam.setIsSendMessage(CommonConstant.COMMON_NO);
         payParam.setPayWay(0);
+        payParam.setDesc("permit" + busId);
         String payUrl = wxPayService.qrCodePay(payParam);
 
         result.setPayUrl(payUrl);
