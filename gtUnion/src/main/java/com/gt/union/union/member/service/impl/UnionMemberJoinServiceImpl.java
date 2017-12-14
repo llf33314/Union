@@ -67,6 +67,18 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         return result != null && unionId.equals(result.getUnionId()) ? result : null;
     }
 
+    @Override
+    public UnionMemberJoin getByApplyMemberIdAndUnionId(Integer applyMemberId, Integer unionId) throws Exception {
+        if (applyMemberId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMemberJoin> result = listByUnionId(unionId);
+        result = filterByApplyMemberId(result, applyMemberId);
+
+        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
+    }
+
     //***************************************** Domain Driven Design - list ********************************************
 
     @Override
@@ -87,13 +99,9 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         }
         // （2）	按时间顺序排序
         List<MemberJoinVO> result = new ArrayList<>();
-        List<UnionMemberJoin> joinList = listByUnionId(unionId);
-        if (ListUtil.isNotEmpty(joinList)) {
-            for (UnionMemberJoin join : joinList) {
-                MemberJoinVO vo = new MemberJoinVO();
-                vo.setMemberJoin(join);
-
-                UnionMember joinMember = unionMemberService.getByIdAndUnionIdAndStatus(join.getApplyMemberId(), join.getUnionId(), MemberConstant.STATUS_APPLY_IN);
+        List<UnionMember> joinMemberList = unionMemberService.listByUnionIdAndStatus(unionId, MemberConstant.STATUS_APPLY_IN);
+        if (ListUtil.isNotEmpty(joinMemberList)) {
+            for (UnionMember joinMember : joinMemberList) {
                 boolean isContinue;
                 if (StringUtil.isNotEmpty(optMemberName)) {
                     isContinue = joinMember == null || StringUtil.isEmpty(joinMember.getEnterpriseName())
@@ -108,10 +116,15 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
                         continue;
                     }
                 }
+
+                MemberJoinVO vo = new MemberJoinVO();
                 vo.setJoinMember(joinMember);
 
-                if (MemberConstant.JOIN_TYPE_RECOMMEND == join.getType() && join.getRecommendMemberId() != null) {
-                    UnionMember recommendMember = unionMemberService.getReadByIdAndUnionId(join.getRecommendMemberId(), join.getUnionId());
+                UnionMemberJoin memberJoin = getByApplyMemberIdAndUnionId(joinMember.getId(), unionId);
+                vo.setMemberJoin(memberJoin);
+
+                if (MemberConstant.JOIN_TYPE_RECOMMEND == memberJoin.getType() && memberJoin.getRecommendMemberId() != null) {
+                    UnionMember recommendMember = unionMemberService.getReadByIdAndUnionId(memberJoin.getRecommendMemberId(), unionId);
                     vo.setRecommendMember(recommendMember);
                 }
 
@@ -301,6 +314,26 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
     //***************************************** Domain Driven Design - count *******************************************
 
     //***************************************** Domain Driven Design - boolean *****************************************
+
+    //***************************************** Domain Driven Design - filter ******************************************
+
+    @Override
+    public List<UnionMemberJoin> filterByApplyMemberId(List<UnionMemberJoin> joinList, Integer applyMemberId) throws Exception {
+        if (joinList == null || applyMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMemberJoin> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(joinList)) {
+            for (UnionMemberJoin join : joinList) {
+                if (applyMemberId.equals(join.getApplyMemberId())) {
+                    result.add(join);
+                }
+            }
+        }
+
+        return result;
+    }
 
     //***************************************** Object As a Service - get **********************************************
 

@@ -26,6 +26,16 @@ public interface IUnionMemberJoinService extends IService<UnionMemberJoin> {
      */
     UnionMemberJoin getByIdAndUnionId(Integer joinId, Integer unionId) throws Exception;
 
+    /**
+     * 获取入盟申请信息
+     *
+     * @param applyMemberId 申请盟员id
+     * @param unionId       联盟id
+     * @return UnionMemberJoin
+     * @throws Exception 统一处理异常
+     */
+    UnionMemberJoin getByApplyMemberIdAndUnionId(Integer applyMemberId, Integer unionId) throws Exception;
+
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
@@ -71,5 +81,17 @@ public interface IUnionMemberJoinService extends IService<UnionMemberJoin> {
     //***************************************** Domain Driven Design - count *******************************************
 
     //***************************************** Domain Driven Design - boolean *****************************************
+
+    //***************************************** Domain Driven Design - filter ******************************************
+
+    /**
+     * 根据入盟盟员id进行过滤
+     *
+     * @param joinList      数据源
+     * @param applyMemberId 入盟盟员id
+     * @return List<UnionMemberJoin>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMemberJoin> filterByApplyMemberId(List<UnionMemberJoin> joinList, Integer applyMemberId) throws Exception;
 
 }
