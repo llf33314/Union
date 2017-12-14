@@ -157,7 +157,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
         }
         List<UnionMainDict> saveDictList = vo.getItemList();
         for (UnionMainDict dict : saveDictList) {
-            if (!dict.getUnionId().equals(unionId)) {
+            if (!unionId.equals(dict.getUnionId())) {
                 throw new BusinessException("入盟申请必填信息不能绑定到其他联盟中");
             }
         }

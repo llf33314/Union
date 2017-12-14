@@ -119,6 +119,10 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
         List<UnionMember> writeMemberList = unionMemberService.listWriteByUnionId(unionId);
         if (ListUtil.isNotEmpty(writeMemberList)) {
             for (UnionMember writeMember : writeMemberList) {
+                if (member.getId().equals(writeMember.getId())) {
+                    continue;
+                }
+                
                 UnionTransferVO vo = new UnionTransferVO();
                 vo.setMember(writeMember);
 
