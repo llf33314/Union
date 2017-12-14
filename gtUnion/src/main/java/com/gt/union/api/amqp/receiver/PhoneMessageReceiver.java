@@ -64,7 +64,7 @@ public class PhoneMessageReceiver {
                     String msg = new String(message.getBody(), "UTF-8");
                     logger.info(msg);
                     PhoneMessage phoneMessage = JSONArray.parseObject(msg, PhoneMessage.class);
-//                    smsService.sendSms(phoneMessage);
+                    smsService.sendSms(phoneMessage);
                 }catch (Exception e){
                     logger.error("错误");
                 }finally {
