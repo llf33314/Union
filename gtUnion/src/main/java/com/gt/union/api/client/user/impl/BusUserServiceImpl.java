@@ -126,7 +126,7 @@ public class BusUserServiceImpl implements IBusUserService {
                 String[] items = itemValue.split(",");
                 data.put("authority",CommonUtil.toInteger(items[0]));
                 data.put("pay",CommonUtil.toInteger(items[1]));
-                data.put("versionName",CommonUtil.toInteger(items[2]));
+                data.put("versionName",items[2]);
             }
         }
         data.put("busVersionName",busVersionName);
