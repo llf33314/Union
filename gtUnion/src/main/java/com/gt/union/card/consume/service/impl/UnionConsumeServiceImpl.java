@@ -420,8 +420,10 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
             updateConsume.setId(consume.getId());
             updateConsume.setPayStatus(isSuccess == CommonConstant.COMMON_YES ? ConsumeConstant.PAY_STATUS_SUCCESS : ConsumeConstant.PAY_STATUS_FAIL);
             if (payType.equals("0")) {
+                updateConsume.setPayType(ConsumeConstant.PAY_TYPE_WX);
                 updateConsume.setWxOrderNo(payOrderNo);
             } else {
+                updateConsume.setPayType(ConsumeConstant.PAY_TYPE_ALIPAY);
                 updateConsume.setAlipayOrderNo(payOrderNo);
             }
 

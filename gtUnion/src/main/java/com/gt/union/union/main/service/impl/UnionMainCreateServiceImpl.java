@@ -285,7 +285,7 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         if (StringUtil.isEmpty(memberNotifyPhone)) {
             throw new BusinessException("短信通知手机不能为空");
         }
-        if (StringUtil.isPhone(memberNotifyPhone)) {
+        if (!StringUtil.isPhone(memberNotifyPhone)) {
             throw new BusinessException("短信通知手机参数值有误");
         }
         saveMember.setNotifyPhone(memberNotifyPhone);

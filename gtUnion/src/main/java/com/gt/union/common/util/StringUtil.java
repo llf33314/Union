@@ -80,4 +80,8 @@ public class StringUtil {
     public static boolean isEmail(String str) {
         return Pattern.matches(EMAIL_PATTERN, str);
     }
+
+    public static void main(String[] args) {
+        System.out.println(isPhone("18825460998"));
+    }
 }

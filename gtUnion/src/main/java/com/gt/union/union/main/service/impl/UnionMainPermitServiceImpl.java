@@ -176,8 +176,10 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
             updatePermit.setId(permit.getId());
             updatePermit.setOrderStatus(isSuccess == CommonConstant.COMMON_YES ? UnionConstant.PERMIT_ORDER_STATUS_SUCCESS : UnionConstant.PERMIT_ORDER_STATUS_FAIL);
             if (payType.equals("0")) {
+                updatePermit.setPayType(UnionConstant.PERMIT_PAY_TYPE_WX);
                 updatePermit.setWxOrderNo(payOrderNo);
             } else {
+                updatePermit.setPayType(UnionConstant.PERMIT_PAY_TYPE_ALIPAY);
                 updatePermit.setAlipayOrderNo(payOrderNo);
             }
 
