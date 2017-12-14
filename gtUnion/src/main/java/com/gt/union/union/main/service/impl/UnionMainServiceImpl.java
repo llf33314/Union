@@ -294,6 +294,8 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
 
                     List<UnionMainDict> itemList = unionMainDictService.listByUnionId(union.getId());
                     vo.setItemList(itemList);
+
+                    result.add(vo);
                 }
             }
         }
