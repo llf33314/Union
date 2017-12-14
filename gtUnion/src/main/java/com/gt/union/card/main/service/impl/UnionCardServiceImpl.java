@@ -445,9 +445,9 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     // TODO 待抽离。。。
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String updateCallbackByOrderNo(String socketKey, String payType, String orderNo, Integer isSuccess) {
+    public String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess) {
         Map<String, Object> result = new HashMap<>(2);
-        if (socketKey == null || payType == null || orderNo == null || isSuccess == null) {
+        if (orderNo == null || socketKey == null || payType == null || payOrderNo == null || isSuccess == null) {
             result.put("code", -1);
             result.put("msg", "参数缺少");
             return JSONObject.toJSONString(result);
@@ -482,10 +482,10 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 updateRecord.setPayStatus(CommonConstant.COMMON_YES == isSuccess ? BrokerageConstant.PAY_STATUS_SUCCESS : BrokerageConstant.PAY_STATUS_FAIL);
                 if (payType.equals("0")) {
                     updateRecord.setPayType(CardConstant.PAY_TYPE_WX);
-                    updateRecord.setWxOrderNo(orderNo);
+                    updateRecord.setWxOrderNo(payOrderNo);
                 } else {
                     updateRecord.setPayType(BrokerageConstant.PAY_TYPE_ALIPAY);
-                    updateRecord.setAlipayOrderNo(orderNo);
+                    updateRecord.setAlipayOrderNo(payOrderNo);
                 }
                 updateRecordList.add(updateRecord);
 

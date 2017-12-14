@@ -60,13 +60,14 @@ public interface IUnionMainPermitService extends IService<UnionMainPermit> {
     /**
      * 创建联盟-购买盟主服务-支付-回调
      *
-     * @param socketKey socket关键字
-     * @param payType   支付类型
-     * @param orderNo   订单号
-     * @param isSuccess 是否成功
+     * @param orderNo    订单号
+     * @param socketKey  socket关键字
+     * @param payType    支付类型
+     * @param payOrderNo 支付订单号
+     * @param isSuccess  是否成功
      * @return String 返回结果
      */
-    String updateCallbackByOrderNo(String socketKey, String payType, String orderNo, Integer isSuccess);
+    String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess);
 
     //***************************************** Domain Driven Design - count *******************************************
 

@@ -94,13 +94,14 @@ public interface IUnionBrokeragePayService extends IService<UnionBrokeragePay> {
     /**
      * 佣金结算-我需支付的佣金-批量支付-回调
      *
-     * @param socketKey socket关键字
-     * @param payType   支付类型
-     * @param orderNo   订单号
-     * @param isSuccess 是否成功
-     * @return String
+     * @param orderNo    订单号
+     * @param socketKey  socket关键字
+     * @param payType    支付类型
+     * @param payOrderNo 支付订单号
+     * @param isSuccess  是否成功
+     * @return String 返回结果
      */
-    String updateCallbackByOrderNo(String socketKey, String payType, String orderNo, Integer isSuccess);
+    String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess);
 
     //***************************************** Domain Driven Design - count *******************************************
 

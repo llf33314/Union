@@ -139,9 +139,9 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
     //***************************************** Domain Driven Design - update ******************************************
 
     @Override
-    public String updateCallbackByOrderNo(String socketKey, String payType, String orderNo, Integer isSuccess) {
+    public String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess) {
         Map<String, Object> result = new HashMap<>(2);
-        if (socketKey == null || payType == null || orderNo == null || isSuccess == null) {
+        if (orderNo == null || socketKey == null || payType == null || payOrderNo == null || isSuccess == null) {
             result.put("code", -1);
             result.put("msg", "参数缺少");
             return JSONObject.toJSONString(result);
@@ -176,9 +176,9 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
             updatePermit.setId(permit.getId());
             updatePermit.setOrderStatus(isSuccess == CommonConstant.COMMON_YES ? UnionConstant.PERMIT_ORDER_STATUS_SUCCESS : UnionConstant.PERMIT_ORDER_STATUS_FAIL);
             if (payType.equals("0")) {
-                updatePermit.setWxOrderNo(orderNo);
+                updatePermit.setWxOrderNo(payOrderNo);
             } else {
-                updatePermit.setAlipayOrderNo(orderNo);
+                updatePermit.setAlipayOrderNo(payOrderNo);
             }
 
             try {

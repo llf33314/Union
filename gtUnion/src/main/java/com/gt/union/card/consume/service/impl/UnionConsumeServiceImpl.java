@@ -383,9 +383,9 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
     //***************************************** Domain Driven Design - update ******************************************
 
     @Override
-    public String updateCallbackByOrderNo(String socketKey, String payType, String orderNo, Integer isSuccess) {
+    public String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess) {
         Map<String, Object> result = new HashMap<>(2);
-        if (socketKey == null || payType == null || orderNo == null || isSuccess == null) {
+        if (orderNo == null || socketKey == null || payType == null || payOrderNo == null || isSuccess == null) {
             result.put("code", -1);
             result.put("msg", "参数缺少");
             return JSONObject.toJSONString(result);
@@ -420,9 +420,9 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
             updateConsume.setId(consume.getId());
             updateConsume.setPayStatus(isSuccess == CommonConstant.COMMON_YES ? ConsumeConstant.PAY_STATUS_SUCCESS : ConsumeConstant.PAY_STATUS_FAIL);
             if (payType.equals("0")) {
-                updateConsume.setWxOrderNo(orderNo);
+                updateConsume.setWxOrderNo(payOrderNo);
             } else {
-                updateConsume.setAlipayOrderNo(orderNo);
+                updateConsume.setAlipayOrderNo(payOrderNo);
             }
 
             try {

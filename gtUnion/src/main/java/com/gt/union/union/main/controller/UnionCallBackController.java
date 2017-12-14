@@ -57,12 +57,21 @@ public class UnionCallBackController {
             return JSONObject.toJSONString(result);
         }
 
-        String orderNo;
+        Object objOrderNo = param.get("out_trade_no");
+        String orderNo = objOrderNo != null ? objOrderNo.toString() : null;
+        if (StringUtil.isEmpty(orderNo)) {
+            Map<String, Object> result = new HashMap<>(2);
+            result.put("code", -1);
+            result.put("msg", "out_trade_no参数无效");
+            return JSONObject.toJSONString(result);
+        }
+
+        String payOrderNo;
         Integer isSuccess;
         if ("0".equals(payType)) {
             // 微信支付
-            Object objOrderNo = param.get("transaction_id");
-            orderNo = objOrderNo != null ? objOrderNo.toString().trim() : "";
+            Object objPayOrderNo = param.get("transaction_id");
+            payOrderNo = objPayOrderNo != null ? objPayOrderNo.toString().trim() : "";
 
             Object objResultCode = param.get("result_code");
             String resultCode = objResultCode != null ? objResultCode.toString().trim() : "";
@@ -72,8 +81,8 @@ public class UnionCallBackController {
                     ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO;
         } else {
             // 支付宝支付
-            Object objOrderNo = param.get("trade_no");
-            orderNo = objOrderNo != null ? objOrderNo.toString().trim() : "";
+            Object objPayOrderNo = param.get("trade_no");
+            payOrderNo = objPayOrderNo != null ? objPayOrderNo.toString().trim() : "";
 
             Object objTradeStatus = param.get("trade_status");
             String tradeStatus = objTradeStatus != null ? objTradeStatus.toString().trim() : "";
@@ -82,13 +91,13 @@ public class UnionCallBackController {
 
         switch (model.toLowerCase()) {
             case "permit":
-                return unionMainPermitService.updateCallbackByOrderNo(socketKey, payType, orderNo, isSuccess);
+                return unionMainPermitService.updateCallbackByOrderNo(orderNo, socketKey, payType, payOrderNo, isSuccess);
             case "opportunity":
-                return unionBrokeragePayService.updateCallbackByOrderNo(socketKey, payType, orderNo, isSuccess);
+                return unionBrokeragePayService.updateCallbackByOrderNo(orderNo, socketKey, payType, payOrderNo, isSuccess);
             case "consume":
-                return unionConsumeService.updateCallbackByOrderNo(socketKey, payType, orderNo, isSuccess);
+                return unionConsumeService.updateCallbackByOrderNo(orderNo, socketKey, payType, payOrderNo, isSuccess);
             case "card":
-                return unionCardService.updateCallbackByOrderNo(socketKey, payType, orderNo, isSuccess);
+                return unionCardService.updateCallbackByOrderNo(orderNo, socketKey, payType, payOrderNo, isSuccess);
             default:
                 Map<String, Object> result = new HashMap<>(2);
                 result.put("code", -1);
