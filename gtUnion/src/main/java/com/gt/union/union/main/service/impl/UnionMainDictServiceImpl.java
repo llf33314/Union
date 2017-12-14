@@ -139,6 +139,7 @@ public class UnionMainDictServiceImpl extends ServiceImpl<UnionMainDictMapper, U
         deleteById(id);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void removeBatchById(List<Integer> idList) throws Exception {
         if (idList == null) {
