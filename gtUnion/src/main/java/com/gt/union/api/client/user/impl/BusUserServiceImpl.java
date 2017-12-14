@@ -135,7 +135,7 @@ public class BusUserServiceImpl implements IBusUserService {
 
 	@Override
 	public BusUser getBusUserByPhone(String phone) {
-        /*logger.info("根据手机号获取商家信息phone：{}", phone);
+        logger.info("根据手机号获取商家信息phone：{}", phone);
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("phone", phone);
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/busUserApi/getBusUserApi.do";
@@ -143,10 +143,9 @@ public class BusUserServiceImpl implements IBusUserService {
             String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
             return ApiResultHandlerUtil.getDataObject(result, BusUser.class);
         } catch (Exception e) {
+            logger.error("根据手机号获取商家信息错误", e);
             return null;
-        }*/
-        //TODO 根据手机号获取商家信息
-        return null;
+        }
 	}
 
 
