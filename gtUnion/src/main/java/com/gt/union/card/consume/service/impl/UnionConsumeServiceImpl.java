@@ -246,10 +246,10 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
         if (consumeMoney == null || consumeMoney <= 0) {
             throw new BusinessException("消费金额不能为空，且必须大于0");
         }
-        if (member.getDiscount() == null) {
-            throw new BusinessException("未设置折扣");
+        BigDecimal discountMoney = BigDecimal.ZERO;
+        if (member.getDiscount() != null) {
+            discountMoney = BigDecimalUtil.multiply(consumeMoney, member.getDiscount());
         }
-        BigDecimal discountMoney = BigDecimalUtil.multiply(consumeMoney, member.getDiscount());
 
         BigDecimal payMoney = BigDecimalUtil.subtract(consumeMoney, discountMoney);
         Integer isUserIntegral = vo.getIsUserIntegral();

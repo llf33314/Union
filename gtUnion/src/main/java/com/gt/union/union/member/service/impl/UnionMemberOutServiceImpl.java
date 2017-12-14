@@ -3,6 +3,8 @@ package com.gt.union.union.member.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.api.amqp.entity.PhoneMessage;
+import com.gt.union.api.amqp.sender.PhoneMessageSender;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
@@ -10,6 +12,7 @@ import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.StringUtil;
+import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.member.constant.MemberConstant;
 import com.gt.union.union.member.entity.UnionMember;
@@ -42,6 +45,9 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
 
     @Autowired
     private IUnionMemberService unionMemberService;
+
+    @Autowired
+    private PhoneMessageSender phoneMessageSender;
 
     //***************************************** Domain Driven Design - get *********************************************
 
@@ -245,7 +251,8 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	判断union有效性和member写权限、盟主权限
-        if (!unionMainService.isUnionValid(unionId)) {
+        UnionMain union = unionMainService.getById(unionId);
+        if (!unionMainService.isUnionValid(union)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
         UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
@@ -261,33 +268,18 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         // 如果是退盟申请状态，判断退盟申请是否存在，不存在则新增，存在则报错；
         // 如果是其他状态，报错
         Date currentDate = DateUtil.getCurrentDate();
-        if (MemberConstant.STATUS_IN == member.getStatus()) {
-            if (StringUtil.isEmpty(reason)) {
-                throw new BusinessException("退盟理由不能为空");
-            }
-
-            UnionMember updateMember = new UnionMember();
-            updateMember.setId(member.getId());
-            updateMember.setStatus(MemberConstant.STATUS_APPLY_OUT);
-
-            UnionMemberOut saveOut = new UnionMemberOut();
-            saveOut.setDelStatus(CommonConstant.COMMON_NO);
-            saveOut.setCreateTime(currentDate);
-            saveOut.setType(MemberConstant.OUT_TYPE_APPLY);
-            saveOut.setUnionId(unionId);
-            saveOut.setApplyMemberId(member.getId());
-            saveOut.setApplyOutReason(reason);
-
-            unionMemberService.update(updateMember);
-            save(saveOut);
-        } else if (MemberConstant.STATUS_APPLY_OUT == member.getStatus()) {
-            UnionMemberOut out = getByUnionIdAndApplyMemberId(unionId, member.getId());
-            if (out == null) {
+        UnionMemberOut saveOut;
+        switch (member.getStatus()) {
+            case MemberConstant.STATUS_IN:
                 if (StringUtil.isEmpty(reason)) {
                     throw new BusinessException("退盟理由不能为空");
                 }
 
-                UnionMemberOut saveOut = new UnionMemberOut();
+                UnionMember updateMember = new UnionMember();
+                updateMember.setId(member.getId());
+                updateMember.setStatus(MemberConstant.STATUS_APPLY_OUT);
+
+                saveOut = new UnionMemberOut();
                 saveOut.setDelStatus(CommonConstant.COMMON_NO);
                 saveOut.setCreateTime(currentDate);
                 saveOut.setType(MemberConstant.OUT_TYPE_APPLY);
@@ -295,13 +287,44 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
                 saveOut.setApplyMemberId(member.getId());
                 saveOut.setApplyOutReason(reason);
 
+                unionMemberService.update(updateMember);
                 save(saveOut);
-            } else {
-                throw new BusinessException("已存在退盟申请");
-            }
-        } else {
-            throw new BusinessException("退盟盟员状态异常");
+                break;
+            case MemberConstant.STATUS_APPLY_OUT:
+                UnionMemberOut out = getByUnionIdAndApplyMemberId(unionId, member.getId());
+                if (out == null) {
+                    if (StringUtil.isEmpty(reason)) {
+                        throw new BusinessException("退盟理由不能为空");
+                    }
+
+                    saveOut = new UnionMemberOut();
+                    saveOut.setDelStatus(CommonConstant.COMMON_NO);
+                    saveOut.setCreateTime(currentDate);
+                    saveOut.setType(MemberConstant.OUT_TYPE_APPLY);
+                    saveOut.setUnionId(unionId);
+                    saveOut.setApplyMemberId(member.getId());
+                    saveOut.setApplyOutReason(reason);
+
+                    save(saveOut);
+                } else {
+                    throw new BusinessException("已存在退盟申请");
+                }
+                break;
+            default:
+                throw new BusinessException("退盟盟员状态异常");
         }
+        // （4）发送短信通知
+        UnionMember ownerMember = unionMemberService.getOwnerByUnionId(unionId);
+        if (ownerMember != null) {
+            String phone = StringUtil.isNotEmpty(ownerMember.getNotifyPhone()) ? ownerMember.getNotifyPhone() : ownerMember.getDirectorPhone();
+            String content = "\""
+                    + member.getEnterpriseAddress()
+                    + "\"申请退出\""
+                    + union.getName()
+                    + "\",请到退盟审核处查看并处理";
+            phoneMessageSender.sendMsg(new PhoneMessage(ownerMember.getBusId(), phone, content));
+        }
+
 
     }
 
