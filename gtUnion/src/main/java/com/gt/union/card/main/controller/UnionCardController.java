@@ -9,6 +9,7 @@ import com.gt.union.card.main.vo.CardApplyVO;
 import com.gt.union.card.main.vo.CardPhoneVO;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
@@ -22,7 +23,6 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 联盟卡 前端控制器
@@ -54,13 +54,17 @@ public class UnionCardController {
             busId = busUser.getPid();
         }
         // mock
-//        CardApplyVO result = MockUtil.get(CardApplyVO.class);
-//        List<UnionMain> unionList = MockUtil.list(UnionMain.class, 3);
-//        result.setUnionList(unionList);
-//        List<UnionCardActivity> activityList = MockUtil.list(UnionCardActivity.class, 3);
-//        result.setActivityList(activityList);
+        CardApplyVO result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.get(CardApplyVO.class);
+            List<UnionMain> unionList = MockUtil.list(UnionMain.class, 3);
+            result.setUnionList(unionList);
+            List<UnionCardActivity> activityList = MockUtil.list(UnionCardActivity.class, 3);
+            result.setActivityList(activityList);
+        } else {
+            result = unionCardService.getCardApplyVOByBusIdAndFanId(busId, fanId, unionId);
+        }
 
-        CardApplyVO result = unionCardService.getCardApplyVOByBusIdAndFanId(busId, fanId, unionId);
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -79,8 +83,13 @@ public class UnionCardController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-//        UnionCardFan result = MockUtil.get(UnionCardFan.class);
-        UnionCardFan result = unionCardService.checkCardPhoneVO(vo);
+        // mock
+        UnionCardFan result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.get(UnionCardFan.class);
+        } else {
+            result = unionCardService.checkCardPhoneVO(vo);
+        }
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -101,8 +110,12 @@ public class UnionCardController {
         }
 
         // mock
-//        UnionPayVO result = MockUtil.get(UnionPayVO.class);
-        UnionPayVO result = unionCardService.saveApplyByBusIdAndUnionIdAndFanId(busId, unionId, fanId, activityIdList);
+        UnionPayVO result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.get(UnionPayVO.class);
+        } else {
+            result = unionCardService.saveApplyByBusIdAndUnionIdAndFanId(busId, unionId, fanId, activityIdList);
+        }
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

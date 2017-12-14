@@ -8,6 +8,7 @@ import com.gt.union.card.activity.service.IUnionCardActivityService;
 import com.gt.union.card.activity.vo.*;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
@@ -50,8 +51,12 @@ public class UnionCardActivityController {
             busId = busUser.getPid();
         }
         // mock
-//        List<CardActivityStatusVO> voList = MockUtil.list(CardActivityStatusVO.class, page.getSize());
-        List<CardActivityStatusVO> voList = unionCardActivityService.listCardActivityStatusVOByBusIdAndUnionId(busId, unionId);
+        List<CardActivityStatusVO> voList;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            voList = MockUtil.list(CardActivityStatusVO.class, page.getSize());
+        } else {
+            voList = unionCardActivityService.listCardActivityStatusVOByBusIdAndUnionId(busId, unionId);
+        }
         Page<CardActivityStatusVO> result = (Page<CardActivityStatusVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -70,8 +75,12 @@ public class UnionCardActivityController {
             busId = busUser.getPid();
         }
         // mock
-//        List<CardActivityVO> voList = MockUtil.list(CardActivityVO.class, page.getSize());
-        List<CardActivityVO> voList = unionCardActivityService.listCardActivityVOByBusIdAndUnionId(busId, unionId);
+        List<CardActivityVO> voList;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            voList = MockUtil.list(CardActivityVO.class, page.getSize());
+        } else {
+            voList = unionCardActivityService.listCardActivityVOByBusIdAndUnionId(busId, unionId);
+        }
         Page<CardActivityVO> result = (Page<CardActivityVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -91,8 +100,12 @@ public class UnionCardActivityController {
             busId = busUser.getPid();
         }
         // mock
-//        List<CardActivityConsumeVO> result = MockUtil.list(CardActivityConsumeVO.class, 20);
-        List<CardActivityConsumeVO> result = unionCardActivityService.listCardActivityConsumeVOByBusIdAndUnionIdAndFanId(busId, unionId, fanId);
+        List<CardActivityConsumeVO> result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.list(CardActivityConsumeVO.class, 20);
+        } else {
+            result = unionCardActivityService.listCardActivityConsumeVOByBusIdAndUnionIdAndFanId(busId, unionId, fanId);
+        }
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -110,8 +123,12 @@ public class UnionCardActivityController {
             busId = busUser.getPid();
         }
         // mock
-//        CardActivityApplyVO result = MockUtil.get(CardActivityApplyVO.class);
-        CardActivityApplyVO result = unionCardActivityService.getCardActivityApplyVOByBusIdAndIdAndUnionId(busId, activityId, unionId);
+        CardActivityApplyVO result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.get(CardActivityApplyVO.class);
+        } else {
+            result = unionCardActivityService.getCardActivityApplyVOByBusIdAndIdAndUnionId(busId, activityId, unionId);
+        }
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -129,8 +146,12 @@ public class UnionCardActivityController {
             busId = busUser.getPid();
         }
         // mock
-//        List<CardActivityApplyItemVO> result = MockUtil.list(CardActivityApplyItemVO.class, 20);
-        List<CardActivityApplyItemVO> result = unionCardActivityService.listCardActivityApplyItemVOByBusIdAndIdAndUnionId(busId, activityId, unionId);
+        List<CardActivityApplyItemVO> result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.list(CardActivityApplyItemVO.class, 20);
+        } else {
+            result = unionCardActivityService.listCardActivityApplyItemVOByBusIdAndIdAndUnionId(busId, activityId, unionId);
+        }
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -152,7 +173,9 @@ public class UnionCardActivityController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionCardActivityService.saveByBusIdAndUnionId(busId, unionId, vo);
+        if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
+            unionCardActivityService.saveByBusIdAndUnionId(busId, unionId, vo);
+        }
         return GtJsonResult.instanceSuccessMsg();
     }
 
@@ -171,7 +194,9 @@ public class UnionCardActivityController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionCardActivityService.removeByBusIdAndIdAndUnionId(busId, activityId, unionId);
+        if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
+            unionCardActivityService.removeByBusIdAndIdAndUnionId(busId, activityId, unionId);
+        }
         return GtJsonResult.instanceSuccessMsg();
     }
 

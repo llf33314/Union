@@ -11,6 +11,7 @@ import com.gt.union.card.consume.vo.ConsumeRecordVO;
 import com.gt.union.card.project.entity.UnionCardProjectItem;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.*;
@@ -69,18 +70,22 @@ public class UnionConsumeController {
             busId = busUser.getPid();
         }
         // mock
-//        List<ConsumeRecordVO> voList = MockUtil.list(ConsumeRecordVO.class, page.getSize());
-//        for (int i = 0; i < voList.size(); i++) {
-//            List<UnionCardProjectItem> nonErpTextList = MockUtil.list(UnionCardProjectItem.class, 3);
-//            voList.get(i).setNonErpTextList(nonErpTextList);
-//
-//            List<UnionCardProjectItem> erpTextList = MockUtil.list(UnionCardProjectItem.class, 3);
-//            voList.get(i).setErpTextList(erpTextList);
-//
-//            List<UnionCardProjectItem> erpGoodsList = MockUtil.list(UnionCardProjectItem.class, 3);
-//            voList.get(i).setErpGoodsList(erpGoodsList);
-//        }
-        List<ConsumeRecordVO> voList = unionConsumeService.listConsumeRecordVOByBusId(busId, unionId, shopId, cardNumber, phone, beginTime, endTime);
+        List<ConsumeRecordVO> voList;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            voList = MockUtil.list(ConsumeRecordVO.class, page.getSize());
+            for (int i = 0; i < voList.size(); i++) {
+                List<UnionCardProjectItem> nonErpTextList = MockUtil.list(UnionCardProjectItem.class, 3);
+                voList.get(i).setNonErpTextList(nonErpTextList);
+
+                List<UnionCardProjectItem> erpTextList = MockUtil.list(UnionCardProjectItem.class, 3);
+                voList.get(i).setErpTextList(erpTextList);
+
+                List<UnionCardProjectItem> erpGoodsList = MockUtil.list(UnionCardProjectItem.class, 3);
+                voList.get(i).setErpGoodsList(erpGoodsList);
+            }
+        } else {
+            voList = unionConsumeService.listConsumeRecordVOByBusId(busId, unionId, shopId, cardNumber, phone, beginTime, endTime);
+        }
         Page<ConsumeRecordVO> result = (Page<ConsumeRecordVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -94,8 +99,24 @@ public class UnionConsumeController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-        List<ConsumeRecordVO> voList = unionConsumeService.listConsumeRecordVOByBusId(busId, null, null,
-                null, null, null, null);
+        // mock
+        List<ConsumeRecordVO> voList;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            voList = MockUtil.list(ConsumeRecordVO.class, 20);
+            for (int i = 0; i < voList.size(); i++) {
+                List<UnionCardProjectItem> nonErpTextList = MockUtil.list(UnionCardProjectItem.class, 3);
+                voList.get(i).setNonErpTextList(nonErpTextList);
+
+                List<UnionCardProjectItem> erpTextList = MockUtil.list(UnionCardProjectItem.class, 3);
+                voList.get(i).setErpTextList(erpTextList);
+
+                List<UnionCardProjectItem> erpGoodsList = MockUtil.list(UnionCardProjectItem.class, 3);
+                voList.get(i).setErpGoodsList(erpGoodsList);
+            }
+        } else {
+            voList = unionConsumeService.listConsumeRecordVOByBusId(busId, null, null,
+                    null, null, null, null);
+        }
         String[] titles = new String[]{"所属联盟", "消费门店", "联盟卡号", "手机号", "消费金额(元)", "实收金额(元)", "优惠项目", "支付状态", "消费时间"};
         HSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);
         HSSFSheet sheet = workbook.getSheetAt(0);
@@ -187,8 +208,12 @@ public class UnionConsumeController {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
         // mock
-//        UnionPayVO result = MockUtil.get(UnionPayVO.class);
-        UnionPayVO result = unionConsumeService.saveConsumePostVOByBusIdAndUnionIdAndFanId(busId, unionId, fanId, postVO);
+        UnionPayVO result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.get(UnionPayVO.class);
+        } else {
+            result = unionConsumeService.saveConsumePostVOByBusIdAndUnionIdAndFanId(busId, unionId, fanId, postVO);
+        }
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

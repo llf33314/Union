@@ -1,11 +1,11 @@
 package com.gt.union.union.member.controller;
 
-import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.ExportUtil;
@@ -60,9 +60,13 @@ public class UnionMemberController {
             busId = busUser.getPid();
         }
         // mock
-//        List<UnionMember> memberList = MockUtil.list(UnionMember.class, page.getSize());
-        List<UnionMember> memberList = unionMemberService.listWriteByBusIdAndUnionId(busId, unionId, optMemberName);
-        
+        List<UnionMember> memberList;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            memberList = MockUtil.list(UnionMember.class, page.getSize());
+        } else {
+            memberList = unionMemberService.listWriteByBusIdAndUnionId(busId, unionId, optMemberName);
+        }
+
         Page<UnionMember> result = (Page<UnionMember>) page;
         result = PageUtil.setRecord(result, memberList);
         return GtJsonResult.instanceSuccessMsg(result);
@@ -81,7 +85,12 @@ public class UnionMemberController {
             busId = busUser.getPid();
         }
 
-        List<UnionMember> memberList = unionMemberService.listWriteByBusIdAndUnionId(busId, unionId, null);
+        List<UnionMember> memberList;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            memberList = MockUtil.list(UnionMember.class, 20);
+        } else {
+            memberList = unionMemberService.listWriteByBusIdAndUnionId(busId, unionId, null);
+        }
         String[] titles = new String[]{"盟员名称", "负责人", "联系电话", "加入时间"};
         HSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);
         HSSFSheet sheet = workbook.getSheetAt(0);
@@ -128,8 +137,12 @@ public class UnionMemberController {
             busId = busUser.getPid();
         }
         // mock
-//        UnionMember result = MockUtil.get(UnionMember.class);
-        UnionMember result = unionMemberService.getByBusIdAndIdAndUnionId(busId, memberId, unionId);
+        UnionMember result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.get(UnionMember.class);
+        } else {
+            result = unionMemberService.getByBusIdAndIdAndUnionId(busId, memberId, unionId);
+        }
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -145,8 +158,12 @@ public class UnionMemberController {
             busId = busUser.getPid();
         }
         // mock
-//        UnionMember result = MockUtil.get(UnionMember.class);
-        UnionMember result = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        UnionMember result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.get(UnionMember.class);
+        } else {
+            result = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        }
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -161,8 +178,12 @@ public class UnionMemberController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-//        List<UnionMember> result = MockUtil.list(UnionMember.class, 30);
-        List<UnionMember> result = unionMemberService.listOtherWriteByBusIdAndUnionId(busId, unionId);
+        List<UnionMember> result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.list(UnionMember.class, 30);
+        } else {
+            result = unionMemberService.listOtherWriteByBusIdAndUnionId(busId, unionId);
+        }
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -183,7 +204,9 @@ public class UnionMemberController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionMemberService.updateByBusIdAndIdAndUnionId(busId, memberId, unionId, member);
+        if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
+            unionMemberService.updateByBusIdAndIdAndUnionId(busId, memberId, unionId, member);
+        }
         return GtJsonResult.instanceSuccessMsg();
     }
 
@@ -202,7 +225,9 @@ public class UnionMemberController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionMemberService.updateDiscountByBusIdAndIdAndUnionId(busId, memberId, unionId, discount);
+        if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
+            unionMemberService.updateDiscountByBusIdAndIdAndUnionId(busId, memberId, unionId, discount);
+        }
         return GtJsonResult.instanceSuccessMsg();
     }
 

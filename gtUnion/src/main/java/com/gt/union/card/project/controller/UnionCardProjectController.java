@@ -10,6 +10,7 @@ import com.gt.union.card.project.vo.CardProjectJoinMemberVO;
 import com.gt.union.card.project.vo.CardProjectVO;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
@@ -53,14 +54,18 @@ public class UnionCardProjectController {
             busId = busUser.getPid();
         }
         // mock
-//        List<CardProjectJoinMemberVO> result = new ArrayList<>();
-//        for (int i = 0; i < 20; i++) {
-//            CardProjectJoinMemberVO vo = MockUtil.get(CardProjectJoinMemberVO.class);
-//            List<UnionCardProjectItem> itemList = MockUtil.list(UnionCardProjectItem.class, 3);
-//            vo.setItemList(itemList);
-//            result.add(vo);
-//        }
-        List<CardProjectJoinMemberVO> result = unionCardProjectService.listJoinMemberByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
+        List<CardProjectJoinMemberVO> result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = new ArrayList<>();
+            for (int i = 0; i < 20; i++) {
+                CardProjectJoinMemberVO vo = MockUtil.get(CardProjectJoinMemberVO.class);
+                List<UnionCardProjectItem> itemList = MockUtil.list(UnionCardProjectItem.class, 3);
+                vo.setItemList(itemList);
+                result.add(vo);
+            }
+        } else {
+            result = unionCardProjectService.listJoinMemberByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
+        }
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -78,14 +83,18 @@ public class UnionCardProjectController {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
         // mock
-//        List<CardProjectCheckVO> result = new ArrayList<>();
-//        for (int i = 0; i < 20; i++) {
-//            CardProjectCheckVO vo = MockUtil.get(CardProjectCheckVO.class);
-//            List<UnionCardProjectItem> itemList = MockUtil.list(UnionCardProjectItem.class, 3);
-//            vo.setItemList(itemList);
-//            result.add(vo);
-//        }
-        List<CardProjectCheckVO> result = unionCardProjectService.listProjectCheckByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
+        List<CardProjectCheckVO> result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = new ArrayList<>();
+            for (int i = 0; i < 20; i++) {
+                CardProjectCheckVO vo = MockUtil.get(CardProjectCheckVO.class);
+                List<UnionCardProjectItem> itemList = MockUtil.list(UnionCardProjectItem.class, 3);
+                vo.setItemList(itemList);
+                result.add(vo);
+            }
+        } else {
+            result = unionCardProjectService.listProjectCheckByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
+        }
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -105,14 +114,18 @@ public class UnionCardProjectController {
             busId = busUser.getPid();
         }
         // mock
-//        CardProjectVO result = MockUtil.get(CardProjectVO.class);
-//        List<UnionCardProjectItem> nonErpTextList = MockUtil.list(UnionCardProjectItem.class, 10);
-//        result.setNonErpTextList(nonErpTextList);
-//        List<UnionCardProjectItem> erpTextList = MockUtil.list(UnionCardProjectItem.class, 10);
-//        result.setErpTextList(erpTextList);
-//        List<UnionCardProjectItem> erpGoodsList = MockUtil.list(UnionCardProjectItem.class, 10);
-//        result.setErpGoodsList(erpGoodsList);
-        CardProjectVO result = unionCardProjectService.getProjectVOByBusIdAndIdAndUnionIdAndActivityId(busId, projectId, unionId, activityId);
+        CardProjectVO result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.get(CardProjectVO.class);
+            List<UnionCardProjectItem> nonErpTextList = MockUtil.list(UnionCardProjectItem.class, 10);
+            result.setNonErpTextList(nonErpTextList);
+            List<UnionCardProjectItem> erpTextList = MockUtil.list(UnionCardProjectItem.class, 10);
+            result.setErpTextList(erpTextList);
+            List<UnionCardProjectItem> erpGoodsList = MockUtil.list(UnionCardProjectItem.class, 10);
+            result.setErpGoodsList(erpGoodsList);
+        } else {
+            result = unionCardProjectService.getProjectVOByBusIdAndIdAndUnionIdAndActivityId(busId, projectId, unionId, activityId);
+        }
         return GtJsonResult.instanceSuccessMsg(result);
     }
 
@@ -135,7 +148,9 @@ public class UnionCardProjectController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
-        unionCardProjectService.updateProjectCheckByBusIdAndUnionIdAndActivityId(busId, unionId, activityId, isPass, updateVO);
+        if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
+            unionCardProjectService.updateProjectCheckByBusIdAndUnionIdAndActivityId(busId, unionId, activityId, isPass, updateVO);
+        }
         return GtJsonResult.instanceSuccessMsg();
     }
 

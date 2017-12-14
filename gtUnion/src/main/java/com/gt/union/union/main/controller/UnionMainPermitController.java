@@ -4,6 +4,7 @@ import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
@@ -52,8 +53,12 @@ public class UnionMainPermitController {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
         // mock
-//        UnionPayVO result = MockUtil.get(UnionPayVO.class);
-        UnionPayVO result = unionMainPermitService.saveByBusIdAndPackageId(busId, packageId);
+        UnionPayVO result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.get(UnionPayVO.class);
+        } else {
+            result = unionMainPermitService.saveByBusIdAndPackageId(busId, packageId);
+        }
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

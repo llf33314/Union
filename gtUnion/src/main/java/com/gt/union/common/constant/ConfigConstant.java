@@ -95,5 +95,10 @@ public interface ConfigConstant {
      * 联盟erp项目类型
      */
     String[] UNION_USER_ERP_TYPE = {"2"};
+
+    /**
+     * 是否启用模拟数据(0：否 1：是)
+     */
+    int IS_MOCK = 0;
 }
 

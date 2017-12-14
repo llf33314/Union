@@ -6,6 +6,8 @@ import com.gt.api.util.SessionUtils;
 import com.gt.union.card.sharing.service.IUnionCardSharingRecordService;
 import com.gt.union.card.sharing.vo.CardSharingRecordVO;
 import com.gt.union.common.constant.BusUserConstant;
+import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PageUtil;
@@ -29,7 +31,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/unionCardSharingRecord")
 public class UnionCardSharingRecordController {
-    
+
     @Autowired
     private IUnionCardSharingRecordService unionCardSharingRecordService;
 
@@ -54,8 +56,12 @@ public class UnionCardSharingRecordController {
             busId = busUser.getPid();
         }
         // mock
-//        List<CardSharingRecordVO> voList = MockUtil.list(CardSharingRecordVO.class, page.getSize());
-        List<CardSharingRecordVO> voList = unionCardSharingRecordService.listCardSharingRecordVOByBusIdAndUnionId(busId, unionId, cardNumber, beginTime, endTime);
+        List<CardSharingRecordVO> voList;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            voList = MockUtil.list(CardSharingRecordVO.class, page.getSize());
+        } else {
+            voList = unionCardSharingRecordService.listCardSharingRecordVOByBusIdAndUnionId(busId, unionId, cardNumber, beginTime, endTime);
+        }
         Page<CardSharingRecordVO> result = (Page<CardSharingRecordVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result);

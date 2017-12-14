@@ -3,6 +3,8 @@ package com.gt.union.union.main.controller;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
+import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
 import com.gt.union.union.main.entity.UnionMainPackage;
@@ -28,7 +30,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/unionMainPackage")
 public class UnionMainPackageController {
-    
+
     @Autowired
     private IUnionMainPackageService unionMainPackageService;
 
@@ -43,10 +45,14 @@ public class UnionMainPackageController {
             busId = busUser.getPid();
         }
         // mock
-//        UnionPackageVO result = MockUtil.get(UnionPackageVO.class);
-//        List<UnionMainPackage> packageList = MockUtil.list(UnionMainPackage.class, 3);
-//        result.setPackageList(packageList);
-        UnionPackageVO result = unionMainPackageService.getUnionPackageVOByBusId(busId);
+        UnionPackageVO result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.get(UnionPackageVO.class);
+            List<UnionMainPackage> packageList = MockUtil.list(UnionMainPackage.class, 3);
+            result.setPackageList(packageList);
+        } else {
+            result = unionMainPackageService.getUnionPackageVOByBusId(busId);
+        }
         return GtJsonResult.instanceSuccessMsg(result);
     }
 

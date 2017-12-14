@@ -5,6 +5,8 @@ import com.gt.api.util.SessionUtils;
 import com.gt.union.card.project.entity.UnionCardProjectFlow;
 import com.gt.union.card.project.service.IUnionCardProjectFlowService;
 import com.gt.union.common.constant.BusUserConstant;
+import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
 import io.swagger.annotations.Api;
@@ -51,8 +53,12 @@ public class UnionCardProjectFlowController {
             busId = busUser.getPid();
         }
         // mock
-//        List<UnionCardProjectFlow> result = MockUtil.list(UnionCardProjectFlow.class, 20);
-        List<UnionCardProjectFlow> result = unionCardProjectFlowService.listByBusIdAndUnionIdAndActivityIdAndProjectId(busId, unionId, activityId, projectId);
+        List<UnionCardProjectFlow> result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.list(UnionCardProjectFlow.class, 20);
+        } else {
+            result = unionCardProjectFlowService.listByBusIdAndUnionIdAndActivityIdAndProjectId(busId, unionId, activityId, projectId);
+        }
         return GtJsonResult.instanceSuccessMsg(result)
                 ;
     }
