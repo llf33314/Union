@@ -1,6 +1,6 @@
 <template>
   <div id="apply_for">
-    <Breadcrumb :header-name="'入盟审核'"></Breadcrumb>
+    <Breadcrumb :header-name="['入盟审核']"></Breadcrumb>
     <div class="apply_for">
       <span class="apply_table">入盟申请表</span>
       <el-col style="width:125px">
@@ -13,62 +13,29 @@
       </el-col>
       <el-col style="width:245px">
         <div class="grid-content1 bg-purple">
-          <el-input placeholder="请输入关键字" icon="search" v-model="input" :on-icon-click="search"
-                    @keyup.enter.native="search">
+          <el-input placeholder="请输入关键字" icon="search" v-model="input" :on-icon-click="search" @keyup.enter.native="search">
           </el-input>
         </div>
       </el-col>
     </div>
     <div class="apply_select">
       <el-table :data="tableData" style="width: 100%">
-        <el-table-column prop="joinEnterpriseName" label="申请企业">
-          <template scope="scope">
-            <el-popover trigger="hover" placement="bottom">
-              <p>申请企业：{{ scope.row.joinEnterpriseName }}</p>
-              <div slot="reference" class="name-wrapper">
-                <span>{{ scope.row.joinEnterpriseName }}</span>
-              </div>
-            </el-popover>
-          </template>
+        <el-table-column prop="joinMember.enterpriseName" label="申请企业">
         </el-table-column>
-        <el-table-column prop="joinDirectorName" label="负责人">
+        <el-table-column prop="joinMember.directorName" label="负责人">
         </el-table-column>
-        <el-table-column prop="joinDirectorPhone" label="联系电话">
-          <template scope="scope">
-            <el-popover trigger="hover" placement="bottom">
-              <p>联系电话：{{ scope.row.joinDirectorPhone }}</p>
-              <div slot="reference" class="name-wrapper">
-                <span>{{ scope.row.joinDirectorPhone }}</span>
-              </div>
-            </el-popover>
-          </template>
+        <el-table-column prop="joinMember.directorPhone" label="联系电话">
         </el-table-column>
-        <el-table-column prop="joinDirectorEmail" label="邮箱">
-          <template scope="scope">
-            <el-popover trigger="hover" placement="bottom">
-              <p>邮箱：{{ scope.row.joinDirectorEmail }}</p>
-              <div slot="reference" class="name-wrapper">
-                <span>{{ scope.row.joinDirectorEmail }}</span>
-              </div>
-            </el-popover>
-          </template>
+        <el-table-column prop="joinMember.directorEmail" label="邮箱">
         </el-table-column>
-        <el-table-column prop="joinReason" label="申请/推荐理由">
+        <el-table-column prop="memberJoin.reason" label="申请/推荐理由">
         </el-table-column>
-        <el-table-column prop="joinTime" label="申请/推荐时间">
-          <template scope="scope">
-            <el-popover trigger="hover" placement="bottom">
-              <p>时间：{{ scope.row.joinTime }}</p>
-              <div slot="reference" class="name-wrapper">
-                <span>{{ scope.row.joinTime }}</span>
-              </div>
-            </el-popover>
-          </template>
+        <el-table-column prop="memberJoin.createTime" label="申请/推荐时间">
         </el-table-column>
-        <el-table-column prop="" label="推荐人">
+        <el-table-column prop="recommendMember.enterpriseName" label="推荐人">
         </el-table-column>
         <el-table-column prop="" label="操作" width="160">
-          <template scope="scope">
+          <template slot-scope="scope">
             <div class="sizeAndColor">
               <el-button size="small" @click="handlePass(scope)">通过</el-button>
               <el-button size="small" @click="handleFail(scope)">不通过</el-button>
@@ -105,7 +72,7 @@
 <script>
 import Breadcrumb from '@/components/public-components/Breadcrumb';
 import $http from '@/utils/http.js';
-
+import { timeFilter } from '@/utils/filter.js';
 export default {
   name: 'union-check',
   components: {
@@ -116,11 +83,11 @@ export default {
       value: '',
       options: [
         {
-          value: 'joinEnterpriseName',
+          value: 'memberName',
           label: '申请企业'
         },
         {
-          value: 'joinDirectorPhone',
+          value: 'phone',
           label: '联系电话'
         }
       ],
@@ -134,8 +101,8 @@ export default {
     };
   },
   computed: {
-    unionMemberId() {
-      return this.$store.state.unionMemberId;
+    unionId() {
+      return this.$store.state.unionId;
     }
   },
   mounted: function() {
@@ -143,12 +110,15 @@ export default {
   },
   methods: {
     init() {
-      if (this.unionMemberId) {
+      if (this.unionId) {
         $http
-          .get(`/unionMemberJoin/memberId/${this.unionMemberId}?current=1`)
+          .get(`/unionMemberJoin/unionId/${this.unionId}/page?current=1`)
           .then(res => {
             if (res.data.data) {
               this.tableData = res.data.data.records;
+              this.tableData.forEach((v, i) => {
+                v.memberJoin.createTime = timeFilter(v.memberJoin.createTime);
+              });
               this.totalAll = res.data.data.total;
             }
           })
@@ -160,10 +130,13 @@ export default {
     // 带条件查询
     search() {
       $http
-        .get(`/unionMemberJoin/memberId/${this.unionMemberId}?current=1&` + this.value + '=' + this.input)
+        .get(`/unionMemberJoin/unionId/${this.unionId}/page?current=1&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
+            this.tableData.forEach((v, i) => {
+              v.memberJoin.createTime = timeFilter(v.memberJoin.createTime);
+            });
             this.totalAll = res.data.data.total;
           }
         })
@@ -174,10 +147,13 @@ export default {
     // 分页查询
     handleCurrentChange(val) {
       $http
-        .get(`/unionMemberJoin/memberId/${this.unionMemberId}?&current=${val}&` + this.value + '=' + this.input)
+        .get(`/unionMemberJoin/unionId/${this.unionId}/page?current=${val}&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
+            this.tableData.forEach((v, i) => {
+              v.memberJoin.createTime = timeFilter(v.memberJoin.createTime);
+            });
             this.totalAll = res.data.data.total;
           }
         })
@@ -188,11 +164,11 @@ export default {
     // 通过
     handlePass(scope) {
       this.visible1 = true;
-      this.joinId = scope.row.joinId;
+      this.joinId = scope.row.memberJoin.id;
     },
     // 确认通过
     confirm1() {
-      let url = `/unionMemberJoin/${this.joinId}/memberId/${this.unionMemberId}?isOK=1`;
+      let url = `/unionMemberJoin/${this.joinId}/unionId/${this.unionId}?isPass=1`;
       $http
         .put(url)
         .then(res => {
@@ -210,19 +186,19 @@ export default {
     // 不通过
     handleFail(scope) {
       this.visible2 = true;
-      this.joinId = scope.row.joinId;
+      this.joinId = scope.row.memberJoin.id;
     },
     // 确认不通过
     confirm2() {
-      let url = `/unionMemberJoin/${this.joinId}/memberId/${this.unionMemberId}?isOK=0`;
+      let url = `/unionMemberJoin/${this.joinId}/unionId/${this.unionId}?isPass=0`;
       $http
         .put(url)
         .then(res => {
           if (res.data.success) {
             this.search();
             eventBus.$emit('unionUpdata');
-            this.visible1 = false;
-            this.$message({ showClose: true, message: '审核通过', type: 'success', duration: 5000 });
+            this.visible2 = false;
+            this.$message({ showClose: true, message: '审核不通过', type: 'success', duration: 5000 });
           }
         })
         .catch(err => {
