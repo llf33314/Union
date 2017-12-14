@@ -241,6 +241,19 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
         return result;
     }
 
+    @Override
+    public List<UnionBrokeragePay> listByOrderNo(String orderNo) throws Exception {
+        if (orderNo == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .eq("order_no", orderNo);
+
+        return selectList(entityWrapper);
+    }
+
 
     //***************************************** Domain Driven Design - save ********************************************
 
@@ -304,17 +317,11 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
         if (ListUtil.isEmpty(savePayList)) {
             throw new BusinessException("没有有效的支付信息");
         }
-        saveBatch(savePayList);
 
         // （3）	调用接口，返回支付链接
-        StringBuilder sbPayIds = new StringBuilder();
-        for (UnionBrokeragePay pay : savePayList) {
-            sbPayIds.append(pay.getId()).append(",");
-        }
-        String payIds = sbPayIds.toString().substring(0, sbPayIds.toString().length() - 1);
         UnionPayVO result = new UnionPayVO();
         String socketKey = PropertiesUtil.getSocketKey() + orderNo;
-        String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/opportunity?socketKey=" + socketKey + "&ids=" + payIds;
+        String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/opportunity?socketKey=" + socketKey;
 
         PayParam payParam = new PayParam();
         payParam.setTotalFee(brokerageSum.doubleValue());
@@ -323,19 +330,20 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
         payParam.setNotifyUrl(notifyUrl);
         payParam.setIsSendMessage(CommonConstant.COMMON_NO);
         payParam.setPayWay(0);
-        payParam.setDesc("opportunity" + busId);
+        payParam.setDesc("商机佣金");
         String payUrl = wxPayService.qrCodePay(payParam);
 
         result.setPayUrl(payUrl);
         result.setSocketKey(socketKey);
 
+        saveBatch(savePayList);
         return result;
     }
 
     @Override
-    public String updateCallbackByIds(String payIds, String socketKey, String payType, String orderNo, Integer isSuccess) {
+    public String updateCallbackByOrderNo(String socketKey, String payType, String orderNo, Integer isSuccess) {
         Map<String, Object> result = new HashMap<>(2);
-        if (payIds == null || socketKey == null || payType == null || orderNo == null || isSuccess == null) {
+        if (socketKey == null || payType == null || orderNo == null || isSuccess == null) {
             result.put("code", -1);
             result.put("msg", "参数缺少");
             return JSONObject.toJSONString(result);
@@ -348,15 +356,11 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
             List<UnionOpportunity> updateOpportunityList = new ArrayList<>();
             boolean isRepeat = false;
             Date currentDate = DateUtil.getCurrentDate();
-            String[] payIdArray = payIds.split(",");
-            for (String payId : payIdArray) {
-                UnionBrokeragePay pay = getById(Integer.valueOf(payId));
-                if (pay == null) {
-                    result.put("code", -1);
-                    result.put("msg", "找不到商机佣金付款信息");
-                    return JSONObject.toJSONString(result);
-                }
-
+            List<UnionBrokeragePay> payList = listByOrderNo(orderNo);
+            if (ListUtil.isEmpty(payList)) {
+                throw new BusinessException("没有支付信息");
+            }
+            for (UnionBrokeragePay pay : payList) {
                 Integer payStatus = pay.getStatus();
                 if (BrokerageConstant.PAY_STATUS_SUCCESS == payStatus || BrokerageConstant.PAY_STATUS_FAIL == payStatus) {
                     isRepeat = true;

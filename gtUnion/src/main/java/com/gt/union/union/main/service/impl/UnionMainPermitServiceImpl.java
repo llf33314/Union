@@ -67,6 +67,20 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         return selectOne(entityWrapper);
     }
 
+    @Override
+    public UnionMainPermit getBySysOrderNo(String sysOrderNo) throws Exception {
+        if (sysOrderNo == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionMainPermit> entityWrapper = new EntityWrapper<>();
+        entityWrapper.ge("validity", DateUtil.getCurrentDate())
+                .eq("sys_order_no", sysOrderNo)
+                .eq("del_status", CommonConstant.COMMON_NO);
+
+        return selectOne(entityWrapper);
+    }
+
     //***************************************** Domain Driven Design - list ********************************************
 
     //***************************************** Domain Driven Design - save ********************************************
@@ -97,12 +111,11 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         savePermit.setOrderStatus(UnionConstant.PERMIT_ORDER_STATUS_PAYING);
         String orderNo = "LM" + ConfigConstant.PAY_MODEL_PERMIT + DateUtil.getSerialNumber();
         savePermit.setSysOrderNo(orderNo);
-        save(savePermit);
 
         // （3）	调用接口，返回支付链接
         UnionPayVO result = new UnionPayVO();
         String socketKey = PropertiesUtil.getSocketKey() + orderNo;
-        String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/permit?socketKey=" + socketKey + "&ids=" + savePermit.getId();
+        String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/permit?socketKey=" + socketKey;
 
         PayParam payParam = new PayParam();
         payParam.setTotalFee(savePermit.getOrderMoney());
@@ -111,12 +124,13 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         payParam.setNotifyUrl(notifyUrl);
         payParam.setIsSendMessage(CommonConstant.COMMON_NO);
         payParam.setPayWay(0);
-        payParam.setDesc("permit" + busId);
+        payParam.setDesc("购买盟主服务");
         String payUrl = wxPayService.qrCodePay(payParam);
 
         result.setPayUrl(payUrl);
         result.setSocketKey(socketKey);
 
+        save(savePermit);
         return result;
     }
 
@@ -125,9 +139,9 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
     //***************************************** Domain Driven Design - update ******************************************
 
     @Override
-    public String updateCallbackById(String permitId, String socketKey, String payType, String orderNo, Integer isSuccess) {
+    public String updateCallbackByOrderNo(String socketKey, String payType, String orderNo, Integer isSuccess) {
         Map<String, Object> result = new HashMap<>(2);
-        if (permitId == null || socketKey == null || payType == null || orderNo == null || isSuccess == null) {
+        if (socketKey == null || payType == null || orderNo == null || isSuccess == null) {
             result.put("code", -1);
             result.put("msg", "参数缺少");
             return JSONObject.toJSONString(result);
@@ -136,7 +150,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         // （1）	判断permitId有效性
         UnionMainPermit permit;
         try {
-            permit = getById(Integer.valueOf(permitId));
+            permit = getBySysOrderNo(orderNo);
         } catch (Exception e) {
             logger.error("", e);
             result.put("code", -1);

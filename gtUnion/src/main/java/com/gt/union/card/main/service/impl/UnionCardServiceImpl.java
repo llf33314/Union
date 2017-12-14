@@ -384,18 +384,10 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 
             saveCardRecordList.add(saveCardRecord);
         }
-        unionCardRecordService.saveBatch(saveCardRecordList);
-
-        StringBuilder sbIds = new StringBuilder();
-        for (UnionCardRecord saveCardRecord : saveCardRecordList) {
-            sbIds.append(saveCardRecord.getId().toString()).append(",");
-        }
-        String ids = sbIds.toString();
-        ids = ids.substring(0, ids.length() - 1);
 
         UnionPayVO result = new UnionPayVO();
         String socketKey = PropertiesUtil.getSocketKey() + orderNo;
-        String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/card?socketKey=" + socketKey + "&ids=" + ids;
+        String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/card?socketKey=" + socketKey;
 
         PayParam payParam = new PayParam();
         payParam.setTotalFee(payMoneySum.doubleValue());
@@ -404,12 +396,13 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         payParam.setNotifyUrl(notifyUrl);
         payParam.setIsSendMessage(CommonConstant.COMMON_NO);
         payParam.setPayWay(0);
-        payParam.setDesc("card" + busId);
+        payParam.setDesc("办理联盟卡");
         String payUrl = wxPayService.qrCodePay(payParam);
 
         result.setPayUrl(payUrl);
         result.setSocketKey(socketKey);
 
+        unionCardRecordService.saveBatch(saveCardRecordList);
         return result;
     }
 
@@ -452,9 +445,9 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     // TODO 待抽离。。。
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String updateCallbackByIds(String recordIds, String socketKey, String payType, String orderNo, Integer isSuccess) {
+    public String updateCallbackByOrderNo(String socketKey, String payType, String orderNo, Integer isSuccess) {
         Map<String, Object> result = new HashMap<>(2);
-        if (recordIds == null || socketKey == null || payType == null || orderNo == null || isSuccess == null) {
+        if (socketKey == null || payType == null || orderNo == null || isSuccess == null) {
             result.put("code", -1);
             result.put("msg", "参数缺少");
             return JSONObject.toJSONString(result);
@@ -467,9 +460,11 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             List<UnionBrokerageIncome> saveIncomeList = new ArrayList<>();
             boolean isRepeat = false;
             Date currentDate = DateUtil.getCurrentDate();
-            String[] recordIdArray = recordIds.split(",");
-            for (String recordId : recordIdArray) {
-                UnionCardRecord record = unionCardRecordService.getById(Integer.valueOf(recordId));
+            List<UnionCardRecord> recordList = unionCardRecordService.listByOrderNo(orderNo);
+            if (ListUtil.isEmpty(recordList)) {
+                throw new BusinessException("没有支付信息");
+            }
+            for (UnionCardRecord record : recordList) {
                 if (record == null) {
                     result.put("code", -1);
                     result.put("msg", "找不到联盟卡购买记录信息");

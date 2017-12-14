@@ -131,14 +131,13 @@ public interface IUnionCardService extends IService<UnionCard> {
     /**
      * 前台-办理联盟卡-确定-回调
      *
-     * @param recordIds 购买联盟卡支付ids
      * @param socketKey socket关键字
      * @param payType   支付类型
      * @param orderNo   订单号
      * @param isSuccess 是否成功
      * @return String
      */
-    String updateCallbackByIds(String recordIds, String socketKey, String payType, String orderNo, Integer isSuccess);
+    String updateCallbackByOrderNo(String socketKey, String payType, String orderNo, Integer isSuccess);
 
     //***************************************** Domain Driven Design - count *******************************************
 
