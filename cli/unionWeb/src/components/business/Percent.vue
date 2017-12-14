@@ -4,7 +4,7 @@
     <div>
       <el-form :inline="true" :model="formInline1" class="demo-form-inline">
         <el-form-item label="选择联盟：">
-          <el-select v-model="value" placeholder="请选择">
+          <el-select v-model="unionId" placeholder="请选择" @change="search">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
@@ -13,14 +13,14 @@
     </div>
     <div class="ratioSetting">
       <el-table :data="tableData" style="width: 100%">
-        <el-table-column prop="toEnterpriseName" label="盟员名称">
+        <el-table-column prop="member.enterpriseName" label="盟员名称">
         </el-table-column>
         <el-table-column prop="ratioFromMe" label="我给TA佣金">
         </el-table-column>
         <el-table-column prop="ratioToMe" label="TA给我佣金">
         </el-table-column>
         <el-table-column label="操作" width="180">
-          <template scope="scope">
+          <template slot-scope="scope">
             <div class="sizeAndColor">
               <el-button @click="setPercent(scope)">设置佣金比例</el-button>
             </div>
@@ -61,7 +61,7 @@ export default {
         region: '',
         state: ''
       },
-      value: 0,
+      unionId: '',
       options: [],
       tableData: [],
       currentPage: 1,
@@ -80,73 +80,26 @@ export default {
   watch: {
     initUnionId: function() {
       this.init();
-    },
-    value: function() {
-      $http
-        .get(`/unionOpportunityRatio/pageMap/memberId/${this.value}?current=1`)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.total;
-            this.tableData.forEach((v, i) => {
-              v.ratioFromMe = (v.ratioFromMe || 0) + '%';
-              v.ratioToMe = (v.ratioToMe || 0) + '%';
-            });
-          } else {
-            this.tableData = [];
-            this.totalAll = 0;
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
     }
   },
   mounted: function() {
     this.init();
-    window.addEventListener('keyup',this.keyUp);
+    window.addEventListener('keyup', this.keyUp);
   },
   methods: {
-    //点击键盘事件
-    keyUp(event){
-     if(event.keyCode == 13){
-//       如果获得焦点
-       if($('#pushMoney').is(":focus")){
-         this.submit();
-       }
-     }
-    },
     init() {
       if (this.initUnionId) {
-        // 获取联盟列表
         $http
-          .get(`/unionMember/listMap`)
+          .get(`/unionMain/my`)
           .then(res => {
-            if (res.data.data && res.data.data.length > 0) {
+            if (res.data.data) {
               this.options = res.data.data;
-              res.data.data.forEach((v, i) => {
-                this.options[i].value = v.unionMember.id;
-                this.options[i].label = v.unionMain.name;
+              this.options.forEach((v, i) => {
+                v.value = v.union.id;
+                v.label = v.union.name;
               });
-              this.value = this.options[0].value;
-              $http
-                .get(`/unionOpportunityRatio/pageMap/memberId/${this.value}?current=1`)
-                .then(res => {
-                  if (res.data.data) {
-                    this.tableData = res.data.data.records;
-                    this.totalAll = res.data.data.total;
-                    this.tableData.forEach((v, i) => {
-                      v.ratioFromMe = (v.ratioFromMe || 0) + '%';
-                      v.ratioToMe = (v.ratioToMe || 0) + '%';
-                    });
-                  } else {
-                    this.tableData = [];
-                    this.totalAll = 0;
-                  }
-                })
-                .catch(err => {
-                  this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-                });
+              // 给unionId 赋初始值
+              this.unionId = this.options[0].value;
             } else {
               this.options = [];
             }
@@ -156,51 +109,9 @@ export default {
           });
       }
     },
-    // 设置比例
-    setPercent(scope) {
-      this.dialogVisible = true;
-      this.toEnterpriseName = scope.row.toEnterpriseName;
-      this.ratioToMe = scope.row.ratioToMe;
-      this.ratioFromMe = scope.row.ratioFromMe.slice(0, -1);
-      this.toMemberId = scope.row.toMemberId;
-    },
-    // 保存设置
-    submit() {
+    search() {
       $http
-        .put(`/unionOpportunityRatio/memberId/${this.value}?toMemberId=${this.toMemberId}&ratio=${this.ratioFromMe}`)
-        .then(res => {
-          if (res.data.success) {
-            $http
-              .get(`/unionOpportunityRatio/pageMap/memberId/${this.value}?current=${this.currentPage}`)
-              .then(res => {
-                if (res.data.data) {
-                  this.tableData = res.data.data.records;
-                  this.totalAll = res.data.data.total;
-                  this.tableData.forEach((v, i) => {
-                    v.ratioFromMe = (v.ratioFromMe || 0) + '%';
-                    v.ratioToMe = (v.ratioToMe || 0) + '%';
-                  });
-                } else {
-                  this.tableData = [];
-                  this.totalAll = 0;
-                }
-              })
-              .then(res => {
-                this.dialogVisible = false;
-              })
-              .catch(err => {
-                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-              });
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
-    },
-    // 分页查询
-    handleCurrentChange(val) {
-      $http
-        .get(`/unionOpportunityRatio/pageMap/memberId/${this.value}?current=${val}`)
+        .get(`/unionOpportunityRatio/unionId/${this.unionId}/page?current=1`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
@@ -217,6 +128,56 @@ export default {
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
+    },
+    // 分页查询
+    handleCurrentChange(val) {
+      $http
+        .get(`/unionOpportunityRatio/unionId/${this.unionId}/page?current=${val}`)
+        .then(res => {
+          if (res.data.data) {
+            this.tableData = res.data.data.records;
+            this.tableData.forEach((v, i) => {
+              v.ratioFromMe = (v.ratioFromMe || 0) + '%';
+              v.ratioToMe = (v.ratioToMe || 0) + '%';
+            });
+          } else {
+            this.tableData = [];
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    },
+    // 设置比例
+    setPercent(scope) {
+      this.dialogVisible = true;
+      this.toEnterpriseName = scope.row.member.enterpriseName;
+      this.ratioToMe = scope.row.ratioToMe;
+      this.ratioFromMe = scope.row.ratioFromMe.slice(0, -1);
+      this.toMemberId = scope.row.member.id;
+    },
+    // 保存设置
+    submit() {
+      $http
+        .put(`/unionOpportunityRatio/unionId/${this.unionId}/toMemberId/${this.toMemberId}?ratio=${this.ratioFromMe}`)
+        .then(res => {
+          if (res.data.success) {
+            this.search();
+            this.dialogVisible = false;
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    },
+    //点击键盘事件
+    keyUp(event) {
+      if (event.keyCode == 13) {
+        //       如果获得焦点
+        if ($('#pushMoney').is(':focus')) {
+          this.submit();
+        }
+      }
     },
     // 关闭弹窗重置数据
     resetData() {
@@ -229,7 +190,6 @@ export default {
 <style lang='less' rel="stylesheet/less">
 .model_03 {
   .el-dialog__body {
-
     padding: 0;
     margin: 30px 0 30px 30px;
     .el-dialog--tiny {

@@ -1,7 +1,7 @@
-import Vue from 'vue'
-import Vuex from 'vuex'
+import Vue from 'vue';
+import Vuex from 'vuex';
 
-Vue.use(Vuex)
+Vue.use(Vuex);
 
 export default new Vuex.Store({
   name: 'state',
@@ -14,13 +14,15 @@ export default new Vuex.Store({
     address: '',
     isUnionOwner: sessionStorage.getItem('isUnionOwner'),
     permitId: '',
-    // baseUrl: 'http://union.yifriend.net:7884', // 调试
-    baseUrl: 'https://union.deeptel.com.cn', // 测试
+    baseUrl: 'http://union.yifriend.net:7884', // 调试
+    // baseUrl: 'https://union.deeptel.com.cn', // 测试
     // baseUrl: 'http://nb.union.deeptel.com.cn', // 堡垒
+    socketUrl: 'https://socket.deeptel.com.cn', // 测试
+    // socketUrl: 'https://socket1.duofriend.com', // 堡垒
+    materialUrl: 'https://suc.deeptel.com.cn/common/material.do?retUrl=' // 测试
+    // materialUrl: 'http://nb.suc.deeptel.com.cn/common/material.do?retUrl=', // 堡垒
   },
-  actions: {
-
-  },
+  actions: {},
   mutations: {
     unionIdChange(state, id) {
       state.unionId = id;
@@ -52,9 +54,7 @@ export default new Vuex.Store({
     // 创建联盟permitId
     permitIdChange(state, value) {
       state.permitId = value;
-    },
+    }
   },
-  getters: {
-
-  }
-})
+  getters: {}
+});

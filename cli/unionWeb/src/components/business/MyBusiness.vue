@@ -5,7 +5,7 @@
       <el-col style="width:300px;">
         <el-form :inline="true" class="demo-form-inline">
           <el-form-item label="所属联盟:">
-            <el-select v-model="unionId" clearable placeholder="请选择所属联盟">
+            <el-select v-model="unionId" clearable placeholder="请选择所属联盟" @change="search">
               <el-option v-for="item in options1" :key="item.value" :label="item.label" :value="item.value">
               </el-option>
             </el-select>
@@ -30,40 +30,31 @@
     <!-- 我的商机表格 -->
     <div class="businesTable">
       <el-table :data="tableData" style="width: 100%">
-        <el-table-column prop="clientName" label="顾客姓名">
+        <el-table-column prop="opportunity.clientName" label="顾客姓名">
         </el-table-column>
-        <el-table-column prop="clientPhone" label="电话">
-          <template scope="scope">
+        <el-table-column prop="opportunity.clientPhone" label="电话">
+        </el-table-column>
+        <el-table-column prop="opportunity.businessMsg" label="业务备注">
+          <template slot-scope="scope">
             <el-popover trigger="hover" placement="bottom">
-              <p>电话：{{ scope.row.clientPhone }}</p>
+              <p>业务备注：{{ scope.row.opportunity.businessMsg }}</p>
               <div slot="reference" class="name-wrapper">
-                <span>{{ scope.row.clientPhone }}</span>
+                <span>{{ scope.row.opportunity.businessMsg }}</span>
               </div>
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column prop="businessMsg" label="业务备注" >
-          <template scope="scope">
-            <el-popover trigger="hover" placement="bottom">
-              <p>业务备注：{{ scope.row.businessMsg }}</p>
-              <div slot="reference" class="name-wrapper">
-                <span>{{ scope.row.businessMsg }}</span>
-              </div>
-            </el-popover>
-          </template>
+        <el-table-column prop="fromMember.enterpriseName" label="商机来源">
         </el-table-column>
-        <el-table-column prop="fromEnterpriseName" label="商机来源">
+        <el-table-column prop="union.name" label="所属联盟">
         </el-table-column>
-        <el-table-column prop="unionName" label="所属联盟">
-        </el-table-column>
-        <el-table-column prop="isAccept" label="状态" :filters="[{ text: '未处理', value: '未处理' }, { text: '已完成', value: '已完成' }, { text: '已拒绝', value: '已拒绝' }]"
-                         :filter-method="filterTag" filter-placement="bottom-end" width="150">
-          <template scope="scope">
-            <el-tag :type="scope.row.isAccept === '未处理' ? 'warning' : (scope.row.isAccept === '已完成' ? 'success' : 'danger')">{{scope.row.isAccept}}</el-tag>
+        <el-table-column prop="opportunity.acceptStatus" label="状态" :filters="[{ text: '未处理', value: '未处理' }, { text: '已完成', value: '已完成' }, { text: '已拒绝', value: '已拒绝' }]" :filter-method="filterTag" filter-placement="bottom-end" width="150">
+          <template slot-scope="scope">
+            <el-tag :type="scope.row.opportunity.acceptStatus === '未处理' ? 'warning' : (scope.row.opportunity.acceptStatus === '已完成' ? 'success' : 'danger')">{{scope.row.opportunity.acceptStatus}}</el-tag>
           </template>
         </el-table-column>
         <el-table-column prop="" label="操作" min-width="120" ref="test">
-          <template scope="scope">
+          <template slot-scope="scope">
             <div class="sizeAndColor">
               <el-button @click="showDialog(scope)" size="small">详情</el-button>
               <el-button v-if="scope.row.isAccept === '未处理'" @click="agree(scope)" size="small">接受</el-button>
@@ -78,12 +69,12 @@
       <el-dialog title="商机推荐详情" :visible.sync="dialogVisible" size="tiny" @click="dialogVisible = false">
         <hr>
         <div class="model_detail">
-          <p>顾客详情：{{ detailData.clientName }}</p>
-          <p>电话：{{ detailData.clientPhone }}</p>
-          <p>商机来源：{{ detailData.fromEnterpriseName }}</p>
-          <p>所属联盟：{{ detailData.unionName }}</p>
-          <p>状态：{{ detailData.isAccept }}</p>
-          <p>业务备注：{{ detailData.businessMsg }}</p>
+          <p>顾客详情：{{ detailData.opportunity.clientName }}</p>
+          <p>电话：{{ detailData.opportunity.clientPhone }}</p>
+          <p>商机来源：{{ detailData.fromMember.enterpriseName }}</p>
+          <p>所属联盟：{{ detailData.union.name }}</p>
+          <p>状态：{{ detailData.opportunity.acceptStatus }}</p>
+          <p>业务备注：{{ detailData.opportunity.businessMsg }}</p>
         </div>
         <span slot="footer" class="dialog-footer">
           <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
@@ -122,6 +113,7 @@
 
 <script>
 import $http from '@/utils/http.js';
+import { bussinessStatusChange } from '@/utils/filter.js';
 export default {
   name: 'mybusiness',
   data() {
@@ -146,17 +138,26 @@ export default {
       dialogVisible1: false,
       dialogVisible2: false,
       detailData: {
-        userName: '',
-        userPhone: '',
-        enterpriseName: '',
-        unionName: '',
-        isAccept: '',
-        businessMsg: ''
+        opportunity: {
+          clientName: '',
+          clientPhone: '',
+          businessMsg: '',
+          unionName: '',
+          acceptStatus: '',
+          businessMsg: ''
+        },
+        fromMember: {
+          enterpriseName: ''
+        },
+        union: {
+          name: ''
+        }
       },
       acceptancePrice: '',
       opportunityId: '',
       //请求到的所有表格列表总数目;
-      totalAll: 0
+      totalAll: 0,
+      putUnionId: ''
     };
   },
   computed: {
@@ -167,39 +168,6 @@ export default {
   watch: {
     initUnionId: function() {
       this.init();
-    },
-    unionId: function() {
-      $http
-        .get(`/unionOpportunity/toMe?current=1&unionId=${this.unionId}&` + this.value + '=' + this.input)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.total;
-            this.tableData.forEach((v, i) => {
-              switch (v.isAccept) {
-                case 1:
-                  v.isAccept = '未处理';
-                  break;
-                case 2:
-                  v.isAccept = '已完成';
-                  break;
-                case 3:
-                  v.isAccept = '已拒绝';
-              }
-            });
-          } else {
-            this.tableData = [];
-            this.totalAll = 0;
-          }
-        })
-        .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
-        });
     }
   },
   mounted: function() {
@@ -210,44 +178,30 @@ export default {
       if (this.initUnionId) {
         // 我创建及加入的所有联盟
         $http
-          .get(`/unionMain/list/myUnion`)
+          .get(`/unionMain/my`)
           .then(res => {
-            if (res.data.data && res.data.data.length > 0) {
+            if (res.data.data) {
               this.options1 = res.data.data;
               this.options1.forEach((v, i) => {
-                v.value = v.id;
-                v.label = v.name;
+                v.value = v.union.id;
+                v.label = v.union.name;
               });
             } else {
               this.options1 = [];
             }
           })
           .catch(err => {
-            this.$message({
-              showClose: true,
-              message: err.toString(),
-              type: 'error',
-              duration: 5000
-            });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
         // 推荐给我的商机
         $http
-          .get(`/unionOpportunity/toMe`)
+          .get(`/unionOpportunity/toMe/page?current=1`)
           .then(res => {
             if (res.data.data) {
               this.tableData = res.data.data.records;
               this.totalAll = res.data.data.total;
               this.tableData.forEach((v, i) => {
-                switch (v.isAccept) {
-                  case 1:
-                    v.isAccept = '未处理';
-                    break;
-                  case 2:
-                    v.isAccept = '已完成';
-                    break;
-                  case 3:
-                    v.isAccept = '已拒绝';
-                }
+                bussinessStatusChange(v.opportunity.acceptStatus);
               });
             } else {
               this.tableData = [];
@@ -255,34 +209,20 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({
-              showClose: true,
-              message: err.toString(),
-              type: 'error',
-              duration: 5000
-            });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
       }
     },
     // 带条件搜索
     search() {
       $http
-        .get(`/unionOpportunity/toMe?current=1&unionId=${this.unionId}&` + this.value + '=' + this.input)
+        .get(`/unionOpportunity/toMe/page?current=1&unionId=${this.unionId}&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
             this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
-              switch (v.isAccept) {
-                case 1:
-                  v.isAccept = '未处理';
-                  break;
-                case 2:
-                  v.isAccept = '已完成';
-                  break;
-                case 3:
-                  v.isAccept = '已拒绝';
-              }
+              bussinessStatusChange(v.opportunity.acceptStatus);
             });
           } else {
             this.tableData = [];
@@ -290,46 +230,23 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     // 分页搜索
     handleCurrentChange(val) {
       $http
-        .get(`/unionOpportunity/toMe?current=${val}&unionId=${this.unionId}&` + this.value + '=' + this.input)
+        .get(`/unionOpportunity/toMe/page?current=${val}&unionId=${this.unionId}&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
-            this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
-              switch (v.isAccept) {
-                case 1:
-                  v.isAccept = '未处理';
-                  break;
-                case 2:
-                  v.isAccept = '已完成';
-                  break;
-                case 3:
-                  v.isAccept = '已拒绝';
-              }
+              bussinessStatusChange(v.opportunity.acceptStatus);
             });
-          } else {
-            this.tableData = [];
-            this.totalAll = 0;
           }
         })
         .catch(err => {
-          this.$message({
-            showClose: true,
-            message: err.toString(),
-            type: 'error',
-            duration: 5000
-          });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
     // 弹出框 商机详情
@@ -340,47 +257,21 @@ export default {
     // 接受
     agree(scope) {
       this.dialogVisible1 = true;
-      this.opportunityId = scope.row.opportunityId; // todo 要改
+      this.opportunityId = scope.row.opportunity.id;
+      this.putUnionId = scope.row.union.id;
     },
     // 接受确认
     confirm() {
       $http
-        .put(`/unionOpportunity/${this.opportunityId}/isAccept/2`, this.acceptancePrice)
+        .put(
+          `/unionOpportunity/${this.opportunityId}/unionId/${this.putUnionId}?isAccept=1&acceptPrice=${this
+            .acceptancePrice}`
+        )
         .then(res => {
           if (res.data.success) {
             eventBus.$emit('newCommissionPay');
             this.dialogVisible1 = false;
-            $http
-              .get(
-                `/unionOpportunity/toMe?current=${this.currentPage}&unionId=${this.unionId}&` +
-                  this.value +
-                  '=' +
-                  this.input
-              )
-              .then(res => {
-                if (res.data.data) {
-                  this.tableData = res.data.data.records;
-                  this.totalAll = res.data.data.total;
-                  this.tableData.forEach((v, i) => {
-                    switch (v.isAccept) {
-                      case 1:
-                        v.isAccept = '未处理';
-                        break;
-                      case 2:
-                        v.isAccept = '已完成';
-                        break;
-                      case 3:
-                        v.isAccept = '已拒绝';
-                    }
-                  });
-                } else {
-                  this.tableData = [];
-                  this.totalAll = 0;
-                }
-              })
-              .catch(err => {
-                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-              });
+            this.search();
           }
         })
         .catch(err => {
@@ -390,45 +281,19 @@ export default {
     // 拒绝
     disagree(scope) {
       this.dialogVisible2 = true;
-      this.opportunityId = scope.row.opportunityId; // todo 要改
+      this.opportunityId = scope.row.opportunity.id;
+      this.putUnionId = scope.row.union.id;
     },
     // 接受拒绝
     confirm1() {
       $http
-        .put(`/unionOpportunity/${this.opportunityId}/isAccept/3`)
+        .put(`/unionOpportunity/${this.opportunityId}/unionId/${this.putUnionId}?isAccept=0`)
         .then(res => {
           this.dialogVisible2 = false;
-          $http
-            .get(
-              `/unionOpportunity/toMe?current=${this.currentPage}&unionId=${this.unionId}&` +
-                this.value +
-                '=' +
-                this.input
-            )
-            .then(res => {
-              if (res.data.data) {
-                this.tableData = res.data.data.records;
-                this.totalAll = res.data.data.total;
-                this.tableData.forEach((v, i) => {
-                  switch (v.isAccept) {
-                    case 1:
-                      v.isAccept = '未处理';
-                      break;
-                    case 2:
-                      v.isAccept = '已完成';
-                      break;
-                    case 3:
-                      v.isAccept = '已拒绝';
-                  }
-                });
-              } else {
-                this.tableData = [];
-                this.totalAll = 0;
-              }
-            })
-            .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-            });
+          if (res.data.success) {
+            this.dialogVisible1 = false;
+            this.search();
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });

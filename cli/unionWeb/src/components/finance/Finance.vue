@@ -11,7 +11,7 @@
             <div class="special">
               <span> {{ withdrawalSum }} </span>元
               <span class="btn1">
-                <el-button type="primary" @click="dialogVisible1 = true">提现</el-button>
+                <el-button type="primary" @click="dialogVisible1=true">提现</el-button>
               </span>
               <div class="model_1">
                 <!-- 弹出框 提现 -->
@@ -29,65 +29,65 @@
       </div>
       <p class="union_set">佣金平台管理者设置</p>
       <div class="footer_">
-      <el-button type="primary" @click="dialogVisible2 = true">新增</el-button>
-      <!-- 弹出框 新增 -->
-      <el-dialog title="新增管理者" :visible.sync="dialogVisible2" size="tiny" @close="resetForm('ruleForm')">
-        <hr>
-        <div class="Popup_">
-          <el-form :label-position="labelPosition" label-width="100px" :model="ruleForm" :rules="rules" ref="ruleForm">
-            <el-form-item label="姓名：" prop="name">
-              <el-col :span="8">
-                <el-input v-model="ruleForm.name" placeholder="请输入管理者姓名"></el-input>
-              </el-col>
-            </el-form-item>
-            <el-form-item label="手机号码：" prop="phone">
-              <el-col :span="8">
-                <el-input v-model="ruleForm.phone" placeholder="请输入管理者手机号码" @keyup.enter.native="getVerificationCode" ></el-input>
-              </el-col>
-            </el-form-item>
-            <el-form-item label="验证码：" prop="code">
-              <el-col :span="8">
-                <el-input v-model="ruleForm.code" placeholder="请输入验证码" ></el-input>
-              </el-col>
-              <el-button type="primary" style="margin-left: 20px" @click="getVerificationCode" :disabled="form1.getVerificationCode || !ruleForm.phone">{{ form1.countDownTime>0?form1.countDownTime+'s':'获取验证码' }}</el-button>
-			</el-form-item>
-            <el-form-item>
-              该手机号是联盟佣金平台的验证登录号码，请管理人员慎重设置号码
-            </el-form-item>
-            <el-form-item>
-              <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
-              <el-button @click="resetForm('ruleForm')">取 消</el-button>
-            </el-form-item>
-          </el-form>
-        </div>
-      </el-dialog>
-      <el-table :data="tableData" style="width: 100%">
-        <el-table-column prop="name" label="姓名">
-        </el-table-column>
-        <el-table-column prop="phone" label="手机号">
-        </el-table-column>
-        <el-table-column prop="action" label="操作" width="150">
-          <template scope="scope">
-            <el-button size="small" @click="del(scope)">删除</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
-      <!-- 弹出框 删除确认 -->
-      <div class="model_2">
-        <el-dialog title="删除" :visible.sync="visible1" size="tiny">
+        <el-button type="primary" @click="dialogVisible2 = true">新增</el-button>
+        <!-- 弹出框 新增 -->
+        <el-dialog title="新增管理者" :visible.sync="dialogVisible2" size="tiny" @close="resetForm('ruleForm')">
           <hr>
-          <div>
-            <img src="../../assets/images/delect01.png"  class="fl">
-            <span>是否确认删除“ {{ name }} ”</span>
-            <p>点击确定后，该财务管理者不可登录佣金平台</p>
+          <div class="Popup_">
+            <el-form :label-position="labelPosition" label-width="100px" :model="ruleForm" :rules="rules" ref="ruleForm">
+              <el-form-item label="姓名：" prop="name">
+                <el-col :span="8">
+                  <el-input v-model="ruleForm.name" placeholder="请输入管理者姓名"></el-input>
+                </el-col>
+              </el-form-item>
+              <el-form-item label="手机号码：" prop="phone">
+                <el-col :span="8">
+                  <el-input v-model="ruleForm.phone" placeholder="请输入管理者手机号码" @keyup.enter.native="getVerificationCode"></el-input>
+                </el-col>
+              </el-form-item>
+              <el-form-item label="验证码：" prop="code">
+                <el-col :span="8">
+                  <el-input v-model="ruleForm.code" placeholder="请输入验证码"></el-input>
+                </el-col>
+                <el-button type="primary" style="margin-left: 20px" @click="getVerificationCode" :disabled="form1.getVerificationCode || !ruleForm.phone">{{ form1.countDownTime>0?form1.countDownTime+'s':'获取验证码' }}</el-button>
+              </el-form-item>
+              <el-form-item>
+                该手机号是联盟佣金平台的验证登录号码，请管理人员慎重设置号码
+              </el-form-item>
+              <el-form-item>
+                <el-button type="primary" @click="submitForm('ruleForm')">确 定</el-button>
+                <el-button @click="resetForm('ruleForm')">取 消</el-button>
+              </el-form-item>
+            </el-form>
           </div>
-          <span slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="confirm1">确定</el-button>
-            <el-button @click="visible1=false">取消</el-button>
-          </span>
         </el-dialog>
+        <el-table :data="tableData" style="width: 100%">
+          <el-table-column prop="name" label="姓名">
+          </el-table-column>
+          <el-table-column prop="phone" label="手机号">
+          </el-table-column>
+          <el-table-column prop="action" label="操作" width="150">
+            <template slot-scope="scope">
+              <el-button size="small" @click="del(scope)">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <!-- 弹出框 删除确认 -->
+        <div class="model_2">
+          <el-dialog title="删除" :visible.sync="visible1" size="tiny">
+            <hr>
+            <div>
+              <img src="../../assets/images/delect01.png" class="fl">
+              <span>是否确认删除“ {{ name }} ”</span>
+              <p>点击确定后，该财务管理者不可登录佣金平台</p>
+            </div>
+            <span slot="footer" class="dialog-footer">
+              <el-button type="primary" @click="confirm1">确定</el-button>
+              <el-button @click="visible1=false">取消</el-button>
+            </span>
+          </el-dialog>
+        </div>
       </div>
-    </div>
     </div>
   </div>
 </template>
@@ -131,37 +131,24 @@ export default {
       name: '',
       id: '',
       timeOut: '',
-      fullscreenLoading: true,
+      fullscreenLoading: true
     };
   },
   created: function() {
     // 首页查询我的联盟信息
     $http
-      .get(`/union/index`)
+      .get(`/index`)
       .then(res => {
         if (res.data.data) {
           setTimeout(() => {
             this.fullscreenLoading = false;
             // 判断是否创建或加入联盟
-            if (!res.data.data.currentUnionId) {
-              this.$router.push({path: '/no-union'});
+            if (!res.data.data.currentUnion) {
+              this.$router.push({ path: '/no-union' });
             } else {
-              //获取佣金平台手机端的二维码
-              $http
-                .get(`/unionBrokerageIncome/indexQRUrl`)
-                .then(res => {
-                  if (res.data.data) {
-                    this.imgUrl = res.data.data;
-                  } else {
-                    this.imgUrl = '';
-                  }
-                })
-                .catch(err => {
-                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 5000});
-                });
               // 可提现金额
               $http
-                .get(`/unionBrokerageIncome/withdrawalSum`)
+                .get(`/unionBrokerageWithdrawal/available`)
                 .then(res => {
                   if (res.data.data) {
                     this.withdrawalSum = res.data.data;
@@ -170,7 +157,7 @@ export default {
                   }
                 })
                 .catch(err => {
-                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 5000});
+                  this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
                 });
               // 佣金平台管理者列表
               $http
@@ -183,11 +170,11 @@ export default {
                   }
                 })
                 .catch(err => {
-                  this.$message({showClose: true, message: err.toString(), type: 'error', duration: 5000});
+                  this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
                 });
-              container_finance.style.display='block';
+              container_finance.style.display = 'block';
             }
-          },300)
+          }, 300);
         }
       })
       .catch(err => {

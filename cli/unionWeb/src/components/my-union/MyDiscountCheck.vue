@@ -10,7 +10,7 @@
             <el-table-column prop="projectIllustration" label="项目说明">
             </el-table-column>
             <el-table-column prop="" label="操作" width="150">
-              <template scope="scope">
+              <template slot-scope="scope">
                 <div class="sizeAndColor">
                   <el-button size="small" @click="showDetail2(scope)">详情</el-button>
                 </div>
@@ -49,7 +49,7 @@
               </el-table-column>
               <el-table-column prop="status" label="状态"></el-table-column>
               <el-table-column label="操作">
-                <template scope="scope">
+                <template slot-scope="scope">
                   <div>
                     <el-button size="small" @click="pass(scope)">通过</el-button>
                     <span class="butguo">
@@ -70,7 +70,7 @@
             <el-table-column prop="projectIllustration" label="项目说明">
             </el-table-column>
             <el-table-column prop="" label="操作" width="150">
-              <template scope="scope">
+              <template slot-scope="scope">
                 <div class="sizeAndColor">
                   <el-button size="small" @click="showDetail3(scope)">详情</el-button>
                 </div>
@@ -113,7 +113,7 @@
             <el-table-column prop="projectIllustration" label="项目说明">
             </el-table-column>
             <el-table-column label="操作" width="150">
-              <template scope="scope">
+              <template slot-scope="scope">
                 <div class="sizeAndColor">
                   <el-button size="small" @click="showDetail4(scope)">详情</el-button>
                 </div>
@@ -154,7 +154,7 @@
             <el-table-column prop="enterpriseName" label="盟员名称">
             </el-table-column>
             <el-table-column prop="" label="操作">
-              <template scope="scope">
+              <template slot-scope="scope">
                 <div class="sizeAndColor">
                   <el-button size="small" @click="moveOut(scope)">移出</el-button>
                 </div>
@@ -173,7 +173,7 @@
       <el-dialog title="提示" :visible.sync="visible" size="tiny">
         <hr>
         <div>
-          <img src="../../assets/images/delect01.png"  class="fl">
+          <img src="~assets/images/delect01.png"  class="fl">
           <span>是否确认移出“ {{ enterpriseName }} ”？</span>
           <p>该盟员没有提交优惠项目，点击‘确定’后可直接移出盟员。</p>
         </div>
