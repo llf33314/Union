@@ -20,7 +20,7 @@
           </el-dialog>
         <el-button type="primary" @click="submitAll" v-if="!isUnionOwner">提交审核</el-button>
         <el-button type="warning" style="padding: 10px 15px 10px 32px;position: relative">
-          <img src="../../assets/images/Videos.png" style="width: 17px;position: absolute;top: 8px;left: 7px;">
+          <img src="~assets/images/Videos.png" style="width: 17px;position: absolute;top: 8px;left: 7px;">
           视频教程
         </el-button>
       </p>
@@ -33,7 +33,7 @@
           <el-table-column prop="status" label="审核状态" :filters="[{ text: '未提交', value: '未提交' }, { text: '已提交', value: '已提交' }, { text: '已通过', value: '已通过' }, { text: '未通过', value: '未通过' }]" :filter-method="filterTag" filter-placement="bottom-start">
           </el-table-column>
           <el-table-column label="操作" ref="scope" width="220">
-            <template scope="scope">
+            <template slot-scope="scope">
               <div class="sizeAndColor">
                 <el-button size="small" @click="submit(scope)" v-if="scope.row.status === '未提交' || scope.row.status === '未通过'"> 提交 </el-button>
                 <el-button size="small" @click="del(scope)">删除</el-button>
@@ -56,7 +56,7 @@
         <el-dialog title="删除" :visible.sync="visible1" size="tiny">
           <hr>
           <div>
-            <img src="../../assets/images/delect01.png"  class="fl">
+            <img src="~assets/images/delect01.png"  class="fl">
             <span>是否确认删除“ {{ name }} ”？</span>
             <p>删除后不可恢复！</p>
           </div>
@@ -71,7 +71,7 @@
         <el-dialog title="删除" :visible.sync="visible2" size="tiny">
           <hr>
           <div>
-            <img src="../../assets/images/delect01.png"  class="fl">
+            <img src="~assets/images/delect01.png"  class="fl">
             <span>是否确认批量删除选中项目？</span>
             <p>删除后不可恢复！</p>
           </div>

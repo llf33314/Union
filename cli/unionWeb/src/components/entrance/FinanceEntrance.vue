@@ -8,11 +8,11 @@ export default {
   name: 'finance-entrance',
   created: function() {
     // 首页查询我的联盟信息
-    $http.get(`/union/index`)
+    $http.get(`/index`)
       .then(res => {
         if (res.data.data) {
           // 判断是否创建或加入联盟
-          if (!res.data.data.currentUnionId) {
+          if (!res.data.data.currentUnion) {
             this.$router.push({ path: '/no-union' });
           } else {
             this.$router.push({ path: '/finance/index' });

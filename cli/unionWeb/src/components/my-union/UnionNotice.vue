@@ -1,8 +1,7 @@
 <template>
   <div id="grid-content-notice">
     <div class="grid-content bg-purple notice-list">联盟公告</div>
-    <el-input type="textarea"  id="unionNotice" v-model="unionNotice":rows="3" :maxlength="unionNoticeMaxlength" @focus="unionNoticeFocus" @blur="unionNoticeBlur" @change="unionNoticeKeydown($event)" @keydown="unionNoticeKeydown($event)" @keyup="unionNoticeKeydown($event)" @input="unionNoticeKeydown($event)" @onpropertychange="unionNoticeKeydown($event)" placeholder="这是一条联盟公告" v-if="isUnionOwner"
-              style="border: none;width: 99%;height: 83px;resize:none">
+    <el-input type="textarea" id="unionNotice" v-model="unionNotice" :rows="3" :maxlength="unionNoticeMaxlength" @focus="unionNoticeFocus" @blur="unionNoticeBlur" @change="unionNoticeKeydown($event)" @keydown="unionNoticeKeydown($event)" @keyup="unionNoticeKeydown($event)" @input="unionNoticeKeydown($event)" @onpropertychange="unionNoticeKeydown($event)" placeholder="这是一条联盟公告" v-if="isUnionOwner" style="border: none;width: 99%;height: 83px;resize:none">
     </el-input>
     <span v-if="!isUnionOwner">{{ unionNotice }}</span>
   </div>
@@ -24,24 +23,17 @@ export default {
     },
     unionId() {
       return this.$store.state.unionId;
-    },
-    unionMemberId() {
-      return this.$store.state.unionMemberId;
     }
   },
   mounted: function() {
-    if (this.unionMemberId) {
-      if (this.unionId) {
-        this.init();
-      }
+    if (this.unionId) {
+      this.init();
     }
   },
   watch: {
     unionId: function() {
-      if (this.unionMemberId) {
-        if (this.unionId) {
-          this.init();
-        }
+      if (this.unionId) {
+        this.init();
       }
     }
   },
@@ -82,7 +74,7 @@ export default {
         return false;
       } else {
         $http
-          .put(`/unionMainNotice/memberId/${this.$store.state.unionMemberId}?noticeContent=${this.unionNotice}`)
+          .put(`/unionMainNotice/unionId/${this.unionId}`, this.unionNotice)
           .then(res => {})
           .catch(err => {
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -93,7 +85,6 @@ export default {
       let valueLength = this.unionNoticeCheck()[0];
       let len = this.unionNoticeCheck()[1];
       if (valueLength > 50) {
-        // this.unionNotice = this.unionNotice.substring(0, len + 1);
         this.unionNoticeMaxlength = len;
         return false;
       } else {
@@ -127,11 +118,10 @@ export default {
 </script>
 
 <style scoped lang='less' rel="stylesheet/less">
-.grid-content{
+.grid-content {
   font-family: 'Microsoft YaHei';
   font-size: 16px;
   font-weight: bold;
   margin-bottom: 13px;
-
 }
 </style>

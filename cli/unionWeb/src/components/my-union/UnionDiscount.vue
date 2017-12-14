@@ -1,12 +1,12 @@
 <template>
   <div>
-    <Breadcrumb :header-name="'红卡优惠设置'"></Breadcrumb>
+    <Breadcrumb :header-name="['联盟卡设置']"></Breadcrumb>
     <div class="container" id="redCard">
       <el-tabs v-model="activeName" type="card">
-        <el-tab-pane label="优惠项目审核" name="first" v-if="isUnionOwner">
+        <el-tab-pane label="折扣卡设置" name="first" v-if="isUnionOwner">
           <my-discount-check></my-discount-check>
         </el-tab-pane>
-        <el-tab-pane label="我的优惠项目" name="second">
+        <el-tab-pane label="活动卡设置" name="second">
           <my-discount-project></my-discount-project>
         </el-tab-pane>
       </el-tabs>

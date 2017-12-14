@@ -1,11 +1,12 @@
 <template>
   <div id="transaction" class="clearfix">
     <div style="float: left;width: 50%;">
+      <p>办理联盟卡</p>
       <!-- 手机号，验证码 -->
       <el-form :label-position="labelPosition" :model="form1" :rules="rules" ref="ruleForm" label-position="right" label-width="120px">
         <el-form-item label="手机号码：" prop="phone">
           <el-col style="width: 250px;margin-right: 20px;">
-            <el-input v-model="form1.phone" @keyup.native="form1.phone=form1.phone.replace(/[^\d]/g,'')"  @keyup.enter.native="show1($event)"></el-input>
+            <el-input v-model="form1.phone" @keyup.native="form1.phone=form1.phone.replace(/[^\d]/g,'')" @keyup.enter.native="getVerificationCode"></el-input>
           </el-col>
           <el-button type="primary" @click="getVerificationCode" :disabled="form1.getVerificationCode || !form1.phone">{{ form1.countDownTime>0?form1.countDownTime+'s':'获取验证码' }}</el-button>
         </el-form-item>
@@ -15,17 +16,19 @@
           </el-row>
         </el-form-item>
         <el-button type="primary" @click="confirmCode('ruleForm')" style="position: relative;top: -58px;left: 390px;" id="affirm">确认</el-button>
+        <el-form-item label="关注公众号办理:">
+          <el-switch v-model="follow_" on-text="" off-text="">
+            <!-- <el-switch v-model="follow_" on-text="" off-text="" v-if="form1.follow === 1"> -->
+          </el-switch>
+        </el-form-item>
       </el-form>
       <!-- 其他办理联盟卡信息 -->
       <el-form :label-position="labelPosition" :model="form2" v-show="visible2" :rules="rules2" ref="ruleForm2" label-position="right" label-width="120px">
-        <el-form-item label="关注公众号办理:">
-          <el-switch v-model="follow_" on-text="" off-text="" v-if="form2.follow === 1">
-          </el-switch>
-        </el-form-item>
         <div class="selectUnion">
+          <p>选择联盟</p>
           <el-form-item label="选择联盟:" prop="unionId">
-            <el-radio-group v-model="unionId" style="margin-top:10px;margin-bottom: 20px;">
-              <el-radio-button v-for="item in form2.unions" :key="item.id" :label="item.id">
+            <el-radio-group v-model="form2.unionId" style="margin-top:10px;margin-bottom: 20px;">
+              <el-radio-button v-for="item in form2.unionList" :key="item.id" :label="item.id">
                 <div class="dddddd clearfix">
                   <img v-bind:src="item.img" alt="" class="fl unionImg">
                   <div class="fl" style="margin-left: 20px;position: absolute;top: 90px;left: -7px;">
@@ -37,24 +40,49 @@
             </el-radio-group>
           </el-form-item>
         </div>
-        <el-form-item label="联盟卡类型:" prop="cardType" v-if="form2.cards.red || form2.cards.black">
-          <el-radio-group v-model="form2.cardType">
-            <el-radio :label="2" v-if="form2.cards.red">红卡</el-radio>
-            <el-radio :label="1" v-if="form2.cards.black">黑卡</el-radio>
-          </el-radio-group>
-        </el-form-item>
-        <el-form-item label="联盟卡有效期:" v-if="form2.cardType === 2">
-          {{ form2.cards.red.termTime}}
-        </el-form-item>
-        <el-form-item label="价格:" v-if="form2.cardType === 2 ">
-          ￥{{ form2.cards.red.price | formatPrice }}
-        </el-form-item>
-        <el-form-item label="联盟卡有效期:" v-if="form2.cardType === 1">
-          {{ form2.cards.black.termTime}}
-        </el-form-item>
-        <el-form-item label="价格:" v-if="form2.cardType === 1">
-          ￥{{ form2.cards.black.price | formatPrice }}
-        </el-form-item>
+        <div>
+          <p>选择联盟卡</p>
+          <el-form-item label="选择联盟卡:" prop="activityCheckList">
+            <el-checkbox-group v-model="form2.activityCheckList">
+              <el-checkbox v-if="isDiscountCard" :label="form2.activityList[0].id" disabled>
+                <div class="dddddd clearfix">
+                  <img v-bind:src="form2.activityList[0].img" alt="" class="fl unionImg">
+                  <div class="fl" style="margin-left: 20px;position: absolute;top: 90px;left: -7px;">
+                    <h6 style="margin-bottom: 17px">{{form2.activityList[0].name}}</h6>
+                  </div>
+                  <i></i>
+                </div>
+              </el-checkbox>
+              <el-checkbox v-for="item in form2.activityList" :key="item.id" :label="item.id">
+                <div class="dddddd clearfix">
+                  <img v-bind:src="item.img" alt="" class="fl unionImg">
+                  <div class="fl" style="margin-left: 20px;position: absolute;top: 90px;left: -7px;">
+                    <h6 style="margin-bottom: 17px">{{item.name}}</h6>
+                  </div>
+                  <i></i>
+                </div>
+              </el-checkbox>
+            </el-checkbox-group>
+          </el-form-item>
+        </div>
+        <!-- 活动卡详情 -->
+        <div>
+          <div v-if="isDiscountCard">
+            <p>联盟折扣卡</p>
+            <p>享受折扣： {{ discount }} </p>
+          </div>
+          <div v-for="item in form2.activityList" :key="item.id" v-show="form2.activityCheckList.indexOf(item.id) > -1">
+            <p>服务项目：
+              <span @click="showDetail(item.id)"> {{ item.itemCount }} 个</span>
+            </p>
+            <p>联盟卡有效天数：
+              <span> {{ item.validityDay }} 天</span>
+            </p>
+            <p>价格：
+              <span> ￥{{ item.price }}</span>
+            </p>
+          </div>
+        </div>
         <el-form-item>
           <el-button type="primary" @click="submitForm('ruleForm2')">确定</el-button>
           <el-button @click="cancel('ruleForm2')">取消</el-button>
@@ -107,6 +135,7 @@
 </template>
 
 <script>
+import io from 'socket.io-client';
 import $http from '@/utils/http.js';
 export default {
   name: 'transaction',
@@ -122,36 +151,31 @@ export default {
     };
     return {
       labelPosition: 'right',
+      fanId: '',
       form1: {
         phone: '',
         code: '',
         getVerificationCode: false,
-        countDownTime: ''
+        countDownTime: '',
+        follow: 0
       },
+      follow_: '',
       rules: {
         code: [{ required: true, message: '验证码不能为空，请重新输入', trigger: 'blur' }],
         phone: [{ validator: phonePass, trigger: 'blur' }]
       },
       visible2: false,
-      follow_: '',
       form2: {
-        follow: 0,
-        cardType: '',
-        cards: {
-          red: {
-            price: '',
-            termTime: ''
-          },
-          black: {
-            price: '',
-            termTime: ''
-          }
-        }
+        unionList: [],
+        unionId: '',
+        activityList: [],
+        activityCheckList: []
       },
-      unionId: '',
+      isDiscountCard: '',
+      discount: '',
       rules2: {
         unionId: [{ type: 'number', required: true, message: '请选择联盟', trigger: 'change' }],
-        cardType: [{ type: 'number', required: true, message: '请选择联盟卡类型', trigger: 'change' }]
+        activityCheckList: [{ type: 'array', required: true, message: '请选择联盟卡', trigger: 'change' }]
       },
       visible3: false,
       codeSrc1: '',
@@ -201,36 +225,6 @@ export default {
       this.wxData_.memberId = this.wxData.memberId;
       this.wxData_.nickName = this.wxData.nickName;
       this.wxData_.time = this.wxData.time;
-    },
-    unionId: function() {
-      if (this.unionId) {
-        $http
-          .get(`/unionCard/info?phone=${this.form1.phone}&code=${this.form1.code}&unionId=${this.unionId}`)
-          .then(res => {
-            if (res.data.data) {
-              this.form2.cards = res.data.data.cards;
-              this.form2.cardType = '';
-              if (this.form2.cards.red) {
-                if (this.form2.cards.red.termTime) {
-                  this.form2.cards.red.termTime = this.form2.cards.red.termTime;
-                } else {
-                  this.form2.cards.red.termTime = '无';
-                }
-              }
-              if (this.form2.cards.black) {
-                if (this.form2.cards.black.termTime) {
-                  this.form2.cards.black.termTime = this.form2.cards.black.termTime;
-                } else {
-                  this.form2.cards.black.termTime = '无';
-                }
-              }
-            }
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          });
-      }
-      this.form2.unionId = this.unionId;
     }
   },
   filters: {
@@ -244,13 +238,51 @@ export default {
     }
   },
   methods: {
-    show1(e) {
-      this.getVerificationCode();
+    // 能否关注公众号 然后获取二维码
+    canFollow() {
+      $http.get(``);
+      var _this = this;
+      if (this.form1.follow == 1 && !this.wxUser) {
+        this.wxUser = true;
+        $http
+          .get(`/unionCard/wxUser/QRcode`)
+          .then(res => {
+            if (res.data.data) {
+              this.codeSrc1 = res.data.data.qrurl;
+              this.socketurl = res.data.data.socketurl;
+              this.userId1 = res.data.data.userId;
+            } else {
+              this.codeSrc1 = '';
+              this.socketurl = '';
+              this.userId1 = '';
+            }
+          })
+          .then(res => {
+            if (!this.socket1) {
+              this.socket1 = io.connect('https://socket.deeptel.com.cn'); // 测试
+              // this.socket1 = io.connect('http://183.47.242.2:8881'); // 堡垒
+              var userId = this.userId1;
+              this.socket1.on('connect', function() {
+                let jsonObject = { userId: userId, message: '0' };
+                _this.socket1.emit('auth', jsonObject);
+              });
+            }
+            this.socket1.on('chatevent', function(data) {
+              if (_this.visible5) {
+                let msg = eval('(' + data.message + ')');
+                _this.wxData = msg;
+              }
+            });
+          })
+          .catch(err => {
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          });
+      }
     },
     // 获取验证码
     getVerificationCode() {
       $http
-        .get(`/unionCard/phoneCode?phone=${this.form1.phone}`)
+        .get(`/api/sms/2?phone=${this.form1.phone}`)
         .then(res => {
           if (res.data.success) {
             this.form1.getVerificationCode = true;
@@ -274,78 +306,45 @@ export default {
     confirmCode(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
+          let url = `/unionCard/apply/phone`;
+          let data = {
+            phone: this.form1.phone,
+            code: this.form1.code
+          };
           $http
-            .get(`/unionCard/info?phone=${this.form1.phone}&code=${this.form1.code}`)
+            .post(url, data)
             .then(res => {
               if (res.data.data) {
                 clearInterval(this.timeEnd);
                 //灰色倒计时'60s'变为紫蓝色"获取验证码"按钮;
                 this.form1.countDownTime = '';
                 this.form1.getVerificationCode = false;
-                this.form2.unions = res.data.data.unions;
-                if (this.form2.unions) {
-                  this.unionId = this.form2.unions[0].id;
-                }
-                this.form2.follow = res.data.data.follow;
-                this.form2.cards = res.data.data.cards;
-                if (this.form2.cards.red) {
-                  if (this.form2.cards.red.termTime) {
-                    this.form2.cards.red.termTime = this.form2.cards.red.termTime;
-                  } else {
-                    this.form2.cards.red.termTime = '无';
-                  }
-                }
-                if (this.form2.cards.black) {
-                  if (this.form2.cards.black.termTime) {
-                    this.form2.cards.black.termTime = this.form2.cards.black.termTime;
-                  } else {
-                    this.form2.cards.black.termTime = '无';
-                  }
-                }
-                this.visible2 = true;
-                //判断是否可以关注 然后获取二维码
-                var _this = this;
-                if (this.form2.follow == 1 && !this.wxUser) {
-                  this.wxUser = true;
-                  $http
-                    .get(`/unionCard/wxUser/QRcode`)
-                    .then(res => {
-                      if (res.data.data) {
-                        this.codeSrc1 = res.data.data.qrurl;
-                        this.socketurl = res.data.data.socketurl;
-                        this.userId1 = res.data.data.userId;
-                      } else {
-                        this.codeSrc1 = '';
-                        this.socketurl = '';
-                        this.userId1 = '';
+                this.fanId = res.data.data.id;
+                $http
+                  .get(`/unionCard/fanId/${this.fanId}/apply`)
+                  .then(res => {
+                    if (res.data.data) {
+                      this.form2.unionList = res.data.data.unionList;
+                      this.unionId = res.data.data.currentUnion.id;
+                      this.form2.activityList = res.data.data.activityList;
+                      this.isDiscountCard = res.data.data.isDiscountCard;
+                      if (this.isDiscountCard) {
+                        this.form2.activityCheckList.push(this.form2.activityList[0].id);
                       }
-                    })
-                    .then(res => {
-                      if (!this.socket1) {
-                        this.socket1 = io.connect('https://socket.deeptel.com.cn'); // 测试
-                        // this.socket1 = io.connect('http://183.47.242.2:8881'); // 堡垒
-                        var userId = this.userId1;
-                        this.socket1.on('connect', function() {
-                          let jsonObject = { userId: userId, message: '0' };
-                          _this.socket1.emit('auth', jsonObject);
-                        });
-                      }
-                      this.socket1.on('chatevent', function(data) {
-                        if (_this.visible5) {
-                          let msg = eval('(' + data.message + ')');
-                          _this.wxData = msg;
-                        }
-                      });
-                    })
-                    .catch(err => {
-                      this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-                    });
-                }
-              } else {
-                this.form2.unions = '';
-                this.form2.follow = 0;
-                this.form2.cards = '';
-                this.visible2 = false;
+                      this.discount = res.data.data.currentMember.discount;
+                      this.visible2 = true;
+                    } else {
+                      this.form2.unionList = [];
+                      this.unionId = '';
+                      this.form2.activityList = [];
+                      this.isDiscountCard = '';
+                      this.discount = '';
+                      this.visible2 = false;
+                    }
+                  })
+                  .catch(err => {
+                    this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+                  });
               }
             })
             .catch(err => {
@@ -356,11 +355,37 @@ export default {
         }
       });
     },
+    // 获取活动卡详情
+    getActivityDetal() {
+      this.form2.activityList.forEach((v, i) => {
+        $http
+          .get(`/unionCardActivity/${v.id}/unionId/${this.form2.unionId}/apply`)
+          .then(res => {
+            if (res.data.data) {
+              v.itemCount = res.data.data.itemCount;
+              v.validityDay = res.data.data.activity.validityDay;
+              v.price = res.data.data.activity.price;
+            }
+          })
+          .catch(err => {
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          });
+      });
+    },
+    // 显示项目详情 todo
+    showDetail(id) {
+      $http
+        .get(`/unionCardActivity/${id}/unionId/${this.form2.unionId}/apply/itemCount`)
+        .then(res => {})
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    },
     // 提交
     submitForm(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          let url = `/unionCard`;
+          let url = `/unionCard/fanId/${this.fanId}/unionId/${this.form2.unionId}/apply`;
           let data = {};
           data.cardType = this.form2.cardType;
           data.follow = this.follow_;
@@ -446,6 +471,7 @@ export default {
         }
       });
     },
+
     // 取消
     cancel(formName) {
       this.$refs[formName].resetFields();
