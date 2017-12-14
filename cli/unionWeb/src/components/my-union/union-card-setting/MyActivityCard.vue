@@ -43,7 +43,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="handle" label="操作" width="180">
-          <template scope="scope">
+          <template slot-scope="scope">
             <el-button size="small" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
           </template>
         </el-table-column>
@@ -74,7 +74,7 @@
           </template>
         </el-table-column>
         <el-table-column prop="handle" label="操作" width="180">
-          <template scope="scope">
+          <template slot-scope="scope">
             <el-button size="small" @click="handleDelete(scope.$index, scope.row)">删除</el-button>
           </template>
         </el-table-column>
