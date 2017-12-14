@@ -34,15 +34,15 @@ public class WxPayServiceImpl implements WxPayService {
         builder.append("totalFee=").append(payParam.getTotalFee())
                 .append("&model=").append(ConfigConstant.PAY_MODEL)
                 .append("&busId=").append(PropertiesUtil.getDuofenBusId())
-                .append("&appidType=").append(payParam.getAppidType())
+                .append("&appidType=").append(CommonUtil.isEmpty(payParam.getAppidType()) ? 0 : payParam.getAppidType())
                 .append("&appid=").append(PropertiesUtil.getDuofenAppid())
                 .append("&orderNum=").append(payParam.getOrderNum())
-                .append("&desc=").append(payParam.getDesc())
+                .append("&desc=").append(CommonUtil.isEmpty(payParam.getDesc()) ? "" : payParam.getDesc())
                 .append("&isreturn=").append(payParam.getIsreturn())
-                .append("&returnUrl=").append(payParam.getReturnUrl())
-                .append("&notifyUrl=").append(payParam.getNotifyUrl())
+                .append("&returnUrl=").append(CommonUtil.isEmpty(payParam.getReturnUrl()) ? "" : payParam.getReturnUrl())
+                .append("&notifyUrl=").append(CommonUtil.isEmpty(payParam.getNotifyUrl()) ? "" : payParam.getNotifyUrl())
                 .append("&isSendMessage=").append(payParam.getIsSendMessage())
-                .append("&sendUrl=").append(payParam.getSendUrl())
+                .append("&sendUrl=").append(CommonUtil.isEmpty(payParam.getSendUrl()) ? "" : payParam.getSendUrl())
                 .append("&payWay=").append(payParam.getPayWay())
                 .append("&sourceType=").append(1);
         if(CommonUtil.isNotEmpty(payParam.getExtend())){
@@ -50,26 +50,26 @@ public class WxPayServiceImpl implements WxPayService {
         }
         String param = builder.toString();
         logger.info("二维码支付请求参数：{}",param);
-        return  PropertiesUtil.getWxmpUrl() + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + param;
+        return PropertiesUtil.getWxmpUrl() + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + param;
     }
 
     @Override
     public String pay(PayParam payParam){
         SubQrPayParams subQrPayParams = new SubQrPayParams();
         subQrPayParams.setAppid(PropertiesUtil.getDuofenAppid());
-        subQrPayParams.setAppidType(payParam.getAppidType());
+        subQrPayParams.setAppidType(CommonUtil.isEmpty(payParam.getAppidType()) ? 0 : payParam.getAppidType());
         subQrPayParams.setBusId(PropertiesUtil.getDuofenBusId());
-        subQrPayParams.setDesc(payParam.getDesc());
+        subQrPayParams.setDesc(CommonUtil.isEmpty(payParam.getDesc()) ? "" : payParam.getDesc());
         subQrPayParams.setIsreturn(payParam.getIsreturn());
-        subQrPayParams.setReturnUrl(payParam.getReturnUrl());
+        subQrPayParams.setReturnUrl(CommonUtil.isEmpty(payParam.getReturnUrl()) ? "" : payParam.getReturnUrl());
         subQrPayParams.setIsSendMessage(payParam.getIsSendMessage());
-        subQrPayParams.setSendUrl(payParam.getSendUrl());
+        subQrPayParams.setSendUrl(CommonUtil.isEmpty(payParam.getSendUrl()) ? "" : payParam.getSendUrl());
         subQrPayParams.setModel(ConfigConstant.PAY_MODEL);
         subQrPayParams.setSourceType(1);
         subQrPayParams.setOrderNum(payParam.getOrderNum());
         subQrPayParams.setTotalFee(payParam.getTotalFee());
         subQrPayParams.setPayWay(payParam.getPayWay());
-        subQrPayParams.setNotifyUrl(payParam.getNotifyUrl());
+        subQrPayParams.setNotifyUrl(CommonUtil.isEmpty(payParam.getNotifyUrl()) ? "" : payParam.getNotifyUrl());
         subQrPayParams.setExtend(payParam.getExtend());
         logger.info("手机端支付请求参数：{}", JSON.toJSONString(subQrPayParams));
         String obj = "";

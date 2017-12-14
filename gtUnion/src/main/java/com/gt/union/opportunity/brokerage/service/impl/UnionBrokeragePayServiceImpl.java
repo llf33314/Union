@@ -257,7 +257,7 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
         List<UnionBrokeragePay> savePayList = new ArrayList<>();
         BigDecimal brokerageSum = BigDecimal.ZERO;
         Date currentDate = DateUtil.getCurrentDate();
-        String orderNo = "LM_Brokerage_" + busId + "_" + DateUtil.getSerialNumber();
+        String orderNo = "LM_B_" + DateUtil.getSerialNumber();
         if (ListUtil.isNotEmpty(opportunityIdList)) {
             for (Integer opportunityId : opportunityIdList) {
                 UnionOpportunity opportunity = unionOpportunityService.getById(opportunityId);
