@@ -57,6 +57,7 @@ public class AmqpConfig {
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public RabbitTemplate rabbitTemplate() {
         RabbitTemplate template = new RabbitTemplate(amqpConnectionFactory());
+        template.setMandatory(true);
         return template;
     }
 
