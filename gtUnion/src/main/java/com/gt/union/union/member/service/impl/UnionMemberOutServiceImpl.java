@@ -153,7 +153,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         Collections.sort(result, new Comparator<MemberOutPeriodVO>() {
             @Override
             public int compare(MemberOutPeriodVO o1, MemberOutPeriodVO o2) {
-                return o2.getMemberOut().getConfirmOutTime().compareTo(o1.getMemberOut().getConfirmOutTime());
+                return o1.getMemberOut().getConfirmOutTime().compareTo(o2.getMemberOut().getConfirmOutTime());
             }
         });
 

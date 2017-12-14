@@ -213,7 +213,7 @@ public class UnionCardProjectServiceImpl extends ServiceImpl<UnionCardProjectMap
         Collections.sort(result, new Comparator<CardProjectJoinMemberVO>() {
             @Override
             public int compare(CardProjectJoinMemberVO o1, CardProjectJoinMemberVO o2) {
-                return o2.getProject().getCreateTime().compareTo(o1.getProject().getCreateTime());
+                return o1.getProject().getCreateTime().compareTo(o2.getProject().getCreateTime());
             }
         });
 
@@ -266,7 +266,7 @@ public class UnionCardProjectServiceImpl extends ServiceImpl<UnionCardProjectMap
         Collections.sort(result, new Comparator<CardProjectCheckVO>() {
             @Override
             public int compare(CardProjectCheckVO o1, CardProjectCheckVO o2) {
-                return o2.getProject().getCreateTime().compareTo(o1.getProject().getCreateTime());
+                return o1.getProject().getCreateTime().compareTo(o2.getProject().getCreateTime());
             }
         });
 

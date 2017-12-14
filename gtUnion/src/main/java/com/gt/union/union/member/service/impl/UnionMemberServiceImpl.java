@@ -290,21 +290,23 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             @Override
             public int compare(UnionMember o1, UnionMember o2) {
                 if (o1.getIsUnionOwner() == MemberConstant.IS_UNION_OWNER_YES) {
-                    return 1;
+                    return -1;
                 }
                 if (o2.getIsUnionOwner() == MemberConstant.IS_UNION_OWNER_YES) {
-                    return -1;
-                }
-                if (o1.getId().equals(member.getId())) {
                     return 1;
                 }
-                if (o2.getId().equals(member.getId())) {
+                if (o1.getId().equals(member.getId())) {
                     return -1;
                 }
-                return o2.getCreateTime().compareTo(o1.getCreateTime());
+                if (o2.getId().equals(member.getId())) {
+                    return 1;
+                }
+                return o1.getCreateTime().compareTo(o2.getCreateTime());
             }
         });
 
+        System.out.println(JSONArray.toJSONString(result));
+        
         return result;
     }
 
