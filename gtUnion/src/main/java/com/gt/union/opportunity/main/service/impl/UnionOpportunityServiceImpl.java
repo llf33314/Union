@@ -432,6 +432,9 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         saveOpportunity.setCreateTime(DateUtil.getCurrentDate());
         saveOpportunity.setAcceptStatus(OpportunityConstant.ACCEPT_STATUS_CONFIRMING);
         saveOpportunity.setIsClose(OpportunityConstant.IS_CLOSE_NO);
+        saveOpportunity.setFromMemberId(member.getId());
+        saveOpportunity.setType(OpportunityConstant.TYPE_OFFLINE);
+        saveOpportunity.setUnionId(unionId);
 
         Integer toMemberId = vo.getToMember() != null ? vo.getToMember().getId() : null;
         if (toMemberId == null) {
