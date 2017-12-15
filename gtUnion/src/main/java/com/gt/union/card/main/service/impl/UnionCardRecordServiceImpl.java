@@ -27,11 +27,24 @@ import java.util.List;
 @Service
 public class UnionCardRecordServiceImpl extends ServiceImpl<UnionCardRecordMapper, UnionCardRecord> implements IUnionCardRecordService {
     @Autowired
-    public RedisCacheUtil redisCacheUtil;
+    private RedisCacheUtil redisCacheUtil;
 
     //***************************************** Domain Driven Design - get *********************************************
 
     //***************************************** Domain Driven Design - list ********************************************
+
+    @Override
+    public List<UnionCardRecord> listByOrderNo(String orderNo) throws Exception {
+        if (orderNo == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionCardRecord> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .eq("order_no", orderNo);
+
+        return selectList(entityWrapper);
+    }
 
     //***************************************** Domain Driven Design - save ********************************************
 

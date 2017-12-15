@@ -257,13 +257,13 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
             public int compare(OpportunityVO o1, OpportunityVO o2) {
                 int acceptStatusOrder = o1.getOpportunity().getAcceptStatus().compareTo(o2.getOpportunity().getAcceptStatus());
                 if (acceptStatusOrder < 0) {
-                    return 1;
-                }
-                if (acceptStatusOrder > 0) {
                     return -1;
                 }
+                if (acceptStatusOrder > 0) {
+                    return 1;
+                }
 
-                return o1.getOpportunity().getCreateTime().compareTo(o2.getOpportunity().getCreateTime());
+                return o2.getOpportunity().getCreateTime().compareTo(o1.getOpportunity().getCreateTime());
             }
         });
     }

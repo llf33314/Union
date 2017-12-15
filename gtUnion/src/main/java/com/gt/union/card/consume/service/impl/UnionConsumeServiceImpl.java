@@ -28,6 +28,7 @@ import com.gt.union.card.project.entity.UnionCardProjectItem;
 import com.gt.union.card.project.service.IUnionCardProjectItemService;
 import com.gt.union.card.project.service.IUnionCardProjectService;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
@@ -95,6 +96,19 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
     //***************************************** Domain Driven Design - get *********************************************
 
     //***************************************** Domain Driven Design - list ********************************************
+
+    @Override
+    public UnionConsume getByOrderNo(String orderNo) throws Exception {
+        if (orderNo == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .eq("order_no", orderNo);
+
+        return selectOne(entityWrapper);
+    }
 
     @Override
     public List<ConsumeRecordVO> listConsumeRecordVOByBusId(Integer busId, Integer optUnionId, Integer optShopId,
@@ -308,7 +322,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
             }
         }
 
-        String orderNo = "LM_Consume_" + busId + "_" + DateUtil.getSerialNumber();
+        String orderNo = "LM" + ConfigConstant.PAY_MODEL_CONSUME + DateUtil.getSerialNumber();
         saveConsume.setOrderNo(orderNo);
         saveConsume.setType(ConsumeConstant.TYPE_OFFLINE);
         saveConsume.setBusinessType(ConsumeConstant.BUSINESS_TYPE_OFFLINE);
@@ -316,13 +330,11 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
         if (ConsumeConstant.VO_PAY_TYPE_CASH == voConsume.getPayType()) {
             saveConsume.setPayType(ConsumeConstant.PAY_TYPE_CASH);
             saveConsume.setPayStatus(ConsumeConstant.PAY_STATUS_SUCCESS);
-            save(saveConsume);
         } else {
             result = new UnionPayVO();
             saveConsume.setPayType(ConsumeConstant.PAY_STATUS_PAYING);
-            save(saveConsume);
             String socketKey = PropertiesUtil.getSocketKey() + orderNo;
-            String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/consume/callback?socketKey=" + socketKey + "&ids=" + saveConsume.getId();
+            String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/consume/callback?socketKey=" + socketKey;
 
             PayParam payParam = new PayParam();
             payParam.setTotalFee(saveConsume.getPayMoney());
@@ -331,12 +343,14 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
             payParam.setNotifyUrl(notifyUrl);
             payParam.setIsSendMessage(CommonConstant.COMMON_NO);
             payParam.setPayWay(0);
+            payParam.setDesc("消费核销");
             String payUrl = wxPayService.qrCodePay(payParam);
 
             result.setPayUrl(payUrl);
             result.setSocketKey(socketKey);
         }
 
+        save(saveConsume);
         if (ListUtil.isNotEmpty(saveConsumeProjectList)) {
             for (UnionConsumeProject saveConsumeProject : saveConsumeProjectList) {
                 saveConsumeProject.setConsumeId(saveConsume.getId());
@@ -369,9 +383,9 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
     //***************************************** Domain Driven Design - update ******************************************
 
     @Override
-    public String updateCallbackById(String consumeId, String socketKey, String payType, String orderNo, Integer isSuccess) {
+    public String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess) {
         Map<String, Object> result = new HashMap<>(2);
-        if (consumeId == null || socketKey == null || payType == null || orderNo == null || isSuccess == null) {
+        if (orderNo == null || socketKey == null || payType == null || payOrderNo == null || isSuccess == null) {
             result.put("code", -1);
             result.put("msg", "参数缺少");
             return JSONObject.toJSONString(result);
@@ -380,7 +394,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
         // （1）	判断consumeId有效性
         UnionConsume consume;
         try {
-            consume = getById(Integer.valueOf(consumeId));
+            consume = getByOrderNo(orderNo);
         } catch (Exception e) {
             logger.error("", e);
             result.put("code", -1);
@@ -406,9 +420,11 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
             updateConsume.setId(consume.getId());
             updateConsume.setPayStatus(isSuccess == CommonConstant.COMMON_YES ? ConsumeConstant.PAY_STATUS_SUCCESS : ConsumeConstant.PAY_STATUS_FAIL);
             if (payType.equals("0")) {
-                updateConsume.setWxOrderNo(orderNo);
+                updateConsume.setPayType(ConsumeConstant.PAY_TYPE_WX);
+                updateConsume.setWxOrderNo(payOrderNo);
             } else {
-                updateConsume.setAlipayOrderNo(orderNo);
+                updateConsume.setPayType(ConsumeConstant.PAY_TYPE_ALIPAY);
+                updateConsume.setAlipayOrderNo(payOrderNo);
             }
 
             try {

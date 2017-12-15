@@ -5,12 +5,14 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.api.bean.session.BusUser;
 import com.gt.union.api.client.dict.IDictService;
-import com.gt.union.api.client.dict.impl.DictServiceImpl;
 import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.*;
+import com.gt.union.common.util.DateUtil;
+import com.gt.union.common.util.ListUtil;
+import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.StringUtil;
 import com.gt.union.union.main.constant.UnionConstant;
 import com.gt.union.union.main.entity.*;
 import com.gt.union.union.main.mapper.UnionMainCreateMapper;
@@ -25,7 +27,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * 联盟创建 服务实现类
@@ -55,7 +60,7 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
 
     @Autowired
     private IUnionMainDictService unionMainDictService;
-    
+
     @Autowired
     private IDictService dictService;
 
@@ -285,7 +290,7 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         if (StringUtil.isEmpty(memberNotifyPhone)) {
             throw new BusinessException("短信通知手机不能为空");
         }
-        if (StringUtil.isPhone(memberNotifyPhone)) {
+        if (!StringUtil.isPhone(memberNotifyPhone)) {
             throw new BusinessException("短信通知手机参数值有误");
         }
         saveMember.setNotifyPhone(memberNotifyPhone);
@@ -304,6 +309,12 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         if (ListUtil.isEmpty(saveDictList)) {
             throw new BusinessException("入盟收集信息不能为空");
         }
+
+        UnionMainCreate saveCreate = new UnionMainCreate();
+        saveCreate.setDelStatus(CommonConstant.COMMON_NO);
+        saveCreate.setCreateTime(currentDate);
+        saveCreate.setBusId(busId);
+        saveCreate.setPermitId(permitId);
         // （5）事务操作
         unionMainService.save(saveUnion);
         saveMember.setUnionId(saveUnion.getId());
@@ -312,8 +323,10 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
             dict.setUnionId(saveUnion.getId());
         }
         unionMainDictService.saveBatch(saveDictList);
+        saveCreate.setUnionId(saveUnion.getId());
+        save(saveCreate);
     }
-    
+
     //***************************************** Domain Driven Design - remove ******************************************
 
     //***************************************** Domain Driven Design - update ******************************************

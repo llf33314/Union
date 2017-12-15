@@ -18,6 +18,7 @@ import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.mapper.UnionMemberMapper;
 import com.gt.union.union.member.service.IUnionMemberService;
 import com.gt.union.union.member.util.UnionMemberCacheUtil;
+import com.gt.union.union.member.vo.MemberVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,6 +46,32 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     private IDictService dictService;
 
     //***************************************** Domain Driven Design - get *********************************************
+
+    @Override
+    public MemberVO getMemberVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
+        if (busId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+
+        // （1）	判断union有效性和member读权限
+        UnionMain union = unionMainService.getById(unionId);
+        if (!unionMainService.isUnionValid(union)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = getReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+        }
+
+        MemberVO result = new MemberVO();
+        result.setUnion(union);
+        result.setMember(member);
+
+        return result;
+    }
 
     @Override
     public UnionMember getReadByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
@@ -263,21 +290,23 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             @Override
             public int compare(UnionMember o1, UnionMember o2) {
                 if (o1.getIsUnionOwner() == MemberConstant.IS_UNION_OWNER_YES) {
-                    return 1;
+                    return -1;
                 }
                 if (o2.getIsUnionOwner() == MemberConstant.IS_UNION_OWNER_YES) {
-                    return -1;
-                }
-                if (o1.getId().equals(member.getId())) {
                     return 1;
                 }
-                if (o2.getId().equals(member.getId())) {
+                if (o1.getId().equals(member.getId())) {
                     return -1;
                 }
-                return o2.getCreateTime().compareTo(o1.getCreateTime());
+                if (o2.getId().equals(member.getId())) {
+                    return 1;
+                }
+                return o1.getCreateTime().compareTo(o2.getCreateTime());
             }
         });
 
+        System.out.println(JSONArray.toJSONString(result));
+        
         return result;
     }
 
@@ -438,7 +467,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         if (StringUtil.isEmpty(memberNotifyPhone)) {
             throw new BusinessException("短信通知手机不能为空");
         }
-        if (StringUtil.isPhone(memberNotifyPhone)) {
+        if (!StringUtil.isPhone(memberNotifyPhone)) {
             throw new BusinessException("短信通知手机格式不对，不是有效的手机号");
         }
         updateMember.setNotifyPhone(memberNotifyPhone);

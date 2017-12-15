@@ -145,11 +145,11 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
                 }
                 vo.setMemberOut(out);
 
-                vo.setPeriodDay(DateUtil.getPeriodIntervalDay(currentDate, out.getConfirmOutTime()));
+                vo.setPeriodDay(DateUtil.getPeriodIntervalDay(currentDate, out.getActualOutTime()));
                 result.add(vo);
             }
         }
-        // （3）	按确认时间顺序排序
+        // （3）	按确认时间倒序排序
         Collections.sort(result, new Comparator<MemberOutPeriodVO>() {
             @Override
             public int compare(MemberOutPeriodVO o1, MemberOutPeriodVO o2) {

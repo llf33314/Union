@@ -58,6 +58,16 @@ public interface UnionConstant {
     int PERMIT_ORDER_STATUS_FAIL = 3;
 
     /**
+     * 盟主服务订单支付类型：微信
+     */
+    int PERMIT_PAY_TYPE_WX = 1;
+    
+    /**
+     * 盟主服务订单支付类型：支付宝
+     */
+    int PERMIT_PAY_TYPE_ALIPAY = 2;
+    
+    /**
      * 入盟申请必填字段：负责人名称
      */
     String ITEM_KEY_DIRECTOR_NAME = "directorName";

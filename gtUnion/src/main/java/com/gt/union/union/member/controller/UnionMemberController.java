@@ -16,6 +16,7 @@ import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
+import com.gt.union.union.member.vo.MemberVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -148,7 +149,7 @@ public class UnionMemberController {
 
     @ApiOperation(value = "联盟设置-基础设置；联盟卡设置-折扣卡设置-折扣设置", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/busUser", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<UnionMember> getByUnionId(
+    public GtJsonResult<MemberVO> getByUnionId(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId) throws Exception {
@@ -158,11 +159,11 @@ public class UnionMemberController {
             busId = busUser.getPid();
         }
         // mock
-        UnionMember result;
+        MemberVO result;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            result = MockUtil.get(UnionMember.class);
+            result = MockUtil.get(MemberVO.class);
         } else {
-            result = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+            result = unionMemberService.getMemberVOByBusIdAndUnionId(busId, unionId);
         }
         return GtJsonResult.instanceSuccessMsg(result);
     }

@@ -54,9 +54,9 @@ public interface IUnionBrokeragePayService extends IService<UnionBrokeragePay> {
      * @throws Exception 统一处理异常
      */
     List<BrokeragePayVO> listBrokeragePayVOByBusId(Integer busId, Integer optUnionId) throws Exception;
-    
+
     /**
-     * 根据支付商家id、收款商家id和支付状态，获取商机佣金支付信息
+     * 获取商机佣金支付列表信息
      *
      * @param fromBusId 支付商家id
      * @param toBusId   收款商家id
@@ -65,6 +65,15 @@ public interface IUnionBrokeragePayService extends IService<UnionBrokeragePay> {
      * @throws Exception 统一处理异常
      */
     List<UnionBrokeragePay> listByFromBusIdAndToBusIdAndStatus(Integer fromBusId, Integer toBusId, Integer status) throws Exception;
+
+    /**
+     * 获取商机佣金支付列表信息
+     *
+     * @param orderNo 订单号
+     * @return List<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokeragePay> listByOrderNo(String orderNo) throws Exception;
 
     //***************************************** Domain Driven Design - save ********************************************
 
@@ -85,14 +94,14 @@ public interface IUnionBrokeragePayService extends IService<UnionBrokeragePay> {
     /**
      * 佣金结算-我需支付的佣金-批量支付-回调
      *
-     * @param payIds    商机佣金支付ids
-     * @param socketKey socket关键字
-     * @param payType   支付类型
-     * @param orderNo   订单号
-     * @param isSuccess 是否成功
-     * @return String
+     * @param orderNo    订单号
+     * @param socketKey  socket关键字
+     * @param payType    支付类型
+     * @param payOrderNo 支付订单号
+     * @param isSuccess  是否成功
+     * @return String 返回结果
      */
-    String updateCallbackByIds(String payIds, String socketKey, String payType, String orderNo, Integer isSuccess);
+    String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess);
 
     //***************************************** Domain Driven Design - count *******************************************
 
@@ -156,7 +165,7 @@ public interface IUnionBrokeragePayService extends IService<UnionBrokeragePay> {
      * 根据收款商家id进行过滤
      *
      * @param payList 数据源
-     * @param toBusId  收款商家id
+     * @param toBusId 收款商家id
      * @return List<UnionBrokeragePay>
      * @throws Exception 统一处理异常
      */

@@ -73,7 +73,7 @@ public class UnionCardProjectFlowServiceImpl extends ServiceImpl<UnionCardProjec
         Collections.sort(result, new Comparator<UnionCardProjectFlow>() {
             @Override
             public int compare(UnionCardProjectFlow o1, UnionCardProjectFlow o2) {
-                return o2.getCreateTime().compareTo(o1.getCreateTime());
+                return o1.getCreateTime().compareTo(o2.getCreateTime());
             }
         });
 

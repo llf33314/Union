@@ -33,13 +33,10 @@ public class PhoneMessageSender implements RabbitTemplate.ConfirmCallback, Rabbi
 
     @Override
     public void confirm(CorrelationData correlationData, boolean ack, String cause) {
-        //消息成功到达了mq服务器回调
-        System.out.println(" 回调id:" + correlationData);
-        System.out.println(ack);
         if (ack) {
-            System.out.println("消息成功消费" + cause);
+            System.out.println("消息到达交换机");
         } else {
-            System.out.println("消息消费失败:" + cause);
+            System.out.println("消息没有到达交换机");
         }
     }
 
@@ -48,10 +45,7 @@ public class PhoneMessageSender implements RabbitTemplate.ConfirmCallback, Rabbi
         try{
             String msg = new String(message.getBody(), "UTF-8");
             System.out.println(msg);
-            System.out.println(i);
-            System.out.println(s);
-            System.out.println(s1);
-            System.out.println(s2);
+            System.out.println("消息找不到队列");
         }catch (Exception e){
 
         }

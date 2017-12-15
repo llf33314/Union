@@ -18,6 +18,15 @@ import java.util.List;
 public interface IUnionConsumeService extends IService<UnionConsume> {
     //***************************************** Domain Driven Design - get *********************************************
 
+    /**
+     * 获取消费核销信息
+     *
+     * @param orderNo 订单号
+     * @return UnionConsume
+     * @throws Exception 统一处理异常
+     */
+    UnionConsume getByOrderNo(String orderNo) throws Exception;
+
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
@@ -57,14 +66,14 @@ public interface IUnionConsumeService extends IService<UnionConsume> {
     /**
      * 前台-联盟卡消费核销-支付-回调
      *
-     * @param consumeId 消费id
-     * @param socketKey socket关键字
-     * @param payType   支付方式
-     * @param orderNo   订单号
-     * @param isSuccess 是否成功(0：否 1：是)
+     * @param orderNo    订单号
+     * @param socketKey  socket关键字
+     * @param payType    支付类型
+     * @param payOrderNo 支付订单号
+     * @param isSuccess  是否成功
      * @return String 返回结果
      */
-    String updateCallbackById(String consumeId, String socketKey, String payType, String orderNo, Integer isSuccess);
+    String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess);
 
     //***************************************** Domain Driven Design - count *******************************************
 
