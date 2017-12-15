@@ -1,5 +1,7 @@
 package com.gt.union.opportunity.brokerage.entity;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
@@ -65,7 +67,7 @@ public class UnionBrokerageWithdrawal extends Model<UnionBrokerageWithdrawal> {
     @ApiModelProperty(value = "系统订单号")
     @TableField("sys_order")
     private String sysOrder;
-    
+
     /**
      * 平台管理者id
      */
@@ -148,5 +150,10 @@ public class UnionBrokerageWithdrawal extends Model<UnionBrokerageWithdrawal> {
     @Override
     protected Serializable pkVal() {
         return this.id;
+    }
+
+    @Override
+    public String toString() {
+        return JSON.toJSONString(this, SerializerFeature.WriteMapNullValue, SerializerFeature.PrettyFormat);
     }
 }

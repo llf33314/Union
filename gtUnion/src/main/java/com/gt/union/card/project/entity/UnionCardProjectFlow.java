@@ -1,5 +1,7 @@
 package com.gt.union.card.project.entity;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
@@ -28,7 +30,7 @@ public class UnionCardProjectFlow extends Model<UnionCardProjectFlow> {
      * 主键
      */
     @ApiModelProperty(value = "主键")
-    @TableId(value="id", type= IdType.AUTO)
+    @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
     /**
@@ -103,5 +105,10 @@ public class UnionCardProjectFlow extends Model<UnionCardProjectFlow> {
     @Override
     protected Serializable pkVal() {
         return this.id;
+    }
+
+    @Override
+    public String toString() {
+        return JSON.toJSONString(this, SerializerFeature.WriteMapNullValue, SerializerFeature.PrettyFormat);
     }
 }

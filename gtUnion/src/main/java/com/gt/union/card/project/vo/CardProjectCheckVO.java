@@ -1,6 +1,7 @@
 package com.gt.union.card.project.vo;
 
-import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.gt.union.card.project.entity.UnionCardProject;
 import com.gt.union.card.project.entity.UnionCardProjectItem;
 import com.gt.union.union.member.entity.UnionMember;
@@ -52,6 +53,6 @@ public class CardProjectCheckVO {
 
     @Override
     public String toString() {
-        return JSONArray.toJSONString(this);
+        return JSON.toJSONString(this, SerializerFeature.WriteMapNullValue, SerializerFeature.PrettyFormat);
     }
 }

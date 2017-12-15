@@ -1,6 +1,7 @@
 package com.gt.union.card.activity.vo;
 
-import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.project.entity.UnionCardProject;
 import io.swagger.annotations.ApiModel;
@@ -82,6 +83,6 @@ public class CardActivityVO {
 
     @Override
     public String toString() {
-        return JSONArray.toJSONString(this);
+        return JSON.toJSONString(this, SerializerFeature.WriteMapNullValue, SerializerFeature.PrettyFormat);
     }
 }

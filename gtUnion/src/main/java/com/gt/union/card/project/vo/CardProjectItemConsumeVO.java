@@ -1,13 +1,10 @@
 package com.gt.union.card.project.vo;
 
-import com.alibaba.fastjson.JSONArray;
-import com.gt.union.card.project.entity.UnionCardProject;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.gt.union.card.project.entity.UnionCardProjectItem;
-import com.gt.union.union.member.entity.UnionMember;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-
-import java.util.List;
 
 /**
  * 消费核销-项目优惠
@@ -19,7 +16,7 @@ import java.util.List;
 public class CardProjectItemConsumeVO {
     @ApiModelProperty(value = "项目优惠")
     private UnionCardProjectItem item;
-    
+
     @ApiModelProperty(value = "项目优惠可使用数量")
     private Integer availableCount;
 
@@ -41,6 +38,6 @@ public class CardProjectItemConsumeVO {
 
     @Override
     public String toString() {
-        return JSONArray.toJSONString(this);
+        return JSON.toJSONString(this, SerializerFeature.WriteMapNullValue, SerializerFeature.PrettyFormat);
     }
 }
