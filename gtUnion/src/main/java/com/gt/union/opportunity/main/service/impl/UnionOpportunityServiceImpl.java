@@ -344,7 +344,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
 
         List<UnionOpportunity> result = new ArrayList<>();
         for (Integer fromMemberId : fromMemberIdList) {
-            result.addAll(listByToMemberId(fromMemberId));
+            result.addAll(listByFromMemberId(fromMemberId));
         }
 
         return result;
