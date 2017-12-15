@@ -306,7 +306,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         });
 
         System.out.println(JSONArray.toJSONString(result));
-        
+
         return result;
     }
 
@@ -322,9 +322,17 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         // （2）获取商家在union的member
         UnionMember member = getReadByBusIdAndUnionId(busId, unionId);
         // （3）获取union下writeMember，过滤掉member
-        List<UnionMember> result = listWriteByUnionId(unionId);
+        List<UnionMember> writeMemberList = listWriteByUnionId(unionId);
 
-        return member == null ? result : filterById(result, member.getId());
+        List<UnionMember> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(writeMemberList)) {
+            for (UnionMember writeMember : writeMemberList) {
+                if (!member.getId().equals(writeMember.getId())) {
+                    result.add(writeMember);
+                }
+            }
+        }
+        return result;
     }
 
     @Override
@@ -338,10 +346,18 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         }
         // （2）获取商家在union的member
         UnionMember member = getReadByBusIdAndUnionId(busId, unionId);
-        // （3）获取union下writeMember，过滤掉member
-        List<UnionMember> result = listReadByUnionId(unionId);
+        // （3）获取union下readMember，过滤掉member
+        List<UnionMember> readMemberList = listReadByUnionId(unionId);
 
-        return member == null ? result : filterById(result, member.getId());
+        List<UnionMember> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(readMemberList)) {
+            for (UnionMember readMember : readMemberList) {
+                if (!member.getId().equals(readMember.getId())) {
+                    result.add(readMember);
+                }
+            }
+        }
+        return result;
     }
 
     @Override
@@ -540,24 +556,6 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     //***************************************** Domain Driven Design - boolean *****************************************
 
     //***************************************** Domain Driven Design - filter ******************************************
-
-    @Override
-    public List<UnionMember> filterById(List<UnionMember> memberList, Integer memberId) throws Exception {
-        if (memberList == null || memberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionMember> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(memberList)) {
-            for (UnionMember member : memberList) {
-                if (memberId.equals(member.getId())) {
-                    result.add(member);
-                }
-            }
-        }
-
-        return result;
-    }
 
     @Override
     public List<UnionMember> filterByIsUnionOwner(List<UnionMember> memberList, Integer isUnionOwner) throws Exception {
