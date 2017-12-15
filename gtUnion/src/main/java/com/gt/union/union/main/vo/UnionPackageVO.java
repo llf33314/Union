@@ -1,6 +1,7 @@
 package com.gt.union.union.main.vo;
 
-import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.gt.union.union.main.entity.UnionMainPackage;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
@@ -50,6 +51,6 @@ public class UnionPackageVO {
 
     @Override
     public String toString() {
-        return JSONArray.toJSONString(this);
+        return JSON.toJSONString(this, SerializerFeature.WriteMapNullValue, SerializerFeature.PrettyFormat);
     }
 }
