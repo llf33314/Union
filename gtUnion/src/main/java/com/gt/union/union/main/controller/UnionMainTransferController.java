@@ -39,7 +39,7 @@ public class UnionMainTransferController {
 
     @ApiOperation(value = "联盟设置-盟主权限转移-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Page<UnionTransferVO>> pageTransferVOByUnionId(
+    public String pageTransferVOByUnionId(
             HttpServletRequest request,
             Page page,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
@@ -58,14 +58,14 @@ public class UnionMainTransferController {
         }
         Page<UnionTransferVO> result = (Page<UnionTransferVO>) page;
         result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
     @ApiOperation(value = "盟主权限转移-接受或拒绝", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{transferId}/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> updateStatusByIdAndUnionId(
+    public String updateStatusByIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "转移id", name = "transferId", required = true)
             @PathVariable("transferId") Integer transferId,
@@ -81,12 +81,12 @@ public class UnionMainTransferController {
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionMainTransferService.updateAcceptByBusIdAndIdAndUnionId(busId, transferId, unionId, isAccept);
         }
-        return GtJsonResult.instanceSuccessMsg();
+        return GtJsonResult.instanceSuccessMsg().toString();
     }
 
     @ApiOperation(value = "联盟设置-盟主权限转移-分页-撤销", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{transferId}/unionId/{unionId}/revoke", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> revokeByIdAndUnionId(
+    public String revokeByIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "转移id", name = "transferId", required = true)
             @PathVariable("transferId") Integer transferId,
@@ -100,14 +100,14 @@ public class UnionMainTransferController {
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionMainTransferService.revokeByBusIdAndIdAndUnionId(busId, transferId, unionId);
         }
-        return GtJsonResult.instanceSuccessMsg();
+        return GtJsonResult.instanceSuccessMsg().toString();
     }
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
     @ApiOperation(value = "联盟设置-盟主权限转移-分页-转移", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/toMemberId/{toMemberId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> saveByUnionIdAndToMemberId(
+    public String saveByUnionIdAndToMemberId(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId,
@@ -121,7 +121,7 @@ public class UnionMainTransferController {
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionMainTransferService.saveByBusIdAndUnionIdAndToMemberId(busId, unionId, toMemberId);
         }
-        return GtJsonResult.instanceSuccessMsg();
+        return GtJsonResult.instanceSuccessMsg().toString();
     }
 
 }

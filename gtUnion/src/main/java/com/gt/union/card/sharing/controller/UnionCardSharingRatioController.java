@@ -39,7 +39,7 @@ public class UnionCardSharingRatioController {
 
     @ApiOperation(value = "售卡佣金分成管理-活动卡售卡比例设置-分页-查看比例", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Page<CardSharingRatioVO>> pageSharingRatioVOByActivityIdAndUnionId(
+    public String pageSharingRatioVOByActivityIdAndUnionId(
             HttpServletRequest request,
             Page page,
             @ApiParam(value = "联盟卡活动id", name = "activityId", required = true)
@@ -60,12 +60,12 @@ public class UnionCardSharingRatioController {
         }
         Page<CardSharingRatioVO> result = (Page<CardSharingRatioVO>) page;
         result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "售卡佣金分成管理-活动卡售卡比例设置-分页-查看比例-比例设置", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<List<CardSharingRatioVO>> listByActivityIdAndUnionId(
+    public String listByActivityIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "联盟卡活动id", name = "activityId", required = true)
             @PathVariable("activityId") Integer activityId,
@@ -83,14 +83,14 @@ public class UnionCardSharingRatioController {
         } else {
             result = unionCardSharingRatioService.listCardSharingRatioVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
         }
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
     @ApiOperation(value = "售卡佣金分成管理-活动卡售卡比例设置-分页-查看比例-比例设置-更新", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> updateRatioByActivityIdAndUnionId(
+    public String updateRatioByActivityIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "联盟卡活动id", name = "activityId", required = true)
             @PathVariable("activityId") Integer activityId,
@@ -106,7 +106,7 @@ public class UnionCardSharingRatioController {
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionCardSharingRatioService.updateRatioByBusIdAndUnionIdAndActivityId(busId, unionId, activityId, ratioList);
         }
-        return GtJsonResult.instanceSuccessMsg();
+        return GtJsonResult.instanceSuccessMsg().toString();
     }
 
     //-------------------------------------------------- post ----------------------------------------------------------

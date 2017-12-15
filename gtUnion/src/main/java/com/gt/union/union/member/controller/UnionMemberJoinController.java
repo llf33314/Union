@@ -40,7 +40,7 @@ public class UnionMemberJoinController {
 
     @ApiOperation(value = "入盟审核-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Page<MemberJoinVO>> pageJoinVOByUnionId(
+    public String pageJoinVOByUnionId(
             HttpServletRequest request,
             Page page,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
@@ -63,14 +63,14 @@ public class UnionMemberJoinController {
         }
         Page<MemberJoinVO> result = (Page<MemberJoinVO>) page;
         result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
     @ApiOperation(value = "入盟审核-分页-通过或不通过", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{joinId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> updateStatusByIdAndUnionId(
+    public String updateStatusByIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "入盟申请id", name = "joinId", required = true)
             @PathVariable("joinId") Integer joinId,
@@ -86,14 +86,14 @@ public class UnionMemberJoinController {
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionMemberJoinService.updateStatusByBusIdAndIdAndUnionId(busId, joinId, unionId, isPass);
         }
-        return GtJsonResult.instanceSuccessMsg();
+        return GtJsonResult.instanceSuccessMsg().toString();
     }
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
     @ApiOperation(value = "加入联盟-保存；推荐入盟", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/type/{type}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> saveJoinCreateVOByUnionIdAndType(
+    public String saveJoinCreateVOByUnionIdAndType(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId,
@@ -109,7 +109,7 @@ public class UnionMemberJoinController {
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionMemberJoinService.saveJoinCreateVOByBusIdAndUnionIdAndType(busId, unionId, type, joinCreateVO);
         }
-        return GtJsonResult.instanceSuccessMsg();
+        return GtJsonResult.instanceSuccessMsg().toString();
     }
 
 }

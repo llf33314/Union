@@ -40,7 +40,7 @@ public class UnionMainCreateController {
 
     @ApiOperation(value = "创建联盟-检查联盟许可", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/checkPermit", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<UnionPermitCheckVO> getPermitCheckVO(HttpServletRequest request) throws Exception {
+    public String getPermitCheckVO(HttpServletRequest request) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -53,7 +53,7 @@ public class UnionMainCreateController {
         } else {
             result = unionMainCreateService.getPermitCheckVOByBusId(busId);
         }
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
@@ -62,7 +62,7 @@ public class UnionMainCreateController {
 
     @ApiOperation(value = "创建联盟-保存", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> saveUnionCreateVO(
+    public String saveUnionCreateVO(
             HttpServletRequest request,
             @ApiParam(value = "表单信息", name = "unionCreateVO", required = true)
             @RequestBody UnionCreateVO unionCreateVO) throws Exception {
@@ -74,6 +74,6 @@ public class UnionMainCreateController {
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionMainCreateService.saveUnionCreateVOByBusId(busId, unionCreateVO);
         }
-        return GtJsonResult.instanceSuccessMsg();
+        return GtJsonResult.instanceSuccessMsg().toString();
     }
 }

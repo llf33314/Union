@@ -42,7 +42,7 @@ public class UnionCardProjectController {
 
     @ApiOperation(value = "联盟卡设置-活动卡设置-分页-参与盟员数", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/joinMember", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<List<CardProjectJoinMemberVO>> listJoinMemberByActivityIdAndUnionId(
+    public String listJoinMemberByActivityIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "联盟卡活动id", name = "activityId", required = true)
             @PathVariable("activityId") Integer activityId,
@@ -66,12 +66,12 @@ public class UnionCardProjectController {
         } else {
             result = unionCardProjectService.listJoinMemberByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
         }
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "联盟卡设置-活动卡设置-分页-审核项目", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/projectCheck", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<List<CardProjectCheckVO>> listProjectCheckByActivityIdAndUnionId(
+    public String listProjectCheckByActivityIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "联盟卡活动id", name = "activityId", required = true)
             @PathVariable("activityId") Integer activityId,
@@ -95,12 +95,12 @@ public class UnionCardProjectController {
         } else {
             result = unionCardProjectService.listProjectCheckByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
         }
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "联盟卡设置-活动卡设置-分页-我的活动项目-ERP和非ERP", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{projectId}/activityId/{activityId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<CardProjectVO> getProjectVOByIdAndUnionId(
+    public String getProjectVOByIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "活动项目id", name = "projectId", required = true)
             @PathVariable("projectId") Integer projectId,
@@ -126,14 +126,14 @@ public class UnionCardProjectController {
         } else {
             result = unionCardProjectService.getProjectVOByBusIdAndIdAndUnionIdAndActivityId(busId, projectId, unionId, activityId);
         }
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
     @ApiOperation(value = "联盟卡设置-活动卡设置-分页-审核项目-通过或不通过", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/projectCheck", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> updateProjectCheckByActivityIdAndUnionId(
+    public String updateProjectCheckByActivityIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "联盟卡活动id", name = "activityId", required = true)
             @PathVariable("activityId") Integer activityId,
@@ -151,7 +151,7 @@ public class UnionCardProjectController {
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionCardProjectService.updateProjectCheckByBusIdAndUnionIdAndActivityId(busId, unionId, activityId, isPass, updateVO);
         }
-        return GtJsonResult.instanceSuccessMsg();
+        return GtJsonResult.instanceSuccessMsg().toString();
     }
 
     //-------------------------------------------------- post ----------------------------------------------------------

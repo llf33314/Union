@@ -39,7 +39,7 @@ public class UnionOpportunityRatioController {
 
     @ApiOperation(value = "商机佣金比例设置-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Page<OpportunityRatioVO>> pageRatioVOByUnionId(
+    public String pageRatioVOByUnionId(
             HttpServletRequest request,
             Page page,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
@@ -58,14 +58,14 @@ public class UnionOpportunityRatioController {
         }
         Page<OpportunityRatioVO> result = (Page<OpportunityRatioVO>) page;
         result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
     @ApiOperation(value = "商机佣金比例设置-设置佣金比例", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/toMemberId/{toMemberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> updateRatioByUnionIdAndToMemberId(
+    public String updateRatioByUnionIdAndToMemberId(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId,
@@ -81,7 +81,7 @@ public class UnionOpportunityRatioController {
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionOpportunityRatioService.updateRatioByBusIdAndUnionIdAndToMemberId(busId, unionId, toMemberId, ratio);
         }
-        return GtJsonResult.instanceSuccessMsg();
+        return GtJsonResult.instanceSuccessMsg().toString();
     }
 
     //-------------------------------------------------- post ----------------------------------------------------------

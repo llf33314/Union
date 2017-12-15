@@ -20,7 +20,6 @@ import com.gt.union.union.main.vo.UnionPayVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -40,8 +39,6 @@ import java.util.List;
 @RequestMapping("/unionBrokeragePay")
 public class UnionBrokeragePayController {
 
-    private Logger logger = Logger.getLogger(UnionBrokeragePayController.class);
-
     @Autowired
     private IUnionBrokeragePayService unionBrokeragePayService;
 
@@ -49,7 +46,7 @@ public class UnionBrokeragePayController {
 
     @ApiOperation(value = "佣金结算-我需支付的佣金-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/opportunity/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Page<BrokerageOpportunityVO>> pageBrokerageOpportunityVO(
+    public String pageBrokerageOpportunityVO(
             HttpServletRequest request,
             Page page,
             @ApiParam(value = "联盟id", name = "unionId")
@@ -76,12 +73,12 @@ public class UnionBrokeragePayController {
         }
         Page<BrokerageOpportunityVO> result = (Page<BrokerageOpportunityVO>) page;
         result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "佣金结算-支付明细-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/detail/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Page<BrokeragePayVO>> pagePayVo(
+    public String pagePayVo(
             HttpServletRequest request,
             Page page,
             @ApiParam(value = "联盟id", name = "unionId")
@@ -104,7 +101,7 @@ public class UnionBrokeragePayController {
         }
         Page<BrokeragePayVO> result = (Page<BrokeragePayVO>) page;
         result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "佣金结算-支付明细-导出", produces = "application/json;charset=UTF-8")
@@ -154,7 +151,7 @@ public class UnionBrokeragePayController {
 
     @ApiOperation(value = "佣金结算-支付明细-详情", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/detail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<BrokeragePayVO> getPayVo(
+    public String getPayVo(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId,
@@ -172,7 +169,7 @@ public class UnionBrokeragePayController {
         } else {
             result = unionBrokeragePayService.getBrokeragePayVOByBusIdAndUnionIdAndMemberId(busId, unionId, memberId);
         }
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "佣金结算-支付明细-详情-导出", produces = "application/json;charset=UTF-8")
@@ -231,7 +228,7 @@ public class UnionBrokeragePayController {
 
     @ApiOperation(value = "佣金结算-我需支付的佣金-批量支付", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/opportunity", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<UnionPayVO> batchPay(
+    public String batchPay(
             HttpServletRequest request,
             @ApiParam(value = "商机id列表", name = "opportunityIdList", required = true)
             @RequestParam(value = "opportunityIdList") List<Integer> opportunityIdList) throws Exception {
@@ -247,7 +244,7 @@ public class UnionBrokeragePayController {
         } else {
             result = unionBrokeragePayService.batchPayByBusId(busId, opportunityIdList);
         }
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- post ----------------------------------------------------------

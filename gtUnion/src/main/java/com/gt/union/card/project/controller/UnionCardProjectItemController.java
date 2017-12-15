@@ -38,7 +38,7 @@ public class UnionCardProjectItemController {
 
     @ApiOperation(value = "前台-联盟卡消费核销-开启优惠项目-查询活动项目优惠列表", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/consume", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<List<CardProjectItemConsumeVO>> listCardProjectItemConsumeVOByActivityIdAndUnionId(
+    public String listCardProjectItemConsumeVOByActivityIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "活动id", name = "activityId", required = true)
             @PathVariable("activityId") Integer activityId,
@@ -56,7 +56,7 @@ public class UnionCardProjectItemController {
         } else {
             result = unionCardProjectItemService.listCardProjectItemConsumeVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
         }
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
@@ -65,7 +65,7 @@ public class UnionCardProjectItemController {
 
     @ApiOperation(value = "联盟卡设置-活动卡设置-分页-我的活动项目-ERP和非ERP-保存", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/save", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> saveProjectItemVOByActivityIdAndUnionId(
+    public String saveProjectItemVOByActivityIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "活动id", name = "activityId", required = true)
             @PathVariable("activityId") Integer activityId,
@@ -81,12 +81,12 @@ public class UnionCardProjectItemController {
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionCardProjectItemService.saveProjectItemVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId, projectItemVO);
         }
-        return GtJsonResult.instanceSuccessMsg();
+        return GtJsonResult.instanceSuccessMsg().toString();
     }
 
     @ApiOperation(value = "联盟卡设置-活动卡设置-分页-我的活动项目-ERP和非ERP-提交", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/commit", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> commitProjectItemVOByActivityIdAndUnionId(
+    public String commitProjectItemVOByActivityIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "活动id", name = "activityId", required = true)
             @PathVariable("activityId") Integer activityId,
@@ -102,6 +102,6 @@ public class UnionCardProjectItemController {
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionCardProjectItemService.commitProjectItemVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId, projectItemVO);
         }
-        return GtJsonResult.instanceSuccessMsg();
+        return GtJsonResult.instanceSuccessMsg().toString();
     }
 }

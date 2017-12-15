@@ -29,7 +29,7 @@ public class UnionVerifierController {
 
     @ApiOperation(value = "列表：获取平台管理者", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<List<UnionVerifier>> list(HttpServletRequest request) throws Exception {
+    public String list(HttpServletRequest request) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -37,7 +37,7 @@ public class UnionVerifierController {
         }
         // mock
         List<UnionVerifier> result = MockUtil.list(UnionVerifier.class, 20);
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
@@ -47,7 +47,7 @@ public class UnionVerifierController {
 
     @ApiOperation(value = "新增平台管理者", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> save(
+    public String save(
             HttpServletRequest request,
             @ApiParam(value = "验证码", name = "code", required = true)
             @RequestParam(value = "code") String code,
@@ -58,14 +58,14 @@ public class UnionVerifierController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-        return GtJsonResult.instanceSuccessMsg();
+        return GtJsonResult.instanceSuccessMsg().toString();
     }
 
     //------------------------------------------------- delete ---------------------------------------------------------
 
     @ApiOperation(value = "删除平台管理者", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{verifierId}", method = RequestMethod.DELETE, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> removeById(
+    public String removeById(
             HttpServletRequest request,
             @ApiParam(value = "平台管理者id", name = "verifierId", required = true)
             @PathVariable("verifierId") Integer verifierId) throws Exception {
@@ -74,7 +74,7 @@ public class UnionVerifierController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-        return GtJsonResult.instanceSuccessMsg();
+        return GtJsonResult.instanceSuccessMsg().toString();
     }
 
 }

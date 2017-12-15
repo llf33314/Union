@@ -19,7 +19,6 @@ import com.gt.union.union.main.vo.UnionPayVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
-import org.apache.log4j.Logger;
 import org.apache.poi.hssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -40,8 +39,6 @@ import java.util.List;
 @RequestMapping("/unionConsume")
 public class UnionConsumeController {
 
-    private Logger logger = Logger.getLogger(UnionConsumeController.class);
-
     @Autowired
     private IUnionConsumeService unionConsumeService;
 
@@ -49,7 +46,7 @@ public class UnionConsumeController {
 
     @ApiOperation(value = "前台-消费核销记录-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/record/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Page<ConsumeRecordVO>> pageConsumeVO(
+    public String pageConsumeVO(
             HttpServletRequest request,
             Page page,
             @ApiParam(value = "联盟id", name = "unionId")
@@ -90,7 +87,7 @@ public class UnionConsumeController {
         }
         Page<ConsumeRecordVO> result = (Page<ConsumeRecordVO>) page;
         result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "前台-消费核销记录-导出", produces = "application/json;charset=UTF-8")
@@ -196,7 +193,7 @@ public class UnionConsumeController {
 
     @ApiOperation(value = "前台-联盟卡消费核销-支付", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/fanId/{fanId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<UnionPayVO> saveConsumePayVOByUnionIdAndFanId(
+    public String saveConsumePayVOByUnionIdAndFanId(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId,
@@ -216,7 +213,7 @@ public class UnionConsumeController {
         } else {
             result = unionConsumeService.saveConsumePostVOByBusIdAndUnionIdAndFanId(busId, unionId, fanId, postVO);
         }
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
 }

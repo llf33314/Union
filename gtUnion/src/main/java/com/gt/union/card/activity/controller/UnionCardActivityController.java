@@ -40,7 +40,7 @@ public class UnionCardActivityController {
 
     @ApiOperation(value = "售卡佣金分成管理-活动卡售卡比例设置-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/sharingRatio/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Page<CardActivityStatusVO>> pageActivityStatusVOByUnionId(
+    public String pageActivityStatusVOByUnionId(
             HttpServletRequest request,
             Page page,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
@@ -59,12 +59,12 @@ public class UnionCardActivityController {
         }
         Page<CardActivityStatusVO> result = (Page<CardActivityStatusVO>) page;
         result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "联盟卡设置-活动卡设置-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Page<CardActivityVO>> pageActivityVOByUnionId(
+    public String pageActivityVOByUnionId(
             HttpServletRequest request,
             Page page,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
@@ -83,12 +83,12 @@ public class UnionCardActivityController {
         }
         Page<CardActivityVO> result = (Page<CardActivityVO>) page;
         result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "前台-联盟卡消费核销-开启优惠项目-查询活动卡列表", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/consume", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<List<CardActivityConsumeVO>> listCardActivityConsumeVOByUnionIdAndFanId(
+    public String listCardActivityConsumeVOByUnionIdAndFanId(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId,
@@ -106,12 +106,12 @@ public class UnionCardActivityController {
         } else {
             result = unionCardActivityService.listCardActivityConsumeVOByBusIdAndUnionIdAndFanId(busId, unionId, fanId);
         }
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "前台-办理联盟卡-查询联盟和联盟卡-查询联盟卡活动", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{activityId}/unionId/{unionId}/apply", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<CardActivityApplyVO> getApplyVOByIdAndUnionId(
+    public String getApplyVOByIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "活动id", name = "activityId", required = true)
             @PathVariable("activityId") Integer activityId,
@@ -129,12 +129,12 @@ public class UnionCardActivityController {
         } else {
             result = unionCardActivityService.getCardActivityApplyVOByBusIdAndIdAndUnionId(busId, activityId, unionId);
         }
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "前台-办理联盟卡-查询联盟和联盟卡-查询联盟卡活动-查询服务项目数", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{activityId}/unionId/{unionId}/apply/itemCount", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<List<CardActivityApplyItemVO>> getApplyItemVOByIdAndUnionId(
+    public String getApplyItemVOByIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "活动id", name = "activityId", required = true)
             @PathVariable("activityId") Integer activityId,
@@ -152,7 +152,7 @@ public class UnionCardActivityController {
         } else {
             result = unionCardActivityService.listCardActivityApplyItemVOByBusIdAndIdAndUnionId(busId, activityId, unionId);
         }
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
 
@@ -162,7 +162,7 @@ public class UnionCardActivityController {
 
     @ApiOperation(value = "联盟卡设置-活动卡设置-新增活动卡", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> saveByUnionId(
+    public String saveByUnionId(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId,
@@ -176,14 +176,14 @@ public class UnionCardActivityController {
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionCardActivityService.saveByBusIdAndUnionId(busId, unionId, vo);
         }
-        return GtJsonResult.instanceSuccessMsg();
+        return GtJsonResult.instanceSuccessMsg().toString();
     }
 
     //------------------------------------------------- delete ---------------------------------------------------------
 
     @ApiOperation(value = "联盟卡设置-活动卡设置-分页-删除", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{activityId}/unionId/{unionId}", method = RequestMethod.DELETE, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> removeByIdAndUnionId(
+    public String removeByIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "活动id", name = "activityId", required = true)
             @PathVariable("activityId") Integer activityId,
@@ -197,7 +197,7 @@ public class UnionCardActivityController {
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionCardActivityService.removeByBusIdAndIdAndUnionId(busId, activityId, unionId);
         }
-        return GtJsonResult.instanceSuccessMsg();
+        return GtJsonResult.instanceSuccessMsg().toString();
     }
 
 }

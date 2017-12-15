@@ -41,7 +41,7 @@ public class UnionBrokerageIncomeController {
 
     @ApiOperation(value = "佣金结算-我的佣金收入-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/opportunity/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Page<BrokerageOpportunityVO>> pageBrokerageOpportunityVO(
+    public String pageBrokerageOpportunityVO(
             HttpServletRequest request,
             Page page,
             @ApiParam(value = "联盟id", name = "unionId")
@@ -68,7 +68,7 @@ public class UnionBrokerageIncomeController {
         }
         Page<BrokerageOpportunityVO> result = (Page<BrokerageOpportunityVO>) page;
         result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------

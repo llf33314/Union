@@ -35,7 +35,7 @@ public class UnionMainNoticeController {
 
     @ApiOperation(value = "首页-联盟公告", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<UnionMainNotice> getByUnionId(
+    public String getByUnionId(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId) throws Exception {
@@ -51,14 +51,14 @@ public class UnionMainNoticeController {
         } else {
             result = unionMainNoticeService.getByBusIdAndUnionId(busId, unionId);
         }
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
     @ApiOperation(value = "首页-联盟公告-更新", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> updateContentByUnionId(
+    public String updateContentByUnionId(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId,
@@ -72,7 +72,7 @@ public class UnionMainNoticeController {
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionMainNoticeService.updateContentByBusIdAndUnionId(busId, unionId, content);
         }
-        return GtJsonResult.instanceSuccessMsg();
+        return GtJsonResult.instanceSuccessMsg().toString();
     }
 
     //-------------------------------------------------- post ----------------------------------------------------------

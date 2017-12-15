@@ -41,7 +41,7 @@ public class UnionMainController {
 
     @ApiOperation(value = "联盟设置-联盟基本信息", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<UnionVO> getUnionMainVOById(
+    public String getUnionMainVOById(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId) throws Exception {
@@ -59,12 +59,12 @@ public class UnionMainController {
         } else {
             result = unionMainService.getUnionVOByBusIdAndId(busId, unionId);
         }
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "加入联盟-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/other/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Page<UnionMain>> pageOther(
+    public String pageOther(
             HttpServletRequest request,
             Page page) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
@@ -81,12 +81,12 @@ public class UnionMainController {
         }
         Page<UnionMain> result = (Page<UnionMain>) page;
         result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "辅助接口：获取我的联盟列表", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/my", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<List<UnionVO>> listMy(HttpServletRequest request) throws Exception {
+    public String listMy(HttpServletRequest request) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -99,14 +99,14 @@ public class UnionMainController {
         } else {
             result = unionMainService.listUnionVOByBusId(busId);
         }
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
     @ApiOperation(value = "联盟设置-联盟基本信息-更新", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> updateUnionMainVOById(
+    public String updateUnionMainVOById(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId,
@@ -120,7 +120,7 @@ public class UnionMainController {
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionMainService.updateUnionVOByBusIdAndId(busId, unionId, unionMainVO);
         }
-        return GtJsonResult.instanceSuccessMsg();
+        return GtJsonResult.instanceSuccessMsg().toString();
     }
 
     //-------------------------------------------------- post ----------------------------------------------------------

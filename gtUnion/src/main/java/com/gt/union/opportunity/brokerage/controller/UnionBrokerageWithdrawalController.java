@@ -28,7 +28,7 @@ public class UnionBrokerageWithdrawalController {
 
     @ApiOperation(value = "获取可提现金额", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/available", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Integer> getAvailableMoney(HttpServletRequest request) throws Exception {
+    public String getAvailableMoney(HttpServletRequest request) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -36,7 +36,7 @@ public class UnionBrokerageWithdrawalController {
         }
         // mock
         Integer result = MockUtil.get(Integer.class);
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------

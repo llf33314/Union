@@ -42,7 +42,7 @@ public class UnionCardController {
 
     @ApiOperation(value = "前台-办理联盟卡-查询联盟和联盟卡", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/fanId/{fanId}/apply", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<CardApplyVO> getCardApplyVO(
+    public String getCardApplyVO(
             HttpServletRequest request,
             @ApiParam(value = "粉丝id", name = "fanId", required = true)
             @PathVariable("fanId") Integer fanId,
@@ -65,7 +65,7 @@ public class UnionCardController {
             result = unionCardService.getCardApplyVOByBusIdAndFanId(busId, fanId, unionId);
         }
 
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
@@ -74,7 +74,7 @@ public class UnionCardController {
 
     @ApiOperation(value = "前台-办理联盟卡-校验手机验证码", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/apply/phone", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<UnionCardFan> checkCardPhoneVO(
+    public String checkCardPhoneVO(
             HttpServletRequest request,
             @ApiParam(value = "表单内容", name = "cardPhoneVO", required = true)
             @RequestBody CardPhoneVO vo) throws Exception {
@@ -90,12 +90,12 @@ public class UnionCardController {
         } else {
             result = unionCardService.checkCardPhoneVO(vo);
         }
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "前台-办理联盟卡-确定", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/fanId/{fanId}/unionId/{unionId}/apply", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<UnionPayVO> saveApplyByUnionId(
+    public String saveApplyByUnionId(
             HttpServletRequest request,
             @ApiParam(value = "粉丝id", name = "fanId", required = true)
             @PathVariable("fanId") Integer fanId,
@@ -116,7 +116,7 @@ public class UnionCardController {
         } else {
             result = unionCardService.saveApplyByBusIdAndUnionIdAndFanId(busId, unionId, fanId, activityIdList);
         }
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
 }

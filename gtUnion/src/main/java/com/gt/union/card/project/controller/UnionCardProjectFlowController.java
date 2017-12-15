@@ -39,7 +39,7 @@ public class UnionCardProjectFlowController {
 
     @ApiOperation(value = "联盟卡设置-活动卡设置-分页-我的活动项目-审批记录", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/projectId/{projectId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<List<UnionCardProjectFlow>> listByProjectIdAndUnionId(
+    public String listByProjectIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "活动id", name = "activityId", required = true)
             @PathVariable("activityId") Integer activityId,
@@ -59,8 +59,7 @@ public class UnionCardProjectFlowController {
         } else {
             result = unionCardProjectFlowService.listByBusIdAndUnionIdAndActivityIdAndProjectId(busId, unionId, activityId, projectId);
         }
-        return GtJsonResult.instanceSuccessMsg(result)
-                ;
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------

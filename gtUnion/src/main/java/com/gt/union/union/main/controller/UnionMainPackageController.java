@@ -38,7 +38,7 @@ public class UnionMainPackageController {
 
     @ApiOperation(value = "创建联盟-购买盟主服务", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/option", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<UnionPackageVO> getUnionPackageVO(HttpServletRequest request) throws Exception {
+    public String getUnionPackageVO(HttpServletRequest request) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -53,7 +53,7 @@ public class UnionMainPackageController {
         } else {
             result = unionMainPackageService.getUnionPackageVOByBusId(busId);
         }
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------

@@ -50,7 +50,7 @@ public class UnionCardFanController {
 
     @ApiOperation(value = "首页-联盟卡-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Page<CardFanVO>> pageFanVOByUnionId(
+    public String pageFanVOByUnionId(
             HttpServletRequest request,
             Page page,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
@@ -73,7 +73,7 @@ public class UnionCardFanController {
         }
         Page<CardFanVO> result = (Page<CardFanVO>) page;
         result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "首页-联盟卡-导出", produces = "application/json;charset=UTF-8")
@@ -125,7 +125,7 @@ public class UnionCardFanController {
 
     @ApiOperation(value = "首页-联盟卡-分页-详情", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{fanId}/detail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<CardFanDetailVO> getFanDetailVOIdAndUnionId(
+    public String getFanDetailVOIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "联盟卡粉丝信息id", name = "fanId", required = true)
             @PathVariable("fanId") Integer fanId,
@@ -145,12 +145,12 @@ public class UnionCardFanController {
         } else {
             result = unionCardFanService.getFanDetailVOByBusIdAndIdAndUnionId(busId, fanId, unionId);
         }
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "前台-联盟卡消费核销-搜索", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/search", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<CardFanSearchVO> getSearchVO(
+    public String getSearchVO(
             HttpServletRequest request,
             @ApiParam(value = "联盟卡号或手机号", name = "numberOrPhone", required = true)
             @RequestParam(value = "numberOrPhone") String numberOrPhone,
@@ -170,7 +170,7 @@ public class UnionCardFanController {
         } else {
             result = unionCardFanService.getCardFanSearchVOByBusId(busId, numberOrPhone, unionId);
         }
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------

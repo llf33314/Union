@@ -40,7 +40,7 @@ public class UnionMemberOutController {
 
     @ApiOperation(value = "退盟管理-退盟审核-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Page<MemberOutVO>> pageOutVOByUnionId(
+    public String pageOutVOByUnionId(
             HttpServletRequest request,
             Page page,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
@@ -51,16 +51,20 @@ public class UnionMemberOutController {
             busId = busUser.getPid();
         }
         // mock
-//        List<MemberOutVO> voList = MockUtil.list(MemberOutVO.class, page.getSize());
-        List<MemberOutVO> voList = unionMemberOutService.listMemberOutVOByBusIdAndUnionId(busId, unionId);
+        List<MemberOutVO> voList;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            voList = MockUtil.list(MemberOutVO.class, page.getSize());
+        } else {
+            voList = unionMemberOutService.listMemberOutVOByBusIdAndUnionId(busId, unionId);
+        }
         Page<MemberOutVO> result = (Page<MemberOutVO>) page;
         result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "退盟管理-退盟过渡期-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/period/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Page<MemberOutPeriodVO>> pagePeriodByUnionId(
+    public String pagePeriodByUnionId(
             HttpServletRequest request,
             Page page,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
@@ -79,14 +83,14 @@ public class UnionMemberOutController {
         }
         Page<MemberOutPeriodVO> result = (Page<MemberOutPeriodVO>) page;
         result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
     @ApiOperation(value = "退盟管理-退盟审核-分页-通过或拒绝", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{outId}/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> updateStatusByIdAndUnionId(
+    public String updateStatusByIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "退盟id", name = "outId", required = true)
             @PathVariable("outId") Integer outId,
@@ -102,14 +106,14 @@ public class UnionMemberOutController {
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionMemberOutService.updateStatusByBusIdAndIdAndUnionId(busId, outId, unionId, isPass);
         }
-        return GtJsonResult.instanceSuccessMsg();
+        return GtJsonResult.instanceSuccessMsg().toString();
     }
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
     @ApiOperation(value = "退盟管理-退盟过渡期-退盟申请", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> saveByUnionId(
+    public String saveByUnionId(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId,
@@ -122,12 +126,12 @@ public class UnionMemberOutController {
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionMemberOutService.saveByBusIdAndUnionId(busId, unionId, reason);
         }
-        return GtJsonResult.instanceSuccessMsg();
+        return GtJsonResult.instanceSuccessMsg().toString();
     }
 
     @ApiOperation(value = "首页-盟员列表-分页-移出", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/applyMemberId/{applyMemberId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> saveByUnionIdAndApplyMemberId(
+    public String saveByUnionIdAndApplyMemberId(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId,
@@ -142,6 +146,6 @@ public class UnionMemberOutController {
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionMemberOutService.saveByBusIdAndUnionIdAndApplyMemberId(busId, unionId, applyMemberId);
         }
-        return GtJsonResult.instanceSuccessMsg();
+        return GtJsonResult.instanceSuccessMsg().toString();
     }
 }

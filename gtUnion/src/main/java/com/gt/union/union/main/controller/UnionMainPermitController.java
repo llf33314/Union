@@ -43,7 +43,7 @@ public class UnionMainPermitController {
 
     @ApiOperation(value = "创建联盟-购买盟主服务-支付", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/packageId/{packageId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<UnionPayVO> saveByPackageId(
+    public String saveByPackageId(
             HttpServletRequest request,
             @ApiParam(value = "套餐id", name = "packageId", required = true)
             @PathVariable("packageId") Integer packageId) throws Exception {
@@ -59,7 +59,7 @@ public class UnionMainPermitController {
         } else {
             result = unionMainPermitService.saveByBusIdAndPackageId(busId, packageId);
         }
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
 }

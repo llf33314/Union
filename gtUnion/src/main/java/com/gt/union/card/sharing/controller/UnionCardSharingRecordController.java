@@ -39,7 +39,7 @@ public class UnionCardSharingRecordController {
 
     @ApiOperation(value = "售卡佣金分成管理-售卡分成记录-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Page<CardSharingRecordVO>> pageSharingRecordVOByUnionId(
+    public String pageSharingRecordVOByUnionId(
             HttpServletRequest request,
             Page page,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
@@ -66,7 +66,7 @@ public class UnionCardSharingRecordController {
         }
         Page<CardSharingRecordVO> result = (Page<CardSharingRecordVO>) page;
         result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------

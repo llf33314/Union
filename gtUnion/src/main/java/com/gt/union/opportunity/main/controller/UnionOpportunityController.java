@@ -41,7 +41,7 @@ public class UnionOpportunityController {
 
     @ApiOperation(value = "我的商机-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/toMe/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Page<OpportunityVO>> pageToMe(
+    public String pageToMe(
             HttpServletRequest request,
             Page page,
             @ApiParam(value = "联盟id", name = "unionId")
@@ -66,12 +66,12 @@ public class UnionOpportunityController {
         }
         Page<OpportunityVO> result = (Page<OpportunityVO>) page;
         result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "我要推荐-分页", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/fromMe/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<Page<OpportunityVO>> pageFromMe(
+    public String pageFromMe(
             HttpServletRequest request,
             Page page,
             @ApiParam(value = "联盟id", name = "unionId")
@@ -96,12 +96,12 @@ public class UnionOpportunityController {
         }
         Page<OpportunityVO> result = (Page<OpportunityVO>) page;
         result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "数据统计图", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/statistics", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<OpportunityStatisticsVO> getStatisticsByUnionId(
+    public String getStatisticsByUnionId(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId) throws Exception {
@@ -131,14 +131,14 @@ public class UnionOpportunityController {
         } else {
             result = unionOpportunityService.getOpportunityStatisticsVOByBusIdAndUnionId(busId, unionId);
         }
-        return GtJsonResult.instanceSuccessMsg(result);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
     @ApiOperation(value = "我的商机-分页-接受或拒绝", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{opportunityId}/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> updateStatusByIdAndUnionId(
+    public String updateStatusByIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "商机id", name = "opportunityId", required = true)
             @PathVariable("opportunityId") Integer opportunityId,
@@ -156,14 +156,14 @@ public class UnionOpportunityController {
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionOpportunityService.updateStatusByBusIdAndIdAndUnionId(busId, opportunityId, unionId, isAccept, acceptPrice);
         }
-        return GtJsonResult.instanceSuccessMsg();
+        return GtJsonResult.instanceSuccessMsg().toString();
     }
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
     @ApiOperation(value = "我要推荐-我要推荐", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
-    public GtJsonResult<String> saveOpportunityVOByUnionId(
+    public String saveOpportunityVOByUnionId(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId,
@@ -177,7 +177,7 @@ public class UnionOpportunityController {
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionOpportunityService.saveOpportunityVOByBusIdAndUnionId(busId, unionId, opportunityVO);
         }
-        return GtJsonResult.instanceSuccessMsg();
+        return GtJsonResult.instanceSuccessMsg().toString();
     }
 
 }
