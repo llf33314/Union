@@ -152,7 +152,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         // （4）	如果unionId存在且有效，则当前联盟为对应union；否则，取第一个union
         CardApplyVO result = new CardApplyVO();
         result.setUnionList(optionUnionList);
-        UnionMain currentUnion = null;
+        UnionMain currentUnion = optionUnionList.get(0);
         if (optUnionId != null) {
             for (UnionMain optionUnion : optionUnionList) {
                 if (optUnionId.equals(optionUnion.getId())) {
