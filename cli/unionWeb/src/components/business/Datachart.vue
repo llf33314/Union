@@ -67,29 +67,32 @@ export default {
     }
   },
   mounted: function() {
-    if (this.initUnionId) {
-      // 获取联盟列表
-      $http
-        .get(`/unionMain/my`)
-        .then(res => {
-          if (res.data.data) {
-            this.options = res.data.data;
-            this.options.forEach((v, i) => {
-              v.value = v.union.id;
-              v.label = v.union.name;
-            });
-            // 给unionId 赋初始值
-            this.unionId = this.options[0].value;
-          } else {
-            this.options = [];
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
-    }
+    this.init();
   },
   methods: {
+    init() {
+      if (this.initUnionId) {
+        // 获取联盟列表
+        $http
+          .get(`/unionMain/my`)
+          .then(res => {
+            if (res.data.data) {
+              this.options = res.data.data;
+              this.options.forEach((v, i) => {
+                v.value = v.union.id;
+                v.label = v.union.name;
+              });
+              // 给unionId 赋初始值
+              this.unionId = this.options[0].value;
+            } else {
+              this.options = [];
+            }
+          })
+          .catch(err => {
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          });
+      }
+    },
     search() {
       // 获取商机统计数据
       $http
@@ -98,7 +101,42 @@ export default {
           if (res.data.data) {
             this.statisticData = res.data.data;
           } else {
-            this.statisticData = {};
+            this.statisticData = {
+              incomeSum: 0,
+              paidIncome: 0,
+              unPaidIncome: 0,
+              expenseSum: 0,
+              paidExpense: 0,
+              unPaidExpense: 0,
+              monday: {
+                paidIncome: 0,
+                paidExpense: 0
+              },
+              tuesday: {
+                paidIncome: 0,
+                paidExpense: 0
+              },
+              wednesday: {
+                paidIncome: 0,
+                paidExpense: 0
+              },
+              thursday: {
+                paidIncome: 0,
+                paidExpense: 0
+              },
+              friday: {
+                paidIncome: 0,
+                paidExpense: 0
+              },
+              saturday: {
+                paidIncome: 0,
+                paidExpense: 0
+              },
+              sunday: {
+                paidIncome: 0,
+                paidExpense: 0
+              }
+            };
           }
         })
         .then(res => {

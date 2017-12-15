@@ -167,8 +167,14 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           let url = `/unionOpportunity/unionId/${this.unionId}`;
-          let data = {};
-          data = this.ruleForm1;
+          let data = {
+            toMember: {},
+            opportunity: {},
+          };
+          data.toMember.id = this.ruleForm1.toMemberId
+          data.opportunity.clientName = this.ruleForm1.clientName
+          data.opportunity.clientPhone = this.ruleForm1.clientPhone
+          data.opportunity.businessMsg = this.ruleForm1.businessMsg
           $http
             .post(url, data)
             .then(res => {

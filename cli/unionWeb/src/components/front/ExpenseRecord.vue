@@ -131,7 +131,7 @@ export default {
     this.init();
     // 是否有新的消费核销成功
     eventBus.$on('newTransaction', () => {
-      this.init();
+      this.search();
     });
   },
   watch: {},
@@ -192,7 +192,7 @@ export default {
               });
               v.itemList = v.itemList.join(',');
               v.consume.createTime = timeFilter(v.consume.createTime);
-              expenseStatusFilter(v.consume.payStatus);
+              v.consume.payStatus = expenseStatusFilter(v.consume.payStatus);
             });
           } else {
             this.tableData = [];
@@ -203,7 +203,7 @@ export default {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
-    // 带条件搜索本店消费记录
+    // 带条件搜索消费记录
     search() {
       let beginTime, endTime;
       if (this.timeValue[0]) {
@@ -235,7 +235,7 @@ export default {
               });
               v.itemList.join(',');
               v.consume.createTime = timeFilter(v.consume.createTime);
-              expenseStatusFilter(v.consume.payStatus);
+              v.consume.payStatus = expenseStatusFilter(v.consume.payStatus);
             });
           } else {
             this.tableData = [];
@@ -277,7 +277,7 @@ export default {
               });
               v.itemList.join(',');
               v.consume.createTime = timeFilter(v.consume.createTime);
-              expenseStatusFilter(v.consume.payStatus);
+              v.consume.payStatus = expenseStatusFilter(v.consume.payStatus);
             });
           } else {
             this.tableData = [];

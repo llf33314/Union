@@ -242,7 +242,7 @@ export default {
     eventBus.$on('unionUpdata', () => {
       if (this.unionMainData.currentUnion) {
         $http
-          .get(`/index?unionId=${this.unionMainData.currentUnion.id}`)
+          .get(`/unionIndex?unionId=${this.unionMainData.currentUnion.id}`)
           .then(res => {
             if (res.data.data) {
               // todo
@@ -303,7 +303,7 @@ export default {
       if (id !== this.unionMainData.currentUnion.id) {
         this.unionMainData.currentUnion.id = id;
         $http
-          .get(`/index?unionId=${this.unionMainData.currentUnion.id}`)
+          .get(`/unionIndex?unionId=${this.unionMainData.currentUnion.id}`)
           .then(res => {
             if (res.data.data) {
               this.unionMainData = res.data.data;

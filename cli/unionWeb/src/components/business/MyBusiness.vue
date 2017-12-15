@@ -201,7 +201,7 @@ export default {
               this.tableData = res.data.data.records;
               this.totalAll = res.data.data.total;
               this.tableData.forEach((v, i) => {
-                bussinessStatusChange(v.opportunity.acceptStatus);
+                v.opportunity.acceptStatus = bussinessStatusChange(v.opportunity.acceptStatus);
               });
             } else {
               this.tableData = [];
@@ -222,7 +222,7 @@ export default {
             this.tableData = res.data.data.records;
             this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
-              bussinessStatusChange(v.opportunity.acceptStatus);
+              v.opportunity.acceptStatus = bussinessStatusChange(v.opportunity.acceptStatus);
             });
           } else {
             this.tableData = [];
@@ -241,7 +241,7 @@ export default {
           if (res.data.data) {
             this.tableData = res.data.data.records;
             this.tableData.forEach((v, i) => {
-              bussinessStatusChange(v.opportunity.acceptStatus);
+              v.opportunity.acceptStatus = bussinessStatusChange(v.opportunity.acceptStatus);
             });
           }
         })

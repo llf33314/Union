@@ -46,7 +46,7 @@ export function timeFilter(value) {
   return date;
 }
 
-// 商机状态，数字转换为文字
+// 商机状态
 export function bussinessStatusChange(value) {
   switch (value) {
     case 1:
@@ -60,6 +60,7 @@ export function bussinessStatusChange(value) {
     default:
       value = value;
   }
+  return value;
 }
 
 // 佣金结算，交易类型
@@ -74,6 +75,7 @@ export function commissionTypeFilter(value) {
     default:
       value = value;
   }
+  return value;
 }
 
 // 佣金结算，结算状态
@@ -88,6 +90,7 @@ export function commissionIsCloseFilter(value) {
     default:
       value = value;
   }
+  return value;
 }
 
 // 消费核销，支付状态
@@ -105,4 +108,5 @@ export function expenseStatusFilter(value) {
     default:
       value = value;
   }
+  return value;
 }

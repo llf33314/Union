@@ -97,7 +97,7 @@ export default {
     this.init();
     // 监听是否有新的推荐
     eventBus.$on('newBusinessRecommend', () => {
-      this.init();
+      this.search();
     });
   },
   methods: {
@@ -128,7 +128,7 @@ export default {
               this.tableData = res.data.data.records;
               this.totalAll = res.data.data.total;
               this.tableData.forEach((v, i) => {
-                bussinessStatusChange(v.opportunity.acceptStatus);
+               v.opportunity.acceptStatus = bussinessStatusChange(v.opportunity.acceptStatus);
               });
             } else {
               this.tableData = [];
@@ -149,7 +149,7 @@ export default {
             this.tableData = res.data.data.records;
             this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
-              bussinessStatusChange(v.opportunity.acceptStatus);
+             v.opportunity.acceptStatus = bussinessStatusChange(v.opportunity.acceptStatus);
             });
           } else {
             this.tableData = [];
@@ -169,7 +169,7 @@ export default {
             this.tableData = res.data.data.records;
             this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
-              bussinessStatusChange(v.opportunity.acceptStatus);
+             v.opportunity.acceptStatus = bussinessStatusChange(v.opportunity.acceptStatus);
             });
           } else {
             this.tableData = [];

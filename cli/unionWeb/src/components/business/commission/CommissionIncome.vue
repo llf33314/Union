@@ -171,8 +171,8 @@ export default {
               this.totalAll = res.data.data.total;
               this.tableData.forEach((v, i) => {
                 v.opportunity.createTime = timeFilter(v.opportunity.createTime);
-                commissionTypeFilter(v.opportunity.acceptStatus);
-                commissionIsCloseFilter(v.isClose);
+                v.opportunity.acceptStatus = commissionTypeFilter(v.opportunity.acceptStatus);
+                v.isClose = commissionIsCloseFilter(v.isClose);
               });
             } else {
               this.tableData = [];
@@ -199,8 +199,8 @@ export default {
               this.totalAll = res.data.data.total;
               this.tableData.forEach((v, i) => {
                 v.opportunity.createTime = timeFilter(v.opportunity.createTime);
-                commissionTypeFilter(v.opportunity.acceptStatus);
-                commissionIsCloseFilter(v.isClose);
+                v.opportunity.acceptStatus = commissionTypeFilter(v.opportunity.acceptStatus);
+                v.isClose = commissionIsCloseFilter(v.isClose);
               });
             } else {
               this.tableData = [];
@@ -226,8 +226,8 @@ export default {
             this.tableData = res.data.data.records;
             this.tableData.forEach((v, i) => {
               v.opportunity.createTime = timeFilter(v.opportunity.createTime);
-              commissionTypeFilter(v.opportunity.acceptStatus);
-              commissionIsCloseFilter(v.isClose);
+              v.opportunity.acceptStatus = commissionTypeFilter(v.opportunity.acceptStatus);
+              v.isClose = commissionIsCloseFilter(v.isClose);
             });
           } else {
             this.tableData = [];
