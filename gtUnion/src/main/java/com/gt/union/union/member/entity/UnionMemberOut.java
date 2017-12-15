@@ -169,6 +169,6 @@ public class UnionMemberOut extends Model<UnionMemberOut> {
 
     @Override
     public String toString() {
-        return JSON.toJSONString(this, SerializerFeature.WriteMapNullValue, SerializerFeature.PrettyFormat);
+        return JSON.toJSONString(this, SerializerFeature.WriteMapNullValue, SerializerFeature.PrettyFormat, SerializerFeature.DisableCircularReferenceDetect);
     }
 }

@@ -154,6 +154,6 @@ public class UnionCardProject extends Model<UnionCardProject> {
 
     @Override
     public String toString() {
-        return JSON.toJSONString(this, SerializerFeature.WriteMapNullValue, SerializerFeature.PrettyFormat);
+        return JSON.toJSONString(this, SerializerFeature.WriteMapNullValue, SerializerFeature.PrettyFormat, SerializerFeature.DisableCircularReferenceDetect);
     }
 }

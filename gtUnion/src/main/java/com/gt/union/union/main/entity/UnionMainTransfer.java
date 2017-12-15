@@ -138,6 +138,6 @@ public class UnionMainTransfer extends Model<UnionMainTransfer> {
 
     @Override
     public String toString() {
-        return JSON.toJSONString(this, SerializerFeature.WriteMapNullValue, SerializerFeature.PrettyFormat);
+        return JSON.toJSONString(this, SerializerFeature.WriteMapNullValue, SerializerFeature.PrettyFormat, SerializerFeature.DisableCircularReferenceDetect);
     }
 }
