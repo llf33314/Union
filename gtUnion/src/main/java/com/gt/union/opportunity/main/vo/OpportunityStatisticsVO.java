@@ -21,12 +21,6 @@ public class OpportunityStatisticsVO {
     @ApiModelProperty(value = "总收入")
     private Double incomeSum;
 
-    @ApiModelProperty(value = "未支付佣金收入百分比")
-    private Double unPaidIncomePercent;
-
-    @ApiModelProperty(value = "已支付佣金收入百分比")
-    private Double paidIncomePercent;
-
     @ApiModelProperty(value = "未支付佣金支出")
     private Double unPaidExpense;
 
@@ -35,12 +29,6 @@ public class OpportunityStatisticsVO {
 
     @ApiModelProperty(value = "总支出")
     private Double expenseSum;
-
-    @ApiModelProperty(value = "未支付佣金支出百分比")
-    private Double unPaidExpensePercent;
-
-    @ApiModelProperty(value = "已支付佣金支出百分比")
-    private Double paidExpensePercent;
 
     @ApiModelProperty(value = "星期一收支对象")
     private OpportunityStatisticsDay monday;
@@ -87,22 +75,6 @@ public class OpportunityStatisticsVO {
         this.incomeSum = incomeSum;
     }
 
-    public Double getUnPaidIncomePercent() {
-        return unPaidIncomePercent;
-    }
-
-    public void setUnPaidIncomePercent(Double unPaidIncomePercent) {
-        this.unPaidIncomePercent = unPaidIncomePercent;
-    }
-
-    public Double getPaidIncomePercent() {
-        return paidIncomePercent;
-    }
-
-    public void setPaidIncomePercent(Double paidIncomePercent) {
-        this.paidIncomePercent = paidIncomePercent;
-    }
-
     public Double getUnPaidExpense() {
         return unPaidExpense;
     }
@@ -125,22 +97,6 @@ public class OpportunityStatisticsVO {
 
     public void setExpenseSum(Double expenseSum) {
         this.expenseSum = expenseSum;
-    }
-
-    public Double getUnPaidExpensePercent() {
-        return unPaidExpensePercent;
-    }
-
-    public void setUnPaidExpensePercent(Double unPaidExpensePercent) {
-        this.unPaidExpensePercent = unPaidExpensePercent;
-    }
-
-    public Double getPaidExpensePercent() {
-        return paidExpensePercent;
-    }
-
-    public void setPaidExpensePercent(Double paidExpensePercent) {
-        this.paidExpensePercent = paidExpensePercent;
     }
 
     public OpportunityStatisticsDay getMonday() {

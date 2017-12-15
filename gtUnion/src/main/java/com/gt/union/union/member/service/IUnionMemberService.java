@@ -280,16 +280,6 @@ public interface IUnionMemberService extends IService<UnionMember> {
     //***************************************** Domain Driven Design - filter ******************************************
 
     /**
-     * 根据id进行过滤
-     *
-     * @param memberList 数据源
-     * @param memberId   盟员id
-     * @return List<UnionMember>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionMember> filterById(List<UnionMember> memberList, Integer memberId) throws Exception;
-
-    /**
      * 根据是否盟主字段进行过滤
      *
      * @param memberList   数据源

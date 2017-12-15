@@ -31,4 +31,14 @@ public interface OpportunityConstant {
      * 是否已结算：是
      */
     int IS_CLOSE_YES = 1;
+
+    /**
+     * 推荐类型：线下
+     */
+    int TYPE_OFFLINE = 1;
+
+    /**
+     * 推荐类型：线上
+     */
+    int TYPE_ONLINE = 2;
 }

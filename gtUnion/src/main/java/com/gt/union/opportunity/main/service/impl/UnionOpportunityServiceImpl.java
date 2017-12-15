@@ -103,8 +103,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         result.setUnPaidIncome(unPaidIncome.doubleValue());
 
         BigDecimal incomeSum = BigDecimalUtil.add(paidIncome, unPaidIncome);
-        result.setPaidIncomePercent(BigDecimalUtil.divide(paidIncome, incomeSum, 4).doubleValue());
-        result.setUnPaidIncomePercent(BigDecimalUtil.divide(unPaidIncome, incomeSum, 4).doubleValue());
+        result.setIncomeSum(incomeSum.doubleValue());
         // （3）	获取已接受的我给的商机，区分是否已支付
         List<UnionOpportunity> expenseOpportunityList = listByUnionIdAndToMemberIdAndAcceptStatus(unionId, member.getId(), OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
         List<UnionOpportunity> paidExpenseOpportunityList = filterByIsClose(expenseOpportunityList, OpportunityConstant.IS_CLOSE_YES);
@@ -126,15 +125,15 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         result.setUnPaidExpense(unPaidExpense.doubleValue());
 
         BigDecimal expenseSum = BigDecimalUtil.add(paidExpense, unPaidExpense);
-        result.setPaidExpensePercent(BigDecimalUtil.divide(unPaidExpense, expenseSum, 4).doubleValue());
-        result.setUnPaidExpensePercent(BigDecimalUtil.divide(unPaidExpense, expenseSum, 4).doubleValue());
+        result.setExpenseSum(expenseSum.doubleValue());
         // （4）	获取一周内商机收支信息
         Date indexDay = DateUtil.getMondayInWeek();
+        String strIndexDay = DateUtil.getDateString(indexDay, DateUtil.DATE_PATTERN);
         for (int i = 0; i < 7; i++) {
             OpportunityStatisticsDay dayStatistic = new OpportunityStatisticsDay();
             String strDay = DateUtil.getDateString(indexDay, DateUtil.DATE_PATTERN);
-            Date beginDate = DateUtil.parseDate(indexDay + " 00:00:00", DateUtil.DATETIME_PATTERN);
-            Date endDate = DateUtil.parseDate(indexDay + " 23:59:59", DateUtil.DATETIME_PATTERN);
+            Date beginDate = DateUtil.parseDate(strIndexDay + " 00:00:00", DateUtil.DATETIME_PATTERN);
+            Date endDate = DateUtil.parseDate(strIndexDay + " 23:59:59", DateUtil.DATETIME_PATTERN);
             List<UnionOpportunity> dayIncomeOpportunityList = filterBetweenTime(paidIncomeOpportunityList, beginDate, endDate);
             BigDecimal dayIncome = BigDecimal.ZERO;
             if (ListUtil.isNotEmpty(dayIncomeOpportunityList)) {
@@ -177,6 +176,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                     break;
             }
             indexDay = DateUtil.addDays(indexDay, 1);
+            strIndexDay = DateUtil.getDateString(indexDay, DateUtil.DATE_PATTERN);
         }
 
         return result;
@@ -344,7 +344,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
 
         List<UnionOpportunity> result = new ArrayList<>();
         for (Integer fromMemberId : fromMemberIdList) {
-            result.addAll(listByToMemberId(fromMemberId));
+            result.addAll(listByFromMemberId(fromMemberId));
         }
 
         return result;
@@ -432,6 +432,9 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         saveOpportunity.setCreateTime(DateUtil.getCurrentDate());
         saveOpportunity.setAcceptStatus(OpportunityConstant.ACCEPT_STATUS_CONFIRMING);
         saveOpportunity.setIsClose(OpportunityConstant.IS_CLOSE_NO);
+        saveOpportunity.setFromMemberId(member.getId());
+        saveOpportunity.setType(OpportunityConstant.TYPE_OFFLINE);
+        saveOpportunity.setUnionId(unionId);
 
         Integer toMemberId = vo.getToMember() != null ? vo.getToMember().getId() : null;
         if (toMemberId == null) {
