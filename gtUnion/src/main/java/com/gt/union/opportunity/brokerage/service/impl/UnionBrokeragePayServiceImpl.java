@@ -286,7 +286,7 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
                 if (member == null) {
                     throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
                 }
-                UnionMember toMember = unionMemberService.getWriteByBusIdAndUnionId(opportunity.getToMemberId(), opportunity.getUnionId());
+                UnionMember toMember = unionMemberService.getWriteByIdAndUnionId(opportunity.getToMemberId(), opportunity.getUnionId());
                 if (toMember == null || !toMember.getId().equals(member.getId())) {
                     throw new BusinessException("找不到商机接受者信息或信息不匹配");
                 }

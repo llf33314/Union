@@ -21,7 +21,7 @@ public class BigDecimalUtil {
     public static BigDecimal add(BigDecimal b1, BigDecimal b2) {
         b1 = b1 == null ? BigDecimal.valueOf(0.0) : b1;
         b2 = b2 == null ? BigDecimal.valueOf(0.0) : b2;
-        return b1.add(b2).setScale(SCALE, BigDecimal.ROUND_CEILING);
+        return b1.add(b2).setScale(SCALE, BigDecimal.ROUND_HALF_UP);
     }
 
     public static BigDecimal add(BigDecimal b1, Double d1) {
@@ -49,7 +49,7 @@ public class BigDecimalUtil {
     public static BigDecimal add(BigDecimal b1, BigDecimal b2, Integer scale) {
         b1 = b1 == null ? BigDecimal.valueOf(0.0) : b1;
         b2 = b2 == null ? BigDecimal.valueOf(0.0) : b2;
-        return b1.add(b2).setScale(scale != null ? scale : SCALE, BigDecimal.ROUND_CEILING);
+        return b1.add(b2).setScale(scale != null ? scale : SCALE, BigDecimal.ROUND_HALF_UP);
     }
 
     public static BigDecimal add(BigDecimal b1, Double d1, Integer scale) {
@@ -76,7 +76,7 @@ public class BigDecimalUtil {
     public static BigDecimal subtract(BigDecimal b1, BigDecimal b2) {
         b1 = b1 == null ? BigDecimal.valueOf(0.0) : b1;
         b2 = b2 == null ? BigDecimal.valueOf(0.0) : b2;
-        return b1.subtract(b2).setScale(SCALE, BigDecimal.ROUND_CEILING);
+        return b1.subtract(b2).setScale(SCALE, BigDecimal.ROUND_HALF_UP);
     }
 
     public static BigDecimal subtract(BigDecimal b1, Double d1) {
@@ -105,7 +105,7 @@ public class BigDecimalUtil {
     public static BigDecimal subtract(BigDecimal b1, BigDecimal b2, Integer scale) {
         b1 = b1 == null ? BigDecimal.valueOf(0.0) : b1;
         b2 = b2 == null ? BigDecimal.valueOf(0.0) : b2;
-        return b1.subtract(b2).setScale(scale != null ? scale : SCALE, BigDecimal.ROUND_CEILING);
+        return b1.subtract(b2).setScale(scale != null ? scale : SCALE, BigDecimal.ROUND_HALF_UP);
     }
 
     public static BigDecimal subtract(BigDecimal b1, Double d1, Integer scale) {
@@ -133,7 +133,7 @@ public class BigDecimalUtil {
     public static BigDecimal multiply(BigDecimal b1, BigDecimal b2) {
         b1 = b1 == null ? BigDecimal.valueOf(0.0) : b1;
         b2 = b2 == null ? BigDecimal.valueOf(0.0) : b2;
-        return b1.multiply(b2).setScale(SCALE, BigDecimal.ROUND_CEILING);
+        return b1.multiply(b2).setScale(SCALE, BigDecimal.ROUND_HALF_UP);
     }
 
     public static BigDecimal multiply(BigDecimal b1, Double d1) {
@@ -161,7 +161,7 @@ public class BigDecimalUtil {
     public static BigDecimal multiply(BigDecimal b1, BigDecimal b2, Integer scale) {
         b1 = b1 == null ? BigDecimal.valueOf(0.0) : b1;
         b2 = b2 == null ? BigDecimal.valueOf(0.0) : b2;
-        return b1.multiply(b2).setScale(scale != null ? scale : SCALE, BigDecimal.ROUND_CEILING);
+        return b1.multiply(b2).setScale(scale != null ? scale : SCALE, BigDecimal.ROUND_HALF_UP);
     }
 
     public static BigDecimal multiply(BigDecimal b1, Double d1, Integer scale) {
@@ -186,7 +186,7 @@ public class BigDecimalUtil {
      * @return BigDecimal
      */
     public static BigDecimal divide(BigDecimal b1, BigDecimal b2) {
-        return b1.divide(b2, SCALE, BigDecimal.ROUND_CEILING);
+        return b1.divide(b2, SCALE, BigDecimal.ROUND_HALF_UP);
     }
 
     public static BigDecimal divide(BigDecimal b1, Double d1) {
@@ -213,7 +213,7 @@ public class BigDecimalUtil {
      * @return BigDecimal
      */
     public static BigDecimal divide(BigDecimal b1, BigDecimal b2, Integer scale) {
-        return b1.divide(b2, scale != null ? scale : SCALE, BigDecimal.ROUND_CEILING);
+        return b1.divide(b2, scale != null ? scale : SCALE, BigDecimal.ROUND_HALF_UP);
     }
 
     public static BigDecimal divide(BigDecimal b1, Double d1, Integer scale) {
@@ -230,4 +230,5 @@ public class BigDecimalUtil {
         BigDecimal b1 = d1 == null ? BigDecimal.valueOf(0.0) : BigDecimal.valueOf(d1);
         return divide(b1, d2, scale);
     }
+
 }
