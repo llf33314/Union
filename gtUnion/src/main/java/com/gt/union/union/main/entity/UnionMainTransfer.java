@@ -1,5 +1,7 @@
 package com.gt.union.union.main.entity;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.baomidou.mybatisplus.activerecord.Model;
 import com.baomidou.mybatisplus.annotations.TableField;
 import com.baomidou.mybatisplus.annotations.TableId;
@@ -72,7 +74,7 @@ public class UnionMainTransfer extends Model<UnionMainTransfer> {
     @ApiModelProperty(value = "确认状态(1:确认中 2:已确认 3:已拒绝)")
     @TableField("confirm_status")
     private Integer confirmStatus;
-    
+
     public Integer getId() {
         return id;
     }
@@ -132,5 +134,10 @@ public class UnionMainTransfer extends Model<UnionMainTransfer> {
     @Override
     protected Serializable pkVal() {
         return this.id;
+    }
+
+    @Override
+    public String toString() {
+        return JSON.toJSONString(this, SerializerFeature.WriteMapNullValue, SerializerFeature.PrettyFormat);
     }
 }
