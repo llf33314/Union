@@ -137,7 +137,7 @@ export default {
   created: function() {
     // 首页查询我的联盟信息
     $http
-      .get(`/index`)
+      .get(`/unionIndex`)
       .then(res => {
         if (res.data.data) {
           setTimeout(() => {

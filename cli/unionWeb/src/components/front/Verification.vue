@@ -63,34 +63,34 @@
         <!-- 优惠项目 -->
         <transition name="slide-fade">
           <div v-show="isProjectAvailable_" class="preferenceItems">
-        <div style="margin-top: 10px;">
-          <span>活动卡名称：</span>
-          <el-select v-model="activityId" placeholder="请选择" @change="activityCardChange" style="width: 180px">
-            <el-option v-for="item in activityCards" :key="item.activity.id" :label="item.activity.name" :value="item">
-            </el-option>
-          </el-select>
-          <span style="margin-left: 15px;">有效时间： {{ activityCardValidity }} </span>
-        </div>
-        <div class="section_ clearfix">
-          <div style="float: left">
-            <el-table ref="multipleTable" :data="tableData" style="width:382px;overflow-y: auto" height="442" @selection-change="handleSelectionChange">
-              <el-table-column type="selection" width="50">
-              </el-table-column>
-              <el-table-column prop="name.name" label="项目名称">
-              </el-table-column>
-              <el-table-column prop="availableCount" label="可用数量">
-              </el-table-column>
-            </el-table>
-          </div>
-          <div class="rightContent" style="width: 295px;">
-            <p>已选择：{{ activitySelected.length }}</p>
-            <div v-for="(item, index) in activitySelected" :key="item.item.id">
-              <span> {{ item.item.name }} </span>
-              <el-button type="text" @click="cancelActivity(index)">取消</el-button>
+            <div style="margin-top: 10px;">
+              <span>活动卡名称：</span>
+              <el-select v-model="activityId" placeholder="请选择" @change="activityCardChange" style="width: 180px">
+                <el-option v-for="item in activityCards" :key="item.activity.id" :label="item.activity.name" :value="item">
+                </el-option>
+              </el-select>
+              <span style="margin-left: 15px;">有效时间： {{ activityCardValidity }} </span>
+            </div>
+            <div class="section_ clearfix">
+              <div style="float: left">
+                <el-table ref="multipleTable" :data="tableData" style="width:382px;overflow-y: auto" height="442" @selection-change="handleSelectionChange">
+                  <el-table-column type="selection" width="50">
+                  </el-table-column>
+                  <el-table-column prop="name.name" label="项目名称">
+                  </el-table-column>
+                  <el-table-column prop="availableCount" label="可用数量">
+                  </el-table-column>
+                </el-table>
+              </div>
+              <div class="rightContent" style="width: 295px;">
+                <p>已选择：{{ activitySelected.length }}</p>
+                <div v-for="(item, index) in activitySelected" :key="item.item.id">
+                  <span> {{ item.item.name }} </span>
+                  <el-button type="text" @click="cancelActivity(index)">取消</el-button>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
         </transition>
       </div>
       <p class="footer_">
@@ -140,9 +140,9 @@
               </span>
             </el-form-item>
             <el-form-item label="优惠项目：">
-                <span v-for="(item, index) in activitySelected" :key="item.item.id">
-                  {{ index + 1 }} 、 {{ item.item.name }};
-                </span>
+              <span v-for="(item, index) in activitySelected" :key="item.item.id">
+                {{ index + 1 }} 、 {{ item.item.name }};
+              </span>
             </el-form-item>
           </el-form>
           <div class="payWay">
@@ -206,7 +206,7 @@ export default {
   name: 'verification',
   data() {
     return {
-      num1:1,
+      num1: 1,
       input: '',
       imgSrc: '',
       visible1: true,
@@ -389,9 +389,9 @@ export default {
       if (isProjectAvailable_) {
         // 获取活动卡名称列表
         $('.UnionCardInformation form').css({
-          transition: "all .3s ease",
-          transform: "translate(-420px)"
-        })
+          transition: 'all .3s ease',
+          transform: 'translate(-420px)'
+        });
         $http
           .get(`/unionCardActivity/unionId/${this.form.unionId}/consume?fanId=${this.form.fan.id}`)
           .then(res => {
@@ -404,12 +404,11 @@ export default {
           .catch(err => {
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
-      }
-      else{
+      } else {
         $('.UnionCardInformation form').css({
-          transition: "all .3s .2s cubic-bezier(1.0, 0.5, 0.8, 1.0)",
-          transform: "translate(0px)",
-        })
+          transition: 'all .3s .2s cubic-bezier(1.0, 0.5, 0.8, 1.0)',
+          transform: 'translate(0px)'
+        });
       }
     },
     // 活动卡切换
@@ -530,18 +529,20 @@ export default {
             }
             this.socket.on('chatevent', function(data) {
               let msg = eval('(' + data.message + ')');
-              if (_this.socketFlag.socketKey == msg.socketKey) {
-                if (msg.status == '003') {
-                  _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
-                  _this.dialogVisible = false;
-                } else if (msg.status == '004') {
-                  _this.$message({ showClose: true, message: '请求超时', type: 'warning', duration: 5000 });
-                } else if (msg.status == '005') {
-                  _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
+              // 避免 socket 重复调用
+              if (!(_this.socketFlag.socketKey == msg.socketKey && _this.socketFlag.status == msg.status)) {
+                if (_this.socketKey == msg.socketKey) {
+                  if (msg.status == '1') {
+                    _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
+                    _this.socketFlag.socketKey = msg.socketKey;
+                    _this.socketFlag.status = msg.status;
+                    _this.visible1 = false;
+                    _this.$router.push({ path: '/my-union' });
+                  } else if (msg.status == '0') {
+                    _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
+                  }
                 }
               }
-              _this.socketFlag.socketKey = msg.socketKey;
-              _this.socketFlag.status = msg.status;
             });
           })
           .catch(err => {
@@ -611,7 +612,6 @@ export default {
   padding: 0 34.7%;
 }
 
-
 .code_ {
   padding: 30px;
   .model_ {
@@ -638,13 +638,13 @@ export default {
 }
 
 .slide-fade-enter-active {
-  transition: all .3s ease;
+  transition: all 0.3s ease;
 }
 .slide-fade-leave-active {
-  transition: all .3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+  transition: all 0.3s cubic-bezier(1, 0.5, 0.8, 1);
 }
-.slide-fade-enter, .slide-fade-leave-to
-  /* .slide-fade-leave-active for below version 2.1.8 */ {
+.slide-fade-enter,
+.slide-fade-leave-to {
   transform: translateX(50px);
   opacity: 0;
 }

@@ -20,7 +20,7 @@
           <span class="tubiao">!</span>
         </el-tooltip>
       </el-form-item>
-      <el-form-item label="积分折扣率：" prop="integralExchangeRatio">
+      <el-form-item label="积分折扣率：" :prop="this.isIntegral && 'integralExchangeRatio'" v-if="this.isIntegral">
         <el-input v-model="form.integralExchangeRatio" placeholder="积分折扣率不可超过30%"></el-input>
         <span class="percent">%</span>
       </el-form-item>
@@ -113,7 +113,8 @@ export default {
         integralExchangeRatio: [{ validator: integralExchangeRatioPass, trigger: 'blur' }],
         region: [{ type: 'array', required: true, message: '地区内容不能为空，请重新输入', trigger: 'change' }],
         enterpriseAddress: [{ required: true, message: '我的地址内容不能为空，请重新输入', trigger: 'change' }]
-      }
+      },
+      isIntegral: ''
     };
   },
   computed: {
@@ -122,29 +123,37 @@ export default {
     }
   },
   mounted: function() {
-    $http
-      .get(`/unionMember/unionId/${this.unionId}/busUser`)
-      .then(res => {
-        if (res.data.data) {
-          // 处理无地址内容时刚进页面触发校验chang
-          if (!res.data.data.enterpriseAddress) {
-            res.data.data.enterpriseAddress = '';
-          }
-          this.form = res.data.data;
-          if (this.form.addressProvinceCode) {
-            this.form.region = [
-              this.form.addressProvinceCode,
-              this.form.addressCityCode,
-              this.form.addressDistrictCode
-            ];
-          }
-        }
-      })
-      .catch(err => {
-        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-      });
+    this.init();
+    eventBus.$on('unionSettingTabChange', () => {
+      this.init();
+    });
   },
   methods: {
+    init() {
+      $http
+        .get(`/unionMember/unionId/${this.unionId}/busUser`)
+        .then(res => {
+          if (res.data.data) {
+            // 处理无地址内容时刚进页面触发校验chang
+            if (!res.data.data.enterpriseAddress) {
+              res.data.data.enterpriseAddress = '';
+            }
+            this.form = res.data.data.member;
+            this.isIntegral = res.data.data.union.isIntegral;
+            this.form.integralExchangeRatio = this.form.integralExchangeRatio * 100 || 0;
+            if (this.form.addressProvinceCode) {
+              this.form.region = [
+                this.form.addressProvinceCode,
+                this.form.addressCityCode,
+                this.form.addressDistrictCode
+              ];
+            }
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    },
     regionChange(v) {
       this.form.addressProvinceCode = v[0].split(',')[1] || '';
       this.form.addressCityCode = v[1].split(',')[1] || '';
@@ -173,7 +182,7 @@ export default {
           data.directorName = this.form.directorName;
           data.directorPhone = this.form.directorPhone;
           data.directorEmail = this.form.directorEmail;
-          data.integralExchangeRatio = this.form.integralExchangeRatio - 0;
+          data.integralExchangeRatio = this.form.integralExchangeRatio / 100;
           data.notifyPhone = this.form.notifyPhone;
           $http
             .put(url, data)
@@ -207,7 +216,6 @@ export default {
   top: 1px;
   left: 250px;
 }
-
 
 /*地图的样式*/
 

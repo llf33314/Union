@@ -2,7 +2,7 @@
   <div>
     <Breadcrumb :header-name="['联盟设置']"></Breadcrumb>
     <div class="container tabs" id="UnionSetting">
-      <el-tabs v-model="activeName" type="card" >
+      <el-tabs v-model="activeName" type="card" @tab-click="unionSettingTabChange">
         <el-tab-pane label="基础设置" name="first">
           <union-setting-basic></union-setting-basic>
         </el-tab-pane>
@@ -47,7 +47,11 @@ export default {
       }
     }
   },
-  methods: {}
+  methods: {
+    unionSettingTabChange() {
+      eventBus.$emit('unionSettingTabChange');
+    }
+  }
 };
 </script>
 

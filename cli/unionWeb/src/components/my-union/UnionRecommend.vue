@@ -96,12 +96,10 @@ export default {
   mounted: function() {
     // 获取必填字段
     $http
-      .get(`/unionMain/my/page`)
+      .get(`/unionMain/${this.unionId}`)
       .then(res => {
-        if (res.data.data.records) {
-          let checkList_ = res.data.data.records.filter(item => {
-            return (item.union.id = this.unionId);
-          });
+        if (res.data.data) {
+          let checkList_ = res.data.data.itemList;
           checkList_.forEach((v, i) => {
             if (this.checkList.indexOf(v.itemKey) === -1) {
               this.checkList.push(v.itemKey);

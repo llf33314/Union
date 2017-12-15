@@ -72,6 +72,7 @@
             <p>享受折扣： {{ discount }} </p>
           </div>
           <div v-for="item in form2.activityList" :key="item.id" v-show="form2.activityCheckList.indexOf(item.id) > -1">
+            <p> {{ item.name }} </p>
             <p>服务项目：
               <span @click="showDetail(item.id)"> {{ item.itemCount }} 个</span>
             </p>
@@ -434,21 +435,20 @@ export default {
                     }
                     this.socket2.on('chatevent', function(data) {
                       let msg = eval('(' + data.message + ')');
-                      if (!(_this.socketFlag2.only == msg.only && _this.socketFlag2.status == msg.status)) {
-                        if (_this.only == msg.only) {
-                          if (msg.status == '003') {
+                      // 避免 socket 重复调用
+                      if (!(_this.socketFlag.socketKey == msg.socketKey && _this.socketFlag.status == msg.status)) {
+                        if (_this.socketKey == msg.socketKey) {
+                          if (msg.status == '1') {
                             _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
-                            _this.visible3 = false;
-                            _this.init();
-                          } else if (msg.status == '004') {
-                            _this.$message({ showClose: true, message: '请求超时', type: 'warning', duration: 5000 });
-                          } else if (msg.status == '005') {
+                            _this.socketFlag.socketKey = msg.socketKey;
+                            _this.socketFlag.status = msg.status;
+                            _this.visible1 = false;
+                            _this.$router.push({ path: '/my-union' });
+                          } else if (msg.status == '0') {
                             _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
                           }
                         }
                       }
-                      _this.socketFlag2.only = msg.only;
-                      _this.socketFlag2.status = msg.status;
                     });
                   })
                   .catch(err => {

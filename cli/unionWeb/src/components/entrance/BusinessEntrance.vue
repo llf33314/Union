@@ -11,7 +11,7 @@ export default {
     this.$store.commit('unionIdChange', '');
     // 首页查询我的联盟信息
     $http
-      .get(`/index`)
+      .get(`/unionIndex`)
       .then(res => {
         if (res.data.data) {
           // 判断是否创建或加入联盟
