@@ -40,7 +40,7 @@ public class UnionIndexController {
     //-------------------------------------------------- get -----------------------------------------------------------
 
     @ApiOperation(value = "首页", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/index", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionIndex", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public GtJsonResult<IndexVO> getIndexVO(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId")
