@@ -140,11 +140,12 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         }
         // （4）	获取一周内商机收支信息
         Date indexDay = DateUtil.getMondayInWeek();
+        String strIndexDay = DateUtil.getDateString(indexDay, DateUtil.DATE_PATTERN);
         for (int i = 0; i < 7; i++) {
             OpportunityStatisticsDay dayStatistic = new OpportunityStatisticsDay();
             String strDay = DateUtil.getDateString(indexDay, DateUtil.DATE_PATTERN);
-            Date beginDate = DateUtil.parseDate(indexDay + " 00:00:00", DateUtil.DATETIME_PATTERN);
-            Date endDate = DateUtil.parseDate(indexDay + " 23:59:59", DateUtil.DATETIME_PATTERN);
+            Date beginDate = DateUtil.parseDate(strIndexDay + " 00:00:00", DateUtil.DATETIME_PATTERN);
+            Date endDate = DateUtil.parseDate(strIndexDay + " 23:59:59", DateUtil.DATETIME_PATTERN);
             List<UnionOpportunity> dayIncomeOpportunityList = filterBetweenTime(paidIncomeOpportunityList, beginDate, endDate);
             BigDecimal dayIncome = BigDecimal.ZERO;
             if (ListUtil.isNotEmpty(dayIncomeOpportunityList)) {
@@ -187,6 +188,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                     break;
             }
             indexDay = DateUtil.addDays(indexDay, 1);
+            strIndexDay = DateUtil.getDateString(indexDay, DateUtil.DATE_PATTERN);
         }
 
         return result;
