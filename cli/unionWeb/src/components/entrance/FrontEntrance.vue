@@ -8,7 +8,7 @@ export default {
   name: 'front-entrance',
   created: function() {
     // 首页查询我的联盟信息
-    $http.get(`/index`)
+    $http.get(`/unionIndex`)
       .then(res => {
         if (res.data.data) {
           // 判断是否创建或加入联盟

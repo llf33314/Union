@@ -17,7 +17,10 @@
           </el-table-column>
           <el-table-column prop="memberOut.type" label="申请状态">
           </el-table-column>
-          <el-table-column prop="periodDay" label="退盟期限" width="150">
+          <el-table-column label="退盟期限" width="150">
+            <template slot-scope="scope">
+              {{ scope.row.periodDay }} 天
+            </template>
           </el-table-column>
         </el-table>
         <div class="footer">
@@ -28,23 +31,23 @@
       <!-- 弹出框 退盟申请 -->
       <div class="RefundAu">
         <el-dialog title="退盟申请" :visible.sync="visible1" size="tiny" @close="resetData">
-        <hr>
-        <div class="main">
-          <el-form ref="form" :model="form" :rules="rules" label-width="80px">
-            <el-form-item label="退盟理由:" prop="outReason">
-              <el-input type="textarea" v-model="form.outReason" :rows="3" placeholder="请输入退盟理由">
-              </el-input>
-            </el-form-item>
-          </el-form>
-          <p>
-            申请推出联盟，盟主同意后有15天过渡期，是否确定？
-          </p>
-        </div>
-        <span slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="outConfirm('form')">确 定</el-button>
-          <el-button @click="visible1=false">取 消</el-button>
-        </span>
-      </el-dialog>
+          <hr>
+          <div class="main">
+            <el-form ref="form" :model="form" :rules="rules" label-width="80px">
+              <el-form-item label="退盟理由:" prop="outReason">
+                <el-input type="textarea" v-model="form.outReason" :rows="3" placeholder="请输入退盟理由">
+                </el-input>
+              </el-form-item>
+            </el-form>
+            <p>
+              申请推出联盟，盟主同意后有15天过渡期，是否确定？
+            </p>
+          </div>
+          <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="outConfirm('form')">确 定</el-button>
+            <el-button @click="visible1=false">取 消</el-button>
+          </span>
+        </el-dialog>
       </div>
       <!--弹出框 退盟说明 -->
       <div class="tuimeng">
@@ -75,6 +78,7 @@
 
 <script>
 import $http from '@/utils/http.js';
+import { timeFilter } from '@/utils/filter.js';
 export default {
   name: 'union-quit-transition',
   data() {
@@ -108,6 +112,10 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
+            this.tableData.forEach((v, i) => {
+              v.memberOut.confirmOutTime = timeFilter(v.memberOut.confirmOutTime);
+              v.memberOut.type === 1 ? (v.memberOut.type = '盟员申请退盟') : (v.memberOut.type = '盟主移出');
+            });
             this.totalAll = res.data.data.total;
           } else {
             this.tableData = [];
@@ -125,6 +133,10 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
+            this.tableData.forEach((v, i) => {
+              v.memberOut.confirmOutTime = timeFilter(v.memberOut.confirmOutTime);
+              v.memberOut.type === 1 ? (v.memberOut.type = '盟员申请退盟') : (v.memberOut.type = '盟主移出');
+            });
           }
         })
         .catch(err => {

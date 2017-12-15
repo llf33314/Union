@@ -52,7 +52,7 @@
             </li>
           </ul>
           <div class="btn1">
-            <el-button type="primary" @click="create">购买</el-button>
+            <el-button type="primary" @click="create">创建</el-button>
             <el-button @click="back">返回</el-button>
           </div>
         </div>

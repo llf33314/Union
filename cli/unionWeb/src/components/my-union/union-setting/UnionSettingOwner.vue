@@ -90,31 +90,37 @@ export default {
       }
       _this.materialVisible = false;
     });
-    // 获取联盟基本信息
-    $http
-      .get(`/unionMain/${this.unionId}`)
-      .then(res => {
-        if (res.data.data) {
-          this.form.name = res.data.data.union.name;
-          this.form.joinType = res.data.data.union.joinType;
-          this.form.isIntegral = Boolean(res.data.data.union.isIntegral);
-          this.isIntegral_ = Boolean(res.data.data.union.isIntegral);
-          this.form.illustration = res.data.data.union.illustration;
-          this.form.img = res.data.data.union.img;
-          if (res.data.data.itemList) {
-            res.data.data.itemList.forEach((v, i) => {
-              if (this.checkList.indexOf(v.itemKey) === -1) {
-                this.checkList.push(v.itemKey);
-              }
-            });
-          }
-        }
-      })
-      .catch(err => {
-        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-      });
+    this.init();
+    eventBus.$on('unionSettingTabChange', () => {
+      this.init();
+    });
   },
   methods: {
+    init() {
+      // 获取联盟基本信息
+      $http
+        .get(`/unionMain/${this.unionId}`)
+        .then(res => {
+          if (res.data.data) {
+            this.form.name = res.data.data.union.name;
+            this.form.joinType = res.data.data.union.joinType;
+            this.form.isIntegral = Boolean(res.data.data.union.isIntegral);
+            this.isIntegral_ = Boolean(res.data.data.union.isIntegral);
+            this.form.illustration = res.data.data.union.illustration;
+            this.form.img = res.data.data.union.img;
+            if (res.data.data.itemList) {
+              res.data.data.itemList.forEach((v, i) => {
+                if (this.checkList.indexOf(v.itemKey) === -1) {
+                  this.checkList.push(v.itemKey);
+                }
+              });
+            }
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    },
     // 调用素材库
     materiallayer() {
       this.materialVisible = true;
@@ -134,7 +140,7 @@ export default {
           data.union.name = this.form.name;
           data.itemList = [];
           this.checkList.forEach((v, i) => {
-            data.itemList.push({ itemKey: v });
+            data.itemList.push({ itemKey: v, unionId: this.unionId });
           });
           $http
             .put(url, data)

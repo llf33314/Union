@@ -139,6 +139,9 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
+            this.tableData.forEach((v, i) => {
+              v.createTime = timeFilter(v.createTime);
+            });
             this.totalAll = res.data.data.total;
           } else {
             this.tableData = [];
@@ -156,6 +159,9 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
+            this.tableData.forEach((v, i) => {
+              v.createTime = timeFilter(v.createTime);
+            });
             this.totalAll = res.data.data.total;
           }
         })
@@ -171,6 +177,9 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records;
+            this.tableData.forEach((v, i) => {
+              v.createTime = timeFilter(v.createTime);
+            });
             this.totalAll = res.data.data.total;
           }
         })
@@ -185,7 +194,7 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.form = res.data.data;
-            this.form.createTime = timeFilter(this.form.createtime);
+            this.form.createTime = timeFilter(this.form.createTime);
             this.dialogVisible0 = true;
           }
         })
@@ -203,7 +212,7 @@ export default {
     confirm() {
       this.visible = false;
       $http
-        .put(`/union/unionMemberOut/unionId/${this.unionId}/applyMemberId/${this.memberId}`)
+        .post(`/unionMemberOut/unionId/${this.unionId}/applyMemberId/${this.memberId}`)
         .then(res => {
           this.$message({ showClose: true, message: '移出成功，该盟员将在15天过渡期后正式退盟', type: 'success', duration: 5000 });
           this.search();

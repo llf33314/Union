@@ -12,11 +12,11 @@
             <div class="el_btn">
               <el-button class="fl" v-if="unionMainData.myCreateUnion.img" @click="changUnion(unionMainData.myCreateUnion.id)">
                 <el-tooltip :content="unionMainData.myCreateUnionName" placement="bottom">
-                  <img v-bind:src="unionMainData.myCreateUnionImg" alt="" class="fl unionImg">
+                  <img v-bind:src="unionMainData.myCreateUnion.img" alt="" class="fl unionImg">
                 </el-tooltip>
               </el-button>
             </div>
-            <create v-if="!unionMainData.myCreateUnionId && unionListLength < 3"></create>
+            <create v-if="!unionMainData.myCreateUnion.id && unionListLength < 3"></create>
           </el-col>
           <el-col :xs="8" :sm="8" :md="8" :lg="8">
             <div class="grid-content bg-purple notice-list">我加入的联盟</div>
@@ -102,7 +102,7 @@
             </router-link>
           </div>
         </el-col>
-        <el-col :xs="8" :sm="8" :md="8" :lg="8" v-if="unionMainData.unionTransfer.id">
+        <el-col :xs="8" :sm="8" :md="8" :lg="8" v-if="unionMainData.unionTransfer">
           <div class="grid-content bg-purple nav-list">
             <a @click="transfer" style="cursor: pointer">
               <el-button type="primary" size="mini">
@@ -134,7 +134,7 @@
         <ul class="gt_union">
           <li style="width:50%">
             <div class="clearfix" id="gt_lm">
-              <img :src="unionMainData.currentUnionImg" class="fl unionImg">
+              <img :src="unionMainData.currentUnion.img" class="fl unionImg">
               <ul class="fl">
                 <li>
                   <span>联盟名称 :</span> {{ unionMainData.currentUnion.name }}</li>
@@ -237,16 +237,15 @@ export default {
       return this.$store.state.unionId;
     }
   },
-  created: function() {
-    this.init();
-  },
   mounted: function() {
+    this.init();
     eventBus.$on('unionUpdata', () => {
-      if (this.unionMainData.currentUnion.id) {
+      if (this.unionMainData.currentUnion) {
         $http
           .get(`/index?unionId=${this.unionMainData.currentUnion.id}`)
           .then(res => {
             if (res.data.data) {
+              // todo
               // 更新联盟基础信息
               // 处理当前页面数据展示格式
             }
@@ -264,7 +263,7 @@ export default {
       this.$store.commit('isUnionOwnerChange', '');
       // 首页查询我的联盟信息
       $http
-        .get(`/index`)
+        .get(`/unionIndex`)
         .then(res => {
           if (res.data.data) {
             setTimeout(() => {
@@ -275,7 +274,7 @@ export default {
                 this.$router.push({ path: '/my-union/no-currentUnion' });
               } else {
                 // 判断创建和加入联盟的数量
-                this.unionMainData.myCreateUnionId ? (this.unionListLength = 1) : (this.unionListLength = 0);
+                this.unionMainData.myCreateUnion.id ? (this.unionListLength = 1) : (this.unionListLength = 0);
                 if (this.unionMainData.myJoinUnionList) {
                   this.unionListLength += this.unionMainData.myJoinUnionList.length;
                 }
