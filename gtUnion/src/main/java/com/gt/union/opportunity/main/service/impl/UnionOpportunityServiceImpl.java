@@ -103,8 +103,13 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         result.setUnPaidIncome(unPaidIncome.doubleValue());
 
         BigDecimal incomeSum = BigDecimalUtil.add(paidIncome, unPaidIncome);
-        result.setPaidIncomePercent(BigDecimalUtil.divide(paidIncome, incomeSum, 4).doubleValue());
-        result.setUnPaidIncomePercent(BigDecimalUtil.divide(unPaidIncome, incomeSum, 4).doubleValue());
+        if (incomeSum.doubleValue() == 0.0) {
+            result.setPaidIncomePercent(0.0);
+            result.setUnPaidIncomePercent(0.0);
+        } else {
+            result.setPaidIncomePercent(BigDecimalUtil.divide(paidIncome, incomeSum, 4).doubleValue());
+            result.setUnPaidIncomePercent(BigDecimalUtil.divide(unPaidIncome, incomeSum, 4).doubleValue());
+        }
         // （3）	获取已接受的我给的商机，区分是否已支付
         List<UnionOpportunity> expenseOpportunityList = listByUnionIdAndToMemberIdAndAcceptStatus(unionId, member.getId(), OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
         List<UnionOpportunity> paidExpenseOpportunityList = filterByIsClose(expenseOpportunityList, OpportunityConstant.IS_CLOSE_YES);
@@ -126,8 +131,13 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         result.setUnPaidExpense(unPaidExpense.doubleValue());
 
         BigDecimal expenseSum = BigDecimalUtil.add(paidExpense, unPaidExpense);
-        result.setPaidExpensePercent(BigDecimalUtil.divide(unPaidExpense, expenseSum, 4).doubleValue());
-        result.setUnPaidExpensePercent(BigDecimalUtil.divide(unPaidExpense, expenseSum, 4).doubleValue());
+        if (expenseSum.doubleValue() == 0.0) {
+            result.setPaidExpensePercent(0.0);
+            result.setUnPaidExpensePercent(0.0);
+        } else {
+            result.setPaidExpensePercent(BigDecimalUtil.divide(unPaidExpense, expenseSum, 4).doubleValue());
+            result.setUnPaidExpensePercent(BigDecimalUtil.divide(unPaidExpense, expenseSum, 4).doubleValue());
+        }
         // （4）	获取一周内商机收支信息
         Date indexDay = DateUtil.getMondayInWeek();
         for (int i = 0; i < 7; i++) {
