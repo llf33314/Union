@@ -26,15 +26,6 @@ public class DateUtil {
     }
 
     /**
-     * 获取字符形式的当前时间
-     *
-     * @return String
-     */
-    public static String getCurrentDateString() {
-        return getDateString(getCurrentDate(), DATETIME_PATTERN);
-    }
-
-    /**
      * 获取指定格式、字符形式的当期时间
      *
      * @param pattern String
@@ -57,17 +48,6 @@ public class DateUtil {
     }
 
     /**
-     * 将字符形式时间解析为日期形式
-     *
-     * @param date String
-     * @return Date
-     * @throws ParseException 转换异常
-     */
-    public static Date parseDate(String date) throws ParseException {
-        return parseDate(date, DATETIME_PATTERN);
-    }
-
-    /**
      * 将字符形式时间按指定格式解析为日期形式
      *
      * @param date    String
@@ -78,64 +58,6 @@ public class DateUtil {
     public static Date parseDate(String date, String pattern) throws ParseException {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat(pattern);
         return simpleDateFormat.parse(date);
-    }
-
-    /**
-     * 获取指定时间的星期几形式，中文
-     *
-     * @param date Date
-     * @return String
-     */
-    public static String getChDayInWeek(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        switch (calendar.get(Calendar.DAY_OF_WEEK)) {
-            case 1:
-                return "星期天";
-            case 2:
-                return "星期一";
-            case 3:
-                return "星期二";
-            case 4:
-                return "星期三";
-            case 5:
-                return "星期四";
-            case 6:
-                return "星期五";
-            case 7:
-                return "星期六";
-            default:
-                return "";
-        }
-    }
-
-    /**
-     * 获取指定时间的星期几形式，英文
-     *
-     * @param date Date
-     * @return String
-     */
-    public static String getEnDayInWeek(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        switch (calendar.get(Calendar.DAY_OF_WEEK)) {
-            case 1:
-                return "Sunday";
-            case 2:
-                return "Monday";
-            case 3:
-                return "Tuesday";
-            case 4:
-                return "Wednesday";
-            case 5:
-                return "Thursday";
-            case 6:
-                return "Friday";
-            case 7:
-                return "Saturday";
-            default:
-                return "";
-        }
     }
 
     /**
@@ -241,5 +163,5 @@ public class DateUtil {
         int offset = (Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 2 + 7) % 7;
         return DateUtil.addDays(DateUtil.getCurrentDate(), 0 - offset);
     }
-
+    
 }

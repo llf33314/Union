@@ -61,9 +61,9 @@ public class UnionConsumeController {
             @ApiParam(value = "手机号", name = "phone")
             @RequestParam(value = "phone", required = false) String phone,
             @ApiParam(value = "开始时间", name = "beginTime")
-            @RequestParam(value = "beginTime", required = false) Date beginTime,
+            @RequestParam(value = "beginTime", required = false) Long beginTime,
             @ApiParam(value = "结束时间", name = "endTime")
-            @RequestParam(value = "endTime", required = false) Date endTime) throws Exception {
+            @RequestParam(value = "endTime", required = false) Long endTime) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -84,7 +84,9 @@ public class UnionConsumeController {
                 voList.get(i).setErpGoodsList(erpGoodsList);
             }
         } else {
-            voList = unionConsumeService.listConsumeRecordVOByBusId(busId, unionId, shopId, cardNumber, phone, beginTime, endTime);
+            Date begin = beginTime != null ? (new Date(beginTime)) : null;
+            Date end = endTime != null ? (new Date(endTime)) : null;
+            voList = unionConsumeService.listConsumeRecordVOByBusId(busId, unionId, shopId, cardNumber, phone, begin, end);
         }
         Page<ConsumeRecordVO> result = (Page<ConsumeRecordVO>) page;
         result = PageUtil.setRecord(result, voList);
