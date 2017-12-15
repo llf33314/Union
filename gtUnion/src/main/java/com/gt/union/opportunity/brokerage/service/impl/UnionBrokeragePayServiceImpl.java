@@ -311,6 +311,8 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
                 savePay.setFromBusId(fromMember.getBusId());
                 savePay.setToBusId(toMember.getBusId());
                 savePay.setOrderNo(orderNo);
+                savePay.setOpportunityId(opportunityId);
+                savePay.setMoney(opportunity.getBrokerageMoney());
                 savePayList.add(savePay);
             }
         }
