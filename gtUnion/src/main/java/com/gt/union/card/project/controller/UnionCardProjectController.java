@@ -99,11 +99,9 @@ public class UnionCardProjectController {
     }
 
     @ApiOperation(value = "联盟卡设置-活动卡设置-分页-我的活动项目-ERP和非ERP", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{projectId}/activityId/{activityId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getProjectVOByIdAndUnionId(
             HttpServletRequest request,
-            @ApiParam(value = "活动项目id", name = "projectId", required = true)
-            @PathVariable("projectId") Integer projectId,
             @ApiParam(value = "活动id", name = "activityId", required = true)
             @PathVariable("activityId") Integer activityId,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
@@ -124,7 +122,7 @@ public class UnionCardProjectController {
             List<UnionCardProjectItem> erpGoodsList = MockUtil.list(UnionCardProjectItem.class, 10);
             result.setErpGoodsList(erpGoodsList);
         } else {
-            result = unionCardProjectService.getProjectVOByBusIdAndIdAndUnionIdAndActivityId(busId, projectId, unionId, activityId);
+            result = unionCardProjectService.getProjectVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
         }
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }

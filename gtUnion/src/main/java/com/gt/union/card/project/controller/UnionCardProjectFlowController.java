@@ -38,13 +38,11 @@ public class UnionCardProjectFlowController {
     //-------------------------------------------------- get -----------------------------------------------------------
 
     @ApiOperation(value = "联盟卡设置-活动卡设置-分页-我的活动项目-审批记录", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/activityId/{activityId}/projectId/{projectId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listByProjectIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "活动id", name = "activityId", required = true)
             @PathVariable("activityId") Integer activityId,
-            @ApiParam(value = "项目id", name = "projectId", required = true)
-            @PathVariable("projectId") Integer projectId,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
@@ -57,7 +55,7 @@ public class UnionCardProjectFlowController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             result = MockUtil.list(UnionCardProjectFlow.class, 20);
         } else {
-            result = unionCardProjectFlowService.listByBusIdAndUnionIdAndActivityIdAndProjectId(busId, unionId, activityId, projectId);
+            result = unionCardProjectFlowService.listByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
         }
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }

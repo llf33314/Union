@@ -93,8 +93,8 @@ public class UnionCardProjectServiceImpl extends ServiceImpl<UnionCardProjectMap
     }
 
     @Override
-    public CardProjectVO getProjectVOByBusIdAndIdAndUnionIdAndActivityId(Integer busId, Integer projectId, Integer unionId, Integer activityId) throws Exception {
-        if (projectId == null || activityId == null || unionId == null || busId == null) {
+    public CardProjectVO getProjectVOByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception {
+        if (activityId == null || unionId == null || busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	判断union有效性和member读权限
@@ -110,10 +110,11 @@ public class UnionCardProjectServiceImpl extends ServiceImpl<UnionCardProjectMap
         if (activity == null) {
             throw new BusinessException("找不到活动信息");
         }
-        UnionCardProject project = getByIdAndUnionIdAndActivityId(projectId, unionId, activityId);
+        UnionCardProject project = getByUnionIdAndMemberIdAndActivityId(unionId, member.getId(), activityId);
         if (project == null) {
             throw new BusinessException("找不到活动项目信息");
         }
+        Integer projectId = project.getId();
         // （3）	获取是否erp信息（调接口）
         CardProjectVO result = new CardProjectVO();
         result.setMember(member);

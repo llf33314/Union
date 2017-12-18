@@ -44,13 +44,12 @@ public interface IUnionCardProjectService extends IService<UnionCardProject> {
      * 联盟卡设置-活动卡设置-分页-我的活动项目-ERP和非ERP
      *
      * @param busId      商家id
-     * @param projectId  项目id
      * @param unionId    联盟id
      * @param activityId 活动id
      * @return CardProjectVO
      * @throws Exception 统一处理异常
      */
-    CardProjectVO getProjectVOByBusIdAndIdAndUnionIdAndActivityId(Integer busId, Integer projectId, Integer unionId, Integer activityId) throws Exception;
+    CardProjectVO getProjectVOByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception;
 
     //***************************************** Domain Driven Design - list ********************************************
 

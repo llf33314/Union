@@ -31,11 +31,10 @@ public interface IUnionCardProjectFlowService extends IService<UnionCardProjectF
      * @param busId      商家id
      * @param unionId    联盟id
      * @param activityId 活动id
-     * @param projectId  项目id
      * @return List<UnionCardProjectFlow>
      * @throws Exception 统一处理异常
      */
-    List<UnionCardProjectFlow> listByBusIdAndUnionIdAndActivityIdAndProjectId(Integer busId, Integer unionId, Integer activityId, Integer projectId) throws Exception;
+    List<UnionCardProjectFlow> listByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception;
 
     //***************************************** Domain Driven Design - save ********************************************
 
