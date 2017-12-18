@@ -59,7 +59,7 @@ public class H5BrokerageController {
     }
 
     @ApiOperation(value = "佣金平台-首页", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "index", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/index", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getIndexVO(HttpServletRequest request) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
         // mock

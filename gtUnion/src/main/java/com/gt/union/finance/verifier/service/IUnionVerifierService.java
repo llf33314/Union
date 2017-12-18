@@ -2,7 +2,6 @@ package com.gt.union.finance.verifier.service;
 
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.finance.verifier.entity.UnionVerifier;
-import com.gt.union.finance.verifier.vo.VerifierVO;
 
 import java.util.List;
 
@@ -14,15 +13,6 @@ import java.util.List;
  */
 public interface IUnionVerifierService extends IService<UnionVerifier> {
     //***************************************** Domain Driven Design - get *********************************************
-
-    /**
-     * 列表：获取平台管理者
-     *
-     * @param busId 商家id
-     * @return VerifierVO
-     * @throws Exception 统一处理异常
-     */
-    VerifierVO getVerifierVOByBusId(Integer busId) throws Exception;
 
     /**
      * 获取平台人员信息
@@ -43,6 +33,15 @@ public interface IUnionVerifierService extends IService<UnionVerifier> {
      * @throws Exception 统一处理异常
      */
     List<UnionVerifier> list() throws Exception;
+
+    /**
+     * 列表：获取平台管理者
+     *
+     * @param busId 商家id
+     * @return VerifierVO
+     * @throws Exception 统一处理异常
+     */
+    List<UnionVerifier> listFinanceByBusId(Integer busId) throws Exception;
 
     //***************************************** Domain Driven Design - save ********************************************
 

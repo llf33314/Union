@@ -1,5 +1,6 @@
 package com.gt.union.finance.verifier.controller;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
@@ -8,9 +9,11 @@ import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
+import com.gt.union.common.util.PageUtil;
+import com.gt.union.common.util.PropertiesUtil;
+import com.gt.union.common.util.QRcodeKit;
 import com.gt.union.finance.verifier.entity.UnionVerifier;
 import com.gt.union.finance.verifier.service.IUnionVerifierService;
-import com.gt.union.finance.verifier.vo.VerifierVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -18,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 /**
@@ -35,23 +39,32 @@ public class UnionVerifierController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "列表：获取平台管理者", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getVerifierVO(HttpServletRequest request) throws Exception {
+    @ApiOperation(value = "佣金平台-提现", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/h5Code", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public void h5Code(HttpServletResponse response) throws Exception {
+        String url = PropertiesUtil.getUnionUrl() + "/h5Brokerage/#/" + "toLogin";
+        Integer width = 250;
+        Integer height = 250;
+        QRcodeKit.buildQRcode(url, width, height, response);
+    }
+
+    @ApiOperation(value = "分页：获取平台管理者", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String pageVerifier(HttpServletRequest request, Page page) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
         // mock
-        VerifierVO result;
+        List<UnionVerifier> verifierList;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            result = MockUtil.get(VerifierVO.class);
-            List<UnionVerifier> verifierList = MockUtil.list(UnionVerifier.class, 20);
-            result.setVerifierList(verifierList);
+            verifierList = MockUtil.list(UnionVerifier.class, page.getSize());
         } else {
-            result = unionVerifierService.getVerifierVOByBusId(busId);
+            verifierList = unionVerifierService.listFinanceByBusId(busId);
         }
+        Page<UnionVerifier> result = (Page<UnionVerifier>) page;
+        result = PageUtil.setRecord(result, verifierList);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 

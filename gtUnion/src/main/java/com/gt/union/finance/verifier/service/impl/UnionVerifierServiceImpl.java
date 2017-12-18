@@ -21,15 +21,12 @@ import com.gt.union.finance.verifier.entity.UnionVerifier;
 import com.gt.union.finance.verifier.mapper.UnionVerifierMapper;
 import com.gt.union.finance.verifier.service.IUnionVerifierService;
 import com.gt.union.finance.verifier.util.UnionVerifierCacheUtil;
-import com.gt.union.finance.verifier.vo.VerifierVO;
 import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -58,37 +55,6 @@ public class UnionVerifierServiceImpl extends ServiceImpl<UnionVerifierMapper, U
     //***************************************** Domain Driven Design - get *********************************************
 
     @Override
-    public VerifierVO getVerifierVOByBusId(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        BusUser busUser = busUserService.getBusUserById(busId);
-        if (busUser == null) {
-            throw new BusinessException("找不到商家信息");
-        }
-
-        VerifierVO result = new VerifierVO();
-        UnionVerifier adminVerifier = new UnionVerifier();
-        adminVerifier.setEmployeeName("管理员");
-        adminVerifier.setPhone(busUser.getPhone());
-        result.setAdminVerifier(adminVerifier);
-
-        List<UnionVerifier> verifierList = listByBusId(busId);
-        if (ListUtil.isNotEmpty(verifierList)) {
-            Collections.sort(verifierList, new Comparator<UnionVerifier>() {
-                @Override
-                public int compare(UnionVerifier o1, UnionVerifier o2) {
-                    return o1.getId().compareTo(o2.getId());
-                }
-            });
-        }
-        result.setVerifierList(verifierList);
-
-        return result;
-    }
-
-    @Override
     public UnionVerifier getByBusIdAndId(Integer busId, Integer verifierId) throws Exception {
         if (busId == null || verifierId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -107,6 +73,28 @@ public class UnionVerifierServiceImpl extends ServiceImpl<UnionVerifierMapper, U
         entityWrapper.eq("del_status", CommonConstant.COMMON_NO);
 
         return selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionVerifier> listFinanceByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        BusUser busUser = busUserService.getBusUserById(busId);
+        if (busUser == null) {
+            throw new BusinessException("找不到商家信息");
+        }
+
+        List<UnionVerifier> result = new ArrayList<>();
+        UnionVerifier adminVerifier = new UnionVerifier();
+        adminVerifier.setEmployeeName("管理员");
+        adminVerifier.setPhone(busUser.getPhone());
+        result.add(adminVerifier);
+
+        result.addAll(listByBusId(busId));
+
+        return result;
     }
 
     //***************************************** Domain Driven Design - save ********************************************
