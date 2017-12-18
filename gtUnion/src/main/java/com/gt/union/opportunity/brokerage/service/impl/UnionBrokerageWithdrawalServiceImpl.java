@@ -5,16 +5,19 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.ParamException;
+import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.opportunity.brokerage.entity.UnionBrokerageWithdrawal;
 import com.gt.union.opportunity.brokerage.mapper.UnionBrokerageWithdrawalMapper;
+import com.gt.union.opportunity.brokerage.service.IUnionBrokerageIncomeService;
 import com.gt.union.opportunity.brokerage.service.IUnionBrokerageWithdrawalService;
 import com.gt.union.opportunity.brokerage.util.UnionBrokerageWithdrawalCacheUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,7 +32,23 @@ public class UnionBrokerageWithdrawalServiceImpl extends ServiceImpl<UnionBroker
     @Autowired
     private RedisCacheUtil redisCacheUtil;
 
+    @Autowired
+    private IUnionBrokerageIncomeService unionBrokerageIncomeService;
+
     //***************************************** Domain Driven Design - get *********************************************
+
+    @Override
+    public Double getAvailableMoneyByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）收入
+        Double incomeSum = unionBrokerageIncomeService.sumMoneyByBusId(busId);
+        // （2）已提现
+        Double withdrawalSum = sumMoneyByBusId(busId);
+
+        return BigDecimalUtil.subtract(incomeSum, withdrawalSum).doubleValue();
+    }
 
     //***************************************** Domain Driven Design - list ********************************************
 
@@ -40,6 +59,23 @@ public class UnionBrokerageWithdrawalServiceImpl extends ServiceImpl<UnionBroker
     //***************************************** Domain Driven Design - update ******************************************
 
     //***************************************** Domain Driven Design - count *******************************************
+
+    @Override
+    public Double sumMoneyByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        BigDecimal result = BigDecimal.ZERO;
+        List<UnionBrokerageWithdrawal> withdrawalList = listByBusId(busId);
+        if (ListUtil.isNotEmpty(withdrawalList)) {
+            for (UnionBrokerageWithdrawal withdrawal : withdrawalList) {
+                result = BigDecimalUtil.add(result, withdrawal.getMoney());
+            }
+        }
+
+        return result.doubleValue();
+    }
 
     //***************************************** Domain Driven Design - boolean *****************************************
 
@@ -68,6 +104,7 @@ public class UnionBrokerageWithdrawalServiceImpl extends ServiceImpl<UnionBroker
 
     //***************************************** Object As a Service - list *********************************************
 
+    @Override
     public List<UnionBrokerageWithdrawal> listByBusId(Integer busId) throws Exception {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -112,6 +149,7 @@ public class UnionBrokerageWithdrawalServiceImpl extends ServiceImpl<UnionBroker
 
     //***************************************** Object As a Service - save *********************************************
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void save(UnionBrokerageWithdrawal newUnionBrokerageWithdrawal) throws Exception {
         if (newUnionBrokerageWithdrawal == null) {
@@ -306,4 +344,5 @@ public class UnionBrokerageWithdrawalServiceImpl extends ServiceImpl<UnionBroker
         }
         return result;
     }
+
 }

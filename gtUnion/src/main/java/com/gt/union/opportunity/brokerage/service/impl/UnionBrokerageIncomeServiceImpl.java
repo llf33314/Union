@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.ParamException;
+import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.StringUtil;
@@ -17,15 +18,13 @@ import com.gt.union.opportunity.main.constant.OpportunityConstant;
 import com.gt.union.opportunity.main.entity.UnionOpportunity;
 import com.gt.union.opportunity.main.service.IUnionOpportunityService;
 import com.gt.union.union.main.service.IUnionMainService;
-import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -88,6 +87,42 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
         return unionOpportunityService.listBrokerageOpportunityVO(opportunityList);
     }
 
+    @Override
+    public List<UnionBrokerageIncome> listByBusIdAndType(Integer busId, Integer type) throws Exception {
+        if (busId == null || type == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionBrokerageIncome> result = listByBusId(busId);
+        result = filterByType(result, type);
+
+        return result;
+    }
+
+    @Override
+    public List<UnionBrokerageIncome> listByBusIdAndTypeAndMemberIdList(Integer busId, Integer type, List<Integer> memberIdList) throws Exception {
+        if (busId == null || type == null || memberIdList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionBrokerageIncome> result = listByBusIdAndType(busId, type);
+        result = filterByMemberIdList(result, memberIdList);
+
+        return result;
+    }
+
+    @Override
+    public List<UnionBrokerageIncome> listByBusIdAndUnionIdAndType(Integer busId, Integer unionId, Integer type) throws Exception {
+        if (busId == null || unionId == null || type == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionBrokerageIncome> result = listByBusIdAndType(busId, type);
+        result = filterByUnionId(result, unionId);
+
+        return result;
+    }
+
 
     //***************************************** Domain Driven Design - save ********************************************
 
@@ -96,6 +131,74 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
     //***************************************** Domain Driven Design - update ******************************************
 
     //***************************************** Domain Driven Design - count *******************************************
+
+    @Override
+    public Double sumMoneyByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        BigDecimal result = BigDecimal.ZERO;
+        List<UnionBrokerageIncome> incomeList = listByBusId(busId);
+        if (ListUtil.isNotEmpty(incomeList)) {
+            for (UnionBrokerageIncome income : incomeList) {
+                result = BigDecimalUtil.add(result, income.getMoney());
+            }
+        }
+
+        return result.doubleValue();
+    }
+
+    @Override
+    public Double sumMoneyByBusIdAndType(Integer busId, Integer type) throws Exception {
+        if (busId == null || type == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        BigDecimal result = BigDecimal.ZERO;
+        List<UnionBrokerageIncome> incomeList = listByBusIdAndType(busId, type);
+        if (ListUtil.isNotEmpty(incomeList)) {
+            for (UnionBrokerageIncome income : incomeList) {
+                result = BigDecimalUtil.add(result, income.getMoney());
+            }
+        }
+
+        return result.doubleValue();
+    }
+
+    @Override
+    public Double sumMoneyByBusIdAndTypeAndMemberIdList(Integer busId, Integer type, List<Integer> memberIdList) throws Exception {
+        if (busId == null || type == null || memberIdList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        BigDecimal result = BigDecimal.ZERO;
+        List<UnionBrokerageIncome> incomeList = listByBusIdAndTypeAndMemberIdList(busId, type, memberIdList);
+        if (ListUtil.isNotEmpty(incomeList)) {
+            for (UnionBrokerageIncome income : incomeList) {
+                result = BigDecimalUtil.add(result, income.getMoney());
+            }
+        }
+
+        return result.doubleValue();
+    }
+
+    @Override
+    public Double sumMoneyByBusIdAndUnionIdAndType(Integer busId, Integer unionId, Integer type) throws Exception {
+        if (busId == null || unionId == null || type == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        BigDecimal result = BigDecimal.ZERO;
+        List<UnionBrokerageIncome> incomeList = listByBusIdAndUnionIdAndType(busId, unionId, type);
+        if (ListUtil.isNotEmpty(incomeList)) {
+            for (UnionBrokerageIncome income : incomeList) {
+                result = BigDecimalUtil.add(result, income.getMoney());
+            }
+        }
+
+        return result.doubleValue();
+    }
 
     //***************************************** Domain Driven Design - boolean *****************************************
 
@@ -138,6 +241,42 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
         if (ListUtil.isNotEmpty(incomeList)) {
             for (UnionBrokerageIncome income : incomeList) {
                 if (opportunityId.equals(income.getOpportunityId())) {
+                    result.add(income);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionBrokerageIncome> filterByType(List<UnionBrokerageIncome> incomeList, Integer type) throws Exception {
+        if (incomeList == null || type == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionBrokerageIncome> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(incomeList)) {
+            for (UnionBrokerageIncome income : incomeList) {
+                if (type.equals(income.getType())) {
+                    result.add(income);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionBrokerageIncome> filterByMemberIdList(List<UnionBrokerageIncome> incomeList, List<Integer> memberIdList) throws Exception {
+        if (incomeList == null || memberIdList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionBrokerageIncome> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(memberIdList)) {
+            for (UnionBrokerageIncome income : incomeList) {
+                if (memberIdList.contains(income.getMemberId())) {
                     result.add(income);
                 }
             }

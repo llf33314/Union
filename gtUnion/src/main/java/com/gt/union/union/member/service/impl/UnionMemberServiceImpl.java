@@ -197,6 +197,22 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     //***************************************** Domain Driven Design - list ********************************************
 
     @Override
+    public List<Integer> getIdList(List<UnionMember> memberList) throws Exception {
+        if (memberList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<Integer> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(memberList)) {
+            for (UnionMember member : memberList) {
+                result.add(member.getId());
+            }
+        }
+
+        return result;
+    }
+
+    @Override
     public List<UnionMember> listReadByBusId(Integer busId) throws Exception {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);

@@ -114,6 +114,15 @@ public interface IUnionMemberService extends IService<UnionMember> {
      */
     UnionMember getById(Integer memberId) throws Exception;
 
+    /**
+     * 获取盟员id列表
+     *
+     * @param memberList 盟员列表
+     * @return List<Integer>
+     * @throws Exception 统一处理异常
+     */
+    List<Integer> getIdList(List<UnionMember> memberList) throws Exception;
+
     //***************************************** Domain Driven Design - list ********************************************
 
     /**

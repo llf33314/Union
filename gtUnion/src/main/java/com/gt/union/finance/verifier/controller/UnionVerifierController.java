@@ -3,12 +3,18 @@ package com.gt.union.finance.verifier.controller;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
+import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
 import com.gt.union.finance.verifier.entity.UnionVerifier;
+import com.gt.union.finance.verifier.service.IUnionVerifierService;
+import com.gt.union.finance.verifier.vo.VerifierVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -24,19 +30,28 @@ import java.util.List;
 @RestController
 @RequestMapping("/unionVerifier")
 public class UnionVerifierController {
+    @Autowired
+    private IUnionVerifierService unionVerifierService;
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
     @ApiOperation(value = "列表：获取平台管理者", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String list(HttpServletRequest request) throws Exception {
+    public String getVerifierVO(HttpServletRequest request) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
         // mock
-        List<UnionVerifier> result = MockUtil.list(UnionVerifier.class, 20);
+        VerifierVO result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.get(VerifierVO.class);
+            List<UnionVerifier> verifierList = MockUtil.list(UnionVerifier.class, 20);
+            result.setVerifierList(verifierList);
+        } else {
+            result = unionVerifierService.getVerifierVOByBusId(busId);
+        }
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -56,7 +71,10 @@ public class UnionVerifierController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
+        }
+        if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
+            unionVerifierService.saveByBusId(busId, code, verifier);
         }
         return GtJsonResult.instanceSuccessMsg().toString();
     }
@@ -72,7 +90,10 @@ public class UnionVerifierController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
+            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
+        }
+        if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
+            unionVerifierService.removeByBusIdAndId(busId, verifierId);
         }
         return GtJsonResult.instanceSuccessMsg().toString();
     }

@@ -182,6 +182,22 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         return result;
     }
 
+    @Override
+    public List<Integer> getIdList(List<UnionOpportunity> opportunityList) throws Exception {
+        if (opportunityList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<Integer> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(opportunityList)) {
+            for (UnionOpportunity opportunity : opportunityList) {
+                result.add(opportunity.getId());
+            }
+        }
+
+        return result;
+    }
+
     //***************************************** Domain Driven Design - list ********************************************
 
     @Override
@@ -364,6 +380,18 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
     }
 
     @Override
+    public List<UnionOpportunity> listByUnionIdAndToMemberIdAndAcceptStatusAndIsClose(Integer unionId, Integer toMemberId, Integer acceptStatus, Integer isClose) throws Exception {
+        if (unionId == null || toMemberId == null || acceptStatus == null || isClose == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionOpportunity> result = listByUnionIdAndToMemberIdAndAcceptStatus(unionId, toMemberId, acceptStatus);
+        result = filterByIsClose(result, isClose);
+
+        return result;
+    }
+
+    @Override
     public List<UnionOpportunity> listByUnionIdAndFromMemberIdAndAcceptStatus(Integer unionId, Integer fromMemberId, Integer acceptStatus) throws Exception {
         if (unionId == null || fromMemberId == null || acceptStatus == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -405,6 +433,38 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 return o1.getOpportunity().getCreateTime().compareTo(o2.getOpportunity().getCreateTime());
             }
         });
+
+        return result;
+    }
+
+    @Override
+    public List<UnionOpportunity> listByFromMemberIdListAndAcceptStatusAndIsClose(List<Integer> fromMemberIdList, Integer acceptStatus, Integer isClose) throws Exception {
+        if (fromMemberIdList == null || acceptStatus == null || isClose == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionOpportunity> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(fromMemberIdList)) {
+            result = listByFromMemberIdList(fromMemberIdList);
+            result = filterByAcceptStatus(result, acceptStatus);
+            result = filterByIsClose(result, isClose);
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionOpportunity> listByToMemberIdListAndAcceptStatusAndIsClose(List<Integer> toMemberIdList, Integer acceptStatus, Integer isClose) throws Exception {
+        if (toMemberIdList == null || acceptStatus == null || isClose == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionOpportunity> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(toMemberIdList)) {
+            result = listByToMemberIdList(toMemberIdList);
+            result = filterByAcceptStatus(result, acceptStatus);
+            result = filterByIsClose(result, isClose);
+        }
 
         return result;
     }
@@ -540,6 +600,40 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
     }
 
     //***************************************** Domain Driven Design - count *******************************************
+
+    @Override
+    public Double sumBrokerageMoneyByFromMemberIdListAndAcceptStatusAndIsClose(List<Integer> fromMemberIdList, Integer acceptStatus, Integer isClose) throws Exception {
+        if (fromMemberIdList == null || acceptStatus == null || isClose == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        BigDecimal result = BigDecimal.ZERO;
+        List<UnionOpportunity> opportunityList = listByFromMemberIdListAndAcceptStatusAndIsClose(fromMemberIdList, acceptStatus, isClose);
+        if (ListUtil.isNotEmpty(opportunityList)) {
+            for (UnionOpportunity opportunity : opportunityList) {
+                result = BigDecimalUtil.add(result, opportunity.getBrokerageMoney());
+            }
+        }
+
+        return result.doubleValue();
+    }
+
+    @Override
+    public Double sumBrokerageMoneyByToMemberIdListAndAcceptStatusAndIsClose(List<Integer> toMemberIdList, Integer acceptStatus, Integer isClose) throws Exception {
+        if (toMemberIdList == null || acceptStatus == null || isClose == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        BigDecimal result = BigDecimal.ZERO;
+        List<UnionOpportunity> opportunityList = listByToMemberIdListAndAcceptStatusAndIsClose(toMemberIdList, acceptStatus, isClose);
+        if (ListUtil.isNotEmpty(opportunityList)) {
+            for (UnionOpportunity opportunity : opportunityList) {
+                result = BigDecimalUtil.add(result, opportunity.getBrokerageMoney());
+            }
+        }
+
+        return result.doubleValue();
+    }
 
     //***************************************** Domain Driven Design - boolean *****************************************
 

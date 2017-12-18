@@ -48,11 +48,32 @@ public class UnionVerifier extends Model<UnionVerifier> {
     private Date createTime;
 
     /**
-     * 姓名
+     * 门店id
      */
-    @ApiModelProperty(value = "姓名")
-    @TableField("name")
-    private String name;
+    @ApiModelProperty(value = "门店id")
+    @TableField("shop_id")
+    private Integer shopId;
+
+    /**
+     * 门店名称
+     */
+    @ApiModelProperty(value = "门店名称")
+    @TableField("shop_name")
+    private String shopName;
+
+    /**
+     * 员工id
+     */
+    @ApiModelProperty(value = "员工id")
+    @TableField("employee_id")
+    private Integer employeeId;
+
+    /**
+     * 员工名称
+     */
+    @ApiModelProperty(value = "员工名称")
+    @TableField("employee_name")
+    private String employeeName;
 
     /**
      * 电话
@@ -93,12 +114,36 @@ public class UnionVerifier extends Model<UnionVerifier> {
         this.createTime = createTime;
     }
 
-    public String getName() {
-        return name;
+    public Integer getShopId() {
+        return shopId;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setShopId(Integer shopId) {
+        this.shopId = shopId;
+    }
+
+    public String getShopName() {
+        return shopName;
+    }
+
+    public void setShopName(String shopName) {
+        this.shopName = shopName;
+    }
+
+    public Integer getEmployeeId() {
+        return employeeId;
+    }
+
+    public void setEmployeeId(Integer employeeId) {
+        this.employeeId = employeeId;
+    }
+
+    public String getEmployeeName() {
+        return employeeName;
+    }
+
+    public void setEmployeeName(String employeeName) {
+        this.employeeName = employeeName;
     }
 
     public String getPhone() {

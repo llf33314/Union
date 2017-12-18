@@ -708,6 +708,7 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
 
     //***************************************** Object As a Service - save *********************************************
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void save(UnionBrokeragePay newUnionBrokeragePay) throws Exception {
         if (newUnionBrokeragePay == null) {

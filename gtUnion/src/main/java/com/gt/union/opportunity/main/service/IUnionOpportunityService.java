@@ -32,12 +32,12 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      *
      * @param opportunityId 商机id
      * @param unionId       联盟id
-     * @param toMemberId    接收盟员id
+     * @param toMemberId    接收者盟员id
      * @return UnionOpportunity
      * @throws Exception 统一处理异常
      */
     UnionOpportunity getByIdAndUnionIdAndToMemberId(Integer opportunityId, Integer unionId, Integer toMemberId) throws Exception;
-
+    
     /**
      * 数据统计图
      *
@@ -47,6 +47,15 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      * @throws Exception 统一处理异常
      */
     OpportunityStatisticsVO getOpportunityStatisticsVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
+
+    /**
+     * 获取商机id列表
+     *
+     * @param opportunityList 商机列表
+     * @return List<Integer>
+     * @throws Exception 统一处理异常
+     */
+    List<Integer> getIdList(List<UnionOpportunity> opportunityList) throws Exception;
 
     //***************************************** Domain Driven Design - list ********************************************
 
@@ -109,6 +118,19 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      * 获取商机列表信息
      *
      * @param unionId      联盟id
+     * @param toMemberId   接收盟员id
+     * @param acceptStatus 受理状态
+     * @param isClose      是否已结算
+     * @return List<UnionOpportunity>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionOpportunity> listByUnionIdAndToMemberIdAndAcceptStatusAndIsClose(Integer unionId, Integer toMemberId, Integer acceptStatus, Integer isClose) throws Exception;
+
+
+    /**
+     * 获取商机列表信息
+     *
+     * @param unionId      联盟id
      * @param fromMemberId 推荐盟员id
      * @param acceptStatus 受理状态
      * @return List<UnionOpportunity>
@@ -124,6 +146,28 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      * @throws Exception 统一处理异常
      */
     List<BrokerageOpportunityVO> listBrokerageOpportunityVO(List<UnionOpportunity> opportunityList) throws Exception;
+
+    /**
+     * 获取商机列表信息
+     *
+     * @param fromMemberIdList 商机推荐者盟员id列表
+     * @param acceptStatus     受理状态
+     * @param isClose          是否已结算(0:否 1:是)
+     * @return List<UnionOpportunity>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionOpportunity> listByFromMemberIdListAndAcceptStatusAndIsClose(List<Integer> fromMemberIdList, Integer acceptStatus, Integer isClose) throws Exception;
+
+    /**
+     * 获取商机列表信息
+     *
+     * @param toMemberIdList 商机接受者盟员id列表
+     * @param acceptStatus   受理状态
+     * @param isClose        是否已结算(0:否 1:是)
+     * @return List<UnionOpportunity>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionOpportunity> listByToMemberIdListAndAcceptStatusAndIsClose(List<Integer> toMemberIdList, Integer acceptStatus, Integer isClose) throws Exception;
 
     //***************************************** Domain Driven Design - save ********************************************
 
@@ -162,6 +206,28 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
     void updateBatch(List<UnionOpportunity> updateUnionOpportunityList) throws Exception;
 
     //***************************************** Domain Driven Design - count *******************************************
+
+    /**
+     * 统计佣金金额
+     *
+     * @param fromMemberIdList 商机推荐者盟员id列表
+     * @param acceptStatus     受理状态
+     * @param isClose          是否已结算(0:否 1:是)
+     * @return Double
+     * @throws Exception 统一处理异常
+     */
+    Double sumBrokerageMoneyByFromMemberIdListAndAcceptStatusAndIsClose(List<Integer> fromMemberIdList, Integer acceptStatus, Integer isClose) throws Exception;
+
+    /**
+     * 统计佣金金额
+     *
+     * @param toMemberIdList 商机接受者盟员id列表
+     * @param acceptStatus   受理状态
+     * @param isClose        是否已结算(0:否 1:是)
+     * @return Double
+     * @throws Exception 统一处理异常
+     */
+    Double sumBrokerageMoneyByToMemberIdListAndAcceptStatusAndIsClose(List<Integer> toMemberIdList, Integer acceptStatus, Integer isClose) throws Exception;
 
     //***************************************** Domain Driven Design - boolean *****************************************
 

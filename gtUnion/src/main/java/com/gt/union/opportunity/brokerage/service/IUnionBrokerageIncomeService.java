@@ -43,6 +43,38 @@ public interface IUnionBrokerageIncomeService extends IService<UnionBrokerageInc
     List<BrokerageOpportunityVO> listBrokerageOpportunityVOByBusId(Integer busId, Integer optUnionId, Integer optToMemberId,
                                                                    Integer optIsClose, String optClientName, String optClientPhone) throws Exception;
 
+    /**
+     * 获取佣金收入列表信息
+     *
+     * @param busId 商家id
+     * @param type  类型
+     * @return List<UnionBrokerageIncome>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokerageIncome> listByBusIdAndType(Integer busId, Integer type) throws Exception;
+
+    /**
+     * 获取佣金收入列表信息
+     *
+     * @param busId        商家id
+     * @param type         类型
+     * @param memberIdList 盟员id列表
+     * @return List<UnionBrokerageIncome>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokerageIncome> listByBusIdAndTypeAndMemberIdList(Integer busId, Integer type, List<Integer> memberIdList) throws Exception;
+
+    /**
+     * 获取佣金收入列表信息
+     *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @param type    类型
+     * @return List<UnionBrokerageIncome>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokerageIncome> listByBusIdAndUnionIdAndType(Integer busId, Integer unionId, Integer type) throws Exception;
+
     //***************************************** Domain Driven Design - save ********************************************
 
     /**
@@ -58,6 +90,47 @@ public interface IUnionBrokerageIncomeService extends IService<UnionBrokerageInc
     //***************************************** Domain Driven Design - update ******************************************
 
     //***************************************** Domain Driven Design - count *******************************************
+
+    /**
+     * 统计佣金收入
+     *
+     * @param busId 商家id
+     * @return Double
+     * @throws Exception 统一处理异常
+     */
+    Double sumMoneyByBusId(Integer busId) throws Exception;
+
+    /**
+     * 统计佣金收入
+     *
+     * @param busId 商家id
+     * @param type  类型(1:售卡 2:商机)
+     * @return Double
+     * @throws Exception 统一处理异常
+     */
+    Double sumMoneyByBusIdAndType(Integer busId, Integer type) throws Exception;
+
+    /**
+     * 统计佣金收入
+     *
+     * @param busId        商家id
+     * @param type         类型(1:售卡 2:商机)
+     * @param memberIdList 盟员id列表
+     * @return Double
+     * @throws Exception 统一处理异常
+     */
+    Double sumMoneyByBusIdAndTypeAndMemberIdList(Integer busId, Integer type, List<Integer> memberIdList) throws Exception;
+
+    /**
+     * 统计佣金收入
+     *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @param type    类型(1:售卡 2:商机)
+     * @return Double
+     * @throws Exception 统一处理异常
+     */
+    Double sumMoneyByBusIdAndUnionIdAndType(Integer busId, Integer unionId, Integer type) throws Exception;
 
     //***************************************** Domain Driven Design - boolean *****************************************
 
@@ -93,5 +166,25 @@ public interface IUnionBrokerageIncomeService extends IService<UnionBrokerageInc
      * @throws Exception 统一处理异常
      */
     List<UnionBrokerageIncome> filterByOpportunityId(List<UnionBrokerageIncome> incomeList, Integer opportunityId) throws Exception;
+
+    /**
+     * 根据类型进行过滤
+     *
+     * @param incomeList 数据源
+     * @param type       类型
+     * @return List<UnionBrokerageIncome>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokerageIncome> filterByType(List<UnionBrokerageIncome> incomeList, Integer type) throws Exception;
+
+    /**
+     * 根据盟员id列表进行过滤
+     *
+     * @param incomeList   数据源
+     * @param memberIdList 盟员id列表
+     * @return List<UnionBrokerageIncome>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokerageIncome> filterByMemberIdList(List<UnionBrokerageIncome> incomeList, List<Integer> memberIdList) throws Exception;
 
 }

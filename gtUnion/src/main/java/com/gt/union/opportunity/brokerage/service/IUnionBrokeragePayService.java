@@ -77,6 +77,14 @@ public interface IUnionBrokeragePayService extends IService<UnionBrokeragePay> {
 
     //***************************************** Domain Driven Design - save ********************************************
 
+    /**
+     * 保存
+     *
+     * @param newUnionBrokeragePay 保存内容
+     * @throws Exception 统一处理异常
+     */
+    void save(UnionBrokeragePay newUnionBrokeragePay) throws Exception;
+
     //***************************************** Domain Driven Design - remove ******************************************
 
     //***************************************** Domain Driven Design - update ******************************************

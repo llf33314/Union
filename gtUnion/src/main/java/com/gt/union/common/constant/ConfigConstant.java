@@ -1,7 +1,5 @@
 package com.gt.union.common.constant;
 
-import com.gt.union.common.util.PropertiesUtil;
-
 /**
  * 系统配置全局常量类
  *
@@ -51,7 +49,7 @@ public interface ConfigConstant {
      * 支付模块：联盟许可
      */
     String PAY_MODEL_PERMIT = "XK";
-    
+
     /**
      * 支付模块：商机佣金
      */
@@ -61,11 +59,16 @@ public interface ConfigConstant {
      * 支付模块：消费核销
      */
     String PAY_MODEL_CONSUME = "XF";
-    
+
     /**
      * 支付模块：联盟卡
      */
     String PAY_MODEL_CARD = "CA";
+
+    /**
+     * 支付模块：佣金提现
+     */
+    String PAY_MODEL_WITHDRAWAL = "TX";
 
     /**
      * 是否启用模拟数据(0：否 1：是)

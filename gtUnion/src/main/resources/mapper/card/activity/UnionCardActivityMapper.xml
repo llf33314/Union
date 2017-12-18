@@ -11,6 +11,7 @@
         <result column="name" property="name"/>
         <result column="price" property="price"/>
         <result column="img" property="img"/>
+        <result column="color" property="color"/>
         <result column="amount" property="amount"/>
         <result column="validity_day" property="validityDay"/>
         <result column="apply_begin_time" property="applyBeginTime"/>
