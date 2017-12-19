@@ -26,7 +26,7 @@ public interface IUnionCardProjectFlowService extends IService<UnionCardProjectF
     List<UnionCardProjectFlow> listByProjectId(Integer projectId) throws Exception;
 
     /**
-     * 联盟卡设置-活动卡设置-分页-我的活动项目-审批记录
+     * 我的联盟-联盟卡设置-活动卡设置-分页数据-我的活动项目-审批记录
      *
      * @param busId      商家id
      * @param unionId    联盟id

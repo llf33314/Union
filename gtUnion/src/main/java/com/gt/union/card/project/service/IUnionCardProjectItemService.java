@@ -70,7 +70,7 @@ public interface IUnionCardProjectItemService extends IService<UnionCardProjectI
     //***************************************** Domain Driven Design - save ********************************************
 
     /**
-     * 联盟卡设置-活动卡设置-分页-我的活动项目-ERP和非ERP-保存
+     * 我的联盟-联盟卡设置-活动卡设置-分页数据-我的活动项目-ERP和非ERP-保存
      *
      * @param busId      商家id
      * @param unionId    联盟id
@@ -81,7 +81,7 @@ public interface IUnionCardProjectItemService extends IService<UnionCardProjectI
     void saveProjectItemVOByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId, CardProjectVO vo) throws Exception;
 
     /**
-     * 联盟卡设置-活动卡设置-分页-我的活动项目-ERP和非ERP-提交
+     * 我的联盟-联盟卡设置-活动卡设置-分页数据-我的活动项目-ERP和非ERP-提交
      *
      * @param busId      商家id
      * @param unionId    联盟id

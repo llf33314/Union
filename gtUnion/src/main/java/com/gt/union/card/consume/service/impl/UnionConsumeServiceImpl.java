@@ -167,9 +167,6 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
                 UnionCardFan fan = unionCardFanService.getById(consume.getFanId());
                 vo.setFan(fan);
 
-                WsWxShopInfoExtend shop = shopService.getById(consume.getShopId());
-                vo.setShopName(shop != null ? shop.getBusinessName() : "");
-
                 List<UnionConsumeProject> consumeProjectList = unionConsumeProjectService.listByConsumeId(consume.getId());
                 if (ListUtil.isNotEmpty(consumeProjectList)) {
                     List<UnionCardProjectItem> nonErpTextList = new ArrayList<>();
@@ -205,7 +202,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
         Collections.sort(result, new Comparator<ConsumeRecordVO>() {
             @Override
             public int compare(ConsumeRecordVO o1, ConsumeRecordVO o2) {
-                return o1.getConsume().getCreateTime().compareTo(o2.getConsume().getCreateTime());
+                return o2.getConsume().getCreateTime().compareTo(o1.getConsume().getCreateTime());
             }
         });
 
@@ -251,6 +248,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
             throw new BusinessException("找不到门店信息");
         }
         saveConsume.setShopId(shopId);
+        saveConsume.setShopName(shop.getBusinessName());
 
         UnionConsume voConsume = vo.getConsume();
         if (voConsume == null) {
@@ -313,6 +311,8 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
                 if (itemIdSet.contains(item.getId())) {
                     throw new BusinessException("存在重复使用的服务优惠");
                 }
+                itemIdSet.add(item.getId());
+                
                 UnionConsumeProject saveConsumeProject = new UnionConsumeProject();
                 saveConsumeProject.setDelStatus(CommonConstant.DEL_STATUS_NO);
                 saveConsumeProject.setCreateTime(currentDate);
@@ -323,7 +323,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
         }
 
         String orderNo = "LM" + ConfigConstant.PAY_MODEL_CONSUME + DateUtil.getSerialNumber();
-        saveConsume.setOrderNo(orderNo);
+        saveConsume.setSysOrderNo(orderNo);
         saveConsume.setType(ConsumeConstant.TYPE_OFFLINE);
         saveConsume.setBusinessType(ConsumeConstant.BUSINESS_TYPE_OFFLINE);
         UnionPayVO result = null;
@@ -338,7 +338,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 
             PayParam payParam = new PayParam();
             payParam.setTotalFee(saveConsume.getPayMoney());
-            payParam.setOrderNum(saveConsume.getOrderNo());
+            payParam.setOrderNum(saveConsume.getSysOrderNo());
             payParam.setIsreturn(CommonConstant.COMMON_NO);
             payParam.setNotifyUrl(notifyUrl);
             payParam.setIsSendMessage(CommonConstant.COMMON_NO);

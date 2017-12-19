@@ -68,8 +68,8 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
     }
 
     @Override
-    public UnionMemberJoin getByApplyMemberIdAndUnionId(Integer applyMemberId, Integer unionId) throws Exception {
-        if (applyMemberId == null || unionId == null) {
+    public UnionMemberJoin getByUnionIdAndApplyMemberId(Integer unionId, Integer applyMemberId) throws Exception {
+        if (unionId == null || applyMemberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
@@ -104,8 +104,7 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
             for (UnionMember joinMember : joinMemberList) {
                 boolean isContinue;
                 if (StringUtil.isNotEmpty(optMemberName)) {
-                    isContinue = joinMember == null || StringUtil.isEmpty(joinMember.getEnterpriseName())
-                            || !joinMember.getEnterpriseName().contains(optMemberName);
+                    isContinue = StringUtil.isEmpty(joinMember.getEnterpriseName()) || !joinMember.getEnterpriseName().contains(optMemberName);
                     if (isContinue) {
                         continue;
                     }
@@ -120,7 +119,7 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
                 MemberJoinVO vo = new MemberJoinVO();
                 vo.setJoinMember(joinMember);
 
-                UnionMemberJoin memberJoin = getByApplyMemberIdAndUnionId(joinMember.getId(), unionId);
+                UnionMemberJoin memberJoin = getByUnionIdAndApplyMemberId(unionId, joinMember.getId());
                 vo.setMemberJoin(memberJoin);
 
                 if (MemberConstant.JOIN_TYPE_RECOMMEND == memberJoin.getType() && memberJoin.getRecommendMemberId() != null) {
@@ -134,7 +133,7 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         Collections.sort(result, new Comparator<MemberJoinVO>() {
             @Override
             public int compare(MemberJoinVO o1, MemberJoinVO o2) {
-                return o2.getMemberJoin().getCreateTime().compareTo(o1.getMemberJoin().getCreateTime());
+                return o1.getMemberJoin().getCreateTime().compareTo(o2.getMemberJoin().getCreateTime());
             }
         });
 
@@ -153,7 +152,7 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        // （2）	如果是推荐，判断member写权限
+        // （2）	如果是推荐入盟，则判断member写权限
         UnionMember member = null;
         BusUser busUser = null;
         if (MemberConstant.JOIN_TYPE_RECOMMEND == type) {
@@ -163,11 +162,11 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
             }
             String busUserName = vo.getBusUserName();
             if (StringUtil.isEmpty(busUserName)) {
-                throw new BusinessException("被推荐的盟员账号不能为空");
+                throw new BusinessException("被推荐的商家名称(盟员账号)不能为空");
             }
             busUser = busUserService.getBusUserByName(busUserName);
             if (busUser == null) {
-                throw new BusinessException("找不到被推荐的盟员账号");
+                throw new BusinessException("找不到被推荐的商家信息(盟员账号)");
             }
         }
         // （3）	判断union剩余可加盟数
@@ -238,7 +237,7 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
             throw new BusinessException("理由字数不能超过20");
         }
         saveJoin.setReason(reason);
-        // （6）	如果是推荐入盟，且是盟主操作，则直接入盟成功
+        // （6）	如果是盟主推荐入盟，则直接入盟成功
         if (MemberConstant.JOIN_TYPE_RECOMMEND == type) {
             saveMember.setBusId(busUser.getId());
             saveJoin.setRecommendMemberId(member.getId());
@@ -252,8 +251,9 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
             saveMember.setStatus(MemberConstant.STATUS_APPLY_IN);
         }
 
-        // 事务操作
+        // （7）事务操作
         unionMemberService.save(saveMember);
+
         saveJoin.setApplyMemberId(saveMember.getId());
         save(saveJoin);
     }
@@ -284,22 +284,25 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         if (join == null) {
             throw new BusinessException("联盟入盟申请不存在");
         }
-        // （3）	判断joinMember状态，如果是申请状态，则进入下一步；如果是其他状态，返回成功
+        // （3）	判断joinMember状态
+        //   （3-1）如果是申请状态，则进入下一步；
+        //   （3-2）如果是其他状态，则直接返回成功；
         UnionMember joinMember = unionMemberService.getByIdAndUnionIdAndStatus(join.getApplyMemberId(), unionId, MemberConstant.STATUS_APPLY_IN);
         if (joinMember == null) {
             return;
         }
-        // （4）	判断union剩余可加盟数和商家已加盟数是否已达上限
+        // （4）	判断union剩余可加盟数
         Integer unionSurplus = unionMainService.countSurplusByUnionId(unionId);
         if (unionSurplus <= 0) {
             throw new BusinessException("联盟已达成员总数上限，无法通过");
         }
+        // （5）判断商家已加盟数
         Integer busMemberCount = unionMemberService.countReadByBusId(joinMember.getBusId());
         if (busMemberCount >= ConfigConstant.MAX_UNION_APPLY) {
             throw new BusinessException("申请者加盟数已达上限，无法通过");
         }
 
-        // 事务操作
+        // （6）事务操作
         UnionMember updateMember = new UnionMember();
         updateMember.setId(joinMember.getId());
         if (CommonConstant.COMMON_YES == isPass) {
@@ -308,6 +311,7 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
             updateMember.setDelStatus(CommonConstant.COMMON_YES);
         }
         unionMemberService.update(updateMember);
+        
         removeById(joinId);
     }
 

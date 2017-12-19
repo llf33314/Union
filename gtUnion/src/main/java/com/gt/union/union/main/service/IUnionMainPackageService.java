@@ -34,7 +34,7 @@ public interface IUnionMainPackageService extends IService<UnionMainPackage> {
     UnionMainPackage getByLevel(Integer level) throws Exception;
 
     /**
-     * 创建联盟-购买盟主服务
+     * 我的联盟-创建联盟-购买盟主服务
      *
      * @param busId 商家id
      * @return UnionPackageVO

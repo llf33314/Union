@@ -18,7 +18,7 @@ public interface IUnionCardFanService extends IService<UnionCardFan> {
     //***************************************** Domain Driven Design - get *****************************************
 
     /**
-     * 首页-联盟卡-分页-详情
+     * 我的联盟-首页-联盟卡-分页数据-详情
      *
      * @param busId   商家id
      * @param fanId   粉丝id
@@ -69,7 +69,7 @@ public interface IUnionCardFanService extends IService<UnionCardFan> {
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 首页-联盟卡-分页；首页-联盟卡-导出
+     * 分页：我的联盟-首页-联盟卡；导出：我的联盟-首页-联盟卡
      *
      * @param busId     商家id
      * @param unionId   联盟id

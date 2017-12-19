@@ -18,7 +18,7 @@ public interface IUnionBrokeragePayService extends IService<UnionBrokeragePay> {
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
-     * 佣金结算-支付明细-详情；佣金结算-支付明细-详情-导出
+     * 商机-佣金结算-支付明细-详情；导出：商机佣金结算-支付明细-详情
      *
      * @param busId    商家id
      * @param unionId  联盟id
@@ -31,7 +31,7 @@ public interface IUnionBrokeragePayService extends IService<UnionBrokeragePay> {
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 佣金结算-我需支付的佣金-分页
+     * 分页：商机-佣金结算-我需支付的佣金
      *
      * @param busId           商家id
      * @param optUnionId      联盟id
@@ -46,7 +46,7 @@ public interface IUnionBrokeragePayService extends IService<UnionBrokeragePay> {
                                                                    Integer optIsClose, String optClientName, String optClientPhone) throws Exception;
 
     /**
-     * 佣金结算-支付明细-分页；佣金结算-支付明细-导出
+     * 分页：商机-佣金结算-支付明细；导出：商机-佣金结算-支付明细
      *
      * @param busId      商家id
      * @param optUnionId 联盟id
@@ -90,14 +90,15 @@ public interface IUnionBrokeragePayService extends IService<UnionBrokeragePay> {
     //***************************************** Domain Driven Design - update ******************************************
 
     /**
-     * 佣金结算-我需支付的佣金-批量支付
+     * 商机-佣金结算-我需支付的佣金-批量支付
      *
      * @param busId             商家id
      * @param opportunityIdList 商机id列表
+     * @param verifierId        佣金平台管理人员id
      * @return UnionPayVO
      * @throws Exception 统一处理异常
      */
-    UnionPayVO batchPayByBusId(Integer busId, List<Integer> opportunityIdList) throws Exception;
+    UnionPayVO batchPayByBusId(Integer busId, List<Integer> opportunityIdList, Integer verifierId) throws Exception;
 
     /**
      * 佣金结算-我需支付的佣金-批量支付-回调

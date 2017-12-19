@@ -378,7 +378,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             saveCardRecord.setUnionId(unionId);
             saveCardRecord.setCardId(saveCard.getId());
             saveCardRecord.setActivityId(saveCard.getActivityId());
-            saveCardRecord.setOrderNo(orderNo);
+            saveCardRecord.setSysOrderNo(orderNo);
             saveCardRecord.setPayMoney(activity.getPrice());
             saveCardRecord.setPayStatus(CardConstant.PAY_STATUS_PAYING);
 
@@ -442,7 +442,6 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 
     //***************************************** Domain Driven Design - remove ******************************************
 
-    // TODO 待抽离。。。
     @Override
     @Transactional(rollbackFor = Exception.class)
     public String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess) {

@@ -19,7 +19,6 @@
         <result column="director_email" property="directorEmail"/>
         <result column="address_longitude" property="addressLongitude"/>
         <result column="address_latitude" property="addressLatitude"/>
-        <result column="is_member_out_notify" property="isMemberOutNotify"/>
         <result column="notify_phone" property="notifyPhone"/>
         <result column="integral_exchange_ratio" property="integralExchangeRatio"/>
         <result column="discount" property="discount"/>

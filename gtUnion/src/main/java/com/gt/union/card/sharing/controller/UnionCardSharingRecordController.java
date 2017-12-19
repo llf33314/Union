@@ -37,7 +37,7 @@ public class UnionCardSharingRecordController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "售卡佣金分成管理-售卡分成记录-分页", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：我的联盟-售卡佣金分成管理-售卡分成记录", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageSharingRecordVOByUnionId(
             HttpServletRequest request,

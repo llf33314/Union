@@ -30,7 +30,7 @@ public interface IUnionConsumeService extends IService<UnionConsume> {
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 前台-消费核销记录-分页；前台-消费核销记录-导出
+     * 分页：前台-消费核销记录；导出：前台-消费核销记录
      *
      * @param busId         商家id
      * @param optUnionId    联盟id

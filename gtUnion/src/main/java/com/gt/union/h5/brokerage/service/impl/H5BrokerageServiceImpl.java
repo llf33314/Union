@@ -324,7 +324,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         saveWithdrawal.setDelStatus(CommonConstant.COMMON_NO);
         saveWithdrawal.setBusId(busId);
         String orderNo = "LM" + ConfigConstant.PAY_MODEL_WITHDRAWAL + DateUtil.getSerialNumber();
-        saveWithdrawal.setSysOrder(orderNo);
+        saveWithdrawal.setSysOrderNo(orderNo);
         saveWithdrawal.setVerifierId(verifier.getId());
         saveWithdrawal.setVerifierName(verifier.getEmployeeName());
 
@@ -375,7 +375,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         savePay.setFromBusId(fromMember.getBusId());
         savePay.setToBusId(member.getBusId());
         String orderNo = "LM" + ConfigConstant.PAY_MODEL_OPPORTUNITY + DateUtil.getSerialNumber();
-        savePay.setOrderNo(orderNo);
+        savePay.setSysOrderNo(orderNo);
         savePay.setOpportunityId(opportunityId);
         savePay.setMoney(opportunity.getBrokerageMoney());
 
@@ -407,7 +407,8 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        Integer busId = h5BrokerageUser.getVerifier().getBusId();
+        UnionVerifier verifier = h5BrokerageUser.getVerifier();
+        Integer busId = verifier.getBusId();
         // （1）	判断union有效性和member写权限
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
@@ -421,7 +422,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
                 member.getId(), OpportunityConstant.ACCEPT_STATUS_CONFIRMED, OpportunityConstant.IS_CLOSE_NO);
         List<Integer> opportunityIdList = unionOpportunityService.getIdList(opportunityList);
 
-        return unionBrokeragePayService.batchPayByBusId(busId, opportunityIdList);
+        return unionBrokeragePayService.batchPayByBusId(busId, opportunityIdList, verifier.getId());
     }
 
     //***************************************** Domain Driven Design - remove ******************************************

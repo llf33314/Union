@@ -37,7 +37,7 @@ public class UnionCardSharingRatioController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "售卡佣金分成管理-活动卡售卡比例设置-分页-查看比例", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：我的联盟-售卡佣金分成管理-活动卡售卡比例设置-选择活动卡后", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageSharingRatioVOByActivityIdAndUnionId(
             HttpServletRequest request,
@@ -63,7 +63,7 @@ public class UnionCardSharingRatioController {
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
-    @ApiOperation(value = "售卡佣金分成管理-活动卡售卡比例设置-分页-查看比例-比例设置", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "列表：我的联盟-售卡佣金分成管理-活动卡售卡比例设置-选择活动卡后-比例设置", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listByActivityIdAndUnionId(
             HttpServletRequest request,
@@ -88,7 +88,7 @@ public class UnionCardSharingRatioController {
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
-    @ApiOperation(value = "售卡佣金分成管理-活动卡售卡比例设置-分页-查看比例-比例设置-更新", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "我的联盟-售卡佣金分成管理-活动卡售卡比例设置-选择活动卡后-比例设置-保存", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateRatioByActivityIdAndUnionId(
             HttpServletRequest request,

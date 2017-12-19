@@ -72,13 +72,17 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        // （1）	判断是否已是盟主，如果是，报错
+        // （1）	判断是否已经是盟主：
+        //   （1-1）如果是，则报错；
+        //   （1-2）如果不是，则进行下一步；
         UnionMember busOwnerMember = unionMemberService.getOwnerByBusId(busId);
         if (busOwnerMember != null) {
-            throw new BusinessException("已具有盟主身份，无法同时创建多个联盟");
+            throw new BusinessException("已经具有盟主身份，最多可成为一个联盟的盟主");
         }
 
-        // （2）	判断是否有联盟基础服务（调接口），如果没有，报错
+        // （2）	判断是否具有联盟基础服务（调接口）：
+        //   （2-1）如果不是，则报错；
+        //   （2-2）如果是，则进行下一步；
         Map<String, Object> basicMap = busUserService.getUserUnionAuthority(busId);
         if (basicMap == null) {
             throw new BusinessException("不具有联盟基础服务");
@@ -89,22 +93,29 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
             throw new BusinessException("不具有联盟基础服务");
         }
 
-        // （3）	判断是否需要付费，
-        // 如果需要付费，判断是否已购买联盟盟主服务，如果已购买，则返回；如果未购买，则进入购买页面；
-        // 如果不需要付费，则判断是否已有免费联盟盟主服务，若没有则新增，返回
-        UnionMainPermit permit = unionMainPermitService.getValidByBusId(busId);
+        // （3）	判断是否需要付费：
+        //   （3-1）如果是，则判断是否已购买联盟许可：
+        //     （3-1-1）如果是，则返回许可id；
+        //     （3-1-2）如果不是，则提示进入购买页面；
+        //   （3-2）如果不是，则判断是否已有免费的联盟许可：
+        //     （3-2-1）如果是，则返回许可id；
+        //     （3-2-2）如果不是，则新增免费的联盟许可，并返回许可id
         UnionPermitCheckVO result = new UnionPermitCheckVO();
+        UnionMainPermit permit = unionMainPermitService.getValidByBusId(busId);
         Object objPay = basicMap.get("pay");
         Integer needPay = objPay != null ? Integer.valueOf(objPay.toString()) : CommonConstant.COMMON_YES;
         if (CommonConstant.COMMON_YES == needPay) {
-            if (permit == null) {
-                result.setIsPay(CommonConstant.COMMON_YES);
-            } else {
+            if (permit != null) {
                 result.setIsPay(CommonConstant.COMMON_NO);
                 result.setPermitId(permit.getId());
+            } else {
+                result.setIsPay(CommonConstant.COMMON_YES);
             }
         } else {
-            if (permit == null) {
+            if (permit != null) {
+                result.setIsPay(CommonConstant.COMMON_NO);
+                result.setPermitId(permit.getId());
+            } else {
                 BusUser busUser = busUserService.getBusUserById(busId);
                 if (busUser == null) {
                     throw new BusinessException(CommonConstant.UNION_BUS_NOT_FOUND);
@@ -115,8 +126,7 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
                 }
                 UnionMainPermit savePermit = new UnionMainPermit();
                 savePermit.setDelStatus(CommonConstant.COMMON_NO);
-                Date currentDate = DateUtil.getCurrentDate();
-                savePermit.setCreateTime(currentDate);
+                savePermit.setCreateTime(DateUtil.getCurrentDate());
                 savePermit.setBusId(busId);
                 savePermit.setValidity(busUser.getEndTime());
                 savePermit.setPackageId(unionPackage.getId());
@@ -124,9 +134,6 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
 
                 result.setIsPay(CommonConstant.COMMON_NO);
                 result.setPermitId(savePermit.getId());
-            } else {
-                result.setIsPay(CommonConstant.COMMON_NO);
-                result.setPermitId(permit.getId());
             }
         }
 
@@ -143,13 +150,17 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         if (busId == null || vo == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断是否已是盟主，如果是，报错
+
+        // （1）	判断是否已经是盟主：
+        //   （1-1）如果是，则报错；
+        //   （1-2）如果不是，则进行下一步；
         UnionMember busOwnerMember = unionMemberService.getOwnerByBusId(busId);
         if (busOwnerMember != null) {
-            throw new BusinessException("已具有盟主身份，无法同时创建多个联盟");
+            throw new BusinessException("已经具有盟主身份，最多可成为一个联盟的盟主");
         }
-
-        // （2）	判断是否有联盟基础服务（调接口），如果不是，报错
+        // （2）	判断是否具有联盟基础服务（调接口）：
+        //   （2-1）如果不是，则报错；
+        //   （2-2）如果是，则进行下一步；
         Map<String, Object> basicMap = busUserService.getUserUnionAuthority(busId);
         if (basicMap == null) {
             throw new BusinessException("不具有联盟基础服务");
@@ -159,21 +170,19 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         if (CommonConstant.COMMON_YES != hasAuthority) {
             throw new BusinessException("不具有联盟基础服务");
         }
-
         // （3）	判断联盟许可有效性
         Integer permitId = vo.getPermitId();
         if (permitId == null) {
-            throw new BusinessException("不具有联盟盟主服务");
+            throw new BusinessException("不具有联盟许可");
         }
         UnionMainPermit permit = unionMainPermitService.getValidByBusId(busId);
-        if (permit == null || !permit.getId().equals(permitId)) {
-            throw new BusinessException("不具有联盟盟主服务");
+        if (permit == null || !permitId.equals(permit.getId())) {
+            throw new BusinessException("找不到联盟许可信息");
         }
         UnionMainPackage unionPackage = unionMainPackageService.getById(permit.getPackageId());
         if (unionPackage == null) {
-            throw new BusinessException("找不到许可对应的套餐");
+            throw new BusinessException("找不到许可对应的套餐信息");
         }
-
         Date currentDate = DateUtil.getCurrentDate();
         // （4）	校验表单
         UnionMain saveUnion = new UnionMain();
@@ -294,7 +303,6 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
             throw new BusinessException("短信通知手机参数值有误");
         }
         saveMember.setNotifyPhone(memberNotifyPhone);
-
         // （4-13）积分抵扣率
         if (saveUnion.getIsIntegral() == CommonConstant.COMMON_YES) {
             Double memberIntegralExchangeRatio = voMember.getIntegralExchangeRatio();
@@ -304,7 +312,7 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
             }
             saveMember.setIntegralExchangeRatio(memberIntegralExchangeRatio);
         }
-
+        // （4-14）入盟收集信息
         List<UnionMainDict> saveDictList = vo.getItemList();
         if (ListUtil.isEmpty(saveDictList)) {
             throw new BusinessException("入盟收集信息不能为空");
@@ -317,12 +325,15 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         saveCreate.setPermitId(permitId);
         // （5）事务操作
         unionMainService.save(saveUnion);
+        
         saveMember.setUnionId(saveUnion.getId());
         unionMemberService.save(saveMember);
+        
         for (UnionMainDict dict : saveDictList) {
             dict.setUnionId(saveUnion.getId());
         }
         unionMainDictService.saveBatch(saveDictList);
+        
         saveCreate.setUnionId(saveUnion.getId());
         save(saveCreate);
     }

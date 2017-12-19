@@ -20,9 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 盟主服务套餐 服务实现类
@@ -63,21 +61,27 @@ public class UnionMainPackageServiceImpl extends ServiceImpl<UnionMainPackageMap
         }
 
         UnionPackageVO result = new UnionPackageVO();
-
+        // （1）	获取商家版本名称(如升级版)
         BusUser busUser = busUserService.getBusUserById(busId);
         if (busUser == null) {
             throw new BusinessException(CommonConstant.UNION_BUS_NOT_FOUND);
         }
         String busVersionName = dictService.getBusUserLevel(busUser.getLevel());
         result.setBusVersionName(busVersionName);
-
+        // （2）获取联盟版本名称(如盟主版)
         Map<String, Object> basicMap = busUserService.getUserUnionAuthority(busId);
         if (basicMap != null && basicMap.get("versionName") != null) {
             String unionVersionName = basicMap.get("versionName").toString();
             result.setUnionVersionName(unionVersionName);
         }
-
+        // （3）获取套餐列表，并按年限顺序排序
         List<UnionMainPackage> packageList = listByLevel(busUser.getLevel());
+        Collections.sort(packageList, new Comparator<UnionMainPackage>() {
+            @Override
+            public int compare(UnionMainPackage o1, UnionMainPackage o2) {
+                return o1.getYear().compareTo(o2.getYear());
+            }
+        });
         result.setPackageList(packageList);
 
         return result;

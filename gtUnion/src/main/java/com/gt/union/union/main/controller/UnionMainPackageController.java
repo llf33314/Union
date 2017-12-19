@@ -36,7 +36,7 @@ public class UnionMainPackageController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "创建联盟-购买盟主服务", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "我的联盟-创建联盟-购买盟主服务", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/option", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getUnionPackageVO(HttpServletRequest request) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);

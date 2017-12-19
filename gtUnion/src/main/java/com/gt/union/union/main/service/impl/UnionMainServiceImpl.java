@@ -241,6 +241,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
+        // （1）获取我创建和已加入的联盟id列表
         List<Integer> unionIdList = new ArrayList<>();
         List<UnionMember> readMemberList = unionMemberService.listReadByBusId(busId);
         if (ListUtil.isNotEmpty(readMemberList)) {
@@ -248,7 +249,7 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
                 unionIdList.add(readMember.getUnionId());
             }
         }
-
+        // （2）缓存穿透：获取所有有效的，但不包括我创建和加入的联盟列表信息
         EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
                 .gt("validity", DateUtil.getCurrentDate())

@@ -144,8 +144,9 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_READ_REJECT);
         }
-        // （2）	如果是盟主，则全部显示
-        // 否则要求盟员已报名活动且项目已通过
+        // （2）	判断是否是盟主：
+        //   （2-1）如果是，则显示全部；
+        //   （2-2）如果不是，则要求是报名项目已审核通过的
         List<CardActivityStatusVO> result = new ArrayList<>();
         List<UnionCardActivity> activityList = null;
         if (MemberConstant.IS_UNION_OWNER_YES == member.getIsUnionOwner()) {
@@ -166,8 +167,10 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
             for (UnionCardActivity activity : activityList) {
                 CardActivityStatusVO vo = new CardActivityStatusVO();
                 vo.setActivity(activity);
+
                 Integer activityStatus = getStatus(activity);
                 vo.setActivityStatus(activityStatus);
+
                 result.add(vo);
             }
         }
@@ -175,7 +178,7 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
         Collections.sort(result, new Comparator<CardActivityStatusVO>() {
             @Override
             public int compare(CardActivityStatusVO o1, CardActivityStatusVO o2) {
-                return o1.getActivity().getCreateTime().compareTo(o2.getActivity().getCreateTime());
+                return o2.getActivity().getCreateTime().compareTo(o1.getActivity().getCreateTime());
             }
         });
 
@@ -195,7 +198,7 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_READ_REJECT);
         }
-        // （2）	参与盟员数要求活动项目已报名且已通过
+
         List<CardActivityVO> result = new ArrayList<>();
         List<UnionCardActivity> activityList = listByUnionId(unionId);
         if (ListUtil.isNotEmpty(activityList)) {
@@ -203,10 +206,11 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
             for (UnionCardActivity activity : activityList) {
                 CardActivityVO vo = new CardActivityVO();
                 vo.setActivity(activity);
+
                 Integer activityStatus = getStatus(activity);
                 vo.setActivityStatus(activityStatus);
 
-
+                // （2）报名开始后，才有参与盟员数，且	参与盟员数要求报名项目已审核通过
                 if (currentDate.compareTo(activity.getApplyBeginTime()) > 0) {
                     Integer joinMemberCount = unionCardProjectService.countByUnionIdAndActivityIdAndStatus(unionId, activity.getId(), ProjectConstant.STATUS_ACCEPT);
                     vo.setJoinMemberCount(joinMemberCount);
@@ -215,13 +219,13 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
                     vo.setProject(project);
                 }
 
-                //（3）	如果在报名中，则有待审核数量
+                //（3）在报名中，才有待审核数量
                 if (ActivityConstant.STATUS_APPLYING == activityStatus) {
                     Integer projectCheckCount = unionCardProjectService.countByUnionIdAndActivityIdAndStatus(unionId, activity.getId(), ProjectConstant.STATUS_COMMITTED);
                     vo.setProjectCheckCount(projectCheckCount);
                 }
 
-                // （4）如果在售卖开始后，则有已售活动卡数量
+                // （4）在售卡开始后，才有已售活动卡数量
                 if (currentDate.compareTo(activity.getSellBeginTime()) > 0) {
                     Integer cardSellCount = unionCardService.countByUnionIdAndActivityId(unionId, activity.getId());
                     vo.setCardSellCount(cardSellCount);
@@ -234,7 +238,7 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
         Collections.sort(result, new Comparator<CardActivityVO>() {
             @Override
             public int compare(CardActivityVO o1, CardActivityVO o2) {
-                return o1.getActivity().getCreateTime().compareTo(o2.getActivity().getCreateTime());
+                return o2.getActivity().getCreateTime().compareTo(o1.getActivity().getCreateTime());
             }
         });
         return result;
@@ -321,7 +325,7 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
             Collections.sort(projectList, new Comparator<UnionCardProject>() {
                 @Override
                 public int compare(UnionCardProject o1, UnionCardProject o2) {
-                    return o2.getCreateTime().compareTo(o1.getCreateTime());
+                    return o1.getCreateTime().compareTo(o2.getCreateTime());
                 }
             });
             for (UnionCardProject project : projectList) {
@@ -489,7 +493,7 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
             }
         }
 
-        // 事务处理
+        // （4）事务处理
         removeById(activityId);
         unionCardProjectService.removeBatchById(removeProjectIdtList);
         unionCardProjectItemService.removeBatchById(removeProjectItemIdList);

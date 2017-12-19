@@ -38,7 +38,7 @@ public class UnionCardActivityController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "售卡佣金分成管理-活动卡售卡比例设置-分页", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：我的联盟-售卡佣金分成管理-活动卡售卡比例设置-选择活动卡", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/sharingRatio/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageActivityStatusVOByUnionId(
             HttpServletRequest request,
@@ -62,7 +62,7 @@ public class UnionCardActivityController {
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
-    @ApiOperation(value = "联盟卡设置-活动卡设置-分页", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：我的联盟-联盟卡设置-活动卡设置", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageActivityVOByUnionId(
             HttpServletRequest request,
@@ -160,7 +160,7 @@ public class UnionCardActivityController {
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
-    @ApiOperation(value = "联盟卡设置-活动卡设置-新增活动卡", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "我的联盟-联盟卡设置-活动卡设置-新增活动卡", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String saveByUnionId(
             HttpServletRequest request,
@@ -181,7 +181,7 @@ public class UnionCardActivityController {
 
     //------------------------------------------------- delete ---------------------------------------------------------
 
-    @ApiOperation(value = "联盟卡设置-活动卡设置-分页-删除", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "我的联盟-联盟卡设置-活动卡设置-分页数据-删除", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{activityId}/unionId/{unionId}", method = RequestMethod.DELETE, produces = "application/json;charset=UTF-8")
     public String removeByIdAndUnionId(
             HttpServletRequest request,

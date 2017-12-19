@@ -39,7 +39,7 @@ public class UnionOpportunityController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "我的商机-分页", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：商机-我的商机", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/toMe/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageToMe(
             HttpServletRequest request,
@@ -69,7 +69,7 @@ public class UnionOpportunityController {
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
-    @ApiOperation(value = "我要推荐-分页", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：商机-我要推荐", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/fromMe/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageFromMe(
             HttpServletRequest request,
@@ -99,7 +99,7 @@ public class UnionOpportunityController {
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
-    @ApiOperation(value = "数据统计图", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "商机-数据统计图", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/statistics", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getStatisticsByUnionId(
             HttpServletRequest request,
@@ -136,7 +136,7 @@ public class UnionOpportunityController {
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
-    @ApiOperation(value = "我的商机-分页-接受或拒绝", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "商机-我的商机-分页数据-接受或拒绝", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{opportunityId}/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateStatusByIdAndUnionId(
             HttpServletRequest request,
@@ -161,7 +161,7 @@ public class UnionOpportunityController {
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
-    @ApiOperation(value = "我要推荐-我要推荐", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "商机-我要推荐-我要推荐", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String saveOpportunityVOByUnionId(
             HttpServletRequest request,

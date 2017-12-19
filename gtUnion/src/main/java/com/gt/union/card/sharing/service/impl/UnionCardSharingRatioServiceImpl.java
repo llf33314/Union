@@ -30,6 +30,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -81,7 +83,7 @@ public class UnionCardSharingRatioServiceImpl extends ServiceImpl<UnionCardShari
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        final UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_READ_REJECT);
         }
@@ -90,20 +92,43 @@ public class UnionCardSharingRatioServiceImpl extends ServiceImpl<UnionCardShari
         if (activity == null) {
             throw new BusinessException("找不到活动信息");
         }
-        // （3）	获取已报名活动且项目已通过的member和member对应的售卡分成比例
+        // （3）	获取已审核通过的报名项目，并获取对应的分成比例设置
         List<CardSharingRatioVO> result = new ArrayList<>();
         List<UnionCardProject> projectList = unionCardProjectService.listByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
         if (ListUtil.isNotEmpty(projectList)) {
             for (UnionCardProject project : projectList) {
                 CardSharingRatioVO vo = new CardSharingRatioVO();
+                
                 UnionCardSharingRatio ratio = getByUnionIdAndMemberIdAndActivityId(unionId, project.getMemberId(), activityId);
                 vo.setSharingRatio(ratio);
+                
                 UnionMember ratioMember = unionMemberService.getReadByIdAndUnionId(project.getMemberId(), unionId);
                 vo.setMember(ratioMember);
+                
                 result.add(vo);
             }
         }
-
+        // （4）按盟主>当前盟员>其他盟员，其他盟员按时间顺序排序
+        Collections.sort(result, new Comparator<CardSharingRatioVO>() {
+            @Override
+            public int compare(CardSharingRatioVO o1, CardSharingRatioVO o2) {
+                UnionMember o1Member = o1.getMember();
+                if (MemberConstant.IS_UNION_OWNER_YES == o1Member.getIsUnionOwner()) {
+                    return -1;
+                }
+                UnionMember o2Member = o2.getMember();
+                if (MemberConstant.IS_UNION_OWNER_YES == o2Member.getIsUnionOwner()) {
+                    return 1;
+                }
+                if (member.getId().equals(o1Member.getId())) {
+                    return -1;
+                }
+                if (member.getId().equals(o2Member.getId())) {
+                    return 1;
+                }
+                return o1.getSharingRatio().getCreateTime().compareTo(o2.getSharingRatio().getCreateTime());
+            }
+        });
         return result;
     }
 
@@ -147,11 +172,11 @@ public class UnionCardSharingRatioServiceImpl extends ServiceImpl<UnionCardShari
         if (activity == null) {
             throw new BusinessException("找不到活动信息");
         }
-        // （3）	要求activity是在售卖开始之前
+        // （3）	要求activity是在售卡开始之前
         if (DateUtil.getCurrentDate().compareTo(activity.getSellBeginTime()) > 0) {
             throw new BusinessException("只能在活动卡售卖开始前更改");
         }
-        // （4）	要求member已报名活动且项目已通过和要求售卡分成之和为100
+        // （4）	要求售卡分成之和为100%
         List<UnionCardSharingRatio> updateRatioList = new ArrayList<>();
         List<UnionCardSharingRatio> saveRatioList = new ArrayList<>();
         BigDecimal bdRatioSum = BigDecimal.ZERO;
@@ -187,7 +212,7 @@ public class UnionCardSharingRatioServiceImpl extends ServiceImpl<UnionCardShari
             throw new BusinessException("售卡分成比例之和必须等于100");
         }
 
-        // 事务操作
+        // （5）事务操作
         updateBatch(updateRatioList);
         saveBatch(saveRatioList);
     }

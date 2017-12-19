@@ -18,6 +18,7 @@ import com.gt.union.opportunity.main.constant.OpportunityConstant;
 import com.gt.union.opportunity.main.entity.UnionOpportunity;
 import com.gt.union.opportunity.main.service.IUnionOpportunityService;
 import com.gt.union.union.main.service.IUnionMainService;
+import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -44,9 +45,6 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
     @Autowired
     private IUnionMemberService unionMemberService;
 
-    @Autowired
-    private IUnionMainService unionMainService;
-
     //***************************************** Domain Driven Design - get *********************************************
 
     @Override
@@ -69,13 +67,29 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	获取商家所有有效的盟员列表
-        List<Integer> readMemberIdList = unionMemberService.listReadIdByBusId(busId);
-        // （2）获取已被接受的商机推荐
-        List<UnionOpportunity> opportunityList = unionOpportunityService.listByFromMemberIdList(readMemberIdList);
+        // （1）	获取商家所有有效的member
+        List<UnionMember> memberList = unionMemberService.listReadByBusId(busId);
+        // （2）	根据unionId过滤掉一些member
+        List<UnionMember> fromMemberList = new ArrayList<>();
+        if (optUnionId == null) {
+            fromMemberList = memberList;
+        } else {
+            for (UnionMember member : memberList) {
+                if (optUnionId.equals(member.getUnionId())) {
+                    fromMemberList.add(member);
+                }
+            }
+        }
+        List<Integer> fromMemberIdList = unionMemberService.getIdList(fromMemberList);
+        // （3）获取已被接受的商机推荐
+        List<UnionOpportunity> opportunityList = unionOpportunityService.listByFromMemberIdList(fromMemberIdList);
         opportunityList = unionOpportunityService.filterByAcceptStatus(opportunityList, OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
+        // （4）根据查询条件进行过滤
         if (optToMemberId != null) {
             opportunityList = unionOpportunityService.filterByToMemberId(opportunityList, optToMemberId);
+        }
+        if (optIsClose != null) {
+            opportunityList = unionOpportunityService.filterByIsClose(opportunityList, optIsClose);
         }
         if (StringUtil.isNotEmpty(optClientName)) {
             opportunityList = unionOpportunityService.filterByLikeClientName(opportunityList, optClientName);
@@ -83,7 +97,7 @@ public class UnionBrokerageIncomeServiceImpl extends ServiceImpl<UnionBrokerageI
         if (StringUtil.isNotEmpty(optClientPhone)) {
             opportunityList = unionOpportunityService.filterByLikeClientPhone(opportunityList, optClientPhone);
         }
-        // （2）	按已结算状态顺序(未>已)，时间倒序排序
+        // （5）	按已结算状态顺序(未>已)，时间倒序排序
         return unionOpportunityService.listBrokerageOpportunityVO(opportunityList);
     }
 

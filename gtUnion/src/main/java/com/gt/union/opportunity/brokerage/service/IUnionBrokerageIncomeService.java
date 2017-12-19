@@ -29,7 +29,7 @@ public interface IUnionBrokerageIncomeService extends IService<UnionBrokerageInc
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 佣金结算-我的佣金收入-分页
+     * 分页：商机-佣金结算-我的佣金收入
      *
      * @param busId          商家id
      * @param optUnionId     联盟id

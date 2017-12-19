@@ -16,7 +16,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
-     * 联盟设置-基础设置；联盟卡设置-折扣卡设置-折扣设置
+     * 我的联盟-联盟设置-基础设置；我的联盟-联盟卡设置-折扣卡设置-折扣设置
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -55,7 +55,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     UnionMember getOwnerByBusId(Integer busId) throws Exception;
 
     /**
-     * 首页-盟员列表-分页-详情
+     * 我的联盟-首页-盟员列表-分页数据-详情
      *
      * @param busId    商家id
      * @param memberId 盟员id
@@ -135,15 +135,6 @@ public interface IUnionMemberService extends IService<UnionMember> {
     List<UnionMember> listReadByBusId(Integer busId) throws Exception;
 
     /**
-     * 获取具有读权限的盟员id列表信息
-     *
-     * @param busId 商家id
-     * @return List<Integer>
-     * @throws Exception 统一处理异常
-     */
-    List<Integer> listReadIdByBusId(Integer busId) throws Exception;
-
-    /**
      * 获取具有写权限的盟员列表信息
      *
      * @param busId 商家id
@@ -153,16 +144,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     List<UnionMember> listWriteByBusId(Integer busId) throws Exception;
 
     /**
-     * 获取具有写权限的盟员id列表信息
-     *
-     * @param busId 商家id
-     * @return List<Integer>
-     * @throws Exception 统一处理异常
-     */
-    List<Integer> listWriteIdByBusId(Integer busId) throws Exception;
-
-    /**
-     * 首页-盟员列表-分页；联盟卡设置-折扣卡设置-分页
+     * 分页：我的联盟-首页-盟员列表；导出：我的联盟-首页-盟员列表；分页：我的联盟-联盟卡设置-折扣卡设置
      *
      * @param busId         商家id
      * @param unionId       联盟id
@@ -243,7 +225,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     void update(UnionMember unionMember) throws Exception;
 
     /**
-     * 联盟设置-基础设置-更新
+     * 我的联盟-联盟设置-基础设置-保存
      *
      * @param busId    商家id
      * @param memberId 盟员id
@@ -254,7 +236,7 @@ public interface IUnionMemberService extends IService<UnionMember> {
     void updateByBusIdAndIdAndUnionId(Integer busId, Integer memberId, Integer unionId, UnionMember vo) throws Exception;
 
     /**
-     * 联盟卡设置-折扣卡设置-折扣设置-更新
+     * 我的联盟-联盟卡设置-折扣卡设置-折扣设置-更新
      *
      * @param busId    商家id
      * @param memberId 盟员id

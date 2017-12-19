@@ -30,6 +30,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -79,7 +81,7 @@ public class UnionCardFanServiceImpl extends ServiceImpl<UnionCardFanMapper, Uni
         if (fan == null) {
             throw new BusinessException("找不到粉丝信息");
         }
-        // （3）	获取折扣卡和活动卡，活动卡按时间倒序排序
+        // （3）	获取有效的折扣卡信息
         List<UnionCard> cardList = unionCardService.listValidByUnionIdAndFanId(unionId, fanId);
         List<UnionCard> discountCardList = unionCardService.filterByType(cardList, CardConstant.TYPE_DISCOUNT);
         CardFanDetailVO result = new CardFanDetailVO();
@@ -89,7 +91,14 @@ public class UnionCardFanServiceImpl extends ServiceImpl<UnionCardFanMapper, Uni
             UnionMember discountCardMember = unionMemberService.getReadByIdAndUnionId(discountCard.getMemberId(), unionId);
             result.setDiscount(discountCardMember != null ? discountCardMember.getDiscount() : null);
         }
+        // （4）获取有效的活动卡信息，并按时间倒序排序
         List<UnionCard> activityCardList = unionCardService.filterByType(cardList, CardConstant.TYPE_ACTIVITY);
+        Collections.sort(activityCardList, new Comparator<UnionCard>() {
+            @Override
+            public int compare(UnionCard o1, UnionCard o2) {
+                return o2.getCreateTime().compareTo(o1.getCreateTime());
+            }
+        });
         result.setActivityCardList(activityCardList);
 
         return result;
@@ -112,16 +121,16 @@ public class UnionCardFanServiceImpl extends ServiceImpl<UnionCardFanMapper, Uni
             throw new BusinessException(CommonConstant.UNION_READ_REJECT);
         }
 
-        // （2）	获取union下的fan，要求fan在该union下有折扣卡
+        // （2）	获取union下具有有效折扣卡的fan，并根据卡号和手机号进行过滤
         List<UnionCardFan> fanList = listWithValidDiscountCardByUnionId(unionId, optNumber, optPhone);
 
-        // （3）	统计联盟积分=指定联盟折扣卡积分+指定联盟活动卡积分
+        // （3）	统计粉丝联盟积分，即fan在union下所有有效的折扣卡和活动卡的积分之和
         List<CardFanVO> result = new ArrayList<>();
         for (UnionCardFan fan : fanList) {
-            CardFanVO fanVO = new CardFanVO();
-            fanVO.setFan(fan);
-            fanVO.setIntegral(unionCardIntegralService.countIntegralByUnionIdAndFanId(unionId, fan.getId()));
-            result.add(fanVO);
+            CardFanVO vo = new CardFanVO();
+            vo.setFan(fan);
+            vo.setIntegral(unionCardIntegralService.countIntegralByUnionIdAndFanId(unionId, fan.getId()));
+            result.add(vo);
         }
 
         return result;
@@ -135,15 +144,15 @@ public class UnionCardFanServiceImpl extends ServiceImpl<UnionCardFanMapper, Uni
 
         EntityWrapper<UnionCardFan> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .eq(StringUtil.isNotEmpty(optNumber), "number", optNumber)
-                .eq(StringUtil.isNotEmpty(optPhone), "phone", optPhone)
+                .like(StringUtil.isNotEmpty(optNumber), "number", optNumber)
+                .like(StringUtil.isNotEmpty(optPhone), "phone", optPhone)
                 .exists(" SELECT c.id FROM t_union_card c "
                         + " WHERE c.fan_id=t_union_card_fan.id "
                         + " AND c.union_id=" + unionId
                         + " AND c.type=" + CardConstant.TYPE_DISCOUNT
                         + " AND c.del_status=" + CommonConstant.COMMON_NO
                         + " AND c.validity >= now() ");
-        
+
         return selectList(entityWrapper);
     }
 
@@ -199,7 +208,7 @@ public class UnionCardFanServiceImpl extends ServiceImpl<UnionCardFanMapper, Uni
                 busUnionIdList.add(union.getId());
             }
         }
-        // （3）	过滤掉一些粉丝没办折扣卡或存在有效活动卡的union
+        // （3）	过滤掉一些粉丝没办折扣卡的union
         List<UnionCard> cardList = unionCardService.listValidByFanId(fan.getId());
         List<Integer> fanUnionIdList = new ArrayList<>();
         if (ListUtil.isNotEmpty(cardList)) {

@@ -29,17 +29,17 @@ public interface IUnionMemberJoinService extends IService<UnionMemberJoin> {
     /**
      * 获取入盟申请信息
      *
-     * @param applyMemberId 申请盟员id
      * @param unionId       联盟id
+     * @param applyMemberId 申请盟员id
      * @return UnionMemberJoin
      * @throws Exception 统一处理异常
      */
-    UnionMemberJoin getByApplyMemberIdAndUnionId(Integer applyMemberId, Integer unionId) throws Exception;
+    UnionMemberJoin getByUnionIdAndApplyMemberId(Integer unionId, Integer applyMemberId) throws Exception;
 
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 入盟审核-分页
+     * 分页：我的联盟-入盟审核
      *
      * @param buId          商家id
      * @param unionId       联盟id
@@ -53,7 +53,7 @@ public interface IUnionMemberJoinService extends IService<UnionMemberJoin> {
     //***************************************** Domain Driven Design - save ********************************************
 
     /**
-     * 加入联盟-保存；推荐入盟
+     * 我的联盟-加入联盟-保存；我的联盟-推荐入盟
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -68,7 +68,7 @@ public interface IUnionMemberJoinService extends IService<UnionMemberJoin> {
     //***************************************** Domain Driven Design - update ******************************************
 
     /**
-     * 通过或不通过入盟申请
+     * 我的联盟-入盟审核-分页数据-通过或不通过
      *
      * @param busId   商家id
      * @param joinId  入盟申请id

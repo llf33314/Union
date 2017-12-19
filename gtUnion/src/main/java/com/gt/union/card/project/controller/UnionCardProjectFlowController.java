@@ -37,7 +37,7 @@ public class UnionCardProjectFlowController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "联盟卡设置-活动卡设置-分页-我的活动项目-审批记录", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "我的联盟-联盟卡设置-活动卡设置-分页数据-我的活动项目-审批记录", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listByProjectIdAndUnionId(
             HttpServletRequest request,

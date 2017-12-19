@@ -38,7 +38,7 @@ public class UnionMainCreateController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "创建联盟-检查联盟许可", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "我的联盟-创建联盟-检查联盟许可", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/checkPermit", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getPermitCheckVO(HttpServletRequest request) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
@@ -60,7 +60,7 @@ public class UnionMainCreateController {
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
-    @ApiOperation(value = "创建联盟-保存", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "我的联盟-创建联盟-保存", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String saveUnionCreateVO(
             HttpServletRequest request,

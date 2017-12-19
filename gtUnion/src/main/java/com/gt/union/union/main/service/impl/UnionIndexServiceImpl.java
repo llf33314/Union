@@ -19,6 +19,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -52,7 +54,7 @@ public class UnionIndexServiceImpl implements IUnionIndexService {
 
         IndexVO result = new IndexVO();
 
-        // （1）获取创建的联盟
+        // （1）获取我创建的联盟
         List<UnionMember> busReadMemberList = unionMemberService.listReadByBusId(busId);
         List<UnionMember> busCreateMemberList = unionMemberService.filterByIsUnionOwner(busReadMemberList, MemberConstant.IS_UNION_OWNER_YES);
         if (ListUtil.isNotEmpty(busCreateMemberList)) {
@@ -61,7 +63,7 @@ public class UnionIndexServiceImpl implements IUnionIndexService {
             result.setMyCreateUnion(busCreateUnion);
         }
 
-        // （2）获取加入的联盟
+        // （2）获取我加入的联盟
         List<UnionMember> busJoinMemberList = unionMemberService.filterByIsUnionOwner(busReadMemberList, MemberConstant.IS_UNION_OWNER_NO);
         if (ListUtil.isNotEmpty(busJoinMemberList)) {
             List<UnionMain> busJoinUnionList = new ArrayList<>();
@@ -72,9 +74,11 @@ public class UnionIndexServiceImpl implements IUnionIndexService {
             result.setMyJoinUnionList(busJoinUnionList);
         }
 
-        // （3）如果存在unionId，则当前联盟为指定union；
-        // 否则，如果存在创建的联盟，则当前联盟为创建的联盟；
-        // 如果不存在创建的联盟，则当前联盟为第一个加入的联盟
+        // （3）判断unionId是否存在：
+        //   （3-1）如果存在，则当前联盟为指定union；
+        //   （3-2）如果不存在，则判断是否存在创建的联盟：
+        //      （3-2-1）如果存在，则当前联盟为创建的联盟；
+        //      （3-2-2）如果不存在，则当前联盟为第一个加入的联盟
         UnionMain currentUnion = null;
         if (optUnionId != null) {
             boolean isFound = false;
@@ -98,7 +102,7 @@ public class UnionIndexServiceImpl implements IUnionIndexService {
             }
         }
 
-        // （4）如果存在当前联盟，则获取商家对应的盟员信息、联盟盟主、联盟积分、联盟成员数、联盟剩余盟员数，以及联盟转移申请信息
+        // （4）如果存在当前联盟，则获取对应的盟员信息、盟主信息、联盟总积分数、联盟成员数、联盟剩余盟员数，以及盟主权限转移申请信息
         if (currentUnion != null) {
             result.setCurrentUnion(currentUnion);
             Integer currentUnionId = currentUnion.getId();

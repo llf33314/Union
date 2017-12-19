@@ -29,7 +29,7 @@ public interface IUnionOpportunityRatioService extends IService<UnionOpportunity
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 商机佣金比例设置-分页
+     * 分页：商机-商机佣金比设置
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -45,7 +45,7 @@ public interface IUnionOpportunityRatioService extends IService<UnionOpportunity
     //***************************************** Domain Driven Design - update ******************************************
 
     /**
-     * 商机佣金比例设置-设置佣金比例
+     * 商机-商机佣金比例设置-设置佣金比例-更新
      *
      * @param busId      商家id
      * @param unionId    联盟id

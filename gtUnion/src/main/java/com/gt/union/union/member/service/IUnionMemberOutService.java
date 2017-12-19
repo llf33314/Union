@@ -39,7 +39,7 @@ public interface IUnionMemberOutService extends IService<UnionMemberOut> {
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 退盟管理-退盟审核-分页
+     * 分页：我的联盟-退盟管理-退盟审核
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -49,7 +49,7 @@ public interface IUnionMemberOutService extends IService<UnionMemberOut> {
     List<MemberOutVO> listMemberOutVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
 
     /**
-     * 退盟管理-退盟过渡期-分页
+     * 分页：我的联盟-退盟管理-退盟过渡期
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -61,7 +61,7 @@ public interface IUnionMemberOutService extends IService<UnionMemberOut> {
     //***************************************** Domain Driven Design - save ********************************************
 
     /**
-     * 首页-盟员列表-分页-移出
+     * 我的联盟-首页-盟员列表-分页数据-移出
      *
      * @param busId         商家id
      * @param unionId       联盟id
@@ -71,7 +71,7 @@ public interface IUnionMemberOutService extends IService<UnionMemberOut> {
     void saveByBusIdAndUnionIdAndApplyMemberId(Integer busId, Integer unionId, Integer applyMemberId) throws Exception;
 
     /**
-     * 退盟管理-退盟过渡期-退盟申请
+     * 我的联盟-退盟管理-退盟过渡期-退盟申请
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -85,7 +85,7 @@ public interface IUnionMemberOutService extends IService<UnionMemberOut> {
     //***************************************** Domain Driven Design - update ******************************************
 
     /**
-     * 退盟管理-退盟审核-分页-通过或拒绝
+     * 我的联盟-退盟管理-退盟审核-分页数据-同意或拒绝
      *
      * @param busId   商家id
      * @param outId   退盟申请id

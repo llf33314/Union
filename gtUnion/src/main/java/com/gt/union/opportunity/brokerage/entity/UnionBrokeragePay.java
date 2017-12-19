@@ -121,8 +121,8 @@ public class UnionBrokeragePay extends Model<UnionBrokeragePay> {
      * 订单号
      */
     @ApiModelProperty(value = "订单号")
-    @TableField("order_no")
-    private String orderNo;
+    @TableField("sys_order_no")
+    private String sysOrderNo;
 
     /**
      * 微信订单编号
@@ -242,12 +242,12 @@ public class UnionBrokeragePay extends Model<UnionBrokeragePay> {
         this.verifierId = verifierId;
     }
 
-    public String getOrderNo() {
-        return orderNo;
+    public String getSysOrderNo() {
+        return sysOrderNo;
     }
 
-    public void setOrderNo(String orderNo) {
-        this.orderNo = orderNo;
+    public void setSysOrderNo(String sysOrderNo) {
+        this.sysOrderNo = sysOrderNo;
     }
 
     public String getWxOrderNo() {

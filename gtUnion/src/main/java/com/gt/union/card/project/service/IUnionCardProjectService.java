@@ -41,7 +41,7 @@ public interface IUnionCardProjectService extends IService<UnionCardProject> {
     UnionCardProject getByIdAndUnionIdAndActivityId(Integer projectId, Integer unionId, Integer activityId) throws Exception;
 
     /**
-     * 联盟卡设置-活动卡设置-分页-我的活动项目-ERP和非ERP
+     * 我的联盟-联盟卡设置-活动卡设置-分页数据-我的活动项目
      *
      * @param busId      商家id
      * @param unionId    联盟id
@@ -86,7 +86,7 @@ public interface IUnionCardProjectService extends IService<UnionCardProject> {
     List<UnionCardProject> listByUnionIdAndActivityIdAndStatus(Integer unionId, Integer activityId, Integer status) throws Exception;
 
     /**
-     * 联盟卡设置-活动卡设置-分页-参与盟员数
+     * 我的联盟-联盟卡设置-活动卡设置-分页数据-参与盟员数
      *
      * @param busId      商家id
      * @param unionId    联盟id
@@ -97,7 +97,7 @@ public interface IUnionCardProjectService extends IService<UnionCardProject> {
     List<CardProjectJoinMemberVO> listJoinMemberByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception;
 
     /**
-     * 联盟卡设置-活动卡设置-分页-审核项目
+     * 我的联盟-联盟卡设置-活动卡设置-分页数据-待审核
      *
      * @param busId      商家id
      * @param unionId    联盟id
@@ -130,7 +130,7 @@ public interface IUnionCardProjectService extends IService<UnionCardProject> {
     //***************************************** Domain Driven Design - update ******************************************
 
     /**
-     * 联盟卡设置-活动卡设置-分页-审核项目-通过或不通过
+     * 我的联盟-联盟卡设置-活动卡设置-分页数据-审核项目-通过或不通过
      *
      * @param busId      商家id
      * @param unionId    联盟id

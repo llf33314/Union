@@ -99,12 +99,14 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
             throw new BusinessException(CommonConstant.UNION_NEED_OWNER);
         }
 
-        // （2）要求公告内容不能为空，且字数不能超过50字
+        // （2）公告内容不能为空，且字数不能超过50字
         if (StringUtil.isEmpty(content) || StringUtil.getStringLength(content) > 50) {
             throw new BusinessException("公告内容不能为空，且字数不能大于50");
         }
 
-        // （3）如果原公告不存在，则新增；否则，更新
+        // （3）判断原公告是否存在：
+        //   （3-1）如果存在，则更新；
+        //   （3-2）如果不存在，则新增
         UnionMainNotice notice = getByUnionId(unionId);
         if (notice != null) {
             UnionMainNotice updateNotice = new UnionMainNotice();

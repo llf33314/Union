@@ -63,7 +63,7 @@ public class UnionCardProjectFlowServiceImpl extends ServiceImpl<UnionCardProjec
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_READ_REJECT);
         }
-        // （2）	判断projectId有效性
+        // （2）	判断project是否存在
         UnionCardProject project = unionCardProjectService.getByUnionIdAndMemberIdAndActivityId(unionId, member.getId(), activityId);
         if (project == null) {
             throw new BusinessException("找不到活动项目信息");

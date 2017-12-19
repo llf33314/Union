@@ -44,7 +44,7 @@ public interface IUnionMainPermitService extends IService<UnionMainPermit> {
     void save(UnionMainPermit savePermit) throws Exception;
 
     /**
-     * 创建联盟-购买盟主服务-支付
+     * 我的联盟-创建联盟-购买盟主服务-支付
      *
      * @param busId     商家id
      * @param packageId 套餐id

@@ -13,7 +13,7 @@ public interface IUnionMainNoticeService extends IService<UnionMainNotice> {
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
-     * 首页-联盟公告
+     * 我的联盟-首页-联盟公告
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -40,7 +40,7 @@ public interface IUnionMainNoticeService extends IService<UnionMainNotice> {
     //***************************************** Domain Driven Design - update ******************************************
 
     /**
-     * 首页-联盟公告-更新
+     * 我的联盟-首页-联盟公告-更新
      *
      * @param busId   商家id
      * @param unionId 联盟id

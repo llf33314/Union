@@ -48,7 +48,7 @@ public interface IUnionCardActivityService extends IService<UnionCardActivity> {
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 售卡佣金分成管理-活动卡售卡比例设置-分页
+     * 分页：我的联盟-售卡佣金分成管理-活动卡售卡比例设置-选择活动卡
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -58,7 +58,7 @@ public interface IUnionCardActivityService extends IService<UnionCardActivity> {
     List<CardActivityStatusVO> listCardActivityStatusVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
 
     /**
-     * 联盟卡设置-活动卡设置-分页
+     * 分页：我的联盟-联盟卡设置-活动卡设置
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -102,7 +102,7 @@ public interface IUnionCardActivityService extends IService<UnionCardActivity> {
     //***************************************** Domain Driven Design - save ********************************************
 
     /**
-     * 联盟卡设置-活动卡设置-新增活动卡
+     * 我的联盟-联盟卡设置-活动卡设置-新增活动卡
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -114,7 +114,7 @@ public interface IUnionCardActivityService extends IService<UnionCardActivity> {
     //***************************************** Domain Driven Design - remove ******************************************
 
     /**
-     * 联盟卡设置-活动卡设置-分页-删除
+     * 我的联盟-联盟卡设置-活动卡设置-分页数据-删除
      *
      * @param busId      商家id
      * @param activityId 活动id

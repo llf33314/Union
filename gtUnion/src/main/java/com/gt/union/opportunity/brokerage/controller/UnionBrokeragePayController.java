@@ -44,7 +44,7 @@ public class UnionBrokeragePayController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "佣金结算-我需支付的佣金-分页", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：商机-佣金结算-我需支付的佣金", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/opportunity/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageBrokerageOpportunityVO(
             HttpServletRequest request,
@@ -76,7 +76,7 @@ public class UnionBrokeragePayController {
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
-    @ApiOperation(value = "佣金结算-支付明细-分页", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：商机-佣金结算-支付明细", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/detail/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pagePayVo(
             HttpServletRequest request,
@@ -104,7 +104,7 @@ public class UnionBrokeragePayController {
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
-    @ApiOperation(value = "佣金结算-支付明细-导出", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "导出：商机-佣金结算-支付明细", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/detail/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public void exportBrokeragePayDetail(HttpServletRequest request, HttpServletResponse response) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
@@ -149,7 +149,7 @@ public class UnionBrokeragePayController {
         ExportUtil.responseExport(response, workbook, fileName);
     }
 
-    @ApiOperation(value = "佣金结算-支付明细-详情", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "商机-佣金结算-支付明细-详情", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/detail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getPayVo(
             HttpServletRequest request,
@@ -172,7 +172,7 @@ public class UnionBrokeragePayController {
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
-    @ApiOperation(value = "佣金结算-支付明细-详情-导出", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "导出：商机佣金结算-支付明细-详情", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/detail/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public void exportDetail(
             HttpServletRequest request,
@@ -226,7 +226,7 @@ public class UnionBrokeragePayController {
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
-    @ApiOperation(value = "佣金结算-我需支付的佣金-批量支付", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "商机-佣金结算-我需支付的佣金-批量支付", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/opportunity", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String batchPay(
             HttpServletRequest request,
@@ -242,7 +242,7 @@ public class UnionBrokeragePayController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             result = MockUtil.get(UnionPayVO.class);
         } else {
-            result = unionBrokeragePayService.batchPayByBusId(busId, opportunityIdList);
+            result = unionBrokeragePayService.batchPayByBusId(busId, opportunityIdList, null);
         }
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }

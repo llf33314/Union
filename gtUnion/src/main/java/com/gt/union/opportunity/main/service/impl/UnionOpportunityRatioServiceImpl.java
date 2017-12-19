@@ -94,7 +94,7 @@ public class UnionOpportunityRatioServiceImpl extends ServiceImpl<UnionOpportuni
         Collections.sort(result, new Comparator<OpportunityRatioVO>() {
             @Override
             public int compare(OpportunityRatioVO o1, OpportunityRatioVO o2) {
-                return o2.getMember().getCreateTime().compareTo(o1.getMember().getCreateTime());
+                return o1.getMember().getCreateTime().compareTo(o2.getMember().getCreateTime());
             }
         });
         return result;
@@ -125,7 +125,7 @@ public class UnionOpportunityRatioServiceImpl extends ServiceImpl<UnionOpportuni
         if (toMember == null) {
             throw new BusinessException("找不到盟员信息");
         }
-        // （3）	要求ratio在(0, 100)
+        // （3）	要求ratio在(0, 100%)
         if (ratio <= 0 || ratio >= 1) {
             throw new BusinessException("比例必须在0至100之间");
         }

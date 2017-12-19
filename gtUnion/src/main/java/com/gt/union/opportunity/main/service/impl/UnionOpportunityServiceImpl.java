@@ -80,7 +80,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_READ_REJECT);
         }
-        // （2）	获取已接受的给我的商机，区分是否已支付
+        // （2）	获取已接受的我推荐的商机，区分是否已支付
         OpportunityStatisticsVO result = new OpportunityStatisticsVO();
 
         List<UnionOpportunity> incomeOpportunityList = listByUnionIdAndFromMemberIdAndAcceptStatus(unionId, member.getId(), OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
@@ -104,7 +104,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
 
         BigDecimal incomeSum = BigDecimalUtil.add(paidIncome, unPaidIncome);
         result.setIncomeSum(incomeSum.doubleValue());
-        // （3）	获取已接受的我给的商机，区分是否已支付
+        // （3）	获取已接受的推荐给我的商机，区分是否已支付
         List<UnionOpportunity> expenseOpportunityList = listByUnionIdAndToMemberIdAndAcceptStatus(unionId, member.getId(), OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
         List<UnionOpportunity> paidExpenseOpportunityList = filterByIsClose(expenseOpportunityList, OpportunityConstant.IS_CLOSE_YES);
         BigDecimal paidExpense = BigDecimal.ZERO;
@@ -218,12 +218,8 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 }
             }
         }
-        List<Integer> toMemberIdList = new ArrayList<>();
-        if (ListUtil.isNotEmpty(toMemberList)) {
-            for (UnionMember member : toMemberList) {
-                toMemberIdList.add(member.getId());
-            }
-        }
+        List<Integer> toMemberIdList = unionMemberService.getIdList(toMemberList);
+        // （3）根据查询条件进行过滤
         List<UnionOpportunity> opportunityList = listByToMemberIdList(toMemberIdList);
         List<Integer> acceptStatusList = getAcceptStatusList(optAcceptStatus);
         if (ListUtil.isNotEmpty(acceptStatusList)) {
@@ -316,12 +312,8 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 }
             }
         }
-        List<Integer> fromMemberIdList = new ArrayList<>();
-        if (ListUtil.isNotEmpty(fromMemberList)) {
-            for (UnionMember member : fromMemberList) {
-                fromMemberIdList.add(member.getId());
-            }
-        }
+        List<Integer> fromMemberIdList = unionMemberService.getIdList(fromMemberList);
+        // （3）根据查询条件进行过滤
         List<UnionOpportunity> opportunityList = listByFromMemberIdList(fromMemberIdList);
         List<Integer> acceptStatusList = getAcceptStatusList(optAcceptStatus);
         if (ListUtil.isNotEmpty(acceptStatusList)) {
@@ -333,7 +325,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         if (StringUtil.isNotEmpty(optClientPhone)) {
             opportunityList = filterByLikeClientPhone(opportunityList, optClientPhone);
         }
-        // （3）	按受理状态顺序、创建时间倒序排序
+        // （4）	按受理状态顺序、创建时间倒序排序
         List<OpportunityVO> result = getOpportunityVOList(opportunityList);
         sortByAcceptStatus(result);
 
@@ -415,9 +407,13 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
             for (UnionOpportunity opportunity : opportunityList) {
                 BrokerageOpportunityVO vo = new BrokerageOpportunityVO();
                 vo.setOpportunity(opportunity);
+
                 vo.setFromMember(unionMemberService.getReadByIdAndUnionId(opportunity.getFromMemberId(), opportunity.getUnionId()));
+
                 vo.setToMember(unionMemberService.getReadByIdAndUnionId(opportunity.getToMemberId(), opportunity.getUnionId()));
+
                 vo.setUnion(unionMainService.getById(opportunity.getUnionId()));
+                
                 result.add(vo);
             }
         }
@@ -426,11 +422,11 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
             public int compare(BrokerageOpportunityVO o1, BrokerageOpportunityVO o2) {
                 int c = o1.getOpportunity().getIsClose().compareTo(o2.getOpportunity().getIsClose());
                 if (c < 0) {
-                    return 1;
-                } else if (c > 0) {
                     return -1;
+                } else if (c > 0) {
+                    return 1;
                 }
-                return o1.getOpportunity().getCreateTime().compareTo(o2.getOpportunity().getCreateTime());
+                return o2.getOpportunity().getCreateTime().compareTo(o1.getOpportunity().getCreateTime());
             }
         });
 
@@ -560,7 +556,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         if (opportunity == null) {
             throw new BusinessException("找不到商机信息");
         }
-        // （3）	要求opportunity为未处理状态，否则，报错
+        // （3）	要求opportunity为未处理状态
         if (OpportunityConstant.ACCEPT_STATUS_CONFIRMING != opportunity.getAcceptStatus()) {
             throw new BusinessException("商机已处理");
         }

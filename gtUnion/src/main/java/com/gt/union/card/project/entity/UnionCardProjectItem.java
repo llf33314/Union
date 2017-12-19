@@ -97,6 +97,13 @@ public class UnionCardProjectItem extends Model<UnionCardProjectItem> {
     private Integer shopId;
 
     /**
+     * 门店名称
+     */
+    @ApiModelProperty(value = "门店名称")
+    @TableField("shop_name")
+    private String shopName;
+
+    /**
      * ERP系统的文本项目id
      */
     @ApiModelProperty(value = "ERP系统的文本项目id")
@@ -196,6 +203,14 @@ public class UnionCardProjectItem extends Model<UnionCardProjectItem> {
 
     public void setShopId(Integer shopId) {
         this.shopId = shopId;
+    }
+
+    public String getShopName() {
+        return shopName;
+    }
+
+    public void setShopName(String shopName) {
+        this.shopName = shopName;
     }
 
     public Integer getErpTextId() {

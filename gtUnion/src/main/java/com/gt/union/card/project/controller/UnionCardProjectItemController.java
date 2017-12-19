@@ -63,7 +63,7 @@ public class UnionCardProjectItemController {
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
-    @ApiOperation(value = "联盟卡设置-活动卡设置-分页-我的活动项目-ERP和非ERP-保存", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "我的联盟-联盟卡设置-活动卡设置-分页数据-我的活动项目-ERP和非ERP-保存", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/save", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String saveProjectItemVOByActivityIdAndUnionId(
             HttpServletRequest request,
@@ -84,7 +84,7 @@ public class UnionCardProjectItemController {
         return GtJsonResult.instanceSuccessMsg().toString();
     }
 
-    @ApiOperation(value = "联盟卡设置-活动卡设置-分页-我的活动项目-ERP和非ERP-提交", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "我的联盟-联盟卡设置-活动卡设置-分页数据-我的活动项目-ERP和非ERP-提交", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}/commit", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String commitProjectItemVOByActivityIdAndUnionId(
             HttpServletRequest request,

@@ -52,9 +52,6 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        if (!unionMainService.isUnionValid(unionId)) {
-            throw new BusinessException(CommonConstant.UNION_INVALID);
-        }
 
         // （1）	判断union有效性和member读权限
         UnionMain union = unionMainService.getById(unionId);
@@ -131,7 +128,12 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         }
 
         // （2）	判断memberId有效性
-        return getReadByIdAndUnionId(memberId, unionId);
+        UnionMember result = getReadByIdAndUnionId(memberId, unionId);
+        if (result == null) {
+            throw new BusinessException("找不到盟员信息");
+        }
+
+        return result;
     }
 
     @Override
@@ -228,23 +230,6 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     }
 
     @Override
-    public List<Integer> listReadIdByBusId(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<Integer> result = new ArrayList<>();
-        List<UnionMember> memberList = listReadByBusId(busId);
-        if (ListUtil.isNotEmpty(memberList)) {
-            for (UnionMember member : memberList) {
-                result.add(member.getId());
-            }
-        }
-
-        return result;
-    }
-
-    @Override
     public List<UnionMember> listWriteByBusId(Integer busId) throws Exception {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -256,23 +241,6 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         statusList.add(MemberConstant.STATUS_APPLY_OUT);
 
         return filterByStatusList(result, statusList);
-    }
-
-    @Override
-    public List<Integer> listWriteIdByBusId(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<Integer> result = new ArrayList<>();
-        List<UnionMember> memberList = listWriteByBusId(busId);
-        if (ListUtil.isNotEmpty(memberList)) {
-            for (UnionMember member : memberList) {
-                result.add(member.getId());
-            }
-        }
-
-        return result;
     }
 
     @Override
@@ -289,9 +257,9 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_READ_REJECT);
         }
-        // （2）	获取union下所有入盟状态和退盟申请状态的member
+        // （2）	获取union下所有具有写权限的member
         List<UnionMember> result = listWriteByUnionId(unionId);
-        // （3）	如果memberName不为空，则过滤member
+        // （3）	如果memberName不为空，则进行过滤
         if (StringUtil.isNotEmpty(optMemberName)) {
             List<UnionMember> tempMemberList = new ArrayList<>();
             for (UnionMember tempMember : result) {
@@ -320,8 +288,6 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
                 return o1.getCreateTime().compareTo(o2.getCreateTime());
             }
         });
-
-        System.out.println(JSONArray.toJSONString(result));
 
         return result;
     }
@@ -429,7 +395,8 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	判断union有效性和member写权限
-        if (!unionMainService.isUnionValid(unionId)) {
+        UnionMain union = unionMainService.getById(unionId);
+        if (!unionMainService.isUnionValid(union)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
         UnionMember member = getWriteByBusIdAndUnionId(busId, unionId);
@@ -438,7 +405,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         }
         // （2）	判断memberId有效性
         if (!memberId.equals(member.getId())) {
-            throw new BusinessException("无法更新其他盟员信息");
+            throw new BusinessException("无法更新他人的盟员信息");
         }
         // （3）	校验表单
         UnionMember updateMember = new UnionMember();
@@ -504,7 +471,6 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         }
         updateMember.setNotifyPhone(memberNotifyPhone);
         // （3-8）如果联盟开启积分，则校验积分抵扣率
-        UnionMain union = unionMainService.getById(unionId);
         if (CommonConstant.COMMON_YES == union.getIsIntegral()) {
             Double memberIntegralExchangeRatio = vo.getIntegralExchangeRatio();
             Double maxIntegralExchange = dictService.getMaxExchangePercent();

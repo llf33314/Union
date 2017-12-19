@@ -10,7 +10,7 @@ import com.gt.union.union.main.vo.IndexVO;
  */
 public interface IUnionIndexService {
     /**
-     * 首页
+     * 我的联盟-首页
      *
      * @param busId      商家id
      * @param optUnionId 联盟id

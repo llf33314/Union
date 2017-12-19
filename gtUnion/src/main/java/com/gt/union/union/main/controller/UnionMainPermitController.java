@@ -41,7 +41,7 @@ public class UnionMainPermitController {
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
-    @ApiOperation(value = "创建联盟-购买盟主服务-支付", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "我的联盟-创建联盟-购买盟主服务-支付", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/packageId/{packageId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String saveByPackageId(
             HttpServletRequest request,

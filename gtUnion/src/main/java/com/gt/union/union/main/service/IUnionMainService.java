@@ -16,7 +16,7 @@ public interface IUnionMainService extends IService<UnionMain> {
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
-     * 获取联盟基础信息
+     * 我的联盟-联盟设置-联盟基本信息
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -37,7 +37,7 @@ public interface IUnionMainService extends IService<UnionMain> {
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 加入联盟-分页
+     * 分页：我的联盟-加入联盟-选择联盟
      *
      * @param busId 商家id
      * @return List<UnionMain>
@@ -86,7 +86,7 @@ public interface IUnionMainService extends IService<UnionMain> {
     void update(UnionMain updateUnionMain) throws Exception;
 
     /**
-     * 联盟设置-联盟基本信息-更新
+     * 我的联盟-联盟设置-联盟基本信息-保存
      *
      * @param busId   商家id
      * @param unionId 联盟id

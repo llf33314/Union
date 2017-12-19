@@ -119,6 +119,7 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
                 }
             }
         }
+        // （4）按时间倒序排序
         Collections.sort(opportunityList, new Comparator<UnionOpportunity>() {
             @Override
             public int compare(UnionOpportunity o1, UnionOpportunity o2) {
@@ -138,13 +139,29 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	获取商家所有有效的盟员列表
-        List<Integer> readMemberIdList = unionMemberService.listReadIdByBusId(busId);
-        // （2）获取已被接受的商机推荐
-        List<UnionOpportunity> opportunityList = unionOpportunityService.listByToMemberIdList(readMemberIdList);
+        // （1）	获取商家所有有效的member
+        List<UnionMember> memberList = unionMemberService.listReadByBusId(busId);
+        // （2）	根据unionId过滤掉一些member
+        List<UnionMember> toMemberList = new ArrayList<>();
+        if (optUnionId == null) {
+            toMemberList = memberList;
+        } else {
+            for (UnionMember member : memberList) {
+                if (optUnionId.equals(member.getUnionId())) {
+                    toMemberList.add(member);
+                }
+            }
+        }
+        List<Integer> toMemberIdList = unionMemberService.getIdList(toMemberList);
+        // （3）获取已被接受的商机推荐
+        List<UnionOpportunity> opportunityList = unionOpportunityService.listByToMemberIdList(toMemberIdList);
         opportunityList = unionOpportunityService.filterByAcceptStatus(opportunityList, OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
+        // （4）根据查询条件进行过滤
         if (optFromMemberId != null) {
             opportunityList = unionOpportunityService.filterByFromMemberId(opportunityList, optFromMemberId);
+        }
+        if (optIsClose != null) {
+            opportunityList = unionOpportunityService.filterByIsClose(opportunityList, optIsClose);
         }
         if (StringUtil.isNotEmpty(optClientName)) {
             opportunityList = unionOpportunityService.filterByLikeClientName(opportunityList, optClientName);
@@ -152,7 +169,7 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
         if (StringUtil.isNotEmpty(optClientPhone)) {
             opportunityList = unionOpportunityService.filterByLikeClientPhone(opportunityList, optClientPhone);
         }
-        // （3）	按已结算状态顺序(未>已)，时间倒序排序]
+        // （5）	按已结算状态顺序(未>已)，时间倒序排序
         return unionOpportunityService.listBrokerageOpportunityVO(opportunityList);
     }
 
@@ -216,12 +233,12 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
             public int compare(BrokeragePayVO o1, BrokeragePayVO o2) {
                 int c = o1.getUnion().getCreateTime().compareTo(o2.getUnion().getCreateTime());
                 if (c > 0) {
-                    return -1;
-                } else if (c < 0) {
                     return 1;
+                } else if (c < 0) {
+                    return 2;
                 }
 
-                return o2.getMember().getCreateTime().compareTo(o1.getMember().getCreateTime());
+                return o1.getMember().getCreateTime().compareTo(o2.getMember().getCreateTime());
             }
         });
 
@@ -263,7 +280,7 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public UnionPayVO batchPayByBusId(Integer busId, List<Integer> opportunityIdList) throws Exception {
+    public UnionPayVO batchPayByBusId(Integer busId, List<Integer> opportunityIdList, Integer verifierId) throws Exception {
         if (busId == null || opportunityIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -310,9 +327,10 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
                 savePay.setUnionId(opportunity.getUnionId());
                 savePay.setFromBusId(fromMember.getBusId());
                 savePay.setToBusId(toMember.getBusId());
-                savePay.setOrderNo(orderNo);
+                savePay.setSysOrderNo(orderNo);
                 savePay.setOpportunityId(opportunityId);
                 savePay.setMoney(opportunity.getBrokerageMoney());
+                savePay.setVerifierId(verifierId);
                 savePayList.add(savePay);
             }
         }
@@ -320,7 +338,7 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
             throw new BusinessException("没有有效的支付信息");
         }
 
-        // （3）	调用接口，返回支付链接
+        // （4）	调用接口，返回支付链接
         UnionPayVO result = new UnionPayVO();
         String socketKey = PropertiesUtil.getSocketKey() + orderNo;
         String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/opportunity?socketKey=" + socketKey;

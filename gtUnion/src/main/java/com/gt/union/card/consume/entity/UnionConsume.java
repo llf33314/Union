@@ -100,8 +100,8 @@ public class UnionConsume extends Model<UnionConsume> {
      * 订单号
      */
     @ApiModelProperty(value = "订单号")
-    @TableField("order_no")
-    private String orderNo;
+    @TableField("sys_order_no")
+    private String sysOrderNo;
 
     /**
      * 微信订单号
@@ -144,6 +144,13 @@ public class UnionConsume extends Model<UnionConsume> {
     @ApiModelProperty(value = "门店id")
     @TableField("shop_id")
     private Integer shopId;
+
+    /**
+     * 门店名称
+     */
+    @ApiModelProperty(value = "门店名称")
+    @TableField("shop_name")
+    private String shopName;
 
     /**
      * 盟员id
@@ -254,12 +261,12 @@ public class UnionConsume extends Model<UnionConsume> {
         this.giveIntegral = giveIntegral;
     }
 
-    public String getOrderNo() {
-        return orderNo;
+    public String getSysOrderNo() {
+        return sysOrderNo;
     }
 
-    public void setOrderNo(String orderNo) {
-        this.orderNo = orderNo;
+    public void setSysOrderNo(String sysOrderNo) {
+        this.sysOrderNo = sysOrderNo;
     }
 
     public String getWxOrderNo() {
@@ -308,6 +315,14 @@ public class UnionConsume extends Model<UnionConsume> {
 
     public void setShopId(Integer shopId) {
         this.shopId = shopId;
+    }
+
+    public String getShopName() {
+        return shopName;
+    }
+
+    public void setShopName(String shopName) {
+        this.shopName = shopName;
     }
 
     public Integer getMemberId() {

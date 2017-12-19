@@ -48,7 +48,7 @@ public class UnionCardFanController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "首页-联盟卡-分页", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：我的联盟-首页-联盟卡", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageFanVOByUnionId(
             HttpServletRequest request,
@@ -76,7 +76,7 @@ public class UnionCardFanController {
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
-    @ApiOperation(value = "首页-联盟卡-导出", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "导出：我的联盟-首页-联盟卡", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public void exportFanVOByUnionId(
             HttpServletRequest request,
@@ -123,7 +123,7 @@ public class UnionCardFanController {
         ExportUtil.responseExport(response, workbook, fileName);
     }
 
-    @ApiOperation(value = "首页-联盟卡-分页-详情", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "我的联盟-首页-联盟卡-分页数据-详情", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{fanId}/detail", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getFanDetailVOIdAndUnionId(
             HttpServletRequest request,

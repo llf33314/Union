@@ -7,9 +7,11 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.opportunity.brokerage.service.IUnionBrokeragePayService;
 import com.gt.union.union.main.service.IUnionMainPermitService;
+import io.swagger.annotations.Api;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import springfox.documentation.annotations.ApiIgnore;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,6 +24,7 @@ import java.util.Map;
  */
 @RestController
 @RequestMapping("/callBack")
+@ApiIgnore
 public class UnionCallBackController {
 
     private Logger logger = Logger.getLogger(UnionCallBackController.class);

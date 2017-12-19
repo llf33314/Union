@@ -15,7 +15,7 @@ public interface IUnionMainCreateService extends IService<UnionMainCreate> {
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
-     * 创建联盟-检查联盟许可
+     * 我的联盟-创建联盟-检查联盟许可
      *
      * @param busId 商家id
      * @return UnionPermitCheckVO
@@ -28,7 +28,7 @@ public interface IUnionMainCreateService extends IService<UnionMainCreate> {
     //***************************************** Domain Driven Design - save ********************************************
 
     /**
-     * 创建联盟-保存
+     * 我的联盟-创建联盟-保存
      *
      * @param busId 商家id
      * @param vo    表单信息

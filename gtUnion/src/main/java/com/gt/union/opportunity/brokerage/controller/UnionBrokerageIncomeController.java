@@ -39,7 +39,7 @@ public class UnionBrokerageIncomeController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "佣金结算-我的佣金收入-分页", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：商机-佣金结算-我的佣金收入", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/opportunity/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageBrokerageOpportunityVO(
             HttpServletRequest request,

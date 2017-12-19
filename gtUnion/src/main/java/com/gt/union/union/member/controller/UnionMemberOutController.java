@@ -38,7 +38,7 @@ public class UnionMemberOutController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "退盟管理-退盟审核-分页", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：我的联盟-退盟管理-退盟审核", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageOutVOByUnionId(
             HttpServletRequest request,
@@ -62,7 +62,7 @@ public class UnionMemberOutController {
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
-    @ApiOperation(value = "退盟管理-退盟过渡期-分页", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：我的联盟-退盟管理-退盟过渡期", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/period/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pagePeriodByUnionId(
             HttpServletRequest request,
@@ -88,7 +88,7 @@ public class UnionMemberOutController {
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
-    @ApiOperation(value = "退盟管理-退盟审核-分页-通过或拒绝", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "我的联盟-退盟管理-退盟审核-分页数据-同意或拒绝", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{outId}/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateStatusByIdAndUnionId(
             HttpServletRequest request,
@@ -111,7 +111,7 @@ public class UnionMemberOutController {
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
-    @ApiOperation(value = "退盟管理-退盟过渡期-退盟申请", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "我的联盟-退盟管理-退盟过渡期-退盟申请", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String saveByUnionId(
             HttpServletRequest request,
@@ -129,7 +129,7 @@ public class UnionMemberOutController {
         return GtJsonResult.instanceSuccessMsg().toString();
     }
 
-    @ApiOperation(value = "首页-盟员列表-分页-移出", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "我的联盟-首页-盟员列表-分页数据-移出", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/applyMemberId/{applyMemberId}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String saveByUnionIdAndApplyMemberId(
             HttpServletRequest request,

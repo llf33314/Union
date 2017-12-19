@@ -44,7 +44,7 @@ public class UnionConsumeController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "前台-消费核销记录-分页", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：前台-消费核销记录", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/record/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageConsumeVO(
             HttpServletRequest request,
@@ -90,7 +90,7 @@ public class UnionConsumeController {
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
-    @ApiOperation(value = "前台-消费核销记录-导出", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "导出：前台-消费核销记录", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/record/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public void exportConsumeVO(HttpServletRequest request, HttpServletResponse response) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);

@@ -98,7 +98,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
             throw new BusinessException("找不到套餐信息");
         }
 
-        // （2）	生成未支付状态的盟主服务记录
+        // （2）	生成支付中状态的联盟许可记录
         UnionMainPermit savePermit = new UnionMainPermit();
         savePermit.setDelStatus(CommonConstant.COMMON_NO);
         Date currentDate = DateUtil.getCurrentDate();
@@ -112,7 +112,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         String orderNo = "LM" + ConfigConstant.PAY_MODEL_PERMIT + DateUtil.getSerialNumber();
         savePermit.setSysOrderNo(orderNo);
 
-        // （3）	调用接口，返回支付链接
+        // （3）	调用支付接口，返回支付链接
         UnionPayVO result = new UnionPayVO();
         String socketKey = PropertiesUtil.getSocketKey() + orderNo;
         String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/permit?socketKey=" + socketKey;

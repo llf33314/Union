@@ -39,7 +39,7 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
     UnionOpportunity getByIdAndUnionIdAndToMemberId(Integer opportunityId, Integer unionId, Integer toMemberId) throws Exception;
     
     /**
-     * 数据统计图
+     * 商机-数据统计图
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -60,7 +60,7 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 我的商机-分页
+     * 分页：商机-我的商机
      *
      * @param busId           商家id
      * @param optUnionId      联盟id
@@ -82,7 +82,7 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
     List<UnionOpportunity> listByToMemberIdList(List<Integer> toMemberIdList) throws Exception;
 
     /**
-     * 我要推荐-分页
+     * 分页：商机-我要推荐
      *
      * @param busId           商家id
      * @param optUnionId      联盟id
@@ -172,7 +172,7 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
     //***************************************** Domain Driven Design - save ********************************************
 
     /**
-     * 我要推荐-我要推荐
+     * 商机-我要推荐-我要推荐
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -186,7 +186,7 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
     //***************************************** Domain Driven Design - update ******************************************
 
     /**
-     * 我的商机-分页-接受或拒绝
+     * 商机-我的商机-分页数据-接受或拒绝
      *
      * @param busId         商家id
      * @param opportunityId 商机id

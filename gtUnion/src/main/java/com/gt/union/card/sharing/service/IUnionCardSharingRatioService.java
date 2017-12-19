@@ -29,7 +29,7 @@ public interface IUnionCardSharingRatioService extends IService<UnionCardSharing
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 售卡佣金分成管理-活动卡售卡比例设置-分页-查看比例；售卡佣金分成管理-活动卡售卡比例设置-分页-查看比例-比例设置
+     * 分页：我的联盟-售卡佣金分成管理-活动卡售卡比例设置-选择活动卡后；列表：我的联盟-售卡佣金分成管理-活动卡售卡比例设置-选择活动卡后-比例设置
      *
      * @param busId      商家id
      * @param unionId    联盟id
@@ -56,7 +56,7 @@ public interface IUnionCardSharingRatioService extends IService<UnionCardSharing
     //***************************************** Domain Driven Design - update ******************************************
 
     /**
-     * 售卡佣金分成管理-活动卡售卡比例设置-分页-查看比例-比例设置-更新
+     * 我的联盟-售卡佣金分成管理-活动卡售卡比例设置-选择活动卡后-比例设置-保存
      *
      * @param busId      商家id
      * @param unionId    联盟id

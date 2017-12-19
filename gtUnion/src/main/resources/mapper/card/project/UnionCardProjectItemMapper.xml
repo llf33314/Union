@@ -14,6 +14,7 @@
         <result column="size" property="size"/>
         <result column="erp_type" property="erpType"/>
         <result column="shop_id" property="shopId"/>
+        <result column="shop_name" property="shopName"/>
         <result column="erp_text_id" property="erpTextId"/>
         <result column="erp_goods_id" property="erpGoodsId"/>
         <result column="project_id" property="projectId"/>

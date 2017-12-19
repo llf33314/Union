@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.api.client.erp.ErpService;
+import com.gt.union.api.client.shop.ShopService;
 import com.gt.union.card.activity.constant.ActivityConstant;
 import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.activity.service.IUnionCardActivityService;
@@ -27,6 +28,7 @@ import com.gt.union.common.util.StringUtil;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
+import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,6 +63,9 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
 
     @Autowired
     private ErpService erpService;
+
+    @Autowired
+    private ShopService shopService;
 
     //***************************************** Domain Driven Design - get *********************************************
 
@@ -170,8 +175,8 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
             throw new BusinessException("活动卡不在报名中状态，无法操作");
         }
         // （4）	判断是否已有活动项目
-        // 如果有，则要求在未提交或不通过状态，且删除所有已有的项目优惠，保存新项目优惠
-        // 如果没有，则新增活动项目，未提交状态，且保存新项目优惠
+        //   （4-1）如果是，则要求在未提交或不通过状态，且删除所有已有的项目优惠，保存新项目优惠；
+        //   （4-2）如果不是，则新增活动项目，未提交状态，且保存新项目优惠；
         UnionCardProject updateProject = null;
         UnionCardProject saveProject = null;
         List<Integer> removeItemIdList = null;
@@ -208,7 +213,7 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
 
         List<UnionCardProjectItem> saveItemList = listItemByVO(vo, busId);
 
-        // 事务操作
+        // （5）事务操作
         if (project == null) {
             unionCardProjectService.save(saveProject);
 
@@ -251,9 +256,9 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
         if (ActivityConstant.STATUS_APPLYING != activityStatus) {
             throw new BusinessException("活动卡不在报名中状态，无法操作");
         }
-        // （4）	判断是否已有活动项目
-        // 如果有，则要求在未提交或不通过状态，且删除所有已有的项目优惠，保存新项目优惠
-        // 如果没有，则新增活动项目，未提交状态，且保存新项目优惠
+        // （4）	判断是否已有活动项目：
+        //   （4-1）如果是，则要求在未提交或不通过状态，且删除所有已有的项目优惠，保存新项目优惠；
+        //   （4-2）如果不是，则新增活动项目，且保存新项目优惠；
         UnionCardProject updateProject = null;
         UnionCardProject saveProject = null;
         List<Integer> removeItemIdList = null;
@@ -269,8 +274,6 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
             updateProject = new UnionCardProject();
             updateProject.setId(project.getId());
             updateProject.setModifyTime(currentDate);
-            updateProject.setStatus(ActivityConstant.IS_PROJECT_CHECK_YES == activity.getIsProjectCheck()
-                    ? ProjectConstant.STATUS_COMMITTED : ProjectConstant.STATUS_ACCEPT);
 
             List<UnionCardProjectItem> removeItemList = listByProjectId(project.getId());
             removeItemIdList = new ArrayList<>();
@@ -286,13 +289,22 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
             saveProject.setActivityId(activityId);
             saveProject.setMemberId(member.getId());
             saveProject.setUnionId(unionId);
+        }
+        // （5）判断活动是否设置了需要项目审核：
+        //   （5-1）如果是，则为提交状态；
+        //   （5-2）如果不是，则为审核通过状态；
+        if (updateProject != null) {
+            updateProject.setStatus(ActivityConstant.IS_PROJECT_CHECK_YES == activity.getIsProjectCheck()
+                    ? ProjectConstant.STATUS_COMMITTED : ProjectConstant.STATUS_ACCEPT);
+        }
+        if (saveProject != null) {
             saveProject.setStatus(ActivityConstant.IS_PROJECT_CHECK_YES == activity.getIsProjectCheck()
                     ? ProjectConstant.STATUS_COMMITTED : ProjectConstant.STATUS_ACCEPT);
         }
 
         List<UnionCardProjectItem> saveItemList = listItemByVO(vo, busId);
 
-        // 事务操作
+        // （6）事务操作
         if (project != null) {
             for (UnionCardProjectItem saveItem : saveItemList) {
                 saveItem.setProjectId(project.getId());
@@ -378,7 +390,12 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
                 if (shopId == null) {
                     throw new BusinessException("门店id不能为空");
                 }
+                WsWxShopInfoExtend shop = shopService.getById(shopId);
+                if (shop == null) {
+                    throw new BusinessException("找不到门店信息");
+                }
                 saveItem.setShopId(shopId);
+                saveItem.setShopName(shop.getBusinessName());
 
                 Integer erpTextId = erpText.getErpTextId();
                 if (erpTextId == null) {

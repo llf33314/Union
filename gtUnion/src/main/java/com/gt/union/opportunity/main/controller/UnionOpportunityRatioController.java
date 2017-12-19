@@ -37,7 +37,7 @@ public class UnionOpportunityRatioController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "商机佣金比例设置-分页", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：商机-商机佣金比设置", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageRatioVOByUnionId(
             HttpServletRequest request,
@@ -63,7 +63,7 @@ public class UnionOpportunityRatioController {
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
-    @ApiOperation(value = "商机佣金比例设置-设置佣金比例", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "商机-商机佣金比例设置-设置佣金比例-更新", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/toMemberId/{toMemberId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateRatioByUnionIdAndToMemberId(
             HttpServletRequest request,

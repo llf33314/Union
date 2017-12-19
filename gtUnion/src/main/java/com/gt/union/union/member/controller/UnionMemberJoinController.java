@@ -38,7 +38,7 @@ public class UnionMemberJoinController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "入盟审核-分页", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：我的联盟-入盟审核", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageJoinVOByUnionId(
             HttpServletRequest request,
@@ -68,7 +68,7 @@ public class UnionMemberJoinController {
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
-    @ApiOperation(value = "入盟审核-分页-通过或不通过", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "我的联盟-入盟审核-分页数据-通过或不通过", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/{joinId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String updateStatusByIdAndUnionId(
             HttpServletRequest request,
@@ -91,7 +91,7 @@ public class UnionMemberJoinController {
 
     //-------------------------------------------------- post ----------------------------------------------------------
 
-    @ApiOperation(value = "加入联盟-保存；推荐入盟", produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "我的联盟-加入联盟-保存；我的联盟-推荐入盟", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/unionId/{unionId}/type/{type}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String saveJoinCreateVOByUnionIdAndType(
             HttpServletRequest request,

@@ -105,7 +105,7 @@ public class UnionCardProjectServiceImpl extends ServiceImpl<UnionCardProjectMap
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_READ_REJECT);
         }
-        // （2）	判断activityId和projectId有效性
+        // （2）	判断activityId有效性
         UnionCardActivity activity = unionCardActivityService.getByIdAndUnionId(activityId, unionId);
         if (activity == null) {
             throw new BusinessException("找不到活动信息");
@@ -115,7 +115,7 @@ public class UnionCardProjectServiceImpl extends ServiceImpl<UnionCardProjectMap
             throw new BusinessException("找不到活动项目信息");
         }
         Integer projectId = project.getId();
-        // （3）	获取是否erp信息（调接口）
+        // （3）	获取是否erp信息（调接口），并获取相应的服务内容
         CardProjectVO result = new CardProjectVO();
         result.setMember(member);
         result.setActivity(activity);
@@ -194,7 +194,7 @@ public class UnionCardProjectServiceImpl extends ServiceImpl<UnionCardProjectMap
         if (activity == null) {
             throw new BusinessException("找不到活动信息");
         }
-        // （3）	要求已报名活动且项目已通过
+        // （3）	要求报名项目已审核通过
         List<CardProjectJoinMemberVO> result = new ArrayList<>();
         List<UnionCardProject> projectList = listByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
         if (ListUtil.isNotEmpty(projectList)) {
@@ -207,6 +207,7 @@ public class UnionCardProjectServiceImpl extends ServiceImpl<UnionCardProjectMap
 
                 List<UnionCardProjectItem> itemList = unionCardProjectItemService.listByProjectId(project.getId());
                 vo.setItemList(itemList);
+
                 result.add(vo);
             }
         }
@@ -247,7 +248,7 @@ public class UnionCardProjectServiceImpl extends ServiceImpl<UnionCardProjectMap
         if (ActivityConstant.STATUS_APPLYING != activityStatus) {
             throw new BusinessException("活动卡不在报名中状态");
         }
-        // （4）	要求已报名活动且项目是审核中状态
+        // （4）	要求报名项目是审核中状态
         List<CardProjectCheckVO> result = new ArrayList<>();
         List<UnionCardProject> projectList = listByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_COMMITTED);
         if (ListUtil.isNotEmpty(projectList)) {
@@ -260,6 +261,7 @@ public class UnionCardProjectServiceImpl extends ServiceImpl<UnionCardProjectMap
 
                 List<UnionCardProjectItem> itemList = unionCardProjectItemService.listByProjectId(project.getId());
                 vo.setItemList(itemList);
+
                 result.add(vo);
             }
         }
@@ -311,7 +313,7 @@ public class UnionCardProjectServiceImpl extends ServiceImpl<UnionCardProjectMap
         if (CommonConstant.COMMON_YES != isPass && StringUtil.isEmpty(vo.getRejectReason())) {
             throw new BusinessException("不通过时理由不能为空");
         }
-        // （5）	要求活动项目在审核中状态
+        // （5）	要求报名项目在审核中状态
         List<UnionCardProject> updateProjectList = new ArrayList<>();
         List<UnionCardProjectFlow> saveFlowList = new ArrayList<>();
         Date currentDate = DateUtil.getCurrentDate();
@@ -334,12 +336,12 @@ public class UnionCardProjectServiceImpl extends ServiceImpl<UnionCardProjectMap
                 saveFlow.setCreateTime(currentDate);
                 saveFlow.setDelStatus(CommonConstant.COMMON_NO);
                 saveFlow.setProjectId(projectId);
-                saveFlow.setIllustration(CommonConstant.COMMON_YES == isPass ? "通过" : vo.getRejectReason());
+                saveFlow.setIllustration(CommonConstant.COMMON_YES == isPass ? "提交审核通过" : "提交审核不通过：" + vo.getRejectReason());
                 saveFlowList.add(saveFlow);
             }
         }
 
-        // 事务操作
+        // （6）事务操作
         updateBatch(updateProjectList);
         unionCardProjectFlowService.saveBatch(saveFlowList);
 

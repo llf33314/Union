@@ -132,13 +132,6 @@ public class UnionMember extends Model<UnionMember> {
     private String addressLatitude;
 
     /**
-     * 盟员退出是否短信通知(0:否 1:是)
-     */
-    @ApiModelProperty(value = "盟员退出是否短信通知(0:否 1:是)")
-    @TableField("is_member_out_notify")
-    private Integer isMemberOutNotify;
-
-    /**
      * 短信通知手机号
      */
     @ApiModelProperty(value = "短信通知手机号")
@@ -278,14 +271,6 @@ public class UnionMember extends Model<UnionMember> {
 
     public void setAddressLatitude(String addressLatitude) {
         this.addressLatitude = addressLatitude;
-    }
-
-    public Integer getIsMemberOutNotify() {
-        return isMemberOutNotify;
-    }
-
-    public void setIsMemberOutNotify(Integer isMemberOutNotify) {
-        this.isMemberOutNotify = isMemberOutNotify;
     }
 
     public String getNotifyPhone() {
