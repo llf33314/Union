@@ -19,7 +19,7 @@ public interface IUnionCardSharingRecordService extends IService<UnionCardSharin
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
-     * 分页：我的联盟-售卡佣金分成管理-售卡分成记录
+     * 分页：我的联盟-售卡佣金分成管理-售卡分成记录；导出：我的联盟-售卡佣金分成管理-售卡分成记录
      *
      * @param busId         商家id
      * @param unionId       联盟id

@@ -9,15 +9,19 @@ import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.response.GtJsonResult;
+import com.gt.union.common.util.ExportUtil;
+import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PageUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
+import org.apache.poi.hssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 import java.util.List;
 
@@ -67,6 +71,61 @@ public class UnionCardSharingRecordController {
         Page<CardSharingRecordVO> result = (Page<CardSharingRecordVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result).toString();
+    }
+
+    @ApiOperation(value = "导出：我的联盟-售卡佣金分成管理-售卡分成记录", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public void exportSharingRecordVOByUnionId(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @PathVariable(value = "unionId") Integer unionId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        // mock
+        List<CardSharingRecordVO> voList;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            voList = MockUtil.list(CardSharingRecordVO.class, 20);
+        } else {
+            voList = unionCardSharingRecordService.listCardSharingRecordVOByBusIdAndUnionId(busId, unionId,
+                    null, null, null);
+        }
+        String[] titles = new String[]{"时间", "联盟卡号", "售卡金额(元)", "售卡佣金(元)", "售卡出处"};
+        HSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);
+        HSSFSheet sheet = workbook.getSheetAt(0);
+        if (ListUtil.isNotEmpty(voList)) {
+            int rowIndex = 1;
+            HSSFCellStyle centerCellStyle = ExportUtil.newHSSFCellStyle(workbook, HSSFCellStyle.ALIGN_CENTER);
+            for (CardSharingRecordVO vo : voList) {
+                HSSFRow row = sheet.createRow(rowIndex++);
+                int cellIndex = 0;
+                // 时间
+                HSSFCell createTimeCell = row.createCell(cellIndex++);
+                createTimeCell.setCellValue(vo.getSharingRecord().getCreateTime());
+                createTimeCell.setCellStyle(centerCellStyle);
+                // 联盟卡号
+                HSSFCell cardNumberCell = row.createCell(cellIndex++);
+                cardNumberCell.setCellValue(vo.getFan().getNumber());
+                cardNumberCell.setCellStyle(centerCellStyle);
+                // 售卡金额(元)
+                HSSFCell sellPriceCell = row.createCell(cellIndex++);
+                sellPriceCell.setCellValue(vo.getSharingRecord().getSellPrice());
+                sellPriceCell.setCellStyle(centerCellStyle);
+                // 售卡佣金(元)
+                HSSFCell sharingMoneyCell = row.createCell(cellIndex++);
+                sharingMoneyCell.setCellValue(vo.getSharingRecord().getSharingMoney());
+                sharingMoneyCell.setCellStyle(centerCellStyle);
+                // 售卡出处
+                HSSFCell fromMemberCell = row.createCell(cellIndex);
+                fromMemberCell.setCellValue(vo.getMember().getEnterpriseName());
+                fromMemberCell.setCellStyle(centerCellStyle);
+            }
+        }
+        String fileName = "售卡佣金分成记录表";
+        ExportUtil.responseExport(response, workbook, fileName);
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
