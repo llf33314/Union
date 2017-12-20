@@ -110,27 +110,31 @@ public class UnionCardProjectServiceImpl extends ServiceImpl<UnionCardProjectMap
         if (activity == null) {
             throw new BusinessException("找不到活动信息");
         }
-        UnionCardProject project = getByUnionIdAndMemberIdAndActivityId(unionId, member.getId(), activityId);
-        if (project == null) {
-            throw new BusinessException("找不到活动项目信息");
-        }
-        Integer projectId = project.getId();
         // （3）	获取是否erp信息（调接口），并获取相应的服务内容
         CardProjectVO result = new CardProjectVO();
         result.setMember(member);
         result.setActivity(activity);
-        result.setProject(project);
         Integer isErp = ListUtil.isNotEmpty(erpService.listErpByBusId(busId)) ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO;
         result.setIsErp(isErp);
-        if (CommonConstant.COMMON_YES == isErp) {
+        UnionCardProject project = getByUnionIdAndMemberIdAndActivityId(unionId, member.getId(), activityId);
+        if (project != null) {
+            result.setProject(project);
+            Integer projectId = project.getId();
+            
             List<UnionCardProjectItem> erpTextList = unionCardProjectItemService.listByProjectIdAndType(projectId, ProjectConstant.TYPE_ERP_TEXT);
             result.setErpTextList(erpTextList);
 
             List<UnionCardProjectItem> erpGoodsList = unionCardProjectItemService.listByProjectIdAndType(projectId, ProjectConstant.TYPE_ERP_GOODS);
             result.setErpGoodsList(erpGoodsList);
-        } else {
+            
             List<UnionCardProjectItem> textList = unionCardProjectItemService.listByProjectIdAndType(projectId, ProjectConstant.TYPE_TEXT);
             result.setNonErpTextList(textList);
+        } else {
+            result.setErpTextList(new ArrayList<UnionCardProjectItem>());
+            
+            result.setErpGoodsList(new ArrayList<UnionCardProjectItem>());
+            
+            result.setNonErpTextList(new ArrayList<UnionCardProjectItem>());
         }
 
         return result;
