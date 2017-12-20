@@ -201,7 +201,7 @@ public class UnionCardFanServiceImpl extends ServiceImpl<UnionCardFanMapper, Uni
             return null;
         }
         // （2）	获取商家所有有效的unionList
-        List<UnionMain> busUnionList = unionMainService.listMyValidByBusId(busId);
+        List<UnionMain> busUnionList = unionMainService.listMyValidWriteByBusId(busId);
         List<Integer> busUnionIdList = new ArrayList<>();
         if (ListUtil.isNotEmpty(busUnionList)) {
             for (UnionMain union : busUnionList) {

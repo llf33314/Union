@@ -46,13 +46,22 @@ public interface IUnionMainService extends IService<UnionMain> {
     List<UnionMain> listOtherValidByBusId(Integer busId) throws Exception;
 
     /**
-     * 获取我的有效的联盟列表
+     * 获取我的有效的具有读权限的联盟列表
      *
      * @param busId 商家id
-     * @return ist<UnionMain>
+     * @return List<UnionMain>
      * @throws Exception 统一处理异常
      */
-    List<UnionMain> listMyValidByBusId(Integer busId) throws Exception;
+    List<UnionMain> listMyValidReadByBusId(Integer busId) throws Exception;
+
+    /**
+     * 获取我的有效的具有写权限的联盟列表
+     *
+     * @param busId 商家id
+     * @return List<UnionMain>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMain> listMyValidWriteByBusId(Integer busId) throws Exception;
 
     /**
      * 辅助接口：获取我的联盟列表

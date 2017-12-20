@@ -177,7 +177,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        return unionMainService.listMyValidByBusId(h5BrokerageUser.getVerifier().getBusId());
+        return unionMainService.listMyValidReadByBusId(h5BrokerageUser.getVerifier().getBusId());
     }
 
     @Override

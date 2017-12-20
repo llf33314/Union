@@ -118,7 +118,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
         }
         List<ConsumeRecordVO> result = new ArrayList<>();
         // （1）	获取我的所有有效的union
-        List<UnionMain> validUnionList = unionMainService.listMyValidByBusId(busId);
+        List<UnionMain> validUnionList = unionMainService.listMyValidReadByBusId(busId);
         List<Integer> validUnionIdList = new ArrayList<>();
         if (ListUtil.isNotEmpty(validUnionList)) {
             for (UnionMain validUnion : validUnionList) {

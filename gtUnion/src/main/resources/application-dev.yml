@@ -39,7 +39,7 @@ spring:
       web-stat-filter:
         url-pattern: /*
         exclusions: /druid/*,*.js,*.gif,*.jpg,*.png,*.css,*.ico
-      aop-patterns: com.gt.union.*.service.*
+      aop-patterns: com.gt.union.*.*.service.*
 
   # redis配置
   redis:
@@ -54,12 +54,15 @@ spring:
         #redis集群配置
       cluster:
         nodes: 113.106.202.51:6379,113.106.202.50:9379,113.106.202.54:9379
-        max-attempts: 3
-        max-redirects: 3
+#        nodes: 113.106.202.50:9001,113.106.202.50:9002,113.106.202.50:9003,113.106.202.50:9004,113.106.202.50:9005,113.106.202.50:9006
+        max-attempts: 6
+        max-redirects: 6
         #redis哨兵模式配置
       sentinel:
         nodes: 113.106.202.51:26379,113.106.202.50:29379,113.106.202.54:29379
         master: mymaster
+
+
   session:
        store-type: redis
 

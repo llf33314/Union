@@ -114,7 +114,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             throw new BusinessException("找不到粉丝信息");
         }
         // （2）	获取商家有效的union
-        List<UnionMain> busUnionList = unionMainService.listMyValidByBusId(busId);
+        List<UnionMain> busUnionList = unionMainService.listMyValidWriteByBusId(busId);
         // （3）	过滤掉粉丝已办卡，且商家没有新活动卡的union
         List<UnionMain> optionUnionList = new ArrayList<>();
         if (ListUtil.isNotEmpty(busUnionList)) {
