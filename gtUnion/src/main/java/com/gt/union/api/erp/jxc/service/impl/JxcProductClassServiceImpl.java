@@ -38,6 +38,7 @@ public class JxcProductClassServiceImpl implements JxcProductClassService {
 				token = JSON.parseObject(token,String.class);
 			}
 			String result = HttpClientUtil.httpGetRequest(url, null, token);
+			logger.info("根据商家id查询进销存商品分类列表，结果：{}", result);
 			JSONObject jsonObject = JSONObject.parseObject(result);
 			List<JxcProductClass> data = JSONArray.parseArray(jsonObject.getJSONArray("data").toJSONString(), JxcProductClass.class);
 			return data;

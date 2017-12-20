@@ -1,5 +1,6 @@
 package com.gt.union.api.client.address.impl;
 
+import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.gt.api.util.HttpClienUtils;
@@ -32,6 +33,7 @@ public class AddressServiceImpl implements AddressService {
 			Map<String, Object> param = new HashMap<String, Object>();
 			param.put("reqdata", ids);
 			String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param),url, String.class, PropertiesUtil.getWxmpSignKey());
+			logger.info("根据ids获取地址列表，结果：{}", result);
 			return ApiResultHandlerUtil.listDataObject(result, Map.class);
 		}catch (Exception e){
 			logger.error("根据ids获取地址列表错误",e);
@@ -47,6 +49,7 @@ public class AddressServiceImpl implements AddressService {
 			Map<String, Object> param = new HashMap<String, Object>();
 			param.put("reqdata", city_codes);
 			String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param),url, String.class, PropertiesUtil.getWxmpSignKey());
+			logger.info("根据city_code列表获取地址列表，结果：{}", result);
 			return ApiResultHandlerUtil.listDataObject(result, Map.class);
 		}catch (Exception e){
 			logger.error("根据city_code列表获取地址列表错误",e);

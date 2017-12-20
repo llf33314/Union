@@ -43,6 +43,7 @@ public class ErpServiceImpl implements ErpService {
 		List<ErpModelVO> dataList = new ArrayList<ErpModelVO>();
 		try{
 			String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
+			logger.info("根据商家id获取erp列表，结果：{}", result);
 			Map data = ApiResultHandlerUtil.getDataObject(result,Map.class);
 			List<ErpModelVO> list = JSON.parseArray(data.get("menusLevelList").toString(),ErpModelVO.class);
 			for(ErpModelVO vo : list){

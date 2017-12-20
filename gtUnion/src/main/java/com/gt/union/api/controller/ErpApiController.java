@@ -51,7 +51,7 @@ public class ErpApiController {
 
 	@ApiOperation(value = "获取erp服务项目列表", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/list/server/{erpModel}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public GtJsonResult<List<ErpServerVO>> listErpServer(Page page, HttpServletRequest request,
+	public GtJsonResult<Page> listErpServer(Page page, HttpServletRequest request,
 					@ApiParam(value = "erp行业类型", name = "erpModel", required = true)
 					@PathVariable(value = "erpModel") Integer erpModel,
 					@ApiParam(value = "门店id", name = "shopId", required = true)
@@ -63,7 +63,8 @@ public class ErpApiController {
 			throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
 		}
 		List<ErpServerVO> list = erpService.listErpServer(shopId, erpModel, search, page, busUser.getId());
-		return GtJsonResult.instanceSuccessMsg(list);
+		page.setRecords(list);
+		return GtJsonResult.instanceSuccessMsg(page);
 	}
 
 

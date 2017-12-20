@@ -31,6 +31,7 @@ public class TCommonStaffServiceImpl implements ITCommonStaffService {
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/staffApiMsg/getAllStaffShopId.do";
 		try{
 			String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
+			logger.info("根据门店id获取员工列表，结果：{}", result);
 			Map map = ApiResultHandlerUtil.getDataObject(result, Map.class);
 			return JSONArray.parseArray(map.get("allList").toString(), TCommonStaff.class);
 		}catch (Exception e){
@@ -47,6 +48,7 @@ public class TCommonStaffServiceImpl implements ITCommonStaffService {
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/staffApiMsg/getStaffId.do";
 		try{
 			String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
+			logger.info("根据员工id获取员工信息，结果：{}", result);
 			return ApiResultHandlerUtil.getDataObject(result, TCommonStaff.class);
 		}catch (Exception e){
 			logger.error("根据员工id获取员工信息错误", e);

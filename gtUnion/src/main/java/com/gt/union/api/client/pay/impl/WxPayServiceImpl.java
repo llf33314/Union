@@ -97,6 +97,7 @@ public class WxPayServiceImpl implements WxPayService {
         logger.info("商家提现请求参数：{}",JSONObject.toJSONString(requestUtils));
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/enterprisePayment.do";
         Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(requestUtils),url, Map.class, PropertiesUtil.getWxmpSignKey());
+        logger.info("商家提现，结果：{}", result.toString());
         if(CommonUtil.isEmpty(result)){
             return GtJsonResult.instanceErrorMsg("提现失败");
         }

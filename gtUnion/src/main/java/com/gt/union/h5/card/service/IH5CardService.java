@@ -15,7 +15,7 @@ public interface IH5CardService {
 	 * @param busId		商家id
 	 * @return
 	 */
-	IndexVO getIndexVO(String phone, Integer busId);
+	IndexVO getIndexVO(String phone, Integer busId) throws Exception;
 
 	/**
 	 * 联盟卡详情
