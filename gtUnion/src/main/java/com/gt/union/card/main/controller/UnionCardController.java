@@ -12,7 +12,10 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
+import com.gt.union.common.util.EncryptUtil;
 import com.gt.union.common.util.MockUtil;
+import com.gt.union.common.util.PropertiesUtil;
+import com.gt.union.common.util.QRcodeKit;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.vo.UnionPayVO;
 import io.swagger.annotations.Api;
@@ -22,6 +25,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
 import java.util.List;
 
 /**
@@ -66,6 +71,18 @@ public class UnionCardController {
         }
 
         return GtJsonResult.instanceSuccessMsg(result).toString();
+    }
+
+    @ApiOperation(value = "获取联盟卡手机端二维码", notes = "获取联盟卡手机端二维码", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/qr/h5Card.png", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
+    public void cardNoImg(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        String url = PropertiesUtil.getUnionUrl() + "/cardPhone/#/" + "toUnionCard?busId=" + busId;
+        QRcodeKit.buildQRcode(url, 250, 250, response);
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
