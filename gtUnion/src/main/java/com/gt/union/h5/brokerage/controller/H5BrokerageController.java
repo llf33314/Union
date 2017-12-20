@@ -1,16 +1,18 @@
 package com.gt.union.h5.brokerage.controller;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.Member;
+import com.gt.api.bean.sign.SignBean;
 import com.gt.api.util.SessionUtils;
+import com.gt.api.util.sign.SignUtils;
 import com.gt.union.api.client.member.MemberService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
-import com.gt.union.common.util.MockUtil;
-import com.gt.union.common.util.PageUtil;
-import com.gt.union.common.util.PropertiesUtil;
-import com.gt.union.common.util.UnionSessionUtil;
+import com.gt.union.common.util.*;
 import com.gt.union.h5.brokerage.service.IH5BrokerageService;
 import com.gt.union.h5.brokerage.vo.*;
 import com.gt.union.opportunity.brokerage.entity.UnionBrokerageWithdrawal;
@@ -23,7 +25,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * H5佣金平台 前端管理器
@@ -308,6 +313,26 @@ public class H5BrokerageController {
     }
 
     //------------------------------------------------- post ----------------------------------------------------------
+
+    @ApiOperation(value = "获取佣金平台账号登录秘钥", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/loginSign", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+    public String loginSign(HttpServletRequest request, HttpServletResponse response
+            ,@ApiParam(name="username", value = "商家账号", required = true) @RequestParam(name = "username") String username
+            ,@ApiParam(name="userpwd", value = "商家账号密码", required = true) @RequestParam(name = "userpwd") String userpwd
+    ) throws Exception{
+        Map<String,Object> param = new HashMap<String,Object>();
+        param.put("login_name",username);
+        param.put("password",userpwd);
+        SignBean sign = SignUtils.sign(PropertiesUtil.getWxmpSignKey() , JSONObject.toJSONString(param));
+        if(CommonUtil.isEmpty(sign)){
+            throw new BusinessException("登录错误");
+        }
+        String url = PropertiesUtil.getWxmpUrl() + "/ErpMenus/79B4DE7C/UnionErplogin.do";
+        Map<String,Object> data = new HashMap<String,Object>();
+        data.put("sign",JSONObject.parseObject(JSON.toJSONString(sign)));
+        data.put("url",url);
+        return GtJsonResult.instanceSuccessMsg(data).toString();
+    }
 
     @ApiOperation(value = "佣金平台-手机号登录", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/login/phone", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
