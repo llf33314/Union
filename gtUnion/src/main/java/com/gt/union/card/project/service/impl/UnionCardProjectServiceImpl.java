@@ -114,6 +114,7 @@ public class UnionCardProjectServiceImpl extends ServiceImpl<UnionCardProjectMap
         CardProjectVO result = new CardProjectVO();
         result.setMember(member);
         result.setActivity(activity);
+        result.setActivityStatus(unionCardActivityService.getStatus(activity));
         Integer isErp = ListUtil.isNotEmpty(erpService.listErpByBusId(busId)) ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO;
         result.setIsErp(isErp);
         UnionCardProject project = getByUnionIdAndMemberIdAndActivityId(unionId, member.getId(), activityId);
