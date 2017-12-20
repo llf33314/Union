@@ -310,6 +310,7 @@ CREATE TABLE `t_union_card_project_item` (
   `size` varchar(100) DEFAULT NULL COMMENT '规格',
   `erp_type` int(2) DEFAULT NULL COMMENT 'ERP类型(1:车小算 2:样子)',
   `shop_id` int(11) DEFAULT NULL COMMENT '门店id',
+  `shop_name` varchar(100) DEFAULT NULL COMMENT '门店名称',
   `erp_text_id` int(11) DEFAULT NULL COMMENT 'ERP系统的文本项目id',
   `erp_goods_id` int(11) DEFAULT NULL COMMENT 'ERP系统的商品项目id',
   `project_id` int(11) DEFAULT NULL COMMENT '项目id',
