@@ -69,13 +69,6 @@ public class UnionCardActivity extends Model<UnionCardActivity> {
     private Double price;
 
     /**
-     * 展示图
-     */
-    @ApiModelProperty(value = "展示图")
-    @TableField("img")
-    private String img;
-
-    /**
      * 颜色
      */
     @ApiModelProperty(value = "颜色")
@@ -185,14 +178,6 @@ public class UnionCardActivity extends Model<UnionCardActivity> {
 
     public void setPrice(Double price) {
         this.price = price;
-    }
-
-    public String getImg() {
-        return img;
-    }
-
-    public void setImg(String img) {
-        this.img = img;
     }
 
     public String getColor() {

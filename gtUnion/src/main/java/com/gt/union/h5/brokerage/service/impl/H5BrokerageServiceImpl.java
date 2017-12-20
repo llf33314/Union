@@ -258,7 +258,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
 
     @Override
     public List<OpportunityBrokerageVO> listUnReceivedOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId) throws Exception {
-        if (h5BrokerageUser == null || optUnionId == null) {
+        if (h5BrokerageUser == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
@@ -544,7 +544,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
 
     @Override
     public Double sumUnPaidOpportunityBrokerage(H5BrokerageUser h5BrokerageUser, Integer optUnionId) throws Exception {
-        if (h5BrokerageUser == null || optUnionId == null) {
+        if (h5BrokerageUser == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
@@ -561,7 +561,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
 
     @Override
     public Double sumUnReceivedOpportunityBrokerage(H5BrokerageUser h5BrokerageUser, Integer optUnionId) throws Exception {
-        if (h5BrokerageUser == null || optUnionId == null) {
+        if (h5BrokerageUser == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 

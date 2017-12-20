@@ -382,55 +382,49 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
             throw new BusinessException("价格不能为空，且不能小于0");
         }
         saveActivity.setPrice(price);
-        // （2-3）展示图
-        String img = vo.getImg();
-        if (StringUtil.isEmpty(img)) {
-            throw new BusinessException("展示图不能为空");
-        }
-        saveActivity.setImg(img);
-        // （2-4）发行量
+        // （2-3）发行量
         Integer amount = vo.getAmount();
         if (amount == null || amount <= 0) {
             throw new BusinessException("发行量不能为空，且不能小于0");
         }
         saveActivity.setAmount(amount);
-        // （2-5）有效天数
+        // （2-4）有效天数
         Integer validityDay = vo.getValidityDay();
         if (validityDay == null || validityDay <= 0) {
             throw new BusinessException("有效天数不能为空，且不能小于0");
         }
         saveActivity.setValidityDay(validityDay);
-        // （2-6）报名开始时间
+        // （2-5）报名开始时间
         Date applyBeginTime = vo.getApplyBeginTime();
         if (applyBeginTime == null || applyBeginTime.compareTo(currentDate) < 0) {
             throw new BusinessException("报名开始时间不能为空，且必须不小于当前时间");
         }
         saveActivity.setApplyBeginTime(applyBeginTime);
-        // （2-7）报名结束时间
+        // （2-6）报名结束时间
         Date applyEndTime = vo.getApplyEndTime();
         if (applyEndTime == null || applyEndTime.compareTo(applyBeginTime) < 0) {
             throw new BusinessException("报名结束时间不能为空，且必须不小于报名开始时间");
         }
         saveActivity.setApplyEndTime(applyEndTime);
-        // （2-8）售卡开始时间
+        // （2-7）售卡开始时间
         Date sellBeginTime = vo.getSellBeginTime();
         if (sellBeginTime == null || sellBeginTime.compareTo(applyEndTime) < 0) {
             throw new BusinessException("售卡开始时间不能为空，且必须不小于报名结束时间");
         }
         saveActivity.setSellBeginTime(sellBeginTime);
-        // （2-9）售卡结束时间
+        // （2-8）售卡结束时间
         Date sellEndTime = vo.getSellEndTime();
         if (sellEndTime == null || sellEndTime.compareTo(sellBeginTime) < 0) {
             throw new BusinessException("售卡结束时间不能为空，且必须不小于售卡开始时间");
         }
         saveActivity.setSellEndTime(sellEndTime);
-        // （2-10）说明
+        // （2-9）说明
         String illustration = vo.getIllustration();
         if (StringUtil.isEmpty(illustration)) {
             throw new BusinessException("说明不能为空");
         }
         saveActivity.setIllustration(illustration);
-        // （2-11）项目是否需要审核
+        // （2-10）项目是否需要审核
         Integer isProjectCheck = vo.getIsProjectCheck();
         if (isProjectCheck == null) {
             throw new BusinessException("项目是否需要审核不能为空");
