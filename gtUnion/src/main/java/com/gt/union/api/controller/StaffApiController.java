@@ -1,10 +1,6 @@
 package com.gt.union.api.controller;
 
-import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.TCommonStaff;
-import com.gt.api.util.SessionUtils;
-import com.gt.union.api.client.erp.ErpService;
-import com.gt.union.api.client.erp.vo.ErpModelVO;
 import com.gt.union.api.client.staff.ITCommonStaffService;
 import com.gt.union.common.response.GtJsonResult;
 import io.swagger.annotations.Api;

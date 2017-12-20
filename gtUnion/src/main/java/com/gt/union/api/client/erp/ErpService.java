@@ -1,7 +1,7 @@
 package com.gt.union.api.client.erp;
 
 import com.baomidou.mybatisplus.plugins.Page;
-import com.gt.union.api.client.erp.vo.ErpModelVO;
+import com.gt.union.api.client.erp.vo.ErpTypeVO;
 import com.gt.union.api.client.erp.vo.ErpServerVO;
 
 import java.util.List;
@@ -13,7 +13,7 @@ public interface ErpService {
 	 * @param busId
 	 * @return	erpmodel：erp类型
 	 */
-	List<ErpModelVO> listErpByBusId(Integer busId);
+	List<ErpTypeVO> listErpByBusId(Integer busId);
 
 	/**
 	 * 查询erp服务项目

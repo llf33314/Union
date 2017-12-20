@@ -8,20 +8,20 @@ import io.swagger.annotations.ApiModelProperty;
  * @time 2017-12-08 10:42
  **/
 @ApiModel(value = "erp行业类型")
-public class ErpModelVO {
+public class ErpTypeVO {
 
 	@ApiModelProperty(value = "erp行业类型")
-	private Integer erpModel;
+	private Integer erpType;
 
 	@ApiModelProperty(value = "erp行业名称")
 	private String erpName;
 
-	public Integer getErpModel() {
-		return erpModel;
+	public Integer getErpType() {
+		return erpType;
 	}
 
-	public void setErpModel(Integer erpModel) {
-		this.erpModel = erpModel;
+	public void setErpType(Integer erpType) {
+		this.erpType = erpType;
 	}
 
 	public String getErpName() {
@@ -32,11 +32,5 @@ public class ErpModelVO {
 		this.erpName = erpName;
 	}
 
-	@Override
-	public String toString() {
-		return "ErpModelVO{" +
-				"erpModel=" + erpModel +
-				", erpName='" + erpName + '\'' +
-				'}';
-	}
+
 }
