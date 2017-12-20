@@ -259,23 +259,38 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
     }
 
     @Override
-    public List<UnionMain> listMyValidByBusId(Integer busId) throws Exception {
+    public List<UnionMain> listMyValidReadByBusId(Integer busId) throws Exception {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionMain> result = new ArrayList<>();
         List<UnionMember> readMemberList = unionMemberService.listReadByBusId(busId);
-        if (ListUtil.isNotEmpty(readMemberList)) {
-            for (UnionMember readMember : readMemberList) {
-                UnionMain union = getById(readMember.getUnionId());
+
+        return getValidUnionList(readMemberList);
+    }
+
+    private List<UnionMain> getValidUnionList(List<UnionMember> memberList) throws Exception {
+        List<UnionMain> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(memberList)) {
+            for (UnionMember member : memberList) {
+                UnionMain union = getById(member.getUnionId());
                 if (isUnionValid(union)) {
                     result.add(union);
                 }
             }
         }
-
         return result;
+    }
+
+    @Override
+    public List<UnionMain> listMyValidWriteByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMember> writeMemberList = unionMemberService.listWriteByBusId(busId);
+        
+        return getValidUnionList(writeMemberList);
     }
 
     @Override
