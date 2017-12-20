@@ -418,13 +418,19 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
             throw new BusinessException("售卡结束时间不能为空，且必须不小于售卡开始时间");
         }
         saveActivity.setSellEndTime(sellEndTime);
-        // （2-9）说明
+        // （2-9）颜色
+        String color = vo.getColor();
+        if (StringUtil.isEmpty(color)) {
+            throw new BusinessException("颜色不能为空");
+        }
+        saveActivity.setColor(color);
+        // （2-10）说明
         String illustration = vo.getIllustration();
         if (StringUtil.isEmpty(illustration)) {
             throw new BusinessException("说明不能为空");
         }
         saveActivity.setIllustration(illustration);
-        // （2-10）项目是否需要审核
+        // （2-11）项目是否需要审核
         Integer isProjectCheck = vo.getIsProjectCheck();
         if (isProjectCheck == null) {
             throw new BusinessException("项目是否需要审核不能为空");
