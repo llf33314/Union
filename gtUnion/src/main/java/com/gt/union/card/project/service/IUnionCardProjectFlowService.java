@@ -39,9 +39,17 @@ public interface IUnionCardProjectFlowService extends IService<UnionCardProjectF
     //***************************************** Domain Driven Design - save ********************************************
 
     /**
+     * 保存
+     *
+     * @param newUnionCardProjectFlow 保存内容
+     * @throws Exception 统一处理异常
+     */
+    void save(UnionCardProjectFlow newUnionCardProjectFlow) throws Exception;
+
+    /**
      * 批量保存
      *
-     * @param saveFlowList 流程列表
+     * @param saveFlowList 保存内容
      * @throws Exception 统一处理异常
      */
     void saveBatch(List<UnionCardProjectFlow> saveFlowList) throws Exception;

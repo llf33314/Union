@@ -11,8 +11,10 @@ import com.gt.union.card.activity.service.IUnionCardActivityService;
 import com.gt.union.card.consume.service.IUnionConsumeProjectService;
 import com.gt.union.card.project.constant.ProjectConstant;
 import com.gt.union.card.project.entity.UnionCardProject;
+import com.gt.union.card.project.entity.UnionCardProjectFlow;
 import com.gt.union.card.project.entity.UnionCardProjectItem;
 import com.gt.union.card.project.mapper.UnionCardProjectItemMapper;
+import com.gt.union.card.project.service.IUnionCardProjectFlowService;
 import com.gt.union.card.project.service.IUnionCardProjectItemService;
 import com.gt.union.card.project.service.IUnionCardProjectService;
 import com.gt.union.card.project.util.UnionCardProjectItemCacheUtil;
@@ -60,6 +62,9 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
 
     @Autowired
     private IUnionConsumeProjectService unionConsumeProjectService;
+
+    @Autowired
+    private IUnionCardProjectFlowService unionCardProjectFlowService;
 
     @Autowired
     private ErpService erpService;
@@ -217,18 +222,25 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
         if (project == null) {
             unionCardProjectService.save(saveProject);
 
-            for (UnionCardProjectItem saveItem : saveItemList) {
-                saveItem.setProjectId(saveProject.getId());
+            if (ListUtil.isNotEmpty(saveItemList)) {
+                for (UnionCardProjectItem saveItem : saveItemList) {
+                    saveItem.setProjectId(saveProject.getId());
+                }
+                saveBatch(saveItemList);
             }
-            saveBatch(saveItemList);
         } else {
-            for (UnionCardProjectItem saveItem : saveItemList) {
-                saveItem.setProjectId(project.getId());
+            unionCardProjectService.update(updateProject);
+
+            if (ListUtil.isNotEmpty(removeItemIdList)) {
+                removeBatchById(removeItemIdList);
             }
 
-            unionCardProjectService.update(updateProject);
-            removeBatchById(removeItemIdList);
-            saveBatch(saveItemList);
+            if (ListUtil.isNotEmpty(saveItemList)) {
+                for (UnionCardProjectItem saveItem : saveItemList) {
+                    saveItem.setProjectId(project.getId());
+                }
+                saveBatch(saveItemList);
+            }
         }
     }
 
@@ -261,6 +273,7 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
         //   （4-2）如果不是，则新增活动项目，且保存新项目优惠；
         UnionCardProject updateProject = null;
         UnionCardProject saveProject = null;
+        UnionCardProjectFlow saveFlow = null;
         List<Integer> removeItemIdList = null;
         UnionCardProject project = unionCardProjectService.getByUnionIdAndMemberIdAndActivityId(unionId, member.getId(), activityId);
         Date currentDate = DateUtil.getCurrentDate();
@@ -292,7 +305,7 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
         }
         // （5）判断活动是否设置了需要项目审核：
         //   （5-1）如果是，则为提交状态；
-        //   （5-2）如果不是，则为审核通过状态；
+        //   （5-2）如果不是，则为审核通过状态，并新增自动通过审核记录；
         if (updateProject != null) {
             updateProject.setStatus(ActivityConstant.IS_PROJECT_CHECK_YES == activity.getIsProjectCheck()
                     ? ProjectConstant.STATUS_COMMITTED : ProjectConstant.STATUS_ACCEPT);
@@ -301,25 +314,42 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
             saveProject.setStatus(ActivityConstant.IS_PROJECT_CHECK_YES == activity.getIsProjectCheck()
                     ? ProjectConstant.STATUS_COMMITTED : ProjectConstant.STATUS_ACCEPT);
         }
+        if (ActivityConstant.IS_PROJECT_CHECK_YES != activity.getIsProjectCheck()) {
+            saveFlow = new UnionCardProjectFlow();
+            saveFlow.setDelStatus(CommonConstant.DEL_STATUS_NO);
+            saveFlow.setCreateTime(currentDate);
+            saveFlow.setIllustration("无需审核，自动通过");
+        }
 
         List<UnionCardProjectItem> saveItemList = listItemByVO(vo, busId);
 
         // （6）事务操作
         if (project != null) {
-            for (UnionCardProjectItem saveItem : saveItemList) {
-                saveItem.setProjectId(project.getId());
+            unionCardProjectService.update(updateProject);
+
+            if (ListUtil.isNotEmpty(removeItemIdList)) {
+                removeBatchById(removeItemIdList);
             }
 
-            unionCardProjectService.update(updateProject);
-            removeBatchById(removeItemIdList);
-            saveBatch(saveItemList);
+            if (ListUtil.isNotEmpty(saveItemList)) {
+                for (UnionCardProjectItem saveItem : saveItemList) {
+                    saveItem.setProjectId(project.getId());
+                }
+                saveBatch(saveItemList);
+            }
+
+            if (saveFlow != null) {
+                unionCardProjectFlowService.save(saveFlow);
+            }
         } else {
             unionCardProjectService.save(saveProject);
 
-            for (UnionCardProjectItem saveItem : saveItemList) {
-                saveItem.setProjectId(saveProject.getId());
+            if (ListUtil.isNotEmpty(saveItemList)) {
+                for (UnionCardProjectItem saveItem : saveItemList) {
+                    saveItem.setProjectId(saveProject.getId());
+                }
+                saveBatch(saveItemList);
             }
-            saveBatch(saveItemList);
         }
     }
 
