@@ -45,8 +45,8 @@ public class CarErpServiceImpl implements CarErpService {
 				List<ErpServerVO> data = new ArrayList(list.size());
 				for(Map map : list){
 					ErpServerVO vo = new ErpServerVO();
-					vo.setServerId(CommonUtil.toInteger(map.get("id")));
-					vo.setServerName(CommonUtil.toString(map.get("serveItemName")));
+					vo.setId(CommonUtil.toInteger(map.get("id")));
+					vo.setName(CommonUtil.toString(map.get("serveItemName")));
 					data.add(vo);
 				}
 				page.setTotal(CommonUtil.toInteger(object.get("total")));

@@ -12,24 +12,24 @@ import io.swagger.annotations.ApiModelProperty;
 public class ErpServerVO {
 
 	@ApiModelProperty(value = "erp服务项目id")
-	private Integer serverId;
+	private Integer id;
 
 	@ApiModelProperty(value = "erp服务项目名称")
-	private String serverName;
+	private String name;
 
-	public Integer getServerId() {
-		return serverId;
+	public Integer getId() {
+		return id;
 	}
 
-	public void setServerId(Integer serverId) {
-		this.serverId = serverId;
+	public void setId(Integer id) {
+		this.id = id;
 	}
 
-	public String getServerName() {
-		return serverName;
+	public String getName() {
+		return name;
 	}
 
-	public void setServerName(String serverName) {
-		this.serverName = serverName;
+	public void setName(String name) {
+		this.name = name;
 	}
 }
