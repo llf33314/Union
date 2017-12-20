@@ -36,6 +36,7 @@ public class ShopServiceImpl implements ShopService {
 			RequestUtils req = new RequestUtils<Integer>();
 			req.setReqdata(busId);
 			String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(req),url, String.class, PropertiesUtil.getWxmpSignKey());
+			logger.info("根据商家id获取门店列表信息，结果：{}", result);
 			List<WsWxShopInfoExtend> list = ApiResultHandlerUtil.listDataObject(result,WsWxShopInfoExtend.class);
 			List<ShopVO> dataList = new ArrayList<ShopVO>();
 			for(WsWxShopInfoExtend info : list){
@@ -59,6 +60,7 @@ public class ShopServiceImpl implements ShopService {
 			RequestUtils req = new RequestUtils<Integer>();
 			req.setReqdata(list);
 			String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(req),url, String.class, PropertiesUtil.getWxmpSignKey());
+			logger.info("根据门店id列表获取门店列表信息，结果：{}", result);
 			List<WsWxShopInfoExtend> shops = ApiResultHandlerUtil.listDataObject(result,WsWxShopInfoExtend.class);
 			return shops;
 		}catch (Exception e){
@@ -77,6 +79,7 @@ public class ShopServiceImpl implements ShopService {
 			RequestUtils req = new RequestUtils<Integer>();
 			req.setReqdata(list);
 			String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(req),url, String.class, PropertiesUtil.getWxmpSignKey());
+			logger.info("根据门店id获取门店信息，结果：{}", result);
 			List<WsWxShopInfoExtend> shops = ApiResultHandlerUtil.listDataObject(result,WsWxShopInfoExtend.class);
 			return CommonUtil.isNotEmpty(shops) ? shops.get(0) : null;
 		}catch (Exception e){

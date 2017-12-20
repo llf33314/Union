@@ -43,6 +43,7 @@ public class BusUserServiceImpl implements IBusUserService {
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/busUserApi/getBusUserApi.do";
         try {
             String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
+            logger.info("根据商家id获取商家信息，结果：{}", result);
             return ApiResultHandlerUtil.getDataObject(result, BusUser.class);
         } catch (Exception e) {
             logger.error("根据商家id获取商家信息错误", e);
@@ -58,6 +59,7 @@ public class BusUserServiceImpl implements IBusUserService {
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/busUserApi/getBusUserApi.do";
         try {
             String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
+            logger.info("根据账号名称获取商家信息，结果：{}", result);
             return ApiResultHandlerUtil.getDataObject(result, BusUser.class);
         } catch (Exception e) {
             logger.error("根据账号名称获取商家信息错误", e);
@@ -73,6 +75,7 @@ public class BusUserServiceImpl implements IBusUserService {
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/wxpublicapi/6F6D9AD2/79B4DE7C/selectByUserId.do";
         try{
             String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param), url, String.class, PropertiesUtil.getWxmpSignKey());
+            logger.info("根据商家id获取公众号信息，结果：{}", result);
             return ApiResultHandlerUtil.getDataObject(result, WxPublicUsers.class);
         }catch (Exception e){
             logger.error("根据商家id获取公众号信息错误", e);
@@ -141,6 +144,7 @@ public class BusUserServiceImpl implements IBusUserService {
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/busUserApi/getBusUserApi.do";
         try {
             String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());
+            logger.info("根据手机号获取商家信息，结果：{}", result);
             return ApiResultHandlerUtil.getDataObject(result, BusUser.class);
         } catch (Exception e) {
             logger.error("根据手机号获取商家信息错误", e);

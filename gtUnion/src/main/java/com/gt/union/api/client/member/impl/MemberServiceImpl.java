@@ -39,6 +39,7 @@ public class MemberServiceImpl implements MemberService {
 		param.put("ids",memberIds);
 		try {
 			String data = SignHttpUtils.WxmppostByHttp(url,param, PropertiesUtil.getMemberSignKey());
+			logger.info("根据商家id和用户ids查询列表信息，结果：{}", data);
 			return ApiResultHandlerUtil.listDataObject(data,Map.class);
 		}catch (Exception e){
 			logger.error("根据商家id和用户ids查询列表信息错误",e);
@@ -54,6 +55,7 @@ public class MemberServiceImpl implements MemberService {
 		param.put("memberId",memberId);
 		try {
 			String data = SignHttpUtils.WxmppostByHttp(url,param, PropertiesUtil.getMemberSignKey());
+			logger.info("根据粉丝用户id获取用户信息，结果：{}", data);
 			return ApiResultHandlerUtil.getDataObject(data,Member.class);
 		}catch (Exception e){
 			logger.error("根据粉丝用户id获取用户信息错误",e);
@@ -70,6 +72,7 @@ public class MemberServiceImpl implements MemberService {
 		param.put("busId",busId);
 		try {
 			String data = SignHttpUtils.WxmppostByHttp(url,param,PropertiesUtil.getMemberSignKey());
+			logger.info("根据手机号和商家id获取用户信息，结果：{}", data);
 			Member member = ApiResultHandlerUtil.getDataObject(data,Member.class);
 			return member;
 		}catch (Exception e){

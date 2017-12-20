@@ -138,6 +138,10 @@ member:
   url: http://member.yifriend.net
   signkey: MV8MMFQUMU1HJ6F2GNH40ZFJJ7Q8LNVM
 
+
+car:
+  url: http://cao.duofee.com
+
 jxc:
   url: https://jxc.deeptel.com.cn
   account: erp_7

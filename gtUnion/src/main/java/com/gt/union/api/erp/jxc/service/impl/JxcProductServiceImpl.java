@@ -52,6 +52,7 @@ public class JxcProductServiceImpl implements JxcProductService{
 			logger.info("根据门店id和商品分类id和搜索条件(名称/条码/编码/全拼码) 分页查询商品：{}", JSON.toJSONString(param));
 
 			String result = HttpClientUtil.httpGetRequest(url, param, token);
+			logger.info("根据门店id和商品分类id和搜索条件(名称/条码/编码/全拼码) 分页查询商品，结果：{}", result);
 			JSONObject jsonObject = JSONObject.parseObject(result);
 			String data = jsonObject.getJSONObject("data").toJSONString();
 			jsonObject = JSONObject.parseObject(data);

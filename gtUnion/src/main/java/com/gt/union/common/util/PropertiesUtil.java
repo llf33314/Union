@@ -60,6 +60,8 @@ public class PropertiesUtil {
 
 	private static String jxcPwd;
 
+	private static String carUrl;
+
 	/**
 	 * 获取资源访问地址
 	 * @return resourceUrl
@@ -259,6 +261,14 @@ public class PropertiesUtil {
 		return unionUrl;
 	}
 
+	/**
+	 * 获取车小算接口路径
+	 * @return
+	 */
+	public static String getCarUrl() {
+		return carUrl;
+	}
+
 	@Value("${resource.url.prefix}")
 	public void setResourceUrl(String resourceUrl) {
 		PropertiesUtil.resourceUrl = resourceUrl;
@@ -379,5 +389,8 @@ public class PropertiesUtil {
 		PropertiesUtil.jxcPwd = jxcPwd;
 	}
 
-
+	@Value("${car.url}")
+	public void setCarUrl(String carUrl) {
+		PropertiesUtil.carUrl = carUrl;
+	}
 }
