@@ -1,6 +1,9 @@
 package com.gt.union.h5.card.vo;
 
 import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+import java.util.List;
 
 /**
  * @author hongjiye
@@ -9,5 +12,14 @@ import io.swagger.annotations.ApiModel;
 @ApiModel(value = "h5联盟卡首页VO")
 public class IndexVO {
 
+	@ApiModelProperty(value = "首页联盟卡列表信息")
+	List<UnionCardVO> cardList;
 
+	public List<UnionCardVO> getCardList() {
+		return cardList;
+	}
+
+	public void setCardList(List<UnionCardVO> cardList) {
+		this.cardList = cardList;
+	}
 }
