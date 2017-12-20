@@ -65,18 +65,19 @@ public class UnionCardProjectFlowServiceImpl extends ServiceImpl<UnionCardProjec
         }
         // （2）	判断project是否存在
         UnionCardProject project = unionCardProjectService.getByUnionIdAndMemberIdAndActivityId(unionId, member.getId(), activityId);
-        if (project == null) {
-            throw new BusinessException("找不到活动项目信息");
-        }
-        Integer projectId = project.getId();
+
         // （3）	按时间顺序排序
-        List<UnionCardProjectFlow> result = listByProjectId(projectId);
-        Collections.sort(result, new Comparator<UnionCardProjectFlow>() {
-            @Override
-            public int compare(UnionCardProjectFlow o1, UnionCardProjectFlow o2) {
-                return o1.getCreateTime().compareTo(o2.getCreateTime());
-            }
-        });
+        List<UnionCardProjectFlow> result = new ArrayList<>();
+        if (project != null) {
+            result = listByProjectId(project.getId());
+
+            Collections.sort(result, new Comparator<UnionCardProjectFlow>() {
+                @Override
+                public int compare(UnionCardProjectFlow o1, UnionCardProjectFlow o2) {
+                    return o1.getCreateTime().compareTo(o2.getCreateTime());
+                }
+            });
+        }
 
         return result;
     }
