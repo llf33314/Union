@@ -372,7 +372,7 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
         if (StringUtil.isEmpty(name)) {
             throw new BusinessException("名称不能为空");
         }
-        if (StringUtil.getStringLength(name) > 0) {
+        if (StringUtil.getStringLength(name) > 10) {
             throw new BusinessException("名称字数不能大于10");
         }
         saveActivity.setName(name);
