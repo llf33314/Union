@@ -79,7 +79,13 @@ public class UnionCardSharingRecordController {
             HttpServletRequest request,
             HttpServletResponse response,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable(value = "unionId") Integer unionId) throws Exception {
+            @PathVariable(value = "unionId") Integer unionId,
+            @ApiParam(value = "联盟卡号", name = "cardNumber")
+            @RequestParam(value = "cardNumber", required = false) String cardNumber,
+            @ApiParam(value = "开始时间", name = "beginTime")
+            @RequestParam(value = "beginTime", required = false) Long beginTime,
+            @ApiParam(value = "结束时间", name = "endTime")
+            @RequestParam(value = "endTime", required = false) Long endTime) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -90,8 +96,9 @@ public class UnionCardSharingRecordController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             voList = MockUtil.list(CardSharingRecordVO.class, 20);
         } else {
-            voList = unionCardSharingRecordService.listCardSharingRecordVOByBusIdAndUnionId(busId, unionId,
-                    null, null, null);
+            Date begin = beginTime != null ? (new Date(beginTime)) : null;
+            Date end = endTime != null ? (new Date(endTime)) : null;
+            voList = unionCardSharingRecordService.listCardSharingRecordVOByBusIdAndUnionId(busId, unionId, cardNumber, begin, end);
         }
         String[] titles = new String[]{"时间", "联盟卡号", "售卡金额(元)", "售卡佣金(元)", "售卡出处"};
         HSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);

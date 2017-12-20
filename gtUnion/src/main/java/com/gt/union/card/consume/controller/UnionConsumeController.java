@@ -92,7 +92,21 @@ public class UnionConsumeController {
 
     @ApiOperation(value = "导出：前台-消费核销记录", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/record/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public void exportConsumeVO(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void exportConsumeVO(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @ApiParam(value = "联盟id", name = "unionId")
+            @RequestParam(value = "unionId", required = false) Integer unionId,
+            @ApiParam(value = "门店id", name = "shopId")
+            @RequestParam(value = "shopId", required = false) Integer shopId,
+            @ApiParam(value = "卡号", name = "cardNumber")
+            @RequestParam(value = "cardNumber", required = false) String cardNumber,
+            @ApiParam(value = "手机号", name = "phone")
+            @RequestParam(value = "phone", required = false) String phone,
+            @ApiParam(value = "开始时间", name = "beginTime")
+            @RequestParam(value = "beginTime", required = false) Long beginTime,
+            @ApiParam(value = "结束时间", name = "endTime")
+            @RequestParam(value = "endTime", required = false) Long endTime) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -113,8 +127,9 @@ public class UnionConsumeController {
                 voList.get(i).setErpGoodsList(erpGoodsList);
             }
         } else {
-            voList = unionConsumeService.listConsumeRecordVOByBusId(busId, null, null,
-                    null, null, null, null);
+            Date begin = beginTime != null ? (new Date(beginTime)) : null;
+            Date end = endTime != null ? (new Date(endTime)) : null;
+            voList = unionConsumeService.listConsumeRecordVOByBusId(busId, unionId, shopId, cardNumber, phone, begin, end);
         }
         String[] titles = new String[]{"所属联盟", "消费门店", "联盟卡号", "手机号", "消费金额(元)", "实收金额(元)", "优惠项目", "支付状态", "消费时间"};
         HSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);
