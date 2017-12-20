@@ -306,7 +306,7 @@ CREATE TABLE `t_union_card_project_item` (
   `type` int(2) DEFAULT NULL COMMENT '类型(1:非ERP文本优惠 2:ERP文本优惠 3:ERP商品优惠)',
   `name` varchar(100) DEFAULT NULL COMMENT '名称',
   `number` int(11) DEFAULT NULL COMMENT '数量',
-  `size` varchar(100) DEFAULT NULL COMMENT '规格',
+  `spec` varchar(100) DEFAULT NULL COMMENT '规格',
   `erp_type` int(2) DEFAULT NULL COMMENT 'ERP类型(1:车小算 2:样子)',
   `shop_id` int(11) DEFAULT NULL COMMENT '门店id',
   `shop_name` varchar(100) DEFAULT NULL COMMENT '门店名称',

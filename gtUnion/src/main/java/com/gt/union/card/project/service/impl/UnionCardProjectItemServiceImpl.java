@@ -458,11 +458,11 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
                 }
                 saveItem.setName(name);
 
-                String size = erpGoods.getSize();
-                if (StringUtil.isEmpty(size)) {
+                String spec = erpGoods.getSpec();
+                if (StringUtil.isEmpty(spec)) {
                     throw new BusinessException("商品规格不能为空");
                 }
-                saveItem.setSize(size);
+                saveItem.setSpec(spec);
 
                 Integer number = erpGoods.getNumber();
                 if (number == null || number <= 0) {

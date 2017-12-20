@@ -79,8 +79,8 @@ public class UnionCardProjectItem extends Model<UnionCardProjectItem> {
      * 规格
      */
     @ApiModelProperty(value = "规格")
-    @TableField("size")
-    private String size;
+    @TableField("spec")
+    private String spec;
 
     /**
      * ERP类型(1:车小算 2:样子)
@@ -181,12 +181,12 @@ public class UnionCardProjectItem extends Model<UnionCardProjectItem> {
         this.number = number;
     }
 
-    public String getSize() {
-        return size;
+    public String getSpec() {
+        return spec;
     }
 
-    public void setSize(String size) {
-        this.size = size;
+    public void setSpec(String spec) {
+        this.spec = spec;
     }
 
     public Integer getErpType() {
