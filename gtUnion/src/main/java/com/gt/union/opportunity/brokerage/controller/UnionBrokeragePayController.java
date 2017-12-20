@@ -106,7 +106,11 @@ public class UnionBrokeragePayController {
 
     @ApiOperation(value = "导出：商机-佣金结算-支付明细", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/detail/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public void exportBrokeragePayDetail(HttpServletRequest request, HttpServletResponse response) throws Exception {
+    public void exportBrokeragePayDetail(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            @ApiParam(value = "联盟id", name = "unionId")
+            @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -120,7 +124,7 @@ public class UnionBrokeragePayController {
                 voList.get(i).setOpportunityList(opportunityList);
             }
         } else {
-            voList = unionBrokeragePayService.listBrokeragePayVOByBusId(busId, null);
+            voList = unionBrokeragePayService.listBrokeragePayVOByBusId(busId, unionId);
         }
         String[] titles = new String[]{"所属联盟", "盟员名称", "商机往来金额(元)"};
         HSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);

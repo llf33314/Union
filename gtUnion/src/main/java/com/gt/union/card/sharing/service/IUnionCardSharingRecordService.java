@@ -25,7 +25,7 @@ public interface IUnionCardSharingRecordService extends IService<UnionCardSharin
      * @param unionId       联盟id
      * @param optCardNumber 卡号
      * @param optBeginTime  开始时间
-     * @param optEndTime    结束时间
+     * @param optEndTime    结束时间 
      * @return List<CardSharingRecordVO>
      * @throws Exception 统一处理异常
      */

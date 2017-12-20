@@ -79,7 +79,9 @@ public class UnionMemberController {
             HttpServletRequest request,
             HttpServletResponse response,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId) throws Exception {
+            @PathVariable("unionId") Integer unionId,
+            @ApiParam(value = "盟员名称", name = "memberName")
+            @RequestParam(value = "memberName", required = false) String optMemberName) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -90,7 +92,7 @@ public class UnionMemberController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             memberList = MockUtil.list(UnionMember.class, 20);
         } else {
-            memberList = unionMemberService.listWriteByBusIdAndUnionId(busId, unionId, null);
+            memberList = unionMemberService.listWriteByBusIdAndUnionId(busId, unionId, optMemberName);
         }
         String[] titles = new String[]{"盟员名称", "负责人", "联系电话", "加入时间"};
         HSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);

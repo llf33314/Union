@@ -82,7 +82,11 @@ public class UnionCardFanController {
             HttpServletRequest request,
             HttpServletResponse response,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @RequestParam(value = "unionId") Integer unionId) throws Exception {
+            @RequestParam(value = "unionId") Integer unionId,
+            @ApiParam(value = "联盟卡号", name = "number")
+            @RequestParam(value = "number", required = false) String optNumber,
+            @ApiParam(value = "手机号", name = "phone")
+            @RequestParam(value = "phone", required = false) String optPhone) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -93,7 +97,7 @@ public class UnionCardFanController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             voList = MockUtil.list(CardFanVO.class, 20);
         } else {
-            voList = unionCardFanService.listCardFanVoByBusIdAndUnionId(busId, unionId, null, null);
+            voList = unionCardFanService.listCardFanVoByBusIdAndUnionId(busId, unionId, optNumber, optPhone);
         }
         String[] titles = new String[]{"盟员卡号", "手机号", "联盟积分"};
         HSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);
