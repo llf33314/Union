@@ -13,8 +13,7 @@ import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.*;
 import com.gt.union.h5.card.service.IH5CardService;
-import com.gt.union.h5.card.vo.CardDetailVO;
-import com.gt.union.h5.card.vo.IndexVO;
+import com.gt.union.h5.card.vo.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -52,12 +51,14 @@ public class H5CardController {
 							 @ApiParam(value = "商家id", name = "busId", required = true)
 							 @PathVariable("busId") Integer busId) throws Exception {
 		Member member = SessionUtils.getLoginMember(request, busId);
-		IndexVO result;
+		IndexVO indexVO;
 		if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-			result = MockUtil.get(IndexVO.class);
+			indexVO = MockUtil.get(IndexVO.class);
 		} else {
-			result = h5CardService.getIndexVO(member == null ? null : member.getPhone(), busId);
+			indexVO = h5CardService.getIndexVO(member == null ? null : member.getPhone(), busId);
 		}
+		Page<UnionCardVO> result = (Page<UnionCardVO>) page;
+		result = PageUtil.setRecord(result, indexVO.getCardList());
 		return GtJsonResult.instanceSuccessMsg(result).toString();
 	}
 
@@ -80,10 +81,28 @@ public class H5CardController {
 		return GtJsonResult.instanceSuccessMsg(result).toString();
 	}
 
+	@ApiOperation(value = "联盟卡-我的详情", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/myCardDetail/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String myCardDetail(HttpServletRequest request,
+							 @ApiParam(value = "商家id", name = "busId", required = true)
+							 @PathVariable("busId") Integer busId, Page page) throws Exception {
+		Member member = SessionUtils.getLoginMember(request, busId);
+		if(CommonUtil.isEmpty(member)){
+			//TODO 联盟卡手机端登录
+			GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/login").toString();
+		}
+		MyCardDetailVO myCardDetailVO = h5CardService.myCardDetail(member.getPhone());
+		myCardDetailVO.setNickName(StringUtil.isEmpty(member.getNickname()) ? "未知用户" : member.getNickname());
+		myCardDetailVO.setHeardImg(member.getHeadimgurl());
+		Page<MyUnionCardDetailVO> result = (Page<MyUnionCardDetailVO>) page;
+		result = PageUtil.setRecord(result, myCardDetailVO.getCardList());
+		return GtJsonResult.instanceSuccessMsg(result).toString();
+	}
+
 
 	@ApiOperation(value = "获取联盟卡二维码", notes = "获取联盟卡二维码", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/qr/cardNo", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
-	public void cardNoImg(HttpServletRequest request,
+	public void qrCardNo(HttpServletRequest request,
 						  HttpServletResponse response, @ApiParam(name="cardNo", value = "联盟卡号", required = true) @RequestParam("cardNo") String cardNo) throws UnsupportedEncodingException {
 		String encrypt = EncryptUtil.encrypt(PropertiesUtil.getEncryptKey(), cardNo);//加密后参数
 		encrypt = URLEncoder.encode(encrypt,"UTF-8");

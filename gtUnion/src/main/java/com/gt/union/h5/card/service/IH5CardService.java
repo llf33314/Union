@@ -2,6 +2,7 @@ package com.gt.union.h5.card.service;
 
 import com.gt.union.h5.card.vo.CardDetailVO;
 import com.gt.union.h5.card.vo.IndexVO;
+import com.gt.union.h5.card.vo.MyCardDetailVO;
 
 /**
  * @author hongjiye
@@ -25,5 +26,12 @@ public interface IH5CardService {
 	 * @param activityId	活动卡id
 	 * @return
 	 */
-	CardDetailVO getCardDetail(String phone, Integer busId, Integer unionId, Integer activityId);
+	CardDetailVO getCardDetail(String phone, Integer busId, Integer unionId, Integer activityId) throws Exception;
+
+	/**
+	 * 获取我的联盟卡详情
+	 * @param phone		用户手机号
+	 * @return
+	 */
+	MyCardDetailVO myCardDetail(String phone) throws Exception;
 }
