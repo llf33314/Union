@@ -262,7 +262,6 @@ CREATE TABLE `t_union_card_activity` (
   `union_id` int(11) DEFAULT NULL COMMENT '联盟id',
   `name` varchar(100) DEFAULT NULL COMMENT '名称',
   `price` double(8,2) DEFAULT NULL COMMENT '价格',
-  `img` varchar(300) DEFAULT NULL COMMENT '展示图',
   `color` varchar(20) DEFAULT NULL COMMENT '颜色',
   `amount` int(11) DEFAULT NULL COMMENT '发行量',
   `validity_day` int(11) DEFAULT NULL COMMENT '有效天数',

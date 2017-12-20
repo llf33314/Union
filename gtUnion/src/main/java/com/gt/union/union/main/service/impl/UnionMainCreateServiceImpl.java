@@ -303,16 +303,7 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
             throw new BusinessException("短信通知手机参数值有误");
         }
         saveMember.setNotifyPhone(memberNotifyPhone);
-        // （4-13）积分抵扣率
-        if (saveUnion.getIsIntegral() == CommonConstant.COMMON_YES) {
-            Double memberIntegralExchangeRatio = voMember.getIntegralExchangeRatio();
-            Double maxIntegralExchange = dictService.getMaxExchangePercent();
-            if (memberIntegralExchangeRatio == null || memberIntegralExchangeRatio <= 0 || memberIntegralExchangeRatio > maxIntegralExchange) {
-                throw new BusinessException("积分抵扣率不能小于等于0，且不能大于" + maxIntegralExchange * 100);
-            }
-            saveMember.setIntegralExchangeRatio(memberIntegralExchangeRatio);
-        }
-        // （4-14）入盟收集信息
+        // （4-13）入盟收集信息
         List<UnionMainDict> saveDictList = vo.getItemList();
         if (ListUtil.isEmpty(saveDictList)) {
             throw new BusinessException("入盟收集信息不能为空");
@@ -325,15 +316,15 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         saveCreate.setPermitId(permitId);
         // （5）事务操作
         unionMainService.save(saveUnion);
-        
+
         saveMember.setUnionId(saveUnion.getId());
         unionMemberService.save(saveMember);
-        
+
         for (UnionMainDict dict : saveDictList) {
             dict.setUnionId(saveUnion.getId());
         }
         unionMainDictService.saveBatch(saveDictList);
-        
+
         saveCreate.setUnionId(saveUnion.getId());
         save(saveCreate);
     }

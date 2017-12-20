@@ -10,7 +10,6 @@
         <result column="union_id" property="unionId"/>
         <result column="name" property="name"/>
         <result column="price" property="price"/>
-        <result column="img" property="img"/>
         <result column="color" property="color"/>
         <result column="amount" property="amount"/>
         <result column="validity_day" property="validityDay"/>
