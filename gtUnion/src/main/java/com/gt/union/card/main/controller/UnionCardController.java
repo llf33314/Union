@@ -74,8 +74,8 @@ public class UnionCardController {
     }
 
     @ApiOperation(value = "获取联盟卡手机端二维码", notes = "获取联盟卡手机端二维码", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/qr/h5Card.png", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
-    public void cardNoImg(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
+    @RequestMapping(value = "/qr/h5Card", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
+    public void qrH5Card(HttpServletRequest request, HttpServletResponse response) throws UnsupportedEncodingException {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
