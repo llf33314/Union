@@ -95,19 +95,19 @@ domain:
   df: duofriend.com
 
 mq:
-  uri: 183.47.242.4
+  uri: 113.106.202.51
   user: guest
-  password: yf26609632
+  password: gt@123456@
 
 
 #队列转换器
 exchange:
   union:
-    exchange: union_exchange_1
+    exchange: union.sms.exchange
 #队列名称
 queueName:
   union:
-    queueName: union_routingKey_phone_message_1
+    queueName: union.sms.queueName
 
 
 #redis:

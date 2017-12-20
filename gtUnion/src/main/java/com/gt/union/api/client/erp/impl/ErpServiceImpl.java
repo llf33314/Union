@@ -38,7 +38,8 @@ public class ErpServiceImpl implements ErpService {
 		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/ErploginApi/getErpListApi.do";
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("userId",busId);
-		param.put("loginStyle",0);
+		param.put("loginStyle",1);
+		param.put("loginUc",0);
 		List<ErpModelVO> dataList = new ArrayList<ErpModelVO>();
 		try{
 			String result = SignHttpUtils.WxmppostByHttp(url, param, PropertiesUtil.getWxmpSignKey());

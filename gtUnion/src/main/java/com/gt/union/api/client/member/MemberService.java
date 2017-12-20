@@ -48,7 +48,7 @@ public interface MemberService {
 	boolean bindMemberPhone(Integer busId, Integer memberId, String phone);
 
 	/**
-	 * 粉丝用户手机号登录
+	 * 粉丝用户手机号登录 登录成功后 member放入session中
 	 * @param phone		手机号
 	 * @param busId		商家id
 	 * @return	1：成功 0：失败
