@@ -16,6 +16,7 @@ import com.gt.union.card.main.entity.UnionCard;
 import com.gt.union.card.main.entity.UnionCardFan;
 import com.gt.union.card.main.entity.UnionCardRecord;
 import com.gt.union.card.main.mapper.UnionCardMapper;
+import com.gt.union.card.main.service.IUnionCardApplyService;
 import com.gt.union.card.main.service.IUnionCardFanService;
 import com.gt.union.card.main.service.IUnionCardRecordService;
 import com.gt.union.card.main.service.IUnionCardService;
@@ -288,7 +289,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public UnionPayVO saveApplyByBusIdAndUnionIdAndFanId(Integer busId, Integer unionId, Integer fanId, List<Integer> activityIdList) throws Exception {
+    public UnionPayVO saveApplyByBusIdAndUnionIdAndFanId(Integer busId, Integer unionId, Integer fanId, List<Integer> activityIdList, IUnionCardApplyService unionCardApplyService) throws Exception {
         if (busId == null || unionId == null || fanId == null || activityIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -385,22 +386,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             saveCardRecordList.add(saveCardRecord);
         }
 
-        UnionPayVO result = new UnionPayVO();
-        String socketKey = PropertiesUtil.getSocketKey() + orderNo;
-        String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/card?socketKey=" + socketKey;
-
-        PayParam payParam = new PayParam();
-        payParam.setTotalFee(payMoneySum.doubleValue());
-        payParam.setOrderNum(orderNo);
-        payParam.setIsreturn(CommonConstant.COMMON_NO);
-        payParam.setNotifyUrl(notifyUrl);
-        payParam.setIsSendMessage(CommonConstant.COMMON_NO);
-        payParam.setPayWay(0);
-        payParam.setDesc("办理联盟卡");
-        String payUrl = wxPayService.qrCodePay(payParam);
-
-        result.setPayUrl(payUrl);
-        result.setSocketKey(socketKey);
+        UnionPayVO result = unionCardApplyService.unionCardApply(orderNo, payMoneySum.doubleValue(), busId);
 
         unionCardRecordService.saveBatch(saveCardRecordList);
         return result;
@@ -446,7 +432,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     @Transactional(rollbackFor = Exception.class)
     public String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess) {
         Map<String, Object> result = new HashMap<>(2);
-        if (orderNo == null || socketKey == null || payType == null || payOrderNo == null || isSuccess == null) {
+        if (orderNo == null || payType == null || payOrderNo == null || isSuccess == null) {
             result.put("code", -1);
             result.put("msg", "参数缺少");
             return JSONObject.toJSONString(result);
@@ -678,7 +664,9 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             }
 
             // socket通知
-            socketService.socketPaySendMessage(socketKey, isSuccess, null);
+            if(StringUtil.isNotEmpty(socketKey)){
+                socketService.socketPaySendMessage(socketKey, isSuccess, null);
+            }
             result.put("code", 0);
             result.put("msg", "成功");
             return JSONObject.toJSONString(result);

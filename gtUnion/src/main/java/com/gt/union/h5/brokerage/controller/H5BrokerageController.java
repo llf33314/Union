@@ -354,7 +354,7 @@ public class H5BrokerageController {
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             Member member = SessionUtils.getLoginMember(request, PropertiesUtil.getDuofenBusId());
             if (member == null) {
-                return memberService.authorizeMemberWx(request, PropertiesUtil.getUnionUrl() + "/h5Brokerage/#/" + "toExtract").toString();
+                return memberService.authorizeMemberWx(request, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toExtract").toString();
             } else {
                 // （1）	判断是否已微信授权，即session里获取member，如果已授权，则执行下一步；否则，获取授权链接（调接口）并返回
                 return h5BrokerageService.withdrawal(h5BrokerageUser, member, money).toString();

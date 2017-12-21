@@ -3,10 +3,10 @@ import axios from 'axios';
 import { Message } from 'element-ui';
 
 // axios 配置
-// axios.defaults.baseURL = 'http://union.yifriend.net:7884';            //调试
-axios.defaults.baseURL = 'https://union.deeptel.com.cn';           //测试环境
+// axios.defaults.baseURL = 'http://union.yifriend.net:7884';         //调试
+// axios.defaults.baseURL = 'https://union.deeptel.com.cn';           //测试环境
 // axios.defaults.baseURL = 'http://nb.union.deeptel.com.cn';         //堡垒
-// axios.defaults.baseURL = 'http://union.duofee.com';
+axios.defaults.baseURL = 'http://union.duofee.com';             //升级环境
 
 // axios.defaults.timeout = 5000;
 
@@ -49,25 +49,28 @@ function checkStatus(res) {
 function checkCode(res) {
   // 如果code异常(这里已经包括网络错误，服务器错误的错，后端抛出误)，可以弹出一个错误提示，告诉用户
   if (res.status === -404) {
+    alert(2)
     Message({
       showClose: true,
       message: res.errorMsg,
       type: 'warning',
-      duration: 0
+      duration: 5000
     });
   }
   if (res.data && (!res.data.success)) {
+    alert(3)
     Message({
       showClose: true,
       message: res.data.errorMsg,
       type: 'warning',
-      duration: 0
+      duration: 5000
     });
   }
   return res;
 }
 
 export default {
+
   post(url, data) {
     return axios({
       method: 'post',
@@ -90,6 +93,33 @@ export default {
       res => {
         if (res.data.redirectUrl && res.data.redirectUrl !== '') {
           window.location = res.data.redirectUrl;
+        }
+        return res;
+      }
+    )
+  },
+  put(url, data) {
+    return axios({
+      method: 'put',
+      url,
+      data: data,
+      timeout: 10000,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-Type': 'application/json; charset=UTF-8'
+      }
+    }).then(
+      res => {
+        return checkStatus(res);
+      }
+    ).then(
+      res => {
+        return checkCode(res);
+      }
+    ).then(
+      res => {
+        if (res.data.redirectUrl && res.data.redirectUrl !== '') {
+          top.window.location = res.data.redirectUrl;
         }
         return res;
       }

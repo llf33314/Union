@@ -1,5 +1,6 @@
 package com.gt.union.h5.card.service;
 
+import com.gt.api.bean.session.Member;
 import com.gt.union.h5.card.vo.CardDetailVO;
 import com.gt.union.h5.card.vo.IndexVO;
 import com.gt.union.h5.card.vo.MyCardDetailVO;
@@ -34,4 +35,23 @@ public interface IH5CardService {
 	 * @return
 	 */
 	MyCardDetailVO myCardDetail(String phone) throws Exception;
+
+	/**
+	 * 绑定联盟卡手机号
+	 * @param member		用户
+	 * @param busId			商家id
+	 * @param phone			手机号
+	 * @param code			验证码
+	 */
+	void bindCardPhone(Member member, Integer busId, String phone, String code) throws Exception;
+
+	/**
+	 *
+	 * @param member
+	 * @param busId
+	 * @param activityId
+	 * @param unionId
+	 * @return
+	 */
+	String cardTransaction(Member member, Integer busId, Integer activityId, Integer unionId) throws Exception;
 }

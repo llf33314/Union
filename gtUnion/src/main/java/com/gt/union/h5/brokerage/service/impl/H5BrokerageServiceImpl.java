@@ -381,8 +381,8 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
 
         // （4）调用支付接口
         UnionPayVO result = new UnionPayVO();
-        String socketKey = PropertiesUtil.getSocketKey() + orderNo;
-        String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/opportunity?socketKey=" + socketKey;
+//        String socketKey = PropertiesUtil.getSocketKey() + orderNo;
+        String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/opportunity?socketKey=";
 
         PayParam payParam = new PayParam();
         payParam.setTotalFee(opportunity.getBrokerageMoney());
@@ -395,7 +395,6 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         String payUrl = wxPayService.pay(payParam);
 
         result.setPayUrl(payUrl);
-        result.setSocketKey(socketKey);
 
         unionBrokeragePayService.save(savePay);
         return result;

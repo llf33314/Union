@@ -37,22 +37,22 @@
             <div class="clear fl">
               <div class="fl">
                 <div class='fl'>
-                  <p>{{item.unionName}}</p>
-                  <span style="color: #7e7e7e">{{item.time}}</span>
+                  <p>{{item.union.name}}</p>
+                  <span style="color: #7e7e7e">{{item.opportunity.createTime}}</span>
                 </div>
               </div>
             </div>
             <div class="clearfr">
               <div class="fr">
-                <span>{{item.name}}</span>
-                <p class="" style="color: #20a0ff;text-align: right;">+{{item.money.toFixed(2)}}</p>
+                <span>{{item.toMember.enterpriseName}}</span>
+                <p class="" style="color: #20a0ff;text-align: right;">+{{item.opportunity.brokerageMoney.toFixed(2)}}</p>
               </div>
             </div>
           </li>
         </ul>
         <!--<div class="loadMore hasPayLoadMore">加载更多</div>-->
-        <div class="loadMore hasPayLoadMore1"  @click="loadMore1" style="color:#868686;">加载更多</div>
-        <div class="nothing noPayNothing" style="display:none;color:#868686;">没有更多数据</div>
+        <div class="loadMore hasPayLoadMore1"  @click="loadMore1" >加载更多</div>
+        <div class="nothing noPayNothing">没有更多数据</div>
       </div>
     <!--售卡佣金页面-->
     <div class="unpay passive">
@@ -61,21 +61,21 @@
           <div class="clear fl">
             <div class="fl clear">
               <div class='fl'>
-                <p class="">{{item.unionName}}</p>
-                <span style="color: #7e7e7e">{{item.time}}</span>
+                <p class="">{{item.union.name}}</p>
+                <span style="color: #7e7e7e">{{item.brokerageIncome.createTime}}</span>
               </div>
             </div>
           </div>
           <div class="clear fr">
             <div class="fr">
-              <span>{{item.name}}</span>
-              <p class="" style="color: #20a0ff;text-align: right;">+{{item.money.toFixed(2)}}</p>
+              <span>{{item.member.enterpriseName}}</span>
+              <p class="" style="color: #20a0ff;text-align: right;">+{{item.brokerageIncome.money.toFixed(2)}}</p>
             </div>
           </div>
         </li>
       </ul>
-      <div class="loadMore hasPayLoadMore2"  @click="loadMore2" style="color:#868686;">加载更多</div>
-      <div class="nothing hasPayNothing " style="display: none;color:#868686;">没有更多数据</div>
+      <div class="loadMore hasPayLoadMore2"  @click="loadMore2" >加载更多</div>
+      <div class="nothing hasPayNothing " >没有更多数据</div>
     </div>
   </div>
   <!--多粉大联盟按钮弹框-->
@@ -114,7 +114,8 @@
         //显示的列表条数
         size:6,
         //当前列表第一页
-        current:1,
+        current1:1,
+        current2:1,
         //当前的联盟id号
         unionId:'',
       }
@@ -151,7 +152,11 @@
         this.unionId='';
         document.querySelector('.unionName').innerHTML='全部';
         //推荐佣金的页面的请求---------------------------1
-        $http.get(`/unionH5Brokerage/opportunity/list`)
+        let data={
+          size:this.size,
+          current:this.current1=1
+        }
+        $http.get(`/h5Brokerage/withdrawal/detail/opportunity/page`,data)
           .then(res => {
             if(res.data.data) {
               if (res.data.data.records.length === 0) {
@@ -170,10 +175,10 @@
               //渲染数据
               this.recommendList = res.data.data.records;
               this.recommendList.forEach((v, i) => {
-                v.time = $todate.todate(new Date(v.time));
+                v.opportunity.createTime = $todate.todate(new Date(v.opportunity.createTime));
               })
               //售卡佣金对应id号的总金额
-              $http.get(`/unionH5Brokerage/opportunitySum`)
+              $http.get(`/h5Brokerage/withdrawal/detail/opportunity/paidSum`)
                 .then(res => {
                   if(res.data.data) {
                     this.recommendMoney = res.data.data.toFixed(2);
@@ -188,7 +193,11 @@
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
         //售卡佣金的页面的请求------------------------------2
-        $http.get(`/unionH5Brokerage/cardDivide/list`)
+        let data1={
+          size:this.size,
+          current:this.current2=1
+        }
+        $http.get(`/h5Brokerage/withdrawal/detail/card/page`,data1)
           .then(res => {
             if(res.data.data) {
               if (res.data.data.records.length === 0) {
@@ -206,10 +215,10 @@
               }
               this.sellCardList = res.data.data.records;
               this.sellCardList.forEach((v, i) => {
-                v.time = $todate.todate(new Date(v.time));
+                v.brokerageIncome.createTime = $todate.todate(new Date(v.brokerageIncome.createTime));
               })
               //售卡佣金对应id号的总金额
-              $http.get(`/unionH5Brokerage/cardDivideSum`)
+              $http.get(`/h5Brokerage/withdrawal/detail/card/paidSum`)
                 .then(res => {
                   if(res.data.data) {this.sellCardMoney = res.data.data.toFixed(2);}
                 })
@@ -227,12 +236,16 @@
       },
 //      点击对应的按钮
       partLoaded(did,uname){
-        let Uid=did;
+        let data1={
+          size:this.size=6,
+          current:this.current1=1,
+          unionId:did
+        };
         //点击时把联盟id放到公共的地方
         this.unionId=did;
         document.querySelector('.unionName').innerHTML=uname;
         //推荐佣金的页面的请求--------------------------------1
-        $http.get(`/unionH5Brokerage/opportunity/list?unionId=${Uid}`)
+        $http.get(`/h5Brokerage/withdrawal/detail/opportunity/page`,data1)
           .then(res => {
             if(res.data.data) {
               if (res.data.data.records.length === 0) {
@@ -251,10 +264,10 @@
               //渲染数据
               this.recommendList = res.data.data.records;
               this.recommendList.forEach((v, i) => {
-                v.time = $todate.todate(new Date(v.time));
+                v.opportunity.createTime = $todate.todate(new Date(v.opportunity.createTime));
               })
-              //售卡佣金对应id号的总金额
-              $http.get(`/unionH5Brokerage/opportunitySum?unionId=${Uid}`)
+              //推荐佣金对应id号的总金额
+              $http.get(`/h5Brokerage/withdrawal/detail/opportunity/paidSum`,{unionId:did})
                 .then(res => {
                   if(res.data.data) {
                     this.recommendMoney = res.data.data.toFixed(2);
@@ -270,7 +283,12 @@
           });
 
         //售卡佣金的页面的请求--------------------------------2
-        $http.get(`/unionH5Brokerage/cardDivide/list?unionId=${Uid}`)
+        let data2={
+          size:this.size=6,
+          current:this.current2=1,
+          unionId:did
+        };
+        $http.get(`/h5Brokerage/withdrawal/detail/card/page`,data2)
           .then(res => {
             if(res.data.data) {
               if (res.data.data.records.length === 0) {
@@ -288,10 +306,10 @@
               }
               this.sellCardList = res.data.data.records;
               this.sellCardList.forEach((v, i) => {
-                v.time = $todate.todate(new Date(v.time));
+                v.brokerageIncome.createTime = $todate.todate(new Date(v.brokerageIncome.createTime));
               })
               //售卡佣金对应id号的总金额
-              $http.get(`/unionH5Brokerage/cardDivideSum?unionId=${Uid}`)
+              $http.get(`/h5Brokerage/withdrawal/detail/card/paidSum`,{unionId:did})
                 .then(res => {
                   if(res.data.data) {
                     this.sellCardMoney = res.data.data.toFixed(2);
@@ -310,9 +328,13 @@
       },
       //推荐佣金页面加载更多列表数据
       loadMore1(){
-        let uid=this.unionId;
-        console.log(++this.current);
-        $http.get(`/unionH5Brokerage/opportunity/list?size=${this.size}&current=${this.current}&unionId=${uid}`)
+        console.log(++this.current1);
+        let data1={
+          size:this.size=6,
+          current:this.current1,
+          unionId:this.unionId
+        }
+        $http.get(`/h5Brokerage/withdrawal/detail/opportunity/page`,data1)
           .then(res => {
             if(res.data.data) {
               let list = res.data.data.records;
@@ -324,7 +346,7 @@
                 $('.hasPayLoadMore1').show();
               }
               list.forEach((v, i) => {
-                v.time = $todate.todate(new Date(v.time));
+                v.opportunity.createTime = $todate.todate(new Date(v.opportunity.createTime));
               })
               //渲染数据
               this.recommendList = this.recommendList.concat(list);
@@ -336,9 +358,13 @@
       },
       //售卡佣金页面加载更多列表数据
       loadMore2(){
-        let uid=this.unionId;
-        console.log(++this.current);
-        $http.get(`/unionH5Brokerage/cardDivide/list?size=${this.size}&current=${this.current}&unionId=${uid}`)
+        console.log(++this.current2);
+        let data1={
+          size:this.size=6,
+          current:this.current2,
+          unionId:this.unionId
+        }
+        $http.get(`/h5Brokerage/withdrawal/detail/card/page`,data1)
           .then(res => {
             if(res.data.data) {
               let list = res.data.data.records;
@@ -352,7 +378,7 @@
               //渲染数据
               list.forEach((v, i) => {
                 if(res.data) {
-                  v.time = $todate.todate(new Date(v.time));
+                  v.brokerageIncome.createTime = $todate.todate(new Date(v.brokerageIncome.createTime));
                 }
               })
               this.sellCardList = this.sellCardList.concat(list);
@@ -361,7 +387,6 @@
           .catch(err => {
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
-        console.log(this.unCommission);
       },
     },
     created (){
@@ -369,9 +394,13 @@
       $("#title_").text('佣金明细');
       //图片底部的颜色切换（白和灰切换）
       this.$emit('getValue',this.toLogin);
-//以下伟推荐佣金部分------------------------------------------------------------------------------------------01
+//以下为推荐佣金部分--------------------------------------------------------------------------------------01
     //推荐佣金
-      $http.get(`/unionH5Brokerage/opportunity/list?size=${this.size}&current=${this.current}`)
+      let data={
+        size:this.size,
+        current:this.current1
+      };
+      $http.get(`/h5Brokerage/withdrawal/detail/opportunity/page`,data)
         .then(res => {
           if(res.data.data) {
             if (res.data.data.records.length === 0) {
@@ -390,7 +419,7 @@
             //渲染数据
             this.recommendList = res.data.data.records;
             this.recommendList.forEach((v, i) => {
-              v.time = $todate.todate(new Date(v.time));
+              v.opportunity.createTime = $todate.todate(new Date(v.opportunity.createTime));
             })
           }
         })
@@ -398,7 +427,7 @@
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
       //推荐佣金明细的总金额
-      $http.get(`/unionH5Brokerage/opportunitySum`)
+      $http.get(`/h5Brokerage/withdrawal/detail/opportunity/paidSum`)
         .then(res => {
           if(res.data.data) {
             this.recommendMoney = res.data.data.toFixed(2);
@@ -408,9 +437,13 @@
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
 
-  //以下为售卡佣金的明细--------------------------------------------------------------------------------------02
+  //以下为售卡佣金的明细----------------------------------------------------------------------------------02
       //售卡佣金
-      $http.get(`/unionH5Brokerage/cardDivide/list?size=${this.size}&current=${this.current}`)
+      let data1={
+        size:this.size,
+        current:this.current2
+      };
+      $http.get(`/h5Brokerage/withdrawal/detail/card/page`,data1)
         .then(res => {
           if(res.data.data) {
             if (res.data.data.records.length === 0) {
@@ -428,7 +461,7 @@
             }
             this.sellCardList = res.data.data.records;
             this.sellCardList.forEach((v, i) => {
-              v.time = $todate.todate(new Date(v.time));
+              v.brokerageIncome.createTime = $todate.todate(new Date(v.brokerageIncome.createTime));
             })
           }
         })
@@ -436,7 +469,7 @@
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
       //售卡佣金明细的总金额
-      $http.get(`/unionH5Brokerage/cardDivideSum`)
+      $http.get(`/h5Brokerage/withdrawal/detail/card/paidSum`)
         .then(res => {
           if(res.data.data) {
             this.sellCardMoney = res.data.data.toFixed(2);
@@ -446,8 +479,8 @@
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
 
-//多粉弹出框的请求盟员列表-------------------------------------------------------------------------------------03
-      $http.get(`/unionH5Brokerage/unionList`)
+//多粉弹出框的请求盟员列表---------------------------------------------------------------------------------03
+      $http.get(`/h5Brokerage/myUnion`)
         .then(res => {
           if(res.data.data) {
             this.unionList = res.data.data;
@@ -466,8 +499,10 @@
     text-align: center;
     padding: 0.3rem;
   }
-  .nothing{
-    margin: 0.8rem 6rem;
+  .nothing,.hasPayNothing{
+    text-align: center;
+    padding: 0.3rem;
     font-size: 0.85rem;
+    display:none;color:#868686;
   }
 </style>

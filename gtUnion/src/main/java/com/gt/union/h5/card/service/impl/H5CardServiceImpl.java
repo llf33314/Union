@@ -1,11 +1,17 @@
 package com.gt.union.h5.card.service.impl;
 
+import com.gt.api.bean.session.Member;
+import com.gt.union.api.client.member.MemberService;
+import com.gt.union.api.client.pay.entity.PayParam;
+import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.card.activity.constant.ActivityConstant;
 import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.activity.service.IUnionCardActivityService;
 import com.gt.union.card.main.constant.CardConstant;
 import com.gt.union.card.main.entity.UnionCard;
 import com.gt.union.card.main.entity.UnionCardFan;
+import com.gt.union.card.main.entity.UnionCardRecord;
+import com.gt.union.card.main.service.IUnionCardApplyService;
 import com.gt.union.card.main.service.IUnionCardFanService;
 import com.gt.union.card.main.service.IUnionCardService;
 import com.gt.union.card.project.constant.ProjectConstant;
@@ -13,25 +19,26 @@ import com.gt.union.card.project.entity.UnionCardProject;
 import com.gt.union.card.project.entity.UnionCardProjectItem;
 import com.gt.union.card.project.service.IUnionCardProjectItemService;
 import com.gt.union.card.project.service.IUnionCardProjectService;
-import com.gt.union.card.project.vo.CardProjectItemConsumeVO;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
+import com.gt.union.common.constant.SmsCodeConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
+import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.*;
 import com.gt.union.h5.card.service.IH5CardService;
 import com.gt.union.h5.card.vo.*;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.service.IUnionMainService;
-import com.gt.union.union.member.constant.MemberConstant;
+import com.gt.union.union.main.vo.UnionPayVO;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import javax.annotation.Resource;
+import java.math.BigDecimal;
+import java.util.*;
 
 /**
  * @author hongjiye
@@ -60,6 +67,15 @@ public class H5CardServiceImpl implements IH5CardService {
 
 	@Autowired
 	private IUnionCardProjectService unionCardProjectService;
+
+	@Autowired
+	private MemberService memberService;
+
+	@Autowired
+	private SmsService smsService;
+
+	@Resource(name = "unionPhoneCardApplyService")
+	private IUnionCardApplyService unionCardApplyService;
 
 	@Override
 	public IndexVO getIndexVO(String phone, Integer busId) throws Exception {
@@ -294,5 +310,40 @@ public class H5CardServiceImpl implements IH5CardService {
 			}
 		}
 		return vo;
+	}
+
+	@Override
+	public void bindCardPhone(Member member, Integer busId, String phone, String code) throws Exception{
+		if(busId == null || StringUtil.isEmpty(phone) || StringUtil.isEmpty(code)){
+			throw new ParamException(CommonConstant.PARAM_ERROR);
+		}
+		if(!smsService.checkPhoneCode(SmsCodeConstant.UNION_CARD_PHONE_BIND_TYPE, code, phone)){
+			throw new ParamException(CommonConstant.CODE_ERROR_MSG);
+		}
+		if(!memberService.bindMemberPhone(busId, member.getId(), phone)){
+			throw new BusinessException("绑定失败");
+		}
+	}
+
+	@Override
+	public String cardTransaction(Member member, Integer busId, Integer activityId, Integer unionId) throws Exception{
+		if(CommonUtil.isEmpty(member.getPhone()) || busId == null || unionId == null){
+			throw new ParamException(CommonConstant.PARAM_ERROR);
+		}
+		List list = new ArrayList<>();
+		if(CommonUtil.isNotEmpty(activityId)){
+			list.add(activityId);
+		}
+		UnionCardFan fan = unionCardFanService.getByPhone(member.getPhone());
+		if (fan == null) {
+			fan = new UnionCardFan();
+			fan.setDelStatus(CommonConstant.COMMON_NO);
+			fan.setCreateTime(DateUtil.getCurrentDate());
+			fan.setPhone(member.getPhone());
+			fan.setNumber(UnionCardUtil.generateCardNo());
+			unionCardFanService.save(fan);
+		}
+		UnionPayVO result = unionCardService.saveApplyByBusIdAndUnionIdAndFanId(busId, unionId, fan.getId(), list, unionCardApplyService);
+		return GtJsonResult.instanceSuccessMsg(result).toString();
 	}
 }
