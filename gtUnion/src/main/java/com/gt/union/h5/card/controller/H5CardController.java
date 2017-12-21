@@ -85,11 +85,13 @@ public class H5CardController {
 	@RequestMapping(value = "/myCardDetail/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String myCardDetail(HttpServletRequest request,
 							 @ApiParam(value = "商家id", name = "busId", required = true)
-							 @PathVariable("busId") Integer busId, Page page) throws Exception {
+							 @PathVariable("busId") Integer busId,
+							 @ApiParam(name = "url", value = "回调的url", required = true)
+							 @RequestParam(value = "url") String url, Page page) throws Exception {
 		Member member = SessionUtils.getLoginMember(request, busId);
+		url = url + "?busId=" + busId;
 		if(CommonUtil.isEmpty(member)){
-			//TODO 联盟卡手机端登录
-			GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/login").toString();
+			return memberService.authorizeMember(request, busId, true, ConfigConstant.CARD_PHONE_BASE_URL + url, ConfigConstant.CARD_PHONE_BASE_URL + "toUnionLogin").toString();
 		}
 		MyCardDetailVO myCardDetailVO = h5CardService.myCardDetail(member.getPhone());
 		myCardDetailVO.setNickName(StringUtil.isEmpty(member.getNickname()) ? "未知用户" : member.getNickname());
@@ -134,22 +136,35 @@ public class H5CardController {
 
 
 	@ApiOperation(value = "绑定手机号", notes = "绑定手机号", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/bind", produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+	@RequestMapping(value = "/{busId}/bind", produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
 	public String bindCardPhone(HttpServletRequest request, HttpServletResponse response
 			,@ApiParam(name="phone", value = "手机号", required = true) @RequestParam("phone") String phone
-			,@ApiParam(name="busId", value = "商家id", required = true) @RequestParam("busId") Integer busId
+			,@ApiParam(name="busId", value = "商家id", required = true) @PathVariable("busId") Integer busId
 			,@ApiParam(name = "url", value = "回调的url", required = true) @RequestParam(value = "url") String url
 			,@ApiParam(name = "code", value = "验证码" ,required = true) @RequestParam(value = "code") String code) throws Exception{
 		Member member = SessionUtils.getLoginMember(request,busId);
 		url = url + "?busId=" + busId;
-//		String returnLoginUrl = this.getCardH5LoginReturnUrl(member, request, busId, url);
-//		if(StringUtil.isNotEmpty(returnLoginUrl)){
-//			return returnLoginUrl;
-//		}
-//		unionCardService.bindCardPhone(member,busId,phone, code);
+		if(CommonUtil.isEmpty(member)){
+			return memberService.authorizeMember(request, busId, true, ConfigConstant.CARD_PHONE_BASE_URL + url, ConfigConstant.CARD_PHONE_BASE_URL + "toUnionLogin").toString();
+		}
+		h5CardService.bindCardPhone(member, busId, phone, code);
 		return GtJsonResult.instanceSuccessMsg().toString();
 	}
 
+	@ApiOperation(value = "办理联盟卡", notes = "办理联盟卡", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/card/{busId}/{unionId}/transaction", produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+	public String cardTransaction(HttpServletRequest request, HttpServletResponse response
+			,@ApiParam(name="busId", value = "商家id", required = true) @PathVariable("busId") Integer busId
+			,@ApiParam(name="activityId", value = "活动卡id，如果没有，则是折扣卡", required = false) @RequestParam("activityId") Integer activityId
+			,@ApiParam(name = "url", value = "回调的url", required = true) @RequestParam(value = "url") String url
+			,@ApiParam(value = "联盟id", name = "unionId", required = true) @PathVariable("unionId") Integer unionId) throws Exception{
+		Member member = SessionUtils.getLoginMember(request,busId);
+		url = url + "?busId=" + busId;
+		if(CommonUtil.isEmpty(member)){
+			return memberService.authorizeMember(request, busId, true, ConfigConstant.CARD_PHONE_BASE_URL + url, ConfigConstant.CARD_PHONE_BASE_URL + "toUnionLogin").toString();
+		}
+		return h5CardService.cardTransaction(member, busId, activityId, unionId);
+	}
 
 
 	//-------------------------------------------------- put ----------------------------------------------------------

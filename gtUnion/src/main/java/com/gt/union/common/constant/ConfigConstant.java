@@ -1,5 +1,7 @@
 package com.gt.union.common.constant;
 
+import com.gt.union.common.util.PropertiesUtil;
+
 /**
  * 系统配置全局常量类
  *
@@ -74,5 +76,10 @@ public interface ConfigConstant {
      * 是否启用模拟数据(0：否 1：是)
      */
     int IS_MOCK = 0;
+
+    /**
+     * 联盟卡手机端根路径
+     */
+    String CARD_PHONE_BASE_URL = PropertiesUtil.getUnionUrl() + "/cardPhone/#/";
 }
 
