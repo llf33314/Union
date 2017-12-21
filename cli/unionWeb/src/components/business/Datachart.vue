@@ -77,7 +77,7 @@ export default {
           .get(`/unionMain/my`)
           .then(res => {
             if (res.data.data) {
-              this.options = res.data.data;
+              this.options = res.data.data || [];
               this.options.forEach((v, i) => {
                 v.value = v.union.id;
                 v.label = v.union.name;

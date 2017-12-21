@@ -138,7 +138,7 @@ export default {
         .get(`/unionMember/unionId/${this.unionId}/write/page?current=1`)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.tableData.forEach((v, i) => {
               v.createTime = timeFilter(v.createTime);
             });
@@ -158,7 +158,7 @@ export default {
         .get(`/unionMember/unionId/${this.unionId}/write/page?current=1&memberName=${this.input}`)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.tableData.forEach((v, i) => {
               v.createTime = timeFilter(v.createTime);
             });
@@ -176,7 +176,7 @@ export default {
         .get(`/unionMember/unionId/${this.unionId}/write/page?current=${val}&memberName=${this.input}`)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.tableData.forEach((v, i) => {
               v.createTime = timeFilter(v.createTime);
             });

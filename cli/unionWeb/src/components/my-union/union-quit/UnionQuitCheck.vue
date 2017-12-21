@@ -41,7 +41,6 @@
             <p>&nbsp;&nbsp;&nbsp;&nbsp;再过15天后视为盟员正式退盟</p>
             <p>9. 联盟其中一位盟员退出联盟，盟主及其他盟员可收到信息或者短信通知</p>
             <p>10. 盟员完全退出某联盟后，可再次申请加入该联盟</p>
-          </p>
         </div>
         <span slot="footer" class="dialog-footer">
           <el-button type="primary" @click="visible1=false">确 定</el-button>
@@ -105,7 +104,7 @@ export default {
         .get(`/unionMemberOut/unionId/${this.unionId}/page?current=1`)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.totalAll = res.data.data.total;
           } else {
             this.tableData = [];
@@ -122,7 +121,7 @@ export default {
         .get(`/unionMemberOut/unionId/${this.unionId}/page?current=${val}`)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
           }
         })
         .catch(err => {
@@ -152,7 +151,7 @@ export default {
               .get(`/unionMemberOut/unionId/${this.unionId}/page?current=1`)
               .then(res => {
                 if (res.data.data) {
-                  this.tableData = res.data.data.records;
+                  this.tableData = res.data.data.records || [];
                   this.totalAll = res.data.data.total;
                 }
               })
@@ -176,7 +175,7 @@ export default {
               .get(`/unionMemberOut/unionId/${this.unionId}/page?current=1`)
               .then(res => {
                 if (res.data.data) {
-                  this.tableData = res.data.data.records;
+                  this.tableData = res.data.data.records || [];
                   this.totalAll = res.data.data.total;
                 }
               })

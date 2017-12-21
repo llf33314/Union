@@ -57,8 +57,8 @@
           <template slot-scope="scope">
             <div class="sizeAndColor">
               <el-button @click="showDialog(scope)" size="small">详情</el-button>
-              <el-button v-if="scope.row.isAccept === '未处理'" @click="agree(scope)" size="small">接受</el-button>
-              <el-button v-if="scope.row.isAccept === '未处理'" @click="disagree(scope)" size="small">拒绝</el-button>
+              <el-button v-if="scope.row.opportunity.acceptStatus === '未处理'" @click="agree(scope)" size="small">接受</el-button>
+              <el-button v-if="scope.row.opportunity.acceptStatus === '未处理'" @click="disagree(scope)" size="small">拒绝</el-button>
             </div>
           </template>
         </el-table-column>
@@ -181,7 +181,7 @@ export default {
           .get(`/unionMain/my`)
           .then(res => {
             if (res.data.data) {
-              this.options1 = res.data.data;
+              this.options1 = res.data.data || [];
               this.options1.forEach((v, i) => {
                 v.value = v.union.id;
                 v.label = v.union.name;
@@ -198,7 +198,7 @@ export default {
           .get(`/unionOpportunity/toMe/page?current=1`)
           .then(res => {
             if (res.data.data) {
-              this.tableData = res.data.data.records;
+              this.tableData = res.data.data.records || [];
               this.totalAll = res.data.data.total;
               this.tableData.forEach((v, i) => {
                 v.opportunity.acceptStatus = bussinessStatusChange(v.opportunity.acceptStatus);
@@ -219,7 +219,7 @@ export default {
         .get(`/unionOpportunity/toMe/page?current=1&unionId=${this.unionId}&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
               v.opportunity.acceptStatus = bussinessStatusChange(v.opportunity.acceptStatus);
@@ -239,7 +239,7 @@ export default {
         .get(`/unionOpportunity/toMe/page?current=${val}&unionId=${this.unionId}&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.tableData.forEach((v, i) => {
               v.opportunity.acceptStatus = bussinessStatusChange(v.opportunity.acceptStatus);
             });

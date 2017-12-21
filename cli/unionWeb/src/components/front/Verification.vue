@@ -9,7 +9,7 @@
     <!--二维码-->
     <div class="code_" v-show="visible1">
       <div class="model_">
-        <p><img v-bind:src="imgSrc" alt=""></p>
+        <p><img v-bind:src="$store.state.baseUrl + '/unionCard/qr/h5Card'" alt=""></p>
         <p>粉丝扫描二维码可查看联盟卡信息</p>
       </div>
     </div>
@@ -84,9 +84,11 @@
               </div>
               <div class="rightContent" style="width: 295px;">
                 <p>已选择：{{ activitySelected.length }}</p>
-                <div v-for="(item, index) in activitySelected" :key="item.item.id">
-                  <span> {{ item.item.name }} </span>
-                  <el-button type="text" @click="cancelActivity(index)">取消</el-button>
+                <div>
+                  <div v-for="(item, index) in activitySelected" :key="item.item.id">
+                    <span> {{ item.item.name }} </span>
+                    <el-button type="text" @click="cancelActivity(index)">取消</el-button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -139,11 +141,13 @@
                 <span class="color_">{{ price1 | formatPrice }} </span>
               </span>
             </el-form-item>
-            <el-form-item label="优惠项目：">
-              <span v-for="(item, index) in activitySelected" :key="item.item.id">
-                {{ index + 1 }} 、 {{ item.item.name }};
-              </span>
-            </el-form-item>
+            <div class="discountsProject">
+              <el-form-item label="优惠项目：">
+                <span v-for="(item, index) in activitySelected" :key="item.item.id">
+                  {{ index + 1 }} 、 {{ item.item.name }};
+                </span>
+              </el-form-item>
+            </div>
           </el-form>
           <div class="payWay">
             <p>请选择支付方式：</p>
@@ -169,8 +173,8 @@
                     <template slot="prepend">￥</template>
                   </el-input>
                 </el-col>
-                <el-col style="width:240px;margin-left:50px;">
-                  <span>找零: ￥
+                <el-col style="width:240px;margin-left:50px;padding-top: 2px;">
+                  <span style="">找零: ￥
                     <span class="color_" v-if="!price2">0.00</span>
                     <span class="color_" v-if="(price2*100 - price1*100)/100 > 0 || Number(price2).toFixed(2) - Number(price1).toFixed(2) == 0">{{ (price2*100 - price1*100)/100 | formatPrice }}</span>
                   </span>
@@ -249,19 +253,6 @@ export default {
     };
   },
   mounted: function() {
-    // 获取进入手机端二维码链接 todo
-    // $http
-    //   .get(`/unionCard/phone`)
-    //   .then(res => {
-    //     if (res.data.data) {
-    //       this.imgSrc = res.data.data;
-    //     } else {
-    //       this.imgSrc = '';
-    //     }
-    //   })
-    //   .catch(err => {
-    //     this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-    //   });
     eventBus.$on('tabChange1', () => {
       this.input = '';
       this.visible1 = true;
@@ -396,7 +387,7 @@ export default {
           .get(`/unionCardActivity/unionId/${this.form.unionId}/consume?fanId=${this.form.fan.id}`)
           .then(res => {
             if (res.data.data) {
-              this.activityCards = res.data.data;
+              this.activityCards = res.data.data || [];
             } else {
               this.activityCards = [];
             }
@@ -420,7 +411,7 @@ export default {
           .get(`/unionCardProjectItem/activityId/${item.activity.id}/unionId/${this.form.unionId}/consume`)
           .then(res => {
             if (res.data.data) {
-              this.tableData = res.data.data;
+              this.tableData = res.data.data || [];
             } else {
               this.tableData = [];
             }
@@ -624,8 +615,8 @@ export default {
 /*点击输出弹出框的样式*/
 .second_0 {
   .color_ {
-    color: red;
-    font-size: 14px;
+    color: #ff4949;
+    font-size: 20px;
   }
   .el-form-item {
     margin-bottom: 5px;
@@ -645,7 +636,7 @@ export default {
 }
 .slide-fade-enter,
 .slide-fade-leave-to {
-  transform: translateX(50px);
+  transform: translateX(100px);
   opacity: 0;
 }
 </style>

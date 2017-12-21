@@ -15,9 +15,15 @@
       <el-table :data="tableData" style="width: 100%">
         <el-table-column prop="member.enterpriseName" label="盟员名称">
         </el-table-column>
-        <el-table-column prop="ratioFromMe" label="我给TA佣金">
+        <el-table-column prop="" label="我给TA佣金">
+          <template slot-scope="scope">
+            {{ scope.row.ratioFromMe }} %
+          </template>
         </el-table-column>
         <el-table-column prop="ratioToMe" label="TA给我佣金">
+          <template slot-scope="scope">
+            {{ scope.row.ratioToMe }} %
+          </template>
         </el-table-column>
         <el-table-column label="操作" width="180">
           <template slot-scope="scope">
@@ -31,7 +37,7 @@
       <div class="model_03">
         <el-dialog title="商机佣金比例设置" :visible.sync="dialogVisible" size="tiny" @close="resetData">
           <div class="model_03_detail">
-            <p>"{{ toEnterpriseName }}" 给我的佣金为：{{ ratioToMe }}</p>
+            <p>"{{ toEnterpriseName }}" 给我的佣金为：{{ ratioToMe }} % </p>
             <p>我给TA佣金 ：&nbsp;&nbsp;<input type="text" v-model="ratioFromMe" @keyup.enter.native="submit" id="pushMoney">
               <span> %</span>
             </p>
@@ -93,7 +99,7 @@ export default {
           .get(`/unionMain/my`)
           .then(res => {
             if (res.data.data) {
-              this.options = res.data.data;
+              this.options = res.data.data || [];
               this.options.forEach((v, i) => {
                 v.value = v.union.id;
                 v.label = v.union.name;
@@ -114,11 +120,11 @@ export default {
         .get(`/unionOpportunityRatio/unionId/${this.unionId}/page?current=1`)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
-              v.ratioFromMe = (v.ratioFromMe || 0) + '%';
-              v.ratioToMe = (v.ratioToMe || 0) + '%';
+              v.ratioFromMe = v.ratioFromMe * 100 || 0;
+              v.ratioToMe = v.ratioToMe * 100  || 0;
             });
           } else {
             this.tableData = [];
@@ -135,10 +141,10 @@ export default {
         .get(`/unionOpportunityRatio/unionId/${this.unionId}/page?current=${val}`)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.tableData.forEach((v, i) => {
-              v.ratioFromMe = (v.ratioFromMe || 0) + '%';
-              v.ratioToMe = (v.ratioToMe || 0) + '%';
+              v.ratioFromMe = v.ratioFromMe * 100 || 0;
+              v.ratioToMe = v.ratioToMe * 100  || 0;
             });
           } else {
             this.tableData = [];
@@ -153,15 +159,16 @@ export default {
       this.dialogVisible = true;
       this.toEnterpriseName = scope.row.member.enterpriseName;
       this.ratioToMe = scope.row.ratioToMe;
-      this.ratioFromMe = scope.row.ratioFromMe.slice(0, -1);
+      this.ratioFromMe = scope.row.ratioFromMe;
       this.toMemberId = scope.row.member.id;
     },
     // 保存设置
     submit() {
       $http
-        .put(`/unionOpportunityRatio/unionId/${this.unionId}/toMemberId/${this.toMemberId}?ratio=${this.ratioFromMe}`)
+        .put(`/unionOpportunityRatio/unionId/${this.unionId}/toMemberId/${this.toMemberId}?ratio=${this.ratioFromMe / 100}`)
         .then(res => {
           if (res.data.success) {
+          this.$message({ showClose: true, message: '设置成功', type: 'success', duration: 5000 });
             this.search();
             this.dialogVisible = false;
           }

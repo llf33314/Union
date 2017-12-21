@@ -29,14 +29,12 @@
 </template>
 
 <script>
-import RegionChoose from '@/components/public-components/RegionChoose';
 import Breadcrumb from '@/components/public-components/Breadcrumb';
 import CreateStepBasic from './CreateStepBasic';
 import CreateStepUnion from './CreateStepUnion';
 export default {
   name: 'create-step',
   components: {
-    RegionChoose,
     Breadcrumb,
     CreateStepBasic,
     CreateStepUnion

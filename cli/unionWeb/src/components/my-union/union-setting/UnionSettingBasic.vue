@@ -24,9 +24,6 @@
         <el-input v-model="form.integralExchangeRatio" placeholder="积分折扣率不可超过30%"></el-input>
         <span class="percent">%</span>
       </el-form-item>
-      <el-form-item label="地区：" prop="region">
-        <region-choose v-model="form.region" :region-options="form.region" @regionChange="regionChange"></region-choose>
-      </el-form-item>
       <el-form-item label="我的地址：" prop="enterpriseAddress">
         <el-col :span="6">
           <div class="dingwei">
@@ -45,14 +42,11 @@
 </template>
 
 <script>
-import axios from 'axios';
 import $http from '@/utils/http.js';
-import RegionChoose from '@/components/public-components/RegionChoose';
 import TMap from '@/components/public-components/TMap';
 export default {
   name: 'union-setting-basic',
   components: {
-    RegionChoose,
     TMap
   },
   data() {
@@ -154,13 +148,7 @@ export default {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
-    regionChange(v) {
-      this.form.addressProvinceCode = v[0].split(',')[1] || '';
-      this.form.addressCityCode = v[1].split(',')[1] || '';
-      this.form.addressDistrictCode = v[2].split(',')[1] || '';
-      this.form.region = [this.form.addressProvinceCode, this.form.addressCityCode, this.form.addressDistrictCode];
-      this.form.enterpriseAddress = '';
-    },
+
     mapClick() {
       this.form.enterpriseAddress = this.$store.state.enterpriseAddress;
       this.form.addressLatitude = this.$store.state.addressLatitude;

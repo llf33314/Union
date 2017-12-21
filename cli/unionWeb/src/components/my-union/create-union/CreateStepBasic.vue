@@ -30,11 +30,6 @@
           <span class="tubiao">!</span>
         </el-tooltip>
       </el-form-item>
-      <el-form-item label="地区：" prop="region">
-        <el-col :span="6">
-          <region-choose v-model="form.region" @regionChange="regionChange"></region-choose>
-        </el-col>
-      </el-form-item>
       <el-form-item label="我的地址：" prop="enterpriseAddress">
         <el-col :span="6">
           <div class="dingwei">
@@ -54,13 +49,10 @@
 
 <script>
 import $http from '@/utils/http.js'
-import RegionChoose from '@/components/public-components/RegionChoose'
 import TMap from '@/components/public-components/TMap'
-
 export default {
   name: 'create-step-basic',
   components: {
-    RegionChoose,
     TMap
   },
   data() {
@@ -141,13 +133,6 @@ export default {
     }
   },
   methods: {
-    regionChange(v) {
-      this.form.addressProvinceCode = v[0].split(',')[1] || '';
-      this.form.addressCityCode = v[1].split(',')[1] || '';
-      this.form.addressDistrictCode = v[2].split(',')[1] || '';
-      this.form.region = [this.form.addressProvinceCode, this.form.addressCityCode, this.form.addressDistrictCode];
-      this.form.enterpriseAddress = '';
-    },
     mapClick() {
       this.form.enterpriseAddress = this.$store.state.enterpriseAddress;
       this.form.addressLatitude = this.$store.state.addressLatitude;

@@ -13,36 +13,61 @@
               <span class="btn1">
                 <el-button type="primary" @click="dialogVisible1=true">提现</el-button>
               </span>
-              <div class="model_1">
-                <!-- 弹出框 提现 -->
-                <el-dialog title="提现" :visible.sync="dialogVisible1" size="tiny">
-                  <hr>
-                  <div class="model_">
-                    <p><img v-bind:src="imgUrl"></p>
-                    <p>扫二维码可进入商家联盟佣金平台</p>
-                  </div>
-                </el-dialog>
-              </div>
             </div>
           </li>
         </ul>
       </div>
       <p class="union_set">佣金平台管理者设置</p>
       <div class="footer_">
-        <el-button type="primary" @click="dialogVisible2 = true">新增</el-button>
+        <el-button type="primary" @click="addAdmin">新增</el-button>
+        <!-- 管理者列表 -->
+        <el-table :data="tableData" style="width: 100%">
+          <el-table-column prop="employeeName" label="姓名">
+            <template slot-scope="scope">
+              <i v-if="!scope.row.id">图标 todo</i>
+              <span> {{ scope.row.employeeName }} </span>
+            </template>
+          </el-table-column>
+          <el-table-column prop="phone" label="手机号">
+          </el-table-column>
+          <el-table-column prop="shopName" label="门店">
+          </el-table-column>
+          <el-table-column prop="action" label="操作" width="150">
+            <template slot-scope="scope">
+              <el-button size="small" @click="del(scope)" v-if="scope.row.id">删除</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+        <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
+        </el-pagination>
+        <!-- 弹出框 提现二维码 -->
+        <el-dialog title="提现" :visible.sync="dialogVisible1" size="tiny">
+          <hr>
+          <div class="model_">
+            <p><img v-bind:src="$store.state.baseUrl + '/unionVerifier/h5Code'"></p>
+            <p>扫二维码可进入商家联盟佣金平台</p>
+          </div>
+        </el-dialog>
         <!-- 弹出框 新增 -->
         <el-dialog title="新增管理者" :visible.sync="dialogVisible2" size="tiny" @close="resetForm('ruleForm')">
           <hr>
           <div class="Popup_">
             <el-form :label-position="labelPosition" label-width="100px" :model="ruleForm" :rules="rules" ref="ruleForm">
+              <el-form-item label="门店：" prop="shop">
+                <el-select v-model="ruleForm.shop" clearable placeholder="请选择门店" style="width:180px;" @change="shopChange">
+                  <el-option v-for="item in options1" :key="item.id" :label="item.name" :value="item.id">
+                  </el-option>
+                </el-select>
+              </el-form-item>
               <el-form-item label="姓名：" prop="name">
-                <el-col :span="8">
-                  <el-input v-model="ruleForm.name" placeholder="请输入管理者姓名"></el-input>
-                </el-col>
+                <el-select v-model="ruleForm.name" clearable placeholder="请选择管理者姓名" style="width:180px" @change="employeeChange">
+                  <el-option v-for="item in options2" :key="item.id" :label="item.name" :value="item.id">
+                  </el-option>
+                </el-select>
               </el-form-item>
               <el-form-item label="手机号码：" prop="phone">
                 <el-col :span="8">
-                  <el-input v-model="ruleForm.phone" placeholder="请输入管理者手机号码" @keyup.enter.native="getVerificationCode"></el-input>
+                  <el-input v-model="ruleForm.phone" placeholder="请输入管理者手机号码" disabled></el-input>
                 </el-col>
               </el-form-item>
               <el-form-item label="验证码：" prop="code">
@@ -61,24 +86,13 @@
             </el-form>
           </div>
         </el-dialog>
-        <el-table :data="tableData" style="width: 100%">
-          <el-table-column prop="name" label="姓名">
-          </el-table-column>
-          <el-table-column prop="phone" label="手机号">
-          </el-table-column>
-          <el-table-column prop="action" label="操作" width="150">
-            <template slot-scope="scope">
-              <el-button size="small" @click="del(scope)">删除</el-button>
-            </template>
-          </el-table-column>
-        </el-table>
         <!-- 弹出框 删除确认 -->
         <div class="model_2">
           <el-dialog title="删除" :visible.sync="visible1" size="tiny">
             <hr>
             <div>
               <img src="../../assets/images/delect01.png" class="fl">
-              <span>是否确认删除“ {{ name }} ”</span>
+              <span>是否确认删除“ {{ employeeName }} ”</span>
               <p>点击确定后，该财务管理者不可登录佣金平台</p>
             </div>
             <span slot="footer" class="dialog-footer">
@@ -111,30 +125,35 @@ export default {
       dialogVisible2: false,
       labelPosition: 'right',
       withdrawalSum: 0,
-      imgUrl: '',
+      tableData: [],
+      currentPage: 1,
+      totalAll: 0,
+      options1: [],
+      options2: [],
       ruleForm: {
+        shop: '',
         name: '',
         code: '',
         phone: ''
       },
       rules: {
-        name: [{ required: true, message: '姓名不能为空，请重新输入', trigger: 'blur' }],
+        shop: [{ type: 'number', required: true, message: '门店不能为空，请重新输入', trigger: 'change' }],
+        name: [{ type: 'number', required: true, message: '姓名不能为空，请重新输入', trigger: 'change' }],
         code: [{ required: true, message: '验证码不能为空，请重新输入', trigger: 'blur' }],
-        phone: [{ validator: phonePass, trigger: 'blur' }]
+        phone: [{ validator: phonePass, trigger: 'change' }]
       },
-      tableData: [],
       form1: {
         getVerificationCode: false,
         countDownTime: ''
       },
       visible1: false,
-      name: '',
+      employeeName: '',
       id: '',
       timeOut: '',
       fullscreenLoading: true
     };
   },
-  created: function() {
+  mounted: function() {
     // 首页查询我的联盟信息
     $http
       .get(`/unionIndex`)
@@ -146,32 +165,8 @@ export default {
             if (!res.data.data.currentUnion) {
               this.$router.push({ path: '/no-union' });
             } else {
-              // 可提现金额
-              $http
-                .get(`/unionBrokerageWithdrawal/available`)
-                .then(res => {
-                  if (res.data.data) {
-                    this.withdrawalSum = res.data.data;
-                  } else {
-                    this.withdrawalSum = 0;
-                  }
-                })
-                .catch(err => {
-                  this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-                });
-              // 佣金平台管理者列表
-              $http
-                .get(`/unionVerifier`)
-                .then(res => {
-                  if (res.data.data) {
-                    this.tableData = res.data.data.records;
-                  } else {
-                    this.tableData = [];
-                  }
-                })
-                .catch(err => {
-                  this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-                });
+              this.init1();
+              this.init2();
               container_finance.style.display = 'block';
             }
           }, 300);
@@ -182,10 +177,102 @@ export default {
       });
   },
   methods: {
+    // 可提现金额
+    init1() {
+      $http
+        .get(`/unionBrokerageWithdrawal/available`)
+        .then(res => {
+          if (res.data.data) {
+            this.withdrawalSum = res.data.data;
+          } else {
+            this.withdrawalSum = 0;
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    },
+    // 佣金平台管理者
+    init2() {
+      $http
+        .get(`/unionVerifier/page?current=1`)
+        .then(res => {
+          if (res.data.data) {
+            this.tableData = res.data.data.records || [];
+            this.totalAll = res.data.data.total;
+          } else {
+            this.tableData = [];
+            this.totalAll = 0;
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    },
+    // 分页获取佣金平台管理者
+    handleCurrentChange(val) {
+      $http
+        .get(`/unionVerifier/page?current=${val}`)
+        .then(res => {
+          if (res.data.data) {
+            this.tableData = res.data.data.records || [];
+          } else {
+            this.tableData = [];
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    },
+    // 新增管理者
+    addAdmin() {
+      this.dialogVisible2 = true;
+      // 获取门店列表
+      $http
+        .get(`/api/shop/list`)
+        .then(res => {
+          if (res.data.data) {
+            this.options1 = res.data.data || [];
+          } else {
+            this.options1 = [];
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    },
+    // 选择门店获取店员列表
+    shopChange() {
+      if (this.ruleForm.shop) {
+        $http
+          .get(`/api/staff/list/${this.ruleForm.shop}`)
+          .then(res => {
+            if (res.data.data) {
+              this.options2 = res.data.data || [];
+            } else {
+              this.options2 = [];
+            }
+          })
+          .catch(err => {
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          });
+      }
+    },
+    // 选择店员获取对应电话
+    employeeChange() {
+      if (this.ruleForm.name) {
+        let item = this.options2.find(item => {
+          return item.id === this.ruleForm.name;
+        });
+        this.ruleForm.phone = item.phone;
+      } else {
+        this.ruleForm.phone = '';
+      }
+    },
     // 获取验证码
     getVerificationCode() {
       $http
-        .get(`/unionVerifier/phone/${this.ruleForm.phone}?name=${this.ruleForm.name}`)
+        .get(`/api/sms/5?phone=${this.ruleForm.phone}`)
         .then(res => {
           if (res.data.success) {
             this.form1.getVerificationCode = true;
@@ -205,11 +292,48 @@ export default {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
+    // 提交新增
+    submitForm(formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          this.dialogVisible2 = false;
+          let url = `/unionVerifier?code=${this.ruleForm.code}`;
+          let data = {};
+          data.shopId = this.ruleForm.shop;
+          data.employeeId = this.ruleForm.name;
+          data.phone = this.ruleForm.phone;
+          $http
+            .post(url, data)
+            .then(res => {
+              if (res.data.success) {
+                this.$message({ showClose: true, message: '新增成功', type: 'success', duration: 5000 });
+                clearInterval(this.timeOut);
+                this.form1.getVerificationCode = false;
+                this.form1.countDownTime = '';
+                this.init2();
+              }
+            })
+            .catch(err => {
+              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+            });
+        } else {
+          return false;
+        }
+      });
+    },
+    // 取消提交清空表格
+    resetForm(formName) {
+      this.$refs[formName].resetFields();
+      this.dialogVisible2 = false;
+      clearInterval(this.timeOut);
+      this.form1.getVerificationCode = false;
+      this.form1.countDownTime = '';
+    },
     // 删除
     del(scope) {
       this.visible1 = true;
       this.id = scope.row.id;
-      this.name = scope.row.name;
+      this.employeeName = scope.row.employeeName;
     },
     // 删除确认
     confirm1() {
@@ -218,77 +342,13 @@ export default {
         .del(`/unionVerifier/${this.id}`)
         .then(res => {
           if (res.data.success) {
-            $http
-              .get(`/unionVerifier`)
-              .then(res => {
-                if (res.data.data) {
-                  this.tableData = res.data.data.records;
-                } else {
-                  this.tableData = [];
-                }
-              })
-              .catch(err => {
-                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-              });
+            this.$message({ showClose: true, message: '删除成功', type: 'success', duration: 5000 });
+            this.init2();
           }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
-    },
-    // 提交新增
-    submitForm(formName) {
-      console.log(this.ruleForm, 222);
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-          this.dialogVisible2 = false;
-          let url = `/unionVerifier`;
-          let data = this.ruleForm;
-          $http
-            .post(url, data)
-            .then(res => {
-              if (res.data.success) {
-                clearInterval(this.timeOut);
-                this.form1.getVerificationCode = false;
-                this.form1.countDownTime = '';
-                $http
-                  .get(`/unionVerifier`)
-                  .then(res => {
-                    if (res.data.data) {
-                      this.tableData = res.data.data.records;
-                    } else {
-                      this.tableData = [];
-                    }
-                  })
-                  .catch(err => {
-                    this.$message({
-                      showClose: true,
-                      message: err.toString(),
-                      type: 'error',
-                      duration: 5000
-                    });
-                  });
-              }
-            })
-            .catch(err => {
-              this.$message({
-                showClose: true,
-                message: err.toString(),
-                type: 'error',
-                duration: 5000
-              });
-            });
-        } else {
-          return false;
-        }
-      });
-    },
-    resetForm(formName) {
-      this.$refs[formName].resetFields();
-      this.dialogVisible2 = false;
-      clearInterval(this.timeOut);
-      this.form1.getVerificationCode = false;
-      this.form1.countDownTime = '';
     }
   }
 };

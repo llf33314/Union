@@ -5,7 +5,6 @@
 </template>
 
 <script>
-import axios from 'axios'
 import $ from 'jquery'
 export default {
   name: 't-map',
@@ -26,9 +25,6 @@ export default {
     var codeAddress = function(value) {
       geocoder.getLocation(value);
     }
-    eventBus.$on('addressChange', () => {
-      codeAddress(_this.$store.state.address);
-    })
     var init = function() {
       var center = new qq.maps.LatLng(_this.lat, _this.lng);
       map = new qq.maps.Map(document.getElementById('container'), {

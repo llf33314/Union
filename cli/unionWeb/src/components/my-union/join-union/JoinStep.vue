@@ -11,12 +11,12 @@
       </div>
       <div class="step2" v-if="active === 0">
         <el-radio-group v-model="unionRadio">
-          <el-radio-button v-for="item in datas" :key="item.union.id" :label="item.union.id">
+          <el-radio-button v-for="item in datas" :key="item.id" :label="item.id">
             <div class="dddddd clearfix">
-              <img v-bind:src="item.union.img" alt="" class="fl unionImg">
+              <img v-bind:src="item.img" alt="" class="fl unionImg">
               <div class="fl" style="margin-left: 20px">
-                <h6 style="margin-bottom: 17px">{{item.union.name}}</h6>
-                <span>{{item.union.illustration}}</span>
+                <h6 style="margin-bottom: 17px">{{item.name}}</h6>
+                <span>{{item.illustration}}</span>
               </div>
               <i></i>
             </div>
@@ -87,7 +87,6 @@
 </template>
 
 <script>
-import axios from 'axios';
 import Breadcrumb from '@/components/public-components/Breadcrumb';
 import $http from '@/utils/http.js';
 import NoUnion from '@/components/public-components/NoUnion';
@@ -146,7 +145,7 @@ export default {
       .get(`/unionMain/other/page`)
       .then(res => {
         if (res.data.data) {
-          this.datas = res.data.data.records;
+          this.datas = res.data.data.records || [];
           this.totalAll = res.data.data.total;
         } else {
           this.datas = [];
@@ -162,7 +161,7 @@ export default {
       if (this.unionRadio) {
         // 获取必填字段
         let checkList_ = this.datas.filter(item => {
-          return (item.union.id = this.unionRadio);
+          return (item.id = this.unionRadio);
         });
         checkList_.forEach((v, i) => {
           if (this.checkList.indexOf(v.itemKey) === -1) {
@@ -191,7 +190,7 @@ export default {
         .get(`/unionMain/other/page?current=${val}`)
         .then(res => {
           if (res.data.data) {
-            this.datas = res.data.data.records;
+            this.datas = res.data.data.records || [];
             this.totalAll = res.data.data.total;
           } else {
             this.datas = [];

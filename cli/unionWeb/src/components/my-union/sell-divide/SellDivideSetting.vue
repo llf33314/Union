@@ -74,7 +74,7 @@ export default {
         .get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=1`)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.totalAll = res.data.data.total;
             if (this.tableData[0].isUnionOwner) {
               this.tableData[0].enterpriseName += '(盟主)';
@@ -94,7 +94,7 @@ export default {
         .get(`/unionMember/pageMap/memberId/${this.unionMemberId}?current=${val}`)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.totalAll = res.data.data.total;
             if (val === 1) {
               if (this.tableData[0].isUnionOwner) {
