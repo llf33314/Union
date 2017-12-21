@@ -13,6 +13,7 @@ import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PageUtil;
 import com.gt.union.opportunity.brokerage.service.IUnionBrokeragePayService;
+import com.gt.union.opportunity.brokerage.service.IUnionBrokeragePayStrategyService;
 import com.gt.union.opportunity.brokerage.vo.BrokerageOpportunityVO;
 import com.gt.union.opportunity.brokerage.vo.BrokeragePayVO;
 import com.gt.union.opportunity.main.entity.UnionOpportunity;
@@ -24,6 +25,7 @@ import org.apache.poi.hssf.usermodel.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
@@ -41,6 +43,9 @@ public class UnionBrokeragePayController {
 
     @Autowired
     private IUnionBrokeragePayService unionBrokeragePayService;
+
+    @Resource(name = "unionBackBrokeragePayService")
+    private IUnionBrokeragePayStrategyService unionBrokeragePayStrategyService;
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
@@ -246,7 +251,7 @@ public class UnionBrokeragePayController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             result = MockUtil.get(UnionPayVO.class);
         } else {
-            result = unionBrokeragePayService.batchPayByBusId(busId, opportunityIdList, null);
+            result = unionBrokeragePayService.batchPayByBusId(busId, opportunityIdList, null, unionBrokeragePayStrategyService);
         }
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
