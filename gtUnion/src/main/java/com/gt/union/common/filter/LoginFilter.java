@@ -42,7 +42,7 @@ public class LoginFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
 
-        passUrlMap.put("/h5Brokerage/login/userPassword", "/h5Brokerage/login/userPassword");
+        passUrlMap.put("/h5Brokerage/loginSign", "/h5Brokerage/loginSign");
         passUrlMap.put("/h5Brokerage/login/phone", "/h5Brokerage/login/phone");
         passSuffixList.add(".js");
         passSuffixList.add(".css");
@@ -76,12 +76,12 @@ public class LoginFilter implements Filter {
         if (url.indexOf("h5Brokerage") > -1) {
             // 开发调试
             BusUser busUser = SessionUtils.getUnionBus(req);
-            if (busUser == null && "dev".equals(PropertiesUtil.getProfiles())) {
-                justForDev(req);
-                justForH5BrokerageDev(req);
-                chain.doFilter(request, response);
-                return;
-            }
+//            if (busUser == null && "dev".equals(PropertiesUtil.getProfiles())) {
+//                justForDev(req);
+//                justForH5BrokerageDev(req);
+//                chain.doFilter(request, response);
+//                return;
+//            }
             // 发布
             H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(req);
             if (h5BrokerageUser == null) {
@@ -108,11 +108,11 @@ public class LoginFilter implements Filter {
         } else {
             // 后台
             BusUser busUser = SessionUtils.getLoginUser(req);
-            if (busUser == null && "dev".equals(PropertiesUtil.getProfiles())) {
-                justForDev(req);
-                chain.doFilter(request, response);
-                return;
-            }
+//            if (busUser == null && "dev".equals(PropertiesUtil.getProfiles())) {
+//                justForDev(req);
+//                chain.doFilter(request, response);
+//                return;
+//            }
             if (busUser == null) {
                 response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getWxmpUrl() + "/user/tologin.do").toString());
             } else {

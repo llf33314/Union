@@ -463,13 +463,7 @@ public class UnionCardProjectItemServiceImpl extends ServiceImpl<UnionCardProjec
                 saveItem.setDelStatus(CommonConstant.COMMON_NO);
                 saveItem.setCreateTime(currentDate);
                 saveItem.setType(ProjectConstant.TYPE_ERP_GOODS);
-
-                Integer erpType = erpGoods.getErpType();
-                if (erpType == null) {
-                    throw new BusinessException("ERP类型不能为空");
-                }
-                saveItem.setErpType(erpType);
-
+                
                 Integer shopId = erpGoods.getShopId();
                 if (shopId == null) {
                     throw new BusinessException("门店id不能为空");
