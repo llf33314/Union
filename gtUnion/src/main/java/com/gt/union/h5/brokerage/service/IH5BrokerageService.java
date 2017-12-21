@@ -4,6 +4,7 @@ import com.gt.api.bean.session.Member;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.h5.brokerage.vo.*;
 import com.gt.union.opportunity.brokerage.entity.UnionBrokerageWithdrawal;
+import com.gt.union.opportunity.brokerage.service.IUnionBrokeragePayStrategyService;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.vo.UnionPayVO;
 
@@ -127,10 +128,11 @@ public interface IH5BrokerageService {
      *
      * @param h5BrokerageUser 登录信息
      * @param unionId         联盟id
-     * @return UnionPayVO
+     * @param unionBrokeragePayStrategyService
+	 * @return UnionPayVO
      * @throws Exception 统一处理异常
      */
-    UnionPayVO batchPayByUnionId(H5BrokerageUser h5BrokerageUser, Integer unionId) throws Exception;
+    UnionPayVO batchPayByUnionId(H5BrokerageUser h5BrokerageUser, Integer unionId, IUnionBrokeragePayStrategyService unionBrokeragePayStrategyService) throws Exception;
 
     //***************************************** Domain Driven Design - remove ******************************************
 

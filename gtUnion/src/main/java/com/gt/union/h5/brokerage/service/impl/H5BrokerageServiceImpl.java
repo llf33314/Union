@@ -3,11 +3,9 @@ package com.gt.union.h5.brokerage.service.impl;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.Member;
 import com.gt.api.bean.session.TCommonStaff;
-import com.gt.api.util.SessionUtils;
 import com.gt.union.api.amqp.entity.PhoneMessage;
 import com.gt.union.api.amqp.sender.PhoneMessageSender;
 import com.gt.union.api.client.pay.WxPayService;
-import com.gt.union.api.client.pay.entity.PayParam;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.api.client.staff.ITCommonStaffService;
 import com.gt.union.api.client.user.IBusUserService;
@@ -29,6 +27,7 @@ import com.gt.union.opportunity.brokerage.entity.UnionBrokeragePay;
 import com.gt.union.opportunity.brokerage.entity.UnionBrokerageWithdrawal;
 import com.gt.union.opportunity.brokerage.service.IUnionBrokerageIncomeService;
 import com.gt.union.opportunity.brokerage.service.IUnionBrokeragePayService;
+import com.gt.union.opportunity.brokerage.service.IUnionBrokeragePayStrategyService;
 import com.gt.union.opportunity.brokerage.service.IUnionBrokerageWithdrawalService;
 import com.gt.union.opportunity.main.constant.OpportunityConstant;
 import com.gt.union.opportunity.main.entity.UnionOpportunity;
@@ -41,6 +40,7 @@ import com.gt.union.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.*;
@@ -89,6 +89,9 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
 
     @Autowired
     private PhoneMessageSender phoneMessageSender;
+
+    @Resource(name = "unionPhoneBrokeragePayService")
+    private IUnionBrokeragePayStrategyService unionBrokeragePayStrategyService;
 
     //***************************************** Domain Driven Design - get ********************************************
 
@@ -378,29 +381,16 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         savePay.setOpportunityId(opportunityId);
         savePay.setMoney(opportunity.getBrokerageMoney());
 
+
         // （4）调用支付接口
-        UnionPayVO result = new UnionPayVO();
-//        String socketKey = PropertiesUtil.getSocketKey() + orderNo;
-        String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/opportunity?socketKey=";
-
-        PayParam payParam = new PayParam();
-        payParam.setTotalFee(opportunity.getBrokerageMoney());
-        payParam.setOrderNum(orderNo);
-        payParam.setIsreturn(CommonConstant.COMMON_NO);
-        payParam.setNotifyUrl(notifyUrl);
-        payParam.setIsSendMessage(CommonConstant.COMMON_NO);
-        payParam.setPayWay(0);
-        payParam.setDesc("商机佣金");
-        String payUrl = wxPayService.pay(payParam);
-
-        result.setPayUrl(payUrl);
+        UnionPayVO result = unionBrokeragePayStrategyService.unionBrokerageApply(orderNo, opportunity.getBrokerageMoney());
 
         unionBrokeragePayService.save(savePay);
         return result;
     }
 
     @Override
-    public UnionPayVO batchPayByUnionId(H5BrokerageUser h5BrokerageUser, Integer unionId) throws Exception {
+    public UnionPayVO batchPayByUnionId(H5BrokerageUser h5BrokerageUser, Integer unionId, IUnionBrokeragePayStrategyService unionBrokeragePayStrategyService) throws Exception {
         if (h5BrokerageUser == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -420,7 +410,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
                 member.getId(), OpportunityConstant.ACCEPT_STATUS_CONFIRMED, OpportunityConstant.IS_CLOSE_NO);
         List<Integer> opportunityIdList = unionOpportunityService.getIdList(opportunityList);
 
-        return unionBrokeragePayService.batchPayByBusId(busId, opportunityIdList, verifier.getId());
+        return unionBrokeragePayService.batchPayByBusId(busId, opportunityIdList, verifier.getId(), unionBrokeragePayStrategyService);
     }
 
     //***************************************** Domain Driven Design - remove ******************************************

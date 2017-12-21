@@ -95,10 +95,11 @@ public interface IUnionBrokeragePayService extends IService<UnionBrokeragePay> {
      * @param busId             商家id
      * @param opportunityIdList 商机id列表
      * @param verifierId        佣金平台管理人员id
-     * @return UnionPayVO
+     * @param unionBrokeragePayStrategyService
+	 * @return UnionPayVO
      * @throws Exception 统一处理异常
      */
-    UnionPayVO batchPayByBusId(Integer busId, List<Integer> opportunityIdList, Integer verifierId) throws Exception;
+    UnionPayVO batchPayByBusId(Integer busId, List<Integer> opportunityIdList, Integer verifierId, IUnionBrokeragePayStrategyService unionBrokeragePayStrategyService) throws Exception;
 
     /**
      * 佣金结算-我需支付的佣金-批量支付-回调

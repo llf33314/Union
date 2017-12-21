@@ -18,6 +18,7 @@ import com.gt.union.opportunity.brokerage.entity.UnionBrokeragePay;
 import com.gt.union.opportunity.brokerage.mapper.UnionBrokeragePayMapper;
 import com.gt.union.opportunity.brokerage.service.IUnionBrokerageIncomeService;
 import com.gt.union.opportunity.brokerage.service.IUnionBrokeragePayService;
+import com.gt.union.opportunity.brokerage.service.IUnionBrokeragePayStrategyService;
 import com.gt.union.opportunity.brokerage.util.UnionBrokeragePayCacheUtil;
 import com.gt.union.opportunity.brokerage.vo.BrokerageOpportunityVO;
 import com.gt.union.opportunity.brokerage.vo.BrokeragePayVO;
@@ -280,7 +281,7 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public UnionPayVO batchPayByBusId(Integer busId, List<Integer> opportunityIdList, Integer verifierId) throws Exception {
+    public UnionPayVO batchPayByBusId(Integer busId, List<Integer> opportunityIdList, Integer verifierId, IUnionBrokeragePayStrategyService unionBrokeragePayStrategyService) throws Exception {
         if (busId == null || opportunityIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -339,22 +340,7 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
         }
 
         // （4）	调用接口，返回支付链接
-        UnionPayVO result = new UnionPayVO();
-        String socketKey = PropertiesUtil.getSocketKey() + orderNo;
-        String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/opportunity?socketKey=" + socketKey;
-
-        PayParam payParam = new PayParam();
-        payParam.setTotalFee(brokerageSum.doubleValue());
-        payParam.setOrderNum(orderNo);
-        payParam.setIsreturn(CommonConstant.COMMON_NO);
-        payParam.setNotifyUrl(notifyUrl);
-        payParam.setIsSendMessage(CommonConstant.COMMON_NO);
-        payParam.setPayWay(0);
-        payParam.setDesc("商机佣金");
-        String payUrl = wxPayService.qrCodePay(payParam);
-
-        result.setPayUrl(payUrl);
-        result.setSocketKey(socketKey);
+        UnionPayVO result = unionBrokeragePayStrategyService.unionBrokerageApply(orderNo, brokerageSum.doubleValue());
 
         saveBatch(savePayList);
         return result;
