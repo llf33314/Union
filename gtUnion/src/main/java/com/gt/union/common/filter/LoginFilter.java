@@ -91,7 +91,7 @@ public class LoginFilter implements Filter {
                 if (busUser == null) {
                     response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
                 } else if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                    response.getWriter().write(GtJsonResult.instanceErrorMsg("请使用主账号登录", PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
+                    response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
                 } else {
                     h5BrokerageUser = new H5BrokerageUser();
                     h5BrokerageUser.setBusUser(busUser);
