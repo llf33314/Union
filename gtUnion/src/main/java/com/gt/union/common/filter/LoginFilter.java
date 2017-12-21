@@ -89,9 +89,9 @@ public class LoginFilter implements Filter {
             H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(req);
             if (h5BrokerageUser == null) {
                 if (busUser == null) {
-                    response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
+                    response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/h5Brokerage/#/" + "toLogin").toString());
                 } else if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                    response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
+                    response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/h5Brokerage/#/" + "toLogin").toString());
                 } else {
                     h5BrokerageUser = new H5BrokerageUser();
                     h5BrokerageUser.setBusUser(busUser);
