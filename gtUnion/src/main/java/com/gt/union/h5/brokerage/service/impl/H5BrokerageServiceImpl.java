@@ -3,7 +3,6 @@ package com.gt.union.h5.brokerage.service.impl;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.Member;
 import com.gt.api.bean.session.TCommonStaff;
-import com.gt.api.util.SessionUtils;
 import com.gt.union.api.amqp.entity.PhoneMessage;
 import com.gt.union.api.amqp.sender.PhoneMessageSender;
 import com.gt.union.api.client.pay.WxPayService;
@@ -11,7 +10,6 @@ import com.gt.union.api.client.pay.entity.PayParam;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.api.client.staff.ITCommonStaffService;
 import com.gt.union.api.client.user.IBusUserService;
-import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.constant.SmsCodeConstant;
@@ -43,7 +41,10 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * 佣金平台 服务实现类
@@ -380,8 +381,8 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
 
         // （4）调用支付接口
         UnionPayVO result = new UnionPayVO();
-        String socketKey = PropertiesUtil.getSocketKey() + orderNo;
-        String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/opportunity?socketKey=" + socketKey;
+//        String socketKey = PropertiesUtil.getSocketKey() + orderNo;
+        String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/opportunity?socketKey=";
 
         PayParam payParam = new PayParam();
         payParam.setTotalFee(opportunity.getBrokerageMoney());
@@ -394,7 +395,6 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         String payUrl = wxPayService.pay(payParam);
 
         result.setPayUrl(payUrl);
-        result.setSocketKey(socketKey);
 
         unionBrokeragePayService.save(savePay);
         return result;
@@ -477,31 +477,8 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
                 }
             }
         } else {
-            BusUser busUser = justForDev(request);
-            if (busUser != null) {
-                UnionVerifier adminVerifier = new UnionVerifier();
-                adminVerifier.setBusId(busUser.getId());
-                adminVerifier.setEmployeeName("管理员");
-
-                H5BrokerageUser h5BrokerageUser = new H5BrokerageUser();
-                h5BrokerageUser.setBusUser(busUser);
-                h5BrokerageUser.setVerifier(adminVerifier);
-
-                UnionSessionUtil.setH5BrokerageUser(request, h5BrokerageUser);
-                return;
-            }
             throw new BusinessException("登录失败");
         }
-    }
-
-    private BusUser justForDev(HttpServletRequest request) {
-        BusUser busUser = new BusUser();
-        busUser.setId(33);
-        busUser.setEndTime(new Date());
-        busUser.setPhone(ConfigConstant.DEVELOPER_PHONE);
-        busUser.setPid(BusUserConstant.ACCOUNT_TYPE_UNVALID);
-        busUser.setLevel(BusUserConstant.LEVEL_EXTREME);
-        return busUser;
     }
 
     @Override

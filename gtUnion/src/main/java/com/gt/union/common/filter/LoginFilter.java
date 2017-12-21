@@ -42,8 +42,11 @@ public class LoginFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
 
-        passUrlMap.put("/h5Brokerage/login/userPassword", "/h5Brokerage/login/userPassword");
+        passUrlMap.put("/h5Brokerage/loginSign", "/h5Brokerage/loginSign");
         passUrlMap.put("/h5Brokerage/login/phone", "/h5Brokerage/login/phone");
+        passUrlMap.put("/api/sms/1", "/api/sms/1");
+        passUrlMap.put("/api/sms/3", "/api/sms/3");
+        passUrlMap.put("/api/sms/4", "/api/sms/4");
         passSuffixList.add(".js");
         passSuffixList.add(".css");
         passSuffixList.add(".gif");
@@ -76,19 +79,19 @@ public class LoginFilter implements Filter {
         if (url.indexOf("h5Brokerage") > -1) {
             // 开发调试
             BusUser busUser = SessionUtils.getUnionBus(req);
-            if (busUser == null && "dev".equals(PropertiesUtil.getProfiles())) {
-                justForDev(req);
-                justForH5BrokerageDev(req);
-                chain.doFilter(request, response);
-                return;
-            }
+//            if (busUser == null && "dev".equals(PropertiesUtil.getProfiles())) {
+//                justForDev(req);
+//                justForH5BrokerageDev(req);
+//                chain.doFilter(request, response);
+//                return;
+//            }
             // 发布
             H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(req);
             if (h5BrokerageUser == null) {
                 if (busUser == null) {
-                    response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/h5Brokerage/#/" + "toLogin").toString());
+                    response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
                 } else if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                    response.getWriter().write(GtJsonResult.instanceErrorMsg("请使用主账号登录", PropertiesUtil.getUnionUrl() + "/h5Brokerage/#/" + "toLogin").toString());
+                    response.getWriter().write(GtJsonResult.instanceErrorMsg("请使用主账号登录", PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
                 } else {
                     h5BrokerageUser = new H5BrokerageUser();
                     h5BrokerageUser.setBusUser(busUser);
@@ -108,11 +111,11 @@ public class LoginFilter implements Filter {
         } else {
             // 后台
             BusUser busUser = SessionUtils.getLoginUser(req);
-            if (busUser == null && "dev".equals(PropertiesUtil.getProfiles())) {
-                justForDev(req);
-                chain.doFilter(request, response);
-                return;
-            }
+//            if (busUser == null && "dev".equals(PropertiesUtil.getProfiles())) {
+//                justForDev(req);
+//                chain.doFilter(request, response);
+//                return;
+//            }
             if (busUser == null) {
                 response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getWxmpUrl() + "/user/tologin.do").toString());
             } else {

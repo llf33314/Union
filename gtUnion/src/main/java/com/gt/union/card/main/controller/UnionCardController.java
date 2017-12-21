@@ -4,6 +4,7 @@ import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.main.entity.UnionCardFan;
+import com.gt.union.card.main.service.IUnionCardApplyService;
 import com.gt.union.card.main.service.IUnionCardService;
 import com.gt.union.card.main.vo.CardApplyVO;
 import com.gt.union.card.main.vo.CardPhoneVO;
@@ -24,6 +25,7 @@ import io.swagger.annotations.ApiParam;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
@@ -42,6 +44,9 @@ public class UnionCardController {
 
     @Autowired
     private IUnionCardService unionCardService;
+
+    @Resource(name = "unionBackCardApplyService")
+    private IUnionCardApplyService unionCardApplyService;
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
@@ -131,7 +136,7 @@ public class UnionCardController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             result = MockUtil.get(UnionPayVO.class);
         } else {
-            result = unionCardService.saveApplyByBusIdAndUnionIdAndFanId(busId, unionId, fanId, activityIdList);
+            result = unionCardService.saveApplyByBusIdAndUnionIdAndFanId(busId, unionId, fanId, activityIdList, unionCardApplyService);
         }
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
