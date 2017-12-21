@@ -667,9 +667,15 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 return JSONObject.toJSONString(result);
             }
 
-            unionCardRecordService.updateBatch(updateRecordList);
-            unionCardSharingRecordService.saveBatch(saveSharingRecordList);
-            unionBrokerageIncomeService.saveBatch(saveIncomeList);
+            if (ListUtil.isNotEmpty(updateRecordList)) {
+                unionCardRecordService.updateBatch(updateRecordList);
+            }
+            if (ListUtil.isNotEmpty(saveSharingRecordList)) {
+                unionCardSharingRecordService.saveBatch(saveSharingRecordList);
+            }
+            if (ListUtil.isNotEmpty(saveIncomeList)) {
+                unionBrokerageIncomeService.saveBatch(saveIncomeList);
+            }
 
             // socket通知
             socketService.socketPaySendMessage(socketKey, isSuccess, null);

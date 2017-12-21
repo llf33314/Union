@@ -1,5 +1,5 @@
 <template>
-  <div id="toTxtract">
+  <div id="toExtract">
         <!--顶部公共样式-->
         <div class="public_stylecss">
           <div class="clear wantMoney">
@@ -13,11 +13,11 @@
           </div>
           <div class="union_second payed clear">
             <div class="fl">
-              <p>{{moneyList.ableGet}}</p>
+              <p>{{moneyList.availableBrokerage | filtration}}</p>
               <span style="font-size: 0.7rem;font-weight:normal">可提佣金=推荐佣金+售卡佣金</span>
             </div>
             <div class="fr payment">
-              <router-link :to="{ path: '/toTxtract/toDetailList', name: 'toDetailList'}">
+              <router-link :to="{ path: '/toExtract/toDetailList', name: 'toDetailList'}">
                 佣金明细
               </router-link>
             </div>
@@ -46,25 +46,25 @@
           <li>
             <div>
               <p>推荐所得总佣金</p>
-              <h2>{{moneyList.opportunitySum}}</h2>
+              <h2>{{moneyList.paidOpportunityBrokerage | filtration }}</h2>
             </div>
           </li>
           <li>
             <div>
               <p>售卡所得总佣金</p>
-              <h2>{{moneyList.divideSum}}</h2>
+              <h2>{{moneyList.cardBrokerage | filtration }}</h2>
             </div>
           </li>
           <li>
             <div>
               <p>历史提现佣金</p>
-              <h2>{{moneyList.sumWithdrawals}}</h2>
+              <h2>{{moneyList.historyWithdrawal | filtration }}</h2>
             </div>
           </li>
           <li>
             <div>
               <p>未收佣金</p>
-              <h2>{{moneyList.sumUnCome}}</h2>
+              <h2>{{moneyList.unPaidOpportunityBrokerage | filtration }}</h2>
             </div>
           </li>
         </ul>
@@ -80,14 +80,14 @@
             </thead>
             <tbody class="table-list-head" id="extract">
             <tr v-for="(item, index) in withdrawRecord">
-              <td width="100">{{item.time}}</td>
-              <td>{{"￥"+item.money}}</td>
-              <td>{{item.nickName}}</td>
+              <td width="100">{{item.createTime}}</td>
+              <td>￥{{item.money | filtration}}</td>
+              <td>{{item.verifierName}}</td>
             </tr>
             </tbody>
           </table>
-          <p class="hasPayLoadMore" style="display:none;color:#868686;" @click="loadMore">加载更多</p>
-          <div class="nothing hasPayNothing" style="display:none;color:#868686;">没有更多数据</div>
+          <p class="hasPayLoadMore"  @click="loadMore">加载更多</p>
+          <div class="nothing hasPayNothing" >没有更多数据</div>
         </div>
   </div>
 </template>
@@ -95,9 +95,10 @@
 <script>
   import $http from '@/utils/http.js'
   import $todate from '@/utils/todate.js'
+  import { Message } from 'element-ui';
 
   export default {
-    name: 'toTxtract',
+    name: 'toExtract',
     data() {
       return {
         //底部颜色切换
@@ -109,7 +110,7 @@
         //输入框的值
         inputNumber:'',
         //显示的列表条数
-        size:4,
+        size:5,
         //当前列表第一页
         current:1,
       }
@@ -118,29 +119,52 @@
       showModel_(){
         $('.box-wrap2').show(200);
       },
+      //隐藏我要体现
       hide1_(){
         $('.box-wrap2').hide(200);
       },
+      // 我要提现
       send1_(){
-        let money=this.inputNumber;
-        let url='toTxtract';
-        $http.post(`unionH5Brokerage/withdrawals?fee=${money}&url=${url}`)
-          .then(res => {
-
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+        let data=this.inputNumber;
+        if(parseInt(data)<parseInt(this.moneyList.availableBrokerage)){
+          Message({
+            showClose: true,
+            message: '提现的金额不能大于可提佣金',
+            type: 'warning',
+            duration: 3000
           });
+        }else {
+          $http.post(`/h5Brokerage/withdrawal`, data)
+            .then(res => {
+              if (res.data.success) {
+                Message({
+                  showClose: true,
+                  message: '提现成功',
+                  type: 'success',
+                  duration: 3000
+                });
+//                刷新当前页面
+                let hre_url = window.location.href;
+              }
+            })
+            .catch(err => {
+              this.$message({showClose: true, message: err.toString(), type: 'error', duration: 3000});
+            });
+        }
         $('.box-wrap2').hide(200);
       },
       //加载更多列表数据
       loadMore(){
-        ++this.current
-        $http.get(`/unionH5Brokerage/withdrawals/list?size=${this.size}&current=${this.current}`)
+        ++this.current;
+        let datas={
+          size:this.size,
+          current:this.current
+        };
+        $http.get(`/h5Brokerage/withdrawal/history/page`,datas)
           .then(res => {
             if(res.data.data) {
               let list = res.data.data.records;
-              if (list.length < 4) {
+              if (list.length < this.size) {
                 $('.hasPayNothing').show();
                 $('.hasPayLoadMore').hide();
               } else {
@@ -148,9 +172,6 @@
                 $('.hasPayLoadMore').show();
               }
               this.withdrawRecord = this.withdrawRecord.concat(list);
-              this.withdrawRecord.forEach((v, i) => {
-                v.time = $todate.todate(new Date(v.time));
-              })
             }
           })
           .catch(err => {
@@ -181,13 +202,20 @@
         }
       }
     },
+    //过滤器
+    filters:{
+      filtration:function(value){
+        //小数点后两位数,不会四舍五入
+        return value = Math.floor(value * 100) / 100;
+      }
+    },
     created(){
       //页面的title变换
       $("#title_").text('我要提现');
       //图片底部的颜色切换（白和灰切换）
       this.$emit('getValue',this.toLogin);
       //获取盟员列表的数据
-      $http.get(`/unionH5Brokerage/withdrawals`)
+      $http.get(`/h5Brokerage/withdrawal`)
         .then(res => {
           if(res.data.data) {
             this.moneyList = res.data.data;
@@ -197,7 +225,11 @@
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
       //获取提现记录表的数据
-      $http.get(`/unionH5Brokerage/withdrawals/list?size=${this.size}&current=${this.current}`)
+      let data1={
+        size:this.size,
+        current:this.current
+      };
+      $http.get(`/h5Brokerage/withdrawal/history/page`,data1)
         .then(res => {
           if(res.data.data) {
             if (res.data.data.records.length === 0) {
@@ -213,7 +245,7 @@
             }
             this.withdrawRecord = res.data.data.records;
             this.withdrawRecord.forEach((v, i) => {
-              v.time = $todate.todate(new Date(v.time));
+              v.createTime = $todate.todate(new Date(v.createTime));
             })
           }
         })
@@ -240,15 +272,14 @@
     color:    #CDCDCD!important;
     font-size:0.8054rem;
   }
-  .hasPayLoadMore{
+  .hasPayLoadMore,.hasPayNothing{
     font-size: 0.85rem;
     color: #39ACFF;
     text-align: center;
     padding: 0.3rem;
+    display:none;
   }
   .nothing{
-    margin: 0.8rem 6rem;
-    font-size: 0.85rem;
     color: #868686;
   }
 </style>

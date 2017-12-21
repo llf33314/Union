@@ -425,8 +425,12 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
                 return JSONObject.toJSONString(result);
             }
 
-            updateBatch(updatePayList);
-            unionBrokerageIncomeService.saveBatch(saveIncomeList);
+            if (ListUtil.isNotEmpty(updatePayList)) {
+                updateBatch(updatePayList);
+            }
+            if (ListUtil.isNotEmpty(saveIncomeList)) {
+                unionBrokerageIncomeService.saveBatch(saveIncomeList);
+            }
             if (ListUtil.isNotEmpty(updateOpportunityList)) {
                 unionOpportunityService.updateBatch(updateOpportunityList);
             }

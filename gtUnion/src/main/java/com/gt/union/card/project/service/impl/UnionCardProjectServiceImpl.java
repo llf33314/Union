@@ -121,20 +121,20 @@ public class UnionCardProjectServiceImpl extends ServiceImpl<UnionCardProjectMap
         if (project != null) {
             result.setProject(project);
             Integer projectId = project.getId();
-            
+
             List<UnionCardProjectItem> erpTextList = unionCardProjectItemService.listByProjectIdAndType(projectId, ProjectConstant.TYPE_ERP_TEXT);
             result.setErpTextList(erpTextList);
 
             List<UnionCardProjectItem> erpGoodsList = unionCardProjectItemService.listByProjectIdAndType(projectId, ProjectConstant.TYPE_ERP_GOODS);
             result.setErpGoodsList(erpGoodsList);
-            
+
             List<UnionCardProjectItem> textList = unionCardProjectItemService.listByProjectIdAndType(projectId, ProjectConstant.TYPE_TEXT);
             result.setNonErpTextList(textList);
         } else {
             result.setErpTextList(new ArrayList<UnionCardProjectItem>());
-            
+
             result.setErpGoodsList(new ArrayList<UnionCardProjectItem>());
-            
+
             result.setNonErpTextList(new ArrayList<UnionCardProjectItem>());
         }
 
@@ -347,8 +347,12 @@ public class UnionCardProjectServiceImpl extends ServiceImpl<UnionCardProjectMap
         }
 
         // （6）事务操作
-        updateBatch(updateProjectList);
-        unionCardProjectFlowService.saveBatch(saveFlowList);
+        if (ListUtil.isNotEmpty(updateProjectList)) {
+            updateBatch(updateProjectList);
+        }
+        if (ListUtil.isNotEmpty(saveFlowList)) {
+            unionCardProjectFlowService.saveBatch(saveFlowList);
+        }
 
     }
 

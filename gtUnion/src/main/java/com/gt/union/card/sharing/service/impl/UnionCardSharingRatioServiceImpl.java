@@ -98,13 +98,13 @@ public class UnionCardSharingRatioServiceImpl extends ServiceImpl<UnionCardShari
         if (ListUtil.isNotEmpty(projectList)) {
             for (UnionCardProject project : projectList) {
                 CardSharingRatioVO vo = new CardSharingRatioVO();
-                
+
                 UnionCardSharingRatio ratio = getByUnionIdAndMemberIdAndActivityId(unionId, project.getMemberId(), activityId);
                 vo.setSharingRatio(ratio);
-                
+
                 UnionMember ratioMember = unionMemberService.getReadByIdAndUnionId(project.getMemberId(), unionId);
                 vo.setMember(ratioMember);
-                
+
                 result.add(vo);
             }
         }
@@ -213,8 +213,12 @@ public class UnionCardSharingRatioServiceImpl extends ServiceImpl<UnionCardShari
         }
 
         // （5）事务操作
-        updateBatch(updateRatioList);
-        saveBatch(saveRatioList);
+        if (ListUtil.isNotEmpty(updateRatioList)) {
+            updateBatch(updateRatioList);
+        }
+        if (ListUtil.isNotEmpty(saveRatioList)) {
+            saveBatch(saveRatioList);
+        }
     }
 
     //***************************************** Domain Driven Design - count *******************************************
