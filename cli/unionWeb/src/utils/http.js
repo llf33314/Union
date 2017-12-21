@@ -152,7 +152,7 @@ export default {
       }
     )
   },
-  get(url, params) {
+  get(url, params)  {
     return axios({
       method: 'get',
       url,
