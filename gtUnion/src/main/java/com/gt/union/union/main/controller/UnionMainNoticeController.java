@@ -62,14 +62,15 @@ public class UnionMainNoticeController {
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId,
-            @ApiParam(value = "公告内容", name = "content", required = true)
-            @RequestBody String content) throws Exception {
+            @ApiParam(value = "公告内容", name = "content")
+            @RequestBody(required = false) String content) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
         }
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
+            content = content != null ? content : new String();
             unionMainNoticeService.updateContentByBusIdAndUnionId(busId, unionId, content);
         }
         return GtJsonResult.instanceSuccessMsg().toString();
