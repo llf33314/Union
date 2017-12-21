@@ -1,7 +1,7 @@
 package com.gt.union.common.exception;
 
 import com.gt.union.common.constant.CommonConstant;
-import com.gt.union.common.response.GTJsonResult;
+import com.gt.union.common.response.GtJsonResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -25,9 +25,9 @@ public class GlobalExceptionHandler {
         //日志文件记录
         this.logger.error("", e);
         if (e instanceof BaseException) {
-            return GTJsonResult.instanceErrorMsg(((BaseException) e).getErrorMsg()).toString();
+            return GtJsonResult.instanceErrorMsg(((BaseException) e).getErrorMsg()).toString();
         }
-        return GTJsonResult.instanceErrorMsg(CommonConstant.SYS_ERROR).toString();
+        return GtJsonResult.instanceErrorMsg(CommonConstant.SYS_ERROR).toString();
     }
 
 }

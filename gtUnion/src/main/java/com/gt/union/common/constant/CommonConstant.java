@@ -1,7 +1,10 @@
 package com.gt.union.common.constant;
 
 /**
- * Created by Administrator on 2017/9/8 0008.
+ * 通用常量类
+ *
+ * @author linweicong
+ * @version 2017-11-22 17:45:00
  */
 public interface CommonConstant {
     /**
@@ -50,24 +53,29 @@ public interface CommonConstant {
     String UNION_BUS_OVERDUE_MSG = "商家帐号已过期";
 
     /**
-     * 盟员身份无效
+     * 找不到商家帐号
      */
-    String UNION_MEMBER_INVALID = "不具有盟员身份或已过期";
+    String UNION_BUS_NOT_FOUND = "找不到商家帐号";
+    
+    /**
+     * 联盟已过期
+     */
+    String UNION_INVALID = "联盟不存在或已过期";
 
     /**
      * 不具有读权限，只有已加盟、申请退盟状态和退盟过渡期才有，未加盟、申请加盟和已退盟不具有
      */
-    String UNION_MEMBER_READ_REJECT = "没有操作权限";
+    String UNION_READ_REJECT = "不具有联盟读权限";
 
     /**
      * 不具有写权限，只有已加盟和申请退盟状态才有，未加盟、申请加盟、退盟过渡期和已退盟不具有
      */
-    String UNION_MEMBER_WRITE_REJECT = "没有操作权限";
+    String UNION_WRITE_REJECT = "不具有联盟写权限";
 
     /**
      * 需要盟主身份
      */
-    String UNION_MEMBER_NEED_OWNER = "非盟主身份无法操作";
+    String UNION_NEED_OWNER = "非盟主身份无法操作";
 
     /**
      * 联盟默认有效期

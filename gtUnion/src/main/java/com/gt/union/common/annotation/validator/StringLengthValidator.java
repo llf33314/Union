@@ -7,26 +7,29 @@ import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
 /**
- * Created by Administrator on 2017/8/16 0016.
+ * 字符串长度校验注解实现类
+ *
+ * @author linweicong
+ * @version 2017-11-22 17:45:00
  */
 public class StringLengthValidator implements ConstraintValidator<StringLengthValid, String> {
 
-	private int len;
+    private int len;
 
-	@Override
-	public void initialize(StringLengthValid stringLengthValid) {
-		this.len = stringLengthValid.length();
-	}
+    @Override
+    public void initialize(StringLengthValid stringLengthValid) {
+        this.len = stringLengthValid.length();
+    }
 
-	@Override
-	public boolean isValid(String str, ConstraintValidatorContext constraintValidatorContext) {
-		if(StringUtil.isEmpty(str)){
-			return true;
-		}else{
-			if(StringUtil.getStringLength(str) > len){
-				return false;
-			}
-		}
-		return true;
-	}
+    @Override
+    public boolean isValid(String str, ConstraintValidatorContext constraintValidatorContext) {
+        if (StringUtil.isEmpty(str)) {
+            return true;
+        } else {
+            if (StringUtil.getStringLength(str) > len) {
+                return false;
+            }
+        }
+        return true;
+    }
 }

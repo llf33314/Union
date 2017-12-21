@@ -1,11 +1,11 @@
 <template>
   <div id="front">
     <div v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="拼命加载中">
-      <!--显示整页加载，1秒后消失-->
+      <!--显示整页加载，0.3秒后消失-->
     </div>
     <el-tabs v-model="activeName" type="card" @tab-click="handleClick" style="display: none">
       <el-tab-pane label="联盟卡消费核销" name="first">
-        <UnionCard></UnionCard>
+        <verification></verification>
       </el-tab-pane>
       <el-tab-pane label="消费核销记录" name="second">
         <ExpenseRecord></ExpenseRecord>
@@ -18,37 +18,37 @@
 </template>
 
 <script>
-import UnionCard from './UnionCard';
+import Verification from '@/components/front/Verification';
 import ExpenseRecord from './ExpenseRecord';
 import Transaction from './Transaction';
 import $http from '@/utils/http.js';
 export default {
   name: 'front',
   components: {
-    UnionCard,
+    Verification,
     ExpenseRecord,
     Transaction
   },
   data() {
     return {
       activeName: 'first',
-      fullscreenLoading: true,
+      fullscreenLoading: true
     };
   },
   created: function() {
     // 首页查询我的联盟信息
     $http
-      .get(`/union/index`)
+      .get(`/unionIndex`)
       .then(res => {
         if (res.data.data) {
           setTimeout(() => {
             this.fullscreenLoading = false;
             // 判断是否创建或加入联盟
-            if (!res.data.data.currentUnionId) {
-              this.$router.push({path: '/no-union'});
+            if (!res.data.data.currentUnion) {
+              this.$router.push({ path: '/no-union' });
             }
             $('.el-tabs--card').show();
-          },300);
+          }, 300);
         }
       })
       .catch(err => {

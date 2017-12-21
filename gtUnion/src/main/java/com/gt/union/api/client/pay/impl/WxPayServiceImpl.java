@@ -2,127 +2,110 @@ package com.gt.union.api.client.pay.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
-import com.gt.api.bean.session.WxPublicUsers;
 import com.gt.api.util.HttpClienUtils;
 import com.gt.api.util.KeysUtil;
+import com.gt.api.util.RequestUtils;
 import com.gt.union.api.client.pay.WxPayService;
-import com.gt.union.api.client.user.IBusUserService;
-import com.gt.union.brokerage.entity.UnionBrokerageWithdrawal;
-import com.gt.union.brokerage.service.IUnionBrokerageIncomeService;
-import com.gt.union.brokerage.service.IUnionBrokerageWithdrawalService;
-import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.api.client.pay.entity.PayParam;
 import com.gt.union.common.constant.ConfigConstant;
-import com.gt.union.common.exception.BusinessException;
-import com.gt.union.common.util.BigDecimalUtil;
+import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.PropertiesUtil;
-import com.gt.union.opportunity.constant.OpportunityConstant;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import com.gt.util.entity.param.pay.ApiEnterprisePayment;
+import com.gt.util.entity.param.pay.SubQrPayParams;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
  * 微信支付服务
- * Created by Administrator on 2017/8/22 0022.
+ * @author hongjiye
+ * Created by Administrator on 2017/11/25 0022.
  */
 @Service
 public class WxPayServiceImpl implements WxPayService {
-
-    @Autowired
-    private IUnionBrokerageIncomeService unionBrokerageIncomeService;
-
-    @Autowired
-    private IUnionBrokerageWithdrawalService unionBrokerageWithdrawalService;
-
-    @Autowired
-    private IBusUserService busUserService;
-
+    private Logger logger = LoggerFactory.getLogger(WxPayServiceImpl.class);
 
     @Override
-    public int pay(Map<String,Object> param) {
-        String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/payapi.do";
-        try {
-            Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param),url, Map.class, PropertiesUtil.getWxmpSignKey());
-            if(CommonUtil.isEmpty(result)){
-                return 0;
-            }
-            if(CommonUtil.toInteger(result.get("code")) != 0){
-                return 0;
-            }
-        }catch (Exception e){
-            return 0;
+    public String qrCodePay(PayParam payParam){
+        StringBuilder builder = new StringBuilder("?");
+        builder.append("totalFee=").append(payParam.getTotalFee())
+                .append("&model=").append(ConfigConstant.PAY_MODEL)
+                .append("&busId=").append(PropertiesUtil.getDuofenBusId())
+                .append("&appidType=").append(CommonUtil.isEmpty(payParam.getAppidType()) ? 0 : payParam.getAppidType())
+                .append("&appid=").append(PropertiesUtil.getDuofenAppid())
+                .append("&orderNum=").append(payParam.getOrderNum())
+                .append("&desc=").append(CommonUtil.isEmpty(payParam.getDesc()) ? "" : payParam.getDesc())
+                .append("&isreturn=").append(payParam.getIsreturn())
+                .append("&returnUrl=").append(CommonUtil.isEmpty(payParam.getReturnUrl()) ? "" : payParam.getReturnUrl())
+                .append("&notifyUrl=").append(CommonUtil.isEmpty(payParam.getNotifyUrl()) ? "" : payParam.getNotifyUrl())
+                .append("&isSendMessage=").append(payParam.getIsSendMessage())
+                .append("&sendUrl=").append(CommonUtil.isEmpty(payParam.getSendUrl()) ? "" : payParam.getSendUrl())
+                .append("&payWay=").append(payParam.getPayWay())
+                .append("&sourceType=").append(1);
+        if(CommonUtil.isNotEmpty(payParam.getExtend())){
+            builder.append("&extend=").append(JSON.toJSONString(payParam.getExtend()));
         }
-        return 1;
+        String param = builder.toString();
+        logger.info("二维码支付请求参数：{}",param);
+        return PropertiesUtil.getWxmpUrl() + "/pay/B02A45A5/79B4DE7C/createPayQR.do" + param;
     }
 
-
-    @Transactional(rollbackFor = Exception.class)
     @Override
-    public int enterprisePayment(Integer busId, Integer memberId, String openid, Double fee, Integer verifierId) throws Exception {
-        double sumInCome = unionBrokerageIncomeService.getSumInComeUnionBrokerage(busId);
-        double sumWithdrawal = unionBrokerageWithdrawalService.getSumWithdrawalsUnionBrokerage(busId);
-        if(sumInCome <= 0){
-            throw new BusinessException("可提佣金不足");
+    public String pay(PayParam payParam){
+        SubQrPayParams subQrPayParams = new SubQrPayParams();
+        subQrPayParams.setAppid(PropertiesUtil.getDuofenAppid());
+        subQrPayParams.setAppidType(CommonUtil.isEmpty(payParam.getAppidType()) ? 0 : payParam.getAppidType());
+        subQrPayParams.setBusId(PropertiesUtil.getDuofenBusId());
+        subQrPayParams.setDesc(CommonUtil.isEmpty(payParam.getDesc()) ? "" : payParam.getDesc());
+        subQrPayParams.setIsreturn(payParam.getIsreturn());
+        subQrPayParams.setReturnUrl(CommonUtil.isEmpty(payParam.getReturnUrl()) ? "" : payParam.getReturnUrl());
+        subQrPayParams.setIsSendMessage(payParam.getIsSendMessage());
+        subQrPayParams.setSendUrl(CommonUtil.isEmpty(payParam.getSendUrl()) ? "" : payParam.getSendUrl());
+        subQrPayParams.setModel(ConfigConstant.PAY_MODEL);
+        subQrPayParams.setSourceType(1);
+        subQrPayParams.setOrderNum(payParam.getOrderNum());
+        subQrPayParams.setTotalFee(payParam.getTotalFee());
+        subQrPayParams.setPayWay(payParam.getPayWay());
+        subQrPayParams.setNotifyUrl(CommonUtil.isEmpty(payParam.getNotifyUrl()) ? "" : payParam.getNotifyUrl());
+        subQrPayParams.setExtend(payParam.getExtend());
+        logger.info("手机端支付请求参数：{}", JSON.toJSONString(subQrPayParams));
+        String obj = "";
+        try {
+            obj = KeysUtil.getEncString(JSON.toJSONString(subQrPayParams));
+        }catch (Exception e){
+            logger.error("手机端支付错误：=======>",e);
         }
-        if(sumInCome < fee){
-            throw new BusinessException("可提佣金不足");
-        }
-        if(BigDecimalUtil.subtract(sumInCome,sumWithdrawal).doubleValue() < fee){
-            throw new BusinessException("可提佣金不足");
-        }
+        return PropertiesUtil.getWxmpUrl() + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/payapi.do?obj=" + obj;
+    }
+
+    @Override
+    public GtJsonResult enterprisePayment(String partnerTradeNo, String openid, String desc, Double amount, Integer paySource){
+        ApiEnterprisePayment payment = new ApiEnterprisePayment();
+        payment.setAmount(amount);
+        payment.setDesc(desc);
+        payment.setBusId(PropertiesUtil.getDuofenBusId());
+        payment.setAppid(PropertiesUtil.getDuofenAppid());
+        payment.setModel(ConfigConstant.ENTERPRISE_PAY_MODEL);
+        payment.setPartner_trade_no(partnerTradeNo);
+        payment.setOpenid(openid);
+        payment.setPaySource(paySource);
+        RequestUtils requestUtils = new RequestUtils();
+        requestUtils.setReqdata(payment);
+        logger.info("商家提现请求参数：{}",JSONObject.toJSONString(requestUtils));
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/enterprisePayment.do";
-        WxPublicUsers wxPublicUsers = busUserService.getWxPublicUserByBusId(PropertiesUtil.getDuofenBusId());
-        Map<String, Object> params = new HashMap<String, Object>();
-        params.put("appid", wxPublicUsers.getAppid());
-        params.put("partner_trade_no", OpportunityConstant.ORDER_PREFIX + System.currentTimeMillis());
-        params.put("openid", openid);
-        params.put("desc", "联盟佣金提现");
-        params.put("model", ConfigConstant.ENTERPRISE_PAY_MODEL);
-        params.put("busId", busId);
-        params.put("amount", fee);
-        params.put("paySource",0);
-        Map<String,Object> data = new HashMap<String,Object>();
-        data.put("reqdata",params);
-        try {
-            Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(data),url, Map.class, PropertiesUtil.getWxmpSignKey());
-            if(CommonUtil.isEmpty(result)){
-                return 0;
-            }
-            if(CommonUtil.toInteger(result.get("code")) != 0){
-                return 0;
-            }
-
-            //添加提现记录
-            UnionBrokerageWithdrawal withdrawal = new UnionBrokerageWithdrawal();
-            withdrawal.setBusId(busId);
-            withdrawal.setCreatetime(new Date());
-            withdrawal.setDelStatus(CommonConstant.DEL_STATUS_NO);
-            withdrawal.setMoney(fee);
-            withdrawal.setThirdMemberId(memberId);
-            withdrawal.setVerifierId(verifierId);
-            unionBrokerageWithdrawalService.insert(withdrawal);
-        }catch (Exception e){
-            return 0;
+        Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(requestUtils),url, Map.class, PropertiesUtil.getWxmpSignKey());
+        logger.info("商家提现，结果：{}", result.toString());
+        if(CommonUtil.isEmpty(result)){
+            return GtJsonResult.instanceErrorMsg("提现失败");
         }
-        return 1;
+        if(CommonUtil.toInteger(result.get("code")) == 0){
+            return GtJsonResult.instanceSuccessMsg();
+        }else {
+            return GtJsonResult.instanceErrorMsg(CommonUtil.isNotEmpty(result.get("msg")) ? result.get("msg").toString() : "提现失败");
+        }
     }
-
-	@Override
-	public String wxPay(Map<String, Object> data) {
-        String obj = null;
-        try {
-            KeysUtil keysUtil = new KeysUtil();
-            obj = keysUtil.getEncString(JSON.toJSONString(data));
-        }catch (Exception e){
-
-        }
-        return PropertiesUtil.getWxmpUrl() + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/payapi.do?obj="+obj;
-	}
-
 
 }

@@ -24,7 +24,7 @@
     <div>
       <el-form :inline="true" class="demo-form-inline">
         <el-form-item label="选择联盟：">
-          <el-select v-model="value" placeholder="请选择" @change="change">
+          <el-select v-model="unionId" placeholder="请选择" @change="search">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
           </el-select>
@@ -51,7 +51,7 @@ export default {
   name: 'datachart',
   data() {
     return {
-      value: '',
+      unionId: '',
       options: [],
       statisticData: {}
     };
@@ -63,19 +63,27 @@ export default {
   },
   watch: {
     initUnionId: function() {
+      this.init();
+    }
+  },
+  mounted: function() {
+    this.init();
+  },
+  methods: {
+    init() {
       if (this.initUnionId) {
         // 获取联盟列表
         $http
-          .get(`/unionMember/listMap`)
+          .get(`/unionMain/my`)
           .then(res => {
-            if (res.data.data && res.data.data.length > 0) {
+            if (res.data.data) {
               this.options = res.data.data;
-              res.data.data.forEach((v, i) => {
-                this.options[i].value = v.unionMember.id;
-                this.options[i].label = v.unionMain.name;
+              this.options.forEach((v, i) => {
+                v.value = v.union.id;
+                v.label = v.union.name;
               });
-              this.value = this.options[0].value;
-              this.change();
+              // 给unionId 赋初始值
+              this.unionId = this.options[0].value;
             } else {
               this.options = [];
             }
@@ -84,41 +92,51 @@ export default {
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
       }
-    }
-  },
-  mounted: function() {
-    if (this.initUnionId) {
-      // 获取联盟列表
-      $http
-        .get(`/unionMember/listMap`)
-        .then(res => {
-          if (res.data.data && res.data.data.length > 0) {
-            this.options = res.data.data;
-            res.data.data.forEach((v, i) => {
-              this.options[i].value = v.unionMember.id;
-              this.options[i].label = v.unionMain.name;
-            });
-            this.value = this.options[0].value;
-            this.change();
-          } else {
-            this.options = [];
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
-    }
-  },
-  methods: {
-    change() {
+    },
+    search() {
       // 获取商机统计数据
       $http
-        .get(`/unionOpportunity/memberId/${this.value}/statistics`)
+        .get(`/unionOpportunity/unionId/${this.unionId}/statistics`)
         .then(res => {
           if (res.data.data) {
             this.statisticData = res.data.data;
           } else {
-            this.statisticData = {};
+            this.statisticData = {
+              incomeSum: 0,
+              paidIncome: 0,
+              unPaidIncome: 0,
+              expenseSum: 0,
+              paidExpense: 0,
+              unPaidExpense: 0,
+              monday: {
+                paidIncome: 0,
+                paidExpense: 0
+              },
+              tuesday: {
+                paidIncome: 0,
+                paidExpense: 0
+              },
+              wednesday: {
+                paidIncome: 0,
+                paidExpense: 0
+              },
+              thursday: {
+                paidIncome: 0,
+                paidExpense: 0
+              },
+              friday: {
+                paidIncome: 0,
+                paidExpense: 0
+              },
+              saturday: {
+                paidIncome: 0,
+                paidExpense: 0
+              },
+              sunday: {
+                paidIncome: 0,
+                paidExpense: 0
+              }
+            };
           }
         })
         .then(res => {
@@ -127,10 +145,19 @@ export default {
           let echart2 = document.getElementById('echart2');
           let echart3 = document.getElementById('echart3');
           if (echart1) {
+            var resizeChart1 = function() {
+              echart1.style.width = 500 + 'px';
+              echart1.style.height = 300 + 'px';
+            };
+            resizeChart1();
             let myChart1 = echarts.init(echart1);
+            $(window).on('resize', function() {
+              resizeChart1();
+              myChart1.resize();
+            });
             myChart1.setOption({
               title: {
-                text: `总佣金收入：￥ ${this.statisticData.brokerageIncomeSum}`,
+                text: `总佣金收入：￥ ${this.statisticData.incomeSum}`,
                 x: '230',
                 top: 270,
                 textStyle: {
@@ -176,7 +203,7 @@ export default {
                   },
                   data: [
                     {
-                      value: this.statisticData.paidBrokerageIncome,
+                      value: this.statisticData.paidIncome,
                       name: '已结算佣金',
                       itemStyle: {
                         normal: {
@@ -185,7 +212,7 @@ export default {
                       }
                     },
                     {
-                      value: this.statisticData.unPaidBrokerageIncome,
+                      value: this.statisticData.unPaidIncome,
                       name: '未结算佣金',
                       itemStyle: {
                         normal: {
@@ -199,10 +226,19 @@ export default {
             });
           }
           if (echart2) {
+            var resizeChart2 = function() {
+              echart2.style.width = 500 + 'px';
+              echart2.style.height = 300 + 'px';
+            };
+            resizeChart2();
             let myChart2 = echarts.init(echart2);
+            $(window).on('resize', function() {
+              resizeChart2();
+              myChart2.resize();
+            });
             myChart2.setOption({
               title: {
-                text: `总支付佣金：￥ ${this.statisticData.brokerageExpenseSum}`,
+                text: `总支付佣金：￥ ${this.statisticData.expenseSum}`,
                 x: '230',
                 top: 270,
                 textStyle: {
@@ -248,7 +284,7 @@ export default {
                   },
                   data: [
                     {
-                      value: this.statisticData.paidBrokerageExpense,
+                      value: this.statisticData.paidExpense,
                       name: '已支付佣金',
                       itemStyle: {
                         normal: {
@@ -257,7 +293,7 @@ export default {
                       }
                     },
                     {
-                      value: this.statisticData.unPaidBrokerageExpense,
+                      value: this.statisticData.unPaidExpense,
                       name: '未支付佣金',
                       itemStyle: {
                         normal: {
@@ -271,25 +307,34 @@ export default {
             });
           }
           if (echart3) {
+            var resizeChart3 = function() {
+              echart3.style.width = 1080 + 'px';
+              echart3.style.height = 400 + 'px';
+            };
+            resizeChart3();
             let myChart3 = echarts.init(echart3);
+            $(window).on('resize', function() {
+              resizeChart3();
+              myChart3.resize();
+            });
             let incomeData = [];
             let payData = [];
             // 佣金收入
-            incomeData.push(this.statisticData.brokerageInWeek[0]['Monday'].paidBrokerageIncome);
-            incomeData.push(this.statisticData.brokerageInWeek[1]['Tuesday'].paidBrokerageIncome);
-            incomeData.push(this.statisticData.brokerageInWeek[2]['Wednesday'].paidBrokerageIncome);
-            incomeData.push(this.statisticData.brokerageInWeek[3]['Thursday'].paidBrokerageIncome);
-            incomeData.push(this.statisticData.brokerageInWeek[4]['Friday'].paidBrokerageIncome);
-            incomeData.push(this.statisticData.brokerageInWeek[5]['Saturday'].paidBrokerageIncome);
-            incomeData.push(this.statisticData.brokerageInWeek[6]['Sunday'].paidBrokerageIncome);
+            incomeData.push(this.statisticData.monday.paidIncome);
+            incomeData.push(this.statisticData.tuesday.paidIncome);
+            incomeData.push(this.statisticData.wednesday.paidIncome);
+            incomeData.push(this.statisticData.thursday.paidIncome);
+            incomeData.push(this.statisticData.friday.paidIncome);
+            incomeData.push(this.statisticData.saturday.paidIncome);
+            incomeData.push(this.statisticData.sunday.paidIncome);
             // 支付佣金
-            payData.push(this.statisticData.brokerageInWeek[0]['Monday'].paidBrokerageExpense);
-            payData.push(this.statisticData.brokerageInWeek[1]['Tuesday'].paidBrokerageExpense);
-            payData.push(this.statisticData.brokerageInWeek[2]['Wednesday'].paidBrokerageExpense);
-            payData.push(this.statisticData.brokerageInWeek[3]['Thursday'].paidBrokerageExpense);
-            payData.push(this.statisticData.brokerageInWeek[4]['Friday'].paidBrokerageExpense);
-            payData.push(this.statisticData.brokerageInWeek[5]['Saturday'].paidBrokerageExpense);
-            payData.push(this.statisticData.brokerageInWeek[6]['Sunday'].paidBrokerageExpense);
+            payData.push(this.statisticData.monday.paidExpense);
+            payData.push(this.statisticData.tuesday.paidExpense);
+            payData.push(this.statisticData.wednesday.paidExpense);
+            payData.push(this.statisticData.thursday.paidExpense);
+            payData.push(this.statisticData.friday.paidExpense);
+            payData.push(this.statisticData.saturday.paidExpense);
+            payData.push(this.statisticData.sunday.paidExpense);
             myChart3.setOption({
               title: {
                 text: '商机一周统计表',

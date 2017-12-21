@@ -12,14 +12,17 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * redis缓存工具类
+ *
+ * @author linweicong
+ * @version 2017-11-22 17:45:00
+ */
 @Component
 public class RedisCacheUtil {
     @Autowired
     @Qualifier("redisTemplate")
     private RedisTemplate redisTemplate;
-
-//    @Autowired
-//    private JedisCluster jedisCluster;
 
     private String getRedisNamePrefix() {
         return PropertiesUtil.redisNamePrefix();
@@ -36,7 +39,7 @@ public class RedisCacheUtil {
     public String get(String key) {
         String result = null;
         try {
-            ValueOperations<String, String> operations = this.redisTemplate.opsForValue();
+            ValueOperations<String, String> operations = redisTemplate.opsForValue();
             String tgtKey = this.getRedisNamePrefix() + key;
             result = operations.get(tgtKey);
         } catch (Exception e) {
@@ -44,16 +47,6 @@ public class RedisCacheUtil {
         }
         return result;
     }
-//    public String get(String key) {
-//        String result = null;
-//        try {
-//            String tgtKey = this.getRedisNamePrefix() + key;
-//            result = jedisCluster.get(tgtKey);
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return result;
-//    }
 
     //-------------------------------------------------- set ----------------------------------------------------------
 
@@ -90,25 +83,13 @@ public class RedisCacheUtil {
             String tgtKey = this.getRedisNamePrefix() + key;
             String tgtValue = JSON.toJSONString(value);
             operations.set(tgtKey, tgtValue);
-            this.redisTemplate.expire(tgtKey, expireTime, TimeUnit.SECONDS);
+            redisTemplate.expire(tgtKey, expireTime, TimeUnit.SECONDS);
             result = true;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return result;
     }
-//    public boolean set(String key, Object value, Long expireTime) {
-//        boolean result = false;
-//        try {
-//            String tgtKey = this.getRedisNamePrefix() + key + new Random().nextInt(Integer.MAX_VALUE);
-//            String tgtValue = JSON.toJSONString(value);
-//            jedisCluster.setex(tgtKey, expireTime.intValue(), tgtValue);
-//            result = true;
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//        return result;
-//    }
 
     //------------------------------------------------ remove ---------------------------------------------------------
 
@@ -122,7 +103,7 @@ public class RedisCacheUtil {
         boolean result = false;
         try {
             String tgtKey = this.getRedisNamePrefix() + key;
-            this.redisTemplate.delete(tgtKey);
+            redisTemplate.delete(tgtKey);
             result = true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -157,7 +138,7 @@ public class RedisCacheUtil {
         boolean result = false;
         try {
             if (tgtKeys.size() > 0) {
-                this.redisTemplate.delete(tgtKeys);
+                redisTemplate.delete(tgtKeys);
             }
             result = true;
         } catch (Exception e) {
@@ -178,7 +159,7 @@ public class RedisCacheUtil {
         boolean result = false;
         try {
             String tgtKey = this.getRedisNamePrefix() + key;
-            result = this.redisTemplate.hasKey(tgtKey);
+            result = redisTemplate.hasKey(tgtKey);
         } catch (Exception e) {
             e.printStackTrace();
         }

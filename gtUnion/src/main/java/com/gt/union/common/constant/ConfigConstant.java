@@ -1,25 +1,17 @@
 package com.gt.union.common.constant;
 
-import com.gt.union.common.util.PropertiesUtil;
-
 /**
- * 系统配置全局常量
+ * 系统配置全局常量类
  *
- * @author Mr.Yu
+ * @author linweicong
+ * @version 2017-11-22 17:45:00
  */
 public interface ConfigConstant {
 
-    /*****佣金平台管理员session key****/
-    String VERIFIER = "verifier";
     /**
      * 最大加入联盟数
      */
     int MAX_UNION_APPLY = 3;
-
-    /**
-     * 最大优惠项目数
-     */
-    int MAX_PREFERENIAL_COUNT = 5;
 
     /**
      * 短信model
@@ -37,53 +29,9 @@ public interface ConfigConstant {
     int ENTERPRISE_PAY_MODEL = 13;
 
     /**
-     * 省级
+     * 公众号二维码链接model
      */
-    String PROVIENCE_LEVEL = "2";
-
-    /**
-     * 市级
-     */
-    String CITY_LEVEL = "3";
-
-    /**
-     * 区级
-     */
-    String DISTRICT_LEVEL = "4";
-
-    /**
-     * 创建联盟支付内部订单前缀
-     */
-    String CREATE_UNION_PAY_ORDER_CODE = "000060000";
-
-
-    /**
-     * 扫码支付订单状态 001:等待用户扫码
-     */
-    String USER_ORDER_STATUS_001 = "001";
-
-    /**
-     * 扫码支付订单状态 002:确认扫码
-     */
-    String USER_ORDER_STATUS_002 = "002";
-
-
-    /**
-     * 扫码支付订单状态 003:完成订单
-     */
-    String USER_ORDER_STATUS_003 = "003";
-
-
-    /**
-     * 扫码支付订单状态 004:订单超时
-     */
-    String USER_ORDER_STATUS_004 = "004";
-
-
-    /**
-     * 扫码支付订单状态 005:订单支付失败
-     */
-    String USER_ORDER_STATUS_005 = "005";
+    int WXPUBLIC_QRCODE_MODEL = 10;
 
     /**
      * 开发者联系电话
@@ -92,89 +40,39 @@ public interface ConfigConstant {
 //	String DEVELOPER_PHONE = "13923639694";
 
     /**
-     * wxmp项目的密钥
+     * 2：车小算
+     * 联盟erp项目类型
      */
-    String WXMP_SIGN_KEY = PropertiesUtil.getWxmpSignKey();
+    Integer[] UNION_USER_ERP_TYPE = {2};
 
     /**
-     * wxmp公司名称
+     * 支付模块：联盟许可
      */
-    String WXMP_COMPANY = PropertiesUtil.getWxmpCompany();
+    String PAY_MODEL_PERMIT = "XK";
 
     /**
-     * wxmp根路径
+     * 支付模块：商机佣金
      */
-    String WXMP_ROOT_URL = PropertiesUtil.getWxmpUrl();
+    String PAY_MODEL_OPPORTUNITY = "SJ";
 
     /**
-     * wxmp请求密钥
+     * 支付模块：消费核销
      */
-    String WXMP_SIGNKEY = PropertiesUtil.getWxmpSignKey();
+    String PAY_MODEL_CONSUME = "XF";
 
     /**
-     * wxmp多粉商家id  正式：2274
+     * 支付模块：联盟卡
      */
-    Integer WXMP_DUOFEN_BUSID = PropertiesUtil.getDuofenBusId();
+    String PAY_MODEL_CARD = "CA";
 
     /**
-     * 联盟根路径
+     * 支付模块：佣金提现
      */
-    String UNION_ROOT_URL = PropertiesUtil.getUnionUrl();
+    String PAY_MODEL_WITHDRAWAL = "TX";
 
     /**
-     * 联盟接口秘钥
+     * 是否启用模拟数据(0：否 1：是)
      */
-    String UNION_SIGNKEY = PropertiesUtil.getUnionSignKey();
-
-    /**
-     * 联盟卡手机端路径
-     */
-    String UNION_PHONE_CARD_ROOT_URL = UNION_ROOT_URL + "/cardPhone/#/";
-
-    /**
-     * 佣金平台手机端路径
-     */
-    String UNION_PHONE_BROKERAGE_ROOT_URL = UNION_ROOT_URL + "/brokeragePhone/#/";
-
-    /**
-     * 联盟加密秘钥
-     */
-    String UNION_ENCRYPTKEY = PropertiesUtil.getEncryptKey();
-
-    /**
-     * redis key前缀
-     */
-    String UNION_REDIS_NAME_PREFIX = PropertiesUtil.redisNamePrefix();
-
-    /**
-     * 会员请求密钥
-     */
-    String MEMBER_SIGNKEY = PropertiesUtil.getMemberSignKey();
-
-    /**
-     * 会员请求路径
-     */
-    String MEMBER_ROOT_URL = PropertiesUtil.getMemberUrl();
-
-    /**
-     * socket url
-     */
-    String SOCKET_URL = PropertiesUtil.getSocketUrl();
-
-    /**
-     * socket key
-     */
-    String SOCKET_KEY = PropertiesUtil.getSocketKey();
-
-    /**
-     * profiles
-     */
-    String PROFILES = PropertiesUtil.getProfiles();
-
-    /**
-     * 公众号二维码链接model
-     */
-    int WXPUBLIC_QRCODE_MODEL = 10;
-
+    int IS_MOCK = 0;
 }
 

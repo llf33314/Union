@@ -1,6 +1,6 @@
 <template>
   <div id="recommended">
-    <Breadcrumb :header-name="'推荐入盟'"></Breadcrumb>
+    <Breadcrumb :header-name="['推荐入盟']"></Breadcrumb>
     <div class="tabs">
       <h4 class="union_set">推荐盟员加入联盟</h4>
       <el-form :label-position="labelPosition" label-width="100px" :model="form" :rules="rules" ref="form">
@@ -81,13 +81,11 @@ export default {
         reason: [{ required: true, message: '推荐理由不能为空，请重新输入', trigger: 'blur' }]
       },
       unionNoticeMaxlength: 40,
-      checkList: ['busUserName']
+      checkList: ['busUserName'],
+      datas: []
     };
   },
   computed: {
-    unionMemberId() {
-      return this.$store.state.unionMemberId;
-    },
     unionId() {
       return this.$store.state.unionId;
     },
@@ -97,26 +95,32 @@ export default {
   },
   mounted: function() {
     // 获取必填字段
-    $http.get(`/unionMainDict/${this.unionId}`).then(res => {
-      if (res.data.data) {
-        res.data.data.forEach((v, i) => {
-          if (this.checkList.indexOf(v.itemKey) === -1) {
-            this.checkList.push(v.itemKey);
+    $http
+      .get(`/unionMain/${this.unionId}`)
+      .then(res => {
+        if (res.data.data) {
+          let checkList_ = res.data.data.itemList;
+          checkList_.forEach((v, i) => {
+            if (this.checkList.indexOf(v.itemKey) === -1) {
+              this.checkList.push(v.itemKey);
+            }
+          });
+          for (let key in this.rules) {
+            if (this.checkList.indexOf(key) === -1) {
+              this.rules[key] = [];
+            }
           }
-        });
-      }
-      for (let key in this.rules) {
-        if (this.checkList.indexOf(key) === -1) {
-          this.rules[key] = [];
         }
-      }
-    });
+      })
+      .catch(err => {
+        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+      });
   },
   methods: {
     onSubmit(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          let url = `unionMemberJoin/memberId/${this.unionMemberId}`;
+          let url = `/unionMemberJoin/unionId/${this.unionId}/type/2`;
           // 处理数据
           let data = {};
           data = this.form;
