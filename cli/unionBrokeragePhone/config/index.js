@@ -4,8 +4,8 @@ var path = require('path')
 module.exports = {
   build: {
     env: require('./prod.env'),
-    index: path.resolve(__dirname, '../../../gtUnion/src/main/webapp/h5Brokerage/index.html'),
-    assetsRoot: path.resolve(__dirname, '../../../gtUnion/src/main/webapp/h5Brokerage/'),
+    index: path.resolve(__dirname, '../../../gtUnion/src/main/webapp/brokeragePhone/index.html'),
+    assetsRoot: path.resolve(__dirname, '../../../gtUnion/src/main/webapp/brokeragePhone/'),
     assetsSubDirectory: 'static',
     assetsPublicPath: './',
     productionSourceMap: true,
