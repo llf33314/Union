@@ -8,5 +8,12 @@ import com.gt.union.union.main.vo.UnionPayVO;
  **/
 public interface IUnionCardApplyService {
 
+	/**
+	 * 办理联盟卡
+	 * @param orderNo		订单号
+	 * @param payMoneySum	支付金额
+	 * @param busId			商家id
+	 * @return
+	 */
 	UnionPayVO unionCardApply(String orderNo, Double payMoneySum, Integer busId);
 }
