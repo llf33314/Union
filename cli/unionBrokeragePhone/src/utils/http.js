@@ -93,6 +93,8 @@ export default {
     ).then(
       res => {
         if (res.data.redirectUrl && res.data.redirectUrl !== '') {
+          alert(111)
+          consolg.log(res.data.redirectUrl);
           window.location = res.data.redirectUrl;
         }
         return res;
@@ -146,6 +148,8 @@ export default {
     ).then(
       res => {
         if (res.data.redirectUrl && res.data.redirectUrl !== '') {
+          alert(222)
+          console.log(res.data.redirectUrl);
           window.location = res.data.redirectUrl;
         }
         return res;
