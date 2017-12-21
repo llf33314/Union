@@ -1,7 +1,12 @@
 package com.gt.union.api.controller;
 
+import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.TCommonStaff;
+import com.gt.api.util.SessionUtils;
 import com.gt.union.api.client.staff.ITCommonStaffService;
+import com.gt.union.common.constant.BusUserConstant;
+import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -32,7 +37,11 @@ public class StaffApiController {
 	public GtJsonResult<List<TCommonStaff>> listStaffByShopId(HttpServletRequest request,
 					 @ApiParam(value = "门店id", name = "shopId", required = true)
 					 @PathVariable(value = "shopId") Integer shopId) throws Exception {
-		List<TCommonStaff> list = commonStaffService.listTCommonStaffByShopId(shopId);
+		BusUser busUser = SessionUtils.getLoginUser(request);
+		if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+			throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
+		}
+		List<TCommonStaff> list = commonStaffService.listTCommonStaffByShopId(shopId, busUser.getId());
 		return GtJsonResult.instanceSuccessMsg(list);
 	}
 
