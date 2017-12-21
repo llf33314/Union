@@ -12,7 +12,7 @@ import toLogin from '@/components/phone/toLogin'
 Vue.use(Router);
 
 export default new Router({
-  mode: 'history',
+  // mode: 'history',
   routes: [
     //默认路由
     {

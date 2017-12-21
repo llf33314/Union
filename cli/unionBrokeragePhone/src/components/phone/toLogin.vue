@@ -168,7 +168,7 @@
         var that_=this;
         //登录页面
           var options = {
-            url: "http://union.duofee.com/h5Brokerage/loginSign",
+            url: "/h5Brokerage/loginSign",
             data: {username: uname, userpwd: pwd},
             dataType: "json",
             type: "post",

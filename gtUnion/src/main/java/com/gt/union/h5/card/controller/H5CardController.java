@@ -24,6 +24,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.List;
 
 /**
  * @author hongjiye
@@ -68,7 +69,7 @@ public class H5CardController {
 					 @ApiParam(value = "商家id", name = "busId", required = true)
 					 @PathVariable("busId") Integer busId,
 					 @ApiParam(value = "活动卡id，如果没有，则是折扣卡", name = "activityId", required = false)
-					 @RequestParam(name = "activityId") Integer activityId,
+					 @RequestParam(name = "activityId", required = false) Integer activityId,
 					 @ApiParam(value = "联盟id", name = "unionId", required = true)
 					 @PathVariable("unionId") Integer unionId) throws Exception {
 		Member member = SessionUtils.getLoginMember(request, busId);
@@ -89,7 +90,7 @@ public class H5CardController {
 							 @ApiParam(name = "url", value = "回调的url", required = true)
 							 @RequestParam(value = "url") String url, Page page) throws Exception {
 		Member member = SessionUtils.getLoginMember(request, busId);
-		url = url + "?busId=" + busId;
+		url = url + "/" + busId;
 		if(CommonUtil.isEmpty(member)){
 			return memberService.authorizeMember(request, busId, true, ConfigConstant.CARD_PHONE_BASE_URL + url, ConfigConstant.CARD_PHONE_BASE_URL + "toUnionLogin").toString();
 		}
@@ -99,6 +100,23 @@ public class H5CardController {
 		Page<MyUnionCardDetailVO> result = (Page<MyUnionCardDetailVO>) page;
 		result = PageUtil.setRecord(result, myCardDetailVO.getCardList());
 		return GtJsonResult.instanceSuccessMsg(result).toString();
+	}
+
+	@ApiOperation(value = "联盟卡-消费记录", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/myCardConsume/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String myCardConsume(HttpServletRequest request,
+				   @ApiParam(value = "商家id", name = "busId", required = true)
+				   @PathVariable("busId") Integer busId,
+				   @ApiParam(name = "url", value = "回调的url", required = true)
+				   @RequestParam(value = "url") String url, Page page) throws Exception {
+		Member member = SessionUtils.getLoginMember(request, busId);
+		url = url + "/" + busId;
+		if(CommonUtil.isEmpty(member)){
+			return memberService.authorizeMember(request, busId, true, ConfigConstant.CARD_PHONE_BASE_URL + url, ConfigConstant.CARD_PHONE_BASE_URL + "toUnionLogin").toString();
+		}
+		List<MyCardConsumeVO> list = h5CardService.listConsumeByPhone(member.getPhone(), page);
+		page.setRecords(list);
+		return GtJsonResult.instanceSuccessMsg(page).toString();
 	}
 
 
@@ -143,7 +161,7 @@ public class H5CardController {
 			,@ApiParam(name = "url", value = "回调的url", required = true) @RequestParam(value = "url") String url
 			,@ApiParam(name = "code", value = "验证码" ,required = true) @RequestParam(value = "code") String code) throws Exception{
 		Member member = SessionUtils.getLoginMember(request,busId);
-		url = url + "?busId=" + busId;
+		url = url + "/" + busId;
 		if(CommonUtil.isEmpty(member)){
 			return memberService.authorizeMember(request, busId, true, ConfigConstant.CARD_PHONE_BASE_URL + url, ConfigConstant.CARD_PHONE_BASE_URL + "toUnionLogin").toString();
 		}
@@ -152,18 +170,18 @@ public class H5CardController {
 	}
 
 	@ApiOperation(value = "办理联盟卡", notes = "办理联盟卡", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/card/{busId}/{unionId}/transaction", produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+	@RequestMapping(value = "/transaction/{busId}/{unionId}", produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
 	public String cardTransaction(HttpServletRequest request, HttpServletResponse response
 			,@ApiParam(name="busId", value = "商家id", required = true) @PathVariable("busId") Integer busId
-			,@ApiParam(name="activityId", value = "活动卡id，如果没有，则是折扣卡", required = false) @RequestParam("activityId") Integer activityId
+			,@ApiParam(name="activityId", value = "活动卡id，如果没有，则是折扣卡", required = false) @RequestParam(value = "activityId", required = false) Integer activityId
 			,@ApiParam(name = "url", value = "回调的url", required = true) @RequestParam(value = "url") String url
 			,@ApiParam(value = "联盟id", name = "unionId", required = true) @PathVariable("unionId") Integer unionId) throws Exception{
 		Member member = SessionUtils.getLoginMember(request,busId);
-		url = url + "?busId=" + busId;
+		url = url + "/" + busId;
 		if(CommonUtil.isEmpty(member)){
 			return memberService.authorizeMember(request, busId, true, ConfigConstant.CARD_PHONE_BASE_URL + url, ConfigConstant.CARD_PHONE_BASE_URL + "toUnionLogin").toString();
 		}
-		return h5CardService.cardTransaction(member, busId, activityId, unionId);
+		return h5CardService.cardTransaction(member.getPhone(), busId, activityId, unionId);
 	}
 
 

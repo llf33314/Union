@@ -49,7 +49,8 @@
               <span  @click="telPhone(item.directorPhone)">{{item.directorPhone}}</span>
             </div>
             <p class="messsge1">
-                <img src="../../assets/images/SJunionCar04.png" @click="boxWarp3(index1, index2)" v-if="item.enterpriseAddress">
+                <img src="../../assets/images/SJunionCar04.png" @click="boxWarp3(index1, index2)"
+                     v-if="item.enterpriseAddress">
                 <span @click="boxWarp3(index1, index2)" >
                   {{item.enterpriseAddress}}
                 </span>

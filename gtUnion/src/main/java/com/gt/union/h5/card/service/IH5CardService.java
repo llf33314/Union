@@ -1,9 +1,13 @@
 package com.gt.union.h5.card.service;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.Member;
 import com.gt.union.h5.card.vo.CardDetailVO;
 import com.gt.union.h5.card.vo.IndexVO;
+import com.gt.union.h5.card.vo.MyCardConsumeVO;
 import com.gt.union.h5.card.vo.MyCardDetailVO;
+
+import java.util.List;
 
 /**
  * @author hongjiye
@@ -46,12 +50,20 @@ public interface IH5CardService {
 	void bindCardPhone(Member member, Integer busId, String phone, String code) throws Exception;
 
 	/**
-	 *
-	 * @param member
-	 * @param busId
-	 * @param activityId
-	 * @param unionId
+	 * 办理联盟卡
+	 * @param phone		手机号
+	 * @param busId		商家id
+	 * @param activityId	活动id
+	 * @param unionId		联盟id
 	 * @return
 	 */
-	String cardTransaction(Member member, Integer busId, Integer activityId, Integer unionId) throws Exception;
+	String cardTransaction(String phone, Integer busId, Integer activityId, Integer unionId) throws Exception;
+
+	/**
+	 * 获取联盟卡消费记录
+	 * @param phone		手机号
+	 * @param page		分页参数
+	 * @return
+	 */
+	List<MyCardConsumeVO> listConsumeByPhone(String phone, Page page) throws Exception;
 }

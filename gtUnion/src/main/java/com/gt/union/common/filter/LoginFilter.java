@@ -8,6 +8,7 @@ import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.PropertiesUtil;
+import com.gt.union.common.util.StringUtil;
 import com.gt.union.common.util.UnionSessionUtil;
 import com.gt.union.finance.verifier.entity.UnionVerifier;
 import com.gt.union.h5.brokerage.vo.H5BrokerageUser;
@@ -37,7 +38,6 @@ public class LoginFilter implements Filter {
      * 不需要过滤的文件类型
      */
     private final List<String> passSuffixList = new ArrayList<>();
-
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
@@ -70,7 +70,7 @@ public class LoginFilter implements Filter {
         res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, api_key, Authorization");
         //(2)判断是否是不需要权限的请求地址
         String url = req.getRequestURI();
-        if (isPassSuffixRequest(url) || isPassUrl(url) || isMobileRequest(url) || isApiRequest(url) || isSwaggerUIRequest(url)) {
+        if (isPassSuffixRequest(url) || isPassUrl(url) || isMobileRequest(url) || isApiRequest(url) || isSwaggerUIRequest(url) || isFrontRequest(url)) {
             chain.doFilter(request, response);
             return;
         }
@@ -91,7 +91,7 @@ public class LoginFilter implements Filter {
                 if (busUser == null) {
                     response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
                 } else if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                    response.getWriter().write(GtJsonResult.instanceErrorMsg("请使用主账号登录", PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
+                    response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
                 } else {
                     h5BrokerageUser = new H5BrokerageUser();
                     h5BrokerageUser.setBusUser(busUser);
@@ -122,6 +122,16 @@ public class LoginFilter implements Filter {
                 chain.doFilter(request, response);
             }
         }
+    }
+
+    /**
+     * 是否前端资源请求
+     *
+     * @param url
+     * @return
+     */
+    private boolean isFrontRequest(String url) {
+        return StringUtil.isNotEmpty(url) && (url.contains("brokeragePhone") || url.contains("cardPhone"));
     }
 
     /**

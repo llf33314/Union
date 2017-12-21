@@ -22,9 +22,6 @@ public class MyUnionCardDetailVO {
 	@ApiModelProperty(value = "联盟活动卡id")
 	private Integer activityId;
 
-	@ApiModelProperty(value = "联盟折扣")
-	private Double discount;
-
 	@ApiModelProperty(value = "联盟活动卡颜色")
 	private String color;
 
@@ -64,14 +61,6 @@ public class MyUnionCardDetailVO {
 
 	public void setActivityId(Integer activityId) {
 		this.activityId = activityId;
-	}
-
-	public Double getDiscount() {
-		return discount;
-	}
-
-	public void setDiscount(Double discount) {
-		this.discount = discount;
 	}
 
 	public String getColor() {

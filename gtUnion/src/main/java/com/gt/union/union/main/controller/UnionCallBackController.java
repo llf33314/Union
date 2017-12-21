@@ -45,7 +45,7 @@ public class UnionCallBackController {
     @RequestMapping(value = "/79B4DE7C/{model}", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String updateCallbackByPermitId(
             @PathVariable("model") String model,
-            @RequestParam(value = "socketKey") String socketKey,
+            @RequestParam(value = "socketKey", required = false) String socketKey,
             @RequestBody Map<String, Object> param) throws Exception {
         // debug
         logger.debug(JSONObject.toJSONString(param));

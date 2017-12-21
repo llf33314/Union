@@ -422,7 +422,9 @@ public class UnionBrokeragePayServiceImpl extends ServiceImpl<UnionBrokeragePayM
             }
 
             // socket通知
-            socketService.socketPaySendMessage(socketKey, isSuccess, null);
+            if(StringUtil.isNotEmpty(socketKey)){
+                socketService.socketPaySendMessage(socketKey, isSuccess, null);
+            }
             result.put("code", 0);
             result.put("msg", "成功");
             return JSONObject.toJSONString(result);

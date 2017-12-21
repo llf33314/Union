@@ -126,34 +126,26 @@ public class UnionVerifierServiceImpl extends ServiceImpl<UnionVerifierMapper, U
         saveVerifier.setPhone(phone);
         // （2）门店信息
         Integer shopId = verifier.getShopId();
-        String shopName = verifier.getShopName();
-        if (shopId == null || shopName == null) {
+        if (shopId == null) {
             throw new BusinessException("门店信息不能为空");
         }
         WsWxShopInfoExtend shop = shopService.getById(shopId);
         if (shop == null) {
             throw new BusinessException("找不到门店信息");
         }
-        if (!shopName.equals(shop.getBusinessName())) {
-            throw new BusinessException("门店信息已更新，请刷新后重试");
-        }
         saveVerifier.setShopId(shopId);
-        saveVerifier.setShopName(shopName);
+        saveVerifier.setShopName(shop.getBusinessName());
         // （3）员工信息
         Integer employeeId = verifier.getEmployeeId();
-        String employeeName = verifier.getEmployeeName();
-        if (employeeId == null || employeeName == null) {
+        if (employeeId == null) {
             throw new BusinessException("员工信息不能为空");
         }
         TCommonStaff employee = itCommonStaffService.getTCommonStaffById(employeeId);
         if (employee == null) {
             throw new BusinessException("找不到员工信息");
         }
-        if (!employeeName.equals(employee.getName())) {
-            throw new BusinessException("员工信息已更新，请刷新后重试");
-        }
         saveVerifier.setEmployeeId(employeeId);
-        saveVerifier.setEmployeeName(employeeName);
+        saveVerifier.setEmployeeName(employee.getName());
 
         save(saveVerifier);
     }
