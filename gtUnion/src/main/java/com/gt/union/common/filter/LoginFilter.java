@@ -8,6 +8,7 @@ import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.PropertiesUtil;
+import com.gt.union.common.util.StringUtil;
 import com.gt.union.common.util.UnionSessionUtil;
 import com.gt.union.finance.verifier.entity.UnionVerifier;
 import com.gt.union.h5.brokerage.vo.H5BrokerageUser;
@@ -38,12 +39,14 @@ public class LoginFilter implements Filter {
      */
     private final List<String> passSuffixList = new ArrayList<>();
 
-
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
 
-        passUrlMap.put("/h5Brokerage/login/userPassword", "/h5Brokerage/login/userPassword");
+        passUrlMap.put("/h5Brokerage/loginSign", "/h5Brokerage/loginSign");
         passUrlMap.put("/h5Brokerage/login/phone", "/h5Brokerage/login/phone");
+        passUrlMap.put("/api/sms/1", "/api/sms/1");
+        passUrlMap.put("/api/sms/3", "/api/sms/3");
+        passUrlMap.put("/api/sms/4", "/api/sms/4");
         passSuffixList.add(".js");
         passSuffixList.add(".css");
         passSuffixList.add(".gif");
@@ -67,7 +70,7 @@ public class LoginFilter implements Filter {
         res.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept, api_key, Authorization");
         //(2)判断是否是不需要权限的请求地址
         String url = req.getRequestURI();
-        if (isPassSuffixRequest(url) || isPassUrl(url) || isMobileRequest(url) || isApiRequest(url) || isSwaggerUIRequest(url)) {
+        if (isPassSuffixRequest(url) || isPassUrl(url) || isMobileRequest(url) || isApiRequest(url) || isSwaggerUIRequest(url) || isFrontRequest(url)) {
             chain.doFilter(request, response);
             return;
         }
@@ -76,19 +79,19 @@ public class LoginFilter implements Filter {
         if (url.indexOf("h5Brokerage") > -1) {
             // 开发调试
             BusUser busUser = SessionUtils.getUnionBus(req);
-            if (busUser == null && "dev".equals(PropertiesUtil.getProfiles())) {
-                justForDev(req);
-                justForH5BrokerageDev(req);
-                chain.doFilter(request, response);
-                return;
-            }
+//            if (busUser == null && "dev".equals(PropertiesUtil.getProfiles())) {
+//                justForDev(req);
+//                justForH5BrokerageDev(req);
+//                chain.doFilter(request, response);
+//                return;
+//            }
             // 发布
             H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(req);
             if (h5BrokerageUser == null) {
                 if (busUser == null) {
-                    response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/h5Brokerage/#/" + "toLogin").toString());
+                    response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
                 } else if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                    response.getWriter().write(GtJsonResult.instanceErrorMsg("请使用主账号登录", PropertiesUtil.getUnionUrl() + "/h5Brokerage/#/" + "toLogin").toString());
+                    response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
                 } else {
                     h5BrokerageUser = new H5BrokerageUser();
                     h5BrokerageUser.setBusUser(busUser);
@@ -108,17 +111,27 @@ public class LoginFilter implements Filter {
         } else {
             // 后台
             BusUser busUser = SessionUtils.getLoginUser(req);
-            if (busUser == null && "dev".equals(PropertiesUtil.getProfiles())) {
-                justForDev(req);
-                chain.doFilter(request, response);
-                return;
-            }
+//            if (busUser == null && "dev".equals(PropertiesUtil.getProfiles())) {
+//                justForDev(req);
+//                chain.doFilter(request, response);
+//                return;
+//            }
             if (busUser == null) {
                 response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getWxmpUrl() + "/user/tologin.do").toString());
             } else {
                 chain.doFilter(request, response);
             }
         }
+    }
+
+    /**
+     * 是否前端资源请求
+     *
+     * @param url
+     * @return
+     */
+    private boolean isFrontRequest(String url) {
+        return StringUtil.isNotEmpty(url) && (url.contains("brokeragePhone") || url.contains("cardPhone"));
     }
 
     /**

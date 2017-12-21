@@ -62,6 +62,41 @@ public class UnionConsume extends Model<UnionConsume> {
     private Double consumeMoney;
 
     /**
+     * 折扣
+     */
+    @ApiModelProperty(value = "折扣抵扣金额")
+    @TableField("discount")
+    private Double discount;
+
+    /**
+     * 折扣抵扣金额
+     */
+    @ApiModelProperty(value = "折扣抵扣金额")
+    @TableField("discount_money")
+    private Double discountMoney;
+
+    /**
+     * 使用积分额
+     */
+    @ApiModelProperty(value = "使用积分额")
+    @TableField("use_integral")
+    private Double useIntegral;
+
+    /**
+     * 积分抵扣金额
+     */
+    @ApiModelProperty(value = "积分抵扣金额")
+    @TableField("integral_money")
+    private Double integralMoney;
+
+    /**
+     * 赠送积分额
+     */
+    @ApiModelProperty(value = "赠送积分额")
+    @TableField("give_integral")
+    private Double giveIntegral;
+
+    /**
      * 支付金额
      */
     @ApiModelProperty(value = "支付金额")
@@ -81,20 +116,6 @@ public class UnionConsume extends Model<UnionConsume> {
     @ApiModelProperty(value = "支付状态(1:未支付 2:已支付 3:已退款)")
     @TableField("pay_status")
     private Integer payStatus;
-
-    /**
-     * 使用积分额
-     */
-    @ApiModelProperty(value = "使用积分额")
-    @TableField("use_integral")
-    private Double useIntegral;
-
-    /**
-     * 赠送积分额
-     */
-    @ApiModelProperty(value = "赠送积分额")
-    @TableField("give_integral")
-    private Double giveIntegral;
 
     /**
      * 订单号
@@ -180,7 +201,6 @@ public class UnionConsume extends Model<UnionConsume> {
     @TableField("fan_id")
     private Integer fanId;
 
-
     public Integer getId() {
         return id;
     }
@@ -221,6 +241,46 @@ public class UnionConsume extends Model<UnionConsume> {
         this.consumeMoney = consumeMoney;
     }
 
+    public Double getDiscount() {
+        return discount;
+    }
+
+    public void setDiscount(Double discount) {
+        this.discount = discount;
+    }
+
+    public Double getDiscountMoney() {
+        return discountMoney;
+    }
+
+    public void setDiscountMoney(Double discountMoney) {
+        this.discountMoney = discountMoney;
+    }
+
+    public Double getUseIntegral() {
+        return useIntegral;
+    }
+
+    public void setUseIntegral(Double useIntegral) {
+        this.useIntegral = useIntegral;
+    }
+
+    public Double getIntegralMoney() {
+        return integralMoney;
+    }
+
+    public void setIntegralMoney(Double integralMoney) {
+        this.integralMoney = integralMoney;
+    }
+
+    public Double getGiveIntegral() {
+        return giveIntegral;
+    }
+
+    public void setGiveIntegral(Double giveIntegral) {
+        this.giveIntegral = giveIntegral;
+    }
+
     public Double getPayMoney() {
         return payMoney;
     }
@@ -243,22 +303,6 @@ public class UnionConsume extends Model<UnionConsume> {
 
     public void setPayStatus(Integer payStatus) {
         this.payStatus = payStatus;
-    }
-
-    public Double getUseIntegral() {
-        return useIntegral;
-    }
-
-    public void setUseIntegral(Double useIntegral) {
-        this.useIntegral = useIntegral;
-    }
-
-    public Double getGiveIntegral() {
-        return giveIntegral;
-    }
-
-    public void setGiveIntegral(Double giveIntegral) {
-        this.giveIntegral = giveIntegral;
     }
 
     public String getSysOrderNo() {

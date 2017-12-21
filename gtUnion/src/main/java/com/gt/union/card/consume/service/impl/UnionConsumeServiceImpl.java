@@ -252,16 +252,17 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
 
         UnionConsume voConsume = vo.getConsume();
         if (voConsume == null) {
-            throw new BusinessException("支付金额不能为空");
+            throw new BusinessException("支付信息不能为空");
         }
         Double consumeMoney = voConsume.getConsumeMoney();
         if (consumeMoney == null || consumeMoney <= 0) {
             throw new BusinessException("消费金额不能为空，且必须大于0");
         }
-        BigDecimal discountMoney = BigDecimal.ZERO;
-        if (member.getDiscount() != null) {
-            discountMoney = BigDecimalUtil.multiply(consumeMoney, member.getDiscount());
-        }
+        
+        Double discount = member.getDiscount() != null ? member.getDiscount() : 0.0;
+        BigDecimal discountMoney = BigDecimalUtil.multiply(consumeMoney, discount);
+        saveConsume.setDiscount(discount);
+        saveConsume.setDiscountMoney(discountMoney.doubleValue());
 
         BigDecimal payMoney = BigDecimalUtil.subtract(consumeMoney, discountMoney);
         Integer isUserIntegral = vo.getIsUserIntegral();
@@ -271,19 +272,20 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
             if (integralExchangeRatio == null) {
                 throw new BusinessException("未设置积分兑换率");
             }
-            BigDecimal exchangeMoney = BigDecimalUtil.multiply(payMoney, integralExchangeRatio);
-            payMoney = BigDecimalUtil.subtract(payMoney, exchangeMoney);
+            BigDecimal integralMoney = BigDecimalUtil.multiply(payMoney, integralExchangeRatio);
+            payMoney = BigDecimalUtil.subtract(payMoney, integralMoney);
 
             if (integral == null) {
                 throw new BusinessException("不存在积分信息，无法使用积分");
             }
             // 消费多少积分可兑换1元
             Double useIntegralPerMoney = dictService.getExchangeIntegral();
-            BigDecimal useIntegral = BigDecimalUtil.multiply(exchangeMoney, useIntegralPerMoney);
+            BigDecimal useIntegral = BigDecimalUtil.multiply(integralMoney, useIntegralPerMoney);
             if (useIntegral.doubleValue() > integral.getIntegral()) {
                 throw new BusinessException("抵扣积分数大于可使用积分数");
             }
             saveConsume.setUseIntegral(useIntegral.doubleValue());
+            saveConsume.setIntegralMoney(integralMoney.doubleValue());
 
             Double giveIntegralPerMoney = dictService.getGiveIntegral();
             BigDecimal giveIntegral = BigDecimalUtil.multiply(payMoney, giveIntegralPerMoney);

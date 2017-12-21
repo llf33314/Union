@@ -83,7 +83,7 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
 
     @Override
     public void updateContentByBusIdAndUnionId(Integer busId, Integer unionId, String content) throws Exception {
-        if (busId == null || unionId == null || content == null) {
+        if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
@@ -99,8 +99,8 @@ public class UnionMainNoticeServiceImpl extends ServiceImpl<UnionMainNoticeMappe
             throw new BusinessException(CommonConstant.UNION_NEED_OWNER);
         }
 
-        // （2）公告内容不能为空，且字数不能超过50字
-        if (StringUtil.isEmpty(content) || StringUtil.getStringLength(content) > 50) {
+        // （2）公告内容字数不能超过50字
+        if (StringUtil.getStringLength(content) > 50) {
             throw new BusinessException("公告内容不能为空，且字数不能大于50");
         }
 

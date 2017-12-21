@@ -42,7 +42,7 @@ public class UnionVerifierController {
     @ApiOperation(value = "佣金平台-提现", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/h5Code", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public void h5Code(HttpServletResponse response) throws Exception {
-        String url = PropertiesUtil.getUnionUrl() + "/h5Brokerage/#/" + "toLogin";
+        String url = PropertiesUtil.getUnionUrl() + "/h5Brokerage/#/" + "index";
         Integer width = 250;
         Integer height = 250;
         QRcodeKit.buildQRcode(url, width, height, response);

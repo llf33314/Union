@@ -110,10 +110,11 @@ public interface IUnionCardService extends IService<UnionCard> {
      * @param unionId        联盟id
      * @param fanId          粉丝id
      * @param activityIdList 活动id列表
-     * @return UnionPayVO
+     * @param unionCardApplyService
+	 * @return UnionPayVO
      * @throws Exception 统一处理异常
      */
-    UnionPayVO saveApplyByBusIdAndUnionIdAndFanId(Integer busId, Integer unionId, Integer fanId, List<Integer> activityIdList) throws Exception;
+    UnionPayVO saveApplyByBusIdAndUnionIdAndFanId(Integer busId, Integer unionId, Integer fanId, List<Integer> activityIdList, IUnionCardApplyService unionCardApplyService) throws Exception;
 
     /**
      * 前台-办理联盟卡-校验手机验证码
