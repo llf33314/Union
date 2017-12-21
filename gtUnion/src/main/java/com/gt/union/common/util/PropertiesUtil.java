@@ -62,6 +62,8 @@ public class PropertiesUtil {
 
 	private static String carUrl;
 
+	private static String sucUrl;
+
 	/**
 	 * 获取资源访问地址
 	 * @return resourceUrl
@@ -253,12 +255,21 @@ public class PropertiesUtil {
 	public static String getJxcPwd() {
 		return jxcPwd;
 	}
+
 	/**
 	 * 联盟路径
 	 * @return
 	 */
 	public static String getUnionUrl() {
 		return unionUrl;
+	}
+
+	/**
+	 * 获取素材库路径
+	 * @return
+	 */
+	public static String getSucUrl() {
+		return sucUrl;
 	}
 
 	/**
@@ -392,5 +403,10 @@ public class PropertiesUtil {
 	@Value("${car.url}")
 	public void setCarUrl(String carUrl) {
 		PropertiesUtil.carUrl = carUrl;
+	}
+
+	@Value("${suc.url}")
+	public void setSucUrl(String sucUrl) {
+		PropertiesUtil.sucUrl = sucUrl;
 	}
 }

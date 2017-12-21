@@ -137,16 +137,21 @@ wx:
     busId: 33
     appid: wxde1072e8c20fcdd4
 
+#会员粉丝
 member:
   url: http://member.yifriend.net
   signkey: MV8MMFQUMU1HJ6F2GNH40ZFJJ7Q8LNVM
 
-
+#车小算
 car:
   url: http://cao.duofee.com
 
+#进销存
 jxc:
   url: https://jxc.deeptel.com.cn
   account: erp_7
   pwd: 123456
 
+#素材库
+suc:
+  url: https://suc.deeptel.com.cn
