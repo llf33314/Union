@@ -495,9 +495,15 @@ public class UnionCardActivityServiceImpl extends ServiceImpl<UnionCardActivityM
 
         // （4）事务处理
         removeById(activityId);
-        unionCardProjectService.removeBatchById(removeProjectIdtList);
-        unionCardProjectItemService.removeBatchById(removeProjectItemIdList);
-        unionCardProjectFlowService.removeBatchById(removeProjectFlowIdList);
+        if (ListUtil.isNotEmpty(removeProjectIdtList)) {
+            unionCardProjectService.removeBatchById(removeProjectIdtList);
+        }
+        if (ListUtil.isNotEmpty(removeProjectItemIdList)) {
+            unionCardProjectItemService.removeBatchById(removeProjectItemIdList);
+        }
+        if (ListUtil.isNotEmpty(removeProjectFlowIdList)) {
+            unionCardProjectFlowService.removeBatchById(removeProjectFlowIdList);
+        }
     }
 
     //***************************************** Domain Driven Design - update ******************************************

@@ -27,6 +27,9 @@ public class CardProjectVO {
 
     @ApiModelProperty(value = "活动")
     private UnionCardActivity activity;
+    
+    @ApiModelProperty(value = "活动状态")
+    private Integer activityStatus;
 
     @ApiModelProperty(value = "是否ERP(0:否 1:是)")
     private Integer isErp;
@@ -62,6 +65,14 @@ public class CardProjectVO {
 
     public void setActivity(UnionCardActivity activity) {
         this.activity = activity;
+    }
+
+    public Integer getActivityStatus() {
+        return activityStatus;
+    }
+
+    public void setActivityStatus(Integer activityStatus) {
+        this.activityStatus = activityStatus;
     }
 
     public Integer getIsErp() {

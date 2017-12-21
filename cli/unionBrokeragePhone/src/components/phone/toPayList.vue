@@ -12,13 +12,13 @@
         </p>
       </div>
       <div class="union_second payed passive">
-        <p>{{payMoney.toFixed(2)}}</p>
+        <p>{{payMoney | filtration}}</p>
         <span>已支付(元)</span>
       </div>
       <!--如果有 passive 类样式，就隐藏-->
       <div class="union_second  unpay clear">
         <div class="fl">
-          <p>{{totalMoney.toFixed(2)}}</p>
+          <p>{{totalMoney | filtration}}</p>
           <span>未支付(元)</span>
         </div>
         <div class="fr payment" @click="showModel3_">
@@ -27,7 +27,7 @@
         <div class="box-wrap3" style="display: none">
           <div class="mask" @click="hide3_"></div>
           <div class="box">
-            <p>将要支付对方￥{{totalMoney.toFixed(2)}}，是否确认?</p>
+            <p>将要支付对方￥{{totalMoney}}，是否确认?</p>
             <div class="fr" @click="send3_()">确认</div>
             <div style="border-left:none" @click="hide3_">取消</div>
           </div>
@@ -48,8 +48,8 @@
             <div class="clear fl">
               <div class="fl clear">
                 <div class='fl'>
-                  <p class="">{{item1.unionName}}</p>
-                  <span style="color: #7e7e7e">{{item1.time}}</span>
+                  <p class="">{{item1.union.name}}</p>
+                  <span style="color: #7e7e7e">{{item1.opportunity.createTime}}</span>
                 </div>
                 <div class='fl'>
                   <el-button class='goPay'  @click="showModel_(index)">去支付</el-button>
@@ -57,8 +57,8 @@
                 <div class="box-wrap2" style="display: none">
                   <div class="mask" @click="hide1_"></div>
                   <div class="box">
-                    <p>将要支付对方￥{{item1.money.toFixed(2)}}，是否确认?</p>
-                    <div class="fr" @click="send1_(item1.id)">确认</div>
+                    <p>将要支付对方￥{{item1.opportunity.brokerageMoney}}，是否确认?</p>
+                    <div class="fr" @click="send1_(item1.opportunity.id,item1.union.id)">确认</div>
                     <div style="border-left:none" @click="hide1_">取消</div>
                   </div>
                 </div>
@@ -66,13 +66,13 @@
             </div>
             <div class="clear fr">
               <div class="fr">
-                <span>{{item1.name}}</span>
-                <p class="" style="color: #90e88f;text-align: right;">-{{item1.money.toFixed(2)}}</p>
+                <span>{{item1.fromMember.enterpriseName}}</span>
+                <p class="" style="color: #90e88f;text-align: right;">-{{item1.opportunity.brokerageMoney | filtration}}</p>
               </div>
             </div>
           </li>
         </ul>
-        <div class="loadMore hasPayLoadMore1"  @click="loadMore1" style="color:#868686;">加载更多</div>
+        <div class="loadMore hasPayLoadMore1"  @click="loadMore1">加载更多</div>
         <div class="nothing noPayNothing" style="display: none;color:#868686;">没有更多数据</div>
       </div>
       <!--已经支付的页面-->
@@ -82,22 +82,22 @@
             <div class="clear fl">
               <div class='fl'>
                 <p>
-                  {{item.unionName}}
+                  {{item.union.name}}
                 </p>
                 <span style="color: #7e7e7e">
-                      {{item.time}}
+                      {{item.opportunity.createTime}}
                     </span>
               </div>
             </div>
             <div class="clearfr">
               <div class="fr">
-                <span>{{item.name}}</span>
-                <p class="" style="color: #90e88f;text-align: right;">{{item.money.toFixed(2)}}</p>
+                <span>{{item.fromMember.enterpriseName}}</span>
+                <p class="" style="color: #90e88f;text-align: right;">{{item.opportunity.brokerageMoney | filtration}}</p>
               </div>
             </div>
           </li>
         </ul>
-        <div class="loadMore hasPayLoadMore2" style="display: none;color:#868686;" @click="loadMore2">加载更多</div>
+        <div class="loadMore hasPayLoadMore2"  @click="loadMore2">加载更多</div>
         <div class="nothing hasPayNothing" style="display: none;color:#868686;">没有更多数据</div>
       </div>
     </div>
@@ -138,7 +138,8 @@
         //显示的列表条数
         size:6,
         //当前列表第一页
-        current:1,
+        current1:1,
+        current2:1,
         //当前的联盟id号
         unionId:'',
         //一键支付的总金额
@@ -163,6 +164,12 @@
         }
       });
     },
+    //过滤器
+    filters:{
+      filtration:function(value){
+        return value = value.toFixed(2);
+      }
+    },
     methods: {
       //点击按钮弹出框显示
       boxWarp(){
@@ -180,17 +187,15 @@
         $('.box-wrap2').hide();
       },
       //对应id的去支付
-      send1_(id){
+      send1_(oid,uid){
         $('.box-wrap2').hide();
 //        去支付的请求，并跳转到微信支付页面
-//        console.log(window.location.href.lastIndexOf('/'));
-        let did=id;
-        let url='toPayList';
-        $http.post(`/unionH5Brokerage/onePay/${did}?url=${url}`)
+//        let url='toPayList';
+        $http.put(`/h5Brokerage/pay/unpaid/toPay?unionId=${uid}&opportunityId=${oid}`)
           .then(res => {
-            if(res.data.data) {
+            if(res.data.success) {
               //跳转到微信支付的页面
-              location.href = res.data.data;
+              location.href = "/#/toPayList";
             }
           })
           .catch(err => {
@@ -213,39 +218,42 @@
       send3_(){
         let uid=this.unionId;
         //未支付金额的总和
-        $http.get(`/unionH5Brokerage/unPaySum?unionId=${uid}`)
+        $http.put(`/h5Brokerage/pay/unpaid/batchPay?unionId=${uid}`)
           .then(res => {
-            if(res.data.data) {
-              this.totalMoney12 = res.data.data;
+            if(res.data.success) {
+              location.href = "/#/toPayList";
             }
           })
           .catch(err => {
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
-        let url='toPayList';
-        $http.post(`/unionH5Brokerage/allPay?unionId=${uid}&fee=${this.totalMoney12}&url=${url}`)
-          .then(res => {
-            if(res.data.data) {
-              //清除页面列表的数据
-              location.href = res.data.data;
-              //页面刷新
-//            history.go(0)
-            }
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
-          });
+//        let url='toPayList';
+//        $http.post(`/unionH5Brokerage/allPay?unionId=${uid}&fee=${this.totalMoney12}&url=${url}`)
+//          .then(res => {
+//            if(res.data.data) {
+//              //清除页面列表的数据
+//              location.href = res.data.data;
+//              //页面刷新
+////            history.go(0)
+//            }
+//          })
+//          .catch(err => {
+//            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+//          });
         $('.box-wrap3').hide();
       },
 //    点击'全部'时候触发
       fullyLoaded(){
         //当前的页数
-        this.current=1;
         //清除联盟Id号码
         this.unionId='';
         document.querySelector('.unionName').innerHTML='全部';
+        let data={
+          size:this.size=6,
+          current:this.current1
+        }
         //未支付的页面的请求-------------1
-        $http.get(`/unionH5Brokerage/unPay/list?size=${this.size}&current=${this.current}`)
+        $http.get(`/h5Brokerage/pay/unPaid/page`,data)
           .then(res => {
             if(res.data.data) {
               if (res.data.data.records.length === 0) {
@@ -258,17 +266,16 @@
                 $('.hasPayLoadMore1').hide();
               }
               else {
-                console.log(res.data.data.records)
                 $('.noPayNothing').hide();
                 $('.hasPayLoadMore1').show();
               }
               //渲染数据
               this.unPayList = res.data.data.records;
               this.unPayList.forEach((v, i) => {
-                v.time = $todate.todate(new Date(v.time));
-              });
+              v.opportunity.createTime = $todate.todate(new Date(v.opportunity.createTime));
+            })
               //未支付金额的总和
-              $http.get(`/unionH5Brokerage/unPaySum`)
+              $http.get(`/h5Brokerage/pay/unPaid/sum`)
                 .then(res => {
                   if(res.data.data){
                     this.totalMoney = res.data.data;
@@ -283,10 +290,13 @@
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
         //已支付的页面的请求-------------2
-          $http.get(`/unionH5Brokerage/pay/list?size=${this.size}&current=${this.current}`)
+          let data1={
+            size:this.size,
+            current:this.current2=1
+          }
+          $http.get(`/h5Brokerage/pay/paid/page`,data1)
             .then(res => {
               if(res.data.data) {
-                console.log(res.data.data.records)
                 if (res.data.data.records.length === 0) {
                   this.payMoney = 0;
                   this.payList = [];
@@ -303,10 +313,10 @@
                 //渲染数据
                 this.payList = res.data.data.records;
                 this.payList.forEach((v, i) => {
-                  v.time = $todate.todate(new Date(v.time));
+                  v.opportunity.createTime = $todate.todate(new Date(v.opportunity.createTime));
                 })
                 //已支付的佣金总和
-                $http.get(`/unionH5Brokerage/paySum`)
+                $http.get(`/h5Brokerage/pay/paid/sum`)
                   .then(res => {
                     if(res.data.data) {
                       this.payMoney = res.data.data;
@@ -324,13 +334,16 @@
       },
 //      点击'对应联盟'时候触发;
       partLoaded(did,uname){
-        let Uid=did;
+        let data1={
+          size:this.size=6,
+          current:this.current1=1,
+          unionId:did
+        };
         //点击时把联盟id放到公共的地方
         this.unionId=did;
         document.querySelector('.unionName').innerHTML=uname;
-        console.log(Uid);
         //未支付的页面的请求-----------------1
-        $http.get(`/unionH5Brokerage/unPay/list?size=${this.size}&current=${this.current}&unionId=${Uid}`)
+        $http.get(`/h5Brokerage/pay/paid/page`,data1)
           .then(res => {
             if(res.data.data) {
               if (res.data.data.records.length === 0) {
@@ -349,10 +362,10 @@
               //渲染数据
               this.unPayList = res.data.data.records;
               this.unPayList.forEach((v, i) => {
-                v.time = $todate.todate(new Date(v.time));
+                v.opportunity.createTime = $todate.todate(new Date(v.opportunity.createTime));
               })
               //未支付金额的总和
-              $http.get(`/unionH5Brokerage/unPaySum?unionId=${Uid}`)
+              $http.get(`/h5Brokerage/pay/unPaid/sum`,{unionId:did})
                 .then(res => {
                   if(res.data.data) {
                     this.totalMoney = res.data.data;
@@ -367,7 +380,12 @@
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
         //已支付的页面的请求----------------2
-        $http.get(`/unionH5Brokerage/pay/list?size=${this.size}&current=${this.current}&unionId=${Uid}`)
+        let data2={
+          size:this.size=6,
+          current:this.current2=1,
+          unionId:did
+        };
+        $http.get(`/h5Brokerage/pay/paid/page`,data2)
           .then(res=>{
             if(res.data.data) {
               if (res.data.data.records.length === 0) {
@@ -386,9 +404,10 @@
               //渲染数据
               this.payList = res.data.data.records;
               this.payList.forEach((v, i) => {
-                v.time = $todate.todate(new Date(v.time));
+                v.opportunity.createTime = $todate.todate(new Date(v.opportunity.createTime));
               })
-              $http.get(`/unionH5Brokerage/paySum?unionId=${Uid}`)
+              //已支付的总金额
+              $http.get(`/h5Brokerage/pay/paid/sum`,{unionId:did})
                 .then(res => {
                   if(res.data.data) {
                     this.payMoney = res.data.data;
@@ -408,9 +427,13 @@
       },
       //未支付页面加载更多列表数据
       loadMore1(){
-        let uid=this.unionId;
-        console.log(++this.current);
-        $http.get(`/unionH5Brokerage/unPay/list?size=${this.size}&current=${this.current}&unionId=${uid}`)
+        console.log(++this.current1);
+        let data1={
+          size:this.size=6,
+          current:this.current1,
+          unionId:this.unionId
+        }
+        $http.get(`/h5Brokerage/withdrawal/detail/opportunity/page`,data1)
           .then(res => {
             if(res.data.data) {
               let list = res.data.data.records;
@@ -423,7 +446,7 @@
               }
               //渲染数据
               list.forEach((v, i) => {
-                v.time = $todate.todate(new Date(v.time));
+                v.opportunity.createTime = $todate.todate(new Date(v.opportunity.createTime));
               })
               this.unPayList = this.unPayList.concat(list);
             }
@@ -434,9 +457,13 @@
       },
       //已支付页面加载更多列表数据
       loadMore2(){
-        let uid=this.unionId;
-        console.log(++this.current);
-        $http.get(`/unionH5Brokerage/pay/list?size=${this.size}&current=${this.current}&unionId=${uid}`)
+        console.log(++this.current2);
+        let data1={
+          size:this.size=6,
+          current:this.current2,
+          unionId:this.unionId
+        }
+        $http.get(`/h5Brokerage/pay/paid/page`,data1)
           .then(res => {
             if(res.data.data) {
               let list = res.data.data.records;
@@ -449,7 +476,7 @@
               }
               //渲染数据
               list.forEach((v, i) => {
-                v.time = $todate.todate(new Date(v.time));
+                v.opportunity.createTime = $todate.todate(new Date(v.opportunity.createTime));
               })
               this.payList = this.payList.concat(list);
             }
@@ -457,7 +484,6 @@
           .catch(err => {
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
-        console.log(this.unCommission);
       },
     },
     created (){
@@ -467,7 +493,11 @@
       this.$emit('getValue',this.toLogin);
 //以下部分为未支付的--------------------------------------------------------------------------1
 //      未支付页面（页面加载时就渲染数据）
-      $http.get(`/unionH5Brokerage/unPay/list?size=${this.size}&current=${this.current}`)
+      let data={
+        size:this.size,
+        current:this.current1
+      };
+      $http.get(`/h5Brokerage/pay/unPaid/page`,data)
         .then(res => {
           if(res.data.data) {
             if (res.data.data.records.length === 0) {
@@ -486,7 +516,7 @@
             //渲染数据
             this.unPayList = res.data.data.records;
             this.unPayList.forEach((v, i) => {
-              v.time = $todate.todate(new Date(v.time));
+              v.opportunity.createTime = $todate.todate(new Date(v.opportunity.createTime));
             })
           }
         })
@@ -494,7 +524,7 @@
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
       //未支付金额的总和
-      $http.get(`/unionH5Brokerage/unPaySum`)
+      $http.get(`/h5Brokerage/pay/unPaid/sum`)
         .then(res => {
           if(res.data.data) {
             this.totalMoney = res.data.data;
@@ -505,7 +535,11 @@
         });
 // 以下为已支付的------------------------------------------------------------------------------2
       //已支付页面（页面加载时就渲染数据）
-      $http.get(`/unionH5Brokerage/pay/list?size=${this.size}&current=${this.current}`)
+      let data1={
+        size:this.size,
+        current:this.current2
+      };
+      $http.get(`/h5Brokerage/pay/paid/page`,data1)
         .then(res => {
           if(res.data.data) {
             if (res.data.data.records.length === 0) {
@@ -524,7 +558,7 @@
             //渲染数据
             this.payList = res.data.data.records;
             this.payList.forEach((v, i) => {
-              v.time = $todate.todate(new Date(v.time));
+              v.opportunity.createTime = $todate.todate(new Date(v.opportunity.createTime));
             })
           }
         })
@@ -533,7 +567,7 @@
           console.log(666)
         });
       //已支付的佣金总和
-      $http.get(`/unionH5Brokerage/paySum`)
+      $http.get(`/h5Brokerage/pay/paid/sum`)
         .then(res => {
           if(res.data.data) {
             this.payMoney = res.data.data;
@@ -543,13 +577,10 @@
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
 //多粉弹出框的请求盟员列表-----------------------------------------------------------------------3
-      $http.get(`/unionH5Brokerage/unionList`)
+      $http.get(`/h5Brokerage/myUnion`)
         .then(res => {
-          let that_=this;
-          if(res.data.data){
-            res.data.data.forEach((item,index)=>{
-              that_.unionList.push(item);
-            });
+          if(res.data.data) {
+            this.unionList = res.data.data;
           }
         })
         .catch(err => {
@@ -566,7 +597,8 @@
   padding: 0.3rem;
 }
 .nothing{
-  margin: 0.8rem 6rem;
+  text-align: center;
+  padding: 0.3rem;
   font-size: 0.85rem;
 }
 </style>

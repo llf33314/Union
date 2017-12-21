@@ -319,7 +319,7 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
             if (permit == null) {
                 Object objPay = basicMap.get("pay");
                 Integer needPay = objPay != null ? Integer.valueOf(objPay.toString()) : CommonConstant.COMMON_YES;
-                if (CommonConstant.COMMON_NO == needPay) {
+                if (CommonConstant.COMMON_YES != needPay) {
                     BusUser busUser = busUserService.getBusUserById(busId);
                     if (busUser == null) {
                         throw new BusinessException("找不到商家信息");
@@ -335,6 +335,8 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
                     permit.setPackageId(unionPackage.getId());
                     permit.setValidity(busUser.getEndTime());
                     unionMainPermitService.save(permit);
+                } else {
+                    throw new BusinessException("不具有联盟许可");
                 }
             }
 
