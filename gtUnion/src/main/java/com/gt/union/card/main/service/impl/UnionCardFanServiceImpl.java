@@ -18,9 +18,7 @@ import com.gt.union.card.main.vo.CardFanVO;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.RedisCacheUtil;
-import com.gt.union.common.util.StringUtil;
+import com.gt.union.common.util.*;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.member.entity.UnionMember;
@@ -295,6 +293,21 @@ public class UnionCardFanServiceImpl extends ServiceImpl<UnionCardFanMapper, Uni
         }
         insert(newUnionCardRoot);
         removeCache(newUnionCardRoot);
+    }
+
+    @Override
+    public UnionCardFan getOrSaveByPhone(String phone) throws Exception{
+        UnionCardFan fan = getByPhone(phone);
+        //TODO 需要加锁
+        if(fan == null){
+            fan = new UnionCardFan();
+            fan.setDelStatus(CommonConstant.COMMON_NO);
+            fan.setCreateTime(DateUtil.getCurrentDate());
+            fan.setPhone(phone);
+            fan.setNumber(UnionCardUtil.generateCardNo());
+            this.save(fan);
+        }
+        return fan;
     }
 
     @Transactional(rollbackFor = Exception.class)

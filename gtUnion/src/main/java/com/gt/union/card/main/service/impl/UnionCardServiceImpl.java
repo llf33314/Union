@@ -413,16 +413,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             throw new BusinessException("验证码错误");
         }
         // （2）	根据phone判断fan是否存在，如果已存在，则返回；否则，新增并返回
-        UnionCardFan result = unionCardFanService.getByPhone(phone);
-        if (result == null) {
-            result = new UnionCardFan();
-            result.setDelStatus(CommonConstant.COMMON_NO);
-            result.setCreateTime(DateUtil.getCurrentDate());
-            result.setPhone(phone);
-            result.setNumber(UnionCardUtil.generateCardNo());
-            unionCardFanService.save(result);
-        }
-
+        UnionCardFan result = unionCardFanService.getOrSaveByPhone(phone);
         return result;
     }
 
