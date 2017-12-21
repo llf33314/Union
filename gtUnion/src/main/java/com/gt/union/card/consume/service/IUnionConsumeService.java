@@ -1,9 +1,11 @@
 package com.gt.union.card.consume.service;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.card.consume.entity.UnionConsume;
 import com.gt.union.card.consume.vo.ConsumePostVO;
 import com.gt.union.card.consume.vo.ConsumeRecordVO;
+import com.gt.union.h5.card.vo.MyCardConsumeVO;
 import com.gt.union.union.main.vo.UnionPayVO;
 
 import java.util.Date;
@@ -45,6 +47,23 @@ public interface IUnionConsumeService extends IService<UnionConsume> {
     List<ConsumeRecordVO> listConsumeRecordVOByBusId(Integer busId, Integer optUnionId, Integer optShopId, String optCardNumber,
                                                      String optPhone, Date optBeginTime, Date optEndTime) throws Exception;
 
+    /**
+     * 分页：联盟卡手机端，我的消费记录列表
+     * @param fanId     联盟卡粉丝id
+     * @param page      分页参数
+     * @return
+     */
+    List<MyCardConsumeVO> listConsumeByFanId(Integer fanId, Page page) throws Exception;
+
+    /**
+     * 分页：根据联盟卡粉丝id获取已支付消费记录列表
+     * @param fanId     联盟卡粉丝id
+     * @param page      分页参数
+     * @return
+     */
+    List<UnionConsume> listPayByFanId(Integer fanId, Page page);
+
+
     //***************************************** Domain Driven Design - save ********************************************
 
     /**
@@ -75,7 +94,7 @@ public interface IUnionConsumeService extends IService<UnionConsume> {
      */
     String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess);
 
-    //***************************************** Domain Driven Design - count *******************************************
+	//***************************************** Domain Driven Design - count *******************************************
 
     //***************************************** Domain Driven Design - boolean *****************************************
 

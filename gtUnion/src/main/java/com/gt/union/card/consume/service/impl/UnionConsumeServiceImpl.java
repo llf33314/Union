@@ -3,6 +3,7 @@ package com.gt.union.card.consume.service.impl;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.api.client.pay.WxPayService;
@@ -32,6 +33,7 @@ import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
+import com.gt.union.h5.card.vo.MyCardConsumeVO;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.main.vo.UnionPayVO;
@@ -207,6 +209,49 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
         });
 
         return result;
+    }
+
+    @Override
+    public List<MyCardConsumeVO> listConsumeByFanId(Integer fanId, Page page) throws Exception{
+        List<MyCardConsumeVO> result = new ArrayList<>();
+        List<UnionConsume> list = listPayByFanId(fanId, page);
+        if(ListUtil.isNotEmpty(list)){
+            for(UnionConsume consume : list){
+                MyCardConsumeVO vo = new MyCardConsumeVO();
+                vo.setShopName(consume.getShopName());
+                vo.setConsumeMoney(consume.getConsumeMoney());
+                vo.setDiscount(consume.getDiscount() * 10);
+                vo.setConsumeIntegral(consume.getUseIntegral());
+                vo.setGiveIntegral(consume.getGiveIntegral());
+                vo.setDiscountMoney(consume.getDiscountMoney());
+                vo.setIntegralMoney(consume.getIntegralMoney());
+                vo.setRecordId(consume.getId());
+                vo.setPayMoney(consume.getPayMoney());
+                vo.setPayType(consume.getPayType());
+                List<UnionConsumeProject> consumeProjectList = unionConsumeProjectService.listByConsumeId(consume.getId());
+                if (ListUtil.isNotEmpty(consumeProjectList)) {
+                    List items = new ArrayList<>();
+                    for (UnionConsumeProject consumeProject : consumeProjectList) {
+                        UnionCardProjectItem item = unionCardProjectItemService.getByIdAndProjectId(consumeProject.getProjectItemId(), consumeProject.getProjectId());
+                        items.add(item);
+                    }
+                    vo.setItems(items);
+                }
+                result.add(vo);
+            }
+        }
+        return result;
+    }
+
+    @Override
+    public List<UnionConsume> listPayByFanId(Integer fanId, Page page) {
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+        entityWrapper.eq("fan_id", fanId);
+        entityWrapper.eq("pay_status", ConsumeConstant.PAY_STATUS_SUCCESS);
+        entityWrapper.orderBy("create_time",false);
+        Page result = this.selectPage(page,entityWrapper);
+        return result.getRecords();
     }
 
     //***************************************** Domain Driven Design - save ********************************************

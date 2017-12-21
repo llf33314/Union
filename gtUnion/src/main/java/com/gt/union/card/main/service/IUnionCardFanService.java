@@ -101,7 +101,14 @@ public interface IUnionCardFanService extends IService<UnionCardFan> {
      */
     void save(UnionCardFan newUnionCardRoot) throws Exception;
 
-    //***************************************** Domain Driven Design - remove ******************************************
+    /**
+     * 根据手机号查联盟卡粉丝信息，如果不存在 则新增
+     * @param phone     手机号
+     * @return
+     */
+	UnionCardFan getOrSaveByPhone(String phone) throws Exception;
+
+	//***************************************** Domain Driven Design - remove ******************************************
 
     //***************************************** Domain Driven Design - update ******************************************
 

@@ -86,7 +86,7 @@ public class UnionCardController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-        String url = PropertiesUtil.getUnionUrl() + "/cardPhone/#/" + "toUnionCard?busId=" + busId;
+        String url = PropertiesUtil.getUnionUrl() + "/cardPhone/#/" + "toUnionCard/" + busId;
         QRcodeKit.buildQRcode(url, 250, 250, response);
     }
 
