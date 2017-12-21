@@ -9,11 +9,14 @@
         <result column="create_time" property="createTime"/>
         <result column="type" property="type"/>
         <result column="consume_money" property="consumeMoney"/>
+        <result column="discount" property="discount"/>
+        <result column="discount_money" property="discountMoney"/>
+        <result column="use_integral" property="useIntegral"/>
+        <result column="integral_money" property="integralMoney"/>
+        <result column="give_integral" property="giveIntegral"/>
         <result column="pay_money" property="payMoney"/>
         <result column="pay_type" property="payType"/>
         <result column="pay_status" property="payStatus"/>
-        <result column="use_integral" property="useIntegral"/>
-        <result column="give_integral" property="giveIntegral"/>
         <result column="sys_order_no" property="sysOrderNo"/>
         <result column="wx_order_no" property="wxOrderNo"/>
         <result column="alipay_order_no" property="alipayOrderNo"/>
