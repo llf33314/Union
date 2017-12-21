@@ -119,7 +119,7 @@ export default {
           .get(`/unionMember/unionId/${this.unionId}/write/other`)
           .then(res => {
             if (res.data.data) {
-              this.options2 = res.data.data;
+              this.options2 = res.data.data || [];
               res.data.data.forEach((v, i) => {
                 this.options2[i].value = v.id;
                 this.options2[i].label = v.enterpriseName;
@@ -145,7 +145,7 @@ export default {
           .get(`/unionMain/my`)
           .then(res => {
             if (res.data.data) {
-              this.options1 = res.data.data;
+              this.options1 = res.data.data || [];
               this.options1.forEach((v, i) => {
                 v.value = v.union.id;
                 v.label = v.union.name;

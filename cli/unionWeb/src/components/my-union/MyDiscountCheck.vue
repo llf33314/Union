@@ -36,7 +36,7 @@
             </p>
             <p class="verify">
               <span class="spacil">
-                <el-button type="primary" @click="passAll()"  v-bind:disabled="!canPass">通过</el-button>
+                <el-button type="primary" @click="passAll()" v-bind:disabled="!canPass">通过</el-button>
               </span>
               <el-button @click="noPassAll()">不通过</el-button>
             </p>
@@ -173,7 +173,7 @@
       <el-dialog title="提示" :visible.sync="visible" size="tiny">
         <hr>
         <div>
-          <img src="~assets/images/delect01.png"  class="fl">
+          <img src="~assets/images/delect01.png" class="fl">
           <span>是否确认移出“ {{ enterpriseName }} ”？</span>
           <p>该盟员没有提交优惠项目，点击‘确定’后可直接移出盟员。</p>
         </div>
@@ -188,7 +188,7 @@
 
 <script>
 import $http from '@/utils/http.js';
-import $todate from '@/utils/todate.js';
+import { timeFilter } from '@/utils/filter.js';
 export default {
   name: 'my-discount-check',
   data() {
@@ -249,7 +249,7 @@ export default {
         .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/1?current=1`)
         .then(res => {
           if (res.data.data) {
-            this.tableData1 = res.data.data.records;
+            this.tableData1 = res.data.data.records || [];
             this.totalAll1 = res.data.data.total;
           } else {
             this.tableData1 = [];
@@ -266,7 +266,7 @@ export default {
         .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/2?current=1`)
         .then(res => {
           if (res.data.data) {
-            this.tableData2 = res.data.data.records;
+            this.tableData2 = res.data.data.records || [];
             this.totalAll2 = res.data.data.total;
           } else {
             this.tableData2 = [];
@@ -283,7 +283,7 @@ export default {
         .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/3?current=1`)
         .then(res => {
           if (res.data.data) {
-            this.tableData3 = res.data.data.records;
+            this.tableData3 = res.data.data.records || [];
             this.totalAll3 = res.data.data.total;
           } else {
             this.tableData3 = [];
@@ -300,7 +300,7 @@ export default {
         .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/4?current=1`)
         .then(res => {
           if (res.data.data) {
-            this.tableData4 = res.data.data.records;
+            this.tableData4 = res.data.data.records || [];
             this.totalAll4 = res.data.data.total;
           } else {
             this.tableData4 = [];
@@ -317,7 +317,7 @@ export default {
         .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/1?current=${val}`)
         .then(res => {
           if (res.data.data) {
-            this.tableData1 = res.data.data.records;
+            this.tableData1 = res.data.data.records || [];
             this.totalAll1 = res.data.data.total;
           } else {
             this.tableData1 = [];
@@ -333,7 +333,7 @@ export default {
         .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/2?current=${val}`)
         .then(res => {
           if (res.data.data) {
-            this.tableData2 = res.data.data.records;
+            this.tableData2 = res.data.data.records || [];
             this.totalAll2 = res.data.data.total;
           } else {
             this.tableData2 = [];
@@ -349,7 +349,7 @@ export default {
         .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/3?current=${val}`)
         .then(res => {
           if (res.data.data) {
-            this.tableData3 = res.data.data.records;
+            this.tableData3 = res.data.data.records || [];
             this.totalAll3 = res.data.data.total;
           } else {
             this.tableData3 = [];
@@ -365,7 +365,7 @@ export default {
         .get(`/unionPreferentialProject/page/memberId/${this.unionMemberId}/status/4?current=${val}`)
         .then(res => {
           if (res.data.data) {
-            this.tableData4 = res.data.data.records;
+            this.tableData4 = res.data.data.records || [];
             this.totalAll4 = res.data.data.total;
           } else {
             this.tableData4 = [];
@@ -387,7 +387,7 @@ export default {
             this.visibleData2.illustration = res.data.data.project.illustration;
             this.tableData21 = res.data.data.itemList;
             this.tableData21.forEach((v, i) => {
-              v.createtime = $todate.todate(new Date(v.createtime));
+              v.createtime = timeFilter(v.createtime);
               if (v.status === 2) {
                 v.status = '未审核';
               }
@@ -412,7 +412,7 @@ export default {
             this.visibleData3.illustration = res.data.data.project.illustration;
             this.tableData31 = res.data.data.itemList;
             this.tableData31.forEach((v, i) => {
-              v.createtime = $todate.todate(new Date(v.createtime));
+              v.createtime = timeFilter(v.createtime);
               if (v.status === 3) {
                 v.status = '通过';
               }
@@ -437,7 +437,7 @@ export default {
             this.visibleData4.illustration = res.data.data.project.illustration;
             this.tableData41 = res.data.data.itemList;
             this.tableData41.forEach((v, i) => {
-              v.createtime = $todate.todate(new Date(v.createtime));
+              v.createtime = timeFilter(v.createtime);
               if (v.status === 4) {
                 v.status = '不通过';
               }

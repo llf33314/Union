@@ -110,7 +110,7 @@ export default {
         .get(`/unionCardFan/page?current=1&unionId=${this.unionId}`)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.totalAll = res.data.data.total;
           } else {
             this.tableData = [];
@@ -127,7 +127,7 @@ export default {
         .get(`/unionCardFan/page?current=1&unionId=${this.unionId}&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.totalAll = res.data.data.total;
           }
         })
@@ -141,7 +141,7 @@ export default {
         .get(`/unionCardFan/page?current=${val}&unionId=${this.unionId}&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.totalAll = res.data.data.total;
           }
         })

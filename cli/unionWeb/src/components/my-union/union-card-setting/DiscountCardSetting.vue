@@ -26,11 +26,9 @@
     <!-- 弹出框 设置折扣 -->
     <el-dialog title="设置折扣" :visible.sync="visible" size="tiny" @close="resetData">
       <hr>
-      <div>当前折扣： {{ discount }} </div>
+      <div>当前折扣： {{ discount }}折 </div>
       <p>设置折扣：
-        <el-input v-model="discountInput"
-                  placeholder="请输入0~10的折扣"
-                  @keyup.native="check" style="width:200px"></el-input>
+        <el-input v-model="discountInput" placeholder="请输入0~10的折扣" @keyup.native="check" style="width:200px"></el-input>
       </p>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="discountConfirm">确定</el-button>
@@ -71,7 +69,11 @@ export default {
         .get(`/unionMember/unionId/${this.unionId}/write/page?current=1`)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
+            // 无折扣时填补空白
+            this.tableData.forEach((v, i) => {
+              v.discount = (v.discount * 10).toFixed(1) || '无';
+            });
             this.totalAll = res.data.data.total;
           } else {
             this.tableData = [];
@@ -85,8 +87,8 @@ export default {
         .get(`/unionMember/unionId/${this.unionId}/busUser`)
         .then(res => {
           if (res.data.data) {
-            this.memberId = res.data.data.id;
-            this.discount = res.data.data.discount;
+            this.memberId = res.data.data.member.id;
+            this.discount = (res.data.data.member.discount * 10).toFixed(1) || '无';
           } else {
             this.memberId = '';
             this.discount = '';
@@ -102,7 +104,11 @@ export default {
         .get(`/unionMember/unionId/${this.unionId}/write/page?current=1&memberName=${this.input}`)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
+            // 无折扣时填补空白
+            this.tableData.forEach((v, i) => {
+              v.discount = (v.discount * 10).toFixed(1) || '无';
+            });
             this.totalAll = res.data.data.total;
           } else {
             this.tableData = [];
@@ -119,7 +125,11 @@ export default {
         .get(`/unionMember/unionId/${this.unionId}/write/page?current=${val}&memberName=${this.input}`)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
+            // 无折扣时填补空白
+            this.tableData.forEach((v, i) => {
+              v.discount = (v.discount * 10).toFixed(1) || '无';
+            });
             this.totalAll = res.data.data.total;
           } else {
             this.tableData = [];
@@ -143,11 +153,12 @@ export default {
         this.$message({ showClose: true, message: '最小折扣为0，请重新输入', type: 'error', duration: 5000 });
       } else {
         let url = `/unionMember/${this.memberId}/unionId/${this.unionId}/discount`;
-        let data = this.discountInput;
+        let data = this.discountInput / 10;
         $http
           .put(url, data)
           .then(res => {
             if (res.data.success) {
+              this.$message({ showClose: true, message: '设置成功', type: 'success', duration: 5000 });
               this.visible = false;
               this.init();
             }

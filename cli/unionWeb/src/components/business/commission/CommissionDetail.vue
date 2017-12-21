@@ -100,7 +100,7 @@ export default {
           .get(`/unionMain/my`)
           .then(res => {
             if (res.data.data) {
-              this.options1 = res.data.data;
+              this.options1 = res.data.data || [];
               this.options1.forEach((v, i) => {
                 v.value = v.union.id;
                 v.label = v.union.name;
@@ -116,7 +116,7 @@ export default {
           .get(`/unionBrokeragePay/detail/page?current=1`)
           .then(res => {
             if (res.data.data) {
-              this.tableData = res.data.data.records;
+              this.tableData = res.data.data.records || [];
               this.totalAll = res.data.data.total;
             } else {
               this.tableData = [];
@@ -134,7 +134,7 @@ export default {
         .get(`/unionBrokeragePay/detail/page?current=1&unionId=${this.unionId}`)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.totalAll = res.data.data.total;
           } else {
             this.tableData = [];
@@ -151,7 +151,7 @@ export default {
         .get(`/unionOpportunity/contact/page?current=${val}&memberId=${this.memberId}`)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.totalAll = res.data.data.total;
           } else {
             this.tableData = [];

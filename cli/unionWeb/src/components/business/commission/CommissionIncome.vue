@@ -42,10 +42,18 @@
       <el-table-column prop="opportunity.clientName" label="顾客姓名" min-width="100px">
       </el-table-column>
       <el-table-column prop="opportunity.clientPhone" label="电话" min-width="100px">
+        <template slot-scope="scope">
+          <el-popover trigger="hover" placement="top">
+            <p>电话: {{ scope.row.opportunity.clientPhone }}</p>
+            <div slot="reference" class="name-wrapper">
+              {{ scope.row.opportunity.clientPhone }}
+            </div>
+          </el-popover>
+        </template>
       </el-table-column>
       <el-table-column prop="opportunity.businessMsg" label="业务备注" min-width="100px">
         <template slot-scope="scope">
-          <el-popover trigger="hover" placement="bottom">
+          <el-popover trigger="hover" placement="top">
             <p>备注：{{ scope.row.opportunity.businessMsg }}</p>
             <div slot="reference" class="name-wrapper">
               <span>{{ scope.row.opportunity.businessMsg }}</span>
@@ -65,10 +73,18 @@
       </el-table-column>
       <el-table-column prop="isClose" label="佣金结算状态" min-width="140px" :filters="[{ text: '未结算', value: '未结算' }, { text: '已结算', value: '已结算' }]" :filter-method="filterTag" filter-placement="bottom-end">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.isClose === '未结算' ? 'danger' : 'success'">{{scope.row.isClose}}</el-tag>
+          <el-tag :type="scope.row.opportunity.isClose === '未结算' ? 'danger' : 'success'">{{scope.row.opportunity.isClose}}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="opportunity.createTime" label="交易时间" min-width="120">
+      <el-table-column prop="opportunity.createTime" label="交易时间" min-width="150">
+        <template slot-scope="scope">
+          <el-popover trigger="hover" placement="top">
+            <p>交易时间: {{ scope.row.opportunity.createTime }}</p>
+            <div slot="reference" class="name-wrapper">
+              {{ scope.row.opportunity.createTime }}
+            </div>
+          </el-popover>
+        </template>
       </el-table-column>
     </el-table>
     <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
@@ -125,7 +141,7 @@ export default {
           .get(`/unionMember/unionId/${this.unionId}/write/other`)
           .then(res => {
             if (res.data.data) {
-              this.options2 = res.data.data;
+              this.options2 = res.data.data || [];
               res.data.data.forEach((v, i) => {
                 this.options2[i].value = v.id;
                 this.options2[i].label = v.enterpriseName;
@@ -151,7 +167,7 @@ export default {
           .get(`/unionMain/my`)
           .then(res => {
             if (res.data.data) {
-              this.options1 = res.data.data;
+              this.options1 = res.data.data || [];
               this.options1.forEach((v, i) => {
                 v.value = v.union.id;
                 v.label = v.union.name;
@@ -167,12 +183,12 @@ export default {
           .get(`/unionBrokerageIncome/opportunity/page?current=1`)
           .then(res => {
             if (res.data.data) {
-              this.tableData = res.data.data.records;
+              this.tableData = res.data.data.records || [];
               this.totalAll = res.data.data.total;
               this.tableData.forEach((v, i) => {
                 v.opportunity.createTime = timeFilter(v.opportunity.createTime);
                 v.opportunity.acceptStatus = commissionTypeFilter(v.opportunity.acceptStatus);
-                v.isClose = commissionIsCloseFilter(v.isClose);
+                v.opportunity.isClose = commissionIsCloseFilter(v.opportunity.isClose);
               });
             } else {
               this.tableData = [];
@@ -195,12 +211,12 @@ export default {
         )
         .then(res => {
           if (res.data.data) {
-              this.tableData = res.data.data.records;
+              this.tableData = res.data.data.records || [];
               this.totalAll = res.data.data.total;
               this.tableData.forEach((v, i) => {
                 v.opportunity.createTime = timeFilter(v.opportunity.createTime);
                 v.opportunity.acceptStatus = commissionTypeFilter(v.opportunity.acceptStatus);
-                v.isClose = commissionIsCloseFilter(v.isClose);
+                v.opportunity.isClose = commissionIsCloseFilter(v.opportunity.isClose);
               });
             } else {
               this.tableData = [];
@@ -223,11 +239,11 @@ export default {
         )
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.tableData.forEach((v, i) => {
               v.opportunity.createTime = timeFilter(v.opportunity.createTime);
               v.opportunity.acceptStatus = commissionTypeFilter(v.opportunity.acceptStatus);
-              v.isClose = commissionIsCloseFilter(v.isClose);
+              v.opportunity.isClose = commissionIsCloseFilter(v.opportunity.isClose);
             });
           } else {
             this.tableData = [];
@@ -238,7 +254,7 @@ export default {
         });
     },
     filterTag(value, row) {
-      return row.isClose === value;
+      return row.opportunity.isClose === value;
     }
   }
 };

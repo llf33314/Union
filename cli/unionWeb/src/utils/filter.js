@@ -110,3 +110,51 @@ export function expenseStatusFilter(value) {
   }
   return value;
 }
+
+// 活动卡状态
+// value1: 活动状态
+// value2: 活动项目id
+export function activityCardStatusFilter(value1, value2) {
+  let status = '';
+  switch (value1) {
+    case 1:
+      status = '未开始';
+      break;
+    case 2:
+      if (value2) {
+        status = '已报名';
+      } else {
+        status = '未报名';
+      }
+      break;
+    case 3:
+      status = '';
+      break;
+    case 4:
+      status = '售卡中';
+      break;
+    case 5:
+      status = '已停售';
+      break;
+  }
+  return status;
+}
+
+// 项目状态
+export function projectStatusFilter(value) {
+  switch (value) {
+    case 1:
+      value = '未提交';
+      break;
+    case 2:
+      value = '审核中';
+      break;
+    case 3:
+      value = '已通过';
+      break;
+    case 4:
+      value = '不通过';
+      break;
+  }
+  return value;
+}

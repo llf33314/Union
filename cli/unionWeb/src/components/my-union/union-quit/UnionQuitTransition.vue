@@ -111,7 +111,7 @@ export default {
         .get(`/unionMemberOut/unionId/${this.unionId}/period/page?current=1`)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.tableData.forEach((v, i) => {
               v.memberOut.confirmOutTime = timeFilter(v.memberOut.confirmOutTime);
               v.memberOut.type === 1 ? (v.memberOut.type = '盟员申请退盟') : (v.memberOut.type = '盟主移出');
@@ -132,7 +132,7 @@ export default {
         .get(`/unionMemberOut/unionId/${this.unionId}/period/page?current=${val}`)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.tableData.forEach((v, i) => {
               v.memberOut.confirmOutTime = timeFilter(v.memberOut.confirmOutTime);
               v.memberOut.type === 1 ? (v.memberOut.type = '盟员申请退盟') : (v.memberOut.type = '盟主移出');

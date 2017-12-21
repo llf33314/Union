@@ -16,10 +16,6 @@ export const longitudeChange = (state, value) => {
 export const enterpriseAddressChange = (state, value) => {
   state.enterpriseAddress = value;
 }
-// 行政区域
-export const addressChange = (state, value) => {
-  state.address = value;
-}
 // 是否盟主
 export const isUnionOwnerChange = (state, value) => {
   state.isUnionOwner = value;

@@ -31,6 +31,14 @@
         <el-table-column prop="memberJoin.reason" label="申请/推荐理由">
         </el-table-column>
         <el-table-column prop="memberJoin.createTime" label="申请/推荐时间">
+          <template slot-scope="scope">
+            <el-popover trigger="hover" placement="bottom">
+              <p>时间: {{ scope.row.memberJoin.createTime}}</p>
+              <div slot="reference" class="name-wrapper">
+                {{ scope.row.memberJoin.createTime }}
+              </div>
+            </el-popover>
+          </template>
         </el-table-column>
         <el-table-column prop="recommendMember.enterpriseName" label="推荐人">
         </el-table-column>
@@ -115,7 +123,7 @@ export default {
           .get(`/unionMemberJoin/unionId/${this.unionId}/page?current=1`)
           .then(res => {
             if (res.data.data) {
-              this.tableData = res.data.data.records;
+              this.tableData = res.data.data.records || [];
               this.tableData.forEach((v, i) => {
                 v.memberJoin.createTime = timeFilter(v.memberJoin.createTime);
               });
@@ -133,7 +141,7 @@ export default {
         .get(`/unionMemberJoin/unionId/${this.unionId}/page?current=1&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.tableData.forEach((v, i) => {
               v.memberJoin.createTime = timeFilter(v.memberJoin.createTime);
             });
@@ -150,7 +158,7 @@ export default {
         .get(`/unionMemberJoin/unionId/${this.unionId}/page?current=${val}&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.tableData.forEach((v, i) => {
               v.memberJoin.createTime = timeFilter(v.memberJoin.createTime);
             });

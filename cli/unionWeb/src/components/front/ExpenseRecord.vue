@@ -3,7 +3,7 @@
     <div id="ExpenseRecord">
       <!-- 搜索栏 -->
       <el-row>
-        <el-col style="width:290px;">
+        <el-col style="width:287px;">
           <el-form :inline="true" class="demo-form-inline">
             <el-form-item label="所属联盟:">
               <el-select v-model="unionId" clearable placeholder="请选择所属联盟" @change="search">
@@ -13,7 +13,7 @@
             </el-form-item>
           </el-form>
         </el-col>
-        <el-col style="width:270px;">
+        <el-col style="width:276px;">
           <el-form :inline="true" class="demo-form-inline">
             <el-form-item label="消费门店:">
               <el-select v-model="shopId" clearable placeholder="请选择来源" @change="search">
@@ -59,6 +59,14 @@
         <el-table-column prop="fan.number" label="联盟卡号">
         </el-table-column>
         <el-table-column prop="fan.phone" label="手机号">
+          <template slot-scope="scope">
+            <el-popover trigger="hover" placement="top">
+              <p>手机号: {{ scope.row.fan.phone }}</p>
+              <div slot="reference" class="name-wrapper">
+                {{ scope.row.fan.phone }}
+              </div>
+            </el-popover>
+          </template>
         </el-table-column>
         <el-table-column prop="consume.consumeMoney" label="消费金额">
         </el-table-column>
@@ -66,37 +74,47 @@
         </el-table-column>
         <el-table-column label="优惠项目">
           <template slot-scope="scope">
-            <span @click="showDetail(scope)"> {{ scope.row.itemList }} </span>
+            <span @click="showDetail(scope)" style="color: #20a0ff;cursor: pointer"> {{ scope.row.itemList }} </span>
           </template>
         </el-table-column>
         <el-table-column prop="consume.payStatus" label="支付状态">
         </el-table-column>
         <el-table-column prop="consume.createTime" label="消费时间">
+          <template slot-scope="scope">
+            <el-popover trigger="hover" placement="top">
+              <p>消费时间: {{ scope.row.consume.createTime }}</p>
+              <div slot="reference" class="name-wrapper">
+                {{ scope.row.consume.createTime }}
+              </div>
+            </el-popover>
+          </template>
         </el-table-column>
       </el-table>
       <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
       </el-pagination>
       <!-- 弹出框 核销详情 -->
-      <el-dialog title="核销详情" :visible.sync="visible">
-        <div>
-          <p>非 ERP 项目</p>
-          <P v-for="(item, index) in noErpList" :key="item.id">
-            {{ index + 1 }} 、{{ item.name }}
-          </P>
-        </div>
-        <div>
-          <p> ERP 项目</p>
-          <P v-for="(item, index) in erpList" :key="item.id">
-            {{ index + 1 }} 、{{ item.name }}
-          </P>
-        </div>
-        <div>
-          <p>商品</p>
-          <P v-for="(item, index) in erpGoodsList" :key="item.id">
-            {{ index + 1 }} 、{{ item.name }}
-          </P>
-        </div>
-      </el-dialog>
+      <div class="verificationMessage">
+        <el-dialog title="核销详情" :visible.sync="visible">
+          <div v-if="noErpList.length > 0">
+            <p>非 ERP 项目</p>
+            <div v-for="(item, index) in noErpList" :key="item.id">
+              {{ index + 1 }} 、{{ item.name }}
+            </div>
+          </div>
+          <div v-if="erpList.length > 0">
+            <p> ERP 项目</p>
+            <div v-for="(item, index) in erpList" :key="item.id">
+              {{ index + 1 }} 、{{ item.name }}
+            </div>
+          </div>
+          <div v-if="erpGoodsList.length > 0">
+            <p>商品</p>
+            <div v-for="(item, index) in erpGoodsList" :key="item.id">
+              {{ index + 1 }} 、{{ item.name }}
+            </div>
+          </div>
+        </el-dialog>
+      </div>
     </div>
   </div>
 </template>
@@ -142,7 +160,7 @@ export default {
         .get(`/unionMain/my`)
         .then(res => {
           if (res.data.data) {
-            this.options1 = res.data.data;
+            this.options1 = res.data.data || [];
             this.options1.forEach((v, i) => {
               v.value = v.union.id;
               v.label = v.union.name;
@@ -161,7 +179,7 @@ export default {
         .get(`/api/shop/list`)
         .then(res => {
           if (res.data.data) {
-            this.options2 = res.data.data;
+            this.options2 = res.data.data || [];
             this.options2.forEach((v, i) => {
               v.value = v.id;
               v.label = v.name;
@@ -180,7 +198,7 @@ export default {
         .get(`/unionConsume/record/page?current=1`)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
               v.itemList = [];
@@ -207,8 +225,8 @@ export default {
     search() {
       let beginTime, endTime;
       if (this.timeValue[0]) {
-        beginTime = timeFilter(this.timeValue[0]);
-        endTime = timeFilter(this.timeValue[1]);
+        beginTime = this.timeValue[0].getTime();
+        endTime = this.timeValue[1].getTime();
       } else {
         beginTime = '';
         endTime = '';
@@ -223,7 +241,7 @@ export default {
         .get(url)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
               v.itemList = [];
@@ -250,8 +268,8 @@ export default {
     handleCurrentChange(val) {
       let beginTime, endTime;
       if (this.timeValue[0]) {
-        beginTime = timeFilter(this.timeValue[0]);
-        endTime = timeFilter(this.timeValue[1]);
+        beginTime = this.timeValue[0].getTime();
+        endTime = this.timeValue[1].getTime();
       } else {
         beginTime = '';
         endTime = '';
@@ -266,7 +284,7 @@ export default {
         .get(url)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.tableData.forEach((v, i) => {
               v.itemList = [];
               v.nonErpTextList.forEach((val, idx) => {
@@ -304,19 +322,5 @@ export default {
 </script>
 
 <style lang='less' rel="stylesheet/less" scoped>
-/*消费审核记录样式表------------------------------------*/
 
-#ExpenseRecord {
-  .el-col-5 {
-    width: 288px;
-  }
-  .third_ {
-    .el-col-3 {
-      margin-left: 20px;
-    }
-  }
-  .el-col-3 {
-    width: 13.5%;
-  }
-}
 </style>

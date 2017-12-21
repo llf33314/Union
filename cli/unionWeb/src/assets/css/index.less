@@ -452,7 +452,7 @@ hr{
   .apply_select {
     .el-table_1_column_8 {
       .cell {
-        width: 151px;
+        width: 155px;
       }
     }
   }
@@ -1586,7 +1586,6 @@ hr{
             .rightContent {
               width: 238px;
               height: 440px;
-              overflow-y: auto;
               border: solid 1px #dfe6ec;
               float: right;
               margin-left: 20px;
@@ -1595,22 +1594,21 @@ hr{
                 padding: 11px 10px 10px;
               }
               > div {
-                margin-left: 10px;
-                .el-button--text{
-                  margin-left: 50px;
+                height: 399px;
+                overflow-y: auto;
+                &::-webkit-scrollbar-thumb{
+                  /*width: 10px;*/
+                  height: 5px;
+                  border-radius: 10px;
+                  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+                }
+                >div {
+                  margin-left: 10px;
+                  .el-button--text {
+                    margin-left: 50px;
+                  }
                 }
               }
-            }
-            .rightContent::-webkit-scrollbar, .el-table::-webkit-scrollbar {
-              width: 10px;
-              height: 20px;
-              background-color: #f5f5f5;
-            }
-            .rightContent::-webkit-scrollbar-thumb, .el-table::-webkit-scrollbar-thumb {
-              /*width: 10px;*/
-              height: 5px;
-              border-radius: 10px;
-              -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
             }
             .el-table__body-wrapper{
               overflow: inherit!important;
@@ -1619,7 +1617,7 @@ hr{
         }
       }
       .footer_{
-        width:250px;
+        width:155px;
         margin: 0 auto;
         margin-top:60px;
       }
@@ -1648,6 +1646,7 @@ hr{
     .second_0 {
       .el-dialog--tiny{
         width: 900px;
+        top: 8%!important;
       }
       .el-dialog__body{
         padding: 0;
@@ -1656,37 +1655,49 @@ hr{
           width: 840px;
           margin: 30px;
           > p {
-            width: 840px;
             height: 40px;
             background-color: #eef1f6;
             line-height: 40px;
             padding-left: 30px;
+            border: solid 1px #dfe6ec;
+            border-bottom: none;
           }
           form {
             border: solid 1px #dfe6ec;
             border-top:none;
+            .discountsProject{
+              .el-form-item__content{
+                margin-left: 127px;
+              }
+            }
           }
           .payWay{
             margin-top: 20px;
+            width: 840px;
+            height: 255px;
+            border: solid 1px #dfe6ec;
             >p{
-              width: 840px;
               height: 40px;
               background-color: #eef1f6;
               line-height: 40px;
               padding-left: 30px;
             }
             >div {
-              border: solid 1px #dfe6ec;
               border-top:none;
               padding-left: 30px;
               >.el-radio-group{
                   margin: 20px 0;
+                .el-radio-button {
+                  margin-right: 10px;
+                }
+                .el-radio-button__orig-radio:checked + .el-radio-button__inner {
+                  color: #fff;
+                }
               }
-              .el-radio-button {
-                margin-right: 10px;
-              }
-              .el-radio-button__orig-radio:checked + .el-radio-button__inner {
-                color: #fff;
+              >.el-row{
+                .el-col-24{
+
+                }
               }
             }
           }
@@ -1740,6 +1751,16 @@ hr{
 
 //消费核销记录--------------------------------   2
   #ExpenseRecord{
+    .el-table .cell {
+      white-space: normal;
+      line-height: 24px;
+      white-space: nowrap;
+    }
+    >.el-row{
+      .el-form-item__label{
+        padding: 11px 3px 11px 0;
+      }
+    }
     .el-date-editor .el-input{
       width:100%
     }
@@ -1751,10 +1772,200 @@ hr{
     .el-tabs__item.is-active{
       border-bottom: 3px solid #20a0ff!important;
     }
+    //弹出框 核销详情
+    .verificationMessage{
+      .el-dialog--small{
+        width: 900px;
+        .el-dialog__body{
+          padding: 0;
+          margin-top: 15px;
+          max-height: 620px;
+          overflow-y: auto;
+          border-top: 1px solid #EEEEEE;
+          >div{
+            width: 840px;
+            margin: 30px;
+            border: solid 1px #dfe6ec;
+            p{
+              height: 40px;
+              background-color: #eef1f6;
+              line-height: 40px;
+              padding-left: 30px;
+            }
+            >div{
+              padding-left: 30px;
+              margin:18px 0;
+            }
+          }
+        }
+      }
+    }
+
   }
 
   //办理联盟卡---------------------------------  3
   #transaction{
+    .uninCardContent{
+      float: left;
+      width: 920px;
+      margin-top: 30px;
+      //办理联盟卡
+      >div{
+        height: 227px;
+        border: 1px solid #EEEEEE;
+        >p{
+          height: 40px;
+          background-color: #eef1f6;
+          line-height: 40px;
+          padding-left: 30px;
+          font-weight: bold;
+        }
+        form{
+            margin-top: 20px;
+            margin-left: 28px;
+          >.el-form-item:nth-last-child(1){
+            margin-bottom: 0!important;
+            position: relative;top:-44px;  left:-5px;
+            .el-form-item__label{
+              width: 124px!important;
+            }
+          }
+        }
+      }
+      >form{
+        margin-top:21px;
+        //选择联盟
+        .selectUnion{
+          border: 1px solid #EEEEEE;
+          >p{
+            height: 40px;
+            background-color: #eef1f6;
+            line-height: 40px;
+            padding-left: 30px;
+            font-weight: bold;
+          }
+          .el-form-item__content{
+            margin-left: 30px!important;
+          }
+        }
+        //选择联盟卡
+        .selectUnionCard{
+          margin-top:21px;
+          border: 1px solid #EEEEEE;
+          p{
+            height: 40px;
+            background-color: #eef1f6;
+            line-height: 40px;
+            padding-left: 30px;
+            font-weight: bold;
+          }
+          .el-form-item__content {
+            margin-left: 0 !important;
+            width: inherit;
+            margin-bottom: 0;
+          }
+          .SwitchAround {
+            position: relative;
+            >button{
+              position:absolute;
+              width: 20px;
+              height: 50px;
+              background-color: #000000;
+              opacity: 0.1;
+              color: #ffffff;
+              line-height: 50px;
+              z-index: 20;
+              border: none;
+              top: 35%;
+            }
+            .forward{
+              left:0;
+            }
+            .backward{
+              right: 0;
+            }
+            >div {
+              width: 864px;
+              height: 175px;
+              position: relative;
+              left: 26px;
+              overflow: hidden;
+              >div {
+                display: flex;
+                transition: all .5s;
+                position: absolute;
+                left:0;
+                .el-checkbox-button {
+                  position: relative;
+                  display: inline-block;
+                  margin-left: 13px;
+                  margin-top: 20px;
+                  .el-checkbox-button__inner {
+                    padding: 0;
+                    border: none;
+                  }
+                }
+                .SelectunionImg {
+                  width: 200px;
+                  height: 120px;
+                }
+                .el-checkbox-button.is-checked .el-checkbox-button__inner{
+                  background-color: #96a3ad;
+                  border-color: #96a3ad;
+                  box-shadow: none;
+                  i{
+                    display: block;
+                    width:200px;
+                    height:120px;
+                    position: absolute;
+                    background: rgba(35,34,34,.5) url('../../assets/images/dagou.png') no-repeat center;
+                    top: 0;
+                    left:0;
+                  }
+                }
+              }
+            }
+          }
+        }
+        //联盟卡折扣卡
+        .ActivityCardDetails{
+          margin-top:21px;
+          .UnionDiscountCard{
+            border: 1px solid #EEEEEE;
+            p{
+              height: 40px;
+              background-color: #eef1f6;
+              line-height: 40px;
+              padding-left: 30px;
+              font-weight: bold;
+            }
+            >div{
+              padding: 20px 0 25px 70px;
+            }
+          }
+          .cardService{
+            margin-top:21px;
+            border: 1px solid #EEEEEE;
+            >p{
+              height: 40px;
+              background-color: #eef1f6;
+              line-height: 40px;
+              padding-left: 30px;
+              font-weight: bold;
+            }
+            >div{
+              margin: 20px 0 20px 32px;
+            }
+          }
+        }
+        >.el-form-item{
+          margin-top: 20px;
+          .el-form-item__content{
+            margin-left: 0!important;
+          }
+        }
+      }
+    }
     .el-col-6{
       width:220px;
     }
@@ -1820,6 +2031,7 @@ hr{
   }
     .el-dialog__body {
       padding: 0;
+      margin-top: 15px;
     }
   .Popup_ {
     margin-top:30px;
@@ -1832,8 +2044,10 @@ hr{
   .model_1{
     .el-dialog--tiny{
       width:560px;
+
       img{
         width:200px;
+        height:200px;
       }
     }
   }

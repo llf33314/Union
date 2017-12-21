@@ -77,7 +77,7 @@ export default {
         .get(`/unionMainTransfer/unionId/${this.unionId}/page`)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             // 判断canTransferFlag
             this.tableData.forEach((v, i) => {
               if (v.unionTransfer) {
@@ -98,10 +98,10 @@ export default {
         .get(`/unionMainTransfer/pageMap/memberId/${this.unionMemberId}?current=${val}`)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
-              v.createTime = $todate.todate(new Date(v.createTime));
+              v.createTime = timeFilter(v.createtime);
             });
           }
         })
@@ -128,10 +128,10 @@ export default {
               .get(`/unionMainTransfer/pageMap/memberId/${this.unionMemberId}?current=1`)
               .then(res => {
                 if (res.data.data) {
-                  this.tableData = res.data.data.records;
+                  this.tableData = res.data.data.records || [];
                   this.totalAll = res.data.data.total;
                   this.tableData.forEach((v, i) => {
-                    v.createTime = $todate.todate(new Date(v.createTime));
+                    v.createTime = timeFilter(v.createtime);
                   });
                 }
               })
@@ -163,10 +163,10 @@ export default {
               .get(`/unionMainTransfer/pageMap/memberId/${this.unionMemberId}?current=1`)
               .then(res => {
                 if (res.data.data) {
-                  this.tableData = res.data.data.records;
+                  this.tableData = res.data.data.records || [];
                   this.totalAll = res.data.data.total;
                   this.tableData.forEach((v, i) => {
-                    v.createTime = $todate.todate(new Date(v.createTime));
+                    v.createTime = timeFilter(v.createtime);
                   });
                 }
               })

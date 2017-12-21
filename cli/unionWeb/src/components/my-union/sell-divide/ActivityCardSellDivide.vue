@@ -3,11 +3,17 @@
     <div v-show="visible" class="clearfix">
       <el-row style="margin-bottom: 35px">
         <el-button type="warning" style="padding: 10px 15px 10px 32px;position: relative;float: right">
-        <img src="~assets/images/Videos.png" style="width: 17px;position: absolute;top:8px;left: 7px;"> 视频教程
-      </el-button>
+          <img src="~assets/images/Videos.png" style="width: 17px;position: absolute;top:8px;left: 7px;"> 视频教程
+        </el-button>
       </el-row>
       <!--主体内容-->
-      <div class="contentList" v-for="item in data1" :key="item.activity.id">
+      <div v-if="data1.length === 0">
+        <img src="~assets/images/noCurrent.png">
+        <p>
+          还没有相关数据
+        </p>
+      </div>
+      <div v-if="data1.length > 0" class="contentList" v-for="item in data1" :key="item.activity.id">
         <div>
           <img :src="item.activity.img">
           <span>{{ item.activityStatus }}</span>
@@ -18,10 +24,7 @@
         </p>
       </div>
       <el-row style="margin-bottom: 85px">
-        <el-pagination @current-change="handleCurrentChange1"
-                     :current-page.sync="currentPage1" :page-size="10"
-                     layout="prev, pager, next, jumper" :total="totalAll1"
-                     v-if="data1.length>0">
+        <el-pagination @current-change="handleCurrentChange1" :current-page.sync="currentPage1" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll1" v-if="data1.length>0">
         </el-pagination>
       </el-row>
     </div>
@@ -120,7 +123,7 @@ export default {
         .get(`/unionCardActivity/unionId/${this.unionId}/sharingRatio/page?current=1`)
         .then(res => {
           if (res.data.data) {
-            this.data1 = res.data.data.records;
+            this.data1 = res.data.data.records || [];
             this.totalAll1 = res.data.data.total;
           } else {
             this.data1 = [];
@@ -136,7 +139,7 @@ export default {
         .get(`/unionCardActivity/unionId/${this.unionId}/sharingRatio/page?current=${val}`)
         .then(res => {
           if (res.data.data) {
-            this.data1 = res.data.data.records;
+            this.data1 = res.data.data.records || [];
           }
         })
         .catch(err => {
@@ -149,7 +152,7 @@ export default {
         .get(`/unionCardSharingRatio/activityId/${this.activityId}/unionId/${this.unionId}/page?current=1`)
         .then(res => {
           if (res.data.data) {
-            this.tableData2 = res.data.data.records;
+            this.tableData2 = res.data.data.records || [];
             this.totalAll2 = res.data.data.total;
             this.visibleChangeFlag = true;
             this.visible = false;
@@ -167,7 +170,7 @@ export default {
         .get(`/unionCardSharingRatio/activityId/${this.activityId}/unionId/${this.unionId}/page?current=${val}`)
         .then(res => {
           if (res.data.data) {
-            this.tableData2 = res.data.data.records;
+            this.tableData2 = res.data.data.records || [];
           }
         })
         .catch(err => {

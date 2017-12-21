@@ -108,7 +108,7 @@ export default {
           .get(`/unionMain/my`)
           .then(res => {
             if (res.data.data) {
-              this.options1 = res.data.data;
+              this.options1 = res.data.data || [];
               this.options1.forEach((v, i) => {
                 v.value = v.union.id;
                 v.label = v.union.name;
@@ -125,7 +125,7 @@ export default {
           .get(`/unionOpportunity/fromMe/page?current=1`)
           .then(res => {
             if (res.data.data) {
-              this.tableData = res.data.data.records;
+              this.tableData = res.data.data.records || [];
               this.totalAll = res.data.data.total;
               this.tableData.forEach((v, i) => {
                v.opportunity.acceptStatus = bussinessStatusChange(v.opportunity.acceptStatus);
@@ -146,7 +146,7 @@ export default {
         .get(`/unionOpportunity/fromMe/page?current=1&unionId=${this.unionId}&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
              v.opportunity.acceptStatus = bussinessStatusChange(v.opportunity.acceptStatus);
@@ -166,7 +166,7 @@ export default {
         .get(`/unionOpportunity/fromMe/page?current=${val}&unionId=${this.unionId}&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
-            this.tableData = res.data.data.records;
+            this.tableData = res.data.data.records || [];
             this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
              v.opportunity.acceptStatus = bussinessStatusChange(v.opportunity.acceptStatus);

@@ -10,18 +10,18 @@
           <el-col :xs="8" :sm="8" :md="8" :lg="8">
             <div class="grid-content bg-purple notice-list">我创建的联盟</div>
             <div class="el_btn">
-              <el-button class="fl" v-if="unionMainData.myCreateUnion.img" @click="changUnion(unionMainData.myCreateUnion.id)">
-                <el-tooltip :content="unionMainData.myCreateUnionName" placement="bottom">
+              <el-button class="fl" v-if="unionMainData.myCreateUnion" @click="changUnion(unionMainData.myCreateUnion)">
+                <el-tooltip :content="unionMainData.myCreateUnion.name" placement="bottom">
                   <img v-bind:src="unionMainData.myCreateUnion.img" alt="" class="fl unionImg">
                 </el-tooltip>
               </el-button>
             </div>
-            <create v-if="!unionMainData.myCreateUnion.id && unionListLength < 3"></create>
+            <create v-if="!unionMainData.myCreateUnion && unionListLength < 3"></create>
           </el-col>
           <el-col :xs="8" :sm="8" :md="8" :lg="8">
             <div class="grid-content bg-purple notice-list">我加入的联盟</div>
             <div class="el_btn">
-              <el-button v-for="item in unionMainData.myJoinUnionList" :key="item.id" class="fl" @click="changUnion(item.id)">
+              <el-button v-for="item in unionMainData.myJoinUnionList" :key="item.id" class="fl" @click="changUnion(item)">
                 <el-tooltip :content="item.name" placement="bottom">
                   <img v-bind:src="item.img" alt="" class="fl unionImg">
                 </el-tooltip>
@@ -117,15 +117,15 @@
           <el-dialog title="提示" :visible.sync="visible" size="tiny">
             <hr style="margin-top: 15px;">
             <div>
-              <img src="~assets/images/delect01.png"  class="fl">
+              <img src="~assets/images/delect01.png" class="fl">
               <span>盟主({{ unionMainData.ownerMember.enterpriseName }}) 将“{{ unionMainData.currentUnion.name }}”权限转移给您，
-          </span>
+              </span>
               <p>请确认！</p>
             </div>
             <span slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="confirm">确定</el-button>
-            <el-button @click="reject">取消</el-button>
-          </span>
+              <el-button type="primary" @click="confirm">确定</el-button>
+              <el-button @click="reject">取消</el-button>
+            </span>
           </el-dialog>
         </div>
       </div>
@@ -173,7 +173,7 @@
             </li>
             <li v-if="unionMainData.currentUnion.isIntegral">
               <p>联盟积分</p>
-              <span> {{ unionMainData.integral }} </span>积分
+              <span> {{ (unionMainData.integral).toFixed(2) }} </span>积分
             </li>
           </ul>
         </div>
@@ -200,7 +200,7 @@ import UnionMember from '@/components/my-union/my-union-index/UnionMember';
 import UnionCard from '@/components/my-union/my-union-index/UnionCard';
 import UnionNotice from '@/components/my-union/UnionNotice';
 import $http from '@/utils/http.js';
-import $todate from '@/utils/todate.js';
+import { timeFilter } from '@/utils/filter.js';
 export default {
   name: 'my-union',
   components: {
@@ -245,9 +245,25 @@ export default {
           .get(`/unionIndex?unionId=${this.unionMainData.currentUnion.id}`)
           .then(res => {
             if (res.data.data) {
-              // todo
+              // 清空缓存的数据
+              this.$store.commit('unionIdChange', '');
+              this.$store.commit('isUnionOwnerChange', '');
               // 更新联盟基础信息
+              this.unionMainData = res.data.data;
+              // 判断创建和加入联盟的数量
+              this.unionMainData.myCreateUnion ? (this.unionListLength = 1) : (this.unionListLength = 0);
+              if (this.unionMainData.myJoinUnionList) {
+                this.unionListLength += this.unionMainData.myJoinUnionList.length;
+              }
+              // 全局存储信息
+              this.$store.commit('unionIdChange', this.unionMainData.currentUnion.id);
+              this.$store.commit('isUnionOwnerChange', this.unionMainData.currentMember.isUnionOwner);
               // 处理当前页面数据展示格式
+              this.unionMainData.currentUnion.createTime = timeFilter(this.unionMainData.currentUnion.createTime);
+              this.unionMainData.currentMember.isUnionOwner
+                ? (this.unionMainData.currentMember.isUnionOwner = '盟主')
+                : (this.unionMainData.currentMember.isUnionOwner = '盟员');
+              this.unionMainData.integral = res.data.data.integral || 0;
             }
           })
           .catch(err => {
@@ -270,11 +286,11 @@ export default {
               this.fullscreenLoading = false;
               this.unionMainData = res.data.data;
               // 判断是否创建或加入联盟
-              if (!this.unionMainData.currentUnion.id) {
+              if (!this.unionMainData.currentUnion) {
                 this.$router.push({ path: '/my-union/no-currentUnion' });
               } else {
                 // 判断创建和加入联盟的数量
-                this.unionMainData.myCreateUnion.id ? (this.unionListLength = 1) : (this.unionListLength = 0);
+                this.unionMainData.myCreateUnion ? (this.unionListLength = 1) : (this.unionListLength = 0);
                 if (this.unionMainData.myJoinUnionList) {
                   this.unionListLength += this.unionMainData.myJoinUnionList.length;
                 }
@@ -282,9 +298,7 @@ export default {
                 this.$store.commit('unionIdChange', this.unionMainData.currentUnion.id);
                 this.$store.commit('isUnionOwnerChange', this.unionMainData.currentMember.isUnionOwner);
                 // 处理当前页面数据展示格式
-                this.unionMainData.currentUnion.createTime = $todate.todate(
-                  new Date(this.unionMainData.currentUnion.createTime)
-                );
+                this.unionMainData.currentUnion.createTime = timeFilter(this.unionMainData.currentUnion.createTime);
                 this.unionMainData.currentMember.isUnionOwner
                   ? (this.unionMainData.currentMember.isUnionOwner = '盟主')
                   : (this.unionMainData.currentMember.isUnionOwner = '盟员');
@@ -299,9 +313,9 @@ export default {
         });
     },
     // 点击联盟图片切换联盟
-    changUnion(id) {
-      if (id !== this.unionMainData.currentUnion.id) {
-        this.unionMainData.currentUnion.id = id;
+    changUnion(item) {
+      if (item.id !== this.unionMainData.currentUnion.id) {
+        this.unionMainData.currentUnion.id = item.id;
         $http
           .get(`/unionIndex?unionId=${this.unionMainData.currentUnion.id}`)
           .then(res => {
@@ -311,9 +325,7 @@ export default {
               this.$store.commit('unionIdChange', this.unionMainData.currentUnion.id);
               this.$store.commit('isUnionOwnerChange', this.unionMainData.currentMember.isUnionOwner);
               // 处理当前页面数据展示格式
-              this.unionMainData.currentUnion.createTime = $todate.todate(
-                new Date(this.unionMainData.currentUnion.createTime)
-              );
+              this.unionMainData.currentUnion.createTime = timeFilter(this.unionMainData.currentUnion.createTime);
               this.unionMainData.currentMember.isUnionOwner == 1
                 ? (this.unionMainData.currentMember.isUnionOwner = '盟主')
                 : (this.unionMainData.currentMember.isUnionOwner = '盟员');
@@ -336,6 +348,7 @@ export default {
           if (res.data.success) {
             this.$message({ showClose: true, message: '接受成功', type: 'success', duration: 5000 });
             this.init();
+            this.visible = false;
           }
         })
         .catch(err => {
@@ -349,6 +362,7 @@ export default {
           if (res.data.success) {
             this.$message({ showClose: true, message: '拒绝成功', type: 'success', duration: 5000 });
             this.init();
+            this.visible = false;
           }
         })
         .catch(err => {

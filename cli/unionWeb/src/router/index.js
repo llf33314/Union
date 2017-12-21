@@ -1,34 +1,42 @@
 import Vue from 'vue';
 import Router from 'vue-router';
+
 // 入口
-import MyUnionEntrance from '@/components/entrance/MyUnionEntrance';
-import BusinessEntrance from '@/components/entrance/BusinessEntrance';
-import FinanceEntrance from '@/components/entrance/FinanceEntrance';
-import FrontEntrance from '@/components/entrance/FrontEntrance';
+const MyUnionEntrance = () => import(/* webpackChunkName: "entrance" */ '@/components/entrance/MyUnionEntrance');
+const BusinessEntrance = () => import(/* webpackChunkName: "entrance" */ '@/components/entrance/BusinessEntrance');
+const FinanceEntrance = () => import(/* webpackChunkName: "entrance" */ '@/components/entrance/FinanceEntrance');
+const FrontEntrance = () => import(/* webpackChunkName: "entrance" */ '@/components/entrance/FrontEntrance');
+
 // 我的联盟
-import MyUnion from '@/components/my-union/my-union-index/MyUnion';
-import NoCurrentUnion from '@/components/my-union/my-union-index/NoCurrentUnion';
-import NoRegister from '@/components/my-union/my-union-index/NoRegister';
-import UnionIntroduced from '@/components/my-union/my-union-index/UnionIntroduced';
-import UnionSetting from '@/components/my-union/union-setting/UnionSetting';
-import JoinStep from '@/components/my-union/join-union/JoinStep';
-import CreateStep from '@/components/my-union/create-union/CreateStep';
-import UnionPercent from '@/components/my-union/sell-divide/UnionPercent';
+// 我的联盟index
+const MyUnion = () => import(/* webpackChunkName: "my-union-index" */ '@/components/my-union/my-union-index/MyUnion');
+const NoCurrentUnion = () =>
+  import(/* webpackChunkName: "my-union-index" */ '@/components/my-union/my-union-index/NoCurrentUnion');
+const NoRegister = () =>
+  import(/* webpackChunkName: "my-union-index" */ '@/components/my-union/my-union-index/NoRegister');
+const UnionIntroduced = () =>
+  import(/* webpackChunkName: "my-union-index" */ '@/components/my-union/my-union-index/UnionIntroduced');
 
-import UnionCardSetting from '../components/my-union/union-card-setting/UnionCardSetting';
-import MyActivityCard from '../components/my-union/union-card-setting/MyActivityCard';
+// 我的联盟其他设置
+const CreateStep = () => import(/* webpackChunkName: "my-union" */ '@/components/my-union/create-union/CreateStep');
+const JoinStep = () => import(/* webpackChunkName: "my-union" */ '@/components/my-union/join-union/JoinStep');
+const UnionSetting = () =>
+  import(/* webpackChunkName: "my-union" */ '@/components/my-union/union-setting/UnionSetting');
+const UnionCheck = () => import(/* webpackChunkName: "my-union" */ '@/components/my-union/UnionCheck');
+const UnionRecommend = () => import(/* webpackChunkName: "my-union" */ '@/components/my-union/UnionRecommend');
+const UnionPercent = () => import(/* webpackChunkName: "my-union" */ '@/components/my-union/sell-divide/UnionPercent');
+const UnionQuit = () => import(/* webpackChunkName: "my-union" */ '@/components/my-union/union-quit/UnionQuit');
 
-import UnionQuit from '@/components/my-union/union-quit/UnionQuit';
-
-import UnionCheck from '@/components/my-union/UnionCheck';
-import UnionRecommend from '@/components/my-union/UnionRecommend';
-import UnionDiscount from '@/components/my-union/UnionDiscount';
+const UnionCardSetting = () =>
+  import(/* webpackChunkName: "union-card-setting" */ '@/components/my-union/union-card-setting/UnionCardSetting');
+const MyActivityCard = () =>
+  import(/* webpackChunkName: "union-card-setting" */ '@/components/my-union/union-card-setting/MyActivityCard');
 
 // 我的联盟外其他模块
-import Business from '@/components/business/Business';
-import Finance from '@/components/finance/Finance';
-import Front from '@/components/front/Front';
-import NoUnion from '@/components/public-components/NoUnion';
+const Business = () => import(/* webpackChunkName: "others" */ '@/components/business/Business');
+const Finance = () => import(/* webpackChunkName: "others" */ '@/components/finance/Finance');
+const Front = () => import(/* webpackChunkName: "others" */ '@/components/front/Front');
+const NoUnion = () => import(/* webpackChunkName: "others" */ '@/components/public-components/NoUnion');
 
 Vue.use(Router);
 
@@ -103,11 +111,6 @@ export default new Router({
       component: UnionPercent
     },
     {
-      path: '/my-union/union-discount',
-      name: 'UnionDiscount',
-      component: UnionDiscount
-    },
-    {
       path: '/my-union/union-quit',
       name: 'UnionQuit',
       component: UnionQuit
@@ -119,7 +122,7 @@ export default new Router({
       component: UnionCardSetting,
       children: [
         {
-          path: '/my-activity-card',
+          path: 'my-activity-card/:id',
           name: 'MyActivityCard',
           component: MyActivityCard
         }

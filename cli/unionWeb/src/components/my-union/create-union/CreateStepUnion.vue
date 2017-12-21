@@ -94,6 +94,8 @@ export default {
     materiallayer() {
       this.materialVisible = true;
       this.materialUrl = this.$store.state.materialUrl + window.location.href;
+      this.form.unionImg =
+        'http://maint.deeptel.com.cn/upload//image/3/goodtom/3/20171019/5908D42D1AFEFCC221A5FFF09705BF46.jpg';
     },
     submitForm(formName) {
       this.$refs[formName].validate(valid => {

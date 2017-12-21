@@ -3,13 +3,13 @@
     <Breadcrumb :header-name="['联盟卡设置']"></Breadcrumb>
     <div class="container">
       <el-tabs v-model="editableTabsValue" type="card" @tab-remove="removeTab" @tab-click="jumpTo">
-        <el-tab-pane label="折扣卡设置" name="1" v-if="isUnionOwner">
+        <el-tab-pane label="折扣卡设置" name="1">
           <discount-card-setting></discount-card-setting>
         </el-tab-pane>
         <el-tab-pane label="活动卡设置" name="2">
           <activity-card-setting></activity-card-setting>
         </el-tab-pane>
-        <el-tab-pane v-for="(item, index) in editableTabs" :key="item.name" :label="item.title" :name="item.name" :url="item.url" closable>
+        <el-tab-pane v-for="item in editableTabs" :key="item.name" :label="item.title" :name="item.name" :url="item.url" closable>
           <keep-alive>
             <router-view></router-view>
           </keep-alive>
@@ -33,11 +33,9 @@ export default {
   data() {
     return {
       editableTabsValue: '1',
-      editableTabs: [
-        { title: 'test3', name: '3', url: '/my-activity-card' },
-        { title: 'test4', name: '44', url: '/my-activity-card' }
-      ],
-      closable: true
+      editableTabs: [],
+      closable: true,
+      tabIndex: 2
     };
   },
   computed: {
@@ -47,6 +45,29 @@ export default {
     isUnionOwner() {
       return this.$store.state.isUnionOwner;
     }
+  },
+  mounted: function() {
+    eventBus.$on('myActivityAddTabs', item => {
+      let newTabName = ++this.tabIndex + '';
+      let url = '/my-union/union-card-setting/my-activity-card/' + item.activity.id;
+      let jumpFlag = true;
+      // 已经添加tab的活动不再新增tab
+      this.editableTabs.forEach((v, i) => {
+        if (v.url === url) {
+          this.editableTabsValue = v.name;
+          jumpFlag = false;
+        }
+      });
+      if (jumpFlag) {
+        this.editableTabs.push({
+          title: item.activity.name,
+          name: newTabName,
+          url: url
+        });
+        this.editableTabsValue = newTabName;
+        this.$router.push({ path: url });
+      }
+    });
   },
   methods: {
     // 点击标签页跳转
@@ -65,6 +86,8 @@ export default {
             let nextTab = tabs[index + 1] || tabs[index - 1];
             if (nextTab) {
               activeName = nextTab.name;
+            } else {
+              activeName = '2';
             }
           }
         });

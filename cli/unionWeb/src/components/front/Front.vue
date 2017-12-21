@@ -20,7 +20,7 @@
 <script>
 import Verification from '@/components/front/Verification';
 import ExpenseRecord from './ExpenseRecord';
-import Transaction from './Transaction';
+import Transaction from '@/components/front/transaction/Transaction';
 import $http from '@/utils/http.js';
 export default {
   name: 'front',

@@ -65,7 +65,7 @@ export default {
   data() {
     return {
       number: 0,
-      payItems: [],
+      payItems: [{}],
       levelDesc: '',
       unionLevelDesc: '',
       id: '',
@@ -98,9 +98,11 @@ export default {
           this.levelDesc = res.data.data.busVersionName;
           this.unionLevelDesc = res.data.data.unionVersionName;
           this.payItems = res.data.data.packageList;
-          this.number = this.payItems[1].number;
-          this.id = this.payItems[1].id;
-          this.price = this.payItems[1].price;
+          if (this.payItems.length) {
+            this.number = this.payItems[1].number;
+            this.id = this.payItems[1].id;
+            this.price = this.payItems[1].price;
+          }
         } else {
           this.levelDesc = '';
           this.unionLevelDesc = '';
@@ -122,7 +124,7 @@ export default {
   },
   methods: {
     // 购买
-    buy: function() {
+    buy() {
       if (this.id) {
         $http
           .post(`/unionMainPermit/packageId/${this.id}`)
@@ -175,17 +177,8 @@ export default {
       }
     },
     // 免费使用
-    tryFree: function() {
-      $http
-        .get(`/unionMainPermit/feeTradeUrl`)
-        .then(res => {
-          if (res.data.data) {
-            top.window.location = res.data.data;
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+    tryFree() {
+      top.window.location = this.$store.state.wxmpUrl + '/trading/index.do?setType=trading';
     }
   }
 };
