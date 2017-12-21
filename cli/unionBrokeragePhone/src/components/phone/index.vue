@@ -8,14 +8,14 @@
       <div class="flex-1">
           <i class="fr tubiao"></i>
           <strong>未支付</strong>
-          <p>{{dataList[2]}}</p>
+          <p>{{dataList[1]}}</p>
       </div>
       <div class="flex-1">
             <strong>所得佣金总和</strong>
-            <p>{{dataList[1]}}</p>
+            <p>{{dataList[2]}}</p>
       </div>
     </div>
-    <router-link :to="{ path:'/toTxtract',name:'toTxtract'}">
+    <router-link :to="{ path:'/toExtract',name:'toExtract'}">
         <div class="main_list clear">
             <img src="../../assets/images/widthDraw-1.png" class="fl">
             <div class="fl">
@@ -68,7 +68,7 @@
       //图片底部的颜色切换（白和灰切换）
       this.$emit('getValue',this.toLogin);
       //可提现的数据
-      $http.get("/unionH5Brokerage/index")
+      $http.get("/h5Brokerage/index")
         .then(res => {
           if(res.data.data) {
             for (var key in res.data.data) {
