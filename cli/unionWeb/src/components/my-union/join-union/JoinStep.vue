@@ -206,7 +206,6 @@ export default {
         if (valid) {
           let url = `/union/unionMemberJoin/unionId/${this.unionRadio}/type/1`;
           let data = {};
-          data.unionId = this.unionRadio;
           data.enterpriseName = this.form.enterpriseName;
           data.directorName = this.form.directorName;
           data.directorPhone = this.form.directorPhone;
