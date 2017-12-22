@@ -60,7 +60,7 @@
           <p v-if="item.activityStatus !== '未开始'">
             <join-member :joinMemberCount="item.joinMemberCount" :activityId="item.activity.id"></join-member>
           </p>
-          <check-activity v-if="isUnionOwner && (item.activityStatus === '未报名' || item.activityStatus === '已报名' || item.activityStatus === '')" :projectCheckCount="item.projectCheckCount" :activityId="item.activity.id" ></check-activity>
+          <check-activity v-if="isUnionOwner && (item.activityStatus === '报名中' || item.activityStatus === '报名结束')" :projectCheckCount="item.projectCheckCount" :activityId="item.activity.id" ></check-activity>
           <p v-if="item.activityStatus === '售卡中' || item.activityStatus === '已停售'">
             <span>已售活动卡</span>
             <span>{{ item.cardSellCount }}/{{ item.activity.amount }}</span>
@@ -134,7 +134,7 @@ export default {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
             this.tableData.forEach((v, i) => {
-              v.activityStatus = activityCardStatusFilter(v.activityStatus, v.project);
+              v.activityStatus = activityCardStatusFilter(v.activityStatus);
               v.activity.applyBeginTime = timeFilter(v.activity.applyBeginTime);
               v.activity.applyEndTime = timeFilter(v.activity.applyEndTime);
             });
@@ -155,7 +155,7 @@ export default {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
             this.tableData.forEach((v, i) => {
-              v.activityStatus = activityCardStatusFilter(v.activityStatus, v.project);
+              v.activityStatus = activityCardStatusFilter(v.activityStatus);
               v.activity.applyBeginTime = timeFilter(v.activity.applyBeginTime);
               v.activity.applyEndTime = timeFilter(v.activity.applyEndTime);
             });
