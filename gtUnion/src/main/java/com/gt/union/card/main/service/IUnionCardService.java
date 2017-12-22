@@ -50,6 +50,14 @@ public interface IUnionCardService extends IService<UnionCard> {
      */
     UnionCard getValidActivityCardByUnionIdAndFanIdAndActivityId(Integer unionId, Integer fanId, Integer activityId) throws Exception;
 
+    /**
+     * 根据id获取联盟卡信息
+     * @param id        联盟卡id
+     * @return
+     * @throws Exception
+     */
+    UnionCard getById(Integer id) throws Exception;
+
     //***************************************** Domain Driven Design - list ********************************************
 
     /**
@@ -196,4 +204,7 @@ public interface IUnionCardService extends IService<UnionCard> {
      * @throws Exception 统一处理异常
      */
     List<UnionCard> filterByValidity(List<UnionCard> cardList) throws Exception;
+
+    //***************************************** Object As a Service - get **********************************************
+
 }

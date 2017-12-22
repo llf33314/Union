@@ -135,12 +135,12 @@ public class H5CardController {
 
 	@ApiOperation(value = "手机号、验证码登录", notes = "手机号、验证码登录", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/login", produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
-	public String loginPhone(HttpServletRequest request, HttpServletResponse response
+	public GtJsonResult loginPhone(HttpServletRequest request, HttpServletResponse response
 			, @ApiParam(name="phone", value = "手机号", required = true) @RequestParam("phone") String phone
 			, @ApiParam(name="code", value = "验证码", required = true) @RequestParam("code") String code
 			, @ApiParam(name="busId", value = "商家id", required = true) @RequestParam("busId") Integer busId) throws Exception{
 		if(!smsService.checkPhoneCode(SmsCodeConstant.UNION_CARD_LOGIN_TYPE, code, phone)){
-			return GtJsonResult.instanceErrorMsg(CommonConstant.CODE_ERROR_MSG).toString();
+			return GtJsonResult.instanceErrorMsg(CommonConstant.CODE_ERROR_MSG);
 		}
 		Member member = memberService.getByPhoneAndBusId(phone, busId);
 		if(member == null){
@@ -149,13 +149,13 @@ public class H5CardController {
 		if(memberService.loginMemberByPhone(phone,busId)){
 			throw new BusinessException("登录失败");
 		}
-		return GtJsonResult.instanceSuccessMsg().toString();
+		return GtJsonResult.instanceSuccessMsg();
 	}
 
 
 	@ApiOperation(value = "绑定手机号", notes = "绑定手机号", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/{busId}/bind", produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
-	public String bindCardPhone(HttpServletRequest request, HttpServletResponse response
+	public GtJsonResult bindCardPhone(HttpServletRequest request, HttpServletResponse response
 			,@ApiParam(name="phone", value = "手机号", required = true) @RequestParam("phone") String phone
 			,@ApiParam(name="busId", value = "商家id", required = true) @PathVariable("busId") Integer busId
 			,@ApiParam(name = "url", value = "回调的url", required = true) @RequestParam(value = "url") String url
@@ -163,10 +163,10 @@ public class H5CardController {
 		Member member = SessionUtils.getLoginMember(request,busId);
 		url = url + "/" + busId;
 		if(CommonUtil.isEmpty(member)){
-			return memberService.authorizeMember(request, busId, true, ConfigConstant.CARD_PHONE_BASE_URL + url, ConfigConstant.CARD_PHONE_BASE_URL + "toUnionLogin").toString();
+			return memberService.authorizeMember(request, busId, true, ConfigConstant.CARD_PHONE_BASE_URL + url, ConfigConstant.CARD_PHONE_BASE_URL + "toUnionLogin");
 		}
 		h5CardService.bindCardPhone(member, busId, phone, code);
-		return GtJsonResult.instanceSuccessMsg().toString();
+		return GtJsonResult.instanceSuccessMsg();
 	}
 
 	@ApiOperation(value = "办理联盟卡", notes = "办理联盟卡", produces = "application/json;charset=UTF-8")
