@@ -69,7 +69,7 @@ public class UnionMemberJoinController {
     //-------------------------------------------------- put -----------------------------------------------------------
 
     @ApiOperation(value = "我的联盟-入盟审核-分页数据-通过或不通过", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{joinId}/unionId/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{joinId}/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String updateStatusByIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "入盟申请id", name = "joinId", required = true)
