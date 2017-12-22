@@ -204,7 +204,7 @@ export default {
     onSubmit(formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
-          let url = `/union/unionMemberJoin/unionId/${this.unionRadio}/type/1`;
+          let url = `unionMemberJoin/unionId/${this.unionRadio}/type/1`;
           let data = {};
           data.enterpriseName = this.form.enterpriseName;
           data.directorName = this.form.directorName;
