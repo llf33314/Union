@@ -21,6 +21,7 @@
     </el-table>
     <!-- 弹出框 确认转移 -->
     <el-dialog title="提示" :visible.sync="dialogVisible1" size="tiny">
+      <hr>
       <span>将盟主权限转移给 {{ enterpriseName }}， 是否确认？</span>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="onConfirm1">确 定</el-button>
@@ -29,6 +30,7 @@
     </el-dialog>
     <!-- 弹出框 确认撤销 -->
     <el-dialog title="提示" :visible.sync="dialogVisible2" size="tiny">
+      <hr>
       <span>撤销将盟主权限转移给 {{ enterpriseName }}， 是否确认？</span>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="onConfirm2">确 定</el-button>

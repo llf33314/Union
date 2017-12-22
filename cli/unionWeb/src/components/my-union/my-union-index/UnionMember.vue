@@ -237,12 +237,16 @@ export default {
 .model__10 {
   .el-dialog__body {
     padding: 0;
+    margin-top:15px;
     > div {
       margin: 20px 40px 50px;
       > span {
         float: right;
         margin-bottom: 20px;
       }
+    }
+    .el-form-item{
+      margin-bottom: 17px!important;
     }
   }
   .el-dialog--tiny {

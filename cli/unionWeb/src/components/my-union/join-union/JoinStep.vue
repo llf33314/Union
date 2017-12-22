@@ -212,6 +212,7 @@ export default {
           data.directorPhone = this.form.directorPhone;
           data.directorEmail = this.form.directorEmail;
           data.reason = this.form.reason;
+          data.busUserName = '';
           $http
             .post(url, data)
             .then(res => {

@@ -1,40 +1,54 @@
 <template>
-  <div>
-    <el-button @click="visible1=true">
+  <div class="btnCheck">
+    <el-button @click="visible1=true" size="small">
       待审核 ({{ projectCheckCount }})
     </el-button>
     <!-- 弹出框 待审核详情 -->
-    <el-dialog title="审核项目" :visible.sync="visible1" @close="resetSelection">
-      <el-table :data="tableData" style="width: 100%" ref="multipleTable" @selection-change="handleSelectionChange">
+    <div class="checkReview">
+      <el-dialog title="审核项目" :visible.sync="visible1" @close="resetSelection">
+        <p>温馨提示：盟员的服务项目审核通过后，请及时到售卡分成管理设置佣金比例</p>
+      <el-table :data="tableData" style="width: 100%"  height="450" ref="multipleTable" @selection-change="handleSelectionChange">
         <el-table-column type="selection" min-width="55px"></el-table-column>
         <el-table-column prop="member.enterpriseName" label="盟员名称">
         </el-table-column>
         <el-table-column prop="itemList_" label="项目名称">
         </el-table-column>
       </el-table>
-      <div>
+      <div style="margin: 15px 0 25px;">
         <el-button :disabled="!multipleSelection.length" @click="visible2=true">通过</el-button>
         <el-button :disabled="!multipleSelection.length" @click="visible3=true">不通过</el-button>
       </div>
     </el-dialog>
-    <!-- 弹出框 确认通过 -->
-    <el-dialog title="提示" :visible.sync="visible2">
-      <span>确认通过盟员的项目？</span>
-      <span>点击确定后，盟员的项目立即生效，该操作不可撤回。</span>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="confirm2">确 定</el-button>
-        <el-button @click="visible2=false">取 消</el-button>
-      </span>
-    </el-dialog>
+    </div>
+    <!-- 弹出框 删除确认 -->
+    <div class="model_2">
+      <el-dialog title="提示" :visible.sync="visible2" size="tiny">
+        <hr>
+        <div>
+          <img src="~assets/images/delect01.png"  class="fl">
+          <span>确认通过盟员的项目？</span>
+          <p>点击确定后，盟员的项目立即生效，该操作不可撤回。</p>
+        </div>
+        <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="confirm2">确定</el-button>
+            <el-button @click="visible2=false">取消</el-button>
+          </span>
+      </el-dialog>
+    </div>
     <!-- 弹出框 确认不通过 -->
-    <el-dialog title="审核不通过" :visible.sync="visible3">
-      <span>不通过理由：</span>
-      <el-input v-model="rejectReason"></el-input>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="confirm3">确 定</el-button>
-        <el-button @click="visible3=false">取 消</el-button>
-      </span>
-    </el-dialog>
+    <div class="noPass">
+      <el-dialog title="审核不通过" :visible.sync="visible3">
+        <hr>
+        <div>
+          <span>不通过理由：</span>
+          <el-input v-model="rejectReason" type="textarea" placeholder="请输入内容"></el-input>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="confirm3">确 定</el-button>
+          <el-button @click="visible3=false">取 消</el-button>
+        </span>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -132,3 +146,6 @@ export default {
 };
 </script>
 
+<style lang='less' rel="stylesheet/less" >
+
+</style>

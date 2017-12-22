@@ -314,6 +314,7 @@ export default {
 .model_01 {
   .el-dialog__body {
     padding: 0;
+    margin-top: 15px;
   }
   .el-dialog--tiny {
     width: 660px !important;

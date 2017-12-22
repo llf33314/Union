@@ -6,7 +6,7 @@
     <div class="membership">
       <el-dialog title="参与盟员数" :visible.sync="visible">
         <hr>
-        <el-table :data="tableData" style="width: 100%">
+        <el-table :data="tableData" style="width: 100%" height="480">
           <el-table-column prop="member.enterpriseName" label="盟员名称">
           </el-table-column>
           <el-table-column prop="" label="活动卡项目名称">
@@ -67,3 +67,4 @@ export default {
   }
 };
 </script>
+
