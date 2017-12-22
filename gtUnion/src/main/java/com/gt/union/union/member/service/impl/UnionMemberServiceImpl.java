@@ -196,6 +196,22 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         return result != null && unionId.equals(result.getUnionId()) && status.equals(result.getStatus()) ? result : null;
     }
 
+    @Override
+    public UnionMember getByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
+        if (busId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+
+        List<UnionMember> result = listByBusId(busId);
+        result = filterByUnionId(result, unionId);
+
+        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
+    }
+
     //***************************************** Domain Driven Design - list ********************************************
 
     @Override
@@ -538,12 +554,21 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
     //***************************************** Domain Driven Design - boolean *****************************************
 
     @Override
-    public boolean existByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
+    public boolean existReadByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
         return getReadByBusIdAndUnionId(busId, unionId) != null;
+    }
+
+    @Override
+    public boolean existByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
+        if (busId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        return getByBusIdAndUnionId(busId, unionId) != null;
     }
 
     @Override
@@ -668,6 +693,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         return result;
     }
 
+    @Override
     public List<UnionMember> listByBusId(Integer busId) throws Exception {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);

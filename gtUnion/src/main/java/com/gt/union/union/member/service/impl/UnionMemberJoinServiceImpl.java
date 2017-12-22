@@ -168,8 +168,21 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
             if (busUser == null) {
                 throw new BusinessException("找不到被推荐的商家信息(盟员账号)");
             }
-            if (unionMemberService.existByBusIdAndUnionId(busUser.getId(), unionId)) {
+        }
+        // （3）判断是否重复加入
+        if (MemberConstant.JOIN_TYPE_RECOMMEND == type) {
+            if (unionMemberService.existReadByBusIdAndUnionId(busUser.getId(), unionId)) {
                 throw new BusinessException("被推荐的商家已入盟");
+            }
+            if (unionMemberService.existByBusIdAndUnionId(busUser.getId(), unionId)) {
+                throw new BusinessException("已被推荐入盟");
+            }
+        } else {
+            if (unionMemberService.existReadByBusIdAndUnionId(busId, unionId)) {
+                throw new BusinessException("已经是该联盟的盟员");
+            }
+            if (unionMemberService.existByBusIdAndUnionId(busId, unionId)) {
+                throw new BusinessException("已申请加入联盟");
             }
         }
         // （3）	判断union剩余可加盟数

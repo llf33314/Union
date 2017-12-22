@@ -63,7 +63,7 @@ public class UnionMainController {
     }
 
     @ApiOperation(value = "分页：我的联盟-加入联盟-选择联盟", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/other/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/join/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageOther(
             HttpServletRequest request,
             Page page) throws Exception {
@@ -77,7 +77,7 @@ public class UnionMainController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             voList = MockUtil.list(UnionMain.class, page.getSize());
         } else {
-            voList = unionMainService.listOtherValidByBusId(busId);
+            voList = unionMainService.listJoinValidByBusId(busId);
         }
         Page<UnionMain> result = (Page<UnionMain>) page;
         result = PageUtil.setRecord(result, voList);

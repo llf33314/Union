@@ -506,6 +506,9 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
         if (StringUtil.isEmpty(clientName)) {
             throw new BusinessException("客户名称不能为空");
         }
+        if (StringUtil.getStringLength(clientName) > 10) {
+            throw new BusinessException("客户名称字段长度不能超过10");
+        }
         saveOpportunity.setClientName(clientName);
 
         String clientPhone = vo.getOpportunity().getClientPhone();
