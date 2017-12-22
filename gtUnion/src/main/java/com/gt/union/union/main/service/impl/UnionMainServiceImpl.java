@@ -236,17 +236,17 @@ public class UnionMainServiceImpl extends ServiceImpl<UnionMainMapper, UnionMain
     //***************************************** Object As a Service - list *********************************************
 
     @Override
-    public List<UnionMain> listOtherValidByBusId(Integer busId) throws Exception {
+    public List<UnionMain> listJoinValidByBusId(Integer busId) throws Exception {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
         // （1）获取我创建和已加入的联盟id列表
         List<Integer> unionIdList = new ArrayList<>();
-        List<UnionMember> readMemberList = unionMemberService.listReadByBusId(busId);
-        if (ListUtil.isNotEmpty(readMemberList)) {
-            for (UnionMember readMember : readMemberList) {
-                unionIdList.add(readMember.getUnionId());
+        List<UnionMember> memberList = unionMemberService.listByBusId(busId);
+        if (ListUtil.isNotEmpty(memberList)) {
+            for (UnionMember member : memberList) {
+                unionIdList.add(member.getUnionId());
             }
         }
         // （2）缓存穿透：获取所有有效的，但不包括我创建和加入的联盟列表信息

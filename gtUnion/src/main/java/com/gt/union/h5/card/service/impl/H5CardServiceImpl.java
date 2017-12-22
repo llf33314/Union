@@ -364,8 +364,14 @@ public class H5CardServiceImpl implements IH5CardService {
 	@Override
 	@Transactional(rollbackFor = Exception.class)
 	public String cardTransaction(String phone, Integer busId, Integer activityId, Integer unionId) throws Exception{
-		if(CommonUtil.isEmpty(phone) || busId == null || unionId == null){
+		if(busId == null || unionId == null){
 			throw new ParamException(CommonConstant.PARAM_ERROR);
+		}
+		Map<String,Object> data = new HashMap<String,Object>();
+		if(StringUtil.isEmpty(phone)){
+			//没有手机号
+			data.put("phone", 0);
+			return GtJsonResult.instanceSuccessMsg(data).toString();
 		}
 		List list = new ArrayList<>();
 		if(CommonUtil.isNotEmpty(activityId)){
@@ -373,7 +379,11 @@ public class H5CardServiceImpl implements IH5CardService {
 		}
 		UnionCardFan fan = unionCardFanService.getOrSaveByPhone(phone);
 		UnionPayVO result = unionCardService.saveApplyByBusIdAndUnionIdAndFanId(busId, unionId, fan.getId(), list, unionCardApplyService);
-		return GtJsonResult.instanceSuccessMsg(result).toString();
+		if(result != null){
+			data.put("payUrl", result.getPayUrl());
+			data.put("phone", 1);
+		}
+		return GtJsonResult.instanceSuccessMsg(data).toString();
 	}
 
 	@Override

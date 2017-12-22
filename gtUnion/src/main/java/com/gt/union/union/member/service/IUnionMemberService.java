@@ -108,6 +108,16 @@ public interface IUnionMemberService extends IService<UnionMember> {
     /**
      * 获取盟员信息
      *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @return UnionMember
+     * @throws Exception 统一处理异常
+     */
+    UnionMember getByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
+
+    /**
+     * 获取盟员信息
+     *
      * @param memberId id
      * @return UnionMember
      * @throws Exception 统一处理异常
@@ -124,6 +134,15 @@ public interface IUnionMemberService extends IService<UnionMember> {
     List<Integer> getIdList(List<UnionMember> memberList) throws Exception;
 
     //***************************************** Domain Driven Design - list ********************************************
+
+    /**
+     * 获取盟员列表信息
+     *
+     * @param busId 商家id
+     * @return List<UnionMember>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> listByBusId(Integer busId) throws Exception;
 
     /**
      * 获取具有读权限的盟员列表信息
@@ -267,6 +286,16 @@ public interface IUnionMemberService extends IService<UnionMember> {
     Integer countReadByUnionId(Integer unionId) throws Exception;
 
     //***************************************** Domain Driven Design - boolean *****************************************
+
+    /**
+     * 判断是否存在读权限的盟员信息
+     *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean existReadByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
 
     /**
      * 判断是否存在盟员信息

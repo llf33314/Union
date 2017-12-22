@@ -43,7 +43,7 @@ public interface IUnionMainService extends IService<UnionMain> {
      * @return List<UnionMain>
      * @throws Exception 统一处理异常
      */
-    List<UnionMain> listOtherValidByBusId(Integer busId) throws Exception;
+    List<UnionMain> listJoinValidByBusId(Integer busId) throws Exception;
 
     /**
      * 获取我的有效的具有读权限的联盟列表
