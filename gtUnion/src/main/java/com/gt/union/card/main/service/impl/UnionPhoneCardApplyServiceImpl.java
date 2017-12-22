@@ -34,6 +34,7 @@ public class UnionPhoneCardApplyServiceImpl implements IUnionCardApplyService{
 		payParam.setIsSendMessage(CommonConstant.COMMON_NO);
 		payParam.setPayWay(1);
 		payParam.setDesc("办理联盟卡");
+		payParam.setPayDuoFen(true);
 		String payUrl = wxPayService.pay(payParam);
 
 		result.setPayUrl(payUrl);

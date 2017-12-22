@@ -86,7 +86,7 @@ public interface IUnionCardIntegralService extends IService<UnionCardIntegral> {
      * @return UnionCardIntegral
      * @throws Exception 统一处理异常
      */
-    Double countIntegralByFanId(Integer fanId) throws Exception;
+    Double sumIntegralByFanId(Integer fanId) throws Exception;
 
     /**
      * 统计联盟积分信息
@@ -95,7 +95,7 @@ public interface IUnionCardIntegralService extends IService<UnionCardIntegral> {
      * @return UnionCardIntegral
      * @throws Exception 统一处理异常
      */
-    Double countIntegralByUnionId(Integer unionId) throws Exception;
+    Double sumIntegralByUnionId(Integer unionId) throws Exception;
 
     //***************************************** Domain Driven Design - boolean *****************************************
 

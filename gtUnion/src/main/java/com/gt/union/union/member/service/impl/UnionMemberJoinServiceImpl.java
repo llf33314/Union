@@ -168,6 +168,9 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
             if (busUser == null) {
                 throw new BusinessException("找不到被推荐的商家信息(盟员账号)");
             }
+            if (unionMemberService.existByBusIdAndUnionId(busUser.getId(), unionId)) {
+                throw new BusinessException("被推荐的商家已入盟");
+            }
         }
         // （3）	判断union剩余可加盟数
         Integer unionSurplus = unionMainService.countSurplusByUnionId(unionId);

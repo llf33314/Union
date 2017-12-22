@@ -33,6 +33,7 @@ public class UnionPhoneBrokeragePayServiceImpl implements IUnionBrokeragePayStra
 		payParam.setIsSendMessage(CommonConstant.COMMON_NO);
 		payParam.setPayWay(1);
 		payParam.setDesc("商机佣金");
+		payParam.setPayDuoFen(true);
 		String payUrl = wxPayService.qrCodePay(payParam);
 
 		result.setPayUrl(payUrl);

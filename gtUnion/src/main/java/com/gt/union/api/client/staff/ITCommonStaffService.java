@@ -12,10 +12,11 @@ public interface ITCommonStaffService {
 
 	/**
 	 * 根据门店id获取员工列表
-	 * @param shopId	门店id
+	 * @param shopId    门店id
+	 * @param busId
 	 * @return
 	 */
-	List<TCommonStaff> listTCommonStaffByShopId(Integer shopId);
+	List<TCommonStaff> listTCommonStaffByShopId(Integer shopId, Integer busId);
 
 	/**
 	 * 根据员工id获取员工信息

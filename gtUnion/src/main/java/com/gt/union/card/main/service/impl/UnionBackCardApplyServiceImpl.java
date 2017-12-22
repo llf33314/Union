@@ -31,8 +31,9 @@ public class UnionBackCardApplyServiceImpl implements IUnionCardApplyService{
 		payParam.setIsreturn(CommonConstant.COMMON_NO);
 		payParam.setNotifyUrl(notifyUrl);
 		payParam.setIsSendMessage(CommonConstant.COMMON_NO);
-		payParam.setPayWay(0);
+		payParam.setPayWay(1);
 		payParam.setDesc("办理联盟卡");
+		payParam.setPayDuoFen(true);
 		String payUrl = wxPayService.qrCodePay(payParam);
 
 		result.setPayUrl(payUrl);

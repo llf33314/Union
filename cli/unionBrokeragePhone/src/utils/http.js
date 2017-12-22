@@ -3,11 +3,11 @@ import axios from 'axios';
 import { Message } from 'element-ui';
 
 // axios 配置
-axios.defaults.baseURL = 'http://union.yifriend.net:7884';         //调试
+// axios.defaults.baseURL = 'http://union.yifriend.net:7884';         //调试
 // axios.defaults.baseURL = 'http://192.168.3.59:8080';
 // axios.defaults.baseURL = 'https://union.deeptel.com.cn';           //测试环境
 // axios.defaults.baseURL = 'http://nb.union.deeptel.com.cn';         //堡垒
-// axios.defaults.baseURL = 'http://union.duofee.com';             //升级环境
+axios.defaults.baseURL = 'http://union.duofee.com';             //升级环境
 
 // axios.defaults.timeout = 5000;
 
@@ -50,7 +50,6 @@ function checkStatus(res) {
 function checkCode(res) {
   // 如果code异常(这里已经包括网络错误，服务器错误的错，后端抛出误)，可以弹出一个错误提示，告诉用户
   if (res.status === -404) {
-    alert(2)
     Message({
       showClose: true,
       message: res.errorMsg,
@@ -59,7 +58,6 @@ function checkCode(res) {
     });
   }
   if (res.data && (!res.data.success)) {
-    alert(3)
     Message({
       showClose: true,
       message: res.data.errorMsg,
@@ -93,8 +91,6 @@ export default {
     ).then(
       res => {
         if (res.data.redirectUrl && res.data.redirectUrl !== '') {
-          alert(111)
-          consolg.log(res.data.redirectUrl);
           window.location = res.data.redirectUrl;
         }
         return res;
@@ -148,8 +144,6 @@ export default {
     ).then(
       res => {
         if (res.data.redirectUrl && res.data.redirectUrl !== '') {
-          alert(222)
-          console.log(res.data.redirectUrl);
           window.location = res.data.redirectUrl;
         }
         return res;

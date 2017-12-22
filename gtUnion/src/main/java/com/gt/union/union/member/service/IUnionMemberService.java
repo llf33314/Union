@@ -268,6 +268,16 @@ public interface IUnionMemberService extends IService<UnionMember> {
 
     //***************************************** Domain Driven Design - boolean *****************************************
 
+    /**
+     * 判断是否存在盟员信息
+     *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean existByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
+
     //***************************************** Domain Driven Design - filter ******************************************
 
     /**
