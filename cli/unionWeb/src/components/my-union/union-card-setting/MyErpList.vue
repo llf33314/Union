@@ -18,7 +18,7 @@
       </el-table-column>
       <el-table-column prop="number" label="数量">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.number" placeholder="请输入数量" @change="erpTextListChange"></el-input>
+          <el-input v-model="scope.row.number" placeholder="请输入数量" @keyup.native="check(scope)" @change="erpTextListChange"></el-input>
         </template>
       </el-table-column>
       <el-table-column prop="handle" label="操作" width="180">
@@ -88,6 +88,7 @@
 
 <script>
 import $http from '@/utils/http.js';
+import { numberCheck } from '@/utils/filter.js';
 export default {
   name: 'my-erp-list',
   props: ['erpTextList'],
@@ -241,6 +242,10 @@ export default {
           this.$refs.multipleTable.toggleRowSelection(this.tableData[i], false);
         }
       });
+    },
+    // 校验折扣输入为数字类型
+    check(scope) {
+      scope.row.number = numberCheck(scope.row.number);
     },
     // 确定所选ERP项目
     confirm() {

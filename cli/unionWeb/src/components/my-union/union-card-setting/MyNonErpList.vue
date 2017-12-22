@@ -20,7 +20,7 @@
       </el-table-column>
       <el-table-column prop="number" label="数量">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.number" placeholder="请输入数量" @change="nonErpTextListChange"></el-input>
+          <el-input v-model="scope.row.number" placeholder="请输入数量"  @keyup.native="check(scope)" @change="nonErpTextListChange"></el-input>
         </template>
       </el-table-column>
       <el-table-column prop="" label="操作" width="180">
@@ -39,6 +39,7 @@
 </template>
 
 <script>
+import { numberCheck } from '@/utils/filter.js';
 export default {
   name: 'my-non-erp-list',
   props: ['nonErpTextList'],
@@ -51,6 +52,10 @@ export default {
     }
   },
   methods: {
+    // 校验折扣输入为数字类型
+    check(scope) {
+      scope.row.number = numberCheck(scope.row.number);
+    },
     addNonErpProject() {
       this.nonErpTextList.push({ name: '', number: '' });
       this.nonErpTextListChange();

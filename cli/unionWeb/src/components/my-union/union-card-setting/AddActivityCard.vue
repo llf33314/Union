@@ -19,7 +19,7 @@
             <union-color-picker @colorSelect="colorSelect"></union-color-picker>
           </el-form-item>
           <el-form-item label="发行量：" prop="amount">
-            <el-input v-model="form.amount" placeholder="请输入活动卡发行量"></el-input>
+            <el-input v-model="form.amount" placeholder="请输入活动卡发行量" @keyup.native="check()"></el-input>
             <span>发行活动卡的最大数量</span>
           </el-form-item>
           <el-form-item label="有效天数：" prop="validityDay">
@@ -57,7 +57,7 @@
 <script>
 import $http from '@/utils/http.js';
 import UnionColorPicker from '@/components/public-components/UnionColorPicker';
-
+import { numberCheck } from '@/utils/filter.js';
 export default {
   name: 'add-activity-card',
   components: {
@@ -121,6 +121,10 @@ export default {
     // 选择颜色
     colorSelect(v) {
       this.form.color = v;
+    },
+    // 校验折扣输入为数字类型
+    check() {
+      this.form.amount = numberCheck(this.form.amount);
     },
     // 确定新增活动卡
     activityCardConfirm(formName) {

@@ -449,6 +449,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
             h5BrokerageUser.setBusUser(busUser);
 
             UnionSessionUtil.setH5BrokerageUser(request, h5BrokerageUser);
+            return;
         } else if (ListUtil.isNotEmpty(verifierList)) {
             for (UnionVerifier verifier : verifierList) {
                 TCommonStaff employee = itCommonStaffService.getTCommonStaffById(verifier.getEmployeeId());
@@ -481,6 +482,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
                 h5BrokerageUser.setVerifier(adminVerifier);
                 
                 UnionSessionUtil.setH5BrokerageUser(request, h5BrokerageUser);
+                return;
             }
         }
         throw new BusinessException("登录失败");
