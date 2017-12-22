@@ -73,7 +73,6 @@ public class ApiBaseController {
                 return SignEnum.SIGN_ERROR.getCode();
             }
         } catch (Exception e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             return SignEnum.SIGN_ERROR.getCode();
         }

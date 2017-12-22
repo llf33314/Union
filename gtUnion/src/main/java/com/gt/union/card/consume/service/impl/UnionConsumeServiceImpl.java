@@ -245,6 +245,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
                 vo.setRecordId(consume.getId());
                 vo.setPayMoney(consume.getPayMoney());
                 vo.setPayType(consume.getPayType());
+                vo.setConsumeTimeStr(DateTimeKit.format(consume.getCreateTime(), DateTimeKit.DEFAULT_DATETIME_FORMAT_YYYYMMDD_HHMM));
                 List<UnionConsumeProject> consumeProjectList = unionConsumeProjectService.listByConsumeId(consume.getId());
                 if (ListUtil.isNotEmpty(consumeProjectList)) {
                     List items = new ArrayList<>();

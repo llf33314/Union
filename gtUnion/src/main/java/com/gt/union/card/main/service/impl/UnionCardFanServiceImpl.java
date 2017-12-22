@@ -31,6 +31,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 /**
  * 联盟卡根信息 服务实现类
@@ -57,6 +58,11 @@ public class UnionCardFanServiceImpl extends ServiceImpl<UnionCardFanMapper, Uni
 
     @Autowired
     private IDictService dictService;
+
+    /**
+     * 字母正则校验
+     */
+    private static Pattern CHARACTER_PATTERN = Pattern.compile("[a-zA-z]");
 
     //***************************************** Domain Driven Design - get *********************************************
 
@@ -194,6 +200,14 @@ public class UnionCardFanServiceImpl extends ServiceImpl<UnionCardFanMapper, Uni
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	判断numberOrPhone有效性
+        if (CHARACTER_PATTERN.matcher(numberOrPhone).find()) {//包含字母--扫码枪扫码所得
+            //解密
+            try {
+                numberOrPhone = EncryptUtil.decrypt(PropertiesUtil.getEncryptKey(), numberOrPhone);//解码后得到联盟卡号
+            } catch (Exception e) {
+                throw new ParamException(CommonConstant.PARAM_ERROR);
+            }
+        }
         UnionCardFan fan = getByNumberOrPhone(numberOrPhone);
         if (fan == null) {
             return null;
@@ -299,6 +313,7 @@ public class UnionCardFanServiceImpl extends ServiceImpl<UnionCardFanMapper, Uni
     public UnionCardFan getOrSaveByPhone(String phone) throws Exception{
         UnionCardFan fan = getByPhone(phone);
         //TODO 需要加锁
+        RedissonLockUtil.lock("fan" + phone, 5);
         if(fan == null){
             fan = new UnionCardFan();
             fan.setDelStatus(CommonConstant.COMMON_NO);
@@ -307,6 +322,7 @@ public class UnionCardFanServiceImpl extends ServiceImpl<UnionCardFanMapper, Uni
             fan.setNumber(UnionCardUtil.generateCardNo());
             this.save(fan);
         }
+        RedissonLockUtil.unlock("fan" + phone);
         return fan;
     }
 
