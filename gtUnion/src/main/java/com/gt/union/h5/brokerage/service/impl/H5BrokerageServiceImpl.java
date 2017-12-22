@@ -447,6 +447,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
             H5BrokerageUser h5BrokerageUser = new H5BrokerageUser();
             h5BrokerageUser.setVerifier(loginVerifier);
             h5BrokerageUser.setBusUser(busUser);
+
             UnionSessionUtil.setH5BrokerageUser(request, h5BrokerageUser);
         } else if (ListUtil.isNotEmpty(verifierList)) {
             for (UnionVerifier verifier : verifierList) {
@@ -468,8 +469,21 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
                 }
             }
         } else {
-            throw new BusinessException("登录失败");
+            BusUser busUser = busUserService.getBusUserByPhone(phone);
+            if (busUser != null && unionMemberService.existOwnerByBusId(busUser.getId())) {
+                H5BrokerageUser h5BrokerageUser = new H5BrokerageUser();
+                h5BrokerageUser.setBusUser(busUser);
+
+                UnionVerifier adminVerifier = new UnionVerifier();
+                adminVerifier.setBusId(busUser.getId());
+                adminVerifier.setPhone(phone);
+                adminVerifier.setEmployeeName("管理员");
+                h5BrokerageUser.setVerifier(adminVerifier);
+                
+                UnionSessionUtil.setH5BrokerageUser(request, h5BrokerageUser);
+            }
         }
+        throw new BusinessException("登录失败");
     }
 
     @Override

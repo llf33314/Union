@@ -546,6 +546,15 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         return getReadByBusIdAndUnionId(busId, unionId) != null;
     }
 
+    @Override
+    public boolean existOwnerByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        return getOwnerByBusId(busId) != null;
+    }
+
     //***************************************** Domain Driven Design - filter ******************************************
 
     @Override
