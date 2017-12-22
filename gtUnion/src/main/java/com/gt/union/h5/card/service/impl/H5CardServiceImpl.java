@@ -35,6 +35,7 @@ import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
 import java.util.*;
@@ -361,6 +362,7 @@ public class H5CardServiceImpl implements IH5CardService {
 	}
 
 	@Override
+	@Transactional(rollbackFor = Exception.class)
 	public String cardTransaction(String phone, Integer busId, Integer activityId, Integer unionId) throws Exception{
 		if(CommonUtil.isEmpty(phone) || busId == null || unionId == null){
 			throw new ParamException(CommonConstant.PARAM_ERROR);

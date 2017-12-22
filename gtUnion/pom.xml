@@ -184,6 +184,11 @@
             <version>2.10.5</version>
         </dependency>
 
+        <dependency>
+            <groupId>com.gt.union</groupId>
+            <artifactId>gt_union_api</artifactId>
+            <version>1.0.5</version>
+        </dependency>
     </dependencies>
 
     <build>

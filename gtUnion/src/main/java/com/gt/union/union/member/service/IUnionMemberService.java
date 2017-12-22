@@ -278,6 +278,15 @@ public interface IUnionMemberService extends IService<UnionMember> {
      */
     boolean existByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
 
+    /**
+     * 判断是否存在盟主身份
+     *
+     * @param busId 商家id
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean existOwnerByBusId(Integer busId) throws Exception;
+
     //***************************************** Domain Driven Design - filter ******************************************
 
     /**

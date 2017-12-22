@@ -752,7 +752,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
     }
 
     //***************************************** Object As a Service - get **********************************************
-
+    @Override
     public UnionCard getById(Integer id) throws Exception {
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
