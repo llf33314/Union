@@ -106,11 +106,11 @@ mq:
 #队列转换器
 exchange:
   union:
-    exchange: union.sms.exchange
+    exchange: union.sms.dev.exchange
 #队列名称
 queueName:
   union:
-    queueName: union.sms.queueName
+    queueName: union.sms.dev.queueName
 
 
 #redis:
