@@ -142,7 +142,7 @@ export default {
   },
   mounted: function() {
     $http
-      .get(`/unionMain/other/page`)
+      .get(`/unionMain/join/page`)
       .then(res => {
         if (res.data.data) {
           this.datas = res.data.data.records || [];
@@ -187,7 +187,7 @@ export default {
     // 分页查询
     handleCurrentChange(val) {
       $http
-        .get(`/unionMain/other/page?current=${val}`)
+        .get(`/unionMain/join/page?current=${val}`)
         .then(res => {
           if (res.data.data) {
             this.datas = res.data.data.records || [];

@@ -114,21 +114,17 @@ export function expenseStatusFilter(value) {
 // 活动卡状态
 // value1: 活动状态
 // value2: 活动项目id
-export function activityCardStatusFilter(value1, value2) {
+export function activityCardStatusFilter(value) {
   let status = '';
-  switch (value1) {
+  switch (value) {
     case 1:
       status = '未开始';
       break;
     case 2:
-      if (value2) {
-        status = '已报名';
-      } else {
-        status = '未报名';
-      }
+      status = '报名中';
       break;
     case 3:
-      status = '';
+      status = '报名结束';
       break;
     case 4:
       status = '售卡中';
