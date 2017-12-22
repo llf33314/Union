@@ -33,9 +33,9 @@ public class WxPayServiceImpl implements WxPayService {
         StringBuilder builder = new StringBuilder("?");
         builder.append("totalFee=").append(payParam.getTotalFee())
                 .append("&model=").append(ConfigConstant.PAY_MODEL)
-                .append("&busId=").append(PropertiesUtil.getDuofenBusId())
+                .append("&busId=").append(CommonUtil.isEmpty(payParam.getBusId()) ? PropertiesUtil.getDuofenBusId() : payParam.getBusId())
                 .append("&appidType=").append(CommonUtil.isEmpty(payParam.getAppidType()) ? 0 : payParam.getAppidType())
-                .append("&appid=").append(PropertiesUtil.getDuofenAppid())
+                .append("&appid=").append(payParam.getPayDuoFen() ? PropertiesUtil.getDuofenAppid() : CommonUtil.isEmpty(payParam.getAppid()) ? "" : payParam.getAppid())
                 .append("&orderNum=").append(payParam.getOrderNum())
                 .append("&desc=").append(CommonUtil.isEmpty(payParam.getDesc()) ? "" : payParam.getDesc())
                 .append("&isreturn=").append(payParam.getIsreturn())
@@ -56,9 +56,9 @@ public class WxPayServiceImpl implements WxPayService {
     @Override
     public String pay(PayParam payParam){
         SubQrPayParams subQrPayParams = new SubQrPayParams();
-        subQrPayParams.setAppid(PropertiesUtil.getDuofenAppid());
+        subQrPayParams.setAppid(payParam.getPayDuoFen() ? PropertiesUtil.getDuofenAppid() : payParam.getAppid());
         subQrPayParams.setAppidType(CommonUtil.isEmpty(payParam.getAppidType()) ? 0 : payParam.getAppidType());
-        subQrPayParams.setBusId(PropertiesUtil.getDuofenBusId());
+        subQrPayParams.setBusId(CommonUtil.isEmpty(payParam.getBusId()) ? PropertiesUtil.getDuofenBusId() : payParam.getBusId());
         subQrPayParams.setDesc(CommonUtil.isEmpty(payParam.getDesc()) ? "" : payParam.getDesc());
         subQrPayParams.setIsreturn(payParam.getIsreturn());
         subQrPayParams.setReturnUrl(CommonUtil.isEmpty(payParam.getReturnUrl()) ? "" : payParam.getReturnUrl());

@@ -5,11 +5,13 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.api.bean.session.WxPublicUsers;
 import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.pay.entity.PayParam;
 import com.gt.union.api.client.shop.ShopService;
 import com.gt.union.api.client.socket.SocketService;
+import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.card.consume.constant.ConsumeConstant;
 import com.gt.union.card.consume.entity.UnionConsume;
 import com.gt.union.card.consume.entity.UnionConsumeProject;
@@ -95,6 +97,9 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
     @Autowired
     private SocketService socketService;
 
+    @Autowired
+    private IBusUserService busUserService;
+
     //***************************************** Domain Driven Design - get *********************************************
 
     //***************************************** Domain Driven Design - list ********************************************
@@ -112,7 +117,19 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
         return selectOne(entityWrapper);
     }
 
-    @Override
+	@Override
+	public Integer countPayByFanId(Integer fanId) throws ParamException {
+        if (fanId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .eq("fan_id", fanId);
+
+        return selectCount(entityWrapper);
+	}
+
+	@Override
     public List<ConsumeRecordVO> listConsumeRecordVOByBusId(Integer busId, Integer optUnionId, Integer optShopId,
                                                             String optCardNumber, String optPhone, Date optBeginTime, Date optEndTime) throws Exception {
         if (busId == null) {
@@ -391,6 +408,11 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
             payParam.setIsSendMessage(CommonConstant.COMMON_NO);
             payParam.setPayWay(0);
             payParam.setDesc("消费核销");
+            payParam.setPayDuoFen(false);
+            payParam.setBusId(busId);
+            WxPublicUsers publicUsers = busUserService.getWxPublicUserByBusId(busId);
+            payParam.setAppid(CommonUtil.isNotEmpty(publicUsers) ? publicUsers.getAppid() : null);
+
             String payUrl = wxPayService.qrCodePay(payParam);
 
             result.setPayUrl(payUrl);

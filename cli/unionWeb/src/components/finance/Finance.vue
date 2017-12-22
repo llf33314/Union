@@ -41,13 +41,15 @@
         <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
         </el-pagination>
         <!-- 弹出框 提现二维码 -->
-        <el-dialog title="提现" :visible.sync="dialogVisible1" size="tiny">
-          <hr>
-          <div class="model_">
-            <p><img v-bind:src="$store.state.baseUrl + '/unionVerifier/h5Code'"></p>
-            <p>扫二维码可进入商家联盟佣金平台</p>
-          </div>
-        </el-dialog>
+        <div class="code_">
+          <el-dialog title="提现" :visible.sync="dialogVisible1" size="tiny">
+            <hr>
+            <div class="model_">
+              <p><img v-bind:src="$store.state.baseUrl + '/unionVerifier/h5Code'"></p>
+              <p>扫二维码可进入商家联盟佣金平台</p>
+            </div>
+          </el-dialog>
+        </div>
         <!-- 弹出框 新增 -->
         <el-dialog title="新增管理者" :visible.sync="dialogVisible2" size="tiny" @close="resetForm('ruleForm')">
           <hr>

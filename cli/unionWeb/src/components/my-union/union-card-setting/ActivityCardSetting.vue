@@ -8,7 +8,7 @@
       <add-activity-card></add-activity-card>
     </div>
     <!--没有相关数据-->
-    <div id="noUnion" v-if="!tableData.length">
+    <div id="noUnion" style="margin: 40px 0" v-if="!tableData.length">
       <img src="~assets/images/noCurrent.png">
       <p>
         还没有相关数据
@@ -68,6 +68,7 @@
           <el-progress v-if="item.activityStatus === '售卡中' || item.activityStatus === '已停售'" :text-inside="true" :stroke-width="20" :percentage="item.cardSellCount/item.activity.amount" status="success">
           </el-progress>
         </li>
+        <!--  操作  -->
         <li>
           <div class="btn" v-if="item.activityStatus !== '未开始'">
             <el-button @click="myActivity(item)">我的活动项目</el-button>

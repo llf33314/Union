@@ -5,16 +5,6 @@ import * as $store from '@/store/index.js';
 
 // axios 配置
 axios.defaults.baseURL = $store.default.state.baseUrl;
-// axios.defaults.baseURL = axios({
-//   method: 'get',
-//   url,
-//   params, // get 请求时带的参数
-//   timeout: 10000,
-//   headers: {
-//     'X-Requested-With': 'XMLHttpRequest'
-//   }
-// });
-
 axios.defaults.timeout = 5000;
 
 // http request 拦截器
@@ -147,7 +137,7 @@ export default {
         return res;
       });
   },
-  get(url, params)  {
+  get(url, params) {
     return axios({
       method: 'get',
       url,

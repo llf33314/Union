@@ -16,7 +16,7 @@ export default new Vuex.Store({
     permitId: '',
     activityCanEdit: '',
     myColor: '',
-    // baseUrl: 'http://192.168.3.59:8080',s
+    // baseUrl: 'http://192.168.3.59:8080',
     baseUrl: 'http://union.yifriend.net:7884', // 调试
     // baseUrl: 'https://union.deeptel.com.cn', // 测试
     // baseUrl: 'http://nb.union.deeptel.com.cn', // 堡垒

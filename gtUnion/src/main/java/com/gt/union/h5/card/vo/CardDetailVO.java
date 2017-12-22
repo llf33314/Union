@@ -40,6 +40,9 @@ public class CardDetailVO {
 	@ApiModelProperty(value = "活动卡价格")
 	private Double cardPrice;
 
+	@ApiModelProperty(value = "联盟id")
+	private Integer unionId;
+
 	@ApiModelProperty(value = "联盟卡详情页-列表信息")
 	private List<CardDetailListVO> cardDetailListVO;
 
@@ -113,6 +116,14 @@ public class CardDetailVO {
 
 	public void setCardPrice(Double cardPrice) {
 		this.cardPrice = cardPrice;
+	}
+
+	public Integer getUnionId() {
+		return unionId;
+	}
+
+	public void setUnionId(Integer unionId) {
+		this.unionId = unionId;
 	}
 
 	public List<CardDetailListVO> getCardDetailListVO() {

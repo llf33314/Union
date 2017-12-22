@@ -40,13 +40,21 @@
       <hr>
       <div if="detailData.discountCard">
         <div> {{ detailData.discountCard.name }} </div>
-        <p> 办理时间：<span>{{ detailData.discountCard.createTime }}</span> </p>
-        <p> 享受折扣：<span>{{ detailData.discount }}</span> </p>
+        <p> 办理时间：
+          <span>{{ detailData.discountCard.createTime }}</span>
+        </p>
+        <p> 享受折扣：
+          <span>{{ detailData.discount }}</span>
+        </p>
       </div>
       <div v-for="item in detailData.activityCardList" :key="item.id">
         <div> {{ item.name }} </div>
-        <p> 办理时间：<span>{{ item.createTime }} </span></p>
-        <p> 有效时间：<span>{{ item.validity }}</span> </p>
+        <p> 办理时间：
+          <span>{{ item.createTime }} </span>
+        </p>
+        <p> 有效时间：
+          <span>{{ item.validity }}</span>
+        </p>
       </div>
     </el-dialog>
   </div>
@@ -151,7 +159,8 @@ export default {
     },
     // 导出联盟卡
     output() {
-      let url = this.$store.state.baseUrl + `/unionCardFan/export/${this.unionId}?`;
+      let url =
+        this.$store.state.baseUrl + `/unionCardFan/export?unionId=${this.unionId}&` + this.value + '=' + this.input;
       window.open(url);
     },
     // 弹出框 详情
