@@ -629,6 +629,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
     //***************************************** Object As a Service - save *********************************************
 
     @Transactional(rollbackFor = Exception.class)
+    @Override
     public void save(UnionConsume newUnionConsume) throws Exception {
         if (newUnionConsume == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);

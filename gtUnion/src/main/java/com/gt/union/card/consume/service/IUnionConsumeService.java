@@ -8,6 +8,7 @@ import com.gt.union.card.consume.vo.ConsumeRecordVO;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.h5.card.vo.MyCardConsumeVO;
 import com.gt.union.union.main.vo.UnionPayVO;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -87,6 +88,14 @@ public interface IUnionConsumeService extends IService<UnionConsume> {
      * @throws Exception 统一处理异常
      */
     UnionPayVO saveConsumePostVOByBusIdAndUnionIdAndFanId(Integer busId, Integer unionId, Integer fanId, ConsumePostVO vo) throws Exception;
+
+    /**
+     * 保存核销记录
+     * @param unionConsume
+     * @throws Exception
+     */
+    void save(UnionConsume unionConsume) throws Exception;
+
 
     //***************************************** Domain Driven Design - remove ******************************************
 
