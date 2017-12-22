@@ -311,8 +311,8 @@ public class UnionCardProjectServiceImpl extends ServiceImpl<UnionCardProjectMap
         }
         // （3）	要求活动在报名中状态
         Integer activityStatus = unionCardActivityService.getStatus(activity);
-        if (ActivityConstant.STATUS_APPLYING != activityStatus) {
-            throw new BusinessException("活动卡不在报名中状态");
+        if (ActivityConstant.STATUS_APPLYING != activityStatus && ActivityConstant.STATUS_BEFORE_SELL != activityStatus) {
+            throw new BusinessException("活动卡状态不在报名中或售卡前");
         }
         // （4）	不通过时要求理由不能为空
         if (CommonConstant.COMMON_YES != isPass && StringUtil.isEmpty(vo.getRejectReason())) {
