@@ -7,13 +7,13 @@ import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.card.activity.constant.ActivityConstant;
 import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.activity.service.IUnionCardActivityService;
-import com.gt.union.card.consume.entity.UnionConsume;
 import com.gt.union.card.consume.service.IUnionConsumeService;
 import com.gt.union.card.main.constant.CardConstant;
 import com.gt.union.card.main.entity.UnionCard;
 import com.gt.union.card.main.entity.UnionCardFan;
 import com.gt.union.card.main.service.IUnionCardApplyService;
 import com.gt.union.card.main.service.IUnionCardFanService;
+import com.gt.union.card.main.service.IUnionCardIntegralService;
 import com.gt.union.card.main.service.IUnionCardService;
 import com.gt.union.card.project.constant.ProjectConstant;
 import com.gt.union.card.project.entity.UnionCardProject;
@@ -78,6 +78,9 @@ public class H5CardServiceImpl implements IH5CardService {
 
 	@Autowired
 	private IUnionConsumeService unionConsumeService;
+	
+	@Autowired
+	private IUnionCardIntegralService unionCardIntegralService;
 
 	@Override
 	public IndexVO getIndexVO(String phone, Integer busId) throws Exception {
@@ -194,6 +197,7 @@ public class H5CardServiceImpl implements IH5CardService {
 		}
 		CardDetailVO result = new CardDetailVO();
 		result.setIsTransacted(CommonConstant.COMMON_YES);
+		result.setUnionId(unionId);
 		if(CommonUtil.isEmpty(activityId)){
 			//折扣卡
 			if(CommonUtil.isNotEmpty(phone)){
@@ -333,6 +337,10 @@ public class H5CardServiceImpl implements IH5CardService {
 						}
 					}
 					vo.setCardList(cardList);
+					Double integral = unionCardIntegralService.sumIntegralByFanId(fan.getId());
+					vo.setIntegral(integral);
+					Integer consumeCount = unionConsumeService.countPayByFanId(fan.getId());
+					vo.setConsumeCount(consumeCount);
 				}
 			}
 		}

@@ -100,11 +100,6 @@ public class UnionCardController {
             HttpServletRequest request,
             @ApiParam(value = "表单内容", name = "cardPhoneVO", required = true)
             @RequestBody CardPhoneVO vo) throws Exception {
-        BusUser busUser = SessionUtils.getLoginUser(request);
-        Integer busId = busUser.getId();
-        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
-        }
         // mock
         UnionCardFan result;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
@@ -128,7 +123,7 @@ public class UnionCardController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
+            busId = busUser.getPid();
         }
 
         // mock

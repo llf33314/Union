@@ -125,6 +125,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         payParam.setIsSendMessage(CommonConstant.COMMON_NO);
         payParam.setPayWay(0);
         payParam.setDesc("购买盟主服务");
+        payParam.setPayDuoFen(true);
         String payUrl = wxPayService.qrCodePay(payParam);
 
         result.setPayUrl(payUrl);

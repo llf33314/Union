@@ -85,7 +85,7 @@ public class UnionCardIntegralServiceImpl extends ServiceImpl<UnionCardIntegralM
     }
 
     @Override
-    public Double countIntegralByFanId(Integer fanId) throws Exception {
+    public Double sumIntegralByFanId(Integer fanId) throws Exception {
         if (fanId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -102,7 +102,7 @@ public class UnionCardIntegralServiceImpl extends ServiceImpl<UnionCardIntegralM
     }
 
     @Override
-    public Double countIntegralByUnionId(Integer unionId) throws Exception {
+    public Double sumIntegralByUnionId(Integer unionId) throws Exception {
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }

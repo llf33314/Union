@@ -60,6 +60,21 @@ public class PayParam {
 	private Integer payWay;
 
 	/**
+	 * 商家id
+	 */
+	private Integer busId;
+
+	/**
+	 * 商家appid
+	 */
+	private String appid;
+
+	/**
+	 * 是否支付给多粉  true：是 false：否
+	 */
+	private Boolean payDuoFen;
+
+	/**
 	 * 扩展属性
 	 */
 	private Map extend;
@@ -145,6 +160,30 @@ public class PayParam {
 		this.payWay = payWay;
 	}
 
+	public Integer getBusId() {
+		return busId;
+	}
+
+	public void setBusId(Integer busId) {
+		this.busId = busId;
+	}
+
+	public String getAppid() {
+		return appid;
+	}
+
+	public void setAppid(String appid) {
+		this.appid = appid;
+	}
+
+	public Boolean getPayDuoFen() {
+		return payDuoFen;
+	}
+
+	public void setPayDuoFen(Boolean payDuoFen) {
+		this.payDuoFen = payDuoFen;
+	}
+
 	public Map getExtend() {
 		return extend;
 	}
@@ -152,4 +191,6 @@ public class PayParam {
 	public void setExtend(Map extend) {
 		this.extend = extend;
 	}
+
+
 }

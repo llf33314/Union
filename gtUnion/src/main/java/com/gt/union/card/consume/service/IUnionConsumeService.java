@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.card.consume.entity.UnionConsume;
 import com.gt.union.card.consume.vo.ConsumePostVO;
 import com.gt.union.card.consume.vo.ConsumeRecordVO;
+import com.gt.union.common.exception.ParamException;
 import com.gt.union.h5.card.vo.MyCardConsumeVO;
 import com.gt.union.union.main.vo.UnionPayVO;
 
@@ -28,6 +29,15 @@ public interface IUnionConsumeService extends IService<UnionConsume> {
      * @throws Exception 统一处理异常
      */
     UnionConsume getByOrderNo(String orderNo) throws Exception;
+
+    //***************************************** Domain Driven Design - count *********************************************
+
+    /**
+     * 根据联盟卡粉丝id计算消费记录数
+     * @param fanId     联盟卡粉丝id
+     * @return
+     */
+    Integer countPayByFanId(Integer fanId) throws ParamException;
 
     //***************************************** Domain Driven Design - list ********************************************
 
@@ -93,6 +103,7 @@ public interface IUnionConsumeService extends IService<UnionConsume> {
      * @return String 返回结果
      */
     String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess);
+
 
 	//***************************************** Domain Driven Design - count *******************************************
 
