@@ -154,7 +154,7 @@
             //跳转到主页面中去
             if(res.data.success) {
               //跳转到主页面
-              location.href = '/#/Index';
+              location.href = '/brokeragePhone/#/Index';
             }
           })
           .catch(err => {
@@ -189,7 +189,7 @@
                   success: function (res) {
                     if(res.code == 0){
                       setTimeout(function () {
-                        location.href = '/#/Index';
+                        location.href = '/brokeragePhone/#/Index';
                       }, 10);
                     }else {
                       that_.$message({showClose: true, message: res.msg, type: 'error', duration: 3000});
