@@ -218,10 +218,12 @@ public class H5CardServiceImpl implements IH5CardService {
 			result.setCardName(union.getName() + "折扣卡");
 			List<UnionMember> members = unionMemberService.listWriteByUnionId(unionId);
 			List<CardDetailListVO> list = new ArrayList<CardDetailListVO>(members.size());
-			for(UnionMember member : members){
-				CardDetailListVO listVO = new CardDetailListVO();
-				listVO.setUnionMember(member);
-				list.add(listVO);
+			if(ListUtil.isNotEmpty(members)){
+				for(UnionMember member : members){
+					CardDetailListVO listVO = new CardDetailListVO();
+					listVO.setUnionMember(member);
+					list.add(listVO);
+				}
 			}
 			result.setCardDetailListVO(list);
 			result.setUserCount(members.size());
@@ -254,6 +256,7 @@ public class H5CardServiceImpl implements IH5CardService {
 				result.setIsTransacted(CommonConstant.COMMON_NO);
 			}
 			int itemCount = 0;
+			List<CardDetailListVO> list = new ArrayList<CardDetailListVO>();
 			//已通过审核
 			List<UnionMember> members = unionMemberService.listWriteByUnionId(unionId);
 			if(ListUtil.isNotEmpty(members)){
@@ -271,7 +274,6 @@ public class H5CardServiceImpl implements IH5CardService {
 					}
 				});
 				List<UnionCardProject> projectList = unionCardProjectService.listByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
-				List<CardDetailListVO> list = new ArrayList<CardDetailListVO>(members.size());
 				for(UnionMember member : members){
 					CardDetailListVO listVO = new CardDetailListVO();
 					if (ListUtil.isNotEmpty(projectList)) {
@@ -294,6 +296,7 @@ public class H5CardServiceImpl implements IH5CardService {
 			result.setCardName(activity.getName());
 			result.setCardType(CardConstant.TYPE_ACTIVITY);
 			result.setCardPrice(activity.getPrice());
+			result.setCardDetailListVO(list);
 			if(CommonUtil.isNotEmpty(activity.getColor())){
 				String[] c = activity.getColor().split(",");
 				result.setColor1(c[0]);
