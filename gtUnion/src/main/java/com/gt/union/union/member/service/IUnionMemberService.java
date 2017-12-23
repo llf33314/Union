@@ -231,17 +231,34 @@ public interface IUnionMemberService extends IService<UnionMember> {
      */
     List<UnionMember> listByUnionIdAndStatus(Integer unionId, Integer status) throws Exception;
 
+    /**
+     * 获取盟员列表信息
+     *
+     * @param status 盟员状态
+     * @return List<UnionMember>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> listByStatus(Integer status) throws Exception;
+
     //***************************************** Domain Driven Design - save ********************************************
 
     /**
      * 保存
      *
      * @param saveMember 保存内容
-     * @throws Exception Exception
+     * @throws Exception 统一处理异常
      */
     void save(UnionMember saveMember) throws Exception;
 
     //***************************************** Domain Driven Design - remove ******************************************
+
+    /**
+     * 移出
+     *
+     * @param id 盟员id
+     * @throws Exception 统一处理异常
+     */
+    void removeById(Integer id) throws Exception;
 
     //***************************************** Domain Driven Design - update ******************************************
 
