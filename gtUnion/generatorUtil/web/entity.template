@@ -1,0 +1,36 @@
+{{define "entity.template"}}package {{.PackagePath}}.entity;
+
+import com.baomidou.mybatisplus.annotations.TableField;
+import com.baomidou.mybatisplus.annotations.TableId;
+import com.baomidou.mybatisplus.enums.IdType;
+import com.baomidou.mybatisplus.activerecord.Model;
+import com.baomidou.mybatisplus.annotations.TableName;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
+
+import java.io.Serializable;
+import java.util.Date;
+
+/**
+ * {{.TableComment}}
+ *
+ * @author {{.Author}}
+ * @version {{.DateTime}}
+ */
+@ApiModel(value = "{{.TableComment}}")
+@JsonInclude(JsonInclude.Include.NON_NULL)
+@TableName("{{.TableName}}")
+public class {{.ModelName}} extends Model<{{.ModelName}}> {
+    private static final long serialVersionUID = 1L;
+    {{range .Columns}}
+    {{template "entity.field.template" .}}
+    {{end}}
+    {{range .Columns}}
+    {{template "entity.method.template" .}}
+    {{end}}
+    @Override
+    protected Serializable pkVal() {
+        return this.{{.PrimaryKeyField}};
+    }
+}{{end}}

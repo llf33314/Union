@@ -1,0 +1,7 @@
+{{define "entity.method.template"}}public {{.FieldType}} get{{upperFirstChar .FieldName}}() {
+        return {{.FieldName}};
+    }
+
+    public void set{{upperFirstChar .FieldName}}({{.FieldType}} {{.FieldName}}) {
+        this.{{.FieldName}} = {{.FieldName}};
+    }{{end}}
