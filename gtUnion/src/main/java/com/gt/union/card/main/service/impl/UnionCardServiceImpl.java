@@ -386,7 +386,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             saveCardRecordList.add(saveCardRecord);
         }
 
-        UnionPayVO result = unionCardApplyService.unionCardApply(orderNo, payMoneySum.doubleValue(), busId);
+        UnionPayVO result = unionCardApplyService.unionCardApply(orderNo, payMoneySum.doubleValue(), busId, unionId, activityIdList);
 
         unionCardRecordService.saveBatch(saveCardRecordList);
         return result;
