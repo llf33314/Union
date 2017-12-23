@@ -5,6 +5,8 @@ import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.api.client.shop.ShopService;
 import com.gt.union.api.entity.param.UnionConsumeParam;
 import com.gt.union.api.server.consume.service.IUnionConsumeApiService;
+import com.gt.union.api.server.entity.result.UnionRefundResult;
+import com.gt.union.card.consume.constant.ConsumeConstant;
 import com.gt.union.card.consume.entity.UnionConsume;
 import com.gt.union.card.consume.service.IUnionConsumeService;
 import com.gt.union.card.main.entity.UnionCard;
@@ -146,7 +148,21 @@ public class UnionConsumeApiServiceImpl implements IUnionConsumeApiService {
 	}
 
 	@Override
-	public void unionConsumeRefund(String orderNo, Integer model) {
+	public void unionConsumeRefund(String orderNo, Integer model) throws Exception{
+		UnionConsume unionConsume = unionConsumeService.getByOrderNoAndModel(orderNo, model);
+		if (unionConsume == null) {
+			throw new BusinessException("订单不存在");
+		}
+		if (unionConsume.getPayStatus() == ConsumeConstant.PAY_STATUS_PAYING) {
+			throw new BusinessException("未支付，不可退款");
+		} else if (unionConsume.getPayStatus() == ConsumeConstant.PAY_STATUS_SUCCESS) {//已支付
+			UnionConsume consume = new UnionConsume();
+			consume.setId(unionConsume.getId());
+			consume.setPayStatus(ConsumeConstant.PAY_STATUS_FAIL);
+			unionConsumeService.updateById(consume);
+		} else if (unionConsume.getPayStatus() == ConsumeConstant.PAY_STATUS_FAIL) {//已退款
+			throw new BusinessException("已退款");
+		}
 
 	}
 }

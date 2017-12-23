@@ -31,6 +31,15 @@ public interface IUnionConsumeService extends IService<UnionConsume> {
      */
     UnionConsume getByOrderNo(String orderNo) throws Exception;
 
+    /**
+     * 根据订单号和行业模型查询消费记录
+     * @param orderNo       订单号
+     * @param model         行业模型
+     * @throws Exception 统一处理异常
+     * @return
+     */
+    UnionConsume getByOrderNoAndModel(String orderNo, Integer model) throws Exception;
+
     //***************************************** Domain Driven Design - count *********************************************
 
     /**

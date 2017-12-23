@@ -118,6 +118,20 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
     }
 
 	@Override
+	public UnionConsume getByOrderNoAndModel(String orderNo, Integer model) throws Exception {
+        if (orderNo == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .eq("order_no", orderNo)
+                .eq("business_type", model);
+
+        return selectOne(entityWrapper);
+	}
+
+	@Override
 	public Integer countPayByFanId(Integer fanId) throws ParamException {
         if (fanId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
