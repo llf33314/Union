@@ -82,6 +82,14 @@ public interface IUnionMemberOutService extends IService<UnionMemberOut> {
 
     //***************************************** Domain Driven Design - remove ******************************************
 
+    /**
+     * 移出
+     *
+     * @param id 盟员id
+     * @throws Exception 统一处理异常
+     */
+    void removeById(Integer id) throws Exception;
+    
     //***************************************** Domain Driven Design - update ******************************************
 
     /**

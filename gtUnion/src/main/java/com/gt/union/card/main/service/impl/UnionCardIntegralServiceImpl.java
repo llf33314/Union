@@ -370,9 +370,9 @@ public class UnionCardIntegralServiceImpl extends ServiceImpl<UnionCardIntegralM
         List<String> idKeyList = UnionCardIntegralCacheUtil.getIdKey(idList);
         redisCacheUtil.remove(idKeyList);
 
-        List<String> fanIDKeyList = getForeignIdKeyList(unionCardIntegralList, UnionCardIntegralCacheUtil.TYPE_FAN_ID);
-        if (ListUtil.isNotEmpty(fanIDKeyList)) {
-            redisCacheUtil.remove(fanIDKeyList);
+        List<String> fanIdKeyList = getForeignIdKeyList(unionCardIntegralList, UnionCardIntegralCacheUtil.TYPE_FAN_ID);
+        if (ListUtil.isNotEmpty(fanIdKeyList)) {
+            redisCacheUtil.remove(fanIdKeyList);
         }
 
         List<String> unionIdKeyList = getForeignIdKeyList(unionCardIntegralList, UnionCardIntegralCacheUtil.TYPE_UNION_ID);

@@ -212,6 +212,17 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         return ListUtil.isNotEmpty(result) ? result.get(0) : null;
     }
 
+    @Override
+    public UnionMember getByIdAndUnionId(Integer memberId, Integer unionId) throws Exception {
+        if (memberId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        UnionMember result = getById(memberId);
+
+        return result != null && unionId.equals(result.getUnionId()) ? result : null;
+    }
+
     //***************************************** Domain Driven Design - list ********************************************
 
     @Override
@@ -397,6 +408,19 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         result = filterByStatus(result, status);
 
         return result;
+    }
+
+    @Override
+    public List<UnionMember> listByStatus(Integer status) throws Exception {
+        if (status == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .eq("status", status);
+
+        return selectList(entityWrapper);
     }
 
     //***************************************** Domain Driven Design - save ********************************************
@@ -738,6 +762,7 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
 
     //***************************************** Object As a Service - remove *******************************************
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void removeById(Integer id) throws Exception {
         if (id == null) {

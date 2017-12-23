@@ -1,0 +1,18 @@
+{
+  "addrPort": "113.106.202.51:3306",
+  "database": "gt_union_ceshi",
+  "userName": "root",
+  "password": "gt123456",
+  "author": "linweicong",
+  "tables": [
+    {
+      "packagePath": "com.gt.union.card.main",
+      "tableName": "t_union_card_integral",
+      "tablePrefixes": "t_",
+      "foreignKeys": [
+        "fan_id",
+        "union_id"
+        ]
+    }
+  ]
+}

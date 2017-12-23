@@ -1,0 +1,14 @@
+{{define "dao.template"}}package {{.PackagePath}}.mapper;
+
+import {{.PackagePath}}.entity.{{.ModelName}};
+import com.baomidou.mybatisplus.mapper.BaseMapper;
+
+/**
+ * {{.TableComment}} Mapper 接口
+ *
+ * @author {{.Author}}
+ * @version {{.DateTime}}
+ */
+public interface {{.ModelName}}Mapper extends BaseMapper<{{.ModelName}}> {
+
+}{{end}}
