@@ -39,48 +39,44 @@ spring:
       web-stat-filter:
         url-pattern: /*
         exclusions: /druid/*,*.js,*.gif,*.jpg,*.png,*.css,*.ico
-      aop-patterns: com.gt.union.*.service.*
+      aop-patterns: com.gt.union.*.*.service.*
 
   # redis配置
   redis:
-      host: 113.106.202.51
-      port: 6381
       password: gt@123456
-      timeout: 0
-      database: 0
-      pool:
-        max-active: 8
-        max-wait: -1
-        max-idle: 8
-        min-idle: 0
-      cluster:
-        nodes: 10.10.3.152:9001,10.10.3.154:9004,10.10.3.153:9002,10.10.3.152:9005,10.10.3.154:9003,10.10.3.153:9006
-        timeout: 30000
-        max-attempts: 3
-        password: Gu123123@
-        pool:
-          max-total: 8
-          max-idle: 8
-          min-idle: 0
-  #redis session共享配置
-  redis2:
-      host: 113.106.202.51
-      port: 6379
-      password: gt@123456
-      timeout: 0
+      timeout: 1000
       database: 4
       pool:
-        max-active: 8
+        max-active: 50
         max-wait: -1
-        max-idle: 8
+        max-idle: 20
         min-idle: 0
+        #redis集群配置
+      cluster:
+        nodes: 113.106.202.51:6379,113.106.202.50:9379,113.106.202.54:9379
+        max-attempts: 6
+        max-redirects: 6
+        #redis哨兵模式配置
+      sentinel:
+        nodes: 113.106.202.51:26379,113.106.202.50:29379,113.106.202.54:29379
+        master: mymaster
+
+
   session:
        store-type: redis
 
+#jdk 1.7 配置 哨兵地址须加redis:// 如redis://127.0.0.1:6379  redissson 稳定版本使用2.10.5
+#jdk 1.8 配置 哨兵地址不须加redis:// 如127.0.0.1:6379  redissson 稳定版本使用3.5.5
+#基于redis的分布式锁 redisson配置
+redisson:
+  master-name: mymaster
+  password: gt@123456
+  sentinel-addresses: redis://113.106.202.51:26379,redis://113.106.202.50:29379,redis://113.106.202.54:29379
+
 # mybatis设置
 mybatis:
-  mapper-locations: classpath:mapper/*/*Mapper.xml
-  type-aliases-package: com.gt.union.*.entity
+  mapper-locations: classpath:mapper/*/*/*Mapper.xml
+  type-aliases-package: com.gt.union.*.*.entity
 
 
 ######################## 全局配置 ########################
@@ -90,9 +86,9 @@ mybatis:
 #访问资源URL
 resource:
   url:
-    prefix: http://192.168.3.41:9998/upload/
+    prefix: https://maint.duofriend.com/upload/
 socket:
-  url: http://183.47.242.2:8881
+  url: https://socket1.duofriend.com
   key: "Union_Key_"
 #企业短信通-密码
 
@@ -103,16 +99,17 @@ domain:
 mq:
   uri: 183.47.242.4
   user: guest
-  password: yf26609632
+  password: gt@123456@
+
 
 #队列转换器
 exchange:
   union:
-    exchange: union_exchange
+    exchange: union.sms.nb.exchange
 #队列名称
 queueName:
   union:
-    queueName: union_routingKey_phone_message
+    queueName: union.sms.nb.queueName
 
 
 #redis:
@@ -126,20 +123,34 @@ redisSession:
 
 #数据请求地址
 wxmp:
-   url: http://nb.deeptel.com.cn
+   url: https://nb.deeptel.com.cn
    signkey: WXMP2017
    company: "多粉平台"
 
 union:
-  url: http://nb.union.deeptel.com.cn
+  url: https://nb.union.deeptel.com.cn
   encryptKey: CFCCBD99C12B62E52952EA90A931A01F
   signkey: SR36E9KIYDLIU1VB6WX20HCW494QL97T
 wx:
   duofen:
     busId: 4856
+    appid: wx6a70c924311f2bd6
 
+#会员粉丝
 member:
-  url: http://nb.member.deeptel.com.cn
+  url: https://nb.member.deeptel.com.cn
   signkey: MV8MMFQUMU1HJ6F2GNH40ZFJJ7Q8LNVM
 
+#车小算
+car:
+  url: https://nb.che.deeptel.com.cn
 
+#进销存
+jxc:
+  url: https://nb.jxc.deeptel.com.cn
+  account: erp_7
+  pwd: 123456
+
+#素材库
+suc:
+  url: https://nb.suc.deeptel.com.cn

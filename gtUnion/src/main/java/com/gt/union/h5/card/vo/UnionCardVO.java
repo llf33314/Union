@@ -16,8 +16,11 @@ public class UnionCardVO {
 	@ApiModelProperty(value = "联盟卡名称")
 	private String cardName;
 
-	@ApiModelProperty(value = "联盟活动卡颜色")
-	private String color;
+	@ApiModelProperty(value = "联盟活动卡颜色1")
+	private String color1;
+
+	@ApiModelProperty(value = "联盟活动卡颜色2")
+	private String color2;
 
 	@ApiModelProperty(value = "活动卡id")
 	private Integer activityId;
@@ -41,12 +44,20 @@ public class UnionCardVO {
 		this.cardName = cardName;
 	}
 
-	public String getColor() {
-		return color;
+	public String getColor1() {
+		return color1;
 	}
 
-	public void setColor(String color) {
-		this.color = color;
+	public void setColor1(String color1) {
+		this.color1 = color1;
+	}
+
+	public String getColor2() {
+		return color2;
+	}
+
+	public void setColor2(String color2) {
+		this.color2 = color2;
 	}
 
 	public Integer getActivityId() {
