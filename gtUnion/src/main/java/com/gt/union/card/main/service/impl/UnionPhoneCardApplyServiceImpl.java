@@ -29,7 +29,7 @@ public class UnionPhoneCardApplyServiceImpl implements IUnionCardApplyService{
 		payParam.setTotalFee(payMoneySum.doubleValue());
 		payParam.setOrderNum(orderNo);
 		payParam.setIsreturn(CommonConstant.COMMON_YES);
-		payParam.setReturnUrl(ConfigConstant.CARD_PHONE_BASE_URL + "toGratitudeCard/" + busId);
+		payParam.setReturnUrl(ConfigConstant.CARD_PHONE_BASE_URL + "toActivityCard/" + busId);
 		payParam.setNotifyUrl(notifyUrl);
 		payParam.setIsSendMessage(CommonConstant.COMMON_NO);
 		payParam.setPayWay(1);
