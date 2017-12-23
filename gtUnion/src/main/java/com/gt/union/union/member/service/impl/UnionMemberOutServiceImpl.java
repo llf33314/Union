@@ -512,6 +512,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
 
     //***************************************** Object As a Service - remove *******************************************
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public void removeById(Integer id) throws Exception {
         if (id == null) {
