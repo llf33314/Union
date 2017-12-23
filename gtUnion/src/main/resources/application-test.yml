@@ -91,7 +91,6 @@ resource:
 socket:
   url: https://socket.deeptel.com.cn
   key: "Union_Key_"
-#企业短信通-密码
 
 #域名
 domain:
@@ -106,11 +105,11 @@ mq:
 #队列转换器
 exchange:
   union:
-    exchange: union.sms.exchange
+    exchange: union.sms.test.exchange
 #队列名称
 queueName:
   union:
-    queueName: union.sms.queueName
+    queueName: union.sms.test.queueName
 
 
 #redis:

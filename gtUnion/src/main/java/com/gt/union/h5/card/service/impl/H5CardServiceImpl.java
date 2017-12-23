@@ -151,7 +151,11 @@ public class H5CardServiceImpl implements IH5CardService {
 		unionCardVO.setCardType(type);
 		unionCardVO.setUnionId(unionId);
 		unionCardVO.setActivityId(activityId);
-		unionCardVO.setColor(color);
+		if(CommonUtil.isNotEmpty(color)){
+			String[] c = color.split(",");
+			unionCardVO.setColor1(c[0]);
+			unionCardVO.setColor2(c[1]);
+		}
 		return unionCardVO;
 	}
 
@@ -290,7 +294,11 @@ public class H5CardServiceImpl implements IH5CardService {
 			result.setCardName(activity.getName());
 			result.setCardType(CardConstant.TYPE_ACTIVITY);
 			result.setCardPrice(activity.getPrice());
-			result.setColor(activity.getColor());
+			if(CommonUtil.isNotEmpty(activity.getColor())){
+				String[] c = activity.getColor().split(",");
+				result.setColor1(c[0]);
+				result.setColor2(c[1]);
+			}
 			result.setItemCount(itemCount);
 		}
 		return result;
@@ -319,7 +327,11 @@ public class H5CardServiceImpl implements IH5CardService {
 								int itemCount = 0;
 								UnionCardActivity activity = unionCardActivityService.getByIdAndUnionId(card.getActivityId(), union.getId());
 								detailVO.setCardName(activity.getName());
-								detailVO.setColor(activity.getColor());
+								if(CommonUtil.isNotEmpty(activity.getColor())){
+									String[] c = activity.getColor().split(",");
+									detailVO.setColor1(c[0]);
+									detailVO.setColor2(c[1]);
+								}
 								detailVO.setActivityId(activity.getId());
 								detailVO.setValidityStr(DateTimeKit.format(card.getValidity(), DateTimeKit.DEFAULT_DATE_FORMAT));
 								//优惠项目
