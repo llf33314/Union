@@ -212,6 +212,17 @@ public class UnionMemberServiceImpl extends ServiceImpl<UnionMemberMapper, Union
         return ListUtil.isNotEmpty(result) ? result.get(0) : null;
     }
 
+    @Override
+    public UnionMember getByIdAndUnionId(Integer memberId, Integer unionId) throws Exception {
+        if (memberId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        UnionMember result = getById(memberId);
+
+        return result != null && unionId.equals(result.getUnionId()) ? result : null;
+    }
+
     //***************************************** Domain Driven Design - list ********************************************
 
     @Override

@@ -251,10 +251,10 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 }
                 vo.setUnion(union);
 
-                UnionMember fromMember = unionMemberService.getReadByIdAndUnionId(opportunity.getFromMemberId(), union.getId());
+                UnionMember fromMember = unionMemberService.getByIdAndUnionId(opportunity.getFromMemberId(), union.getId());
                 vo.setFromMember(fromMember);
 
-                UnionMember toMember = unionMemberService.getReadByIdAndUnionId(opportunity.getToMemberId(), union.getId());
+                UnionMember toMember = unionMemberService.getByIdAndUnionId(opportunity.getToMemberId(), union.getId());
                 vo.setToMember(toMember);
 
                 result.add(vo);
@@ -413,7 +413,7 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
                 vo.setToMember(unionMemberService.getReadByIdAndUnionId(opportunity.getToMemberId(), opportunity.getUnionId()));
 
                 vo.setUnion(unionMainService.getById(opportunity.getUnionId()));
-                
+
                 result.add(vo);
             }
         }

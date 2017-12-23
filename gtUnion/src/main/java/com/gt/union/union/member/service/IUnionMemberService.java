@@ -125,6 +125,16 @@ public interface IUnionMemberService extends IService<UnionMember> {
     UnionMember getById(Integer memberId) throws Exception;
 
     /**
+     * 获取盟员信息
+     *
+     * @param memberId id
+     * @param unionId  联盟id
+     * @return UnionMember
+     * @throws Exception 统一处理异常
+     */
+    UnionMember getByIdAndUnionId(Integer memberId, Integer unionId) throws Exception;
+
+    /**
      * 获取盟员id列表
      *
      * @param memberList 盟员列表
