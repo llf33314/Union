@@ -120,7 +120,7 @@ export default {
     // 确认转移
     onConfirm1() {
       $http
-        .put(`/unionMainTransfer/memberId/${this.unionMemberId}?tgtMemberId=${this.id}`)
+        .post(`/unionMainTransfer/memberId/${this.unionMemberId}?tgtMemberId=${this.id}`)
         .then(res => {
           if (res.data.success) {
             eventBus.$emit('unionUpdata');
@@ -155,7 +155,7 @@ export default {
     // 确认撤销
     onConfirm2() {
       $http
-        .put(`/unionMainTransfer/${this.transferId}/memberId/${this.unionMemberId}/revoke`)
+        .post(`/unionMainTransfer/${this.transferId}/memberId/${this.unionMemberId}/revoke`)
         .then(res => {
           if (res.data.success) {
             eventBus.$emit('unionUpdata');
