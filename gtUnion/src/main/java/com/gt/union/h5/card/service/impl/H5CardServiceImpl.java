@@ -90,6 +90,7 @@ public class H5CardServiceImpl implements IH5CardService {
 		}
 		IndexVO indexVO = new IndexVO();
 		List<UnionMember> members = unionMemberService.listWriteByBusId(busId);
+		List indexCardList = new ArrayList<>();
 		if(ListUtil.isNotEmpty(members)){
 			//入盟时间倒序
 			Collections.sort(members, new Comparator<UnionMember>() {
@@ -98,7 +99,6 @@ public class H5CardServiceImpl implements IH5CardService {
 					return o2.getCreateTime().compareTo(o1.getCreateTime());
 				}
 			});
-			List indexCardList = new ArrayList<>();
 			List discountCardList = new ArrayList<>();
 			List activityCardList = new ArrayList<>();
 			if(CommonUtil.isEmpty(phone)){
@@ -140,8 +140,8 @@ public class H5CardServiceImpl implements IH5CardService {
 			}
 			indexCardList.addAll(discountCardList);
 			indexCardList.addAll(activityCardList);
-			indexVO.setCardList(indexCardList);
 		}
+		indexVO.setCardList(indexCardList);
 		return indexVO;
 	}
 
@@ -299,12 +299,12 @@ public class H5CardServiceImpl implements IH5CardService {
 	@Override
 	public MyCardDetailVO myCardDetail(String phone) throws Exception{
 		MyCardDetailVO vo = new MyCardDetailVO();
+		List cardList = new ArrayList<>();
 		if(CommonUtil.isNotEmpty(phone)){
 			UnionCardFan fan = unionCardFanService.getByPhone(phone);
 			if(fan != null){
 				List<UnionCard> list = unionCardService.listValidByFanId(fan.getId());
 				if(ListUtil.isNotEmpty(list)){
-					List cardList = new ArrayList<>();
 					for(UnionCard card : list){
 						UnionMain union = unionMainService.getById(card.getUnionId());
 						if (unionMainService.isUnionValid(union)) {
@@ -337,7 +337,6 @@ public class H5CardServiceImpl implements IH5CardService {
 							cardList.add(detailVO);
 						}
 					}
-					vo.setCardList(cardList);
 					Double integral = unionCardIntegralService.sumIntegralByFanId(fan.getId());
 					vo.setIntegral(integral);
 					Integer consumeCount = unionConsumeService.countPayByFanId(fan.getId());
@@ -345,6 +344,7 @@ public class H5CardServiceImpl implements IH5CardService {
 				}
 			}
 		}
+		vo.setCardList(cardList);
 		return vo;
 	}
 

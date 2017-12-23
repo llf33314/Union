@@ -17,10 +17,6 @@
             </el-row>
           </el-form-item>
           <el-button type="primary" @click="confirmCode('ruleForm')" style="position: relative;top: -58px;left: 390px;" id="affirm">确认</el-button>
-          <el-form-item label="关注公众号办理:" v-if="form1.follow">
-            <el-switch v-model="follow_" on-text="" off-text="">
-            </el-switch>
-          </el-form-item>
         </el-form>
       </div>
       <!-- 其他办理联盟卡信息 -->
@@ -101,43 +97,14 @@
         </el-form-item>
       </el-form>
     </div>
-    <!-- 是否关注公众号办理 -->
-    <div class="fr drop_down" v-if="this.follow_" v-show="visible5">
-      <p>扫码二维码关注办理联盟卡</p>
-      <div class="middle_">
-        <img v-bind:src="codeSrc1" class="codeImg" style="width:240px;height:240px;">
-        <div class="code_">
-          <el-button @click="downloadCode">下载该二维码</el-button>
-        </div>
-      </div>
-      <span>
-        <p>提示：</p>
-        <p>1.请确认用户扫码关注成功后，才可出现粉丝列表进行下一步操作。</p>
-        <p>2.已关注过公众号的粉丝，扫码成功后将不在新增粉丝列表中呈现，粉丝可在公众号进行联盟卡注册的相关操作。</p>
-      </span>
-    </div>
-    <!-- 今日新增粉丝信息 -->
-    <div class="fr drop_down1 step2" v-if="this.follow_" v-show="!visible5">
-      <p>今日新增粉丝信息，点击对应头像可与联盟手机号绑定</p>
-      <el-radio-group v-model="memberId">
-        <el-radio-button :label="wxData_.memberId">
-          <div class="dddddd clearfix">
-            <img v-bind:src="wxData_.headurl" alt="" class="fl unionImg">
-            <div class="fl" style="margin-left: 20px">
-              <h6 style="margin-bottom: 17px">{{ wxData_.nickName }}</h6>
-              <span>时间：{{ wxData_.time }} </span>
-            </div>
-            <i></i>
-          </div>
-        </el-radio-button>
-      </el-radio-group>
-    </div>
+    <!-- 公众号信息 -->
+    <is-follow></is-follow>
     <!-- 弹出框 付款 -->
     <div class="model_1">
       <el-dialog title="付款" :visible.sync="visible3" size="tiny">
         <hr>
         <div class="model_">
-          <p><img v-bind:src="codeSrc2" class="codeImg"></p>
+          <p><img v-bind:src="codeSrc3" class="codeImg"></p>
           <p style="margin-bottom: 50px;">请使用微信扫描该二维码付款</p>
         </div>
       </el-dialog>
@@ -156,8 +123,12 @@
 <script>
 import io from 'socket.io-client';
 import $http from '@/utils/http.js';
+import IsFollow from '@/components/front/transaction/IsFollow';
 export default {
   name: 'transaction',
+  components: {
+    IsFollow
+  },
   data() {
     let phonePass = (rule, value, callback) => {
       if (!value) {
@@ -175,10 +146,8 @@ export default {
         phone: '',
         code: '',
         getVerificationCode: false,
-        countDownTime: '',
-        follow: ''
+        countDownTime: ''
       },
-      follow_: '',
       rules: {
         code: [{ required: true, message: '验证码不能为空，请重新输入', trigger: 'blur' }],
         phone: [{ validator: phonePass, trigger: 'blur' }]
@@ -197,25 +166,13 @@ export default {
         activityCheckList: [{ type: 'array', required: true, message: '请选择联盟卡', trigger: 'change' }]
       },
       visible3: false,
-      codeSrc1: '',
-      codeSrc2: '',
-      socket1: '',
-      socketKey1: '',
-      socketFlag1: {
+      codeSrc3: '',
+      socket3: '',
+      socketKey3: '',
+      socketFlag3: {
         socketKey: '',
         status: ''
       },
-      wxData: {},
-      wxData_: {},
-      visible5: true,
-      memberId: '',
-      socket2: '',
-      socketKey2: '',
-      socketFlag2: {
-        socketKey: '',
-        status: ''
-      },
-      wxUser: false,
       timeEnd: '',
       detaiVisible: false,
       detailTableData: []
@@ -260,74 +217,7 @@ export default {
       }
     });
   },
-  watch: {
-    follow_: function() {
-      if (this.follow_) {
-        this.visible5 = true;
-      } else {
-        this.memberId = '';
-      }
-    },
-    wxData: function() {
-      this.visible5 = false;
-      this.wxData_.headurl = this.wxData.headurl;
-      this.wxData_.memberId = this.wxData.memberId;
-      this.wxData_.nickName = this.wxData.nickName;
-      this.wxData_.time = this.wxData.time;
-    }
-  },
   methods: {
-    // 能否关注公众号 然后获取二维码
-    canFollow() {
-      $http
-        .get(`/api/user/wxPublicUser`)
-        .then(res => {
-          if (res.data.data) {
-            this.form1.follow = res.data.data;
-          } else {
-            this.form1.follow = '';
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
-      var _this = this;
-      if (this.form1.follow && !this.wxUser) {
-        this.wxUser = true;
-        $http
-          .get(`/api/user/wxPublicUserQRCode/${this.form1.follow}`)
-          .then(res => {
-            if (res.data.data) {
-              this.codeSrc1 = res.data.data.qrCodeUrl;
-              this.socketKey1 = res.data.data.qrCodeSocketKey;
-            } else {
-              this.codeSrc1 = '';
-              this.socketKey1 = '';
-            }
-          })
-          .then(res => {
-            if (!this.socket1) {
-              var _this = this;
-              var socketUrl1 = this.$store.state.socketUrl;
-              this.socket1 = io.connect(socketUrl1);
-              var socketKey1 = this.socketKey1;
-              this.socket1.on('connect', function() {
-                let jsonObject = { userId: socketKey1, message: '0' };
-                _this.socket1.emit('auth', jsonObject);
-              });
-            }
-            this.socket1.on('chatevent', function(data) {
-              if (_this.visible5) {
-                let msg = eval('(' + data.message + ')');
-                _this.wxData = msg;
-              }
-            });
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          });
-      }
-    },
     // 获取验证码
     getVerificationCode() {
       $http
@@ -377,9 +267,10 @@ export default {
                       this.form2.unionList = res.data.data.unionList;
                       this.form2.unionId = res.data.data.currentUnion.id;
                       this.form2.activityList = res.data.data.activityList;
+                      this.form2.activityCheckList = [];
                       this.isDiscountCard = res.data.data.isDiscountCard;
                       if (this.isDiscountCard) {
-                        this.activityCheckList.push(this.form2.unionId);
+                        this.form2.activityCheckList.push(this.form2.unionId);
                       }
                       this.discount = res.data.data.currentMember.discount;
                       this.visible2 = true;
@@ -443,72 +334,43 @@ export default {
       this.$refs[formName].validate(valid => {
         if (valid) {
           let url = `/unionCard/fanId/${this.fanId}/unionId/${this.form2.unionId}/apply`;
-          let data = {};
-          data.cardType = this.form2.cardType;
-          data.follow = this.follow_;
-          if (this.follow_) {
-            if (this.memberId) {
-              data.memberId = this.memberId - 0;
-            } else {
-              this.$message({ showClose: true, message: '请选择粉丝', type: 'warning', duration: 5000 });
-              return false;
-            }
-          } else {
-            data.memberId = '';
-          }
-          data.phone = this.form1.phone;
-          data.unionId = this.form2.unionId;
+          let data = [];
+          this.form2.activityCheckList.forEach(v => {
+            data.push(v.id);
+          });
           $http
             .post(url, data)
             .then(res => {
-              if (res.data.success && res.data.data.qrurl) {
+              if (res.data.data) {
+                this.codeSrc3 = res.data.data.payUrl;
+                this.socketKey3 = res.data.data.socketKey;
                 this.visible3 = true;
-                $http
-                  .get(
-                    `/unionCard/qrCode?phone=${data.phone}&memberId=${data.memberId}&unionId=${data.unionId}&cardType=${data.cardType}`
-                  )
-                  .then(res => {
-                    if (res.data.data) {
-                      this.codeSrc2 = res.data.data.url;
-                      this.userId2 = res.data.data.userId;
-                    } else {
-                      this.codeSrc2 = '';
-                      this.only = '';
-                      this.userId2 = '';
-                    }
-                  })
-                  .then(res => {
-                    var _this = this;
-                    if (!this.socket2) {
-                      this.socket2 = io.connect('https://socket.deeptel.com.cn'); // 测试
-                      // this.socket2 = io.connect('http://183.47.242.2:8881'); // 堡垒
-                      var userId = this.userId2;
-                      this.socket2.on('connect', function() {
-                        let jsonObject = { userId: userId, message: '0' };
-                        _this.socket2.emit('auth', jsonObject);
-                      });
-                    }
-                    this.socket2.on('chatevent', function(data) {
-                      let msg = eval('(' + data.message + ')');
-                      // 避免 socket 重复调用
-                      if (!(_this.socketFlag.socketKey == msg.socketKey && _this.socketFlag.status == msg.status)) {
-                        if (_this.socketKey == msg.socketKey) {
-                          if (msg.status == '1') {
-                            _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
-                            _this.socketFlag.socketKey = msg.socketKey;
-                            _this.socketFlag.status = msg.status;
-                            _this.visible1 = false;
-                            _this.$router.push({ path: '/my-union' });
-                          } else if (msg.status == '0') {
-                            _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
-                          }
+                var _this = this;
+                var socketUrl = this.$store.state.socketUrl;
+                if (!this.socket3) {
+                  this.socket3 = io.connect(socketUrl);
+                  var socketKey3 = this.socketKey3;
+                  this.socket3.on('connect', function() {
+                    let jsonObject = { userId: socketKey3, message: '0' };
+                    _this.socket2.emit('auth', jsonObject);
+                  });
+                  this.socket3.on('chatevent', function(data) {
+                    let msg = eval('(' + data.message + ')');
+                    // 避免 socket 重复调用
+                    if (!(_this.socketFlag.socketKey == msg.socketKey && _this.socketFlag.status == msg.status)) {
+                      if (_this.socketKey == msg.socketKey) {
+                        if (msg.status == '1') {
+                          _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
+                          _this.socketFlag.socketKey = msg.socketKey;
+                          _this.socketFlag.status = msg.status;
+                          _this.visible1 = false;
+                        } else if (msg.status == '0') {
+                          _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
                         }
                       }
-                    });
-                  })
-                  .catch(err => {
-                    this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+                    }
                   });
+                }
               } else if (res.data.success) {
                 this.$message({ showClose: true, message: '办理成功', type: 'success', duration: 5000 });
                 clearInterval(this.timeEnd);
@@ -516,6 +378,9 @@ export default {
                 this.init();
                 this.form1.countDownTime = '';
                 this.form1.getVerificationCode = false;
+              } else {
+                this.codeSrc3 = '';
+                this.socketKey3 = '';
               }
             })
             .catch(err => {
@@ -540,14 +405,6 @@ export default {
       this.form1.countDownTime = 0;
       this.visible2 = false;
       this.visible3 = false;
-      this.visible5 = true;
-    },
-    // 下载二维码
-    downloadCode() {
-      let alink = document.createElement('a');
-      alink.href = this.codeSrc1;
-      alink.download = 'wx.jpg';
-      alink.click();
     }
   }
 };

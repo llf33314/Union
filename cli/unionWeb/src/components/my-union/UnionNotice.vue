@@ -9,6 +9,7 @@
 
 <script>
 import $http from '@/utils/http.js';
+import { lengthCheck } from '@/utils/length-check.js';
 export default {
   name: 'union-notice',
   data() {
@@ -56,8 +57,8 @@ export default {
     unionNoticeFocus() {
       if (this.isUnionOwner) {
         document.querySelector('#unionNotice').style.border = '1px solid #ddd';
-        let valueLength = this.unionNoticeCheck()[0];
-        let len = this.unionNoticeCheck()[1];
+        let valueLength = lengthCheck(this.unionNotice, 50)[0];
+        let len = lengthCheck(this.unionNotice, 50)[1];
         if (valueLength > 50) {
           this.unionNotice = this.unionNotice.substring(0, len + 1);
           this.unionNoticeMaxlength = len;
@@ -69,7 +70,7 @@ export default {
     },
     unionNoticeBlur() {
       document.querySelector('#unionNotice').style.border = 'none';
-      let valueLength = this.unionNoticeCheck()[0];
+      let valueLength = lengthCheck(this.unionNotice, 50)[0];
       if (valueLength > 50) {
         return false;
       } else {
@@ -82,8 +83,8 @@ export default {
       }
     },
     unionNoticeKeydown(e) {
-      let valueLength = this.unionNoticeCheck()[0];
-      let len = this.unionNoticeCheck()[1];
+      let valueLength = lengthCheck(this.unionNotice, 50)[0];
+      let len = lengthCheck(this.unionNotice, 50)[1];
       if (valueLength > 50) {
         this.unionNoticeMaxlength = len;
         return false;
@@ -91,28 +92,6 @@ export default {
         this.unionNoticeMaxlength = 100;
       }
     },
-    unionNoticeCheck() {
-      let valueLength = 0;
-      let maxLenth = 0;
-      let chinese = '[\u4e00-\u9fa5]'; // 获取字段值的长度，如果含中文字符，则每个中文字符长度为2，否则为1
-      let str = this.unionNotice || '';
-      for (let i = 0; i < str.length; i++) {
-        // 获取一个字符
-        let temp = str.substring(i, i + 1); // 判断是否为中文字符
-        if (temp.match(chinese)) {
-          // 中文字符长度为1
-          valueLength += 1;
-        } else {
-          // 其他字符长度为0.5
-          valueLength += 0.5;
-        }
-        if (Math.ceil(valueLength) == 50) {
-          maxLenth = i;
-        }
-      }
-      valueLength = Math.ceil(valueLength); //进位取整
-      return [valueLength, maxLenth];
-    }
   }
 };
 </script>

@@ -3,7 +3,7 @@
     <p class="information">退盟过渡期</p>
     <div>
       <div id="popBox">
-        <el-button type="primary" @click="visible1=true" v-if="isUnionOwner">退盟申请</el-button>
+        <el-button type="primary" @click="visible1=true" v-if="!isUnionOwner">退盟申请</el-button>
         <el-button type="warning" style="padding: 10px 15px 10px 32px;position: relative">
           <img src="~assets/images/Videos.png" style="width: 17px;position: absolute;top: 8px;left: 7px;"> 视频教程
         </el-button>
@@ -55,17 +55,16 @@
           <hr>
           <div class="model_12">
             <p>1. 盟主不能退出自己的联盟</p>
-            <p>2. 盟员申请退出联盟，需要等待联盟盟主确认后进入过渡期
-              <p>3. 盟主确认盟员退出联盟申请至盟员正式退盟的时间段视为退盟过渡期</p>
-              <p>4. 盟员进入退盟过渡期，不可对该联盟进行消费核销、商家推荐等操作</p>
-              <p>5. 盟员进入退盟过渡期，已结算佣金可提现</p>
-              <p>6. 盟员进入退盟过渡期，该盟员的会员不可在该联盟进入联盟卡升级操作</p>
-              <p>7. 盟员进入退盟过渡期，若收费联盟卡的最大有效期已过，15天之后视为盟员正式退盟</p>
-              <p>8. 盟员进入退盟过渡期，若收费联盟卡的最大有效期未过，需等待最大有效期时间结束后，</p>
-              <p>&nbsp;&nbsp;&nbsp;&nbsp;再过15天后视为盟员正式退盟</p>
-              <p>9. 联盟其中一位盟员退出联盟，盟主及其他盟员可收到信息或者短信通知</p>
-              <p>10. 盟员完全退出某联盟后，可再次申请加入该联盟</p>
-            </p>
+            <p>2. 盟员申请退出联盟，需要等待联盟盟主确认后进入过渡期 </p>
+            <p>3. 盟主确认盟员退出联盟申请至盟员正式退盟的时间段视为退盟过渡期</p>
+            <p>4. 盟员进入退盟过渡期，不可对该联盟进行消费核销、商家推荐等操作</p>
+            <p>5. 盟员进入退盟过渡期，已结算佣金可提现</p>
+            <p>6. 盟员进入退盟过渡期，该盟员的会员不可在该联盟进入联盟卡升级操作</p>
+            <p>7. 盟员进入退盟过渡期，若收费联盟卡的最大有效期已过，15天之后视为盟员正式退盟</p>
+            <p>8. 盟员进入退盟过渡期，若收费联盟卡的最大有效期未过，需等待最大有效期时间结束后，</p>
+            <p>&nbsp;&nbsp;&nbsp;&nbsp;再过15天后视为盟员正式退盟</p>
+            <p>9. 联盟其中一位盟员退出联盟，盟主及其他盟员可收到信息或者短信通知</p>
+            <p>10. 盟员完全退出某联盟后，可再次申请加入该联盟</p>
           </div>
           <span slot="footer" class="dialog-footer">
             <el-button type="primary" @click="visible2=false">确 定</el-button>

@@ -144,7 +144,6 @@ public class H5CardController {
 		}
 		Member member = memberService.getByPhoneAndBusId(phone, busId);
 		if(member == null){
-			//TODO  注册member用户信息
 		}
 		if(memberService.loginMemberByPhone(phone,busId)){
 			throw new BusinessException("登录失败");
