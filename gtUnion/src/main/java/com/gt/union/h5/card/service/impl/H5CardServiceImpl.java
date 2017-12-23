@@ -235,7 +235,8 @@ public class H5CardServiceImpl implements IH5CardService {
 				throw new BusinessException("找不到该卡信息");
 			}
 			if(DateTimeKit.isBetween(activity.getSellBeginTime(),activity.getSellEndTime())){
-				//有效期
+				//有效期 可以卖
+				result.setValidityDay(activity.getValidityDay());
 				if(CommonUtil.isNotEmpty(phone)){
 					UnionCardFan fan = unionCardFanService.getByPhone(phone);
 					if(fan != null){
@@ -254,7 +255,7 @@ public class H5CardServiceImpl implements IH5CardService {
 					}
 				}
 			}else {
-				result.setIsTransacted(CommonConstant.COMMON_NO);
+				throw new BusinessException("该联盟卡不可购买");
 			}
 			int itemCount = 0;
 			List<CardDetailListVO> list = new ArrayList<CardDetailListVO>();
