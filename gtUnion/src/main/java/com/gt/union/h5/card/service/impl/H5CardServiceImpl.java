@@ -295,6 +295,7 @@ public class H5CardServiceImpl implements IH5CardService {
 					list.add(listVO);
 				}
 			}
+			result.setActivityIllustration(activity.getIllustration());
 			result.setCardName(activity.getName());
 			result.setCardType(CardConstant.TYPE_ACTIVITY);
 			result.setCardPrice(activity.getPrice());

@@ -28,6 +28,9 @@ public class CardDetailVO {
 	@ApiModelProperty(value = "联盟活动卡颜色2")
 	private String color2;
 
+	@ApiModelProperty(value = "联盟活动卡说明")
+	private String activityIllustration;
+
 	@ApiModelProperty(value = "联盟活动卡有效期字符串")
 	private String validityStr;
 
@@ -87,6 +90,14 @@ public class CardDetailVO {
 
 	public void setColor2(String color2) {
 		this.color2 = color2;
+	}
+
+	public String getActivityIllustration() {
+		return activityIllustration;
+	}
+
+	public void setActivityIllustration(String activityIllustration) {
+		this.activityIllustration = activityIllustration;
 	}
 
 	public String getValidityStr() {
