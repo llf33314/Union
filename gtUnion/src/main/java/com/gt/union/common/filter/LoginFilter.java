@@ -1,6 +1,7 @@
 package com.gt.union.common.filter;
 
 import com.gt.api.bean.session.BusUser;
+import com.gt.api.bean.session.Member;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
@@ -73,6 +74,14 @@ public class LoginFilter implements Filter {
         if (isPassSuffixRequest(url) || isPassUrl(url) || isMobileRequest(url) || isApiRequest(url) || isSwaggerUIRequest(url) || isFrontRequest(url)) {
             chain.doFilter(request, response);
             return;
+        }
+        //调试手机端，设置member数据
+        if ("dev".equals(PropertiesUtil.getProfiles())) {
+            Member member = new Member();
+            member.setId(998);
+            member.setPhone("15986670850");
+            member.setBusid(33);
+            SessionUtils.setLoginMember(req,member);
         }
         //(3)判断是否已有登录信息
         // （3-1）佣金平台
