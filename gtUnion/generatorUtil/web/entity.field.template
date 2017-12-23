@@ -1,0 +1,6 @@
+{{define "entity.field.template"}}/**
+     * {{.ColumnComment}}
+     */
+    @ApiModelProperty(value = "{{.ColumnComment}}")
+    {{if eq "PRI" .ColumnKey}}@TableId(value="{{.ColumnName}}"{{if eq "auto_increment" .ColumnExtra}}, type= IdType.AUTO{{end}}){{else}}@TableField("{{.ColumnName}}"){{end}}
+    private {{.FieldType}} {{.FieldName}};{{end}}

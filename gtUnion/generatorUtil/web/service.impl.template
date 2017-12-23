@@ -1,0 +1,268 @@
+{{define "service.impl.template"}}package {{.PackagePath}}.service.impl;
+
+import {{.PackagePath}}.entity.{{.ModelName}};
+import {{.PackagePath}}.mapper.{{.ModelName}}Mapper;
+import {{.PackagePath}}.service.I{{.ModelName}}Service;
+import {{.PackagePath}}.util.{{.ModelName}}CacheUtil;
+import com.alibaba.fastjson.JSONArray;
+import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.exception.ParamException;
+import com.gt.union.common.util.DateUtil;
+import com.gt.union.common.util.ListUtil;
+import com.gt.union.common.util.RedisCacheUtil;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.*;
+
+/**
+ * {{.TableComment}} 服务实现类
+ *
+ * @author {{.Author}}
+ * @version {{.DateTime}}
+ */
+@Service
+public class {{.ModelName}}ServiceImpl extends ServiceImpl<{{.ModelName}}Mapper, {{.ModelName}}> implements I{{.ModelName}}Service {
+    @Autowired
+    private RedisCacheUtil redisCacheUtil;
+
+    //***************************************** Domain Driven Design - get *********************************************
+
+    //***************************************** Domain Driven Design - list ********************************************
+
+    //***************************************** Domain Driven Design - save ********************************************
+
+    //***************************************** Domain Driven Design - remove ******************************************
+
+    //***************************************** Domain Driven Design - update ******************************************
+
+    //***************************************** Domain Driven Design - count *******************************************
+
+    //***************************************** Domain Driven Design - boolean *****************************************
+
+    //***************************************** Object As a Service - get **********************************************
+
+    public {{.ModelName}} getBy{{upperFirstChar .PrimaryKeyField}}({{.PrimaryKeyType}} {{.PrimaryKeyField}}) throws Exception {
+        if ({{.PrimaryKeyField}} == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        {{.ModelName}} result;
+        // (1)cache
+        String {{lowerFirstChar .PrimaryKeyField}}Key = {{.ModelName}}CacheUtil.get{{upperFirstChar .PrimaryKeyField}}Key({{.PrimaryKeyField}});
+        if (redisCacheUtil.exists({{lowerFirstChar .PrimaryKeyField}}Key)) {
+            String tempStr = redisCacheUtil.get({{lowerFirstChar .PrimaryKeyField}}Key);
+            result = JSONArray.parseObject(tempStr, {{.ModelName}}.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<{{.ModelName}}> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("{{.PrimaryKeyColumn}}", {{.PrimaryKeyField}})
+                .eq("del_status", CommonConstant.DEL_STATUS_NO);
+        result = selectOne(entityWrapper);
+        setCache(result, {{.PrimaryKeyField}});
+        return result;
+    }
+
+    //***************************************** Object As a Service - list *********************************************
+    {{range .ForeignKeys}}
+    public List<{{$.ModelName}}> listBy{{turnFieldName2Camel .}}(Integer {{turnFieldName2CamelAndLowerFirstChar .}}) {
+        if ({{turnFieldName2CamelAndLowerFirstChar .}} == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<{{$.ModelName}}> result;
+        // (1)cache
+        String {{turnFieldName2CamelAndLowerFirstChar .}}Key = {{$.ModelName}}CacheUtil.get{{turnFieldName2Camel .}}Key({{turnFieldName2CamelAndLowerFirstChar .}});
+        if (redisCacheUtil.exists({{turnFieldName2CamelAndLowerFirstChar .}}Key)) {
+            String tempStr = redisCacheUtil.get({{turnFieldName2CamelAndLowerFirstChar .}}Key);
+            result = JSONArray.parseArray(tempStr, {{$.ModelName}}.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<{{$.ModelName}}> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("{{.}}", {{turnFieldName2CamelAndLowerFirstChar .}})
+                .eq("del_status", CommonConstant.COMMON_NO);
+        result = selectList(entityWrapper);
+        setCache(result, {{turnFieldName2CamelAndLowerFirstChar .}}, {{$.ModelName}}CacheUtil.TYPE_{{toUpper .}});
+        return result;
+    }
+    {{end}}
+
+    //***************************************** Object As a Service - save *********************************************
+
+    @Transactional(rollbackFor = Exception.class)
+    public void save({{.ModelName}} new{{.ModelName}}) throws Exception {
+        if (new{{.ModelName}} == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        insert(new{{.ModelName}});
+        removeCache(new{{.ModelName}});
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void saveBatch(List<{{.ModelName}}> new{{.ModelName}}List) throws Exception {
+        if (new{{.ModelName}}List == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        insertBatch(new{{.ModelName}}List);
+        removeCache(new{{.ModelName}}List);
+    }
+
+    //***************************************** Object As a Service - remove *******************************************
+
+    @Transactional(rollbackFor = Exception.class)
+    public void removeBy{{upperFirstChar .PrimaryKeyField}}({{.PrimaryKeyType}} {{.PrimaryKeyField}}) throws Exception {
+        if ({{.PrimaryKeyField}} == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)remove cache
+        {{.ModelName}} {{lowerFirstChar .ModelName}} = getBy{{upperFirstChar .PrimaryKeyField}}({{.PrimaryKeyField}});
+        removeCache({{lowerFirstChar .ModelName}});
+        // (2)remove in db logically
+        {{.ModelName}} remove{{.ModelName}} = new {{.ModelName}}();
+        remove{{.ModelName}}.set{{upperFirstChar .PrimaryKeyField}}({{.PrimaryKeyField}});
+        remove{{.ModelName}}.setDelStatus(CommonConstant.DEL_STATUS_YES);
+        updateById(remove{{.ModelName}});
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void removeBatchBy{{upperFirstChar .PrimaryKeyField}}(List<{{.PrimaryKeyType}}> {{.PrimaryKeyField}}List) throws Exception {
+        if ({{.PrimaryKeyField}}List == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)remove cache
+        List<{{.ModelName}}> {{lowerFirstChar .ModelName}}List = new ArrayList<>();
+        for ({{.PrimaryKeyType}} {{.PrimaryKeyField}} : {{.PrimaryKeyField}}List) {
+            {{.ModelName}} {{lowerFirstChar .ModelName}} = getBy{{upperFirstChar .PrimaryKeyField}}({{.PrimaryKeyField}});
+            {{lowerFirstChar .ModelName}}List.add({{lowerFirstChar .ModelName}});
+        }
+        removeCache({{lowerFirstChar .ModelName}}List);
+        // (2)remove in db logically
+        List<{{.ModelName}}> remove{{.ModelName}}List = new ArrayList<>();
+        for ({{.PrimaryKeyType}} {{.PrimaryKeyField}} : {{.PrimaryKeyField}}List) {
+            {{.ModelName}} remove{{.ModelName}} = new {{.ModelName}}();
+            remove{{.ModelName}}.set{{upperFirstChar .PrimaryKeyField}}({{.PrimaryKeyField}});
+            remove{{.ModelName}}.setDelStatus(CommonConstant.DEL_STATUS_YES);
+            remove{{.ModelName}}List.add(remove{{.ModelName}});
+        }
+        updateBatchById(remove{{.ModelName}}List);
+    }
+
+    //***************************************** Object As a Service - update *******************************************
+
+    @Transactional(rollbackFor = Exception.class)
+    public void update({{.ModelName}} update{{.ModelName}}) throws Exception {
+        if (update{{.ModelName}} == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)remove cache
+        {{.PrimaryKeyType}} {{lowerFirstChar .PrimaryKeyField}} = update{{.ModelName}}.get{{upperFirstChar .PrimaryKeyField}}();
+        {{.ModelName}} {{lowerFirstChar .ModelName}} = getBy{{upperFirstChar .PrimaryKeyField}}({{lowerFirstChar .PrimaryKeyField}});
+        removeCache({{lowerFirstChar .ModelName}});
+        // (2)update db
+        updateById(update{{.ModelName}});
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void updateBatch(List<{{.ModelName}}> update{{.ModelName}}List) throws Exception {
+        if (update{{.ModelName}}List == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)remove cache
+        List<{{.PrimaryKeyType}}> {{lowerFirstChar .PrimaryKeyField}}List = new ArrayList<>();
+        for ({{.ModelName}} update{{.ModelName}} : update{{.ModelName}}List) {
+            {{lowerFirstChar .PrimaryKeyField}}List.add(update{{.ModelName}}.get{{upperFirstChar .PrimaryKeyField}}());
+        }
+        List<{{.ModelName}}> {{lowerFirstChar .ModelName}}List = new ArrayList<>();
+        for ({{.PrimaryKeyType}} {{lowerFirstChar .PrimaryKeyField}} : {{lowerFirstChar .PrimaryKeyField}}List) {
+            {{.ModelName}} {{lowerFirstChar .ModelName}} = getBy{{upperFirstChar .PrimaryKeyField}}({{lowerFirstChar .PrimaryKeyField}});
+            {{lowerFirstChar .ModelName}}List.add({{lowerFirstChar .ModelName}});
+        }
+        removeCache({{lowerFirstChar .ModelName}}List);
+        // (2)update db
+        updateBatchById(update{{.ModelName}}List);
+    }
+
+    //***************************************** Object As a Service - cache support ************************************
+
+    private void setCache({{.ModelName}} new{{.ModelName}}, {{.PrimaryKeyType}} {{.PrimaryKeyField}}) {
+        if ({{.PrimaryKeyField}} == null) {
+            //do nothing,just in case
+            return;
+        }
+        String {{lowerFirstChar .PrimaryKeyField}}Key = {{.ModelName}}CacheUtil.get{{upperFirstChar .PrimaryKeyField}}Key({{.PrimaryKeyField}});
+        redisCacheUtil.set({{lowerFirstChar .PrimaryKeyField}}Key, new{{.ModelName}});
+    }
+
+    private void setCache(List<{{.ModelName}}> new{{.ModelName}}List, Integer foreignId, int foreignIdType) {
+        if (foreignId == null) {
+            //do nothing,just in case
+            return;
+        }
+        String foreignIdKey = null;
+        switch (foreignIdType) {
+            {{range .ForeignKeys}}case {{$.ModelName}}CacheUtil.TYPE_{{toUpper .}}:
+                foreignId = {{$.ModelName}}CacheUtil.get{{turnFieldName2Camel .}}Key(foreignId);
+                break;
+            {{end}}
+            default:
+                break;
+        }
+        if (foreignIdKey != null) {
+            redisCacheUtil.set(foreignIdKey, new{{.ModelName}}List);
+        }
+    }
+
+    private void removeCache({{.ModelName}} {{lowerFirstChar .ModelName}}) {
+        if ({{lowerFirstChar .ModelName}} == null) {
+            return;
+        }
+        {{.PrimaryKeyType}} {{lowerFirstChar .PrimaryKeyField}} = {{lowerFirstChar .ModelName}}.get{{upperFirstChar .PrimaryKeyField}}();
+        String {{lowerFirstChar .PrimaryKeyField}}Key = {{.ModelName}}CacheUtil.get{{upperFirstChar .PrimaryKeyField}}Key({{lowerFirstChar .PrimaryKeyField}});
+        redisCacheUtil.remove({{lowerFirstChar .PrimaryKeyField}}Key);
+        {{range .ForeignKeys}}
+        Integer {{turnFieldName2CamelAndLowerFirstChar .}} = {{lowerFirstChar $.ModelName}}.get{{turnFieldName2Camel .}}();
+        if ({{turnFieldName2CamelAndLowerFirstChar .}} != null) {
+            String {{turnFieldName2CamelAndLowerFirstChar .}}Key = {{$.ModelName}}CacheUtil.get{{turnFieldName2Camel .}}Key({{turnFieldName2CamelAndLowerFirstChar .}});
+            redisCacheUtil.remove({{turnFieldName2CamelAndLowerFirstChar .}}Key);
+        }
+        {{end}}
+    }
+
+    private void removeCache(List<{{.ModelName}}> {{lowerFirstChar .ModelName}}List) {
+        if (ListUtil.isEmpty({{lowerFirstChar .ModelName}}List)) {
+            return;
+        }
+        List<{{.PrimaryKeyType}}> {{lowerFirstChar .PrimaryKeyField}}List = new ArrayList<>();
+        for ({{.ModelName}} {{lowerFirstChar .ModelName}} : {{lowerFirstChar .ModelName}}List) {
+            {{lowerFirstChar .PrimaryKeyField}}List.add({{lowerFirstChar .ModelName}}.get{{upperFirstChar .PrimaryKeyField}}());
+        }
+        List<String> {{lowerFirstChar .PrimaryKeyField}}KeyList = {{.ModelName}}CacheUtil.get{{upperFirstChar .PrimaryKeyField}}Key({{lowerFirstChar .PrimaryKeyField}}List);
+        redisCacheUtil.remove({{lowerFirstChar .PrimaryKeyField}}KeyList);
+        {{range .ForeignKeys}}
+        List<String> {{turnFieldName2CamelAndLowerFirstChar .}}KeyList = getForeignIdKeyList({{lowerFirstChar $.ModelName}}List, {{$.ModelName}}CacheUtil.TYPE_{{toUpper .}});
+        if (ListUtil.isNotEmpty({{turnFieldName2CamelAndLowerFirstChar .}}KeyList)) {
+            redisCacheUtil.remove({{turnFieldName2CamelAndLowerFirstChar .}}KeyList);
+        }
+        {{end}}
+    }
+
+    private List<String> getForeignIdKeyList(List<{{.ModelName}}> {{lowerFirstChar .ModelName}}List, int foreignIdType) {
+        List<String> result = new ArrayList<>();
+        switch (foreignIdType) {
+            {{range .ForeignKeys}}case {{$.ModelName}}CacheUtil.TYPE_{{toUpper .}}:
+                for ({{$.ModelName }} {{lowerFirstChar $.ModelName}} : {{lowerFirstChar $.ModelName}}List) {
+                    Integer {{turnFieldName2CamelAndLowerFirstChar .}} = {{lowerFirstChar $.ModelName}}.get{{turnFieldName2Camel .}}();
+                    if ({{turnFieldName2CamelAndLowerFirstChar .}} != null) {
+                        String {{turnFieldName2CamelAndLowerFirstChar .}}Key = {{$.ModelName}}CacheUtil.get{{turnFieldName2Camel .}}Key({{turnFieldName2CamelAndLowerFirstChar .}});
+                        result.add({{turnFieldName2CamelAndLowerFirstChar .}}Key);
+                    }
+                }
+                break;
+            {{end}}
+            default:
+                break;
+        }
+        return result;
+    }
+}{{end}}
