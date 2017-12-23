@@ -27,7 +27,7 @@
         <httpclient.version>4.5.3</httpclient.version>
         <dev.lib.lombok>1.16.18</dev.lib.lombok>
         <gt.common.api.version>1.3.26-SNAPSHOT</gt.common.api.version>
-        <gt.union.api.version>1.0.5</gt.union.api.version>
+        <gt.union.api.version>1.0.7</gt.union.api.version>
     </properties>
 
     <dependencies>

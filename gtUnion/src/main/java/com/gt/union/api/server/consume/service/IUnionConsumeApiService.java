@@ -21,5 +21,5 @@ public interface IUnionConsumeApiService {
 	 * @param model			行业模型
 	 * @return
 	 */
-	void unionConsumeRefund(String orderNo, Integer model);
+	void unionConsumeRefund(String orderNo, Integer model) throws Exception;
 }
