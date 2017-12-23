@@ -250,7 +250,13 @@ export default {
     // 确定所选ERP项目
     confirm() {
       this.selectedErpRight.forEach(v => {
-        this.erpTextList.push({ erpType: v.erpType, shopId: this.shopId, erpTextId: v.id, name: v.name, number: v.number });
+        this.erpTextList.push({
+          erpType: this.erpType,
+          shopId: this.shopId,
+          erpTextId: v.id,
+          name: v.name,
+          number: v.number
+        });
       });
       this.erpTextListChange();
       this.visible = false;
