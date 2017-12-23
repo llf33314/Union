@@ -28,7 +28,7 @@ public class UnionPhoneBrokeragePayServiceImpl implements IUnionBrokeragePayStra
 		payParam.setTotalFee(payMoneySum);
 		payParam.setOrderNum(orderNo);
 		payParam.setIsreturn(CommonConstant.COMMON_YES);
-		payParam.setReturnUrl(PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/to");//TODO 佣金平台手机端支付回调
+		payParam.setReturnUrl(PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/toPayList");
 		payParam.setNotifyUrl(notifyUrl);
 		payParam.setIsSendMessage(CommonConstant.COMMON_NO);
 		payParam.setPayWay(1);

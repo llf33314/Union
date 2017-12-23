@@ -91,7 +91,7 @@ public class LoginFilter implements Filter {
                 if (busUser == null) {
                     response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
                 } else if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                    response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
+                    response.getWriter().write(GtJsonResult.instanceErrorMsg(CommonConstant.UNION_BUS_PARENT_MSG).toString());
                 } else {
                     h5BrokerageUser = new H5BrokerageUser();
                     h5BrokerageUser.setBusUser(busUser);
@@ -127,8 +127,8 @@ public class LoginFilter implements Filter {
     /**
      * 是否前端资源请求
      *
-     * @param url
-     * @return
+     * @param url 请求对象
+     * @return boolean
      */
     private boolean isFrontRequest(String url) {
         return StringUtil.isNotEmpty(url) && (url.contains("brokeragePhone") || url.contains("cardPhone"));
