@@ -341,6 +341,7 @@ public class H5CardServiceImpl implements IH5CardService {
 								}
 								detailVO.setActivityId(activity.getId());
 								detailVO.setValidityStr(DateTimeKit.format(card.getValidity(), DateTimeKit.DEFAULT_DATE_FORMAT));
+								detailVO.setIsOverdue(DateTimeKit.laterThanNow(card.getValidity()) ? 0 : 1);
 								//优惠项目
 								List<UnionCardProject> projectList = unionCardProjectService.listByUnionIdAndActivityIdAndStatus(union.getId(), activity.getId(), ProjectConstant.STATUS_ACCEPT);
 								if (ListUtil.isNotEmpty(projectList)) {

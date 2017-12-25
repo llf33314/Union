@@ -34,6 +34,9 @@ public class MyUnionCardDetailVO {
 	@ApiModelProperty(value = "联盟活动卡有效期字符串")
 	private String validityStr;
 
+	@ApiModelProperty(value = "联盟活动卡是否过期 0：未过期  1：已过期")
+	private Integer isOverdue;
+
 	public String getCardName() {
 		return cardName;
 	}
@@ -96,5 +99,13 @@ public class MyUnionCardDetailVO {
 
 	public void setValidityStr(String validityStr) {
 		this.validityStr = validityStr;
+	}
+
+	public Integer getIsOverdue() {
+		return isOverdue;
+	}
+
+	public void setIsOverdue(Integer isOverdue) {
+		this.isOverdue = isOverdue;
 	}
 }
