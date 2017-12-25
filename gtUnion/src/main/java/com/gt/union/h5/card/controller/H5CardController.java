@@ -99,7 +99,8 @@ public class H5CardController {
 		myCardDetailVO.setHeardImg(member.getHeadimgurl());
 		Page<MyUnionCardDetailVO> result = (Page<MyUnionCardDetailVO>) page;
 		result = PageUtil.setRecord(result, myCardDetailVO.getCardList());
-		return GtJsonResult.instanceSuccessMsg(result).toString();
+		myCardDetailVO.setCardList(result.getRecords());
+		return GtJsonResult.instanceSuccessMsg(myCardDetailVO).toString();
 	}
 
 	@ApiOperation(value = "联盟卡-消费记录", produces = "application/json;charset=UTF-8")
