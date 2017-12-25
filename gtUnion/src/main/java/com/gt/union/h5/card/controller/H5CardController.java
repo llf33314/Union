@@ -129,6 +129,13 @@ public class H5CardController {
 		QRcodeKit.buildQRcode(encrypt, 250, 250, response);
 	}
 
+	@ApiOperation(value = "获取二维码图片链接", notes = "获取二维码图片链接", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/cardNoImgUrl", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
+	public String cardNoImgUrl(HttpServletRequest request,
+							   HttpServletResponse response, @ApiParam(name="cardNo", value = "联盟卡号", required = true) @RequestParam("cardNo") String cardNo) throws UnsupportedEncodingException {
+		String url = PropertiesUtil.getUnionUrl() + "/h5Card/79B4DE7C/qr/cardNo?cardNo="+cardNo;
+		return GtJsonResult.instanceSuccessMsg(url).toString();
+	}
 
 	//-------------------------------------------------- post ----------------------------------------------------------
 
