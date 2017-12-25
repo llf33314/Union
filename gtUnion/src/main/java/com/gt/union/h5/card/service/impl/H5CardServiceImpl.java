@@ -398,9 +398,9 @@ public class H5CardServiceImpl implements IH5CardService {
 		}
 		UnionCardFan fan = unionCardFanService.getOrSaveByPhone(phone);
 		UnionPayVO result = unionCardService.saveApplyByBusIdAndUnionIdAndFanId(busId, unionId, fan.getId(), list, unionCardApplyService);
+		data.put("phone", 1);
 		if(result != null){
 			data.put("payUrl", result.getPayUrl());
-			data.put("phone", 1);
 		}
 		return GtJsonResult.instanceSuccessMsg(data).toString();
 	}

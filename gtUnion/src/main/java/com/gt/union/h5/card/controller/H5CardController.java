@@ -175,6 +175,13 @@ public class H5CardController {
 			,@ApiParam(name="activityId", value = "活动卡id，如果没有，则是折扣卡", required = false) @RequestParam(value = "activityId", required = false) Integer activityId
 			,@ApiParam(name = "url", value = "回调的url", required = true) @RequestParam(value = "url") String url
 			,@ApiParam(value = "联盟id", name = "unionId", required = true) @PathVariable("unionId") Integer unionId) throws Exception{
+		if ("dev".equals(PropertiesUtil.getProfiles())) {
+			Member member = new Member();
+			member.setId(998);
+			member.setPhone("15986670850");
+			member.setBusid(33);
+			SessionUtils.setLoginMember(request,member);
+		}
 		Member member = SessionUtils.getLoginMember(request,busId);
 		url = url + "/" + busId;
 		if(CommonUtil.isEmpty(member)){
