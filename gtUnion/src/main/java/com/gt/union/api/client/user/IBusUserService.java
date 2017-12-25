@@ -2,6 +2,7 @@ package com.gt.union.api.client.user;
 
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.WxPublicUsers;
+import com.gt.union.api.client.user.bean.UserUnionAuthority;
 
 import java.util.Map;
 
@@ -45,9 +46,9 @@ public interface IBusUserService {
 	/**
 	 * 根据商家id获取联盟权限
 	 * @param busId		商家id
-	 * @return authority：联盟权限 1：有 0：无  pay：是否支付 1：需要支付 0：不需支付  versionName:商家的联盟版本名称  无，盟员版，盟主版   busVersionName：商家版本名称
+	 * @return authority：联盟权限 true：有 false：无  pay：是否需要支付 true：需要支付 false：不需支付  unionVersionName:商家的联盟版本名称  无，盟员版，盟主版
 	 */
-	Map<String,Object> getUserUnionAuthority(Integer busId);
+	UserUnionAuthority getUserUnionAuthority(Integer busId);
 
 	/**
 	 * 根据手机号获取商家信息

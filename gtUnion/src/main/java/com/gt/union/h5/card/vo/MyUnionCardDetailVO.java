@@ -3,6 +3,8 @@ package com.gt.union.h5.card.vo;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
+import java.util.Date;
+
 /**
  * @author hongjiye
  * @time 2017-12-20 17:45
@@ -12,6 +14,9 @@ public class MyUnionCardDetailVO {
 
 	@ApiModelProperty(value = "联盟卡名称")
 	private String cardName;
+
+	@ApiModelProperty(value = "联盟卡办理时间")
+	private Date createtime;
 
 	@ApiModelProperty(value = "联盟卡类型 1:折扣卡 2:活动卡")
 	private Integer cardType;
@@ -43,6 +48,14 @@ public class MyUnionCardDetailVO {
 
 	public void setCardName(String cardName) {
 		this.cardName = cardName;
+	}
+
+	public Date getCreatetime() {
+		return createtime;
+	}
+
+	public void setCreatetime(Date createtime) {
+		this.createtime = createtime;
 	}
 
 	public Integer getCardType() {

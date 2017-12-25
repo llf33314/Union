@@ -33,6 +33,7 @@ import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.main.vo.UnionPayVO;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
+import com.gt.union.union.member.vo.MemberJoinVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -365,6 +366,20 @@ public class H5CardServiceImpl implements IH5CardService {
 				vo.setCardNo(fan.getNumber());
 				vo.setCardImg(PropertiesUtil.getUnionUrl() + "/h5Card/79B4DE7C/qr/cardNo?cardNo="+fan.getNumber());
 			}
+		}
+		if(ListUtil.isNotEmpty(cardList)){
+			Collections.sort(cardList, new Comparator<MyUnionCardDetailVO>() {
+				@Override
+				public int compare(MyUnionCardDetailVO o1, MyUnionCardDetailVO o2) {
+					if(o1.getCardType() > o2.getCardType()){
+						return 1;
+					}else if(o1.getCardType().equals(o2.getCardType())){
+						return o1.getCreatetime().compareTo(o2.getCreatetime());
+					}else {
+						return -1;
+					}
+				}
+			});
 		}
 		vo.setCardList(cardList);
 		return vo;

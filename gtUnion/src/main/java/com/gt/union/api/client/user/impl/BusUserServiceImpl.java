@@ -8,6 +8,7 @@ import com.gt.api.util.HttpClienUtils;
 import com.gt.api.util.sign.SignHttpUtils;
 import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.api.client.user.IBusUserService;
+import com.gt.union.api.client.user.bean.UserUnionAuthority;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.util.*;
 import org.slf4j.Logger;
@@ -109,31 +110,31 @@ public class BusUserServiceImpl implements IBusUserService {
 	}
 
     @Override
-    public Map<String, Object> getUserUnionAuthority(Integer busId) {
+    public UserUnionAuthority getUserUnionAuthority(Integer busId) {
         logger.info("获取创建联盟权限商家id：{}",busId);
         BusUser user = this.getBusUserById(busId);
         if(user == null){
             return null;
         }
         //商家版本名称
-        String busVersionName = dictService.getBusUserLevel(user.getLevel());
         List<Map> list = dictService.listCreateUnionDict();
         if(CommonUtil.isEmpty(list)){
             return null;
         }
-        Map<String, Object> data = new HashMap<String, Object>();
+        UserUnionAuthority authority = new UserUnionAuthority();
         for(Map map : list){
             //商家等级
             if(user.getLevel().toString().equals(map.get("item_key").toString())){
                 String itemValue = map.get("item_value").toString();
                 String[] items = itemValue.split(",");
-                data.put("authority",CommonUtil.toInteger(items[0]));
-                data.put("pay",CommonUtil.toInteger(items[1]));
-                data.put("versionName",items[2]);
+                authority.setAuthority(CommonUtil.toInteger(items[0]).equals(1) ? true : false);
+                authority.setPay(CommonUtil.toInteger(items[1]).equals(1) ? true : false);
+                authority.setUnionVersionName(items[2]);
+            }else {
+                authority.setAuthority(false);
             }
         }
-        data.put("busVersionName",busVersionName);
-        return data;
+        return authority;
     }
 
 	@Override
