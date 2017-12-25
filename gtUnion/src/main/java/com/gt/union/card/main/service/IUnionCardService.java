@@ -5,8 +5,10 @@ import com.gt.union.card.main.entity.UnionCard;
 import com.gt.union.card.main.entity.UnionCardFan;
 import com.gt.union.card.main.vo.CardApplyVO;
 import com.gt.union.card.main.vo.CardPhoneVO;
+import com.gt.union.common.exception.ParamException;
 import com.gt.union.union.main.vo.UnionPayVO;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -161,6 +163,15 @@ public interface IUnionCardService extends IService<UnionCard> {
      */
     Integer countByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception;
 
+    /**
+     * 查询是否有有效的活动卡
+     * @param fanId         粉丝卡id
+     * @param activityId    活动卡id
+     * @param date          当前时间
+     * @return
+     */
+    int countCardByFanIdAndActivityIdValidity(Integer fanId, Integer activityId, Date date) throws Exception;
+
     //***************************************** Domain Driven Design - boolean *****************************************
 
     /**
@@ -204,6 +215,8 @@ public interface IUnionCardService extends IService<UnionCard> {
      * @throws Exception 统一处理异常
      */
     List<UnionCard> filterByValidity(List<UnionCard> cardList) throws Exception;
+
+
 
     //***************************************** Object As a Service - get **********************************************
 

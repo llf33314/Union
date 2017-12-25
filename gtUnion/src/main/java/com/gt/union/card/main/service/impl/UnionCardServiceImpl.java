@@ -347,6 +347,10 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 if (activityCardCount >= activity.getAmount()) {
                     throw new BusinessException("售卡量已达活动卡发行量");
                 }
+                int activityValidityCardCount = this.countCardByFanIdAndActivityIdValidity(fanId, activity.getId(), DateUtil.getCurrentDate());
+                if(activityValidityCardCount > 0){
+                    throw new BusinessException("已办理活动卡");
+                }
                 UnionCard saveActivityCard = new UnionCard();
                 saveActivityCard.setDelStatus(CommonConstant.DEL_STATUS_NO);
                 saveActivityCard.setCreateTime(currentDate);
@@ -684,6 +688,19 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         result = filterByUnionId(result, unionId);
 
         return ListUtil.isNotEmpty(result) ? result.size() : 0;
+    }
+
+    @Override
+    public int countCardByFanIdAndActivityIdValidity(Integer fanId, Integer activityId, Date date) throws Exception {
+        if (fanId == null || activityId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper wrapper = new EntityWrapper<>();
+        wrapper.eq("fan_id", fanId);
+        wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
+        wrapper.eq("activity_id", activityId);
+        wrapper.ge(CommonUtil.isNotEmpty(date), "validity", date);
+        return selectCount(wrapper);
     }
 
     //***************************************** Domain Driven Design - boolean *****************************************
