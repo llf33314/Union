@@ -361,6 +361,8 @@ public class H5CardServiceImpl implements IH5CardService {
 					Integer consumeCount = unionConsumeService.countPayByFanId(fan.getId());
 					vo.setConsumeCount(consumeCount);
 				}
+				vo.setCardNo(fan.getNumber());
+				vo.setCardImg(PropertiesUtil.getUnionUrl() + "/h5Card/79B4DE7C/qr/cardNo?cardNo="+fan.getNumber());
 			}
 		}
 		vo.setCardList(cardList);
