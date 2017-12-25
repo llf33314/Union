@@ -347,8 +347,8 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
                 if (activityCardCount >= activity.getAmount()) {
                     throw new BusinessException("售卡量已达活动卡发行量");
                 }
-                int activityValidityCardCount = this.countCardByFanIdAndActivityIdValidity(fanId, activity.getId(), DateUtil.getCurrentDate());
-                if(activityValidityCardCount > 0){
+                UnionCard card = getValidActivityCardByUnionIdAndFanIdAndActivityId(unionId, fan.getId(), activity.getId());
+                if(card != null && DateTimeKit.laterThanNow(card.getValidity())){
                     throw new BusinessException("已办理活动卡");
                 }
                 UnionCard saveActivityCard = new UnionCard();
@@ -667,7 +667,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             result.put("msg", "成功");
             return JSONObject.toJSONString(result);
         } catch (Exception e) {
-            logger.error("", e);
+            logger.error("升级联盟卡支付成功回调错误", e);
             result.put("code", -1);
             result.put("msg", e.getMessage());
             return JSONObject.toJSONString(result);
@@ -690,18 +690,6 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
         return ListUtil.isNotEmpty(result) ? result.size() : 0;
     }
 
-    @Override
-    public int countCardByFanIdAndActivityIdValidity(Integer fanId, Integer activityId, Date date) throws Exception {
-        if (fanId == null || activityId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        EntityWrapper wrapper = new EntityWrapper<>();
-        wrapper.eq("fan_id", fanId);
-        wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
-        wrapper.eq("activity_id", activityId);
-        wrapper.ge(CommonUtil.isNotEmpty(date), "validity", date);
-        return selectCount(wrapper);
-    }
 
     //***************************************** Domain Driven Design - boolean *****************************************
 

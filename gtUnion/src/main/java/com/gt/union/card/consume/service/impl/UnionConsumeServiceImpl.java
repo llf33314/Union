@@ -480,7 +480,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
         try {
             consume = getByOrderNo(orderNo);
         } catch (Exception e) {
-            logger.error("", e);
+            logger.error("消费核销支付成功回调错误", e);
             result.put("code", -1);
             result.put("msg", e.getMessage());
             return JSONObject.toJSONString(result);
@@ -514,7 +514,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
             try {
                 update(updateConsume);
             } catch (Exception e) {
-                logger.error("", e);
+                logger.error("消费核销支付成功回调错误", e);
                 result.put("code", -1);
                 result.put("msg", e.getMessage());
                 return JSONObject.toJSONString(result);

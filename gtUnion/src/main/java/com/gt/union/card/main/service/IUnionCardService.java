@@ -163,15 +163,6 @@ public interface IUnionCardService extends IService<UnionCard> {
      */
     Integer countByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception;
 
-    /**
-     * 查询是否有有效的活动卡
-     * @param fanId         粉丝卡id
-     * @param activityId    活动卡id
-     * @param date          当前时间
-     * @return
-     */
-    int countCardByFanIdAndActivityIdValidity(Integer fanId, Integer activityId, Date date) throws Exception;
-
     //***************************************** Domain Driven Design - boolean *****************************************
 
     /**
