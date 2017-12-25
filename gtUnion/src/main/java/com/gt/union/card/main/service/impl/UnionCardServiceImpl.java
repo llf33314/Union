@@ -212,7 +212,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCard> result = listValidByUnionIdAndFanIdAndType(unionId, activityId, CardConstant.TYPE_ACTIVITY);
+        List<UnionCard> result = listValidByUnionIdAndFanIdAndType(unionId, fanId, CardConstant.TYPE_ACTIVITY);
 
         return ListUtil.isNotEmpty(result) ? result.get(0) : null;
     }
