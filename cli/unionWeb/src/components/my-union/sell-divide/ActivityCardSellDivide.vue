@@ -153,6 +153,12 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData2 = res.data.data.records || [];
+            this.tableData2.forEach(v => {
+              if (!v.sharingRatio) {
+                v.sharingRatio = {};
+                v.sharingRatio.ratio = 0;
+              }
+            });
             this.totalAll2 = res.data.data.total;
             this.visibleChangeFlag = true;
             this.visible = false;
@@ -171,6 +177,12 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData2 = res.data.data.records || [];
+            this.tableData2.forEach(v => {
+              if (!v.sharingRatio) {
+                v.sharingRatio = {};
+                v.sharingRatio.ratio = 0;
+              }
+            });
           }
         })
         .catch(err => {
@@ -187,6 +199,10 @@ export default {
           if (res.data.data) {
             this.tableData3 = res.data.data;
             this.tableData3.forEach(v => {
+              if (!v.sharingRatio) {
+                v.sharingRatio = {};
+                v.sharingRatio.ratio = 0;
+              }
               v.sharingRatio.ratio = v.sharingRatio.ratio.toFixed(0);
               this.sum3 += parseFloat(v.sharingRatio.ratio);
             });
