@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- 是否关注公众号办理 -->
-    <div class="fr drop_down" v-if="this.follow">
+    <div class="fr drop_down" v-if="this.publicId">
       <p>扫码二维码关注公众号</p>
       <div class="middle_">
         <img v-bind:src="codeSrc" class="codeImg" style="width:240px;height:240px;">
@@ -15,7 +15,7 @@
       </span>
     </div>
     <!-- 新增粉丝信息 -->
-    <div class="fr drop_down1 step2" v-if="this.follow" v-show="visible">
+    <div class="fr drop_down1 step2" v-if="this.publicId" v-show="visible">
       <p>新增粉丝信息</p>
       <div class="dddddd clearfix">
         <img v-bind:src="wxData.headurl" alt="" class="fl unionImg">
@@ -36,7 +36,7 @@ export default {
   name: 'is-follow',
   data() {
     return {
-      follow: false,
+      publicId: '',
       visible: false,
       codeSrc: '',
       wxUser: false,
@@ -64,50 +64,52 @@ export default {
         .get(`/api/user/wxPublicUser`)
         .then(res => {
           if (res.data.data) {
-            this.follow = res.data.data;
+            this.publicId = res.data.data;
           } else {
-            this.follow = false;
+            this.publicId = '';
+          }
+        })
+        .then(res => {
+          if (this.publicId && !this.wxUser) {
+            this.wxUser = true;
+            $http
+              .get(`/api/user/wxPublicUserQRCode/${this.publicId}`)
+              .then(res => {
+                if (res.data.data) {
+                  this.codeSrc = res.data.data.qrCodeUrl;
+                  this.socketKey = res.data.data.qrCodeSocketKey;
+                } else {
+                  this.codeSrc = '';
+                  this.socketKey = '';
+                }
+              })
+              .then(res => {
+                if (!this.socket) {
+                  var _this = this;
+                  var socketUrl = this.$store.state.socketUrl;
+                  this.socket = io.connect(socketUrl);
+                  var socketKey = this.socketKey;
+                  this.socket.on('connect', function() {
+                    let jsonObject = { userId: socketKey, message: '0' };
+                    _this.socket.emit('auth', jsonObject);
+                  });
+                }
+                this.socket.on('chatevent', function(data) {
+                  if (_this.visible) {
+                    let msg = eval('(' + data.message + ')');
+                    _this.wxData = msg;
+                  }
+                });
+              })
+              .catch(err => {
+                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+              });
           }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
       var _this = this;
-      if (this.follow && !this.wxUser) {
-        this.wxUser = true;
-        $http
-          .get(`/api/user/wxPublicUserQRCode/${this.follow}`)
-          .then(res => {
-            if (res.data.data) {
-              this.codeSrc = res.data.data.qrCodeUrl;
-              this.socketKey = res.data.data.qrCodeSocketKey;
-            } else {
-              this.codeSrc = '';
-              this.socketKey = '';
-            }
-          })
-          .then(res => {
-            if (!this.socket) {
-              var _this = this;
-              var socketUrl = this.$store.state.socketUrl;
-              this.socket = io.connect(socketUrl);
-              var socketKey = this.socketKey;
-              this.socket.on('connect', function() {
-                let jsonObject = { userId: socketKey, message: '0' };
-                _this.socket.emit('auth', jsonObject);
-              });
-            }
-            this.socket.on('chatevent', function(data) {
-              if (_this.visible) {
-                let msg = eval('(' + data.message + ')');
-                _this.wxData = msg;
-              }
-            });
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          });
-      }
     },
     // 下载二维码
     downloadCode() {

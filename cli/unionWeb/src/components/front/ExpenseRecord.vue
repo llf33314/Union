@@ -95,15 +95,15 @@
       <!-- 弹出框 核销详情 -->
       <div class="verificationMessage">
         <el-dialog title="核销详情" :visible.sync="visible">
-          <div v-if="noErpList.length > 0">
+          <div v-if="nonErpTextList.length > 0">
             <p>非 ERP 项目</p>
-            <div v-for="(item, index) in noErpList" :key="item.id">
+            <div v-for="(item, index) in nonErpTextList" :key="item.id">
               {{ index + 1 }} 、{{ item.name }}
             </div>
           </div>
-          <div v-if="erpList.length > 0">
+          <div v-if="erpTextList.length > 0">
             <p> ERP 项目</p>
-            <div v-for="(item, index) in erpList" :key="item.id">
+            <div v-for="(item, index) in erpTextList" :key="item.id">
               {{ index + 1 }} 、{{ item.name }}
             </div>
           </div>
@@ -138,8 +138,8 @@ export default {
       currentPage: 1,
       timeValue: '',
       visible: false,
-      noErpList: [],
-      erpList: [],
+      nonErpTextList: [],
+      erpTextList: [],
       erpGoodsList: []
     };
   },
@@ -202,12 +202,16 @@ export default {
             this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
               v.itemList = [];
-              v.nonErpTextList.forEach((val, idx) => {
-                v.itemList.push(val.name);
-              });
-              v.erpTextList.forEach((val, idx) => {
-                v.itemList.push(val.name);
-              });
+              if (v.nonErpTextList) {
+                v.nonErpTextList.forEach((val, idx) => {
+                  v.itemList.push(val.name);
+                });
+              }
+              if (v.erpTextList) {
+                v.erpTextList.forEach((val, idx) => {
+                  v.itemList.push(val.name);
+                });
+              }
               v.itemList = v.itemList.join(',');
               v.consume.createTime = timeFilter(v.consume.createTime);
               v.consume.payStatus = expenseStatusFilter(v.consume.payStatus);
@@ -312,8 +316,8 @@ export default {
     },
     // 显示核销详情
     showDetail(scope) {
-      this.noErpList = scope.row.nonErpTextList;
-      this.erpList = scope.row.erpTextList;
+      this.nonErpTextList = scope.row.nonErpTextList;
+      this.erpTextList = scope.row.erpTextList;
       this.erpGoodsList = scope.row.erpGoodsList;
       this.visible = true;
     }
