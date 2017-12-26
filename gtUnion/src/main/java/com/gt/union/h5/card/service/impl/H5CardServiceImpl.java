@@ -355,6 +355,7 @@ public class H5CardServiceImpl implements IH5CardService {
 								}
 								detailVO.setItemCount(itemCount);
 							}
+							detailVO.setCreatetime(card.getCreateTime());
 							cardList.add(detailVO);
 						}
 					}
@@ -373,7 +374,7 @@ public class H5CardServiceImpl implements IH5CardService {
 				public int compare(MyUnionCardDetailVO o1, MyUnionCardDetailVO o2) {
 					if(o1.getCardType() > o2.getCardType()){
 						return 1;
-					}else if(o1.getCardType().equals(o2.getCardType()) && o1.getCardType().equals(CardConstant.TYPE_ACTIVITY)){
+					}else if(o1.getCardType().equals(o2.getCardType())){
 						return -o1.getCreatetime().compareTo(o2.getCreatetime());
 					}else {
 						return -1;
