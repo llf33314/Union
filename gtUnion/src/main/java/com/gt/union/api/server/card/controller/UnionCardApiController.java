@@ -7,6 +7,7 @@ import com.gt.union.api.server.card.service.IUnionCardApiService;
 import com.gt.union.api.server.constant.UnionDiscountConstant;
 import com.gt.union.api.server.entity.param.RequestApiParam;
 import com.gt.union.api.server.ApiBaseController;
+import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BaseException;
 import io.swagger.annotations.ApiOperation;
 import org.apache.log4j.Logger;
@@ -41,12 +42,12 @@ public class UnionCardApiController extends ApiBaseController {
 			UnionDiscountResult data = unionCardApiService.getConsumeUnionCardDiscount(param.getPhone(), param.getBusId());
 			return ResponseUtils.createBySuccess(data);
 		} catch (BaseException e) {
-			logger.error("", e);
+			logger.error(e.getMessage(), e);
 			UnionDiscountResult data = new UnionDiscountResult();
 			data.setCode(UnionDiscountConstant.UNION_DISCOUNT_CODE_NON);
 			return ResponseUtils.createByErrorMessage(e.getErrorMsg());
 		}catch (Exception e) {
-			logger.error("", e);
+			logger.error(CommonConstant.SYS_ERROR, e);
 			UnionDiscountResult data = new UnionDiscountResult();
 			data.setCode(UnionDiscountConstant.UNION_DISCOUNT_CODE_NON);
 			return ResponseUtils.createByError();

@@ -118,6 +118,20 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
     }
 
 	@Override
+	public UnionConsume getByOrderNoAndModel(String orderNo, Integer model) throws Exception {
+        if (orderNo == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .eq("order_no", orderNo)
+                .eq("business_type", model);
+
+        return selectOne(entityWrapper);
+	}
+
+	@Override
 	public Integer countPayByFanId(Integer fanId) throws ParamException {
         if (fanId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -466,7 +480,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
         try {
             consume = getByOrderNo(orderNo);
         } catch (Exception e) {
-            logger.error("", e);
+            logger.error("消费核销支付成功回调错误", e);
             result.put("code", -1);
             result.put("msg", e.getMessage());
             return JSONObject.toJSONString(result);
@@ -500,7 +514,7 @@ public class UnionConsumeServiceImpl extends ServiceImpl<UnionConsumeMapper, Uni
             try {
                 update(updateConsume);
             } catch (Exception e) {
-                logger.error("", e);
+                logger.error("消费核销支付成功回调错误", e);
                 result.put("code", -1);
                 result.put("msg", e.getMessage());
                 return JSONObject.toJSONString(result);

@@ -5,7 +5,6 @@ import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.union.api.client.pay.WxPayService;
-import com.gt.union.api.client.pay.entity.PayParam;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.api.client.socket.SocketService;
 import com.gt.union.card.activity.constant.ActivityConstant;
@@ -213,7 +212,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCard> result = listValidByUnionIdAndFanIdAndType(unionId, activityId, CardConstant.TYPE_ACTIVITY);
+        List<UnionCard> result = listValidByUnionIdAndFanIdAndType(unionId, fanId, CardConstant.TYPE_ACTIVITY);
 
         return ListUtil.isNotEmpty(result) ? result.get(0) : null;
     }
@@ -335,31 +334,37 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             saveCardList.add(saveDiscountCard);
         }
         BigDecimal payMoneySum = BigDecimal.ZERO;
-        for (Integer activityId : activityIdList) {
-            UnionCardActivity activity = unionCardActivityService.getByIdAndUnionId(activityId, unionId);
-            if (activity == null) {
-                throw new BusinessException("找不到活动卡信息");
-            }
-            if (ActivityConstant.STATUS_SELLING != unionCardActivityService.getStatus(activity)) {
-                throw new BusinessException("活动卡不在售卡状态");
-            }
-            Integer activityCardCount = countByUnionIdAndActivityId(unionId, activityId);
-            if (activityCardCount >= activity.getAmount()) {
-                throw new BusinessException("售卡量已达活动卡发行量");
-            }
-            UnionCard saveActivityCard = new UnionCard();
-            saveActivityCard.setDelStatus(CommonConstant.DEL_STATUS_NO);
-            saveActivityCard.setCreateTime(currentDate);
-            saveActivityCard.setType(CardConstant.TYPE_ACTIVITY);
-            saveActivityCard.setFanId(fanId);
-            saveActivityCard.setMemberId(member.getId());
-            saveActivityCard.setUnionId(unionId);
-            saveActivityCard.setActivityId(activityId);
-            saveActivityCard.setName(activity.getName());
-            saveActivityCard.setValidity(DateUtil.addDays(currentDate, activity.getValidityDay()));
-            saveCardList.add(saveActivityCard);
+        if (ListUtil.isNotEmpty(activityIdList)) {
+            for (Integer activityId : activityIdList) {
+                UnionCardActivity activity = unionCardActivityService.getByIdAndUnionId(activityId, unionId);
+                if (activity == null) {
+                    throw new BusinessException("找不到活动卡信息");
+                }
+                if (ActivityConstant.STATUS_SELLING != unionCardActivityService.getStatus(activity)) {
+                    throw new BusinessException("活动卡不在售卡状态");
+                }
+                Integer activityCardCount = countByUnionIdAndActivityId(unionId, activityId);
+                if (activityCardCount >= activity.getAmount()) {
+                    throw new BusinessException("售卡量已达活动卡发行量");
+                }
+                UnionCard card = getValidActivityCardByUnionIdAndFanIdAndActivityId(unionId, fan.getId(), activity.getId());
+                if(card != null && DateTimeKit.laterThanNow(card.getValidity())){
+                    throw new BusinessException("已办理活动卡");
+                }
+                UnionCard saveActivityCard = new UnionCard();
+                saveActivityCard.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                saveActivityCard.setCreateTime(currentDate);
+                saveActivityCard.setType(CardConstant.TYPE_ACTIVITY);
+                saveActivityCard.setFanId(fanId);
+                saveActivityCard.setMemberId(member.getId());
+                saveActivityCard.setUnionId(unionId);
+                saveActivityCard.setActivityId(activityId);
+                saveActivityCard.setName(activity.getName());
+                saveActivityCard.setValidity(DateUtil.addDays(currentDate, activity.getValidityDay()));
+                saveCardList.add(saveActivityCard);
 
-            payMoneySum = BigDecimalUtil.add(payMoneySum, activity.getPrice());
+                payMoneySum = BigDecimalUtil.add(payMoneySum, activity.getPrice());
+            }
         }
         saveBatch(saveCardList);
         // （6）	新增未付款的联盟卡购买记录，并返回支付链接
@@ -386,7 +391,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             saveCardRecordList.add(saveCardRecord);
         }
 
-        UnionPayVO result = unionCardApplyService.unionCardApply(orderNo, payMoneySum.doubleValue(), busId);
+        UnionPayVO result = unionCardApplyService.unionCardApply(orderNo, payMoneySum.doubleValue(), busId, unionId, activityIdList);
 
         unionCardRecordService.saveBatch(saveCardRecordList);
         return result;
@@ -655,14 +660,14 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
             }
 
             // socket通知
-            if(StringUtil.isNotEmpty(socketKey)){
+            if (StringUtil.isNotEmpty(socketKey)) {
                 socketService.socketPaySendMessage(socketKey, isSuccess, null);
             }
             result.put("code", 0);
             result.put("msg", "成功");
             return JSONObject.toJSONString(result);
         } catch (Exception e) {
-            logger.error("", e);
+            logger.error("升级联盟卡支付成功回调错误", e);
             result.put("code", -1);
             result.put("msg", e.getMessage());
             return JSONObject.toJSONString(result);
@@ -684,6 +689,7 @@ public class UnionCardServiceImpl extends ServiceImpl<UnionCardMapper, UnionCard
 
         return ListUtil.isNotEmpty(result) ? result.size() : 0;
     }
+
 
     //***************************************** Domain Driven Design - boolean *****************************************
 

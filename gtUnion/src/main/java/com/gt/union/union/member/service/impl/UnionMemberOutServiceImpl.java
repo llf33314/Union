@@ -322,7 +322,7 @@ public class UnionMemberOutServiceImpl extends ServiceImpl<UnionMemberOutMapper,
         if (ownerMember != null) {
             String phone = StringUtil.isNotEmpty(ownerMember.getNotifyPhone()) ? ownerMember.getNotifyPhone() : ownerMember.getDirectorPhone();
             String content = "\""
-                    + member.getEnterpriseAddress()
+                    + member.getEnterpriseName()
                     + "\"申请退出\""
                     + union.getName()
                     + "\",请到退盟审核处查看并处理";

@@ -99,7 +99,8 @@ public class H5CardController {
 		myCardDetailVO.setHeardImg(member.getHeadimgurl());
 		Page<MyUnionCardDetailVO> result = (Page<MyUnionCardDetailVO>) page;
 		result = PageUtil.setRecord(result, myCardDetailVO.getCardList());
-		return GtJsonResult.instanceSuccessMsg(result).toString();
+		myCardDetailVO.setCardList(result.getRecords());
+		return GtJsonResult.instanceSuccessMsg(myCardDetailVO).toString();
 	}
 
 	@ApiOperation(value = "联盟卡-消费记录", produces = "application/json;charset=UTF-8")
@@ -129,6 +130,13 @@ public class H5CardController {
 		QRcodeKit.buildQRcode(encrypt, 250, 250, response);
 	}
 
+	@ApiOperation(value = "获取二维码图片链接", notes = "获取二维码图片链接", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/cardNoImgUrl", produces = "application/json;charset=UTF-8", method = RequestMethod.GET)
+	public String cardNoImgUrl(HttpServletRequest request,
+							   HttpServletResponse response, @ApiParam(name="cardNo", value = "联盟卡号", required = true) @RequestParam("cardNo") String cardNo) throws UnsupportedEncodingException {
+		String url = PropertiesUtil.getUnionUrl() + "/h5Card/79B4DE7C/qr/cardNo?cardNo="+cardNo;
+		return GtJsonResult.instanceSuccessMsg(url).toString();
+	}
 
 	//-------------------------------------------------- post ----------------------------------------------------------
 
@@ -175,6 +183,13 @@ public class H5CardController {
 			,@ApiParam(name="activityId", value = "活动卡id，如果没有，则是折扣卡", required = false) @RequestParam(value = "activityId", required = false) Integer activityId
 			,@ApiParam(name = "url", value = "回调的url", required = true) @RequestParam(value = "url") String url
 			,@ApiParam(value = "联盟id", name = "unionId", required = true) @PathVariable("unionId") Integer unionId) throws Exception{
+		if ("dev".equals(PropertiesUtil.getProfiles())) {
+			Member member = new Member();
+			member.setId(998);
+			member.setPhone("15986670850");
+			member.setBusid(33);
+			SessionUtils.setLoginMember(request,member);
+		}
 		Member member = SessionUtils.getLoginMember(request,busId);
 		url = url + "/" + busId;
 		if(CommonUtil.isEmpty(member)){

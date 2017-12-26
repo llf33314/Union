@@ -153,7 +153,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
         try {
             permit = getBySysOrderNo(orderNo);
         } catch (Exception e) {
-            logger.error("", e);
+            logger.error("购买盟主服务，支付成功回调错误", e);
             result.put("code", -1);
             result.put("msg", e.getMessage());
             return JSONObject.toJSONString(result);
@@ -187,7 +187,7 @@ public class UnionMainPermitServiceImpl extends ServiceImpl<UnionMainPermitMappe
             try {
                 update(updatePermit);
             } catch (Exception e) {
-                logger.error("", e);
+                logger.error("购买盟主服务，支付成功回调错误", e);
                 result.put("code", -1);
                 result.put("msg", e.getMessage());
                 return JSONObject.toJSONString(result);

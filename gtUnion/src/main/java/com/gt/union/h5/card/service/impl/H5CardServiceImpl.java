@@ -33,6 +33,7 @@ import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.main.vo.UnionPayVO;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
+import com.gt.union.union.member.vo.MemberJoinVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -235,7 +236,8 @@ public class H5CardServiceImpl implements IH5CardService {
 				throw new BusinessException("找不到该卡信息");
 			}
 			if(DateTimeKit.isBetween(activity.getSellBeginTime(),activity.getSellEndTime())){
-				//有效期
+				//有效期 可以卖
+				result.setValidityDay(activity.getValidityDay());
 				if(CommonUtil.isNotEmpty(phone)){
 					UnionCardFan fan = unionCardFanService.getByPhone(phone);
 					if(fan != null){
@@ -254,7 +256,7 @@ public class H5CardServiceImpl implements IH5CardService {
 					}
 				}
 			}else {
-				result.setIsTransacted(CommonConstant.COMMON_NO);
+				throw new BusinessException("该联盟卡不可购买");
 			}
 			int itemCount = 0;
 			List<CardDetailListVO> list = new ArrayList<CardDetailListVO>();
@@ -340,6 +342,7 @@ public class H5CardServiceImpl implements IH5CardService {
 								}
 								detailVO.setActivityId(activity.getId());
 								detailVO.setValidityStr(DateTimeKit.format(card.getValidity(), DateTimeKit.DEFAULT_DATE_FORMAT));
+								detailVO.setIsOverdue(DateTimeKit.laterThanNow(card.getValidity()) ? 0 : 1);
 								//优惠项目
 								List<UnionCardProject> projectList = unionCardProjectService.listByUnionIdAndActivityIdAndStatus(union.getId(), activity.getId(), ProjectConstant.STATUS_ACCEPT);
 								if (ListUtil.isNotEmpty(projectList)) {
@@ -352,6 +355,7 @@ public class H5CardServiceImpl implements IH5CardService {
 								}
 								detailVO.setItemCount(itemCount);
 							}
+							detailVO.setCreatetime(card.getCreateTime());
 							cardList.add(detailVO);
 						}
 					}
@@ -360,7 +364,23 @@ public class H5CardServiceImpl implements IH5CardService {
 					Integer consumeCount = unionConsumeService.countPayByFanId(fan.getId());
 					vo.setConsumeCount(consumeCount);
 				}
+				vo.setCardNo(fan.getNumber());
+				vo.setCardImg(PropertiesUtil.getUnionUrl() + "/h5Card/79B4DE7C/qr/cardNo?cardNo="+fan.getNumber());
 			}
+		}
+		if(ListUtil.isNotEmpty(cardList)){
+			Collections.sort(cardList, new Comparator<MyUnionCardDetailVO>() {
+				@Override
+				public int compare(MyUnionCardDetailVO o1, MyUnionCardDetailVO o2) {
+					if(o1.getCardType() > o2.getCardType()){
+						return 1;
+					}else if(o1.getCardType().equals(o2.getCardType())){
+						return -o1.getCreatetime().compareTo(o2.getCreatetime());
+					}else {
+						return -1;
+					}
+				}
+			});
 		}
 		vo.setCardList(cardList);
 		return vo;
@@ -397,9 +417,9 @@ public class H5CardServiceImpl implements IH5CardService {
 		}
 		UnionCardFan fan = unionCardFanService.getOrSaveByPhone(phone);
 		UnionPayVO result = unionCardService.saveApplyByBusIdAndUnionIdAndFanId(busId, unionId, fan.getId(), list, unionCardApplyService);
+		data.put("phone", 1);
 		if(result != null){
 			data.put("payUrl", result.getPayUrl());
-			data.put("phone", 1);
 		}
 		return GtJsonResult.instanceSuccessMsg(data).toString();
 	}

@@ -2,10 +2,11 @@ package com.gt.union.api.server.consume.controller;
 
 import com.gt.api.dto.ResponseUtils;
 import com.gt.union.api.entity.param.UnionConsumeParam;
+import com.gt.union.api.entity.param.UnionRefundParam;
 import com.gt.union.api.server.ApiBaseController;
 import com.gt.union.api.server.consume.service.IUnionConsumeApiService;
 import com.gt.union.api.server.entity.param.RequestApiParam;
-import com.gt.union.api.server.entity.param.UnionRefundParam;
+import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BaseException;
 import io.swagger.annotations.ApiOperation;
 import org.apache.log4j.Logger;
@@ -39,10 +40,10 @@ public class UnionConsumeApiController extends ApiBaseController{
 			unionConsumeApiService.consumeByUnionCard(requestApiParam.getReqdata());
 			return ResponseUtils.createBySuccess();
 		} catch (BaseException e) {
-			logger.error("", e);
+			logger.error(e.getMessage(), e);
 			return ResponseUtils.createByErrorMessage(e.getErrorMsg());
 		}catch (Exception e) {
-			logger.error("", e);
+			logger.error(CommonConstant.SYS_ERROR, e);
 			return ResponseUtils.createByError();
 		}
 	}
@@ -55,10 +56,10 @@ public class UnionConsumeApiController extends ApiBaseController{
 			unionConsumeApiService.unionConsumeRefund(requestApiParam.getReqdata().getOrderNo(), requestApiParam.getReqdata().getModel());
 			return ResponseUtils.createBySuccess();
 		} catch (BaseException e) {
-			logger.error("", e);
+			logger.error(e.getMessage(), e);
 			return ResponseUtils.createByErrorMessage(e.getErrorMsg());
 		}catch (Exception e) {
-			logger.error("", e);
+			logger.error(CommonConstant.SYS_ERROR, e);
 			return ResponseUtils.createByError();
 		}
 	}
