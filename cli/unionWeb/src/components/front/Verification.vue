@@ -45,9 +45,6 @@
               </el-radio-group>
             </el-form-item>
           </div>
-          <el-form-item label="有效期:" v-if="form.currentUnion.validity">
-            <span> {{ form.currentUnion.validity }}天 </span>
-          </el-form-item>
           <el-form-item label="消费金额:">
             <el-col style="width: 220px;">
               <el-input v-model="price">
@@ -76,7 +73,7 @@
                 <el-table ref="multipleTable" :data="tableData" style="width:382px;overflow-y: auto" height="442" @selection-change="handleSelectionChange">
                   <el-table-column type="selection" width="50">
                   </el-table-column>
-                  <el-table-column prop="name.name" label="项目名称">
+                  <el-table-column prop="item.name" label="项目名称">
                   </el-table-column>
                   <el-table-column prop="availableCount" label="可用数量">
                   </el-table-column>
@@ -206,6 +203,7 @@
 <script>
 import io from 'socket.io-client';
 import $http from '@/utils/http.js';
+import { timeFilter } from '@/utils/filter.js';
 export default {
   name: 'verification',
   data() {
@@ -404,7 +402,7 @@ export default {
     },
     // 活动卡切换
     activityCardChange(item) {
-      this.activityCardValidity = item.activityCard.validity;
+      this.activityCardValidity = timeFilter(item.activityCard.validity);
       // 获取活动卡优惠项目
       if (item.activity.id) {
         $http

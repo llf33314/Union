@@ -334,16 +334,12 @@ export default {
           if (res.data.data) {
             this.imgSrc = res.data.data.payUrl;
             this.socketKey = res.data.data.socketKey;
+            this.dialogVisible = true;
+            this.mySocket();
           } else {
             this.imgSrc = '';
             this.socketKey = '';
           }
-        })
-        .then(res => {
-          this.dialogVisible = true;
-        })
-        .then(res => {
-          this.mySocket();
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -355,7 +351,7 @@ export default {
       this.brokerageMoney = 0;
       this.multipleSelection.forEach((v, i) => {
         this.brokerageMoney += Number(v.opportunity.brokerageMoney);
-        ids += v.opportunityId + '%2C';
+        ids += v.opportunity.id + '%2C';
       });
       this.brokerageMoney = this.brokerageMoney.toFixed(2);
       $http
@@ -364,16 +360,12 @@ export default {
           if (res.data.data) {
             this.imgSrc = res.data.data.payUrl;
             this.socketKey = res.data.data.socketKey;
+            this.dialogVisible = true;
+            this.mySocket();
           } else {
             this.imgSrc = '';
             this.socketKey = '';
           }
-        })
-        .then(res => {
-          this.dialogVisible = true;
-        })
-        .then(res => {
-          this.mySocket();
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });

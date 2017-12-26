@@ -161,6 +161,9 @@
                   <span>已加入盟员数</span> {{ unionMainData.memberCount }}
                   <span>,剩余盟员数</span> {{ unionMainData.memberSurplus }}
                 </li>
+                <li>
+                  <span>粉丝享受折扣</span> {{ ((unionMainData.currentMember.discount || 0) * 10).toFixed(1) }} 折
+                </li>
               </ul>
             </div>
           </li>

@@ -41,9 +41,8 @@
           <p>选择联盟卡</p>
           <el-form-item label="" prop="activityCheckList">
             <div class="SwitchAround">
-              <button class="forward">
-              </button>
-              <button class="backward"> > </button>
+              <button class="forward"> &lt; </button>
+              <button class="backward"> &gt; </button>
               <div>
                 <el-checkbox-group v-model="form2.activityCheckList">
                   <el-checkbox-button v-if="isDiscountCard" :label="form2.currentMember.id" disabled>
