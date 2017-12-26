@@ -1,6 +1,7 @@
 package com.gt.union.api.client.user.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.WxPublicUsers;
@@ -102,9 +103,16 @@ public class BusUserServiceImpl implements IBusUserService {
         param.put("reqdata", data);
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/wxpublicapi/6F6D9AD2/79B4DE7C/newqrcodeCreateFinal.do";
         String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param), url, String.class, PropertiesUtil.getWxmpSignKey());
-        String qrurl = ApiResultHandlerUtil.getDataObject(result, String.class);
-        if (CommonUtil.isNotEmpty(qrurl)) {
-            redisCacheUtil.set(codeKey, qrurl);
+        if(StringUtil.isEmpty(result)){
+            return null;
+        }
+        Map map = JSONObject.parseObject(result,Map.class);
+        String qrurl = "";
+        if(CommonUtil.isNotEmpty(map.get("data"))){
+            qrurl = map.get("data").toString();
+            if (CommonUtil.isNotEmpty(qrurl)) {
+                redisCacheUtil.set(codeKey, qrurl);
+            }
         }
 		return qrurl;
 	}
