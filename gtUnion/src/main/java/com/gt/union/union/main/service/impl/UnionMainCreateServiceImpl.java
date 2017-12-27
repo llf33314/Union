@@ -2,7 +2,7 @@ package com.gt.union.union.main.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.api.client.user.IBusUserService;
@@ -15,8 +15,8 @@ import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.union.main.constant.UnionConstant;
+import com.gt.union.union.main.dao.IUnionMainCreateDao;
 import com.gt.union.union.main.entity.*;
-import com.gt.union.union.main.mapper.UnionMainCreateMapper;
 import com.gt.union.union.main.service.*;
 import com.gt.union.union.main.util.UnionMainCreateCacheUtil;
 import com.gt.union.union.main.vo.UnionCreateVO;
@@ -31,7 +31,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 联盟创建 服务实现类
@@ -40,7 +39,10 @@ import java.util.Map;
  * @version 2017-11-23 15:26:25
  */
 @Service
-public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMapper, UnionMainCreate> implements IUnionMainCreateService {
+public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
+    @Autowired
+    private IUnionMainCreateDao unionMainCreateDao;
+
     @Autowired
     private RedisCacheUtil redisCacheUtil;
 
@@ -64,6 +66,624 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
 
     @Autowired
     private IDictService dictService;
+
+    //********************************************* Base On Business - get *********************************************
+
+    //********************************************* Base On Business - list ********************************************
+
+
+    //********************************************* Base On Business - save ********************************************
+
+    //********************************************* Base On Business - remove ******************************************
+
+    //********************************************* Base On Business - update ******************************************
+
+    //********************************************* Base On Business - other *******************************************
+
+    //********************************************* Base On Business - filter ******************************************
+
+    @Override
+    public List<UnionMainCreate> filterByDelStatus(List<UnionMainCreate> unionMainCreateList, Integer delStatus) throws Exception {
+        if (delStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMainCreate> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(unionMainCreateList)) {
+            for (UnionMainCreate unionMainCreate : unionMainCreateList) {
+                if (delStatus.equals(unionMainCreate.getDelStatus())) {
+                    result.add(unionMainCreate);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    //********************************************* Object As a Service - get ******************************************
+
+    @Override
+    public UnionMainCreate getById(Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        UnionMainCreate result;
+        // (1)cache
+        String idKey = UnionMainCreateCacheUtil.getIdKey(id);
+        if (redisCacheUtil.exists(idKey)) {
+            String tempStr = redisCacheUtil.get(idKey);
+            result = JSONArray.parseObject(tempStr, UnionMainCreate.class);
+            return result;
+        }
+        // (2)db
+        result = unionMainCreateDao.selectById(id);
+        setCache(result, id);
+        return result;
+    }
+
+    @Override
+    public UnionMainCreate getValidById(Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        UnionMainCreate result = getById(id);
+
+        return result != null && CommonConstant.DEL_STATUS_NO == result.getDelStatus() ? result : null;
+    }
+
+    @Override
+    public UnionMainCreate getInvalidById(Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        UnionMainCreate result = getById(id);
+
+        return result != null && CommonConstant.DEL_STATUS_YES == result.getDelStatus() ? result : null;
+    }
+
+    //********************************************* Object As a Service - list *****************************************
+
+    @Override
+    public List<Integer> getIdList(List<UnionMainCreate> unionMainCreateList) throws Exception {
+        if (unionMainCreateList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<Integer> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(unionMainCreateList)) {
+            for (UnionMainCreate unionMainCreate : unionMainCreateList) {
+                result.add(unionMainCreate.getId());
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionMainCreate> listByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionMainCreate> result;
+        // (1)cache
+        String busIdKey = UnionMainCreateCacheUtil.getBusIdKey(busId);
+        if (redisCacheUtil.exists(busIdKey)) {
+            String tempStr = redisCacheUtil.get(busIdKey);
+            result = JSONArray.parseArray(tempStr, UnionMainCreate.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionMainCreate> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("bus_id", busId);
+        result = unionMainCreateDao.selectList(entityWrapper);
+        setCache(result, busId, UnionMainCreateCacheUtil.TYPE_BUS_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionMainCreate> listValidByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionMainCreate> result;
+        // (1)cache
+        String validBusIdKey = UnionMainCreateCacheUtil.getValidBusIdKey(busId);
+        if (redisCacheUtil.exists(validBusIdKey)) {
+            String tempStr = redisCacheUtil.get(validBusIdKey);
+            result = JSONArray.parseArray(tempStr, UnionMainCreate.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionMainCreate> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("bus_id", busId);
+        result = unionMainCreateDao.selectList(entityWrapper);
+        setValidCache(result, busId, UnionMainCreateCacheUtil.TYPE_BUS_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionMainCreate> listInvalidByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionMainCreate> result;
+        // (1)cache
+        String invalidBusIdKey = UnionMainCreateCacheUtil.getInvalidBusIdKey(busId);
+        if (redisCacheUtil.exists(invalidBusIdKey)) {
+            String tempStr = redisCacheUtil.get(invalidBusIdKey);
+            result = JSONArray.parseArray(tempStr, UnionMainCreate.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionMainCreate> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("bus_id", busId);
+        result = unionMainCreateDao.selectList(entityWrapper);
+        setInvalidCache(result, busId, UnionMainCreateCacheUtil.TYPE_BUS_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionMainCreate> listByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionMainCreate> result;
+        // (1)cache
+        String unionIdKey = UnionMainCreateCacheUtil.getUnionIdKey(unionId);
+        if (redisCacheUtil.exists(unionIdKey)) {
+            String tempStr = redisCacheUtil.get(unionIdKey);
+            result = JSONArray.parseArray(tempStr, UnionMainCreate.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionMainCreate> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("union_id", unionId);
+        result = unionMainCreateDao.selectList(entityWrapper);
+        setCache(result, unionId, UnionMainCreateCacheUtil.TYPE_UNION_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionMainCreate> listValidByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionMainCreate> result;
+        // (1)cache
+        String validUnionIdKey = UnionMainCreateCacheUtil.getValidUnionIdKey(unionId);
+        if (redisCacheUtil.exists(validUnionIdKey)) {
+            String tempStr = redisCacheUtil.get(validUnionIdKey);
+            result = JSONArray.parseArray(tempStr, UnionMainCreate.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionMainCreate> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId);
+        result = unionMainCreateDao.selectList(entityWrapper);
+        setValidCache(result, unionId, UnionMainCreateCacheUtil.TYPE_UNION_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionMainCreate> listInvalidByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionMainCreate> result;
+        // (1)cache
+        String invalidUnionIdKey = UnionMainCreateCacheUtil.getInvalidUnionIdKey(unionId);
+        if (redisCacheUtil.exists(invalidUnionIdKey)) {
+            String tempStr = redisCacheUtil.get(invalidUnionIdKey);
+            result = JSONArray.parseArray(tempStr, UnionMainCreate.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionMainCreate> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("union_id", unionId);
+        result = unionMainCreateDao.selectList(entityWrapper);
+        setInvalidCache(result, unionId, UnionMainCreateCacheUtil.TYPE_UNION_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionMainCreate> listByPermitId(Integer permitId) throws Exception {
+        if (permitId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionMainCreate> result;
+        // (1)cache
+        String permitIdKey = UnionMainCreateCacheUtil.getPermitIdKey(permitId);
+        if (redisCacheUtil.exists(permitIdKey)) {
+            String tempStr = redisCacheUtil.get(permitIdKey);
+            result = JSONArray.parseArray(tempStr, UnionMainCreate.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionMainCreate> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("permit_id", permitId);
+        result = unionMainCreateDao.selectList(entityWrapper);
+        setCache(result, permitId, UnionMainCreateCacheUtil.TYPE_PERMIT_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionMainCreate> listValidByPermitId(Integer permitId) throws Exception {
+        if (permitId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionMainCreate> result;
+        // (1)cache
+        String validPermitIdKey = UnionMainCreateCacheUtil.getValidPermitIdKey(permitId);
+        if (redisCacheUtil.exists(validPermitIdKey)) {
+            String tempStr = redisCacheUtil.get(validPermitIdKey);
+            result = JSONArray.parseArray(tempStr, UnionMainCreate.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionMainCreate> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("permit_id", permitId);
+        result = unionMainCreateDao.selectList(entityWrapper);
+        setValidCache(result, permitId, UnionMainCreateCacheUtil.TYPE_PERMIT_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionMainCreate> listInvalidByPermitId(Integer permitId) throws Exception {
+        if (permitId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionMainCreate> result;
+        // (1)cache
+        String invalidPermitIdKey = UnionMainCreateCacheUtil.getInvalidPermitIdKey(permitId);
+        if (redisCacheUtil.exists(invalidPermitIdKey)) {
+            String tempStr = redisCacheUtil.get(invalidPermitIdKey);
+            result = JSONArray.parseArray(tempStr, UnionMainCreate.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionMainCreate> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("permit_id", permitId);
+        result = unionMainCreateDao.selectList(entityWrapper);
+        setInvalidCache(result, permitId, UnionMainCreateCacheUtil.TYPE_PERMIT_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionMainCreate> listByIdList(List<Integer> idList) throws Exception {
+        if (idList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMainCreate> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(idList)) {
+            for (Integer id : idList) {
+                result.add(getById(id));
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public Page<UnionMainCreate> pageSupport(Page page, EntityWrapper<UnionMainCreate> entityWrapper) throws Exception {
+        if (page == null || entityWrapper == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        return unionMainCreateDao.selectPage(page, entityWrapper);
+    }
+    //********************************************* Object As a Service - save *****************************************
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void save(UnionMainCreate newUnionMainCreate) throws Exception {
+        if (newUnionMainCreate == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        unionMainCreateDao.insert(newUnionMainCreate);
+        removeCache(newUnionMainCreate);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveBatch(List<UnionMainCreate> newUnionMainCreateList) throws Exception {
+        if (newUnionMainCreateList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        unionMainCreateDao.insertBatch(newUnionMainCreateList);
+        removeCache(newUnionMainCreateList);
+    }
+
+    //********************************************* Object As a Service - remove ***************************************
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeById(Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)remove cache
+        UnionMainCreate unionMainCreate = getById(id);
+        removeCache(unionMainCreate);
+        // (2)remove in db logically
+        UnionMainCreate removeUnionMainCreate = new UnionMainCreate();
+        removeUnionMainCreate.setId(id);
+        removeUnionMainCreate.setDelStatus(CommonConstant.DEL_STATUS_YES);
+        unionMainCreateDao.updateById(removeUnionMainCreate);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeBatchById(List<Integer> idList) throws Exception {
+        if (idList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)remove cache
+        List<UnionMainCreate> unionMainCreateList = listByIdList(idList);
+        removeCache(unionMainCreateList);
+        // (2)remove in db logically
+        List<UnionMainCreate> removeUnionMainCreateList = new ArrayList<>();
+        for (Integer id : idList) {
+            UnionMainCreate removeUnionMainCreate = new UnionMainCreate();
+            removeUnionMainCreate.setId(id);
+            removeUnionMainCreate.setDelStatus(CommonConstant.DEL_STATUS_YES);
+            removeUnionMainCreateList.add(removeUnionMainCreate);
+        }
+        unionMainCreateDao.updateBatchById(removeUnionMainCreateList);
+    }
+
+    //********************************************* Object As a Service - update ***************************************
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void update(UnionMainCreate updateUnionMainCreate) throws Exception {
+        if (updateUnionMainCreate == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)remove cache
+        Integer id = updateUnionMainCreate.getId();
+        UnionMainCreate unionMainCreate = getById(id);
+        removeCache(unionMainCreate);
+        // (2)update db
+        unionMainCreateDao.updateById(updateUnionMainCreate);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateBatch(List<UnionMainCreate> updateUnionMainCreateList) throws Exception {
+        if (updateUnionMainCreateList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)remove cache
+        List<Integer> idList = getIdList(updateUnionMainCreateList);
+        List<UnionMainCreate> unionMainCreateList = listByIdList(idList);
+        removeCache(unionMainCreateList);
+        // (2)update db
+        unionMainCreateDao.updateBatchById(updateUnionMainCreateList);
+    }
+
+    //********************************************* Object As a Service - cache support ********************************
+
+    private void setCache(UnionMainCreate newUnionMainCreate, Integer id) {
+        if (id == null) {
+            //do nothing,just in case
+            return;
+        }
+        String idKey = UnionMainCreateCacheUtil.getIdKey(id);
+        redisCacheUtil.set(idKey, newUnionMainCreate);
+    }
+
+    private void setCache(List<UnionMainCreate> newUnionMainCreateList, Integer foreignId, int foreignIdType) {
+        if (foreignId == null) {
+            //do nothing,just in case
+            return;
+        }
+        String foreignIdKey = null;
+        switch (foreignIdType) {
+            case UnionMainCreateCacheUtil.TYPE_BUS_ID:
+                foreignIdKey = UnionMainCreateCacheUtil.getBusIdKey(foreignId);
+                break;
+            case UnionMainCreateCacheUtil.TYPE_UNION_ID:
+                foreignIdKey = UnionMainCreateCacheUtil.getUnionIdKey(foreignId);
+                break;
+            case UnionMainCreateCacheUtil.TYPE_PERMIT_ID:
+                foreignIdKey = UnionMainCreateCacheUtil.getPermitIdKey(foreignId);
+                break;
+
+            default:
+                break;
+        }
+        if (foreignIdKey != null) {
+            redisCacheUtil.set(foreignIdKey, newUnionMainCreateList);
+        }
+    }
+
+    private void setValidCache(List<UnionMainCreate> newUnionMainCreateList, Integer foreignId, int foreignIdType) {
+        if (foreignId == null) {
+            //do nothing,just in case
+            return;
+        }
+        String validForeignIdKey = null;
+        switch (foreignIdType) {
+            case UnionMainCreateCacheUtil.TYPE_BUS_ID:
+                validForeignIdKey = UnionMainCreateCacheUtil.getValidBusIdKey(foreignId);
+                break;
+            case UnionMainCreateCacheUtil.TYPE_UNION_ID:
+                validForeignIdKey = UnionMainCreateCacheUtil.getValidUnionIdKey(foreignId);
+                break;
+            case UnionMainCreateCacheUtil.TYPE_PERMIT_ID:
+                validForeignIdKey = UnionMainCreateCacheUtil.getValidPermitIdKey(foreignId);
+                break;
+
+            default:
+                break;
+        }
+        if (validForeignIdKey != null) {
+            redisCacheUtil.set(validForeignIdKey, newUnionMainCreateList);
+        }
+    }
+
+    private void setInvalidCache(List<UnionMainCreate> newUnionMainCreateList, Integer foreignId, int foreignIdType) {
+        if (foreignId == null) {
+            //do nothing,just in case
+            return;
+        }
+        String invalidForeignIdKey = null;
+        switch (foreignIdType) {
+            case UnionMainCreateCacheUtil.TYPE_BUS_ID:
+                invalidForeignIdKey = UnionMainCreateCacheUtil.getInvalidBusIdKey(foreignId);
+                break;
+            case UnionMainCreateCacheUtil.TYPE_UNION_ID:
+                invalidForeignIdKey = UnionMainCreateCacheUtil.getInvalidUnionIdKey(foreignId);
+                break;
+            case UnionMainCreateCacheUtil.TYPE_PERMIT_ID:
+                invalidForeignIdKey = UnionMainCreateCacheUtil.getInvalidPermitIdKey(foreignId);
+                break;
+
+            default:
+                break;
+        }
+        if (invalidForeignIdKey != null) {
+            redisCacheUtil.set(invalidForeignIdKey, newUnionMainCreateList);
+        }
+    }
+
+    private void removeCache(UnionMainCreate unionMainCreate) {
+        if (unionMainCreate == null) {
+            return;
+        }
+        Integer id = unionMainCreate.getId();
+        String idKey = UnionMainCreateCacheUtil.getIdKey(id);
+        redisCacheUtil.remove(idKey);
+
+        Integer busId = unionMainCreate.getBusId();
+        if (busId != null) {
+            String busIdKey = UnionMainCreateCacheUtil.getBusIdKey(busId);
+            redisCacheUtil.remove(busIdKey);
+
+            String validBusIdKey = UnionMainCreateCacheUtil.getValidBusIdKey(busId);
+            redisCacheUtil.remove(validBusIdKey);
+
+            String invalidBusIdKey = UnionMainCreateCacheUtil.getInvalidBusIdKey(busId);
+            redisCacheUtil.remove(invalidBusIdKey);
+        }
+
+        Integer unionId = unionMainCreate.getUnionId();
+        if (unionId != null) {
+            String unionIdKey = UnionMainCreateCacheUtil.getUnionIdKey(unionId);
+            redisCacheUtil.remove(unionIdKey);
+
+            String validUnionIdKey = UnionMainCreateCacheUtil.getValidUnionIdKey(unionId);
+            redisCacheUtil.remove(validUnionIdKey);
+
+            String invalidUnionIdKey = UnionMainCreateCacheUtil.getInvalidUnionIdKey(unionId);
+            redisCacheUtil.remove(invalidUnionIdKey);
+        }
+
+        Integer permitId = unionMainCreate.getPermitId();
+        if (permitId != null) {
+            String permitIdKey = UnionMainCreateCacheUtil.getPermitIdKey(permitId);
+            redisCacheUtil.remove(permitIdKey);
+
+            String validPermitIdKey = UnionMainCreateCacheUtil.getValidPermitIdKey(permitId);
+            redisCacheUtil.remove(validPermitIdKey);
+
+            String invalidPermitIdKey = UnionMainCreateCacheUtil.getInvalidPermitIdKey(permitId);
+            redisCacheUtil.remove(invalidPermitIdKey);
+        }
+
+    }
+
+    private void removeCache(List<UnionMainCreate> unionMainCreateList) {
+        if (ListUtil.isEmpty(unionMainCreateList)) {
+            return;
+        }
+        List<Integer> idList = new ArrayList<>();
+        for (UnionMainCreate unionMainCreate : unionMainCreateList) {
+            idList.add(unionMainCreate.getId());
+        }
+        List<String> idKeyList = UnionMainCreateCacheUtil.getIdKey(idList);
+        redisCacheUtil.remove(idKeyList);
+
+        List<String> busIdKeyList = getForeignIdKeyList(unionMainCreateList, UnionMainCreateCacheUtil.TYPE_BUS_ID);
+        if (ListUtil.isNotEmpty(busIdKeyList)) {
+            redisCacheUtil.remove(busIdKeyList);
+        }
+
+        List<String> unionIdKeyList = getForeignIdKeyList(unionMainCreateList, UnionMainCreateCacheUtil.TYPE_UNION_ID);
+        if (ListUtil.isNotEmpty(unionIdKeyList)) {
+            redisCacheUtil.remove(unionIdKeyList);
+        }
+
+        List<String> permitIdKeyList = getForeignIdKeyList(unionMainCreateList, UnionMainCreateCacheUtil.TYPE_PERMIT_ID);
+        if (ListUtil.isNotEmpty(permitIdKeyList)) {
+            redisCacheUtil.remove(permitIdKeyList);
+        }
+
+    }
+
+    private List<String> getForeignIdKeyList(List<UnionMainCreate> unionMainCreateList, int foreignIdType) {
+        List<String> result = new ArrayList<>();
+        switch (foreignIdType) {
+            case UnionMainCreateCacheUtil.TYPE_BUS_ID:
+                for (UnionMainCreate unionMainCreate : unionMainCreateList) {
+                    Integer busId = unionMainCreate.getBusId();
+                    if (busId != null) {
+                        String busIdKey = UnionMainCreateCacheUtil.getBusIdKey(busId);
+                        result.add(busIdKey);
+
+                        String validBusIdKey = UnionMainCreateCacheUtil.getValidBusIdKey(busId);
+                        result.add(validBusIdKey);
+
+                        String invalidBusIdKey = UnionMainCreateCacheUtil.getInvalidBusIdKey(busId);
+                        result.add(invalidBusIdKey);
+                    }
+                }
+                break;
+            case UnionMainCreateCacheUtil.TYPE_UNION_ID:
+                for (UnionMainCreate unionMainCreate : unionMainCreateList) {
+                    Integer unionId = unionMainCreate.getUnionId();
+                    if (unionId != null) {
+                        String unionIdKey = UnionMainCreateCacheUtil.getUnionIdKey(unionId);
+                        result.add(unionIdKey);
+
+                        String validUnionIdKey = UnionMainCreateCacheUtil.getValidUnionIdKey(unionId);
+                        result.add(validUnionIdKey);
+
+                        String invalidUnionIdKey = UnionMainCreateCacheUtil.getInvalidUnionIdKey(unionId);
+                        result.add(invalidUnionIdKey);
+                    }
+                }
+                break;
+            case UnionMainCreateCacheUtil.TYPE_PERMIT_ID:
+                for (UnionMainCreate unionMainCreate : unionMainCreateList) {
+                    Integer permitId = unionMainCreate.getPermitId();
+                    if (permitId != null) {
+                        String permitIdKey = UnionMainCreateCacheUtil.getPermitIdKey(permitId);
+                        result.add(permitIdKey);
+
+                        String validPermitIdKey = UnionMainCreateCacheUtil.getValidPermitIdKey(permitId);
+                        result.add(validPermitIdKey);
+
+                        String invalidPermitIdKey = UnionMainCreateCacheUtil.getInvalidPermitIdKey(permitId);
+                        result.add(invalidPermitIdKey);
+                    }
+                }
+                break;
+
+            default:
+                break;
+        }
+        return result;
+    }
+
+    // TODO
 
     //***************************************** Domain Driven Design - get *********************************************
 
@@ -326,312 +946,5 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
 
     //***************************************** Domain Driven Design - boolean *****************************************
 
-    //***************************************** Object As a Service - get **********************************************
-
-    public UnionMainCreate getById(Integer id) throws Exception {
-        if (id == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        UnionMainCreate result;
-        // (1)cache
-        String idKey = UnionMainCreateCacheUtil.getIdKey(id);
-        if (redisCacheUtil.exists(idKey)) {
-            String tempStr = redisCacheUtil.get(idKey);
-            result = JSONArray.parseObject(tempStr, UnionMainCreate.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionMainCreate> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("id", id)
-                .eq("del_status", CommonConstant.DEL_STATUS_NO);
-        result = selectOne(entityWrapper);
-        setCache(result, id);
-        return result;
-    }
-
-    //***************************************** Object As a Service - list *********************************************
-
-    public List<UnionMainCreate> listByBusId(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionMainCreate> result;
-        // (1)cache
-        String busIdKey = UnionMainCreateCacheUtil.getBusIdKey(busId);
-        if (redisCacheUtil.exists(busIdKey)) {
-            String tempStr = redisCacheUtil.get(busIdKey);
-            result = JSONArray.parseArray(tempStr, UnionMainCreate.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionMainCreate> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("bus_id", busId)
-                .eq("del_status", CommonConstant.COMMON_NO);
-        result = selectList(entityWrapper);
-        setCache(result, busId, UnionMainCreateCacheUtil.TYPE_BUS_ID);
-        return result;
-    }
-
-    public List<UnionMainCreate> listByUnionId(Integer unionId) throws Exception {
-        if (unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionMainCreate> result;
-        // (1)cache
-        String unionIdKey = UnionMainCreateCacheUtil.getUnionIdKey(unionId);
-        if (redisCacheUtil.exists(unionIdKey)) {
-            String tempStr = redisCacheUtil.get(unionIdKey);
-            result = JSONArray.parseArray(tempStr, UnionMainCreate.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionMainCreate> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("union_id", unionId)
-                .eq("del_status", CommonConstant.COMMON_NO);
-        result = selectList(entityWrapper);
-        setCache(result, unionId, UnionMainCreateCacheUtil.TYPE_UNION_ID);
-        return result;
-    }
-
-    public List<UnionMainCreate> listByPermitId(Integer permitId) throws Exception {
-        if (permitId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionMainCreate> result;
-        // (1)cache
-        String permitIdKey = UnionMainCreateCacheUtil.getPermitIdKey(permitId);
-        if (redisCacheUtil.exists(permitIdKey)) {
-            String tempStr = redisCacheUtil.get(permitIdKey);
-            result = JSONArray.parseArray(tempStr, UnionMainCreate.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionMainCreate> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("permit_id", permitId)
-                .eq("del_status", CommonConstant.COMMON_NO);
-        result = selectList(entityWrapper);
-        setCache(result, permitId, UnionMainCreateCacheUtil.TYPE_PERMIT_ID);
-        return result;
-    }
-
-    //***************************************** Object As a Service - save *********************************************
-
-    @Transactional(rollbackFor = Exception.class)
-    public void save(UnionMainCreate newUnionMainCreate) throws Exception {
-        if (newUnionMainCreate == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        insert(newUnionMainCreate);
-        removeCache(newUnionMainCreate);
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    public void saveBatch(List<UnionMainCreate> newUnionMainCreateList) throws Exception {
-        if (newUnionMainCreateList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        insertBatch(newUnionMainCreateList);
-        removeCache(newUnionMainCreateList);
-    }
-
-    //***************************************** Object As a Service - remove *******************************************
-
-    @Transactional(rollbackFor = Exception.class)
-    public void removeById(Integer id) throws Exception {
-        if (id == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // (1)remove cache
-        UnionMainCreate unionMainCreate = getById(id);
-        removeCache(unionMainCreate);
-        // (2)remove in db logically
-        UnionMainCreate removeUnionMainCreate = new UnionMainCreate();
-        removeUnionMainCreate.setId(id);
-        removeUnionMainCreate.setDelStatus(CommonConstant.DEL_STATUS_YES);
-        updateById(removeUnionMainCreate);
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    public void removeBatchById(List<Integer> idList) throws Exception {
-        if (idList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // (1)remove cache
-        List<UnionMainCreate> unionMainCreateList = new ArrayList<>();
-        for (Integer id : idList) {
-            UnionMainCreate unionMainCreate = getById(id);
-            unionMainCreateList.add(unionMainCreate);
-        }
-        removeCache(unionMainCreateList);
-        // (2)remove in db logically
-        List<UnionMainCreate> removeUnionMainCreateList = new ArrayList<>();
-        for (Integer id : idList) {
-            UnionMainCreate removeUnionMainCreate = new UnionMainCreate();
-            removeUnionMainCreate.setId(id);
-            removeUnionMainCreate.setDelStatus(CommonConstant.DEL_STATUS_YES);
-            removeUnionMainCreateList.add(removeUnionMainCreate);
-        }
-        updateBatchById(removeUnionMainCreateList);
-    }
-
-    //***************************************** Object As a Service - update *******************************************
-
-    @Transactional(rollbackFor = Exception.class)
-    public void update(UnionMainCreate updateUnionMainCreate) throws Exception {
-        if (updateUnionMainCreate == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // (1)remove cache
-        Integer id = updateUnionMainCreate.getId();
-        UnionMainCreate unionMainCreate = getById(id);
-        removeCache(unionMainCreate);
-        // (2)update db
-        updateById(updateUnionMainCreate);
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    public void updateBatch(List<UnionMainCreate> updateUnionMainCreateList) throws Exception {
-        if (updateUnionMainCreateList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // (1)remove cache
-        List<Integer> idList = new ArrayList<>();
-        for (UnionMainCreate updateUnionMainCreate : updateUnionMainCreateList) {
-            idList.add(updateUnionMainCreate.getId());
-        }
-        List<UnionMainCreate> unionMainCreateList = new ArrayList<>();
-        for (Integer id : idList) {
-            UnionMainCreate unionMainCreate = getById(id);
-            unionMainCreateList.add(unionMainCreate);
-        }
-        removeCache(unionMainCreateList);
-        // (2)update db
-        updateBatchById(updateUnionMainCreateList);
-    }
-
-    //***************************************** Object As a Service - cache support ************************************
-
-    private void setCache(UnionMainCreate newUnionMainCreate, Integer id) {
-        if (id == null) {
-            //do nothing,just in case
-            return;
-        }
-        String idKey = UnionMainCreateCacheUtil.getIdKey(id);
-        redisCacheUtil.set(idKey, newUnionMainCreate);
-    }
-
-    private void setCache(List<UnionMainCreate> newUnionMainCreateList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String foreignIdKey = null;
-        switch (foreignIdType) {
-            case UnionMainCreateCacheUtil.TYPE_BUS_ID:
-                foreignIdKey = UnionMainCreateCacheUtil.getBusIdKey(foreignId);
-                break;
-            case UnionMainCreateCacheUtil.TYPE_UNION_ID:
-                foreignIdKey = UnionMainCreateCacheUtil.getUnionIdKey(foreignId);
-                break;
-            case UnionMainCreateCacheUtil.TYPE_PERMIT_ID:
-                foreignIdKey = UnionMainCreateCacheUtil.getPermitIdKey(foreignId);
-                break;
-            default:
-                break;
-        }
-        if (foreignIdKey != null) {
-            redisCacheUtil.set(foreignIdKey, newUnionMainCreateList);
-        }
-    }
-
-    private void removeCache(UnionMainCreate unionMainCreate) {
-        if (unionMainCreate == null) {
-            return;
-        }
-        Integer id = unionMainCreate.getId();
-        String idKey = UnionMainCreateCacheUtil.getIdKey(id);
-        redisCacheUtil.remove(idKey);
-
-        Integer busId = unionMainCreate.getBusId();
-        if (busId != null) {
-            String busIdKey = UnionMainCreateCacheUtil.getBusIdKey(busId);
-            redisCacheUtil.remove(busIdKey);
-        }
-
-        Integer unionId = unionMainCreate.getUnionId();
-        if (unionId != null) {
-            String unionIdKey = UnionMainCreateCacheUtil.getUnionIdKey(unionId);
-            redisCacheUtil.remove(unionIdKey);
-        }
-
-        Integer permitId = unionMainCreate.getPermitId();
-        if (permitId != null) {
-            String permitIdKey = UnionMainCreateCacheUtil.getPermitIdKey(permitId);
-            redisCacheUtil.remove(permitIdKey);
-        }
-    }
-
-    private void removeCache(List<UnionMainCreate> unionMainCreateList) {
-        if (ListUtil.isEmpty(unionMainCreateList)) {
-            return;
-        }
-        List<Integer> idList = new ArrayList<>();
-        for (UnionMainCreate unionMainCreate : unionMainCreateList) {
-            idList.add(unionMainCreate.getId());
-        }
-        List<String> idKeyList = UnionMainCreateCacheUtil.getIdKey(idList);
-        redisCacheUtil.remove(idKeyList);
-
-        List<String> busIdKeyList = getForeignIdKeyList(unionMainCreateList, UnionMainCreateCacheUtil.TYPE_BUS_ID);
-        if (ListUtil.isNotEmpty(busIdKeyList)) {
-            redisCacheUtil.remove(busIdKeyList);
-        }
-
-        List<String> unionIdKeyList = getForeignIdKeyList(unionMainCreateList, UnionMainCreateCacheUtil.TYPE_UNION_ID);
-        if (ListUtil.isNotEmpty(unionIdKeyList)) {
-            redisCacheUtil.remove(unionIdKeyList);
-        }
-
-        List<String> permitIdKeyList = getForeignIdKeyList(unionMainCreateList, UnionMainCreateCacheUtil.TYPE_PERMIT_ID);
-        if (ListUtil.isNotEmpty(permitIdKeyList)) {
-            redisCacheUtil.remove(permitIdKeyList);
-        }
-    }
-
-    private List<String> getForeignIdKeyList(List<UnionMainCreate> unionMainCreateList, int foreignIdType) {
-        List<String> result = new ArrayList<>();
-        switch (foreignIdType) {
-            case UnionMainCreateCacheUtil.TYPE_BUS_ID:
-                for (UnionMainCreate unionMainCreate : unionMainCreateList) {
-                    Integer busId = unionMainCreate.getBusId();
-                    if (busId != null) {
-                        String busIdKey = UnionMainCreateCacheUtil.getBusIdKey(busId);
-                        result.add(busIdKey);
-                    }
-                }
-                break;
-            case UnionMainCreateCacheUtil.TYPE_UNION_ID:
-                for (UnionMainCreate unionMainCreate : unionMainCreateList) {
-                    Integer unionId = unionMainCreate.getUnionId();
-                    if (unionId != null) {
-                        String unionIdKey = UnionMainCreateCacheUtil.getUnionIdKey(unionId);
-                        result.add(unionIdKey);
-                    }
-                }
-                break;
-            case UnionMainCreateCacheUtil.TYPE_PERMIT_ID:
-                for (UnionMainCreate unionMainCreate : unionMainCreateList) {
-                    Integer permitId = unionMainCreate.getPermitId();
-                    if (permitId != null) {
-                        String permitIdKey = UnionMainCreateCacheUtil.getPermitIdKey(permitId);
-                        result.add(permitIdKey);
-                    }
-                }
-                break;
-            default:
-                break;
-        }
-        return result;
-    }
 
 }

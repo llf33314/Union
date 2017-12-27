@@ -1,6 +1,7 @@
 package com.gt.union.union.main.service;
 
-import com.baomidou.mybatisplus.service.IService;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.union.main.entity.UnionMainTransfer;
 import com.gt.union.union.main.vo.UnionTransferVO;
 
@@ -12,7 +13,228 @@ import java.util.List;
  * @author linweicong
  * @version 2017-11-23 15:26:25
  */
-public interface IUnionMainTransferService extends IService<UnionMainTransfer> {
+public interface IUnionMainTransferService {
+    //********************************************* Base On Business - get *********************************************
+
+    //********************************************* Base On Business - list ********************************************
+
+    //********************************************* Base On Business - save ********************************************
+
+    //********************************************* Base On Business - remove ******************************************
+
+    //********************************************* Base On Business - update ******************************************
+
+    //********************************************* Base On Business - other *******************************************
+
+    //********************************************* Base On Business - filter ******************************************
+
+    /**
+     * 根据删除状态进行过滤(by myBatisGenerator)
+     *
+     * @param unionMainTransferList 数据源
+     * @param delStatus             删除状态
+     * @return List<UnionMainTransfer>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMainTransfer> filterByDelStatus(List<UnionMainTransfer> unionMainTransferList, Integer delStatus) throws Exception;
+
+    //****************************************** Object As a Service - get *********************************************
+
+    /**
+     * 获取联盟转移信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionMainTransfer
+     * @throws Exception 统一处理异常
+     */
+    UnionMainTransfer getById(Integer id) throws Exception;
+
+    /**
+     * 获取未删除的联盟转移信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionMainTransfer
+     * @throws Exception 统一处理异常
+     */
+    UnionMainTransfer getValidById(Integer id) throws Exception;
+
+    /**
+     * 获取已删除的联盟转移信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionMainTransfer
+     * @throws Exception 统一处理异常
+     */
+    UnionMainTransfer getInvalidById(Integer id) throws Exception;
+
+    //****************************************** Object As a Service - list ********************************************
+
+    /**
+     * 获取对象集对应的的主键集(by myBatisGenerator)
+     *
+     * @param unionMainTransferList 对象集
+     * @return List<Id>
+     * @throws Exception 统一处理异常
+     */
+    List<Integer> getIdList(List<UnionMainTransfer> unionMainTransferList) throws Exception;
+
+
+    /**
+     * 获取联盟转移列表信息(by myBatisGenerator)
+     *
+     * @param fromMemberId fromMemberId
+     * @return List<UnionMainTransfer>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMainTransfer> listByFromMemberId(Integer fromMemberId) throws Exception;
+
+    /**
+     * 获取未删除的联盟转移列表信息(by myBatisGenerator)
+     *
+     * @param fromMemberId fromMemberId
+     * @return List<UnionMainTransfer>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMainTransfer> listValidByFromMemberId(Integer fromMemberId) throws Exception;
+
+    /**
+     * 获取已删除的联盟转移列表信息(by myBatisGenerator)
+     *
+     * @param fromMemberId fromMemberId
+     * @return List<UnionMainTransfer>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMainTransfer> listInvalidByFromMemberId(Integer fromMemberId) throws Exception;
+
+    /**
+     * 获取联盟转移列表信息(by myBatisGenerator)
+     *
+     * @param toMemberId toMemberId
+     * @return List<UnionMainTransfer>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMainTransfer> listByToMemberId(Integer toMemberId) throws Exception;
+
+    /**
+     * 获取未删除的联盟转移列表信息(by myBatisGenerator)
+     *
+     * @param toMemberId toMemberId
+     * @return List<UnionMainTransfer>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMainTransfer> listValidByToMemberId(Integer toMemberId) throws Exception;
+
+    /**
+     * 获取已删除的联盟转移列表信息(by myBatisGenerator)
+     *
+     * @param toMemberId toMemberId
+     * @return List<UnionMainTransfer>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMainTransfer> listInvalidByToMemberId(Integer toMemberId) throws Exception;
+
+    /**
+     * 获取联盟转移列表信息(by myBatisGenerator)
+     *
+     * @param unionId unionId
+     * @return List<UnionMainTransfer>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMainTransfer> listByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 获取未删除的联盟转移列表信息(by myBatisGenerator)
+     *
+     * @param unionId unionId
+     * @return List<UnionMainTransfer>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMainTransfer> listValidByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 获取已删除的联盟转移列表信息(by myBatisGenerator)
+     *
+     * @param unionId unionId
+     * @return List<UnionMainTransfer>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMainTransfer> listInvalidByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 获取主键集对应的对象集
+     *
+     * @param idList 主键集
+     * @return List<UnionMainTransfer>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMainTransfer> listByIdList(List<Integer> idList) throws Exception;
+
+    /**
+     * 分页支持
+     *
+     * @param page          分页对象
+     * @param entityWrapper 条件
+     * @return Page<UnionMainTransfer>
+     * @throws Exception 统一处理异常
+     */
+    Page<UnionMainTransfer> pageSupport(Page page, EntityWrapper<UnionMainTransfer> entityWrapper) throws Exception;
+
+    //****************************************** Object As a Service - save ********************************************
+
+    /**
+     * 保存(by myBatisGenerator)
+     *
+     * @param newUnionMainTransfer 保存内容
+     * @throws Exception 统一处理异常
+     */
+    void save(UnionMainTransfer newUnionMainTransfer) throws Exception;
+
+    /**
+     * 批量保存(by myBatisGenerator)
+     *
+     * @param newUnionMainTransferList 保存内容
+     * @throws Exception 统一处理异常
+     */
+    void saveBatch(List<UnionMainTransfer> newUnionMainTransferList) throws Exception;
+
+    //****************************************** Object As a Service - remove ******************************************
+
+    /**
+     * 移除(by myBatisGenerator)
+     *
+     * @param id 移除内容
+     * @throws Exception 统一处理异常
+     */
+    void removeById(Integer id) throws Exception;
+
+    /**
+     * 批量移除(by myBatisGenerator)
+     *
+     * @param idList 移除内容
+     * @throws Exception 统一处理异常
+     */
+    void removeBatchById(List<Integer> idList) throws Exception;
+
+    //****************************************** Object As a Service - update ******************************************
+
+    /**
+     * 更新(by myBatisGenerator)
+     *
+     * @param updateUnionMainTransfer 更新内容
+     * @throws Exception 统一处理异常
+     */
+    void update(UnionMainTransfer updateUnionMainTransfer) throws Exception;
+
+    /**
+     * 批量更新(by myBatisGenerator)
+     *
+     * @param updateUnionMainTransferList 更新内容
+     * @throws Exception 统一处理异常
+     */
+    void updateBatch(List<UnionMainTransfer> updateUnionMainTransferList) throws Exception;
+
+    // TODO
+
     //***************************************** Domain Driven Design - get *********************************************
 
     /**

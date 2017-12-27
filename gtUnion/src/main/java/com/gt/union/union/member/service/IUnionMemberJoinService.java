@@ -1,6 +1,7 @@
 package com.gt.union.union.member.service;
 
-import com.baomidou.mybatisplus.service.IService;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.union.member.entity.UnionMemberJoin;
 import com.gt.union.union.member.vo.MemberJoinCreateVO;
 import com.gt.union.union.member.vo.MemberJoinVO;
@@ -13,7 +14,228 @@ import java.util.List;
  * @author linweicong
  * @version 2017-11-23 10:28:35
  */
-public interface IUnionMemberJoinService extends IService<UnionMemberJoin> {
+public interface IUnionMemberJoinService {
+    //********************************************* Base On Business - get *********************************************
+
+    //********************************************* Base On Business - list ********************************************
+
+    //********************************************* Base On Business - save ********************************************
+
+    //********************************************* Base On Business - remove ******************************************
+
+    //********************************************* Base On Business - update ******************************************
+
+    //********************************************* Base On Business - other *******************************************
+
+    //********************************************* Base On Business - filter ******************************************
+
+    /**
+     * 根据删除状态进行过滤(by myBatisGenerator)
+     *
+     * @param unionMemberJoinList 数据源
+     * @param delStatus           删除状态
+     * @return List<UnionMemberJoin>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMemberJoin> filterByDelStatus(List<UnionMemberJoin> unionMemberJoinList, Integer delStatus) throws Exception;
+
+    //****************************************** Object As a Service - get *********************************************
+
+    /**
+     * 获取入盟申请信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionMemberJoin
+     * @throws Exception 统一处理异常
+     */
+    UnionMemberJoin getById(Integer id) throws Exception;
+
+    /**
+     * 获取未删除的入盟申请信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionMemberJoin
+     * @throws Exception 统一处理异常
+     */
+    UnionMemberJoin getValidById(Integer id) throws Exception;
+
+    /**
+     * 获取已删除的入盟申请信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionMemberJoin
+     * @throws Exception 统一处理异常
+     */
+    UnionMemberJoin getInvalidById(Integer id) throws Exception;
+
+    //****************************************** Object As a Service - list ********************************************
+
+    /**
+     * 获取对象集对应的的主键集(by myBatisGenerator)
+     *
+     * @param unionMemberJoinList 对象集
+     * @return List<Id>
+     * @throws Exception 统一处理异常
+     */
+    List<Integer> getIdList(List<UnionMemberJoin> unionMemberJoinList) throws Exception;
+
+
+    /**
+     * 获取入盟申请列表信息(by myBatisGenerator)
+     *
+     * @param applyMemberId applyMemberId
+     * @return List<UnionMemberJoin>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMemberJoin> listByApplyMemberId(Integer applyMemberId) throws Exception;
+
+    /**
+     * 获取未删除的入盟申请列表信息(by myBatisGenerator)
+     *
+     * @param applyMemberId applyMemberId
+     * @return List<UnionMemberJoin>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMemberJoin> listValidByApplyMemberId(Integer applyMemberId) throws Exception;
+
+    /**
+     * 获取已删除的入盟申请列表信息(by myBatisGenerator)
+     *
+     * @param applyMemberId applyMemberId
+     * @return List<UnionMemberJoin>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMemberJoin> listInvalidByApplyMemberId(Integer applyMemberId) throws Exception;
+
+    /**
+     * 获取入盟申请列表信息(by myBatisGenerator)
+     *
+     * @param recommendMemberId recommendMemberId
+     * @return List<UnionMemberJoin>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMemberJoin> listByRecommendMemberId(Integer recommendMemberId) throws Exception;
+
+    /**
+     * 获取未删除的入盟申请列表信息(by myBatisGenerator)
+     *
+     * @param recommendMemberId recommendMemberId
+     * @return List<UnionMemberJoin>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMemberJoin> listValidByRecommendMemberId(Integer recommendMemberId) throws Exception;
+
+    /**
+     * 获取已删除的入盟申请列表信息(by myBatisGenerator)
+     *
+     * @param recommendMemberId recommendMemberId
+     * @return List<UnionMemberJoin>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMemberJoin> listInvalidByRecommendMemberId(Integer recommendMemberId) throws Exception;
+
+    /**
+     * 获取入盟申请列表信息(by myBatisGenerator)
+     *
+     * @param unionId unionId
+     * @return List<UnionMemberJoin>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMemberJoin> listByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 获取未删除的入盟申请列表信息(by myBatisGenerator)
+     *
+     * @param unionId unionId
+     * @return List<UnionMemberJoin>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMemberJoin> listValidByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 获取已删除的入盟申请列表信息(by myBatisGenerator)
+     *
+     * @param unionId unionId
+     * @return List<UnionMemberJoin>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMemberJoin> listInvalidByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 获取主键集对应的对象集
+     *
+     * @param idList 主键集
+     * @return List<UnionMemberJoin>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMemberJoin> listByIdList(List<Integer> idList) throws Exception;
+
+    /**
+     * 分页支持
+     *
+     * @param page          分页对象
+     * @param entityWrapper 条件
+     * @return Page<UnionMemberJoin>
+     * @throws Exception 统一处理异常
+     */
+    Page<UnionMemberJoin> pageSupport(Page page, EntityWrapper<UnionMemberJoin> entityWrapper) throws Exception;
+
+    //****************************************** Object As a Service - save ********************************************
+
+    /**
+     * 保存(by myBatisGenerator)
+     *
+     * @param newUnionMemberJoin 保存内容
+     * @throws Exception 统一处理异常
+     */
+    void save(UnionMemberJoin newUnionMemberJoin) throws Exception;
+
+    /**
+     * 批量保存(by myBatisGenerator)
+     *
+     * @param newUnionMemberJoinList 保存内容
+     * @throws Exception 统一处理异常
+     */
+    void saveBatch(List<UnionMemberJoin> newUnionMemberJoinList) throws Exception;
+
+    //****************************************** Object As a Service - remove ******************************************
+
+    /**
+     * 移除(by myBatisGenerator)
+     *
+     * @param id 移除内容
+     * @throws Exception 统一处理异常
+     */
+    void removeById(Integer id) throws Exception;
+
+    /**
+     * 批量移除(by myBatisGenerator)
+     *
+     * @param idList 移除内容
+     * @throws Exception 统一处理异常
+     */
+    void removeBatchById(List<Integer> idList) throws Exception;
+
+    //****************************************** Object As a Service - update ******************************************
+
+    /**
+     * 更新(by myBatisGenerator)
+     *
+     * @param updateUnionMemberJoin 更新内容
+     * @throws Exception 统一处理异常
+     */
+    void update(UnionMemberJoin updateUnionMemberJoin) throws Exception;
+
+    /**
+     * 批量更新(by myBatisGenerator)
+     *
+     * @param updateUnionMemberJoinList 更新内容
+     * @throws Exception 统一处理异常
+     */
+    void updateBatch(List<UnionMemberJoin> updateUnionMemberJoinList) throws Exception;
+
+    
+    // TODO
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
