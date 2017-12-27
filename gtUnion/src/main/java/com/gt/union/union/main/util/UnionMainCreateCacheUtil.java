@@ -7,7 +7,7 @@ import java.util.List;
  * 联盟创建 缓存键工具类
  *
  * @author linweicong
- * @version 2017-11-23 15:26:25
+ * @version 2017-12-27 10:56:25
  */
 public class UnionMainCreateCacheUtil {
     public static final int TYPE_BUS_ID = 1;
@@ -26,15 +26,41 @@ public class UnionMainCreateCacheUtil {
         return result;
     }
 
+
     public static String getBusIdKey(Integer busId) {
         return "unionMainCreate:busId:" + busId;
+    }
+
+    public static String getValidBusIdKey(Integer busId) {
+        return "unionMainCreate:busId:" + busId + ":valid";
+    }
+
+    public static String getInvalidBusIdKey(Integer busId) {
+        return "unionMainCreate:busId:" + busId + ":invalid";
     }
 
     public static String getUnionIdKey(Integer unionId) {
         return "unionMainCreate:unionId:" + unionId;
     }
 
+    public static String getValidUnionIdKey(Integer unionId) {
+        return "unionMainCreate:unionId:" + unionId + ":valid";
+    }
+
+    public static String getInvalidUnionIdKey(Integer unionId) {
+        return "unionMainCreate:unionId:" + unionId + ":invalid";
+    }
+
     public static String getPermitIdKey(Integer permitId) {
         return "unionMainCreate:permitId:" + permitId;
     }
+
+    public static String getValidPermitIdKey(Integer permitId) {
+        return "unionMainCreate:permitId:" + permitId + ":valid";
+    }
+
+    public static String getInvalidPermitIdKey(Integer permitId) {
+        return "unionMainCreate:permitId:" + permitId + ":invalid";
+    }
+
 }

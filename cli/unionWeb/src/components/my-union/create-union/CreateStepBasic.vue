@@ -35,7 +35,7 @@
           <div class="dingwei">
             <el-input v-model="form.enterpriseAddress" icon="search" :on-icon-click="handleIconClick" placeholder="请输入详细地址" disabled>
             </el-input>
-            <t-map @mapClick="mapClick" v-show="mapShow"></t-map>
+            <union-map @mapClick="mapClick" v-show="mapShow" ref="unionMap" :address="form.enterpriseAddress"></union-map>
           </div>
         </el-col>
       </el-form-item>
@@ -48,12 +48,12 @@
 </template>
 
 <script>
-import $http from '@/utils/http.js'
-import TMap from '@/components/public-components/TMap'
+import $http from '@/utils/http.js';
+import UnionMap from '@/components/public-components/UnionMap';
 export default {
   name: 'create-step-basic',
   components: {
-    TMap
+    UnionMap
   },
   data() {
     // 验证规则
@@ -102,35 +102,17 @@ export default {
       labelPosition: 'right',
       mapShow: false,
       form: {
-        enterpriseAddress: '',
+        enterpriseAddress: ''
       },
       rules: {
-        enterpriseName: [
-          { required: true, message: '企业名称内容不能为空，请重新输入', trigger: 'blur' }
-        ],
-        directorName: [
-          { required: true, message: '负责人内容不能为空，请重新输入', trigger: 'blur' }
-        ],
-        directorPhone: [
-          { validator: directorPhonePass, trigger: 'blur' }
-        ],
-        directorEmail: [
-          { validator: emailPass, trigger: 'blur' }
-        ],
-        notifyPhone: [
-          { validator: notifyPhonePass, trigger: 'blur' }
-        ],
-        // integralExchangePercent: [
-        //   { validator: integralExchangePercentPass, trigger: 'blur' }
-        // ],
-        region: [
-          { type: 'array', required: true, message: '地区内容不能为空，请重新输入', trigger: 'change' }
-        ],
-        enterpriseAddress: [
-          { required: true, message: '我的地址内容不能为空，请重新输入', trigger: 'change' }
-        ],
-      },
-    }
+        enterpriseName: [{ required: true, message: '企业名称内容不能为空，请重新输入', trigger: 'blur' }],
+        directorName: [{ required: true, message: '负责人内容不能为空，请重新输入', trigger: 'blur' }],
+        directorPhone: [{ validator: directorPhonePass, trigger: 'blur' }],
+        directorEmail: [{ validator: emailPass, trigger: 'blur' }],
+        notifyPhone: [{ validator: notifyPhonePass, trigger: 'blur' }],
+        enterpriseAddress: [{ required: true, message: '我的地址内容不能为空，请重新输入', trigger: 'change' }]
+      }
+    };
   },
   methods: {
     mapClick() {
@@ -139,7 +121,7 @@ export default {
       this.form.addressLongitude = this.$store.state.addressLongitude;
     },
     submitForm(formName) {
-      this.$refs[formName].validate((valid) => {
+      this.$refs[formName].validate(valid => {
         if (valid) {
           this.childrenData = 1;
           this.$emit('activeChange', this.childrenData);
@@ -152,12 +134,12 @@ export default {
     back() {
       this.$router.push({ path: '/my-union' });
     },
-    handleIconClick(ev) {
+    handleIconClick() {
       this.mapShow = !this.mapShow;
-    },
-  },
-
-}
+      this.$refs.unionMap.init();
+    }
+  }
+};
 </script>
 
 <style lang='less' rel="stylesheet/less" scoped>
@@ -166,7 +148,6 @@ export default {
   top: 1px;
   left: 250px;
 }
-
 
 /*一个图标*/
 
@@ -185,7 +166,6 @@ export default {
   left: 250px;
   cursor: pointer;
 }
-
 
 /*地图的样式*/
 

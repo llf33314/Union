@@ -51,6 +51,9 @@ public class UnionConsumeParam implements Serializable {
 	@ApiModelProperty(value = "支付状态：1：未支付 2：已支付 3：已退款")
 	private Integer status;
 
+	@ApiModelProperty(value = "门店id")
+	private Integer shopId;
+
 	public Integer getBusId() {
 		return busId;
 	}
@@ -145,5 +148,13 @@ public class UnionConsumeParam implements Serializable {
 
 	public void setStatus(Integer status) {
 		this.status = status;
+	}
+
+	public Integer getShopId() {
+		return shopId;
+	}
+
+	public void setShopId(Integer shopId) {
+		this.shopId = shopId;
 	}
 }

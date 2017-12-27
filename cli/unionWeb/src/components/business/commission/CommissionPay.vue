@@ -45,7 +45,7 @@
       </el-table-column>
       <el-table-column prop="opportunity.clientPhone" label="电话" min-width="100px">
         <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top">
+          <el-popover trigger="hover" placement="bottom">
             <p>电话: {{ scope.row.opportunity.clientPhone }}</p>
             <div slot="reference" class="name-wrapper">
               {{ scope.row.opportunity.clientPhone }}
@@ -79,6 +79,14 @@
         </template>
       </el-table-column>
       <el-table-column prop="opportunity.createTime" label="交易时间" min-width="120">
+        <template slot-scope="scope">
+          <el-popover trigger="hover" placement="bottom">
+            <p>交易时间: {{ scope.row.opportunity.createTime }}</p>
+            <div slot="reference" class="name-wrapper">
+              {{ scope.row.opportunity.createTime }}
+            </div>
+          </el-popover>
+        </template>
       </el-table-column>
       <el-table-column prop="" label="操作">
         <template slot-scope="scope">
@@ -326,16 +334,12 @@ export default {
           if (res.data.data) {
             this.imgSrc = res.data.data.payUrl;
             this.socketKey = res.data.data.socketKey;
+            this.dialogVisible = true;
+            this.mySocket();
           } else {
             this.imgSrc = '';
             this.socketKey = '';
           }
-        })
-        .then(res => {
-          this.dialogVisible = true;
-        })
-        .then(res => {
-          this.mySocket();
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -347,7 +351,7 @@ export default {
       this.brokerageMoney = 0;
       this.multipleSelection.forEach((v, i) => {
         this.brokerageMoney += Number(v.opportunity.brokerageMoney);
-        ids += v.opportunityId + '%2C';
+        ids += v.opportunity.id + '%2C';
       });
       this.brokerageMoney = this.brokerageMoney.toFixed(2);
       $http
@@ -356,16 +360,12 @@ export default {
           if (res.data.data) {
             this.imgSrc = res.data.data.payUrl;
             this.socketKey = res.data.data.socketKey;
+            this.dialogVisible = true;
+            this.mySocket();
           } else {
             this.imgSrc = '';
             this.socketKey = '';
           }
-        })
-        .then(res => {
-          this.dialogVisible = true;
-        })
-        .then(res => {
-          this.mySocket();
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });

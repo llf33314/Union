@@ -9,6 +9,8 @@ import com.gt.union.union.main.vo.UnionPayVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 /**
  * @author hongjiye
  * @time 2017-12-21 10:15
@@ -20,7 +22,7 @@ public class UnionBackCardApplyServiceImpl implements IUnionCardApplyService{
 	private WxPayService wxPayService;
 
 	@Override
-	public UnionPayVO unionCardApply(String orderNo, Double payMoneySum, Integer busId) {
+	public UnionPayVO unionCardApply(String orderNo, Double payMoneySum, Integer busId, Integer unionId, List<Integer> activityIdList) {
 		UnionPayVO result = new UnionPayVO();
 		String socketKey = PropertiesUtil.getSocketKey() + orderNo;
 		String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/card?socketKey=" + socketKey;
@@ -31,8 +33,9 @@ public class UnionBackCardApplyServiceImpl implements IUnionCardApplyService{
 		payParam.setIsreturn(CommonConstant.COMMON_NO);
 		payParam.setNotifyUrl(notifyUrl);
 		payParam.setIsSendMessage(CommonConstant.COMMON_NO);
-		payParam.setPayWay(0);
+		payParam.setPayWay(1);
 		payParam.setDesc("办理联盟卡");
+		payParam.setPayDuoFen(true);
 		String payUrl = wxPayService.qrCodePay(payParam);
 
 		result.setPayUrl(payUrl);

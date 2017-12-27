@@ -7,35 +7,35 @@
     <!-- 备选色列表 -->
     <el-radio-group v-model="color" v-show="visible" @change="colorSelect">
       <!-- blue -->
-      <el-radio-button label="008FD7">
+      <el-radio-button label="03ABFF,008CD4">
         <template slot-scope="scope">
           <div class="m008FD7">
           </div>
         </template>
       </el-radio-button>
       <!-- green -->
-      <el-radio-button label="019762">
+      <el-radio-button label="06BD7D,009560">
         <template slot-scope="scope">
           <div class="m019762">
           </div>
         </template>
       </el-radio-button>
       <!-- blue-green -->
-      <el-radio-button label="45B0A0">
+      <el-radio-button label="4FC6B4,43AE9E">
         <template slot-scope="scope">
           <div class="m45B0A0">
           </div>
         </template>
       </el-radio-button>
-      <!-- brown -->
-      <el-radio-button label="C88D6E">
+      <!-- coffee -->
+      <el-radio-button label="F6C9A5,C68A6A">
         <template slot-scope="scope">
           <div class="mC88D6E">
           </div>
         </template>
       </el-radio-button>
       <!-- red -->
-      <el-radio-button label="C1231F">
+      <el-radio-button label="E62229,BD231E">
         <template slot-scope="scope">
           <div class="mC1231F">
           </div>

@@ -20,7 +20,7 @@
         </div>
         <p>
           <span>{{ item.activity.name }} </span>
-          <el-button @click="setting(item.activity.id)" size="small">设置折扣</el-button>
+          <el-button @click="setting(item.activity.id)" size="small">设置比例</el-button>
         </p>
       </div>
       <el-row style="margin-bottom: 85px">
@@ -40,6 +40,9 @@
         <el-table-column prop="member.enterpriseName" label="盟员名称">
         </el-table-column>
         <el-table-column prop="sharingRatio.ratio" label="售卡分成比例">
+          <template slot-scope="scope">
+            {{ (scope.row.sharingRatio.ratio).toFixed(2) }} %
+          </template>
         </el-table-column>
       </el-table>
       <el-pagination @current-change="handleCurrentChange2" :current-page.sync="currentPage2" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll2" v-if="tableData2.length>0">
@@ -50,18 +53,15 @@
           <hr>
           <div class="model_setting">
             <div>
-              <span style="margin-right: 30px">盟主比例:</span>
-              <el-input v-model="input3" placeholder="请输入比例" @change="onChange" style="width:26%"></el-input>
-              <span>&nbsp;%&nbsp;</span>
               <el-button type="primary" @click="onAverage()">平均分配</el-button>
             </div>
             <p>商机总比例之和不得超过100%，当前总比例为{{ sum3 }}%，剩余{{(100 - sum3).toFixed(0)}}%可分配。</p>
-            <el-table :data="tableData3" style="width: 100%" height="450" id="table3">
+            <el-table :data="tableData3" style="width: 100%" height="450">
               <el-table-column prop="member.enterpriseName" label="企业名称">
               </el-table-column>
               <el-table-column prop="sharingRatio.ratio" label="分成比例(%)">
                 <template slot-scope="scope">
-                  <el-input placeholder="请输入比例" @change="onChange(scope)"></el-input>
+                  <el-input v-model="scope.row.sharingRatio.ratio" placeholder="请输入比例" @change="onChange(scope)"></el-input>
                 </template>
               </el-table-column>
             </el-table>
@@ -91,10 +91,8 @@ export default {
       totalAll2: '',
       currentPage2: 1,
       visible3: false,
-      input3: '',
-      sum3: '',
+      sum3: 0,
       tableData3: [],
-      tableData4: [],
       activityId: ''
     };
   },
@@ -118,6 +116,7 @@ export default {
     });
   },
   methods: {
+    // 获取活动卡列表
     init() {
       $http
         .get(`/unionCardActivity/unionId/${this.unionId}/sharingRatio/page?current=1`)
@@ -146,6 +145,7 @@ export default {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
+    // 获取活动参加盟员比例分配列表
     setting(value) {
       this.activityId = value;
       $http
@@ -153,6 +153,12 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData2 = res.data.data.records || [];
+            this.tableData2.forEach(v => {
+              if (!v.sharingRatio) {
+                v.sharingRatio = {};
+                v.sharingRatio.ratio = 0;
+              }
+            });
             this.totalAll2 = res.data.data.total;
             this.visibleChangeFlag = true;
             this.visible = false;
@@ -171,6 +177,12 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData2 = res.data.data.records || [];
+            this.tableData2.forEach(v => {
+              if (!v.sharingRatio) {
+                v.sharingRatio = {};
+                v.sharingRatio.ratio = 0;
+              }
+            });
           }
         })
         .catch(err => {
@@ -183,23 +195,19 @@ export default {
       $http
         .get(`/unionCardSharingRatio/activityId/${this.activityId}/unionId/${this.unionId}`)
         .then(res => {
+          this.sum3 = 0;
           if (res.data.data) {
             this.tableData3 = res.data.data;
-            if (this.tableData3[0].member.isUnionOwner) {
-              this.input3 = this.tableData3[0].sharingRatio.ratio.toFixed(0);
-              this.sum3 = parseFloat(this.input3);
-              this.tableData3.splice(0, 1);
-            }
+            this.tableData3.forEach(v => {
+              if (!v.sharingRatio) {
+                v.sharingRatio = {};
+                v.sharingRatio.ratio = 0;
+              }
+              v.sharingRatio.ratio = v.sharingRatio.ratio.toFixed(0);
+              this.sum3 += parseFloat(v.sharingRatio.ratio);
+            });
+            this.sum3 = this.sum3.toFixed(0);
           }
-        })
-        .then(res => {
-          let table3 = document.getElementById('table3');
-          let inputs3 = table3.getElementsByTagName('input');
-          for (let i = 0; i < inputs3.length; i++) {
-            inputs3[i].value = this.tableData3[i].sharingRatio.ratio.toFixed(0);
-            this.sum3 += parseFloat(inputs3[i].value);
-          }
-          this.sum3 = parseFloat(this.sum3.toFixed(0));
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -207,92 +215,32 @@ export default {
     },
     // 平均分配
     onAverage() {
-      let _sum3 = 100 - Number(this.input3).toFixed(0);
-      let table3 = document.getElementById('table3');
-      let inputs3 = table3.getElementsByTagName('input');
-      let len = inputs3.length;
-      this.sum3 = 0;
-      this.tableData4 = [];
-      for (let i = 0; i < len + 1; i++) {
-        this.tableData4.push({ ratio: 0, id: 0 });
-      }
+      let len = this.tableData3.length;
       if (len !== 0) {
-        let average = (_sum3 / len).toFixed(0);
-        if (this.input3 && 0 < this.input3 && 100 > this.input3) {
-          for (let i = 0; i < len; i++) {
-            inputs3[i].value = average;
-          }
-          this.input3 = (100 - average * len).toFixed(0);
-          this.tableData4[0].ratio = this.input3;
-          for (let i = 1, j = i - 1; i < inputs3.length + 1; i++, j++) {
-            this.tableData4[i].ratio = inputs3[j].value;
-          }
-          this.sum3 = 100;
-        } else {
-          this.$message({ showClose: true, message: '售卡分成总比例之和不得超过100%,必须设置盟主比例', type: 'warning', duration: 5000 });
-        }
-      } else {
-        this.tableData4[0].ratio = parseFloat(this.input3);
-      }
-      $http
-        .get(`/unionCardSharingRatio/activityId/${this.activityId}/unionId/${this.unionId}`)
-        .then(res => {
-          if (res.data.data) {
-            res.data.data.forEach((v, i) => {
-              this.tableData4[i].id = v.member.id;
-            });
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        let average = (100 / len).toFixed(0);
+        this.tableData3.forEach(v => {
+          v.sharingRatio.ratio = average;
         });
+        this.tableData3[0].sharingRatio.ratio = 100 - average * (len - 1);
+      }
+      this.sum3 = 100;
     },
     // 计算分配比例
     onChange() {
-      let table3 = document.getElementById('table3');
-      let inputs3 = table3.getElementsByTagName('input');
-      let len = inputs3.length;
-      this.tableData4 = [];
-      for (let i = 0; i < len + 1; i++) {
-        this.tableData4.push({ ratio: 0 });
-      }
+      let len = this.tableData3.length;
       this.sum3 = 0;
-      this.tableData4[0].ratio = this.input3;
-      for (let i = 1, j = i - 1; i < inputs3.length + 1; i++, j++) {
-        this.tableData4[i].ratio = inputs3[j].value || 0;
-      }
-      this.tableData4.forEach((v, i) => {
-        this.sum3 += parseFloat(v.ratio || 0);
+      this.tableData3.forEach(v => {
+        v.sharingRatio.ratio = parseFloat(v.sharingRatio.ratio || 0);
+        this.sum3 += v.sharingRatio.ratio;
       });
       this.sum3 = parseFloat(this.sum3.toFixed(0));
-      $http
-        .get(`/unionCardSharingRatio/activityId/${this.activityId}/unionId/${this.unionId}`)
-        .then(res => {
-          if (res.data.data) {
-            res.data.data.forEach((v, i) => {
-              this.tableData4[i].id = v.member.id;
-            });
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
     },
     // 保存
     onSave() {
       if (this.sum3 === 100) {
         let url = `/union/unionCardSharingRatio/activityId/${this.activityId}/unionId/${this.unionId}`;
         // 处理数据
-        let data = [];
-        this.tableData4.forEach((v, i) => {
-          let obj = {
-            member: {},
-            sharingRatio: {}
-          };
-          obj.member.id = v.id - 0;
-          obj.sharingRatio.ratio = v.ratio - 0;
-          data.push(obj);
-        });
+        let data = this.tableData3;
         $http
           .put(url, data)
           .then(res => {
@@ -311,13 +259,7 @@ export default {
     },
     // 关闭弹窗重置数据
     resetData() {
-      this.input3 = '';
-      let table3 = document.getElementById('table3');
-      let inputs3 = table3.getElementsByTagName('input');
-      // inputs3 是伪数组 不能foreach遍历?
-      for (let i = 0; i < inputs3.length; i++) {
-        inputs3[i].value = '';
-      }
+      this.tableData3 = [];
     }
   }
 };

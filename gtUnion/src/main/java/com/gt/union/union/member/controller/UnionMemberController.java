@@ -8,10 +8,7 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
-import com.gt.union.common.util.ExportUtil;
-import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.MockUtil;
-import com.gt.union.common.util.PageUtil;
+import com.gt.union.common.util.*;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.member.entity.UnionMember;
@@ -117,7 +114,7 @@ public class UnionMemberController {
                 phoneCell.setCellStyle(centerCellStyle);
                 // 加入时间
                 HSSFCell createTimeCell = row.createCell(cellIndex);
-                createTimeCell.setCellValue(member.getCreateTime());
+                createTimeCell.setCellValue(DateUtil.getDateString(member.getCreateTime(), DateUtil.DATETIME_PATTERN));
                 createTimeCell.setCellStyle(centerCellStyle);
             }
         }

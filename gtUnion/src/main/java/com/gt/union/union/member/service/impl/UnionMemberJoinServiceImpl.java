@@ -2,7 +2,7 @@ package com.gt.union.union.member.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.common.constant.CommonConstant;
@@ -17,9 +17,9 @@ import com.gt.union.union.main.constant.UnionConstant;
 import com.gt.union.union.main.service.IUnionMainDictService;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.member.constant.MemberConstant;
+import com.gt.union.union.member.dao.IUnionMemberJoinDao;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.entity.UnionMemberJoin;
-import com.gt.union.union.member.mapper.UnionMemberJoinMapper;
 import com.gt.union.union.member.service.IUnionMemberJoinService;
 import com.gt.union.union.member.service.IUnionMemberService;
 import com.gt.union.union.member.util.UnionMemberJoinCacheUtil;
@@ -38,7 +38,10 @@ import java.util.*;
  * @version 2017-11-23 11:45:12
  */
 @Service
-public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMapper, UnionMemberJoin> implements IUnionMemberJoinService {
+public class UnionMemberJoinServiceImpl implements IUnionMemberJoinService {
+    @Autowired
+    private IUnionMemberJoinDao unionMemberJoinDao;
+
     @Autowired
     private RedisCacheUtil redisCacheUtil;
 
@@ -53,6 +56,624 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
 
     @Autowired
     private IBusUserService busUserService;
+
+    //********************************************* Base On Business - get *********************************************
+
+    //********************************************* Base On Business - list ********************************************
+
+
+    //********************************************* Base On Business - save ********************************************
+
+    //********************************************* Base On Business - remove ******************************************
+
+    //********************************************* Base On Business - update ******************************************
+
+    //********************************************* Base On Business - other *******************************************
+
+    //********************************************* Base On Business - filter ******************************************
+
+    @Override
+    public List<UnionMemberJoin> filterByDelStatus(List<UnionMemberJoin> unionMemberJoinList, Integer delStatus) throws Exception {
+        if (delStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMemberJoin> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(unionMemberJoinList)) {
+            for (UnionMemberJoin unionMemberJoin : unionMemberJoinList) {
+                if (delStatus.equals(unionMemberJoin.getDelStatus())) {
+                    result.add(unionMemberJoin);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    //********************************************* Object As a Service - get ******************************************
+
+    @Override
+    public UnionMemberJoin getById(Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        UnionMemberJoin result;
+        // (1)cache
+        String idKey = UnionMemberJoinCacheUtil.getIdKey(id);
+        if (redisCacheUtil.exists(idKey)) {
+            String tempStr = redisCacheUtil.get(idKey);
+            result = JSONArray.parseObject(tempStr, UnionMemberJoin.class);
+            return result;
+        }
+        // (2)db
+        result = unionMemberJoinDao.selectById(id);
+        setCache(result, id);
+        return result;
+    }
+
+    @Override
+    public UnionMemberJoin getValidById(Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        UnionMemberJoin result = getById(id);
+
+        return result != null && CommonConstant.DEL_STATUS_NO == result.getDelStatus() ? result : null;
+    }
+
+    @Override
+    public UnionMemberJoin getInvalidById(Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        UnionMemberJoin result = getById(id);
+
+        return result != null && CommonConstant.DEL_STATUS_YES == result.getDelStatus() ? result : null;
+    }
+
+    //********************************************* Object As a Service - list *****************************************
+
+    @Override
+    public List<Integer> getIdList(List<UnionMemberJoin> unionMemberJoinList) throws Exception {
+        if (unionMemberJoinList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<Integer> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(unionMemberJoinList)) {
+            for (UnionMemberJoin unionMemberJoin : unionMemberJoinList) {
+                result.add(unionMemberJoin.getId());
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionMemberJoin> listByApplyMemberId(Integer applyMemberId) throws Exception {
+        if (applyMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionMemberJoin> result;
+        // (1)cache
+        String applyMemberIdKey = UnionMemberJoinCacheUtil.getApplyMemberIdKey(applyMemberId);
+        if (redisCacheUtil.exists(applyMemberIdKey)) {
+            String tempStr = redisCacheUtil.get(applyMemberIdKey);
+            result = JSONArray.parseArray(tempStr, UnionMemberJoin.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("apply_member_id", applyMemberId);
+        result = unionMemberJoinDao.selectList(entityWrapper);
+        setCache(result, applyMemberId, UnionMemberJoinCacheUtil.TYPE_APPLY_MEMBER_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionMemberJoin> listValidByApplyMemberId(Integer applyMemberId) throws Exception {
+        if (applyMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionMemberJoin> result;
+        // (1)cache
+        String validApplyMemberIdKey = UnionMemberJoinCacheUtil.getValidApplyMemberIdKey(applyMemberId);
+        if (redisCacheUtil.exists(validApplyMemberIdKey)) {
+            String tempStr = redisCacheUtil.get(validApplyMemberIdKey);
+            result = JSONArray.parseArray(tempStr, UnionMemberJoin.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("apply_member_id", applyMemberId);
+        result = unionMemberJoinDao.selectList(entityWrapper);
+        setValidCache(result, applyMemberId, UnionMemberJoinCacheUtil.TYPE_APPLY_MEMBER_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionMemberJoin> listInvalidByApplyMemberId(Integer applyMemberId) throws Exception {
+        if (applyMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionMemberJoin> result;
+        // (1)cache
+        String invalidApplyMemberIdKey = UnionMemberJoinCacheUtil.getInvalidApplyMemberIdKey(applyMemberId);
+        if (redisCacheUtil.exists(invalidApplyMemberIdKey)) {
+            String tempStr = redisCacheUtil.get(invalidApplyMemberIdKey);
+            result = JSONArray.parseArray(tempStr, UnionMemberJoin.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("apply_member_id", applyMemberId);
+        result = unionMemberJoinDao.selectList(entityWrapper);
+        setInvalidCache(result, applyMemberId, UnionMemberJoinCacheUtil.TYPE_APPLY_MEMBER_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionMemberJoin> listByRecommendMemberId(Integer recommendMemberId) throws Exception {
+        if (recommendMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionMemberJoin> result;
+        // (1)cache
+        String recommendMemberIdKey = UnionMemberJoinCacheUtil.getRecommendMemberIdKey(recommendMemberId);
+        if (redisCacheUtil.exists(recommendMemberIdKey)) {
+            String tempStr = redisCacheUtil.get(recommendMemberIdKey);
+            result = JSONArray.parseArray(tempStr, UnionMemberJoin.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("recommend_member_id", recommendMemberId);
+        result = unionMemberJoinDao.selectList(entityWrapper);
+        setCache(result, recommendMemberId, UnionMemberJoinCacheUtil.TYPE_RECOMMEND_MEMBER_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionMemberJoin> listValidByRecommendMemberId(Integer recommendMemberId) throws Exception {
+        if (recommendMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionMemberJoin> result;
+        // (1)cache
+        String validRecommendMemberIdKey = UnionMemberJoinCacheUtil.getValidRecommendMemberIdKey(recommendMemberId);
+        if (redisCacheUtil.exists(validRecommendMemberIdKey)) {
+            String tempStr = redisCacheUtil.get(validRecommendMemberIdKey);
+            result = JSONArray.parseArray(tempStr, UnionMemberJoin.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("recommend_member_id", recommendMemberId);
+        result = unionMemberJoinDao.selectList(entityWrapper);
+        setValidCache(result, recommendMemberId, UnionMemberJoinCacheUtil.TYPE_RECOMMEND_MEMBER_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionMemberJoin> listInvalidByRecommendMemberId(Integer recommendMemberId) throws Exception {
+        if (recommendMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionMemberJoin> result;
+        // (1)cache
+        String invalidRecommendMemberIdKey = UnionMemberJoinCacheUtil.getInvalidRecommendMemberIdKey(recommendMemberId);
+        if (redisCacheUtil.exists(invalidRecommendMemberIdKey)) {
+            String tempStr = redisCacheUtil.get(invalidRecommendMemberIdKey);
+            result = JSONArray.parseArray(tempStr, UnionMemberJoin.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("recommend_member_id", recommendMemberId);
+        result = unionMemberJoinDao.selectList(entityWrapper);
+        setInvalidCache(result, recommendMemberId, UnionMemberJoinCacheUtil.TYPE_RECOMMEND_MEMBER_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionMemberJoin> listByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionMemberJoin> result;
+        // (1)cache
+        String unionIdKey = UnionMemberJoinCacheUtil.getUnionIdKey(unionId);
+        if (redisCacheUtil.exists(unionIdKey)) {
+            String tempStr = redisCacheUtil.get(unionIdKey);
+            result = JSONArray.parseArray(tempStr, UnionMemberJoin.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("union_id", unionId);
+        result = unionMemberJoinDao.selectList(entityWrapper);
+        setCache(result, unionId, UnionMemberJoinCacheUtil.TYPE_UNION_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionMemberJoin> listValidByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionMemberJoin> result;
+        // (1)cache
+        String validUnionIdKey = UnionMemberJoinCacheUtil.getValidUnionIdKey(unionId);
+        if (redisCacheUtil.exists(validUnionIdKey)) {
+            String tempStr = redisCacheUtil.get(validUnionIdKey);
+            result = JSONArray.parseArray(tempStr, UnionMemberJoin.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId);
+        result = unionMemberJoinDao.selectList(entityWrapper);
+        setValidCache(result, unionId, UnionMemberJoinCacheUtil.TYPE_UNION_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionMemberJoin> listInvalidByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionMemberJoin> result;
+        // (1)cache
+        String invalidUnionIdKey = UnionMemberJoinCacheUtil.getInvalidUnionIdKey(unionId);
+        if (redisCacheUtil.exists(invalidUnionIdKey)) {
+            String tempStr = redisCacheUtil.get(invalidUnionIdKey);
+            result = JSONArray.parseArray(tempStr, UnionMemberJoin.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("union_id", unionId);
+        result = unionMemberJoinDao.selectList(entityWrapper);
+        setInvalidCache(result, unionId, UnionMemberJoinCacheUtil.TYPE_UNION_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionMemberJoin> listByIdList(List<Integer> idList) throws Exception {
+        if (idList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMemberJoin> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(idList)) {
+            for (Integer id : idList) {
+                result.add(getById(id));
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public Page<UnionMemberJoin> pageSupport(Page page, EntityWrapper<UnionMemberJoin> entityWrapper) throws Exception {
+        if (page == null || entityWrapper == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        return unionMemberJoinDao.selectPage(page, entityWrapper);
+    }
+    //********************************************* Object As a Service - save *****************************************
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void save(UnionMemberJoin newUnionMemberJoin) throws Exception {
+        if (newUnionMemberJoin == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        unionMemberJoinDao.insert(newUnionMemberJoin);
+        removeCache(newUnionMemberJoin);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveBatch(List<UnionMemberJoin> newUnionMemberJoinList) throws Exception {
+        if (newUnionMemberJoinList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        unionMemberJoinDao.insertBatch(newUnionMemberJoinList);
+        removeCache(newUnionMemberJoinList);
+    }
+
+    //********************************************* Object As a Service - remove ***************************************
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeById(Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)remove cache
+        UnionMemberJoin unionMemberJoin = getById(id);
+        removeCache(unionMemberJoin);
+        // (2)remove in db logically
+        UnionMemberJoin removeUnionMemberJoin = new UnionMemberJoin();
+        removeUnionMemberJoin.setId(id);
+        removeUnionMemberJoin.setDelStatus(CommonConstant.DEL_STATUS_YES);
+        unionMemberJoinDao.updateById(removeUnionMemberJoin);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeBatchById(List<Integer> idList) throws Exception {
+        if (idList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)remove cache
+        List<UnionMemberJoin> unionMemberJoinList = listByIdList(idList);
+        removeCache(unionMemberJoinList);
+        // (2)remove in db logically
+        List<UnionMemberJoin> removeUnionMemberJoinList = new ArrayList<>();
+        for (Integer id : idList) {
+            UnionMemberJoin removeUnionMemberJoin = new UnionMemberJoin();
+            removeUnionMemberJoin.setId(id);
+            removeUnionMemberJoin.setDelStatus(CommonConstant.DEL_STATUS_YES);
+            removeUnionMemberJoinList.add(removeUnionMemberJoin);
+        }
+        unionMemberJoinDao.updateBatchById(removeUnionMemberJoinList);
+    }
+
+    //********************************************* Object As a Service - update ***************************************
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void update(UnionMemberJoin updateUnionMemberJoin) throws Exception {
+        if (updateUnionMemberJoin == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)remove cache
+        Integer id = updateUnionMemberJoin.getId();
+        UnionMemberJoin unionMemberJoin = getById(id);
+        removeCache(unionMemberJoin);
+        // (2)update db
+        unionMemberJoinDao.updateById(updateUnionMemberJoin);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateBatch(List<UnionMemberJoin> updateUnionMemberJoinList) throws Exception {
+        if (updateUnionMemberJoinList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)remove cache
+        List<Integer> idList = getIdList(updateUnionMemberJoinList);
+        List<UnionMemberJoin> unionMemberJoinList = listByIdList(idList);
+        removeCache(unionMemberJoinList);
+        // (2)update db
+        unionMemberJoinDao.updateBatchById(updateUnionMemberJoinList);
+    }
+
+    //********************************************* Object As a Service - cache support ********************************
+
+    private void setCache(UnionMemberJoin newUnionMemberJoin, Integer id) {
+        if (id == null) {
+            //do nothing,just in case
+            return;
+        }
+        String idKey = UnionMemberJoinCacheUtil.getIdKey(id);
+        redisCacheUtil.set(idKey, newUnionMemberJoin);
+    }
+
+    private void setCache(List<UnionMemberJoin> newUnionMemberJoinList, Integer foreignId, int foreignIdType) {
+        if (foreignId == null) {
+            //do nothing,just in case
+            return;
+        }
+        String foreignIdKey = null;
+        switch (foreignIdType) {
+            case UnionMemberJoinCacheUtil.TYPE_APPLY_MEMBER_ID:
+                foreignIdKey = UnionMemberJoinCacheUtil.getApplyMemberIdKey(foreignId);
+                break;
+            case UnionMemberJoinCacheUtil.TYPE_RECOMMEND_MEMBER_ID:
+                foreignIdKey = UnionMemberJoinCacheUtil.getRecommendMemberIdKey(foreignId);
+                break;
+            case UnionMemberJoinCacheUtil.TYPE_UNION_ID:
+                foreignIdKey = UnionMemberJoinCacheUtil.getUnionIdKey(foreignId);
+                break;
+
+            default:
+                break;
+        }
+        if (foreignIdKey != null) {
+            redisCacheUtil.set(foreignIdKey, newUnionMemberJoinList);
+        }
+    }
+
+    private void setValidCache(List<UnionMemberJoin> newUnionMemberJoinList, Integer foreignId, int foreignIdType) {
+        if (foreignId == null) {
+            //do nothing,just in case
+            return;
+        }
+        String validForeignIdKey = null;
+        switch (foreignIdType) {
+            case UnionMemberJoinCacheUtil.TYPE_APPLY_MEMBER_ID:
+                validForeignIdKey = UnionMemberJoinCacheUtil.getValidApplyMemberIdKey(foreignId);
+                break;
+            case UnionMemberJoinCacheUtil.TYPE_RECOMMEND_MEMBER_ID:
+                validForeignIdKey = UnionMemberJoinCacheUtil.getValidRecommendMemberIdKey(foreignId);
+                break;
+            case UnionMemberJoinCacheUtil.TYPE_UNION_ID:
+                validForeignIdKey = UnionMemberJoinCacheUtil.getValidUnionIdKey(foreignId);
+                break;
+
+            default:
+                break;
+        }
+        if (validForeignIdKey != null) {
+            redisCacheUtil.set(validForeignIdKey, newUnionMemberJoinList);
+        }
+    }
+
+    private void setInvalidCache(List<UnionMemberJoin> newUnionMemberJoinList, Integer foreignId, int foreignIdType) {
+        if (foreignId == null) {
+            //do nothing,just in case
+            return;
+        }
+        String invalidForeignIdKey = null;
+        switch (foreignIdType) {
+            case UnionMemberJoinCacheUtil.TYPE_APPLY_MEMBER_ID:
+                invalidForeignIdKey = UnionMemberJoinCacheUtil.getInvalidApplyMemberIdKey(foreignId);
+                break;
+            case UnionMemberJoinCacheUtil.TYPE_RECOMMEND_MEMBER_ID:
+                invalidForeignIdKey = UnionMemberJoinCacheUtil.getInvalidRecommendMemberIdKey(foreignId);
+                break;
+            case UnionMemberJoinCacheUtil.TYPE_UNION_ID:
+                invalidForeignIdKey = UnionMemberJoinCacheUtil.getInvalidUnionIdKey(foreignId);
+                break;
+
+            default:
+                break;
+        }
+        if (invalidForeignIdKey != null) {
+            redisCacheUtil.set(invalidForeignIdKey, newUnionMemberJoinList);
+        }
+    }
+
+    private void removeCache(UnionMemberJoin unionMemberJoin) {
+        if (unionMemberJoin == null) {
+            return;
+        }
+        Integer id = unionMemberJoin.getId();
+        String idKey = UnionMemberJoinCacheUtil.getIdKey(id);
+        redisCacheUtil.remove(idKey);
+
+        Integer applyMemberId = unionMemberJoin.getApplyMemberId();
+        if (applyMemberId != null) {
+            String applyMemberIdKey = UnionMemberJoinCacheUtil.getApplyMemberIdKey(applyMemberId);
+            redisCacheUtil.remove(applyMemberIdKey);
+
+            String validApplyMemberIdKey = UnionMemberJoinCacheUtil.getValidApplyMemberIdKey(applyMemberId);
+            redisCacheUtil.remove(validApplyMemberIdKey);
+
+            String invalidApplyMemberIdKey = UnionMemberJoinCacheUtil.getInvalidApplyMemberIdKey(applyMemberId);
+            redisCacheUtil.remove(invalidApplyMemberIdKey);
+        }
+
+        Integer recommendMemberId = unionMemberJoin.getRecommendMemberId();
+        if (recommendMemberId != null) {
+            String recommendMemberIdKey = UnionMemberJoinCacheUtil.getRecommendMemberIdKey(recommendMemberId);
+            redisCacheUtil.remove(recommendMemberIdKey);
+
+            String validRecommendMemberIdKey = UnionMemberJoinCacheUtil.getValidRecommendMemberIdKey(recommendMemberId);
+            redisCacheUtil.remove(validRecommendMemberIdKey);
+
+            String invalidRecommendMemberIdKey = UnionMemberJoinCacheUtil.getInvalidRecommendMemberIdKey(recommendMemberId);
+            redisCacheUtil.remove(invalidRecommendMemberIdKey);
+        }
+
+        Integer unionId = unionMemberJoin.getUnionId();
+        if (unionId != null) {
+            String unionIdKey = UnionMemberJoinCacheUtil.getUnionIdKey(unionId);
+            redisCacheUtil.remove(unionIdKey);
+
+            String validUnionIdKey = UnionMemberJoinCacheUtil.getValidUnionIdKey(unionId);
+            redisCacheUtil.remove(validUnionIdKey);
+
+            String invalidUnionIdKey = UnionMemberJoinCacheUtil.getInvalidUnionIdKey(unionId);
+            redisCacheUtil.remove(invalidUnionIdKey);
+        }
+
+    }
+
+    private void removeCache(List<UnionMemberJoin> unionMemberJoinList) {
+        if (ListUtil.isEmpty(unionMemberJoinList)) {
+            return;
+        }
+        List<Integer> idList = new ArrayList<>();
+        for (UnionMemberJoin unionMemberJoin : unionMemberJoinList) {
+            idList.add(unionMemberJoin.getId());
+        }
+        List<String> idKeyList = UnionMemberJoinCacheUtil.getIdKey(idList);
+        redisCacheUtil.remove(idKeyList);
+
+        List<String> applyMemberIdKeyList = getForeignIdKeyList(unionMemberJoinList, UnionMemberJoinCacheUtil.TYPE_APPLY_MEMBER_ID);
+        if (ListUtil.isNotEmpty(applyMemberIdKeyList)) {
+            redisCacheUtil.remove(applyMemberIdKeyList);
+        }
+
+        List<String> recommendMemberIdKeyList = getForeignIdKeyList(unionMemberJoinList, UnionMemberJoinCacheUtil.TYPE_RECOMMEND_MEMBER_ID);
+        if (ListUtil.isNotEmpty(recommendMemberIdKeyList)) {
+            redisCacheUtil.remove(recommendMemberIdKeyList);
+        }
+
+        List<String> unionIdKeyList = getForeignIdKeyList(unionMemberJoinList, UnionMemberJoinCacheUtil.TYPE_UNION_ID);
+        if (ListUtil.isNotEmpty(unionIdKeyList)) {
+            redisCacheUtil.remove(unionIdKeyList);
+        }
+
+    }
+
+    private List<String> getForeignIdKeyList(List<UnionMemberJoin> unionMemberJoinList, int foreignIdType) {
+        List<String> result = new ArrayList<>();
+        switch (foreignIdType) {
+            case UnionMemberJoinCacheUtil.TYPE_APPLY_MEMBER_ID:
+                for (UnionMemberJoin unionMemberJoin : unionMemberJoinList) {
+                    Integer applyMemberId = unionMemberJoin.getApplyMemberId();
+                    if (applyMemberId != null) {
+                        String applyMemberIdKey = UnionMemberJoinCacheUtil.getApplyMemberIdKey(applyMemberId);
+                        result.add(applyMemberIdKey);
+
+                        String validApplyMemberIdKey = UnionMemberJoinCacheUtil.getValidApplyMemberIdKey(applyMemberId);
+                        result.add(validApplyMemberIdKey);
+
+                        String invalidApplyMemberIdKey = UnionMemberJoinCacheUtil.getInvalidApplyMemberIdKey(applyMemberId);
+                        result.add(invalidApplyMemberIdKey);
+                    }
+                }
+                break;
+            case UnionMemberJoinCacheUtil.TYPE_RECOMMEND_MEMBER_ID:
+                for (UnionMemberJoin unionMemberJoin : unionMemberJoinList) {
+                    Integer recommendMemberId = unionMemberJoin.getRecommendMemberId();
+                    if (recommendMemberId != null) {
+                        String recommendMemberIdKey = UnionMemberJoinCacheUtil.getRecommendMemberIdKey(recommendMemberId);
+                        result.add(recommendMemberIdKey);
+
+                        String validRecommendMemberIdKey = UnionMemberJoinCacheUtil.getValidRecommendMemberIdKey(recommendMemberId);
+                        result.add(validRecommendMemberIdKey);
+
+                        String invalidRecommendMemberIdKey = UnionMemberJoinCacheUtil.getInvalidRecommendMemberIdKey(recommendMemberId);
+                        result.add(invalidRecommendMemberIdKey);
+                    }
+                }
+                break;
+            case UnionMemberJoinCacheUtil.TYPE_UNION_ID:
+                for (UnionMemberJoin unionMemberJoin : unionMemberJoinList) {
+                    Integer unionId = unionMemberJoin.getUnionId();
+                    if (unionId != null) {
+                        String unionIdKey = UnionMemberJoinCacheUtil.getUnionIdKey(unionId);
+                        result.add(unionIdKey);
+
+                        String validUnionIdKey = UnionMemberJoinCacheUtil.getValidUnionIdKey(unionId);
+                        result.add(validUnionIdKey);
+
+                        String invalidUnionIdKey = UnionMemberJoinCacheUtil.getInvalidUnionIdKey(unionId);
+                        result.add(invalidUnionIdKey);
+                    }
+                }
+                break;
+
+            default:
+                break;
+        }
+        return result;
+    }
+
+    // TODO
 
     //***************************************** Domain Driven Design - get *********************************************
 
@@ -167,6 +788,22 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
             busUser = busUserService.getBusUserByName(busUserName);
             if (busUser == null) {
                 throw new BusinessException("找不到被推荐的商家信息(盟员账号)");
+            }
+        }
+        // （3）判断是否重复加入
+        if (MemberConstant.JOIN_TYPE_RECOMMEND == type) {
+            if (unionMemberService.existReadByBusIdAndUnionId(busUser.getId(), unionId)) {
+                throw new BusinessException("被推荐的商家已入盟");
+            }
+            if (unionMemberService.existByBusIdAndUnionId(busUser.getId(), unionId)) {
+                throw new BusinessException("已被推荐入盟");
+            }
+        } else {
+            if (unionMemberService.existReadByBusIdAndUnionId(busId, unionId)) {
+                throw new BusinessException("已经是该联盟的盟员");
+            }
+            if (unionMemberService.existByBusIdAndUnionId(busId, unionId)) {
+                throw new BusinessException("已申请加入联盟");
             }
         }
         // （3）	判断union剩余可加盟数
@@ -311,7 +948,7 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
             updateMember.setDelStatus(CommonConstant.COMMON_YES);
         }
         unionMemberService.update(updateMember);
-        
+
         removeById(joinId);
     }
 
@@ -339,312 +976,5 @@ public class UnionMemberJoinServiceImpl extends ServiceImpl<UnionMemberJoinMappe
         return result;
     }
 
-    //***************************************** Object As a Service - get **********************************************
-
-    public UnionMemberJoin getById(Integer id) throws Exception {
-        if (id == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        UnionMemberJoin result;
-        // (1)cache
-        String idKey = UnionMemberJoinCacheUtil.getIdKey(id);
-        if (redisCacheUtil.exists(idKey)) {
-            String tempStr = redisCacheUtil.get(idKey);
-            result = JSONArray.parseObject(tempStr, UnionMemberJoin.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("id", id)
-                .eq("del_status", CommonConstant.DEL_STATUS_NO);
-        result = selectOne(entityWrapper);
-        setCache(result, id);
-        return result;
-    }
-
-    //***************************************** Object As a Service - list *********************************************
-
-    public List<UnionMemberJoin> listByApplyMemberId(Integer applyMemberId) throws Exception {
-        if (applyMemberId != null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionMemberJoin> result;
-        // (1)cache
-        String applyMemberIdKey = UnionMemberJoinCacheUtil.getApplyMemberIdKey(applyMemberId);
-        if (redisCacheUtil.exists(applyMemberIdKey)) {
-            String tempStr = redisCacheUtil.get(applyMemberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionMemberJoin.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("apply_member_id", applyMemberId)
-                .eq("del_status", CommonConstant.COMMON_NO);
-        result = selectList(entityWrapper);
-        setCache(result, applyMemberId, UnionMemberJoinCacheUtil.TYPE_APPLY_MEMBER_ID);
-        return result;
-    }
-
-    public List<UnionMemberJoin> listByRecommendMemberId(Integer recommendMemberId) throws Exception {
-        if (recommendMemberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionMemberJoin> result;
-        // (1)cache
-        String recommendMemberIdKey = UnionMemberJoinCacheUtil.getRecommendMemberIdKey(recommendMemberId);
-        if (redisCacheUtil.exists(recommendMemberIdKey)) {
-            String tempStr = redisCacheUtil.get(recommendMemberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionMemberJoin.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("recommend_member_id", recommendMemberId)
-                .eq("del_status", CommonConstant.COMMON_NO);
-        result = selectList(entityWrapper);
-        setCache(result, recommendMemberId, UnionMemberJoinCacheUtil.TYPE_RECOMMEND_MEMBER_ID);
-        return result;
-    }
-
-    public List<UnionMemberJoin> listByUnionId(Integer unionId) throws Exception {
-        if (unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionMemberJoin> result;
-        // (1)cache
-        String unionIdKey = UnionMemberJoinCacheUtil.getUnionIdKey(unionId);
-        if (redisCacheUtil.exists(unionIdKey)) {
-            String tempStr = redisCacheUtil.get(unionIdKey);
-            result = JSONArray.parseArray(tempStr, UnionMemberJoin.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionMemberJoin> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("union_id", unionId)
-                .eq("del_status", CommonConstant.COMMON_NO);
-        result = selectList(entityWrapper);
-        setCache(result, unionId, UnionMemberJoinCacheUtil.TYPE_UNION_ID);
-        return result;
-    }
-
-    //***************************************** Object As a Service - save *********************************************
-
-    @Transactional(rollbackFor = Exception.class)
-    public void save(UnionMemberJoin newUnionMemberJoin) throws Exception {
-        if (newUnionMemberJoin == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        insert(newUnionMemberJoin);
-        removeCache(newUnionMemberJoin);
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    public void saveBatch(List<UnionMemberJoin> newUnionMemberJoinList) throws Exception {
-        if (newUnionMemberJoinList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        insertBatch(newUnionMemberJoinList);
-        removeCache(newUnionMemberJoinList);
-    }
-
-    //***************************************** Object As a Service - remove *******************************************
-
-    @Transactional(rollbackFor = Exception.class)
-    public void removeById(Integer id) throws Exception {
-        if (id == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // (1)remove cache
-        UnionMemberJoin unionMemberJoin = getById(id);
-        removeCache(unionMemberJoin);
-        // (2)remove in db logically
-        UnionMemberJoin removeUnionMemberJoin = new UnionMemberJoin();
-        removeUnionMemberJoin.setId(id);
-        removeUnionMemberJoin.setDelStatus(CommonConstant.DEL_STATUS_YES);
-        updateById(removeUnionMemberJoin);
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    public void removeBatchById(List<Integer> idList) throws Exception {
-        if (idList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // (1)remove cache
-        List<UnionMemberJoin> unionMemberJoinList = new ArrayList<>();
-        for (Integer id : idList) {
-            UnionMemberJoin unionMemberJoin = getById(id);
-            unionMemberJoinList.add(unionMemberJoin);
-        }
-        removeCache(unionMemberJoinList);
-        // (2)remove in db logically
-        List<UnionMemberJoin> removeUnionMemberJoinList = new ArrayList<>();
-        for (Integer id : idList) {
-            UnionMemberJoin removeUnionMemberJoin = new UnionMemberJoin();
-            removeUnionMemberJoin.setId(id);
-            removeUnionMemberJoin.setDelStatus(CommonConstant.DEL_STATUS_YES);
-            removeUnionMemberJoinList.add(removeUnionMemberJoin);
-        }
-        updateBatchById(removeUnionMemberJoinList);
-    }
-
-    //***************************************** Object As a Service - update *******************************************
-
-    @Transactional(rollbackFor = Exception.class)
-    public void update(UnionMemberJoin updateUnionMemberJoin) throws Exception {
-        if (updateUnionMemberJoin == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // (1)remove cache
-        Integer id = updateUnionMemberJoin.getId();
-        UnionMemberJoin unionMemberJoin = getById(id);
-        removeCache(unionMemberJoin);
-        // (2)update db
-        updateById(updateUnionMemberJoin);
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    public void updateBatch(List<UnionMemberJoin> updateUnionMemberJoinList) throws Exception {
-        if (updateUnionMemberJoinList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // (1)remove cache
-        List<Integer> idList = new ArrayList<>();
-        for (UnionMemberJoin updateUnionMemberJoin : updateUnionMemberJoinList) {
-            idList.add(updateUnionMemberJoin.getId());
-        }
-        List<UnionMemberJoin> unionMemberJoinList = new ArrayList<>();
-        for (Integer id : idList) {
-            UnionMemberJoin unionMemberJoin = getById(id);
-            unionMemberJoinList.add(unionMemberJoin);
-        }
-        removeCache(unionMemberJoinList);
-        // (2)update db
-        updateBatchById(updateUnionMemberJoinList);
-    }
-
-    //***************************************** Object As a Service - cache support ************************************
-
-    private void setCache(UnionMemberJoin newUnionMemberJoin, Integer id) {
-        if (id == null) {
-            //do nothing,just in case
-            return;
-        }
-        String idKey = UnionMemberJoinCacheUtil.getIdKey(id);
-        redisCacheUtil.set(idKey, newUnionMemberJoin);
-    }
-
-    private void setCache(List<UnionMemberJoin> newUnionMemberJoinList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String foreignIdKey = null;
-        switch (foreignIdType) {
-            case UnionMemberJoinCacheUtil.TYPE_APPLY_MEMBER_ID:
-                foreignIdKey = UnionMemberJoinCacheUtil.getApplyMemberIdKey(foreignId);
-                break;
-            case UnionMemberJoinCacheUtil.TYPE_RECOMMEND_MEMBER_ID:
-                foreignIdKey = UnionMemberJoinCacheUtil.getRecommendMemberIdKey(foreignId);
-                break;
-            case UnionMemberJoinCacheUtil.TYPE_UNION_ID:
-                foreignIdKey = UnionMemberJoinCacheUtil.getUnionIdKey(foreignId);
-                break;
-            default:
-                break;
-        }
-        if (foreignIdKey != null) {
-            redisCacheUtil.set(foreignIdKey, newUnionMemberJoinList);
-        }
-    }
-
-    private void removeCache(UnionMemberJoin unionMemberJoin) {
-        if (unionMemberJoin == null) {
-            return;
-        }
-        Integer id = unionMemberJoin.getId();
-        String idKey = UnionMemberJoinCacheUtil.getIdKey(id);
-        redisCacheUtil.remove(idKey);
-
-        Integer applyMemberId = unionMemberJoin.getApplyMemberId();
-        if (applyMemberId != null) {
-            String applyMemberIdKey = UnionMemberJoinCacheUtil.getApplyMemberIdKey(applyMemberId);
-            redisCacheUtil.remove(applyMemberIdKey);
-        }
-
-        Integer recommendMemberId = unionMemberJoin.getRecommendMemberId();
-        if (recommendMemberId != null) {
-            String recommendMemberIdKey = UnionMemberJoinCacheUtil.getRecommendMemberIdKey(recommendMemberId);
-            redisCacheUtil.remove(recommendMemberIdKey);
-        }
-
-        Integer unionId = unionMemberJoin.getUnionId();
-        if (unionId != null) {
-            String unionIdKey = UnionMemberJoinCacheUtil.getUnionIdKey(unionId);
-            redisCacheUtil.remove(unionIdKey);
-        }
-    }
-
-    private void removeCache(List<UnionMemberJoin> unionMemberJoinList) {
-        if (ListUtil.isEmpty(unionMemberJoinList)) {
-            return;
-        }
-        List<Integer> idList = new ArrayList<>();
-        for (UnionMemberJoin unionMemberJoin : unionMemberJoinList) {
-            idList.add(unionMemberJoin.getId());
-        }
-        List<String> idKeyList = UnionMemberJoinCacheUtil.getIdKey(idList);
-        redisCacheUtil.remove(idKeyList);
-
-        List<String> applyMemberIdKeyList = getForeignIdKeyList(unionMemberJoinList, UnionMemberJoinCacheUtil.TYPE_APPLY_MEMBER_ID);
-        if (ListUtil.isNotEmpty(applyMemberIdKeyList)) {
-            redisCacheUtil.remove(applyMemberIdKeyList);
-        }
-
-        List<String> recommendMemberIdKeyList = getForeignIdKeyList(unionMemberJoinList, UnionMemberJoinCacheUtil.TYPE_RECOMMEND_MEMBER_ID);
-        if (ListUtil.isNotEmpty(recommendMemberIdKeyList)) {
-            redisCacheUtil.remove(recommendMemberIdKeyList);
-        }
-
-        List<String> unionIdKeyList = getForeignIdKeyList(unionMemberJoinList, UnionMemberJoinCacheUtil.TYPE_UNION_ID);
-        if (ListUtil.isNotEmpty(unionIdKeyList)) {
-            redisCacheUtil.remove(unionIdKeyList);
-        }
-    }
-
-    private List<String> getForeignIdKeyList(List<UnionMemberJoin> unionMemberJoinList, int foreignIdType) {
-        List<String> result = new ArrayList<>();
-        switch (foreignIdType) {
-            case UnionMemberJoinCacheUtil.TYPE_APPLY_MEMBER_ID:
-                for (UnionMemberJoin unionMemberJoin : unionMemberJoinList) {
-                    Integer applyMemberId = unionMemberJoin.getApplyMemberId();
-                    if (applyMemberId != null) {
-                        String applyMemberIdKey = UnionMemberJoinCacheUtil.getApplyMemberIdKey(applyMemberId);
-                        result.add(applyMemberIdKey);
-                    }
-                }
-                break;
-            case UnionMemberJoinCacheUtil.TYPE_RECOMMEND_MEMBER_ID:
-                for (UnionMemberJoin unionMemberJoin : unionMemberJoinList) {
-                    Integer recommendMemberId = unionMemberJoin.getRecommendMemberId();
-                    if (recommendMemberId != null) {
-                        String recommendMemberIdKey = UnionMemberJoinCacheUtil.getRecommendMemberIdKey(recommendMemberId);
-                        result.add(recommendMemberIdKey);
-                    }
-                }
-                break;
-            case UnionMemberJoinCacheUtil.TYPE_UNION_ID:
-                for (UnionMemberJoin unionMemberJoin : unionMemberJoinList) {
-                    Integer unionId = unionMemberJoin.getUnionId();
-                    if (unionId != null) {
-                        String unionIdKey = UnionMemberJoinCacheUtil.getUnionIdKey(unionId);
-                        result.add(unionIdKey);
-                    }
-                }
-                break;
-            default:
-                break;
-        }
-        return result;
-    }
 
 }

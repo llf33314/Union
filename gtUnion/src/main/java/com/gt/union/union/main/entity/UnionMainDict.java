@@ -12,6 +12,7 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 联盟入盟申请必填信息
@@ -33,6 +34,20 @@ public class UnionMainDict extends Model<UnionMainDict> {
     private Integer id;
 
     /**
+     * 是否删除(0:否 1:是)
+     */
+    @ApiModelProperty(value = "是否删除(0:否 1:是)")
+    @TableField("del_status")
+    private Integer delStatus;
+
+    /**
+     * 创建时间
+     */
+    @ApiModelProperty(value = "创建时间")
+    @TableField("create_time")
+    private Date createTime;
+
+    /**
      * 联盟id
      */
     @ApiModelProperty(value = "联盟id")
@@ -46,13 +61,28 @@ public class UnionMainDict extends Model<UnionMainDict> {
     @TableField("item_key")
     private String itemKey;
 
-
     public Integer getId() {
         return id;
     }
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getDelStatus() {
+        return delStatus;
+    }
+
+    public void setDelStatus(Integer delStatus) {
+        this.delStatus = delStatus;
+    }
+
+    public Date getCreateTime() {
+        return createTime;
+    }
+
+    public void setCreateTime(Date createTime) {
+        this.createTime = createTime;
     }
 
     public Integer getUnionId() {

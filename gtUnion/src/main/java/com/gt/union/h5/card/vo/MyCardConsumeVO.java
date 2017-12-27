@@ -16,6 +16,9 @@ public class MyCardConsumeVO {
 	@ApiModelProperty(value = "消费记录id")
 	private Integer recordId;
 
+	@ApiModelProperty(value = "消费时间字符串")
+	private String consumeTimeStr;
+
 	@ApiModelProperty(value = "门店名称")
 	private String shopName;
 
@@ -26,7 +29,7 @@ public class MyCardConsumeVO {
 	private Double payMoney;
 
 	@ApiModelProperty(value = "折扣金额")
-	private Double DiscountMoney;
+	private Double discountMoney;
 
 	@ApiModelProperty(value = "折扣")
 	private Double discount;
@@ -54,6 +57,14 @@ public class MyCardConsumeVO {
 		this.recordId = recordId;
 	}
 
+	public String getConsumeTimeStr() {
+		return consumeTimeStr;
+	}
+
+	public void setConsumeTimeStr(String consumeTimeStr) {
+		this.consumeTimeStr = consumeTimeStr;
+	}
+
 	public String getShopName() {
 		return shopName;
 	}
@@ -79,11 +90,11 @@ public class MyCardConsumeVO {
 	}
 
 	public Double getDiscountMoney() {
-		return DiscountMoney;
+		return discountMoney;
 	}
 
 	public void setDiscountMoney(Double discountMoney) {
-		DiscountMoney = discountMoney;
+		this.discountMoney = discountMoney;
 	}
 
 	public Double getDiscount() {

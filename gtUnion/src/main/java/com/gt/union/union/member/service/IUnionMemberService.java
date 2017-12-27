@@ -1,6 +1,7 @@
 package com.gt.union.union.member.service;
 
-import com.baomidou.mybatisplus.service.IService;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.vo.MemberVO;
 
@@ -12,7 +13,200 @@ import java.util.List;
  * @author linweicong
  * @version 2017-11-23 10:28:35
  */
-public interface IUnionMemberService extends IService<UnionMember> {
+public interface IUnionMemberService {
+    //********************************************* Base On Business - get *********************************************
+
+    //********************************************* Base On Business - list ********************************************
+
+    //********************************************* Base On Business - save ********************************************
+
+    //********************************************* Base On Business - remove ******************************************
+
+    //********************************************* Base On Business - update ******************************************
+
+    //********************************************* Base On Business - other *******************************************
+
+    //********************************************* Base On Business - filter ******************************************
+
+    /**
+     * 根据删除状态进行过滤(by myBatisGenerator)
+     *
+     * @param unionMemberList 数据源
+     * @param delStatus       删除状态
+     * @return List<UnionMember>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> filterByDelStatus(List<UnionMember> unionMemberList, Integer delStatus) throws Exception;
+
+    //****************************************** Object As a Service - get *********************************************
+
+    /**
+     * 获取盟员信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionMember
+     * @throws Exception 统一处理异常
+     */
+    UnionMember getById(Integer id) throws Exception;
+
+    /**
+     * 获取未删除的盟员信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionMember
+     * @throws Exception 统一处理异常
+     */
+    UnionMember getValidById(Integer id) throws Exception;
+
+    /**
+     * 获取已删除的盟员信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionMember
+     * @throws Exception 统一处理异常
+     */
+    UnionMember getInvalidById(Integer id) throws Exception;
+
+    //****************************************** Object As a Service - list ********************************************
+
+    /**
+     * 获取对象集对应的的主键集(by myBatisGenerator)
+     *
+     * @param unionMemberList 对象集
+     * @return List<Id>
+     * @throws Exception 统一处理异常
+     */
+    List<Integer> getIdList(List<UnionMember> unionMemberList) throws Exception;
+
+
+    /**
+     * 获取盟员列表信息(by myBatisGenerator)
+     *
+     * @param busId busId
+     * @return List<UnionMember>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> listByBusId(Integer busId) throws Exception;
+
+    /**
+     * 获取未删除的盟员列表信息(by myBatisGenerator)
+     *
+     * @param busId busId
+     * @return List<UnionMember>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> listValidByBusId(Integer busId) throws Exception;
+
+    /**
+     * 获取已删除的盟员列表信息(by myBatisGenerator)
+     *
+     * @param busId busId
+     * @return List<UnionMember>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> listInvalidByBusId(Integer busId) throws Exception;
+
+    /**
+     * 获取盟员列表信息(by myBatisGenerator)
+     *
+     * @param unionId unionId
+     * @return List<UnionMember>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> listByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 获取未删除的盟员列表信息(by myBatisGenerator)
+     *
+     * @param unionId unionId
+     * @return List<UnionMember>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> listValidByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 获取已删除的盟员列表信息(by myBatisGenerator)
+     *
+     * @param unionId unionId
+     * @return List<UnionMember>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> listInvalidByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 获取主键集对应的对象集
+     *
+     * @param idList 主键集
+     * @return List<UnionMember>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> listByIdList(List<Integer> idList) throws Exception;
+
+    /**
+     * 分页支持
+     *
+     * @param page          分页对象
+     * @param entityWrapper 条件
+     * @return Page<UnionMember>
+     * @throws Exception 统一处理异常
+     */
+    Page<UnionMember> pageSupport(Page page, EntityWrapper<UnionMember> entityWrapper) throws Exception;
+
+    //****************************************** Object As a Service - save ********************************************
+
+    /**
+     * 保存(by myBatisGenerator)
+     *
+     * @param newUnionMember 保存内容
+     * @throws Exception 统一处理异常
+     */
+    void save(UnionMember newUnionMember) throws Exception;
+
+    /**
+     * 批量保存(by myBatisGenerator)
+     *
+     * @param newUnionMemberList 保存内容
+     * @throws Exception 统一处理异常
+     */
+    void saveBatch(List<UnionMember> newUnionMemberList) throws Exception;
+
+    //****************************************** Object As a Service - remove ******************************************
+
+    /**
+     * 移除(by myBatisGenerator)
+     *
+     * @param id 移除内容
+     * @throws Exception 统一处理异常
+     */
+    void removeById(Integer id) throws Exception;
+
+    /**
+     * 批量移除(by myBatisGenerator)
+     *
+     * @param idList 移除内容
+     * @throws Exception 统一处理异常
+     */
+    void removeBatchById(List<Integer> idList) throws Exception;
+
+    //****************************************** Object As a Service - update ******************************************
+
+    /**
+     * 更新(by myBatisGenerator)
+     *
+     * @param updateUnionMember 更新内容
+     * @throws Exception 统一处理异常
+     */
+    void update(UnionMember updateUnionMember) throws Exception;
+
+    /**
+     * 批量更新(by myBatisGenerator)
+     *
+     * @param updateUnionMemberList 更新内容
+     * @throws Exception 统一处理异常
+     */
+    void updateBatch(List<UnionMember> updateUnionMemberList) throws Exception;
+
+    // TODO
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
@@ -108,20 +302,22 @@ public interface IUnionMemberService extends IService<UnionMember> {
     /**
      * 获取盟员信息
      *
-     * @param memberId id
+     * @param busId   商家id
+     * @param unionId 联盟id
      * @return UnionMember
      * @throws Exception 统一处理异常
      */
-    UnionMember getById(Integer memberId) throws Exception;
+    UnionMember getByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
 
     /**
-     * 获取盟员id列表
+     * 获取盟员信息
      *
-     * @param memberList 盟员列表
-     * @return List<Integer>
+     * @param memberId id
+     * @param unionId  联盟id
+     * @return UnionMember
      * @throws Exception 统一处理异常
      */
-    List<Integer> getIdList(List<UnionMember> memberList) throws Exception;
+    UnionMember getByIdAndUnionId(Integer memberId, Integer unionId) throws Exception;
 
     //***************************************** Domain Driven Design - list ********************************************
 
@@ -202,27 +398,23 @@ public interface IUnionMemberService extends IService<UnionMember> {
      */
     List<UnionMember> listByUnionIdAndStatus(Integer unionId, Integer status) throws Exception;
 
+    /**
+     * 获取盟员列表信息
+     *
+     * @param status 盟员状态
+     * @return List<UnionMember>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> listByStatus(Integer status) throws Exception;
+
     //***************************************** Domain Driven Design - save ********************************************
 
-    /**
-     * 保存
-     *
-     * @param saveMember 保存内容
-     * @throws Exception Exception
-     */
-    void save(UnionMember saveMember) throws Exception;
 
     //***************************************** Domain Driven Design - remove ******************************************
 
+
     //***************************************** Domain Driven Design - update ******************************************
 
-    /**
-     * 更新
-     *
-     * @param unionMember 更新内容
-     * @throws Exception 统一处理异常
-     */
-    void update(UnionMember unionMember) throws Exception;
 
     /**
      * 我的联盟-联盟设置-基础设置-保存
@@ -267,6 +459,35 @@ public interface IUnionMemberService extends IService<UnionMember> {
     Integer countReadByUnionId(Integer unionId) throws Exception;
 
     //***************************************** Domain Driven Design - boolean *****************************************
+
+    /**
+     * 判断是否存在读权限的盟员信息
+     *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean existReadByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
+
+    /**
+     * 判断是否存在盟员信息
+     *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean existByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
+
+    /**
+     * 判断是否存在盟主身份
+     *
+     * @param busId 商家id
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean existOwnerByBusId(Integer busId) throws Exception;
 
     //***************************************** Domain Driven Design - filter ******************************************
 

@@ -1,0 +1,31 @@
+{{define "util.template"}}package com.gt.union.common.util;
+
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * {{.TableComment}} 缓存键工具类
+ *
+ * @author {{.Author}}
+ * @version {{.DateTime}}
+ */
+public class {{.ModelName}}CacheUtil {
+    {{range $index, $foreignKey := .ForeignKeys}}public static final int TYPE_{{toUpper $foreignKey}} = {{addOne $index}};
+    {{end}}
+    public static String get{{upperFirstChar .PrimaryKeyField}}Key({{.PrimaryKeyType}} {{.PrimaryKeyField}}) {
+        return "{{lowerFirstChar .ModelName}}:" + {{.PrimaryKeyField}};
+    }
+
+    public static List<String> get{{upperFirstChar .PrimaryKeyField}}Key(List<{{.PrimaryKeyType}}> {{.PrimaryKeyField}}List) {
+        List<String> result = new ArrayList<>();
+        for ({{.PrimaryKeyType}} {{.PrimaryKeyField}} : {{.PrimaryKeyField}}List) {
+            result.add(get{{upperFirstChar .PrimaryKeyField}}Key({{.PrimaryKeyField}}));
+        }
+        return result;
+    }
+    {{range .ForeignKeys}}
+    public static String get{{turnFieldName2Camel .}}Key(Integer {{turnFieldName2CamelAndLowerFirstChar .}}) {
+        return "{{lowerFirstChar $.ModelName}}:{{turnFieldName2CamelAndLowerFirstChar .}}:" + {{turnFieldName2CamelAndLowerFirstChar .}};
+    }
+    {{end}}
+}{{end}}

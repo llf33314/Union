@@ -19,8 +19,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -119,7 +117,7 @@ public class UnionIndexServiceImpl implements IUnionIndexService {
             result.setMemberSurplus(memberLimit - readMemberCount);
 
             if (UnionConstant.IS_INTEGRAL_YES == currentUnion.getIsIntegral()) {
-                result.setIntegral(unionCardIntegralService.countIntegralByUnionId(currentUnionId));
+                result.setIntegral(unionCardIntegralService.sumIntegralByUnionId(currentUnionId));
             }
 
             UnionMainTransfer transfer = unionMainTransferService.getByUnionIdAndToMemberIdAndConfirmStatus(currentUnionId, currentMember.getId(), UnionConstant.TRANSFER_CONFIRM_STATUS_PROCESS);

@@ -53,7 +53,7 @@
       </el-table-column>
       <el-table-column prop="opportunity.businessMsg" label="业务备注" min-width="100px">
         <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top">
+          <el-popover trigger="hover" placement="bottom">
             <p>备注：{{ scope.row.opportunity.businessMsg }}</p>
             <div slot="reference" class="name-wrapper">
               <span>{{ scope.row.opportunity.businessMsg }}</span>
@@ -78,7 +78,7 @@
       </el-table-column>
       <el-table-column prop="opportunity.createTime" label="交易时间" min-width="150">
         <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top">
+          <el-popover trigger="hover" placement="bottom">
             <p>交易时间: {{ scope.row.opportunity.createTime }}</p>
             <div slot="reference" class="name-wrapper">
               {{ scope.row.opportunity.createTime }}

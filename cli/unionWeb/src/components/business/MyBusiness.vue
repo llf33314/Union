@@ -88,7 +88,7 @@
         <div class="model_detail">
           <span>商机受理价格</span>
           <el-row style="width:250px;margin-top:10px;">
-            <el-input v-model="acceptancePrice" placeholder="请输入受理价格"></el-input>
+            <el-input v-model="acceptancePrice" placeholder="请输入受理价格" @keyup.native="check()"></el-input>
           </el-row>
         </div>
         <span slot="footer" class="dialog-footer">
@@ -114,6 +114,7 @@
 <script>
 import $http from '@/utils/http.js';
 import { bussinessStatusChange } from '@/utils/filter.js';
+import { numberCheck } from '@/utils/filter.js';
 export default {
   name: 'mybusiness',
   data() {
@@ -254,6 +255,10 @@ export default {
       this.dialogVisible = true;
       this.detailData = scope.row;
     },
+    // 校验输入为数字类型
+    check() {
+      value = numberCheck(value);
+    },
     // 接受
     agree(scope) {
       this.dialogVisible1 = true;
@@ -300,7 +305,7 @@ export default {
         });
     },
     filterTag(value, row) {
-      return row.isAccept === value;
+      return row.opportunity.acceptStatus === value;
     },
     // 关闭弹窗重置数据
     resetData() {
@@ -314,6 +319,7 @@ export default {
 .model_01 {
   .el-dialog__body {
     padding: 0;
+    margin-top: 15px;
   }
   .el-dialog--tiny {
     width: 660px !important;

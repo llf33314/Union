@@ -36,9 +36,9 @@ public class DateTimeKit {
 	public static final String DEFAULT_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 	
 	/**
-	 * 缺省的日期时间显示格式：yyyy-MM-dd HH:mm:ss
+	 * 缺省的日期时间显示格式：yyyy-MM-dd HH:mm
 	 */
-	public static final String DEFAULT_DATETIME_FORMAT_YYYYMMDD_MMSS = "yyyy-MM-dd HH:mm";
+	public static final String DEFAULT_DATETIME_FORMAT_YYYYMMDD_HHMM = "yyyy-MM-dd HH:mm";
 
 	/**
 	 * 时间显示格式：yyyyMMddHHmmssms yyyyMMddHHmmss

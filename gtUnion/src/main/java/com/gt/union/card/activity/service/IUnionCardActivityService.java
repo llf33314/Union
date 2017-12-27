@@ -1,6 +1,7 @@
 package com.gt.union.card.activity.service;
 
-import com.baomidou.mybatisplus.service.IService;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.activity.vo.*;
 
@@ -12,7 +13,174 @@ import java.util.List;
  * @author linweicong
  * @version 2017-11-23 17:39:04
  */
-public interface IUnionCardActivityService extends IService<UnionCardActivity> {
+public interface IUnionCardActivityService {
+    //********************************************* Base On Business - get *********************************************
+
+    //********************************************* Base On Business - list ********************************************
+
+    //********************************************* Base On Business - save ********************************************
+
+    //********************************************* Base On Business - remove ******************************************
+
+    //********************************************* Base On Business - update ******************************************
+
+    //********************************************* Base On Business - other *******************************************
+
+    //********************************************* Base On Business - filter ******************************************
+
+    /**
+     * 根据删除状态进行过滤(by myBatisGenerator)
+     *
+     * @param unionCardActivityList 数据源
+     * @param delStatus             删除状态
+     * @return List<UnionCardActivity>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardActivity> filterByDelStatus(List<UnionCardActivity> unionCardActivityList, Integer delStatus) throws Exception;
+
+    //****************************************** Object As a Service - get *********************************************
+
+    /**
+     * 获取活动信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionCardActivity
+     * @throws Exception 统一处理异常
+     */
+    UnionCardActivity getById(Integer id) throws Exception;
+
+    /**
+     * 获取未删除的活动信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionCardActivity
+     * @throws Exception 统一处理异常
+     */
+    UnionCardActivity getValidById(Integer id) throws Exception;
+
+    /**
+     * 获取已删除的活动信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionCardActivity
+     * @throws Exception 统一处理异常
+     */
+    UnionCardActivity getInvalidById(Integer id) throws Exception;
+
+    //****************************************** Object As a Service - list ********************************************
+
+    /**
+     * 获取对象集对应的的主键集(by myBatisGenerator)
+     *
+     * @param unionCardActivityList 对象集
+     * @return List<Id>
+     * @throws Exception 统一处理异常
+     */
+    List<Integer> getIdList(List<UnionCardActivity> unionCardActivityList) throws Exception;
+
+
+    /**
+     * 获取活动列表信息(by myBatisGenerator)
+     *
+     * @param unionId unionId
+     * @return List<UnionCardActivity>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardActivity> listByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 获取未删除的活动列表信息(by myBatisGenerator)
+     *
+     * @param unionId unionId
+     * @return List<UnionCardActivity>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardActivity> listValidByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 获取已删除的活动列表信息(by myBatisGenerator)
+     *
+     * @param unionId unionId
+     * @return List<UnionCardActivity>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardActivity> listInvalidByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 获取主键集对应的对象集
+     *
+     * @param idList 主键集
+     * @return List<UnionCardActivity>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardActivity> listByIdList(List<Integer> idList) throws Exception;
+
+    /**
+     * 分页支持
+     *
+     * @param page          分页对象
+     * @param entityWrapper 条件
+     * @return Page<UnionCardActivity>
+     * @throws Exception 统一处理异常
+     */
+    Page<UnionCardActivity> pageSupport(Page page, EntityWrapper<UnionCardActivity> entityWrapper) throws Exception;
+
+    //****************************************** Object As a Service - save ********************************************
+
+    /**
+     * 保存(by myBatisGenerator)
+     *
+     * @param newUnionCardActivity 保存内容
+     * @throws Exception 统一处理异常
+     */
+    void save(UnionCardActivity newUnionCardActivity) throws Exception;
+
+    /**
+     * 批量保存(by myBatisGenerator)
+     *
+     * @param newUnionCardActivityList 保存内容
+     * @throws Exception 统一处理异常
+     */
+    void saveBatch(List<UnionCardActivity> newUnionCardActivityList) throws Exception;
+
+    //****************************************** Object As a Service - remove ******************************************
+
+    /**
+     * 移除(by myBatisGenerator)
+     *
+     * @param id 移除内容
+     * @throws Exception 统一处理异常
+     */
+    void removeById(Integer id) throws Exception;
+
+    /**
+     * 批量移除(by myBatisGenerator)
+     *
+     * @param idList 移除内容
+     * @throws Exception 统一处理异常
+     */
+    void removeBatchById(List<Integer> idList) throws Exception;
+
+    //****************************************** Object As a Service - update ******************************************
+
+    /**
+     * 更新(by myBatisGenerator)
+     *
+     * @param updateUnionCardActivity 更新内容
+     * @throws Exception 统一处理异常
+     */
+    void update(UnionCardActivity updateUnionCardActivity) throws Exception;
+
+    /**
+     * 批量更新(by myBatisGenerator)
+     *
+     * @param updateUnionCardActivityList 更新内容
+     * @throws Exception 统一处理异常
+     */
+    void updateBatch(List<UnionCardActivity> updateUnionCardActivityList) throws Exception;
+
+    // TODO
+
     //***************************************** Domain Driven Design - get *********************************************
 
     /**

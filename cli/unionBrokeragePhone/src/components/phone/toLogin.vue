@@ -192,8 +192,7 @@
                   success: function (res) {
                     if(res.code == 0){
                       setTimeout(function () {
-//                        location.href = '/#/Index';
-                        that_.add();
+                        location.href = '/#/Index';
                       }, 10);
                     }else {
                       that_.$message({showClose: true, message: res.msg, type: 'error', duration: 3000});

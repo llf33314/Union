@@ -22,11 +22,20 @@ public class CardDetailVO {
 	@ApiModelProperty(value = "联盟卡名称")
 	private String cardName;
 
-	@ApiModelProperty(value = "联盟活动卡颜色")
-	private String color;
+	@ApiModelProperty(value = "联盟活动卡颜色1")
+	private String color1;
 
-	@ApiModelProperty(value = "联盟活动卡有效期字符串")
+	@ApiModelProperty(value = "联盟活动卡颜色2")
+	private String color2;
+
+	@ApiModelProperty(value = "联盟活动卡说明")
+	private String activityIllustration;
+
+	@ApiModelProperty(value = "联盟活动卡有效期字符串 已办理")
 	private String validityStr;
+
+	@ApiModelProperty(value = "联盟活动卡的有效天数 未办理")
+	private Integer validityDay;
 
 	@ApiModelProperty(value = "联盟活动卡是否过期 0：未过期  1：已过期")
 	private Integer isOverdue;
@@ -39,6 +48,9 @@ public class CardDetailVO {
 
 	@ApiModelProperty(value = "活动卡价格")
 	private Double cardPrice;
+
+	@ApiModelProperty(value = "联盟id")
+	private Integer unionId;
 
 	@ApiModelProperty(value = "联盟卡详情页-列表信息")
 	private List<CardDetailListVO> cardDetailListVO;
@@ -67,12 +79,28 @@ public class CardDetailVO {
 		this.cardName = cardName;
 	}
 
-	public String getColor() {
-		return color;
+	public String getColor1() {
+		return color1;
 	}
 
-	public void setColor(String color) {
-		this.color = color;
+	public void setColor1(String color1) {
+		this.color1 = color1;
+	}
+
+	public String getColor2() {
+		return color2;
+	}
+
+	public void setColor2(String color2) {
+		this.color2 = color2;
+	}
+
+	public String getActivityIllustration() {
+		return activityIllustration;
+	}
+
+	public void setActivityIllustration(String activityIllustration) {
+		this.activityIllustration = activityIllustration;
 	}
 
 	public String getValidityStr() {
@@ -81,6 +109,14 @@ public class CardDetailVO {
 
 	public void setValidityStr(String validityStr) {
 		this.validityStr = validityStr;
+	}
+
+	public Integer getValidityDay() {
+		return validityDay;
+	}
+
+	public void setValidityDay(Integer validityDay) {
+		this.validityDay = validityDay;
 	}
 
 	public Integer getIsOverdue() {
@@ -113,6 +149,14 @@ public class CardDetailVO {
 
 	public void setCardPrice(Double cardPrice) {
 		this.cardPrice = cardPrice;
+	}
+
+	public Integer getUnionId() {
+		return unionId;
+	}
+
+	public void setUnionId(Integer unionId) {
+		this.unionId = unionId;
 	}
 
 	public List<CardDetailListVO> getCardDetailListVO() {

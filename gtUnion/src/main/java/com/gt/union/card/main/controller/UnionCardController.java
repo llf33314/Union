@@ -86,7 +86,7 @@ public class UnionCardController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-        String url = PropertiesUtil.getUnionUrl() + "/cardPhone/#/" + "toUnionCard/" + busId;
+        String url = ConfigConstant.CARD_PHONE_BASE_URL + "toUnionCard/" + busId;
         QRcodeKit.buildQRcode(url, 250, 250, response);
     }
 
@@ -100,11 +100,6 @@ public class UnionCardController {
             HttpServletRequest request,
             @ApiParam(value = "表单内容", name = "cardPhoneVO", required = true)
             @RequestBody CardPhoneVO vo) throws Exception {
-        BusUser busUser = SessionUtils.getLoginUser(request);
-        Integer busId = busUser.getId();
-        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
-        }
         // mock
         UnionCardFan result;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
@@ -128,7 +123,7 @@ public class UnionCardController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
+            busId = busUser.getPid();
         }
 
         // mock

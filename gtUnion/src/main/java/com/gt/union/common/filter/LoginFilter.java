@@ -1,6 +1,7 @@
 package com.gt.union.common.filter;
 
 import com.gt.api.bean.session.BusUser;
+import com.gt.api.bean.session.Member;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
@@ -74,6 +75,14 @@ public class LoginFilter implements Filter {
             chain.doFilter(request, response);
             return;
         }
+        //调试手机端，设置member数据
+        if ("dev".equals(PropertiesUtil.getProfiles())) {
+            Member member = new Member();
+            member.setId(998);
+            member.setPhone("15986670850");
+            member.setBusid(33);
+            SessionUtils.setLoginMember(req,member);
+        }
         //(3)判断是否已有登录信息
         // （3-1）佣金平台
         if (url.indexOf("h5Brokerage") > -1) {
@@ -91,7 +100,7 @@ public class LoginFilter implements Filter {
                 if (busUser == null) {
                     response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
                 } else if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                    response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
+                    response.getWriter().write(GtJsonResult.instanceErrorMsg(CommonConstant.UNION_BUS_PARENT_MSG).toString());
                 } else {
                     h5BrokerageUser = new H5BrokerageUser();
                     h5BrokerageUser.setBusUser(busUser);
@@ -127,8 +136,8 @@ public class LoginFilter implements Filter {
     /**
      * 是否前端资源请求
      *
-     * @param url
-     * @return
+     * @param url 请求对象
+     * @return boolean
      */
     private boolean isFrontRequest(String url) {
         return StringUtil.isNotEmpty(url) && (url.contains("brokeragePhone") || url.contains("cardPhone"));

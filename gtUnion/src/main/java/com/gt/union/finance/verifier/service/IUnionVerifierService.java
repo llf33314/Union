@@ -1,6 +1,7 @@
 package com.gt.union.finance.verifier.service;
 
-import com.baomidou.mybatisplus.service.IService;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.finance.verifier.entity.UnionVerifier;
 
 import java.util.List;
@@ -11,7 +12,174 @@ import java.util.List;
  * @author linweicong
  * @version 2017-11-23 14:54:27
  */
-public interface IUnionVerifierService extends IService<UnionVerifier> {
+public interface IUnionVerifierService {
+    //********************************************* Base On Business - get *********************************************
+
+    //********************************************* Base On Business - list ********************************************
+
+    //********************************************* Base On Business - save ********************************************
+
+    //********************************************* Base On Business - remove ******************************************
+
+    //********************************************* Base On Business - update ******************************************
+
+    //********************************************* Base On Business - other *******************************************
+
+    //********************************************* Base On Business - filter ******************************************
+
+    /**
+     * 根据删除状态进行过滤(by myBatisGenerator)
+     *
+     * @param unionVerifierList 数据源
+     * @param delStatus         删除状态
+     * @return List<UnionVerifier>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionVerifier> filterByDelStatus(List<UnionVerifier> unionVerifierList, Integer delStatus) throws Exception;
+
+    //****************************************** Object As a Service - get *********************************************
+
+    /**
+     * 获取平台管理者信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionVerifier
+     * @throws Exception 统一处理异常
+     */
+    UnionVerifier getById(Integer id) throws Exception;
+
+    /**
+     * 获取未删除的平台管理者信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionVerifier
+     * @throws Exception 统一处理异常
+     */
+    UnionVerifier getValidById(Integer id) throws Exception;
+
+    /**
+     * 获取已删除的平台管理者信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionVerifier
+     * @throws Exception 统一处理异常
+     */
+    UnionVerifier getInvalidById(Integer id) throws Exception;
+
+    //****************************************** Object As a Service - list ********************************************
+
+    /**
+     * 获取对象集对应的的主键集(by myBatisGenerator)
+     *
+     * @param unionVerifierList 对象集
+     * @return List<Id>
+     * @throws Exception 统一处理异常
+     */
+    List<Integer> getIdList(List<UnionVerifier> unionVerifierList) throws Exception;
+
+
+    /**
+     * 获取平台管理者列表信息(by myBatisGenerator)
+     *
+     * @param busId busId
+     * @return List<UnionVerifier>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionVerifier> listByBusId(Integer busId) throws Exception;
+
+    /**
+     * 获取未删除的平台管理者列表信息(by myBatisGenerator)
+     *
+     * @param busId busId
+     * @return List<UnionVerifier>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionVerifier> listValidByBusId(Integer busId) throws Exception;
+
+    /**
+     * 获取已删除的平台管理者列表信息(by myBatisGenerator)
+     *
+     * @param busId busId
+     * @return List<UnionVerifier>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionVerifier> listInvalidByBusId(Integer busId) throws Exception;
+
+    /**
+     * 获取主键集对应的对象集
+     *
+     * @param idList 主键集
+     * @return List<UnionVerifier>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionVerifier> listByIdList(List<Integer> idList) throws Exception;
+
+    /**
+     * 分页支持
+     *
+     * @param page          分页对象
+     * @param entityWrapper 条件
+     * @return Page<UnionVerifier>
+     * @throws Exception 统一处理异常
+     */
+    Page<UnionVerifier> pageSupport(Page page, EntityWrapper<UnionVerifier> entityWrapper) throws Exception;
+
+    //****************************************** Object As a Service - save ********************************************
+
+    /**
+     * 保存(by myBatisGenerator)
+     *
+     * @param newUnionVerifier 保存内容
+     * @throws Exception 统一处理异常
+     */
+    void save(UnionVerifier newUnionVerifier) throws Exception;
+
+    /**
+     * 批量保存(by myBatisGenerator)
+     *
+     * @param newUnionVerifierList 保存内容
+     * @throws Exception 统一处理异常
+     */
+    void saveBatch(List<UnionVerifier> newUnionVerifierList) throws Exception;
+
+    //****************************************** Object As a Service - remove ******************************************
+
+    /**
+     * 移除(by myBatisGenerator)
+     *
+     * @param id 移除内容
+     * @throws Exception 统一处理异常
+     */
+    void removeById(Integer id) throws Exception;
+
+    /**
+     * 批量移除(by myBatisGenerator)
+     *
+     * @param idList 移除内容
+     * @throws Exception 统一处理异常
+     */
+    void removeBatchById(List<Integer> idList) throws Exception;
+
+    //****************************************** Object As a Service - update ******************************************
+
+    /**
+     * 更新(by myBatisGenerator)
+     *
+     * @param updateUnionVerifier 更新内容
+     * @throws Exception 统一处理异常
+     */
+    void update(UnionVerifier updateUnionVerifier) throws Exception;
+
+    /**
+     * 批量更新(by myBatisGenerator)
+     *
+     * @param updateUnionVerifierList 更新内容
+     * @throws Exception 统一处理异常
+     */
+    void updateBatch(List<UnionVerifier> updateUnionVerifierList) throws Exception;
+
+    // TODO
+
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
@@ -67,14 +235,6 @@ public interface IUnionVerifierService extends IService<UnionVerifier> {
     void removeByBusIdAndId(Integer busId, Integer verifierId) throws Exception;
 
     //***************************************** Domain Driven Design - update ******************************************
-
-    /**
-     * 更新
-     *
-     * @param updateUnionVerifier 更新内容
-     * @throws Exception 统一处理异常
-     */
-    void update(UnionVerifier updateUnionVerifier) throws Exception;
 
     //***************************************** Domain Driven Design - count *******************************************
 

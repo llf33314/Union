@@ -10,10 +10,10 @@
         <template slot-scope="scope">
           <div class="sizeAndColor">
             <span class="repeal repeal_">
-              <el-button v-if="!scope.row.transferId" size="small" @click="onTransfer(scope)" :disabled="!canTransferFlag">转移</el-button>
+              <el-button v-if="!scope.row.unionTransfer" size="small" @click="onTransfer(scope)" :disabled="!canTransferFlag">转移</el-button>
             </span>
             <span class="repeal">
-              <el-button v-if="scope.row.transferId" size="small" @click="onRevoke(scope)">撤销</el-button>
+              <el-button v-if="scope.row.unionTransfer" size="small" @click="onRevoke(scope)">撤销</el-button>
             </span>
           </div>
         </template>
@@ -21,6 +21,7 @@
     </el-table>
     <!-- 弹出框 确认转移 -->
     <el-dialog title="提示" :visible.sync="dialogVisible1" size="tiny">
+      <hr>
       <span>将盟主权限转移给 {{ enterpriseName }}， 是否确认？</span>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="onConfirm1">确 定</el-button>
@@ -29,6 +30,7 @@
     </el-dialog>
     <!-- 弹出框 确认撤销 -->
     <el-dialog title="提示" :visible.sync="dialogVisible2" size="tiny">
+      <hr>
       <span>撤销将盟主权限转移给 {{ enterpriseName }}， 是否确认？</span>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="onConfirm2">确 定</el-button>
@@ -95,7 +97,7 @@ export default {
     // 分页查询
     handleCurrentChange(val) {
       $http
-        .get(`/unionMainTransfer/pageMap/memberId/${this.unionMemberId}?current=${val}`)
+        .get(`/unionMainTransfer/unionId/${this.unionId}/page?current=${val}`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
@@ -112,32 +114,19 @@ export default {
     // 转移
     onTransfer(scope) {
       this.dialogVisible1 = true;
-      this.id = scope.row.memberId;
-      this.enterpriseName = scope.row.enterpriseName;
+      this.id = scope.row.member.id;
+      this.enterpriseName = scope.row.member.enterpriseName;
     },
     // 确认转移
     onConfirm1() {
       $http
-        .put(`/unionMainTransfer/memberId/${this.unionMemberId}?tgtMemberId=${this.id}`)
+        .post(`/unionMainTransfer/unionId/${this.unionId}toMemberId=${this.id}`)
         .then(res => {
           if (res.data.success) {
             eventBus.$emit('unionUpdata');
             this.dialogVisible1 = false;
             this.canTransferFlag = false;
-            $http
-              .get(`/unionMainTransfer/pageMap/memberId/${this.unionMemberId}?current=1`)
-              .then(res => {
-                if (res.data.data) {
-                  this.tableData = res.data.data.records || [];
-                  this.totalAll = res.data.data.total;
-                  this.tableData.forEach((v, i) => {
-                    v.createTime = timeFilter(v.createtime);
-                  });
-                }
-              })
-              .catch(err => {
-                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-              });
+            this.init();
           }
         })
         .catch(err => {
@@ -147,32 +136,19 @@ export default {
     // 撤销
     onRevoke(scope) {
       this.dialogVisible2 = true;
-      this.transferId = scope.row.transferId;
-      this.enterpriseName = scope.row.enterpriseName;
+      this.transferId = scope.row.unionTransfer.id;
+      this.enterpriseName = scope.row.member.enterpriseName;
     },
     // 确认撤销
     onConfirm2() {
       $http
-        .put(`/unionMainTransfer/${this.transferId}/memberId/${this.unionMemberId}/revoke`)
+        .put(`/unionMainTransfer/${this.transferId}/unionId/${this.unionId}/revoke`)
         .then(res => {
           if (res.data.success) {
             eventBus.$emit('unionUpdata');
             this.dialogVisible2 = false;
             this.canTransferFlag = true;
-            $http
-              .get(`/unionMainTransfer/pageMap/memberId/${this.unionMemberId}?current=1`)
-              .then(res => {
-                if (res.data.data) {
-                  this.tableData = res.data.data.records || [];
-                  this.totalAll = res.data.data.total;
-                  this.tableData.forEach((v, i) => {
-                    v.createTime = timeFilter(v.createtime);
-                  });
-                }
-              })
-              .catch(err => {
-                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-              });
+            this.init();
           }
         })
         .catch(err => {

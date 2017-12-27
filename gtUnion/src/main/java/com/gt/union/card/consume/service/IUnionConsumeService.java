@@ -1,10 +1,11 @@
 package com.gt.union.card.consume.service;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.baomidou.mybatisplus.service.IService;
 import com.gt.union.card.consume.entity.UnionConsume;
 import com.gt.union.card.consume.vo.ConsumePostVO;
 import com.gt.union.card.consume.vo.ConsumeRecordVO;
+import com.gt.union.common.exception.ParamException;
 import com.gt.union.h5.card.vo.MyCardConsumeVO;
 import com.gt.union.union.main.vo.UnionPayVO;
 
@@ -17,7 +18,255 @@ import java.util.List;
  * @author linweicong
  * @version 2017-11-25 10:51:42
  */
-public interface IUnionConsumeService extends IService<UnionConsume> {
+public interface IUnionConsumeService {
+    //********************************************* Base On Business - get *********************************************
+
+    //********************************************* Base On Business - list ********************************************
+
+    //********************************************* Base On Business - save ********************************************
+
+    //********************************************* Base On Business - remove ******************************************
+
+    //********************************************* Base On Business - update ******************************************
+
+    //********************************************* Base On Business - other *******************************************
+
+    //********************************************* Base On Business - filter ******************************************
+
+    /**
+     * 根据删除状态进行过滤(by myBatisGenerator)
+     *
+     * @param unionConsumeList 数据源
+     * @param delStatus        删除状态
+     * @return List<UnionConsume>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionConsume> filterByDelStatus(List<UnionConsume> unionConsumeList, Integer delStatus) throws Exception;
+
+    //****************************************** Object As a Service - get *********************************************
+
+    /**
+     * 获取消费核销信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionConsume
+     * @throws Exception 统一处理异常
+     */
+    UnionConsume getById(Integer id) throws Exception;
+
+    /**
+     * 获取未删除的消费核销信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionConsume
+     * @throws Exception 统一处理异常
+     */
+    UnionConsume getValidById(Integer id) throws Exception;
+
+    /**
+     * 获取已删除的消费核销信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionConsume
+     * @throws Exception 统一处理异常
+     */
+    UnionConsume getInvalidById(Integer id) throws Exception;
+
+    //****************************************** Object As a Service - list ********************************************
+
+    /**
+     * 获取对象集对应的的主键集(by myBatisGenerator)
+     *
+     * @param unionConsumeList 对象集
+     * @return List<Id>
+     * @throws Exception 统一处理异常
+     */
+    List<Integer> getIdList(List<UnionConsume> unionConsumeList) throws Exception;
+
+
+    /**
+     * 获取消费核销列表信息(by myBatisGenerator)
+     *
+     * @param memberId memberId
+     * @return List<UnionConsume>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionConsume> listByMemberId(Integer memberId) throws Exception;
+
+    /**
+     * 获取未删除的消费核销列表信息(by myBatisGenerator)
+     *
+     * @param memberId memberId
+     * @return List<UnionConsume>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionConsume> listValidByMemberId(Integer memberId) throws Exception;
+
+    /**
+     * 获取已删除的消费核销列表信息(by myBatisGenerator)
+     *
+     * @param memberId memberId
+     * @return List<UnionConsume>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionConsume> listInvalidByMemberId(Integer memberId) throws Exception;
+
+    /**
+     * 获取消费核销列表信息(by myBatisGenerator)
+     *
+     * @param unionId unionId
+     * @return List<UnionConsume>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionConsume> listByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 获取未删除的消费核销列表信息(by myBatisGenerator)
+     *
+     * @param unionId unionId
+     * @return List<UnionConsume>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionConsume> listValidByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 获取已删除的消费核销列表信息(by myBatisGenerator)
+     *
+     * @param unionId unionId
+     * @return List<UnionConsume>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionConsume> listInvalidByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 获取消费核销列表信息(by myBatisGenerator)
+     *
+     * @param cardId cardId
+     * @return List<UnionConsume>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionConsume> listByCardId(Integer cardId) throws Exception;
+
+    /**
+     * 获取未删除的消费核销列表信息(by myBatisGenerator)
+     *
+     * @param cardId cardId
+     * @return List<UnionConsume>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionConsume> listValidByCardId(Integer cardId) throws Exception;
+
+    /**
+     * 获取已删除的消费核销列表信息(by myBatisGenerator)
+     *
+     * @param cardId cardId
+     * @return List<UnionConsume>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionConsume> listInvalidByCardId(Integer cardId) throws Exception;
+
+    /**
+     * 获取消费核销列表信息(by myBatisGenerator)
+     *
+     * @param fanId fanId
+     * @return List<UnionConsume>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionConsume> listByFanId(Integer fanId) throws Exception;
+
+    /**
+     * 获取未删除的消费核销列表信息(by myBatisGenerator)
+     *
+     * @param fanId fanId
+     * @return List<UnionConsume>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionConsume> listValidByFanId(Integer fanId) throws Exception;
+
+    /**
+     * 获取已删除的消费核销列表信息(by myBatisGenerator)
+     *
+     * @param fanId fanId
+     * @return List<UnionConsume>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionConsume> listInvalidByFanId(Integer fanId) throws Exception;
+
+    /**
+     * 获取主键集对应的对象集
+     *
+     * @param idList 主键集
+     * @return List<UnionConsume>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionConsume> listByIdList(List<Integer> idList) throws Exception;
+
+    /**
+     * 分页支持
+     *
+     * @param page          分页对象
+     * @param entityWrapper 条件
+     * @return Page<UnionConsume>
+     * @throws Exception 统一处理异常
+     */
+    Page<UnionConsume> pageSupport(Page page, EntityWrapper<UnionConsume> entityWrapper) throws Exception;
+
+    //****************************************** Object As a Service - save ********************************************
+
+    /**
+     * 保存(by myBatisGenerator)
+     *
+     * @param newUnionConsume 保存内容
+     * @throws Exception 统一处理异常
+     */
+    void save(UnionConsume newUnionConsume) throws Exception;
+
+    /**
+     * 批量保存(by myBatisGenerator)
+     *
+     * @param newUnionConsumeList 保存内容
+     * @throws Exception 统一处理异常
+     */
+    void saveBatch(List<UnionConsume> newUnionConsumeList) throws Exception;
+
+    //****************************************** Object As a Service - remove ******************************************
+
+    /**
+     * 移除(by myBatisGenerator)
+     *
+     * @param id 移除内容
+     * @throws Exception 统一处理异常
+     */
+    void removeById(Integer id) throws Exception;
+
+    /**
+     * 批量移除(by myBatisGenerator)
+     *
+     * @param idList 移除内容
+     * @throws Exception 统一处理异常
+     */
+    void removeBatchById(List<Integer> idList) throws Exception;
+
+    //****************************************** Object As a Service - update ******************************************
+
+    /**
+     * 更新(by myBatisGenerator)
+     *
+     * @param updateUnionConsume 更新内容
+     * @throws Exception 统一处理异常
+     */
+    void update(UnionConsume updateUnionConsume) throws Exception;
+
+    /**
+     * 批量更新(by myBatisGenerator)
+     *
+     * @param updateUnionConsumeList 更新内容
+     * @throws Exception 统一处理异常
+     */
+    void updateBatch(List<UnionConsume> updateUnionConsumeList) throws Exception;
+
+    // TODO
+
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
@@ -28,6 +277,26 @@ public interface IUnionConsumeService extends IService<UnionConsume> {
      * @throws Exception 统一处理异常
      */
     UnionConsume getByOrderNo(String orderNo) throws Exception;
+
+    /**
+     * 根据订单号和行业模型查询消费记录
+     *
+     * @param orderNo 订单号
+     * @param model   行业模型
+     * @return
+     * @throws Exception 统一处理异常
+     */
+    UnionConsume getByOrderNoAndModel(String orderNo, Integer model) throws Exception;
+
+    //***************************************** Domain Driven Design - count *********************************************
+
+    /**
+     * 根据联盟卡粉丝id计算消费记录数
+     *
+     * @param fanId 联盟卡粉丝id
+     * @return
+     */
+    Integer countPayByFanId(Integer fanId) throws ParamException;
 
     //***************************************** Domain Driven Design - list ********************************************
 
@@ -49,16 +318,18 @@ public interface IUnionConsumeService extends IService<UnionConsume> {
 
     /**
      * 分页：联盟卡手机端，我的消费记录列表
-     * @param fanId     联盟卡粉丝id
-     * @param page      分页参数
+     *
+     * @param fanId 联盟卡粉丝id
+     * @param page  分页参数
      * @return
      */
     List<MyCardConsumeVO> listConsumeByFanId(Integer fanId, Page page) throws Exception;
 
     /**
      * 分页：根据联盟卡粉丝id获取已支付消费记录列表
-     * @param fanId     联盟卡粉丝id
-     * @param page      分页参数
+     *
+     * @param fanId 联盟卡粉丝id
+     * @param page  分页参数
      * @return
      */
     List<UnionConsume> listPayByFanId(Integer fanId, Page page);
@@ -94,7 +365,8 @@ public interface IUnionConsumeService extends IService<UnionConsume> {
      */
     String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess);
 
-	//***************************************** Domain Driven Design - count *******************************************
+
+    //***************************************** Domain Driven Design - count *******************************************
 
     //***************************************** Domain Driven Design - boolean *****************************************
 

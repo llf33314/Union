@@ -8,7 +8,7 @@
       <add-activity-card></add-activity-card>
     </div>
     <!--没有相关数据-->
-    <div id="noUnion" v-if="!tableData.length">
+    <div id="noUnion" style="margin: 40px 0" v-if="!tableData.length">
       <img src="~assets/images/noCurrent.png">
       <p>
         还没有相关数据
@@ -60,14 +60,15 @@
           <p v-if="item.activityStatus !== '未开始'">
             <join-member :joinMemberCount="item.joinMemberCount" :activityId="item.activity.id"></join-member>
           </p>
-          <check-activity v-if="isUnionOwner && (item.activityStatus === '未报名' || item.activityStatus === '已报名' || item.activityStatus === '')" :projectCheckCount="item.projectCheckCount" :activityId="item.activity.id" ></check-activity>
+          <check-activity v-if="isUnionOwner && (item.activityStatus === '报名中' || item.activityStatus === '报名结束')" :projectCheckCount="item.projectCheckCount" :activityId="item.activity.id" ></check-activity>
           <p v-if="item.activityStatus === '售卡中' || item.activityStatus === '已停售'">
             <span>已售活动卡</span>
             <span>{{ item.cardSellCount }}/{{ item.activity.amount }}</span>
           </p>
-          <el-progress v-if="item.activityStatus === '售卡中' || item.activityStatus === '已停售'" :text-inside="true" :stroke-width="20" :percentage="item.cardSellCount/item.activity.amount" status="success">
+          <el-progress v-if="item.activityStatus === '售卡中' || item.activityStatus === '已停售'" :text-inside="true" :stroke-width="20" :percentage="item.cardSellCount/item.activity.amount*100" status="success">
           </el-progress>
         </li>
+        <!--  操作  -->
         <li>
           <div class="btn" v-if="item.activityStatus !== '未开始'">
             <el-button @click="myActivity(item)">我的活动项目</el-button>
@@ -133,7 +134,7 @@ export default {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
             this.tableData.forEach((v, i) => {
-              v.activityStatus = activityCardStatusFilter(v.activityStatus, v.project);
+              v.activityStatus = activityCardStatusFilter(v.activityStatus);
               v.activity.applyBeginTime = timeFilter(v.activity.applyBeginTime);
               v.activity.applyEndTime = timeFilter(v.activity.applyEndTime);
             });
@@ -154,7 +155,7 @@ export default {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
             this.tableData.forEach((v, i) => {
-              v.activityStatus = activityCardStatusFilter(v.activityStatus, v.project);
+              v.activityStatus = activityCardStatusFilter(v.activityStatus);
               v.activity.applyBeginTime = timeFilter(v.activity.applyBeginTime);
               v.activity.applyEndTime = timeFilter(v.activity.applyEndTime);
             });

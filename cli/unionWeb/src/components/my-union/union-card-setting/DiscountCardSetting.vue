@@ -28,7 +28,7 @@
       <hr>
       <div>当前折扣： {{ discount }}折 </div>
       <p>设置折扣：
-        <el-input v-model="discountInput" placeholder="请输入0~10的折扣" @keyup.native="check" style="width:200px"></el-input>
+        <el-input v-model="discountInput" placeholder="请输入0~10的折扣" @keyup.native="check()" style="width:200px"></el-input>
       </p>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="discountConfirm">确定</el-button>

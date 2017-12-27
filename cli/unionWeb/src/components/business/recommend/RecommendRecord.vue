@@ -181,7 +181,7 @@ export default {
         });
     },
     filterTag(value, row) {
-      return row.isAccept === value;
+      return row.opportunity.acceptStatus === value;
     }
   }
 };

@@ -6,6 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.boot.web.support.SpringBootServletInitializer;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
  * 项目启动类
@@ -16,6 +17,7 @@ import org.springframework.boot.web.support.SpringBootServletInitializer;
 @SpringBootApplication
 @ServletComponentScan
 @MapperScan("com.gt.union.*.*.mapper")
+@EnableScheduling
 public class UnionApplication extends SpringBootServletInitializer {
     @Override
     protected SpringApplicationBuilder configure(SpringApplicationBuilder springApplicationBuilder) {

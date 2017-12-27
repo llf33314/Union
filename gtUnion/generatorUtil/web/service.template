@@ -1,0 +1,29 @@
+{{define "service.template"}}package {{.PackagePath}}.service;
+
+import {{.PackagePath}}.entity.{{.ModelName}};
+import com.baomidou.mybatisplus.service.IService;
+
+import java.util.List;
+
+/**
+ * {{.TableComment}} 服务接口
+ *
+ * @author {{.Author}}
+ * @version {{.DateTime}}
+ */
+public interface I{{.ModelName}}Service extends IService<{{.ModelName}}> {
+    //***************************************** Domain Driven Design - get *********************************************
+
+    //***************************************** Domain Driven Design - list ********************************************
+
+    //***************************************** Domain Driven Design - save ********************************************
+
+    //***************************************** Domain Driven Design - remove ******************************************
+
+    //***************************************** Domain Driven Design - update ******************************************
+
+    //***************************************** Domain Driven Design - count *******************************************
+
+    //***************************************** Domain Driven Design - boolean *****************************************
+
+}{{end}}

@@ -1,6 +1,7 @@
 package com.gt.union.card.project.service;
 
-import com.baomidou.mybatisplus.service.IService;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.card.project.entity.UnionCardProjectItem;
 import com.gt.union.card.project.vo.CardProjectItemConsumeVO;
 import com.gt.union.card.project.vo.CardProjectVO;
@@ -13,17 +14,176 @@ import java.util.List;
  * @author linweicong
  * @version 2017-11-27 09:55:47
  */
-public interface IUnionCardProjectItemService extends IService<UnionCardProjectItem> {
-    //***************************************** Domain Driven Design - get *********************************************
+public interface IUnionCardProjectItemService {
+    //********************************************* Base On Business - get *********************************************
+
+    //********************************************* Base On Business - list ********************************************
+
+    //********************************************* Base On Business - save ********************************************
+
+    //********************************************* Base On Business - remove ******************************************
+
+    //********************************************* Base On Business - update ******************************************
+
+    //********************************************* Base On Business - other *******************************************
+
+    //********************************************* Base On Business - filter ******************************************
 
     /**
-     * 获取优惠信息
+     * 根据删除状态进行过滤(by myBatisGenerator)
      *
-     * @param id 优惠id
+     * @param unionCardProjectItemList 数据源
+     * @param delStatus                删除状态
+     * @return List<UnionCardProjectItem>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardProjectItem> filterByDelStatus(List<UnionCardProjectItem> unionCardProjectItemList, Integer delStatus) throws Exception;
+
+    //****************************************** Object As a Service - get *********************************************
+
+    /**
+     * 获取项目优惠信息(by myBatisGenerator)
+     *
+     * @param id id
      * @return UnionCardProjectItem
      * @throws Exception 统一处理异常
      */
     UnionCardProjectItem getById(Integer id) throws Exception;
+
+    /**
+     * 获取未删除的项目优惠信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionCardProjectItem
+     * @throws Exception 统一处理异常
+     */
+    UnionCardProjectItem getValidById(Integer id) throws Exception;
+
+    /**
+     * 获取已删除的项目优惠信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionCardProjectItem
+     * @throws Exception 统一处理异常
+     */
+    UnionCardProjectItem getInvalidById(Integer id) throws Exception;
+
+    //****************************************** Object As a Service - list ********************************************
+
+    /**
+     * 获取对象集对应的的主键集(by myBatisGenerator)
+     *
+     * @param unionCardProjectItemList 对象集
+     * @return List<Id>
+     * @throws Exception 统一处理异常
+     */
+    List<Integer> getIdList(List<UnionCardProjectItem> unionCardProjectItemList) throws Exception;
+
+
+    /**
+     * 获取项目优惠列表信息(by myBatisGenerator)
+     *
+     * @param projectId projectId
+     * @return List<UnionCardProjectItem>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardProjectItem> listByProjectId(Integer projectId) throws Exception;
+
+    /**
+     * 获取未删除的项目优惠列表信息(by myBatisGenerator)
+     *
+     * @param projectId projectId
+     * @return List<UnionCardProjectItem>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardProjectItem> listValidByProjectId(Integer projectId) throws Exception;
+
+    /**
+     * 获取已删除的项目优惠列表信息(by myBatisGenerator)
+     *
+     * @param projectId projectId
+     * @return List<UnionCardProjectItem>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardProjectItem> listInvalidByProjectId(Integer projectId) throws Exception;
+
+    /**
+     * 获取主键集对应的对象集
+     *
+     * @param idList 主键集
+     * @return List<UnionCardProjectItem>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardProjectItem> listByIdList(List<Integer> idList) throws Exception;
+
+    /**
+     * 分页支持
+     *
+     * @param page          分页对象
+     * @param entityWrapper 条件
+     * @return Page<UnionCardProjectItem>
+     * @throws Exception 统一处理异常
+     */
+    Page<UnionCardProjectItem> pageSupport(Page page, EntityWrapper<UnionCardProjectItem> entityWrapper) throws Exception;
+
+    //****************************************** Object As a Service - save ********************************************
+
+    /**
+     * 保存(by myBatisGenerator)
+     *
+     * @param newUnionCardProjectItem 保存内容
+     * @throws Exception 统一处理异常
+     */
+    void save(UnionCardProjectItem newUnionCardProjectItem) throws Exception;
+
+    /**
+     * 批量保存(by myBatisGenerator)
+     *
+     * @param newUnionCardProjectItemList 保存内容
+     * @throws Exception 统一处理异常
+     */
+    void saveBatch(List<UnionCardProjectItem> newUnionCardProjectItemList) throws Exception;
+
+    //****************************************** Object As a Service - remove ******************************************
+
+    /**
+     * 移除(by myBatisGenerator)
+     *
+     * @param id 移除内容
+     * @throws Exception 统一处理异常
+     */
+    void removeById(Integer id) throws Exception;
+
+    /**
+     * 批量移除(by myBatisGenerator)
+     *
+     * @param idList 移除内容
+     * @throws Exception 统一处理异常
+     */
+    void removeBatchById(List<Integer> idList) throws Exception;
+
+    //****************************************** Object As a Service - update ******************************************
+
+    /**
+     * 更新(by myBatisGenerator)
+     *
+     * @param updateUnionCardProjectItem 更新内容
+     * @throws Exception 统一处理异常
+     */
+    void update(UnionCardProjectItem updateUnionCardProjectItem) throws Exception;
+
+    /**
+     * 批量更新(by myBatisGenerator)
+     *
+     * @param updateUnionCardProjectItemList 更新内容
+     * @throws Exception 统一处理异常
+     */
+    void updateBatch(List<UnionCardProjectItem> updateUnionCardProjectItemList) throws Exception;
+
+    // TODO
+
+    //***************************************** Domain Driven Design - get *********************************************
+
 
     /**
      * 获取优惠信息
@@ -36,15 +196,6 @@ public interface IUnionCardProjectItemService extends IService<UnionCardProjectI
     UnionCardProjectItem getByIdAndProjectId(Integer itemId, Integer projectId) throws Exception;
 
     //***************************************** Domain Driven Design - list ********************************************
-
-    /**
-     * 获取优惠列表信息
-     *
-     * @param projectId 项目id
-     * @return List<UnionCardProjectItem>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCardProjectItem> listByProjectId(Integer projectId) throws Exception;
 
     /**
      * 获取优惠列表信息
@@ -93,13 +244,6 @@ public interface IUnionCardProjectItemService extends IService<UnionCardProjectI
 
     //***************************************** Domain Driven Design - remove ******************************************
 
-    /**
-     * 批量删除
-     *
-     * @param idList id列表
-     * @throws Exception 统一处理异常
-     */
-    void removeBatchById(List<Integer> idList) throws Exception;
 
     //***************************************** Domain Driven Design - update ******************************************
 

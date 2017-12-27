@@ -23,7 +23,7 @@ public class GlobalExceptionHandler {
     @ResponseBody
     public String defaultErrorHandler(Exception e) throws Exception {
         //日志文件记录
-        this.logger.error("", e);
+        this.logger.error(e.getMessage(), e);
         if (e instanceof BaseException) {
             return GtJsonResult.instanceErrorMsg(((BaseException) e).getErrorMsg()).toString();
         }

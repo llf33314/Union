@@ -5,6 +5,8 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="com.gt.union.union.main.entity.UnionMainDict">
         <id column="id" property="id"/>
+        <result column="del_status" property="delStatus"/>
+        <result column="create_time" property="createTime"/>
         <result column="union_id" property="unionId"/>
         <result column="item_key" property="itemKey"/>
     </resultMap>
