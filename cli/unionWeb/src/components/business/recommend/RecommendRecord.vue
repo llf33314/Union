@@ -128,7 +128,7 @@ export default {
               this.tableData = res.data.data.records || [];
               this.totalAll = res.data.data.total;
               this.tableData.forEach((v, i) => {
-               v.opportunity.acceptStatus = bussinessStatusChange(v.opportunity.acceptStatus);
+                v.opportunity.acceptStatus = bussinessStatusChange(v.opportunity.acceptStatus);
               });
             } else {
               this.tableData = [];
@@ -141,15 +141,16 @@ export default {
       }
     },
     // 带条件搜索
-    search() {
+    search(value) {
+      let val = value || 1;
       $http
-        .get(`/unionOpportunity/fromMe/page?current=1&unionId=${this.unionId}&` + this.value + '=' + this.input)
+        .get(`/unionOpportunity/fromMe/page?current=${val}&unionId=${this.unionId}&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
             this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
-             v.opportunity.acceptStatus = bussinessStatusChange(v.opportunity.acceptStatus);
+              v.opportunity.acceptStatus = bussinessStatusChange(v.opportunity.acceptStatus);
             });
           } else {
             this.tableData = [];
@@ -162,23 +163,7 @@ export default {
     },
     // 分页搜索
     handleCurrentChange(val) {
-      $http
-        .get(`/unionOpportunity/fromMe/page?current=${val}&unionId=${this.unionId}&` + this.value + '=' + this.input)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records || [];
-            this.totalAll = res.data.data.total;
-            this.tableData.forEach((v, i) => {
-             v.opportunity.acceptStatus = bussinessStatusChange(v.opportunity.acceptStatus);
-            });
-          } else {
-            this.tableData = [];
-            this.totalAll = 0;
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+      this.search(val);
     },
     filterTag(value, row) {
       return row.opportunity.acceptStatus === value;
