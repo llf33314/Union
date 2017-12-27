@@ -24,7 +24,7 @@
         <el-table :data="tableData" style="width: 100%">
           <el-table-column prop="employeeName" label="姓名">
             <template slot-scope="scope">
-              <i v-if="!scope.row.id">图标 todo</i>
+              <img src="~assets/images/finance1.png" style="width: 18px;position: absolute;left: 8px;" alt=""><!--v-if="!scope.row.id"-->
               <span> {{ scope.row.employeeName }} </span>
             </template>
           </el-table-column>

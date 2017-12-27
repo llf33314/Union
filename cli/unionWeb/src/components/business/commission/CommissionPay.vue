@@ -91,7 +91,7 @@
       <el-table-column prop="" label="操作">
         <template slot-scope="scope">
           <div class="sizeAndColor">
-            <el-button v-if="scope.row.opportunity.isClose === '未结算'" @click="pay(scope)">支付</el-button>
+            <el-button v-if="scope.row.opportunity.isClose === '未支付'" @click="pay(scope)">支付</el-button>
           </div>
         </template>
       </el-table-column>

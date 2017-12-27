@@ -460,10 +460,11 @@ export default {
   padding: 13px 0 17px;
   > ul > li {
     float: left;
-    width: 32%;
+    width: 50%;
     border-left: 1px solid #eeeeee;
     padding-left: 22px;
     color: #999999;
+    box-sizing: border-box;
     p {
       margin-bottom: 19px;
     }

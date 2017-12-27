@@ -2,7 +2,7 @@
   <div id="MyActivityCard" v-loading="loading" element-loading-text="拼命加载中">
     <div class="explain">
       <span>说明：</span>
-      <div>
+      <div style="margin-top: 10px;">
         <div style="float: right;color: #666666" v-if="projectData.project.status">项目/商品 状态：
           <span style="color: #20A0FF"> {{ projectData.project.status }} </span>
           <span class="icon">!</span>
@@ -37,18 +37,20 @@
       <el-button type="primary" @click="visible=true">提交审核</el-button>
     </footer>
     <!-- 弹出框 确认提交审核 -->
-    <el-dialog title="通过" :visible.sync="visible" size="tiny">
-      <hr>
-      <div>
-        <img src="~assets/images/delect01.png" class="fl">
-        <span>请确认您的项目，提交审核后不可修改项目内容，且不可</span>
-        <p>再次提交项目！</p>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="confirmSubmit">确定</el-button>
-        <el-button @click="visible=false">取消</el-button>
-      </span>
-    </el-dialog>
+    <div class="model_2">
+      <el-dialog title="通过" :visible.sync="visible" size="tiny">
+        <hr>
+        <div>
+          <img src="~assets/images/delect01.png" class="fl">
+          <span>请确认您的项目，提交审核后不可修改项目内容，且不可</span>
+          <p>再次提交项目！</p>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="confirmSubmit">确定</el-button>
+          <el-button @click="visible=false">取消</el-button>
+        </span>
+      </el-dialog>
+    </div>
   </div>
 </template>
 

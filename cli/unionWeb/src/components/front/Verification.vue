@@ -45,6 +45,9 @@
               </el-radio-group>
             </el-form-item>
           </div>
+          <el-form-item label="享受折扣:">
+            <span style="color: #f10b0b"> {{ form.currentMember.discount }} </span>
+          </el-form-item>
           <el-form-item label="消费金额:">
             <el-col style="width: 220px;">
               <el-input v-model="price">
@@ -63,7 +66,7 @@
             <div style="margin-top: 10px;">
               <span>活动卡名称：</span>
               <el-select v-model="activityId" placeholder="请选择" @change="activityCardChange" style="width: 180px">
-                <el-option v-for="item in activityCards" :key="item.activity.id" :label="item.activity.name" :value="item">
+                <el-option v-for="item in activityCards" :key="item.activity.id" :label="item.activity.name" :value="item.activity.id">
                 </el-option>
               </el-select>
               <span style="margin-left: 15px;">有效时间： {{ activityCardValidity }} </span>
