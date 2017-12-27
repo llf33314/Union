@@ -129,9 +129,10 @@ export default {
       }
     },
     // 改变选取联盟
-    search() {
+    search(value) {
+      let val = value || 1;
       $http
-        .get(`/unionBrokeragePay/detail/page?current=1&unionId=${this.unionId}`)
+        .get(`/unionBrokeragePay/detail/page?current=${val}&unionId=${this.unionId}`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
@@ -147,20 +148,7 @@ export default {
     },
     // 分页查询
     handleCurrentChange(val) {
-      $http
-        .get(`/unionOpportunity/contact/page?current=${val}&memberId=${this.memberId}`)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records || [];
-            this.totalAll = res.data.data.total;
-          } else {
-            this.tableData = [];
-            this.totalAll = 0;
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+      this.search(val);
     },
     // 弹出框 佣金详情
     showDialog(scope) {

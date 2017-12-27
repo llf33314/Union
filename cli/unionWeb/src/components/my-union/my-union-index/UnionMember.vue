@@ -153,9 +153,10 @@ export default {
         });
     },
     // 带条件查询盟员列表
-    search() {
+    search(value) {
+      let val = value || 1;
       $http
-        .get(`/unionMember/unionId/${this.unionId}/write/page?current=1&memberName=${this.input}`)
+        .get(`/unionMember/unionId/${this.unionId}/write/page?current=${val}&memberName=${this.input}`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
@@ -171,21 +172,7 @@ export default {
     },
     // 分页查询盟员列表
     handleCurrentChange(val) {
-      this.current = val;
-      $http
-        .get(`/unionMember/unionId/${this.unionId}/write/page?current=${val}&memberName=${this.input}`)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records || [];
-            this.tableData.forEach((v, i) => {
-              v.createTime = timeFilter(v.createTime);
-            });
-            this.totalAll = res.data.data.total;
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+      this.search(val);
     },
     // 详情
     detail(scope) {
@@ -237,7 +224,7 @@ export default {
 .model__10 {
   .el-dialog__body {
     padding: 0;
-    margin-top:15px;
+    margin-top: 15px;
     > div {
       margin: 20px 40px 50px;
       > span {
@@ -245,8 +232,8 @@ export default {
         margin-bottom: 20px;
       }
     }
-    .el-form-item{
-      margin-bottom: 17px!important;
+    .el-form-item {
+      margin-bottom: 17px !important;
     }
   }
   .el-dialog--tiny {

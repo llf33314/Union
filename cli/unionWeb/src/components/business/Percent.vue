@@ -115,16 +115,17 @@ export default {
           });
       }
     },
-    search() {
+    search(value) {
+      let val = value || 1;
       $http
-        .get(`/unionOpportunityRatio/unionId/${this.unionId}/page?current=1`)
+        .get(`/unionOpportunityRatio/unionId/${this.unionId}/page?current=${val}`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
             this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
               v.ratioFromMe = v.ratioFromMe * 100 || 0;
-              v.ratioToMe = v.ratioToMe * 100  || 0;
+              v.ratioToMe = v.ratioToMe * 100 || 0;
             });
           } else {
             this.tableData = [];
@@ -137,22 +138,7 @@ export default {
     },
     // 分页查询
     handleCurrentChange(val) {
-      $http
-        .get(`/unionOpportunityRatio/unionId/${this.unionId}/page?current=${val}`)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records || [];
-            this.tableData.forEach((v, i) => {
-              v.ratioFromMe = v.ratioFromMe * 100 || 0;
-              v.ratioToMe = v.ratioToMe * 100  || 0;
-            });
-          } else {
-            this.tableData = [];
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+      this.search(val);
     },
     // 设置比例
     setPercent(scope) {
@@ -165,10 +151,12 @@ export default {
     // 保存设置
     submit() {
       $http
-        .put(`/unionOpportunityRatio/unionId/${this.unionId}/toMemberId/${this.toMemberId}?ratio=${this.ratioFromMe / 100}`)
+        .put(
+          `/unionOpportunityRatio/unionId/${this.unionId}/toMemberId/${this.toMemberId}?ratio=${this.ratioFromMe / 100}`
+        )
         .then(res => {
           if (res.data.success) {
-          this.$message({ showClose: true, message: '设置成功', type: 'success', duration: 5000 });
+            this.$message({ showClose: true, message: '设置成功', type: 'success', duration: 5000 });
             this.search();
             this.dialogVisible = false;
           }

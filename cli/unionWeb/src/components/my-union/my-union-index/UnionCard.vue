@@ -130,9 +130,10 @@ export default {
         });
     },
     // 带条件查询联盟卡
-    search() {
+    search(value) {
+      let val = value || 1;
       $http
-        .get(`/unionCardFan/page?current=1&unionId=${this.unionId}&` + this.value + '=' + this.input)
+        .get(`/unionCardFan/page?current=${val}&unionId=${this.unionId}&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
@@ -145,17 +146,7 @@ export default {
     },
     // 分页查询联盟卡
     handleCurrentChange(val) {
-      $http
-        .get(`/unionCardFan/page?current=${val}&unionId=${this.unionId}&` + this.value + '=' + this.input)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records || [];
-            this.totalAll = res.data.data.total;
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+      this.search(val);
     },
     // 导出联盟卡
     output() {

@@ -65,7 +65,7 @@
             <span>已售活动卡</span>
             <span>{{ item.cardSellCount }}/{{ item.activity.amount }}</span>
           </p>
-          <el-progress v-if="item.activityStatus === '售卡中' || item.activityStatus === '已停售'" :text-inside="true" :stroke-width="20" :percentage="item.cardSellCount/item.activity.amount" status="success">
+          <el-progress v-if="item.activityStatus === '售卡中' || item.activityStatus === '已停售'" :text-inside="true" :stroke-width="20" :percentage="item.cardSellCount/item.activity.amount*100" status="success">
           </el-progress>
         </li>
         <!--  操作  -->

@@ -136,9 +136,10 @@ export default {
       }
     },
     // 带条件查询
-    search() {
+    search(value) {
+      let val = value || 1;
       $http
-        .get(`/unionMemberJoin/unionId/${this.unionId}/page?current=1&` + this.value + '=' + this.input)
+        .get(`/unionMemberJoin/unionId/${this.unionId}/page?current=${val}&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
@@ -154,20 +155,7 @@ export default {
     },
     // 分页查询
     handleCurrentChange(val) {
-      $http
-        .get(`/unionMemberJoin/unionId/${this.unionId}/page?current=${val}&` + this.value + '=' + this.input)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records || [];
-            this.tableData.forEach((v, i) => {
-              v.memberJoin.createTime = timeFilter(v.memberJoin.createTime);
-            });
-            this.totalAll = res.data.data.total;
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+      this.search(val);
     },
     // 通过
     handlePass(scope) {

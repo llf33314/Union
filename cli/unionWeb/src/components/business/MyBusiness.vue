@@ -215,9 +215,10 @@ export default {
       }
     },
     // 带条件搜索
-    search() {
+    search(value) {
+      let val = value || 1;
       $http
-        .get(`/unionOpportunity/toMe/page?current=1&unionId=${this.unionId}&` + this.value + '=' + this.input)
+        .get(`/unionOpportunity/toMe/page?current=${val}&unionId=${this.unionId}&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
@@ -236,19 +237,7 @@ export default {
     },
     // 分页搜索
     handleCurrentChange(val) {
-      $http
-        .get(`/unionOpportunity/toMe/page?current=${val}&unionId=${this.unionId}&` + this.value + '=' + this.input)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records || [];
-            this.tableData.forEach((v, i) => {
-              v.opportunity.acceptStatus = bussinessStatusChange(v.opportunity.acceptStatus);
-            });
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+      this.search(val);
     },
     // 弹出框 商机详情
     showDialog(scope) {

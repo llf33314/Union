@@ -20,7 +20,7 @@
         </div>
         <p>
           <span>{{ item.activity.name }} </span>
-          <el-button @click="setting(item.activity.id)" size="small">设置折扣</el-button>
+          <el-button @click="setting(item.activity.id)" size="small">设置比例</el-button>
         </p>
       </div>
       <el-row style="margin-bottom: 85px">

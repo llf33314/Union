@@ -120,7 +120,7 @@ export default {
     // 确认转移
     onConfirm1() {
       $http
-        .post(`/unionMainTransfer/unionId/${this.unionId}?toMemberId=${this.id}`)
+        .post(`/unionMainTransfer/unionId/${this.unionId}toMemberId=${this.id}`)
         .then(res => {
           if (res.data.success) {
             eventBus.$emit('unionUpdata');

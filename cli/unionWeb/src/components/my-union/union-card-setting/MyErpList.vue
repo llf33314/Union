@@ -182,7 +182,9 @@ export default {
           .then(res => {
             if (res.data.data) {
               this.tableData = res.data.data.records || [];
-              this.checkToggle();
+              this.$nextTick(() => {
+                this.checkToggle();
+              });
             } else {
               this.tableData = [];
             }
