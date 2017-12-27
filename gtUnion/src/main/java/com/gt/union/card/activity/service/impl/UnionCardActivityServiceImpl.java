@@ -521,9 +521,9 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         // （2）	判断activityId有效性
         UnionCardActivity activity = getByIdAndUnionId(activityId, unionId);
@@ -549,9 +549,9 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         // （2）	判断是否是盟主：
         //   （2-1）如果是，则显示全部；
@@ -603,9 +603,9 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
 
         List<CardActivityVO> result = new ArrayList<>();
@@ -662,9 +662,9 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         // （2）	判断fanId有效性
         UnionCardFan fan = unionCardFanService.getById(fanId);
@@ -717,9 +717,9 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         // （2）	判断activityId有效性
         UnionCardActivity activity = getByIdAndUnionId(activityId, unionId);
@@ -739,7 +739,7 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
             });
             for (UnionCardProject project : projectList) {
                 CardActivityApplyItemVO vo = new CardActivityApplyItemVO();
-                UnionMember projectMember = unionMemberService.getReadByIdAndUnionId(project.getMemberId(), project.getUnionId());
+                UnionMember projectMember = unionMemberService.getValidReadByIdAndUnionId(project.getMemberId(), project.getUnionId());
                 vo.setMember(projectMember);
 
                 List<UnionCardProjectItem> itemList = unionCardProjectItemService.listByProjectId(project.getId());
@@ -763,12 +763,12 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidWriteByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
-            throw new BusinessException(CommonConstant.UNION_NEED_OWNER);
+            throw new BusinessException(CommonConstant.UNION_OWNER_ERROR);
         }
         // （2）	校验表单
         UnionCardActivity saveActivity = new UnionCardActivity();
@@ -861,12 +861,12 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidWriteByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
-            throw new BusinessException(CommonConstant.UNION_NEED_OWNER);
+            throw new BusinessException(CommonConstant.UNION_OWNER_ERROR);
         }
         // （2）	判断activityId有效性
         UnionCardActivity activity = getByIdAndUnionId(activityId, unionId);

@@ -16,13 +16,53 @@ import java.util.List;
 public interface IUnionMainPermitService {
     //********************************************* Base On Business - get *********************************************
 
+    /**
+     * 获取未删除的有效联盟许可信息
+     *
+     * @param busId 商家id
+     * @return UnionMainPermit
+     * @throws Exception 统一处理异常
+     */
+    UnionMainPermit getValidByBusId(Integer busId) throws Exception;
+    
+    /**
+     * 获取未删除的联盟许可信息
+     *
+     * @param sysOrderNo 订单号
+     * @return UnionMainPermit
+     * @throws Exception 统一处理异常
+     */
+    UnionMainPermit getValidBySysOrderNo(String sysOrderNo) throws Exception;
+
     //********************************************* Base On Business - list ********************************************
 
     //********************************************* Base On Business - save ********************************************
 
+    /**
+     * 我的联盟-创建联盟-购买盟主服务-支付
+     *
+     * @param busId     商家id
+     * @param packageId 套餐id
+     * @return UnionPayVO
+     * @throws Exception 统一处理异常
+     */
+    UnionPayVO saveByBusIdAndPackageId(Integer busId, Integer packageId) throws Exception;
+
     //********************************************* Base On Business - remove ******************************************
 
     //********************************************* Base On Business - update ******************************************
+
+    /**
+     * 创建联盟-购买盟主服务-支付-回调
+     *
+     * @param orderNo    订单号
+     * @param socketKey  socket关键字
+     * @param payType    支付类型
+     * @param payOrderNo 支付订单号
+     * @param isSuccess  是否成功
+     * @return String 返回结果
+     */
+    String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess);
 
     //********************************************* Base On Business - other *******************************************
 
@@ -205,62 +245,5 @@ public interface IUnionMainPermitService {
      * @throws Exception 统一处理异常
      */
     void updateBatch(List<UnionMainPermit> updateUnionMainPermitList) throws Exception;
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    /**
-     * 获取有效的联盟许可信息
-     *
-     * @param busId 商家id
-     * @return UnionMainPermit
-     * @throws Exception 统一处理异常
-     */
-    UnionMainPermit getValidByBusId(Integer busId) throws Exception;
-
-    /**
-     * 获取联盟许可信息
-     *
-     * @param sysOrderNo 订单号
-     * @return UnionMainPermit
-     * @throws Exception 统一处理异常
-     */
-    UnionMainPermit getBySysOrderNo(String sysOrderNo) throws Exception;
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-
-    /**
-     * 我的联盟-创建联盟-购买盟主服务-支付
-     *
-     * @param busId     商家id
-     * @param packageId 套餐id
-     * @return UnionPayVO
-     * @throws Exception 统一处理异常
-     */
-    UnionPayVO saveByBusIdAndPackageId(Integer busId, Integer packageId) throws Exception;
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    /**
-     * 创建联盟-购买盟主服务-支付-回调
-     *
-     * @param orderNo    订单号
-     * @param socketKey  socket关键字
-     * @param payType    支付类型
-     * @param payOrderNo 支付订单号
-     * @param isSuccess  是否成功
-     * @return String 返回结果
-     */
-    String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess);
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    //***************************************** Domain Driven Design - boolean *****************************************
 
 }

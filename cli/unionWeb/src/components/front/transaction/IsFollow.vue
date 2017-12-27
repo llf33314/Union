@@ -121,3 +121,48 @@ export default {
   }
 };
 </script>
+<style lang='less' rel="stylesheet/less" scoped>
+  /*右边下拉框的样式*/
+
+  .drop_down {
+    margin-top: 30px;
+    border: 1px solid #ddd;
+    height: 720px;
+    overflow: auto;
+    width: 420px;
+  > p {
+    background: #eef1f6;
+    padding: 15px 30px;
+    font-size: 12px;
+  }
+  /*二维码的显示框的样式*/
+  .middle_ {
+    text-align: center;
+    padding: 50px 42px 40px 58px;
+  > img {
+    display: block;
+    margin: 0 40px 30px 40px;
+  }
+  }
+  > span {
+    display: block;
+    margin: 0px 42px 40px 58px;
+    border-top: 1px solid #ddd;
+    padding-top: 40px;
+  p {
+    color: #999999;
+  }
+  }
+  }
+  .drop_down1 {
+    margin-top: 30px;
+    border: 1px solid #ddd;
+    overflow: auto;
+    width: 420px;
+  > p {
+    background: #eef1f6;
+    padding: 15px 30px;
+    font-size: 12px;
+  }
+  }
+</style>

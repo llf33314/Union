@@ -517,9 +517,9 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         // （2）	判断activityId有效性
         UnionCardActivity activity = unionCardActivityService.getByIdAndUnionId(activityId, unionId);
@@ -574,9 +574,9 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidWriteByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         // （2）	判断activityId有效性
         UnionCardActivity activity = unionCardActivityService.getByIdAndUnionId(activityId, unionId);
@@ -663,9 +663,9 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidWriteByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         // （2）	判断activityId有效性
         UnionCardActivity activity = unionCardActivityService.getByIdAndUnionId(activityId, unionId);

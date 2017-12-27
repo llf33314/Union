@@ -17,9 +17,27 @@ import java.util.List;
 public interface IUnionMainCreateService {
     //********************************************* Base On Business - get *********************************************
 
+    /**
+     * 我的联盟-创建联盟-检查联盟许可
+     *
+     * @param busId 商家id
+     * @return UnionPermitCheckVO
+     * @throws Exception 统一处理异常
+     */
+    UnionPermitCheckVO getPermitCheckVOByBusId(Integer busId) throws Exception;
+
     //********************************************* Base On Business - list ********************************************
 
     //********************************************* Base On Business - save ********************************************
+
+    /**
+     * 我的联盟-创建联盟-保存
+     *
+     * @param busId 商家id
+     * @param vo    表单信息
+     * @throws Exception 统一处理异常
+     */
+    void saveUnionCreateVOByBusId(Integer busId, UnionCreateVO vo) throws Exception;
 
     //********************************************* Base On Business - remove ******************************************
 
@@ -233,39 +251,5 @@ public interface IUnionMainCreateService {
      * @throws Exception 统一处理异常
      */
     void updateBatch(List<UnionMainCreate> updateUnionMainCreateList) throws Exception;
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    /**
-     * 我的联盟-创建联盟-检查联盟许可
-     *
-     * @param busId 商家id
-     * @return UnionPermitCheckVO
-     * @throws Exception 统一处理异常
-     */
-    UnionPermitCheckVO getPermitCheckVOByBusId(Integer busId) throws Exception;
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    /**
-     * 我的联盟-创建联盟-保存
-     *
-     * @param busId 商家id
-     * @param vo    表单信息
-     * @throws Exception 统一处理异常
-     */
-    void saveUnionCreateVOByBusId(Integer busId, UnionCreateVO vo) throws Exception;
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    //***************************************** Domain Driven Design - boolean *****************************************
 
 }

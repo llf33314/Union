@@ -373,9 +373,9 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         // （2）	判断fanId有效性
         UnionCardFan fan = getById(fanId);
@@ -389,7 +389,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         if (ListUtil.isNotEmpty(discountCardList)) {
             UnionCard discountCard = discountCardList.get(0);
             result.setDiscountCard(discountCard);
-            UnionMember discountCardMember = unionMemberService.getReadByIdAndUnionId(discountCard.getMemberId(), unionId);
+            UnionMember discountCardMember = unionMemberService.getValidReadByIdAndUnionId(discountCard.getMemberId(), unionId);
             result.setDiscount(discountCardMember != null ? discountCardMember.getDiscount() : null);
         }
         // （4）获取有效的活动卡信息，并按时间倒序排序
@@ -417,9 +417,9 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
 
         // （2）	获取union下具有有效折扣卡的fan，并根据卡号和手机号进行过滤
@@ -479,7 +479,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
             return null;
         }
         // （2）	获取商家所有有效的unionList
-        List<UnionMain> busUnionList = unionMainService.listMyValidWriteByBusId(busId);
+        List<UnionMain> busUnionList = unionMainService.listValidWriteByBusId(busId);
         List<Integer> busUnionIdList = new ArrayList<>();
         if (ListUtil.isNotEmpty(busUnionList)) {
             for (UnionMain union : busUnionList) {
@@ -514,7 +514,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         result.setCurrentUnion(currentUnion);
 
         // （6）	获取union对应的member，获得折扣信息
-        UnionMember currentMember = unionMemberService.getReadByBusIdAndUnionId(busId, currentUnionId);
+        UnionMember currentMember = unionMemberService.getValidReadByBusIdAndUnionId(busId, currentUnionId);
         result.setCurrentMember(currentMember);
 
         // （7）	获取粉丝联盟积分

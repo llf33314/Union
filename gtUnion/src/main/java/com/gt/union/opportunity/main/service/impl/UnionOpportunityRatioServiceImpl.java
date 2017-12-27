@@ -690,13 +690,13 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         // （2）	获取所有，但不包括自己的member列表
         List<OpportunityRatioVO> result = new ArrayList<>();
-        List<UnionMember> otherMemberList = unionMemberService.listOtherReadByBusIdAndUnionId(busId, unionId);
+        List<UnionMember> otherMemberList = unionMemberService.listOtherValidReadByBusIdAndUnionId(busId, unionId);
         if (ListUtil.isNotEmpty(otherMemberList)) {
             for (UnionMember otherMember : otherMemberList) {
                 OpportunityRatioVO vo = new OpportunityRatioVO();
@@ -737,12 +737,12 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidWriteByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         // （2）	判断toMemberId有效性
-        UnionMember toMember = unionMemberService.getReadByIdAndUnionId(toMemberId, unionId);
+        UnionMember toMember = unionMemberService.getValidReadByIdAndUnionId(toMemberId, unionId);
         if (toMember == null) {
             throw new BusinessException("找不到盟员信息");
         }

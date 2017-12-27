@@ -55,6 +55,7 @@
     <!-- 弹出框 确认通过 -->
     <div class="model_02">
       <el-dialog title="是否确认通过申请" :visible.sync="visible1" size="tiny">
+        <hr>
         <span slot="footer" class="dialog-footer">
           <el-button type="primary" @click="confirm1">确定</el-button>
           <el-button @click="visible1=false">取消</el-button>
@@ -64,6 +65,7 @@
     <!-- 弹出框 确认不通过 -->
     <div class="model_02">
       <el-dialog title="是否确认不通过申请" :visible.sync="visible2" size="tiny">
+        <hr>
         <span slot="footer" class="dialog-footer">
           <el-button type="primary" @click="confirm2">确定</el-button>
           <el-button @click="visible2=false">取消</el-button>
@@ -136,9 +138,10 @@ export default {
       }
     },
     // 带条件查询
-    search() {
+    search(value) {
+      let val = value || 1;
       $http
-        .get(`/unionMemberJoin/unionId/${this.unionId}/page?current=1&` + this.value + '=' + this.input)
+        .get(`/unionMemberJoin/unionId/${this.unionId}/page?current=${val}&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
@@ -154,20 +157,7 @@ export default {
     },
     // 分页查询
     handleCurrentChange(val) {
-      $http
-        .get(`/unionMemberJoin/unionId/${this.unionId}/page?current=${val}&` + this.value + '=' + this.input)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records || [];
-            this.tableData.forEach((v, i) => {
-              v.memberJoin.createTime = timeFilter(v.memberJoin.createTime);
-            });
-            this.totalAll = res.data.data.total;
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+      this.search(val);
     },
     // 通过
     handlePass(scope) {

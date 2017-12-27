@@ -7,7 +7,7 @@
         </el-button>
       </el-row>
       <!--主体内容-->
-      <div v-if="data1.length === 0">
+      <div id="noUnion" style="margin: 0!important;" v-if="data1.length === 0">
         <img src="~assets/images/noCurrent.png">
         <p>
           还没有相关数据

@@ -456,7 +456,17 @@ hr{
       }
     }
   }
-  .selectPublic
+  .selectPublic;
+  .model_02{
+    .el-dialog--tiny{
+      width: 550px;
+      .el-dialog__body{
+        padding: 0;
+        margin-bottom: 65px;
+        margin-top: 15px;
+      }
+    }
+  }
 }
 // 我的联盟分页公共样式
 .el-pagination{
@@ -753,6 +763,9 @@ hr{
           padding: 0;
           .model_setting {
             padding: 30px 30px;
+            >div{
+              margin-bottom: 15px;
+            }
             p {
               padding: 10px 0 10px 92px;
             }
@@ -837,12 +850,18 @@ hr{
           li:nth-child(1){
             padding-left: 31px;
             position: relative;
+            top: 31px;
             >img{
-              width: 200px;height:120px;
+              width: 260px;height:60px;
+              border-radius: 6px;
+              background-image: linear-gradient(90deg,
+              #03abff 0%,
+              #008bd2 100%);
             }
             >div{
               position: absolute;
-              width: 200px;height:120px;
+              width: 260px;height:60px;
+              border-radius: 6px;
               top: 0;
               left:32px;
               overflow: hidden;
@@ -866,7 +885,7 @@ hr{
           }
           li:nth-child(2){
             position: relative;
-            top: -10px;
+
             >p{
               margin-bottom: 6px;
               span:nth-child(1){
@@ -922,8 +941,10 @@ hr{
             margin-top: 65px;
             padding-left: 48px;
             width:18%;
-            .btn{
+            >div{
               display: inline-block;
+            }
+            .btn{
               margin-right: 10px;
               .el-button{
                 border: 1px solid #20a0ff;
@@ -963,6 +984,22 @@ hr{
                 textarea.el-textarea__inner {
                   width: 220px;
                   height: 55px;
+                }
+              }
+              .OptionalColor{
+                .el-radio-group{
+                  border: 1px solid #ddd;
+                }
+                .el-radio-button:first-child .el-radio-button__inner{
+                  border-left: none!important;
+                }
+                .el-radio-button__inner{
+                  border: none;
+                  padding: 5px;
+                  >div{
+                    margin-left: 14px;
+                    margin-bottom: 3px;
+                  }
                 }
               }
             }
@@ -1124,6 +1161,7 @@ hr{
           font-weight: bold;
           padding-bottom: 10px;
           border-bottom: 1px solid #EEEEEE;
+          margin-bottom: 15px;
         }
         .addUnion{
           margin-top: 20px;
@@ -1173,12 +1211,15 @@ hr{
           }
         }
       }
-      .model_4,.model_5{
-        .el-dialog--tiny{
+      .model_4{
+        .el-dialog--small{
           width: 900px;
           .el-dialog__body{
             padding: 0;
             margin-top: 15px;
+            .el-input__inner{
+              width: 195px;
+            }
             >div{
               margin-left: 30px;
               margin-top:20px;
@@ -1347,7 +1388,7 @@ hr{
           //文字提示样式
           .el-form-item__error {
             top: 80px;
-            left: 265px;
+            left: 305px;
           }
         }
         .dddddd{
@@ -1400,11 +1441,13 @@ hr{
         height: 360px;
         .el-dialog__body{
           padding:0;
+          margin-top: 10px;
           .middle_{
             text-align: center;
             margin-top: 25px;
             .imgSrc{
               width: 200px;
+              height: 200px;
             }
             span{
               color: red;
@@ -1500,6 +1543,7 @@ hr{
         max-width: 1450px;
         margin: 0 auto;
         form {
+          padding-top:10px;
           width: 540px;
           height: 532px;
           background-color: #ffffff;
@@ -1509,6 +1553,7 @@ hr{
           position: relative;
           left: 454px;
           margin-right: 70px;
+          box-sizing: border-box;
         }
         .preferenceItems {
           max-width: 760px;
@@ -1541,6 +1586,10 @@ hr{
                 }
                 >div {
                   margin-left: 10px;
+                  >span{
+                    display: inline-block;
+                    width: 140px;
+                  }
                   .el-button--text {
                     margin-left: 50px;
                   }
@@ -1956,6 +2005,9 @@ hr{
 
 //财务页面所有样式---------------------------------------------------------------------------------------------3
 #finance{
+  .el-table .cell {
+    padding-left: 30px;
+  }
   //弹出框样式
   .el-dialog--tiny{
     width:650px;
@@ -1980,13 +2032,12 @@ hr{
     padding-left: 50px;
     .el-form-item__error{
       top: 20%;
-      left: 35%;
+      left: 40%;
     }
   }
   .model_1{
     .el-dialog--tiny{
       width:560px;
-
       img{
         width:200px;
         height:200px;

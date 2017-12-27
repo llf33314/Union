@@ -226,7 +226,7 @@ export default {
         });
     },
     // 带条件搜索消费记录
-    search() {
+    search(value) {
       let beginTime, endTime;
       if (this.timeValue[0]) {
         beginTime = this.timeValue[0].getTime();
@@ -235,8 +235,9 @@ export default {
         beginTime = '';
         endTime = '';
       }
+      let val = value || 1;
       let url =
-        `/unionConsume/record/page?current=1&unionId=${this.unionId}&shopId=${this.shopId}&` +
+        `/unionConsume/record/page?current=${val}&unionId=${this.unionId}&shopId=${this.shopId}&` +
         this.value +
         '=' +
         this.input +
@@ -270,44 +271,7 @@ export default {
     },
     // 分页搜索本店消费记录
     handleCurrentChange(val) {
-      let beginTime, endTime;
-      if (this.timeValue[0]) {
-        beginTime = this.timeValue[0].getTime();
-        endTime = this.timeValue[1].getTime();
-      } else {
-        beginTime = '';
-        endTime = '';
-      }
-      let url =
-        `/unionConsume/record/page?current=${val}&unionId=${this.unionId}&shopId=${this.shopId}&` +
-        this.value +
-        '=' +
-        this.input +
-        `&beginTime=${beginTime}&endTime=${endTime}`;
-      $http
-        .get(url)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records || [];
-            this.tableData.forEach((v, i) => {
-              v.itemList = [];
-              v.nonErpTextList.forEach((val, idx) => {
-                v.itemList.push(val.name);
-              });
-              v.erpTextList.forEach((val, idx) => {
-                v.itemList.push(val.name);
-              });
-              v.itemList.join(',');
-              v.consume.createTime = timeFilter(v.consume.createTime);
-              v.consume.payStatus = expenseStatusFilter(v.consume.payStatus);
-            });
-          } else {
-            this.tableData = [];
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+      this.search(val);
     },
     // 导出本店消费记录
     output() {

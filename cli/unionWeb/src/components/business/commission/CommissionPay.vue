@@ -91,7 +91,7 @@
       <el-table-column prop="" label="操作">
         <template slot-scope="scope">
           <div class="sizeAndColor">
-            <el-button v-if="scope.row.opportunity.isClose === '未结算'" @click="pay(scope)">支付</el-button>
+            <el-button v-if="scope.row.opportunity.isClose === '未支付'" @click="pay(scope)">支付</el-button>
           </div>
         </template>
       </el-table-column>
@@ -243,10 +243,12 @@ export default {
       }
     },
     // 带条件搜索
-    search() {
+    search(value) {
+      let val = value || 1;
       $http
         .get(
-          `/unionBrokeragePay/opportunity/page?current=1&unionId=${this.unionId}&fromMemberId=${this.fromMemberId}&` +
+          `/unionBrokeragePay/opportunity/page?current=${val}&unionId=${this.unionId}&fromMemberId=${this
+            .fromMemberId}&` +
             this.value +
             '=' +
             this.input
@@ -271,29 +273,7 @@ export default {
     },
     // 分页搜索
     handleCurrentChange(val) {
-      $http
-        .get(
-          `/unionBrokeragePay/opportunity/page?current=${val}&unionId=${this.unionId}&fromMemberId=${this
-            .fromMemberId}&` +
-            this.value +
-            '=' +
-            this.input
-        )
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records || [];
-            this.tableData.forEach((v, i) => {
-              v.opportunity.createTime = timeFilter(v.opportunity.createTime);
-              v.opportunity.acceptStatus = commissionTypeFilter(v.opportunity.acceptStatus);
-              v.opportunity.isClose = commissionIsCloseFilter(v.opportunity.isClose);
-            });
-          } else {
-            this.tableData = [];
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+      this.search(val);
     },
     // 连接 socket
     mySocket() {

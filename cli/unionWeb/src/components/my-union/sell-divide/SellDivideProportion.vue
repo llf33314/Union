@@ -75,34 +75,8 @@ export default {
   },
   methods: {
     // 带条件搜索
-    search() {
-      let beginTime, endTime;
-      if (this.timeValue[0]) {
-        beginTime = this.timeValue[0].getTime();
-        endTime = this.timeValue[1].getTime();
-      } else {
-        beginTime = '';
-        endTime = '';
-      }
-      $http
-        .get(
-          `/unionCardSharingRecord/unionId/${this.unionId}/page?current=1&cardNumber=${this
-            .value1}&beginTime=${beginTime}&endTime=${endTime}`
-        )
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records || [];
-            this.tableData.forEach((v, i) => {
-              v.sharingRecord.createTime = timeFilter(v.sharingRecord.createTime);
-            });
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
-    },
-    // 分页
-    handleCurrentChange(val) {
+    search(value) {
+      let val = value || 1;
       let beginTime, endTime;
       if (this.timeValue[0]) {
         beginTime = this.timeValue[0].getTime();
@@ -119,7 +93,6 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
-            this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
               v.sharingRecord.createTime = timeFilter(v.sharingRecord.createTime);
             });
@@ -128,6 +101,10 @@ export default {
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
+    },
+    // 分页
+    handleCurrentChange(val) {
+      this.search(val);
     },
     // 导出售卡分成记录
     output() {

@@ -876,7 +876,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         }
         List<ConsumeRecordVO> result = new ArrayList<>();
         // （1）	获取我的所有有效的union
-        List<UnionMain> validUnionList = unionMainService.listMyValidReadByBusId(busId);
+        List<UnionMain> validUnionList = unionMainService.listValidReadByBusId(busId);
         List<Integer> validUnionIdList = new ArrayList<>();
         if (ListUtil.isNotEmpty(validUnionList)) {
             for (UnionMain validUnion : validUnionList) {
@@ -893,7 +893,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         // （2）	获取我的所有有效的member
         List<Integer> validMemberIdList = new ArrayList<>();
         for (Integer validUnionId : validUnionIdList) {
-            UnionMember validMember = unionMemberService.getReadByBusIdAndUnionId(busId, validUnionId);
+            UnionMember validMember = unionMemberService.getValidReadByBusIdAndUnionId(busId, validUnionId);
             if (validMember != null) {
                 validMemberIdList.add(validMember.getId());
             }
@@ -1023,9 +1023,9 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidWriteByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         // （2）	判断fanId有效性
         UnionCardFan fan = unionCardFanService.getById(fanId);

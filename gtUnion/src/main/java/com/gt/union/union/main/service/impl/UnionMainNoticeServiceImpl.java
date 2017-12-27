@@ -49,12 +49,83 @@ public class UnionMainNoticeServiceImpl implements IUnionMainNoticeService {
 
     //********************************************* Base On Business - list ********************************************
 
+    @Override
+    public UnionMainNotice getValidByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
+        if (busId == null && unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        // （1）检查union有效性和member读权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
+        }
+
+        return getValidByUnionId(unionId);
+    }
+
+    @Override
+    public UnionMainNotice getValidByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMainNotice> result = listValidByUnionId(unionId);
+
+        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
+    }
 
     //********************************************* Base On Business - save ********************************************
 
     //********************************************* Base On Business - remove ******************************************
 
     //********************************************* Base On Business - update ******************************************
+
+    @Override
+    public void updateByBusIdAndUnionId(Integer busId, Integer unionId, String content) throws Exception {
+        if (busId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        // （1）判断union有效性和member读权限、盟主权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
+        }
+        if (member.getIsUnionOwner() != MemberConstant.IS_UNION_OWNER_YES) {
+            throw new BusinessException(CommonConstant.UNION_OWNER_ERROR);
+        }
+
+        // （2）公告内容字数不能超过50字
+        if (StringUtil.getStringLength(content) > 160) {
+            throw new BusinessException("公告内容不能为空，且字数不能大于160");
+        }
+
+        // （3）判断原公告是否存在：
+        //   （3-1）如果存在，则更新；
+        //   （3-2）如果不存在，则新增
+        UnionMainNotice notice = getValidByUnionId(unionId);
+        if (notice != null) {
+            UnionMainNotice updateNotice = new UnionMainNotice();
+            updateNotice.setId(notice.getId());
+            updateNotice.setModifyTime(DateUtil.getCurrentDate());
+            updateNotice.setContent(content);
+            update(updateNotice);
+        } else {
+            UnionMainNotice saveNotice = new UnionMainNotice();
+            saveNotice.setDelStatus(CommonConstant.DEL_STATUS_NO);
+            saveNotice.setCreateTime(DateUtil.getCurrentDate());
+            saveNotice.setUnionId(unionId);
+            saveNotice.setContent(content);
+            save(saveNotice);
+        }
+    }
 
     //********************************************* Base On Business - other *******************************************
 
@@ -448,91 +519,5 @@ public class UnionMainNoticeServiceImpl implements IUnionMainNoticeService {
         }
         return result;
     }
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    @Override
-    public UnionMainNotice getByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
-        if (busId == null && unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        // （1）检查union有效性和member读权限
-        if (!unionMainService.isUnionValid(unionId)) {
-            throw new BusinessException(CommonConstant.UNION_INVALID);
-        }
-        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
-        if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
-        }
-
-        return getByUnionId(unionId);
-    }
-
-    @Override
-    public UnionMainNotice getByUnionId(Integer unionId) throws Exception {
-        if (unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionMainNotice> result = listByUnionId(unionId);
-
-        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
-    }
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    @Override
-    public void updateContentByBusIdAndUnionId(Integer busId, Integer unionId, String content) throws Exception {
-        if (busId == null || unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        // （1）判断union有效性和member写权限、盟主权限
-        if (!unionMainService.isUnionValid(unionId)) {
-            throw new BusinessException(CommonConstant.UNION_INVALID);
-        }
-        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
-        if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
-        }
-        if (member.getIsUnionOwner() != MemberConstant.IS_UNION_OWNER_YES) {
-            throw new BusinessException(CommonConstant.UNION_NEED_OWNER);
-        }
-
-        // （2）公告内容字数不能超过50字
-        if (StringUtil.getStringLength(content) > 50) {
-            throw new BusinessException("公告内容不能为空，且字数不能大于50");
-        }
-
-        // （3）判断原公告是否存在：
-        //   （3-1）如果存在，则更新；
-        //   （3-2）如果不存在，则新增
-        UnionMainNotice notice = getByUnionId(unionId);
-        if (notice != null) {
-            UnionMainNotice updateNotice = new UnionMainNotice();
-            updateNotice.setId(notice.getId());
-            updateNotice.setModifyTime(DateUtil.getCurrentDate());
-            updateNotice.setContent(content);
-            update(updateNotice);
-        } else {
-            UnionMainNotice saveNotice = new UnionMainNotice();
-            saveNotice.setDelStatus(CommonConstant.DEL_STATUS_NO);
-            saveNotice.setCreateTime(DateUtil.getCurrentDate());
-            saveNotice.setUnionId(unionId);
-            saveNotice.setContent(content);
-            save(saveNotice);
-        }
-    }
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    //***************************************** Domain Driven Design - boolean *****************************************
 
 }

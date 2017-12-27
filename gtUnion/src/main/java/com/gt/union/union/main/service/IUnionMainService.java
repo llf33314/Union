@@ -16,7 +16,44 @@ import java.util.List;
 public interface IUnionMainService {
     //********************************************* Base On Business - get *********************************************
 
+    /**
+     * 我的联盟-联盟设置-联盟基本信息
+     *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @return UnionVO
+     * @throws Exception 统一处理异常
+     */
+    UnionVO getUnionVOByBusIdAndId(Integer busId, Integer unionId) throws Exception;
+
     //********************************************* Base On Business - list ********************************************
+
+    /**
+     * 缓存穿透-分页：我的联盟-加入联盟-选择联盟
+     *
+     * @param busId 商家id
+     * @return List<UnionMain>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMain> listValidJoinByBusId(Integer busId) throws Exception;
+
+    /**
+     * 获取我具有读权限的有效联盟列表
+     *
+     * @param busId 商家id
+     * @return List<UnionMain>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMain> listValidReadByBusId(Integer busId) throws Exception;
+
+    /**
+     * 获取我具有写权限的有效联盟列表
+     *
+     * @param busId 商家id
+     * @return List<UnionMain>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMain> listValidWriteByBusId(Integer busId) throws Exception;
 
     //********************************************* Base On Business - save ********************************************
 
@@ -24,7 +61,44 @@ public interface IUnionMainService {
 
     //********************************************* Base On Business - update ******************************************
 
+    /**
+     * 我的联盟-联盟设置-联盟基本信息-保存
+     *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @param vo      更新内容
+     * @throws Exception 统一处理异常
+     */
+    void updateUnionVOByBusIdAndId(Integer busId, Integer unionId, UnionVO vo) throws Exception;
+
     //********************************************* Base On Business - other *******************************************
+
+    /**
+     * 获取联盟剩余可加盟数
+     *
+     * @param unionId 联盟id
+     * @return Integer
+     * @throws Exception 统一处理异常
+     */
+    Integer countSurplusByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 判断联盟有效性
+     *
+     * @param unionId 联盟id
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean isUnionValid(Integer unionId) throws Exception;
+
+    /**
+     * 判断联盟有效性
+     *
+     * @param union 联盟
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean isUnionValid(UnionMain union) throws Exception;
 
     //********************************************* Base On Business - filter ******************************************
 
@@ -151,107 +225,5 @@ public interface IUnionMainService {
      * @throws Exception 统一处理异常
      */
     void updateBatch(List<UnionMain> updateUnionMainList) throws Exception;
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    /**
-     * 我的联盟-联盟设置-联盟基本信息
-     *
-     * @param busId   商家id
-     * @param unionId 联盟id
-     * @return UnionVO
-     * @throws Exception 统一处理异常
-     */
-    UnionVO getUnionVOByBusIdAndId(Integer busId, Integer unionId) throws Exception;
-
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    /**
-     * 分页：我的联盟-加入联盟-选择联盟
-     *
-     * @param busId 商家id
-     * @return List<UnionMain>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionMain> listJoinValidByBusId(Integer busId) throws Exception;
-
-    /**
-     * 获取我的有效的具有读权限的联盟列表
-     *
-     * @param busId 商家id
-     * @return List<UnionMain>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionMain> listMyValidReadByBusId(Integer busId) throws Exception;
-
-    /**
-     * 获取我的有效的具有写权限的联盟列表
-     *
-     * @param busId 商家id
-     * @return List<UnionMain>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionMain> listMyValidWriteByBusId(Integer busId) throws Exception;
-
-    /**
-     * 辅助接口：获取我的联盟列表
-     *
-     * @param busId 商家id
-     * @return ist<UnionMain>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionVO> listUnionVOByBusId(Integer busId) throws Exception;
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-
-    /**
-     * 我的联盟-联盟设置-联盟基本信息-保存
-     *
-     * @param busId   商家id
-     * @param unionId 联盟id
-     * @param vo      更新内容
-     * @throws Exception 统一处理异常
-     */
-    void updateUnionVOByBusIdAndId(Integer busId, Integer unionId, UnionVO vo) throws Exception;
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    /**
-     * 获取联盟剩余可加盟数
-     *
-     * @param unionId 联盟id
-     * @return Integer
-     * @throws Exception 统一处理异常
-     */
-    Integer countSurplusByUnionId(Integer unionId) throws Exception;
-
-    //***************************************** Domain Driven Design - boolean *****************************************
-
-    /**
-     * 判断联盟有效性
-     *
-     * @param unionId 联盟id
-     * @return boolean
-     * @throws Exception 统一处理异常
-     */
-    boolean isUnionValid(Integer unionId) throws Exception;
-
-    /**
-     * 判断联盟有效性
-     *
-     * @param union 联盟
-     * @return boolean
-     * @throws Exception 统一处理异常
-     */
-    boolean isUnionValid(UnionMain union) throws Exception;
 
 }

@@ -705,9 +705,9 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        final UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        final UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         // （2）	判断activityId有效性
         UnionCardActivity activity = unionCardActivityService.getByIdAndUnionId(activityId, unionId);
@@ -724,7 +724,7 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
                 UnionCardSharingRatio ratio = getByUnionIdAndMemberIdAndActivityId(unionId, project.getMemberId(), activityId);
                 vo.setSharingRatio(ratio);
 
-                UnionMember ratioMember = unionMemberService.getReadByIdAndUnionId(project.getMemberId(), unionId);
+                UnionMember ratioMember = unionMemberService.getValidReadByIdAndUnionId(project.getMemberId(), unionId);
                 vo.setMember(ratioMember);
 
                 result.add(vo);
@@ -782,12 +782,12 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidWriteByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
-            throw new BusinessException(CommonConstant.UNION_NEED_OWNER);
+            throw new BusinessException(CommonConstant.UNION_OWNER_ERROR);
         }
         // （2）	判断activityId有效性
         UnionCardActivity activity = unionCardActivityService.getByIdAndUnionId(activityId, unionId);

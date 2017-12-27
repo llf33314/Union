@@ -47,7 +47,7 @@ public class UnionCardApiServiceImpl implements IUnionCardApiService {
 		}
 
 		//1、判断商家加入的有效联盟
-		List<UnionMember> members = unionMemberService.listWriteByBusId(busId);
+		List<UnionMember> members = unionMemberService.listValidWriteByBusId(busId);
 		if (ListUtil.isEmpty(members)) {
 			result.setCode(UnionDiscountConstant.UNION_DISCOUNT_CODE_NON);
 			return result;
