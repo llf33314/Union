@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 活动项目流程 缓存键工具类
+ * 项目流程 缓存键工具类
  *
  * @author linweicong
- * @version 2017-11-24 16:48:44
+ * @version 2017-12-27 10:56:25
  */
 public class UnionCardProjectFlowCacheUtil {
     public static final int TYPE_PROJECT_ID = 1;
@@ -24,7 +24,17 @@ public class UnionCardProjectFlowCacheUtil {
         return result;
     }
 
+
     public static String getProjectIdKey(Integer projectId) {
         return "unionCardProjectFlow:projectId:" + projectId;
     }
+
+    public static String getValidProjectIdKey(Integer projectId) {
+        return "unionCardProjectFlow:projectId:" + projectId + ":valid";
+    }
+
+    public static String getInvalidProjectIdKey(Integer projectId) {
+        return "unionCardProjectFlow:projectId:" + projectId + ":invalid";
+    }
+
 }

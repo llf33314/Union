@@ -2,7 +2,7 @@ package com.gt.union.opportunity.main.service.impl;
 
 import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
-import com.baomidou.mybatisplus.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.api.amqp.entity.PhoneMessage;
 import com.gt.union.api.amqp.sender.PhoneMessageSender;
 import com.gt.union.common.constant.CommonConstant;
@@ -11,9 +11,9 @@ import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
 import com.gt.union.opportunity.brokerage.vo.BrokerageOpportunityVO;
 import com.gt.union.opportunity.main.constant.OpportunityConstant;
+import com.gt.union.opportunity.main.dao.IUnionOpportunityDao;
 import com.gt.union.opportunity.main.entity.UnionOpportunity;
 import com.gt.union.opportunity.main.entity.UnionOpportunityRatio;
-import com.gt.union.opportunity.main.mapper.UnionOpportunityMapper;
 import com.gt.union.opportunity.main.service.IUnionOpportunityRatioService;
 import com.gt.union.opportunity.main.service.IUnionOpportunityService;
 import com.gt.union.opportunity.main.util.UnionOpportunityCacheUtil;
@@ -38,7 +38,10 @@ import java.util.*;
  * @version 2017-11-23 16:56:17
  */
 @Service
-public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMapper, UnionOpportunity> implements IUnionOpportunityService {
+public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
+    @Autowired
+    private IUnionOpportunityDao unionOpportunityDao;
+
     @Autowired
     private RedisCacheUtil redisCacheUtil;
 
@@ -53,6 +56,624 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
 
     @Autowired
     private PhoneMessageSender phoneMessageSender;
+
+    //********************************************* Base On Business - get *********************************************
+
+    //********************************************* Base On Business - list ********************************************
+
+
+    //********************************************* Base On Business - save ********************************************
+
+    //********************************************* Base On Business - remove ******************************************
+
+    //********************************************* Base On Business - update ******************************************
+
+    //********************************************* Base On Business - other *******************************************
+
+    //********************************************* Base On Business - filter ******************************************
+
+    @Override
+    public List<UnionOpportunity> filterByDelStatus(List<UnionOpportunity> unionOpportunityList, Integer delStatus) throws Exception {
+        if (delStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionOpportunity> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(unionOpportunityList)) {
+            for (UnionOpportunity unionOpportunity : unionOpportunityList) {
+                if (delStatus.equals(unionOpportunity.getDelStatus())) {
+                    result.add(unionOpportunity);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    //********************************************* Object As a Service - get ******************************************
+
+    @Override
+    public UnionOpportunity getById(Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        UnionOpportunity result;
+        // (1)cache
+        String idKey = UnionOpportunityCacheUtil.getIdKey(id);
+        if (redisCacheUtil.exists(idKey)) {
+            String tempStr = redisCacheUtil.get(idKey);
+            result = JSONArray.parseObject(tempStr, UnionOpportunity.class);
+            return result;
+        }
+        // (2)db
+        result = unionOpportunityDao.selectById(id);
+        setCache(result, id);
+        return result;
+    }
+
+    @Override
+    public UnionOpportunity getValidById(Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        UnionOpportunity result = getById(id);
+
+        return result != null && CommonConstant.DEL_STATUS_NO == result.getDelStatus() ? result : null;
+    }
+
+    @Override
+    public UnionOpportunity getInvalidById(Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        UnionOpportunity result = getById(id);
+
+        return result != null && CommonConstant.DEL_STATUS_YES == result.getDelStatus() ? result : null;
+    }
+
+    //********************************************* Object As a Service - list *****************************************
+
+    @Override
+    public List<Integer> getIdList(List<UnionOpportunity> unionOpportunityList) throws Exception {
+        if (unionOpportunityList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<Integer> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(unionOpportunityList)) {
+            for (UnionOpportunity unionOpportunity : unionOpportunityList) {
+                result.add(unionOpportunity.getId());
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionOpportunity> listByFromMemberId(Integer fromMemberId) throws Exception {
+        if (fromMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionOpportunity> result;
+        // (1)cache
+        String fromMemberIdKey = UnionOpportunityCacheUtil.getFromMemberIdKey(fromMemberId);
+        if (redisCacheUtil.exists(fromMemberIdKey)) {
+            String tempStr = redisCacheUtil.get(fromMemberIdKey);
+            result = JSONArray.parseArray(tempStr, UnionOpportunity.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("from_member_id", fromMemberId);
+        result = unionOpportunityDao.selectList(entityWrapper);
+        setCache(result, fromMemberId, UnionOpportunityCacheUtil.TYPE_FROM_MEMBER_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionOpportunity> listValidByFromMemberId(Integer fromMemberId) throws Exception {
+        if (fromMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionOpportunity> result;
+        // (1)cache
+        String validFromMemberIdKey = UnionOpportunityCacheUtil.getValidFromMemberIdKey(fromMemberId);
+        if (redisCacheUtil.exists(validFromMemberIdKey)) {
+            String tempStr = redisCacheUtil.get(validFromMemberIdKey);
+            result = JSONArray.parseArray(tempStr, UnionOpportunity.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("from_member_id", fromMemberId);
+        result = unionOpportunityDao.selectList(entityWrapper);
+        setValidCache(result, fromMemberId, UnionOpportunityCacheUtil.TYPE_FROM_MEMBER_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionOpportunity> listInvalidByFromMemberId(Integer fromMemberId) throws Exception {
+        if (fromMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionOpportunity> result;
+        // (1)cache
+        String invalidFromMemberIdKey = UnionOpportunityCacheUtil.getInvalidFromMemberIdKey(fromMemberId);
+        if (redisCacheUtil.exists(invalidFromMemberIdKey)) {
+            String tempStr = redisCacheUtil.get(invalidFromMemberIdKey);
+            result = JSONArray.parseArray(tempStr, UnionOpportunity.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("from_member_id", fromMemberId);
+        result = unionOpportunityDao.selectList(entityWrapper);
+        setInvalidCache(result, fromMemberId, UnionOpportunityCacheUtil.TYPE_FROM_MEMBER_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionOpportunity> listByToMemberId(Integer toMemberId) throws Exception {
+        if (toMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionOpportunity> result;
+        // (1)cache
+        String toMemberIdKey = UnionOpportunityCacheUtil.getToMemberIdKey(toMemberId);
+        if (redisCacheUtil.exists(toMemberIdKey)) {
+            String tempStr = redisCacheUtil.get(toMemberIdKey);
+            result = JSONArray.parseArray(tempStr, UnionOpportunity.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("to_member_id", toMemberId);
+        result = unionOpportunityDao.selectList(entityWrapper);
+        setCache(result, toMemberId, UnionOpportunityCacheUtil.TYPE_TO_MEMBER_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionOpportunity> listValidByToMemberId(Integer toMemberId) throws Exception {
+        if (toMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionOpportunity> result;
+        // (1)cache
+        String validToMemberIdKey = UnionOpportunityCacheUtil.getValidToMemberIdKey(toMemberId);
+        if (redisCacheUtil.exists(validToMemberIdKey)) {
+            String tempStr = redisCacheUtil.get(validToMemberIdKey);
+            result = JSONArray.parseArray(tempStr, UnionOpportunity.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("to_member_id", toMemberId);
+        result = unionOpportunityDao.selectList(entityWrapper);
+        setValidCache(result, toMemberId, UnionOpportunityCacheUtil.TYPE_TO_MEMBER_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionOpportunity> listInvalidByToMemberId(Integer toMemberId) throws Exception {
+        if (toMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionOpportunity> result;
+        // (1)cache
+        String invalidToMemberIdKey = UnionOpportunityCacheUtil.getInvalidToMemberIdKey(toMemberId);
+        if (redisCacheUtil.exists(invalidToMemberIdKey)) {
+            String tempStr = redisCacheUtil.get(invalidToMemberIdKey);
+            result = JSONArray.parseArray(tempStr, UnionOpportunity.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("to_member_id", toMemberId);
+        result = unionOpportunityDao.selectList(entityWrapper);
+        setInvalidCache(result, toMemberId, UnionOpportunityCacheUtil.TYPE_TO_MEMBER_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionOpportunity> listByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionOpportunity> result;
+        // (1)cache
+        String unionIdKey = UnionOpportunityCacheUtil.getUnionIdKey(unionId);
+        if (redisCacheUtil.exists(unionIdKey)) {
+            String tempStr = redisCacheUtil.get(unionIdKey);
+            result = JSONArray.parseArray(tempStr, UnionOpportunity.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("union_id", unionId);
+        result = unionOpportunityDao.selectList(entityWrapper);
+        setCache(result, unionId, UnionOpportunityCacheUtil.TYPE_UNION_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionOpportunity> listValidByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionOpportunity> result;
+        // (1)cache
+        String validUnionIdKey = UnionOpportunityCacheUtil.getValidUnionIdKey(unionId);
+        if (redisCacheUtil.exists(validUnionIdKey)) {
+            String tempStr = redisCacheUtil.get(validUnionIdKey);
+            result = JSONArray.parseArray(tempStr, UnionOpportunity.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId);
+        result = unionOpportunityDao.selectList(entityWrapper);
+        setValidCache(result, unionId, UnionOpportunityCacheUtil.TYPE_UNION_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionOpportunity> listInvalidByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionOpportunity> result;
+        // (1)cache
+        String invalidUnionIdKey = UnionOpportunityCacheUtil.getInvalidUnionIdKey(unionId);
+        if (redisCacheUtil.exists(invalidUnionIdKey)) {
+            String tempStr = redisCacheUtil.get(invalidUnionIdKey);
+            result = JSONArray.parseArray(tempStr, UnionOpportunity.class);
+            return result;
+        }
+        // (2)db
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("union_id", unionId);
+        result = unionOpportunityDao.selectList(entityWrapper);
+        setInvalidCache(result, unionId, UnionOpportunityCacheUtil.TYPE_UNION_ID);
+        return result;
+    }
+
+    @Override
+    public List<UnionOpportunity> listByIdList(List<Integer> idList) throws Exception {
+        if (idList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionOpportunity> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(idList)) {
+            for (Integer id : idList) {
+                result.add(getById(id));
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public Page<UnionOpportunity> pageSupport(Page page, EntityWrapper<UnionOpportunity> entityWrapper) throws Exception {
+        if (page == null || entityWrapper == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        return unionOpportunityDao.selectPage(page, entityWrapper);
+    }
+    //********************************************* Object As a Service - save *****************************************
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void save(UnionOpportunity newUnionOpportunity) throws Exception {
+        if (newUnionOpportunity == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        unionOpportunityDao.insert(newUnionOpportunity);
+        removeCache(newUnionOpportunity);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveBatch(List<UnionOpportunity> newUnionOpportunityList) throws Exception {
+        if (newUnionOpportunityList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        unionOpportunityDao.insertBatch(newUnionOpportunityList);
+        removeCache(newUnionOpportunityList);
+    }
+
+    //********************************************* Object As a Service - remove ***************************************
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeById(Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)remove cache
+        UnionOpportunity unionOpportunity = getById(id);
+        removeCache(unionOpportunity);
+        // (2)remove in db logically
+        UnionOpportunity removeUnionOpportunity = new UnionOpportunity();
+        removeUnionOpportunity.setId(id);
+        removeUnionOpportunity.setDelStatus(CommonConstant.DEL_STATUS_YES);
+        unionOpportunityDao.updateById(removeUnionOpportunity);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeBatchById(List<Integer> idList) throws Exception {
+        if (idList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)remove cache
+        List<UnionOpportunity> unionOpportunityList = listByIdList(idList);
+        removeCache(unionOpportunityList);
+        // (2)remove in db logically
+        List<UnionOpportunity> removeUnionOpportunityList = new ArrayList<>();
+        for (Integer id : idList) {
+            UnionOpportunity removeUnionOpportunity = new UnionOpportunity();
+            removeUnionOpportunity.setId(id);
+            removeUnionOpportunity.setDelStatus(CommonConstant.DEL_STATUS_YES);
+            removeUnionOpportunityList.add(removeUnionOpportunity);
+        }
+        unionOpportunityDao.updateBatchById(removeUnionOpportunityList);
+    }
+
+    //********************************************* Object As a Service - update ***************************************
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void update(UnionOpportunity updateUnionOpportunity) throws Exception {
+        if (updateUnionOpportunity == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)remove cache
+        Integer id = updateUnionOpportunity.getId();
+        UnionOpportunity unionOpportunity = getById(id);
+        removeCache(unionOpportunity);
+        // (2)update db
+        unionOpportunityDao.updateById(updateUnionOpportunity);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateBatch(List<UnionOpportunity> updateUnionOpportunityList) throws Exception {
+        if (updateUnionOpportunityList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // (1)remove cache
+        List<Integer> idList = getIdList(updateUnionOpportunityList);
+        List<UnionOpportunity> unionOpportunityList = listByIdList(idList);
+        removeCache(unionOpportunityList);
+        // (2)update db
+        unionOpportunityDao.updateBatchById(updateUnionOpportunityList);
+    }
+
+    //********************************************* Object As a Service - cache support ********************************
+
+    private void setCache(UnionOpportunity newUnionOpportunity, Integer id) {
+        if (id == null) {
+            //do nothing,just in case
+            return;
+        }
+        String idKey = UnionOpportunityCacheUtil.getIdKey(id);
+        redisCacheUtil.set(idKey, newUnionOpportunity);
+    }
+
+    private void setCache(List<UnionOpportunity> newUnionOpportunityList, Integer foreignId, int foreignIdType) {
+        if (foreignId == null) {
+            //do nothing,just in case
+            return;
+        }
+        String foreignIdKey = null;
+        switch (foreignIdType) {
+            case UnionOpportunityCacheUtil.TYPE_FROM_MEMBER_ID:
+                foreignIdKey = UnionOpportunityCacheUtil.getFromMemberIdKey(foreignId);
+                break;
+            case UnionOpportunityCacheUtil.TYPE_TO_MEMBER_ID:
+                foreignIdKey = UnionOpportunityCacheUtil.getToMemberIdKey(foreignId);
+                break;
+            case UnionOpportunityCacheUtil.TYPE_UNION_ID:
+                foreignIdKey = UnionOpportunityCacheUtil.getUnionIdKey(foreignId);
+                break;
+
+            default:
+                break;
+        }
+        if (foreignIdKey != null) {
+            redisCacheUtil.set(foreignIdKey, newUnionOpportunityList);
+        }
+    }
+
+    private void setValidCache(List<UnionOpportunity> newUnionOpportunityList, Integer foreignId, int foreignIdType) {
+        if (foreignId == null) {
+            //do nothing,just in case
+            return;
+        }
+        String validForeignIdKey = null;
+        switch (foreignIdType) {
+            case UnionOpportunityCacheUtil.TYPE_FROM_MEMBER_ID:
+                validForeignIdKey = UnionOpportunityCacheUtil.getValidFromMemberIdKey(foreignId);
+                break;
+            case UnionOpportunityCacheUtil.TYPE_TO_MEMBER_ID:
+                validForeignIdKey = UnionOpportunityCacheUtil.getValidToMemberIdKey(foreignId);
+                break;
+            case UnionOpportunityCacheUtil.TYPE_UNION_ID:
+                validForeignIdKey = UnionOpportunityCacheUtil.getValidUnionIdKey(foreignId);
+                break;
+
+            default:
+                break;
+        }
+        if (validForeignIdKey != null) {
+            redisCacheUtil.set(validForeignIdKey, newUnionOpportunityList);
+        }
+    }
+
+    private void setInvalidCache(List<UnionOpportunity> newUnionOpportunityList, Integer foreignId, int foreignIdType) {
+        if (foreignId == null) {
+            //do nothing,just in case
+            return;
+        }
+        String invalidForeignIdKey = null;
+        switch (foreignIdType) {
+            case UnionOpportunityCacheUtil.TYPE_FROM_MEMBER_ID:
+                invalidForeignIdKey = UnionOpportunityCacheUtil.getInvalidFromMemberIdKey(foreignId);
+                break;
+            case UnionOpportunityCacheUtil.TYPE_TO_MEMBER_ID:
+                invalidForeignIdKey = UnionOpportunityCacheUtil.getInvalidToMemberIdKey(foreignId);
+                break;
+            case UnionOpportunityCacheUtil.TYPE_UNION_ID:
+                invalidForeignIdKey = UnionOpportunityCacheUtil.getInvalidUnionIdKey(foreignId);
+                break;
+
+            default:
+                break;
+        }
+        if (invalidForeignIdKey != null) {
+            redisCacheUtil.set(invalidForeignIdKey, newUnionOpportunityList);
+        }
+    }
+
+    private void removeCache(UnionOpportunity unionOpportunity) {
+        if (unionOpportunity == null) {
+            return;
+        }
+        Integer id = unionOpportunity.getId();
+        String idKey = UnionOpportunityCacheUtil.getIdKey(id);
+        redisCacheUtil.remove(idKey);
+
+        Integer fromMemberId = unionOpportunity.getFromMemberId();
+        if (fromMemberId != null) {
+            String fromMemberIdKey = UnionOpportunityCacheUtil.getFromMemberIdKey(fromMemberId);
+            redisCacheUtil.remove(fromMemberIdKey);
+
+            String validFromMemberIdKey = UnionOpportunityCacheUtil.getValidFromMemberIdKey(fromMemberId);
+            redisCacheUtil.remove(validFromMemberIdKey);
+
+            String invalidFromMemberIdKey = UnionOpportunityCacheUtil.getInvalidFromMemberIdKey(fromMemberId);
+            redisCacheUtil.remove(invalidFromMemberIdKey);
+        }
+
+        Integer toMemberId = unionOpportunity.getToMemberId();
+        if (toMemberId != null) {
+            String toMemberIdKey = UnionOpportunityCacheUtil.getToMemberIdKey(toMemberId);
+            redisCacheUtil.remove(toMemberIdKey);
+
+            String validToMemberIdKey = UnionOpportunityCacheUtil.getValidToMemberIdKey(toMemberId);
+            redisCacheUtil.remove(validToMemberIdKey);
+
+            String invalidToMemberIdKey = UnionOpportunityCacheUtil.getInvalidToMemberIdKey(toMemberId);
+            redisCacheUtil.remove(invalidToMemberIdKey);
+        }
+
+        Integer unionId = unionOpportunity.getUnionId();
+        if (unionId != null) {
+            String unionIdKey = UnionOpportunityCacheUtil.getUnionIdKey(unionId);
+            redisCacheUtil.remove(unionIdKey);
+
+            String validUnionIdKey = UnionOpportunityCacheUtil.getValidUnionIdKey(unionId);
+            redisCacheUtil.remove(validUnionIdKey);
+
+            String invalidUnionIdKey = UnionOpportunityCacheUtil.getInvalidUnionIdKey(unionId);
+            redisCacheUtil.remove(invalidUnionIdKey);
+        }
+
+    }
+
+    private void removeCache(List<UnionOpportunity> unionOpportunityList) {
+        if (ListUtil.isEmpty(unionOpportunityList)) {
+            return;
+        }
+        List<Integer> idList = new ArrayList<>();
+        for (UnionOpportunity unionOpportunity : unionOpportunityList) {
+            idList.add(unionOpportunity.getId());
+        }
+        List<String> idKeyList = UnionOpportunityCacheUtil.getIdKey(idList);
+        redisCacheUtil.remove(idKeyList);
+
+        List<String> fromMemberIdKeyList = getForeignIdKeyList(unionOpportunityList, UnionOpportunityCacheUtil.TYPE_FROM_MEMBER_ID);
+        if (ListUtil.isNotEmpty(fromMemberIdKeyList)) {
+            redisCacheUtil.remove(fromMemberIdKeyList);
+        }
+
+        List<String> toMemberIdKeyList = getForeignIdKeyList(unionOpportunityList, UnionOpportunityCacheUtil.TYPE_TO_MEMBER_ID);
+        if (ListUtil.isNotEmpty(toMemberIdKeyList)) {
+            redisCacheUtil.remove(toMemberIdKeyList);
+        }
+
+        List<String> unionIdKeyList = getForeignIdKeyList(unionOpportunityList, UnionOpportunityCacheUtil.TYPE_UNION_ID);
+        if (ListUtil.isNotEmpty(unionIdKeyList)) {
+            redisCacheUtil.remove(unionIdKeyList);
+        }
+
+    }
+
+    private List<String> getForeignIdKeyList(List<UnionOpportunity> unionOpportunityList, int foreignIdType) {
+        List<String> result = new ArrayList<>();
+        switch (foreignIdType) {
+            case UnionOpportunityCacheUtil.TYPE_FROM_MEMBER_ID:
+                for (UnionOpportunity unionOpportunity : unionOpportunityList) {
+                    Integer fromMemberId = unionOpportunity.getFromMemberId();
+                    if (fromMemberId != null) {
+                        String fromMemberIdKey = UnionOpportunityCacheUtil.getFromMemberIdKey(fromMemberId);
+                        result.add(fromMemberIdKey);
+
+                        String validFromMemberIdKey = UnionOpportunityCacheUtil.getValidFromMemberIdKey(fromMemberId);
+                        result.add(validFromMemberIdKey);
+
+                        String invalidFromMemberIdKey = UnionOpportunityCacheUtil.getInvalidFromMemberIdKey(fromMemberId);
+                        result.add(invalidFromMemberIdKey);
+                    }
+                }
+                break;
+            case UnionOpportunityCacheUtil.TYPE_TO_MEMBER_ID:
+                for (UnionOpportunity unionOpportunity : unionOpportunityList) {
+                    Integer toMemberId = unionOpportunity.getToMemberId();
+                    if (toMemberId != null) {
+                        String toMemberIdKey = UnionOpportunityCacheUtil.getToMemberIdKey(toMemberId);
+                        result.add(toMemberIdKey);
+
+                        String validToMemberIdKey = UnionOpportunityCacheUtil.getValidToMemberIdKey(toMemberId);
+                        result.add(validToMemberIdKey);
+
+                        String invalidToMemberIdKey = UnionOpportunityCacheUtil.getInvalidToMemberIdKey(toMemberId);
+                        result.add(invalidToMemberIdKey);
+                    }
+                }
+                break;
+            case UnionOpportunityCacheUtil.TYPE_UNION_ID:
+                for (UnionOpportunity unionOpportunity : unionOpportunityList) {
+                    Integer unionId = unionOpportunity.getUnionId();
+                    if (unionId != null) {
+                        String unionIdKey = UnionOpportunityCacheUtil.getUnionIdKey(unionId);
+                        result.add(unionIdKey);
+
+                        String validUnionIdKey = UnionOpportunityCacheUtil.getValidUnionIdKey(unionId);
+                        result.add(validUnionIdKey);
+
+                        String invalidUnionIdKey = UnionOpportunityCacheUtil.getInvalidUnionIdKey(unionId);
+                        result.add(invalidUnionIdKey);
+                    }
+                }
+                break;
+
+            default:
+                break;
+        }
+        return result;
+    }
+
+    // TODO
 
     //***************************************** Domain Driven Design - get *********************************************
 
@@ -177,22 +798,6 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
             }
             indexDay = DateUtil.addDays(indexDay, 1);
             strIndexDay = DateUtil.getDateString(indexDay, DateUtil.DATE_PATTERN);
-        }
-
-        return result;
-    }
-
-    @Override
-    public List<Integer> getIdList(List<UnionOpportunity> opportunityList) throws Exception {
-        if (opportunityList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<Integer> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(opportunityList)) {
-            for (UnionOpportunity opportunity : opportunityList) {
-                result.add(opportunity.getId());
-            }
         }
 
         return result;
@@ -801,316 +1406,6 @@ public class UnionOpportunityServiceImpl extends ServiceImpl<UnionOpportunityMap
             }
         }
 
-        return result;
-    }
-
-    //***************************************** Object As a Service - get **********************************************
-
-    @Override
-    public UnionOpportunity getById(Integer id) throws Exception {
-        if (id == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        UnionOpportunity result;
-        // (1)cache
-        String idKey = UnionOpportunityCacheUtil.getIdKey(id);
-        if (redisCacheUtil.exists(idKey)) {
-            String tempStr = redisCacheUtil.get(idKey);
-            result = JSONArray.parseObject(tempStr, UnionOpportunity.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("id", id)
-                .eq("del_status", CommonConstant.DEL_STATUS_NO);
-        result = selectOne(entityWrapper);
-        setCache(result, id);
-        return result;
-    }
-
-    //***************************************** Object As a Service - list *********************************************
-
-    public List<UnionOpportunity> listByUnionId(Integer unionId) throws Exception {
-        if (unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionOpportunity> result;
-        // (1)cache
-        String unionIdKey = UnionOpportunityCacheUtil.getUnionIdKey(unionId);
-        if (redisCacheUtil.exists(unionIdKey)) {
-            String tempStr = redisCacheUtil.get(unionIdKey);
-            result = JSONArray.parseArray(tempStr, UnionOpportunity.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("union_id", unionId)
-                .eq("del_status", CommonConstant.COMMON_NO);
-        result = selectList(entityWrapper);
-        setCache(result, unionId, UnionOpportunityCacheUtil.TYPE_UNION_ID);
-        return result;
-    }
-
-    public List<UnionOpportunity> listByFromMemberId(Integer fromMemberId) throws Exception {
-        if (fromMemberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionOpportunity> result;
-        // (1)cache
-        String fromMemberIdKey = UnionOpportunityCacheUtil.getFromMemberIdKey(fromMemberId);
-        if (redisCacheUtil.exists(fromMemberIdKey)) {
-            String tempStr = redisCacheUtil.get(fromMemberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionOpportunity.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("from_member_id", fromMemberId)
-                .eq("del_status", CommonConstant.COMMON_NO);
-        result = selectList(entityWrapper);
-        setCache(result, fromMemberId, UnionOpportunityCacheUtil.TYPE_FROM_MEMBER_ID);
-        return result;
-    }
-
-    public List<UnionOpportunity> listByToMemberId(Integer toMemberId) throws Exception {
-        if (toMemberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionOpportunity> result;
-        // (1)cache
-        String toMemberIdKey = UnionOpportunityCacheUtil.getToMemberIdKey(toMemberId);
-        if (redisCacheUtil.exists(toMemberIdKey)) {
-            String tempStr = redisCacheUtil.get(toMemberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionOpportunity.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("to_member_id", toMemberId)
-                .eq("del_status", CommonConstant.COMMON_NO);
-        result = selectList(entityWrapper);
-        setCache(result, toMemberId, UnionOpportunityCacheUtil.TYPE_TO_MEMBER_ID);
-        return result;
-    }
-
-    //***************************************** Object As a Service - save *********************************************
-
-    @Transactional(rollbackFor = Exception.class)
-    public void save(UnionOpportunity newUnionOpportunity) throws Exception {
-        if (newUnionOpportunity == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        insert(newUnionOpportunity);
-        removeCache(newUnionOpportunity);
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    public void saveBatch(List<UnionOpportunity> newUnionOpportunityList) throws Exception {
-        if (newUnionOpportunityList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        insertBatch(newUnionOpportunityList);
-        removeCache(newUnionOpportunityList);
-    }
-
-    //***************************************** Object As a Service - remove *******************************************
-
-    @Transactional(rollbackFor = Exception.class)
-    public void removeById(Integer id) throws Exception {
-        if (id == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // (1)remove cache
-        UnionOpportunity unionOpportunity = getById(id);
-        removeCache(unionOpportunity);
-        // (2)remove in db logically
-        UnionOpportunity removeUnionOpportunity = new UnionOpportunity();
-        removeUnionOpportunity.setId(id);
-        removeUnionOpportunity.setDelStatus(CommonConstant.DEL_STATUS_YES);
-        updateById(removeUnionOpportunity);
-    }
-
-    @Transactional(rollbackFor = Exception.class)
-    public void removeBatchById(List<Integer> idList) throws Exception {
-        if (idList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // (1)remove cache
-        List<UnionOpportunity> unionOpportunityList = new ArrayList<>();
-        for (Integer id : idList) {
-            UnionOpportunity unionOpportunity = getById(id);
-            unionOpportunityList.add(unionOpportunity);
-        }
-        removeCache(unionOpportunityList);
-        // (2)remove in db logically
-        List<UnionOpportunity> removeUnionOpportunityList = new ArrayList<>();
-        for (Integer id : idList) {
-            UnionOpportunity removeUnionOpportunity = new UnionOpportunity();
-            removeUnionOpportunity.setId(id);
-            removeUnionOpportunity.setDelStatus(CommonConstant.DEL_STATUS_YES);
-            removeUnionOpportunityList.add(removeUnionOpportunity);
-        }
-        updateBatchById(removeUnionOpportunityList);
-    }
-
-    //***************************************** Object As a Service - update *******************************************
-
-    @Transactional(rollbackFor = Exception.class)
-    public void update(UnionOpportunity updateUnionOpportunity) throws Exception {
-        if (updateUnionOpportunity == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // (1)remove cache
-        Integer id = updateUnionOpportunity.getId();
-        UnionOpportunity unionOpportunity = getById(id);
-        removeCache(unionOpportunity);
-        // (2)update db
-        updateById(updateUnionOpportunity);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void updateBatch(List<UnionOpportunity> updateUnionOpportunityList) throws Exception {
-        if (updateUnionOpportunityList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // (1)remove cache
-        List<Integer> idList = new ArrayList<>();
-        for (UnionOpportunity updateUnionOpportunity : updateUnionOpportunityList) {
-            idList.add(updateUnionOpportunity.getId());
-        }
-        List<UnionOpportunity> unionOpportunityList = new ArrayList<>();
-        for (Integer id : idList) {
-            UnionOpportunity unionOpportunity = getById(id);
-            unionOpportunityList.add(unionOpportunity);
-        }
-        removeCache(unionOpportunityList);
-        // (2)update db
-        updateBatchById(updateUnionOpportunityList);
-    }
-
-    //***************************************** Object As a Service - cache support ************************************
-
-    private void setCache(UnionOpportunity newUnionOpportunity, Integer id) {
-        if (id == null) {
-            //do nothing,just in case
-            return;
-        }
-        String idKey = UnionOpportunityCacheUtil.getIdKey(id);
-        redisCacheUtil.set(idKey, newUnionOpportunity);
-    }
-
-    private void setCache(List<UnionOpportunity> newUnionOpportunityList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String foreignIdKey = null;
-        switch (foreignIdType) {
-            case UnionOpportunityCacheUtil.TYPE_UNION_ID:
-                foreignIdKey = UnionOpportunityCacheUtil.getUnionIdKey(foreignId);
-                break;
-            case UnionOpportunityCacheUtil.TYPE_FROM_MEMBER_ID:
-                foreignIdKey = UnionOpportunityCacheUtil.getFromMemberIdKey(foreignId);
-                break;
-            case UnionOpportunityCacheUtil.TYPE_TO_MEMBER_ID:
-                foreignIdKey = UnionOpportunityCacheUtil.getToMemberIdKey(foreignId);
-                break;
-            default:
-                break;
-        }
-        if (foreignIdKey != null) {
-            redisCacheUtil.set(foreignIdKey, newUnionOpportunityList);
-        }
-    }
-
-    private void removeCache(UnionOpportunity unionOpportunity) {
-        if (unionOpportunity == null) {
-            return;
-        }
-        Integer id = unionOpportunity.getId();
-        String idKey = UnionOpportunityCacheUtil.getIdKey(id);
-        redisCacheUtil.remove(idKey);
-
-        Integer unionId = unionOpportunity.getUnionId();
-        if (unionId != null) {
-            String unionIdKey = UnionOpportunityCacheUtil.getUnionIdKey(unionId);
-            redisCacheUtil.remove(unionIdKey);
-        }
-
-        Integer fromMemberId = unionOpportunity.getFromMemberId();
-        if (fromMemberId != null) {
-            String fromMemberIdKey = UnionOpportunityCacheUtil.getFromMemberIdKey(fromMemberId);
-            redisCacheUtil.remove(fromMemberIdKey);
-        }
-
-        Integer toMemberId = unionOpportunity.getToMemberId();
-        if (toMemberId != null) {
-            String toMemberIdKey = UnionOpportunityCacheUtil.getToMemberIdKey(toMemberId);
-            redisCacheUtil.remove(toMemberIdKey);
-        }
-    }
-
-    private void removeCache(List<UnionOpportunity> unionOpportunityList) {
-        if (ListUtil.isEmpty(unionOpportunityList)) {
-            return;
-        }
-        List<Integer> idList = new ArrayList<>();
-        for (UnionOpportunity unionOpportunity : unionOpportunityList) {
-            idList.add(unionOpportunity.getId());
-        }
-        List<String> idKeyList = UnionOpportunityCacheUtil.getIdKey(idList);
-        redisCacheUtil.remove(idKeyList);
-
-        List<String> unionIdKeyList = getForeignIdKeyList(unionOpportunityList, UnionOpportunityCacheUtil.TYPE_UNION_ID);
-        if (ListUtil.isNotEmpty(unionIdKeyList)) {
-            redisCacheUtil.remove(unionIdKeyList);
-        }
-
-        List<String> fromMemberIdKeyList = getForeignIdKeyList(unionOpportunityList, UnionOpportunityCacheUtil.TYPE_FROM_MEMBER_ID);
-        if (ListUtil.isNotEmpty(fromMemberIdKeyList)) {
-            redisCacheUtil.remove(fromMemberIdKeyList);
-        }
-
-        List<String> toMemberIdKeyList = getForeignIdKeyList(unionOpportunityList, UnionOpportunityCacheUtil.TYPE_TO_MEMBER_ID);
-        if (ListUtil.isNotEmpty(toMemberIdKeyList)) {
-            redisCacheUtil.remove(toMemberIdKeyList);
-        }
-    }
-
-    private List<String> getForeignIdKeyList(List<UnionOpportunity> unionOpportunityList, int foreignIdType) {
-        List<String> result = new ArrayList<>();
-        switch (foreignIdType) {
-            case UnionOpportunityCacheUtil.TYPE_UNION_ID:
-                for (UnionOpportunity unionOpportunity : unionOpportunityList) {
-                    Integer unionId = unionOpportunity.getUnionId();
-                    if (unionId != null) {
-                        String unionIdKey = UnionOpportunityCacheUtil.getUnionIdKey(unionId);
-                        result.add(unionIdKey);
-                    }
-                }
-                break;
-            case UnionOpportunityCacheUtil.TYPE_FROM_MEMBER_ID:
-                for (UnionOpportunity unionOpportunity : unionOpportunityList) {
-                    Integer fromMemberId = unionOpportunity.getFromMemberId();
-                    if (fromMemberId != null) {
-                        String fromMemberIdKey = UnionOpportunityCacheUtil.getFromMemberIdKey(fromMemberId);
-                        result.add(fromMemberIdKey);
-                    }
-                }
-                break;
-            case UnionOpportunityCacheUtil.TYPE_TO_MEMBER_ID:
-                for (UnionOpportunity unionOpportunity : unionOpportunityList) {
-                    Integer toMemberId = unionOpportunity.getToMemberId();
-                    if (toMemberId != null) {
-                        String toMemberIdKey = UnionOpportunityCacheUtil.getToMemberIdKey(toMemberId);
-                        result.add(toMemberIdKey);
-                    }
-                }
-                break;
-            default:
-                break;
-        }
         return result;
     }
 

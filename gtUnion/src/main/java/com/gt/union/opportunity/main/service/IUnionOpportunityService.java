@@ -1,6 +1,7 @@
 package com.gt.union.opportunity.main.service;
 
-import com.baomidou.mybatisplus.service.IService;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.opportunity.brokerage.vo.BrokerageOpportunityVO;
 import com.gt.union.opportunity.main.entity.UnionOpportunity;
 import com.gt.union.opportunity.main.vo.OpportunityStatisticsVO;
@@ -15,17 +16,230 @@ import java.util.List;
  * @author linweicong
  * @version 2017-11-23 16:56:17
  */
-public interface IUnionOpportunityService extends IService<UnionOpportunity> {
-    //***************************************** Domain Driven Design - get *********************************************
+public interface IUnionOpportunityService {
+    //********************************************* Base On Business - get *********************************************
+
+    //********************************************* Base On Business - list ********************************************
+
+    //********************************************* Base On Business - save ********************************************
+
+    //********************************************* Base On Business - remove ******************************************
+
+    //********************************************* Base On Business - update ******************************************
+
+    //********************************************* Base On Business - other *******************************************
+
+    //********************************************* Base On Business - filter ******************************************
 
     /**
-     * 获取商机信息
+     * 根据删除状态进行过滤(by myBatisGenerator)
      *
-     * @param id 商机id
+     * @param unionOpportunityList 数据源
+     * @param delStatus            删除状态
+     * @return List<UnionOpportunity>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionOpportunity> filterByDelStatus(List<UnionOpportunity> unionOpportunityList, Integer delStatus) throws Exception;
+
+    //****************************************** Object As a Service - get *********************************************
+
+    /**
+     * 获取商机信息(by myBatisGenerator)
+     *
+     * @param id id
      * @return UnionOpportunity
      * @throws Exception 统一处理异常
      */
     UnionOpportunity getById(Integer id) throws Exception;
+
+    /**
+     * 获取未删除的商机信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionOpportunity
+     * @throws Exception 统一处理异常
+     */
+    UnionOpportunity getValidById(Integer id) throws Exception;
+
+    /**
+     * 获取已删除的商机信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionOpportunity
+     * @throws Exception 统一处理异常
+     */
+    UnionOpportunity getInvalidById(Integer id) throws Exception;
+
+    //****************************************** Object As a Service - list ********************************************
+
+    /**
+     * 获取对象集对应的的主键集(by myBatisGenerator)
+     *
+     * @param unionOpportunityList 对象集
+     * @return List<Id>
+     * @throws Exception 统一处理异常
+     */
+    List<Integer> getIdList(List<UnionOpportunity> unionOpportunityList) throws Exception;
+
+
+    /**
+     * 获取商机列表信息(by myBatisGenerator)
+     *
+     * @param fromMemberId fromMemberId
+     * @return List<UnionOpportunity>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionOpportunity> listByFromMemberId(Integer fromMemberId) throws Exception;
+
+    /**
+     * 获取未删除的商机列表信息(by myBatisGenerator)
+     *
+     * @param fromMemberId fromMemberId
+     * @return List<UnionOpportunity>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionOpportunity> listValidByFromMemberId(Integer fromMemberId) throws Exception;
+
+    /**
+     * 获取已删除的商机列表信息(by myBatisGenerator)
+     *
+     * @param fromMemberId fromMemberId
+     * @return List<UnionOpportunity>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionOpportunity> listInvalidByFromMemberId(Integer fromMemberId) throws Exception;
+
+    /**
+     * 获取商机列表信息(by myBatisGenerator)
+     *
+     * @param toMemberId toMemberId
+     * @return List<UnionOpportunity>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionOpportunity> listByToMemberId(Integer toMemberId) throws Exception;
+
+    /**
+     * 获取未删除的商机列表信息(by myBatisGenerator)
+     *
+     * @param toMemberId toMemberId
+     * @return List<UnionOpportunity>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionOpportunity> listValidByToMemberId(Integer toMemberId) throws Exception;
+
+    /**
+     * 获取已删除的商机列表信息(by myBatisGenerator)
+     *
+     * @param toMemberId toMemberId
+     * @return List<UnionOpportunity>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionOpportunity> listInvalidByToMemberId(Integer toMemberId) throws Exception;
+
+    /**
+     * 获取商机列表信息(by myBatisGenerator)
+     *
+     * @param unionId unionId
+     * @return List<UnionOpportunity>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionOpportunity> listByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 获取未删除的商机列表信息(by myBatisGenerator)
+     *
+     * @param unionId unionId
+     * @return List<UnionOpportunity>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionOpportunity> listValidByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 获取已删除的商机列表信息(by myBatisGenerator)
+     *
+     * @param unionId unionId
+     * @return List<UnionOpportunity>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionOpportunity> listInvalidByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 获取主键集对应的对象集
+     *
+     * @param idList 主键集
+     * @return List<UnionOpportunity>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionOpportunity> listByIdList(List<Integer> idList) throws Exception;
+
+    /**
+     * 分页支持
+     *
+     * @param page          分页对象
+     * @param entityWrapper 条件
+     * @return Page<UnionOpportunity>
+     * @throws Exception 统一处理异常
+     */
+    Page<UnionOpportunity> pageSupport(Page page, EntityWrapper<UnionOpportunity> entityWrapper) throws Exception;
+
+    //****************************************** Object As a Service - save ********************************************
+
+    /**
+     * 保存(by myBatisGenerator)
+     *
+     * @param newUnionOpportunity 保存内容
+     * @throws Exception 统一处理异常
+     */
+    void save(UnionOpportunity newUnionOpportunity) throws Exception;
+
+    /**
+     * 批量保存(by myBatisGenerator)
+     *
+     * @param newUnionOpportunityList 保存内容
+     * @throws Exception 统一处理异常
+     */
+    void saveBatch(List<UnionOpportunity> newUnionOpportunityList) throws Exception;
+
+    //****************************************** Object As a Service - remove ******************************************
+
+    /**
+     * 移除(by myBatisGenerator)
+     *
+     * @param id 移除内容
+     * @throws Exception 统一处理异常
+     */
+    void removeById(Integer id) throws Exception;
+
+    /**
+     * 批量移除(by myBatisGenerator)
+     *
+     * @param idList 移除内容
+     * @throws Exception 统一处理异常
+     */
+    void removeBatchById(List<Integer> idList) throws Exception;
+
+    //****************************************** Object As a Service - update ******************************************
+
+    /**
+     * 更新(by myBatisGenerator)
+     *
+     * @param updateUnionOpportunity 更新内容
+     * @throws Exception 统一处理异常
+     */
+    void update(UnionOpportunity updateUnionOpportunity) throws Exception;
+
+    /**
+     * 批量更新(by myBatisGenerator)
+     *
+     * @param updateUnionOpportunityList 更新内容
+     * @throws Exception 统一处理异常
+     */
+    void updateBatch(List<UnionOpportunity> updateUnionOpportunityList) throws Exception;
+
+    // TODO
+
+    //***************************************** Domain Driven Design - get *********************************************
+
 
     /**
      * 获取商机信息
@@ -37,7 +251,7 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      * @throws Exception 统一处理异常
      */
     UnionOpportunity getByIdAndUnionIdAndToMemberId(Integer opportunityId, Integer unionId, Integer toMemberId) throws Exception;
-    
+
     /**
      * 商机-数据统计图
      *
@@ -48,14 +262,6 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      */
     OpportunityStatisticsVO getOpportunityStatisticsVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
 
-    /**
-     * 获取商机id列表
-     *
-     * @param opportunityList 商机列表
-     * @return List<Integer>
-     * @throws Exception 统一处理异常
-     */
-    List<Integer> getIdList(List<UnionOpportunity> opportunityList) throws Exception;
 
     //***************************************** Domain Driven Design - list ********************************************
 
@@ -197,13 +403,6 @@ public interface IUnionOpportunityService extends IService<UnionOpportunity> {
      */
     void updateStatusByBusIdAndIdAndUnionId(Integer busId, Integer opportunityId, Integer unionId, Integer isAccept, Double acceptPrice) throws Exception;
 
-    /**
-     * 批量更新
-     *
-     * @param updateUnionOpportunityList 更新内容
-     * @throws Exception 统一处理异常
-     */
-    void updateBatch(List<UnionOpportunity> updateUnionOpportunityList) throws Exception;
 
     //***************************************** Domain Driven Design - count *******************************************
 

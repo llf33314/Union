@@ -159,7 +159,7 @@ public class UnionConsumeApiServiceImpl implements IUnionConsumeApiService {
 			UnionConsume consume = new UnionConsume();
 			consume.setId(unionConsume.getId());
 			consume.setPayStatus(ConsumeConstant.PAY_STATUS_FAIL);
-			unionConsumeService.updateById(consume);
+			unionConsumeService.update(consume);
 		} else if (unionConsume.getPayStatus() == ConsumeConstant.PAY_STATUS_FAIL) {//已退款
 			throw new BusinessException("已退款");
 		}

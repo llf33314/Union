@@ -119,39 +119,12 @@ public class DateUtil {
      * @return 相隔天数
      */
     public static Integer getPeriodIntervalDay(Date fromDate, Date toDate) {
-        Calendar fromCalendar = Calendar.getInstance();
-        fromCalendar.setTime(fromDate);
+        long differTime = toDate.getTime() - fromDate.getTime();
+        long dateTime = 1000 * 60 * 60 * 24;
 
-        Calendar toCalendar = Calendar.getInstance();
-        toCalendar.setTime(toDate);
+        int differDay = (int) (differTime / dateTime);
 
-        Integer intervalDay = toCalendar.get(Calendar.DAY_OF_YEAR) - fromCalendar.get(Calendar.DAY_OF_YEAR);
-
-        Integer toHour = toCalendar.get(Calendar.HOUR);
-        Integer fromHour = fromCalendar.get(Calendar.HOUR);
-        if (toHour > fromHour) {
-            intervalDay++;
-        } else if (toHour < fromHour) {
-            intervalDay--;
-        } else {
-            Integer toMinute = toCalendar.get(Calendar.MINUTE);
-            Integer fromMinute = fromCalendar.get(Calendar.MINUTE);
-            if (toMinute > fromMinute) {
-                intervalDay++;
-            } else if (toMinute < fromMinute) {
-                intervalDay--;
-            } else {
-                Integer toSecond = toCalendar.get(Calendar.SECOND);
-                Integer fromSecond = fromCalendar.get(Calendar.SECOND);
-                if (toSecond > fromHour) {
-                    intervalDay++;
-                } else if (toSecond < fromSecond) {
-                    intervalDay--;
-                }
-            }
-        }
-
-        return intervalDay < 0 ? 0 : intervalDay;
+        return (differTime % dateTime) != 0 ? differDay + 1 : differDay;
     }
 
     /**

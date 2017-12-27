@@ -7,7 +7,7 @@ import java.util.List;
  * 盟员 缓存键工具类
  *
  * @author linweicong
- * @version 2017-11-23 10:22:05
+ * @version 2017-12-27 10:46:18
  */
 public class UnionMemberCacheUtil {
     public static final int TYPE_BUS_ID = 1;
@@ -25,12 +25,29 @@ public class UnionMemberCacheUtil {
         return result;
     }
 
-    public static String getUnionIdKey(Integer unionId) {
-        return "unionMember:unionId:" + unionId;
-    }
 
     public static String getBusIdKey(Integer busId) {
         return "unionMember:busId:" + busId;
     }
-    
+
+    public static String getValidBusIdKey(Integer busId) {
+        return "unionMember:busId:" + busId + ":valid";
+    }
+
+    public static String getInvalidBusIdKey(Integer busId) {
+        return "unionMember:busId:" + busId + ":invalid";
+    }
+
+    public static String getUnionIdKey(Integer unionId) {
+        return "unionMember:unionId:" + unionId;
+    }
+
+    public static String getValidUnionIdKey(Integer unionId) {
+        return "unionMember:unionId:" + unionId + ":valid";
+    }
+
+    public static String getInvalidUnionIdKey(Integer unionId) {
+        return "unionMember:unionId:" + unionId + ":invalid";
+    }
+
 }

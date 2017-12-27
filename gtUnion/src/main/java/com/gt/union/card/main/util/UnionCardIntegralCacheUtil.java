@@ -7,7 +7,7 @@ import java.util.List;
  * 联盟积分 缓存键工具类
  *
  * @author linweicong
- * @version 2017-09-01 11:34:16
+ * @version 2017-12-27 10:56:25
  */
 public class UnionCardIntegralCacheUtil {
     public static final int TYPE_FAN_ID = 1;
@@ -25,11 +25,29 @@ public class UnionCardIntegralCacheUtil {
         return result;
     }
 
+
     public static String getFanIdKey(Integer fanId) {
         return "unionCardIntegral:fanId:" + fanId;
+    }
+
+    public static String getValidFanIdKey(Integer fanId) {
+        return "unionCardIntegral:fanId:" + fanId + ":valid";
+    }
+
+    public static String getInvalidFanIdKey(Integer fanId) {
+        return "unionCardIntegral:fanId:" + fanId + ":invalid";
     }
 
     public static String getUnionIdKey(Integer unionId) {
         return "unionCardIntegral:unionId:" + unionId;
     }
+
+    public static String getValidUnionIdKey(Integer unionId) {
+        return "unionCardIntegral:unionId:" + unionId + ":valid";
+    }
+
+    public static String getInvalidUnionIdKey(Integer unionId) {
+        return "unionCardIntegral:unionId:" + unionId + ":invalid";
+    }
+
 }

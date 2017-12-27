@@ -1,14 +1,13 @@
 package com.gt.union.card.main.service;
 
-import com.baomidou.mybatisplus.service.IService;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.card.main.entity.UnionCard;
 import com.gt.union.card.main.entity.UnionCardFan;
 import com.gt.union.card.main.vo.CardApplyVO;
 import com.gt.union.card.main.vo.CardPhoneVO;
-import com.gt.union.common.exception.ParamException;
 import com.gt.union.union.main.vo.UnionPayVO;
 
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -17,7 +16,255 @@ import java.util.List;
  * @author linweicong
  * @version 2017-11-23 17:39:04
  */
-public interface IUnionCardService extends IService<UnionCard> {
+public interface IUnionCardService {
+    //********************************************* Base On Business - get *********************************************
+
+    //********************************************* Base On Business - list ********************************************
+
+    //********************************************* Base On Business - save ********************************************
+
+    //********************************************* Base On Business - remove ******************************************
+
+    //********************************************* Base On Business - update ******************************************
+
+    //********************************************* Base On Business - other *******************************************
+
+    //********************************************* Base On Business - filter ******************************************
+
+    /**
+     * 根据删除状态进行过滤(by myBatisGenerator)
+     *
+     * @param unionCardList 数据源
+     * @param delStatus     删除状态
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> filterByDelStatus(List<UnionCard> unionCardList, Integer delStatus) throws Exception;
+
+    //****************************************** Object As a Service - get *********************************************
+
+    /**
+     * 获取联盟卡信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionCard
+     * @throws Exception 统一处理异常
+     */
+    UnionCard getById(Integer id) throws Exception;
+
+    /**
+     * 获取未删除的联盟卡信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionCard
+     * @throws Exception 统一处理异常
+     */
+    UnionCard getValidById(Integer id) throws Exception;
+
+    /**
+     * 获取已删除的联盟卡信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionCard
+     * @throws Exception 统一处理异常
+     */
+    UnionCard getInvalidById(Integer id) throws Exception;
+
+    //****************************************** Object As a Service - list ********************************************
+
+    /**
+     * 获取对象集对应的的主键集(by myBatisGenerator)
+     *
+     * @param unionCardList 对象集
+     * @return List<Id>
+     * @throws Exception 统一处理异常
+     */
+    List<Integer> getIdList(List<UnionCard> unionCardList) throws Exception;
+
+
+    /**
+     * 获取联盟卡列表信息(by myBatisGenerator)
+     *
+     * @param memberId memberId
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> listByMemberId(Integer memberId) throws Exception;
+
+    /**
+     * 获取未删除的联盟卡列表信息(by myBatisGenerator)
+     *
+     * @param memberId memberId
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> listValidByMemberId(Integer memberId) throws Exception;
+
+    /**
+     * 获取已删除的联盟卡列表信息(by myBatisGenerator)
+     *
+     * @param memberId memberId
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> listInvalidByMemberId(Integer memberId) throws Exception;
+
+    /**
+     * 获取联盟卡列表信息(by myBatisGenerator)
+     *
+     * @param unionId unionId
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> listByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 获取未删除的联盟卡列表信息(by myBatisGenerator)
+     *
+     * @param unionId unionId
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> listValidByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 获取已删除的联盟卡列表信息(by myBatisGenerator)
+     *
+     * @param unionId unionId
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> listInvalidByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 获取联盟卡列表信息(by myBatisGenerator)
+     *
+     * @param fanId fanId
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> listByFanId(Integer fanId) throws Exception;
+
+    /**
+     * 获取未删除的联盟卡列表信息(by myBatisGenerator)
+     *
+     * @param fanId fanId
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> listValidByFanId(Integer fanId) throws Exception;
+
+    /**
+     * 获取已删除的联盟卡列表信息(by myBatisGenerator)
+     *
+     * @param fanId fanId
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> listInvalidByFanId(Integer fanId) throws Exception;
+
+    /**
+     * 获取联盟卡列表信息(by myBatisGenerator)
+     *
+     * @param activityId activityId
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> listByActivityId(Integer activityId) throws Exception;
+
+    /**
+     * 获取未删除的联盟卡列表信息(by myBatisGenerator)
+     *
+     * @param activityId activityId
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> listValidByActivityId(Integer activityId) throws Exception;
+
+    /**
+     * 获取已删除的联盟卡列表信息(by myBatisGenerator)
+     *
+     * @param activityId activityId
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> listInvalidByActivityId(Integer activityId) throws Exception;
+
+    /**
+     * 获取主键集对应的对象集
+     *
+     * @param idList 主键集
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> listByIdList(List<Integer> idList) throws Exception;
+
+    /**
+     * 分页支持
+     *
+     * @param page          分页对象
+     * @param entityWrapper 条件
+     * @return Page<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    Page<UnionCard> pageSupport(Page page, EntityWrapper<UnionCard> entityWrapper) throws Exception;
+
+    //****************************************** Object As a Service - save ********************************************
+
+    /**
+     * 保存(by myBatisGenerator)
+     *
+     * @param newUnionCard 保存内容
+     * @throws Exception 统一处理异常
+     */
+    void save(UnionCard newUnionCard) throws Exception;
+
+    /**
+     * 批量保存(by myBatisGenerator)
+     *
+     * @param newUnionCardList 保存内容
+     * @throws Exception 统一处理异常
+     */
+    void saveBatch(List<UnionCard> newUnionCardList) throws Exception;
+
+    //****************************************** Object As a Service - remove ******************************************
+
+    /**
+     * 移除(by myBatisGenerator)
+     *
+     * @param id 移除内容
+     * @throws Exception 统一处理异常
+     */
+    void removeById(Integer id) throws Exception;
+
+    /**
+     * 批量移除(by myBatisGenerator)
+     *
+     * @param idList 移除内容
+     * @throws Exception 统一处理异常
+     */
+    void removeBatchById(List<Integer> idList) throws Exception;
+
+    //****************************************** Object As a Service - update ******************************************
+
+    /**
+     * 更新(by myBatisGenerator)
+     *
+     * @param updateUnionCard 更新内容
+     * @throws Exception 统一处理异常
+     */
+    void update(UnionCard updateUnionCard) throws Exception;
+
+    /**
+     * 批量更新(by myBatisGenerator)
+     *
+     * @param updateUnionCardList 更新内容
+     * @throws Exception 统一处理异常
+     */
+    void updateBatch(List<UnionCard> updateUnionCardList) throws Exception;
+
+    // TODO
+
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
@@ -52,24 +299,7 @@ public interface IUnionCardService extends IService<UnionCard> {
      */
     UnionCard getValidActivityCardByUnionIdAndFanIdAndActivityId(Integer unionId, Integer fanId, Integer activityId) throws Exception;
 
-    /**
-     * 根据id获取联盟卡信息
-     * @param id        联盟卡id
-     * @return
-     * @throws Exception
-     */
-    UnionCard getById(Integer id) throws Exception;
-
     //***************************************** Domain Driven Design - list ********************************************
-
-    /**
-     * 获取有效的联盟卡列表信息
-     *
-     * @param unionId 联盟id
-     * @return List<UnionCard>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCard> listValidByUnionId(Integer unionId) throws Exception;
 
     /**
      * 获取有效的联盟卡列表信息
@@ -102,26 +332,17 @@ public interface IUnionCardService extends IService<UnionCard> {
      */
     List<UnionCard> listValidByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception;
 
-    /**
-     * 获取有效的联盟卡列表信息
-     *
-     * @param fanId 粉丝id
-     * @return List<UnionCard>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCard> listValidByFanId(Integer fanId) throws Exception;
-
     //***************************************** Domain Driven Design - save ********************************************
 
     /**
      * 前台-办理联盟卡-确定
      *
-     * @param busId          商家id
-     * @param unionId        联盟id
-     * @param fanId          粉丝id
-     * @param activityIdList 活动id列表
+     * @param busId                 商家id
+     * @param unionId               联盟id
+     * @param fanId                 粉丝id
+     * @param activityIdList        活动id列表
      * @param unionCardApplyService
-	 * @return UnionPayVO
+     * @return UnionPayVO
      * @throws Exception 统一处理异常
      */
     UnionPayVO saveApplyByBusIdAndUnionIdAndFanId(Integer busId, Integer unionId, Integer fanId, List<Integer> activityIdList, IUnionCardApplyService unionCardApplyService) throws Exception;
@@ -206,7 +427,6 @@ public interface IUnionCardService extends IService<UnionCard> {
      * @throws Exception 统一处理异常
      */
     List<UnionCard> filterByValidity(List<UnionCard> cardList) throws Exception;
-
 
 
     //***************************************** Object As a Service - get **********************************************
