@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.api.bean.session.BusUser;
 import com.gt.union.api.client.user.IBusUserService;
+import com.gt.union.api.client.user.bean.UserUnionAuthority;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
@@ -30,7 +31,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * 联盟转移 服务实现类
@@ -191,13 +195,8 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
         // （5）	判断toMember是否具有联盟基础服务（调接口）
         //   （5-1）如果不是，则报错；
         //   （5-2）如果是，则进行下一步；
-        Map<String, Object> basicMap = busUserService.getUserUnionAuthority(busId);
-        if (basicMap == null) {
-            throw new BusinessException("联盟盟主权限转移的目标盟员不具有联盟基础服务");
-        }
-        Object objAuthority = basicMap.get("authority");
-        Integer hasAuthority = objAuthority != null ? Integer.valueOf(objAuthority.toString()) : CommonConstant.COMMON_NO;
-        if (CommonConstant.COMMON_YES != hasAuthority) {
+        UserUnionAuthority authority = busUserService.getUserUnionAuthority(busId);
+        if (authority == null || !authority.getAuthority()) {
             throw new BusinessException("联盟盟主权限转移的目标盟员不具有联盟基础服务");
         }
         // （6）	判断toMember是否具有联盟许可:
@@ -207,9 +206,7 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
         //   （6-2）如果是，则进行下一步；
         UnionMainPermit permit = unionMainPermitService.getValidByBusId(toMember.getBusId());
         if (permit == null) {
-            Object objPay = basicMap.get("pay");
-            Integer needPay = objPay != null ? Integer.valueOf(objPay.toString()) : CommonConstant.COMMON_YES;
-            if (CommonConstant.COMMON_YES != needPay) {
+            if (!authority.getPay()) {
                 BusUser toMemberBusUser = busUserService.getBusUserById(toMember.getBusId());
                 if (toMemberBusUser == null) {
                     throw new BusinessException("找不到联盟盟主权限转移目标盟员的商家信息");
@@ -306,20 +303,13 @@ public class UnionMainTransferServiceImpl extends ServiceImpl<UnionMainTransferM
                 throw new BusinessException("已经是盟主身份，无法同时成为多个联盟的盟主");
             }
 
-            Map<String, Object> basicMap = busUserService.getUserUnionAuthority(busId);
-            if (basicMap == null) {
-                throw new BusinessException("不具有联盟基础服务");
-            }
-            Object objAuthority = basicMap.get("authority");
-            Integer hasAuthority = objAuthority != null ? Integer.valueOf(objAuthority.toString()) : CommonConstant.COMMON_NO;
-            if (CommonConstant.COMMON_YES != hasAuthority) {
+            UserUnionAuthority authority = busUserService.getUserUnionAuthority(busId);
+            if (authority == null || !authority.getAuthority()) {
                 throw new BusinessException("不具有联盟基础服务");
             }
             UnionMainPermit permit = unionMainPermitService.getValidByBusId(busId);
             if (permit == null) {
-                Object objPay = basicMap.get("pay");
-                Integer needPay = objPay != null ? Integer.valueOf(objPay.toString()) : CommonConstant.COMMON_YES;
-                if (CommonConstant.COMMON_YES != needPay) {
+                if (!authority.getPay()) {
                     BusUser busUser = busUserService.getBusUserById(busId);
                     if (busUser == null) {
                         throw new BusinessException("找不到商家信息");

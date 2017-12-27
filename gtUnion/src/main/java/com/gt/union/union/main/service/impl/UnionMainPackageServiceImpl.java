@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.api.bean.session.BusUser;
 import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.api.client.user.IBusUserService;
+import com.gt.union.api.client.user.bean.UserUnionAuthority;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
@@ -20,7 +21,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * 盟主服务套餐 服务实现类
@@ -69,10 +73,9 @@ public class UnionMainPackageServiceImpl extends ServiceImpl<UnionMainPackageMap
         String busVersionName = dictService.getBusUserLevel(busUser.getLevel());
         result.setBusVersionName(busVersionName);
         // （2）获取联盟版本名称(如盟主版)
-        Map<String, Object> basicMap = busUserService.getUserUnionAuthority(busId);
-        if (basicMap != null && basicMap.get("versionName") != null) {
-            String unionVersionName = basicMap.get("versionName").toString();
-            result.setUnionVersionName(unionVersionName);
+        UserUnionAuthority authority = busUserService.getUserUnionAuthority(busId);
+        if (authority != null) {
+            result.setUnionVersionName(authority.getUnionVersionName());
         }
         // （3）获取套餐列表，并按年限顺序排序
         List<UnionMainPackage> packageList = listByLevel(busUser.getLevel());

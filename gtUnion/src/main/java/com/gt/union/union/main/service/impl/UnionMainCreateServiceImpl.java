@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.service.impl.ServiceImpl;
 import com.gt.api.bean.session.BusUser;
 import com.gt.union.api.client.dict.IDictService;
 import com.gt.union.api.client.user.IBusUserService;
+import com.gt.union.api.client.user.bean.UserUnionAuthority;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
@@ -83,13 +84,8 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         // （2）	判断是否具有联盟基础服务（调接口）：
         //   （2-1）如果不是，则报错；
         //   （2-2）如果是，则进行下一步；
-        Map<String, Object> basicMap = busUserService.getUserUnionAuthority(busId);
-        if (basicMap == null) {
-            throw new BusinessException("不具有联盟基础服务");
-        }
-        Object objAuthority = basicMap.get("authority");
-        Integer hasAuthority = objAuthority != null ? Integer.valueOf(objAuthority.toString()) : CommonConstant.COMMON_NO;
-        if (CommonConstant.COMMON_YES != hasAuthority) {
+        UserUnionAuthority authority = busUserService.getUserUnionAuthority(busId);
+        if (authority == null || !authority.getAuthority()) {
             throw new BusinessException("不具有联盟基础服务");
         }
 
@@ -102,9 +98,7 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         //     （3-2-2）如果不是，则新增免费的联盟许可，并返回许可id
         UnionPermitCheckVO result = new UnionPermitCheckVO();
         UnionMainPermit permit = unionMainPermitService.getValidByBusId(busId);
-        Object objPay = basicMap.get("pay");
-        Integer needPay = objPay != null ? Integer.valueOf(objPay.toString()) : CommonConstant.COMMON_YES;
-        if (CommonConstant.COMMON_YES == needPay) {
+        if (authority.getPay()) {
             if (permit != null) {
                 result.setIsPay(CommonConstant.COMMON_NO);
                 result.setPermitId(permit.getId());
@@ -161,13 +155,8 @@ public class UnionMainCreateServiceImpl extends ServiceImpl<UnionMainCreateMappe
         // （2）	判断是否具有联盟基础服务（调接口）：
         //   （2-1）如果不是，则报错；
         //   （2-2）如果是，则进行下一步；
-        Map<String, Object> basicMap = busUserService.getUserUnionAuthority(busId);
-        if (basicMap == null) {
-            throw new BusinessException("不具有联盟基础服务");
-        }
-        Object objAuthority = basicMap.get("authority");
-        Integer hasAuthority = objAuthority != null ? Integer.valueOf(objAuthority.toString()) : CommonConstant.COMMON_NO;
-        if (CommonConstant.COMMON_YES != hasAuthority) {
+        UserUnionAuthority authority = busUserService.getUserUnionAuthority(busId);
+        if (authority == null || !authority.getAuthority()) {
             throw new BusinessException("不具有联盟基础服务");
         }
         // （3）	判断联盟许可有效性
