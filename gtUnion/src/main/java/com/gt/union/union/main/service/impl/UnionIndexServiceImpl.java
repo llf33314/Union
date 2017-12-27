@@ -1,7 +1,6 @@
 package com.gt.union.union.main.service.impl;
 
 import com.gt.union.card.main.service.IUnionCardIntegralService;
-import com.gt.union.card.main.service.IUnionCardService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.ListUtil;
@@ -36,9 +35,6 @@ public class UnionIndexServiceImpl implements IUnionIndexService {
     private IUnionMainService unionMainService;
 
     @Autowired
-    private IUnionCardService unionCardService;
-
-    @Autowired
     private IUnionMainTransferService unionMainTransferService;
 
     @Autowired
@@ -53,7 +49,7 @@ public class UnionIndexServiceImpl implements IUnionIndexService {
         IndexVO result = new IndexVO();
 
         // （1）获取我创建的联盟
-        List<UnionMember> busReadMemberList = unionMemberService.listReadByBusId(busId);
+        List<UnionMember> busReadMemberList = unionMemberService.listValidReadByBusId(busId);
         List<UnionMember> busCreateMemberList = unionMemberService.filterByIsUnionOwner(busReadMemberList, MemberConstant.IS_UNION_OWNER_YES);
         if (ListUtil.isNotEmpty(busCreateMemberList)) {
             UnionMember busCreateMember = busCreateMemberList.get(0);
@@ -105,12 +101,12 @@ public class UnionIndexServiceImpl implements IUnionIndexService {
             result.setCurrentUnion(currentUnion);
             Integer currentUnionId = currentUnion.getId();
 
-            UnionMember currentMember = unionMemberService.getReadByBusIdAndUnionId(busId, currentUnionId);
+            UnionMember currentMember = unionMemberService.getValidReadByBusIdAndUnionId(busId, currentUnionId);
             result.setCurrentMember(currentMember);
 
-            result.setOwnerMember(unionMemberService.getOwnerByUnionId(currentUnionId));
+            result.setOwnerMember(unionMemberService.getValidOwnerByUnionId(currentUnionId));
 
-            Integer readMemberCount = unionMemberService.countReadByUnionId(currentUnionId);
+            Integer readMemberCount = unionMemberService.countValidReadByUnionId(currentUnionId);
             result.setMemberCount(readMemberCount);
             Integer memberLimit = currentUnion.getMemberLimit();
             memberLimit = memberLimit != null ? memberLimit : 0;
@@ -120,7 +116,7 @@ public class UnionIndexServiceImpl implements IUnionIndexService {
                 result.setIntegral(unionCardIntegralService.sumIntegralByUnionId(currentUnionId));
             }
 
-            UnionMainTransfer transfer = unionMainTransferService.getByUnionIdAndToMemberIdAndConfirmStatus(currentUnionId, currentMember.getId(), UnionConstant.TRANSFER_CONFIRM_STATUS_PROCESS);
+            UnionMainTransfer transfer = unionMainTransferService.getValidByUnionIdAndToMemberIdAndConfirmStatus(currentUnionId, currentMember.getId(), UnionConstant.TRANSFER_CONFIRM_STATUS_PROCESS);
             result.setUnionTransfer(transfer);
         }
 

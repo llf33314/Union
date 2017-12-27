@@ -841,13 +841,13 @@ public class UnionCardServiceImpl implements IUnionCardService {
             throw new BusinessException("找不到粉丝信息");
         }
         // （2）	获取商家有效的union
-        List<UnionMain> busUnionList = unionMainService.listMyValidWriteByBusId(busId);
+        List<UnionMain> busUnionList = unionMainService.listValidWriteByBusId(busId);
         // （3）	过滤掉粉丝已办卡，且商家没有新活动卡的union
         List<UnionMain> optionUnionList = new ArrayList<>();
         if (ListUtil.isNotEmpty(busUnionList)) {
             for (UnionMain union : busUnionList) {
                 Integer unionId = union.getId();
-                UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+                UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
                 if (member == null) {
                     throw new BusinessException("找不到盟员信息");
                 }
@@ -893,7 +893,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
         }
         result.setCurrentUnion(currentUnion);
 
-        UnionMember currentMember = unionMemberService.getReadByBusIdAndUnionId(busId, currentUnion.getId());
+        UnionMember currentMember = unionMemberService.getValidReadByBusIdAndUnionId(busId, currentUnion.getId());
         result.setCurrentMember(currentMember);
 
         // （5）	获取当前联盟粉丝的折扣卡和活动卡情况，若已办理，则不显示；否则，要求活动卡在售卖中状态
@@ -998,9 +998,9 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (!unionMainService.isUnionValid(union)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidWriteByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         // （2）	判断fanId有效性
         UnionCardFan fan = unionCardFanService.getById(fanId);
@@ -1173,7 +1173,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
                 if (CommonConstant.COMMON_YES == isSuccess) {
                     UnionCard card = getById(record.getCardId());
-                    UnionMember ownerMember = unionMemberService.getOwnerByUnionId(card.getUnionId());
+                    UnionMember ownerMember = unionMemberService.getValidOwnerByUnionId(card.getUnionId());
                     List<UnionCardSharingRatio> sharingRatioList = unionCardSharingRatioService.listByUnionIdAndActivityId(record.getUnionId(), record.getActivityId());
                     if (ListUtil.isEmpty(sharingRatioList)) {
                         // 没有售卡分成比例
@@ -1209,7 +1209,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
                             int sharingMemberCount = 1;
                             List<UnionMember> sharingMemberList = new ArrayList<>();
                             for (UnionCardProject project : projectList) {
-                                UnionMember sharingMember = unionMemberService.getWriteByIdAndUnionId(project.getMemberId(), project.getUnionId());
+                                UnionMember sharingMember = unionMemberService.getValidWriteByIdAndUnionId(project.getMemberId(), project.getUnionId());
                                 if (sharingMember != null) {
                                     sharingMemberList.add(sharingMember);
                                     sharingMemberCount++;
@@ -1278,7 +1278,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
                         BigDecimal sharedMoney = BigDecimal.ZERO;
                         BigDecimal sharedRatio = BigDecimal.ZERO;
                         for (UnionCardSharingRatio sharingRatio : sharingRatioList) {
-                            UnionMember sharingMember = unionMemberService.getWriteByIdAndUnionId(sharingRatio.getMemberId(), sharingRatio.getUnionId());
+                            UnionMember sharingMember = unionMemberService.getValidWriteByIdAndUnionId(sharingRatio.getMemberId(), sharingRatio.getUnionId());
                             if (MemberConstant.IS_UNION_OWNER_YES == sharingMember.getIsUnionOwner()) {
                                 continue;
                             }

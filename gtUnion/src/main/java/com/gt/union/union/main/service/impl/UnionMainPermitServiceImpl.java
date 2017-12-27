@@ -54,14 +54,150 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
 
     //********************************************* Base On Business - get *********************************************
 
+    @Override
+    public UnionMainPermit getValidByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMainPermit> result = listValidByBusId(busId);
+
+        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
+    }
+
+    @Override
+    public UnionMainPermit getValidBySysOrderNo(String sysOrderNo) throws Exception {
+        if (sysOrderNo == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionMainPermit> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .eq("sys_order_no", sysOrderNo);
+
+        return unionMainPermitDao.selectOne(entityWrapper);
+    }
+
     //********************************************* Base On Business - list ********************************************
 
-
     //********************************************* Base On Business - save ********************************************
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public UnionPayVO saveByBusIdAndPackageId(Integer busId, Integer packageId) throws Exception {
+        if (busId == null || packageId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        // （1）	判断packageId有效性
+        UnionMainPackage unionPackage = unionMainPackageService.getValidById(packageId);
+        if (unionPackage == null) {
+            throw new BusinessException("找不到套餐信息");
+        }
+
+        // （2）	生成支付中状态的联盟许可记录
+        UnionMainPermit savePermit = new UnionMainPermit();
+        savePermit.setDelStatus(CommonConstant.COMMON_NO);
+        Date currentDate = DateUtil.getCurrentDate();
+        savePermit.setCreateTime(currentDate);
+        int validMonth = BigDecimalUtil.multiply(Double.valueOf(12), unionPackage.getYear()).intValue();
+        savePermit.setValidity(DateUtil.addMonths(currentDate, validMonth));
+        savePermit.setBusId(busId);
+        savePermit.setPackageId(packageId);
+        savePermit.setOrderMoney(unionPackage.getPrice());
+        savePermit.setOrderStatus(UnionConstant.PERMIT_ORDER_STATUS_PAYING);
+        String orderNo = "LM" + ConfigConstant.PAY_MODEL_PERMIT + DateUtil.getSerialNumber();
+        savePermit.setSysOrderNo(orderNo);
+
+        // （3）	调用支付接口，返回支付链接
+        UnionPayVO result = new UnionPayVO();
+        String socketKey = PropertiesUtil.getSocketKey() + orderNo;
+        String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/permit?socketKey=" + socketKey;
+
+        PayParam payParam = new PayParam();
+        payParam.setTotalFee(savePermit.getOrderMoney());
+        payParam.setOrderNum(savePermit.getSysOrderNo());
+        payParam.setIsreturn(CommonConstant.COMMON_NO);
+        payParam.setNotifyUrl(notifyUrl);
+        payParam.setIsSendMessage(CommonConstant.COMMON_NO);
+        payParam.setPayWay(0);
+        payParam.setDesc("购买盟主服务");
+        payParam.setPayDuoFen(true);
+        String payUrl = wxPayService.qrCodePay(payParam);
+
+        result.setPayUrl(payUrl);
+        result.setSocketKey(socketKey);
+
+        save(savePermit);
+        return result;
+    }
+
 
     //********************************************* Base On Business - remove ******************************************
 
     //********************************************* Base On Business - update ******************************************
+
+    @Override
+    public String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess) {
+        Map<String, Object> result = new HashMap<>(2);
+        if (orderNo == null || socketKey == null || payType == null || payOrderNo == null || isSuccess == null) {
+            result.put("code", -1);
+            result.put("msg", "参数缺少");
+            return JSONObject.toJSONString(result);
+        }
+
+        // （1）	判断permitId有效性
+        UnionMainPermit permit;
+        try {
+            permit = getValidBySysOrderNo(orderNo);
+        } catch (Exception e) {
+            logger.error("购买盟主服务，支付成功回调错误", e);
+            result.put("code", -1);
+            result.put("msg", e.getMessage());
+            return JSONObject.toJSONString(result);
+        }
+        if (permit == null) {
+            result.put("code", -1);
+            result.put("msg", "找不到联盟许可对象");
+            return JSONObject.toJSONString(result);
+        }
+        // （2）	如果permit不是未支付状态，则socket通知，并返回处理成功
+        // （3）	否则，更新permit为支付成功状态，且socket通知，并返回处理成功
+        Integer orderStatus = permit.getOrderStatus();
+        if (orderStatus == UnionConstant.PERMIT_ORDER_STATUS_SUCCESS || orderStatus == UnionConstant.PERMIT_ORDER_STATUS_FAIL) {
+            // socket通知
+            socketService.socketPaySendMessage(socketKey, isSuccess, null);
+            result.put("code", 0);
+            result.put("msg", "重复处理");
+            return JSONObject.toJSONString(result);
+        } else {
+            UnionMainPermit updatePermit = new UnionMainPermit();
+            updatePermit.setId(permit.getId());
+            updatePermit.setOrderStatus(isSuccess == CommonConstant.COMMON_YES ? UnionConstant.PERMIT_ORDER_STATUS_SUCCESS : UnionConstant.PERMIT_ORDER_STATUS_FAIL);
+            if (payType.equals("0")) {
+                updatePermit.setPayType(UnionConstant.PERMIT_PAY_TYPE_WX);
+                updatePermit.setWxOrderNo(payOrderNo);
+            } else {
+                updatePermit.setPayType(UnionConstant.PERMIT_PAY_TYPE_ALIPAY);
+                updatePermit.setAlipayOrderNo(payOrderNo);
+            }
+
+            try {
+                update(updatePermit);
+            } catch (Exception e) {
+                logger.error("购买盟主服务，支付成功回调错误", e);
+                result.put("code", -1);
+                result.put("msg", e.getMessage());
+                return JSONObject.toJSONString(result);
+            }
+
+            // socket通知
+            socketService.socketPaySendMessage(socketKey, isSuccess, null);
+            result.put("code", 0);
+            result.put("msg", "成功");
+            return JSONObject.toJSONString(result);
+        }
+    }
 
     //********************************************* Base On Business - other *******************************************
 
@@ -561,162 +697,5 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
         }
         return result;
     }
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    @Override
-    public UnionMainPermit getValidByBusId(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionMainPermit> entityWrapper = new EntityWrapper<>();
-        entityWrapper.ge("validity", DateUtil.getCurrentDate())
-                .eq("bus_id", busId)
-                .eq("order_status", UnionConstant.PERMIT_ORDER_STATUS_SUCCESS)
-                .eq("del_status", CommonConstant.COMMON_NO);
-
-        return unionMainPermitDao.selectOne(entityWrapper);
-    }
-
-    @Override
-    public UnionMainPermit getBySysOrderNo(String sysOrderNo) throws Exception {
-        if (sysOrderNo == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionMainPermit> entityWrapper = new EntityWrapper<>();
-        entityWrapper.ge("validity", DateUtil.getCurrentDate())
-                .eq("sys_order_no", sysOrderNo)
-                .eq("del_status", CommonConstant.COMMON_NO);
-
-        return unionMainPermitDao.selectOne(entityWrapper);
-    }
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public UnionPayVO saveByBusIdAndPackageId(Integer busId, Integer packageId) throws Exception {
-        if (busId == null || packageId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        // （1）	判断packageId有效性
-        UnionMainPackage unionPackage = unionMainPackageService.getById(packageId);
-        if (unionPackage == null) {
-            throw new BusinessException("找不到套餐信息");
-        }
-
-        // （2）	生成支付中状态的联盟许可记录
-        UnionMainPermit savePermit = new UnionMainPermit();
-        savePermit.setDelStatus(CommonConstant.COMMON_NO);
-        Date currentDate = DateUtil.getCurrentDate();
-        savePermit.setCreateTime(currentDate);
-        int validMonth = BigDecimalUtil.multiply(Double.valueOf(12), unionPackage.getYear()).intValue();
-        savePermit.setValidity(DateUtil.addMonths(currentDate, validMonth));
-        savePermit.setBusId(busId);
-        savePermit.setPackageId(packageId);
-        savePermit.setOrderMoney(unionPackage.getPrice());
-        savePermit.setOrderStatus(UnionConstant.PERMIT_ORDER_STATUS_PAYING);
-        String orderNo = "LM" + ConfigConstant.PAY_MODEL_PERMIT + DateUtil.getSerialNumber();
-        savePermit.setSysOrderNo(orderNo);
-
-        // （3）	调用支付接口，返回支付链接
-        UnionPayVO result = new UnionPayVO();
-        String socketKey = PropertiesUtil.getSocketKey() + orderNo;
-        String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/permit?socketKey=" + socketKey;
-
-        PayParam payParam = new PayParam();
-        payParam.setTotalFee(savePermit.getOrderMoney());
-        payParam.setOrderNum(savePermit.getSysOrderNo());
-        payParam.setIsreturn(CommonConstant.COMMON_NO);
-        payParam.setNotifyUrl(notifyUrl);
-        payParam.setIsSendMessage(CommonConstant.COMMON_NO);
-        payParam.setPayWay(0);
-        payParam.setDesc("购买盟主服务");
-        payParam.setPayDuoFen(true);
-        String payUrl = wxPayService.qrCodePay(payParam);
-
-        result.setPayUrl(payUrl);
-        result.setSocketKey(socketKey);
-
-        save(savePermit);
-        return result;
-    }
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    @Override
-    public String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess) {
-        Map<String, Object> result = new HashMap<>(2);
-        if (orderNo == null || socketKey == null || payType == null || payOrderNo == null || isSuccess == null) {
-            result.put("code", -1);
-            result.put("msg", "参数缺少");
-            return JSONObject.toJSONString(result);
-        }
-
-        // （1）	判断permitId有效性
-        UnionMainPermit permit;
-        try {
-            permit = getBySysOrderNo(orderNo);
-        } catch (Exception e) {
-            logger.error("购买盟主服务，支付成功回调错误", e);
-            result.put("code", -1);
-            result.put("msg", e.getMessage());
-            return JSONObject.toJSONString(result);
-        }
-        if (permit == null) {
-            result.put("code", -1);
-            result.put("msg", "找不到联盟许可对象");
-            return JSONObject.toJSONString(result);
-        }
-        // （2）	如果permit不是未支付状态，则socket通知，并返回处理成功
-        // （3）	否则，更新permit为支付成功状态，且socket通知，并返回处理成功
-        Integer orderStatus = permit.getOrderStatus();
-        if (orderStatus == UnionConstant.PERMIT_ORDER_STATUS_SUCCESS || orderStatus == UnionConstant.PERMIT_ORDER_STATUS_FAIL) {
-            // socket通知
-            socketService.socketPaySendMessage(socketKey, isSuccess, null);
-            result.put("code", 0);
-            result.put("msg", "重复处理");
-            return JSONObject.toJSONString(result);
-        } else {
-            UnionMainPermit updatePermit = new UnionMainPermit();
-            updatePermit.setId(permit.getId());
-            updatePermit.setOrderStatus(isSuccess == CommonConstant.COMMON_YES ? UnionConstant.PERMIT_ORDER_STATUS_SUCCESS : UnionConstant.PERMIT_ORDER_STATUS_FAIL);
-            if (payType.equals("0")) {
-                updatePermit.setPayType(UnionConstant.PERMIT_PAY_TYPE_WX);
-                updatePermit.setWxOrderNo(payOrderNo);
-            } else {
-                updatePermit.setPayType(UnionConstant.PERMIT_PAY_TYPE_ALIPAY);
-                updatePermit.setAlipayOrderNo(payOrderNo);
-            }
-
-            try {
-                update(updatePermit);
-            } catch (Exception e) {
-                logger.error("购买盟主服务，支付成功回调错误", e);
-                result.put("code", -1);
-                result.put("msg", e.getMessage());
-                return JSONObject.toJSONString(result);
-            }
-
-            // socket通知
-            socketService.socketPaySendMessage(socketKey, isSuccess, null);
-            result.put("code", 0);
-            result.put("msg", "成功");
-            return JSONObject.toJSONString(result);
-        }
-    }
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    //***************************************** Domain Driven Design - boolean *****************************************
 
 }

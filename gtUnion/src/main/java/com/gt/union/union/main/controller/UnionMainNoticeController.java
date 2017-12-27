@@ -49,7 +49,7 @@ public class UnionMainNoticeController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             result = MockUtil.get(UnionMainNotice.class);
         } else {
-            result = unionMainNoticeService.getByBusIdAndUnionId(busId, unionId);
+            result = unionMainNoticeService.getValidByBusIdAndUnionId(busId, unionId);
         }
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
@@ -67,11 +67,11 @@ public class UnionMainNoticeController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
+            throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
         }
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             content = content != null ? content : new String();
-            unionMainNoticeService.updateContentByBusIdAndUnionId(busId, unionId, content);
+            unionMainNoticeService.updateByBusIdAndUnionId(busId, unionId, content);
         }
         return GtJsonResult.instanceSuccessMsg().toString();
     }

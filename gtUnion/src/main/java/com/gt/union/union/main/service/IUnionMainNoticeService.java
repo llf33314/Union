@@ -15,6 +15,25 @@ import java.util.List;
 public interface IUnionMainNoticeService {
     //********************************************* Base On Business - get *********************************************
 
+    /**
+     * 我的联盟-首页-联盟公告
+     *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @return UnionMainNotice
+     * @throws Exception 统一处理异常
+     */
+    UnionMainNotice getValidByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
+
+    /**
+     * 获取联盟公告信息
+     *
+     * @param unionId 联盟id
+     * @return UnionMainNotice
+     * @throws Exception 统一处理异常
+     */
+    UnionMainNotice getValidByUnionId(Integer unionId) throws Exception;
+
     //********************************************* Base On Business - list ********************************************
 
     //********************************************* Base On Business - save ********************************************
@@ -22,6 +41,16 @@ public interface IUnionMainNoticeService {
     //********************************************* Base On Business - remove ******************************************
 
     //********************************************* Base On Business - update ******************************************
+
+    /**
+     * 我的联盟-首页-联盟公告-更新
+     *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @param content 公告内容
+     * @throws Exception 统一处理异常
+     */
+    void updateByBusIdAndUnionId(Integer busId, Integer unionId, String content) throws Exception;
 
     //********************************************* Base On Business - other *******************************************
 
@@ -177,51 +206,5 @@ public interface IUnionMainNoticeService {
      * @throws Exception 统一处理异常
      */
     void updateBatch(List<UnionMainNotice> updateUnionMainNoticeList) throws Exception;
-
-    // TODO
-    //***************************************** Domain Driven Design - get *********************************************
-
-    /**
-     * 我的联盟-首页-联盟公告
-     *
-     * @param busId   商家id
-     * @param unionId 联盟id
-     * @return UnionMainNotice
-     * @throws Exception 统一处理异常
-     */
-    UnionMainNotice getByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
-
-    /**
-     * 获取联盟公告信息
-     *
-     * @param unionId 联盟id
-     * @return UnionMainNotice
-     * @throws Exception 统一处理异常
-     */
-    UnionMainNotice getByUnionId(Integer unionId) throws Exception;
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    /**
-     * 我的联盟-首页-联盟公告-更新
-     *
-     * @param busId   商家id
-     * @param unionId 联盟id
-     * @param content 公告内容
-     * @throws Exception 统一处理异常
-     */
-    void updateContentByBusIdAndUnionId(Integer busId, Integer unionId, String content) throws Exception;
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    //***************************************** Domain Driven Design - boolean *****************************************
-
-    //***************************************** Domain Driven Design - filter ******************************************
 
 }

@@ -76,10 +76,10 @@ public class UnionMainTransferController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
+            throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
         }
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
-            unionMainTransferService.updateAcceptByBusIdAndIdAndUnionId(busId, transferId, unionId, isAccept);
+            unionMainTransferService.updateByBusIdAndIdAndUnionId(busId, transferId, unionId, isAccept);
         }
         return GtJsonResult.instanceSuccessMsg().toString();
     }
@@ -95,10 +95,10 @@ public class UnionMainTransferController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
+            throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
         }
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
-            unionMainTransferService.revokeByBusIdAndIdAndUnionId(busId, transferId, unionId);
+            unionMainTransferService.removeByBusIdAndIdAndUnionId(busId, transferId, unionId);
         }
         return GtJsonResult.instanceSuccessMsg().toString();
     }
@@ -116,7 +116,7 @@ public class UnionMainTransferController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
+            throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
         }
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionMainTransferService.saveByBusIdAndUnionIdAndToMemberId(busId, unionId, toMemberId);

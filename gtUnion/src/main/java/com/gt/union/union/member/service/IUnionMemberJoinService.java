@@ -17,13 +17,67 @@ import java.util.List;
 public interface IUnionMemberJoinService {
     //********************************************* Base On Business - get *********************************************
 
+    /**
+     * 获取未删除的入盟申请信息
+     *
+     * @param joinId  入盟申请id
+     * @param unionId 联盟id
+     * @return UnionMemberJoin
+     * @throws Exception 统一处理异常
+     */
+    UnionMemberJoin getValidByIdAndUnionId(Integer joinId, Integer unionId) throws Exception;
+
+    /**
+     * 获取未删除的入盟申请信息
+     *
+     * @param unionId       联盟id
+     * @param applyMemberId 申请盟员id
+     * @return UnionMemberJoin
+     * @throws Exception 统一处理异常
+     */
+    UnionMemberJoin getValidByUnionIdAndApplyMemberId(Integer unionId, Integer applyMemberId) throws Exception;
+
     //********************************************* Base On Business - list ********************************************
 
+    /**
+     * 分页：我的联盟-入盟审核
+     *
+     * @param buId          商家id
+     * @param unionId       联盟id
+     * @param optMemberName 盟员名称
+     * @param optPhone      盟员手机号
+     * @return List<MemberJoinVO>
+     * @throws Exception 统一处理异常
+     */
+    List<MemberJoinVO> listMemberJoinVOByBusIdAndUnionId(Integer buId, Integer unionId, String optMemberName, String optPhone) throws Exception;
+
     //********************************************* Base On Business - save ********************************************
+
+    /**
+     * 我的联盟-加入联盟-保存；我的联盟-推荐入盟
+     *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @param type    入盟类型
+     * @param vo      表单信息
+     * @throws Exception 统一处理异常
+     */
+    void saveJoinCreateVOByBusIdAndUnionIdAndType(Integer busId, Integer unionId, Integer type, MemberJoinCreateVO vo) throws Exception;
 
     //********************************************* Base On Business - remove ******************************************
 
     //********************************************* Base On Business - update ******************************************
+
+    /**
+     * 我的联盟-入盟审核-分页数据-通过或不通过
+     *
+     * @param busId   商家id
+     * @param joinId  入盟申请id
+     * @param unionId 联盟id
+     * @param isPass  是否通过(0：否 1：是)
+     * @throws Exception 统一处理异常
+     */
+    void updateByBusIdAndIdAndUnionId(Integer busId, Integer joinId, Integer unionId, Integer isPass) throws Exception;
 
     //********************************************* Base On Business - other *******************************************
 
@@ -38,6 +92,16 @@ public interface IUnionMemberJoinService {
      * @throws Exception 统一处理异常
      */
     List<UnionMemberJoin> filterByDelStatus(List<UnionMemberJoin> unionMemberJoinList, Integer delStatus) throws Exception;
+
+    /**
+     * 根据入盟盟员id进行过滤
+     *
+     * @param joinList      数据源
+     * @param applyMemberId 入盟盟员id
+     * @return List<UnionMemberJoin>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMemberJoin> filterByApplyMemberId(List<UnionMemberJoin> joinList, Integer applyMemberId) throws Exception;
 
     //****************************************** Object As a Service - get *********************************************
 
@@ -233,87 +297,5 @@ public interface IUnionMemberJoinService {
      * @throws Exception 统一处理异常
      */
     void updateBatch(List<UnionMemberJoin> updateUnionMemberJoinList) throws Exception;
-
-    
-    // TODO
-    //***************************************** Domain Driven Design - get *********************************************
-
-    /**
-     * 获取入盟申请信息
-     *
-     * @param joinId  入盟申请id
-     * @param unionId 联盟id
-     * @return UnionMemberJoin
-     * @throws Exception 统一处理异常
-     */
-    UnionMemberJoin getByIdAndUnionId(Integer joinId, Integer unionId) throws Exception;
-
-    /**
-     * 获取入盟申请信息
-     *
-     * @param unionId       联盟id
-     * @param applyMemberId 申请盟员id
-     * @return UnionMemberJoin
-     * @throws Exception 统一处理异常
-     */
-    UnionMemberJoin getByUnionIdAndApplyMemberId(Integer unionId, Integer applyMemberId) throws Exception;
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    /**
-     * 分页：我的联盟-入盟审核
-     *
-     * @param buId          商家id
-     * @param unionId       联盟id
-     * @param optMemberName 盟员名称
-     * @param optPhone      盟员手机号
-     * @return List<MemberJoinVO>
-     * @throws Exception 统一处理异常
-     */
-    List<MemberJoinVO> listMemberJoinVOByBusIdAndUnionId(Integer buId, Integer unionId, String optMemberName, String optPhone) throws Exception;
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    /**
-     * 我的联盟-加入联盟-保存；我的联盟-推荐入盟
-     *
-     * @param busId   商家id
-     * @param unionId 联盟id
-     * @param type    入盟类型
-     * @param vo      表单信息
-     * @throws Exception 统一处理异常
-     */
-    void saveJoinCreateVOByBusIdAndUnionIdAndType(Integer busId, Integer unionId, Integer type, MemberJoinCreateVO vo) throws Exception;
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    /**
-     * 我的联盟-入盟审核-分页数据-通过或不通过
-     *
-     * @param busId   商家id
-     * @param joinId  入盟申请id
-     * @param unionId 联盟id
-     * @param isPass  是否通过(0：否 1：是)
-     * @throws Exception 统一处理异常
-     */
-    void updateStatusByBusIdAndIdAndUnionId(Integer busId, Integer joinId, Integer unionId, Integer isPass) throws Exception;
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    //***************************************** Domain Driven Design - boolean *****************************************
-
-    //***************************************** Domain Driven Design - filter ******************************************
-
-    /**
-     * 根据入盟盟员id进行过滤
-     *
-     * @param joinList      数据源
-     * @param applyMemberId 入盟盟员id
-     * @return List<UnionMemberJoin>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionMemberJoin> filterByApplyMemberId(List<UnionMemberJoin> joinList, Integer applyMemberId) throws Exception;
 
 }

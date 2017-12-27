@@ -41,10 +41,10 @@ public class UnionSchedule {
         try {
             Date currentDate = DateUtil.getCurrentDate();
             System.out.println(currentDate + " 开始执行<我的联盟>定时任务器：退盟过渡期结束后，逻辑删除盟员信息和退盟申请");
-            List<UnionMember> periodMemberList = unionMemberService.listByStatus(MemberConstant.STATUS_OUT_PERIOD);
+            List<UnionMember> periodMemberList = unionMemberService.listValidByStatus(MemberConstant.STATUS_OUT_PERIOD);
             if (ListUtil.isNotEmpty(periodMemberList)) {
                 for (UnionMember periodMember : periodMemberList) {
-                    UnionMemberOut out = unionMemberOutService.getByUnionIdAndApplyMemberId(periodMember.getUnionId(), periodMember.getId());
+                    UnionMemberOut out = unionMemberOutService.getValidByUnionIdAndApplyMemberId(periodMember.getUnionId(), periodMember.getId());
                     if (out == null) {
                         continue;
                     }

@@ -996,9 +996,9 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
 
         // （2）	按时间倒序排序
@@ -1026,7 +1026,7 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
                 CardSharingRecordVO vo = new CardSharingRecordVO();
                 vo.setFan(fan);
                 vo.setSharingRecord(record);
-                UnionMember fromMember = unionMemberService.getReadByIdAndUnionId(record.getFromMemberId(), unionId);
+                UnionMember fromMember = unionMemberService.getValidReadByIdAndUnionId(record.getFromMemberId(), unionId);
                 vo.setMember(fromMember);
                 result.add(vo);
             }

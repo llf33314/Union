@@ -113,7 +113,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         BigDecimal availableBrokerage = BigDecimalUtil.subtract(brokerageSum, withdrawalSum);
         result.setAvailableBrokerage(availableBrokerage.doubleValue());
         // （3）	获取未支付佣金金额，即商机已接受，但仍未支付
-        List<UnionMember> memberList = unionMemberService.listReadByBusId(busId);
+        List<UnionMember> memberList = unionMemberService.listValidReadByBusId(busId);
         List<Integer> memberIdList = unionMemberService.getIdList(memberList);
         Double unPaidOpportunityBrokerage = unionOpportunityService.sumBrokerageMoneyByFromMemberIdListAndAcceptStatusAndIsClose(memberIdList,
                 OpportunityConstant.ACCEPT_STATUS_CONFIRMED, OpportunityConstant.IS_CLOSE_NO);
@@ -130,7 +130,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         WithdrawalVO result = new WithdrawalVO();
         // （1）	获取已支付的商机佣金收入总额
         Integer busId = h5BrokerageUser.getVerifier().getBusId();
-        List<UnionMember> memberList = unionMemberService.listReadByBusId(busId);
+        List<UnionMember> memberList = unionMemberService.listValidReadByBusId(busId);
         List<Integer> memberIdList = unionMemberService.getIdList(memberList);
 
         Double paidOpportunityBrokerage = unionOpportunityService.sumBrokerageMoneyByFromMemberIdListAndAcceptStatusAndIsClose(memberIdList,
@@ -181,7 +181,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        return unionMainService.listMyValidReadByBusId(h5BrokerageUser.getVerifier().getBusId());
+        return unionMainService.listValidReadByBusId(h5BrokerageUser.getVerifier().getBusId());
     }
 
     @Override
@@ -191,7 +191,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         }
 
         Integer busId = h5BrokerageUser.getVerifier().getBusId();
-        List<UnionMember> memberList = unionMemberService.listReadByBusId(busId);
+        List<UnionMember> memberList = unionMemberService.listValidReadByBusId(busId);
         if (optUnionId != null) {
             memberList = unionMemberService.filterByUnionId(memberList, optUnionId);
         }
@@ -210,7 +210,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         }
 
         Integer busId = h5BrokerageUser.getVerifier().getBusId();
-        List<UnionMember> memberList = unionMemberService.listReadByBusId(busId);
+        List<UnionMember> memberList = unionMemberService.listValidReadByBusId(busId);
         if (optUnionId != null) {
             memberList = unionMemberService.filterByUnionId(memberList, optUnionId);
         }
@@ -226,7 +226,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
                 Integer unionId = income.getUnionId();
                 vo.setUnion(unionMainService.getById(unionId));
 
-                vo.setMember(unionMemberService.getReadByIdAndUnionId(income.getMemberId(), unionId));
+                vo.setMember(unionMemberService.getValidReadByIdAndUnionId(income.getMemberId(), unionId));
 
                 result.add(vo);
             }
@@ -248,7 +248,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         }
 
         Integer busId = h5BrokerageUser.getVerifier().getBusId();
-        List<UnionMember> memberList = unionMemberService.listReadByBusId(busId);
+        List<UnionMember> memberList = unionMemberService.listValidReadByBusId(busId);
         if (optUnionId != null) {
             memberList = unionMemberService.filterByUnionId(memberList, optUnionId);
         }
@@ -267,7 +267,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         }
 
         Integer busId = h5BrokerageUser.getVerifier().getBusId();
-        List<UnionMember> memberList = unionMemberService.listReadByBusId(busId);
+        List<UnionMember> memberList = unionMemberService.listValidReadByBusId(busId);
         if (optUnionId != null) {
             memberList = unionMemberService.filterByUnionId(memberList, optUnionId);
         }
@@ -289,9 +289,9 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
                 Integer unionId = opportunity.getUnionId();
                 vo.setUnion(unionMainService.getById(unionId));
 
-                vo.setFromMember(unionMemberService.getReadByIdAndUnionId(opportunity.getFromMemberId(), unionId));
+                vo.setFromMember(unionMemberService.getValidReadByIdAndUnionId(opportunity.getFromMemberId(), unionId));
 
-                vo.setToMember(unionMemberService.getReadByIdAndUnionId(opportunity.getToMemberId(), unionId));
+                vo.setToMember(unionMemberService.getValidReadByIdAndUnionId(opportunity.getToMemberId(), unionId));
 
                 result.add(vo);
             }
@@ -351,9 +351,9 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidWriteByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         // （2）判断opportunityId有效性
         UnionOpportunity opportunity = unionOpportunityService.getByIdAndUnionIdAndToMemberId(opportunityId, unionId, member.getId());
@@ -364,7 +364,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
             throw new BusinessException("商机不是未结算状态");
         }
         // （3）生成支付中记录
-        UnionMember fromMember = unionMemberService.getReadByIdAndUnionId(opportunity.getFromMemberId(), opportunity.getUnionId());
+        UnionMember fromMember = unionMemberService.getValidReadByIdAndUnionId(opportunity.getFromMemberId(), opportunity.getUnionId());
         if (fromMember == null) {
             throw new BusinessException("找不到商机推荐者信息");
         }
@@ -403,9 +403,9 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidWriteByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         // （2）获取所有已接受但未支付的商机id列表
         List<UnionOpportunity> opportunityList = unionOpportunityService.listByUnionIdAndToMemberIdAndAcceptStatusAndIsClose(unionId,
@@ -471,7 +471,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
             }
         } else {
             BusUser busUser = busUserService.getBusUserByPhone(phone);
-            if (busUser != null && unionMemberService.existOwnerByBusId(busUser.getId())) {
+            if (busUser != null && unionMemberService.existValidOwnerByBusId(busUser.getId())) {
                 H5BrokerageUser h5BrokerageUser = new H5BrokerageUser();
                 h5BrokerageUser.setBusUser(busUser);
 
@@ -501,7 +501,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
 
         Integer unionId = opportunity.getUnionId();
         Integer busId = h5BrokerageUser.getVerifier().getBusId();
-        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null || !member.getId().equals(opportunity.getFromMemberId())) {
             throw new BusinessException("无法催促别人的商机");
         }
@@ -524,7 +524,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         }
 
         Integer busId = h5BrokerageUser.getVerifier().getBusId();
-        List<UnionMember> memberList = unionMemberService.listReadByBusId(busId);
+        List<UnionMember> memberList = unionMemberService.listValidReadByBusId(busId);
         if (optUnionId != null) {
             memberList = unionMemberService.filterByUnionId(memberList, optUnionId);
         }
@@ -540,7 +540,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         }
 
         Integer busId = h5BrokerageUser.getVerifier().getBusId();
-        List<UnionMember> memberList = unionMemberService.listReadByBusId(busId);
+        List<UnionMember> memberList = unionMemberService.listValidReadByBusId(busId);
         if (optUnionId != null) {
             memberList = unionMemberService.filterByUnionId(memberList, optUnionId);
         }
@@ -556,7 +556,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         }
 
         Integer busId = h5BrokerageUser.getVerifier().getBusId();
-        List<UnionMember> memberList = unionMemberService.listReadByBusId(busId);
+        List<UnionMember> memberList = unionMemberService.listValidReadByBusId(busId);
         if (optUnionId != null) {
             memberList = unionMemberService.filterByUnionId(memberList, optUnionId);
         }
@@ -573,7 +573,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         }
 
         Integer busId = h5BrokerageUser.getVerifier().getBusId();
-        List<UnionMember> memberList = unionMemberService.listReadByBusId(busId);
+        List<UnionMember> memberList = unionMemberService.listValidReadByBusId(busId);
         if (optUnionId != null) {
             memberList = unionMemberService.filterByUnionId(memberList, optUnionId);
         }

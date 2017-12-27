@@ -37,7 +37,7 @@ public class ErpApiController {
 	public GtJsonResult<List<ErpTypeVO>> listErpType(HttpServletRequest request) throws Exception {
 		BusUser busUser = SessionUtils.getLoginUser(request);
 		if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-			throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
+			throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
 		}
 		Integer busId = busUser.getId();
 		List<ErpTypeVO> list = erpService.listErpByBusId(busId);
@@ -55,7 +55,7 @@ public class ErpApiController {
 					@RequestParam(value = "search", required = false) String search) throws Exception {
 		BusUser busUser = SessionUtils.getLoginUser(request);
 		if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-			throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
+			throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
 		}
 		List<ErpServerVO> list = erpService.listErpServer(shopId, erpModel, search, page, busUser.getId());
 		page.setRecords(list);
