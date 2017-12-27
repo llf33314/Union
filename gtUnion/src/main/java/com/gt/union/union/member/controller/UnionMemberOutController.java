@@ -101,10 +101,10 @@ public class UnionMemberOutController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
+            throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
         }
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
-            unionMemberOutService.updateStatusByBusIdAndIdAndUnionId(busId, outId, unionId, isPass);
+            unionMemberOutService.updateByBusIdAndIdAndUnionId(busId, outId, unionId, isPass);
         }
         return GtJsonResult.instanceSuccessMsg().toString();
     }
@@ -121,7 +121,7 @@ public class UnionMemberOutController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
+            throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
         }
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionMemberOutService.saveByBusIdAndUnionId(busId, unionId, reason);
@@ -140,7 +140,7 @@ public class UnionMemberOutController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
+            throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
         }
 
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {

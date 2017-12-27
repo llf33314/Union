@@ -90,7 +90,7 @@ public class H5CardServiceImpl implements IH5CardService {
 			throw new ParamException(CommonConstant.PARAM_ERROR);
 		}
 		IndexVO indexVO = new IndexVO();
-		List<UnionMember> members = unionMemberService.listWriteByBusId(busId);
+		List<UnionMember> members = unionMemberService.listValidWriteByBusId(busId);
 		List indexCardList = new ArrayList<>();
 		if(ListUtil.isNotEmpty(members)){
 			//入盟时间倒序
@@ -197,9 +197,9 @@ public class H5CardServiceImpl implements IH5CardService {
 		if (!unionMainService.isUnionValid(union)) {
 			throw new BusinessException(CommonConstant.UNION_INVALID);
 		}
-		final UnionMember unionMember = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+		final UnionMember unionMember = unionMemberService.getValidWriteByBusIdAndUnionId(busId, unionId);
 		if (unionMember == null) {
-			throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+			throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
 		}
 		CardDetailVO result = new CardDetailVO();
 		result.setIsTransacted(CommonConstant.COMMON_YES);
@@ -217,7 +217,7 @@ public class H5CardServiceImpl implements IH5CardService {
 			}
 			result.setCardType(CardConstant.TYPE_DISCOUNT);
 			result.setCardName(union.getName() + "折扣卡");
-			List<UnionMember> members = unionMemberService.listWriteByUnionId(unionId);
+			List<UnionMember> members = unionMemberService.listValidWriteByUnionId(unionId);
 			List<CardDetailListVO> list = new ArrayList<CardDetailListVO>(members.size());
 			if(ListUtil.isNotEmpty(members)){
 				for(UnionMember member : members){
@@ -261,7 +261,7 @@ public class H5CardServiceImpl implements IH5CardService {
 			int itemCount = 0;
 			List<CardDetailListVO> list = new ArrayList<CardDetailListVO>();
 			//已通过审核
-			List<UnionMember> members = unionMemberService.listWriteByUnionId(unionId);
+			List<UnionMember> members = unionMemberService.listValidWriteByUnionId(unionId);
 			if(ListUtil.isNotEmpty(members)){
 				//本商家盟员在前面，其他按时间倒序
 				Collections.sort(members, new Comparator<UnionMember>() {

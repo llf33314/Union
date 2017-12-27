@@ -1124,12 +1124,12 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         // （2）	判断memberId有效性
-        UnionMember tgtMember = unionMemberService.getReadByIdAndUnionId(memberId, unionId);
+        UnionMember tgtMember = unionMemberService.getValidReadByIdAndUnionId(memberId, unionId);
         if (tgtMember == null) {
             throw new BusinessException("找不到盟员信息");
         }
@@ -1184,7 +1184,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	获取商家所有有效的member
-        List<UnionMember> memberList = unionMemberService.listReadByBusId(busId);
+        List<UnionMember> memberList = unionMemberService.listValidReadByBusId(busId);
         // （2）	根据unionId过滤掉一些member
         List<UnionMember> toMemberList = new ArrayList<>();
         if (optUnionId == null) {
@@ -1223,7 +1223,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	获取所有有效的member
-        List<UnionMember> readMemberList = unionMemberService.listReadByBusId(busId);
+        List<UnionMember> readMemberList = unionMemberService.listValidReadByBusId(busId);
         List<Integer> readMemberIdList = new ArrayList<>();
         if (ListUtil.isNotEmpty(readMemberList)) {
             for (UnionMember readMember : readMemberList) {
@@ -1343,15 +1343,15 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
                 if (!unionMainService.isUnionValid(opportunity.getUnionId())) {
                     throw new BusinessException(CommonConstant.UNION_INVALID);
                 }
-                UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, opportunity.getUnionId());
+                UnionMember member = unionMemberService.getValidWriteByBusIdAndUnionId(busId, opportunity.getUnionId());
                 if (member == null) {
-                    throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+                    throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
                 }
-                UnionMember toMember = unionMemberService.getWriteByIdAndUnionId(opportunity.getToMemberId(), opportunity.getUnionId());
+                UnionMember toMember = unionMemberService.getValidWriteByIdAndUnionId(opportunity.getToMemberId(), opportunity.getUnionId());
                 if (toMember == null || !toMember.getId().equals(member.getId())) {
                     throw new BusinessException("找不到商机接受者信息或信息不匹配");
                 }
-                UnionMember fromMember = unionMemberService.getReadByIdAndUnionId(opportunity.getFromMemberId(), opportunity.getUnionId());
+                UnionMember fromMember = unionMemberService.getValidReadByIdAndUnionId(opportunity.getFromMemberId(), opportunity.getUnionId());
                 if (fromMember == null) {
                     throw new BusinessException("找不到商机推荐者信息");
                 }

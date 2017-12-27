@@ -50,8 +50,87 @@ public class UnionMainServiceImpl implements IUnionMainService {
 
     //********************************************* Base On Business - get *********************************************
 
-    //********************************************* Base On Business - list ********************************************
+    @Override
+    public UnionVO getUnionVOByBusIdAndId(Integer busId, Integer unionId) throws Exception {
+        if (busId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member读权限
+        if (!isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
+        }
 
+        UnionVO result = new UnionVO();
+        UnionMain union = getValidById(unionId);
+        result.setUnion(union);
+
+        List<UnionMainDict> itemList = unionMainDictService.listValidByUnionId(unionId);
+        result.setItemList(itemList);
+
+        return result;
+    }
+
+    @Override
+    public List<UnionMain> listValidJoinByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        // （1）获取我创建和已加入的联盟id列表
+        List<UnionMember> memberList = unionMemberService.listValidByBusId(busId);
+        List<Integer> unionIdList = unionMemberService.getUnionIdList(memberList);
+        // （2）缓存穿透：获取所有有效的，但不包括我创建和加入的联盟列表信息
+        EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .gt("validity", DateUtil.getCurrentDate())
+                .notIn("id", unionIdList)
+                .orderBy("create_time", true);
+
+        return unionMainDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionMain> listValidReadByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMember> readMemberList = unionMemberService.listValidReadByBusId(busId);
+
+        return getValidUnionList(readMemberList);
+    }
+
+    @Override
+    public List<UnionMain> listValidWriteByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMember> writeMemberList = unionMemberService.listValidWriteByBusId(busId);
+
+        return getValidUnionList(writeMemberList);
+    }
+
+    private List<UnionMain> getValidUnionList(List<UnionMember> memberList) throws Exception {
+        List<UnionMain> result = new ArrayList<>();
+
+        if (ListUtil.isNotEmpty(memberList)) {
+            for (UnionMember member : memberList) {
+                UnionMain union = getValidById(member.getUnionId());
+                if (isUnionValid(union)) {
+                    result.add(union);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    //********************************************* Base On Business - list ********************************************
 
     //********************************************* Base On Business - save ********************************************
 
@@ -59,7 +138,131 @@ public class UnionMainServiceImpl implements IUnionMainService {
 
     //********************************************* Base On Business - update ******************************************
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateUnionVOByBusIdAndId(Integer busId, Integer unionId, UnionVO vo) throws Exception {
+        if (busId == null || unionId == null || vo == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member读权限、盟主权限
+        if (!isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getValidWriteByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
+        }
+        if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
+            throw new BusinessException(CommonConstant.UNION_OWNER_ERROR);
+        }
+        // （2）	校验表单
+        UnionMain updateUnion = new UnionMain();
+        updateUnion.setId(unionId);
+        updateUnion.setModifyTime(DateUtil.getCurrentDate());
+        UnionMain voUnion = vo.getUnion();
+        if (voUnion == null) {
+            throw new BusinessException("请填写联盟设置信息");
+        }
+        // （2-1）联盟名称
+        String voUnionName = voUnion.getName();
+        if (StringUtil.isEmpty(voUnionName)) {
+            throw new BusinessException("联盟名称不能为空");
+        }
+        if (StringUtil.getStringLength(voUnionName) > 20) {
+            throw new BusinessException("联盟名称字数不能大于20");
+        }
+        updateUnion.setName(voUnionName);
+        // （2-2）联盟图标
+        String voUnionImg = voUnion.getImg();
+        if (StringUtil.isEmpty(voUnionImg)) {
+            throw new BusinessException("联盟图标不能为空");
+        }
+        updateUnion.setImg(voUnionImg);
+        // （2-3）联盟说明
+        String voUnionIllustration = voUnion.getIllustration();
+        if (StringUtil.isEmpty(voUnionIllustration)) {
+            throw new BusinessException("联盟说明不能为空");
+        }
+        if (StringUtil.getStringLength(voUnionIllustration) > 60) {
+            throw new BusinessException("联盟说明字数不能大于60");
+        }
+        updateUnion.setIllustration(voUnionIllustration);
+        // （2-4）加盟方式
+        Integer voUnionJoinType = voUnion.getJoinType();
+        if (voUnionJoinType == null) {
+            throw new BusinessException("加盟方式不能为空");
+        }
+        if (UnionConstant.JOIN_TYPE_RECOMMEND != voUnionJoinType && UnionConstant.JOIN_TYPE_APPLY_RECOMMEND != voUnionJoinType) {
+            throw new BusinessException("加盟方式参数值有误");
+        }
+        updateUnion.setJoinType(voUnionJoinType);
+        // （2-5）是否开启积分
+        UnionMain union = getById(unionId);
+        if (UnionConstant.IS_INTEGRAL_YES != union.getIsIntegral()) {
+            Integer voUnionIsIntegral = voUnion.getIsIntegral();
+            if (UnionConstant.IS_INTEGRAL_YES == voUnionIsIntegral) {
+                updateUnion.setIsIntegral(UnionConstant.IS_INTEGRAL_YES);
+            }
+        }
+        // （2-6）入盟申请必填信息
+        List<UnionMainDict> dictList = unionMainDictService.listValidByUnionId(unionId);
+        List<Integer> removeDictIdList = unionMainDictService.getIdList(dictList);
+
+        List<UnionMainDict> saveDictList = vo.getItemList();
+        for (UnionMainDict dict : saveDictList) {
+            if (!unionId.equals(dict.getUnionId())) {
+                throw new BusinessException("入盟申请必填信息不能绑定到其他联盟中");
+            }
+        }
+
+        // 事务操作
+        update(updateUnion);
+        if (ListUtil.isNotEmpty(removeDictIdList)) {
+            unionMainDictService.removeBatchById(removeDictIdList);
+        }
+        if (ListUtil.isNotEmpty(saveDictList)) {
+            unionMainDictService.saveBatch(saveDictList);
+        }
+    }
+
     //********************************************* Base On Business - other *******************************************
+
+    @Override
+    public Integer countSurplusByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        UnionMain union = getValidById(unionId);
+        if (!isUnionValid(union)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        List<UnionMember> memberList = unionMemberService.listValidReadByUnionId(unionId);
+
+        Integer memberLimit = union.getMemberLimit() != null ? union.getMemberLimit() : 0;
+        Integer memberCount = ListUtil.isNotEmpty(memberList) ? memberList.size() : 0;
+
+        return memberLimit - memberCount;
+    }
+
+    @Override
+    public boolean isUnionValid(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        UnionMain union = getValidById(unionId);
+
+        return isUnionValid(union);
+    }
+
+    @Override
+    public boolean isUnionValid(UnionMain union) throws Exception {
+        if (union == null) {
+            throw new ParamException(CommonConstant.UNION_INVALID);
+        }
+
+        return union.getValidity().compareTo(DateUtil.getCurrentDate()) >= 0;
+    }
 
     //********************************************* Base On Business - filter ******************************************
 
@@ -345,258 +548,5 @@ public class UnionMainServiceImpl implements IUnionMainService {
         }
         return result;
     }
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    @Override
-    public UnionVO getUnionVOByBusIdAndId(Integer busId, Integer unionId) throws Exception {
-        if (busId == null || unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // （1）	判断union有效性和member读权限
-        if (!isUnionValid(unionId)) {
-            throw new BusinessException(CommonConstant.UNION_INVALID);
-        }
-        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
-        if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
-        }
-
-        UnionVO result = new UnionVO();
-        UnionMain union = getById(unionId);
-        result.setUnion(union);
-
-        List<UnionMainDict> itemList = unionMainDictService.listByUnionId(unionId);
-        result.setItemList(itemList);
-
-        return result;
-    }
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void updateUnionVOByBusIdAndId(Integer busId, Integer unionId, UnionVO vo) throws Exception {
-        if (busId == null || unionId == null || vo == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // （1）	判断union有效性和member写权限、盟主权限
-        if (!isUnionValid(unionId)) {
-            throw new BusinessException(CommonConstant.UNION_INVALID);
-        }
-        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
-        if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
-        }
-        if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
-            throw new BusinessException(CommonConstant.UNION_NEED_OWNER);
-        }
-        // （2）	校验表单
-        UnionMain updateUnion = new UnionMain();
-        updateUnion.setId(unionId);
-        updateUnion.setModifyTime(DateUtil.getCurrentDate());
-        UnionMain voUnion = vo.getUnion();
-        if (voUnion == null) {
-            throw new BusinessException("请填写联盟设置信息");
-        }
-        // （2-1）联盟名称
-        String voUnionName = voUnion.getName();
-        if (StringUtil.isEmpty(voUnionName)) {
-            throw new BusinessException("联盟名称不能为空");
-        }
-        if (StringUtil.getStringLength(voUnionName) > 5) {
-            throw new BusinessException("联盟名称字数不能大于5");
-        }
-        updateUnion.setName(voUnionName);
-        // （2-2）联盟图标
-        String voUnionImg = voUnion.getImg();
-        if (StringUtil.isEmpty(voUnionImg)) {
-            throw new BusinessException("联盟图标不能为空");
-        }
-        updateUnion.setImg(voUnionImg);
-        // （2-3）联盟说明
-        String voUnionIllustration = voUnion.getIllustration();
-        if (StringUtil.isEmpty(voUnionIllustration)) {
-            throw new BusinessException("联盟说明不能为空");
-        }
-        if (StringUtil.getStringLength(voUnionIllustration) > 20) {
-            throw new BusinessException("联盟说明字数不能大于20");
-        }
-        updateUnion.setIllustration(voUnionIllustration);
-        // （2-4）加盟方式
-        Integer voUnionJoinType = voUnion.getJoinType();
-        if (voUnionJoinType == null) {
-            throw new BusinessException("加盟方式不能为空");
-        }
-        if (UnionConstant.JOIN_TYPE_RECOMMEND != voUnionJoinType && UnionConstant.JOIN_TYPE_APPLY_RECOMMEND != voUnionJoinType) {
-            throw new BusinessException("加盟方式参数值有误");
-        }
-        updateUnion.setJoinType(voUnionJoinType);
-        // （2-5）是否开启积分
-        UnionMain union = getById(unionId);
-        if (UnionConstant.IS_INTEGRAL_YES != union.getIsIntegral()) {
-            Integer voUnionIsIntegral = voUnion.getIsIntegral();
-            if (UnionConstant.IS_INTEGRAL_YES == voUnionIsIntegral) {
-                updateUnion.setIsIntegral(UnionConstant.IS_INTEGRAL_YES);
-            }
-        }
-        // （2-6）入盟申请必填信息
-        List<Integer> removeDictIdList = new ArrayList<>();
-        List<UnionMainDict> dictList = unionMainDictService.listByUnionId(unionId);
-        if (ListUtil.isNotEmpty(dictList)) {
-            for (UnionMainDict dict : dictList) {
-                removeDictIdList.add(dict.getId());
-            }
-        }
-        List<UnionMainDict> saveDictList = vo.getItemList();
-        for (UnionMainDict dict : saveDictList) {
-            if (!unionId.equals(dict.getUnionId())) {
-                throw new BusinessException("入盟申请必填信息不能绑定到其他联盟中");
-            }
-        }
-
-        // 事务操作
-        update(updateUnion);
-        unionMainDictService.removeBatchById(removeDictIdList);
-        unionMainDictService.saveBatch(saveDictList);
-    }
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    @Override
-    public Integer countSurplusByUnionId(Integer unionId) throws Exception {
-        if (unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        UnionMain union = getById(unionId);
-        if (union == null || !isUnionValid(union)) {
-            throw new BusinessException(CommonConstant.UNION_INVALID);
-        }
-        List<UnionMember> memberList = unionMemberService.listReadByUnionId(unionId);
-
-        Integer memberLimit = union.getMemberLimit();
-        memberLimit = memberLimit != null ? memberLimit : 0;
-        Integer memberCount = ListUtil.isNotEmpty(memberList) ? memberList.size() : 0;
-
-        return memberLimit - memberCount;
-    }
-
-    //***************************************** Domain Driven Design - boolean *****************************************
-
-    @Override
-    public boolean isUnionValid(Integer unionId) throws Exception {
-        if (unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        UnionMain union = getById(unionId);
-
-        return isUnionValid(union);
-    }
-
-    @Override
-    public boolean isUnionValid(UnionMain union) throws Exception {
-        if (union == null) {
-            throw new ParamException(CommonConstant.UNION_INVALID);
-        }
-
-        return union.getValidity().compareTo(DateUtil.getCurrentDate()) >= 0;
-    }
-
-
-    //***************************************** Object As a Service - list *********************************************
-
-    @Override
-    public List<UnionMain> listJoinValidByBusId(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        // （1）获取我创建和已加入的联盟id列表
-        List<Integer> unionIdList = new ArrayList<>();
-        List<UnionMember> memberList = unionMemberService.listByBusId(busId);
-        if (ListUtil.isNotEmpty(memberList)) {
-            for (UnionMember member : memberList) {
-                unionIdList.add(member.getUnionId());
-            }
-        }
-        // （2）缓存穿透：获取所有有效的，但不包括我创建和加入的联盟列表信息
-        EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .gt("validity", DateUtil.getCurrentDate())
-                .notIn("id", unionIdList);
-
-        return unionMainDao.selectList(entityWrapper);
-    }
-
-    @Override
-    public List<UnionMain> listMyValidReadByBusId(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionMember> readMemberList = unionMemberService.listReadByBusId(busId);
-
-        return getValidUnionList(readMemberList);
-    }
-
-    private List<UnionMain> getValidUnionList(List<UnionMember> memberList) throws Exception {
-        List<UnionMain> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(memberList)) {
-            for (UnionMember member : memberList) {
-                UnionMain union = getById(member.getUnionId());
-                if (isUnionValid(union)) {
-                    result.add(union);
-                }
-            }
-        }
-        return result;
-    }
-
-    @Override
-    public List<UnionMain> listMyValidWriteByBusId(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionMember> writeMemberList = unionMemberService.listWriteByBusId(busId);
-
-        return getValidUnionList(writeMemberList);
-    }
-
-    @Override
-    public List<UnionVO> listUnionVOByBusId(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionVO> result = new ArrayList<>();
-        List<UnionMember> readMemberList = unionMemberService.listReadByBusId(busId);
-        if (ListUtil.isNotEmpty(readMemberList)) {
-            for (UnionMember readMember : readMemberList) {
-                UnionMain union = getById(readMember.getUnionId());
-                if (isUnionValid(union)) {
-                    UnionVO vo = new UnionVO();
-                    vo.setUnion(union);
-
-                    List<UnionMainDict> itemList = unionMainDictService.listByUnionId(union.getId());
-                    vo.setItemList(itemList);
-
-                    result.add(vo);
-                }
-            }
-        }
-
-        return result;
-    }
-
+    
 }

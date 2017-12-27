@@ -100,7 +100,7 @@ public class LoginFilter implements Filter {
                 if (busUser == null) {
                     response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
                 } else if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                    response.getWriter().write(GtJsonResult.instanceErrorMsg(CommonConstant.UNION_BUS_PARENT_MSG).toString());
+                    response.getWriter().write(GtJsonResult.instanceErrorMsg(CommonConstant.BUS_PARENT_TIP).toString());
                 } else {
                     h5BrokerageUser = new H5BrokerageUser();
                     h5BrokerageUser.setBusUser(busUser);

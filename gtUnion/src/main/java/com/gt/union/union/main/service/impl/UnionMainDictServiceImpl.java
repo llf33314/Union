@@ -36,6 +36,22 @@ public class UnionMainDictServiceImpl implements IUnionMainDictService {
 
     //********************************************* Base On Business - list ********************************************
 
+    @Override
+    public List<String> listItemKeyByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<String> result = new ArrayList<>();
+        List<UnionMainDict> itemList = listValidByUnionId(unionId);
+        if (ListUtil.isNotEmpty(itemList)) {
+            for (UnionMainDict item : itemList) {
+                result.add(item.getItemKey());
+            }
+        }
+
+        return result;
+    }
 
     //********************************************* Base On Business - save ********************************************
 
@@ -435,36 +451,5 @@ public class UnionMainDictServiceImpl implements IUnionMainDictService {
         }
         return result;
     }
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    @Override
-    public List<String> listItemKeyByUnionId(Integer unionId) throws Exception {
-        if (unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<String> result = new ArrayList<>();
-        List<UnionMainDict> itemList = listByUnionId(unionId);
-        if (ListUtil.isNotEmpty(itemList)) {
-            for (UnionMainDict item : itemList) {
-                result.add(item.getItemKey());
-            }
-        }
-        return result;
-    }
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    //***************************************** Domain Driven Design - boolean *****************************************
 
 }

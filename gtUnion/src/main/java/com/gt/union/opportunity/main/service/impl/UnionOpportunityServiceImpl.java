@@ -697,9 +697,9 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getReadByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_READ_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         // （2）	获取已接受的我推荐的商机，区分是否已支付
         OpportunityStatisticsVO result = new OpportunityStatisticsVO();
@@ -811,7 +811,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	获取商家所有有效的member
-        List<UnionMember> memberList = unionMemberService.listReadByBusId(busId);
+        List<UnionMember> memberList = unionMemberService.listValidReadByBusId(busId);
         // （2）	根据unionId过滤掉一些member
         List<UnionMember> toMemberList = new ArrayList<>();
         if (optUnionId == null) {
@@ -856,10 +856,10 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
                 }
                 vo.setUnion(union);
 
-                UnionMember fromMember = unionMemberService.getByIdAndUnionId(opportunity.getFromMemberId(), union.getId());
+                UnionMember fromMember = unionMemberService.getValidByIdAndUnionId(opportunity.getFromMemberId(), union.getId());
                 vo.setFromMember(fromMember);
 
-                UnionMember toMember = unionMemberService.getByIdAndUnionId(opportunity.getToMemberId(), union.getId());
+                UnionMember toMember = unionMemberService.getValidByIdAndUnionId(opportunity.getToMemberId(), union.getId());
                 vo.setToMember(toMember);
 
                 result.add(vo);
@@ -905,7 +905,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	获取商家所有有效的member
-        List<UnionMember> memberList = unionMemberService.listReadByBusId(busId);
+        List<UnionMember> memberList = unionMemberService.listValidReadByBusId(busId);
         // （2）	根据unionId过滤掉一些member
         List<UnionMember> fromMemberList = new ArrayList<>();
         if (optUnionId == null) {
@@ -1013,9 +1013,9 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
                 BrokerageOpportunityVO vo = new BrokerageOpportunityVO();
                 vo.setOpportunity(opportunity);
 
-                vo.setFromMember(unionMemberService.getReadByIdAndUnionId(opportunity.getFromMemberId(), opportunity.getUnionId()));
+                vo.setFromMember(unionMemberService.getValidReadByIdAndUnionId(opportunity.getFromMemberId(), opportunity.getUnionId()));
 
-                vo.setToMember(unionMemberService.getReadByIdAndUnionId(opportunity.getToMemberId(), opportunity.getUnionId()));
+                vo.setToMember(unionMemberService.getValidReadByIdAndUnionId(opportunity.getToMemberId(), opportunity.getUnionId()));
 
                 vo.setUnion(unionMainService.getById(opportunity.getUnionId()));
 
@@ -1083,9 +1083,9 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         if (!unionMainService.isUnionValid(union)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidWriteByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         // （2）	校验表单数据
         UnionOpportunity saveOpportunity = new UnionOpportunity();
@@ -1101,7 +1101,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         if (toMemberId == null) {
             throw new BusinessException("商机接受者不能为空");
         }
-        UnionMember toMember = unionMemberService.getWriteByIdAndUnionId(toMemberId, unionId);
+        UnionMember toMember = unionMemberService.getValidWriteByIdAndUnionId(toMemberId, unionId);
         if (toMember == null) {
             throw new BusinessException("找不到商机接受者信息");
         }
@@ -1155,9 +1155,9 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         if (!unionMainService.isUnionValid(union)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getWriteByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidWriteByBusIdAndUnionId(busId, unionId);
         if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_WRITE_REJECT);
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         // （2）	判断opportunityId有效性
         UnionOpportunity opportunity = getByIdAndUnionIdAndToMemberId(opportunityId, unionId, member.getId());
@@ -1189,7 +1189,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
         update(updateOpportunity);
         // （5）发送短信通知
-        UnionMember fromMember = unionMemberService.getReadByIdAndUnionId(opportunity.getFromMemberId(), unionId);
+        UnionMember fromMember = unionMemberService.getValidReadByIdAndUnionId(opportunity.getFromMemberId(), unionId);
         if (fromMember != null) {
             String phone = StringUtil.isNotEmpty(fromMember.getNotifyPhone()) ? fromMember.getNotifyPhone() : fromMember.getDirectorPhone();
             String content = "\"" + union.getName() + "\"的盟员\""

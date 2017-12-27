@@ -77,28 +77,10 @@ public class UnionMainController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             voList = MockUtil.list(UnionMain.class, page.getSize());
         } else {
-            voList = unionMainService.listJoinValidByBusId(busId);
+            voList = unionMainService.listValidJoinByBusId(busId);
         }
         Page<UnionMain> result = (Page<UnionMain>) page;
         result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result).toString();
-    }
-
-    @ApiOperation(value = "辅助接口：获取我的联盟列表", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/my", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String listMy(HttpServletRequest request) throws Exception {
-        BusUser busUser = SessionUtils.getLoginUser(request);
-        Integer busId = busUser.getId();
-        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
-        }
-        // mock
-        List<UnionVO> result;
-        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            result = MockUtil.list(UnionVO.class, 3);
-        } else {
-            result = unionMainService.listUnionVOByBusId(busId);
-        }
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -115,7 +97,7 @@ public class UnionMainController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
+            throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
         }
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionMainService.updateUnionVOByBusIdAndId(busId, unionId, unionMainVO);

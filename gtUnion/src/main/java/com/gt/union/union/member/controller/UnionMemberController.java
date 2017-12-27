@@ -44,7 +44,7 @@ public class UnionMemberController {
     //-------------------------------------------------- get -----------------------------------------------------------
 
     @ApiOperation(value = "分页：我的联盟-首页-盟员列表；分页：我的联盟-联盟卡设置-折扣卡设置", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/unionId/{unionId}/write/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/read/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageWriteByUnionId(
             HttpServletRequest request,
             Page page,
@@ -62,7 +62,7 @@ public class UnionMemberController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             memberList = MockUtil.list(UnionMember.class, page.getSize());
         } else {
-            memberList = unionMemberService.listWriteByBusIdAndUnionId(busId, unionId, optMemberName);
+            memberList = unionMemberService.listValidReadByBusIdAndUnionId(busId, unionId, optMemberName);
         }
 
         Page<UnionMember> result = (Page<UnionMember>) page;
@@ -71,7 +71,7 @@ public class UnionMemberController {
     }
 
     @ApiOperation(value = "导出：我的联盟-首页-盟员列表", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/unionId/{unionId}/write/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/read/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public void exportWriteByUnionId(
             HttpServletRequest request,
             HttpServletResponse response,
@@ -89,7 +89,7 @@ public class UnionMemberController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             memberList = MockUtil.list(UnionMember.class, 20);
         } else {
-            memberList = unionMemberService.listWriteByBusIdAndUnionId(busId, unionId, optMemberName);
+            memberList = unionMemberService.listValidReadByBusIdAndUnionId(busId, unionId, optMemberName);
         }
         String[] titles = new String[]{"盟员名称", "负责人", "联系电话", "加入时间"};
         HSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);
@@ -141,7 +141,7 @@ public class UnionMemberController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             result = MockUtil.get(UnionMember.class);
         } else {
-            result = unionMemberService.getByBusIdAndIdAndUnionId(busId, memberId, unionId);
+            result = unionMemberService.getValidByBusIdAndIdAndUnionId(busId, memberId, unionId);
         }
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
@@ -168,7 +168,7 @@ public class UnionMemberController {
     }
 
     @ApiOperation(value = "辅助接口：获取指定联盟下具有写权限的但不包括我的盟员列表", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/unionId/{unionId}/write/other", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/read/other", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listOtherWriteByUnionId(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
@@ -182,7 +182,7 @@ public class UnionMemberController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             result = MockUtil.list(UnionMember.class, 30);
         } else {
-            result = unionMemberService.listOtherWriteByBusIdAndUnionId(busId, unionId);
+            result = unionMemberService.listOtherValidReadByBusIdAndUnionId(busId, unionId);
         }
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
@@ -202,7 +202,7 @@ public class UnionMemberController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
+            throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
         }
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionMemberService.updateByBusIdAndIdAndUnionId(busId, memberId, unionId, member);
@@ -223,7 +223,7 @@ public class UnionMemberController {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            throw new BusinessException(CommonConstant.UNION_BUS_PARENT_MSG);
+            throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
         }
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
             unionMemberService.updateDiscountByBusIdAndIdAndUnionId(busId, memberId, unionId, discount);

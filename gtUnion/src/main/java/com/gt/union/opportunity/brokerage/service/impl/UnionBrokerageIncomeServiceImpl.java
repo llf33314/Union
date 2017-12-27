@@ -900,7 +900,7 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	获取商家所有有效的member
-        List<UnionMember> memberList = unionMemberService.listReadByBusId(busId);
+        List<UnionMember> memberList = unionMemberService.listValidReadByBusId(busId);
         // （2）	根据unionId过滤掉一些member
         List<UnionMember> fromMemberList = new ArrayList<>();
         if (optUnionId == null) {

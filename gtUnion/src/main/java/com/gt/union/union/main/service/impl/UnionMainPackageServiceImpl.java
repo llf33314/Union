@@ -48,8 +48,64 @@ public class UnionMainPackageServiceImpl implements IUnionMainPackageService {
 
     //********************************************* Base On Business - get *********************************************
 
+    @Override
+    public UnionMainPackage getValidByLevel(Integer level) throws Exception {
+        if (level == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMainPackage> result = listValidByLevel(level);
+
+        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
+    }
+
+    @Override
+    public UnionPackageVO getUnionPackageVOByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        UnionPackageVO result = new UnionPackageVO();
+        // （1）	获取商家版本名称(如升级版)
+        BusUser busUser = busUserService.getBusUserById(busId);
+        if (busUser == null) {
+            throw new BusinessException(CommonConstant.BUS_NOT_FOUND);
+        }
+        String busVersionName = dictService.getBusUserLevel(busUser.getLevel());
+        result.setBusVersionName(busVersionName);
+        // （2）获取联盟版本名称(如盟主版)
+        UserUnionAuthority authority = busUserService.getUserUnionAuthority(busId);
+        if (authority != null) {
+            result.setUnionVersionName(authority.getUnionVersionName());
+        }
+        // （3）获取套餐列表，并按年限顺序排序
+        List<UnionMainPackage> packageList = listValidByLevel(busUser.getLevel());
+        Collections.sort(packageList, new Comparator<UnionMainPackage>() {
+            @Override
+            public int compare(UnionMainPackage o1, UnionMainPackage o2) {
+                return o1.getYear().compareTo(o2.getYear());
+            }
+        });
+        result.setPackageList(packageList);
+
+        return result;
+    }
+
     //********************************************* Base On Business - list ********************************************
 
+    @Override
+    public List<UnionMainPackage> listValidByLevel(Integer level) throws Exception {
+        if (level == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionMainPackage> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .eq("level", level)
+                .orderBy("year", true);
+
+        return unionMainPackageDao.selectList(entityWrapper);
+    }
 
     //********************************************* Base On Business - save ********************************************
 
@@ -343,80 +399,5 @@ public class UnionMainPackageServiceImpl implements IUnionMainPackageService {
         }
         return result;
     }
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    @Override
-    public UnionMainPackage getByLevel(Integer level) throws Exception {
-        if (level == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionMainPackage> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("level", level)
-                .eq("del_status", CommonConstant.COMMON_NO);
-
-        return unionMainPackageDao.selectOne(entityWrapper);
-    }
-
-    @Override
-    public UnionPackageVO getUnionPackageVOByBusId(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        UnionPackageVO result = new UnionPackageVO();
-        // （1）	获取商家版本名称(如升级版)
-        BusUser busUser = busUserService.getBusUserById(busId);
-        if (busUser == null) {
-            throw new BusinessException(CommonConstant.UNION_BUS_NOT_FOUND);
-        }
-        String busVersionName = dictService.getBusUserLevel(busUser.getLevel());
-        result.setBusVersionName(busVersionName);
-        // （2）获取联盟版本名称(如盟主版)
-        UserUnionAuthority authority = busUserService.getUserUnionAuthority(busId);
-        if (authority != null) {
-            result.setUnionVersionName(authority.getUnionVersionName());
-        }
-        // （3）获取套餐列表，并按年限顺序排序
-        List<UnionMainPackage> packageList = listByLevel(busUser.getLevel());
-        Collections.sort(packageList, new Comparator<UnionMainPackage>() {
-            @Override
-            public int compare(UnionMainPackage o1, UnionMainPackage o2) {
-                return o1.getYear().compareTo(o2.getYear());
-            }
-        });
-        result.setPackageList(packageList);
-
-        return result;
-    }
-
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    @Override
-    public List<UnionMainPackage> listByLevel(Integer level) throws Exception {
-        if (level == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionMainPackage> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("level", level)
-                .eq("del_status", CommonConstant.COMMON_NO)
-                .orderBy("year", true);
-
-        return unionMainPackageDao.selectList(entityWrapper);
-    }
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    //***************************************** Domain Driven Design - boolean *****************************************
-
-
+    
 }

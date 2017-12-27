@@ -17,6 +17,15 @@ public interface IUnionMainDictService {
 
     //********************************************* Base On Business - list ********************************************
 
+    /**
+     * 获取未删除的入盟必填字段列表信息
+     *
+     * @param unionId unionId 联盟id
+     * @return List<String>
+     * @throws Exception 统一处理异常
+     */
+    List<String> listItemKeyByUnionId(Integer unionId) throws Exception;
+
     //********************************************* Base On Business - save ********************************************
 
     //********************************************* Base On Business - remove ******************************************
@@ -177,33 +186,5 @@ public interface IUnionMainDictService {
      * @throws Exception 统一处理异常
      */
     void updateBatch(List<UnionMainDict> updateUnionMainDictList) throws Exception;
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-
-    /**
-     * 获取入盟必填字段列表信息
-     *
-     * @param unionId unionId 联盟id
-     * @return List<String>
-     * @throws Exception 统一处理异常
-     */
-    List<String> listItemKeyByUnionId(Integer unionId) throws Exception;
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    //***************************************** Domain Driven Design - boolean *****************************************
-
+    
 }
