@@ -1,6 +1,7 @@
 package com.gt.union.opportunity.brokerage.service;
 
-import com.baomidou.mybatisplus.service.IService;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.opportunity.brokerage.entity.UnionBrokeragePay;
 import com.gt.union.opportunity.brokerage.vo.BrokerageOpportunityVO;
 import com.gt.union.opportunity.brokerage.vo.BrokeragePayVO;
@@ -14,7 +15,336 @@ import java.util.List;
  * @author linweicong
  * @version 2017-11-24 09:21:28
  */
-public interface IUnionBrokeragePayService extends IService<UnionBrokeragePay> {
+public interface IUnionBrokeragePayService {
+    //********************************************* Base On Business - get *********************************************
+
+    //********************************************* Base On Business - list ********************************************
+
+    //********************************************* Base On Business - save ********************************************
+
+    //********************************************* Base On Business - remove ******************************************
+
+    //********************************************* Base On Business - update ******************************************
+
+    //********************************************* Base On Business - other *******************************************
+
+    //********************************************* Base On Business - filter ******************************************
+
+    /**
+     * 根据删除状态进行过滤(by myBatisGenerator)
+     *
+     * @param unionBrokeragePayList 数据源
+     * @param delStatus             删除状态
+     * @return List<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokeragePay> filterByDelStatus(List<UnionBrokeragePay> unionBrokeragePayList, Integer delStatus) throws Exception;
+
+    //****************************************** Object As a Service - get *********************************************
+
+    /**
+     * 获取佣金支出信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionBrokeragePay
+     * @throws Exception 统一处理异常
+     */
+    UnionBrokeragePay getById(Integer id) throws Exception;
+
+    /**
+     * 获取未删除的佣金支出信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionBrokeragePay
+     * @throws Exception 统一处理异常
+     */
+    UnionBrokeragePay getValidById(Integer id) throws Exception;
+
+    /**
+     * 获取已删除的佣金支出信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionBrokeragePay
+     * @throws Exception 统一处理异常
+     */
+    UnionBrokeragePay getInvalidById(Integer id) throws Exception;
+
+    //****************************************** Object As a Service - list ********************************************
+
+    /**
+     * 获取对象集对应的的主键集(by myBatisGenerator)
+     *
+     * @param unionBrokeragePayList 对象集
+     * @return List<Id>
+     * @throws Exception 统一处理异常
+     */
+    List<Integer> getIdList(List<UnionBrokeragePay> unionBrokeragePayList) throws Exception;
+
+
+    /**
+     * 获取佣金支出列表信息(by myBatisGenerator)
+     *
+     * @param fromBusId fromBusId
+     * @return List<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokeragePay> listByFromBusId(Integer fromBusId) throws Exception;
+
+    /**
+     * 获取未删除的佣金支出列表信息(by myBatisGenerator)
+     *
+     * @param fromBusId fromBusId
+     * @return List<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokeragePay> listValidByFromBusId(Integer fromBusId) throws Exception;
+
+    /**
+     * 获取已删除的佣金支出列表信息(by myBatisGenerator)
+     *
+     * @param fromBusId fromBusId
+     * @return List<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokeragePay> listInvalidByFromBusId(Integer fromBusId) throws Exception;
+
+    /**
+     * 获取佣金支出列表信息(by myBatisGenerator)
+     *
+     * @param toBusId toBusId
+     * @return List<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokeragePay> listByToBusId(Integer toBusId) throws Exception;
+
+    /**
+     * 获取未删除的佣金支出列表信息(by myBatisGenerator)
+     *
+     * @param toBusId toBusId
+     * @return List<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokeragePay> listValidByToBusId(Integer toBusId) throws Exception;
+
+    /**
+     * 获取已删除的佣金支出列表信息(by myBatisGenerator)
+     *
+     * @param toBusId toBusId
+     * @return List<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokeragePay> listInvalidByToBusId(Integer toBusId) throws Exception;
+
+    /**
+     * 获取佣金支出列表信息(by myBatisGenerator)
+     *
+     * @param fromMemberId fromMemberId
+     * @return List<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokeragePay> listByFromMemberId(Integer fromMemberId) throws Exception;
+
+    /**
+     * 获取未删除的佣金支出列表信息(by myBatisGenerator)
+     *
+     * @param fromMemberId fromMemberId
+     * @return List<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokeragePay> listValidByFromMemberId(Integer fromMemberId) throws Exception;
+
+    /**
+     * 获取已删除的佣金支出列表信息(by myBatisGenerator)
+     *
+     * @param fromMemberId fromMemberId
+     * @return List<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokeragePay> listInvalidByFromMemberId(Integer fromMemberId) throws Exception;
+
+    /**
+     * 获取佣金支出列表信息(by myBatisGenerator)
+     *
+     * @param toMemberId toMemberId
+     * @return List<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokeragePay> listByToMemberId(Integer toMemberId) throws Exception;
+
+    /**
+     * 获取未删除的佣金支出列表信息(by myBatisGenerator)
+     *
+     * @param toMemberId toMemberId
+     * @return List<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokeragePay> listValidByToMemberId(Integer toMemberId) throws Exception;
+
+    /**
+     * 获取已删除的佣金支出列表信息(by myBatisGenerator)
+     *
+     * @param toMemberId toMemberId
+     * @return List<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokeragePay> listInvalidByToMemberId(Integer toMemberId) throws Exception;
+
+    /**
+     * 获取佣金支出列表信息(by myBatisGenerator)
+     *
+     * @param unionId unionId
+     * @return List<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokeragePay> listByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 获取未删除的佣金支出列表信息(by myBatisGenerator)
+     *
+     * @param unionId unionId
+     * @return List<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokeragePay> listValidByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 获取已删除的佣金支出列表信息(by myBatisGenerator)
+     *
+     * @param unionId unionId
+     * @return List<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokeragePay> listInvalidByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 获取佣金支出列表信息(by myBatisGenerator)
+     *
+     * @param opportunityId opportunityId
+     * @return List<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokeragePay> listByOpportunityId(Integer opportunityId) throws Exception;
+
+    /**
+     * 获取未删除的佣金支出列表信息(by myBatisGenerator)
+     *
+     * @param opportunityId opportunityId
+     * @return List<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokeragePay> listValidByOpportunityId(Integer opportunityId) throws Exception;
+
+    /**
+     * 获取已删除的佣金支出列表信息(by myBatisGenerator)
+     *
+     * @param opportunityId opportunityId
+     * @return List<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokeragePay> listInvalidByOpportunityId(Integer opportunityId) throws Exception;
+
+    /**
+     * 获取佣金支出列表信息(by myBatisGenerator)
+     *
+     * @param verifierId verifierId
+     * @return List<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokeragePay> listByVerifierId(Integer verifierId) throws Exception;
+
+    /**
+     * 获取未删除的佣金支出列表信息(by myBatisGenerator)
+     *
+     * @param verifierId verifierId
+     * @return List<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokeragePay> listValidByVerifierId(Integer verifierId) throws Exception;
+
+    /**
+     * 获取已删除的佣金支出列表信息(by myBatisGenerator)
+     *
+     * @param verifierId verifierId
+     * @return List<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokeragePay> listInvalidByVerifierId(Integer verifierId) throws Exception;
+
+    /**
+     * 获取主键集对应的对象集
+     *
+     * @param idList 主键集
+     * @return List<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionBrokeragePay> listByIdList(List<Integer> idList) throws Exception;
+
+    /**
+     * 分页支持
+     *
+     * @param page          分页对象
+     * @param entityWrapper 条件
+     * @return Page<UnionBrokeragePay>
+     * @throws Exception 统一处理异常
+     */
+    Page<UnionBrokeragePay> pageSupport(Page page, EntityWrapper<UnionBrokeragePay> entityWrapper) throws Exception;
+
+    //****************************************** Object As a Service - save ********************************************
+
+    /**
+     * 保存(by myBatisGenerator)
+     *
+     * @param newUnionBrokeragePay 保存内容
+     * @throws Exception 统一处理异常
+     */
+    void save(UnionBrokeragePay newUnionBrokeragePay) throws Exception;
+
+    /**
+     * 批量保存(by myBatisGenerator)
+     *
+     * @param newUnionBrokeragePayList 保存内容
+     * @throws Exception 统一处理异常
+     */
+    void saveBatch(List<UnionBrokeragePay> newUnionBrokeragePayList) throws Exception;
+
+    //****************************************** Object As a Service - remove ******************************************
+
+    /**
+     * 移除(by myBatisGenerator)
+     *
+     * @param id 移除内容
+     * @throws Exception 统一处理异常
+     */
+    void removeById(Integer id) throws Exception;
+
+    /**
+     * 批量移除(by myBatisGenerator)
+     *
+     * @param idList 移除内容
+     * @throws Exception 统一处理异常
+     */
+    void removeBatchById(List<Integer> idList) throws Exception;
+
+    //****************************************** Object As a Service - update ******************************************
+
+    /**
+     * 更新(by myBatisGenerator)
+     *
+     * @param updateUnionBrokeragePay 更新内容
+     * @throws Exception 统一处理异常
+     */
+    void update(UnionBrokeragePay updateUnionBrokeragePay) throws Exception;
+
+    /**
+     * 批量更新(by myBatisGenerator)
+     *
+     * @param updateUnionBrokeragePayList 更新内容
+     * @throws Exception 统一处理异常
+     */
+    void updateBatch(List<UnionBrokeragePay> updateUnionBrokeragePayList) throws Exception;
+
+    // TODO
+
     //***************************************** Domain Driven Design - get *********************************************
 
     /**
@@ -77,13 +407,6 @@ public interface IUnionBrokeragePayService extends IService<UnionBrokeragePay> {
 
     //***************************************** Domain Driven Design - save ********************************************
 
-    /**
-     * 保存
-     *
-     * @param newUnionBrokeragePay 保存内容
-     * @throws Exception 统一处理异常
-     */
-    void save(UnionBrokeragePay newUnionBrokeragePay) throws Exception;
 
     //***************************************** Domain Driven Design - remove ******************************************
 
@@ -92,11 +415,11 @@ public interface IUnionBrokeragePayService extends IService<UnionBrokeragePay> {
     /**
      * 商机-佣金结算-我需支付的佣金-批量支付
      *
-     * @param busId             商家id
-     * @param opportunityIdList 商机id列表
-     * @param verifierId        佣金平台管理人员id
+     * @param busId                            商家id
+     * @param opportunityIdList                商机id列表
+     * @param verifierId                       佣金平台管理人员id
      * @param unionBrokeragePayStrategyService
-	 * @return UnionPayVO
+     * @return UnionPayVO
      * @throws Exception 统一处理异常
      */
     UnionPayVO batchPayByBusId(Integer busId, List<Integer> opportunityIdList, Integer verifierId, IUnionBrokeragePayStrategyService unionBrokeragePayStrategyService) throws Exception;
