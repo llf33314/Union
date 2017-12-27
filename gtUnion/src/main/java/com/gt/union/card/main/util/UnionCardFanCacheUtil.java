@@ -7,7 +7,7 @@ import java.util.List;
  * 联盟卡粉丝信息 缓存键工具类
  *
  * @author linweicong
- * @version 2017-11-23 17:39:13
+ * @version 2017-12-27 10:56:25
  */
 public class UnionCardFanCacheUtil {
 
@@ -22,4 +22,6 @@ public class UnionCardFanCacheUtil {
         }
         return result;
     }
+
+
 }

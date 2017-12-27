@@ -7,7 +7,7 @@ import java.util.List;
  * 联盟卡售卡分成比例 缓存键工具类
  *
  * @author linweicong
- * @version 2017-11-23 17:39:04
+ * @version 2017-12-27 10:56:25
  */
 public class UnionCardSharingRatioCacheUtil {
     public static final int TYPE_ACTIVITY_ID = 1;
@@ -26,15 +26,41 @@ public class UnionCardSharingRatioCacheUtil {
         return result;
     }
 
+
     public static String getActivityIdKey(Integer activityId) {
         return "unionCardSharingRatio:activityId:" + activityId;
+    }
+
+    public static String getValidActivityIdKey(Integer activityId) {
+        return "unionCardSharingRatio:activityId:" + activityId + ":valid";
+    }
+
+    public static String getInvalidActivityIdKey(Integer activityId) {
+        return "unionCardSharingRatio:activityId:" + activityId + ":invalid";
     }
 
     public static String getMemberIdKey(Integer memberId) {
         return "unionCardSharingRatio:memberId:" + memberId;
     }
 
+    public static String getValidMemberIdKey(Integer memberId) {
+        return "unionCardSharingRatio:memberId:" + memberId + ":valid";
+    }
+
+    public static String getInvalidMemberIdKey(Integer memberId) {
+        return "unionCardSharingRatio:memberId:" + memberId + ":invalid";
+    }
+
     public static String getUnionIdKey(Integer unionId) {
         return "unionCardSharingRatio:unionId:" + unionId;
     }
+
+    public static String getValidUnionIdKey(Integer unionId) {
+        return "unionCardSharingRatio:unionId:" + unionId + ":valid";
+    }
+
+    public static String getInvalidUnionIdKey(Integer unionId) {
+        return "unionCardSharingRatio:unionId:" + unionId + ":invalid";
+    }
+
 }

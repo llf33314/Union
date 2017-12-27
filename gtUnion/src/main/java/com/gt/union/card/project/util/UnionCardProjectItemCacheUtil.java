@@ -7,7 +7,7 @@ import java.util.List;
  * 项目优惠 缓存键工具类
  *
  * @author linweicong
- * @version 2017-11-27 09:55:47
+ * @version 2017-12-27 10:56:25
  */
 public class UnionCardProjectItemCacheUtil {
     public static final int TYPE_PROJECT_ID = 1;
@@ -23,8 +23,18 @@ public class UnionCardProjectItemCacheUtil {
         }
         return result;
     }
-    
+
+
     public static String getProjectIdKey(Integer projectId) {
         return "unionCardProjectItem:projectId:" + projectId;
     }
+
+    public static String getValidProjectIdKey(Integer projectId) {
+        return "unionCardProjectItem:projectId:" + projectId + ":valid";
+    }
+
+    public static String getInvalidProjectIdKey(Integer projectId) {
+        return "unionCardProjectItem:projectId:" + projectId + ":invalid";
+    }
+
 }

@@ -7,7 +7,7 @@ import java.util.List;
  * 消费核销项目优惠 缓存键工具类
  *
  * @author linweicong
- * @version 2017-11-27 10:27:29
+ * @version 2017-12-27 10:56:25
  */
 public class UnionConsumeProjectCacheUtil {
     public static final int TYPE_CONSUME_ID = 1;
@@ -26,15 +26,41 @@ public class UnionConsumeProjectCacheUtil {
         return result;
     }
 
+
     public static String getConsumeIdKey(Integer consumeId) {
         return "unionConsumeProject:consumeId:" + consumeId;
     }
-    
+
+    public static String getValidConsumeIdKey(Integer consumeId) {
+        return "unionConsumeProject:consumeId:" + consumeId + ":valid";
+    }
+
+    public static String getInvalidConsumeIdKey(Integer consumeId) {
+        return "unionConsumeProject:consumeId:" + consumeId + ":invalid";
+    }
+
     public static String getProjectItemIdKey(Integer projectItemId) {
         return "unionConsumeProject:projectItemId:" + projectItemId;
+    }
+
+    public static String getValidProjectItemIdKey(Integer projectItemId) {
+        return "unionConsumeProject:projectItemId:" + projectItemId + ":valid";
+    }
+
+    public static String getInvalidProjectItemIdKey(Integer projectItemId) {
+        return "unionConsumeProject:projectItemId:" + projectItemId + ":invalid";
     }
 
     public static String getProjectIdKey(Integer projectId) {
         return "unionConsumeProject:projectId:" + projectId;
     }
+
+    public static String getValidProjectIdKey(Integer projectId) {
+        return "unionConsumeProject:projectId:" + projectId + ":valid";
+    }
+
+    public static String getInvalidProjectIdKey(Integer projectId) {
+        return "unionConsumeProject:projectId:" + projectId + ":invalid";
+    }
+
 }
