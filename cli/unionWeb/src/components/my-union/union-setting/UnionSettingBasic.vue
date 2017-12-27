@@ -29,7 +29,7 @@
           <div class="dingwei">
             <el-input v-model="form.enterpriseAddress" icon="search" :on-icon-click="handleIconClick" placeholder="请输入详细地址" disabled>
             </el-input>
-            <t-map @mapClick="mapClick" v-show="mapShow"></t-map>
+            <union-map @mapClick="mapClick" v-show="mapShow" ref="unionMap" :address="form.enterpriseAddress"></union-map>
           </div>
         </el-col>
       </el-form-item>
@@ -43,11 +43,11 @@
 
 <script>
 import $http from '@/utils/http.js';
-import TMap from '@/components/public-components/TMap';
+import UnionMap from '@/components/public-components/UnionMap';
 export default {
   name: 'union-setting-basic',
   components: {
-    TMap
+    UnionMap
   },
   data() {
     // 验证规则
@@ -105,7 +105,6 @@ export default {
         directorEmail: [{ validator: emailPass, trigger: 'blur' }],
         notifyPhone: [{ validator: notifyPhonePass, trigger: 'blur' }],
         integralExchangeRatio: [{ validator: integralExchangeRatioPass, trigger: 'blur' }],
-        region: [{ type: 'array', required: true, message: '地区内容不能为空，请重新输入', trigger: 'change' }],
         enterpriseAddress: [{ required: true, message: '我的地址内容不能为空，请重新输入', trigger: 'change' }]
       },
       isIntegral: ''
@@ -134,21 +133,13 @@ export default {
             }
             this.form = res.data.data.member;
             this.isIntegral = res.data.data.union.isIntegral;
-            this.form.integralExchangeRatio = this.form.integralExchangeRatio * 100 || 0;
-            if (this.form.addressProvinceCode) {
-              this.form.region = [
-                this.form.addressProvinceCode,
-                this.form.addressCityCode,
-                this.form.addressDistrictCode
-              ];
-            }
+            this.form.integralExchangeRatio = (this.form.integralExchangeRatio * 100 || 0).toFixed(2);
           }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
-
     mapClick() {
       this.form.enterpriseAddress = this.$store.state.enterpriseAddress;
       this.form.addressLatitude = this.$store.state.addressLatitude;
@@ -193,6 +184,7 @@ export default {
     },
     handleIconClick(ev) {
       this.mapShow = !this.mapShow;
+      this.$refs.unionMap.init();
     }
   }
 };

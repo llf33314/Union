@@ -114,7 +114,7 @@ export default {
     // 下载二维码
     downloadCode() {
       let alink = document.createElement('a');
-      alink.href = this.codeSrc1;
+      alink.href = this.codeSrc;
       alink.download = 'wx.jpg';
       alink.click();
     }

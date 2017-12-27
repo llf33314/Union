@@ -211,7 +211,7 @@ export default {
     Create,
     UnionMember,
     UnionCard,
-    UnionNotice
+    UnionNotice,
   },
   data() {
     return {
