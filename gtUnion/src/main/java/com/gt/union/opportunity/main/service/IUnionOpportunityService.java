@@ -186,7 +186,7 @@ public interface IUnionOpportunityService {
     List<OpportunityVO> listToMeByBusId(Integer busId, Integer optUnionId, String optAcceptStatus, String optClientName, String optClientPhone) throws Exception;
 
     /**
-     * 重复方法抽离：根据商机推荐列表获取VO对象，并按是否结算排序(未结算>已结算)、时间倒序排序
+     * 重复方法抽离：根据商机推荐列表获取VO对象
      *
      * @param opportunityList 商机推荐列表
      * @return List<BrokerageOpportunityVO>

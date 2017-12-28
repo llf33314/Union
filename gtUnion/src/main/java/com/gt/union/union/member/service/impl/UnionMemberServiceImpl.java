@@ -73,19 +73,26 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
     }
 
     @Override
+    public UnionMember getValidReadById(Integer memberId) throws Exception {
+        if (memberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        UnionMember result = getValidById(memberId);
+        Integer status = result != null ? result.getStatus() : null;
+
+        return status != null && (MemberConstant.STATUS_IN == status || MemberConstant.STATUS_APPLY_OUT == status || MemberConstant.STATUS_OUT_PERIOD == status) ? result : null;
+    }
+
+    @Override
     public UnionMember getValidReadByIdAndUnionId(Integer memberId, Integer unionId) throws Exception {
         if (memberId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        UnionMember result = getValidByIdAndUnionId(memberId, unionId);
+        UnionMember result = getValidReadById(memberId);
 
-        if (result == null) {
-            return null;
-        } else {
-            Integer status = result.getStatus();
-            return MemberConstant.STATUS_IN == status || MemberConstant.STATUS_APPLY_OUT == status || MemberConstant.STATUS_OUT_PERIOD == status ? result : null;
-        }
+        return result != null && unionId.equals(result.getUnionId()) ? result : null;
     }
 
     @Override
@@ -597,6 +604,24 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         List<UnionMember> result = listValidReadByUnionId(unionId);
 
         return ListUtil.isNotEmpty(result) ? result.size() : 0;
+    }
+
+    @Override
+    public boolean existValidReadById(Integer memberId) throws Exception {
+        if (memberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        return getValidReadById(memberId) != null;
+    }
+
+    @Override
+    public boolean existValidReadByIdAndUnionId(Integer memberId, Integer unionId) throws Exception {
+        if (memberId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        return getValidReadByIdAndUnionId(memberId, unionId) != null;
     }
 
     @Override

@@ -15,15 +15,71 @@ import java.util.List;
 public interface IUnionVerifierService {
     //********************************************* Base On Business - get *********************************************
 
+    /**
+     * 获取未删除的平台人员信息
+     *
+     * @param busId      商家id
+     * @param verifierId 平台人员id
+     * @return UnionVerifier
+     * @throws Exception 统一处理异常
+     */
+    UnionVerifier getValidByBusIdAndId(Integer busId, Integer verifierId) throws Exception;
+
     //********************************************* Base On Business - list ********************************************
+
+    /**
+     * 缓存穿透-获取未删除的平台管理者列表信息
+     *
+     * @return List<UnionVerifier>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionVerifier> listValid() throws Exception;
+
+    /**
+     * 列表：获取未删除的平台管理者
+     *
+     * @param busId 商家id
+     * @return VerifierVO
+     * @throws Exception 统一处理异常
+     */
+    List<UnionVerifier> listValidFinanceByBusId(Integer busId) throws Exception;
 
     //********************************************* Base On Business - save ********************************************
 
+    /**
+     * 新增平台管理者
+     *
+     * @param busId    商家id
+     * @param code     手机验证码
+     * @param verifier 表单内容
+     * @throws Exception 统一处理异常
+     */
+    void saveByBusId(Integer busId, String code, UnionVerifier verifier) throws Exception;
+
     //********************************************* Base On Business - remove ******************************************
+
+    /**
+     * 删除平台管理者
+     *
+     * @param busId      商家id
+     * @param verifierId 平台管理人员id
+     * @throws Exception 统一处理异常
+     */
+    void removeByBusIdAndId(Integer busId, Integer verifierId) throws Exception;
 
     //********************************************* Base On Business - update ******************************************
 
     //********************************************* Base On Business - other *******************************************
+
+    /**
+     * 是否存在未删除的平台人员信息
+     *
+     * @param busId 商家id
+     * @param phone 电话
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean existValidByBusIdAndPhone(Integer busId, String phone) throws Exception;
 
     //********************************************* Base On Business - filter ******************************************
 
@@ -36,6 +92,16 @@ public interface IUnionVerifierService {
      * @throws Exception 统一处理异常
      */
     List<UnionVerifier> filterByDelStatus(List<UnionVerifier> unionVerifierList, Integer delStatus) throws Exception;
+
+    /**
+     * 根据手机号进行过滤
+     *
+     * @param verifierList 数据源
+     * @param phone        手机号
+     * @return List<UnionVerifier>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionVerifier> filterByPhone(List<UnionVerifier> verifierList, String phone) throws Exception;
 
     //****************************************** Object As a Service - get *********************************************
 
@@ -178,87 +244,4 @@ public interface IUnionVerifierService {
      */
     void updateBatch(List<UnionVerifier> updateUnionVerifierList) throws Exception;
 
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    /**
-     * 获取平台人员信息
-     *
-     * @param busId      商家id
-     * @param verifierId 平台人员id
-     * @return UnionVerifier
-     * @throws Exception 统一处理异常
-     */
-    UnionVerifier getByBusIdAndId(Integer busId, Integer verifierId) throws Exception;
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    /**
-     * 获取平台管理者列表信息
-     *
-     * @return List<UnionVerifier>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionVerifier> list() throws Exception;
-
-    /**
-     * 列表：获取平台管理者
-     *
-     * @param busId 商家id
-     * @return VerifierVO
-     * @throws Exception 统一处理异常
-     */
-    List<UnionVerifier> listFinanceByBusId(Integer busId) throws Exception;
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    /**
-     * 新增平台管理者
-     *
-     * @param busId    商家id
-     * @param code     手机验证码
-     * @param verifier 表单内容
-     * @throws Exception 统一处理异常
-     */
-    void saveByBusId(Integer busId, String code, UnionVerifier verifier) throws Exception;
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    /**
-     * 删除平台管理者
-     *
-     * @param busId      商家id
-     * @param verifierId 平台管理人员id
-     * @throws Exception 统一处理异常
-     */
-    void removeByBusIdAndId(Integer busId, Integer verifierId) throws Exception;
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    //***************************************** Domain Driven Design - boolean *****************************************
-
-    /**
-     * 判断是否存在平台人员信息
-     *
-     * @param busId 商家id
-     * @param phone 电话
-     * @return boolean
-     * @throws Exception 统一处理异常
-     */
-    boolean existByBusIdAndPhone(Integer busId, String phone) throws Exception;
-
-    //***************************************** Domain Driven Design - filter ******************************************
-
-    /**
-     * 根据手机号进行过滤
-     *
-     * @param verifierList 数据源
-     * @param phone        手机号
-     * @return List<UnionVerifier>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionVerifier> filterByPhone(List<UnionVerifier> verifierList, String phone) throws Exception;
 }

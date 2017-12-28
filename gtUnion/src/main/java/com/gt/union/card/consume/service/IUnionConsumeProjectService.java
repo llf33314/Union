@@ -25,6 +25,16 @@ public interface IUnionConsumeProjectService {
 
     //********************************************* Base On Business - other *******************************************
 
+    /**
+     * 缓存穿透-统计未删除的消费优惠个数
+     *
+     * @param projectId     项目id
+     * @param projectItemId 项目优惠id
+     * @return Integer
+     * @throws Exception 统一处理异常
+     */
+    Integer countValidByProjectIdAndProjectItemId(Integer projectId, Integer projectItemId) throws Exception;
+
     //********************************************* Base On Business - filter ******************************************
 
     /**
@@ -231,31 +241,5 @@ public interface IUnionConsumeProjectService {
      * @throws Exception 统一处理异常
      */
     void updateBatch(List<UnionConsumeProject> updateUnionConsumeProjectList) throws Exception;
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    /**
-     * 根据项目id和项目优惠id，统计个数
-     *
-     * @param projectId     项目id
-     * @param projectItemId 项目优惠id
-     * @return Integer
-     * @throws Exception 统一处理异常
-     */
-    Integer countByProjectIdAndProjectItemId(Integer projectId, Integer projectItemId) throws Exception;
-
-    //***************************************** Domain Driven Design - boolean *****************************************
 
 }

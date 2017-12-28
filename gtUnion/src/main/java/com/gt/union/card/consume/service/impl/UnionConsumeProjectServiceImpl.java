@@ -45,6 +45,20 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
 
     //********************************************* Base On Business - other *******************************************
 
+    @Override
+    public Integer countValidByProjectIdAndProjectItemId(Integer projectId, Integer projectItemId) throws Exception {
+        if (projectId == null || projectItemId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .eq("project_id", projectId)
+                .eq("project_item_id", projectItemId);
+
+        return unionConsumeProjectDao.selectCount(entityWrapper);
+    }
+
     //********************************************* Base On Business - filter ******************************************
 
     @Override
@@ -647,36 +661,5 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         }
         return result;
     }
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    @Override
-    public Integer countByProjectIdAndProjectItemId(Integer projectId, Integer projectItemId) throws Exception {
-        if (projectId == null || projectItemId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .eq("project_id", projectId)
-                .eq("project_item_id", projectItemId);
-        
-        return unionConsumeProjectDao.selectCount(entityWrapper);
-    }
-
-    //***************************************** Domain Driven Design - boolean *****************************************
-
 
 }

@@ -63,10 +63,197 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
 
     //********************************************* Base On Business - get *********************************************
 
+    @Override
+    public CardFanDetailVO getFanDetailVOByBusIdAndIdAndUnionId(Integer busId, Integer fanId, Integer unionId) throws Exception {
+        if (fanId == null || busId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        // （1）	判断union有效性和member读权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
+        }
+        // （2）	判断fanId有效性
+        UnionCardFan fan = getValidById(fanId);
+        if (fan == null) {
+            throw new BusinessException("找不到粉丝信息");
+        }
+        // （3）	获取有效的折扣卡信息
+        List<UnionCard> cardList = unionCardService.listValidUnexpiredByUnionIdAndFanId(unionId, fanId);
+        List<UnionCard> discountCardList = unionCardService.filterByType(cardList, CardConstant.TYPE_DISCOUNT);
+        CardFanDetailVO result = new CardFanDetailVO();
+        if (ListUtil.isNotEmpty(discountCardList)) {
+            UnionCard discountCard = discountCardList.get(0);
+            result.setDiscountCard(discountCard);
+            UnionMember discountCardMember = unionMemberService.getValidReadByIdAndUnionId(discountCard.getMemberId(), unionId);
+            result.setDiscount(discountCardMember != null ? discountCardMember.getDiscount() : null);
+        }
+        // （4）获取有效的活动卡信息，并按时间倒序排序
+        List<UnionCard> activityCardList = unionCardService.filterByType(cardList, CardConstant.TYPE_ACTIVITY);
+        Collections.sort(activityCardList, new Comparator<UnionCard>() {
+            @Override
+            public int compare(UnionCard o1, UnionCard o2) {
+                return o2.getCreateTime().compareTo(o1.getCreateTime());
+            }
+        });
+        result.setActivityCardList(activityCardList);
+
+        return result;
+    }
+
+    @Override
+    public CardFanSearchVO getCardFanSearchVOByBusId(Integer busId, String numberOrPhone, Integer optUnionId) throws Exception {
+        if (busId == null || numberOrPhone == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断numberOrPhone有效性
+        UnionCardFan fan = getValidByNumberOrPhone(numberOrPhone);
+        if (fan == null) {
+            throw new BusinessException("找不到联盟卡号");
+        }
+        // （2）	获取商家所有有效的unionList
+        List<UnionMember> busMemberList = unionMemberService.listValidReadByBusId(busId);
+        if (optUnionId != null) {
+            busMemberList = unionMemberService.filterByUnionId(busMemberList, optUnionId);
+        }
+        List<Integer> busUnionIdList = unionMemberService.getUnionIdList(busMemberList);
+        // （3）	过滤掉一些粉丝没办折扣卡的union
+        List<UnionCard> cardList = unionCardService.listValidUnexpiredByFanIdAndType(fan.getId(), CardConstant.TYPE_DISCOUNT);
+        List<Integer> fanUnionIdList = unionCardService.getUnionIdList(cardList);
+
+        List<Integer> tgtUnionIdList = ListUtil.intersection(busUnionIdList, fanUnionIdList);
+        // （4）	如果没有剩余的union，则返回，否则，进行下一步
+        if (ListUtil.isEmpty(tgtUnionIdList)) {
+            return null;
+        }
+        // （5）	判断unionId是否在剩余的union中，如果是，则当前联盟为该union，否则默认为第一个union
+        CardFanSearchVO result = new CardFanSearchVO();
+        result.setFan(fan);
+        List<UnionMain> tgtUnionList = new ArrayList<>();
+        for (Integer tgtUnionId : tgtUnionIdList) {
+            UnionMain tgtUnion = unionMainService.getValidById(tgtUnionId);
+            tgtUnionList.add(tgtUnion);
+        }
+        result.setUnionList(tgtUnionList);
+
+        Integer currentUnionId = optUnionId != null && tgtUnionIdList.contains(optUnionId) ? optUnionId : tgtUnionIdList.get(0);
+        UnionMain currentUnion = unionMainService.getValidById(currentUnionId);
+        result.setCurrentUnion(currentUnion);
+
+        // （6）	获取union对应的member，获得折扣信息
+        UnionMember currentMember = unionMemberService.getValidReadByBusIdAndUnionId(busId, currentUnionId);
+        result.setCurrentMember(currentMember);
+
+        // （7）	获取粉丝联盟积分
+        Double unionIntegral = unionCardIntegralService.sumValidIntegralByUnionIdAndFanId(currentUnionId, fan.getId());
+        result.setIntegral(unionIntegral);
+
+        // （8）	如果粉丝在union下的存在有效的活动卡，则优惠项目可用；否则，不可用
+        boolean isProjectAvailable = unionCardService.existValidUnexpiredByUnionIdAndFanIdAndType(currentUnionId, fan.getId(), CardConstant.TYPE_ACTIVITY);
+        result.setIsProjectAvailable(isProjectAvailable ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO);
+
+        // （9）	获取消费多少积分可以抵扣1元配置
+        Double exchangeIntegral = dictService.getExchangeIntegral();
+        result.setExchangeIntegral(exchangeIntegral);
+
+        return result;
+    }
+
+    @Override
+    public UnionCardFan getValidByNumberOrPhone(String numberOrPhone) throws Exception {
+        if (numberOrPhone == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionCardFan> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .andNew()
+                .eq("number", numberOrPhone)
+                .or()
+                .eq("phone", numberOrPhone);
+
+        return unionCardFanDao.selectOne(entityWrapper);
+    }
+
+    @Override
+    public UnionCardFan getValidByPhone(String phone) throws Exception {
+        if (phone == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionCardFan> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .eq("phone", phone);
+
+        return unionCardFanDao.selectOne(entityWrapper);
+    }
+
     //********************************************* Base On Business - list ********************************************
 
+    @Override
+    public List<CardFanVO> listCardFanVoByBusIdAndUnionId(Integer busId, Integer unionId, String optNumber, String optPhone) throws Exception {
+        if (busId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        // （1）	判断union有效性和member读权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
+        }
+
+        // （2）	获取union下具有有效折扣卡的fan，并根据卡号和手机号进行过滤
+        EntityWrapper<UnionCardFan> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .like(StringUtil.isNotEmpty(optNumber), "number", optNumber)
+                .like(StringUtil.isNotEmpty(optPhone), "phone", optPhone)
+                .exists(" SELECT c.id FROM t_union_card c "
+                        + " WHERE c.fan_id=t_union_card_fan.id "
+                        + " AND c.union_id=" + unionId
+                        + " AND c.type=" + CardConstant.TYPE_DISCOUNT
+                        + " AND c.del_status=" + CommonConstant.COMMON_NO
+                        + " AND c.validity >= now() ");
+        List<UnionCardFan> fanList = unionCardFanDao.selectList(entityWrapper);
+
+        // （3）	统计粉丝联盟积分，即fan在union下所有有效的折扣卡和活动卡的积分之和
+        List<CardFanVO> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(fanList)) {
+            for (UnionCardFan fan : fanList) {
+                CardFanVO vo = new CardFanVO();
+                vo.setFan(fan);
+                vo.setIntegral(unionCardIntegralService.sumValidIntegralByUnionIdAndFanId(unionId, fan.getId()));
+                result.add(vo);
+            }
+        }
+
+        return result;
+    }
 
     //********************************************* Base On Business - save ********************************************
+
+    @Override
+    public UnionCardFan getOrSaveByPhone(String phone) throws Exception {
+        UnionCardFan fan = getValidByPhone(phone);
+        //TODO 需要加锁
+        RedissonLockUtil.lock("fan" + phone, 5);
+        if (fan == null) {
+            fan = new UnionCardFan();
+            fan.setDelStatus(CommonConstant.COMMON_NO);
+            fan.setCreateTime(DateUtil.getCurrentDate());
+            fan.setPhone(phone);
+            fan.setNumber(UnionCardUtil.generateCardNo());
+            this.save(fan);
+        }
+        RedissonLockUtil.unlock("fan" + phone);
+        return fan;
+    }
 
     //********************************************* Base On Business - remove ******************************************
 
@@ -357,225 +544,6 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
                 break;
         }
         return result;
-    }
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    @Override
-    public CardFanDetailVO getFanDetailVOByBusIdAndIdAndUnionId(Integer busId, Integer fanId, Integer unionId) throws Exception {
-        if (fanId == null || busId == null || unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        // （1）	判断union有效性和member读权限
-        if (!unionMainService.isUnionValid(unionId)) {
-            throw new BusinessException(CommonConstant.UNION_INVALID);
-        }
-        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
-        if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
-        }
-        // （2）	判断fanId有效性
-        UnionCardFan fan = getById(fanId);
-        if (fan == null) {
-            throw new BusinessException("找不到粉丝信息");
-        }
-        // （3）	获取有效的折扣卡信息
-        List<UnionCard> cardList = unionCardService.listValidByUnionIdAndFanId(unionId, fanId);
-        List<UnionCard> discountCardList = unionCardService.filterByType(cardList, CardConstant.TYPE_DISCOUNT);
-        CardFanDetailVO result = new CardFanDetailVO();
-        if (ListUtil.isNotEmpty(discountCardList)) {
-            UnionCard discountCard = discountCardList.get(0);
-            result.setDiscountCard(discountCard);
-            UnionMember discountCardMember = unionMemberService.getValidReadByIdAndUnionId(discountCard.getMemberId(), unionId);
-            result.setDiscount(discountCardMember != null ? discountCardMember.getDiscount() : null);
-        }
-        // （4）获取有效的活动卡信息，并按时间倒序排序
-        List<UnionCard> activityCardList = unionCardService.filterByType(cardList, CardConstant.TYPE_ACTIVITY);
-        Collections.sort(activityCardList, new Comparator<UnionCard>() {
-            @Override
-            public int compare(UnionCard o1, UnionCard o2) {
-                return o2.getCreateTime().compareTo(o1.getCreateTime());
-            }
-        });
-        result.setActivityCardList(activityCardList);
-
-        return result;
-    }
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    @Override
-    public List<CardFanVO> listCardFanVoByBusIdAndUnionId(Integer busId, Integer unionId, String optNumber, String optPhone) throws Exception {
-        if (busId == null || unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        // （1）	判断union有效性和member读权限
-        if (!unionMainService.isUnionValid(unionId)) {
-            throw new BusinessException(CommonConstant.UNION_INVALID);
-        }
-        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
-        if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
-        }
-
-        // （2）	获取union下具有有效折扣卡的fan，并根据卡号和手机号进行过滤
-        List<UnionCardFan> fanList = listWithValidDiscountCardByUnionId(unionId, optNumber, optPhone);
-
-        // （3）	统计粉丝联盟积分，即fan在union下所有有效的折扣卡和活动卡的积分之和
-        List<CardFanVO> result = new ArrayList<>();
-        for (UnionCardFan fan : fanList) {
-            CardFanVO vo = new CardFanVO();
-            vo.setFan(fan);
-            vo.setIntegral(unionCardIntegralService.countIntegralByUnionIdAndFanId(unionId, fan.getId()));
-            result.add(vo);
-        }
-
-        return result;
-    }
-
-    @Override
-    public List<UnionCardFan> listWithValidDiscountCardByUnionId(Integer unionId, String optNumber, String optPhone) throws Exception {
-        if (unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionCardFan> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .like(StringUtil.isNotEmpty(optNumber), "number", optNumber)
-                .like(StringUtil.isNotEmpty(optPhone), "phone", optPhone)
-                .exists(" SELECT c.id FROM t_union_card c "
-                        + " WHERE c.fan_id=t_union_card_fan.id "
-                        + " AND c.union_id=" + unionId
-                        + " AND c.type=" + CardConstant.TYPE_DISCOUNT
-                        + " AND c.del_status=" + CommonConstant.COMMON_NO
-                        + " AND c.validity >= now() ");
-
-        return unionCardFanDao.selectList(entityWrapper);
-    }
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    //***************************************** Domain Driven Design - boolean *****************************************
-
-
-    @Override
-    public CardFanSearchVO getCardFanSearchVOByBusId(Integer busId, String numberOrPhone, Integer optUnionId) throws Exception {
-        if (busId == null || numberOrPhone == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // （1）	判断numberOrPhone有效性
-        UnionCardFan fan = getByNumberOrPhone(numberOrPhone);
-        if (fan == null) {
-            return null;
-        }
-        // （2）	获取商家所有有效的unionList
-        List<UnionMain> busUnionList = unionMainService.listValidWriteByBusId(busId);
-        List<Integer> busUnionIdList = new ArrayList<>();
-        if (ListUtil.isNotEmpty(busUnionList)) {
-            for (UnionMain union : busUnionList) {
-                busUnionIdList.add(union.getId());
-            }
-        }
-        // （3）	过滤掉一些粉丝没办折扣卡的union
-        List<UnionCard> cardList = unionCardService.listValidByFanId(fan.getId());
-        List<Integer> fanUnionIdList = new ArrayList<>();
-        if (ListUtil.isNotEmpty(cardList)) {
-            for (UnionCard card : cardList) {
-                fanUnionIdList.add(card.getUnionId());
-            }
-        }
-        List<Integer> validUnionIdList = ListUtil.intersection(busUnionIdList, fanUnionIdList);
-        // （4）	如果没有剩余的union，则返回，否则，进行下一步
-        if (ListUtil.isEmpty(validUnionIdList)) {
-            return null;
-        }
-        // （5）	判断unionId是否在剩余的union中，如果是，则当前联盟为该union，否则默认为第一个union
-        CardFanSearchVO result = new CardFanSearchVO();
-        result.setFan(fan);
-        List<UnionMain> validUnionList = new ArrayList<>();
-        for (Integer validUnionId : validUnionIdList) {
-            UnionMain validUnion = unionMainService.getById(validUnionId);
-            validUnionList.add(validUnion);
-        }
-        result.setUnionList(validUnionList);
-
-        Integer currentUnionId = optUnionId != null && validUnionIdList.contains(optUnionId) ? optUnionId : validUnionIdList.get(0);
-        UnionMain currentUnion = unionMainService.getById(currentUnionId);
-        result.setCurrentUnion(currentUnion);
-
-        // （6）	获取union对应的member，获得折扣信息
-        UnionMember currentMember = unionMemberService.getValidReadByBusIdAndUnionId(busId, currentUnionId);
-        result.setCurrentMember(currentMember);
-
-        // （7）	获取粉丝联盟积分
-        Double unionIntegral = unionCardIntegralService.countIntegralByUnionIdAndFanId(currentUnionId, fan.getId());
-        result.setIntegral(unionIntegral);
-
-        // （8）	如果粉丝在union下的存在有效的活动卡，则优惠项目可用；否则，不可用
-        boolean isProjectAvailable = unionCardService.existValidByUnionIdAndFanIdAndType(currentUnionId, fan.getId(), CardConstant.TYPE_ACTIVITY);
-        result.setIsProjectAvailable(isProjectAvailable ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO);
-
-        // （9）	获取消费多少积分可以抵扣1元配置
-        Double exchangeIntegral = dictService.getExchangeIntegral();
-        result.setExchangeIntegral(exchangeIntegral);
-
-        return result;
-    }
-
-    @Override
-    public UnionCardFan getByNumberOrPhone(String numberOrPhone) throws Exception {
-        if (numberOrPhone == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionCardFan> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .andNew()
-                .eq("number", numberOrPhone)
-                .or()
-                .eq("phone", numberOrPhone);
-
-        return unionCardFanDao.selectOne(entityWrapper);
-    }
-
-    @Override
-    public UnionCardFan getByPhone(String phone) throws Exception {
-        if (phone == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionCardFan> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .eq("phone", phone);
-
-        return unionCardFanDao.selectOne(entityWrapper);
-    }
-
-    @Override
-    public UnionCardFan getOrSaveByPhone(String phone) throws Exception {
-        UnionCardFan fan = getByPhone(phone);
-        //TODO 需要加锁
-        RedissonLockUtil.lock("fan" + phone, 5);
-        if (fan == null) {
-            fan = new UnionCardFan();
-            fan.setDelStatus(CommonConstant.COMMON_NO);
-            fan.setCreateTime(DateUtil.getCurrentDate());
-            fan.setPhone(phone);
-            fan.setNumber(UnionCardUtil.generateCardNo());
-            this.save(fan);
-        }
-        RedissonLockUtil.unlock("fan" + phone);
-        return fan;
     }
 
 }

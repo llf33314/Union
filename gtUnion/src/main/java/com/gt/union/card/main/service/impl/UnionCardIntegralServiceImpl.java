@@ -36,8 +36,30 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
 
     //********************************************* Base On Business - get *********************************************
 
+    @Override
+    public UnionCardIntegral getValidByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception {
+        if (unionId == null || fanId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCardIntegral> result = listValidByUnionIdAndFanId(unionId, fanId);
+
+        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
+    }
+
     //********************************************* Base On Business - list ********************************************
 
+    @Override
+    public List<UnionCardIntegral> listValidByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception {
+        if (unionId == null || fanId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCardIntegral> result = listValidByFanId(fanId);
+        result = filterByUnionId(result, unionId);
+
+        return result;
+    }
 
     //********************************************* Base On Business - save ********************************************
 
@@ -46,6 +68,57 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
     //********************************************* Base On Business - update ******************************************
 
     //********************************************* Base On Business - other *******************************************
+
+    @Override
+    public Double sumValidIntegralByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception {
+        if (unionId == null || fanId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        BigDecimal result = BigDecimal.ZERO;
+        List<UnionCardIntegral> integralList = listValidByUnionIdAndFanId(unionId, fanId);
+        if (ListUtil.isNotEmpty(integralList)) {
+            for (UnionCardIntegral integral : integralList) {
+                result = BigDecimalUtil.add(result, integral.getIntegral());
+            }
+        }
+
+        return result.doubleValue();
+    }
+
+    @Override
+    public Double sumValidIntegralByFanId(Integer fanId) throws Exception {
+        if (fanId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        BigDecimal result = BigDecimal.ZERO;
+        List<UnionCardIntegral> integralList = listValidByFanId(fanId);
+        if (ListUtil.isNotEmpty(integralList)) {
+            for (UnionCardIntegral integral : integralList) {
+                result = BigDecimalUtil.add(result, integral.getIntegral());
+            }
+        }
+
+        return result.doubleValue();
+    }
+
+    @Override
+    public Double sumValidIntegralByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        BigDecimal result = BigDecimal.ZERO;
+        List<UnionCardIntegral> integralList = listValidByUnionId(unionId);
+        if (ListUtil.isNotEmpty(integralList)) {
+            for (UnionCardIntegral integral : integralList) {
+                result = BigDecimalUtil.add(result, integral.getIntegral());
+            }
+        }
+
+        return result.doubleValue();
+    }
 
     //********************************************* Base On Business - filter ******************************************
 
@@ -60,6 +133,24 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
             for (UnionCardIntegral unionCardIntegral : unionCardIntegralList) {
                 if (delStatus.equals(unionCardIntegral.getDelStatus())) {
                     result.add(unionCardIntegral);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionCardIntegral> filterByUnionId(List<UnionCardIntegral> integralList, Integer unionId) throws Exception {
+        if (integralList == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCardIntegral> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(integralList)) {
+            for (UnionCardIntegral integral : integralList) {
+                if (unionId.equals(integral.getUnionId())) {
+                    result.add(integral);
                 }
             }
         }
@@ -541,117 +632,6 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
             default:
                 break;
         }
-        return result;
-    }
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    @Override
-    public UnionCardIntegral getByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception {
-        if (unionId == null || fanId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionCardIntegral> result = listByUnionIdAndFanId(unionId, fanId);
-
-        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
-    }
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    @Override
-    public List<UnionCardIntegral> listByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception {
-        if (unionId == null || fanId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionCardIntegral> result = listByFanId(fanId);
-        result = filterByUnionId(result, unionId);
-
-        return result;
-    }
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    @Override
-    public Double countIntegralByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception {
-        if (unionId == null || fanId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        BigDecimal result = BigDecimal.ZERO;
-        List<UnionCardIntegral> integralList = listByUnionIdAndFanId(unionId, fanId);
-        if (ListUtil.isNotEmpty(integralList)) {
-            for (UnionCardIntegral integral : integralList) {
-                result = BigDecimalUtil.add(result, integral.getIntegral());
-            }
-        }
-
-        return result.doubleValue();
-    }
-
-    @Override
-    public Double sumIntegralByFanId(Integer fanId) throws Exception {
-        if (fanId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        BigDecimal result = BigDecimal.ZERO;
-        List<UnionCardIntegral> integralList = listByFanId(fanId);
-        if (ListUtil.isNotEmpty(integralList)) {
-            for (UnionCardIntegral integral : integralList) {
-                result = BigDecimalUtil.add(result, integral.getIntegral());
-            }
-        }
-
-        return result.doubleValue();
-    }
-
-    @Override
-    public Double sumIntegralByUnionId(Integer unionId) throws Exception {
-        if (unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        BigDecimal result = BigDecimal.ZERO;
-        List<UnionCardIntegral> integralList = listByUnionId(unionId);
-        if (ListUtil.isNotEmpty(integralList)) {
-            for (UnionCardIntegral integral : integralList) {
-                result = BigDecimalUtil.add(result, integral.getIntegral());
-            }
-        }
-
-        return result.doubleValue();
-    }
-
-
-    //***************************************** Domain Driven Design - boolean *****************************************
-
-    //***************************************** Domain Driven Design - filter ******************************************
-
-    @Override
-    public List<UnionCardIntegral> filterByUnionId(List<UnionCardIntegral> integralList, Integer unionId) throws Exception {
-        if (integralList == null || unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionCardIntegral> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(integralList)) {
-            for (UnionCardIntegral integral : integralList) {
-                if (unionId.equals(integral.getUnionId())) {
-                    result.add(integral);
-                }
-            }
-        }
-
         return result;
     }
 

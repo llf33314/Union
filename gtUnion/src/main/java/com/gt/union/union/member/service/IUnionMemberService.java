@@ -40,6 +40,15 @@ public interface IUnionMemberService {
      * 获取未删除的具有读权限的联盟盟员信息
      *
      * @param memberId 盟员id
+     * @return UnionMember
+     * @throws Exception 统一处理异常
+     */
+    UnionMember getValidReadById(Integer memberId) throws Exception;
+
+    /**
+     * 获取未删除的具有读权限的联盟盟员信息
+     *
+     * @param memberId 盟员id
      * @param unionId  联盟id
      * @return UnionMember
      * @throws Exception 统一处理异常
@@ -292,6 +301,25 @@ public interface IUnionMemberService {
      * @throws Exception 统一处理异常
      */
     Integer countValidReadByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 是否存在未删除的联盟盟员信息
+     *
+     * @param memberId 盟员id
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean existValidReadById(Integer memberId) throws Exception;
+
+    /**
+     * 是否存在未删除的联盟盟员信息
+     *
+     * @param memberId 盟员id
+     * @param unionId  联盟id
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean existValidReadByIdAndUnionId(Integer memberId, Integer unionId) throws Exception;
 
     /**
      * 是否存在未删除的商家盟主信息
