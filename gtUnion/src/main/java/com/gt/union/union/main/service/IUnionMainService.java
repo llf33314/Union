@@ -100,6 +100,15 @@ public interface IUnionMainService {
      */
     boolean isUnionValid(UnionMain union) throws Exception;
 
+    /**
+     * 判断联盟是否存在
+     *
+     * @param unionId 联盟id
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean existById(Integer unionId) throws Exception;
+
     //********************************************* Base On Business - filter ******************************************
 
     /**
@@ -167,10 +176,10 @@ public interface IUnionMainService {
      *
      * @param page          分页对象
      * @param entityWrapper 条件
-     * @return Page<UnionMain>
+     * @return Page
      * @throws Exception 统一处理异常
      */
-    Page<UnionMain> pageSupport(Page page, EntityWrapper<UnionMain> entityWrapper) throws Exception;
+    Page pageSupport(Page page, EntityWrapper<UnionMain> entityWrapper) throws Exception;
 
     //****************************************** Object As a Service - save ********************************************
 

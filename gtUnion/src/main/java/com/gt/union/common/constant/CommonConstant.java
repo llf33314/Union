@@ -58,6 +58,11 @@ public interface CommonConstant {
     String UNION_INVALID = "联盟不存在或已过期";
 
     /**
+     * 找不到联盟信息
+     */
+    String UNION_NOT_FOUND = "找不到联盟信息";
+
+    /**
      * 非盟主身份无法操作
      */
     String UNION_OWNER_ERROR = "非盟主身份无法操作";
@@ -70,7 +75,7 @@ public interface CommonConstant {
     /**
      * 找不到盟员信息或已退盟
      */
-    String MEMBER_NOT_FOUND = "找不到盟员信息或已退盟";
+    String MEMBER_NOT_FOUND = "找不到盟员信息";
     
     /**
      * 验证码有误

@@ -15,6 +15,15 @@ import java.util.List;
 public interface IUnionBrokerageWithdrawalService {
     //********************************************* Base On Business - get *********************************************
 
+    /**
+     * 缓存穿透-获取未删除的可提现金额
+     *
+     * @param busId 商家id
+     * @return Double
+     * @throws Exception 统一处理异常
+     */
+    Double getValidAvailableMoneyByBusId(Integer busId) throws Exception;
+
     //********************************************* Base On Business - list ********************************************
 
     //********************************************* Base On Business - save ********************************************
@@ -24,6 +33,15 @@ public interface IUnionBrokerageWithdrawalService {
     //********************************************* Base On Business - update ******************************************
 
     //********************************************* Base On Business - other *******************************************
+
+    /**
+     * 缓存穿透-统计未删除的已提现金额
+     *
+     * @param busId 商家id
+     * @return Double
+     * @throws Exception 统一处理异常
+     */
+    Double sumValidMoneyByBusId(Integer busId) throws Exception;
 
     //********************************************* Base On Business - filter ******************************************
 
@@ -146,10 +164,10 @@ public interface IUnionBrokerageWithdrawalService {
      *
      * @param page          分页对象
      * @param entityWrapper 条件
-     * @return Page<UnionBrokerageWithdrawal>
+     * @return Page
      * @throws Exception 统一处理异常
      */
-    Page<UnionBrokerageWithdrawal> pageSupport(Page page, EntityWrapper<UnionBrokerageWithdrawal> entityWrapper) throws Exception;
+    Page pageSupport(Page page, EntityWrapper<UnionBrokerageWithdrawal> entityWrapper) throws Exception;
 
     //****************************************** Object As a Service - save ********************************************
 
@@ -204,39 +222,5 @@ public interface IUnionBrokerageWithdrawalService {
      * @throws Exception 统一处理异常
      */
     void updateBatch(List<UnionBrokerageWithdrawal> updateUnionBrokerageWithdrawalList) throws Exception;
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    /**
-     * 获取可提现金额
-     *
-     * @param busId 商家id
-     * @return Double
-     * @throws Exception 统一处理异常
-     */
-    Double getAvailableMoneyByBusId(Integer busId) throws Exception;
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    /**
-     * 统计已提现金额
-     *
-     * @param busId 商家id
-     * @return Double
-     * @throws Exception 统一处理异常
-     */
-    Double sumMoneyByBusId(Integer busId) throws Exception;
-
-    //***************************************** Domain Driven Design - boolean *****************************************
 
 }

@@ -204,10 +204,10 @@ public interface IUnionCardService {
      *
      * @param page          分页对象
      * @param entityWrapper 条件
-     * @return Page<UnionCard>
+     * @return Page
      * @throws Exception 统一处理异常
      */
-    Page<UnionCard> pageSupport(Page page, EntityWrapper<UnionCard> entityWrapper) throws Exception;
+    Page pageSupport(Page page, EntityWrapper<UnionCard> entityWrapper) throws Exception;
 
     //****************************************** Object As a Service - save ********************************************
 

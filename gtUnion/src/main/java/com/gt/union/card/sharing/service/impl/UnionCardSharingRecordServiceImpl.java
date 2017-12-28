@@ -547,7 +547,7 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
     }
 
     @Override
-    public Page<UnionCardSharingRecord> pageSupport(Page page, EntityWrapper<UnionCardSharingRecord> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionCardSharingRecord> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }

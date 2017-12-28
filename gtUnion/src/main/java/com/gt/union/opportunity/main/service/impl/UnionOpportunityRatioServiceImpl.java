@@ -48,14 +48,111 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
 
     //********************************************* Base On Business - get *********************************************
 
+    @Override
+    public UnionOpportunityRatio getValidByUnionIdAndFromMemberIdAndToMemberId(Integer unionId, Integer fromMemberId, Integer toMemberId) throws Exception {
+        if (unionId == null || fromMemberId == null || toMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionOpportunityRatio> result = listValidByUnionId(unionId);
+        result = filterByFromMemberId(result, fromMemberId);
+        result = filterByToMemberId(result, toMemberId);
+
+        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
+    }
+
     //********************************************* Base On Business - list ********************************************
 
+    @Override
+    public List<OpportunityRatioVO> listOpportunityRatioVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
+        if (busId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member读权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
+        }
+        // （2）	获取所有，但不包括自己的member列表
+        List<OpportunityRatioVO> result = new ArrayList<>();
+        List<UnionMember> otherMemberList = unionMemberService.listOtherValidReadByBusIdAndUnionId(busId, unionId);
+        if (ListUtil.isNotEmpty(otherMemberList)) {
+            for (UnionMember otherMember : otherMemberList) {
+                OpportunityRatioVO vo = new OpportunityRatioVO();
+                vo.setMember(otherMember);
+
+                UnionOpportunityRatio ratioFromMe = getValidByUnionIdAndFromMemberIdAndToMemberId(unionId, member.getId(), otherMember.getId());
+                vo.setRatioFromMe(ratioFromMe != null ? ratioFromMe.getRatio() : null);
+
+                UnionOpportunityRatio ratioToMe = getValidByUnionIdAndFromMemberIdAndToMemberId(unionId, otherMember.getId(), member.getId());
+                vo.setRatioToMe(ratioToMe != null ? ratioToMe.getRatio() : null);
+
+                result.add(vo);
+            }
+        }
+        // （3）	按时间顺序排序
+        Collections.sort(result, new Comparator<OpportunityRatioVO>() {
+            @Override
+            public int compare(OpportunityRatioVO o1, OpportunityRatioVO o2) {
+                return o1.getMember().getCreateTime().compareTo(o2.getMember().getCreateTime());
+            }
+        });
+        return result;
+    }
 
     //********************************************* Base On Business - save ********************************************
 
     //********************************************* Base On Business - remove ******************************************
 
     //********************************************* Base On Business - update ******************************************
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateRatioByBusIdAndUnionIdAndToMemberId(Integer busId, Integer unionId, Integer toMemberId, Double ratio) throws Exception {
+        if (busId == null || unionId == null || toMemberId == null || ratio == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member写权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
+        }
+        // （2）	判断toMemberId有效性
+        UnionMember toMember = unionMemberService.getValidReadByIdAndUnionId(toMemberId, unionId);
+        if (toMember == null) {
+            throw new BusinessException(CommonConstant.MEMBER_NOT_FOUND);
+        }
+        // （3）	要求ratio在(0, 100%)
+        if (ratio <= 0 || ratio >= 1) {
+            throw new BusinessException("比例必须在0至100之间");
+        }
+        // （4）	如果存在原设置，则更新，否则新增
+        UnionOpportunityRatio oldRatio = getValidByUnionIdAndFromMemberIdAndToMemberId(unionId, member.getId(), toMemberId);
+        if (oldRatio != null) {
+            UnionOpportunityRatio updateRatio = new UnionOpportunityRatio();
+            updateRatio.setId(oldRatio.getId());
+            updateRatio.setModifyTime(DateUtil.getCurrentDate());
+            updateRatio.setRatio(ratio);
+
+            update(updateRatio);
+        } else {
+            UnionOpportunityRatio saveRatio = new UnionOpportunityRatio();
+            saveRatio.setDelStatus(CommonConstant.COMMON_NO);
+            saveRatio.setCreateTime(DateUtil.getCurrentDate());
+            saveRatio.setFromMemberId(member.getId());
+            saveRatio.setToMemberId(toMemberId);
+            saveRatio.setUnionId(unionId);
+            saveRatio.setRatio(ratio);
+
+            save(saveRatio);
+        }
+    }
 
     //********************************************* Base On Business - other *******************************************
 
@@ -72,6 +169,60 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
             for (UnionOpportunityRatio unionOpportunityRatio : unionOpportunityRatioList) {
                 if (delStatus.equals(unionOpportunityRatio.getDelStatus())) {
                     result.add(unionOpportunityRatio);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionOpportunityRatio> filterByFromMemberId(List<UnionOpportunityRatio> ratioList, Integer fromMemberId) throws Exception {
+        if (ratioList == null || fromMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionOpportunityRatio> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(ratioList)) {
+            for (UnionOpportunityRatio ratio : ratioList) {
+                if (fromMemberId.equals(ratio.getFromMemberId())) {
+                    result.add(ratio);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionOpportunityRatio> filterByToMemberId(List<UnionOpportunityRatio> ratioList, Integer toMemberId) throws Exception {
+        if (ratioList == null || toMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionOpportunityRatio> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(ratioList)) {
+            for (UnionOpportunityRatio ratio : ratioList) {
+                if (toMemberId.equals(ratio.getToMemberId())) {
+                    result.add(ratio);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionOpportunityRatio> filterByUnionId(List<UnionOpportunityRatio> ratioList, Integer unionId) throws Exception {
+        if (ratioList == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionOpportunityRatio> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(ratioList)) {
+            for (UnionOpportunityRatio ratio : ratioList) {
+                if (unionId.equals(ratio.getUnionId())) {
+                    result.add(ratio);
                 }
             }
         }
@@ -350,7 +501,7 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
     }
 
     @Override
-    public Page<UnionOpportunityRatio> pageSupport(Page page, EntityWrapper<UnionOpportunityRatio> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionOpportunityRatio> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -661,176 +812,5 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         }
         return result;
     }
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    @Override
-    public UnionOpportunityRatio getByUnionIdAndFromMemberIdAndToMemberId(Integer unionId, Integer fromMemberId, Integer toMemberId) throws Exception {
-        if (unionId == null || fromMemberId == null || toMemberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionOpportunityRatio> result = listByUnionId(unionId);
-        result = filterByFromMemberId(result, fromMemberId);
-        result = filterByToMemberId(result, toMemberId);
-
-        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
-    }
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    @Override
-    public List<OpportunityRatioVO> listOpportunityRatioVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
-        if (busId == null || unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // （1）	判断union有效性和member读权限
-        if (!unionMainService.isUnionValid(unionId)) {
-            throw new BusinessException(CommonConstant.UNION_INVALID);
-        }
-        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
-        if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
-        }
-        // （2）	获取所有，但不包括自己的member列表
-        List<OpportunityRatioVO> result = new ArrayList<>();
-        List<UnionMember> otherMemberList = unionMemberService.listOtherValidReadByBusIdAndUnionId(busId, unionId);
-        if (ListUtil.isNotEmpty(otherMemberList)) {
-            for (UnionMember otherMember : otherMemberList) {
-                OpportunityRatioVO vo = new OpportunityRatioVO();
-                vo.setMember(otherMember);
-
-                UnionOpportunityRatio ratioFromMe = getByUnionIdAndFromMemberIdAndToMemberId(unionId, member.getId(), otherMember.getId());
-                vo.setRatioFromMe(ratioFromMe != null ? ratioFromMe.getRatio() : null);
-
-                UnionOpportunityRatio ratioToMe = getByUnionIdAndFromMemberIdAndToMemberId(unionId, otherMember.getId(), member.getId());
-                vo.setRatioToMe(ratioToMe != null ? ratioToMe.getRatio() : null);
-
-                result.add(vo);
-            }
-        }
-        // （3）	按时间顺序排序
-        Collections.sort(result, new Comparator<OpportunityRatioVO>() {
-            @Override
-            public int compare(OpportunityRatioVO o1, OpportunityRatioVO o2) {
-                return o1.getMember().getCreateTime().compareTo(o2.getMember().getCreateTime());
-            }
-        });
-        return result;
-    }
-
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    @Override
-    public void updateRatioByBusIdAndUnionIdAndToMemberId(Integer busId, Integer unionId, Integer toMemberId, Double ratio) throws Exception {
-        if (busId == null || unionId == null || toMemberId == null || ratio == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // （1）	判断union有效性和member写权限
-        if (!unionMainService.isUnionValid(unionId)) {
-            throw new BusinessException(CommonConstant.UNION_INVALID);
-        }
-        UnionMember member = unionMemberService.getValidWriteByBusIdAndUnionId(busId, unionId);
-        if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
-        }
-        // （2）	判断toMemberId有效性
-        UnionMember toMember = unionMemberService.getValidReadByIdAndUnionId(toMemberId, unionId);
-        if (toMember == null) {
-            throw new BusinessException("找不到盟员信息");
-        }
-        // （3）	要求ratio在(0, 100%)
-        if (ratio <= 0 || ratio >= 1) {
-            throw new BusinessException("比例必须在0至100之间");
-        }
-        // （4）	如果存在原设置，则更新，否则新增
-        UnionOpportunityRatio oldRatio = getByUnionIdAndFromMemberIdAndToMemberId(unionId, member.getId(), toMemberId);
-        if (oldRatio != null) {
-            UnionOpportunityRatio updateRatio = new UnionOpportunityRatio();
-            updateRatio.setId(oldRatio.getId());
-            updateRatio.setModifyTime(DateUtil.getCurrentDate());
-            updateRatio.setRatio(ratio);
-
-            update(updateRatio);
-        } else {
-            UnionOpportunityRatio saveRatio = new UnionOpportunityRatio();
-            saveRatio.setDelStatus(CommonConstant.COMMON_NO);
-            saveRatio.setCreateTime(DateUtil.getCurrentDate());
-            saveRatio.setFromMemberId(member.getId());
-            saveRatio.setToMemberId(toMemberId);
-            saveRatio.setUnionId(unionId);
-            saveRatio.setRatio(ratio);
-
-            save(saveRatio);
-        }
-    }
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    //***************************************** Domain Driven Design - boolean *****************************************
-
-    //***************************************** Domain Driven Design - filter ******************************************
-
-    @Override
-    public List<UnionOpportunityRatio> filterByFromMemberId(List<UnionOpportunityRatio> ratioList, Integer fromMemberId) throws Exception {
-        if (ratioList == null || fromMemberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionOpportunityRatio> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(ratioList)) {
-            for (UnionOpportunityRatio ratio : ratioList) {
-                if (fromMemberId.equals(ratio.getFromMemberId())) {
-                    result.add(ratio);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    @Override
-    public List<UnionOpportunityRatio> filterByToMemberId(List<UnionOpportunityRatio> ratioList, Integer toMemberId) throws Exception {
-        if (ratioList == null || toMemberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionOpportunityRatio> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(ratioList)) {
-            for (UnionOpportunityRatio ratio : ratioList) {
-                if (toMemberId.equals(ratio.getToMemberId())) {
-                    result.add(ratio);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    @Override
-    public List<UnionOpportunityRatio> filterByUnionId(List<UnionOpportunityRatio> ratioList, Integer unionId) throws Exception {
-        if (ratioList == null || unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionOpportunityRatio> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(ratioList)) {
-            for (UnionOpportunityRatio ratio : ratioList) {
-                if (unionId.equals(ratio.getUnionId())) {
-                    result.add(ratio);
-                }
-            }
-        }
-
-        return result;
-    }
-
 
 }

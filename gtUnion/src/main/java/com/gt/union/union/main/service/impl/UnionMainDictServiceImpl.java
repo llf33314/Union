@@ -222,7 +222,7 @@ public class UnionMainDictServiceImpl implements IUnionMainDictService {
     }
 
     @Override
-    public Page<UnionMainDict> pageSupport(Page page, EntityWrapper<UnionMainDict> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionMainDict> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }

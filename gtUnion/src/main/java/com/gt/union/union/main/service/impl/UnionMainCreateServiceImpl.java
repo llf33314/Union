@@ -613,7 +613,7 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
     }
 
     @Override
-    public Page<UnionMainCreate> pageSupport(Page page, EntityWrapper<UnionMainCreate> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionMainCreate> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }

@@ -73,12 +73,13 @@ public class UnionBrokeragePayController {
         List<BrokerageOpportunityVO> voList;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             voList = MockUtil.list(BrokerageOpportunityVO.class, page.getSize());
+            Page<BrokerageOpportunityVO> result = (Page<BrokerageOpportunityVO>) page;
+            result = PageUtil.setRecord(result, voList);
+            return GtJsonResult.instanceSuccessMsg(result).toString();
         } else {
-            voList = unionBrokeragePayService.listBrokerageOpportunityVOByBusId(busId, unionId, fromMemberId, isClose, clientName, clientPhone);
+            Page result = unionBrokeragePayService.pageBrokerageOpportunityVOByBusId(page, busId, unionId, fromMemberId, isClose, clientName, clientPhone);
+            return GtJsonResult.instanceSuccessMsg(result).toString();
         }
-        Page<BrokerageOpportunityVO> result = (Page<BrokerageOpportunityVO>) page;
-        result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "分页：商机-佣金结算-支付明细", produces = "application/json;charset=UTF-8")

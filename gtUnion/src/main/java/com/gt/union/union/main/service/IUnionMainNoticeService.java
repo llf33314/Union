@@ -148,10 +148,10 @@ public interface IUnionMainNoticeService {
      *
      * @param page          分页对象
      * @param entityWrapper 条件
-     * @return Page<UnionMainNotice>
+     * @return Page
      * @throws Exception 统一处理异常
      */
-    Page<UnionMainNotice> pageSupport(Page page, EntityWrapper<UnionMainNotice> entityWrapper) throws Exception;
+    Page pageSupport(Page page, EntityWrapper<UnionMainNotice> entityWrapper) throws Exception;
 
     //****************************************** Object As a Service - save ********************************************
 

@@ -642,7 +642,7 @@ public class UnionMemberJoinServiceImpl implements IUnionMemberJoinService {
     }
 
     @Override
-    public Page<UnionMemberJoin> pageSupport(Page page, EntityWrapper<UnionMemberJoin> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionMemberJoin> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }

@@ -227,10 +227,10 @@ public interface IUnionCardRecordService {
      *
      * @param page          分页对象
      * @param entityWrapper 条件
-     * @return Page<UnionCardRecord>
+     * @return Page
      * @throws Exception 统一处理异常
      */
-    Page<UnionCardRecord> pageSupport(Page page, EntityWrapper<UnionCardRecord> entityWrapper) throws Exception;
+    Page pageSupport(Page page, EntityWrapper<UnionCardRecord> entityWrapper) throws Exception;
 
     //****************************************** Object As a Service - save ********************************************
 

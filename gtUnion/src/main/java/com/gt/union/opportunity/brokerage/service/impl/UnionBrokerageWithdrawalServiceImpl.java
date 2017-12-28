@@ -40,6 +40,19 @@ public class UnionBrokerageWithdrawalServiceImpl implements IUnionBrokerageWithd
 
     //********************************************* Base On Business - get *********************************************
 
+    @Override
+    public Double getValidAvailableMoneyByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）收入
+        Double incomeSum = unionBrokerageIncomeService.sumValidMoneyByBusId(busId);
+        // （2）已提现
+        Double withdrawalSum = sumValidMoneyByBusId(busId);
+
+        return BigDecimalUtil.subtract(incomeSum, withdrawalSum).doubleValue();
+    }
+
     //********************************************* Base On Business - list ********************************************
 
 
@@ -50,6 +63,27 @@ public class UnionBrokerageWithdrawalServiceImpl implements IUnionBrokerageWithd
     //********************************************* Base On Business - update ******************************************
 
     //********************************************* Base On Business - other *******************************************
+
+    @Override
+    public Double sumValidMoneyByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionBrokerageWithdrawal> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("bus_id", busId);
+        List<UnionBrokerageWithdrawal> withdrawalList = unionBrokerageWithdrawalDao.selectList(entityWrapper);
+
+        BigDecimal result = BigDecimal.ZERO;
+        if (ListUtil.isNotEmpty(withdrawalList)) {
+            for (UnionBrokerageWithdrawal withdrawal : withdrawalList) {
+                result = BigDecimalUtil.add(result, withdrawal.getMoney());
+            }
+        }
+
+        return result.doubleValue();
+    }
 
     //********************************************* Base On Business - filter ******************************************
 
@@ -277,7 +311,7 @@ public class UnionBrokerageWithdrawalServiceImpl implements IUnionBrokerageWithd
     }
 
     @Override
-    public Page<UnionBrokerageWithdrawal> pageSupport(Page page, EntityWrapper<UnionBrokerageWithdrawal> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionBrokerageWithdrawal> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -547,52 +581,5 @@ public class UnionBrokerageWithdrawalServiceImpl implements IUnionBrokerageWithd
         }
         return result;
     }
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    @Override
-    public Double getAvailableMoneyByBusId(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // （1）收入
-        Double incomeSum = unionBrokerageIncomeService.sumMoneyByBusId(busId);
-        // （2）已提现
-        Double withdrawalSum = sumMoneyByBusId(busId);
-
-        return BigDecimalUtil.subtract(incomeSum, withdrawalSum).doubleValue();
-    }
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    @Override
-    public Double sumMoneyByBusId(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        BigDecimal result = BigDecimal.ZERO;
-        List<UnionBrokerageWithdrawal> withdrawalList = listByBusId(busId);
-        if (ListUtil.isNotEmpty(withdrawalList)) {
-            for (UnionBrokerageWithdrawal withdrawal : withdrawalList) {
-                result = BigDecimalUtil.add(result, withdrawal.getMoney());
-            }
-        }
-
-        return result.doubleValue();
-    }
-
-    //***************************************** Domain Driven Design - boolean *****************************************
-
 
 }

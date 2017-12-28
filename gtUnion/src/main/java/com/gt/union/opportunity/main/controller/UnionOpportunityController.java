@@ -154,7 +154,7 @@ public class UnionOpportunityController {
             throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
         }
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
-            unionOpportunityService.updateStatusByBusIdAndIdAndUnionId(busId, opportunityId, unionId, isAccept, acceptPrice);
+            unionOpportunityService.updateByBusIdAndIdAndUnionId(busId, opportunityId, unionId, isAccept, acceptPrice);
         }
         return GtJsonResult.instanceSuccessMsg().toString();
     }

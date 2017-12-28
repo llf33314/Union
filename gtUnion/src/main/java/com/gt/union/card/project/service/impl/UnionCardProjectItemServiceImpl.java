@@ -249,7 +249,7 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
     }
 
     @Override
-    public Page<UnionCardProjectItem> pageSupport(Page page, EntityWrapper<UnionCardProjectItem> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionCardProjectItem> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }

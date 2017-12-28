@@ -119,10 +119,10 @@ public interface IUnionCardProjectFlowService {
      *
      * @param page          分页对象
      * @param entityWrapper 条件
-     * @return Page<UnionCardProjectFlow>
+     * @return Page
      * @throws Exception 统一处理异常
      */
-    Page<UnionCardProjectFlow> pageSupport(Page page, EntityWrapper<UnionCardProjectFlow> entityWrapper) throws Exception;
+    Page pageSupport(Page page, EntityWrapper<UnionCardProjectFlow> entityWrapper) throws Exception;
 
     //****************************************** Object As a Service - save ********************************************
 

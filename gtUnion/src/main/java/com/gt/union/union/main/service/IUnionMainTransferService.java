@@ -287,10 +287,10 @@ public interface IUnionMainTransferService {
      *
      * @param page          分页对象
      * @param entityWrapper 条件
-     * @return Page<UnionMainTransfer>
+     * @return Page
      * @throws Exception 统一处理异常
      */
-    Page<UnionMainTransfer> pageSupport(Page page, EntityWrapper<UnionMainTransfer> entityWrapper) throws Exception;
+    Page pageSupport(Page page, EntityWrapper<UnionMainTransfer> entityWrapper) throws Exception;
 
     //****************************************** Object As a Service - save ********************************************
 

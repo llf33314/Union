@@ -46,7 +46,7 @@ public class UnionBrokerageWithdrawalController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             result = MockUtil.get(Double.class);
         } else {
-            result = unionBrokerageWithdrawalService.getAvailableMoneyByBusId(busId);
+            result = unionBrokerageWithdrawalService.getValidAvailableMoneyByBusId(busId);
         }
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }

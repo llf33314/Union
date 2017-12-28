@@ -373,7 +373,7 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
     }
 
     @Override
-    public Page<UnionCardProject> pageSupport(Page page, EntityWrapper<UnionCardProject> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionCardProject> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }

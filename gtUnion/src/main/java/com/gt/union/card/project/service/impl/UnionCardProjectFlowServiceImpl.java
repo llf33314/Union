@@ -223,7 +223,7 @@ public class UnionCardProjectFlowServiceImpl implements IUnionCardProjectFlowSer
     }
 
     @Override
-    public Page<UnionCardProjectFlow> pageSupport(Page page, EntityWrapper<UnionCardProjectFlow> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionCardProjectFlow> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }

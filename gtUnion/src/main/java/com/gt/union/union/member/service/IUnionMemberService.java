@@ -106,6 +106,27 @@ public interface IUnionMemberService {
     UnionMember getValidByBusIdAndUnionIdAndStatus(Integer busId, Integer unionId, Integer status) throws Exception;
 
     /**
+     * 获取商家盟员信息
+     *
+     * @param busId    商家id
+     * @param memberId 盟员id
+     * @return UnionMember
+     * @throws Exception 统一处理异常
+     */
+    UnionMember getByBusIdAndId(Integer busId, Integer memberId) throws Exception;
+
+    /**
+     * 获取商家盟员信息
+     *
+     * @param busId    商家id
+     * @param memberId 盟员id
+     * @param unionId  联盟id
+     * @return UnionMember
+     * @throws Exception 统一处理异常
+     */
+    UnionMember getByBusIdAndIdAndUnionId(Integer busId, Integer memberId, Integer unionId) throws Exception;
+
+    /**
      * 我的联盟-首页-盟员列表-分页数据-详情
      *
      * @param busId    商家id
@@ -182,6 +203,16 @@ public interface IUnionMemberService {
      * @throws Exception 统一处理异常
      */
     List<UnionMember> listValidWriteByBusId(Integer busId) throws Exception;
+
+    /**
+     * 获取商家盟员列表信息
+     *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @return UnionMember
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> listByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
 
     /**
      * 获取其他未删除的具有读权限的联盟盟员列表信息
@@ -394,6 +425,15 @@ public interface IUnionMemberService {
     List<Integer> getUnionIdList(List<UnionMember> memberList) throws Exception;
 
     /**
+     * 辅助：获取盟员集对应的的商家id列表
+     *
+     * @param memberList 盟员列表
+     * @return List<Integer>
+     * @throws Exception 统一处理异常
+     */
+    List<Integer> getBusIdList(List<UnionMember> memberList) throws Exception;
+
+    /**
      * 获取盟员列表信息(by myBatisGenerator)
      *
      * @param busId busId
@@ -461,10 +501,10 @@ public interface IUnionMemberService {
      *
      * @param page          分页对象
      * @param entityWrapper 条件
-     * @return Page<UnionMember>
+     * @return Page
      * @throws Exception 统一处理异常
      */
-    Page<UnionMember> pageSupport(Page page, EntityWrapper<UnionMember> entityWrapper) throws Exception;
+    Page pageSupport(Page page, EntityWrapper<UnionMember> entityWrapper) throws Exception;
 
     //****************************************** Object As a Service - save ********************************************
 

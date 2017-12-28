@@ -172,6 +172,28 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
     }
 
     @Override
+    public UnionMember getByBusIdAndId(Integer busId, Integer memberId) throws Exception {
+        if (busId == null || memberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        UnionMember result = getById(memberId);
+
+        return result != null && busId.equals(result.getBusId()) ? result : null;
+    }
+
+    @Override
+    public UnionMember getByBusIdAndIdAndUnionId(Integer busId, Integer memberId, Integer unionId) throws Exception {
+        if (busId == null || memberId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        UnionMember result = getByBusIdAndId(busId, memberId);
+
+        return result != null && unionId.equals(result.getUnionId()) ? result : null;
+    }
+
+    @Override
     public UnionMember getValidByBusIdAndIdAndUnionId(Integer busId, Integer memberId, Integer unionId) throws Exception {
         if (busId == null || memberId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -305,6 +327,17 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         result = filterByStatusList(result, statusList);
 
         return result;
+    }
+
+    @Override
+    public List<UnionMember> listByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
+        if (busId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMember> result = listByBusId(busId);
+
+        return filterByUnionId(result, unionId);
     }
 
     @Override
@@ -750,6 +783,19 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
     }
 
     @Override
+    public List<Integer> getBusIdList(List<UnionMember> memberList) throws Exception {
+        List<Integer> result = new ArrayList<>();
+
+        if (ListUtil.isNotEmpty(memberList)) {
+            for (UnionMember member : memberList) {
+                result.add(member.getBusId());
+            }
+        }
+
+        return result;
+    }
+
+    @Override
     public List<UnionMember> listByBusId(Integer busId) throws Exception {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -896,7 +942,7 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
     }
 
     @Override
-    public Page<UnionMember> pageSupport(Page page, EntityWrapper<UnionMember> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionMember> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
