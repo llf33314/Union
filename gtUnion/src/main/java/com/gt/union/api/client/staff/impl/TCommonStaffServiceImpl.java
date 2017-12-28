@@ -44,7 +44,7 @@ public class TCommonStaffServiceImpl implements ITCommonStaffService {
 			List<TCommonStaff> list = JSONArray.parseArray(map.get("staffList").toString(), TCommonStaff.class);
 			List exitsList = new ArrayList<>();
 			if(ListUtil.isNotEmpty(list)){
-				List<UnionVerifier> verifiers = unionVerifierService.listFinanceByBusId(busId);
+				List<UnionVerifier> verifiers = unionVerifierService.listValidFinanceByBusId(busId);
 				if(ListUtil.isNotEmpty(verifiers)){
 					for(TCommonStaff staff : list){
 						for(UnionVerifier verifier : verifiers){

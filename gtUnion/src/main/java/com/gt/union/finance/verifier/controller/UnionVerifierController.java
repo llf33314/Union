@@ -61,7 +61,7 @@ public class UnionVerifierController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             verifierList = MockUtil.list(UnionVerifier.class, page.getSize());
         } else {
-            verifierList = unionVerifierService.listFinanceByBusId(busId);
+            verifierList = unionVerifierService.listValidFinanceByBusId(busId);
         }
         Page<UnionVerifier> result = (Page<UnionVerifier>) page;
         result = PageUtil.setRecord(result, verifierList);

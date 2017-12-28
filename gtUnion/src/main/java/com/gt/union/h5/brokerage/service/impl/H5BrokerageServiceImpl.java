@@ -438,7 +438,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
             throw new BusinessException("手机验证码错误");
         }
         // （2）	判断本地手机号，如果存在，则继续；否则调用接口查询并更新
-        List<UnionVerifier> verifierList = unionVerifierService.list();
+        List<UnionVerifier> verifierList = unionVerifierService.listValid();
         List<UnionVerifier> loginVerifierList = unionVerifierService.filterByPhone(verifierList, phone);
         if (ListUtil.isNotEmpty(loginVerifierList)) {
             UnionVerifier loginVerifier = loginVerifierList.get(0);
