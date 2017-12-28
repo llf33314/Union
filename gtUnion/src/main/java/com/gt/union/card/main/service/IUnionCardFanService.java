@@ -18,10 +18,70 @@ import java.util.List;
 public interface IUnionCardFanService {
     //********************************************* Base On Business - get *********************************************
 
+    /**
+     * 我的联盟-首页-联盟卡-分页数据-详情
+     *
+     * @param busId   商家id
+     * @param fanId   粉丝id
+     * @param unionId 联盟id
+     * @return CardFanDetailVO
+     * @throws Exception 统一处理异常
+     */
+    CardFanDetailVO getFanDetailVOByBusIdAndIdAndUnionId(Integer busId, Integer fanId, Integer unionId) throws Exception;
+
+    /**
+     * 前台-联盟卡消费核销-搜索
+     *
+     * @param busId         商家id
+     * @param numberOrPhone 联盟卡号或手机号
+     * @param optUnionId    联盟id
+     * @return CardFanSearchVO
+     * @throws Exception 统一处理异常
+     */
+    CardFanSearchVO getCardFanSearchVOByBusId(Integer busId, String numberOrPhone, Integer optUnionId) throws Exception;
+
+    /**
+     * 获取未删除的粉丝信息
+     *
+     * @param numberOrPhone 联盟卡号或手机号
+     * @return UnionCardFan
+     * @throws Exception 统一处理异常
+     */
+    UnionCardFan getValidByNumberOrPhone(String numberOrPhone) throws Exception;
+
+    /**
+     * 获取未删除的粉丝信息
+     *
+     * @param phone 手机号
+     * @return UnionCardFan
+     * @throws Exception 统一处理异常
+     */
+    UnionCardFan getValidByPhone(String phone) throws Exception;
+    
     //********************************************* Base On Business - list ********************************************
+
+    /**
+     * 分页：我的联盟-首页-联盟卡；导出：我的联盟-首页-联盟卡
+     *
+     * @param busId     商家id
+     * @param unionId   联盟id
+     * @param optNumber 联盟卡号
+     * @param optPhone  手机号
+     * @return List<CardFanVO>
+     * @throws Exception 统一处理异常
+     */
+    List<CardFanVO> listCardFanVoByBusIdAndUnionId(Integer busId, Integer unionId, String optNumber, String optPhone) throws Exception;
 
     //********************************************* Base On Business - save ********************************************
 
+    /**
+     * 根据手机号查联盟卡粉丝信息，如果不存在 则新增
+     *
+     * @param phone 手机号
+     * @return UnionCardFan
+     */
+    UnionCardFan getOrSaveByPhone(String phone) throws Exception;
+    
     //********************************************* Base On Business - remove ******************************************
 
     //********************************************* Base On Business - update ******************************************
@@ -153,94 +213,5 @@ public interface IUnionCardFanService {
      * @throws Exception 统一处理异常
      */
     void updateBatch(List<UnionCardFan> updateUnionCardFanList) throws Exception;
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *****************************************
-
-    /**
-     * 我的联盟-首页-联盟卡-分页数据-详情
-     *
-     * @param busId   商家id
-     * @param fanId   粉丝id
-     * @param unionId 联盟id
-     * @return CardFanDetailVO
-     * @throws Exception 统一处理异常
-     */
-    CardFanDetailVO getFanDetailVOByBusIdAndIdAndUnionId(Integer busId, Integer fanId, Integer unionId) throws Exception;
-
-
-    /**
-     * 前台-联盟卡消费核销-搜索
-     *
-     * @param busId         商家id
-     * @param numberOrPhone 联盟卡号或手机号
-     * @param optUnionId    联盟id
-     * @return CardFanSearchVO
-     * @throws Exception 统一处理异常
-     */
-    CardFanSearchVO getCardFanSearchVOByBusId(Integer busId, String numberOrPhone, Integer optUnionId) throws Exception;
-
-    /**
-     * 获取粉丝信息
-     *
-     * @param numberOrPhone 联盟卡号或手机号
-     * @return UnionCardFan
-     * @throws Exception 统一处理异常
-     */
-    UnionCardFan getByNumberOrPhone(String numberOrPhone) throws Exception;
-
-    /**
-     * 获取粉丝信息
-     *
-     * @param phone 手机号
-     * @return UnionCardFan
-     * @throws Exception 统一处理异常
-     */
-    UnionCardFan getByPhone(String phone) throws Exception;
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    /**
-     * 分页：我的联盟-首页-联盟卡；导出：我的联盟-首页-联盟卡
-     *
-     * @param busId     商家id
-     * @param unionId   联盟id
-     * @param optNumber 联盟卡号
-     * @param optPhone  手机号
-     * @return List<CardFanVO>
-     * @throws Exception 统一处理异常
-     */
-    List<CardFanVO> listCardFanVoByBusIdAndUnionId(Integer busId, Integer unionId, String optNumber, String optPhone) throws Exception;
-
-    /**
-     * 获取具有有效折扣卡的粉丝信息
-     *
-     * @param unionId   联盟id
-     * @param optNumber 联盟卡号
-     * @param optPhone  手机号
-     * @return List<UnionCardFan>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCardFan> listWithValidDiscountCardByUnionId(Integer unionId, String optNumber, String optPhone) throws Exception;
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-
-    /**
-     * 根据手机号查联盟卡粉丝信息，如果不存在 则新增
-     *
-     * @param phone 手机号
-     * @return
-     */
-    UnionCardFan getOrSaveByPhone(String phone) throws Exception;
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    //***************************************** Domain Driven Design - boolean *****************************************
-
+    
 }

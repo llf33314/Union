@@ -113,7 +113,7 @@ public class UnionIndexServiceImpl implements IUnionIndexService {
             result.setMemberSurplus(memberLimit - readMemberCount);
 
             if (UnionConstant.IS_INTEGRAL_YES == currentUnion.getIsIntegral()) {
-                result.setIntegral(unionCardIntegralService.sumIntegralByUnionId(currentUnionId));
+                result.setIntegral(unionCardIntegralService.sumValidIntegralByUnionId(currentUnionId));
             }
 
             UnionMainTransfer transfer = unionMainTransferService.getValidByUnionIdAndToMemberIdAndConfirmStatus(currentUnionId, currentMember.getId(), UnionConstant.TRANSFER_CONFIRM_STATUS_PROCESS);

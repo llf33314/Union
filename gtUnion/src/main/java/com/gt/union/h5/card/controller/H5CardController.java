@@ -115,9 +115,8 @@ public class H5CardController {
 		if(CommonUtil.isEmpty(member)){
 			return memberService.authorizeMember(request, busId, true, ConfigConstant.CARD_PHONE_BASE_URL + url, ConfigConstant.CARD_PHONE_BASE_URL + "toUnionLogin").toString();
 		}
-		List<MyCardConsumeVO> list = h5CardService.listConsumeByPhone(member.getPhone(), page);
-		page.setRecords(list);
-		return GtJsonResult.instanceSuccessMsg(page).toString();
+		Page result = h5CardService.pageConsumeByPhone(page, member.getPhone());
+		return GtJsonResult.instanceSuccessMsg(result).toString();
 	}
 
 

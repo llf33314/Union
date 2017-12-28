@@ -17,6 +17,15 @@ public interface IUnionCardRecordService {
 
     //********************************************* Base On Business - list ********************************************
 
+    /**
+     * 缓存穿透-获取联盟卡购买记录列表信息
+     *
+     * @param orderNo 订单号
+     * @return UnionCardRecord
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardRecord> listValidByOrderNo(String orderNo) throws Exception;
+    
     //********************************************* Base On Business - save ********************************************
 
     //********************************************* Base On Business - remove ******************************************
@@ -285,33 +294,5 @@ public interface IUnionCardRecordService {
      * @throws Exception 统一处理异常
      */
     void updateBatch(List<UnionCardRecord> updateUnionCardRecordList) throws Exception;
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    /**
-     * 获取联盟卡购买记录列表信息
-     *
-     * @param orderNo 订单号
-     * @return UnionCardRecord
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCardRecord> listByOrderNo(String orderNo) throws Exception;
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    //***************************************** Domain Driven Design - boolean *****************************************
 
 }

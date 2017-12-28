@@ -121,7 +121,7 @@ public class UnionConsumeApiServiceImpl implements IUnionConsumeApiService {
 			UnionMain main = unionMainService.getById(card.getUnionId());
 			if(unionMainService.isUnionValid(main)){
 				if (main.getIsIntegral() != null && main.getIsIntegral() == 1) {//开启积分
-					UnionCardIntegral cardIntegral = unionCardIntegralService.getByUnionIdAndFanId(card.getUnionId(), card.getFanId());
+					UnionCardIntegral cardIntegral = unionCardIntegralService.getValidByUnionIdAndFanId(card.getUnionId(), card.getFanId());
 					double integral = dictService.getGiveIntegral();
 					//获得的积分
 					double getIntegral = BigDecimalUtil.multiply(unionConsume.getPayMoney(), integral, 2).doubleValue();
@@ -149,7 +149,7 @@ public class UnionConsumeApiServiceImpl implements IUnionConsumeApiService {
 
 	@Override
 	public void unionConsumeRefund(String orderNo, Integer model) throws Exception{
-		UnionConsume unionConsume = unionConsumeService.getByOrderNoAndModel(orderNo, model);
+		UnionConsume unionConsume = unionConsumeService.getValidByOrderNoAndModel(orderNo, model);
 		if (unionConsume == null) {
 			throw new BusinessException("订单不存在");
 		}

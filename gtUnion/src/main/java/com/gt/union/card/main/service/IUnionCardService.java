@@ -19,15 +19,155 @@ import java.util.List;
 public interface IUnionCardService {
     //********************************************* Base On Business - get *********************************************
 
+    /**
+     * 前台-办理联盟卡-查询联盟和联盟卡
+     *
+     * @param busId      商家id
+     * @param fanId      粉丝id
+     * @param optUnionId 联盟id
+     * @return CardApplyVO
+     * @throws Exception 统一处理异常
+     */
+    CardApplyVO getCardApplyVOByBusIdAndFanId(Integer busId, Integer fanId, Integer optUnionId) throws Exception;
+
+    /**
+     * 获取未删除的未过期的联盟卡信息
+     *
+     * @param unionId 联盟id
+     * @param fanId   粉丝id
+     * @param type    联盟卡类型
+     * @return UnionCard
+     * @throws Exception 统一处理异常
+     */
+    UnionCard getValidUnexpiredByUnionIdAndFanIdAndType(Integer unionId, Integer fanId, Integer type) throws Exception;
+
+    /**
+     * 获取未删除的未过期的活动卡信息
+     *
+     * @param unionId    联盟id
+     * @param fanId      粉丝id
+     * @param activityId 活动id
+     * @return UnionCard
+     * @throws Exception 统一处理异常
+     */
+    UnionCard getValidUnexpiredByUnionIdAndFanIdAndActivityId(Integer unionId, Integer fanId, Integer activityId) throws Exception;
+
     //********************************************* Base On Business - list ********************************************
 
+    /**
+     * 获取未删除的未过期的联盟卡列表信息
+     *
+     * @param unionId 联盟id
+     * @param fanId   粉丝id
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> listValidUnexpiredByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception;
+
+    /**
+     * 获取未删除的未过期的联盟卡列表信息
+     *
+     * @param unionId 联盟id
+     * @param fanId   粉丝id
+     * @param type    联盟卡类型
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> listValidUnexpiredByUnionIdAndFanIdAndType(Integer unionId, Integer fanId, Integer type) throws Exception;
+
+    /**
+     * 获取未删除的未过期的联盟卡列表信息
+     *
+     * @param unionId    联盟id
+     * @param activityId 活动id
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> listValidUnexpiredByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception;
+
+    /**
+     * 获取未删除的未过期的联盟卡列表信息
+     *
+     * @param fanId 粉丝id
+     * @param type  联盟卡类型
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> listValidUnexpiredByFanIdAndType(Integer fanId, Integer type) throws Exception;
+
     //********************************************* Base On Business - save ********************************************
+
+    /**
+     * 前台-办理联盟卡-确定
+     *
+     * @param busId                 商家id
+     * @param unionId               联盟id
+     * @param fanId                 粉丝id
+     * @param activityIdList        活动id列表
+     * @param unionCardApplyService 支付回调策略接口
+     * @return UnionPayVO
+     * @throws Exception 统一处理异常
+     */
+    UnionPayVO saveApplyByBusIdAndUnionIdAndFanId(Integer busId, Integer unionId, Integer fanId, List<Integer> activityIdList, IUnionCardApplyService unionCardApplyService) throws Exception;
+
+    /**
+     * 前台-办理联盟卡-校验手机验证码
+     *
+     * @param vo 表单内容
+     * @return UnionCardFan
+     * @throws Exception 统一处理异常
+     */
+    UnionCardFan checkCardPhoneVO(CardPhoneVO vo) throws Exception;
 
     //********************************************* Base On Business - remove ******************************************
 
     //********************************************* Base On Business - update ******************************************
 
+    /**
+     * 前台-办理联盟卡-确定-回调
+     *
+     * @param orderNo    订单号
+     * @param socketKey  socket关键字
+     * @param payType    支付类型
+     * @param payOrderNo 支付订单号
+     * @param isSuccess  是否成功
+     * @return String 返回结果
+     */
+    String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess);
+
     //********************************************* Base On Business - other *******************************************
+
+    /**
+     * 统计未删除的活动卡数量
+     *
+     * @param unionId    联盟id
+     * @param activityId 活动id
+     * @return Integer
+     * @throws Exception 统一处理异常
+     */
+    Integer countValidByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception;
+
+    /**
+     * 是否存在未删除的未过期的联盟卡信息
+     *
+     * @param unionId 联盟id
+     * @param fanId   粉丝id
+     * @param type    联盟卡类型
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean existValidUnexpiredByUnionIdAndFanIdAndType(Integer unionId, Integer fanId, Integer type) throws Exception;
+
+    /**
+     * 是否存在未删除的未过期的联盟卡信息
+     *
+     * @param unionId    联盟id
+     * @param fanId      粉丝id
+     * @param activityId 活动id
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean existValidUnexpiredByUnionIdAndFanIdAndActivityId(Integer unionId, Integer fanId, Integer activityId) throws Exception;
 
     //********************************************* Base On Business - filter ******************************************
 
@@ -40,6 +180,45 @@ public interface IUnionCardService {
      * @throws Exception 统一处理异常
      */
     List<UnionCard> filterByDelStatus(List<UnionCard> unionCardList, Integer delStatus) throws Exception;
+
+    /**
+     * 根据联盟卡类型进行过滤
+     *
+     * @param cardList 数据源
+     * @param type     类型
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> filterByType(List<UnionCard> cardList, Integer type) throws Exception;
+
+    /**
+     * 根据联盟id进行过滤
+     *
+     * @param cardList 数据源
+     * @param unionId  联盟id
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> filterByUnionId(List<UnionCard> cardList, Integer unionId) throws Exception;
+
+    /**
+     * 根据活动id进行过滤
+     *
+     * @param cardList   数据源
+     * @param activityId 活动id
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> filterByActivityId(List<UnionCard> cardList, Integer activityId) throws Exception;
+
+    /**
+     * 过滤掉过期的联盟卡
+     *
+     * @param cardList 数据源
+     * @return List<UnionCard>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> filterExpired(List<UnionCard> cardList) throws Exception;
 
     //****************************************** Object As a Service - get *********************************************
 
@@ -81,6 +260,14 @@ public interface IUnionCardService {
      */
     List<Integer> getIdList(List<UnionCard> unionCardList) throws Exception;
 
+    /**
+     * 获取对象集对应的的联盟id集
+     *
+     * @param unionCardList 对象集
+     * @return List<Id>
+     * @throws Exception 统一处理异常
+     */
+    List<Integer> getUnionIdList(List<UnionCard> unionCardList) throws Exception;
 
     /**
      * 获取联盟卡列表信息(by myBatisGenerator)
@@ -262,173 +449,5 @@ public interface IUnionCardService {
      * @throws Exception 统一处理异常
      */
     void updateBatch(List<UnionCard> updateUnionCardList) throws Exception;
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    /**
-     * 前台-办理联盟卡-查询联盟和联盟卡
-     *
-     * @param busId      商家id
-     * @param fanId      粉丝id
-     * @param optUnionId 联盟id
-     * @return CardApplyVO
-     * @throws Exception 统一处理异常
-     */
-    CardApplyVO getCardApplyVOByBusIdAndFanId(Integer busId, Integer fanId, Integer optUnionId) throws Exception;
-
-    /**
-     * 获取有效的折扣卡信息
-     *
-     * @param unionId 联盟id
-     * @param fanId   粉丝id
-     * @return UnionCard
-     * @throws Exception 统一处理异常
-     */
-    UnionCard getValidDiscountCardByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception;
-
-    /**
-     * 获取有效的折扣卡信息
-     *
-     * @param unionId    联盟id
-     * @param fanId      粉丝id
-     * @param activityId 活动id
-     * @return UnionCard
-     * @throws Exception 统一处理异常
-     */
-    UnionCard getValidActivityCardByUnionIdAndFanIdAndActivityId(Integer unionId, Integer fanId, Integer activityId) throws Exception;
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    /**
-     * 获取有效的联盟卡列表信息
-     *
-     * @param unionId 联盟id
-     * @param fanId   粉丝id
-     * @return List<UnionCard>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCard> listValidByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception;
-
-    /**
-     * 获取有效的联盟卡列表信息
-     *
-     * @param unionId 联盟id
-     * @param fanId   粉丝id
-     * @param type    联盟卡类型
-     * @return List<UnionCard>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCard> listValidByUnionIdAndFanIdAndType(Integer unionId, Integer fanId, Integer type) throws Exception;
-
-    /**
-     * 获取有效的联盟卡列表信息
-     *
-     * @param unionId    联盟id
-     * @param activityId 活动id
-     * @return List<UnionCard>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCard> listValidByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception;
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    /**
-     * 前台-办理联盟卡-确定
-     *
-     * @param busId                 商家id
-     * @param unionId               联盟id
-     * @param fanId                 粉丝id
-     * @param activityIdList        活动id列表
-     * @param unionCardApplyService
-     * @return UnionPayVO
-     * @throws Exception 统一处理异常
-     */
-    UnionPayVO saveApplyByBusIdAndUnionIdAndFanId(Integer busId, Integer unionId, Integer fanId, List<Integer> activityIdList, IUnionCardApplyService unionCardApplyService) throws Exception;
-
-    /**
-     * 前台-办理联盟卡-校验手机验证码
-     *
-     * @param vo 表单内容
-     * @return UnionCardFan
-     * @throws Exception 统一处理异常
-     */
-    UnionCardFan checkCardPhoneVO(CardPhoneVO vo) throws Exception;
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    /**
-     * 前台-办理联盟卡-确定-回调
-     *
-     * @param orderNo    订单号
-     * @param socketKey  socket关键字
-     * @param payType    支付类型
-     * @param payOrderNo 支付订单号
-     * @param isSuccess  是否成功
-     * @return String 返回结果
-     */
-    String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess);
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    /**
-     * 统计活动卡数量
-     *
-     * @param unionId    联盟id
-     * @param activityId 活动id
-     * @return Integer
-     * @throws Exception 统一处理异常
-     */
-    Integer countByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception;
-
-    //***************************************** Domain Driven Design - boolean *****************************************
-
-    /**
-     * 判断是否存在有效的联盟卡信息
-     *
-     * @param unionId 联盟id
-     * @param fanId   粉丝id
-     * @param type    联盟卡类型
-     * @return boolean
-     * @throws Exception 统一处理异常
-     */
-    boolean existValidByUnionIdAndFanIdAndType(Integer unionId, Integer fanId, Integer type) throws Exception;
-
-    //***************************************** Domain Driven Design - filter ******************************************
-
-    /**
-     * 根据联盟卡类型进行过滤
-     *
-     * @param cardList 数据源
-     * @param type     类型
-     * @return List<UnionCard>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCard> filterByType(List<UnionCard> cardList, Integer type) throws Exception;
-
-    /**
-     * 根据联盟id进行过滤
-     *
-     * @param cardList 数据源
-     * @param unionId  联盟id
-     * @return List<UnionCard>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCard> filterByUnionId(List<UnionCard> cardList, Integer unionId) throws Exception;
-
-    /**
-     * 过滤掉过期的联盟卡
-     *
-     * @param cardList 数据源
-     * @return List<UnionCard>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCard> filterByValidity(List<UnionCard> cardList) throws Exception;
-
-
-    //***************************************** Object As a Service - get **********************************************
 
 }

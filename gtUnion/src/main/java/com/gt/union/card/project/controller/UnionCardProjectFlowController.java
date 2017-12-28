@@ -55,7 +55,7 @@ public class UnionCardProjectFlowController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             result = MockUtil.list(UnionCardProjectFlow.class, 20);
         } else {
-            result = unionCardProjectFlowService.listByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
+            result = unionCardProjectFlowService.listValidByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
         }
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }

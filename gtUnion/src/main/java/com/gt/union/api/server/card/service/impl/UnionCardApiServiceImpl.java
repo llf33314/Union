@@ -54,7 +54,7 @@ public class UnionCardApiServiceImpl implements IUnionCardApiService {
 		}
 
 		//2、判断手机号是否升级过联盟卡
-		UnionCardFan fan = unionCardFanService.getByPhone(phone);
+		UnionCardFan fan = unionCardFanService.getValidByPhone(phone);
 		if(fan == null){
 			result.setCode(UnionDiscountConstant.UNION_DISCOUNT_CODE_NON);
 			return result;
@@ -64,7 +64,7 @@ public class UnionCardApiServiceImpl implements IUnionCardApiService {
 		//3、获取最低折扣
 		List<UnionDiscountResult> discountList = new ArrayList<UnionDiscountResult>();
 		for(UnionMember member : members){
-			List<UnionCard> cards = unionCardService.listValidByUnionIdAndFanIdAndType(member.getUnionId(), fan.getId(), CardConstant.TYPE_DISCOUNT);
+			List<UnionCard> cards = unionCardService.listValidUnexpiredByUnionIdAndFanIdAndType(member.getUnionId(), fan.getId(), CardConstant.TYPE_DISCOUNT);
 			if(ListUtil.isNotEmpty(cards)){
 				if(CommonUtil.isNotEmpty(member.getDiscount()) && member.getDiscount() > 0 && member.getDiscount() < 1){
 					UnionDiscountResult data = new UnionDiscountResult();

@@ -104,7 +104,7 @@ public class UnionCardSharingRatioController {
             throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
         }
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
-            unionCardSharingRatioService.updateRatioByBusIdAndUnionIdAndActivityId(busId, unionId, activityId, ratioList);
+            unionCardSharingRatioService.updateByBusIdAndUnionIdAndActivityId(busId, unionId, activityId, ratioList);
         }
         return GtJsonResult.instanceSuccessMsg().toString();
     }

@@ -16,7 +16,39 @@ import java.util.List;
 public interface IUnionCardSharingRatioService {
     //********************************************* Base On Business - get *********************************************
 
+    /**
+     * 获取未删除的售卡分成佣金信息
+     *
+     * @param unionId    联盟id
+     * @param memberId   盟员id
+     * @param activityId 活动id
+     * @return UnionCardSharingRatio
+     * @throws Exception 统一处理异常
+     */
+    UnionCardSharingRatio getValidByUnionIdAndMemberIdAndActivityId(Integer unionId, Integer memberId, Integer activityId) throws Exception;
+
     //********************************************* Base On Business - list ********************************************
+
+    /**
+     * 获取未删除的售卡分成比例列表信息
+     *
+     * @param unionId    联盟id
+     * @param activityId 活动id
+     * @return List<UnionCardSharingRatio>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardSharingRatio> listValidByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception;
+
+    /**
+     * 分页：我的联盟-售卡佣金分成管理-活动卡售卡比例设置-选择活动卡后；列表：我的联盟-售卡佣金分成管理-活动卡售卡比例设置-选择活动卡后-比例设置
+     *
+     * @param busId      商家id
+     * @param unionId    联盟id
+     * @param activityId 活动id
+     * @return List<CardSharingRatioVO>
+     * @throws Exception 统一处理异常
+     */
+    List<CardSharingRatioVO> listCardSharingRatioVOByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception;
 
     //********************************************* Base On Business - save ********************************************
 
@@ -24,7 +56,28 @@ public interface IUnionCardSharingRatioService {
 
     //********************************************* Base On Business - update ******************************************
 
+    /**
+     * 我的联盟-售卡佣金分成管理-活动卡售卡比例设置-选择活动卡后-比例设置-保存
+     *
+     * @param busId      商家id
+     * @param unionId    联盟id
+     * @param activityId 活动id
+     * @param voList     表单内容
+     * @throws Exception 统一处理异常
+     */
+    void updateByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId, List<CardSharingRatioVO> voList) throws Exception;
+
     //********************************************* Base On Business - other *******************************************
+
+    /**
+     * 是否存在未删除的售卡分成比例信息
+     *
+     * @param unionId    联盟id
+     * @param activityId 活动id
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean existValidByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception;
 
     //********************************************* Base On Business - filter ******************************************
 
@@ -37,6 +90,45 @@ public interface IUnionCardSharingRatioService {
      * @throws Exception 统一处理异常
      */
     List<UnionCardSharingRatio> filterByDelStatus(List<UnionCardSharingRatio> unionCardSharingRatioList, Integer delStatus) throws Exception;
+
+    /**
+     * 根据活动id进行过滤
+     *
+     * @param ratioList  数据源
+     * @param activityId 活动id
+     * @return List<UnionCardSharingRatio>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardSharingRatio> filterByActivityId(List<UnionCardSharingRatio> ratioList, Integer activityId) throws Exception;
+
+    /**
+     * 过滤掉已退盟的数据
+     *
+     * @param ratioList 数据源
+     * @return List<UnionCardSharingRatio>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardSharingRatio> filterInvalidMemberId(List<UnionCardSharingRatio> ratioList) throws Exception;
+
+    /**
+     * 根据盟员id进行过滤
+     *
+     * @param ratioList 数据源
+     * @param memberId  盟员id
+     * @return List<UnionCardSharingRatio>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardSharingRatio> filterByMemberId(List<UnionCardSharingRatio> ratioList, Integer memberId) throws Exception;
+
+    /**
+     * 根据联盟id进行过滤
+     *
+     * @param ratioList 数据源
+     * @param unionId   联盟id
+     * @return List<UnionCardSharingRatio>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardSharingRatio> filterByUnionId(List<UnionCardSharingRatio> ratioList, Integer unionId) throws Exception;
 
     //****************************************** Object As a Service - get *********************************************
 
@@ -232,96 +324,5 @@ public interface IUnionCardSharingRatioService {
      * @throws Exception 统一处理异常
      */
     void updateBatch(List<UnionCardSharingRatio> updateUnionCardSharingRatioList) throws Exception;
-
-    // TODO
-    
-    //***************************************** Domain Driven Design - get *********************************************
-
-    /**
-     * 获取售卡分成佣金信息
-     *
-     * @param unionId    联盟id
-     * @param memberId   盟员id
-     * @param activityId 活动id
-     * @return UnionCardSharingRatio
-     * @throws Exception 统一处理异常
-     */
-    UnionCardSharingRatio getByUnionIdAndMemberIdAndActivityId(Integer unionId, Integer memberId, Integer activityId) throws Exception;
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    /**
-     * 分页：我的联盟-售卡佣金分成管理-活动卡售卡比例设置-选择活动卡后；列表：我的联盟-售卡佣金分成管理-活动卡售卡比例设置-选择活动卡后-比例设置
-     *
-     * @param busId      商家id
-     * @param unionId    联盟id
-     * @param activityId 活动id
-     * @return List<CardSharingRatioVO>
-     * @throws Exception 统一处理异常
-     */
-    List<CardSharingRatioVO> listCardSharingRatioVOByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception;
-
-    /**
-     * 获取售卡分成比例列表信息
-     *
-     * @param unionId    联盟id
-     * @param activityId 活动id
-     * @return List<UnionCardSharingRatio>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCardSharingRatio> listByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception;
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    /**
-     * 我的联盟-售卡佣金分成管理-活动卡售卡比例设置-选择活动卡后-比例设置-保存
-     *
-     * @param busId      商家id
-     * @param unionId    联盟id
-     * @param activityId 活动id
-     * @param voList     表单内容
-     * @throws Exception 统一处理异常
-     */
-    void updateRatioByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId, List<CardSharingRatioVO> voList) throws Exception;
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    //***************************************** Domain Driven Design - boolean *****************************************
-
-    //***************************************** Domain Driven Design - filter ******************************************
-
-    /**
-     * 根据活动id进行过滤
-     *
-     * @param ratioList  数据源
-     * @param activityId 活动id
-     * @return List<UnionCardSharingRatio>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCardSharingRatio> filterByActivityId(List<UnionCardSharingRatio> ratioList, Integer activityId) throws Exception;
-
-    /**
-     * 根据盟员id进行过滤
-     *
-     * @param ratioList 数据源
-     * @param memberId  盟员id
-     * @return List<UnionCardSharingRatio>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCardSharingRatio> filterByMemberId(List<UnionCardSharingRatio> ratioList, Integer memberId) throws Exception;
-
-    /**
-     * 根据联盟id进行过滤
-     *
-     * @param ratioList 数据源
-     * @param unionId   联盟id
-     * @return List<UnionCardSharingRatio>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCardSharingRatio> filterByUnionId(List<UnionCardSharingRatio> ratioList, Integer unionId) throws Exception;
 
 }

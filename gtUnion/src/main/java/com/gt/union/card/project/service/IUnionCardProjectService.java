@@ -19,7 +19,106 @@ import java.util.List;
 public interface IUnionCardProjectService {
     //********************************************* Base On Business - get *********************************************
 
+    /**
+     * 获取未删除的项目信息
+     *
+     * @param unionId    联盟id
+     * @param memberId   盟员id
+     * @param activityId 活动id
+     * @return UnionCardProject
+     * @throws Exception 统一处理异常
+     */
+    UnionCardProject getValidByUnionIdAndMemberIdAndActivityId(Integer unionId, Integer memberId, Integer activityId) throws Exception;
+
+    /**
+     * 获取未删除的项目信息
+     *
+     * @param unionId    联盟id
+     * @param memberId   盟员id
+     * @param activityId 活动id
+     * @param status     项目状态
+     * @return UnionCardProject
+     * @throws Exception 统一处理异常
+     */
+    UnionCardProject getValidByUnionIdAndMemberIdAndActivityIdAndStatus(Integer unionId, Integer memberId, Integer activityId, Integer status) throws Exception;
+
+    /**
+     * 获取未删除的项目信息
+     *
+     * @param projectId  项目id
+     * @param unionId    联盟id
+     * @param activityId 活动id
+     * @return UnionCardProject
+     * @throws Exception 统一处理异常
+     */
+    UnionCardProject getValidByIdAndUnionIdAndActivityId(Integer projectId, Integer unionId, Integer activityId) throws Exception;
+
+    /**
+     * 我的联盟-联盟卡设置-活动卡设置-分页数据-我的活动项目
+     *
+     * @param busId      商家id
+     * @param unionId    联盟id
+     * @param activityId 活动id
+     * @return CardProjectVO
+     * @throws Exception 统一处理异常
+     */
+    CardProjectVO getProjectVOByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception;
+
     //********************************************* Base On Business - list ********************************************
+
+    /**
+     * 获取未删除的项目列表信息
+     *
+     * @param unionId  联盟id
+     * @param memberId 盟员id
+     * @param status   项目状态
+     * @return List<UnionCardProject>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardProject> listValidByUnionIdAndMemberIdAndStatus(Integer unionId, Integer memberId, Integer status) throws Exception;
+
+    /**
+     * 获取未删除的项目列表信息
+     *
+     * @param unionId    联盟id
+     * @param activityId 活动id
+     * @return List<UnionCardProject>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardProject> listValidByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception;
+
+    /**
+     * 获取未删除的项目列表信息
+     *
+     * @param unionId    联盟id
+     * @param activityId 活动id
+     * @param status     项目状态
+     * @return List<UnionCardProject>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardProject> listValidByUnionIdAndActivityIdAndStatus(Integer unionId, Integer activityId, Integer status) throws Exception;
+
+    /**
+     * 我的联盟-联盟卡设置-活动卡设置-分页数据-参与盟员数
+     *
+     * @param busId      商家id
+     * @param unionId    联盟id
+     * @param activityId 活动id
+     * @return List<CardProjectJoinMemberVO>
+     * @throws Exception 统一处理异常
+     */
+    List<CardProjectJoinMemberVO> listJoinMemberByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception;
+
+    /**
+     * 我的联盟-联盟卡设置-活动卡设置-分页数据-待审核
+     *
+     * @param busId      商家id
+     * @param unionId    联盟id
+     * @param activityId 活动id
+     * @return List<CardProjectCheckVO>
+     * @throws Exception 统一处理异常
+     */
+    List<CardProjectCheckVO> listProjectCheckByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception;
 
     //********************************************* Base On Business - save ********************************************
 
@@ -27,7 +126,42 @@ public interface IUnionCardProjectService {
 
     //********************************************* Base On Business - update ******************************************
 
+    /**
+     * 我的联盟-联盟卡设置-活动卡设置-分页数据-审核项目-通过或不通过
+     *
+     * @param busId      商家id
+     * @param unionId    联盟id
+     * @param activityId 活动id
+     * @param vo         表单内容
+     * @param isPass     是否通过(0：否 1：是)
+     * @throws Exception 统一处理异常
+     */
+    void updateByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId, Integer isPass, CardProjectCheckUpdateVO vo) throws Exception;
+
     //********************************************* Base On Business - other *******************************************
+
+    /**
+     * 统计未删除的项目个数
+     *
+     * @param activityId 活动id
+     * @param unionId    联盟id
+     * @param status     项目状态
+     * @return List<UnionCardProject>
+     * @throws Exception 统一处理异常
+     */
+    Integer countValidByUnionIdAndActivityIdAndStatus(Integer unionId, Integer activityId, Integer status) throws Exception;
+
+    /**
+     * 是否存在未删除的项目信息
+     *
+     * @param unionId    联盟id
+     * @param memberId   盟员id
+     * @param activityId 活动id
+     * @param status     项目状态
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean existValidByUnionIdAndMemberIdAndActivityIdAndStatus(Integer unionId, Integer memberId, Integer activityId, Integer status) throws Exception;
 
     //********************************************* Base On Business - filter ******************************************
 
@@ -40,6 +174,45 @@ public interface IUnionCardProjectService {
      * @throws Exception 统一处理异常
      */
     List<UnionCardProject> filterByDelStatus(List<UnionCardProject> unionCardProjectList, Integer delStatus) throws Exception;
+
+    /**
+     * 根据盟员id进行过滤
+     *
+     * @param projectList 数据源
+     * @param memberId    盟员id
+     * @return List<UnionCardProject>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardProject> filterByMemberId(List<UnionCardProject> projectList, Integer memberId) throws Exception;
+
+    /**
+     * 过滤掉盟员已退盟的数据
+     *
+     * @param projectList 数据源
+     * @return List<UnionCardProject>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardProject> filterInvalidMemberId(List<UnionCardProject> projectList) throws Exception;
+
+    /**
+     * 根据联盟id进行过滤
+     *
+     * @param projectList 数据源
+     * @param unionId     联盟id
+     * @return List<UnionCardProject>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardProject> filterByUnionId(List<UnionCardProject> projectList, Integer unionId) throws Exception;
+
+    /**
+     * 根据项目状态进行过滤
+     *
+     * @param projectList 数据源
+     * @param status      项目状态
+     * @return List<UnionCardProject>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardProject> filterByStatus(List<UnionCardProject> projectList, Integer status) throws Exception;
 
     //****************************************** Object As a Service - get *********************************************
 
@@ -235,166 +408,5 @@ public interface IUnionCardProjectService {
      * @throws Exception 统一处理异常
      */
     void updateBatch(List<UnionCardProject> updateUnionCardProjectList) throws Exception;
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    /**
-     * 获取项目信息
-     *
-     * @param unionId    联盟id
-     * @param memberId   盟员id
-     * @param activityId 活动id
-     * @return UnionCardProject
-     * @throws Exception 统一处理异常
-     */
-    UnionCardProject getByUnionIdAndMemberIdAndActivityId(Integer unionId, Integer memberId, Integer activityId) throws Exception;
-
-    /**
-     * 获取项目信息
-     *
-     * @param projectId  项目id
-     * @param unionId    联盟id
-     * @param activityId 活动id
-     * @return UnionCardProject
-     * @throws Exception 统一处理异常
-     */
-    UnionCardProject getByIdAndUnionIdAndActivityId(Integer projectId, Integer unionId, Integer activityId) throws Exception;
-
-    /**
-     * 我的联盟-联盟卡设置-活动卡设置-分页数据-我的活动项目
-     *
-     * @param busId      商家id
-     * @param unionId    联盟id
-     * @param activityId 活动id
-     * @return CardProjectVO
-     * @throws Exception 统一处理异常
-     */
-    CardProjectVO getProjectVOByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception;
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    /**
-     * 获取项目信息
-     *
-     * @param unionId  联盟id
-     * @param memberId 盟员id
-     * @param status   项目状态
-     * @return List<UnionCardProject>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCardProject> listByUnionIdAndMemberIdAndStatus(Integer unionId, Integer memberId, Integer status) throws Exception;
-
-    /**
-     * 获取项目列表信息
-     *
-     * @param unionId    联盟id
-     * @param activityId 活动id
-     * @return List<UnionCardProject>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCardProject> listByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception;
-
-    /**
-     * 获取项目列表信息
-     *
-     * @param unionId    联盟id
-     * @param activityId 活动id
-     * @param status     项目状态
-     * @return List<UnionCardProject>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCardProject> listByUnionIdAndActivityIdAndStatus(Integer unionId, Integer activityId, Integer status) throws Exception;
-
-    /**
-     * 我的联盟-联盟卡设置-活动卡设置-分页数据-参与盟员数
-     *
-     * @param busId      商家id
-     * @param unionId    联盟id
-     * @param activityId 活动id
-     * @return List<CardProjectJoinMemberVO>
-     * @throws Exception 统一处理异常
-     */
-    List<CardProjectJoinMemberVO> listJoinMemberByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception;
-
-    /**
-     * 我的联盟-联盟卡设置-活动卡设置-分页数据-待审核
-     *
-     * @param busId      商家id
-     * @param unionId    联盟id
-     * @param activityId 活动id
-     * @return List<CardProjectCheckVO>
-     * @throws Exception 统一处理异常
-     */
-    List<CardProjectCheckVO> listProjectCheckByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception;
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    /**
-     * 我的联盟-联盟卡设置-活动卡设置-分页数据-审核项目-通过或不通过
-     *
-     * @param busId      商家id
-     * @param unionId    联盟id
-     * @param activityId 活动id
-     * @param vo         表单内容
-     * @param isPass     是否通过(0：否 1：是)
-     * @throws Exception 统一处理异常
-     */
-    void updateProjectCheckByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId, Integer isPass, CardProjectCheckUpdateVO vo) throws Exception;
-
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    /**
-     * 统计项目个数
-     *
-     * @param activityId 活动id
-     * @param unionId    联盟id
-     * @param status     项目状态
-     * @return List<UnionCardProject>
-     * @throws Exception 统一处理异常
-     */
-    Integer countByUnionIdAndActivityIdAndStatus(Integer unionId, Integer activityId, Integer status) throws Exception;
-
-    //***************************************** Domain Driven Design - boolean *****************************************
-
-    //***************************************** Domain Driven Design - filter ******************************************
-
-    /**
-     * 根据盟员id进行过滤
-     *
-     * @param projectList 数据源
-     * @param memberId    盟员id
-     * @return List<UnionCardProject>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCardProject> filterByMemberId(List<UnionCardProject> projectList, Integer memberId) throws Exception;
-
-    /**
-     * 根据联盟id进行过滤
-     *
-     * @param projectList 数据源
-     * @param unionId     联盟id
-     * @return List<UnionCardProject>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCardProject> filterByUnionId(List<UnionCardProject> projectList, Integer unionId) throws Exception;
-
-    /**
-     * 根据项目状态进行过滤
-     *
-     * @param projectList 数据源
-     * @param status      项目状态
-     * @return List<UnionCardProject>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCardProject> filterByStatus(List<UnionCardProject> projectList, Integer status) throws Exception;
 
 }

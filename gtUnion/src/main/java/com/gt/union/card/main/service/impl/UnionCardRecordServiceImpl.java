@@ -36,6 +36,18 @@ public class UnionCardRecordServiceImpl implements IUnionCardRecordService {
 
     //********************************************* Base On Business - list ********************************************
 
+    @Override
+    public List<UnionCardRecord> listValidByOrderNo(String orderNo) throws Exception {
+        if (orderNo == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionCardRecord> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .eq("order_no", orderNo);
+
+        return unionCardRecordDao.selectList(entityWrapper);
+    }
 
     //********************************************* Base On Business - save ********************************************
 
@@ -859,34 +871,5 @@ public class UnionCardRecordServiceImpl implements IUnionCardRecordService {
         }
         return result;
     }
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    @Override
-    public List<UnionCardRecord> listByOrderNo(String orderNo) throws Exception {
-        if (orderNo == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionCardRecord> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .eq("order_no", orderNo);
-
-        return unionCardRecordDao.selectList(entityWrapper);
-    }
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    //***************************************** Domain Driven Design - boolean *****************************************
 
 }

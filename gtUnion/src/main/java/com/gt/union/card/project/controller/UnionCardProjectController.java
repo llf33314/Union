@@ -147,7 +147,7 @@ public class UnionCardProjectController {
             throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
         }
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
-            unionCardProjectService.updateProjectCheckByBusIdAndUnionIdAndActivityId(busId, unionId, activityId, isPass, updateVO);
+            unionCardProjectService.updateByBusIdAndUnionIdAndActivityId(busId, unionId, activityId, isPass, updateVO);
         }
         return GtJsonResult.instanceSuccessMsg().toString();
     }

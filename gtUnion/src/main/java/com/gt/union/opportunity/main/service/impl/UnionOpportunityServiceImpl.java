@@ -480,11 +480,8 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
     @Override
     public List<BrokerageOpportunityVO> listBrokerageOpportunityVO(List<UnionOpportunity> opportunityList) throws Exception {
-        if (opportunityList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
         List<BrokerageOpportunityVO> result = new ArrayList<>();
+        
         if (ListUtil.isNotEmpty(opportunityList)) {
             for (UnionOpportunity opportunity : opportunityList) {
                 BrokerageOpportunityVO vo = new BrokerageOpportunityVO();
