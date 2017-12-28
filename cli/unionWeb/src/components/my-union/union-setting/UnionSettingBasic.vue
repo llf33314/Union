@@ -96,7 +96,7 @@ export default {
       labelPosition: 'right',
       mapShow: false,
       form: {
-        enterpriseAddress: ''
+        enterpriseAddress: '' // 处理无地址内容时刚进页面触发校验chang
       },
       rules: {
         enterpriseName: [{ required: true, message: '企业名称内容不能为空，请重新输入', trigger: 'blur' }],
@@ -128,8 +128,8 @@ export default {
         .then(res => {
           if (res.data.data) {
             // 处理无地址内容时刚进页面触发校验chang
-            if (!res.data.data.enterpriseAddress) {
-              res.data.data.enterpriseAddress = '';
+            if (!res.data.data.member.enterpriseAddress) {
+              res.data.data.member.enterpriseAddress = '';
             }
             this.form = res.data.data.member;
             this.isIntegral = res.data.data.union.isIntegral;
