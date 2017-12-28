@@ -273,7 +273,7 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
     }
 
     @Override
-    public Page<UnionCardIntegral> pageSupport(Page page, EntityWrapper<UnionCardIntegral> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionCardIntegral> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }

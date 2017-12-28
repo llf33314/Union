@@ -427,7 +427,7 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
     }
 
     @Override
-    public Page<UnionMainPermit> pageSupport(Page page, EntityWrapper<UnionMainPermit> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionMainPermit> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }

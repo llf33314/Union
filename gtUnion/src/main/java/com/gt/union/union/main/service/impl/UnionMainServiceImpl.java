@@ -264,6 +264,15 @@ public class UnionMainServiceImpl implements IUnionMainService {
         return union.getValidity().compareTo(DateUtil.getCurrentDate()) >= 0;
     }
 
+    @Override
+    public boolean existById(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        
+        return getById(unionId) != null;
+    }
+
     //********************************************* Base On Business - filter ******************************************
 
     @Override
@@ -360,7 +369,7 @@ public class UnionMainServiceImpl implements IUnionMainService {
     }
 
     @Override
-    public Page<UnionMain> pageSupport(Page page, EntityWrapper<UnionMain> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionMain> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }

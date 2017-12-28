@@ -364,7 +364,7 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
     }
 
     @Override
-    public Page<UnionCardSharingRatio> pageSupport(Page page, EntityWrapper<UnionCardSharingRatio> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionCardSharingRatio> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }

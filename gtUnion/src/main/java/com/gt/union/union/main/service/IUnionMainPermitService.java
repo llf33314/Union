@@ -187,10 +187,10 @@ public interface IUnionMainPermitService {
      *
      * @param page          分页对象
      * @param entityWrapper 条件
-     * @return Page<UnionMainPermit>
+     * @return Page
      * @throws Exception 统一处理异常
      */
-    Page<UnionMainPermit> pageSupport(Page page, EntityWrapper<UnionMainPermit> entityWrapper) throws Exception;
+    Page pageSupport(Page page, EntityWrapper<UnionMainPermit> entityWrapper) throws Exception;
 
     //****************************************** Object As a Service - save ********************************************
 

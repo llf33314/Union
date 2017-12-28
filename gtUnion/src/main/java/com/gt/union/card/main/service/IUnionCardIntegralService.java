@@ -146,10 +146,10 @@ public interface IUnionCardIntegralService {
      *
      * @param page          分页对象
      * @param entityWrapper 条件
-     * @return Page<UnionCardIntegral>
+     * @return Page
      * @throws Exception 统一处理异常
      */
-    Page<UnionCardIntegral> pageSupport(Page page, EntityWrapper<UnionCardIntegral> entityWrapper) throws Exception;
+    Page pageSupport(Page page, EntityWrapper<UnionCardIntegral> entityWrapper) throws Exception;
 
     //****************************************** Object As a Service - save ********************************************
 

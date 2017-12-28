@@ -174,10 +174,10 @@ public interface IUnionCardSharingRatioService {
      *
      * @param page          分页对象
      * @param entityWrapper 条件
-     * @return Page<UnionCardSharingRatio>
+     * @return Page
      * @throws Exception 统一处理异常
      */
-    Page<UnionCardSharingRatio> pageSupport(Page page, EntityWrapper<UnionCardSharingRatio> entityWrapper) throws Exception;
+    Page pageSupport(Page page, EntityWrapper<UnionCardSharingRatio> entityWrapper) throws Exception;
 
     //****************************************** Object As a Service - save ********************************************
 

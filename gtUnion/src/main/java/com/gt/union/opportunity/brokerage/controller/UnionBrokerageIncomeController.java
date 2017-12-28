@@ -63,12 +63,13 @@ public class UnionBrokerageIncomeController {
         List<BrokerageOpportunityVO> voList;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             voList = MockUtil.list(BrokerageOpportunityVO.class, page.getSize());
+            Page<BrokerageOpportunityVO> result = (Page<BrokerageOpportunityVO>) page;
+            result = PageUtil.setRecord(result, voList);
+            return GtJsonResult.instanceSuccessMsg(result).toString();
         } else {
-            voList = unionBrokerageIncomeService.listBrokerageOpportunityVOByBusId(busId, unionId, toMemberId, isClose, clientName, clientPhone);
+            Page result = unionBrokerageIncomeService.pageBrokerageOpportunityVOByBusId(page, busId, unionId, toMemberId, isClose, clientName, clientPhone);
+            return GtJsonResult.instanceSuccessMsg(result).toString();
         }
-        Page<BrokerageOpportunityVO> result = (Page<BrokerageOpportunityVO>) page;
-        result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------

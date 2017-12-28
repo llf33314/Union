@@ -290,7 +290,7 @@ public class UnionMainNoticeServiceImpl implements IUnionMainNoticeService {
     }
 
     @Override
-    public Page<UnionMainNotice> pageSupport(Page page, EntityWrapper<UnionMainNotice> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionMainNotice> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }

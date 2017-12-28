@@ -470,7 +470,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
     }
 
     @Override
-    public Page<UnionConsume> pageSupport(Page page, EntityWrapper<UnionConsume> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionConsume> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }

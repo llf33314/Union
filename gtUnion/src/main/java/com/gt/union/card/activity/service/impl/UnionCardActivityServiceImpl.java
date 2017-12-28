@@ -247,7 +247,7 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
     }
 
     @Override
-    public Page<UnionCardActivity> pageSupport(Page page, EntityWrapper<UnionCardActivity> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionCardActivity> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }

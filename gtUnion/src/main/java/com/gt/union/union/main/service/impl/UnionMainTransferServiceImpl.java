@@ -714,7 +714,7 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
     }
 
     @Override
-    public Page<UnionMainTransfer> pageSupport(Page page, EntityWrapper<UnionMainTransfer> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionMainTransfer> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }

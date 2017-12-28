@@ -704,7 +704,7 @@ public class UnionMemberOutServiceImpl implements IUnionMemberOutService {
     }
 
     @Override
-    public Page<UnionMemberOut> pageSupport(Page page, EntityWrapper<UnionMemberOut> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionMemberOut> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
