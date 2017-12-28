@@ -1,6 +1,20 @@
 <template>
-  <div id="container">
-
+  <div>
+    <div id="container"></div>
+    <div id="myPageTop">
+      <table>
+        <tr>
+          <td>
+            <label>请输入关键字：</label>
+          </td>
+        </tr>
+        <tr>
+          <td>
+            <input id="tipinput" />
+          </td>
+        </tr>
+      </table>
+    </div>
   </div>
 </template>
 
@@ -17,8 +31,10 @@ export default {
   methods: {
     init() {
       // 初始化地图
-      let map = new AMap.Map('container', {});
-      map.plugin(['AMap.ToolBar', 'AMap.CitySearch', 'AMap.Geocoder'], () => {
+      let map = new AMap.Map('container', {
+        resizeEnable: true
+      });
+      map.plugin(['AMap.ToolBar', 'AMap.CitySearch', 'AMap.Geocoder', 'AMap.Autocomplete', 'AMap.PlaceSearch'], () => {
         map.addControl(new AMap.ToolBar());
         let geocoder = new AMap.Geocoder({
           radius: 1000,
@@ -54,6 +70,18 @@ export default {
           });
         }
       });
+      let autoOptions = {
+        input: 'tipinput'
+      };
+      let auto = new AMap.Autocomplete(autoOptions);
+      let placeSearch = new AMap.PlaceSearch({
+        map: map
+      }); //构造地点查询类
+      AMap.event.addListener(auto, 'select', select); //注册监听，当选中某条记录时会触发
+      function select(e) {
+        placeSearch.setCity(e.poi.adcode);
+        placeSearch.search(e.poi.name); //关键字查询查询
+      }
       // 点击事件
       AMap.event.addListener(map, 'click', e => {
         map.clearMap(); // 清除地图覆盖物
