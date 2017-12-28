@@ -1,0 +1,1308 @@
+@charset "UTF-8";
+* {
+  margin: 0;
+  padding: 0;
+  font-size: 24px;
+}
+body {
+  width: 100%;
+  height: 100%;
+  background: #F0F4F7;
+  font-family: MicrosoftYaHei;
+}
+.mt10 {
+  margin-top: 10px;
+}
+.mt20 {
+  margin-top: 20px;
+}
+.mp30 {
+  margin-top: 30px;
+}
+.mb10 {
+  margin-bottom: 10px;
+}
+.mb20 {
+  margin-bottom: 20px;
+}
+.mb30 {
+  margin-bottom: 30px;
+}
+.ml10 {
+  margin-left: 10px;
+}
+.ml20 {
+  margin-left: 20px;
+}
+.mr10 {
+  margin-right: 10px;
+}
+.mr20 {
+  margin-right: 20px;
+}
+.pt10 {
+  padding-top: 10px;
+}
+.pt15 {
+  padding-top: 15px;
+}
+.pt20 {
+  padding-top: 20px;
+}
+.pb10 {
+  padding-bottom: 10px;
+}
+.pb15 {
+  padding-bottom: 15px;
+}
+.line {
+  position: relative;
+}
+.line :after {
+  content: " ";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 1px;
+  border-top: 1px solid #D5D5D6;
+  color: #D5D5D6;
+  -webkit-transform-origin: 0 0;
+  transform-origin: 0 0;
+  -webkit-transform: scaleY(0.5);
+  transform: scaleY(0.5);
+}
+a {
+  text-decoration: none;
+  color: black;
+}
+a:hover {
+  text-decoration: underline;
+}
+a:link {
+  text-decoration: none;
+}
+a {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  vertical-align: baseline;
+  background: transparent;
+}
+li {
+  list-style: none;
+}
+html,
+body,
+div,
+span,
+object,
+iframe,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+blockquote,
+pre,
+abbr,
+address,
+cite,
+code,
+del,
+dfn,
+em,
+img,
+ins,
+kbd,
+q,
+samp,
+small,
+strong,
+sub,
+sup,
+var,
+b,
+i,
+dl,
+dt,
+dd,
+ol,
+ul,
+li,
+fieldset,
+form,
+label,
+legend,
+table,
+caption,
+tbody,
+tfoot,
+thead,
+tr,
+th,
+td,
+article,
+aside,
+canvas,
+details,
+figcaption,
+figure,
+footer,
+header,
+menu,
+nav,
+section,
+summary,
+time,
+mark,
+audio,
+video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  outline: 0;
+  vertical-align: baseline;
+  background: transparent;
+}
+input,
+select,
+textarea {
+  outline: none;
+  text-indent: .26rem;
+}
+textarea.el-textarea__inner {
+  resize: none;
+  width: 12.8rem;
+}
+.fr {
+  float: right;
+}
+.fl {
+  float: left;
+}
+.clearfix:before,
+.clearfix:after {
+  content: " ";
+  display: table;
+}
+.clearfix:after {
+  clear: both;
+}
+.clear:after {
+  content: "";
+  display: block;
+  height: 0;
+  clear: both;
+  visibility: hidden;
+}
+table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+.flex {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -ms-flexbox;
+  display: flex;
+}
+.passive {
+  display: none;
+}
+.box-wrap,
+.box-wrap2 {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 10;
+}
+.box-wrap .mask,
+.box-wrap2 .mask {
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1;
+  background: rgba(0, 0, 0, 0.44);
+}
+.box-wrap .box,
+.box-wrap2 .box {
+  position: absolute;
+  background: white;
+  z-index: 5;
+  border-radius: 18px;
+  border: 1px solid white;
+  margin: 0 28px;
+  width: 92.3%;
+  margin-top: 180px;
+}
+.footer_ .footerHight {
+  margin-top: 135px;
+  height: 1px;
+}
+.footer_ > footer {
+  position: fixed;
+  z-index: 1000;
+  width: 100%;
+  bottom: 0;
+  height: 100px;
+  background-color: #ffffff;
+  box-shadow: 0px 0px 9px 0px rgba(53, 53, 53, 0.15);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+}
+.footer_ > footer > ul > li {
+  color: #ddd;
+  font-size: 22px;
+}
+.footer_ > footer > ul > li i {
+  font-size: 34px;
+}
+.footer_ > footer > ul > li:nth-last-child(1) {
+  position: relative;
+  left: -5px;
+  margin-top: 14px;
+}
+.footer_ > footer .footerLeft > li {
+  color: #ddd;
+}
+.btn1 {
+  width: 75%;
+  height: 92px;
+  line-height: 92px;
+  text-align: center;
+  background: #64C4A8;
+  box-shadow: 0px 11px 18px 0px rgba(68, 191, 151, 0.3);
+  border-radius: 45px;
+  color: #FFFFFF;
+  font-size: 30px;
+  margin-left: 110px;
+  margin-top: 110px;
+}
+.outOfDatePublic {
+  font-size: 109px;
+  color: #FFFFFF;
+  margin-right: 23px;
+  z-index: 1;
+}
+.unionListPublic {
+  margin-top: 30px;
+  height: 161px;
+  border-radius: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.unionListPublic .listLeft {
+  margin-left: 32px;
+  display: flex;
+  align-items: center;
+}
+.unionListPublic .listLeft i:nth-child(1) {
+  font-size: 85px;
+  color: #FFFFFF;
+  margin-right: 30px;
+}
+.unionListPublic .listLeft > span {
+  font-size: 30px;
+  color: #FFFFFF;
+  display: inline-block;
+}
+.unionListPublic .listRight {
+  width: 124px;
+  height: 50px;
+  border-radius: 25px;
+  border: solid 1px #ffffff;
+  line-height: 50px;
+  text-align: center;
+  color: #FFFFFF;
+  margin-right: 50px;
+}
+.exclusivePublic {
+  margin: 30px 30px 0;
+  box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.1);
+  border-radius: 18px;
+  background-color: #fff;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+.exclusivePublic > .efontSize {
+  margin: 27px 0 35px 29px;
+}
+.exclusivePublic > .efontSize .fr {
+  color: rgba(51, 51, 51, 0.7);
+  margin-right: 28px;
+  font-size: 25px;
+}
+.exclusivePublic > ul {
+  display: flex;
+  margin: 0 0 36px 50px;
+}
+.exclusivePublic > ul > li > p {
+  font-size: 22px;
+  margin-top: 20px;
+}
+.exclusivePublic > ul > .consumed i {
+  font-size: 40px;
+  color: #FF585C;
+  position: relative;
+  left: 25px;
+}
+.exclusivePublic > ul > .unionPoint {
+  margin-left: 85px;
+}
+.exclusivePublic > ul > .unionPoint i {
+  font-size: 40px;
+  color: #FFBF17;
+  position: relative;
+  left: 25px;
+}
+.privilegedUserPublic {
+  margin: 30px 30px 0;
+  height: 125px;
+  box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.1);
+  border-radius: 18px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding-left: 28px;
+}
+.privilegedUserPublic > p {
+  margin: 27px 0 18px;
+}
+.cardListPublic > .list {
+  margin: 30px 30px 0;
+  height: 158px;
+  background-color: #fff;
+  box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.1);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  padding: 0 29px;
+}
+.cardListPublic > .list > .listLeft {
+  width: 75%;
+  margin-right: 40px;
+}
+.cardListPublic > .list > .listLeft > p {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 17px;
+}
+.cardListPublic > .list > .listLeft > div {
+  color: rgba(51, 51, 51, 0.7);
+}
+.cardListPublic > .list > .listRight {
+  font-size: 48px;
+}
+.declarePublic {
+  border: 1px solid #eee;
+  background-color: #FFF;
+  border-radius: 18px;
+  padding: 28px 28px 10px;
+  margin: 0 30px;
+  position: relative;
+}
+.declarePublic > .content {
+  color: rgba(51, 51, 51, 0.7);
+  display: block;
+}
+.declarePublic > i {
+  display: block;
+  position: absolute;
+  color: #E8ECEF;
+  font-size: 35px;
+}
+.declarePublic .left {
+  top: -18px;
+  left: -13px;
+}
+.declarePublic .right {
+  top: -18px;
+  right: -13px;
+}
+.noData {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+.noData p {
+  color: #666666;
+  font-size: 30px;
+}
+#unionCard > main {
+  margin: 0 4% 0;
+}
+#unionCard > main .unionList {
+  margin-top: 30px;
+  height: 161px;
+  border-radius: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-image: linear-gradient(90deg, #fe7358 0%, #eb3b3e 100%);
+}
+#unionCard > main .unionList .listLeft {
+  margin-left: 32px;
+  display: flex;
+  align-items: center;
+}
+#unionCard > main .unionList .listLeft i:nth-child(1) {
+  font-size: 85px;
+  color: #FFFFFF;
+  margin-right: 30px;
+}
+#unionCard > main .unionList .listLeft > span {
+  font-size: 30px;
+  color: #FFFFFF;
+  display: inline-block;
+}
+#unionCard > main .unionList .listRight {
+  width: 124px;
+  height: 50px;
+  border-radius: 25px;
+  border: solid 1px #ffffff;
+  line-height: 50px;
+  text-align: center;
+  color: #FFFFFF;
+  margin-right: 50px;
+}
+#unionCard > main .useRaiders {
+  display: flex;
+  justify-content: center;
+  color: #44bf97;
+  margin-top: 30px;
+  font-size: 30px;
+}
+#unionCard .box-wrap2 .box .unionHeader {
+  font-size: 33px;
+  display: flex;
+  justify-content: center;
+  margin: 40px 0;
+}
+#unionCard .box-wrap2 .box .boxContent2 {
+  margin: 0 30px;
+}
+#unionCard .box-wrap2 .box .boxContent2 p {
+  display: flex;
+  font-weight: normal;
+  font-stretch: normal;
+  line-height: 50px;
+  letter-spacing: 0px;
+  margin-bottom: 30px;
+}
+#unionCard .box-wrap2 .box .boxContent2 p > span {
+  font-size: 28px;
+  color: rgba(51, 51, 51, 0.7);
+}
+#unionCard .box-wrap2 .box .btn1 {
+  width: 75%;
+  height: 92px;
+  line-height: 92px;
+  text-align: center;
+  background-image: linear-gradient(90deg, #00ce96 0%, #00ad7b 100%);
+  box-shadow: 0px 11px 18px 0px rgba(68, 191, 151, 0.3);
+  border-radius: 45px;
+  color: #FFFFFF;
+  font-size: 30px;
+  margin-left: 15%;
+  margin-top: 70px;
+  margin-bottom: 40px;
+}
+#myInformaiton > .mainContent {
+  margin: 0 30px;
+}
+#myInformaiton > .mainContent .unionCard > p {
+  margin-bottom: 60px;
+}
+#myInformaiton > .mainContent .unionCard > p > span {
+  display: inline-block;
+  width: 200px;
+  height: 2px;
+  background-color: #dddddd;
+  position: relative;
+  top: -5px;
+}
+#myInformaiton > .mainContent .unionCard > p > strong {
+  margin: 0 37px;
+  color: #333333;
+  font-size: 25px;
+  font-weight: normal;
+}
+#myInformaiton > .mainContent .unionCard .unionList {
+  position: relative;
+  z-index: 2;
+  margin-top: -45px;
+  height: 161px;
+  background-image: linear-gradient(90deg, #fe7358 0%, #eb3b3e 100%);
+  border-radius: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+#myInformaiton > .mainContent .unionCard .unionList .listLeft {
+  margin-left: 32px;
+  display: flex;
+  align-items: center;
+}
+#myInformaiton > .mainContent .unionCard .unionList .listLeft > i {
+  font-size: 85px;
+  color: #FFFFFF;
+  margin-right: 30px;
+}
+#myInformaiton > .mainContent .unionCard .unionList .listLeft > div {
+  font-size: 30px;
+  color: #FFFFFF;
+  display: block;
+}
+#myInformaiton > .mainContent .unionCard .unionList .listLeft > div > p:nth-child(1) {
+  font-size: 30px;
+}
+#myInformaiton > .mainContent .unionCard .unionList .outOfDate {
+  font-size: 109px;
+  color: #FFFFFF;
+  margin-right: 23px;
+  z-index: 1;
+}
+#myInformaiton > .mainContent .unionCard .exclusive {
+  display: none;
+  margin: 30px 30px 0;
+  box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.1);
+  border-radius: 18px;
+  background-color: #fff;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  margin: 0!important;
+  margin-bottom: 55px!important;
+}
+#myInformaiton > .mainContent .unionCard .exclusive > .efontSize {
+  margin: 27px 0 35px 29px;
+}
+#myInformaiton > .mainContent .unionCard .exclusive > .efontSize .fr {
+  color: rgba(51, 51, 51, 0.7);
+  margin-right: 28px;
+  font-size: 25px;
+}
+#myInformaiton > .mainContent .unionCard .exclusive > ul {
+  display: flex;
+  margin: 0 0 36px 50px;
+}
+#myInformaiton > .mainContent .unionCard .exclusive > ul > li > p {
+  font-size: 22px;
+  margin-top: 20px;
+}
+#myInformaiton > .mainContent .unionCard .exclusive > ul > .consumed i {
+  font-size: 40px;
+  color: #FF585C;
+  position: relative;
+  left: 25px;
+}
+#myInformaiton > .mainContent .unionCard .exclusive > ul > .unionPoint {
+  margin-left: 85px;
+}
+#myInformaiton > .mainContent .unionCard .exclusive > ul > .unionPoint i {
+  font-size: 40px;
+  color: #FFBF17;
+  position: relative;
+  left: 25px;
+}
+#myInformaiton > .mainContent .unionCard .exclusive .discounts {
+  margin-right: 85px;
+}
+#myInformaiton > .mainContent .unionCard .exclusive .discounts i {
+  font-size: 40px;
+  color: #4D7BFE;
+  position: relative;
+  left: 25px;
+}
+#myInformaiton > .mainContent .unionCard .exclusive .viewDetails {
+  display: flex;
+  justify-content: center;
+}
+#myInformaiton > .mainContent .unionCard .exclusive .viewDetails span {
+  display: inline-block;
+  width: 124px;
+  height: 52px;
+  line-height: 52px;
+  font-size: 21px;
+  text-align: center;
+  background-color: #ffffff;
+  border-radius: 25px;
+  color: #44bf97;
+  border: solid 1px #44bf97;
+  margin-bottom: 27px;
+}
+#myInformaiton > .cardBag {
+  margin: 102px 29px 30px;
+  box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#myInformaiton > .cardBag > .headpPortrait {
+  width: 145px;
+  height: 145px;
+  border: 1px solid #dddddd;
+  border-radius: 50%;
+  position: relative;
+  top: -72px;
+  z-index: 10;
+}
+#myInformaiton > .cardBag .name_ {
+  margin-top: -40px;
+}
+#myInformaiton > .cardBag .mb20,
+#myInformaiton > .cardBag .mb30 {
+  font-size: 28px;
+}
+#myInformaiton > .cardBag .mb30 {
+  color: #cccccc;
+}
+#myInformaiton > .cardBag .QRCode {
+  width: 302px;
+  height: 303px;
+}
+#myInformaiton > .cardBag .UnionNumber {
+  width: 418px;
+  height: 60px;
+  line-height: 60px;
+  text-align: center;
+  background-color: #f6f6f6;
+  border-radius: 22px;
+  font-size: 35px;
+}
+#myInformaiton > .cardBag .flex {
+  flex-direction: row;
+  margin: 40px 0 45px;
+}
+#myInformaiton > .cardBag .flex i {
+  font-size: 45px;
+  margin-right: 15px;
+}
+#myInformaiton > .cardBag .flex span {
+  font-size: 30px;
+  position: relative;
+  top: -6px;
+}
+#myInformaiton > .cardBag .flex > p:nth-child(1) {
+  margin-right: 110px;
+}
+#myInformaiton > .cardBag > .btn1 {
+  margin: 30px 0 35px;
+  background-image: linear-gradient(90deg, #00ce96 0%, #00ad7b 100%);
+}
+#unionLogin .box {
+  background: white;
+  z-index: 5;
+  border-radius: 18px;
+  border: 1px solid white;
+  height: 700px;
+  margin-top: 180px;
+}
+#unionLogin .box .binDing {
+  text-align: center;
+  width: 100%;
+  margin: 87px auto;
+  color: #333333;
+  font-size: 33px;
+  font-weight: bold;
+}
+#unionLogin .box .boxContent {
+  position: relative;
+}
+#unionLogin .box .boxContent > div {
+  margin: 60px 49px 0;
+  padding-bottom: 33px;
+  border-bottom: 1px solid #eee;
+}
+#unionLogin .box .boxContent > div > span {
+  font-size: 27px;
+  color: #333333;
+}
+#unionLogin .box .boxContent > div > input {
+  border: none;
+  width: 55%;
+  height: 35px;
+}
+#unionLogin .box .boxContent > div #getCode {
+  width: 134px;
+  height: 52px;
+  background: #64c4a8;
+  line-height: 52px;
+  text-align: center;
+  color: #FFFFFF;
+  border-radius: 25px;
+}
+#unionLogin .box .boxContent .message_ {
+  display: none;
+  position: absolute;
+  left: 150px;
+  top: 230px;
+  color: #ff4949;
+}
+#unionLogin .box .boxContent .btn1 {
+  width: 75%;
+  height: 92px;
+  line-height: 92px;
+  text-align: center;
+  background: #64C4A8;
+  box-shadow: 0px 11px 18px 0px rgba(68, 191, 151, 0.3);
+  border-radius: 45px;
+  color: #FFFFFF;
+  font-size: 30px;
+  margin-left: 110px;
+  margin-top: 110px;
+}
+#consumeRecord .unionTime {
+  display: flex;
+  justify-content: center;
+  margin-top: 30px;
+}
+#consumeRecord .unionTime span {
+  display: block;
+  padding: 0 10px;
+  text-align: center;
+  height: 43px;
+  line-height: 43px;
+  margin-left: 50px;
+  background-color: #d8d8d8;
+  font-size: 28px;
+  border-radius: 21px;
+  color: #FFFFFF;
+}
+#consumeRecord .unionContent {
+  background-color: #ffffff;
+  box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.1);
+  z-index: 5;
+  border-radius: 18px;
+  border: 1px solid white;
+  margin: 0 4%;
+  margin-top: 35px;
+}
+#consumeRecord .unionContent .hair {
+  margin: 27px 28px;
+  color: #333333;
+  font-size: 28px;
+}
+#consumeRecord .unionContent .ListContent {
+  border-top: 1px solid #dddddd;
+  margin-bottom: 26px;
+}
+#consumeRecord .unionContent .ListContent > p {
+  margin-left: 28px;
+  font-size: 28px;
+  margin-top: 25px;
+}
+#consumeRecord .unionContent .ListContent > p > span {
+  color: rgba(51, 51, 51, 0.7);
+  font-size: 28px;
+}
+#consumeRecord .unionContent .ListContent > span {
+  display: block;
+  margin-left: 180px;
+  margin-top: 25px;
+  color: rgba(51, 51, 51, 0.7);
+  font-size: 28px;
+}
+#consumeRecord .unionContent .ListContent .special_P {
+  display: block;
+  margin-left: 176px;
+  color: rgba(51, 51, 51, 0.7);
+}
+#consumeRecord .unionContent .payMoney {
+  padding: 28px 26px;
+  font-size: 28px;
+  border-top: 1px solid #dddddd;
+}
+#consumeRecord .unionContent .payMoney > span {
+  color: #44bf97;
+  font-size: 28px;
+}
+#consumeRecord .unionContent .payMoney > p {
+  float: right;
+  font-size: 28px;
+}
+#discountCard {
+  background-color: #EEF2F5;
+  height: 100%;
+}
+#discountCard .unionList {
+  margin-top: 30px;
+  height: 161px;
+  border-radius: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-image: linear-gradient(90deg, #fe7358 0%, #eb3b3e 100%);
+  margin: 30px 30px 0;
+}
+#discountCard .unionList .listLeft {
+  margin-left: 32px;
+  display: flex;
+  align-items: center;
+}
+#discountCard .unionList .listLeft i:nth-child(1) {
+  font-size: 85px;
+  color: #FFFFFF;
+  margin-right: 30px;
+}
+#discountCard .unionList .listLeft > span {
+  font-size: 30px;
+  color: #FFFFFF;
+  display: inline-block;
+}
+#discountCard .unionList .listRight {
+  width: 124px;
+  height: 50px;
+  border-radius: 25px;
+  border: solid 1px #ffffff;
+  line-height: 50px;
+  text-align: center;
+  color: #FFFFFF;
+  margin-right: 50px;
+}
+#discountCard .exclusive1 {
+  margin: 30px 30px 0;
+  box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.1);
+  border-radius: 18px;
+  background-color: #fff;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  height: 205px;
+}
+#discountCard .exclusive1 > .efontSize {
+  margin: 27px 0 35px 29px;
+}
+#discountCard .exclusive1 > .efontSize .fr {
+  color: rgba(51, 51, 51, 0.7);
+  margin-right: 28px;
+  font-size: 25px;
+}
+#discountCard .exclusive1 > ul {
+  display: flex;
+  margin: 0 0 36px 50px;
+}
+#discountCard .exclusive1 > ul > li > p {
+  font-size: 22px;
+  margin-top: 20px;
+}
+#discountCard .exclusive1 > ul > .consumed i {
+  font-size: 40px;
+  color: #FF585C;
+  position: relative;
+  left: 25px;
+}
+#discountCard .exclusive1 > ul > .unionPoint {
+  margin-left: 85px;
+}
+#discountCard .exclusive1 > ul > .unionPoint i {
+  font-size: 40px;
+  color: #FFBF17;
+  position: relative;
+  left: 25px;
+}
+#discountCard .privilegedUser {
+  margin: 30px 30px 0;
+  height: 125px;
+  box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.1);
+  border-radius: 18px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding-left: 28px;
+  background-color: #fff;
+}
+#discountCard .privilegedUser > p {
+  margin: 27px 0 18px;
+}
+#discountCard .cardList > .list {
+  margin: 30px 30px 0;
+  height: 158px;
+  background-color: #fff;
+  box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.1);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  padding: 0 29px;
+}
+#discountCard .cardList > .list > .listLeft {
+  width: 75%;
+  margin-right: 40px;
+}
+#discountCard .cardList > .list > .listLeft > p {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 17px;
+}
+#discountCard .cardList > .list > .listLeft > div {
+  color: rgba(51, 51, 51, 0.7);
+}
+#discountCard .cardList > .list > .listRight {
+  font-size: 48px;
+}
+#discountCard > footer {
+  background-color: #fff;
+  position: fixed;
+  z-index: 1000;
+  color: #44bf97;
+  width: 100%;
+  bottom: 0;
+  height: 100px;
+  line-height: 100px;
+  text-align: center;
+  box-shadow: 0px 0px 9px 0px rgba(53, 53, 53, 0.15);
+}
+#discountCard > footer > span {
+  font-size: 30px;
+}
+#discountCard .box-wrap .close {
+  float: right;
+  font-size: 33px;
+  margin: 24px;
+  color: #d5d5d6;
+}
+#discountCard .box-wrap .binDing {
+  text-align: center;
+  width: 100%;
+  margin: 87px auto;
+  color: #333333;
+  font-size: 33px;
+  font-weight: bold;
+}
+#discountCard .box-wrap .boxContent {
+  position: relative;
+}
+#discountCard .box-wrap .boxContent > div {
+  margin: 60px 49px 0;
+  padding-bottom: 33px;
+  border-bottom: 1px solid #eee;
+}
+#discountCard .box-wrap .boxContent > div > span {
+  font-size: 27px;
+  color: #333333;
+}
+#discountCard .box-wrap .boxContent > div > input {
+  border: none;
+  width: 55%;
+  height: 35px;
+}
+#discountCard .box-wrap .boxContent > div #getCode {
+  width: 134px;
+  height: 52px;
+  background: #64c4a8;
+  line-height: 52px;
+  text-align: center;
+  color: #FFFFFF;
+  border-radius: 25px;
+}
+#discountCard .box-wrap .boxContent .message_ {
+  display: none;
+  position: absolute;
+  left: 150px;
+  top: 230px;
+  color: #ff4949;
+}
+#discountCard .box-wrap .boxContent .btn1 {
+  width: 67%;
+  height: 92px;
+  line-height: 92px;
+  text-align: center;
+  background: #64C4A8;
+  box-shadow: 0px 11px 18px 0px rgba(68, 191, 151, 0.3);
+  border-radius: 45px;
+  color: #FFFFFF;
+  font-size: 30px;
+  margin-left: 15%;
+  margin-top: 110px;
+  margin-bottom: 88px;
+}
+#activityCard {
+  background-color: #EEF2F5;
+  height: 100%;
+}
+#activityCard .unionList {
+  margin-top: 30px;
+  height: 161px;
+  border-radius: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 30px 30px 0;
+  background-image: linear-gradient(90deg, #06bd7d 0%, #00935f 100%);
+}
+#activityCard .unionList .listLeft {
+  margin-left: 32px;
+  display: flex;
+  align-items: center;
+}
+#activityCard .unionList .listLeft i:nth-child(1) {
+  font-size: 85px;
+  color: #FFFFFF;
+  margin-right: 30px;
+}
+#activityCard .unionList .listLeft > span {
+  font-size: 30px;
+  color: #FFFFFF;
+  display: inline-block;
+}
+#activityCard .unionList .listRight {
+  width: 124px;
+  height: 50px;
+  border-radius: 25px;
+  border: solid 1px #ffffff;
+  line-height: 50px;
+  text-align: center;
+  color: #FFFFFF;
+  margin-right: 50px;
+}
+#activityCard .unionList .listLeft > span {
+  display: block!important;
+}
+#activityCard .unionList .listLeft > span p {
+  font-size: 30px;
+  margin-bottom: 10px;
+}
+#activityCard .unionList .listLeft > span > span {
+  font-size: 26px;
+  color: rgba(255, 255, 255, 0.7);
+}
+#activityCard .unionList .outOfDate {
+  font-size: 109px!important;
+  float: right;
+}
+#activityCard .exclusive {
+  margin: 30px 30px 0;
+  box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.1);
+  border-radius: 18px;
+  background-color: #fff;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  height: 205px;
+}
+#activityCard .exclusive > .efontSize {
+  margin: 27px 0 35px 29px;
+}
+#activityCard .exclusive > .efontSize .fr {
+  color: rgba(51, 51, 51, 0.7);
+  margin-right: 28px;
+  font-size: 25px;
+}
+#activityCard .exclusive > ul {
+  display: flex;
+  margin: 0 0 36px 50px;
+}
+#activityCard .exclusive > ul > li > p {
+  font-size: 22px;
+  margin-top: 20px;
+}
+#activityCard .exclusive > ul > .consumed i {
+  font-size: 40px;
+  color: #FF585C;
+  position: relative;
+  left: 25px;
+}
+#activityCard .exclusive > ul > .unionPoint {
+  margin-left: 85px;
+}
+#activityCard .exclusive > ul > .unionPoint i {
+  font-size: 40px;
+  color: #FFBF17;
+  position: relative;
+  left: 25px;
+}
+#activityCard .exclusive .discounts {
+  margin-right: 85px;
+}
+#activityCard .exclusive .discounts i {
+  font-size: 40px;
+  color: #4D7BFE;
+  position: relative;
+  left: 25px;
+}
+#activityCard .privileged > .privilegedUser {
+  margin: 30px 30px 0;
+  height: 125px;
+  box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.1);
+  border-radius: 18px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding-left: 28px;
+  background-color: #fff;
+}
+#activityCard .privileged > .privilegedUser > p {
+  margin: 27px 0 18px;
+}
+#activityCard .privileged > .privilegedUser > .iconfont {
+  float: right;
+  font-size: 30px;
+  margin-right: 24px;
+}
+#activityCard .privileged > .declare {
+  border: 1px solid #eee;
+  background-color: #FFF;
+  border-radius: 18px;
+  padding: 28px 28px 10px;
+  margin: 0 30px;
+  position: relative;
+  height: 125px;
+  display: none;
+}
+#activityCard .privileged > .declare > .content {
+  color: rgba(51, 51, 51, 0.7);
+  display: block;
+}
+#activityCard .privileged > .declare > i {
+  display: block;
+  position: absolute;
+  color: #E8ECEF;
+  font-size: 35px;
+}
+#activityCard .privileged > .declare .left {
+  top: -18px;
+  left: -13px;
+}
+#activityCard .privileged > .declare .right {
+  top: -18px;
+  right: -13px;
+}
+#activityCard .cardList > .list {
+  margin: 30px 30px 0;
+  height: 158px;
+  background-color: #fff;
+  box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.1);
+  border-radius: 18px;
+  display: flex;
+  align-items: center;
+  padding: 0 29px;
+}
+#activityCard .cardList > .list > .listLeft {
+  width: 75%;
+  margin-right: 40px;
+}
+#activityCard .cardList > .list > .listLeft > p {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 17px;
+}
+#activityCard .cardList > .list > .listLeft > div {
+  color: rgba(51, 51, 51, 0.7);
+}
+#activityCard .cardList > .list > .listRight {
+  font-size: 48px;
+}
+#activityCard .cardList > .listConent {
+  border: 1px solid #eee;
+  background-color: #FFF;
+  border-radius: 18px;
+  padding: 28px 28px 10px;
+  margin: 0 30px;
+  position: relative;
+}
+#activityCard .cardList > .listConent > .content {
+  color: rgba(51, 51, 51, 0.7);
+  display: block;
+}
+#activityCard .cardList > .listConent > i {
+  display: block;
+  position: absolute;
+  color: #E8ECEF;
+  font-size: 35px;
+}
+#activityCard .cardList > .listConent .left {
+  top: -18px;
+  left: -13px;
+}
+#activityCard .cardList > .listConent .right {
+  top: -18px;
+  right: -13px;
+}
+#activityCard .cardList > .listConent > .discounts {
+  margin: 25px 0 0;
+}
+#activityCard .cardList > .listConent > .iconContent {
+  margin: 13px 0 11px;
+  color: rgba(51, 51, 51, 0.7);
+}
+#activityCard .cardList > .listConent > .iconContent .iconfont {
+  color: #EEEEEE;
+}
+#activityCard > footer {
+  position: fixed;
+  z-index: 1000;
+  width: 100%;
+  bottom: 0;
+  height: 100px;
+  line-height: 100px;
+  text-align: center;
+  box-shadow: 0px 0px 9px 0px rgba(53, 53, 53, 0.15);
+  background-color: #fff;
+}
+#activityCard > footer > .money {
+  color: #44bf97;
+  margin-right: 20px;
+}
+#activityCard > footer > span {
+  font-size: 30px;
+}
+#activityCard .box-wrap .close {
+  float: right;
+  font-size: 33px;
+  margin: 24px;
+  color: #d5d5d6;
+}
+#activityCard .box-wrap .binDing {
+  text-align: center;
+  width: 100%;
+  margin: 87px auto;
+  color: #333333;
+  font-size: 33px;
+  font-weight: bold;
+}
+#activityCard .box-wrap .boxContent {
+  position: relative;
+}
+#activityCard .box-wrap .boxContent > div {
+  margin: 60px 49px 0;
+  padding-bottom: 33px;
+  border-bottom: 1px solid #eee;
+}
+#activityCard .box-wrap .boxContent > div > span {
+  font-size: 27px;
+  color: #333333;
+}
+#activityCard .box-wrap .boxContent > div > input {
+  border: none;
+  width: 55%;
+  height: 35px;
+}
+#activityCard .box-wrap .boxContent > div #getCode {
+  width: 134px;
+  height: 52px;
+  background: #64c4a8;
+  line-height: 52px;
+  text-align: center;
+  color: #FFFFFF;
+  border-radius: 25px;
+}
+#activityCard .box-wrap .boxContent .message_ {
+  display: none;
+  position: absolute;
+  left: 150px;
+  top: 230px;
+  color: #ff4949;
+}
+#activityCard .box-wrap .boxContent .btn1 {
+  width: 67%;
+  height: 92px;
+  line-height: 92px;
+  text-align: center;
+  background: #64C4A8;
+  box-shadow: 0px 11px 18px 0px rgba(68, 191, 151, 0.3);
+  border-radius: 45px;
+  color: #FFFFFF;
+  font-size: 30px;
+  margin-left: 15%;
+  margin-top: 110px;
+  margin-bottom: 88px;
+}

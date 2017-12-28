@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="unionList">
     <p>商品列表</p>
     <div class="addUnion" v-if="canEdit">
       <el-button type="primary" @click="addErpGoods">新增商品</el-button>
@@ -13,7 +13,7 @@
       </p>
     </div>
     <!-- ERP项目商品 列表数据-->
-    <el-table v-if="erpGoodsList.length > 0" :data="erpGoodsList" style="width: 100%" max-height="450" id="table3" v-show="canEdit">
+    <el-table v-if="erpGoodsList.length > 0" :data="erpGoodsList" style="width: 100%" hight="450"   v-show="canEdit">
       <el-table-column prop="name" label="商品名称">
       </el-table-column>
       <el-table-column prop="spec" label="规格">
@@ -29,68 +29,73 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-table v-if="erpGoodsList.length > 0" :data="erpGoodsList" style="width: 100%" max-height="450" id="table3" v-show="!canEdit">
+    <el-table v-if="erpGoodsList.length > 0" :data="erpGoodsList" style="width: 100%" hight="450"  v-show="!canEdit">
       <el-table-column prop="name" label="商品名称">
       </el-table-column>
       <el-table-column prop="spec" label="规格">
       </el-table-column>
-      <el-table-column prop="number" label="数量">
+      <el-table-column prop="number" label="数量" width="250">
       </el-table-column>
     </el-table>
     <!-- 弹出框 新增ERP商品 -->
-    <el-dialog title="添加商品" :visible.sync="visible" @close="resetData">
-      <el-row>
-        <el-col style="width:300px;">
-          <el-form :inline="true" class="demo-form-inline">
-            <el-select v-model="shopId" clearable placeholder="请选择门店" @change="search">
-              <el-option v-for="item in options1" :key="item.id" :label="item.name" :value="item.id">
-              </el-option>
-            </el-select>
-          </el-form>
-        </el-col>
-        <el-col style="width:300px;">
-          <el-form :inline="true" class="demo-form-inline">
-            <el-select v-model="ProductClass" clearable placeholder="请选择行业" @change="search">
-              <el-option v-for="item in options2" :key="item.id" :label="item.name" :value="item.id">
-              </el-option>
-            </el-select>
-          </el-form>
-        </el-col>
-        <el-col style="width:200px;">
-          <div class="grid-content1 bg-purple">
-            <el-input placeholder="请输入关键字" @keyup.enter.native="search" icon="search" v-model="input" :on-icon-click="search" class="input-search2 fl">
-            </el-input>
+
+    <div class="model_4">
+      <el-dialog title="添加商品" :visible.sync="visible" @close="resetData">
+        <hr>
+        <div>
+          <el-row>
+            <el-col style="width:220px;">
+              <el-form :inline="true" class="demo-form-inline">
+                <el-select v-model="shopId" clearable placeholder="请选择门店" @change="search">
+                  <el-option v-for="item in options1" :key="item.id" :label="item.name" :value="item.id">
+                  </el-option>
+                </el-select>
+              </el-form>
+            </el-col>
+            <el-col style="width:220px;">
+              <el-form :inline="true" class="demo-form-inline">
+                <el-select v-model="ProductClass" clearable placeholder="请选择行业" @change="search">
+                  <el-option v-for="item in options2" :key="item.id" :label="item.name" :value="item.id">
+                  </el-option>
+                </el-select>
+              </el-form>
+            </el-col>
+            <el-col style="width:200px;">
+              <div class="grid-content1 bg-purple">
+                <el-input placeholder="请输入关键字" @keyup.enter.native="search" icon="search" v-model="input" :on-icon-click="search" class="input-search2 fl">
+                </el-input>
+              </div>
+            </el-col>
+          </el-row>
+          <div class="section_ clearfix">
+            <div style="float:left;width: 580px;height: 445px;">
+              <el-table :data="tableData" style="width: 100%;height: 100%;" ref="multipleTable" @select="handleSelect" @select-all="handleSelectAll" @row-click="handleRowClick">
+                <el-table-column type="selection" min-width="55px"></el-table-column>
+                <el-table-column prop="name" label="商品名称" min-width="100px">
+                </el-table-column>
+                <el-table-column prop="spec" label="规格" min-width="100px">
+                </el-table-column>
+                <el-table-column prop="amount" label="库存" min-width="100px">
+                </el-table-column>
+              </el-table>
+              <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
+        </el-pagination>
+            </div>
+            <div class="rightContent">
+              <p>已选择：{{ selectedErpRight.length }}</p>
+              <div v-for="(item, index) in selectedErpRight" :key="item.id">
+                  <el-input-number v-model="item.number" :min="1" size="small" :max="item.amount"></el-input-number>
+                  <el-button @click="handleDelete2(index)">删除</el-button>
+              </div>
+            </div>
           </div>
-        </el-col>
-      </el-row>
-      <el-table :data="tableData" style="width: 100%" ref="multipleTable" @select="handleSelect" @select-all="handleSelectAll" @row-click="handleRowClick">
-        <el-table-column type="selection" min-width="55px"></el-table-column>
-        <el-table-column prop="name" label="商品名称" min-width="100px">
-        </el-table-column>
-        <el-table-column prop="spec" label="规格" min-width="100px">
-        </el-table-column>
-        <el-table-column prop="amount" label="库存" min-width="100px">
-        </el-table-column>
-      </el-table>
-      <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
-      </el-pagination>
-      <div>
-        <p>已选择：{{ selectedErpRight.length }}</p>
-        <p v-for="(item, index) in selectedErpRight" :key="item.id">
-          <span> {{ item.name }} </span>
-          <span>
-            <el-input-number v-model="item.number" :min="1" :max="item.amount"></el-input-number>
-          </span>
-          <span>
-            <el-button @click="handleDelete2(index)">删除</el-button>
-          </span>
-        </p>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="confirm">确定</el-button>
-        <el-button @click="visible=false">取消</el-button>
-      </span>
-    </el-dialog>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="confirm">确定</el-button>
+          <el-button @click="visible=false">取消</el-button>
+        </span>
+      </el-dialog>
+    </div>
   </div>
 </template>
 

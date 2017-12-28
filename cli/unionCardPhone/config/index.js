@@ -23,6 +23,7 @@ module.exports = {
   },
   dev: {
     env: require('./dev.env'),
+    host: '192.168.3.40',
     port: 8083,
     autoOpenBrowser: true,
     assetsSubDirectory: 'static',
@@ -35,7 +36,7 @@ module.exports = {
     cssSourceMap: false,
     proxyTable: {
       '/apitest': {
-        target: 'http://apis.map.qq.com/ws/geocoder',
+        target: 'https://apis.map.qq.com/ws/geocoder',
         changeOrigin: true,
         pathRewrite: {
           '^/apitest': ''

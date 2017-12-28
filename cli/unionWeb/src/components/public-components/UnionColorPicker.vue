@@ -1,11 +1,13 @@
 <template>
   <div>
-    <div @click="showToggle" style="border:1px solid">
-      <div :class="'m'+myColor">
+    <div class="selectColorPublic" @click="showToggle" >
+      <p class="triangleDown"></p>
+      <div :class="'m'+myColor" style="">
       </div>
     </div>
     <!-- 备选色列表 -->
-    <el-radio-group v-model="color" v-show="visible" @change="colorSelect">
+    <div class="OptionalColor">
+      <el-radio-group v-model="color" v-show="visible" @change="colorSelect">
       <!-- blue -->
       <el-radio-button label="03ABFF,008CD4">
         <template slot-scope="scope">
@@ -42,6 +44,7 @@
         </template>
       </el-radio-button>
     </el-radio-group>
+    </div>
   </div>
 </template>
 
@@ -75,6 +78,7 @@ export default {
 .m {
   width: 20px;
   height: 20px;
+  background-color: #019762;
 }
 .m008FD7 {
   width: 20px;
@@ -101,5 +105,27 @@ export default {
   height: 20px;
   background-color: #c1231f;
 }
+.selectColorPublic{
+  width: 56px;
+  height: 32px;
+  border-radius: 4px;
+  border: solid 1px #bfcbd9;
+  cursor: pointer;
+}
+/*绘制三角形*/
+.selectColorPublic .triangleDown{
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 9px solid #BFCBD9;
+  position: absolute;
+  top: 12px;
+  left: 34px;
+}
+.selectColorPublic>div{
+  margin: 6px;
+}
+
 </style>
 
