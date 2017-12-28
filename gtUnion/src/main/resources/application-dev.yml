@@ -47,9 +47,9 @@ spring:
       timeout: 1000
       database: 3
       pool:
-        max-active: 50
-        max-wait: -1
-        max-idle: 20
+        max-active: 50  #可用连接实例的最大数目
+        max-wait: 2000  #最大的等待时间，如果超过等待时间，则直接抛出JedisConnectionException
+        max-idle: 20    #最大空闲实例个数
         min-idle: 0
         #redis集群配置
       cluster:

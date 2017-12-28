@@ -240,9 +240,8 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
 
     @Override
     public UnionCardFan getOrSaveByPhone(String phone) throws Exception {
-        UnionCardFan fan = getValidByPhone(phone);
-        //TODO 需要加锁
         RedissonLockUtil.lock("fan" + phone, 5);
+        UnionCardFan fan = getValidByPhone(phone);
         if (fan == null) {
             fan = new UnionCardFan();
             fan.setDelStatus(CommonConstant.COMMON_NO);

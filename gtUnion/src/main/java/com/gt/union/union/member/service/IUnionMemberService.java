@@ -205,7 +205,7 @@ public interface IUnionMemberService {
     List<UnionMember> listValidReadByBusId(Integer busId) throws Exception;
 
     /**
-     * 获取为删除的具有写权限的商家盟员列表信息
+     * 获取未删除的具有写权限的商家盟员列表信息
      *
      * @param busId 商家id
      * @return List<UnionMember>
