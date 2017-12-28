@@ -17,7 +17,6 @@
     <div v-show="visible2" class="UnionCardInformation">
       <div class="clearfix">
         <el-form :model="form" label-position="right" label-width="120px">
-          <span style="color: red;margin-left: 48px;margin-bottom: 20px;display: inline-block;">你给予“{{ form.currentMember.enterpriseName }}”的最低折扣为{{ form.currentMember.discount }}折</span>
           <el-form-item label="联盟卡号:">
             <span> {{ form.fan.number }} </span>
           </el-form-item>
@@ -312,10 +311,15 @@ export default {
           .then(res => {
             if (res.data.data) {
               this.form = res.data.data;
+              if (this.form.unionList.length) {
+                this.form.unionId = this.form.unionList.id;
+              }
               this.isIntegral = this.form.currentUnion.isIntegral;
               this.isIntegral ? (this.isIntegral_ = true) : (this.isIntegral_ = false);
+              this.visible1 = false;
+              this.visible2 = true;
             } else {
-              this.form = {};
+              this.$message({ showClose: true, message: '不存在该联盟卡', type: 'error', duration: 5000 });
             }
           })
           .then(res => {
@@ -328,8 +332,6 @@ export default {
                 } else {
                   this.form.shops = [];
                 }
-                this.visible1 = false;
-                this.visible2 = true;
               })
               .catch(err => {
                 this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });

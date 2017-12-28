@@ -59,9 +59,9 @@
             <el-table :data="tableData3" style="width: 100%" height="450">
               <el-table-column prop="member.enterpriseName" label="企业名称">
               </el-table-column>
-              <el-table-column prop="sharingRatio.ratio" label="分成比例(%)">
+              <el-table-column prop="" label="分成比例(%)">
                 <template slot-scope="scope">
-                  <el-input v-model="scope.row.sharingRatio.ratio" placeholder="请输入比例" @change="onChange(scope)"></el-input>
+                  <el-input v-model="scope.row.sharingRatio.ratio" placeholder="请输入比例" @keyup.native="check(scope)" @change="onChange(scope)"></el-input>
                 </template>
               </el-table-column>
             </el-table>
@@ -78,6 +78,7 @@
 
 <script>
 import $http from '@/utils/http.js';
+import { numberCheck } from '@/utils/filter.js';
 export default {
   name: 'activity-card-sell-divie',
   data() {
@@ -117,9 +118,10 @@ export default {
   },
   methods: {
     // 获取活动卡列表
-    init() {
+    init(value) {
+      let val = value || 1;
       $http
-        .get(`/unionCardActivity/unionId/${this.unionId}/sharingRatio/page?current=1`)
+        .get(`/unionCardActivity/unionId/${this.unionId}/sharingRatio/page?current=${val}`)
         .then(res => {
           if (res.data.data) {
             this.data1 = res.data.data.records || [];
@@ -133,17 +135,8 @@ export default {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
-    handleCurrentChange1() {
-      $http
-        .get(`/unionCardActivity/unionId/${this.unionId}/sharingRatio/page?current=${val}`)
-        .then(res => {
-          if (res.data.data) {
-            this.data1 = res.data.data.records || [];
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+    handleCurrentChange1(val) {
+      this.init(val);
     },
     // 获取活动参加盟员比例分配列表
     setting(value) {
@@ -191,7 +184,6 @@ export default {
     },
     // 比例设置 弹出框 获取数据
     showSettingDialog() {
-      this.visible3 = true;
       $http
         .get(`/unionCardSharingRatio/activityId/${this.activityId}/unionId/${this.unionId}`)
         .then(res => {
@@ -207,11 +199,16 @@ export default {
               this.sum3 += parseFloat(v.sharingRatio.ratio);
             });
             this.sum3 = this.sum3.toFixed(0);
+            this.visible3 = true;
           }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
+    },
+    // 校验输入为数字类型
+    check(scope) {
+      scope.row.sharingRatio.ratio = numberCheck(scope.row.sharingRatio.ratio);
     },
     // 平均分配
     onAverage() {
