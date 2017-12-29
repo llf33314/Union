@@ -87,8 +87,9 @@
 </template>
 
 <script>
-import Breadcrumb from '@/components/public-components/Breadcrumb';
 import $http from '@/utils/http.js';
+import { enterpriseNamePass, directorNamePass, cellPhonePass, emailPass, reasonPass } from '@/utils/validator.js';
+import Breadcrumb from '@/components/public-components/Breadcrumb';
 import NoUnion from '@/components/public-components/NoUnion';
 export default {
   name: 'join-step',
@@ -97,25 +98,6 @@ export default {
     NoUnion
   },
   data() {
-    // 验证规则
-    let directorPhonePass = (rule, value, callback) => {
-      if (!value) {
-        callback(new Error('联系电话内容不能为空，请重新输入'));
-      } else if (!value.match(/(^1[3|4|5|6|7|8][0-9][0-9]{8}$)|(^0\d{2,3}-?\d{7,8}$)/)) {
-        callback(new Error('请输入正确的联系电话'));
-      } else {
-        callback();
-      }
-    };
-    let emailPass = (rule, value, callback) => {
-      if (!value) {
-        callback(new Error('邮箱内容不能为空，请重新输入'));
-      } else if (!value.match(/^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/)) {
-        callback(new Error('请输入正确的邮箱'));
-      } else {
-        callback();
-      }
-    };
     return {
       active: 0,
       currentPage: 1,
@@ -128,11 +110,11 @@ export default {
         reason: ''
       },
       rules: {
-        enterpriseName: [{ required: true, message: '申请企业内容不能为空，请重新输入', trigger: 'blur' }],
-        directorName: [{ required: true, message: '负责人内容不能为空，请重新输入', trigger: 'blur' }],
-        directorPhone: [{ validator: directorPhonePass, trigger: 'blur' }],
+        enterpriseName: [{ validator: enterpriseNamePass, trigger: 'blur' }],
+        directorName: [{ validator: directorNamePass, trigger: 'blur' }],
+        directorPhone: [{ validator: cellPhonePass, trigger: 'blur' }],
         directorEmail: [{ validator: emailPass, trigger: 'blur' }],
-        reason: [{ required: true, message: '申请理由不能为空，请重新输入', trigger: 'blur' }]
+        reason: [{ validator: reasonPass, trigger: 'blur' }]
       },
       datas: [],
       unionRadio: '',

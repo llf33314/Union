@@ -42,7 +42,7 @@
         </el-form-item>
         <el-form-item label="业务备注：" prop="businessMsg">
           <el-col :span="4">
-            <el-input type="textarea" :rows="3" id="feedbackcontent" placeholder="请输入业务备注" v-model="ruleForm1.businessMsg" :maxlength="unionNoticeMaxlength" @focus="unionNoticeFocus" @blur="unionNoticeBlur" @change="unionNoticeKeydown($event)" @keydown="unionNoticeKeydown($event)" @keyup="unionNoticeKeydown($event)" @input="unionNoticeKeydown($event)" @onpropertychange="unionNoticeKeydown($event)"></el-input>
+            <el-input type="textarea" :rows="3" id="feedbackcontent" placeholder="请输入业务备注" v-model="ruleForm1.businessMsg"></el-input>
           </el-col>
         </el-form-item>
         <el-form-item style="margin-left: 15px;">
@@ -57,6 +57,7 @@
 
 <script>
 import $http from '@/utils/http.js';
+import { clientNamePass, cellPhonePass, businessMsgPass } from '@/utils/validator.js';
 import RecommendRecord from './RecommendRecord';
 export default {
   name: 'recommend',
@@ -64,16 +65,6 @@ export default {
     RecommendRecord
   },
   data() {
-    // 验证规则
-    let clientPhonePass = (rule, value, callback) => {
-      if (!value) {
-        callback(new Error('意向客户手机内容不能为空，请重新输入'));
-      } else if (!value.match(/^1[3|4|5|6|7|8][0-9][0-9]{8}$/)) {
-        callback(new Error('请输入正确的手机号码'));
-      } else {
-        callback();
-      }
-    };
     return {
       visible: true,
       visible1: false,
@@ -86,11 +77,11 @@ export default {
         businessMsg: ''
       },
       rules: {
-        clientName: [{ required: true, message: '意向客户内容不能为空，请重新输入', trigger: 'blur' }],
+        clientName: [{ validator: clientNamePass, trigger: 'blur' }],
         unionId: [{ type: 'number', required: true, message: '联盟不能为空，请重新选择', trigger: 'change' }],
         toMemberId: [{ type: 'number', required: true, message: '推荐商家不能为空，请重新选择', trigger: 'change' }],
-        businessMsg: [{ required: true, message: '业务备注内容不能为空，请重新输入', trigger: 'blur' }],
-        clientPhone: [{ validator: clientPhonePass, trigger: 'blur' }]
+        businessMsg: [{ validator: businessMsgPass, trigger: 'blur' }],
+        clientPhone: [{ validator: cellPhonePass, trigger: 'blur' }]
       },
       options1: [],
       options2: [],
@@ -169,12 +160,12 @@ export default {
           let url = `/unionOpportunity/unionId/${this.unionId}`;
           let data = {
             toMember: {},
-            opportunity: {},
+            opportunity: {}
           };
-          data.toMember.id = this.ruleForm1.toMemberId
-          data.opportunity.clientName = this.ruleForm1.clientName
-          data.opportunity.clientPhone = this.ruleForm1.clientPhone
-          data.opportunity.businessMsg = this.ruleForm1.businessMsg
+          data.toMember.id = this.ruleForm1.toMemberId;
+          data.opportunity.clientName = this.ruleForm1.clientName;
+          data.opportunity.clientPhone = this.ruleForm1.clientPhone;
+          data.opportunity.businessMsg = this.ruleForm1.businessMsg;
           $http
             .post(url, data)
             .then(res => {
@@ -196,57 +187,6 @@ export default {
     resetForm1(formName) {
       this.show();
       this.$refs[formName].resetFields();
-    },
-    // 判断业务备注字数
-    unionNoticeFocus() {
-      let valueLength = this.unionNoticeCheck()[0];
-      let len = this.unionNoticeCheck()[1];
-      if (valueLength > 20) {
-        this.ruleForm1.businessMsg = this.ruleForm1.businessMsg.substring(0, len + 1);
-        this.unionNoticeMaxlength = len;
-        return false;
-      } else {
-        this.unionNoticeMaxlength = 40;
-      }
-    },
-    unionNoticeBlur() {
-      let valueLength = this.unionNoticeCheck()[0];
-      if (valueLength > 20) {
-        return false;
-      }
-    },
-    unionNoticeKeydown(e) {
-      let valueLength = this.unionNoticeCheck()[0];
-      let len = this.unionNoticeCheck()[1];
-      if (valueLength > 20) {
-        // this.ruleForm1.businessMsg = this.ruleForm1.businessMsg.substring(0, len + 1);
-        this.unionNoticeMaxlength = len;
-        return false;
-      } else {
-        this.unionNoticeMaxlength = 40;
-      }
-    },
-    unionNoticeCheck() {
-      let valueLength = 0;
-      let maxLenth = 0;
-      let chinese = '[\u4e00-\u9fa5]'; // 获取字段值的长度，如果含中文字符，则每个中文字符长度为2，否则为1
-      let str = this.ruleForm1.businessMsg || '';
-      for (let i = 0; i < str.length; i++) {
-        // 获取一个字符
-        let temp = str.substring(i, i + 1); // 判断是否为中文字符
-        if (temp.match(chinese)) {
-          // 中文字符长度为1
-          valueLength += 1;
-        } else {
-          // 其他字符长度为0.5
-          valueLength += 0.5;
-        }
-        if (Math.ceil(valueLength) == 20) {
-          maxLenth = i;
-        }
-      }
-      valueLength = Math.ceil(valueLength); //进位取整
-      return [valueLength, maxLenth];
     }
   }
 };

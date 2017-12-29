@@ -110,18 +110,10 @@
 
 <script>
 import $http from '@/utils/http.js';
+import { cellPhonePass } from '@/utils/validator.js';
 export default {
   name: 'finance',
   data() {
-    let phonePass = (rule, value, callback) => {
-      if (!value) {
-        callback(new Error('手机号码内容不能为空，请重新输入'));
-      } else if (!value.match(/^1[3|4|5|6|7|8][0-9][0-9]{8}$/)) {
-        callback(new Error('请输入正确的手机号码'));
-      } else {
-        callback();
-      }
-    };
     return {
       dialogVisible1: false,
       dialogVisible2: false,
@@ -142,7 +134,7 @@ export default {
         shop: [{ type: 'number', required: true, message: '门店不能为空，请重新输入', trigger: 'change' }],
         name: [{ type: 'number', required: true, message: '姓名不能为空，请重新输入', trigger: 'change' }],
         code: [{ required: true, message: '验证码不能为空，请重新输入', trigger: 'blur' }],
-        phone: [{ validator: phonePass, trigger: 'change' }]
+        phone: [{ validator: cellPhonePass, trigger: 'change' }]
       },
       form1: {
         getVerificationCode: false,
