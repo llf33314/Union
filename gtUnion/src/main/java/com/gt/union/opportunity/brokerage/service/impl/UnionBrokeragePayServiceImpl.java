@@ -310,7 +310,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
                 }
                 // （3）	如果已付款过，则报错
                 if (existValidByOpportunityIdAndStatus(opportunityId, BrokerageConstant.PAY_STATUS_SUCCESS)) {
-                    throw new BusinessException("重复支付");
+                    throw new BusinessException("请勿重复支付");
                 }
 
                 brokerageSum = BigDecimalUtil.add(brokerageSum, opportunity.getBrokerageMoney());

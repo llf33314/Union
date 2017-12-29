@@ -127,6 +127,16 @@ public interface IUnionMemberService {
     /**
      * 获取商家盟员信息
      *
+     * @param memberId 盟员id
+     * @param unionId    商家id
+     * @return UnionMember
+     * @throws Exception 统一处理异常
+     */
+    UnionMember getByIdAndUnionId(Integer memberId, Integer unionId) throws Exception;
+
+    /**
+     * 获取商家盟员信息
+     *
      * @param busId    商家id
      * @param memberId 盟员id
      * @param unionId  联盟id

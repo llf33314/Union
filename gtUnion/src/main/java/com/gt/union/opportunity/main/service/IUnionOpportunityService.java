@@ -224,6 +224,7 @@ public interface IUnionOpportunityService {
 
     //********************************************* Base On Business - other *******************************************
 
+
     /**
      * 统计未删除的佣金金额总和
      *
@@ -562,5 +563,6 @@ public interface IUnionOpportunityService {
      * @throws Exception 统一处理异常
      */
     void updateBatch(List<UnionOpportunity> updateUnionOpportunityList) throws Exception;
+
 
 }
