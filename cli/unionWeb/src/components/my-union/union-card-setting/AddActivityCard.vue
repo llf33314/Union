@@ -56,8 +56,9 @@
 
 <script>
 import $http from '@/utils/http.js';
-import UnionColorPicker from '@/components/public-components/UnionColorPicker';
 import { numberCheck } from '@/utils/filter.js';
+import { activityCardNamePass, activityCardIllustrationPass } from '@/utils/validator.js';
+import UnionColorPicker from '@/components/public-components/UnionColorPicker';
 export default {
   name: 'add-activity-card',
   components: {
@@ -97,14 +98,14 @@ export default {
         isProjectCheck: ''
       },
       rules: {
-        name: [{ required: true, message: '请输入活动卡名称', trigger: 'blur' }],
+        name: [{ validator: activityCardNamePass, trigger: 'blur' }],
         price: [{ required: true, message: '请输入活动卡价格', trigger: 'blur' }],
         color: [{ required: true, message: '请选择活动卡颜色', trigger: 'change' }],
         amount: [{ required: true, message: '请输入活动卡最大发行量', trigger: 'blur' }],
         validityDay: [{ required: true, message: '请输入活动卡有效天数', trigger: 'blur' }],
         applyTime: [{ validator: applyTimePass, trigger: 'change' }],
         sellTime: [{ validator: sellTimePass, trigger: 'change' }],
-        illustration: [{ required: true, message: '请输入活动卡说明', trigger: 'blur' }]
+        illustration: [{ validator: activityCardIllustrationPass, trigger: 'blur' }]
       }
     };
   },

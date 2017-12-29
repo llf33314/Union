@@ -122,6 +122,7 @@
 <script>
 import io from 'socket.io-client';
 import $http from '@/utils/http.js';
+import { cellPhonePass } from '@/utils/validator.js';
 import IsFollow from '@/components/front/transaction/IsFollow';
 export default {
   name: 'transaction',
@@ -129,15 +130,6 @@ export default {
     IsFollow
   },
   data() {
-    let phonePass = (rule, value, callback) => {
-      if (!value) {
-        callback(new Error('手机号码内容不能为空，请重新输入'));
-      } else if (!value.match(/^1[3|4|5|6|7|8][0-9][0-9]{8}$/)) {
-        callback(new Error('请输入正确的手机号码'));
-      } else {
-        callback();
-      }
-    };
     return {
       labelPosition: 'right',
       fanId: '',
@@ -149,7 +141,7 @@ export default {
       },
       rules: {
         code: [{ required: true, message: '验证码不能为空，请重新输入', trigger: 'blur' }],
-        phone: [{ validator: phonePass, trigger: 'blur' }]
+        phone: [{ validator: cellPhonePass, trigger: 'blur' }]
       },
       visible2: false,
       form2: {
