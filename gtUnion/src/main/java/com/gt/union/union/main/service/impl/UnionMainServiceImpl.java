@@ -56,7 +56,8 @@ public class UnionMainServiceImpl implements IUnionMainService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	判断union有效性和member读权限
-        if (!isUnionValid(unionId)) {
+        UnionMain union = getValidById(unionId);
+        if (!isUnionValid(union)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
@@ -65,7 +66,6 @@ public class UnionMainServiceImpl implements IUnionMainService {
         }
 
         UnionVO result = new UnionVO();
-        UnionMain union = getValidById(unionId);
         result.setUnion(union);
 
         List<UnionMainDict> itemList = unionMainDictService.listValidByUnionId(unionId);
@@ -79,7 +79,6 @@ public class UnionMainServiceImpl implements IUnionMainService {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-
         // （1）获取我创建和已加入的联盟id列表
         List<UnionMember> memberList = unionMemberService.listValidByBusId(busId);
         List<Integer> unionIdList = unionMemberService.getUnionIdList(memberList);
@@ -269,7 +268,7 @@ public class UnionMainServiceImpl implements IUnionMainService {
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        
+
         return getById(unionId) != null;
     }
 
@@ -366,6 +365,15 @@ public class UnionMainServiceImpl implements IUnionMainService {
         }
 
         return result;
+    }
+
+    @Override
+    public List<UnionMain> listSupport(EntityWrapper<UnionMain> entityWrapper) throws Exception {
+        if (entityWrapper == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        return unionMainDao.selectList(entityWrapper);
     }
 
     @Override
@@ -557,5 +565,5 @@ public class UnionMainServiceImpl implements IUnionMainService {
         }
         return result;
     }
-    
+
 }

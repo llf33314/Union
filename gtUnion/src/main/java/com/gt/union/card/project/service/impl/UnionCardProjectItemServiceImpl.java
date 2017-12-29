@@ -181,8 +181,6 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
             throw new BusinessException("活动卡不在报名中状态，无法操作");
         }
         // （4）	判断是否已有活动项目
-        //   （4-1）如果是，则要求在未提交或不通过状态，且删除所有已有的项目优惠，保存新项目优惠；
-        //   （4-2）如果不是，则新增活动项目，未提交状态，且保存新项目优惠；
         UnionCardProject updateProject = null;
         UnionCardProject saveProject = null;
         List<Integer> removeItemIdList = null;
@@ -264,9 +262,7 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         if (ActivityConstant.STATUS_APPLYING != activityStatus) {
             throw new BusinessException("活动卡不在报名中状态，无法操作");
         }
-        // （4）	判断是否已有活动项目：
-        //   （4-1）如果是，则要求在未提交或不通过状态，且删除所有已有的项目优惠，保存新项目优惠；
-        //   （4-2）如果不是，则新增活动项目，且保存新项目优惠；
+        // （4）	判断是否已有活动项目
         UnionCardProject updateProject = null;
         UnionCardProject saveProject = null;
         UnionCardProjectFlow saveFlow = null;
@@ -294,9 +290,7 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
             saveProject.setMemberId(member.getId());
             saveProject.setUnionId(unionId);
         }
-        // （5）判断活动是否设置了需要项目审核：
-        //   （5-1）如果是，则为提交状态；
-        //   （5-2）如果不是，则为审核通过状态，并新增自动通过审核记录；
+        // （5）判断活动是否设置了需要项目审核
         if (updateProject != null) {
             updateProject.setStatus(ActivityConstant.IS_PROJECT_CHECK_YES == activity.getIsProjectCheck()
                     ? ProjectConstant.STATUS_COMMITTED : ProjectConstant.STATUS_ACCEPT);

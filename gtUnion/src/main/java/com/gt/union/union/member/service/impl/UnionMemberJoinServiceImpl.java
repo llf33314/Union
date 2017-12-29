@@ -103,18 +103,14 @@ public class UnionMemberJoinServiceImpl implements IUnionMemberJoinService {
         // （2）	按时间顺序排序
         List<MemberJoinVO> result = new ArrayList<>();
         List<UnionMember> joinMemberList = unionMemberService.listValidByUnionIdAndStatus(unionId, MemberConstant.STATUS_APPLY_IN);
+        if (StringUtil.isNotEmpty(optMemberName)) {
+            joinMemberList = unionMemberService.filterByListEnterpriseName(joinMemberList, optMemberName);
+        }
+        if (StringUtil.isNotEmpty(optPhone)) {
+            joinMemberList = unionMemberService.filterByListDirectorPhone(joinMemberList, optPhone);
+        }
         if (ListUtil.isNotEmpty(joinMemberList)) {
-            boolean isContinue;
             for (UnionMember joinMember : joinMemberList) {
-                isContinue = StringUtil.isNotEmpty(optMemberName) && !joinMember.getEnterpriseName().contains(optMemberName);
-                if (isContinue) {
-                    continue;
-                }
-                isContinue = StringUtil.isNotEmpty(optPhone) && !joinMember.getDirectorPhone().contains(optPhone);
-                if (isContinue) {
-                    continue;
-                }
-
                 MemberJoinVO vo = new MemberJoinVO();
                 vo.setJoinMember(joinMember);
 
@@ -300,8 +296,6 @@ public class UnionMemberJoinServiceImpl implements IUnionMemberJoinService {
             throw new BusinessException("找不到入盟申请信息");
         }
         // （3）	判断joinMember状态
-        //   （3-1）如果是申请状态，则进入下一步；
-        //   （3-2）如果是其他状态，则直接返回成功；
         UnionMember joinMember = unionMemberService.getValidByIdAndStatus(join.getApplyMemberId(), MemberConstant.STATUS_APPLY_IN);
         if (joinMember == null) {
             throw new BusinessException("找不到入盟申请者信息");

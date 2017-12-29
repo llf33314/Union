@@ -3,6 +3,7 @@ package com.gt.union.union.member.service;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.union.member.entity.UnionMember;
+import com.gt.union.union.member.vo.MemberOutVO;
 import com.gt.union.union.member.vo.MemberVO;
 
 import java.util.List;
@@ -244,7 +245,18 @@ public interface IUnionMemberService {
     List<UnionMember> listOtherValidWriteByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
 
     /**
-     * 分页：我的联盟-首页-盟员列表；导出：我的联盟-首页-盟员列表；分页：我的联盟-联盟卡设置-折扣卡设置
+     * 分页：我的联盟-首页-盟员列表；导出：我的联盟-首页-盟员列表
+     *
+     * @param busId         商家id
+     * @param unionId       联盟id
+     * @param optMemberName 盟员名称
+     * @return List<MemberOutVO>
+     * @throws Exception 统一处理异常
+     */
+    List<MemberOutVO> listIndexByBusIdAndUnionId(Integer busId, Integer unionId, String optMemberName) throws Exception;
+
+    /**
+     * 分页：我的联盟-联盟卡设置-折扣卡设置
      *
      * @param busId         商家id
      * @param unionId       联盟id
@@ -252,7 +264,7 @@ public interface IUnionMemberService {
      * @return List<UnionMember>
      * @throws Exception 统一处理异常
      */
-    List<UnionMember> listValidReadByBusIdAndUnionId(Integer busId, Integer unionId, String optMemberName) throws Exception;
+    List<UnionMember> listDiscountByBusIdAndUnionId(Integer busId, Integer unionId, String optMemberName) throws Exception;
 
     //********************************************* Base On Business - save ********************************************
 
@@ -402,6 +414,26 @@ public interface IUnionMemberService {
      * @throws Exception 统一处理异常
      */
     List<UnionMember> filterByUnionId(List<UnionMember> memberList, Integer unionId) throws Exception;
+
+    /**
+     * 根据盟员企业名称进行模糊过滤
+     *
+     * @param memberList         数据源
+     * @param likeEnterpriseName 盟员企业名称
+     * @return List<UnionMember>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> filterByListEnterpriseName(List<UnionMember> memberList, String likeEnterpriseName) throws Exception;
+
+    /**
+     * 根据负责人联系方式进行模糊过滤
+     *
+     * @param memberList        数据源
+     * @param likeDirectorPhone 负责人联系方式
+     * @return List<UnionMember>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> filterByListDirectorPhone(List<UnionMember> memberList, String likeDirectorPhone) throws Exception;
 
     //****************************************** Object As a Service - get *********************************************
 

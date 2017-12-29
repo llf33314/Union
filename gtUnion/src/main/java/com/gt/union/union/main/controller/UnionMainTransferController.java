@@ -84,25 +84,6 @@ public class UnionMainTransferController {
         return GtJsonResult.instanceSuccessMsg().toString();
     }
 
-    @ApiOperation(value = "我的联盟-联盟设置-盟主权限转移-分页数据-撤销", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{transferId}/unionId/{unionId}/revoke", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public String revokeByIdAndUnionId(
-            HttpServletRequest request,
-            @ApiParam(value = "转移id", name = "transferId", required = true)
-            @PathVariable("transferId") Integer transferId,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId) throws Exception {
-        BusUser busUser = SessionUtils.getLoginUser(request);
-        Integer busId = busUser.getId();
-        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
-        }
-        if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
-            unionMainTransferService.removeByBusIdAndIdAndUnionId(busId, transferId, unionId);
-        }
-        return GtJsonResult.instanceSuccessMsg().toString();
-    }
-
     //-------------------------------------------------- post ----------------------------------------------------------
 
     @ApiOperation(value = "我的联盟-联盟设置-盟主权限转移-分页-转移", produces = "application/json;charset=UTF-8")
@@ -124,4 +105,24 @@ public class UnionMainTransferController {
         return GtJsonResult.instanceSuccessMsg().toString();
     }
 
+    //-------------------------------------------------- delete --------------------------------------------------------
+    
+    @ApiOperation(value = "我的联盟-联盟设置-盟主权限转移-分页数据-撤销", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{transferId}/unionId/{unionId}", method = RequestMethod.DELETE, produces = "application/json;charset=UTF-8")
+    public String removeByIdAndUnionId(
+            HttpServletRequest request,
+            @ApiParam(value = "转移id", name = "transferId", required = true)
+            @PathVariable("transferId") Integer transferId,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @PathVariable("unionId") Integer unionId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
+        }
+        if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
+            unionMainTransferService.removeByBusIdAndIdAndUnionId(busId, transferId, unionId);
+        }
+        return GtJsonResult.instanceSuccessMsg().toString();
+    }
 }

@@ -16,8 +16,11 @@ import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.member.constant.MemberConstant;
 import com.gt.union.union.member.dao.IUnionMemberDao;
 import com.gt.union.union.member.entity.UnionMember;
+import com.gt.union.union.member.entity.UnionMemberOut;
+import com.gt.union.union.member.service.IUnionMemberOutService;
 import com.gt.union.union.member.service.IUnionMemberService;
 import com.gt.union.union.member.util.UnionMemberCacheUtil;
+import com.gt.union.union.member.vo.MemberOutVO;
 import com.gt.union.union.member.vo.MemberVO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -47,6 +50,9 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
 
     @Autowired
     private IDictService dictService;
+
+    @Autowired
+    private IUnionMemberOutService unionMemberOutService;
 
     //********************************************* Base On Business - get *********************************************
 
@@ -210,18 +216,12 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember busMember = getValidReadByBusIdAndUnionId(busId, unionId);
-        if (busMember == null) {
+        UnionMember member = getValidReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-
-        // （2）	判断memberId有效性
-        UnionMember result = getValidReadByIdAndUnionId(memberId, unionId);
-        if (result == null) {
-            throw new BusinessException(CommonConstant.MEMBER_NOT_FOUND);
-        }
-
-        return result;
+        
+        return getValidReadByIdAndUnionId(memberId, unionId);
     }
 
     @Override
@@ -229,7 +229,6 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-
         // （1）	判断union有效性和member读权限
         UnionMain union = unionMainService.getValidById(unionId);
         if (!unionMainService.isUnionValid(union)) {
@@ -403,11 +402,63 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
     }
 
     @Override
-    public List<UnionMember> listValidReadByBusIdAndUnionId(Integer busId, Integer unionId, String optMemberName) throws Exception {
+    public List<MemberOutVO> listIndexByBusIdAndUnionId(Integer busId, Integer unionId, String optMemberName) throws Exception {
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+        // （1）判断union有效性和member读权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        final UnionMember member = getValidReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
+        }
+        // （2）	获取union下所有具有读权限的member
+        List<UnionMember> unionMemberList = listValidReadByUnionId(unionId);
+        // （3）	根据查询条件进行过滤
+        if (StringUtil.isNotEmpty(optMemberName)) {
+            unionMemberList = filterByListEnterpriseName(unionMemberList, optMemberName);
+        }
+        List<MemberOutVO> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(unionMemberList)) {
+            for (UnionMember unionMember : unionMemberList) {
+                MemberOutVO vo = new MemberOutVO();
+                vo.setMember(unionMember);
 
+                UnionMemberOut memberOut = unionMemberOutService.getValidByUnionIdAndApplyMemberId(unionId, unionMember.getId());
+                vo.setMemberOut(memberOut);
+
+                result.add(vo);
+            }
+        }
+        // （4）	按盟主>商家盟员>其他盟员，其他盟员按时间顺序排序
+        Collections.sort(result, new Comparator<MemberOutVO>() {
+            @Override
+            public int compare(MemberOutVO o1, MemberOutVO o2) {
+                if (MemberConstant.IS_UNION_OWNER_YES == o1.getMember().getIsUnionOwner()) {
+                    return -1;
+                }
+                if (MemberConstant.IS_UNION_OWNER_YES == o2.getMember().getIsUnionOwner()) {
+                    return 1;
+                }
+                if (member.getId().equals(o1.getMember().getId())) {
+                    return -1;
+                }
+                if (member.getId().equals(o2.getMember().getId())) {
+                    return 1;
+                }
+                return o1.getMember().getCreateTime().compareTo(o2.getMember().getCreateTime());
+            }
+        });
+        return result;
+    }
+
+    @Override
+    public List<UnionMember> listDiscountByBusIdAndUnionId(Integer busId, Integer unionId, String optMemberName) throws Exception {
+        if (busId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
         // （1）判断union有效性和member读权限
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
@@ -420,13 +471,7 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         List<UnionMember> result = listValidReadByUnionId(unionId);
         // （3）	如果memberName不为空，则进行过滤
         if (StringUtil.isNotEmpty(optMemberName)) {
-            List<UnionMember> tempMemberList = new ArrayList<>();
-            for (UnionMember tempMember : result) {
-                if (tempMember.getEnterpriseName().contains(optMemberName)) {
-                    tempMemberList.add(tempMember);
-                }
-            }
-            result = tempMemberList;
+            result = filterByListEnterpriseName(result, optMemberName);
         }
         // （4）	按盟主>商家盟员>其他盟员，其他盟员按时间顺序排序
         Collections.sort(result, new Comparator<UnionMember>() {
@@ -729,6 +774,42 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         for (UnionMember member : memberList) {
             if (unionId.equals(member.getUnionId())) {
                 result.add(member);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionMember> filterByListEnterpriseName(List<UnionMember> memberList, String likeEnterpriseName) throws Exception {
+        if (memberList == null || likeEnterpriseName == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMember> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(memberList)) {
+            for (UnionMember member : memberList) {
+                if (member.getEnterpriseName().contains(likeEnterpriseName)) {
+                    result.add(member);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionMember> filterByListDirectorPhone(List<UnionMember> memberList, String likeDirectorPhone) throws Exception {
+        if (memberList == null || likeDirectorPhone == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMember> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(memberList)) {
+            for (UnionMember member : memberList) {
+                if (member.getDirectorPhone().contains(likeDirectorPhone)) {
+                    result.add(member);
+                }
             }
         }
 

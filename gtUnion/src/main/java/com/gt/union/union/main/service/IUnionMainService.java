@@ -172,6 +172,15 @@ public interface IUnionMainService {
     List<UnionMain> listByIdList(List<Integer> idList) throws Exception;
 
     /**
+     * 列表支持
+     *
+     * @param entityWrapper 条件
+     * @return Page
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMain> listSupport(EntityWrapper<UnionMain> entityWrapper) throws Exception;
+
+    /**
      * 分页支持
      *
      * @param page          分页对象

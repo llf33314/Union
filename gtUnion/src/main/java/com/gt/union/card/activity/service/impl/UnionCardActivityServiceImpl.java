@@ -166,9 +166,7 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-        // （2）	判断是否是盟主：
-        //   （2-1）如果是，则显示全部；
-        //   （2-2）如果不是，则要求是报名项目已审核通过的
+        // （2）	判断是否是盟主
         List<CardActivityStatusVO> result = new ArrayList<>();
         List<UnionCardActivity> activityList = null;
         if (MemberConstant.IS_UNION_OWNER_YES == member.getIsUnionOwner()) {

@@ -66,11 +66,9 @@ public class UnionCardProjectFlowServiceImpl implements IUnionCardProjectFlowSer
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-        // （2）	判断project是否存在
-        UnionCardProject project = unionCardProjectService.getValidByUnionIdAndMemberIdAndActivityId(unionId, member.getId(), activityId);
-
         // （3）	按时间顺序排序
         List<UnionCardProjectFlow> result = new ArrayList<>();
+        UnionCardProject project = unionCardProjectService.getValidByUnionIdAndMemberIdAndActivityId(unionId, member.getId(), activityId);
         if (project != null) {
             result = listValidByProjectId(project.getId());
 
