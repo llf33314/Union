@@ -234,6 +234,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         return result;
     }
 
+
     @Override
     public List<UnionOpportunity> listValidByFromMemberIdListAndAcceptStatusAndIsClose(List<Integer> fromMemberIdList, Integer acceptStatus, Integer isClose) throws Exception {
         if (fromMemberIdList == null || acceptStatus == null || isClose == null) {
@@ -637,7 +638,9 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         }
     }
 
+
     //********************************************* Base On Business - other *******************************************
+
 
     @Override
     public Double sumValidBrokerageMoneyByFromMemberIdListAndAcceptStatusAndIsClose(List<Integer> fromMemberIdList, Integer acceptStatus, Integer isClose) throws Exception {

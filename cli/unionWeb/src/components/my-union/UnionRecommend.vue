@@ -30,7 +30,7 @@
           </el-col>
         </el-form-item>
         <el-form-item label="推荐理由：" prop="reason">
-          <el-input type="textarea" :rows="4" id="feedbackcontent" placeholder="请输入推荐理由" v-model="form.reason" :maxlength="unionNoticeMaxlength" @focus="unionNoticeFocus" @blur="unionNoticeBlur" @change="unionNoticeKeydown($event)" @keydown.native="unionNoticeKeydown($event)" @keyup.native="unionNoticeKeydown($event)" @input.native="unionNoticeKeydown($event)" @onpropertychange.native="unionNoticeKeydown($event)"></el-input>
+          <el-input type="textarea" :rows="4" id="feedbackcontent" placeholder="请输入推荐理由" v-model="form.reason" :maxlength="unionNoticeMaxlength"></el-input>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onSubmit('form')">保存</el-button>
@@ -43,6 +43,7 @@
 
 <script>
 import $http from '@/utils/http.js';
+import { enterpriseNamePass, directorNamePass, cellPhonePass, emailPass, reasonPass } from '@/utils/validator.js';
 import Breadcrumb from '@/components/public-components/Breadcrumb';
 export default {
   name: 'union-recommend',
@@ -50,37 +51,17 @@ export default {
     Breadcrumb
   },
   data() {
-    // 验证规则
-    let directorPhonePass = (rule, value, callback) => {
-      if (!value) {
-        callback(new Error('联系电话内容不能为空，请重新输入'));
-      } else if (!value.match(/(^1[3|4|5|6|7|8][0-9][0-9]{8}$)|(^0\d{2,3}-?\d{7,8}$)/)) {
-        callback(new Error('请输入正确的联系电话'));
-      } else {
-        callback();
-      }
-    };
-    let emailPass = (rule, value, callback) => {
-      if (!value) {
-        callback(new Error('邮箱内容不能为空，请重新输入'));
-      } else if (!value.match(/^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/)) {
-        callback(new Error('请输入正确的邮箱'));
-      } else {
-        callback();
-      }
-    };
     return {
       labelPosition: 'right',
       form: {},
       rules: {
         busUserName: [{ required: true, message: '联盟账号内容不能为空，请重新输入', trigger: 'blur' }],
-        enterpriseName: [{ required: true, message: '申请企业内容不能为空，请重新输入', trigger: 'blur' }],
-        directorName: [{ required: true, message: '负责人内容不能为空，请重新输入', trigger: 'blur' }],
-        directorPhone: [{ validator: directorPhonePass, trigger: 'blur' }],
+        enterpriseName: [{ validator: enterpriseNamePass, trigger: 'blur' }],
+        directorName: [{ validator: directorNamePass, trigger: 'blur' }],
+        directorPhone: [{ validator: cellPhonePass, trigger: 'blur' }],
         directorEmail: [{ validator: emailPass, trigger: 'blur' }],
-        reason: [{ required: true, message: '推荐理由不能为空，请重新输入', trigger: 'blur' }]
+        reason: [{ validator: reasonPass, trigger: 'blur' }]
       },
-      unionNoticeMaxlength: 40,
       checkList: ['busUserName'],
       datas: []
     };
@@ -145,58 +126,6 @@ export default {
     },
     back() {
       this.$router.push({ path: '/my-union/index' });
-    },
-    // 判断推荐理由字数
-    unionNoticeFocus() {
-      let valueLength = this.unionNoticeCheck()[0];
-      let len = this.unionNoticeCheck()[1];
-      if (valueLength > 20) {
-        this.form.reason = this.form.reason.substring(0, len + 1);
-        this.unionNoticeMaxlength = len;
-        return false;
-      } else {
-        this.unionNoticeMaxlength = 40;
-      }
-    },
-    unionNoticeBlur() {
-      let valueLength = this.unionNoticeCheck()[0];
-      if (valueLength > 20) {
-        return false;
-      }
-    },
-    unionNoticeKeydown(e) {
-      let lengthObj = this.unionNoticeCheck();
-      let valueLength = lengthObj[0];
-      let len = lengthObj[1];
-      if (valueLength > 20) {
-        // this.form.reason = this.form.reason.substring(0, len + 1);
-        this.unionNoticeMaxlength = len;
-        return false;
-      } else {
-        this.unionNoticeMaxlength = 40;
-      }
-    },
-    unionNoticeCheck() {
-      let valueLength = 0;
-      let maxLenth = 0;
-      let chinese = '[\u4e00-\u9fa5]'; // 获取字段值的长度，如果含中文字符，则每个中文字符长度为2，否则为1
-      let str = this.form.reason || '';
-      for (let i = 0; i < str.length; i++) {
-        // 获取一个字符
-        let temp = str.substring(i, i + 1); // 判断是否为中文字符
-        if (temp.match(chinese)) {
-          // 中文字符长度为1
-          valueLength += 1;
-        } else {
-          // 其他字符长度为0.5
-          valueLength += 0.5;
-        }
-        if (Math.ceil(valueLength) == 20) {
-          maxLenth = i;
-        }
-      }
-      valueLength = Math.ceil(valueLength); //进位取整
-      return [valueLength, maxLenth];
     }
   }
 };

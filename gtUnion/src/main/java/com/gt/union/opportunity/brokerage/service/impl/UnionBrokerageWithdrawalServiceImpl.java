@@ -53,7 +53,8 @@ public class UnionBrokerageWithdrawalServiceImpl implements IUnionBrokerageWithd
         return BigDecimalUtil.subtract(incomeSum, withdrawalSum).doubleValue();
     }
 
-    //********************************************* Base On Business - list ********************************************
+
+	//********************************************* Base On Business - list ********************************************
 
 
     //********************************************* Base On Business - save ********************************************
@@ -63,6 +64,26 @@ public class UnionBrokerageWithdrawalServiceImpl implements IUnionBrokerageWithd
     //********************************************* Base On Business - update ******************************************
 
     //********************************************* Base On Business - other *******************************************
+
+    @Override
+    public Double sumMoneyByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionBrokerageWithdrawal> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("bus_id", busId);
+        List<UnionBrokerageWithdrawal> withdrawalList = unionBrokerageWithdrawalDao.selectList(entityWrapper);
+
+        BigDecimal result = BigDecimal.ZERO;
+        if (ListUtil.isNotEmpty(withdrawalList)) {
+            for (UnionBrokerageWithdrawal withdrawal : withdrawalList) {
+                result = BigDecimalUtil.add(result, withdrawal.getMoney());
+            }
+        }
+
+        return result.doubleValue();
+    }
 
     @Override
     public Double sumValidMoneyByBusId(Integer busId) throws Exception {

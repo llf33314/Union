@@ -236,9 +236,9 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
 
     @Override
     public UnionCardFan getOrSaveByPhone(String phone) throws Exception {
+        String key = RedissonKeyUtil.getUnionCardFanByPhoneKey(phone);
+        RedissonLockUtil.lock(key, 5);
         UnionCardFan fan = getValidByPhone(phone);
-        //TODO 需要加锁
-        RedissonLockUtil.lock("fan" + phone, 5);
         if (fan == null) {
             fan = new UnionCardFan();
             fan.setDelStatus(CommonConstant.COMMON_NO);
@@ -247,7 +247,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
             fan.setNumber(UnionCardUtil.generateCardNo());
             this.save(fan);
         }
-        RedissonLockUtil.unlock("fan" + phone);
+        RedissonLockUtil.unlock(key);
         return fan;
     }
 

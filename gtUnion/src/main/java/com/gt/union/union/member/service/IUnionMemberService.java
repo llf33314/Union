@@ -128,6 +128,16 @@ public interface IUnionMemberService {
     /**
      * 获取商家盟员信息
      *
+     * @param memberId 盟员id
+     * @param unionId    商家id
+     * @return UnionMember
+     * @throws Exception 统一处理异常
+     */
+    UnionMember getByIdAndUnionId(Integer memberId, Integer unionId) throws Exception;
+
+    /**
+     * 获取商家盟员信息
+     *
      * @param busId    商家id
      * @param memberId 盟员id
      * @param unionId  联盟id
@@ -206,7 +216,7 @@ public interface IUnionMemberService {
     List<UnionMember> listValidReadByBusId(Integer busId) throws Exception;
 
     /**
-     * 获取为删除的具有写权限的商家盟员列表信息
+     * 获取未删除的具有写权限的商家盟员列表信息
      *
      * @param busId 商家id
      * @return List<UnionMember>

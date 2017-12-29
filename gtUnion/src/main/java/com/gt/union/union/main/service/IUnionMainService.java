@@ -124,15 +124,6 @@ public interface IUnionMainService {
     //****************************************** Object As a Service - get *********************************************
 
     /**
-     * 获取联盟信息(by myBatisGenerator)
-     *
-     * @param id id
-     * @return UnionMain
-     * @throws Exception 统一处理异常
-     */
-    UnionMain getById(Integer id) throws Exception;
-
-    /**
      * 获取未删除的联盟信息(by myBatisGenerator)
      *
      * @param id id
@@ -140,6 +131,15 @@ public interface IUnionMainService {
      * @throws Exception 统一处理异常
      */
     UnionMain getValidById(Integer id) throws Exception;
+
+    /**
+     * 获取联盟信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionMain
+     * @throws Exception 统一处理异常
+     */
+    UnionMain getById(Integer id) throws Exception;
 
     /**
      * 获取已删除的联盟信息(by myBatisGenerator)

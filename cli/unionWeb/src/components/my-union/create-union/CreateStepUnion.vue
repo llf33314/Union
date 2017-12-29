@@ -53,7 +53,7 @@
 
 <script>
 import $http from '@/utils/http.js';
-import $ from 'jquery';
+import { unionNamePass, unionIllustrationPass } from '@/utils/validator.js';
 export default {
   name: 'create-step-union',
   props: ['basicFormData'],
@@ -67,9 +67,9 @@ export default {
       },
       checkList: ['enterpriseName', 'directorPhone'],
       rules: {
-        unionName: [{ required: true, message: '联盟名称内容不能为空，请重新输入', trigger: 'blur' }],
+        unionName: [{ validator: unionNamePass, trigger: 'blur' }],
         unionImg: [{ required: true, message: '联盟图标内容不能为空，请重新输入', trigger: 'change' }],
-        unionIllustration: [{ required: true, message: '联盟说明内容不能为空，请重新输入', trigger: 'blur' }]
+        unionIllustration: [{ validator: unionIllustrationPass, trigger: 'blur' }]
       },
       materialVisible: false,
       materialUrl: ''
