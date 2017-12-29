@@ -172,6 +172,9 @@
                 $('.hasPayLoadMore').show();
               }
               this.withdrawRecord = this.withdrawRecord.concat(list);
+              this.withdrawRecord.forEach((v, i) => {
+                v.createTime = $todate.todate(new Date(v.createTime));
+              })
             }
           })
           .catch(err => {
