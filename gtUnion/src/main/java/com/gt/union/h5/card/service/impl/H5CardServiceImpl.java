@@ -125,7 +125,7 @@ public class H5CardServiceImpl implements IH5CardService {
 							if(ListUtil.isNotEmpty(list)){
 								for(UnionCardActivity activity : list){
 									UnionCard card = unionCardService.getValidUnexpiredByUnionIdAndFanIdAndActivityId(unionMain.getId(), fan.getId(), activity.getId());
-									if(card == null || !DateTimeKit.laterThanNow(card.getValidity())){
+									if(card == null){
 										//没有办理过或已过期
 										UnionCardVO activityCardVO = getUnionCardVO(activity.getName(), CardConstant.TYPE_ACTIVITY, unionMain.getId(), activity.getId(), activity.getColor());
 										activityCardList.add(activityCardVO);
@@ -243,15 +243,13 @@ public class H5CardServiceImpl implements IH5CardService {
 					if(fan != null){
 						UnionCard card = unionCardService.getValidUnexpiredByUnionIdAndFanIdAndActivityId(unionId, fan.getId(), activityId);
 						if(card != null){
-							if(DateTimeKit.laterThanNow(card.getValidity())){
-								//没过期
-								result.setIsTransacted(CommonConstant.COMMON_NO);
-								result.setValidityStr(DateTimeKit.format(card.getValidity(), DateTimeKit.DEFAULT_DATE_FORMAT));
-								result.setIsOverdue(CommonConstant.COMMON_NO);
-							}else {
-								//已过期
-								result.setIsOverdue(CommonConstant.COMMON_YES);
-							}
+							//存在且没过期
+							result.setIsTransacted(CommonConstant.COMMON_NO);
+							result.setValidityStr(DateTimeKit.format(card.getValidity(), DateTimeKit.DEFAULT_DATE_FORMAT));
+							result.setIsOverdue(CommonConstant.COMMON_NO);
+						}else{
+							//不存在或已过期
+							result.setIsOverdue(CommonConstant.COMMON_YES);
 						}
 					}
 				}
@@ -282,7 +280,7 @@ public class H5CardServiceImpl implements IH5CardService {
 					if (ListUtil.isNotEmpty(projectList)) {
 						for (UnionCardProject project : projectList) {
 							if(member.getId().equals(project.getMemberId())){
-								List<UnionCardProjectItem> textItemList = unionCardProjectItemService.listByProjectId(project.getId());
+								List<UnionCardProjectItem> textItemList = unionCardProjectItemService.listValidByProjectId(project.getId());
 								if (ListUtil.isNotEmpty(textItemList)) {
 									listVO.setUnionCardProjectItems(textItemList);
 									itemCount += textItemList.size();

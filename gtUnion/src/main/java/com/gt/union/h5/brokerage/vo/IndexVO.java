@@ -19,7 +19,7 @@ public class IndexVO {
     @ApiModelProperty(value = "未支付商机佣金总额")
     private Double unPaidOpportunityBrokerage;
 
-    @ApiModelProperty(value = "历史佣金总额(售卡+佣金(已+未))")
+    @ApiModelProperty(value = "历史佣金总额(售卡+佣金(已))")
     private Double brokerageSum;
 
     public Double getAvailableBrokerage() {

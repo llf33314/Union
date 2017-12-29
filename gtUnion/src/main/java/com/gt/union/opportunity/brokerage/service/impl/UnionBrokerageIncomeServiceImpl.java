@@ -136,6 +136,7 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         return result;
     }
 
+
     //********************************************* Base On Business - save ********************************************
 
     //********************************************* Base On Business - remove ******************************************
@@ -143,6 +144,26 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
     //********************************************* Base On Business - update ******************************************
 
     //********************************************* Base On Business - other *******************************************
+
+    @Override
+    public Double sumMoneyByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("bus_id", busId);
+        List<UnionBrokerageIncome> incomeList = unionBrokerageIncomeDao.selectList(entityWrapper);
+
+        BigDecimal result = BigDecimal.ZERO;
+        if (ListUtil.isNotEmpty(incomeList)) {
+            for (UnionBrokerageIncome income : incomeList) {
+                result = BigDecimalUtil.add(result, income.getMoney());
+            }
+        }
+
+        return result.doubleValue();
+    }
 
     @Override
     public Double sumValidMoneyByBusId(Integer busId) throws Exception {

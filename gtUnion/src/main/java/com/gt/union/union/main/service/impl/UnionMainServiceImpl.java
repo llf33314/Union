@@ -93,7 +93,8 @@ public class UnionMainServiceImpl implements IUnionMainService {
         return unionMainDao.selectList(entityWrapper);
     }
 
-    @Override
+
+	@Override
     public List<UnionMain> listValidReadByBusId(Integer busId) throws Exception {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);

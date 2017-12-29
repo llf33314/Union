@@ -265,14 +265,12 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
                 vo.setPayMoney(consume.getPayMoney());
                 vo.setPayType(consume.getPayType());
                 vo.setConsumeTimeStr(DateTimeKit.format(consume.getCreateTime(), DateTimeKit.DEFAULT_DATETIME_FORMAT_YYYYMMDD_HHMM));
-                List<UnionConsumeProject> consumeProjectList = unionConsumeProjectService.listByConsumeId(consume.getId());
+                List<UnionConsumeProject> consumeProjectList = unionConsumeProjectService.listValidByConsumeId(consume.getId());
                 if (ListUtil.isNotEmpty(consumeProjectList)) {
-                    List items = new ArrayList<>();
                     for (UnionConsumeProject consumeProject : consumeProjectList) {
-                        UnionCardProjectItem item = unionCardProjectItemService.getById(consumeProject.getProjectItemId());
-                        items.add(item);
+                        List<UnionCardProjectItem> items = unionCardProjectItemService.listValidByProjectId(consumeProject.getProjectId());
+                        vo.setItems(items);
                     }
-                    vo.setItems(items);
                 }
                 resultDataList.add(vo);
             }

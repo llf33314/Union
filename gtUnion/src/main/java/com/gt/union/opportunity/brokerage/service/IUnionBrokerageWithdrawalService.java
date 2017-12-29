@@ -34,6 +34,16 @@ public interface IUnionBrokerageWithdrawalService {
 
     //********************************************* Base On Business - other *******************************************
 
+
+    /**
+     * 缓存穿透-统计已提现金额
+     *
+     * @param busId 商家id
+     * @return Double
+     * @throws Exception 统一处理异常
+     */
+    Double sumMoneyByBusId(Integer busId) throws Exception;
+
     /**
      * 缓存穿透-统计未删除的已提现金额
      *
