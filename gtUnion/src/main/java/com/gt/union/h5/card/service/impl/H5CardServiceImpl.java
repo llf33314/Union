@@ -222,7 +222,6 @@ public class H5CardServiceImpl implements IH5CardService {
 			if(ListUtil.isNotEmpty(members)){
 				for(UnionMember member : members){
 					CardDetailListVO listVO = new CardDetailListVO();
-					member.setDiscount(CommonUtil.isNotEmpty(member.getDiscount()) && member.getDiscount() > 0 && member.getDiscount() < 1 ? member.getDiscount() * 10 : null);
 					listVO.setUnionMember(member);
 					list.add(listVO);
 				}
@@ -290,7 +289,6 @@ public class H5CardServiceImpl implements IH5CardService {
 
 						}
 					}
-					member.setDiscount(CommonUtil.isNotEmpty(member.getDiscount()) && member.getDiscount() > 0 && member.getDiscount() < 1 ? member.getDiscount() * 10 : null);
 					listVO.setUnionMember(member);
 					list.add(listVO);
 				}
