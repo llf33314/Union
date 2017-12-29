@@ -92,16 +92,30 @@ public class UnionMainServiceImpl implements IUnionMainService {
         return unionMainDao.selectList(entityWrapper);
     }
 
+    @Override
+    public List<UnionMain> listReadByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
 
-	@Override
+        List<UnionMember> readMemberList = unionMemberService.listReadByBusId(busId);
+        List<Integer> unionIdList = unionMemberService.getUnionIdList(readMemberList);
+        unionIdList = ListUtil.unique(unionIdList);
+
+        return listByIdList(unionIdList);
+    }
+
+
+    @Override
     public List<UnionMain> listValidReadByBusId(Integer busId) throws Exception {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionMember> readMemberList = unionMemberService.listValidReadByBusId(busId);
+        List<UnionMain> result = listReadByBusId(busId);
+        result = filterByDelStatus(result, CommonConstant.DEL_STATUS_NO);
 
-        return getValidUnionList(readMemberList);
+        return result;
     }
 
     @Override
@@ -111,23 +125,9 @@ public class UnionMainServiceImpl implements IUnionMainService {
         }
 
         List<UnionMember> writeMemberList = unionMemberService.listValidWriteByBusId(busId);
+        List<Integer> unionIdList = unionMemberService.getUnionIdList(writeMemberList);
 
-        return getValidUnionList(writeMemberList);
-    }
-
-    private List<UnionMain> getValidUnionList(List<UnionMember> memberList) throws Exception {
-        List<UnionMain> result = new ArrayList<>();
-
-        if (ListUtil.isNotEmpty(memberList)) {
-            for (UnionMember member : memberList) {
-                UnionMain union = getValidById(member.getUnionId());
-                if (isUnionValid(union)) {
-                    result.add(union);
-                }
-            }
-        }
-
-        return result;
+        return listByIdList(unionIdList);
     }
 
     //********************************************* Base On Business - list ********************************************

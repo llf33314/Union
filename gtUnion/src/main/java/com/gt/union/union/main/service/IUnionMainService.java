@@ -38,6 +38,15 @@ public interface IUnionMainService {
     List<UnionMain> listValidJoinByBusId(Integer busId) throws Exception;
 
     /**
+     * 获取我具有读权限的联盟列表
+     *
+     * @param busId 商家id
+     * @return List<UnionMain>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMain> listReadByBusId(Integer busId) throws Exception;
+    
+    /**
      * 获取我具有读权限的有效联盟列表
      *
      * @param busId 商家id

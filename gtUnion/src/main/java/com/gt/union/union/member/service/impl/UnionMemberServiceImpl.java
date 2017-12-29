@@ -231,7 +231,7 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-        
+
         return getValidReadByIdAndUnionId(memberId, unionId);
     }
 
@@ -316,17 +316,28 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
     }
 
     @Override
-    public List<UnionMember> listValidReadByBusId(Integer busId) throws Exception {
+    public List<UnionMember> listReadByBusId(Integer busId) throws Exception {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionMember> result = listValidByBusId(busId);
+        List<UnionMember> result = listByBusId(busId);
         List<Integer> statusList = new ArrayList<>();
         statusList.add(MemberConstant.STATUS_IN);
         statusList.add(MemberConstant.STATUS_APPLY_OUT);
         statusList.add(MemberConstant.STATUS_OUT_PERIOD);
         result = filterByStatusList(result, statusList);
+
+        return result;
+    }
+
+    @Override
+    public List<UnionMember> listValidReadByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionMember> result = listReadByBusId(busId);
+        result = filterByDelStatus(result, CommonConstant.DEL_STATUS_NO);
 
         return result;
     }
@@ -1056,6 +1067,15 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         }
 
         return result;
+    }
+
+    @Override
+    public List<UnionMember> listSupport(EntityWrapper<UnionMember> entityWrapper) throws Exception {
+        if (entityWrapper == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        return unionMemberDao.selectList(entityWrapper);
     }
 
     @Override

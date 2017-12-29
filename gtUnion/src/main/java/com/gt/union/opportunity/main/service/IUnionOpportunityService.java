@@ -6,6 +6,7 @@ import com.gt.union.opportunity.brokerage.vo.BrokerageOpportunityVO;
 import com.gt.union.opportunity.main.entity.UnionOpportunity;
 import com.gt.union.opportunity.main.vo.OpportunityStatisticsVO;
 import com.gt.union.opportunity.main.vo.OpportunityVO;
+import com.gt.union.union.member.entity.UnionMember;
 
 import java.util.Date;
 import java.util.List;
@@ -29,6 +30,19 @@ public interface IUnionOpportunityService {
      * @throws Exception 统一处理异常
      */
     UnionOpportunity getValidByIdAndUnionIdAndToMemberId(Integer opportunityId, Integer unionId, Integer toMemberId) throws Exception;
+
+    /**
+     * 获取未删除的商机信息
+     *
+     * @param opportunityId 商机id
+     * @param unionId       联盟id
+     * @param toMemberId    接收者盟员id
+     * @param acceptStatus  受理状态
+     * @return UnionOpportunity
+     * @throws Exception 统一处理异常
+     */
+    UnionOpportunity getValidByIdAndUnionIdAndToMemberIdAndAcceptStatus(Integer opportunityId, Integer unionId, Integer toMemberId, Integer acceptStatus) throws Exception;
+
 
     /**
      * 商机-数据统计图
@@ -160,8 +174,29 @@ public interface IUnionOpportunityService {
     List<UnionOpportunity> listValidByUnionIdAndToMemberIdAndAcceptStatusAndIsClose(Integer unionId, Integer toMemberId, Integer acceptStatus, Integer isClose) throws Exception;
 
     /**
+     * 列表：我的佣金收入来源
+     *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @return List<UnionMember>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> listFromMemberByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
+
+    /**
+     * 列表：我的佣金去向
+     *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @return List<UnionMember>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> listToMemberByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
+    
+    /**
      * 分页：商机-我要推荐
      *
+     * @param page            分页对象
      * @param busId           商家id
      * @param optUnionId      联盟id
      * @param optAcceptStatus 受理状态
@@ -170,20 +205,21 @@ public interface IUnionOpportunityService {
      * @return List<OpportunityVO>
      * @throws Exception 统一处理异常
      */
-    List<OpportunityVO> listFromMeByBusId(Integer busId, Integer optUnionId, String optAcceptStatus, String optClientName, String optClientPhone) throws Exception;
+    Page pageFromMeByBusId(Page page, Integer busId, Integer optUnionId, String optAcceptStatus, String optClientName, String optClientPhone) throws Exception;
 
     /**
      * 分页：商机-我的商机
      *
+     * @param page            分页对象
      * @param busId           商家id
      * @param optUnionId      联盟id
      * @param optAcceptStatus 受理状态
      * @param optClientName   客户名称
      * @param optClientPhone  客户电话
-     * @return List<OpportunityVO>
+     * @return Page
      * @throws Exception 统一处理异常
      */
-    List<OpportunityVO> listToMeByBusId(Integer busId, Integer optUnionId, String optAcceptStatus, String optClientName, String optClientPhone) throws Exception;
+    Page pageToMeByBusId(Page page, Integer busId, Integer optUnionId, String optAcceptStatus, String optClientName, String optClientPhone) throws Exception;
 
     /**
      * 重复方法抽离：根据商机推荐列表获取VO对象
@@ -223,7 +259,6 @@ public interface IUnionOpportunityService {
     void updateByBusIdAndIdAndUnionId(Integer busId, Integer opportunityId, Integer unionId, Integer isAccept, Double acceptPrice) throws Exception;
 
     //********************************************* Base On Business - other *******************************************
-
 
     /**
      * 统计未删除的佣金金额总和
@@ -409,6 +444,23 @@ public interface IUnionOpportunityService {
      */
     List<Integer> getIdList(List<UnionOpportunity> unionOpportunityList) throws Exception;
 
+    /**
+     * 获取对象集对应的的推荐者主键集
+     *
+     * @param unionOpportunityList 对象集
+     * @return List<Id>
+     * @throws Exception 统一处理异常
+     */
+    List<Integer> getFromMemberIdList(List<UnionOpportunity> unionOpportunityList) throws Exception;
+
+    /**
+     * 获取对象集对应的的接收者主键集
+     *
+     * @param unionOpportunityList 对象集
+     * @return List<Id>
+     * @throws Exception 统一处理异常
+     */
+    List<Integer> getToMemberIdList(List<UnionOpportunity> unionOpportunityList) throws Exception;
 
     /**
      * 获取商机列表信息(by myBatisGenerator)
@@ -563,6 +615,5 @@ public interface IUnionOpportunityService {
      * @throws Exception 统一处理异常
      */
     void updateBatch(List<UnionOpportunity> updateUnionOpportunityList) throws Exception;
-
 
 }

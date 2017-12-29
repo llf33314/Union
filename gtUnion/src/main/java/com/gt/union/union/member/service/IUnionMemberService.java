@@ -129,7 +129,7 @@ public interface IUnionMemberService {
      * 获取商家盟员信息
      *
      * @param memberId 盟员id
-     * @param unionId    商家id
+     * @param unionId  商家id
      * @return UnionMember
      * @throws Exception 统一处理异常
      */
@@ -206,6 +206,15 @@ public interface IUnionMemberService {
      */
     List<UnionMember> listValidWriteByUnionId(Integer unionId) throws Exception;
 
+    /**
+     * 获取具有读权限的商家盟员列表信息
+     *
+     * @param busId 商家id
+     * @return List<UnionMember>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> listReadByBusId(Integer busId) throws Exception;
+    
     /**
      * 获取未删除的具有读权限的商家盟员列表信息
      *
@@ -565,6 +574,15 @@ public interface IUnionMemberService {
      * @throws Exception 统一处理异常
      */
     List<UnionMember> listByIdList(List<Integer> idList) throws Exception;
+
+    /**
+     * 列表支持
+     *
+     * @param entityWrapper 条件
+     * @return Page
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> listSupport(EntityWrapper<UnionMember> entityWrapper) throws Exception;
 
     /**
      * 分页支持
