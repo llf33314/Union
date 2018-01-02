@@ -98,7 +98,9 @@ export default {
     }
   },
   mounted() {
-    this.init();
+    eventBus.$on('getActivityCardProject', () => {
+      this.init();
+    });
   },
   methods: {
     init() {
