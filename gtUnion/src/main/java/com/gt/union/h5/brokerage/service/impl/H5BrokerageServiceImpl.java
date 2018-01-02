@@ -1,5 +1,7 @@
 package com.gt.union.h5.brokerage.service.impl;
 
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
+import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.Member;
 import com.gt.api.bean.session.TCommonStaff;
@@ -43,8 +45,6 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -157,19 +157,16 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
     //***************************************** Domain Driven Design - list ********************************************
 
     @Override
-    public List<UnionBrokerageWithdrawal> listWithdrawalHistory(H5BrokerageUser h5BrokerageUser) throws Exception {
-        if (h5BrokerageUser == null) {
+    public Page listPageWithdrawalHistory(H5BrokerageUser h5BrokerageUser, Page page) throws Exception {
+        if (h5BrokerageUser == null || page == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         Integer busId = h5BrokerageUser.getVerifier().getBusId();
         // 按时间倒序排序
-        List<UnionBrokerageWithdrawal> result = unionBrokerageWithdrawalService.listByBusId(busId);
-        Collections.sort(result, new Comparator<UnionBrokerageWithdrawal>() {
-            @Override
-            public int compare(UnionBrokerageWithdrawal o1, UnionBrokerageWithdrawal o2) {
-                return o2.getCreateTime().compareTo(o1.getCreateTime());
-            }
-        });
+        EntityWrapper<UnionBrokerageWithdrawal> wrapper = new EntityWrapper<UnionBrokerageWithdrawal>();
+        wrapper.eq("bus_id", busId);
+        wrapper.orderBy("create_time", false);
+        Page result = unionBrokerageWithdrawalService.pageSupport(page, wrapper);
 
         return result;
     }
@@ -191,8 +188,8 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
     }
 
     @Override
-    public List<OpportunityBrokerageVO> listOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId) throws Exception {
-        if (h5BrokerageUser == null) {
+    public Page listPageOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception {
+        if (h5BrokerageUser == null || page == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
@@ -201,17 +198,25 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         if (optUnionId != null) {
             memberList = unionMemberService.filterByUnionId(memberList, optUnionId);
         }
-        List<Integer> memberIdList = unionMemberService.getIdList(memberList);
         // （1）	获取商机佣金明细，如果unionId不为空，则对unionId进行过滤，按时间倒序排序
-        List<UnionOpportunity> opportunityList = unionOpportunityService.listValidByFromMemberIdListAndAcceptStatusAndIsClose(memberIdList,
-                OpportunityConstant.ACCEPT_STATUS_CONFIRMED, OpportunityConstant.IS_CLOSE_YES);
+        List<Integer> memberIdList = unionMemberService.getIdList(memberList);
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .in("from_member_id", memberIdList)
+                .eq("accept_status", OpportunityConstant.ACCEPT_STATUS_CONFIRMED)
+                .eq("is_close", OpportunityConstant.IS_CLOSE_YES)
+                .orderBy("create_time", false);
+        Page result = unionOpportunityService.pageSupport(page, entityWrapper);
 
-        return getOpportunityBrokerageVOList(opportunityList);
+        List<OpportunityBrokerageVO> list = getOpportunityBrokerageVOList(result.getRecords());
+        result.setRecords(list);
+
+        return result;
     }
 
     @Override
-    public List<CardBrokerageVO> listCardBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId) throws Exception {
-        if (h5BrokerageUser == null) {
+    public Page listPageCardBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception {
+        if (h5BrokerageUser == null || page == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
@@ -222,8 +227,17 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         }
         List<Integer> memberIdList = unionMemberService.getIdList(memberList);
         // （1）	获取售卡佣金明细，如果unionId不为空，则对unionId进行过滤，按时间倒序排序
-        List<CardBrokerageVO> result = new ArrayList<>();
-        List<UnionBrokerageIncome> incomeList = unionBrokerageIncomeService.listValidByBusIdAndTypeAndMemberIdList(busId, BrokerageConstant.INCOME_TYPE_CARD, memberIdList);
+
+        EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("bus_id", busId)
+                .eq("type", BrokerageConstant.INCOME_TYPE_CARD)
+                .in("member_id", memberIdList)
+                .orderBy("create_time", false);
+        Page result = unionBrokerageIncomeService.pageSupport(page, entityWrapper);
+
+        List<UnionBrokerageIncome> incomeList = result.getRecords();
+        List<CardBrokerageVO> list = new ArrayList<CardBrokerageVO>();
         if (ListUtil.isNotEmpty(incomeList)) {
             for (UnionBrokerageIncome income : incomeList) {
                 CardBrokerageVO vo = new CardBrokerageVO();
@@ -232,24 +246,19 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
                 Integer unionId = income.getUnionId();
                 vo.setUnion(unionMainService.getById(unionId));
 
-                vo.setMember(unionMemberService.getByBusIdAndIdAndUnionId(busId, income.getMemberId(), unionId));
+                vo.setMember(unionMemberService.getByIdAndUnionId(income.getMemberId(), unionId));
 
-                result.add(vo);
+                list.add(vo);
             }
         }
-        Collections.sort(result, new Comparator<CardBrokerageVO>() {
-            @Override
-            public int compare(CardBrokerageVO o1, CardBrokerageVO o2) {
-                return o2.getBrokerageIncome().getCreateTime().compareTo(o1.getBrokerageIncome().getCreateTime());
-            }
-        });
+        result.setRecords(list);
 
         return result;
     }
 
     @Override
-    public List<OpportunityBrokerageVO> listUnPaidOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId) throws Exception {
-        if (h5BrokerageUser == null) {
+    public Page listPageUnPaidOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception {
+        if (h5BrokerageUser == null || page == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
@@ -260,15 +269,22 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         }
         List<Integer> memberIdList = unionMemberService.getIdList(memberList);
         // （1）	获取未支付的商机佣金明细，如果unionId不为空，则对unionId进行过滤，按时间倒序排序
-        List<UnionOpportunity> opportunityList = unionOpportunityService.listValidByToMemberIdListAndAcceptStatusAndIsClose(memberIdList,
-                OpportunityConstant.ACCEPT_STATUS_CONFIRMED, OpportunityConstant.IS_CLOSE_NO);
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .in("to_member_id", memberIdList)
+                .eq("accept_status", OpportunityConstant.ACCEPT_STATUS_CONFIRMED)
+                .eq("is_close", OpportunityConstant.IS_CLOSE_NO)
+                .orderBy("create_time", false);
 
-        return getOpportunityBrokerageVOList(opportunityList);
+        Page result = unionOpportunityService.pageSupport(page, entityWrapper);
+        List<OpportunityBrokerageVO> opportunityList = getOpportunityBrokerageVOList(result.getRecords());
+        result.setRecords(opportunityList);
+        return result;
     }
 
     @Override
-    public List<OpportunityBrokerageVO> listUnReceivedOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId) throws Exception {
-        if (h5BrokerageUser == null) {
+    public Page listPageUnReceivedOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception {
+        if (h5BrokerageUser == null || page == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
@@ -279,10 +295,17 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         }
         List<Integer> memberIdList = unionMemberService.getIdList(memberList);
         // （1）	获取未收的商机佣金明细，如果unionId不为空，则对unionId进行过滤，按时间倒序排序
-        List<UnionOpportunity> opportunityList = unionOpportunityService.listValidByFromMemberIdListAndAcceptStatusAndIsClose(memberIdList,
-                OpportunityConstant.ACCEPT_STATUS_CONFIRMED, OpportunityConstant.IS_CLOSE_NO);
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .in("from_member_id", memberIdList)
+                .eq("accept_status", OpportunityConstant.ACCEPT_STATUS_CONFIRMED)
+                .eq("is_close", OpportunityConstant.IS_CLOSE_NO)
+                .orderBy("create_time", false);
+        Page result = unionOpportunityService.pageSupport(page, entityWrapper);
 
-        return getOpportunityBrokerageVOList(opportunityList);
+        List<OpportunityBrokerageVO> opportunityList = getOpportunityBrokerageVOList(result.getRecords());
+        page.setRecords(opportunityList);
+        return result;
     }
 
     private List<OpportunityBrokerageVO> getOpportunityBrokerageVOList(List<UnionOpportunity> opportunityList) throws Exception {
@@ -295,19 +318,12 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
                 Integer unionId = opportunity.getUnionId();
                 vo.setUnion(unionMainService.getById(unionId));
 
-                vo.setFromMember(unionMemberService.getValidReadByIdAndUnionId(opportunity.getFromMemberId(), unionId));
+                vo.setFromMember(unionMemberService.getByIdAndUnionId(opportunity.getFromMemberId(), unionId));
 
-                vo.setToMember(unionMemberService.getValidReadByIdAndUnionId(opportunity.getToMemberId(), unionId));
+                vo.setToMember(unionMemberService.getByIdAndUnionId(opportunity.getToMemberId(), unionId));
 
                 result.add(vo);
             }
-
-            Collections.sort(result, new Comparator<OpportunityBrokerageVO>() {
-                @Override
-                public int compare(OpportunityBrokerageVO o1, OpportunityBrokerageVO o2) {
-                    return o2.getOpportunity().getCreateTime().compareTo(o1.getOpportunity().getCreateTime());
-                }
-            });
         }
 
         return result;
