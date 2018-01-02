@@ -33,6 +33,7 @@ import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 商机 服务实现类
@@ -656,15 +657,16 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        BigDecimal result = BigDecimal.ZERO;
-        List<UnionOpportunity> opportunityList = listValidByFromMemberIdListAndAcceptStatusAndIsClose(fromMemberIdList, acceptStatus, isClose);
-        if (ListUtil.isNotEmpty(opportunityList)) {
-            for (UnionOpportunity opportunity : opportunityList) {
-                result = BigDecimalUtil.add(result, opportunity.getBrokerageMoney());
-            }
-        }
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .in("from_member_id", fromMemberIdList)
+                .eq("accept_status", acceptStatus)
+                .eq("is_close", isClose);
 
-        return result.doubleValue();
+        entityWrapper.setSqlSelect("IfNull(SUM(brokerage_money)) brokerageMoneySum");
+        Map<String, Object> resultMap = unionOpportunityDao.selectMap(entityWrapper);
+
+        return Double.valueOf(resultMap.get("brokerageMoneySum").toString());
     }
 
     @Override
@@ -673,15 +675,16 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        BigDecimal result = BigDecimal.ZERO;
-        List<UnionOpportunity> opportunityList = listValidByToMemberIdListAndAcceptStatusAndIsClose(toMemberIdList, acceptStatus, isClose);
-        if (ListUtil.isNotEmpty(opportunityList)) {
-            for (UnionOpportunity opportunity : opportunityList) {
-                result = BigDecimalUtil.add(result, opportunity.getBrokerageMoney());
-            }
-        }
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .in("to_member_id", toMemberIdList)
+                .eq("accept_status", acceptStatus)
+                .eq("is_close", isClose);
 
-        return result.doubleValue();
+        entityWrapper.setSqlSelect("IfNull(SUM(brokerage_money)) brokerageMoneySum");
+        Map<String, Object> resultMap = unionOpportunityDao.selectMap(entityWrapper);
+
+        return Double.valueOf(resultMap.get("brokerageMoneySum").toString());
     }
 
     //********************************************* Base On Business - filter ******************************************

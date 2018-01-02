@@ -4,9 +4,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.opportunity.brokerage.dao.IUnionBrokerageIncomeDao;
 import com.gt.union.opportunity.brokerage.entity.UnionBrokerageIncome;
@@ -19,9 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 佣金收入 服务实现类
@@ -148,16 +146,11 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
 
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("bus_id", busId);
-        List<UnionBrokerageIncome> incomeList = unionBrokerageIncomeDao.selectList(entityWrapper);
 
-        BigDecimal result = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(incomeList)) {
-            for (UnionBrokerageIncome income : incomeList) {
-                result = BigDecimalUtil.add(result, income.getMoney());
-            }
-        }
+        entityWrapper.setSqlSelect("IfNull(SUM(money),0) moneySum");
 
-        return result.doubleValue();
+        Map<String, Object> resultMap = unionBrokerageIncomeDao.selectMap(entityWrapper);
+        return Double.valueOf(resultMap.get("moneySum").toString());
     }
 
     @Override
@@ -169,16 +162,11 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("bus_id", busId);
-        List<UnionBrokerageIncome> incomeList = unionBrokerageIncomeDao.selectList(entityWrapper);
 
-        BigDecimal result = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(incomeList)) {
-            for (UnionBrokerageIncome income : incomeList) {
-                result = BigDecimalUtil.add(result, income.getMoney());
-            }
-        }
+        entityWrapper.setSqlSelect("IfNull(SUM(money),0) moneySum");
 
-        return result.doubleValue();
+        Map<String, Object> resultMap = unionBrokerageIncomeDao.selectMap(entityWrapper);
+        return Double.valueOf(resultMap.get("moneySum").toString());
     }
 
     @Override
@@ -191,16 +179,11 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("bus_id", busId)
                 .eq("type", type);
-        List<UnionBrokerageIncome> incomeList = unionBrokerageIncomeDao.selectList(entityWrapper);
 
-        BigDecimal result = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(incomeList)) {
-            for (UnionBrokerageIncome income : incomeList) {
-                result = BigDecimalUtil.add(result, income.getMoney());
-            }
-        }
+        entityWrapper.setSqlSelect("IfNull(SUM(money),0) moneySum");
 
-        return result.doubleValue();
+        Map<String, Object> resultMap = unionBrokerageIncomeDao.selectMap(entityWrapper);
+        return Double.valueOf(resultMap.get("moneySum").toString());
     }
 
     @Override
@@ -214,16 +197,11 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
                 .eq("bus_id", busId)
                 .eq("type", type)
                 .in("member_id", memberIdList);
-        List<UnionBrokerageIncome> incomeList = unionBrokerageIncomeDao.selectList(entityWrapper);
 
-        BigDecimal result = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(incomeList)) {
-            for (UnionBrokerageIncome income : incomeList) {
-                result = BigDecimalUtil.add(result, income.getMoney());
-            }
-        }
+        entityWrapper.setSqlSelect("IfNull(SUM(money),0) moneySum");
 
-        return result.doubleValue();
+        Map<String, Object> resultMap = unionBrokerageIncomeDao.selectMap(entityWrapper);
+        return Double.valueOf(resultMap.get("moneySum").toString());
     }
 
     @Override
@@ -237,16 +215,11 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
                 .eq("bus_id", busId)
                 .eq("type", type)
                 .eq("union_id", unionId);
-        List<UnionBrokerageIncome> incomeList = unionBrokerageIncomeDao.selectList(entityWrapper);
 
-        BigDecimal result = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(incomeList)) {
-            for (UnionBrokerageIncome income : incomeList) {
-                result = BigDecimalUtil.add(result, income.getMoney());
-            }
-        }
+        entityWrapper.setSqlSelect("IfNull(SUM(money),0) moneySum");
 
-        return result.doubleValue();
+        Map<String, Object> resultMap = unionBrokerageIncomeDao.selectMap(entityWrapper);
+        return Double.valueOf(resultMap.get("moneySum").toString());
     }
 
     @Override
@@ -261,7 +234,7 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
                 .eq("member_id", memberId)
                 .eq("opportunity_id", opportunityId);
 
-        return unionBrokerageIncomeDao.selectOne(entityWrapper) != null;
+        return unionBrokerageIncomeDao.selectCount(entityWrapper) > 0;
     }
 
     //********************************************* Base On Business - filter ******************************************
@@ -693,7 +666,7 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (updateUnionBrokerageIncomeList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        
+
         unionBrokerageIncomeDao.updateBatchById(updateUnionBrokerageIncomeList);
     }
 

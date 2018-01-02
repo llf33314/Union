@@ -459,15 +459,16 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        BigDecimal result = BigDecimal.ZERO;
-        List<UnionBrokeragePay> payList = listValidByFromBusIdAndToBusIdListAndStatus(fromBusId, toBusIdList, status);
-        if (ListUtil.isNotEmpty(payList)) {
-            for (UnionBrokeragePay pay : payList) {
-                result = BigDecimalUtil.add(result, pay.getMoney());
-            }
-        }
+        EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("from_bus_id", fromBusId)
+                .eq("status", status)
+                .in("to_bus_id", toBusIdList);
 
-        return result.doubleValue();
+        entityWrapper.setSqlSelect("IfNull(SUM(money)) moneySum");
+        Map<String, Object> resultMap = unionBrokeragePayDao.selectMap(entityWrapper);
+
+        return Double.valueOf(resultMap.get("moneySum").toString());
     }
 
     @Override
@@ -476,15 +477,16 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        BigDecimal result = BigDecimal.ZERO;
-        List<UnionBrokeragePay> payList = listValidByFromBusIdListAndToBusIdAndStatus(fromBusIdList, toBusId, status);
-        if (ListUtil.isNotEmpty(payList)) {
-            for (UnionBrokeragePay pay : payList) {
-                result = BigDecimalUtil.add(result, pay.getMoney());
-            }
-        }
+        EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .in("from_bus_id", fromBusIdList)
+                .eq("status", status)
+                .eq("to_bus_id", toBusId);
 
-        return result.doubleValue();
+        entityWrapper.setSqlSelect("IfNull(SUM(money)) moneySum");
+        Map<String, Object> resultMap = unionBrokeragePayDao.selectMap(entityWrapper);
+
+        return Double.valueOf(resultMap.get("moneySum").toString());
     }
 
     @Override
@@ -498,7 +500,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
                 .eq("opportunity_id", opportunityId)
                 .eq("status", status);
 
-        return unionBrokeragePayDao.selectOne(entityWrapper) != null;
+        return unionBrokeragePayDao.selectCount(entityWrapper) > 0;
     }
 
     //********************************************* Base On Business - filter ******************************************

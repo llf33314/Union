@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 佣金提现 服务实现类
@@ -67,16 +68,11 @@ public class UnionBrokerageWithdrawalServiceImpl implements IUnionBrokerageWithd
 
         EntityWrapper<UnionBrokerageWithdrawal> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("bus_id", busId);
-        List<UnionBrokerageWithdrawal> withdrawalList = unionBrokerageWithdrawalDao.selectList(entityWrapper);
 
-        BigDecimal result = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(withdrawalList)) {
-            for (UnionBrokerageWithdrawal withdrawal : withdrawalList) {
-                result = BigDecimalUtil.add(result, withdrawal.getMoney());
-            }
-        }
+        entityWrapper.setSqlSelect("IfNull(SUM(money)) moneySum");
+        Map<String, Object> resultMap = unionBrokerageWithdrawalDao.selectMap(entityWrapper);
 
-        return result.doubleValue();
+        return Double.valueOf(resultMap.get("moneySum").toString());
     }
 
     @Override
@@ -88,16 +84,11 @@ public class UnionBrokerageWithdrawalServiceImpl implements IUnionBrokerageWithd
         EntityWrapper<UnionBrokerageWithdrawal> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("bus_id", busId);
-        List<UnionBrokerageWithdrawal> withdrawalList = unionBrokerageWithdrawalDao.selectList(entityWrapper);
 
-        BigDecimal result = BigDecimal.ZERO;
-        if (ListUtil.isNotEmpty(withdrawalList)) {
-            for (UnionBrokerageWithdrawal withdrawal : withdrawalList) {
-                result = BigDecimalUtil.add(result, withdrawal.getMoney());
-            }
-        }
+        entityWrapper.setSqlSelect("IfNull(SUM(money)) moneySum");
+        Map<String, Object> resultMap = unionBrokerageWithdrawalDao.selectMap(entityWrapper);
 
-        return result.doubleValue();
+        return Double.valueOf(resultMap.get("moneySum").toString());
     }
 
     //********************************************* Base On Business - filter ******************************************
