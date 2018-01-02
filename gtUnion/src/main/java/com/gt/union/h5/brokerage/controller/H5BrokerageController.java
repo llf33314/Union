@@ -8,14 +8,11 @@ import com.gt.api.bean.sign.SignBean;
 import com.gt.api.util.SessionUtils;
 import com.gt.api.util.sign.SignUtils;
 import com.gt.union.api.client.member.MemberService;
-import com.gt.union.common.constant.CommonConstant;
-import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.*;
 import com.gt.union.h5.brokerage.service.IH5BrokerageService;
 import com.gt.union.h5.brokerage.vo.*;
-import com.gt.union.opportunity.brokerage.entity.UnionBrokerageWithdrawal;
 import com.gt.union.opportunity.brokerage.service.IUnionBrokeragePayStrategyService;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.vo.UnionPayVO;
@@ -58,13 +55,7 @@ public class H5BrokerageController {
     @RequestMapping(value = "/myUnion", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listMyUnion(HttpServletRequest request) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        // mock
-        List<UnionMain> result;
-        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            result = MockUtil.list(UnionMain.class, 3);
-        } else {
-            result = h5BrokerageService.listMyUnion(h5BrokerageUser);
-        }
+        List<UnionMain> result = h5BrokerageService.listMyUnion(h5BrokerageUser);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -72,13 +63,7 @@ public class H5BrokerageController {
     @RequestMapping(value = "/index", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getIndexVO(HttpServletRequest request) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        // mock
-        IndexVO result;
-        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            result = MockUtil.get(IndexVO.class);
-        } else {
-            result = h5BrokerageService.getIndexVO(h5BrokerageUser);
-        }
+        IndexVO result = h5BrokerageService.getIndexVO(h5BrokerageUser);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -86,13 +71,7 @@ public class H5BrokerageController {
     @RequestMapping(value = "/withdrawal", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String getWithdrawalVO(HttpServletRequest request) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        // mock
-        WithdrawalVO result;
-        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            result = MockUtil.get(WithdrawalVO.class);
-        } else {
-            result = h5BrokerageService.getWithdrawalVO(h5BrokerageUser);
-        }
+        WithdrawalVO result = h5BrokerageService.getWithdrawalVO(h5BrokerageUser);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -100,15 +79,7 @@ public class H5BrokerageController {
     @RequestMapping(value = "/withdrawal/history/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageWithdrawalHistory(HttpServletRequest request, Page page) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        // mock
-        List<UnionBrokerageWithdrawal> withdrawalList;
-        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            withdrawalList = MockUtil.list(UnionBrokerageWithdrawal.class, page.getSize());
-        } else {
-            withdrawalList = h5BrokerageService.listWithdrawalHistory(h5BrokerageUser);
-        }
-        Page<UnionBrokerageWithdrawal> result = (Page<UnionBrokerageWithdrawal>) page;
-        result = PageUtil.setRecord(result, withdrawalList);
+        Page result = h5BrokerageService.listPageWithdrawalHistory(h5BrokerageUser, page);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -118,13 +89,7 @@ public class H5BrokerageController {
                                               @ApiParam(value = "联盟id", name = "unionId")
                                               @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        // mock
-        Double result;
-        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            result = MockUtil.get(Double.class);
-        } else {
-            result = h5BrokerageService.sumPaidOpportunityBrokerage(h5BrokerageUser, unionId);
-        }
+        Double result = h5BrokerageService.sumPaidOpportunityBrokerage(h5BrokerageUser, unionId);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -134,15 +99,7 @@ public class H5BrokerageController {
                                                  @ApiParam(value = "联盟id", name = "unionId")
                                                  @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        // mock
-        List<OpportunityBrokerageVO> voList;
-        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            voList = MockUtil.list(OpportunityBrokerageVO.class, page.getSize());
-        } else {
-            voList = h5BrokerageService.listOpportunityBrokerageVO(h5BrokerageUser, unionId);
-        }
-        Page<OpportunityBrokerageVO> result = (Page<OpportunityBrokerageVO>) page;
-        result = PageUtil.setRecord(result, voList);
+        Page result = h5BrokerageService.listPageOpportunityBrokerageVO(h5BrokerageUser, unionId, page);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -152,13 +109,7 @@ public class H5BrokerageController {
                                        @ApiParam(value = "联盟id", name = "unionId")
                                        @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        // mock
-        Double result;
-        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            result = MockUtil.get(Double.class);
-        } else {
-            result = h5BrokerageService.sumPaidCardBrokerage(h5BrokerageUser, unionId);
-        }
+        Double result = h5BrokerageService.sumPaidCardBrokerage(h5BrokerageUser, unionId);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -168,15 +119,7 @@ public class H5BrokerageController {
                                       @ApiParam(value = "联盟id", name = "unionId")
                                       @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        // mock
-        List<CardBrokerageVO> voList;
-        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            voList = MockUtil.list(CardBrokerageVO.class, page.getSize());
-        } else {
-            voList = h5BrokerageService.listCardBrokerageVO(h5BrokerageUser, unionId);
-        }
-        Page<CardBrokerageVO> result = (Page<CardBrokerageVO>) page;
-        result = PageUtil.setRecord(result, voList);
+        Page result = h5BrokerageService.listPageCardBrokerageVO(h5BrokerageUser, unionId, page);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -186,13 +129,7 @@ public class H5BrokerageController {
                                                 @ApiParam(value = "联盟id", name = "unionId")
                                                 @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        // mock
-        Double result;
-        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            result = MockUtil.get(Double.class);
-        } else {
-            result = h5BrokerageService.sumUnPaidOpportunityBrokerage(h5BrokerageUser, unionId);
-        }
+        Double result = h5BrokerageService.sumUnPaidOpportunityBrokerage(h5BrokerageUser, unionId);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -202,15 +139,7 @@ public class H5BrokerageController {
                                                    @ApiParam(value = "联盟id", name = "unionId")
                                                    @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        // mock
-        List<OpportunityBrokerageVO> voList;
-        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            voList = MockUtil.list(OpportunityBrokerageVO.class, page.getSize());
-        } else {
-            voList = h5BrokerageService.listUnPaidOpportunityBrokerageVO(h5BrokerageUser, unionId);
-        }
-        Page<OpportunityBrokerageVO> result = (Page<OpportunityBrokerageVO>) page;
-        result = PageUtil.setRecord(result, voList);
+        Page result = h5BrokerageService.listPageUnPaidOpportunityBrokerageVO(h5BrokerageUser, unionId, page);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -220,13 +149,7 @@ public class H5BrokerageController {
                                                @ApiParam(value = "联盟id", name = "unionId")
                                                @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        // mock
-        Double result;
-        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            result = MockUtil.get(Double.class);
-        } else {
-            result = h5BrokerageService.sumPaidOpportunityBrokerage(h5BrokerageUser, unionId);
-        }
+        Double result = h5BrokerageService.sumPaidOpportunityBrokerage(h5BrokerageUser, unionId);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -236,15 +159,7 @@ public class H5BrokerageController {
                                                   @ApiParam(value = "联盟id", name = "unionId")
                                                   @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        // mock
-        List<OpportunityBrokerageVO> voList;
-        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            voList = MockUtil.list(OpportunityBrokerageVO.class, page.getSize());
-        } else {
-            voList = h5BrokerageService.listOpportunityBrokerageVO(h5BrokerageUser, unionId);
-        }
-        Page<OpportunityBrokerageVO> result = (Page<OpportunityBrokerageVO>) page;
-        result = PageUtil.setRecord(result, voList);
+        Page result = h5BrokerageService.listPageOpportunityBrokerageVO(h5BrokerageUser, unionId, page);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -254,13 +169,7 @@ public class H5BrokerageController {
                                                     @ApiParam(value = "联盟id", name = "unionId")
                                                     @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        // mock
-        Double result;
-        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            result = MockUtil.get(Double.class);
-        } else {
-            result = h5BrokerageService.sumUnReceivedOpportunityBrokerage(h5BrokerageUser, unionId);
-        }
+        Double result = h5BrokerageService.sumUnReceivedOpportunityBrokerage(h5BrokerageUser, unionId);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -270,15 +179,7 @@ public class H5BrokerageController {
                                                        @ApiParam(value = "联盟id", name = "unionId")
                                                        @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        // mock
-        List<OpportunityBrokerageVO> voList;
-        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            voList = MockUtil.list(OpportunityBrokerageVO.class, page.getSize());
-        } else {
-            voList = h5BrokerageService.listUnReceivedOpportunityBrokerageVO(h5BrokerageUser, unionId);
-        }
-        Page<OpportunityBrokerageVO> result = (Page<OpportunityBrokerageVO>) page;
-        result = PageUtil.setRecord(result, voList);
+        Page result = h5BrokerageService.listPageUnReceivedOpportunityBrokerageVO(h5BrokerageUser, unionId, page);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -293,12 +194,7 @@ public class H5BrokerageController {
                         @ApiParam(value = "商机id", name = "opportunityId", required = true)
                         @RequestParam(value = "opportunityId") Integer opportunityId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        UnionPayVO result;
-        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            result = MockUtil.get(UnionPayVO.class);
-        } else {
-            result = h5BrokerageService.toPayByUnionIdAndOpportunityId(h5BrokerageUser, unionId, opportunityId);
-        }
+        UnionPayVO result = h5BrokerageService.toPayByUnionIdAndOpportunityId(h5BrokerageUser, unionId, opportunityId);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -308,12 +204,7 @@ public class H5BrokerageController {
                            @ApiParam(value = "联盟id", name = "unionId")
                            @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        UnionPayVO result;
-        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            result = MockUtil.get(UnionPayVO.class);
-        } else {
-            result = h5BrokerageService.batchPayByUnionId(h5BrokerageUser, unionId, unionBrokeragePayStrategyService);
-        }
+        UnionPayVO result = h5BrokerageService.batchPayByUnionId(h5BrokerageUser, unionId, unionBrokeragePayStrategyService);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -344,9 +235,7 @@ public class H5BrokerageController {
     public String loginByPhone(HttpServletRequest request,
                                @ApiParam(value = "表单内容", name = "loginPhone", required = true)
                                @RequestBody LoginPhone loginPhone) throws Exception {
-        if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
-            h5BrokerageService.loginByPhone(request, loginPhone);
-        }
+        h5BrokerageService.loginByPhone(request, loginPhone);
         return GtJsonResult.instanceSuccessMsg().toString();
     }
 
@@ -356,16 +245,13 @@ public class H5BrokerageController {
                              @ApiParam(value = "提现金额", name = "money", required = true)
                              @RequestBody Double money) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
-            Member member = SessionUtils.getLoginMember(request, PropertiesUtil.getDuofenBusId());
-            if (member == null) {
-                return memberService.authorizeMemberWx(request, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toExtract").toString();
-            } else {
-                // （1）	判断是否已微信授权，即session里获取member，如果已授权，则执行下一步；否则，获取授权链接（调接口）并返回
-                return h5BrokerageService.withdrawal(h5BrokerageUser, member, money).toString();
-            }
+        Member member = SessionUtils.getLoginMember(request, PropertiesUtil.getDuofenBusId());
+        if (member == null) {
+            return memberService.authorizeMemberWx(request, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toExtract").toString();
+        } else {
+            // （1）	判断是否已微信授权，即session里获取member，如果已授权，则执行下一步；否则，获取授权链接（调接口）并返回
+            return h5BrokerageService.withdrawal(h5BrokerageUser, member, money).toString();
         }
-        return GtJsonResult.instanceSuccessMsg().toString();
     }
 
     @ApiOperation(value = "佣金平台-首页-我未收佣金-催促", produces = "application/json;charset=UTF-8")
@@ -374,9 +260,7 @@ public class H5BrokerageController {
                                  @ApiParam(value = "商机id", name = "opportunityId", required = true)
                                  @RequestParam(value = "opportunityId") Integer opportunityId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
-            h5BrokerageService.urgeUnreceived(h5BrokerageUser, opportunityId);
-        }
+        h5BrokerageService.urgeUnreceived(h5BrokerageUser, opportunityId);
         return GtJsonResult.instanceSuccessMsg().toString();
     }
 
