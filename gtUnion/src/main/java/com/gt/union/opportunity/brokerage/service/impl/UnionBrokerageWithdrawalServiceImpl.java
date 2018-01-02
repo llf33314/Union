@@ -69,7 +69,7 @@ public class UnionBrokerageWithdrawalServiceImpl implements IUnionBrokerageWithd
         EntityWrapper<UnionBrokerageWithdrawal> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("bus_id", busId);
 
-        entityWrapper.setSqlSelect("IfNull(SUM(money)) moneySum");
+        entityWrapper.setSqlSelect("IfNull(SUM(money),0) moneySum");
         Map<String, Object> resultMap = unionBrokerageWithdrawalDao.selectMap(entityWrapper);
 
         return Double.valueOf(resultMap.get("moneySum").toString());
@@ -85,7 +85,7 @@ public class UnionBrokerageWithdrawalServiceImpl implements IUnionBrokerageWithd
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("bus_id", busId);
 
-        entityWrapper.setSqlSelect("IfNull(SUM(money)) moneySum");
+        entityWrapper.setSqlSelect("IfNull(SUM(money),0) moneySum");
         Map<String, Object> resultMap = unionBrokerageWithdrawalDao.selectMap(entityWrapper);
 
         return Double.valueOf(resultMap.get("moneySum").toString());

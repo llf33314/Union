@@ -465,7 +465,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
                 .eq("status", status)
                 .in("to_bus_id", toBusIdList);
 
-        entityWrapper.setSqlSelect("IfNull(SUM(money)) moneySum");
+        entityWrapper.setSqlSelect("IfNull(SUM(money),0) moneySum");
         Map<String, Object> resultMap = unionBrokeragePayDao.selectMap(entityWrapper);
 
         return Double.valueOf(resultMap.get("moneySum").toString());
@@ -483,7 +483,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
                 .eq("status", status)
                 .eq("to_bus_id", toBusId);
 
-        entityWrapper.setSqlSelect("IfNull(SUM(money)) moneySum");
+        entityWrapper.setSqlSelect("IfNull(SUM(money),0) moneySum");
         Map<String, Object> resultMap = unionBrokeragePayDao.selectMap(entityWrapper);
 
         return Double.valueOf(resultMap.get("moneySum").toString());

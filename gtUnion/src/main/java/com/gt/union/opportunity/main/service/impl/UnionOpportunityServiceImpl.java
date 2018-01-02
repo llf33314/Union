@@ -663,7 +663,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
                 .eq("accept_status", acceptStatus)
                 .eq("is_close", isClose);
 
-        entityWrapper.setSqlSelect("IfNull(SUM(brokerage_money)) brokerageMoneySum");
+        entityWrapper.setSqlSelect("IfNull(SUM(brokerage_money),0) brokerageMoneySum");
         Map<String, Object> resultMap = unionOpportunityDao.selectMap(entityWrapper);
 
         return Double.valueOf(resultMap.get("brokerageMoneySum").toString());
@@ -681,7 +681,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
                 .eq("accept_status", acceptStatus)
                 .eq("is_close", isClose);
 
-        entityWrapper.setSqlSelect("IfNull(SUM(brokerage_money)) brokerageMoneySum");
+        entityWrapper.setSqlSelect("IfNull(SUM(brokerage_money),0) brokerageMoneySum");
         Map<String, Object> resultMap = unionOpportunityDao.selectMap(entityWrapper);
 
         return Double.valueOf(resultMap.get("brokerageMoneySum").toString());

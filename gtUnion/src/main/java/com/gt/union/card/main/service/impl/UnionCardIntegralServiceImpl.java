@@ -78,7 +78,7 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
                 .eq("union_id", unionId)
                 .eq("fan_id", fanId);
 
-        entityWrapper.setSqlSelect("IfNull(SUM(integral)) integralSum");
+        entityWrapper.setSqlSelect("IfNull(SUM(integral),0) integralSum");
         Map<String, Object> resultMap = unionCardIntegralDao.selectMap(entityWrapper);
 
         return Double.valueOf(resultMap.get("integralSum").toString());
@@ -94,7 +94,7 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("fan_id", fanId);
 
-        entityWrapper.setSqlSelect("IfNull(SUM(integral)) integralSum");
+        entityWrapper.setSqlSelect("IfNull(SUM(integral),0) integralSum");
         Map<String, Object> resultMap = unionCardIntegralDao.selectMap(entityWrapper);
 
         return Double.valueOf(resultMap.get("integralSum").toString());
@@ -110,7 +110,7 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("union_id", unionId);
 
-        entityWrapper.setSqlSelect("IfNull(SUM(integral)) integralSum");
+        entityWrapper.setSqlSelect("IfNull(SUM(integral),0) integralSum");
         Map<String, Object> resultMap = unionCardIntegralDao.selectMap(entityWrapper);
 
         return Double.valueOf(resultMap.get("integralSum").toString());
