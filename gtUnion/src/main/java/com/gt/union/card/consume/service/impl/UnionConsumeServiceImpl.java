@@ -1,6 +1,5 @@
 package com.gt.union.card.consume.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -17,7 +16,6 @@ import com.gt.union.card.consume.entity.UnionConsume;
 import com.gt.union.card.consume.entity.UnionConsumeProject;
 import com.gt.union.card.consume.service.IUnionConsumeProjectService;
 import com.gt.union.card.consume.service.IUnionConsumeService;
-import com.gt.union.card.consume.util.UnionConsumeCacheUtil;
 import com.gt.union.card.consume.vo.ConsumePostVO;
 import com.gt.union.card.consume.vo.ConsumeRecordVO;
 import com.gt.union.card.main.entity.UnionCardFan;
@@ -63,9 +61,6 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
     private IUnionConsumeDao unionConsumeDao;
 
     @Autowired
-    private RedisCacheUtil redisCacheUtil;
-
-    @Autowired
     private IUnionMainService unionMainService;
 
     @Autowired
@@ -103,816 +98,38 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
     //********************************************* Base On Business - get *********************************************
 
-    //********************************************* Base On Business - list ********************************************
-
-
-    //********************************************* Base On Business - save ********************************************
-
-    //********************************************* Base On Business - remove ******************************************
-
-    //********************************************* Base On Business - update ******************************************
-
-    //********************************************* Base On Business - other *******************************************
-
-    //********************************************* Base On Business - filter ******************************************
-
     @Override
-    public List<UnionConsume> filterByDelStatus(List<UnionConsume> unionConsumeList, Integer delStatus) throws Exception {
-        if (delStatus == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionConsume> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(unionConsumeList)) {
-            for (UnionConsume unionConsume : unionConsumeList) {
-                if (delStatus.equals(unionConsume.getDelStatus())) {
-                    result.add(unionConsume);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    //********************************************* Object As a Service - get ******************************************
-
-    @Override
-    public UnionConsume getById(Integer id) throws Exception {
-        if (id == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        UnionConsume result;
-        // (1)cache
-        String idKey = UnionConsumeCacheUtil.getIdKey(id);
-        if (redisCacheUtil.exists(idKey)) {
-            String tempStr = redisCacheUtil.get(idKey);
-            result = JSONArray.parseObject(tempStr, UnionConsume.class);
-            return result;
-        }
-        // (2)db
-        result = unionConsumeDao.selectById(id);
-        setCache(result, id);
-        return result;
-    }
-
-    @Override
-    public UnionConsume getValidById(Integer id) throws Exception {
-        if (id == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        UnionConsume result = getById(id);
-
-        return result != null && CommonConstant.DEL_STATUS_NO == result.getDelStatus() ? result : null;
-    }
-
-    @Override
-    public UnionConsume getInvalidById(Integer id) throws Exception {
-        if (id == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        UnionConsume result = getById(id);
-
-        return result != null && CommonConstant.DEL_STATUS_YES == result.getDelStatus() ? result : null;
-    }
-
-    //********************************************* Object As a Service - list *****************************************
-
-    @Override
-    public List<Integer> getIdList(List<UnionConsume> unionConsumeList) throws Exception {
-        if (unionConsumeList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<Integer> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(unionConsumeList)) {
-            for (UnionConsume unionConsume : unionConsumeList) {
-                result.add(unionConsume.getId());
-            }
-        }
-
-        return result;
-    }
-
-    @Override
-    public List<UnionConsume> listByMemberId(Integer memberId) throws Exception {
-        if (memberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionConsume> result;
-        // (1)cache
-        String memberIdKey = UnionConsumeCacheUtil.getMemberIdKey(memberId);
-        if (redisCacheUtil.exists(memberIdKey)) {
-            String tempStr = redisCacheUtil.get(memberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionConsume.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("member_id", memberId);
-        result = unionConsumeDao.selectList(entityWrapper);
-        setCache(result, memberId, UnionConsumeCacheUtil.TYPE_MEMBER_ID);
-        return result;
-    }
-
-    @Override
-    public List<UnionConsume> listValidByMemberId(Integer memberId) throws Exception {
-        if (memberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionConsume> result;
-        // (1)cache
-        String validMemberIdKey = UnionConsumeCacheUtil.getValidMemberIdKey(memberId);
-        if (redisCacheUtil.exists(validMemberIdKey)) {
-            String tempStr = redisCacheUtil.get(validMemberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionConsume.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("member_id", memberId);
-        result = unionConsumeDao.selectList(entityWrapper);
-        setValidCache(result, memberId, UnionConsumeCacheUtil.TYPE_MEMBER_ID);
-        return result;
-    }
-
-    @Override
-    public List<UnionConsume> listInvalidByMemberId(Integer memberId) throws Exception {
-        if (memberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionConsume> result;
-        // (1)cache
-        String invalidMemberIdKey = UnionConsumeCacheUtil.getInvalidMemberIdKey(memberId);
-        if (redisCacheUtil.exists(invalidMemberIdKey)) {
-            String tempStr = redisCacheUtil.get(invalidMemberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionConsume.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("member_id", memberId);
-        result = unionConsumeDao.selectList(entityWrapper);
-        setInvalidCache(result, memberId, UnionConsumeCacheUtil.TYPE_MEMBER_ID);
-        return result;
-    }
-
-    @Override
-    public List<UnionConsume> listByUnionId(Integer unionId) throws Exception {
-        if (unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionConsume> result;
-        // (1)cache
-        String unionIdKey = UnionConsumeCacheUtil.getUnionIdKey(unionId);
-        if (redisCacheUtil.exists(unionIdKey)) {
-            String tempStr = redisCacheUtil.get(unionIdKey);
-            result = JSONArray.parseArray(tempStr, UnionConsume.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("union_id", unionId);
-        result = unionConsumeDao.selectList(entityWrapper);
-        setCache(result, unionId, UnionConsumeCacheUtil.TYPE_UNION_ID);
-        return result;
-    }
-
-    @Override
-    public List<UnionConsume> listValidByUnionId(Integer unionId) throws Exception {
-        if (unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionConsume> result;
-        // (1)cache
-        String validUnionIdKey = UnionConsumeCacheUtil.getValidUnionIdKey(unionId);
-        if (redisCacheUtil.exists(validUnionIdKey)) {
-            String tempStr = redisCacheUtil.get(validUnionIdKey);
-            result = JSONArray.parseArray(tempStr, UnionConsume.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
-        result = unionConsumeDao.selectList(entityWrapper);
-        setValidCache(result, unionId, UnionConsumeCacheUtil.TYPE_UNION_ID);
-        return result;
-    }
-
-    @Override
-    public List<UnionConsume> listInvalidByUnionId(Integer unionId) throws Exception {
-        if (unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionConsume> result;
-        // (1)cache
-        String invalidUnionIdKey = UnionConsumeCacheUtil.getInvalidUnionIdKey(unionId);
-        if (redisCacheUtil.exists(invalidUnionIdKey)) {
-            String tempStr = redisCacheUtil.get(invalidUnionIdKey);
-            result = JSONArray.parseArray(tempStr, UnionConsume.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("union_id", unionId);
-        result = unionConsumeDao.selectList(entityWrapper);
-        setInvalidCache(result, unionId, UnionConsumeCacheUtil.TYPE_UNION_ID);
-        return result;
-    }
-
-    @Override
-    public List<UnionConsume> listByCardId(Integer cardId) throws Exception {
-        if (cardId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionConsume> result;
-        // (1)cache
-        String cardIdKey = UnionConsumeCacheUtil.getCardIdKey(cardId);
-        if (redisCacheUtil.exists(cardIdKey)) {
-            String tempStr = redisCacheUtil.get(cardIdKey);
-            result = JSONArray.parseArray(tempStr, UnionConsume.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("card_id", cardId);
-        result = unionConsumeDao.selectList(entityWrapper);
-        setCache(result, cardId, UnionConsumeCacheUtil.TYPE_CARD_ID);
-        return result;
-    }
-
-    @Override
-    public List<UnionConsume> listValidByCardId(Integer cardId) throws Exception {
-        if (cardId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionConsume> result;
-        // (1)cache
-        String validCardIdKey = UnionConsumeCacheUtil.getValidCardIdKey(cardId);
-        if (redisCacheUtil.exists(validCardIdKey)) {
-            String tempStr = redisCacheUtil.get(validCardIdKey);
-            result = JSONArray.parseArray(tempStr, UnionConsume.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("card_id", cardId);
-        result = unionConsumeDao.selectList(entityWrapper);
-        setValidCache(result, cardId, UnionConsumeCacheUtil.TYPE_CARD_ID);
-        return result;
-    }
-
-    @Override
-    public List<UnionConsume> listInvalidByCardId(Integer cardId) throws Exception {
-        if (cardId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionConsume> result;
-        // (1)cache
-        String invalidCardIdKey = UnionConsumeCacheUtil.getInvalidCardIdKey(cardId);
-        if (redisCacheUtil.exists(invalidCardIdKey)) {
-            String tempStr = redisCacheUtil.get(invalidCardIdKey);
-            result = JSONArray.parseArray(tempStr, UnionConsume.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("card_id", cardId);
-        result = unionConsumeDao.selectList(entityWrapper);
-        setInvalidCache(result, cardId, UnionConsumeCacheUtil.TYPE_CARD_ID);
-        return result;
-    }
-
-    @Override
-    public List<UnionConsume> listByFanId(Integer fanId) throws Exception {
-        if (fanId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionConsume> result;
-        // (1)cache
-        String fanIdKey = UnionConsumeCacheUtil.getFanIdKey(fanId);
-        if (redisCacheUtil.exists(fanIdKey)) {
-            String tempStr = redisCacheUtil.get(fanIdKey);
-            result = JSONArray.parseArray(tempStr, UnionConsume.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("fan_id", fanId);
-        result = unionConsumeDao.selectList(entityWrapper);
-        setCache(result, fanId, UnionConsumeCacheUtil.TYPE_FAN_ID);
-        return result;
-    }
-
-    @Override
-    public List<UnionConsume> listValidByFanId(Integer fanId) throws Exception {
-        if (fanId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionConsume> result;
-        // (1)cache
-        String validFanIdKey = UnionConsumeCacheUtil.getValidFanIdKey(fanId);
-        if (redisCacheUtil.exists(validFanIdKey)) {
-            String tempStr = redisCacheUtil.get(validFanIdKey);
-            result = JSONArray.parseArray(tempStr, UnionConsume.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("fan_id", fanId);
-        result = unionConsumeDao.selectList(entityWrapper);
-        setValidCache(result, fanId, UnionConsumeCacheUtil.TYPE_FAN_ID);
-        return result;
-    }
-
-    @Override
-    public List<UnionConsume> listInvalidByFanId(Integer fanId) throws Exception {
-        if (fanId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionConsume> result;
-        // (1)cache
-        String invalidFanIdKey = UnionConsumeCacheUtil.getInvalidFanIdKey(fanId);
-        if (redisCacheUtil.exists(invalidFanIdKey)) {
-            String tempStr = redisCacheUtil.get(invalidFanIdKey);
-            result = JSONArray.parseArray(tempStr, UnionConsume.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("fan_id", fanId);
-        result = unionConsumeDao.selectList(entityWrapper);
-        setInvalidCache(result, fanId, UnionConsumeCacheUtil.TYPE_FAN_ID);
-        return result;
-    }
-
-    @Override
-    public List<UnionConsume> listByIdList(List<Integer> idList) throws Exception {
-        if (idList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionConsume> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(idList)) {
-            for (Integer id : idList) {
-                result.add(getById(id));
-            }
-        }
-
-        return result;
-    }
-
-    @Override
-    public Page<UnionConsume> pageSupport(Page page, EntityWrapper<UnionConsume> entityWrapper) throws Exception {
-        if (page == null || entityWrapper == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        return unionConsumeDao.selectPage(page, entityWrapper);
-    }
-    //********************************************* Object As a Service - save *****************************************
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void save(UnionConsume newUnionConsume) throws Exception {
-        if (newUnionConsume == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        unionConsumeDao.insert(newUnionConsume);
-        removeCache(newUnionConsume);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void saveBatch(List<UnionConsume> newUnionConsumeList) throws Exception {
-        if (newUnionConsumeList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        unionConsumeDao.insertBatch(newUnionConsumeList);
-        removeCache(newUnionConsumeList);
-    }
-
-    //********************************************* Object As a Service - remove ***************************************
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void removeById(Integer id) throws Exception {
-        if (id == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // (1)remove cache
-        UnionConsume unionConsume = getById(id);
-        removeCache(unionConsume);
-        // (2)remove in db logically
-        UnionConsume removeUnionConsume = new UnionConsume();
-        removeUnionConsume.setId(id);
-        removeUnionConsume.setDelStatus(CommonConstant.DEL_STATUS_YES);
-        unionConsumeDao.updateById(removeUnionConsume);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void removeBatchById(List<Integer> idList) throws Exception {
-        if (idList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // (1)remove cache
-        List<UnionConsume> unionConsumeList = listByIdList(idList);
-        removeCache(unionConsumeList);
-        // (2)remove in db logically
-        List<UnionConsume> removeUnionConsumeList = new ArrayList<>();
-        for (Integer id : idList) {
-            UnionConsume removeUnionConsume = new UnionConsume();
-            removeUnionConsume.setId(id);
-            removeUnionConsume.setDelStatus(CommonConstant.DEL_STATUS_YES);
-            removeUnionConsumeList.add(removeUnionConsume);
-        }
-        unionConsumeDao.updateBatchById(removeUnionConsumeList);
-    }
-
-    //********************************************* Object As a Service - update ***************************************
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void update(UnionConsume updateUnionConsume) throws Exception {
-        if (updateUnionConsume == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // (1)remove cache
-        Integer id = updateUnionConsume.getId();
-        UnionConsume unionConsume = getById(id);
-        removeCache(unionConsume);
-        // (2)update db
-        unionConsumeDao.updateById(updateUnionConsume);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void updateBatch(List<UnionConsume> updateUnionConsumeList) throws Exception {
-        if (updateUnionConsumeList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // (1)remove cache
-        List<Integer> idList = getIdList(updateUnionConsumeList);
-        List<UnionConsume> unionConsumeList = listByIdList(idList);
-        removeCache(unionConsumeList);
-        // (2)update db
-        unionConsumeDao.updateBatchById(updateUnionConsumeList);
-    }
-
-    //********************************************* Object As a Service - cache support ********************************
-
-    private void setCache(UnionConsume newUnionConsume, Integer id) {
-        if (id == null) {
-            //do nothing,just in case
-            return;
-        }
-        String idKey = UnionConsumeCacheUtil.getIdKey(id);
-        redisCacheUtil.set(idKey, newUnionConsume);
-    }
-
-    private void setCache(List<UnionConsume> newUnionConsumeList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String foreignIdKey = null;
-        switch (foreignIdType) {
-            case UnionConsumeCacheUtil.TYPE_MEMBER_ID:
-                foreignIdKey = UnionConsumeCacheUtil.getMemberIdKey(foreignId);
-                break;
-            case UnionConsumeCacheUtil.TYPE_UNION_ID:
-                foreignIdKey = UnionConsumeCacheUtil.getUnionIdKey(foreignId);
-                break;
-            case UnionConsumeCacheUtil.TYPE_CARD_ID:
-                foreignIdKey = UnionConsumeCacheUtil.getCardIdKey(foreignId);
-                break;
-            case UnionConsumeCacheUtil.TYPE_FAN_ID:
-                foreignIdKey = UnionConsumeCacheUtil.getFanIdKey(foreignId);
-                break;
-
-            default:
-                break;
-        }
-        if (foreignIdKey != null) {
-            redisCacheUtil.set(foreignIdKey, newUnionConsumeList);
-        }
-    }
-
-    private void setValidCache(List<UnionConsume> newUnionConsumeList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String validForeignIdKey = null;
-        switch (foreignIdType) {
-            case UnionConsumeCacheUtil.TYPE_MEMBER_ID:
-                validForeignIdKey = UnionConsumeCacheUtil.getValidMemberIdKey(foreignId);
-                break;
-            case UnionConsumeCacheUtil.TYPE_UNION_ID:
-                validForeignIdKey = UnionConsumeCacheUtil.getValidUnionIdKey(foreignId);
-                break;
-            case UnionConsumeCacheUtil.TYPE_CARD_ID:
-                validForeignIdKey = UnionConsumeCacheUtil.getValidCardIdKey(foreignId);
-                break;
-            case UnionConsumeCacheUtil.TYPE_FAN_ID:
-                validForeignIdKey = UnionConsumeCacheUtil.getValidFanIdKey(foreignId);
-                break;
-
-            default:
-                break;
-        }
-        if (validForeignIdKey != null) {
-            redisCacheUtil.set(validForeignIdKey, newUnionConsumeList);
-        }
-    }
-
-    private void setInvalidCache(List<UnionConsume> newUnionConsumeList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String invalidForeignIdKey = null;
-        switch (foreignIdType) {
-            case UnionConsumeCacheUtil.TYPE_MEMBER_ID:
-                invalidForeignIdKey = UnionConsumeCacheUtil.getInvalidMemberIdKey(foreignId);
-                break;
-            case UnionConsumeCacheUtil.TYPE_UNION_ID:
-                invalidForeignIdKey = UnionConsumeCacheUtil.getInvalidUnionIdKey(foreignId);
-                break;
-            case UnionConsumeCacheUtil.TYPE_CARD_ID:
-                invalidForeignIdKey = UnionConsumeCacheUtil.getInvalidCardIdKey(foreignId);
-                break;
-            case UnionConsumeCacheUtil.TYPE_FAN_ID:
-                invalidForeignIdKey = UnionConsumeCacheUtil.getInvalidFanIdKey(foreignId);
-                break;
-
-            default:
-                break;
-        }
-        if (invalidForeignIdKey != null) {
-            redisCacheUtil.set(invalidForeignIdKey, newUnionConsumeList);
-        }
-    }
-
-    private void removeCache(UnionConsume unionConsume) {
-        if (unionConsume == null) {
-            return;
-        }
-        Integer id = unionConsume.getId();
-        String idKey = UnionConsumeCacheUtil.getIdKey(id);
-        redisCacheUtil.remove(idKey);
-
-        Integer memberId = unionConsume.getMemberId();
-        if (memberId != null) {
-            String memberIdKey = UnionConsumeCacheUtil.getMemberIdKey(memberId);
-            redisCacheUtil.remove(memberIdKey);
-
-            String validMemberIdKey = UnionConsumeCacheUtil.getValidMemberIdKey(memberId);
-            redisCacheUtil.remove(validMemberIdKey);
-
-            String invalidMemberIdKey = UnionConsumeCacheUtil.getInvalidMemberIdKey(memberId);
-            redisCacheUtil.remove(invalidMemberIdKey);
-        }
-
-        Integer unionId = unionConsume.getUnionId();
-        if (unionId != null) {
-            String unionIdKey = UnionConsumeCacheUtil.getUnionIdKey(unionId);
-            redisCacheUtil.remove(unionIdKey);
-
-            String validUnionIdKey = UnionConsumeCacheUtil.getValidUnionIdKey(unionId);
-            redisCacheUtil.remove(validUnionIdKey);
-
-            String invalidUnionIdKey = UnionConsumeCacheUtil.getInvalidUnionIdKey(unionId);
-            redisCacheUtil.remove(invalidUnionIdKey);
-        }
-
-        Integer cardId = unionConsume.getCardId();
-        if (cardId != null) {
-            String cardIdKey = UnionConsumeCacheUtil.getCardIdKey(cardId);
-            redisCacheUtil.remove(cardIdKey);
-
-            String validCardIdKey = UnionConsumeCacheUtil.getValidCardIdKey(cardId);
-            redisCacheUtil.remove(validCardIdKey);
-
-            String invalidCardIdKey = UnionConsumeCacheUtil.getInvalidCardIdKey(cardId);
-            redisCacheUtil.remove(invalidCardIdKey);
-        }
-
-        Integer fanId = unionConsume.getFanId();
-        if (fanId != null) {
-            String fanIdKey = UnionConsumeCacheUtil.getFanIdKey(fanId);
-            redisCacheUtil.remove(fanIdKey);
-
-            String validFanIdKey = UnionConsumeCacheUtil.getValidFanIdKey(fanId);
-            redisCacheUtil.remove(validFanIdKey);
-
-            String invalidFanIdKey = UnionConsumeCacheUtil.getInvalidFanIdKey(fanId);
-            redisCacheUtil.remove(invalidFanIdKey);
-        }
-
-    }
-
-    private void removeCache(List<UnionConsume> unionConsumeList) {
-        if (ListUtil.isEmpty(unionConsumeList)) {
-            return;
-        }
-        List<Integer> idList = new ArrayList<>();
-        for (UnionConsume unionConsume : unionConsumeList) {
-            idList.add(unionConsume.getId());
-        }
-        List<String> idKeyList = UnionConsumeCacheUtil.getIdKey(idList);
-        redisCacheUtil.remove(idKeyList);
-
-        List<String> memberIdKeyList = getForeignIdKeyList(unionConsumeList, UnionConsumeCacheUtil.TYPE_MEMBER_ID);
-        if (ListUtil.isNotEmpty(memberIdKeyList)) {
-            redisCacheUtil.remove(memberIdKeyList);
-        }
-
-        List<String> unionIdKeyList = getForeignIdKeyList(unionConsumeList, UnionConsumeCacheUtil.TYPE_UNION_ID);
-        if (ListUtil.isNotEmpty(unionIdKeyList)) {
-            redisCacheUtil.remove(unionIdKeyList);
-        }
-
-        List<String> cardIdKeyList = getForeignIdKeyList(unionConsumeList, UnionConsumeCacheUtil.TYPE_CARD_ID);
-        if (ListUtil.isNotEmpty(cardIdKeyList)) {
-            redisCacheUtil.remove(cardIdKeyList);
-        }
-
-        List<String> fanIdKeyList = getForeignIdKeyList(unionConsumeList, UnionConsumeCacheUtil.TYPE_FAN_ID);
-        if (ListUtil.isNotEmpty(fanIdKeyList)) {
-            redisCacheUtil.remove(fanIdKeyList);
-        }
-
-    }
-
-    private List<String> getForeignIdKeyList(List<UnionConsume> unionConsumeList, int foreignIdType) {
-        List<String> result = new ArrayList<>();
-        switch (foreignIdType) {
-            case UnionConsumeCacheUtil.TYPE_MEMBER_ID:
-                for (UnionConsume unionConsume : unionConsumeList) {
-                    Integer memberId = unionConsume.getMemberId();
-                    if (memberId != null) {
-                        String memberIdKey = UnionConsumeCacheUtil.getMemberIdKey(memberId);
-                        result.add(memberIdKey);
-
-                        String validMemberIdKey = UnionConsumeCacheUtil.getValidMemberIdKey(memberId);
-                        result.add(validMemberIdKey);
-
-                        String invalidMemberIdKey = UnionConsumeCacheUtil.getInvalidMemberIdKey(memberId);
-                        result.add(invalidMemberIdKey);
-                    }
-                }
-                break;
-            case UnionConsumeCacheUtil.TYPE_UNION_ID:
-                for (UnionConsume unionConsume : unionConsumeList) {
-                    Integer unionId = unionConsume.getUnionId();
-                    if (unionId != null) {
-                        String unionIdKey = UnionConsumeCacheUtil.getUnionIdKey(unionId);
-                        result.add(unionIdKey);
-
-                        String validUnionIdKey = UnionConsumeCacheUtil.getValidUnionIdKey(unionId);
-                        result.add(validUnionIdKey);
-
-                        String invalidUnionIdKey = UnionConsumeCacheUtil.getInvalidUnionIdKey(unionId);
-                        result.add(invalidUnionIdKey);
-                    }
-                }
-                break;
-            case UnionConsumeCacheUtil.TYPE_CARD_ID:
-                for (UnionConsume unionConsume : unionConsumeList) {
-                    Integer cardId = unionConsume.getCardId();
-                    if (cardId != null) {
-                        String cardIdKey = UnionConsumeCacheUtil.getCardIdKey(cardId);
-                        result.add(cardIdKey);
-
-                        String validCardIdKey = UnionConsumeCacheUtil.getValidCardIdKey(cardId);
-                        result.add(validCardIdKey);
-
-                        String invalidCardIdKey = UnionConsumeCacheUtil.getInvalidCardIdKey(cardId);
-                        result.add(invalidCardIdKey);
-                    }
-                }
-                break;
-            case UnionConsumeCacheUtil.TYPE_FAN_ID:
-                for (UnionConsume unionConsume : unionConsumeList) {
-                    Integer fanId = unionConsume.getFanId();
-                    if (fanId != null) {
-                        String fanIdKey = UnionConsumeCacheUtil.getFanIdKey(fanId);
-                        result.add(fanIdKey);
-
-                        String validFanIdKey = UnionConsumeCacheUtil.getValidFanIdKey(fanId);
-                        result.add(validFanIdKey);
-
-                        String invalidFanIdKey = UnionConsumeCacheUtil.getInvalidFanIdKey(fanId);
-                        result.add(invalidFanIdKey);
-                    }
-                }
-                break;
-
-            default:
-                break;
-        }
-        return result;
-    }
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    @Override
-    public UnionConsume getByOrderNo(String orderNo) throws Exception {
+    public UnionConsume getValidByOrderNo(String orderNo) throws Exception {
         if (orderNo == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("order_no", orderNo);
 
         return unionConsumeDao.selectOne(entityWrapper);
     }
 
     @Override
-    public UnionConsume getByOrderNoAndModel(String orderNo, Integer model) throws Exception {
+    public UnionConsume getValidByOrderNoAndModel(String orderNo, Integer model) throws Exception {
         if (orderNo == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("order_no", orderNo)
                 .eq("business_type", model);
 
         return unionConsumeDao.selectOne(entityWrapper);
     }
 
-    @Override
-    public Integer countPayByFanId(Integer fanId) throws ParamException {
-        if (fanId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .eq("fan_id", fanId);
-
-        return unionConsumeDao.selectCount(entityWrapper);
-    }
+    //********************************************* Base On Business - list ********************************************
 
     @Override
-    public List<ConsumeRecordVO> listConsumeRecordVOByBusId(Integer busId, Integer optUnionId, Integer optShopId,
-                                                            String optCardNumber, String optPhone, Date optBeginTime, Date optEndTime) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
+    public List<ConsumeRecordVO> listConsumeRecordVO(List<UnionConsume> consumeList) throws Exception {
         List<ConsumeRecordVO> result = new ArrayList<>();
-        // （1）	获取我的所有有效的union
-        List<UnionMain> validUnionList = unionMainService.listValidReadByBusId(busId);
-        List<Integer> validUnionIdList = new ArrayList<>();
-        if (ListUtil.isNotEmpty(validUnionList)) {
-            for (UnionMain validUnion : validUnionList) {
-                Integer validUnionId = validUnion.getId();
-                if (optUnionId != null && !optUnionId.equals(validUnionId)) {
-                    continue;
-                }
-                validUnionIdList.add(validUnionId);
-            }
-        }
-        if (ListUtil.isEmpty(validUnionIdList)) {
-            return result;
-        }
-        // （2）	获取我的所有有效的member
-        List<Integer> validMemberIdList = new ArrayList<>();
-        for (Integer validUnionId : validUnionIdList) {
-            UnionMember validMember = unionMemberService.getValidReadByBusIdAndUnionId(busId, validUnionId);
-            if (validMember != null) {
-                validMemberIdList.add(validMember.getId());
-            }
-        }
-
-        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .in("member_id", validMemberIdList)
-                .in("union_id", validUnionIdList)
-                .eq(optShopId != null, "shop_id = {0}", optShopId)
-                .gt(optBeginTime != null, "create_time >= {0}", optBeginTime)
-                .gt(optEndTime != null, "create_time <= {0}", optEndTime)
-                .exists(StringUtil.isNotEmpty(optCardNumber) || StringUtil.isNotEmpty(optPhone),
-                        " SELECT f.id FROM t_union_card_fan f "
-                                + " WHERE f.del_status = " + CommonConstant.DEL_STATUS_NO
-                                + " AND f.id = t_union_consume.fan_id "
-                                + (StringUtil.isNotEmpty(optCardNumber) ? (" AND f.number LIKE '%" + optCardNumber + "%' ") : "")
-                                + (StringUtil.isNotEmpty(optPhone) ? (" AND f.phone LIKE '%" + optPhone + "%' ") : ""));
-        List<UnionConsume> consumeList = unionConsumeDao.selectList(entityWrapper);
 
         if (ListUtil.isNotEmpty(consumeList)) {
             for (UnionConsume consume : consumeList) {
@@ -931,7 +148,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
                     List<UnionCardProjectItem> erpTextList = new ArrayList<>();
                     List<UnionCardProjectItem> eErpGoodsList = new ArrayList<>();
                     for (UnionConsumeProject consumeProject : consumeProjectList) {
-                        UnionCardProjectItem item = unionCardProjectItemService.getByIdAndProjectId(consumeProject.getProjectItemId(), consumeProject.getProjectId());
+                        UnionCardProjectItem item = unionCardProjectItemService.getById(consumeProject.getProjectItemId());
                         if (item != null) {
                             switch (item.getType()) {
                                 case ProjectConstant.TYPE_TEXT:
@@ -956,27 +173,85 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
                 result.add(vo);
             }
         }
-        // （3）	按支付时间倒序排序
-        Collections.sort(result, new Comparator<ConsumeRecordVO>() {
-            @Override
-            public int compare(ConsumeRecordVO o1, ConsumeRecordVO o2) {
-                return o2.getConsume().getCreateTime().compareTo(o1.getConsume().getCreateTime());
-            }
-        });
 
         return result;
     }
 
     @Override
-    public List<MyCardConsumeVO> listConsumeByFanId(Integer fanId, Page page) throws Exception {
-        List<MyCardConsumeVO> result = new ArrayList<>();
-        List<UnionConsume> list = listPayByFanId(fanId, page);
-        if (ListUtil.isNotEmpty(list)) {
-            for (UnionConsume consume : list) {
+    public List<ConsumeRecordVO> listConsumeRecordVOByBusId(
+            Integer busId, Integer optUnionId, Integer optShopId, String optCardNumber, String optPhone, Date optBeginTime, Date optEndTime) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionMember> memberList = unionMemberService.listByBusId(busId);
+        List<Integer> memberIdList = unionMemberService.getIdList(memberList);
+
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .in("member_id", memberIdList)
+                .eq(optUnionId != null, "union_id = {0}", optUnionId)
+                .eq(optShopId != null, "shop_id = {0}", optShopId)
+                .ge(optBeginTime != null, "create_time >= {0}", optBeginTime)
+                .le(optEndTime != null, "create_time <= {0}", optEndTime)
+                .exists(StringUtil.isNotEmpty(optCardNumber) || StringUtil.isNotEmpty(optPhone),
+                        " SELECT f.id FROM t_union_card_fan f "
+                                + " WHERE f.del_status = " + CommonConstant.DEL_STATUS_NO
+                                + " AND f.id = t_union_consume.fan_id "
+                                + (StringUtil.isNotEmpty(optCardNumber) ? (" AND f.number LIKE '%" + optCardNumber + "%' ") : "")
+                                + (StringUtil.isNotEmpty(optPhone) ? (" AND f.phone LIKE '%" + optPhone + "%' ") : ""))
+                .orderBy("create_time", false);
+
+        List<UnionConsume> consumeList = unionConsumeDao.selectList(entityWrapper);
+
+        return listConsumeRecordVO(consumeList);
+    }
+
+    @Override
+    public Page pageConsumeRecordVOByBusId(
+            Page page, Integer busId, Integer optUnionId, Integer optShopId, String optCardNumber, String optPhone, Date optBeginTime, Date optEndTime) throws Exception {
+        if (page == null || busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        List<UnionMember> memberList = unionMemberService.listByBusId(busId);
+        List<Integer> memberIdList = unionMemberService.getIdList(memberList);
+
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .in("member_id", memberIdList)
+                .eq(optUnionId != null, "union_id = {0}", optUnionId)
+                .eq(optShopId != null, "shop_id = {0}", optShopId)
+                .ge(optBeginTime != null, "create_time >= {0}", optBeginTime)
+                .le(optEndTime != null, "create_time <= {0}", optEndTime)
+                .exists(StringUtil.isNotEmpty(optCardNumber) || StringUtil.isNotEmpty(optPhone),
+                        " SELECT f.id FROM t_union_card_fan f "
+                                + " WHERE f.del_status = " + CommonConstant.DEL_STATUS_NO
+                                + " AND f.id = t_union_consume.fan_id "
+                                + (StringUtil.isNotEmpty(optCardNumber) ? (" AND f.number LIKE '%" + optCardNumber + "%' ") : "")
+                                + (StringUtil.isNotEmpty(optPhone) ? (" AND f.phone LIKE '%" + optPhone + "%' ") : ""))
+                .orderBy("create_time", false);
+
+        Page result = unionConsumeDao.selectPage(page, entityWrapper);
+        List<UnionConsume> resultDataList = result.getRecords();
+        result.setRecords(listConsumeRecordVO(resultDataList));
+
+        return result;
+    }
+
+    @Override
+    public Page pageConsumeByFanId(Page page, Integer fanId) throws Exception {
+        if (page == null || fanId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        Page result = pagePayByFanId(page, fanId);
+        List<UnionConsume> dataList = result.getRecords();
+        List<MyCardConsumeVO> resultDataList = new ArrayList<>();
+        if (ListUtil.isNotEmpty(resultDataList)) {
+            for (UnionConsume consume : dataList) {
                 MyCardConsumeVO vo = new MyCardConsumeVO();
                 vo.setShopName(consume.getShopName());
                 vo.setConsumeMoney(consume.getConsumeMoney());
-                vo.setDiscount(consume.getDiscount() * 10);
+                vo.setDiscount(consume.getDiscount());
                 vo.setConsumeIntegral(consume.getUseIntegral());
                 vo.setGiveIntegral(consume.getGiveIntegral());
                 vo.setDiscountMoney(consume.getDiscountMoney());
@@ -985,33 +260,37 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
                 vo.setPayMoney(consume.getPayMoney());
                 vo.setPayType(consume.getPayType());
                 vo.setConsumeTimeStr(DateTimeKit.format(consume.getCreateTime(), DateTimeKit.DEFAULT_DATETIME_FORMAT_YYYYMMDD_HHMM));
-                List<UnionConsumeProject> consumeProjectList = unionConsumeProjectService.listByConsumeId(consume.getId());
+                List<UnionConsumeProject> consumeProjectList = unionConsumeProjectService.listValidByConsumeId(consume.getId());
                 if (ListUtil.isNotEmpty(consumeProjectList)) {
-                    List items = new ArrayList<>();
                     for (UnionConsumeProject consumeProject : consumeProjectList) {
-                        UnionCardProjectItem item = unionCardProjectItemService.getByIdAndProjectId(consumeProject.getProjectItemId(), consumeProject.getProjectId());
-                        items.add(item);
+                        List<UnionCardProjectItem> items = unionCardProjectItemService.listValidByProjectId(consumeProject.getProjectId());
+                        vo.setItems(items);
                     }
-                    vo.setItems(items);
                 }
-                result.add(vo);
+                resultDataList.add(vo);
             }
         }
+        result.setRecords(resultDataList);
+
         return result;
     }
 
     @Override
-    public List<UnionConsume> listPayByFanId(Integer fanId, Page page) {
+    public Page pagePayByFanId(Page page, Integer fanId) throws Exception {
+        if (page == null || fanId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO);
-        entityWrapper.eq("fan_id", fanId);
-        entityWrapper.eq("pay_status", ConsumeConstant.PAY_STATUS_SUCCESS);
-        entityWrapper.orderBy("create_time", false);
-        Page result = unionConsumeDao.selectPage(page, entityWrapper);
-        return result.getRecords();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("fan_id", fanId)
+                .eq("pay_status", ConsumeConstant.PAY_STATUS_SUCCESS)
+                .orderBy("create_time", false);
+
+        return unionConsumeDao.selectPage(page, entityWrapper);
     }
 
-    //***************************************** Domain Driven Design - save ********************************************
+    //********************************************* Base On Business - save ********************************************
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -1023,7 +302,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getValidWriteByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
@@ -1068,7 +347,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
         BigDecimal payMoney = BigDecimalUtil.subtract(consumeMoney, discountMoney);
         Integer isUserIntegral = vo.getIsUserIntegral();
-        UnionCardIntegral integral = unionCardIntegralService.getByUnionIdAndFanId(unionId, fanId);
+        UnionCardIntegral integral = unionCardIntegralService.getValidByUnionIdAndFanId(unionId, fanId);
         if (CommonConstant.COMMON_YES == isUserIntegral) {
             Double integralExchangeRatio = member.getIntegralExchangeRatio();
             if (integralExchangeRatio == null) {
@@ -1104,11 +383,11 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         if (voActivityId != null && ListUtil.isNotEmpty(voItemList)) {
             Set<Integer> itemIdSet = new HashSet<>();
             for (UnionCardProjectItem voItem : voItemList) {
-                UnionCardProjectItem item = unionCardProjectItemService.getById(voItem.getId());
+                UnionCardProjectItem item = unionCardProjectItemService.getValidById(voItem.getId());
                 if (item == null) {
                     throw new BusinessException("找不到服务优惠信息");
                 }
-                UnionCardProject project = unionCardProjectService.getByUnionIdAndMemberIdAndActivityId(unionId, member.getId(), voActivityId);
+                UnionCardProject project = unionCardProjectService.getValidByUnionIdAndMemberIdAndActivityId(unionId, member.getId(), voActivityId);
                 if (project == null || !project.getId().equals(item.getProjectId())) {
                     throw new BusinessException("找不到服务项目信息");
                 }
@@ -1187,9 +466,9 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         return result;
     }
 
-    //***************************************** Domain Driven Design - remove ******************************************
+    //********************************************* Base On Business - remove ******************************************
 
-    //***************************************** Domain Driven Design - update ******************************************
+    //********************************************* Base On Business - update ******************************************
 
     @Override
     public String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess) {
@@ -1203,7 +482,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         // （1）	判断consumeId有效性
         UnionConsume consume;
         try {
-            consume = getByOrderNo(orderNo);
+            consume = getValidByOrderNo(orderNo);
         } catch (Exception e) {
             logger.error("消费核销支付成功回调错误", e);
             result.put("code", -1);
@@ -1253,8 +532,341 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         }
     }
 
-    //***************************************** Domain Driven Design - count *******************************************
+    //********************************************* Base On Business - other *******************************************
 
-    //***************************************** Domain Driven Design - boolean *****************************************
+    @Override
+    public Integer countValidPayByFanId(Integer fanId) throws ParamException {
+        if (fanId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .eq("fan_id", fanId);
+
+        return unionConsumeDao.selectCount(entityWrapper);
+    }
+
+    //********************************************* Base On Business - filter ******************************************
+
+    @Override
+    public List<UnionConsume> filterByDelStatus(List<UnionConsume> unionConsumeList, Integer delStatus) throws Exception {
+        if (delStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionConsume> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(unionConsumeList)) {
+            for (UnionConsume unionConsume : unionConsumeList) {
+                if (delStatus.equals(unionConsume.getDelStatus())) {
+                    result.add(unionConsume);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    //********************************************* Object As a Service - get ******************************************
+
+    @Override
+    public UnionConsume getById(Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        return unionConsumeDao.selectById(id);
+    }
+
+    @Override
+    public UnionConsume getValidById(Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("id", id);
+
+        return unionConsumeDao.selectOne(entityWrapper);
+    }
+
+    @Override
+    public UnionConsume getInvalidById(Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("id", id);
+
+        return unionConsumeDao.selectOne(entityWrapper);
+    }
+
+    //********************************************* Object As a Service - list *****************************************
+
+    @Override
+    public List<Integer> getIdList(List<UnionConsume> unionConsumeList) throws Exception {
+        if (unionConsumeList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<Integer> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(unionConsumeList)) {
+            for (UnionConsume unionConsume : unionConsumeList) {
+                result.add(unionConsume.getId());
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionConsume> listByMemberId(Integer memberId) throws Exception {
+        if (memberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("member_id", memberId);
+
+        return unionConsumeDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionConsume> listValidByMemberId(Integer memberId) throws Exception {
+        if (memberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("member_id", memberId);
+
+        return unionConsumeDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionConsume> listInvalidByMemberId(Integer memberId) throws Exception {
+        if (memberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("member_id", memberId);
+
+        return unionConsumeDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionConsume> listByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("union_id", unionId);
+
+        return unionConsumeDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionConsume> listValidByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId);
+
+        return unionConsumeDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionConsume> listInvalidByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("union_id", unionId);
+
+        return unionConsumeDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionConsume> listByCardId(Integer cardId) throws Exception {
+        if (cardId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("card_id", cardId);
+
+        return unionConsumeDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionConsume> listValidByCardId(Integer cardId) throws Exception {
+        if (cardId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("card_id", cardId);
+
+        return unionConsumeDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionConsume> listInvalidByCardId(Integer cardId) throws Exception {
+        if (cardId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("card_id", cardId);
+
+        return unionConsumeDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionConsume> listByFanId(Integer fanId) throws Exception {
+        if (fanId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("fan_id", fanId);
+
+        return unionConsumeDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionConsume> listValidByFanId(Integer fanId) throws Exception {
+        if (fanId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("fan_id", fanId);
+
+        return unionConsumeDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionConsume> listInvalidByFanId(Integer fanId) throws Exception {
+        if (fanId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("fan_id", fanId);
+
+        return unionConsumeDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionConsume> listByIdList(List<Integer> idList) throws Exception {
+        if (idList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.in("id", idList);
+
+        return unionConsumeDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public Page pageSupport(Page page, EntityWrapper<UnionConsume> entityWrapper) throws Exception {
+        if (page == null || entityWrapper == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        return unionConsumeDao.selectPage(page, entityWrapper);
+    }
+    //********************************************* Object As a Service - save *****************************************
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void save(UnionConsume newUnionConsume) throws Exception {
+        if (newUnionConsume == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        unionConsumeDao.insert(newUnionConsume);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveBatch(List<UnionConsume> newUnionConsumeList) throws Exception {
+        if (newUnionConsumeList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        unionConsumeDao.insertBatch(newUnionConsumeList);
+    }
+
+    //********************************************* Object As a Service - remove ***************************************
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeById(Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        UnionConsume removeUnionConsume = new UnionConsume();
+        removeUnionConsume.setId(id);
+        removeUnionConsume.setDelStatus(CommonConstant.DEL_STATUS_YES);
+        unionConsumeDao.updateById(removeUnionConsume);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeBatchById(List<Integer> idList) throws Exception {
+        if (idList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionConsume> removeUnionConsumeList = new ArrayList<>();
+        for (Integer id : idList) {
+            UnionConsume removeUnionConsume = new UnionConsume();
+            removeUnionConsume.setId(id);
+            removeUnionConsume.setDelStatus(CommonConstant.DEL_STATUS_YES);
+            removeUnionConsumeList.add(removeUnionConsume);
+        }
+        unionConsumeDao.updateBatchById(removeUnionConsumeList);
+    }
+
+    //********************************************* Object As a Service - update ***************************************
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void update(UnionConsume updateUnionConsume) throws Exception {
+        if (updateUnionConsume == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        unionConsumeDao.updateById(updateUnionConsume);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateBatch(List<UnionConsume> updateUnionConsumeList) throws Exception {
+        if (updateUnionConsumeList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        
+        unionConsumeDao.updateBatchById(updateUnionConsumeList);
+    }
 
 }

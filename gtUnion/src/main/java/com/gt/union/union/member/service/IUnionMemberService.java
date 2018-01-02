@@ -3,6 +3,7 @@ package com.gt.union.union.member.service;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.union.member.entity.UnionMember;
+import com.gt.union.union.member.vo.MemberOutVO;
 import com.gt.union.union.member.vo.MemberVO;
 
 import java.util.List;
@@ -35,6 +36,15 @@ public interface IUnionMemberService {
      * @throws Exception 统一处理异常
      */
     UnionMember getValidByIdAndStatus(Integer memberId, Integer status) throws Exception;
+
+    /**
+     * 获取未删除的具有读权限的联盟盟员信息
+     *
+     * @param memberId 盟员id
+     * @return UnionMember
+     * @throws Exception 统一处理异常
+     */
+    UnionMember getValidReadById(Integer memberId) throws Exception;
 
     /**
      * 获取未删除的具有读权限的联盟盟员信息
@@ -106,6 +116,37 @@ public interface IUnionMemberService {
     UnionMember getValidByBusIdAndUnionIdAndStatus(Integer busId, Integer unionId, Integer status) throws Exception;
 
     /**
+     * 获取商家盟员信息
+     *
+     * @param busId    商家id
+     * @param memberId 盟员id
+     * @return UnionMember
+     * @throws Exception 统一处理异常
+     */
+    UnionMember getByBusIdAndId(Integer busId, Integer memberId) throws Exception;
+
+    /**
+     * 获取商家盟员信息
+     *
+     * @param memberId 盟员id
+     * @param unionId  商家id
+     * @return UnionMember
+     * @throws Exception 统一处理异常
+     */
+    UnionMember getByIdAndUnionId(Integer memberId, Integer unionId) throws Exception;
+
+    /**
+     * 获取商家盟员信息
+     *
+     * @param busId    商家id
+     * @param memberId 盟员id
+     * @param unionId  联盟id
+     * @return UnionMember
+     * @throws Exception 统一处理异常
+     */
+    UnionMember getByBusIdAndIdAndUnionId(Integer busId, Integer memberId, Integer unionId) throws Exception;
+
+    /**
      * 我的联盟-首页-盟员列表-分页数据-详情
      *
      * @param busId    商家id
@@ -166,6 +207,15 @@ public interface IUnionMemberService {
     List<UnionMember> listValidWriteByUnionId(Integer unionId) throws Exception;
 
     /**
+     * 获取具有读权限的商家盟员列表信息
+     *
+     * @param busId 商家id
+     * @return List<UnionMember>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> listReadByBusId(Integer busId) throws Exception;
+    
+    /**
      * 获取未删除的具有读权限的商家盟员列表信息
      *
      * @param busId 商家id
@@ -175,13 +225,23 @@ public interface IUnionMemberService {
     List<UnionMember> listValidReadByBusId(Integer busId) throws Exception;
 
     /**
-     * 获取为删除的具有写权限的商家盟员列表信息
+     * 获取未删除的具有写权限的商家盟员列表信息
      *
      * @param busId 商家id
      * @return List<UnionMember>
      * @throws Exception 统一处理异常
      */
     List<UnionMember> listValidWriteByBusId(Integer busId) throws Exception;
+
+    /**
+     * 获取商家盟员列表信息
+     *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @return UnionMember
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> listByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
 
     /**
      * 获取其他未删除的具有读权限的联盟盟员列表信息
@@ -204,7 +264,18 @@ public interface IUnionMemberService {
     List<UnionMember> listOtherValidWriteByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
 
     /**
-     * 分页：我的联盟-首页-盟员列表；导出：我的联盟-首页-盟员列表；分页：我的联盟-联盟卡设置-折扣卡设置
+     * 分页：我的联盟-首页-盟员列表；导出：我的联盟-首页-盟员列表
+     *
+     * @param busId         商家id
+     * @param unionId       联盟id
+     * @param optMemberName 盟员名称
+     * @return List<MemberOutVO>
+     * @throws Exception 统一处理异常
+     */
+    List<MemberOutVO> listIndexByBusIdAndUnionId(Integer busId, Integer unionId, String optMemberName) throws Exception;
+
+    /**
+     * 分页：我的联盟-联盟卡设置-折扣卡设置
      *
      * @param busId         商家id
      * @param unionId       联盟id
@@ -212,7 +283,7 @@ public interface IUnionMemberService {
      * @return List<UnionMember>
      * @throws Exception 统一处理异常
      */
-    List<UnionMember> listValidReadByBusIdAndUnionId(Integer busId, Integer unionId, String optMemberName) throws Exception;
+    List<UnionMember> listDiscountByBusIdAndUnionId(Integer busId, Integer unionId, String optMemberName) throws Exception;
 
     //********************************************* Base On Business - save ********************************************
 
@@ -261,6 +332,25 @@ public interface IUnionMemberService {
      * @throws Exception 统一处理异常
      */
     Integer countValidReadByUnionId(Integer unionId) throws Exception;
+
+    /**
+     * 是否存在未删除的联盟盟员信息
+     *
+     * @param memberId 盟员id
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean existValidReadById(Integer memberId) throws Exception;
+
+    /**
+     * 是否存在未删除的联盟盟员信息
+     *
+     * @param memberId 盟员id
+     * @param unionId  联盟id
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean existValidReadByIdAndUnionId(Integer memberId, Integer unionId) throws Exception;
 
     /**
      * 是否存在未删除的商家盟主信息
@@ -344,6 +434,26 @@ public interface IUnionMemberService {
      */
     List<UnionMember> filterByUnionId(List<UnionMember> memberList, Integer unionId) throws Exception;
 
+    /**
+     * 根据盟员企业名称进行模糊过滤
+     *
+     * @param memberList         数据源
+     * @param likeEnterpriseName 盟员企业名称
+     * @return List<UnionMember>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> filterByListEnterpriseName(List<UnionMember> memberList, String likeEnterpriseName) throws Exception;
+
+    /**
+     * 根据负责人联系方式进行模糊过滤
+     *
+     * @param memberList        数据源
+     * @param likeDirectorPhone 负责人联系方式
+     * @return List<UnionMember>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> filterByListDirectorPhone(List<UnionMember> memberList, String likeDirectorPhone) throws Exception;
+
     //****************************************** Object As a Service - get *********************************************
 
     /**
@@ -392,6 +502,15 @@ public interface IUnionMemberService {
      * @throws Exception 统一处理异常
      */
     List<Integer> getUnionIdList(List<UnionMember> memberList) throws Exception;
+
+    /**
+     * 辅助：获取盟员集对应的的商家id列表
+     *
+     * @param memberList 盟员列表
+     * @return List<Integer>
+     * @throws Exception 统一处理异常
+     */
+    List<Integer> getBusIdList(List<UnionMember> memberList) throws Exception;
 
     /**
      * 获取盟员列表信息(by myBatisGenerator)
@@ -457,14 +576,23 @@ public interface IUnionMemberService {
     List<UnionMember> listByIdList(List<Integer> idList) throws Exception;
 
     /**
+     * 列表支持
+     *
+     * @param entityWrapper 条件
+     * @return Page
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> listSupport(EntityWrapper<UnionMember> entityWrapper) throws Exception;
+
+    /**
      * 分页支持
      *
      * @param page          分页对象
      * @param entityWrapper 条件
-     * @return Page<UnionMember>
+     * @return Page
      * @throws Exception 统一处理异常
      */
-    Page<UnionMember> pageSupport(Page page, EntityWrapper<UnionMember> entityWrapper) throws Exception;
+    Page pageSupport(Page page, EntityWrapper<UnionMember> entityWrapper) throws Exception;
 
     //****************************************** Object As a Service - save ********************************************
 

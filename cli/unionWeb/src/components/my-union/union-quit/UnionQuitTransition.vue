@@ -78,6 +78,7 @@
 <script>
 import $http from '@/utils/http.js';
 import { timeFilter } from '@/utils/filter.js';
+import { reasonPass } from '@/utils/validator.js';
 export default {
   name: 'union-quit-transition',
   data() {
@@ -89,7 +90,7 @@ export default {
       totalAll: '',
       form: {},
       rules: {
-        outReason: [{ required: true, message: '退盟理由不能为空，请重新输入', trigger: 'blur' }]
+        outReason: [{ validator: reasonPass, trigger: 'blur' }]
       }
     };
   },

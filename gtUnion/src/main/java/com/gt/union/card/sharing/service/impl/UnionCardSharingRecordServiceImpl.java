@@ -52,6 +52,65 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
 
     //********************************************* Base On Business - list ********************************************
 
+    @Override
+    public List<UnionCardSharingRecord> listValidByUnionIdAndSharingMemberId(Integer unionId, Integer sharingMemberId) throws Exception {
+        if (unionId == null || sharingMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCardSharingRecord> result = listValidBySharingMemberId(sharingMemberId);
+        result = filterByUnionId(result, unionId);
+
+        return result;
+    }
+
+    @Override
+    public List<CardSharingRecordVO> listCardSharingRecordVOByBusIdAndUnionId(
+            Integer busId, Integer unionId, String optCardNumber, Date optBeginTime, Date optEndTime) throws Exception {
+        if (busId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member读权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
+        }
+        // （2）	按时间倒序排序
+        List<CardSharingRecordVO> result = new ArrayList<>();
+        List<UnionCardSharingRecord> recordList = listValidByUnionIdAndSharingMemberId(unionId, member.getId());
+        if (ListUtil.isNotEmpty(recordList)) {
+            for (UnionCardSharingRecord record : recordList) {
+                if (optBeginTime != null && optBeginTime.compareTo(record.getCreateTime()) > 0) {
+                    continue;
+                }
+                if (optEndTime != null && optEndTime.compareTo(record.getCreateTime()) < 0) {
+                    continue;
+                }
+                Integer fanId = record.getFanId();
+                UnionCardFan fan = unionCardFanService.getById(fanId);
+                if (StringUtil.isNotEmpty(optCardNumber) && fan != null && !fan.getNumber().contains(optCardNumber)) {
+                    continue;
+                }
+                CardSharingRecordVO vo = new CardSharingRecordVO();
+                vo.setFan(fan);
+                vo.setSharingRecord(record);
+                UnionMember fromMember = unionMemberService.getById(record.getFromMemberId());
+                vo.setMember(fromMember);
+                result.add(vo);
+            }
+        }
+        Collections.sort(result, new Comparator<CardSharingRecordVO>() {
+            @Override
+            public int compare(CardSharingRecordVO o1, CardSharingRecordVO o2) {
+                return o2.getSharingRecord().getCreateTime().compareTo(o1.getSharingRecord().getCreateTime());
+            }
+        });
+
+        return result;
+    }
 
     //********************************************* Base On Business - save ********************************************
 
@@ -75,6 +134,22 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
                 if (delStatus.equals(unionCardSharingRecord.getDelStatus())) {
                     result.add(unionCardSharingRecord);
                 }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionCardSharingRecord> filterByUnionId(List<UnionCardSharingRecord> recordList, Integer unionId) throws Exception {
+        if (recordList == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCardSharingRecord> result = new ArrayList<>();
+        for (UnionCardSharingRecord record : recordList) {
+            if (unionId.equals(record.getUnionId())) {
+                result.add(record);
             }
         }
 
@@ -547,7 +622,7 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
     }
 
     @Override
-    public Page<UnionCardSharingRecord> pageSupport(Page page, EntityWrapper<UnionCardSharingRecord> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionCardSharingRecord> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -981,106 +1056,5 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
         }
         return result;
     }
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    @Override
-    public List<CardSharingRecordVO> listCardSharingRecordVOByBusIdAndUnionId(
-            Integer busId, Integer unionId, String optCardNumber, Date optBeginTime, Date optEndTime) throws Exception {
-        if (busId == null || unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // （1）	判断union有效性和member读权限
-        if (!unionMainService.isUnionValid(unionId)) {
-            throw new BusinessException(CommonConstant.UNION_INVALID);
-        }
-        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
-        if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
-        }
-
-        // （2）	按时间倒序排序
-        List<CardSharingRecordVO> result = new ArrayList<>();
-        List<UnionCardSharingRecord> recordList = listByUnionIdAndSharingMemberId(unionId, member.getId());
-        if (ListUtil.isNotEmpty(recordList)) {
-            for (UnionCardSharingRecord record : recordList) {
-                if (optBeginTime != null && optBeginTime.compareTo(record.getCreateTime()) > 0) {
-                    continue;
-                }
-                if (optEndTime != null && optEndTime.compareTo(record.getCreateTime()) < 0) {
-                    continue;
-                }
-                Integer fanId = record.getFanId();
-                UnionCardFan fan = null;
-                if (StringUtil.isNotEmpty(optCardNumber)) {
-                    if (fanId == null) {
-                        continue;
-                    }
-                    fan = unionCardFanService.getById(fanId);
-                    if (fan == null || StringUtil.isEmpty(fan.getNumber()) || !fan.getNumber().contains(optCardNumber)) {
-                        continue;
-                    }
-                }
-                CardSharingRecordVO vo = new CardSharingRecordVO();
-                vo.setFan(fan);
-                vo.setSharingRecord(record);
-                UnionMember fromMember = unionMemberService.getValidReadByIdAndUnionId(record.getFromMemberId(), unionId);
-                vo.setMember(fromMember);
-                result.add(vo);
-            }
-        }
-        Collections.sort(result, new Comparator<CardSharingRecordVO>() {
-            @Override
-            public int compare(CardSharingRecordVO o1, CardSharingRecordVO o2) {
-                return o2.getSharingRecord().getCreateTime().compareTo(o1.getSharingRecord().getCreateTime());
-            }
-        });
-
-        return result;
-    }
-
-    @Override
-    public List<UnionCardSharingRecord> listByUnionIdAndSharingMemberId(Integer unionId, Integer sharingMemberId) throws Exception {
-        if (unionId == null || sharingMemberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionCardSharingRecord> result = listBySharingMemberId(sharingMemberId);
-        result = filterByUnionId(result, unionId);
-
-        return result;
-    }
-
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    //***************************************** Domain Driven Design - boolean *****************************************
-
-    //***************************************** Domain Driven Design - filter ******************************************
-
-    @Override
-    public List<UnionCardSharingRecord> filterByUnionId(List<UnionCardSharingRecord> recordList, Integer unionId) throws Exception {
-        if (recordList == null || unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionCardSharingRecord> result = new ArrayList<>();
-        for (UnionCardSharingRecord record : recordList) {
-            if (unionId.equals(record.getUnionId())) {
-                result.add(record);
-            }
-        }
-
-        return result;
-    }
-
 
 }

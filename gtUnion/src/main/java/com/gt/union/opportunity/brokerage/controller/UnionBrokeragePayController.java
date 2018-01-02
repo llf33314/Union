@@ -73,12 +73,13 @@ public class UnionBrokeragePayController {
         List<BrokerageOpportunityVO> voList;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             voList = MockUtil.list(BrokerageOpportunityVO.class, page.getSize());
+            Page<BrokerageOpportunityVO> result = (Page<BrokerageOpportunityVO>) page;
+            result = PageUtil.setRecord(result, voList);
+            return GtJsonResult.instanceSuccessMsg(result).toString();
         } else {
-            voList = unionBrokeragePayService.listBrokerageOpportunityVOByBusId(busId, unionId, fromMemberId, isClose, clientName, clientPhone);
+            Page result = unionBrokeragePayService.pageBrokerageOpportunityVOByBusId(page, busId, unionId, fromMemberId, isClose, clientName, clientPhone);
+            return GtJsonResult.instanceSuccessMsg(result).toString();
         }
-        Page<BrokerageOpportunityVO> result = (Page<BrokerageOpportunityVO>) page;
-        result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "分页：商机-佣金结算-支付明细", produces = "application/json;charset=UTF-8")
@@ -94,19 +95,19 @@ public class UnionBrokeragePayController {
             busId = busUser.getPid();
         }
         // mock
-        List<BrokeragePayVO> voList;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            voList = MockUtil.list(BrokeragePayVO.class, page.getSize());
+            List<BrokeragePayVO> voList = MockUtil.list(BrokeragePayVO.class, page.getSize());
             for (int i = 0; i < voList.size(); i++) {
                 List<UnionOpportunity> opportunityList = MockUtil.list(UnionOpportunity.class, 20);
                 voList.get(i).setOpportunityList(opportunityList);
             }
+            Page<BrokeragePayVO> result = (Page<BrokeragePayVO>) page;
+            result = PageUtil.setRecord(result, voList);
+            return GtJsonResult.instanceSuccessMsg(result).toString();
         } else {
-            voList = unionBrokeragePayService.listBrokeragePayVOByBusId(busId, unionId);
+            Page result = unionBrokeragePayService.pageBrokeragePayVOByBusId(page, busId, unionId);
+            return GtJsonResult.instanceSuccessMsg(result).toString();
         }
-        Page<BrokeragePayVO> result = (Page<BrokeragePayVO>) page;
-        result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "导出：商机-佣金结算-支付明细", produces = "application/json;charset=UTF-8")

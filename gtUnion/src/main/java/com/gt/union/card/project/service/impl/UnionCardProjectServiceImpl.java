@@ -71,8 +71,235 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
 
     //********************************************* Base On Business - get *********************************************
 
+    @Override
+    public UnionCardProject getValidByUnionIdAndMemberIdAndActivityId(Integer unionId, Integer memberId, Integer activityId) throws Exception {
+        if (unionId == null || memberId == null || activityId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCardProject> result = listValidByActivityId(activityId);
+        result = filterByMemberId(result, memberId);
+        result = filterByUnionId(result, unionId);
+
+        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
+    }
+
+    @Override
+    public UnionCardProject getValidByUnionIdAndMemberIdAndActivityIdAndStatus(Integer unionId, Integer memberId, Integer activityId, Integer status) throws Exception {
+        if (unionId == null || memberId == null || activityId == null || status == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        UnionCardProject result = getValidByUnionIdAndMemberIdAndActivityId(unionId, memberId, activityId);
+
+        return result != null && status.equals(result.getStatus()) ? result : null;
+    }
+
+    @Override
+    public UnionCardProject getValidByIdAndUnionIdAndActivityId(Integer projectId, Integer unionId, Integer activityId) throws Exception {
+        if (projectId == null || unionId == null || activityId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        UnionCardProject result = getValidById(projectId);
+
+        return result != null && activityId.equals(result.getActivityId()) && unionId.equals(result.getUnionId()) ? result : null;
+    }
+
+    @Override
+    public CardProjectVO getProjectVOByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception {
+        if (activityId == null || unionId == null || busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member读权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
+        }
+        // （2）	判断activityId有效性
+        UnionCardActivity activity = unionCardActivityService.getValidByIdAndUnionId(activityId, unionId);
+        if (activity == null) {
+            throw new BusinessException("找不到活动信息");
+        }
+        // （3）	获取是否erp信息（调接口），并获取相应的服务内容
+        CardProjectVO result = new CardProjectVO();
+        result.setMember(member);
+        result.setActivity(activity);
+        result.setActivityStatus(unionCardActivityService.getStatus(activity));
+        Integer isErp = ListUtil.isNotEmpty(erpService.listErpByBusId(busId)) ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO;
+        result.setIsErp(isErp);
+        UnionCardProject project = getValidByUnionIdAndMemberIdAndActivityId(unionId, member.getId(), activityId);
+        if (project != null) {
+            result.setProject(project);
+            Integer projectId = project.getId();
+
+            List<UnionCardProjectItem> erpTextList = unionCardProjectItemService.listValidByProjectIdAndType(projectId, ProjectConstant.TYPE_ERP_TEXT);
+            result.setErpTextList(erpTextList);
+
+            List<UnionCardProjectItem> erpGoodsList = unionCardProjectItemService.listValidByProjectIdAndType(projectId, ProjectConstant.TYPE_ERP_GOODS);
+            result.setErpGoodsList(erpGoodsList);
+
+            List<UnionCardProjectItem> textList = unionCardProjectItemService.listValidByProjectIdAndType(projectId, ProjectConstant.TYPE_TEXT);
+            result.setNonErpTextList(textList);
+        } else {
+            result.setErpTextList(new ArrayList<UnionCardProjectItem>());
+
+            result.setErpGoodsList(new ArrayList<UnionCardProjectItem>());
+
+            result.setNonErpTextList(new ArrayList<UnionCardProjectItem>());
+        }
+
+        return result;
+    }
+
     //********************************************* Base On Business - list ********************************************
 
+    @Override
+    public List<UnionCardProject> listValidByUnionIdAndMemberIdAndStatus(Integer unionId, Integer memberId, Integer status) throws Exception {
+        if (unionId == null || memberId == null || status == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCardProject> result = listValidByMemberId(memberId);
+        result = filterByUnionId(result, unionId);
+        result = filterByStatus(result, status);
+
+        return result;
+    }
+
+    @Override
+    public List<UnionCardProject> listValidByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception {
+        if (unionId == null || activityId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCardProject> result = listValidByActivityId(activityId);
+        result = filterByUnionId(result, unionId);
+
+        return result;
+    }
+
+    @Override
+    public List<UnionCardProject> listValidByUnionIdAndActivityIdAndStatus(Integer unionId, Integer activityId, Integer status) throws Exception {
+        if (unionId == null || activityId == null || status == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCardProject> result = listValidByActivityId(activityId);
+        result = filterByUnionId(result, unionId);
+        result = filterByStatus(result, status);
+
+        return result;
+    }
+
+    @Override
+    public List<CardProjectJoinMemberVO> listJoinMemberByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception {
+        if (busId == null || unionId == null || activityId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member读权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
+        }
+        // （2）	判断activityId有效性
+        UnionCardActivity activity = unionCardActivityService.getValidByIdAndUnionId(activityId, unionId);
+        if (activity == null) {
+            throw new BusinessException("找不到活动信息");
+        }
+        // （3）	要求报名项目已审核通过
+        List<CardProjectJoinMemberVO> result = new ArrayList<>();
+        List<UnionCardProject> projectList = listValidByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
+        if (ListUtil.isNotEmpty(projectList)) {
+            for (UnionCardProject project : projectList) {
+                CardProjectJoinMemberVO vo = new CardProjectJoinMemberVO();
+                vo.setProject(project);
+
+                UnionMember projectMember = unionMemberService.getValidReadByIdAndUnionId(project.getMemberId(), unionId);
+                if (projectMember == null) {
+                    continue;
+                }
+                vo.setMember(projectMember);
+
+                List<UnionCardProjectItem> itemList = unionCardProjectItemService.listValidByProjectId(project.getId());
+                vo.setItemList(itemList);
+
+                result.add(vo);
+            }
+        }
+        // （4）	按时间顺序排序 
+        Collections.sort(result, new Comparator<CardProjectJoinMemberVO>() {
+            @Override
+            public int compare(CardProjectJoinMemberVO o1, CardProjectJoinMemberVO o2) {
+                return o1.getProject().getCreateTime().compareTo(o2.getProject().getCreateTime());
+            }
+        });
+
+        return result;
+    }
+
+    @Override
+    public List<CardProjectCheckVO> listProjectCheckByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception {
+        if (busId == null || activityId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member读权限、盟主权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
+        }
+        if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
+            throw new BusinessException(CommonConstant.UNION_OWNER_ERROR);
+        }
+        // （2）	判断activityId有效性
+        UnionCardActivity activity = unionCardActivityService.getValidByIdAndUnionId(activityId, unionId);
+        if (activity == null) {
+            throw new BusinessException("找不到活动信息");
+        }
+        // （3）	要求活动在报名中状态
+        Integer activityStatus = unionCardActivityService.getStatus(activity);
+        if (ActivityConstant.STATUS_APPLYING != activityStatus) {
+            throw new BusinessException("活动卡不在报名中状态");
+        }
+        // （4）	要求报名项目是审核中状态
+        List<CardProjectCheckVO> result = new ArrayList<>();
+        List<UnionCardProject> projectList = listValidByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_COMMITTED);
+        if (ListUtil.isNotEmpty(projectList)) {
+            for (UnionCardProject project : projectList) {
+                CardProjectCheckVO vo = new CardProjectCheckVO();
+                vo.setProject(project);
+
+                UnionMember projectMember = unionMemberService.getValidReadByIdAndUnionId(project.getMemberId(), unionId);
+                if (projectMember == null) {
+                    continue;
+                }
+                vo.setMember(projectMember);
+
+                List<UnionCardProjectItem> itemList = unionCardProjectItemService.listByProjectId(project.getId());
+                vo.setItemList(itemList);
+
+                result.add(vo);
+            }
+        }
+        // （5）	按时间顺序排序
+        Collections.sort(result, new Comparator<CardProjectCheckVO>() {
+            @Override
+            public int compare(CardProjectCheckVO o1, CardProjectCheckVO o2) {
+                return o1.getProject().getCreateTime().compareTo(o2.getProject().getCreateTime());
+            }
+        });
+
+        return result;
+    }
 
     //********************************************* Base On Business - save ********************************************
 
@@ -80,7 +307,96 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
 
     //********************************************* Base On Business - update ******************************************
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId, Integer isPass, CardProjectCheckUpdateVO vo) throws Exception {
+        if (busId == null || unionId == null || activityId == null || isPass == null || vo == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member读权限、盟主权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
+        }
+        if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
+            throw new BusinessException(CommonConstant.UNION_OWNER_ERROR);
+        }
+        // （2）	判断activityId有效性
+        UnionCardActivity activity = unionCardActivityService.getValidByIdAndUnionId(activityId, unionId);
+        if (activity == null) {
+            throw new BusinessException("找不到活动信息");
+        }
+        // （3）	要求活动在报名中状态
+        Integer activityStatus = unionCardActivityService.getStatus(activity);
+        if (ActivityConstant.STATUS_APPLYING != activityStatus && ActivityConstant.STATUS_BEFORE_SELL != activityStatus) {
+            throw new BusinessException("活动卡状态不在报名中或售卡前");
+        }
+        // （4）	不通过时要求理由不能为空
+        if (CommonConstant.COMMON_YES != isPass && StringUtil.isEmpty(vo.getRejectReason())) {
+            throw new BusinessException("不通过时理由不能为空");
+        }
+        // （5）	要求报名项目在审核中状态
+        List<UnionCardProject> updateProjectList = new ArrayList<>();
+        List<UnionCardProjectFlow> saveFlowList = new ArrayList<>();
+        Date currentDate = DateUtil.getCurrentDate();
+        if (ListUtil.isNotEmpty(vo.getProjectIdList())) {
+            for (Integer projectId : vo.getProjectIdList()) {
+                UnionCardProject project = getValidByIdAndUnionIdAndActivityId(projectId, unionId, activityId);
+                if (project == null) {
+                    throw new BusinessException("找不到要审核的项目信息");
+                }
+                if (ProjectConstant.STATUS_COMMITTED != project.getStatus()) {
+                    throw new BusinessException("项目不在可审核状态");
+                }
+
+                UnionCardProject updateProject = new UnionCardProject();
+                updateProject.setId(projectId);
+                updateProject.setStatus(CommonConstant.COMMON_YES == isPass ? ProjectConstant.STATUS_ACCEPT : ProjectConstant.STATUS_REJECT);
+                updateProjectList.add(updateProject);
+
+                UnionCardProjectFlow saveFlow = new UnionCardProjectFlow();
+                saveFlow.setCreateTime(currentDate);
+                saveFlow.setDelStatus(CommonConstant.COMMON_NO);
+                saveFlow.setProjectId(projectId);
+                saveFlow.setIllustration(CommonConstant.COMMON_YES == isPass ? "提交审核通过" : "提交审核不通过：" + vo.getRejectReason());
+                saveFlowList.add(saveFlow);
+            }
+        }
+
+        // （6）事务操作
+        if (ListUtil.isNotEmpty(updateProjectList)) {
+            updateBatch(updateProjectList);
+        }
+        if (ListUtil.isNotEmpty(saveFlowList)) {
+            unionCardProjectFlowService.saveBatch(saveFlowList);
+        }
+
+    }
+
     //********************************************* Base On Business - other *******************************************
+
+    @Override
+    public Integer countValidByUnionIdAndActivityIdAndStatus(Integer unionId, Integer activityId, Integer status) throws Exception {
+        if (unionId == null || activityId == null || status == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCardProject> projectList = listValidByUnionIdAndActivityIdAndStatus(unionId, activityId, status);
+
+        return ListUtil.isNotEmpty(projectList) ? projectList.size() : 0;
+    }
+
+    @Override
+    public boolean existValidByUnionIdAndMemberIdAndActivityIdAndStatus(Integer unionId, Integer memberId, Integer activityId, Integer status) throws Exception {
+        if (unionId == null || memberId == null || activityId == null || status == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        return getValidByUnionIdAndMemberIdAndActivityIdAndStatus(unionId, memberId, activityId, status) != null;
+    }
 
     //********************************************* Base On Business - filter ******************************************
 
@@ -96,6 +412,72 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
                 if (delStatus.equals(unionCardProject.getDelStatus())) {
                     result.add(unionCardProject);
                 }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionCardProject> filterByMemberId(List<UnionCardProject> projectList, Integer memberId) throws Exception {
+        if (projectList == null || memberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCardProject> result = new ArrayList<>();
+        for (UnionCardProject project : projectList) {
+            if (memberId.equals(project.getMemberId())) {
+                result.add(project);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionCardProject> filterInvalidMemberId(List<UnionCardProject> projectList) throws Exception {
+        if (projectList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCardProject> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(projectList)) {
+            for (UnionCardProject project : projectList) {
+                if (unionMemberService.existValidReadById(project.getMemberId())) {
+                    result.add(project);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionCardProject> filterByUnionId(List<UnionCardProject> projectList, Integer unionId) throws Exception {
+        if (projectList == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCardProject> result = new ArrayList<>();
+        for (UnionCardProject project : projectList) {
+            if (unionId.equals(project.getUnionId())) {
+                result.add(project);
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionCardProject> filterByStatus(List<UnionCardProject> projectList, Integer status) throws Exception {
+        if (projectList == null || status == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionCardProject> result = new ArrayList<>();
+        for (UnionCardProject project : projectList) {
+            if (status.equals(project.getStatus())) {
+                result.add(project);
             }
         }
 
@@ -373,7 +755,7 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
     }
 
     @Override
-    public Page<UnionCardProject> pageSupport(Page page, EntityWrapper<UnionCardProject> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionCardProject> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -684,363 +1066,5 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
         }
         return result;
     }
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    @Override
-    public UnionCardProject getByUnionIdAndMemberIdAndActivityId(Integer unionId, Integer memberId, Integer activityId) throws Exception {
-        if (unionId == null || memberId == null || activityId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionCardProject> result = listByActivityId(activityId);
-        result = filterByMemberId(result, memberId);
-        result = filterByUnionId(result, unionId);
-
-        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
-    }
-
-    @Override
-    public UnionCardProject getByIdAndUnionIdAndActivityId(Integer projectId, Integer unionId, Integer activityId) throws Exception {
-        if (projectId == null || unionId == null || activityId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        UnionCardProject result = getById(projectId);
-
-        return result != null && activityId.equals(result.getActivityId()) && unionId.equals(result.getUnionId()) ? result : null;
-    }
-
-    @Override
-    public CardProjectVO getProjectVOByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception {
-        if (activityId == null || unionId == null || busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // （1）	判断union有效性和member读权限
-        if (!unionMainService.isUnionValid(unionId)) {
-            throw new BusinessException(CommonConstant.UNION_INVALID);
-        }
-        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
-        if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
-        }
-        // （2）	判断activityId有效性
-        UnionCardActivity activity = unionCardActivityService.getByIdAndUnionId(activityId, unionId);
-        if (activity == null) {
-            throw new BusinessException("找不到活动信息");
-        }
-        // （3）	获取是否erp信息（调接口），并获取相应的服务内容
-        CardProjectVO result = new CardProjectVO();
-        result.setMember(member);
-        result.setActivity(activity);
-        result.setActivityStatus(unionCardActivityService.getStatus(activity));
-        Integer isErp = ListUtil.isNotEmpty(erpService.listErpByBusId(busId)) ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO;
-        result.setIsErp(isErp);
-        UnionCardProject project = getByUnionIdAndMemberIdAndActivityId(unionId, member.getId(), activityId);
-        if (project != null) {
-            result.setProject(project);
-            Integer projectId = project.getId();
-
-            List<UnionCardProjectItem> erpTextList = unionCardProjectItemService.listByProjectIdAndType(projectId, ProjectConstant.TYPE_ERP_TEXT);
-            result.setErpTextList(erpTextList);
-
-            List<UnionCardProjectItem> erpGoodsList = unionCardProjectItemService.listByProjectIdAndType(projectId, ProjectConstant.TYPE_ERP_GOODS);
-            result.setErpGoodsList(erpGoodsList);
-
-            List<UnionCardProjectItem> textList = unionCardProjectItemService.listByProjectIdAndType(projectId, ProjectConstant.TYPE_TEXT);
-            result.setNonErpTextList(textList);
-        } else {
-            result.setErpTextList(new ArrayList<UnionCardProjectItem>());
-
-            result.setErpGoodsList(new ArrayList<UnionCardProjectItem>());
-
-            result.setNonErpTextList(new ArrayList<UnionCardProjectItem>());
-        }
-
-        return result;
-    }
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    @Override
-    public List<UnionCardProject> listByUnionIdAndMemberIdAndStatus(Integer unionId, Integer memberId, Integer status) throws Exception {
-        if (unionId == null || memberId == null || status == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionCardProject> result = listByMemberId(memberId);
-        result = filterByUnionId(result, unionId);
-        result = filterByStatus(result, status);
-
-        return result;
-    }
-
-    @Override
-    public List<UnionCardProject> listByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception {
-        if (unionId == null || activityId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionCardProject> result = listByActivityId(activityId);
-        result = filterByUnionId(result, unionId);
-
-        return result;
-    }
-
-    @Override
-    public List<UnionCardProject> listByUnionIdAndActivityIdAndStatus(Integer unionId, Integer activityId, Integer status) throws Exception {
-        if (unionId == null || activityId == null || status == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionCardProject> result = listByActivityId(activityId);
-        result = filterByUnionId(result, unionId);
-        result = filterByStatus(result, status);
-
-        return result;
-    }
-
-    @Override
-    public List<CardProjectJoinMemberVO> listJoinMemberByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception {
-        if (busId == null || unionId == null || activityId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // （1）	判断union有效性和member读权限
-        if (!unionMainService.isUnionValid(unionId)) {
-            throw new BusinessException(CommonConstant.UNION_INVALID);
-        }
-        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
-        if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
-        }
-        // （2）	判断activityId有效性
-        UnionCardActivity activity = unionCardActivityService.getByIdAndUnionId(activityId, unionId);
-        if (activity == null) {
-            throw new BusinessException("找不到活动信息");
-        }
-        // （3）	要求报名项目已审核通过
-        List<CardProjectJoinMemberVO> result = new ArrayList<>();
-        List<UnionCardProject> projectList = listByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
-        if (ListUtil.isNotEmpty(projectList)) {
-            for (UnionCardProject project : projectList) {
-                CardProjectJoinMemberVO vo = new CardProjectJoinMemberVO();
-                vo.setProject(project);
-
-                UnionMember projectMember = unionMemberService.getValidReadByIdAndUnionId(project.getMemberId(), unionId);
-                vo.setMember(projectMember);
-
-                List<UnionCardProjectItem> itemList = unionCardProjectItemService.listByProjectId(project.getId());
-                vo.setItemList(itemList);
-
-                result.add(vo);
-            }
-        }
-        // （4）	按时间顺序排序 
-        Collections.sort(result, new Comparator<CardProjectJoinMemberVO>() {
-            @Override
-            public int compare(CardProjectJoinMemberVO o1, CardProjectJoinMemberVO o2) {
-                return o1.getProject().getCreateTime().compareTo(o2.getProject().getCreateTime());
-            }
-        });
-
-        return result;
-    }
-
-    @Override
-    public List<CardProjectCheckVO> listProjectCheckByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception {
-        if (busId == null || activityId == null || unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // （1）	判断union有效性和member读权限、盟主权限
-        if (!unionMainService.isUnionValid(unionId)) {
-            throw new BusinessException(CommonConstant.UNION_INVALID);
-        }
-        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
-        if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
-        }
-        if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
-            throw new BusinessException(CommonConstant.UNION_OWNER_ERROR);
-        }
-        // （2）	判断activityId有效性
-        UnionCardActivity activity = unionCardActivityService.getByIdAndUnionId(activityId, unionId);
-        if (activity == null) {
-            throw new BusinessException("找不到活动信息");
-        }
-        // （3）	要求活动在报名中状态
-        Integer activityStatus = unionCardActivityService.getStatus(activity);
-        if (ActivityConstant.STATUS_APPLYING != activityStatus) {
-            throw new BusinessException("活动卡不在报名中状态");
-        }
-        // （4）	要求报名项目是审核中状态
-        List<CardProjectCheckVO> result = new ArrayList<>();
-        List<UnionCardProject> projectList = listByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_COMMITTED);
-        if (ListUtil.isNotEmpty(projectList)) {
-            for (UnionCardProject project : projectList) {
-                CardProjectCheckVO vo = new CardProjectCheckVO();
-                vo.setProject(project);
-
-                UnionMember projectMember = unionMemberService.getValidReadByIdAndUnionId(project.getMemberId(), unionId);
-                vo.setMember(projectMember);
-
-                List<UnionCardProjectItem> itemList = unionCardProjectItemService.listByProjectId(project.getId());
-                vo.setItemList(itemList);
-
-                result.add(vo);
-            }
-        }
-        // （5）	按时间顺序排序
-        Collections.sort(result, new Comparator<CardProjectCheckVO>() {
-            @Override
-            public int compare(CardProjectCheckVO o1, CardProjectCheckVO o2) {
-                return o1.getProject().getCreateTime().compareTo(o2.getProject().getCreateTime());
-            }
-        });
-
-        return result;
-    }
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void updateProjectCheckByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId, Integer isPass, CardProjectCheckUpdateVO vo) throws Exception {
-        if (busId == null || unionId == null || activityId == null || isPass == null || vo == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // （1）	判断union有效性和member写权限、盟主权限
-        if (!unionMainService.isUnionValid(unionId)) {
-            throw new BusinessException(CommonConstant.UNION_INVALID);
-        }
-        UnionMember member = unionMemberService.getValidWriteByBusIdAndUnionId(busId, unionId);
-        if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
-        }
-        if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
-            throw new BusinessException(CommonConstant.UNION_OWNER_ERROR);
-        }
-        // （2）	判断activityId有效性
-        UnionCardActivity activity = unionCardActivityService.getByIdAndUnionId(activityId, unionId);
-        if (activity == null) {
-            throw new BusinessException("找不到活动信息");
-        }
-        // （3）	要求活动在报名中状态
-        Integer activityStatus = unionCardActivityService.getStatus(activity);
-        if (ActivityConstant.STATUS_APPLYING != activityStatus && ActivityConstant.STATUS_BEFORE_SELL != activityStatus) {
-            throw new BusinessException("活动卡状态不在报名中或售卡前");
-        }
-        // （4）	不通过时要求理由不能为空
-        if (CommonConstant.COMMON_YES != isPass && StringUtil.isEmpty(vo.getRejectReason())) {
-            throw new BusinessException("不通过时理由不能为空");
-        }
-        // （5）	要求报名项目在审核中状态
-        List<UnionCardProject> updateProjectList = new ArrayList<>();
-        List<UnionCardProjectFlow> saveFlowList = new ArrayList<>();
-        Date currentDate = DateUtil.getCurrentDate();
-        if (ListUtil.isNotEmpty(vo.getProjectIdList())) {
-            for (Integer projectId : vo.getProjectIdList()) {
-                UnionCardProject project = getByIdAndUnionIdAndActivityId(projectId, unionId, activityId);
-                if (project == null) {
-                    throw new BusinessException("找不到要审核的项目信息");
-                }
-                if (ProjectConstant.STATUS_COMMITTED != project.getStatus()) {
-                    throw new BusinessException("项目不在可审核状态");
-                }
-
-                UnionCardProject updateProject = new UnionCardProject();
-                updateProject.setId(projectId);
-                updateProject.setStatus(CommonConstant.COMMON_YES == isPass ? ProjectConstant.STATUS_ACCEPT : ProjectConstant.STATUS_REJECT);
-                updateProjectList.add(updateProject);
-
-                UnionCardProjectFlow saveFlow = new UnionCardProjectFlow();
-                saveFlow.setCreateTime(currentDate);
-                saveFlow.setDelStatus(CommonConstant.COMMON_NO);
-                saveFlow.setProjectId(projectId);
-                saveFlow.setIllustration(CommonConstant.COMMON_YES == isPass ? "提交审核通过" : "提交审核不通过：" + vo.getRejectReason());
-                saveFlowList.add(saveFlow);
-            }
-        }
-
-        // （6）事务操作
-        if (ListUtil.isNotEmpty(updateProjectList)) {
-            updateBatch(updateProjectList);
-        }
-        if (ListUtil.isNotEmpty(saveFlowList)) {
-            unionCardProjectFlowService.saveBatch(saveFlowList);
-        }
-
-    }
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    @Override
-    public Integer countByUnionIdAndActivityIdAndStatus(Integer unionId, Integer activityId, Integer status) throws Exception {
-        if (unionId == null || activityId == null || status == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionCardProject> projectList = listByUnionIdAndActivityIdAndStatus(unionId, activityId, status);
-
-        return ListUtil.isNotEmpty(projectList) ? projectList.size() : 0;
-    }
-
-    //***************************************** Domain Driven Design - boolean *****************************************
-
-    //***************************************** Domain Driven Design - filter ******************************************
-
-    @Override
-    public List<UnionCardProject> filterByMemberId(List<UnionCardProject> projectList, Integer memberId) throws Exception {
-        if (projectList == null || memberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionCardProject> result = new ArrayList<>();
-        for (UnionCardProject project : projectList) {
-            if (memberId.equals(project.getMemberId())) {
-                result.add(project);
-            }
-        }
-
-        return result;
-    }
-
-    @Override
-    public List<UnionCardProject> filterByUnionId(List<UnionCardProject> projectList, Integer unionId) throws Exception {
-        if (projectList == null || unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionCardProject> result = new ArrayList<>();
-        for (UnionCardProject project : projectList) {
-            if (unionId.equals(project.getUnionId())) {
-                result.add(project);
-            }
-        }
-
-        return result;
-    }
-
-    @Override
-    public List<UnionCardProject> filterByStatus(List<UnionCardProject> projectList, Integer status) throws Exception {
-        if (projectList == null || status == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionCardProject> result = new ArrayList<>();
-        for (UnionCardProject project : projectList) {
-            if (status.equals(project.getStatus())) {
-                result.add(project);
-            }
-        }
-
-        return result;
-    }
-
 
 }

@@ -1,9 +1,6 @@
 package com.gt.union.common.util;
 
 
-import com.alibaba.fastjson.JSON;
-import org.apache.poi.ss.formula.functions.T;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -91,11 +88,22 @@ public class ListUtil {
      */
     public static <T> List<T> difference(List<T> list1, List<T> list2) {
         List<T> result = new ArrayList<>();
-        
+
         result.addAll(list1);
         result.removeAll(list2);
-        
+
         return result;
     }
-    
+
+    /**
+     * 唯一集
+     *
+     * @param list 列表
+     * @param <T>  类型
+     * @return List<T>
+     */
+    public static <T extends Comparable<? super T>> List<T> unique(List<T> list) {
+        return toList(toSet(list));
+    }
+
 }

@@ -49,6 +49,7 @@
 
 <script>
 import $http from '@/utils/http.js';
+import { enterpriseNamePass, directorNamePass, cellPhonePass, emailPass } from '@/utils/validator.js';
 import UnionMap from '@/components/public-components/UnionMap';
 export default {
   name: 'create-step-basic',
@@ -56,47 +57,6 @@ export default {
     UnionMap
   },
   data() {
-    // 验证规则
-    let directorPhonePass = (rule, value, callback) => {
-      if (!value) {
-        callback(new Error('联系电话内容不能为空，请重新输入'));
-      } else if (!value.match(/(^1[3|4|5|6|7|8][0-9][0-9]{8}$)|(^0\d{2,3}-?\d{7,8}$)/)) {
-        callback(new Error('请输入正确的联系电话'));
-      } else {
-        callback();
-      }
-    };
-    let emailPass = (rule, value, callback) => {
-      if (!value) {
-        callback(new Error('邮箱内容不能为空，请重新输入'));
-      } else if (!value.match(/^[A-Za-z0-9\u4e00-\u9fa5]+@[a-zA-Z0-9_-]+(\.[a-zA-Z0-9_-]+)+$/)) {
-        callback(new Error('请输入正确的邮箱'));
-      } else {
-        callback();
-      }
-    };
-    let notifyPhonePass = (rule, value, callback) => {
-      if (!value) {
-        callback(new Error('手机短信通知内容不能为空，请重新输入'));
-      } else if (!value.match(/^1[3|4|5|6|7|8][0-9][0-9]{8}$/)) {
-        callback(new Error('请输入正确的手机号码'));
-      } else {
-        callback();
-      }
-    };
-    let integralExchangePercentPass = (rule, value, callback) => {
-      if (value !== 0 && !value) {
-        callback(new Error('积分折扣率内容不能为空，请重新输入'));
-      } else if (isNaN(value)) {
-        callback(new Error('积分折扣率必须为数字值，请重新输入'));
-      } else if (value < 0) {
-        callback(new Error('积分折扣率不能小于0%，请重新输入'));
-      } else if (value > 30) {
-        callback(new Error('积分折扣率不能大于30%，请重新输入'));
-      } else {
-        callback();
-      }
-    };
     return {
       childrenData: '',
       labelPosition: 'right',
@@ -105,11 +65,11 @@ export default {
         enterpriseAddress: ''
       },
       rules: {
-        enterpriseName: [{ required: true, message: '企业名称内容不能为空，请重新输入', trigger: 'blur' }],
-        directorName: [{ required: true, message: '负责人内容不能为空，请重新输入', trigger: 'blur' }],
-        directorPhone: [{ validator: directorPhonePass, trigger: 'blur' }],
+        enterpriseName: [{ validator: enterpriseNamePass, trigger: 'blur' }],
+        directorName: [{ alidator: directorNamePass, trigger: 'blur' }],
+        directorPhone: [{ validator: cellPhonePass, trigger: 'blur' }],
         directorEmail: [{ validator: emailPass, trigger: 'blur' }],
-        notifyPhone: [{ validator: notifyPhonePass, trigger: 'blur' }],
+        notifyPhone: [{ validator: cellPhonePass, trigger: 'blur' }],
         enterpriseAddress: [{ required: true, message: '我的地址内容不能为空，请重新输入', trigger: 'change' }]
       }
     };

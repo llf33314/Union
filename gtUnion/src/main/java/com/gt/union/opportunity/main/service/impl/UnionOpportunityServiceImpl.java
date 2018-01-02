@@ -1,6 +1,5 @@
 package com.gt.union.opportunity.main.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.api.amqp.entity.PhoneMessage;
@@ -8,7 +7,10 @@ import com.gt.union.api.amqp.sender.PhoneMessageSender;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.*;
+import com.gt.union.common.util.BigDecimalUtil;
+import com.gt.union.common.util.DateUtil;
+import com.gt.union.common.util.ListUtil;
+import com.gt.union.common.util.StringUtil;
 import com.gt.union.opportunity.brokerage.vo.BrokerageOpportunityVO;
 import com.gt.union.opportunity.main.constant.OpportunityConstant;
 import com.gt.union.opportunity.main.dao.IUnionOpportunityDao;
@@ -16,7 +18,6 @@ import com.gt.union.opportunity.main.entity.UnionOpportunity;
 import com.gt.union.opportunity.main.entity.UnionOpportunityRatio;
 import com.gt.union.opportunity.main.service.IUnionOpportunityRatioService;
 import com.gt.union.opportunity.main.service.IUnionOpportunityService;
-import com.gt.union.opportunity.main.util.UnionOpportunityCacheUtil;
 import com.gt.union.opportunity.main.vo.OpportunityStatisticsDay;
 import com.gt.union.opportunity.main.vo.OpportunityStatisticsVO;
 import com.gt.union.opportunity.main.vo.OpportunityVO;
@@ -29,7 +30,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 /**
  * 商机 服务实现类
@@ -41,9 +44,6 @@ import java.util.*;
 public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
     @Autowired
     private IUnionOpportunityDao unionOpportunityDao;
-
-    @Autowired
-    private RedisCacheUtil redisCacheUtil;
 
     @Autowired
     private IUnionMemberService unionMemberService;
@@ -59,633 +59,35 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
     //********************************************* Base On Business - get *********************************************
 
-    //********************************************* Base On Business - list ********************************************
-
-
-    //********************************************* Base On Business - save ********************************************
-
-    //********************************************* Base On Business - remove ******************************************
-
-    //********************************************* Base On Business - update ******************************************
-
-    //********************************************* Base On Business - other *******************************************
-
-    //********************************************* Base On Business - filter ******************************************
-
     @Override
-    public List<UnionOpportunity> filterByDelStatus(List<UnionOpportunity> unionOpportunityList, Integer delStatus) throws Exception {
-        if (delStatus == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionOpportunity> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(unionOpportunityList)) {
-            for (UnionOpportunity unionOpportunity : unionOpportunityList) {
-                if (delStatus.equals(unionOpportunity.getDelStatus())) {
-                    result.add(unionOpportunity);
-                }
-            }
-        }
-
-        return result;
-    }
-
-    //********************************************* Object As a Service - get ******************************************
-
-    @Override
-    public UnionOpportunity getById(Integer id) throws Exception {
-        if (id == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        UnionOpportunity result;
-        // (1)cache
-        String idKey = UnionOpportunityCacheUtil.getIdKey(id);
-        if (redisCacheUtil.exists(idKey)) {
-            String tempStr = redisCacheUtil.get(idKey);
-            result = JSONArray.parseObject(tempStr, UnionOpportunity.class);
-            return result;
-        }
-        // (2)db
-        result = unionOpportunityDao.selectById(id);
-        setCache(result, id);
-        return result;
-    }
-
-    @Override
-    public UnionOpportunity getValidById(Integer id) throws Exception {
-        if (id == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        UnionOpportunity result = getById(id);
-
-        return result != null && CommonConstant.DEL_STATUS_NO == result.getDelStatus() ? result : null;
-    }
-
-    @Override
-    public UnionOpportunity getInvalidById(Integer id) throws Exception {
-        if (id == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        UnionOpportunity result = getById(id);
-
-        return result != null && CommonConstant.DEL_STATUS_YES == result.getDelStatus() ? result : null;
-    }
-
-    //********************************************* Object As a Service - list *****************************************
-
-    @Override
-    public List<Integer> getIdList(List<UnionOpportunity> unionOpportunityList) throws Exception {
-        if (unionOpportunityList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<Integer> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(unionOpportunityList)) {
-            for (UnionOpportunity unionOpportunity : unionOpportunityList) {
-                result.add(unionOpportunity.getId());
-            }
-        }
-
-        return result;
-    }
-
-    @Override
-    public List<UnionOpportunity> listByFromMemberId(Integer fromMemberId) throws Exception {
-        if (fromMemberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionOpportunity> result;
-        // (1)cache
-        String fromMemberIdKey = UnionOpportunityCacheUtil.getFromMemberIdKey(fromMemberId);
-        if (redisCacheUtil.exists(fromMemberIdKey)) {
-            String tempStr = redisCacheUtil.get(fromMemberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionOpportunity.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("from_member_id", fromMemberId);
-        result = unionOpportunityDao.selectList(entityWrapper);
-        setCache(result, fromMemberId, UnionOpportunityCacheUtil.TYPE_FROM_MEMBER_ID);
-        return result;
-    }
-
-    @Override
-    public List<UnionOpportunity> listValidByFromMemberId(Integer fromMemberId) throws Exception {
-        if (fromMemberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionOpportunity> result;
-        // (1)cache
-        String validFromMemberIdKey = UnionOpportunityCacheUtil.getValidFromMemberIdKey(fromMemberId);
-        if (redisCacheUtil.exists(validFromMemberIdKey)) {
-            String tempStr = redisCacheUtil.get(validFromMemberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionOpportunity.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("from_member_id", fromMemberId);
-        result = unionOpportunityDao.selectList(entityWrapper);
-        setValidCache(result, fromMemberId, UnionOpportunityCacheUtil.TYPE_FROM_MEMBER_ID);
-        return result;
-    }
-
-    @Override
-    public List<UnionOpportunity> listInvalidByFromMemberId(Integer fromMemberId) throws Exception {
-        if (fromMemberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionOpportunity> result;
-        // (1)cache
-        String invalidFromMemberIdKey = UnionOpportunityCacheUtil.getInvalidFromMemberIdKey(fromMemberId);
-        if (redisCacheUtil.exists(invalidFromMemberIdKey)) {
-            String tempStr = redisCacheUtil.get(invalidFromMemberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionOpportunity.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("from_member_id", fromMemberId);
-        result = unionOpportunityDao.selectList(entityWrapper);
-        setInvalidCache(result, fromMemberId, UnionOpportunityCacheUtil.TYPE_FROM_MEMBER_ID);
-        return result;
-    }
-
-    @Override
-    public List<UnionOpportunity> listByToMemberId(Integer toMemberId) throws Exception {
-        if (toMemberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionOpportunity> result;
-        // (1)cache
-        String toMemberIdKey = UnionOpportunityCacheUtil.getToMemberIdKey(toMemberId);
-        if (redisCacheUtil.exists(toMemberIdKey)) {
-            String tempStr = redisCacheUtil.get(toMemberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionOpportunity.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("to_member_id", toMemberId);
-        result = unionOpportunityDao.selectList(entityWrapper);
-        setCache(result, toMemberId, UnionOpportunityCacheUtil.TYPE_TO_MEMBER_ID);
-        return result;
-    }
-
-    @Override
-    public List<UnionOpportunity> listValidByToMemberId(Integer toMemberId) throws Exception {
-        if (toMemberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionOpportunity> result;
-        // (1)cache
-        String validToMemberIdKey = UnionOpportunityCacheUtil.getValidToMemberIdKey(toMemberId);
-        if (redisCacheUtil.exists(validToMemberIdKey)) {
-            String tempStr = redisCacheUtil.get(validToMemberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionOpportunity.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("to_member_id", toMemberId);
-        result = unionOpportunityDao.selectList(entityWrapper);
-        setValidCache(result, toMemberId, UnionOpportunityCacheUtil.TYPE_TO_MEMBER_ID);
-        return result;
-    }
-
-    @Override
-    public List<UnionOpportunity> listInvalidByToMemberId(Integer toMemberId) throws Exception {
-        if (toMemberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionOpportunity> result;
-        // (1)cache
-        String invalidToMemberIdKey = UnionOpportunityCacheUtil.getInvalidToMemberIdKey(toMemberId);
-        if (redisCacheUtil.exists(invalidToMemberIdKey)) {
-            String tempStr = redisCacheUtil.get(invalidToMemberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionOpportunity.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("to_member_id", toMemberId);
-        result = unionOpportunityDao.selectList(entityWrapper);
-        setInvalidCache(result, toMemberId, UnionOpportunityCacheUtil.TYPE_TO_MEMBER_ID);
-        return result;
-    }
-
-    @Override
-    public List<UnionOpportunity> listByUnionId(Integer unionId) throws Exception {
-        if (unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionOpportunity> result;
-        // (1)cache
-        String unionIdKey = UnionOpportunityCacheUtil.getUnionIdKey(unionId);
-        if (redisCacheUtil.exists(unionIdKey)) {
-            String tempStr = redisCacheUtil.get(unionIdKey);
-            result = JSONArray.parseArray(tempStr, UnionOpportunity.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("union_id", unionId);
-        result = unionOpportunityDao.selectList(entityWrapper);
-        setCache(result, unionId, UnionOpportunityCacheUtil.TYPE_UNION_ID);
-        return result;
-    }
-
-    @Override
-    public List<UnionOpportunity> listValidByUnionId(Integer unionId) throws Exception {
-        if (unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionOpportunity> result;
-        // (1)cache
-        String validUnionIdKey = UnionOpportunityCacheUtil.getValidUnionIdKey(unionId);
-        if (redisCacheUtil.exists(validUnionIdKey)) {
-            String tempStr = redisCacheUtil.get(validUnionIdKey);
-            result = JSONArray.parseArray(tempStr, UnionOpportunity.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId);
-        result = unionOpportunityDao.selectList(entityWrapper);
-        setValidCache(result, unionId, UnionOpportunityCacheUtil.TYPE_UNION_ID);
-        return result;
-    }
-
-    @Override
-    public List<UnionOpportunity> listInvalidByUnionId(Integer unionId) throws Exception {
-        if (unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        List<UnionOpportunity> result;
-        // (1)cache
-        String invalidUnionIdKey = UnionOpportunityCacheUtil.getInvalidUnionIdKey(unionId);
-        if (redisCacheUtil.exists(invalidUnionIdKey)) {
-            String tempStr = redisCacheUtil.get(invalidUnionIdKey);
-            result = JSONArray.parseArray(tempStr, UnionOpportunity.class);
-            return result;
-        }
-        // (2)db
-        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("union_id", unionId);
-        result = unionOpportunityDao.selectList(entityWrapper);
-        setInvalidCache(result, unionId, UnionOpportunityCacheUtil.TYPE_UNION_ID);
-        return result;
-    }
-
-    @Override
-    public List<UnionOpportunity> listByIdList(List<Integer> idList) throws Exception {
-        if (idList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionOpportunity> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(idList)) {
-            for (Integer id : idList) {
-                result.add(getById(id));
-            }
-        }
-
-        return result;
-    }
-
-    @Override
-    public Page<UnionOpportunity> pageSupport(Page page, EntityWrapper<UnionOpportunity> entityWrapper) throws Exception {
-        if (page == null || entityWrapper == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        return unionOpportunityDao.selectPage(page, entityWrapper);
-    }
-    //********************************************* Object As a Service - save *****************************************
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void save(UnionOpportunity newUnionOpportunity) throws Exception {
-        if (newUnionOpportunity == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        unionOpportunityDao.insert(newUnionOpportunity);
-        removeCache(newUnionOpportunity);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void saveBatch(List<UnionOpportunity> newUnionOpportunityList) throws Exception {
-        if (newUnionOpportunityList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        unionOpportunityDao.insertBatch(newUnionOpportunityList);
-        removeCache(newUnionOpportunityList);
-    }
-
-    //********************************************* Object As a Service - remove ***************************************
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void removeById(Integer id) throws Exception {
-        if (id == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // (1)remove cache
-        UnionOpportunity unionOpportunity = getById(id);
-        removeCache(unionOpportunity);
-        // (2)remove in db logically
-        UnionOpportunity removeUnionOpportunity = new UnionOpportunity();
-        removeUnionOpportunity.setId(id);
-        removeUnionOpportunity.setDelStatus(CommonConstant.DEL_STATUS_YES);
-        unionOpportunityDao.updateById(removeUnionOpportunity);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void removeBatchById(List<Integer> idList) throws Exception {
-        if (idList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // (1)remove cache
-        List<UnionOpportunity> unionOpportunityList = listByIdList(idList);
-        removeCache(unionOpportunityList);
-        // (2)remove in db logically
-        List<UnionOpportunity> removeUnionOpportunityList = new ArrayList<>();
-        for (Integer id : idList) {
-            UnionOpportunity removeUnionOpportunity = new UnionOpportunity();
-            removeUnionOpportunity.setId(id);
-            removeUnionOpportunity.setDelStatus(CommonConstant.DEL_STATUS_YES);
-            removeUnionOpportunityList.add(removeUnionOpportunity);
-        }
-        unionOpportunityDao.updateBatchById(removeUnionOpportunityList);
-    }
-
-    //********************************************* Object As a Service - update ***************************************
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void update(UnionOpportunity updateUnionOpportunity) throws Exception {
-        if (updateUnionOpportunity == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // (1)remove cache
-        Integer id = updateUnionOpportunity.getId();
-        UnionOpportunity unionOpportunity = getById(id);
-        removeCache(unionOpportunity);
-        // (2)update db
-        unionOpportunityDao.updateById(updateUnionOpportunity);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void updateBatch(List<UnionOpportunity> updateUnionOpportunityList) throws Exception {
-        if (updateUnionOpportunityList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // (1)remove cache
-        List<Integer> idList = getIdList(updateUnionOpportunityList);
-        List<UnionOpportunity> unionOpportunityList = listByIdList(idList);
-        removeCache(unionOpportunityList);
-        // (2)update db
-        unionOpportunityDao.updateBatchById(updateUnionOpportunityList);
-    }
-
-    //********************************************* Object As a Service - cache support ********************************
-
-    private void setCache(UnionOpportunity newUnionOpportunity, Integer id) {
-        if (id == null) {
-            //do nothing,just in case
-            return;
-        }
-        String idKey = UnionOpportunityCacheUtil.getIdKey(id);
-        redisCacheUtil.set(idKey, newUnionOpportunity);
-    }
-
-    private void setCache(List<UnionOpportunity> newUnionOpportunityList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String foreignIdKey = null;
-        switch (foreignIdType) {
-            case UnionOpportunityCacheUtil.TYPE_FROM_MEMBER_ID:
-                foreignIdKey = UnionOpportunityCacheUtil.getFromMemberIdKey(foreignId);
-                break;
-            case UnionOpportunityCacheUtil.TYPE_TO_MEMBER_ID:
-                foreignIdKey = UnionOpportunityCacheUtil.getToMemberIdKey(foreignId);
-                break;
-            case UnionOpportunityCacheUtil.TYPE_UNION_ID:
-                foreignIdKey = UnionOpportunityCacheUtil.getUnionIdKey(foreignId);
-                break;
-
-            default:
-                break;
-        }
-        if (foreignIdKey != null) {
-            redisCacheUtil.set(foreignIdKey, newUnionOpportunityList);
-        }
-    }
-
-    private void setValidCache(List<UnionOpportunity> newUnionOpportunityList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String validForeignIdKey = null;
-        switch (foreignIdType) {
-            case UnionOpportunityCacheUtil.TYPE_FROM_MEMBER_ID:
-                validForeignIdKey = UnionOpportunityCacheUtil.getValidFromMemberIdKey(foreignId);
-                break;
-            case UnionOpportunityCacheUtil.TYPE_TO_MEMBER_ID:
-                validForeignIdKey = UnionOpportunityCacheUtil.getValidToMemberIdKey(foreignId);
-                break;
-            case UnionOpportunityCacheUtil.TYPE_UNION_ID:
-                validForeignIdKey = UnionOpportunityCacheUtil.getValidUnionIdKey(foreignId);
-                break;
-
-            default:
-                break;
-        }
-        if (validForeignIdKey != null) {
-            redisCacheUtil.set(validForeignIdKey, newUnionOpportunityList);
-        }
-    }
-
-    private void setInvalidCache(List<UnionOpportunity> newUnionOpportunityList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String invalidForeignIdKey = null;
-        switch (foreignIdType) {
-            case UnionOpportunityCacheUtil.TYPE_FROM_MEMBER_ID:
-                invalidForeignIdKey = UnionOpportunityCacheUtil.getInvalidFromMemberIdKey(foreignId);
-                break;
-            case UnionOpportunityCacheUtil.TYPE_TO_MEMBER_ID:
-                invalidForeignIdKey = UnionOpportunityCacheUtil.getInvalidToMemberIdKey(foreignId);
-                break;
-            case UnionOpportunityCacheUtil.TYPE_UNION_ID:
-                invalidForeignIdKey = UnionOpportunityCacheUtil.getInvalidUnionIdKey(foreignId);
-                break;
-
-            default:
-                break;
-        }
-        if (invalidForeignIdKey != null) {
-            redisCacheUtil.set(invalidForeignIdKey, newUnionOpportunityList);
-        }
-    }
-
-    private void removeCache(UnionOpportunity unionOpportunity) {
-        if (unionOpportunity == null) {
-            return;
-        }
-        Integer id = unionOpportunity.getId();
-        String idKey = UnionOpportunityCacheUtil.getIdKey(id);
-        redisCacheUtil.remove(idKey);
-
-        Integer fromMemberId = unionOpportunity.getFromMemberId();
-        if (fromMemberId != null) {
-            String fromMemberIdKey = UnionOpportunityCacheUtil.getFromMemberIdKey(fromMemberId);
-            redisCacheUtil.remove(fromMemberIdKey);
-
-            String validFromMemberIdKey = UnionOpportunityCacheUtil.getValidFromMemberIdKey(fromMemberId);
-            redisCacheUtil.remove(validFromMemberIdKey);
-
-            String invalidFromMemberIdKey = UnionOpportunityCacheUtil.getInvalidFromMemberIdKey(fromMemberId);
-            redisCacheUtil.remove(invalidFromMemberIdKey);
-        }
-
-        Integer toMemberId = unionOpportunity.getToMemberId();
-        if (toMemberId != null) {
-            String toMemberIdKey = UnionOpportunityCacheUtil.getToMemberIdKey(toMemberId);
-            redisCacheUtil.remove(toMemberIdKey);
-
-            String validToMemberIdKey = UnionOpportunityCacheUtil.getValidToMemberIdKey(toMemberId);
-            redisCacheUtil.remove(validToMemberIdKey);
-
-            String invalidToMemberIdKey = UnionOpportunityCacheUtil.getInvalidToMemberIdKey(toMemberId);
-            redisCacheUtil.remove(invalidToMemberIdKey);
-        }
-
-        Integer unionId = unionOpportunity.getUnionId();
-        if (unionId != null) {
-            String unionIdKey = UnionOpportunityCacheUtil.getUnionIdKey(unionId);
-            redisCacheUtil.remove(unionIdKey);
-
-            String validUnionIdKey = UnionOpportunityCacheUtil.getValidUnionIdKey(unionId);
-            redisCacheUtil.remove(validUnionIdKey);
-
-            String invalidUnionIdKey = UnionOpportunityCacheUtil.getInvalidUnionIdKey(unionId);
-            redisCacheUtil.remove(invalidUnionIdKey);
-        }
-
-    }
-
-    private void removeCache(List<UnionOpportunity> unionOpportunityList) {
-        if (ListUtil.isEmpty(unionOpportunityList)) {
-            return;
-        }
-        List<Integer> idList = new ArrayList<>();
-        for (UnionOpportunity unionOpportunity : unionOpportunityList) {
-            idList.add(unionOpportunity.getId());
-        }
-        List<String> idKeyList = UnionOpportunityCacheUtil.getIdKey(idList);
-        redisCacheUtil.remove(idKeyList);
-
-        List<String> fromMemberIdKeyList = getForeignIdKeyList(unionOpportunityList, UnionOpportunityCacheUtil.TYPE_FROM_MEMBER_ID);
-        if (ListUtil.isNotEmpty(fromMemberIdKeyList)) {
-            redisCacheUtil.remove(fromMemberIdKeyList);
-        }
-
-        List<String> toMemberIdKeyList = getForeignIdKeyList(unionOpportunityList, UnionOpportunityCacheUtil.TYPE_TO_MEMBER_ID);
-        if (ListUtil.isNotEmpty(toMemberIdKeyList)) {
-            redisCacheUtil.remove(toMemberIdKeyList);
-        }
-
-        List<String> unionIdKeyList = getForeignIdKeyList(unionOpportunityList, UnionOpportunityCacheUtil.TYPE_UNION_ID);
-        if (ListUtil.isNotEmpty(unionIdKeyList)) {
-            redisCacheUtil.remove(unionIdKeyList);
-        }
-
-    }
-
-    private List<String> getForeignIdKeyList(List<UnionOpportunity> unionOpportunityList, int foreignIdType) {
-        List<String> result = new ArrayList<>();
-        switch (foreignIdType) {
-            case UnionOpportunityCacheUtil.TYPE_FROM_MEMBER_ID:
-                for (UnionOpportunity unionOpportunity : unionOpportunityList) {
-                    Integer fromMemberId = unionOpportunity.getFromMemberId();
-                    if (fromMemberId != null) {
-                        String fromMemberIdKey = UnionOpportunityCacheUtil.getFromMemberIdKey(fromMemberId);
-                        result.add(fromMemberIdKey);
-
-                        String validFromMemberIdKey = UnionOpportunityCacheUtil.getValidFromMemberIdKey(fromMemberId);
-                        result.add(validFromMemberIdKey);
-
-                        String invalidFromMemberIdKey = UnionOpportunityCacheUtil.getInvalidFromMemberIdKey(fromMemberId);
-                        result.add(invalidFromMemberIdKey);
-                    }
-                }
-                break;
-            case UnionOpportunityCacheUtil.TYPE_TO_MEMBER_ID:
-                for (UnionOpportunity unionOpportunity : unionOpportunityList) {
-                    Integer toMemberId = unionOpportunity.getToMemberId();
-                    if (toMemberId != null) {
-                        String toMemberIdKey = UnionOpportunityCacheUtil.getToMemberIdKey(toMemberId);
-                        result.add(toMemberIdKey);
-
-                        String validToMemberIdKey = UnionOpportunityCacheUtil.getValidToMemberIdKey(toMemberId);
-                        result.add(validToMemberIdKey);
-
-                        String invalidToMemberIdKey = UnionOpportunityCacheUtil.getInvalidToMemberIdKey(toMemberId);
-                        result.add(invalidToMemberIdKey);
-                    }
-                }
-                break;
-            case UnionOpportunityCacheUtil.TYPE_UNION_ID:
-                for (UnionOpportunity unionOpportunity : unionOpportunityList) {
-                    Integer unionId = unionOpportunity.getUnionId();
-                    if (unionId != null) {
-                        String unionIdKey = UnionOpportunityCacheUtil.getUnionIdKey(unionId);
-                        result.add(unionIdKey);
-
-                        String validUnionIdKey = UnionOpportunityCacheUtil.getValidUnionIdKey(unionId);
-                        result.add(validUnionIdKey);
-
-                        String invalidUnionIdKey = UnionOpportunityCacheUtil.getInvalidUnionIdKey(unionId);
-                        result.add(invalidUnionIdKey);
-                    }
-                }
-                break;
-
-            default:
-                break;
-        }
-        return result;
-    }
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    @Override
-    public UnionOpportunity getByIdAndUnionIdAndToMemberId(Integer opportunityId, Integer unionId, Integer toMemberId) throws Exception {
+    public UnionOpportunity getValidByIdAndUnionIdAndToMemberId(Integer opportunityId, Integer unionId, Integer toMemberId) throws Exception {
         if (opportunityId == null || unionId == null || toMemberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        UnionOpportunity result = getById(opportunityId);
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("id", opportunityId)
+                .eq("union_id", unionId)
+                .eq("to_member_id", toMemberId);
 
-        return result != null && unionId.equals(result.getUnionId()) && toMemberId.equals(result.getToMemberId()) ? result : null;
+        return unionOpportunityDao.selectOne(entityWrapper);
+    }
+
+    @Override
+    public UnionOpportunity getValidByIdAndUnionIdAndToMemberIdAndAcceptStatus(Integer opportunityId, Integer unionId, Integer toMemberId, Integer acceptStatus) throws Exception {
+        if (opportunityId == null || unionId == null || toMemberId == null || acceptStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("id", opportunityId)
+                .eq("union_id", unionId)
+                .eq("to_member_id", toMemberId)
+                .eq("accept_status", acceptStatus);
+
+        return unionOpportunityDao.selectOne(entityWrapper);
     }
 
     @Override
@@ -693,18 +95,15 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member读权限
-        if (!unionMainService.isUnionValid(unionId)) {
-            throw new BusinessException(CommonConstant.UNION_INVALID);
+        // （1）	获取我的盟员信息
+        List<UnionMember> memberList = unionMemberService.listByBusIdAndUnionId(busId, unionId);
+        if (ListUtil.isEmpty(memberList)) {
+            throw new BusinessException(CommonConstant.MEMBER_NOT_FOUND);
         }
-        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
-        if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
-        }
+        List<Integer> memberIdList = unionMemberService.getIdList(memberList);
         // （2）	获取已接受的我推荐的商机，区分是否已支付
         OpportunityStatisticsVO result = new OpportunityStatisticsVO();
-
-        List<UnionOpportunity> incomeOpportunityList = listByUnionIdAndFromMemberIdAndAcceptStatus(unionId, member.getId(), OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
+        List<UnionOpportunity> incomeOpportunityList = listValidByUnionIdAndFromMemberIdListAndAcceptStatus(unionId, memberIdList, OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
         List<UnionOpportunity> paidIncomeOpportunityList = filterByIsClose(incomeOpportunityList, OpportunityConstant.IS_CLOSE_YES);
         BigDecimal paidIncome = BigDecimal.ZERO;
         if (ListUtil.isNotEmpty(paidIncomeOpportunityList)) {
@@ -726,7 +125,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         BigDecimal incomeSum = BigDecimalUtil.add(paidIncome, unPaidIncome);
         result.setIncomeSum(incomeSum.doubleValue());
         // （3）	获取已接受的推荐给我的商机，区分是否已支付
-        List<UnionOpportunity> expenseOpportunityList = listByUnionIdAndToMemberIdAndAcceptStatus(unionId, member.getId(), OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
+        List<UnionOpportunity> expenseOpportunityList = listValidByUnionIdAndToMemberIdListAndAcceptStatus(unionId, memberIdList, OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
         List<UnionOpportunity> paidExpenseOpportunityList = filterByIsClose(expenseOpportunityList, OpportunityConstant.IS_CLOSE_YES);
         BigDecimal paidExpense = BigDecimal.ZERO;
         if (ListUtil.isNotEmpty(paidExpenseOpportunityList)) {
@@ -803,42 +202,259 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         return result;
     }
 
-    //***************************************** Domain Driven Design - list ********************************************
+    //********************************************* Base On Business - list ********************************************
 
     @Override
-    public List<OpportunityVO> listToMeByBusId(Integer busId, Integer optUnionId, String optAcceptStatus, String optClientName, String optClientPhone) throws Exception {
-        if (busId == null) {
+    public List<UnionOpportunity> listValidByFromMemberIdList(List<Integer> fromMemberIdList) throws Exception {
+        if (fromMemberIdList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .in("from_member_id", fromMemberIdList);
+
+        return unionOpportunityDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionOpportunity> listValidByToMemberIdList(List<Integer> toMemberIdList) throws Exception {
+        if (toMemberIdList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .in("to_member_id", toMemberIdList);
+
+        return unionOpportunityDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionOpportunity> listValidByFromMemberIdListAndAcceptStatus(List<Integer> fromMemberIdList, Integer acceptStatus) throws Exception {
+        if (fromMemberIdList == null || acceptStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .in("from_member_id", fromMemberIdList)
+                .eq("accept_status", acceptStatus);
+
+        return unionOpportunityDao.selectList(entityWrapper);
+    }
+
+
+    @Override
+    public List<UnionOpportunity> listValidByFromMemberIdListAndAcceptStatusAndIsClose(List<Integer> fromMemberIdList, Integer acceptStatus, Integer isClose) throws Exception {
+        if (fromMemberIdList == null || acceptStatus == null || isClose == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .in("from_member_id", fromMemberIdList)
+                .eq("accept_status", acceptStatus)
+                .eq("is_close", isClose);
+
+        return unionOpportunityDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionOpportunity> listValidByToMemberIdListAndAcceptStatus(List<Integer> toMemberIdList, Integer acceptStatus) throws Exception {
+        if (toMemberIdList == null || acceptStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .in("to_member_id", toMemberIdList)
+                .eq("accept_status", acceptStatus);
+
+        return unionOpportunityDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionOpportunity> listValidByToMemberIdListAndAcceptStatusAndIsClose(List<Integer> toMemberIdList, Integer acceptStatus, Integer isClose) throws Exception {
+        if (toMemberIdList == null || acceptStatus == null || isClose == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .in("to_member_id", toMemberIdList)
+                .eq("accept_status", acceptStatus)
+                .eq("is_close", isClose);
+
+        return unionOpportunityDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionOpportunity> listValidByUnionIdAndFromMemberIdAndAcceptStatus(Integer unionId, Integer fromMemberId, Integer acceptStatus) throws Exception {
+        if (unionId == null || fromMemberId == null || acceptStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("from_member_id", fromMemberId)
+                .eq("accept_status", acceptStatus);
+
+        return unionOpportunityDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionOpportunity> listValidByUnionIdAndFromMemberIdListAndAcceptStatus(Integer unionId, List<Integer> fromMemberIdList, Integer acceptStatus) throws Exception {
+        if (unionId == null || fromMemberIdList == null || acceptStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .in("from_member_id", fromMemberIdList)
+                .eq("accept_status", acceptStatus);
+
+        return unionOpportunityDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionOpportunity> listValidByUnionIdAndToMemberIdAndAcceptStatus(Integer unionId, Integer toMemberId, Integer acceptStatus) throws Exception {
+        if (unionId == null || toMemberId == null || acceptStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("to_member_id", toMemberId)
+                .eq("accept_status", acceptStatus);
+
+        return unionOpportunityDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionOpportunity> listValidByUnionIdAndToMemberIdListAndAcceptStatus(Integer unionId, List<Integer> toMemberIdList, Integer acceptStatus) throws Exception {
+        if (unionId == null || toMemberIdList == null || acceptStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .in("to_member_id", toMemberIdList)
+                .eq("accept_status", acceptStatus);
+
+        return unionOpportunityDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionOpportunity> listValidByUnionIdAndToMemberIdAndAcceptStatusAndIsClose(Integer unionId, Integer toMemberId, Integer acceptStatus, Integer isClose) throws Exception {
+        if (unionId == null || toMemberId == null || acceptStatus == null || isClose == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("to_member_id", toMemberId)
+                .eq("accept_status", acceptStatus)
+                .eq("is_close", isClose);
+
+        return unionOpportunityDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionMember> listFromMemberByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
+        if (busId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMember> memberList = unionMemberService.listByBusIdAndUnionId(busId, unionId);
+        List<Integer> memberIdList = unionMemberService.getIdList(memberList);
+
+        List<UnionOpportunity> opportunityList = listValidByUnionIdAndToMemberIdListAndAcceptStatus(unionId, memberIdList, OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
+        List<Integer> fromMemberIdList = getFromMemberIdList(opportunityList);
+        fromMemberIdList = ListUtil.unique(fromMemberIdList);
+
+        return unionMemberService.listByIdList(fromMemberIdList);
+    }
+
+    @Override
+    public List<UnionMember> listToMemberByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
+        if (busId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMember> memberList = unionMemberService.listByBusIdAndUnionId(busId, unionId);
+        List<Integer> memberIdList = unionMemberService.getIdList(memberList);
+
+        List<UnionOpportunity> opportunityList = listValidByUnionIdAndFromMemberIdListAndAcceptStatus(unionId, memberIdList, OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
+        List<Integer> toMemberIdList = getToMemberIdList(opportunityList);
+        toMemberIdList = ListUtil.unique(toMemberIdList);
+
+        return unionMemberService.listByIdList(toMemberIdList);
+    }
+
+    @Override
+    public Page pageFromMeByBusId(Page page, Integer busId, Integer optUnionId, String optAcceptStatus, String optClientName, String optClientPhone) throws Exception {
+        if (page == null || busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	获取商家所有有效的member
         List<UnionMember> memberList = unionMemberService.listValidReadByBusId(busId);
         // （2）	根据unionId过滤掉一些member
-        List<UnionMember> toMemberList = new ArrayList<>();
-        if (optUnionId == null) {
-            toMemberList = memberList;
-        } else {
-            for (UnionMember member : memberList) {
-                if (optUnionId.equals(member.getUnionId())) {
-                    toMemberList.add(member);
-                }
-            }
+        if (optUnionId != null) {
+            memberList = unionMemberService.filterByUnionId(memberList, optUnionId);
         }
-        List<Integer> toMemberIdList = unionMemberService.getIdList(toMemberList);
+        List<Integer> fromMemberIdList = unionMemberService.getIdList(memberList);
         // （3）根据查询条件进行过滤
-        List<UnionOpportunity> opportunityList = listByToMemberIdList(toMemberIdList);
         List<Integer> acceptStatusList = getAcceptStatusList(optAcceptStatus);
-        if (ListUtil.isNotEmpty(acceptStatusList)) {
-            opportunityList = filterByAcceptStatusList(opportunityList, acceptStatusList);
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .in("from_member_id", fromMemberIdList)
+                .in(ListUtil.isNotEmpty(acceptStatusList), "accept_status", acceptStatusList)
+                .like(StringUtil.isNotEmpty(optClientName), "client_name", optClientName)
+                .like(StringUtil.isNotEmpty(optClientPhone), "client_phone", optClientPhone)
+                .exists(" SELECT * FROM t_union_member m" +
+                        " WHERE m.id=t_union_opportunity.to_member_id" +
+                        " AND m.del_status=" + CommonConstant.DEL_STATUS_NO)
+                .orderBy("accept_status ASC,create_time", false);
+        Page result = unionOpportunityDao.selectPage(page, entityWrapper);
+        List<UnionOpportunity> resultDataList = result.getRecords();
+        result.setRecords(getOpportunityVOList(resultDataList));
+
+        return result;
+    }
+
+    @Override
+    public Page pageToMeByBusId(Page page, Integer busId, Integer optUnionId, String optAcceptStatus, String optClientName, String optClientPhone) throws Exception {
+        if (page == null || busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        if (StringUtil.isNotEmpty(optClientName)) {
-            opportunityList = filterByLikeClientName(opportunityList, optClientName);
+        // （1）	获取商家所有有效的member
+        List<UnionMember> memberList = unionMemberService.listValidReadByBusId(busId);
+        // （2）	根据unionId过滤掉一些member
+        if (optUnionId == null) {
+            memberList = unionMemberService.filterByUnionId(memberList, optUnionId);
         }
-        if (StringUtil.isNotEmpty(optClientPhone)) {
-            opportunityList = filterByLikeClientPhone(opportunityList, optClientPhone);
-        }
-        // （3）	按受理状态顺序、创建时间倒序排序
-        List<OpportunityVO> result = getOpportunityVOList(opportunityList);
-        sortByAcceptStatus(result);
+        List<Integer> toMemberIdList = unionMemberService.getIdList(memberList);
+        // （3）根据查询条件进行过滤
+        List<Integer> acceptStatusList = getAcceptStatusList(optAcceptStatus);
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .in("to_member_id", toMemberIdList)
+                .in(ListUtil.isNotEmpty(acceptStatusList), "accept_status", acceptStatusList)
+                .like(StringUtil.isNotEmpty(optClientName), "client_name", optClientName)
+                .like(StringUtil.isNotEmpty(optClientPhone), "client_phone", optClientPhone)
+                .exists(" SELECT * FROM t_union_member m" +
+                        " WHERE m.id=t_union_opportunity.from_member_id" +
+                        " AND m.del_status=" + CommonConstant.DEL_STATUS_NO)
+                .orderBy("accept_status ASC,create_time", false);
+        Page result = unionOpportunityDao.selectPage(page, entityWrapper);
+        List<UnionOpportunity> resultDataList = result.getRecords();
+        result.setRecords(getOpportunityVOList(resultDataList));
 
         return result;
     }
@@ -851,89 +467,17 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
                 vo.setOpportunity(opportunity);
 
                 UnionMain union = unionMainService.getById(opportunity.getUnionId());
-                if (!unionMainService.isUnionValid(union)) {
-                    continue;
-                }
                 vo.setUnion(union);
 
-                UnionMember fromMember = unionMemberService.getValidByIdAndUnionId(opportunity.getFromMemberId(), union.getId());
+                UnionMember fromMember = unionMemberService.getById(opportunity.getFromMemberId());
                 vo.setFromMember(fromMember);
 
-                UnionMember toMember = unionMemberService.getValidByIdAndUnionId(opportunity.getToMemberId(), union.getId());
+                UnionMember toMember = unionMemberService.getById(opportunity.getToMemberId());
                 vo.setToMember(toMember);
 
                 result.add(vo);
             }
         }
-        return result;
-    }
-
-    private void sortByAcceptStatus(List<OpportunityVO> result) {
-        Collections.sort(result, new Comparator<OpportunityVO>() {
-            @Override
-            public int compare(OpportunityVO o1, OpportunityVO o2) {
-                int acceptStatusOrder = o1.getOpportunity().getAcceptStatus().compareTo(o2.getOpportunity().getAcceptStatus());
-                if (acceptStatusOrder < 0) {
-                    return -1;
-                }
-                if (acceptStatusOrder > 0) {
-                    return 1;
-                }
-
-                return o2.getOpportunity().getCreateTime().compareTo(o1.getOpportunity().getCreateTime());
-            }
-        });
-    }
-
-    @Override
-    public List<UnionOpportunity> listByToMemberIdList(List<Integer> toMemberIdList) throws Exception {
-        if (toMemberIdList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionOpportunity> result = new ArrayList<>();
-        for (Integer toMemberId : toMemberIdList) {
-            result.addAll(listByToMemberId(toMemberId));
-        }
-
-        return result;
-    }
-
-    @Override
-    public List<OpportunityVO> listFromMeByBusId(Integer busId, Integer optUnionId, String optAcceptStatus, String optClientName, String optClientPhone) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // （1）	获取商家所有有效的member
-        List<UnionMember> memberList = unionMemberService.listValidReadByBusId(busId);
-        // （2）	根据unionId过滤掉一些member
-        List<UnionMember> fromMemberList = new ArrayList<>();
-        if (optUnionId == null) {
-            fromMemberList = memberList;
-        } else {
-            for (UnionMember member : memberList) {
-                if (optUnionId.equals(member.getUnionId())) {
-                    fromMemberList.add(member);
-                }
-            }
-        }
-        List<Integer> fromMemberIdList = unionMemberService.getIdList(fromMemberList);
-        // （3）根据查询条件进行过滤
-        List<UnionOpportunity> opportunityList = listByFromMemberIdList(fromMemberIdList);
-        List<Integer> acceptStatusList = getAcceptStatusList(optAcceptStatus);
-        if (ListUtil.isNotEmpty(acceptStatusList)) {
-            opportunityList = filterByAcceptStatusList(opportunityList, acceptStatusList);
-        }
-        if (StringUtil.isNotEmpty(optClientName)) {
-            opportunityList = filterByLikeClientName(opportunityList, optClientName);
-        }
-        if (StringUtil.isNotEmpty(optClientPhone)) {
-            opportunityList = filterByLikeClientPhone(opportunityList, optClientPhone);
-        }
-        // （4）	按受理状态顺序、创建时间倒序排序
-        List<OpportunityVO> result = getOpportunityVOList(opportunityList);
-        sortByAcceptStatus(result);
-
         return result;
     }
 
@@ -950,140 +494,41 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
     }
 
     @Override
-    public List<UnionOpportunity> listByFromMemberIdList(List<Integer> fromMemberIdList) throws Exception {
-        if (fromMemberIdList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionOpportunity> result = new ArrayList<>();
-        for (Integer fromMemberId : fromMemberIdList) {
-            result.addAll(listByFromMemberId(fromMemberId));
-        }
-
-        return result;
-    }
-
-    @Override
-    public List<UnionOpportunity> listByUnionIdAndToMemberIdAndAcceptStatus(Integer unionId, Integer toMemberId, Integer acceptStatus) throws Exception {
-        if (unionId == null || toMemberId == null || acceptStatus == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionOpportunity> result = listByToMemberId(toMemberId);
-        result = filterByUnionId(result, unionId);
-        result = filterByAcceptStatus(result, acceptStatus);
-
-        return result;
-    }
-
-    @Override
-    public List<UnionOpportunity> listByUnionIdAndToMemberIdAndAcceptStatusAndIsClose(Integer unionId, Integer toMemberId, Integer acceptStatus, Integer isClose) throws Exception {
-        if (unionId == null || toMemberId == null || acceptStatus == null || isClose == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionOpportunity> result = listByUnionIdAndToMemberIdAndAcceptStatus(unionId, toMemberId, acceptStatus);
-        result = filterByIsClose(result, isClose);
-
-        return result;
-    }
-
-    @Override
-    public List<UnionOpportunity> listByUnionIdAndFromMemberIdAndAcceptStatus(Integer unionId, Integer fromMemberId, Integer acceptStatus) throws Exception {
-        if (unionId == null || fromMemberId == null || acceptStatus == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionOpportunity> result = listByFromMemberId(fromMemberId);
-        result = filterByUnionId(result, unionId);
-        result = filterByAcceptStatus(result, acceptStatus);
-
-        return result;
-    }
-
-    @Override
     public List<BrokerageOpportunityVO> listBrokerageOpportunityVO(List<UnionOpportunity> opportunityList) throws Exception {
-        if (opportunityList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
         List<BrokerageOpportunityVO> result = new ArrayList<>();
+
         if (ListUtil.isNotEmpty(opportunityList)) {
             for (UnionOpportunity opportunity : opportunityList) {
                 BrokerageOpportunityVO vo = new BrokerageOpportunityVO();
                 vo.setOpportunity(opportunity);
 
-                vo.setFromMember(unionMemberService.getValidReadByIdAndUnionId(opportunity.getFromMemberId(), opportunity.getUnionId()));
+                vo.setFromMember(unionMemberService.getById(opportunity.getFromMemberId()));
 
-                vo.setToMember(unionMemberService.getValidReadByIdAndUnionId(opportunity.getToMemberId(), opportunity.getUnionId()));
+                vo.setToMember(unionMemberService.getById(opportunity.getToMemberId()));
 
                 vo.setUnion(unionMainService.getById(opportunity.getUnionId()));
 
                 result.add(vo);
             }
         }
-        Collections.sort(result, new Comparator<BrokerageOpportunityVO>() {
-            @Override
-            public int compare(BrokerageOpportunityVO o1, BrokerageOpportunityVO o2) {
-                int c = o1.getOpportunity().getIsClose().compareTo(o2.getOpportunity().getIsClose());
-                if (c < 0) {
-                    return -1;
-                } else if (c > 0) {
-                    return 1;
-                }
-                return o2.getOpportunity().getCreateTime().compareTo(o1.getOpportunity().getCreateTime());
-            }
-        });
 
         return result;
     }
 
-    @Override
-    public List<UnionOpportunity> listByFromMemberIdListAndAcceptStatusAndIsClose(List<Integer> fromMemberIdList, Integer acceptStatus, Integer isClose) throws Exception {
-        if (fromMemberIdList == null || acceptStatus == null || isClose == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionOpportunity> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(fromMemberIdList)) {
-            result = listByFromMemberIdList(fromMemberIdList);
-            result = filterByAcceptStatus(result, acceptStatus);
-            result = filterByIsClose(result, isClose);
-        }
-
-        return result;
-    }
+    //********************************************* Base On Business - save ********************************************
 
     @Override
-    public List<UnionOpportunity> listByToMemberIdListAndAcceptStatusAndIsClose(List<Integer> toMemberIdList, Integer acceptStatus, Integer isClose) throws Exception {
-        if (toMemberIdList == null || acceptStatus == null || isClose == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionOpportunity> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(toMemberIdList)) {
-            result = listByToMemberIdList(toMemberIdList);
-            result = filterByAcceptStatus(result, acceptStatus);
-            result = filterByIsClose(result, isClose);
-        }
-
-        return result;
-    }
-
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    @Override
+    @Transactional(rollbackFor = Exception.class)
     public void saveOpportunityVOByBusIdAndUnionId(Integer busId, Integer unionId, OpportunityVO vo) throws Exception {
         if (busId == null || unionId == null || vo == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member写权限
-        UnionMain union = unionMainService.getById(unionId);
+        // （1）	判断union有效性和member读权限
+        UnionMain union = unionMainService.getValidById(unionId);
         if (!unionMainService.isUnionValid(union)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getValidWriteByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
@@ -1101,7 +546,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         if (toMemberId == null) {
             throw new BusinessException("商机接受者不能为空");
         }
-        UnionMember toMember = unionMemberService.getValidWriteByIdAndUnionId(toMemberId, unionId);
+        UnionMember toMember = unionMemberService.getValidReadByIdAndUnionId(toMemberId, unionId);
         if (toMember == null) {
             throw new BusinessException("找不到商机接受者信息");
         }
@@ -1111,8 +556,8 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         if (StringUtil.isEmpty(clientName)) {
             throw new BusinessException("客户名称不能为空");
         }
-        if (StringUtil.getStringLength(clientName) > 10) {
-            throw new BusinessException("客户名称字段长度不能超过10");
+        if (StringUtil.getStringLength(clientName) > 20) {
+            throw new BusinessException("客户名称字段长度不能超过20");
         }
         saveOpportunity.setClientName(clientName);
 
@@ -1129,6 +574,9 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         if (StringUtil.isEmpty(businessMsg)) {
             throw new BusinessException("业务备注不能为空");
         }
+        if (StringUtil.getStringLength(businessMsg) > 100) {
+            throw new BusinessException("业务备注字段长度不能超过100");
+        }
         saveOpportunity.setBusinessMsg(businessMsg);
 
         save(saveOpportunity);
@@ -1141,40 +589,37 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         phoneMessageSender.sendMsg(new PhoneMessage(toMember.getBusId(), phone, content));
     }
 
-    //***************************************** Domain Driven Design - remove ******************************************
+    //********************************************* Base On Business - remove ******************************************
 
-    //***************************************** Domain Driven Design - update ******************************************
+    //********************************************* Base On Business - update ******************************************
 
     @Override
-    public void updateStatusByBusIdAndIdAndUnionId(Integer busId, Integer opportunityId, Integer unionId, Integer isAccept, Double acceptPrice) throws Exception {
+    @Transactional(rollbackFor = Exception.class)
+    public void updateByBusIdAndIdAndUnionId(Integer busId, Integer opportunityId, Integer unionId, Integer isAccept, Double acceptPrice) throws Exception {
         if (opportunityId == null || unionId == null || busId == null || isAccept == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member写权限
-        UnionMain union = unionMainService.getById(unionId);
+        // （1）	判断union有效性和member读权限
+        UnionMain union = unionMainService.getValidById(unionId);
         if (!unionMainService.isUnionValid(union)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        UnionMember member = unionMemberService.getValidWriteByBusIdAndUnionId(busId, unionId);
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         // （2）	判断opportunityId有效性
-        UnionOpportunity opportunity = getByIdAndUnionIdAndToMemberId(opportunityId, unionId, member.getId());
+        UnionOpportunity opportunity = getValidByIdAndUnionIdAndToMemberIdAndAcceptStatus(opportunityId, unionId, member.getId(), OpportunityConstant.ACCEPT_STATUS_CONFIRMING);
         if (opportunity == null) {
             throw new BusinessException("找不到商机信息");
         }
-        // （3）	要求opportunity为未处理状态
-        if (OpportunityConstant.ACCEPT_STATUS_CONFIRMING != opportunity.getAcceptStatus()) {
-            throw new BusinessException("商机已处理");
-        }
-        // （4）	接受时受理金额不能为空，且需大于0
+        // （3）	接受时受理金额不能为空，且需大于0
         UnionOpportunity updateOpportunity = new UnionOpportunity();
         if (CommonConstant.COMMON_YES == isAccept) {
             if (acceptPrice == null || acceptPrice <= 0) {
                 throw new BusinessException("接受商机时受理金额不能为空，且必须大于0");
             }
-            UnionOpportunityRatio ratio = opportunityRatioService.getByUnionIdAndFromMemberIdAndToMemberId(unionId, member.getId(), opportunity.getFromMemberId());
+            UnionOpportunityRatio ratio = opportunityRatioService.getValidByUnionIdAndFromMemberIdAndToMemberId(unionId, member.getId(), opportunity.getFromMemberId());
             if (ratio == null) {
                 throw new BusinessException("没有对商机推荐者设置佣金比例");
             }
@@ -1203,16 +648,16 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         }
     }
 
-    //***************************************** Domain Driven Design - count *******************************************
+    //********************************************* Base On Business - other *******************************************
 
     @Override
-    public Double sumBrokerageMoneyByFromMemberIdListAndAcceptStatusAndIsClose(List<Integer> fromMemberIdList, Integer acceptStatus, Integer isClose) throws Exception {
+    public Double sumValidBrokerageMoneyByFromMemberIdListAndAcceptStatusAndIsClose(List<Integer> fromMemberIdList, Integer acceptStatus, Integer isClose) throws Exception {
         if (fromMemberIdList == null || acceptStatus == null || isClose == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
         BigDecimal result = BigDecimal.ZERO;
-        List<UnionOpportunity> opportunityList = listByFromMemberIdListAndAcceptStatusAndIsClose(fromMemberIdList, acceptStatus, isClose);
+        List<UnionOpportunity> opportunityList = listValidByFromMemberIdListAndAcceptStatusAndIsClose(fromMemberIdList, acceptStatus, isClose);
         if (ListUtil.isNotEmpty(opportunityList)) {
             for (UnionOpportunity opportunity : opportunityList) {
                 result = BigDecimalUtil.add(result, opportunity.getBrokerageMoney());
@@ -1223,13 +668,13 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
     }
 
     @Override
-    public Double sumBrokerageMoneyByToMemberIdListAndAcceptStatusAndIsClose(List<Integer> toMemberIdList, Integer acceptStatus, Integer isClose) throws Exception {
+    public Double sumValidBrokerageMoneyByToMemberIdListAndAcceptStatusAndIsClose(List<Integer> toMemberIdList, Integer acceptStatus, Integer isClose) throws Exception {
         if (toMemberIdList == null || acceptStatus == null || isClose == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
         BigDecimal result = BigDecimal.ZERO;
-        List<UnionOpportunity> opportunityList = listByToMemberIdListAndAcceptStatusAndIsClose(toMemberIdList, acceptStatus, isClose);
+        List<UnionOpportunity> opportunityList = listValidByToMemberIdListAndAcceptStatusAndIsClose(toMemberIdList, acceptStatus, isClose);
         if (ListUtil.isNotEmpty(opportunityList)) {
             for (UnionOpportunity opportunity : opportunityList) {
                 result = BigDecimalUtil.add(result, opportunity.getBrokerageMoney());
@@ -1239,9 +684,25 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         return result.doubleValue();
     }
 
-    //***************************************** Domain Driven Design - boolean *****************************************
+    //********************************************* Base On Business - filter ******************************************
 
-    //***************************************** Domain Driven Design - filter ******************************************
+    @Override
+    public List<UnionOpportunity> filterByDelStatus(List<UnionOpportunity> unionOpportunityList, Integer delStatus) throws Exception {
+        if (delStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionOpportunity> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(unionOpportunityList)) {
+            for (UnionOpportunity unionOpportunity : unionOpportunityList) {
+                if (delStatus.equals(unionOpportunity.getDelStatus())) {
+                    result.add(unionOpportunity);
+                }
+            }
+        }
+
+        return result;
+    }
 
     @Override
     public List<UnionOpportunity> filterByUnionId(List<UnionOpportunity> opportunityList, Integer unionId) throws Exception {
@@ -1374,6 +835,24 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
     }
 
     @Override
+    public List<UnionOpportunity> filterByFromMemberId(List<UnionOpportunity> opportunityList, Integer fromMemberId) throws Exception {
+        if (opportunityList == null || fromMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionOpportunity> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(opportunityList)) {
+            for (UnionOpportunity opportunity : opportunityList) {
+                if (fromMemberId.equals(opportunity.getFromMemberId())) {
+                    result.add(opportunity);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
     public List<UnionOpportunity> filterByToMemberId(List<UnionOpportunity> opportunityList, Integer toMemberId) throws Exception {
         if (opportunityList == null || toMemberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -1392,21 +871,336 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
     }
 
     @Override
-    public List<UnionOpportunity> filterByFromMemberId(List<UnionOpportunity> opportunityList, Integer fromMemberId) throws Exception {
-        if (opportunityList == null || fromMemberId == null) {
+    public List<UnionOpportunity> filterInvalidFromMemberId(List<UnionOpportunity> opportunityList) throws Exception {
+        if (opportunityList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
         List<UnionOpportunity> result = new ArrayList<>();
         if (ListUtil.isNotEmpty(opportunityList)) {
             for (UnionOpportunity opportunity : opportunityList) {
-                if (fromMemberId.equals(opportunity.getFromMemberId())) {
+                if (unionMemberService.getValidById(opportunity.getFromMemberId()) != null) {
                     result.add(opportunity);
                 }
             }
         }
 
         return result;
+    }
+
+    @Override
+    public List<UnionOpportunity> filterInvalidToMemberId(List<UnionOpportunity> opportunityList) throws Exception {
+        if (opportunityList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionOpportunity> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(opportunityList)) {
+            for (UnionOpportunity opportunity : opportunityList) {
+                if (unionMemberService.getValidById(opportunity.getToMemberId()) != null) {
+                    result.add(opportunity);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    //********************************************* Object As a Service - get ******************************************
+
+    @Override
+    public UnionOpportunity getById(Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        return unionOpportunityDao.selectById(id);
+    }
+
+    @Override
+    public UnionOpportunity getValidById(Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("id", id);
+
+        return unionOpportunityDao.selectOne(entityWrapper);
+    }
+
+    @Override
+    public UnionOpportunity getInvalidById(Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("id", id);
+
+        return unionOpportunityDao.selectOne(entityWrapper);
+    }
+
+    //********************************************* Object As a Service - list *****************************************
+
+    @Override
+    public List<Integer> getIdList(List<UnionOpportunity> unionOpportunityList) throws Exception {
+        if (unionOpportunityList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<Integer> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(unionOpportunityList)) {
+            for (UnionOpportunity unionOpportunity : unionOpportunityList) {
+                result.add(unionOpportunity.getId());
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<Integer> getFromMemberIdList(List<UnionOpportunity> unionOpportunityList) throws Exception {
+        if (unionOpportunityList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<Integer> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(unionOpportunityList)) {
+            for (UnionOpportunity unionOpportunity : unionOpportunityList) {
+                result.add(unionOpportunity.getFromMemberId());
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<Integer> getToMemberIdList(List<UnionOpportunity> unionOpportunityList) throws Exception {
+        if (unionOpportunityList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<Integer> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(unionOpportunityList)) {
+            for (UnionOpportunity unionOpportunity : unionOpportunityList) {
+                result.add(unionOpportunity.getToMemberId());
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionOpportunity> listByFromMemberId(Integer fromMemberId) throws Exception {
+        if (fromMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("from_member_id", fromMemberId);
+
+        return unionOpportunityDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionOpportunity> listValidByFromMemberId(Integer fromMemberId) throws Exception {
+        if (fromMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("from_member_id", fromMemberId);
+
+        return unionOpportunityDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionOpportunity> listInvalidByFromMemberId(Integer fromMemberId) throws Exception {
+        if (fromMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("from_member_id", fromMemberId);
+
+        return unionOpportunityDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionOpportunity> listByToMemberId(Integer toMemberId) throws Exception {
+        if (toMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("to_member_id", toMemberId);
+
+        return unionOpportunityDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionOpportunity> listValidByToMemberId(Integer toMemberId) throws Exception {
+        if (toMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("to_member_id", toMemberId);
+
+        return unionOpportunityDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionOpportunity> listInvalidByToMemberId(Integer toMemberId) throws Exception {
+        if (toMemberId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("to_member_id", toMemberId);
+
+        return unionOpportunityDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionOpportunity> listByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("union_id", unionId);
+
+        return unionOpportunityDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionOpportunity> listValidByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId);
+
+        return unionOpportunityDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionOpportunity> listInvalidByUnionId(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("union_id", unionId);
+
+        return unionOpportunityDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionOpportunity> listByIdList(List<Integer> idList) throws Exception {
+        if (idList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
+        entityWrapper.in("id", idList);
+
+        return unionOpportunityDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public Page pageSupport(Page page, EntityWrapper<UnionOpportunity> entityWrapper) throws Exception {
+        if (page == null || entityWrapper == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        return unionOpportunityDao.selectPage(page, entityWrapper);
+    }
+    //********************************************* Object As a Service - save *****************************************
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void save(UnionOpportunity newUnionOpportunity) throws Exception {
+        if (newUnionOpportunity == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        unionOpportunityDao.insert(newUnionOpportunity);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void saveBatch(List<UnionOpportunity> newUnionOpportunityList) throws Exception {
+        if (newUnionOpportunityList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        unionOpportunityDao.insertBatch(newUnionOpportunityList);
+    }
+
+    //********************************************* Object As a Service - remove ***************************************
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeById(Integer id) throws Exception {
+        if (id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        UnionOpportunity removeUnionOpportunity = new UnionOpportunity();
+        removeUnionOpportunity.setId(id);
+        removeUnionOpportunity.setDelStatus(CommonConstant.DEL_STATUS_YES);
+        unionOpportunityDao.updateById(removeUnionOpportunity);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void removeBatchById(List<Integer> idList) throws Exception {
+        if (idList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionOpportunity> removeUnionOpportunityList = new ArrayList<>();
+        for (Integer id : idList) {
+            UnionOpportunity removeUnionOpportunity = new UnionOpportunity();
+            removeUnionOpportunity.setId(id);
+            removeUnionOpportunity.setDelStatus(CommonConstant.DEL_STATUS_YES);
+            removeUnionOpportunityList.add(removeUnionOpportunity);
+        }
+        unionOpportunityDao.updateBatchById(removeUnionOpportunityList);
+    }
+
+    //********************************************* Object As a Service - update ***************************************
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void update(UnionOpportunity updateUnionOpportunity) throws Exception {
+        if (updateUnionOpportunity == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        unionOpportunityDao.updateById(updateUnionOpportunity);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void updateBatch(List<UnionOpportunity> updateUnionOpportunityList) throws Exception {
+        if (updateUnionOpportunityList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        unionOpportunityDao.updateBatchById(updateUnionOpportunityList);
     }
 
 }

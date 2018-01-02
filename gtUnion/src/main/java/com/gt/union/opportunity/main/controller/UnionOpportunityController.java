@@ -14,6 +14,7 @@ import com.gt.union.opportunity.main.service.IUnionOpportunityService;
 import com.gt.union.opportunity.main.vo.OpportunityStatisticsDay;
 import com.gt.union.opportunity.main.vo.OpportunityStatisticsVO;
 import com.gt.union.opportunity.main.vo.OpportunityVO;
+import com.gt.union.union.member.entity.UnionMember;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -39,6 +40,48 @@ public class UnionOpportunityController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
+    @ApiOperation(value = "列表：我的佣金收入来源", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/fromMember", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String listFromMemberByUnionId(
+            HttpServletRequest request,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @PathVariable("unionId") Integer unionId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        // mock
+        List<UnionMember> result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.list(UnionMember.class, 20);
+        } else {
+            result = unionOpportunityService.listFromMemberByBusIdAndUnionId(busId, unionId);
+        }
+        return GtJsonResult.instanceSuccessMsg(result).toString();
+    }
+
+    @ApiOperation(value = "列表：我的佣金去向", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/toMember", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String listToMemberByUnionId(
+            HttpServletRequest request,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @PathVariable("unionId") Integer unionId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        // mock
+        List<UnionMember> result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.list(UnionMember.class, 20);
+        } else {
+            result = unionOpportunityService.listToMemberByBusIdAndUnionId(busId, unionId);
+        }
+        return GtJsonResult.instanceSuccessMsg(result).toString();
+    }
+
     @ApiOperation(value = "分页：商机-我的商机", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/toMe/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageToMe(
@@ -57,16 +100,16 @@ public class UnionOpportunityController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-        // mock
-        List<OpportunityVO> voList;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            voList = MockUtil.list(OpportunityVO.class, page.getSize());
+            // mock
+            List<OpportunityVO> voList = MockUtil.list(OpportunityVO.class, page.getSize());
+            Page<OpportunityVO> result = (Page<OpportunityVO>) page;
+            result = PageUtil.setRecord(result, voList);
+            return GtJsonResult.instanceSuccessMsg(result).toString();
         } else {
-            voList = unionOpportunityService.listToMeByBusId(busId, unionId, acceptStatus, clientName, clientPhone);
+            Page result = unionOpportunityService.pageToMeByBusId(page, busId, unionId, acceptStatus, clientName, clientPhone);
+            return GtJsonResult.instanceSuccessMsg(result).toString();
         }
-        Page<OpportunityVO> result = (Page<OpportunityVO>) page;
-        result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "分页：商机-我要推荐", produces = "application/json;charset=UTF-8")
@@ -87,16 +130,16 @@ public class UnionOpportunityController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-        // mock
-        List<OpportunityVO> voList;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            voList = MockUtil.list(OpportunityVO.class, page.getSize());
+            // mock
+            List<OpportunityVO> voList = MockUtil.list(OpportunityVO.class, page.getSize());
+            Page<OpportunityVO> result = (Page<OpportunityVO>) page;
+            result = PageUtil.setRecord(result, voList);
+            return GtJsonResult.instanceSuccessMsg(result).toString();
         } else {
-            voList = unionOpportunityService.listFromMeByBusId(busId, unionId, acceptStatus, clientName, clientPhone);
+            Page result = unionOpportunityService.pageFromMeByBusId(page, busId, unionId, acceptStatus, clientName, clientPhone);
+            return GtJsonResult.instanceSuccessMsg(result).toString();
         }
-        Page<OpportunityVO> result = (Page<OpportunityVO>) page;
-        result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "商机-数据统计图", produces = "application/json;charset=UTF-8")
@@ -154,7 +197,7 @@ public class UnionOpportunityController {
             throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
         }
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
-            unionOpportunityService.updateStatusByBusIdAndIdAndUnionId(busId, opportunityId, unionId, isAccept, acceptPrice);
+            unionOpportunityService.updateByBusIdAndIdAndUnionId(busId, opportunityId, unionId, isAccept, acceptPrice);
         }
         return GtJsonResult.instanceSuccessMsg().toString();
     }

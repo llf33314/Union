@@ -15,7 +15,7 @@ export default {
   data() {
     return {
       unionNotice: '',
-      unionNoticeMaxlength: 100
+      unionNoticeMaxlength: 160
     };
   },
   computed: {
@@ -57,21 +57,21 @@ export default {
     unionNoticeFocus() {
       if (this.isUnionOwner) {
         document.querySelector('#unionNotice').style.border = '1px solid #ddd';
-        let valueLength = lengthCheck(this.unionNotice, 50)[0];
-        let len = lengthCheck(this.unionNotice, 50)[1];
-        if (valueLength > 50) {
+        let valueLength = lengthCheck(this.unionNotice, 80)[0];
+        let len = lengthCheck(this.unionNotice, 80)[1];
+        if (valueLength > 80) {
           this.unionNotice = this.unionNotice.substring(0, len + 1);
           this.unionNoticeMaxlength = len;
           return false;
         } else {
-          this.unionNoticeMaxlength = 100;
+          this.unionNoticeMaxlength = 160;
         }
       }
     },
     unionNoticeBlur() {
       document.querySelector('#unionNotice').style.border = 'none';
-      let valueLength = lengthCheck(this.unionNotice, 50)[0];
-      if (valueLength > 50) {
+      let valueLength = lengthCheck(this.unionNotice, 80)[0];
+      if (valueLength > 80) {
         return false;
       } else {
         $http
@@ -83,15 +83,15 @@ export default {
       }
     },
     unionNoticeKeydown(e) {
-      let valueLength = lengthCheck(this.unionNotice, 50)[0];
-      let len = lengthCheck(this.unionNotice, 50)[1];
-      if (valueLength > 50) {
+      let valueLength = lengthCheck(this.unionNotice, 80)[0];
+      let len = lengthCheck(this.unionNotice, 80)[1];
+      if (valueLength > 80) {
         this.unionNoticeMaxlength = len;
         return false;
       } else {
-        this.unionNoticeMaxlength = 100;
+        this.unionNoticeMaxlength = 160;
       }
-    },
+    }
   }
 };
 </script>

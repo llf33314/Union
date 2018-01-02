@@ -1,5 +1,6 @@
 // 只能输入正数
 export function numberCheck(value) {
+  value = value + '';
   //先把非数字的都替换掉，除了数字和.
   value = value.replace(/[^\d\.]/g, '');
   //必须保证第一个为数字而不是.

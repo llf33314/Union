@@ -57,16 +57,140 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
 
     //********************************************* Base On Business - get *********************************************
 
+    @Override
+    public UnionVerifier getValidByBusIdAndId(Integer busId, Integer verifierId) throws Exception {
+        if (busId == null || verifierId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        UnionVerifier result = getValidById(verifierId);
+
+        return result != null && busId.equals(result.getBusId()) ? result : null;
+    }
+
     //********************************************* Base On Business - list ********************************************
 
+    @Override
+    public List<UnionVerifier> listValid() throws Exception {
+        EntityWrapper<UnionVerifier> entityWrapper = new EntityWrapper<>();
+
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO);
+
+        return unionVerifierDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionVerifier> listValidFinanceByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        BusUser busUser = busUserService.getBusUserById(busId);
+        if (busUser == null) {
+            throw new BusinessException(CommonConstant.BUS_NOT_FOUND);
+        }
+
+        List<UnionVerifier> result = new ArrayList<>();
+        UnionVerifier adminVerifier = new UnionVerifier();
+        adminVerifier.setEmployeeName("管理员");
+        adminVerifier.setPhone(busUser.getPhone());
+        result.add(adminVerifier);
+
+        result.addAll(listValidByBusId(busId));
+
+        return result;
+    }
 
     //********************************************* Base On Business - save ********************************************
 
+    @Override
+    public void saveByBusId(Integer busId, String code, UnionVerifier verifier) throws Exception {
+        if (busId == null || code == null || verifier == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        // （1）	手机号不能重复
+        String phone = verifier.getPhone();
+        if (StringUtil.isEmpty(phone)) {
+            throw new BusinessException("手机号不能为空");
+        }
+        if (!StringUtil.isPhone(phone)) {
+            throw new BusinessException("手机号格式有误");
+        }
+        if (!smsService.checkPhoneCode(SmsCodeConstant.UNION_VERIFIER_TYPE, code, phone)) {
+            throw new BusinessException("验证码错误");
+        }
+        if (existValidByBusIdAndPhone(busId, phone)) {
+            throw new BusinessException("已存在手机号为" + phone + "的平台管理人员信息");
+        }
+        UnionVerifier saveVerifier = new UnionVerifier();
+        saveVerifier.setCreateTime(DateUtil.getCurrentDate());
+        saveVerifier.setDelStatus(CommonConstant.DEL_STATUS_NO);
+        saveVerifier.setBusId(busId);
+        saveVerifier.setPhone(phone);
+        // （2）门店信息
+        Integer shopId = verifier.getShopId();
+        if (shopId == null) {
+            throw new BusinessException("门店信息不能为空");
+        }
+        WsWxShopInfoExtend shop = shopService.getById(shopId);
+        if (shop == null) {
+            throw new BusinessException("找不到门店信息");
+        }
+        saveVerifier.setShopId(shopId);
+        saveVerifier.setShopName(shop.getBusinessName());
+        // （3）员工信息
+        Integer employeeId = verifier.getEmployeeId();
+        if (employeeId == null) {
+            throw new BusinessException("员工信息不能为空");
+        }
+        TCommonStaff employee = itCommonStaffService.getTCommonStaffById(employeeId);
+        if (employee == null) {
+            throw new BusinessException("找不到员工信息");
+        }
+        saveVerifier.setEmployeeId(employeeId);
+        saveVerifier.setEmployeeName(employee.getName());
+
+        save(saveVerifier);
+    }
+
     //********************************************* Base On Business - remove ******************************************
+
+    @Override
+    public void removeByBusIdAndId(Integer busId, Integer verifierId) throws Exception {
+        if (busId == null || verifierId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        UnionVerifier removeVerifier = getValidByBusIdAndId(busId, verifierId);
+        if (removeVerifier == null) {
+            throw new BusinessException("找不到平添管理人员信息");
+        }
+
+        removeById(verifierId);
+    }
 
     //********************************************* Base On Business - update ******************************************
 
     //********************************************* Base On Business - other *******************************************
+
+    @Override
+    public boolean existValidByBusIdAndPhone(Integer busId, String phone) throws Exception {
+        if (busId == null || phone == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionVerifier> verifierList = listValidByBusId(busId);
+        if (ListUtil.isNotEmpty(verifierList)) {
+            for (UnionVerifier verifier : verifierList) {
+                if (phone.equals(verifier.getPhone())) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
+    }
 
     //********************************************* Base On Business - filter ******************************************
 
@@ -81,6 +205,24 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
             for (UnionVerifier unionVerifier : unionVerifierList) {
                 if (delStatus.equals(unionVerifier.getDelStatus())) {
                     result.add(unionVerifier);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionVerifier> filterByPhone(List<UnionVerifier> verifierList, String phone) throws Exception {
+        if (verifierList == null || phone == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionVerifier> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(verifierList)) {
+            for (UnionVerifier verifier : verifierList) {
+                if (phone.equals(verifier.getPhone())) {
+                    result.add(verifier);
                 }
             }
         }
@@ -229,7 +371,7 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
     }
 
     @Override
-    public Page<UnionVerifier> pageSupport(Page page, EntityWrapper<UnionVerifier> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionVerifier> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -456,166 +598,6 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
             default:
                 break;
         }
-        return result;
-    }
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    @Override
-    public UnionVerifier getByBusIdAndId(Integer busId, Integer verifierId) throws Exception {
-        if (busId == null || verifierId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        UnionVerifier result = getById(verifierId);
-
-        return result != null && busId.equals(result.getBusId()) ? result : null;
-    }
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    @Override
-    public List<UnionVerifier> list() throws Exception {
-        EntityWrapper<UnionVerifier> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.COMMON_NO);
-
-        return unionVerifierDao.selectList(entityWrapper);
-    }
-
-    @Override
-    public List<UnionVerifier> listFinanceByBusId(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        BusUser busUser = busUserService.getBusUserById(busId);
-        if (busUser == null) {
-            throw new BusinessException("找不到商家信息");
-        }
-
-        List<UnionVerifier> result = new ArrayList<>();
-        UnionVerifier adminVerifier = new UnionVerifier();
-        adminVerifier.setEmployeeName("管理员");
-        adminVerifier.setPhone(busUser.getPhone());
-        result.add(adminVerifier);
-
-        result.addAll(listByBusId(busId));
-
-        return result;
-    }
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    @Override
-    public void saveByBusId(Integer busId, String code, UnionVerifier verifier) throws Exception {
-        if (busId == null || code == null || verifier == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        // （1）	手机号不能重复
-        String phone = verifier.getPhone();
-        if (StringUtil.isEmpty(phone)) {
-            throw new BusinessException("手机号不能为空");
-        }
-        if (!StringUtil.isPhone(phone)) {
-            throw new BusinessException("手机号格式有误");
-        }
-        if (!smsService.checkPhoneCode(SmsCodeConstant.UNION_VERIFIER_TYPE, code, phone)) {
-            throw new BusinessException("验证码错误");
-        }
-        if (existByBusIdAndPhone(busId, phone)) {
-            throw new BusinessException("已存在手机号为" + phone + "的平台管理人员信息");
-        }
-        UnionVerifier saveVerifier = new UnionVerifier();
-        saveVerifier.setCreateTime(DateUtil.getCurrentDate());
-        saveVerifier.setDelStatus(CommonConstant.DEL_STATUS_NO);
-        saveVerifier.setBusId(busId);
-        saveVerifier.setPhone(phone);
-        // （2）门店信息
-        Integer shopId = verifier.getShopId();
-        if (shopId == null) {
-            throw new BusinessException("门店信息不能为空");
-        }
-        WsWxShopInfoExtend shop = shopService.getById(shopId);
-        if (shop == null) {
-            throw new BusinessException("找不到门店信息");
-        }
-        saveVerifier.setShopId(shopId);
-        saveVerifier.setShopName(shop.getBusinessName());
-        // （3）员工信息
-        Integer employeeId = verifier.getEmployeeId();
-        if (employeeId == null) {
-            throw new BusinessException("员工信息不能为空");
-        }
-        TCommonStaff employee = itCommonStaffService.getTCommonStaffById(employeeId);
-        if (employee == null) {
-            throw new BusinessException("找不到员工信息");
-        }
-        saveVerifier.setEmployeeId(employeeId);
-        saveVerifier.setEmployeeName(employee.getName());
-
-        save(saveVerifier);
-    }
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    @Override
-    public void removeByBusIdAndId(Integer busId, Integer verifierId) throws Exception {
-        if (busId == null || verifierId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        UnionVerifier removeVerifier = getByBusIdAndId(busId, verifierId);
-        if (removeVerifier == null) {
-            throw new BusinessException("找不到平添管理人员信息");
-        }
-
-        removeById(verifierId);
-    }
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    //***************************************** Domain Driven Design - boolean *****************************************
-
-    @Override
-    public boolean existByBusIdAndPhone(Integer busId, String phone) throws Exception {
-        if (busId == null || phone == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionVerifier> verifierList = listByBusId(busId);
-        if (ListUtil.isNotEmpty(verifierList)) {
-            for (UnionVerifier verifier : verifierList) {
-                if (phone.equals(verifier.getPhone())) {
-                    return true;
-                }
-            }
-        }
-
-        return false;
-    }
-
-    //***************************************** Domain Driven Design - filter ******************************************
-
-    @Override
-    public List<UnionVerifier> filterByPhone(List<UnionVerifier> verifierList, String phone) throws Exception {
-        if (verifierList == null || phone == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionVerifier> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(verifierList)) {
-            for (UnionVerifier verifier : verifierList) {
-                if (phone.equals(verifier.getPhone())) {
-                    result.add(verifier);
-                }
-            }
-        }
-
         return result;
     }
 

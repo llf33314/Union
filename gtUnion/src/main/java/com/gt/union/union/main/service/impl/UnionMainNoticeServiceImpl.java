@@ -102,14 +102,12 @@ public class UnionMainNoticeServiceImpl implements IUnionMainNoticeService {
             throw new BusinessException(CommonConstant.UNION_OWNER_ERROR);
         }
 
-        // （2）公告内容字数不能超过50字
+        // （2）公告内容字数不能超过160字
         if (StringUtil.getStringLength(content) > 160) {
             throw new BusinessException("公告内容不能为空，且字数不能大于160");
         }
 
-        // （3）判断原公告是否存在：
-        //   （3-1）如果存在，则更新；
-        //   （3-2）如果不存在，则新增
+        // （3）更新或新增
         UnionMainNotice notice = getValidByUnionId(unionId);
         if (notice != null) {
             UnionMainNotice updateNotice = new UnionMainNotice();
@@ -290,7 +288,7 @@ public class UnionMainNoticeServiceImpl implements IUnionMainNoticeService {
     }
 
     @Override
-    public Page<UnionMainNotice> pageSupport(Page page, EntityWrapper<UnionMainNotice> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionMainNotice> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }

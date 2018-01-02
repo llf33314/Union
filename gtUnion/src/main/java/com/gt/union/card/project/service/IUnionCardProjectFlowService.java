@@ -17,6 +17,17 @@ public interface IUnionCardProjectFlowService {
 
     //********************************************* Base On Business - list ********************************************
 
+    /**
+     * 我的联盟-联盟卡设置-活动卡设置-分页数据-我的活动项目-审批记录
+     *
+     * @param busId      商家id
+     * @param unionId    联盟id
+     * @param activityId 活动id
+     * @return List<UnionCardProjectFlow>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardProjectFlow> listValidByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception;
+
     //********************************************* Base On Business - save ********************************************
 
     //********************************************* Base On Business - remove ******************************************
@@ -119,10 +130,10 @@ public interface IUnionCardProjectFlowService {
      *
      * @param page          分页对象
      * @param entityWrapper 条件
-     * @return Page<UnionCardProjectFlow>
+     * @return Page
      * @throws Exception 统一处理异常
      */
-    Page<UnionCardProjectFlow> pageSupport(Page page, EntityWrapper<UnionCardProjectFlow> entityWrapper) throws Exception;
+    Page pageSupport(Page page, EntityWrapper<UnionCardProjectFlow> entityWrapper) throws Exception;
 
     //****************************************** Object As a Service - save ********************************************
 
@@ -177,34 +188,5 @@ public interface IUnionCardProjectFlowService {
      * @throws Exception 统一处理异常
      */
     void updateBatch(List<UnionCardProjectFlow> updateUnionCardProjectFlowList) throws Exception;
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    /**
-     * 我的联盟-联盟卡设置-活动卡设置-分页数据-我的活动项目-审批记录
-     *
-     * @param busId      商家id
-     * @param unionId    联盟id
-     * @param activityId 活动id
-     * @return List<UnionCardProjectFlow>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCardProjectFlow> listByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception;
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    //***************************************** Domain Driven Design - boolean *****************************************
 
 }

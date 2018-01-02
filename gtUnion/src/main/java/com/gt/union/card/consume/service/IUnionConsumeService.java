@@ -5,8 +5,6 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.card.consume.entity.UnionConsume;
 import com.gt.union.card.consume.vo.ConsumePostVO;
 import com.gt.union.card.consume.vo.ConsumeRecordVO;
-import com.gt.union.common.exception.ParamException;
-import com.gt.union.h5.card.vo.MyCardConsumeVO;
 import com.gt.union.union.main.vo.UnionPayVO;
 
 import java.util.Date;
@@ -21,15 +19,129 @@ import java.util.List;
 public interface IUnionConsumeService {
     //********************************************* Base On Business - get *********************************************
 
+    /**
+     * 缓存穿透-获取未删除的消费核销信息
+     *
+     * @param orderNo 订单号
+     * @return UnionConsume
+     * @throws Exception 统一处理异常
+     */
+    UnionConsume getValidByOrderNo(String orderNo) throws Exception;
+
+    /**
+     * 缓存穿透-根据订单号和行业模型查询未删除的消费记录
+     *
+     * @param orderNo 订单号
+     * @param model   行业模型
+     * @return UnionConsume
+     * @throws Exception 统一处理异常
+     */
+    UnionConsume getValidByOrderNoAndModel(String orderNo, Integer model) throws Exception;
+
     //********************************************* Base On Business - list ********************************************
 
+    /**
+     * 重复方法抽离：根据消费记录列表获取VO对象
+     *
+     * @param consumeList 消费记录列表
+     * @return List<ConsumeRecordVO>
+     * @throws Exception 统一处理异常
+     */
+    List<ConsumeRecordVO> listConsumeRecordVO(List<UnionConsume> consumeList) throws Exception;
+
+    /**
+     * 缓存穿透-导出：前台-消费核销记录
+     *
+     * @param busId         商家id
+     * @param optUnionId    联盟id
+     * @param optShopId     门店id
+     * @param optCardNumber 联盟卡号
+     * @param optPhone      手机号
+     * @param optBeginTime  开始时间
+     * @param optEndTime    结束时间
+     * @return List<ConsumeRecordVO>
+     * @throws Exception 统一处理异常
+     */
+    List<ConsumeRecordVO> listConsumeRecordVOByBusId(
+            Integer busId, Integer optUnionId, Integer optShopId, String optCardNumber, String optPhone, Date optBeginTime, Date optEndTime) throws Exception;
+
+    /**
+     * 缓存穿透-分页：前台-消费核销记录
+     *
+     * @param page          分页对象
+     * @param busId         商家id
+     * @param optUnionId    联盟id
+     * @param optShopId     门店id
+     * @param optCardNumber 联盟卡号
+     * @param optPhone      手机号
+     * @param optBeginTime  开始时间
+     * @param optEndTime    结束时间
+     * @return List<ConsumeRecordVO>
+     * @throws Exception 统一处理异常
+     */
+    Page pageConsumeRecordVOByBusId(
+            Page page, Integer busId, Integer optUnionId, Integer optShopId, String optCardNumber, String optPhone, Date optBeginTime, Date optEndTime) throws Exception;
+
+    /**
+     * 缓存穿透-分页：联盟卡手机端，我的消费记录列表
+     *
+     * @param page  分页参数
+     * @param fanId 联盟卡粉丝id
+     * @return Page
+     * @throws Exception 统一处理异常
+     */
+    Page pageConsumeByFanId(Page page, Integer fanId) throws Exception;
+
+    /**
+     * 缓存穿透-分页：根据联盟卡粉丝id获取已支付消费记录列表
+     *
+     * @param page  分页参数
+     * @param fanId 联盟卡粉丝id
+     * @return Page
+     * @throws Exception 统一处理异常
+     */
+    Page pagePayByFanId(Page page, Integer fanId) throws Exception;
+
     //********************************************* Base On Business - save ********************************************
+
+    /**
+     * 前台-联盟卡消费核销-支付
+     *
+     * @param busId   商家id
+     * @param unionId 联盟id
+     * @param fanId   粉丝id
+     * @param vo      表单内容
+     * @return UnionPayVO
+     * @throws Exception 统一处理异常
+     */
+    UnionPayVO saveConsumePostVOByBusIdAndUnionIdAndFanId(Integer busId, Integer unionId, Integer fanId, ConsumePostVO vo) throws Exception;
 
     //********************************************* Base On Business - remove ******************************************
 
     //********************************************* Base On Business - update ******************************************
 
+    /**
+     * 前台-联盟卡消费核销-支付-回调
+     *
+     * @param orderNo    订单号
+     * @param socketKey  socket关键字
+     * @param payType    支付类型
+     * @param payOrderNo 支付订单号
+     * @param isSuccess  是否成功
+     * @return String 返回结果
+     */
+    String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess);
+
     //********************************************* Base On Business - other *******************************************
+
+    /**
+     * 根据联盟卡粉丝id计算消费记录数
+     *
+     * @param fanId 联盟卡粉丝id
+     * @return Integer
+     * @throws Exception 统一处理异常
+     */
+    Integer countValidPayByFanId(Integer fanId) throws Exception;
 
     //********************************************* Base On Business - filter ******************************************
 
@@ -206,10 +318,10 @@ public interface IUnionConsumeService {
      *
      * @param page          分页对象
      * @param entityWrapper 条件
-     * @return Page<UnionConsume>
+     * @return Page
      * @throws Exception 统一处理异常
      */
-    Page<UnionConsume> pageSupport(Page page, EntityWrapper<UnionConsume> entityWrapper) throws Exception;
+    Page pageSupport(Page page, EntityWrapper<UnionConsume> entityWrapper) throws Exception;
 
     //****************************************** Object As a Service - save ********************************************
 
@@ -264,110 +376,5 @@ public interface IUnionConsumeService {
      * @throws Exception 统一处理异常
      */
     void updateBatch(List<UnionConsume> updateUnionConsumeList) throws Exception;
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    /**
-     * 获取消费核销信息
-     *
-     * @param orderNo 订单号
-     * @return UnionConsume
-     * @throws Exception 统一处理异常
-     */
-    UnionConsume getByOrderNo(String orderNo) throws Exception;
-
-    /**
-     * 根据订单号和行业模型查询消费记录
-     *
-     * @param orderNo 订单号
-     * @param model   行业模型
-     * @return
-     * @throws Exception 统一处理异常
-     */
-    UnionConsume getByOrderNoAndModel(String orderNo, Integer model) throws Exception;
-
-    //***************************************** Domain Driven Design - count *********************************************
-
-    /**
-     * 根据联盟卡粉丝id计算消费记录数
-     *
-     * @param fanId 联盟卡粉丝id
-     * @return
-     */
-    Integer countPayByFanId(Integer fanId) throws ParamException;
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    /**
-     * 分页：前台-消费核销记录；导出：前台-消费核销记录
-     *
-     * @param busId         商家id
-     * @param optUnionId    联盟id
-     * @param optShopId     门店id
-     * @param optCardNumber 联盟卡号
-     * @param optPhone      手机号
-     * @param optBeginTime  开始时间
-     * @param optEndTime    结束时间
-     * @return List<ConsumeRecordVO>
-     * @throws Exception 统一处理异常
-     */
-    List<ConsumeRecordVO> listConsumeRecordVOByBusId(Integer busId, Integer optUnionId, Integer optShopId, String optCardNumber,
-                                                     String optPhone, Date optBeginTime, Date optEndTime) throws Exception;
-
-    /**
-     * 分页：联盟卡手机端，我的消费记录列表
-     *
-     * @param fanId 联盟卡粉丝id
-     * @param page  分页参数
-     * @return
-     */
-    List<MyCardConsumeVO> listConsumeByFanId(Integer fanId, Page page) throws Exception;
-
-    /**
-     * 分页：根据联盟卡粉丝id获取已支付消费记录列表
-     *
-     * @param fanId 联盟卡粉丝id
-     * @param page  分页参数
-     * @return
-     */
-    List<UnionConsume> listPayByFanId(Integer fanId, Page page);
-
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    /**
-     * 前台-联盟卡消费核销-支付
-     *
-     * @param busId   商家id
-     * @param unionId 联盟id
-     * @param fanId   粉丝id
-     * @param vo      表单内容
-     * @return UnionPayVO
-     * @throws Exception 统一处理异常
-     */
-    UnionPayVO saveConsumePostVOByBusIdAndUnionIdAndFanId(Integer busId, Integer unionId, Integer fanId, ConsumePostVO vo) throws Exception;
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    /**
-     * 前台-联盟卡消费核销-支付-回调
-     *
-     * @param orderNo    订单号
-     * @param socketKey  socket关键字
-     * @param payType    支付类型
-     * @param payOrderNo 支付订单号
-     * @param isSuccess  是否成功
-     * @return String 返回结果
-     */
-    String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess);
-
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    //***************************************** Domain Driven Design - boolean *****************************************
 
 }

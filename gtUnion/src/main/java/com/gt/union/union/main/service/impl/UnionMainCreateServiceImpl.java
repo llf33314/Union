@@ -70,29 +70,16 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-
-        // （1）	判断是否已经是盟主：
-        //   （1-1）如果是，则报错；
-        //   （1-2）如果不是，则进行下一步；
+        // （1）	要求不能已经是盟主
         if (unionMemberService.existValidOwnerByBusId(busId)) {
             throw new BusinessException("已经具有盟主身份，最多可成为一个联盟的盟主");
         }
-
-        // （2）	判断是否具有联盟基础服务（调接口）：
-        //   （2-1）如果不是，则报错；
-        //   （2-2）如果是，则进行下一步；
+        // （2）	要求具有联盟基础服务（调接口）
         UserUnionAuthority authority = busUserService.getUserUnionAuthority(busId);
         if (authority == null || !authority.getAuthority()) {
             throw new BusinessException("不具有联盟基础服务");
         }
-
-        // （3）	判断是否需要付费：
-        //   （3-1）如果是，则判断是否已购买联盟许可：
-        //     （3-1-1）如果是，则返回许可id；
-        //     （3-1-2）如果不是，则提示进入购买页面；
-        //   （3-2）如果不是，则判断是否已有免费的联盟许可：
-        //     （3-2-1）如果是，则返回许可id；
-        //     （3-2-2）如果不是，则新增免费的联盟许可，并返回许可id
+        // （3）	判断是否需要付费
         UnionPermitCheckVO result = new UnionPermitCheckVO();
         UnionMainPermit permit = unionMainPermitService.getValidByBusId(busId);
         if (authority.getPay()) {
@@ -141,16 +128,11 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
         if (busId == null || vo == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-
-        // （1）	判断是否已经是盟主：
-        //   （1-1）如果是，则报错；
-        //   （1-2）如果不是，则进行下一步；
+        // （1）	要求不能已经是盟主
         if (unionMemberService.existValidOwnerByBusId(busId)) {
             throw new BusinessException("已经具有盟主身份，最多可成为一个联盟的盟主");
         }
-        // （2）	判断是否具有联盟基础服务（调接口）：
-        //   （2-1）如果不是，则报错；
-        //   （2-2）如果是，则进行下一步；
+        // （2）	要求具有联盟基础服务（调接口）
         UserUnionAuthority authority = busUserService.getUserUnionAuthority(busId);
         if (authority == null || !authority.getAuthority()) {
             throw new BusinessException("不具有联盟基础服务");
@@ -162,7 +144,7 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
         }
         UnionMainPermit permit = unionMainPermitService.getValidByBusId(busId);
         if (permit == null || !permitId.equals(permit.getId())) {
-            throw new BusinessException("找不到联盟许可信息");
+            throw new BusinessException("找不到有效的联盟许可信息");
         }
         UnionMainPackage unionPackage = unionMainPackageService.getById(permit.getPackageId());
         if (unionPackage == null) {
@@ -613,7 +595,7 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
     }
 
     @Override
-    public Page<UnionMainCreate> pageSupport(Page page, EntityWrapper<UnionMainCreate> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionMainCreate> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }

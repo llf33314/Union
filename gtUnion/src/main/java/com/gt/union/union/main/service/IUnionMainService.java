@@ -38,6 +38,15 @@ public interface IUnionMainService {
     List<UnionMain> listValidJoinByBusId(Integer busId) throws Exception;
 
     /**
+     * 获取我具有读权限的联盟列表
+     *
+     * @param busId 商家id
+     * @return List<UnionMain>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMain> listReadByBusId(Integer busId) throws Exception;
+    
+    /**
      * 获取我具有读权限的有效联盟列表
      *
      * @param busId 商家id
@@ -100,6 +109,15 @@ public interface IUnionMainService {
      */
     boolean isUnionValid(UnionMain union) throws Exception;
 
+    /**
+     * 判断联盟是否存在
+     *
+     * @param unionId 联盟id
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean existById(Integer unionId) throws Exception;
+
     //********************************************* Base On Business - filter ******************************************
 
     /**
@@ -115,15 +133,6 @@ public interface IUnionMainService {
     //****************************************** Object As a Service - get *********************************************
 
     /**
-     * 获取联盟信息(by myBatisGenerator)
-     *
-     * @param id id
-     * @return UnionMain
-     * @throws Exception 统一处理异常
-     */
-    UnionMain getById(Integer id) throws Exception;
-
-    /**
      * 获取未删除的联盟信息(by myBatisGenerator)
      *
      * @param id id
@@ -131,6 +140,15 @@ public interface IUnionMainService {
      * @throws Exception 统一处理异常
      */
     UnionMain getValidById(Integer id) throws Exception;
+
+    /**
+     * 获取联盟信息(by myBatisGenerator)
+     *
+     * @param id id
+     * @return UnionMain
+     * @throws Exception 统一处理异常
+     */
+    UnionMain getById(Integer id) throws Exception;
 
     /**
      * 获取已删除的联盟信息(by myBatisGenerator)
@@ -163,14 +181,23 @@ public interface IUnionMainService {
     List<UnionMain> listByIdList(List<Integer> idList) throws Exception;
 
     /**
+     * 列表支持
+     *
+     * @param entityWrapper 条件
+     * @return Page
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMain> listSupport(EntityWrapper<UnionMain> entityWrapper) throws Exception;
+
+    /**
      * 分页支持
      *
      * @param page          分页对象
      * @param entityWrapper 条件
-     * @return Page<UnionMain>
+     * @return Page
      * @throws Exception 统一处理异常
      */
-    Page<UnionMain> pageSupport(Page page, EntityWrapper<UnionMain> entityWrapper) throws Exception;
+    Page pageSupport(Page page, EntityWrapper<UnionMain> entityWrapper) throws Exception;
 
     //****************************************** Object As a Service - save ********************************************
 

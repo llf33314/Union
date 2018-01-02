@@ -19,6 +19,30 @@ public interface IUnionCardSharingRecordService {
 
     //********************************************* Base On Business - list ********************************************
 
+    /**
+     * 获取未删除的售卡佣金分成记录
+     *
+     * @param unionId         联盟id
+     * @param sharingMemberId 分成盟员id
+     * @return List<UnionCardSharingRecord>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardSharingRecord> listValidByUnionIdAndSharingMemberId(Integer unionId, Integer sharingMemberId) throws Exception;
+
+    /**
+     * 分页：我的联盟-售卡佣金分成管理-售卡分成记录；导出：我的联盟-售卡佣金分成管理-售卡分成记录
+     *
+     * @param busId         商家id
+     * @param unionId       联盟id
+     * @param optCardNumber 卡号
+     * @param optBeginTime  开始时间
+     * @param optEndTime    结束时间
+     * @return List<CardSharingRecordVO>
+     * @throws Exception 统一处理异常
+     */
+    List<CardSharingRecordVO> listCardSharingRecordVOByBusIdAndUnionId(
+            Integer busId, Integer unionId, String optCardNumber, Date optBeginTime, Date optEndTime) throws Exception;
+
     //********************************************* Base On Business - save ********************************************
 
     //********************************************* Base On Business - remove ******************************************
@@ -38,6 +62,16 @@ public interface IUnionCardSharingRecordService {
      * @throws Exception 统一处理异常
      */
     List<UnionCardSharingRecord> filterByDelStatus(List<UnionCardSharingRecord> unionCardSharingRecordList, Integer delStatus) throws Exception;
+
+    /**
+     * 根据联盟id进行过滤
+     *
+     * @param recordList 数据源
+     * @param unionId    联盟id
+     * @return List<UnionCardSharingRecord>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardSharingRecord> filterByUnionId(List<UnionCardSharingRecord> recordList, Integer unionId) throws Exception;
 
     //****************************************** Object As a Service - get *********************************************
 
@@ -256,10 +290,10 @@ public interface IUnionCardSharingRecordService {
      *
      * @param page          分页对象
      * @param entityWrapper 条件
-     * @return Page<UnionCardSharingRecord>
+     * @return Page
      * @throws Exception 统一处理异常
      */
-    Page<UnionCardSharingRecord> pageSupport(Page page, EntityWrapper<UnionCardSharingRecord> entityWrapper) throws Exception;
+    Page pageSupport(Page page, EntityWrapper<UnionCardSharingRecord> entityWrapper) throws Exception;
 
     //****************************************** Object As a Service - save ********************************************
 
@@ -315,56 +349,4 @@ public interface IUnionCardSharingRecordService {
      */
     void updateBatch(List<UnionCardSharingRecord> updateUnionCardSharingRecordList) throws Exception;
 
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    /**
-     * 分页：我的联盟-售卡佣金分成管理-售卡分成记录；导出：我的联盟-售卡佣金分成管理-售卡分成记录
-     *
-     * @param busId         商家id
-     * @param unionId       联盟id
-     * @param optCardNumber 卡号
-     * @param optBeginTime  开始时间
-     * @param optEndTime    结束时间
-     * @return List<CardSharingRecordVO>
-     * @throws Exception 统一处理异常
-     */
-    List<CardSharingRecordVO> listCardSharingRecordVOByBusIdAndUnionId(
-            Integer busId, Integer unionId, String optCardNumber, Date optBeginTime, Date optEndTime) throws Exception;
-
-    /**
-     * 获取售卡佣金分成记录
-     *
-     * @param unionId         联盟id
-     * @param sharingMemberId 分成盟员id
-     * @return List<UnionCardSharingRecord>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCardSharingRecord> listByUnionIdAndSharingMemberId(Integer unionId, Integer sharingMemberId) throws Exception;
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    //***************************************** Domain Driven Design - boolean *****************************************
-
-    //***************************************** Domain Driven Design - filter ******************************************
-
-    /**
-     * 根据联盟id进行过滤
-     *
-     * @param recordList 数据源
-     * @param unionId    联盟id
-     * @return List<UnionCardSharingRecord>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCardSharingRecord> filterByUnionId(List<UnionCardSharingRecord> recordList, Integer unionId) throws Exception;
 }

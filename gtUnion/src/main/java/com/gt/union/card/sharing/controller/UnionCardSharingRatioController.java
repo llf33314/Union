@@ -90,7 +90,7 @@ public class UnionCardSharingRatioController {
 
     @ApiOperation(value = "我的联盟-售卡佣金分成管理-活动卡售卡比例设置-选择活动卡后-比例设置-保存", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/activityId/{activityId}/unionId/{unionId}", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
-    public String updateRatioByActivityIdAndUnionId(
+    public String updateByActivityIdAndUnionId(
             HttpServletRequest request,
             @ApiParam(value = "联盟卡活动id", name = "activityId", required = true)
             @PathVariable("activityId") Integer activityId,
@@ -104,7 +104,7 @@ public class UnionCardSharingRatioController {
             throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
         }
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
-            unionCardSharingRatioService.updateRatioByBusIdAndUnionIdAndActivityId(busId, unionId, activityId, ratioList);
+            unionCardSharingRatioService.updateByBusIdAndUnionIdAndActivityId(busId, unionId, activityId, ratioList);
         }
         return GtJsonResult.instanceSuccessMsg().toString();
     }

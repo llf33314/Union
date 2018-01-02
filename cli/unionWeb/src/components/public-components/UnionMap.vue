@@ -1,6 +1,13 @@
 <template>
-  <div id="container">
+  <div>
+    <div id="container">
 
+    </div>
+    <div id="myPageTop">
+      <label>请输入关键字：</label>
+      <input id="tipinput" />
+      <el-button id="search">搜索</el-button>
+    </div>
   </div>
 </template>
 
@@ -17,14 +24,24 @@ export default {
   methods: {
     init() {
       // 初始化地图
-      let map = new AMap.Map('container', {});
-      map.plugin(['AMap.ToolBar', 'AMap.CitySearch', 'AMap.Geocoder'], () => {
+      let map = new AMap.Map('container', {
+        resizeEnable: true
+      });
+      map.plugin(['AMap.ToolBar', 'AMap.CitySearch', 'AMap.Geocoder', 'AMap.Autocomplete', 'AMap.PlaceSearch'], () => {
         map.addControl(new AMap.ToolBar());
         let geocoder = new AMap.Geocoder({
           radius: 1000,
           extensions: 'all'
         });
         let citysearch = new AMap.CitySearch();
+        let autoOptions = {
+          input: 'tipinput'
+        };
+        let auto = new AMap.Autocomplete(autoOptions);
+        // 构造地点查询类
+        let placeSearch = new AMap.PlaceSearch({
+          map: map
+        });
         if (this.address) {
           // 地理编码,返回地理编码结果
           geocoder.getLocation(this.address, (status, result) => {
@@ -53,33 +70,62 @@ export default {
             }
           });
         }
+        // 注册监听，当选中某条记录时会触发
+        AMap.event.addListener(auto, 'select', e => {
+          placeSearch.setCity(e.poi.adcode);
+          placeSearch.search(e.poi.name); // 关键字查询查询
+        });
+        // 点击搜索
+        let searchButton = document.getElementById('search');
+        AMap.event.addDomListener(searchButton, 'click', () => {
+          let value = document.getElementById('tipinput').value;
+          placeSearch.search(value, (status, result) => {
+            if (!result.poiList.pois.length) {
+              this.$message({ showClose: true, message: '请缩小搜索范围', type: 'error', duration: 5000 });
+            }
+          }); // 关键字查询查询
+        });
+        // 交换数据
+        AMap.event.addListener(placeSearch, 'markerClick', e => {
+          let lng = e.data.location.lng;
+          let lat = e.data.location.lat;
+          let enterpriseAddress = e.data.pname + e.data.cityname + e.data.adname + e.data.address + e.data.name;
+          this.$store.commit('longitudeChange', lng);
+          this.$store.commit('latitudeChange', lat);
+          this.$store.commit('enterpriseAddress', enterpriseAddress);
+          this.$emit('mapClick');
+        });
+        AMap.event.addListener(map, 'click', e => {
+          map.clearMap(); // 清除地图覆盖物
+          let lng = e.lnglat.getLng();
+          let lat = e.lnglat.getLat();
+          this.$store.commit('longitudeChange', lng);
+          this.$store.commit('latitudeChange', lat);
+          // 点击添加标记
+          let marker = new AMap.Marker({
+            map: map,
+            position: [lng, lat]
+          });
+          // 逆向地理编码解析
+          geocoder.getAddress([lng, lat], (status, result) => {
+            if (status === 'complete' && result.info === 'OK') {
+              let enterpriseAddress = result.regeocode.formattedAddress;
+              this.$store.commit('enterpriseAddress', enterpriseAddress);
+            }
+          });
+          this.$emit('mapClick');
+        });
       });
-      // 点击事件
-      AMap.event.addListener(map, 'click', e => {
-        map.clearMap(); // 清除地图覆盖物
-        let lng = e.lnglat.getLng();
-        let lat = e.lnglat.getLat();
-        this.$store.commit('longitudeChange', lng);
-        this.$store.commit('latitudeChange', lat);
-        // 点击添加标记
-        let marker = new AMap.Marker({
-          map: map,
-          position: [lng, lat]
-        });
-        // 逆向地理编码解析
-        let geocoder = new AMap.Geocoder({
-          radius: 1000,
-          extensions: 'all'
-        });
-        geocoder.getAddress([lng, lat], (status, result) => {
-          if (status === 'complete' && result.info === 'OK') {
-            let enterpriseAddress = result.regeocode.formattedAddress;
-            this.$store.commit('enterpriseAddress', enterpriseAddress);
-            this.$emit('mapClick');
-          }
-        });
-      });
+      map.setFitView();
     }
   }
 };
 </script>
+
+<style scoped>
+#container {
+  width: 800px;
+  height: 500px;
+}
+</style>
+

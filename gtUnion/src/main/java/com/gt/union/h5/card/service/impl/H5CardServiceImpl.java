@@ -107,25 +107,25 @@ public class H5CardServiceImpl implements IH5CardService {
 				nonTransacted(members, discountCardList, activityCardList);
 			}else {
 				//有手机号
-				UnionCardFan fan = unionCardFanService.getByPhone(phone);
+				UnionCardFan fan = unionCardFanService.getValidByPhone(phone);
 				if(fan != null){
 					//办过卡
 					for(UnionMember member : members) {
 						UnionMain unionMain = unionMainService.getById(member.getUnionId());
 						if (unionMainService.isUnionValid(unionMain)) {
 							//是否办理过折扣卡
-							UnionCard discountCard = unionCardService.getValidDiscountCardByUnionIdAndFanId(unionMain.getId(), fan.getId());
+							UnionCard discountCard = unionCardService.getValidUnexpiredByUnionIdAndFanIdAndType(unionMain.getId(), fan.getId(), CardConstant.TYPE_DISCOUNT);
 							if(discountCard == null){
 								UnionCardVO discountCardVO = getUnionCardVO(unionMain.getName() + "折扣卡", CardConstant.TYPE_DISCOUNT, unionMain.getId(), null, null);
 								discountCardList.add(discountCardVO);
 							}
 
 							//是否办理过活动卡
-							List<UnionCardActivity> list = unionCardActivityService.listByUnionIdAndStatus(unionMain.getId(), ActivityConstant.STATUS_SELLING);
+							List<UnionCardActivity> list = unionCardActivityService.listValidByUnionIdAndStatus(unionMain.getId(), ActivityConstant.STATUS_SELLING);
 							if(ListUtil.isNotEmpty(list)){
 								for(UnionCardActivity activity : list){
-									UnionCard card = unionCardService.getValidActivityCardByUnionIdAndFanIdAndActivityId(unionMain.getId(), fan.getId(), activity.getId());
-									if(card == null || !DateTimeKit.laterThanNow(card.getValidity())){
+									UnionCard card = unionCardService.getValidUnexpiredByUnionIdAndFanIdAndActivityId(unionMain.getId(), fan.getId(), activity.getId());
+									if(card == null){
 										//没有办理过或已过期
 										UnionCardVO activityCardVO = getUnionCardVO(activity.getName(), CardConstant.TYPE_ACTIVITY, unionMain.getId(), activity.getId(), activity.getColor());
 										activityCardList.add(activityCardVO);
@@ -176,7 +176,7 @@ public class H5CardServiceImpl implements IH5CardService {
 				discountCardList.add(discountCardVO);
 
 				//活动卡
-				List<UnionCardActivity> list = unionCardActivityService.listByUnionIdAndStatus(unionMain.getId(), ActivityConstant.STATUS_SELLING);
+				List<UnionCardActivity> list = unionCardActivityService.listValidByUnionIdAndStatus(unionMain.getId(), ActivityConstant.STATUS_SELLING);
 				if(ListUtil.isNotEmpty(list)){
 					for(UnionCardActivity activity : list){
 						UnionCardVO activityCardVO = getUnionCardVO(activity.getName(), CardConstant.TYPE_ACTIVITY, unionMain.getId(), activity.getId(), activity.getColor());
@@ -207,9 +207,9 @@ public class H5CardServiceImpl implements IH5CardService {
 		if(CommonUtil.isEmpty(activityId)){
 			//折扣卡
 			if(CommonUtil.isNotEmpty(phone)){
-				UnionCardFan fan = unionCardFanService.getByPhone(phone);
+				UnionCardFan fan = unionCardFanService.getValidByPhone(phone);
 				if(fan != null){
-					UnionCard card = unionCardService.getValidDiscountCardByUnionIdAndFanId(unionId, fan.getId());
+					UnionCard card = unionCardService.getValidUnexpiredByUnionIdAndFanIdAndType(unionId, fan.getId(), CardConstant.TYPE_DISCOUNT);
 					if(card != null){
 						result.setIsTransacted(CommonConstant.COMMON_NO);
 					}
@@ -222,7 +222,6 @@ public class H5CardServiceImpl implements IH5CardService {
 			if(ListUtil.isNotEmpty(members)){
 				for(UnionMember member : members){
 					CardDetailListVO listVO = new CardDetailListVO();
-					member.setDiscount(CommonUtil.isNotEmpty(member.getDiscount()) && member.getDiscount() > 0 && member.getDiscount() < 1 ? member.getDiscount() * 10 : null);
 					listVO.setUnionMember(member);
 					list.add(listVO);
 				}
@@ -231,7 +230,7 @@ public class H5CardServiceImpl implements IH5CardService {
 			result.setUserCount(members.size());
 		}else {
 			//活动卡
-			UnionCardActivity activity = unionCardActivityService.getByIdAndUnionId(activityId, unionId);
+			UnionCardActivity activity = unionCardActivityService.getValidByIdAndUnionId(activityId, unionId);
 			if(CommonUtil.isEmpty(activity)){
 				throw new BusinessException("找不到该卡信息");
 			}
@@ -239,19 +238,17 @@ public class H5CardServiceImpl implements IH5CardService {
 				//有效期 可以卖
 				result.setValidityDay(activity.getValidityDay());
 				if(CommonUtil.isNotEmpty(phone)){
-					UnionCardFan fan = unionCardFanService.getByPhone(phone);
+					UnionCardFan fan = unionCardFanService.getValidByPhone(phone);
 					if(fan != null){
-						UnionCard card = unionCardService.getValidActivityCardByUnionIdAndFanIdAndActivityId(unionId, fan.getId(), activityId);
+						UnionCard card = unionCardService.getValidUnexpiredByUnionIdAndFanIdAndActivityId(unionId, fan.getId(), activityId);
 						if(card != null){
-							if(DateTimeKit.laterThanNow(card.getValidity())){
-								//没过期
-								result.setIsTransacted(CommonConstant.COMMON_NO);
-								result.setValidityStr(DateTimeKit.format(card.getValidity(), DateTimeKit.DEFAULT_DATE_FORMAT));
-								result.setIsOverdue(CommonConstant.COMMON_NO);
-							}else {
-								//已过期
-								result.setIsOverdue(CommonConstant.COMMON_YES);
-							}
+							//存在且没过期
+							result.setIsTransacted(CommonConstant.COMMON_NO);
+							result.setValidityStr(DateTimeKit.format(card.getValidity(), DateTimeKit.DEFAULT_DATE_FORMAT));
+							result.setIsOverdue(CommonConstant.COMMON_NO);
+						}else{
+							//不存在或已过期
+							result.setIsOverdue(CommonConstant.COMMON_YES);
 						}
 					}
 				}
@@ -276,13 +273,13 @@ public class H5CardServiceImpl implements IH5CardService {
 						return o2.getCreateTime().compareTo(o1.getCreateTime());
 					}
 				});
-				List<UnionCardProject> projectList = unionCardProjectService.listByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
+				List<UnionCardProject> projectList = unionCardProjectService.listValidByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
 				for(UnionMember member : members){
 					CardDetailListVO listVO = new CardDetailListVO();
 					if (ListUtil.isNotEmpty(projectList)) {
 						for (UnionCardProject project : projectList) {
 							if(member.getId().equals(project.getMemberId())){
-								List<UnionCardProjectItem> textItemList = unionCardProjectItemService.listByProjectId(project.getId());
+								List<UnionCardProjectItem> textItemList = unionCardProjectItemService.listValidByProjectId(project.getId());
 								if (ListUtil.isNotEmpty(textItemList)) {
 									listVO.setUnionCardProjectItems(textItemList);
 									itemCount += textItemList.size();
@@ -292,7 +289,6 @@ public class H5CardServiceImpl implements IH5CardService {
 
 						}
 					}
-					member.setDiscount(CommonUtil.isNotEmpty(member.getDiscount()) && member.getDiscount() > 0 && member.getDiscount() < 1 ? member.getDiscount() * 10 : null);
 					listVO.setUnionMember(member);
 					list.add(listVO);
 				}
@@ -317,7 +313,7 @@ public class H5CardServiceImpl implements IH5CardService {
 		MyCardDetailVO vo = new MyCardDetailVO();
 		List cardList = new ArrayList<>();
 		if(CommonUtil.isNotEmpty(phone)){
-			UnionCardFan fan = unionCardFanService.getByPhone(phone);
+			UnionCardFan fan = unionCardFanService.getValidByPhone(phone);
 			if(fan != null){
 				List<UnionCard> list = unionCardService.listValidByFanId(fan.getId());
 				if(ListUtil.isNotEmpty(list)){
@@ -333,7 +329,7 @@ public class H5CardServiceImpl implements IH5CardService {
 							}else if(card.getType().equals(CardConstant.TYPE_ACTIVITY)){
 								//活动卡
 								int itemCount = 0;
-								UnionCardActivity activity = unionCardActivityService.getByIdAndUnionId(card.getActivityId(), union.getId());
+								UnionCardActivity activity = unionCardActivityService.getValidByIdAndUnionId(card.getActivityId(), union.getId());
 								detailVO.setCardName(activity.getName());
 								if(CommonUtil.isNotEmpty(activity.getColor())){
 									String[] c = activity.getColor().split(",");
@@ -344,7 +340,7 @@ public class H5CardServiceImpl implements IH5CardService {
 								detailVO.setValidityStr(DateTimeKit.format(card.getValidity(), DateTimeKit.DEFAULT_DATE_FORMAT));
 								detailVO.setIsOverdue(DateTimeKit.laterThanNow(card.getValidity()) ? 0 : 1);
 								//优惠项目
-								List<UnionCardProject> projectList = unionCardProjectService.listByUnionIdAndActivityIdAndStatus(union.getId(), activity.getId(), ProjectConstant.STATUS_ACCEPT);
+								List<UnionCardProject> projectList = unionCardProjectService.listValidByUnionIdAndActivityIdAndStatus(union.getId(), activity.getId(), ProjectConstant.STATUS_ACCEPT);
 								if (ListUtil.isNotEmpty(projectList)) {
 									for (UnionCardProject project : projectList) {
 										List<UnionCardProjectItem> textItemList = unionCardProjectItemService.listByProjectId(project.getId());
@@ -359,9 +355,9 @@ public class H5CardServiceImpl implements IH5CardService {
 							cardList.add(detailVO);
 						}
 					}
-					Double integral = unionCardIntegralService.sumIntegralByFanId(fan.getId());
+					Double integral = unionCardIntegralService.sumValidIntegralByFanId(fan.getId());
 					vo.setIntegral(integral);
-					Integer consumeCount = unionConsumeService.countPayByFanId(fan.getId());
+					Integer consumeCount = unionConsumeService.countValidPayByFanId(fan.getId());
 					vo.setConsumeCount(consumeCount);
 				}
 				vo.setCardNo(fan.getNumber());
@@ -425,14 +421,13 @@ public class H5CardServiceImpl implements IH5CardService {
 	}
 
 	@Override
-	public List<MyCardConsumeVO> listConsumeByPhone(String phone, Page page) throws Exception {
-		List<MyCardConsumeVO> list = null;
-		if(StringUtil.isNotEmpty(phone)){
-			UnionCardFan fan = unionCardFanService.getByPhone(phone);
-			if(fan != null){
-				list = unionConsumeService.listConsumeByFanId(fan.getId(), page);
+	public Page pageConsumeByPhone(Page page, String phone) throws Exception {
+        if(StringUtil.isNotEmpty(phone)){
+            UnionCardFan fan = unionCardFanService.getValidByPhone(phone);
+            if(fan != null){
+                return  unionConsumeService.pageConsumeByFanId(page, fan.getId());
 			}
 		}
-		return list == null ? new ArrayList<MyCardConsumeVO>() : list;
+		return page;
 	}
 }

@@ -15,7 +15,27 @@ import java.util.List;
 public interface IUnionCardIntegralService {
     //********************************************* Base On Business - get *********************************************
 
+    /**
+     * 获取未删除的联盟积分信息
+     *
+     * @param unionId 联盟id
+     * @param fanId   粉丝id
+     * @return UnionCardIntegral
+     * @throws Exception 统一处理异常
+     */
+    UnionCardIntegral getValidByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception;
+
     //********************************************* Base On Business - list ********************************************
+
+    /**
+     * 获取未删除的联盟积分列表信息
+     *
+     * @param unionId 联盟id
+     * @param fanId   粉丝id
+     * @return UnionCardIntegral
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardIntegral> listValidByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception;
 
     //********************************************* Base On Business - save ********************************************
 
@@ -24,6 +44,34 @@ public interface IUnionCardIntegralService {
     //********************************************* Base On Business - update ******************************************
 
     //********************************************* Base On Business - other *******************************************
+
+    /**
+     * 统计未删除的联盟积分总和信息
+     *
+     * @param unionId 联盟id
+     * @param fanId   粉丝id
+     * @return UnionCardIntegral
+     * @throws Exception 统一处理异常
+     */
+    Double sumValidIntegralByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception;
+
+    /**
+     * 统计未删除的联盟积分总和信息
+     *
+     * @param fanId 粉丝id
+     * @return UnionCardIntegral
+     * @throws Exception 统一处理异常
+     */
+    Double sumValidIntegralByFanId(Integer fanId) throws Exception;
+
+    /**
+     * 统计未删除的联盟积分总和信息
+     *
+     * @param unionId 联盟id
+     * @return UnionCardIntegral
+     * @throws Exception 统一处理异常
+     */
+    Double sumValidIntegralByUnionId(Integer unionId) throws Exception;
 
     //********************************************* Base On Business - filter ******************************************
 
@@ -36,6 +84,16 @@ public interface IUnionCardIntegralService {
      * @throws Exception 统一处理异常
      */
     List<UnionCardIntegral> filterByDelStatus(List<UnionCardIntegral> unionCardIntegralList, Integer delStatus) throws Exception;
+
+    /**
+     * 根据联盟id进行过滤
+     *
+     * @param integralList 数据源
+     * @param unionId      联盟id
+     * @return List<UnionCardIntegral>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardIntegral> filterByUnionId(List<UnionCardIntegral> integralList, Integer unionId) throws Exception;
 
     //****************************************** Object As a Service - get *********************************************
 
@@ -146,10 +204,10 @@ public interface IUnionCardIntegralService {
      *
      * @param page          分页对象
      * @param entityWrapper 条件
-     * @return Page<UnionCardIntegral>
+     * @return Page
      * @throws Exception 统一处理异常
      */
-    Page<UnionCardIntegral> pageSupport(Page page, EntityWrapper<UnionCardIntegral> entityWrapper) throws Exception;
+    Page pageSupport(Page page, EntityWrapper<UnionCardIntegral> entityWrapper) throws Exception;
 
     //****************************************** Object As a Service - save ********************************************
 
@@ -204,84 +262,5 @@ public interface IUnionCardIntegralService {
      * @throws Exception 统一处理异常
      */
     void updateBatch(List<UnionCardIntegral> updateUnionCardIntegralList) throws Exception;
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    /**
-     * 获取联盟积分信息
-     *
-     * @param unionId 联盟id
-     * @param fanId   粉丝id
-     * @return UnionCardIntegral
-     * @throws Exception 统一处理异常
-     */
-    UnionCardIntegral getByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception;
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    /**
-     * 获取联盟积分列表信息
-     *
-     * @param unionId 联盟id
-     * @param fanId   粉丝id
-     * @return UnionCardIntegral
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCardIntegral> listByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception;
-
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    /**
-     * 统计联盟积分信息
-     *
-     * @param unionId 联盟id
-     * @param fanId   粉丝id
-     * @return UnionCardIntegral
-     * @throws Exception 统一处理异常
-     */
-    Double countIntegralByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception;
-
-    /**
-     * 统计联盟积分信息
-     *
-     * @param fanId 粉丝id
-     * @return UnionCardIntegral
-     * @throws Exception 统一处理异常
-     */
-    Double sumIntegralByFanId(Integer fanId) throws Exception;
-
-    /**
-     * 统计联盟积分信息
-     *
-     * @param unionId 联盟id
-     * @return UnionCardIntegral
-     * @throws Exception 统一处理异常
-     */
-    Double sumIntegralByUnionId(Integer unionId) throws Exception;
-
-    //***************************************** Domain Driven Design - boolean *****************************************
-
-    //***************************************** Domain Driven Design - filter ******************************************
-
-    /**
-     * 根据联盟id进行过滤
-     *
-     * @param integralList 数据源
-     * @param unionId      联盟id
-     * @return List<UnionCardIntegral>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCardIntegral> filterByUnionId(List<UnionCardIntegral> integralList, Integer unionId) throws Exception;
 
 }

@@ -56,7 +56,8 @@ public class UnionMainServiceImpl implements IUnionMainService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	判断union有效性和member读权限
-        if (!isUnionValid(unionId)) {
+        UnionMain union = getValidById(unionId);
+        if (!isUnionValid(union)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
@@ -65,7 +66,6 @@ public class UnionMainServiceImpl implements IUnionMainService {
         }
 
         UnionVO result = new UnionVO();
-        UnionMain union = getValidById(unionId);
         result.setUnion(union);
 
         List<UnionMainDict> itemList = unionMainDictService.listValidByUnionId(unionId);
@@ -79,7 +79,6 @@ public class UnionMainServiceImpl implements IUnionMainService {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-
         // （1）获取我创建和已加入的联盟id列表
         List<UnionMember> memberList = unionMemberService.listValidByBusId(busId);
         List<Integer> unionIdList = unionMemberService.getUnionIdList(memberList);
@@ -94,14 +93,29 @@ public class UnionMainServiceImpl implements IUnionMainService {
     }
 
     @Override
+    public List<UnionMain> listReadByBusId(Integer busId) throws Exception {
+        if (busId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMember> readMemberList = unionMemberService.listReadByBusId(busId);
+        List<Integer> unionIdList = unionMemberService.getUnionIdList(readMemberList);
+        unionIdList = ListUtil.unique(unionIdList);
+
+        return listByIdList(unionIdList);
+    }
+
+
+    @Override
     public List<UnionMain> listValidReadByBusId(Integer busId) throws Exception {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionMember> readMemberList = unionMemberService.listValidReadByBusId(busId);
+        List<UnionMain> result = listReadByBusId(busId);
+        result = filterByDelStatus(result, CommonConstant.DEL_STATUS_NO);
 
-        return getValidUnionList(readMemberList);
+        return result;
     }
 
     @Override
@@ -111,23 +125,9 @@ public class UnionMainServiceImpl implements IUnionMainService {
         }
 
         List<UnionMember> writeMemberList = unionMemberService.listValidWriteByBusId(busId);
+        List<Integer> unionIdList = unionMemberService.getUnionIdList(writeMemberList);
 
-        return getValidUnionList(writeMemberList);
-    }
-
-    private List<UnionMain> getValidUnionList(List<UnionMember> memberList) throws Exception {
-        List<UnionMain> result = new ArrayList<>();
-
-        if (ListUtil.isNotEmpty(memberList)) {
-            for (UnionMember member : memberList) {
-                UnionMain union = getValidById(member.getUnionId());
-                if (isUnionValid(union)) {
-                    result.add(union);
-                }
-            }
-        }
-
-        return result;
+        return listByIdList(unionIdList);
     }
 
     //********************************************* Base On Business - list ********************************************
@@ -264,6 +264,15 @@ public class UnionMainServiceImpl implements IUnionMainService {
         return union.getValidity().compareTo(DateUtil.getCurrentDate()) >= 0;
     }
 
+    @Override
+    public boolean existById(Integer unionId) throws Exception {
+        if (unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        return getById(unionId) != null;
+    }
+
     //********************************************* Base On Business - filter ******************************************
 
     @Override
@@ -360,7 +369,16 @@ public class UnionMainServiceImpl implements IUnionMainService {
     }
 
     @Override
-    public Page<UnionMain> pageSupport(Page page, EntityWrapper<UnionMain> entityWrapper) throws Exception {
+    public List<UnionMain> listSupport(EntityWrapper<UnionMain> entityWrapper) throws Exception {
+        if (entityWrapper == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        return unionMainDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public Page pageSupport(Page page, EntityWrapper<UnionMain> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -548,5 +566,5 @@ public class UnionMainServiceImpl implements IUnionMainService {
         }
         return result;
     }
-    
+
 }

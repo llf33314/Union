@@ -135,7 +135,7 @@ export default {
   methods: {
     init() {
       $http
-        .get(`/unionMember/unionId/${this.unionId}/write/page?current=1`)
+        .get(`/unionMember/unionId/${this.unionId}/read/page?current=1`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];

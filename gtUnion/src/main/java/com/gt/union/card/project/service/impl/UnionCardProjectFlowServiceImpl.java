@@ -53,6 +53,35 @@ public class UnionCardProjectFlowServiceImpl implements IUnionCardProjectFlowSer
 
     //********************************************* Base On Business - list ********************************************
 
+    @Override
+    public List<UnionCardProjectFlow> listValidByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception {
+        if (busId == null || unionId == null || activityId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+        // （1）	判断union有效性和member读权限
+        if (!unionMainService.isUnionValid(unionId)) {
+            throw new BusinessException(CommonConstant.UNION_INVALID);
+        }
+        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
+        if (member == null) {
+            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
+        }
+        // （3）	按时间顺序排序
+        List<UnionCardProjectFlow> result = new ArrayList<>();
+        UnionCardProject project = unionCardProjectService.getValidByUnionIdAndMemberIdAndActivityId(unionId, member.getId(), activityId);
+        if (project != null) {
+            result = listValidByProjectId(project.getId());
+
+            Collections.sort(result, new Comparator<UnionCardProjectFlow>() {
+                @Override
+                public int compare(UnionCardProjectFlow o1, UnionCardProjectFlow o2) {
+                    return o1.getCreateTime().compareTo(o2.getCreateTime());
+                }
+            });
+        }
+
+        return result;
+    }
 
     //********************************************* Base On Business - save ********************************************
 
@@ -223,7 +252,7 @@ public class UnionCardProjectFlowServiceImpl implements IUnionCardProjectFlowSer
     }
 
     @Override
-    public Page<UnionCardProjectFlow> pageSupport(Page page, EntityWrapper<UnionCardProjectFlow> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionCardProjectFlow> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -452,53 +481,5 @@ public class UnionCardProjectFlowServiceImpl implements IUnionCardProjectFlowSer
         }
         return result;
     }
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    @Override
-    public List<UnionCardProjectFlow> listByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception {
-        if (busId == null || unionId == null || activityId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // （1）	判断union有效性和member读权限
-        if (!unionMainService.isUnionValid(unionId)) {
-            throw new BusinessException(CommonConstant.UNION_INVALID);
-        }
-        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
-        if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
-        }
-        // （2）	判断project是否存在
-        UnionCardProject project = unionCardProjectService.getByUnionIdAndMemberIdAndActivityId(unionId, member.getId(), activityId);
-
-        // （3）	按时间顺序排序
-        List<UnionCardProjectFlow> result = new ArrayList<>();
-        if (project != null) {
-            result = listByProjectId(project.getId());
-
-            Collections.sort(result, new Comparator<UnionCardProjectFlow>() {
-                @Override
-                public int compare(UnionCardProjectFlow o1, UnionCardProjectFlow o2) {
-                    return o1.getCreateTime().compareTo(o2.getCreateTime());
-                }
-            });
-        }
-
-        return result;
-    }
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    //***************************************** Domain Driven Design - boolean *****************************************
 
 }

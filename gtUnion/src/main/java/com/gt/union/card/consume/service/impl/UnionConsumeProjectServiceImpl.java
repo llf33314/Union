@@ -1,12 +1,10 @@
 package com.gt.union.card.consume.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.card.consume.dao.IUnionConsumeProjectDao;
 import com.gt.union.card.consume.entity.UnionConsumeProject;
 import com.gt.union.card.consume.service.IUnionConsumeProjectService;
-import com.gt.union.card.consume.util.UnionConsumeProjectCacheUtil;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.ListUtil;
@@ -29,9 +27,6 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
     @Autowired
     private IUnionConsumeProjectDao unionConsumeProjectDao;
 
-    @Autowired
-    private RedisCacheUtil redisCacheUtil;
-
     //********************************************* Base On Business - get *********************************************
 
     //********************************************* Base On Business - list ********************************************
@@ -44,6 +39,20 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
     //********************************************* Base On Business - update ******************************************
 
     //********************************************* Base On Business - other *******************************************
+
+    @Override
+    public Integer countValidByProjectIdAndProjectItemId(Integer projectId, Integer projectItemId) throws Exception {
+        if (projectId == null || projectItemId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .eq("project_id", projectId)
+                .eq("project_item_id", projectItemId);
+
+        return unionConsumeProjectDao.selectCount(entityWrapper);
+    }
 
     //********************************************* Base On Business - filter ******************************************
 
@@ -72,18 +81,7 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        UnionConsumeProject result;
-        // (1)cache
-        String idKey = UnionConsumeProjectCacheUtil.getIdKey(id);
-        if (redisCacheUtil.exists(idKey)) {
-            String tempStr = redisCacheUtil.get(idKey);
-            result = JSONArray.parseObject(tempStr, UnionConsumeProject.class);
-            return result;
-        }
-        // (2)db
-        result = unionConsumeProjectDao.selectById(id);
-        setCache(result, id);
-        return result;
+        return unionConsumeProjectDao.selectById(id);
     }
 
     @Override
@@ -91,9 +89,12 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        UnionConsumeProject result = getById(id);
 
-        return result != null && CommonConstant.DEL_STATUS_NO == result.getDelStatus() ? result : null;
+        EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("id", id);
+
+        return unionConsumeProjectDao.selectOne(entityWrapper);
     }
 
     @Override
@@ -101,9 +102,12 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        UnionConsumeProject result = getById(id);
 
-        return result != null && CommonConstant.DEL_STATUS_YES == result.getDelStatus() ? result : null;
+        EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("id", id);
+
+        return unionConsumeProjectDao.selectOne(entityWrapper);
     }
 
     //********************************************* Object As a Service - list *****************************************
@@ -129,20 +133,11 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         if (consumeId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionConsumeProject> result;
-        // (1)cache
-        String consumeIdKey = UnionConsumeProjectCacheUtil.getConsumeIdKey(consumeId);
-        if (redisCacheUtil.exists(consumeIdKey)) {
-            String tempStr = redisCacheUtil.get(consumeIdKey);
-            result = JSONArray.parseArray(tempStr, UnionConsumeProject.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("consume_id", consumeId);
-        result = unionConsumeProjectDao.selectList(entityWrapper);
-        setCache(result, consumeId, UnionConsumeProjectCacheUtil.TYPE_CONSUME_ID);
-        return result;
+
+        return unionConsumeProjectDao.selectList(entityWrapper);
     }
 
     @Override
@@ -150,21 +145,12 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         if (consumeId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionConsumeProject> result;
-        // (1)cache
-        String validConsumeIdKey = UnionConsumeProjectCacheUtil.getValidConsumeIdKey(consumeId);
-        if (redisCacheUtil.exists(validConsumeIdKey)) {
-            String tempStr = redisCacheUtil.get(validConsumeIdKey);
-            result = JSONArray.parseArray(tempStr, UnionConsumeProject.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("consume_id", consumeId);
-        result = unionConsumeProjectDao.selectList(entityWrapper);
-        setValidCache(result, consumeId, UnionConsumeProjectCacheUtil.TYPE_CONSUME_ID);
-        return result;
+
+        return unionConsumeProjectDao.selectList(entityWrapper);
     }
 
     @Override
@@ -172,21 +158,12 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         if (consumeId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionConsumeProject> result;
-        // (1)cache
-        String invalidConsumeIdKey = UnionConsumeProjectCacheUtil.getInvalidConsumeIdKey(consumeId);
-        if (redisCacheUtil.exists(invalidConsumeIdKey)) {
-            String tempStr = redisCacheUtil.get(invalidConsumeIdKey);
-            result = JSONArray.parseArray(tempStr, UnionConsumeProject.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
                 .eq("consume_id", consumeId);
-        result = unionConsumeProjectDao.selectList(entityWrapper);
-        setInvalidCache(result, consumeId, UnionConsumeProjectCacheUtil.TYPE_CONSUME_ID);
-        return result;
+
+        return unionConsumeProjectDao.selectList(entityWrapper);
     }
 
     @Override
@@ -194,20 +171,11 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         if (projectItemId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionConsumeProject> result;
-        // (1)cache
-        String projectItemIdKey = UnionConsumeProjectCacheUtil.getProjectItemIdKey(projectItemId);
-        if (redisCacheUtil.exists(projectItemIdKey)) {
-            String tempStr = redisCacheUtil.get(projectItemIdKey);
-            result = JSONArray.parseArray(tempStr, UnionConsumeProject.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("project_item_id", projectItemId);
-        result = unionConsumeProjectDao.selectList(entityWrapper);
-        setCache(result, projectItemId, UnionConsumeProjectCacheUtil.TYPE_PROJECT_ITEM_ID);
-        return result;
+
+        return unionConsumeProjectDao.selectList(entityWrapper);
     }
 
     @Override
@@ -215,21 +183,12 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         if (projectItemId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionConsumeProject> result;
-        // (1)cache
-        String validProjectItemIdKey = UnionConsumeProjectCacheUtil.getValidProjectItemIdKey(projectItemId);
-        if (redisCacheUtil.exists(validProjectItemIdKey)) {
-            String tempStr = redisCacheUtil.get(validProjectItemIdKey);
-            result = JSONArray.parseArray(tempStr, UnionConsumeProject.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("project_item_id", projectItemId);
-        result = unionConsumeProjectDao.selectList(entityWrapper);
-        setValidCache(result, projectItemId, UnionConsumeProjectCacheUtil.TYPE_PROJECT_ITEM_ID);
-        return result;
+
+        return unionConsumeProjectDao.selectList(entityWrapper);
     }
 
     @Override
@@ -237,21 +196,12 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         if (projectItemId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionConsumeProject> result;
-        // (1)cache
-        String invalidProjectItemIdKey = UnionConsumeProjectCacheUtil.getInvalidProjectItemIdKey(projectItemId);
-        if (redisCacheUtil.exists(invalidProjectItemIdKey)) {
-            String tempStr = redisCacheUtil.get(invalidProjectItemIdKey);
-            result = JSONArray.parseArray(tempStr, UnionConsumeProject.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
                 .eq("project_item_id", projectItemId);
-        result = unionConsumeProjectDao.selectList(entityWrapper);
-        setInvalidCache(result, projectItemId, UnionConsumeProjectCacheUtil.TYPE_PROJECT_ITEM_ID);
-        return result;
+
+        return unionConsumeProjectDao.selectList(entityWrapper);
     }
 
     @Override
@@ -259,20 +209,11 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         if (projectId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionConsumeProject> result;
-        // (1)cache
-        String projectIdKey = UnionConsumeProjectCacheUtil.getProjectIdKey(projectId);
-        if (redisCacheUtil.exists(projectIdKey)) {
-            String tempStr = redisCacheUtil.get(projectIdKey);
-            result = JSONArray.parseArray(tempStr, UnionConsumeProject.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("project_id", projectId);
-        result = unionConsumeProjectDao.selectList(entityWrapper);
-        setCache(result, projectId, UnionConsumeProjectCacheUtil.TYPE_PROJECT_ID);
-        return result;
+
+        return unionConsumeProjectDao.selectList(entityWrapper);
     }
 
     @Override
@@ -280,21 +221,12 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         if (projectId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionConsumeProject> result;
-        // (1)cache
-        String validProjectIdKey = UnionConsumeProjectCacheUtil.getValidProjectIdKey(projectId);
-        if (redisCacheUtil.exists(validProjectIdKey)) {
-            String tempStr = redisCacheUtil.get(validProjectIdKey);
-            result = JSONArray.parseArray(tempStr, UnionConsumeProject.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("project_id", projectId);
-        result = unionConsumeProjectDao.selectList(entityWrapper);
-        setValidCache(result, projectId, UnionConsumeProjectCacheUtil.TYPE_PROJECT_ID);
-        return result;
+
+        return unionConsumeProjectDao.selectList(entityWrapper);
     }
 
     @Override
@@ -302,21 +234,12 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         if (projectId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionConsumeProject> result;
-        // (1)cache
-        String invalidProjectIdKey = UnionConsumeProjectCacheUtil.getInvalidProjectIdKey(projectId);
-        if (redisCacheUtil.exists(invalidProjectIdKey)) {
-            String tempStr = redisCacheUtil.get(invalidProjectIdKey);
-            result = JSONArray.parseArray(tempStr, UnionConsumeProject.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
                 .eq("project_id", projectId);
-        result = unionConsumeProjectDao.selectList(entityWrapper);
-        setInvalidCache(result, projectId, UnionConsumeProjectCacheUtil.TYPE_PROJECT_ID);
-        return result;
+
+        return unionConsumeProjectDao.selectList(entityWrapper);
     }
 
     @Override
@@ -325,18 +248,14 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionConsumeProject> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(idList)) {
-            for (Integer id : idList) {
-                result.add(getById(id));
-            }
-        }
+        EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
+        entityWrapper.in("id", idList);
 
-        return result;
+        return unionConsumeProjectDao.selectList(entityWrapper);
     }
 
     @Override
-    public Page<UnionConsumeProject> pageSupport(Page page, EntityWrapper<UnionConsumeProject> entityWrapper) throws Exception {
+    public Page pageSupport(Page page, EntityWrapper<UnionConsumeProject> entityWrapper) throws Exception {
         if (page == null || entityWrapper == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -351,8 +270,8 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         if (newUnionConsumeProject == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+
         unionConsumeProjectDao.insert(newUnionConsumeProject);
-        removeCache(newUnionConsumeProject);
     }
 
     @Override
@@ -361,8 +280,8 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         if (newUnionConsumeProjectList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+
         unionConsumeProjectDao.insertBatch(newUnionConsumeProjectList);
-        removeCache(newUnionConsumeProjectList);
     }
 
     //********************************************* Object As a Service - remove ***************************************
@@ -373,10 +292,7 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        UnionConsumeProject unionConsumeProject = getById(id);
-        removeCache(unionConsumeProject);
-        // (2)remove in db logically
+
         UnionConsumeProject removeUnionConsumeProject = new UnionConsumeProject();
         removeUnionConsumeProject.setId(id);
         removeUnionConsumeProject.setDelStatus(CommonConstant.DEL_STATUS_YES);
@@ -389,10 +305,7 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         if (idList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        List<UnionConsumeProject> unionConsumeProjectList = listByIdList(idList);
-        removeCache(unionConsumeProjectList);
-        // (2)remove in db logically
+
         List<UnionConsumeProject> removeUnionConsumeProjectList = new ArrayList<>();
         for (Integer id : idList) {
             UnionConsumeProject removeUnionConsumeProject = new UnionConsumeProject();
@@ -411,11 +324,7 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         if (updateUnionConsumeProject == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        Integer id = updateUnionConsumeProject.getId();
-        UnionConsumeProject unionConsumeProject = getById(id);
-        removeCache(unionConsumeProject);
-        // (2)update db
+
         unionConsumeProjectDao.updateById(updateUnionConsumeProject);
     }
 
@@ -425,258 +334,8 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         if (updateUnionConsumeProjectList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        List<Integer> idList = getIdList(updateUnionConsumeProjectList);
-        List<UnionConsumeProject> unionConsumeProjectList = listByIdList(idList);
-        removeCache(unionConsumeProjectList);
-        // (2)update db
+        
         unionConsumeProjectDao.updateBatchById(updateUnionConsumeProjectList);
     }
-
-    //********************************************* Object As a Service - cache support ********************************
-
-    private void setCache(UnionConsumeProject newUnionConsumeProject, Integer id) {
-        if (id == null) {
-            //do nothing,just in case
-            return;
-        }
-        String idKey = UnionConsumeProjectCacheUtil.getIdKey(id);
-        redisCacheUtil.set(idKey, newUnionConsumeProject);
-    }
-
-    private void setCache(List<UnionConsumeProject> newUnionConsumeProjectList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String foreignIdKey = null;
-        switch (foreignIdType) {
-            case UnionConsumeProjectCacheUtil.TYPE_CONSUME_ID:
-                foreignIdKey = UnionConsumeProjectCacheUtil.getConsumeIdKey(foreignId);
-                break;
-            case UnionConsumeProjectCacheUtil.TYPE_PROJECT_ITEM_ID:
-                foreignIdKey = UnionConsumeProjectCacheUtil.getProjectItemIdKey(foreignId);
-                break;
-            case UnionConsumeProjectCacheUtil.TYPE_PROJECT_ID:
-                foreignIdKey = UnionConsumeProjectCacheUtil.getProjectIdKey(foreignId);
-                break;
-
-            default:
-                break;
-        }
-        if (foreignIdKey != null) {
-            redisCacheUtil.set(foreignIdKey, newUnionConsumeProjectList);
-        }
-    }
-
-    private void setValidCache(List<UnionConsumeProject> newUnionConsumeProjectList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String validForeignIdKey = null;
-        switch (foreignIdType) {
-            case UnionConsumeProjectCacheUtil.TYPE_CONSUME_ID:
-                validForeignIdKey = UnionConsumeProjectCacheUtil.getValidConsumeIdKey(foreignId);
-                break;
-            case UnionConsumeProjectCacheUtil.TYPE_PROJECT_ITEM_ID:
-                validForeignIdKey = UnionConsumeProjectCacheUtil.getValidProjectItemIdKey(foreignId);
-                break;
-            case UnionConsumeProjectCacheUtil.TYPE_PROJECT_ID:
-                validForeignIdKey = UnionConsumeProjectCacheUtil.getValidProjectIdKey(foreignId);
-                break;
-
-            default:
-                break;
-        }
-        if (validForeignIdKey != null) {
-            redisCacheUtil.set(validForeignIdKey, newUnionConsumeProjectList);
-        }
-    }
-
-    private void setInvalidCache(List<UnionConsumeProject> newUnionConsumeProjectList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String invalidForeignIdKey = null;
-        switch (foreignIdType) {
-            case UnionConsumeProjectCacheUtil.TYPE_CONSUME_ID:
-                invalidForeignIdKey = UnionConsumeProjectCacheUtil.getInvalidConsumeIdKey(foreignId);
-                break;
-            case UnionConsumeProjectCacheUtil.TYPE_PROJECT_ITEM_ID:
-                invalidForeignIdKey = UnionConsumeProjectCacheUtil.getInvalidProjectItemIdKey(foreignId);
-                break;
-            case UnionConsumeProjectCacheUtil.TYPE_PROJECT_ID:
-                invalidForeignIdKey = UnionConsumeProjectCacheUtil.getInvalidProjectIdKey(foreignId);
-                break;
-
-            default:
-                break;
-        }
-        if (invalidForeignIdKey != null) {
-            redisCacheUtil.set(invalidForeignIdKey, newUnionConsumeProjectList);
-        }
-    }
-
-    private void removeCache(UnionConsumeProject unionConsumeProject) {
-        if (unionConsumeProject == null) {
-            return;
-        }
-        Integer id = unionConsumeProject.getId();
-        String idKey = UnionConsumeProjectCacheUtil.getIdKey(id);
-        redisCacheUtil.remove(idKey);
-
-        Integer consumeId = unionConsumeProject.getConsumeId();
-        if (consumeId != null) {
-            String consumeIdKey = UnionConsumeProjectCacheUtil.getConsumeIdKey(consumeId);
-            redisCacheUtil.remove(consumeIdKey);
-
-            String validConsumeIdKey = UnionConsumeProjectCacheUtil.getValidConsumeIdKey(consumeId);
-            redisCacheUtil.remove(validConsumeIdKey);
-
-            String invalidConsumeIdKey = UnionConsumeProjectCacheUtil.getInvalidConsumeIdKey(consumeId);
-            redisCacheUtil.remove(invalidConsumeIdKey);
-        }
-
-        Integer projectItemId = unionConsumeProject.getProjectItemId();
-        if (projectItemId != null) {
-            String projectItemIdKey = UnionConsumeProjectCacheUtil.getProjectItemIdKey(projectItemId);
-            redisCacheUtil.remove(projectItemIdKey);
-
-            String validProjectItemIdKey = UnionConsumeProjectCacheUtil.getValidProjectItemIdKey(projectItemId);
-            redisCacheUtil.remove(validProjectItemIdKey);
-
-            String invalidProjectItemIdKey = UnionConsumeProjectCacheUtil.getInvalidProjectItemIdKey(projectItemId);
-            redisCacheUtil.remove(invalidProjectItemIdKey);
-        }
-
-        Integer projectId = unionConsumeProject.getProjectId();
-        if (projectId != null) {
-            String projectIdKey = UnionConsumeProjectCacheUtil.getProjectIdKey(projectId);
-            redisCacheUtil.remove(projectIdKey);
-
-            String validProjectIdKey = UnionConsumeProjectCacheUtil.getValidProjectIdKey(projectId);
-            redisCacheUtil.remove(validProjectIdKey);
-
-            String invalidProjectIdKey = UnionConsumeProjectCacheUtil.getInvalidProjectIdKey(projectId);
-            redisCacheUtil.remove(invalidProjectIdKey);
-        }
-
-    }
-
-    private void removeCache(List<UnionConsumeProject> unionConsumeProjectList) {
-        if (ListUtil.isEmpty(unionConsumeProjectList)) {
-            return;
-        }
-        List<Integer> idList = new ArrayList<>();
-        for (UnionConsumeProject unionConsumeProject : unionConsumeProjectList) {
-            idList.add(unionConsumeProject.getId());
-        }
-        List<String> idKeyList = UnionConsumeProjectCacheUtil.getIdKey(idList);
-        redisCacheUtil.remove(idKeyList);
-
-        List<String> consumeIdKeyList = getForeignIdKeyList(unionConsumeProjectList, UnionConsumeProjectCacheUtil.TYPE_CONSUME_ID);
-        if (ListUtil.isNotEmpty(consumeIdKeyList)) {
-            redisCacheUtil.remove(consumeIdKeyList);
-        }
-
-        List<String> projectItemIdKeyList = getForeignIdKeyList(unionConsumeProjectList, UnionConsumeProjectCacheUtil.TYPE_PROJECT_ITEM_ID);
-        if (ListUtil.isNotEmpty(projectItemIdKeyList)) {
-            redisCacheUtil.remove(projectItemIdKeyList);
-        }
-
-        List<String> projectIdKeyList = getForeignIdKeyList(unionConsumeProjectList, UnionConsumeProjectCacheUtil.TYPE_PROJECT_ID);
-        if (ListUtil.isNotEmpty(projectIdKeyList)) {
-            redisCacheUtil.remove(projectIdKeyList);
-        }
-
-    }
-
-    private List<String> getForeignIdKeyList(List<UnionConsumeProject> unionConsumeProjectList, int foreignIdType) {
-        List<String> result = new ArrayList<>();
-        switch (foreignIdType) {
-            case UnionConsumeProjectCacheUtil.TYPE_CONSUME_ID:
-                for (UnionConsumeProject unionConsumeProject : unionConsumeProjectList) {
-                    Integer consumeId = unionConsumeProject.getConsumeId();
-                    if (consumeId != null) {
-                        String consumeIdKey = UnionConsumeProjectCacheUtil.getConsumeIdKey(consumeId);
-                        result.add(consumeIdKey);
-
-                        String validConsumeIdKey = UnionConsumeProjectCacheUtil.getValidConsumeIdKey(consumeId);
-                        result.add(validConsumeIdKey);
-
-                        String invalidConsumeIdKey = UnionConsumeProjectCacheUtil.getInvalidConsumeIdKey(consumeId);
-                        result.add(invalidConsumeIdKey);
-                    }
-                }
-                break;
-            case UnionConsumeProjectCacheUtil.TYPE_PROJECT_ITEM_ID:
-                for (UnionConsumeProject unionConsumeProject : unionConsumeProjectList) {
-                    Integer projectItemId = unionConsumeProject.getProjectItemId();
-                    if (projectItemId != null) {
-                        String projectItemIdKey = UnionConsumeProjectCacheUtil.getProjectItemIdKey(projectItemId);
-                        result.add(projectItemIdKey);
-
-                        String validProjectItemIdKey = UnionConsumeProjectCacheUtil.getValidProjectItemIdKey(projectItemId);
-                        result.add(validProjectItemIdKey);
-
-                        String invalidProjectItemIdKey = UnionConsumeProjectCacheUtil.getInvalidProjectItemIdKey(projectItemId);
-                        result.add(invalidProjectItemIdKey);
-                    }
-                }
-                break;
-            case UnionConsumeProjectCacheUtil.TYPE_PROJECT_ID:
-                for (UnionConsumeProject unionConsumeProject : unionConsumeProjectList) {
-                    Integer projectId = unionConsumeProject.getProjectId();
-                    if (projectId != null) {
-                        String projectIdKey = UnionConsumeProjectCacheUtil.getProjectIdKey(projectId);
-                        result.add(projectIdKey);
-
-                        String validProjectIdKey = UnionConsumeProjectCacheUtil.getValidProjectIdKey(projectId);
-                        result.add(validProjectIdKey);
-
-                        String invalidProjectIdKey = UnionConsumeProjectCacheUtil.getInvalidProjectIdKey(projectId);
-                        result.add(invalidProjectIdKey);
-                    }
-                }
-                break;
-
-            default:
-                break;
-        }
-        return result;
-    }
-
-    // TODO
-
-    //***************************************** Domain Driven Design - get *********************************************
-
-    //***************************************** Domain Driven Design - list ********************************************
-
-    //***************************************** Domain Driven Design - save ********************************************
-
-    //***************************************** Domain Driven Design - remove ******************************************
-
-    //***************************************** Domain Driven Design - update ******************************************
-
-    //***************************************** Domain Driven Design - count *******************************************
-
-    @Override
-    public Integer countByProjectIdAndProjectItemId(Integer projectId, Integer projectItemId) throws Exception {
-        if (projectId == null || projectItemId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .eq("project_id", projectId)
-                .eq("project_item_id", projectItemId);
-        
-        return unionConsumeProjectDao.selectCount(entityWrapper);
-    }
-
-    //***************************************** Domain Driven Design - boolean *****************************************
-
 
 }
