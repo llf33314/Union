@@ -98,7 +98,7 @@ export default {
     }
   },
   mounted() {
-    eventBus.$on('getActivityCardProject', () => {
+    eventBus.$on('myActivityAddTabs', () => {
       this.init();
     });
   },
