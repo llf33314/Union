@@ -101,6 +101,9 @@ export default {
     eventBus.$on('myActivityAddTabs', () => {
       this.init();
     });
+    setTimeout(() => {
+      this.loading = false;
+    }, 500);
   },
   methods: {
     init() {
@@ -126,9 +129,6 @@ export default {
               this.canEdit = false;
             }
             this.$store.commit('activityCanEditChange', this.canEdit);
-            setTimeout(() => {
-              this.loading = false;
-            }, 500);
           }
         })
         .catch(err => {
