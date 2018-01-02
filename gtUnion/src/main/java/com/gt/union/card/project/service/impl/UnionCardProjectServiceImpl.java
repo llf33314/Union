@@ -282,8 +282,8 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
         }
         // （3）	要求活动在报名中状态
         Integer activityStatus = unionCardActivityService.getStatus(activity);
-        if (ActivityConstant.STATUS_APPLYING != activityStatus) {
-            throw new BusinessException("活动卡不在报名中状态");
+        if (ActivityConstant.STATUS_APPLYING != activityStatus && ActivityConstant.STATUS_BEFORE_SELL != activityStatus) {
+            throw new BusinessException("活动卡不在可审核状态");
         }
         // （4）	要求报名项目是审核中状态
         List<CardProjectCheckVO> result = new ArrayList<>();
