@@ -59,9 +59,9 @@
             <el-table :data="tableData3" style="width: 100%" height="450">
               <el-table-column prop="member.enterpriseName" label="企业名称">
               </el-table-column>
-              <el-table-column prop="sharingRatio.ratio" label="分成比例(%)">
+              <el-table-column prop="" label="分成比例(%)">
                 <template slot-scope="scope">
-                  <el-input v-model="scope.row.sharingRatio.ratio" placeholder="请输入比例" @change="onChange(scope)"></el-input>
+                  <el-input v-model="scope.row.sharingRatio.ratio" placeholder="请输入比例" @keyup.native="check(scope)" @change="onChange(scope)"></el-input>
                 </template>
               </el-table-column>
             </el-table>
@@ -77,190 +77,187 @@
 </template>
 
 <script>
-  import $http from '@/utils/http.js';
-  export default {
-    name: 'activity-card-sell-divie',
-    data() {
-      return {
-        data1: [],
-        totalAll1: '',
-        currentPage1: 1,
-        visible: true,
-        visibleChangeFlag: false,
-        tableData2: [],
-        totalAll2: '',
-        currentPage2: 1,
-        visible3: false,
-        sum3: 0,
-        tableData3: [],
-        activityId: ''
-      };
+import $http from '@/utils/http.js';
+import { numberCheck } from '@/utils/filter.js';
+export default {
+  name: 'activity-card-sell-divie',
+  data() {
+    return {
+      data1: [],
+      totalAll1: '',
+      currentPage1: 1,
+      visible: true,
+      visibleChangeFlag: false,
+      tableData2: [],
+      totalAll2: '',
+      currentPage2: 1,
+      visible3: false,
+      sum3: 0,
+      tableData3: [],
+      activityId: ''
+    };
+  },
+  computed: {
+    unionId() {
+      return this.$store.state.unionId;
     },
-    computed: {
-      unionId() {
-        return this.$store.state.unionId;
-      },
-      isUnionOwner() {
-        return this.$store.state.isUnionOwner;
-      }
-    },
-    mounted: function() {
-      this.init();
-      eventBus.$on('sellDivideVisibleChange', () => {
-        if (this.visible) {
-          this.visibleChangeFlag = false;
-        }
-        if (this.visibleChangeFlag) {
-          this.visible = !this.visible;
-        }
-      });
-    },
-    methods: {
-      // 获取活动卡列表
-      init() {
-        $http
-          .get(`/unionCardActivity/unionId/${this.unionId}/sharingRatio/page?current=1`)
-          .then(res => {
-            if (res.data.data) {
-              this.data1 = res.data.data.records || [];
-              this.totalAll1 = res.data.data.total;
-            } else {
-              this.data1 = [];
-              this.totalAll1 = 0;
-            }
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          });
-      },
-      handleCurrentChange1() {
-        $http
-          .get(`/unionCardActivity/unionId/${this.unionId}/sharingRatio/page?current=${val}`)
-          .then(res => {
-            if (res.data.data) {
-              this.data1 = res.data.data.records || [];
-            }
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          });
-      },
-      // 获取活动参加盟员比例分配列表
-      setting(value) {
-        this.activityId = value;
-        $http
-          .get(`/unionCardSharingRatio/activityId/${this.activityId}/unionId/${this.unionId}/page?current=1`)
-          .then(res => {
-            if (res.data.data) {
-              this.tableData2 = res.data.data.records || [];
-              this.tableData2.forEach(v => {
-                if (!v.sharingRatio) {
-                  v.sharingRatio = {};
-                  v.sharingRatio.ratio = 0;
-                }
-              });
-              this.totalAll2 = res.data.data.total;
-              this.visibleChangeFlag = true;
-              this.visible = false;
-            } else {
-              this.tableData2 = [];
-              this.totalAll2 = 0;
-            }
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          });
-      },
-      handleCurrentChange2() {
-        $http
-          .get(`/unionCardSharingRatio/activityId/${this.activityId}/unionId/${this.unionId}/page?current=${val}`)
-          .then(res => {
-            if (res.data.data) {
-              this.tableData2 = res.data.data.records || [];
-              this.tableData2.forEach(v => {
-                if (!v.sharingRatio) {
-                  v.sharingRatio = {};
-                  v.sharingRatio.ratio = 0;
-                }
-              });
-            }
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          });
-      },
-      // 比例设置 弹出框 获取数据
-      showSettingDialog() {
-        this.visible3 = true;
-        $http
-          .get(`/unionCardSharingRatio/activityId/${this.activityId}/unionId/${this.unionId}`)
-          .then(res => {
-            this.sum3 = 0;
-            if (res.data.data) {
-              this.tableData3 = res.data.data;
-              this.tableData3.forEach(v => {
-                if (!v.sharingRatio) {
-                  v.sharingRatio = {};
-                  v.sharingRatio.ratio = 0;
-                }
-                v.sharingRatio.ratio = v.sharingRatio.ratio.toFixed(0);
-                this.sum3 += parseFloat(v.sharingRatio.ratio);
-              });
-              this.sum3 = this.sum3.toFixed(0);
-            }
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          });
-      },
-      // 平均分配
-      onAverage() {
-        let len = this.tableData3.length;
-        if (len !== 0) {
-          let average = (100 / len).toFixed(0);
-          this.tableData3.forEach(v => {
-            v.sharingRatio.ratio = average;
-          });
-          this.tableData3[0].sharingRatio.ratio = 100 - average * (len - 1);
-        }
-        this.sum3 = 100;
-      },
-      // 计算分配比例
-      onChange() {
-        let len = this.tableData3.length;
-        this.sum3 = 0;
-        this.tableData3.forEach(v => {
-          v.sharingRatio.ratio = parseFloat(v.sharingRatio.ratio || 0);
-          this.sum3 += v.sharingRatio.ratio;
-        });
-        this.sum3 = parseFloat(this.sum3.toFixed(0));
-      },
-      // 保存
-      onSave() {
-        if (this.sum3 === 100) {
-          let url = `/union/unionCardSharingRatio/activityId/${this.activityId}/unionId/${this.unionId}`;
-          // 处理数据
-          let data = this.tableData3;
-          $http
-            .put(url, data)
-            .then(res => {
-              if (res.data.success) {
-                this.init();
-                this.visible3 = false;
-                this.$message({ showClose: true, message: '保存成功', type: 'success', duration: 5000 });
-              }
-            })
-            .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-            });
-        } else {
-          this.$message({ showClose: true, message: '售卡分成总比例之和应为100%', type: 'warning', duration: 5000 });
-        }
-      },
-      // 关闭弹窗重置数据
-      resetData() {
-        this.tableData3 = [];
-      }
+    isUnionOwner() {
+      return this.$store.state.isUnionOwner;
     }
-  };
+  },
+  mounted: function() {
+    this.init();
+    eventBus.$on('sellDivideVisibleChange', () => {
+      if (this.visible) {
+        this.visibleChangeFlag = false;
+      }
+      if (this.visibleChangeFlag) {
+        this.visible = !this.visible;
+      }
+    });
+  },
+  methods: {
+    // 获取活动卡列表
+    init(value) {
+      let val = value || 1;
+      $http
+        .get(`/unionCardActivity/unionId/${this.unionId}/sharingRatio/page?current=${val}`)
+        .then(res => {
+          if (res.data.data) {
+            this.data1 = res.data.data.records || [];
+            this.totalAll1 = res.data.data.total;
+          } else {
+            this.data1 = [];
+            this.totalAll1 = 0;
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    },
+    handleCurrentChange1(val) {
+      this.init(val);
+    },
+    // 获取活动参加盟员比例分配列表
+    setting(value) {
+      this.activityId = value;
+      $http
+        .get(`/unionCardSharingRatio/activityId/${this.activityId}/unionId/${this.unionId}/page?current=1`)
+        .then(res => {
+          if (res.data.data) {
+            this.tableData2 = res.data.data.records || [];
+            this.tableData2.forEach(v => {
+              if (!v.sharingRatio) {
+                v.sharingRatio = {};
+                v.sharingRatio.ratio = 0;
+              }
+            });
+            this.totalAll2 = res.data.data.total;
+            this.visibleChangeFlag = true;
+            this.visible = false;
+          } else {
+            this.tableData2 = [];
+            this.totalAll2 = 0;
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    },
+    handleCurrentChange2() {
+      $http
+        .get(`/unionCardSharingRatio/activityId/${this.activityId}/unionId/${this.unionId}/page?current=${val}`)
+        .then(res => {
+          if (res.data.data) {
+            this.tableData2 = res.data.data.records || [];
+            this.tableData2.forEach(v => {
+              if (!v.sharingRatio) {
+                v.sharingRatio = {};
+                v.sharingRatio.ratio = 0;
+              }
+            });
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    },
+    // 比例设置 弹出框 获取数据
+    showSettingDialog() {
+      $http
+        .get(`/unionCardSharingRatio/activityId/${this.activityId}/unionId/${this.unionId}`)
+        .then(res => {
+          this.sum3 = 0;
+          if (res.data.data) {
+            this.tableData3 = res.data.data;
+            this.tableData3.forEach(v => {
+              if (!v.sharingRatio) {
+                v.sharingRatio = {};
+                v.sharingRatio.ratio = 0;
+              }
+              v.sharingRatio.ratio = v.sharingRatio.ratio.toFixed(0);
+              this.sum3 += parseFloat(v.sharingRatio.ratio);
+            });
+            this.sum3 = this.sum3.toFixed(0);
+            this.visible3 = true;
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    },
+    // 校验输入为数字类型
+    check(scope) {
+      scope.row.sharingRatio.ratio = numberCheck(scope.row.sharingRatio.ratio);
+    },
+    // 平均分配
+    onAverage() {
+      let len = this.tableData3.length;
+      if (len !== 0) {
+        let average = (100 / len).toFixed(0);
+        this.tableData3.forEach(v => {
+          v.sharingRatio.ratio = average;
+        });
+        this.tableData3[0].sharingRatio.ratio = 100 - average * (len - 1);
+      }
+      this.sum3 = 100;
+    },
+    // 计算分配比例
+    onChange() {
+      let len = this.tableData3.length;
+      this.sum3 = 0;
+      this.tableData3.forEach(v => {
+        v.sharingRatio.ratio = parseFloat(v.sharingRatio.ratio || 0);
+        this.sum3 += v.sharingRatio.ratio;
+      });
+      this.sum3 = parseFloat(this.sum3.toFixed(0));
+    },
+    // 保存
+    onSave() {
+      if (this.sum3 === 100) {
+        let url = `/union/unionCardSharingRatio/activityId/${this.activityId}/unionId/${this.unionId}`;
+        // 处理数据
+        let data = this.tableData3;
+        $http
+          .put(url, data)
+          .then(res => {
+            if (res.data.success) {
+              this.init();
+              this.visible3 = false;
+              this.$message({ showClose: true, message: '保存成功', type: 'success', duration: 5000 });
+            }
+          })
+          .catch(err => {
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          });
+      } else {
+        this.$message({ showClose: true, message: '售卡分成总比例之和应为100%', type: 'error', duration: 5000 });
+      }
+    },
+    // 关闭弹窗重置数据
+    resetData() {
+      this.tableData3 = [];
+    }
+  }
+};
 </script>

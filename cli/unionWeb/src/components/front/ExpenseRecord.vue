@@ -154,16 +154,16 @@ export default {
   },
   watch: {},
   methods: {
-    // 获取联盟列表
+    // 获取我参与过的联盟
     getUnionList() {
       $http
-        .get(`/unionMain/my`)
+        .get(`/unionMain/busUser`)
         .then(res => {
           if (res.data.data) {
             this.options1 = res.data.data || [];
             this.options1.forEach((v, i) => {
-              v.value = v.union.id;
-              v.label = v.union.name;
+              v.value = v.id;
+              v.label = v.name;
             });
           } else {
             this.options1 = [];

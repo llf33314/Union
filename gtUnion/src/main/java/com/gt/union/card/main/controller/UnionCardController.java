@@ -11,11 +11,8 @@ import com.gt.union.card.main.vo.CardPhoneVO;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
-import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
-import com.gt.union.common.util.EncryptUtil;
 import com.gt.union.common.util.MockUtil;
-import com.gt.union.common.util.PropertiesUtil;
 import com.gt.union.common.util.QRcodeKit;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.vo.UnionPayVO;
@@ -125,7 +122,6 @@ public class UnionCardController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-
         // mock
         UnionPayVO result;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {

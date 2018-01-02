@@ -7,8 +7,8 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.opportunity.brokerage.service.IUnionBrokeragePayService;
 import com.gt.union.union.main.service.IUnionMainPermitService;
-import io.swagger.annotations.Api;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
@@ -27,7 +27,7 @@ import java.util.Map;
 @ApiIgnore
 public class UnionCallBackController {
 
-    private Logger logger = Logger.getLogger(UnionCallBackController.class);
+    private Logger logger = LoggerFactory.getLogger(UnionCallBackController.class);
 
     @Autowired
     private IUnionMainPermitService unionMainPermitService;
@@ -48,7 +48,7 @@ public class UnionCallBackController {
             @RequestParam(value = "socketKey", required = false) String socketKey,
             @RequestBody Map<String, Object> param) throws Exception {
         // debug
-        logger.debug(JSONObject.toJSONString(param));
+        logger.info("支付成功后回调参数：{}",JSONObject.toJSONString(param));
 
         Object objPayType = param.get("payType");
         String payType = objPayType != null ? objPayType.toString().trim() : "";

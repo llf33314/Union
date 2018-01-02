@@ -1,9 +1,9 @@
 package com.gt.union.h5.brokerage.service;
 
+import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.Member;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.h5.brokerage.vo.*;
-import com.gt.union.opportunity.brokerage.entity.UnionBrokerageWithdrawal;
 import com.gt.union.opportunity.brokerage.service.IUnionBrokeragePayStrategyService;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.vo.UnionPayVO;
@@ -54,50 +54,55 @@ public interface IH5BrokerageService {
      * 佣金平台-我要提现-提现记录-分页
      *
      * @param h5BrokerageUser 登录信息
+     * @param page
      * @return List<UnionBrokerageWithdrawal>
      * @throws Exception 统一处理异常
      */
-    List<UnionBrokerageWithdrawal> listWithdrawalHistory(H5BrokerageUser h5BrokerageUser) throws Exception;
+    Page listPageWithdrawalHistory(H5BrokerageUser h5BrokerageUser, Page page) throws Exception;
 
     /**
      * 佣金平台-首页-我要提现-佣金明细-推荐佣金-分页；佣金平台-首页-我需支付-已支付-分页
      *
      * @param h5BrokerageUser 登录信息
      * @param optUnionId      联盟id
+     * @param page
      * @return List<OpportunityBrokerageVO>
      * @throws Exception 统一处理异常
      */
-    List<OpportunityBrokerageVO> listOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId) throws Exception;
+    Page listPageOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception;
 
     /**
      * 拥挤平台-首页-我要提现-佣金明细-售卡佣金-分页
      *
      * @param h5BrokerageUser 登录信息
      * @param optUnionId      联盟id
-     * @return List<CardBrokerageVO>
+     * @param page
+     * @return
      * @throws Exception 统一处理异常
      */
-    List<CardBrokerageVO> listCardBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId) throws Exception;
+    Page listPageCardBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception;
 
     /**
      * 佣金平台-首页-我需支付-未支付-分页
      *
      * @param h5BrokerageUser 登录信息
      * @param optUnionId      联盟id
+     * @param page
      * @return List<OpportunityBrokerageVO>
      * @throws Exception 统一处理异常
      */
-    List<OpportunityBrokerageVO> listUnPaidOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId) throws Exception;
+    Page listPageUnPaidOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception;
 
     /**
      * 佣金平台-首页-我未收佣金-分页
      *
      * @param h5BrokerageUser 登录信息
      * @param optUnionId      联盟id
+     * @param page
      * @return List<OpportunityBrokerageVO>
      * @throws Exception 统一处理异常
      */
-    List<OpportunityBrokerageVO> listUnReceivedOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId) throws Exception;
+    Page listPageUnReceivedOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception;
 
     //***************************************** Domain Driven Design - save ********************************************
 

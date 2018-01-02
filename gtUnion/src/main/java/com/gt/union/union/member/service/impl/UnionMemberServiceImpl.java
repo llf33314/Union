@@ -294,7 +294,7 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionMember> result = listByUnionId(unionId);
+        List<UnionMember> result = listValidByUnionId(unionId);
         result = filterByStatus(result, status);
 
         return result;
@@ -830,6 +830,24 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         if (ListUtil.isNotEmpty(memberList)) {
             for (UnionMember member : memberList) {
                 if (member.getDirectorPhone().contains(likeDirectorPhone)) {
+                    result.add(member);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionMember> filterInvalidUnionId(List<UnionMember> memberList) throws Exception {
+        if (memberList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMember> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(memberList)) {
+            for (UnionMember member : memberList) {
+                if (unionMainService.isUnionValid(member.getUnionId())) {
                     result.add(member);
                 }
             }

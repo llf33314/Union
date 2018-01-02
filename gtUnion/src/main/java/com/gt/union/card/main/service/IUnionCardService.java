@@ -105,7 +105,7 @@ public interface IUnionCardService {
      * @param fanId                 粉丝id
      * @param activityIdList        活动id列表
      * @param unionCardApplyService 支付回调策略接口
-     * @return UnionPayVO
+	 * @return UnionPayVO
      * @throws Exception 统一处理异常
      */
     UnionPayVO saveApplyByBusIdAndUnionIdAndFanId(Integer busId, Integer unionId, Integer fanId, List<Integer> activityIdList, IUnionCardApplyService unionCardApplyService) throws Exception;

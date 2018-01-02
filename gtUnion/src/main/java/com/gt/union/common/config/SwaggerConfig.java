@@ -125,6 +125,21 @@ public class SwaggerConfig {
     }
 
     @Bean
+    public Docket wxAppGroupConfig() {
+        return new Docket(DocumentationType.SWAGGER_2)
+                .groupName("wxapp")
+                .apiInfo(new ApiInfoBuilder()
+                        .title("Restful文档接口服务平台-微信小程序")
+                        .description("基于Swagger2实现")
+                        .version("v1.0.0")
+                        .build())
+                .select()
+                .apis(RequestHandlerSelectors.basePackage("com.gt.union.wxapp"))
+                .paths(PathSelectors.any())
+                .build();
+    }
+
+    @Bean
     public Docket erpGroupConfig() {
         return new Docket(DocumentationType.SWAGGER_2)
                 .groupName("erp")

@@ -41,7 +41,7 @@ public class UnionOpportunityController {
     //-------------------------------------------------- get -----------------------------------------------------------
 
     @ApiOperation(value = "列表：我的佣金收入来源", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/unionId/{unionId}/fromMember", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/toMember", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listFromMemberByUnionId(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
@@ -56,13 +56,13 @@ public class UnionOpportunityController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             result = MockUtil.list(UnionMember.class, 20);
         } else {
-            result = unionOpportunityService.listFromMemberByBusIdAndUnionId(busId, unionId);
+            result = unionOpportunityService.listToMemberByBusIdAndUnionId(busId, unionId);
         }
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "列表：我的佣金去向", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/unionId/{unionId}/toMember", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/fromMember", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String listToMemberByUnionId(
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
@@ -77,7 +77,7 @@ public class UnionOpportunityController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             result = MockUtil.list(UnionMember.class, 20);
         } else {
-            result = unionOpportunityService.listToMemberByBusIdAndUnionId(busId, unionId);
+            result = unionOpportunityService.listFromMemberByBusIdAndUnionId(busId, unionId);
         }
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }

@@ -15,21 +15,22 @@
     <el-table :data="tableData" style="width: 100%">
       <el-table-column label="盟员名称">
         <template slot-scope="scope">
-          <i class="iconfont" v-if="scope.row.isUnionOwner" style="font-size: 25px;color:#FDD43F;position: absolute;top: 4px;left: 9px;">&#xe504;</i>
-          <span>{{ scope.row.enterpriseName }}</span>
+          <i class="iconfont" v-if="scope.row.member.isUnionOwner" style="font-size: 25px;color:#FDD43F;position: absolute;top: 4px;left: 9px;">&#xe504;</i>
+          <span>{{ scope.row.member.enterpriseName }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="directorName" label="负责人">
+      <el-table-column prop="member.directorName" label="负责人">
       </el-table-column>
-      <el-table-column prop="directorPhone" label="联系电话">
+      <el-table-column prop="member.directorPhone" label="联系电话">
       </el-table-column>
-      <el-table-column prop="createTime" label="加入时间">
+      <el-table-column prop="member.createTime" label="加入时间">
       </el-table-column>
       <el-table-column label="操作" width="220">
         <template slot-scope="scope">
           <div class="sizeAndColor">
             <el-button size="small" @click="detail(scope)">详情</el-button>
-            <el-button size="small" v-if="isUnionOwner && !scope.row.isUnionOwner" @click="remove(scope)">移出</el-button>
+            <el-button size="small" v-if="(isUnionOwner && !scope.row.member.isUnionOwner) && !scope.row.memberOut.type" @click="remove(scope)">移出</el-button>
+            <el-button size="small" v-if="isUnionOwner && scope.row.memberOut.type === 2" @click="withdraw(scope)">撤回移出</el-button>
           </div>
         </template>
       </el-table-column>
@@ -38,7 +39,7 @@
     </el-pagination>
     <!-- 弹出框 详情 -->
     <div class="model__10">
-      <el-dialog title="详情" :visible.sync="dialogVisible0" size="tiny">
+      <el-dialog title="详情" :visible.sync="visible" size="tiny">
         <hr>
         <div>
           <el-form ref="form" :model="form" label-width="80px">
@@ -70,8 +71,18 @@
         <p>是否确认移出“ {{ enterpriseName }} ”</p>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="confirm">确定</el-button>
-        <el-button @click="visible = false">取消</el-button>
+        <el-button type="primary" @click="confirm1">确定</el-button>
+        <el-button @click="visible1=false">取消</el-button>
+      </span>
+    </el-dialog>
+    <!-- 弹出框 移出确认 -->
+    <el-dialog title="" :visible.sync="visible" size="tiny">
+      <div class="model_12">
+        <p>是否确认撤回移出“ {{ enterpriseName }} ”</p>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="confirm2">确定</el-button>
+        <el-button @click="visible2=false">取消</el-button>
       </span>
     </el-dialog>
   </div>
@@ -87,9 +98,7 @@ export default {
       input: '',
       tableData: [],
       currentPage: 1,
-      dialogVisible0: false,
-      dialogVisible1: false,
-      dialogVisible2: false,
+      visible: false,
       form: {
         busAddress: '',
         createTime: '',
@@ -101,9 +110,11 @@ export default {
       current: 1,
       tgtMemberId: '',
       totalAll: 0,
-      visible: false,
+      visible1: false,
+      visible2: false,
       enterpriseName: '',
-      memberId: ''
+      memberId: '',
+      outId: ''
     };
   },
   computed: {
@@ -135,12 +146,16 @@ export default {
   methods: {
     init() {
       $http
-        .get(`/unionMember/unionId/${this.unionId}/read/page?current=1`)
+        .get(`/unionMember/unionId/${this.unionId}/index/page?current=1`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
             this.tableData.forEach((v, i) => {
-              v.createTime = timeFilter(v.createTime);
+              v.member.createTime = timeFilter(v.member.createTime);
+              if (!v.memberOut) {
+                v.memberOut = {};
+                v.memberOut.type = '';
+              }
             });
             this.totalAll = res.data.data.total;
           } else {
@@ -156,12 +171,16 @@ export default {
     search(value) {
       let val = value || 1;
       $http
-        .get(`/unionMember/unionId/${this.unionId}/write/page?current=${val}&memberName=${this.input}`)
+        .get(`/unionMember/unionId/${this.unionId}/index/page?current=${val}&memberName=${this.input}`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
             this.tableData.forEach((v, i) => {
-              v.createTime = timeFilter(v.createTime);
+              v.member.createTime = timeFilter(v.createTime);
+              if (!v.memberOut) {
+                v.memberOut = {};
+                v.memberOut.type = '';
+              }
             });
             this.totalAll = res.data.data.total;
           }
@@ -177,12 +196,12 @@ export default {
     // 详情
     detail(scope) {
       $http
-        .get(`/unionMember/${scope.row.id}/unionId/${this.unionId}`)
+        .get(`/unionMember/${scope.row.member.id}/unionId/${this.unionId}`)
         .then(res => {
           if (res.data.data) {
             this.form = res.data.data;
             this.form.createTime = timeFilter(this.form.createTime);
-            this.dialogVisible0 = true;
+            this.visible = true;
           }
         })
         .catch(err => {
@@ -191,18 +210,41 @@ export default {
     },
     // 移出
     remove(scope) {
-      this.enterpriseName = scope.row.enterpriseName;
-      this.memberId = scope.row.id;
-      this.visible = true;
+      this.enterpriseName = scope.row.member.enterpriseName;
+      this.memberId = scope.row.member.id;
+      this.visible1 = true;
     },
     // 确认移出
-    confirm() {
-      this.visible = false;
+    confirm1() {
       $http
         .post(`/unionMemberOut/unionId/${this.unionId}/applyMemberId/${this.memberId}`)
         .then(res => {
-          this.$message({ showClose: true, message: '移出成功，该盟员将在15天过渡期后正式退盟', type: 'success', duration: 5000 });
-          this.search();
+          if (res.data.success) {
+            this.visible1 = false;
+            this.$message({ showClose: true, message: '移出成功，该盟员将在15天过渡期后正式退盟', type: 'success', duration: 5000 });
+            this.search();
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    },
+    // 撤回移出
+    withdraw(scope) {
+      this.enterpriseName = scope.row.member.enterpriseName;
+      this.outId = scope.row.memberOut.id;
+      this.visible2 = true;
+    },
+    // 确认撤回移出
+    confirm2() {
+      $http
+        .del(`/unionMemberOut/${this.outId}/unionId/${this.unionId}`)
+        .then(res => {
+          if (res.data.success) {
+            this.visible2 = false;
+            this.$message({ showClose: true, message: '撤回移出成功', type: 'success', duration: 5000 });
+            this.search();
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
@@ -210,7 +252,8 @@ export default {
     },
     // 导出盟员列表
     output() {
-      let url = this.$store.state.baseUrl + `/unionMember/unionId/${this.unionId}/write/export`;
+      let url =
+        this.$store.state.baseUrl + `/unionMember/unionId/${this.unionId}/index/export?memberName=${this.input}`;
       window.open(url);
     }
   }

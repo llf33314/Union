@@ -436,7 +436,7 @@ export default {
     // 确认
     confirm() {
       if (this.activitySelected.length === 0 && !this.price) {
-        this.$message({ showClose: true, message: '请输入金额', type: 'warning', duration: 5000 });
+        this.$message({ showClose: true, message: '请输入金额', type: 'error', duration: 5000 });
       } else {
         this.visible3 = true;
         let temData = 0;
@@ -533,7 +533,7 @@ export default {
                     _this.visible1 = false;
                     _this.$router.push({ path: '/my-union' });
                   } else if (msg.status == '0') {
-                    _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
+                    _this.$message({ showClose: true, message: '支付失败', type: 'error', duration: 5000 });
                   }
                 }
               }

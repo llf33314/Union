@@ -307,7 +307,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         // （2）	判断fanId有效性
-        UnionCardFan fan = unionCardFanService.getById(fanId);
+        UnionCardFan fan = unionCardFanService.getValidById(fanId);
         if (fan == null) {
             throw new BusinessException("找不到粉丝信息");
         }
@@ -383,13 +383,13 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         if (voActivityId != null && ListUtil.isNotEmpty(voItemList)) {
             Set<Integer> itemIdSet = new HashSet<>();
             for (UnionCardProjectItem voItem : voItemList) {
-                UnionCardProjectItem item = unionCardProjectItemService.getValidById(voItem.getId());
+                UnionCardProject project = unionCardProjectService.getValidByUnionIdAndMemberIdAndActivityId(unionId, member.getId(), voActivityId);
+                if (project == null) {
+                    throw new BusinessException("找不到服务项目信息");
+                }
+                UnionCardProjectItem item = unionCardProjectItemService.getValidByIdAndProjectId(voItem.getId(), project.getId());
                 if (item == null) {
                     throw new BusinessException("找不到服务优惠信息");
-                }
-                UnionCardProject project = unionCardProjectService.getValidByUnionIdAndMemberIdAndActivityId(unionId, member.getId(), voActivityId);
-                if (project == null || !project.getId().equals(item.getProjectId())) {
-                    throw new BusinessException("找不到服务项目信息");
                 }
                 if (itemIdSet.contains(item.getId())) {
                     throw new BusinessException("存在重复使用的服务优惠");
@@ -420,15 +420,15 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/consume/callback?socketKey=" + socketKey;
 
             PayParam payParam = new PayParam();
-            payParam.setTotalFee(saveConsume.getPayMoney());
-            payParam.setOrderNum(saveConsume.getSysOrderNo());
-            payParam.setIsreturn(CommonConstant.COMMON_NO);
-            payParam.setNotifyUrl(notifyUrl);
-            payParam.setIsSendMessage(CommonConstant.COMMON_NO);
-            payParam.setPayWay(0);
-            payParam.setDesc("消费核销");
-            payParam.setPayDuoFen(false);
-            payParam.setBusId(busId);
+            payParam.setTotalFee(saveConsume.getPayMoney())
+                    .setOrderNum(saveConsume.getSysOrderNo())
+                    .setIsreturn(CommonConstant.COMMON_NO)
+                    .setNotifyUrl(notifyUrl)
+                    .setIsSendMessage(CommonConstant.COMMON_NO)
+                    .setPayWay(0)
+                    .setDesc("消费核销")
+                    .setPayDuoFen(false)
+                    .setBusId(busId);
             WxPublicUsers publicUsers = busUserService.getWxPublicUserByBusId(busId);
             payParam.setAppid(CommonUtil.isNotEmpty(publicUsers) ? publicUsers.getAppid() : null);
 
@@ -865,7 +865,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         if (updateUnionConsumeList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        
+
         unionConsumeDao.updateBatchById(updateUnionConsumeList);
     }
 

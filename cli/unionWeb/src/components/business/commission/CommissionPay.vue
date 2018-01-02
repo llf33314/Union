@@ -177,7 +177,7 @@ export default {
       this.options2 = [];
       if (this.unionId) {
         $http
-          .get(`/unionMember/unionId/${this.unionId}/write/other`)
+          .get(`/unionOpportunity/unionId/${this.unionId}/fromMember`)
           .then(res => {
             if (res.data.data) {
               this.options2 = res.data.data || [];
@@ -204,15 +204,15 @@ export default {
   methods: {
     init() {
       if (this.initUnionId) {
-        // 获取联盟列表
+        // 获取我参与过的联盟
         $http
-          .get(`/unionMain/my`)
+          .get(`/unionMain/busUser`)
           .then(res => {
             if (res.data.data) {
               this.options1 = res.data.data || [];
               this.options1.forEach((v, i) => {
-                v.value = v.union.id;
-                v.label = v.union.name;
+                v.value = v.id;
+                v.label = v.name;
               });
             } else {
               this.options1 = [];
@@ -298,7 +298,7 @@ export default {
               _this.socketFlag.status = msg.status;
               _this.visible1 = false;
             } else if (msg.status == '0') {
-              _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
+              _this.$message({ showClose: true, message: '支付失败', type: 'error', duration: 5000 });
             }
           }
         }

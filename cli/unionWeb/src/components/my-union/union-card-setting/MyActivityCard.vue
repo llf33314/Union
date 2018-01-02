@@ -98,7 +98,9 @@ export default {
     }
   },
   mounted() {
-    this.init();
+    eventBus.$on('myActivityAddTabs', () => {
+      this.init();
+    });
   },
   methods: {
     init() {

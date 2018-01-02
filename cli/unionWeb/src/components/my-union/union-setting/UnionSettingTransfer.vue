@@ -83,7 +83,7 @@ export default {
             // 判断canTransferFlag
             this.tableData.forEach((v, i) => {
               if (v.unionTransfer) {
-                this.canTransferFlag = false;
+                thisthis.canTransferFlag = false;
               }
               v.member.createTime = timeFilter(v.member.createTime);
             });
@@ -142,7 +142,7 @@ export default {
     // 确认撤销
     onConfirm2() {
       $http
-        .put(`/unionMainTransfer/${this.transferId}/unionId/${this.unionId}/revoke`)
+        .del(`/unionMainTransfer/${this.transferId}/unionId/${this.unionId}`)
         .then(res => {
           if (res.data.success) {
             eventBus.$emit('unionUpdata');

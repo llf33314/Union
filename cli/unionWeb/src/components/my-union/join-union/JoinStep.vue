@@ -157,7 +157,7 @@ export default {
         }
         this.active++;
       } else {
-        this.$message({ showClose: true, message: '请选择要加入的联盟', type: 'warning', duration: 5000 });
+        this.$message({ showClose: true, message: '请选择要加入的联盟', type: 'error', duration: 5000 });
       }
     },
     pre() {
