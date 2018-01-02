@@ -87,12 +87,12 @@ public class LoginFilter implements Filter {
         if (url.indexOf("h5Brokerage") > -1) {
             // 开发调试
             BusUser busUser = SessionUtils.getUnionBus(req);
-//            if (busUser == null && "dev".equals(PropertiesUtil.getProfiles())) {
-//                justForDev(req);
-//                justForH5BrokerageDev(req);
-//                chain.doFilter(request, response);
-//                return;
-//            }
+            if (busUser == null && "dev".equals(PropertiesUtil.getProfiles())) {
+                justForDev(req);
+                justForH5BrokerageDev(req);
+                chain.doFilter(request, response);
+                return;
+            }
             // 发布
             H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(req);
             if (h5BrokerageUser == null) {

@@ -72,6 +72,18 @@ public class UnionBrokerageIncomeController {
         }
     }
 
+    
+    @ApiOperation(value = "/111", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/111", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String method(HttpServletRequest request) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        Double result = unionBrokerageIncomeService.sumMoneyByBusId(busId);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
+    }
     //-------------------------------------------------- put -----------------------------------------------------------
 
     //-------------------------------------------------- post ----------------------------------------------------------

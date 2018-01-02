@@ -7,15 +7,14 @@ import com.gt.union.card.main.entity.UnionCardIntegral;
 import com.gt.union.card.main.service.IUnionCardIntegralService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.ListUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 联盟积分 服务实现类
@@ -74,15 +73,15 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        BigDecimal result = BigDecimal.ZERO;
-        List<UnionCardIntegral> integralList = listValidByUnionIdAndFanId(unionId, fanId);
-        if (ListUtil.isNotEmpty(integralList)) {
-            for (UnionCardIntegral integral : integralList) {
-                result = BigDecimalUtil.add(result, integral.getIntegral());
-            }
-        }
+        EntityWrapper<UnionCardIntegral> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("fan_id", fanId);
 
-        return result.doubleValue();
+        entityWrapper.setSqlSelect("IfNull(SUM(integral),0) integralSum");
+        Map<String, Object> resultMap = unionCardIntegralDao.selectMap(entityWrapper);
+
+        return Double.valueOf(resultMap.get("integralSum").toString());
     }
 
     @Override
@@ -91,15 +90,14 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        BigDecimal result = BigDecimal.ZERO;
-        List<UnionCardIntegral> integralList = listValidByFanId(fanId);
-        if (ListUtil.isNotEmpty(integralList)) {
-            for (UnionCardIntegral integral : integralList) {
-                result = BigDecimalUtil.add(result, integral.getIntegral());
-            }
-        }
+        EntityWrapper<UnionCardIntegral> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("fan_id", fanId);
 
-        return result.doubleValue();
+        entityWrapper.setSqlSelect("IfNull(SUM(integral),0) integralSum");
+        Map<String, Object> resultMap = unionCardIntegralDao.selectMap(entityWrapper);
+
+        return Double.valueOf(resultMap.get("integralSum").toString());
     }
 
     @Override
@@ -108,15 +106,14 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        BigDecimal result = BigDecimal.ZERO;
-        List<UnionCardIntegral> integralList = listValidByUnionId(unionId);
-        if (ListUtil.isNotEmpty(integralList)) {
-            for (UnionCardIntegral integral : integralList) {
-                result = BigDecimalUtil.add(result, integral.getIntegral());
-            }
-        }
+        EntityWrapper<UnionCardIntegral> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId);
 
-        return result.doubleValue();
+        entityWrapper.setSqlSelect("IfNull(SUM(integral),0) integralSum");
+        Map<String, Object> resultMap = unionCardIntegralDao.selectMap(entityWrapper);
+
+        return Double.valueOf(resultMap.get("integralSum").toString());
     }
 
     //********************************************* Base On Business - filter ******************************************
