@@ -84,6 +84,42 @@ public class UnionMainController {
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
+    @ApiOperation(value = "辅助-列表：获取我参与过的联盟", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/busUser", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String listByBusUser(HttpServletRequest request) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        // mock
+        List<UnionMain> result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.list(UnionMain.class, 20);
+        } else {
+            result = unionMainService.listReadByBusId(busId);
+        }
+        return GtJsonResult.instanceSuccessMsg(result).toString();
+    }
+
+    @ApiOperation(value = "辅助-列表：获取我的当前有效的联盟", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/busUser/valid", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String listValidByBusUser(HttpServletRequest request) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        // mock
+        List<UnionMain> result;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            result = MockUtil.list(UnionMain.class, 3);
+        } else {
+            result = unionMainService.listValidReadByBusId(busId);
+        }
+        return GtJsonResult.instanceSuccessMsg(result).toString();
+    }
+
     //-------------------------------------------------- put -----------------------------------------------------------
 
     @ApiOperation(value = "我的联盟-联盟设置-联盟基本信息-保存", produces = "application/json;charset=UTF-8")

@@ -53,7 +53,7 @@ public class UnionIndexServiceImpl implements IUnionIndexService {
         List<UnionMember> busCreateMemberList = unionMemberService.filterByIsUnionOwner(busReadMemberList, MemberConstant.IS_UNION_OWNER_YES);
         if (ListUtil.isNotEmpty(busCreateMemberList)) {
             UnionMember busCreateMember = busCreateMemberList.get(0);
-            UnionMain busCreateUnion = unionMainService.getById(busCreateMember.getUnionId());
+            UnionMain busCreateUnion = unionMainService.getValidById(busCreateMember.getUnionId());
             result.setMyCreateUnion(busCreateUnion);
         }
 
@@ -62,7 +62,7 @@ public class UnionIndexServiceImpl implements IUnionIndexService {
         if (ListUtil.isNotEmpty(busJoinMemberList)) {
             List<UnionMain> busJoinUnionList = new ArrayList<>();
             for (UnionMember member : busJoinMemberList) {
-                UnionMain busJoinUnion = unionMainService.getById(member.getUnionId());
+                UnionMain busJoinUnion = unionMainService.getValidById(member.getUnionId());
                 busJoinUnionList.add(busJoinUnion);
             }
             result.setMyJoinUnionList(busJoinUnionList);

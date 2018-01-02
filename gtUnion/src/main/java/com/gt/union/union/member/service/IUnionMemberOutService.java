@@ -108,6 +108,16 @@ public interface IUnionMemberOutService {
 
     //********************************************* Base On Business - other *******************************************
 
+    /**
+     * 是否存在未删除的退盟申请信息
+     *
+     * @param unionId       联盟id
+     * @param applyMemberId 退盟申请盟员id
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean existValidByUnionIdAndApplyMemberId(Integer unionId, Integer applyMemberId) throws Exception;
+
     //********************************************* Base On Business - filter ******************************************
 
     /**

@@ -163,7 +163,7 @@ export default {
                     _this.visible1 = false;
                     _this.$router.push({ path: '/my-union' });
                   } else if (msg.status == '0') {
-                    _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
+                    _this.$message({ showClose: true, message: '支付失败', type: 'error', duration: 5000 });
                   }
                 }
               }
@@ -173,7 +173,7 @@ export default {
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
       } else {
-        this.$message({ showClose: true, message: '请选择版本', type: 'warning', duration: 5000 });
+        this.$message({ showClose: true, message: '请选择版本', type: 'error', duration: 5000 });
       }
     },
     // 免费使用

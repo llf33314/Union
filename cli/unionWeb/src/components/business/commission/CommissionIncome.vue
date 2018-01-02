@@ -138,7 +138,7 @@ export default {
       this.options2 = [];
       if (this.unionId) {
         $http
-          .get(`/unionMember/unionId/${this.unionId}/write/other`)
+          .get(`/unionOpportunity/unionId/${this.unionId}/toMember`)
           .then(res => {
             if (res.data.data) {
               this.options2 = res.data.data || [];
@@ -154,7 +154,7 @@ export default {
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
       }
-    },
+    }
   },
   mounted: function() {
     this.init();
@@ -162,15 +162,15 @@ export default {
   methods: {
     init() {
       if (this.initUnionId) {
-        // 获取联盟列表
+        // 获取我参与过的联盟
         $http
-          .get(`/unionMain/my`)
+          .get(`/unionMain/busUser`)
           .then(res => {
             if (res.data.data) {
               this.options1 = res.data.data || [];
               this.options1.forEach((v, i) => {
-                v.value = v.union.id;
-                v.label = v.union.name;
+                v.value = v.id;
+                v.label = v.name;
               });
             } else {
               this.options1 = [];
@@ -205,24 +205,25 @@ export default {
       let val = value || 1;
       $http
         .get(
-          `/unionBrokerageIncome/opportunity/page?current=${val}&unionId=${this.unionId}&toMemberId=${this.toMemberId}&` +
+          `/unionBrokerageIncome/opportunity/page?current=${val}&unionId=${this.unionId}&toMemberId=${this
+            .toMemberId}&` +
             this.value +
             '=' +
             this.input
         )
         .then(res => {
           if (res.data.data) {
-              this.tableData = res.data.data.records || [];
-              this.totalAll = res.data.data.total;
-              this.tableData.forEach((v, i) => {
-                v.opportunity.createTime = timeFilter(v.opportunity.createTime);
-                v.opportunity.acceptStatus = commissionTypeFilter(v.opportunity.acceptStatus);
-                v.opportunity.isClose = commissionIsCloseFilter(v.opportunity.isClose);
-              });
-            } else {
-              this.tableData = [];
-              this.totalAll = 0;
-            }
+            this.tableData = res.data.data.records || [];
+            this.totalAll = res.data.data.total;
+            this.tableData.forEach((v, i) => {
+              v.opportunity.createTime = timeFilter(v.opportunity.createTime);
+              v.opportunity.acceptStatus = commissionTypeFilter(v.opportunity.acceptStatus);
+              v.opportunity.isClose = commissionIsCloseFilter(v.opportunity.isClose);
+            });
+          } else {
+            this.tableData = [];
+            this.totalAll = 0;
+          }
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });

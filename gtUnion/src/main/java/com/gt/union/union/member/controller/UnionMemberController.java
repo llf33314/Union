@@ -13,6 +13,7 @@ import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
+import com.gt.union.union.member.vo.MemberOutVO;
 import com.gt.union.union.member.vo.MemberVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -43,8 +44,35 @@ public class UnionMemberController {
 
     //-------------------------------------------------- get -----------------------------------------------------------
 
-    @ApiOperation(value = "分页：我的联盟-首页-盟员列表；分页：我的联盟-联盟卡设置-折扣卡设置", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/unionId/{unionId}/read/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @ApiOperation(value = "分页：我的联盟-首页-盟员列表", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/index/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String pageIndexByUnionId(
+            HttpServletRequest request,
+            Page page,
+            @ApiParam(value = "联盟id", name = "unionId", required = true)
+            @PathVariable("unionId") Integer unionId,
+            @ApiParam(value = "盟员名称", name = "memberName")
+            @RequestParam(value = "memberName", required = false) String optMemberName) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            busId = busUser.getPid();
+        }
+        // mock
+        List<MemberOutVO> voList;
+        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
+            voList = MockUtil.list(MemberOutVO.class, page.getSize());
+        } else {
+            voList = unionMemberService.listIndexByBusIdAndUnionId(busId, unionId, optMemberName);
+        }
+
+        Page<MemberOutVO> result = (Page<MemberOutVO>) page;
+        result = PageUtil.setRecord(result, voList);
+        return GtJsonResult.instanceSuccessMsg(result).toString();
+    }
+
+    @ApiOperation(value = "分页：我的联盟-联盟卡设置-折扣卡设置", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/discount/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageWriteByUnionId(
             HttpServletRequest request,
             Page page,
@@ -62,7 +90,7 @@ public class UnionMemberController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             memberList = MockUtil.list(UnionMember.class, page.getSize());
         } else {
-            memberList = unionMemberService.listValidReadByBusIdAndUnionId(busId, unionId, optMemberName);
+            memberList = unionMemberService.listDiscountByBusIdAndUnionId(busId, unionId, optMemberName);
         }
 
         Page<UnionMember> result = (Page<UnionMember>) page;
@@ -71,7 +99,7 @@ public class UnionMemberController {
     }
 
     @ApiOperation(value = "导出：我的联盟-首页-盟员列表", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/unionId/{unionId}/read/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/unionId/{unionId}/index/export", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public void exportWriteByUnionId(
             HttpServletRequest request,
             HttpServletResponse response,
@@ -85,19 +113,20 @@ public class UnionMemberController {
             busId = busUser.getPid();
         }
 
-        List<UnionMember> memberList;
+        List<MemberOutVO> voList;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            memberList = MockUtil.list(UnionMember.class, 20);
+            voList = MockUtil.list(MemberOutVO.class, 20);
         } else {
-            memberList = unionMemberService.listValidReadByBusIdAndUnionId(busId, unionId, optMemberName);
+            voList = unionMemberService.listIndexByBusIdAndUnionId(busId, unionId, optMemberName);
         }
         String[] titles = new String[]{"盟员名称", "负责人", "联系电话", "加入时间"};
         HSSFWorkbook workbook = ExportUtil.newHSSFWorkbook(titles);
         HSSFSheet sheet = workbook.getSheetAt(0);
-        if (ListUtil.isNotEmpty(memberList)) {
+        if (ListUtil.isNotEmpty(voList)) {
             int rowIndex = 1;
             HSSFCellStyle centerCellStyle = ExportUtil.newHSSFCellStyle(workbook, HSSFCellStyle.ALIGN_CENTER);
-            for (UnionMember member : memberList) {
+            for (MemberOutVO vo : voList) {
+                UnionMember member = vo.getMember();
                 HSSFRow row = sheet.createRow(rowIndex++);
                 int cellIndex = 0;
                 // 盟员名称

@@ -95,14 +95,15 @@ export default {
   methods: {
     init() {
       if (this.initUnionId) {
+        // 获取我的当前有效的联盟
         $http
-          .get(`/unionMain/my`)
+          .get(`/unionMain/busUser/valid`)
           .then(res => {
             if (res.data.data) {
               this.options = res.data.data || [];
               this.options.forEach((v, i) => {
-                v.value = v.union.id;
-                v.label = v.union.name;
+                v.value = v.id;
+                v.label = v.name;
               });
               // 给unionId 赋初始值
               this.unionId = this.options[0].value;

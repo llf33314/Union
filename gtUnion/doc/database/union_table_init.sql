@@ -108,6 +108,8 @@ CREATE TABLE `t_union_main_package` (
 DROP TABLE IF EXISTS `t_union_main_dict`;
 CREATE TABLE `t_union_main_dict` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
+  `del_status` int(2) DEFAULT NULL COMMENT '是否删除(0:否 1:是)',
+  `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `union_id` int(11) DEFAULT NULL COMMENT '联盟id',
   `item_key` varchar(50) DEFAULT NULL COMMENT '字典关键字',
   PRIMARY KEY (`id`)

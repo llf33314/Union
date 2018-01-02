@@ -356,7 +356,7 @@ export default {
                           _this.socketFlag.status = msg.status;
                           _this.visible1 = false;
                         } else if (msg.status == '0') {
-                          _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
+                          _this.$message({ showClose: true, message: '支付失败', type: 'error', duration: 5000 });
                         }
                       }
                     }

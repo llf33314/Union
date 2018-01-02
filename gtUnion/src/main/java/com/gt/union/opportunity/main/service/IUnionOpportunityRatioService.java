@@ -3,7 +3,6 @@ package com.gt.union.opportunity.main.service;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.opportunity.main.entity.UnionOpportunityRatio;
-import com.gt.union.opportunity.main.vo.OpportunityRatioVO;
 
 import java.util.List;
 
@@ -32,13 +31,14 @@ public interface IUnionOpportunityRatioService {
     /**
      * 分页：商机-商机佣金比设置
      *
+     * @param page    分页对象
      * @param busId   商家id
      * @param unionId 联盟id
      * @return List<OpportunityRatioVO>
      * @throws Exception 统一处理异常
      */
-    List<OpportunityRatioVO> listOpportunityRatioVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
-    
+    Page pageOpportunityRatioVOByBusIdAndUnionId(Page page, Integer busId, Integer unionId) throws Exception;
+
     //********************************************* Base On Business - save ********************************************
 
     //********************************************* Base On Business - remove ******************************************
@@ -54,7 +54,7 @@ public interface IUnionOpportunityRatioService {
      * @param ratio      佣金比例
      * @throws Exception 统一处理异常
      */
-    void updateRatioByBusIdAndUnionIdAndToMemberId(Integer busId, Integer unionId, Integer toMemberId, Double ratio) throws Exception;
+    void updateByBusIdAndUnionIdAndToMemberId(Integer busId, Integer unionId, Integer toMemberId, Double ratio) throws Exception;
 
     //********************************************* Base On Business - other *******************************************
 
@@ -99,7 +99,7 @@ public interface IUnionOpportunityRatioService {
      * @throws Exception 统一处理异常
      */
     List<UnionOpportunityRatio> filterByUnionId(List<UnionOpportunityRatio> ratioList, Integer unionId) throws Exception;
-    
+
     //****************************************** Object As a Service - get *********************************************
 
     /**

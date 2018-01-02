@@ -18,7 +18,7 @@ public interface IUnionBrokeragePayService {
     //********************************************* Base On Business - get *********************************************
 
     /**
-     * 缓存穿透-商机-佣金结算-支付明细-详情；导出：商机佣金结算-支付明细-详情
+     * 商机-佣金结算-支付明细-详情；导出：商机佣金结算-支付明细-详情
      *
      * @param busId    商家id
      * @param unionId  联盟id
@@ -31,7 +31,7 @@ public interface IUnionBrokeragePayService {
     //********************************************* Base On Business - list ********************************************
 
     /**
-     * 缓存穿透-获取未删除的商机佣金支付列表信息
+     * 获取未删除的商机佣金支付列表信息
      *
      * @param fromBusId 支付商家id
      * @param toBusId   收款商家id
@@ -42,7 +42,7 @@ public interface IUnionBrokeragePayService {
     List<UnionBrokeragePay> listValidByFromBusIdAndToBusIdAndStatus(Integer fromBusId, Integer toBusId, Integer status) throws Exception;
 
     /**
-     * 缓存穿透-获取未删除的商机佣金支付列表信息
+     * 获取未删除的商机佣金支付列表信息
      *
      * @param fromBusId   支付商家id
      * @param toBusIdList 收款商家id列表
@@ -90,7 +90,18 @@ public interface IUnionBrokeragePayService {
             Page page, Integer busId, Integer optUnionId, Integer optFromMemberId, Integer optIsClose, String optClientName, String optClientPhone) throws Exception;
 
     /**
-     * 商机-佣金结算-支付明细；导出：商机-佣金结算-支付明细
+     * 分页：商机-佣金结算-支付明细
+     *
+     * @param page       分页对象
+     * @param busId      商家id
+     * @param optUnionId 联盟id
+     * @return List<BrokeragePayVO>
+     * @throws Exception 统一处理异常
+     */
+    Page pageBrokeragePayVOByBusId(Page page, Integer busId, Integer optUnionId) throws Exception;
+
+    /**
+     * 导出：商机-佣金结算-支付明细
      *
      * @param busId      商家id
      * @param optUnionId 联盟id

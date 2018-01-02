@@ -24,9 +24,9 @@
             <el-radio-group v-model="ruleForm1.unionId">
               <el-radio-button v-for="item in options1" :key="item.value" :label="item.value">
                 <div class="dddddd clearfix">
-                  <img v-bind:src="item.union.img" alt="" class="fl unionImg">
+                  <img v-bind:src="item.img" alt="" class="fl unionImg">
                   <div class="fl" style="margin-left: 20px">
-                    <h6 style="margin-bottom: 17px">{{item.union.name}}</h6>
+                    <h6 style="margin-bottom: 17px">{{item.name}}</h6>
                   </div>
                   <i></i>
                 </div>
@@ -131,15 +131,15 @@ export default {
   methods: {
     init() {
       if (this.initUnionId) {
-        // 获取联盟列表
+        // 获取我的当前有效的联盟
         $http
-          .get(`/unionMain/my`)
+          .get(`/unionMain/busUser/valid`)
           .then(res => {
             if (res.data.data) {
               this.options1 = res.data.data || [];
               this.options1.forEach((v, i) => {
-                v.value = v.union.id;
-                v.label = v.union.name;
+                v.value = v.id;
+                v.label = v.name;
               });
             } else {
               this.options1 = [];

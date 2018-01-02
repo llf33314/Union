@@ -66,7 +66,7 @@ export default {
   methods: {
     init() {
       $http
-        .get(`/unionMember/unionId/${this.unionId}/write/page?current=1`)
+        .get(`/unionMember/unionId/${this.unionId}/discount/page?current=1`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
@@ -102,7 +102,7 @@ export default {
     search(value) {
       let val = value || 1;
       $http
-        .get(`/unionMember/unionId/${this.unionId}/write/page?current=${val}&memberName=${this.input}`)
+        .get(`/unionMember/unionId/${this.unionId}/discount/page?current=${val}&memberName=${this.input}`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
