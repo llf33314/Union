@@ -2,10 +2,10 @@ import Vue from 'vue';
 import Router from 'vue-router';
 
 // 入口
-const MyUnionEntrance = () => import(/* webpackChunkName: "entrance" */ '@/components/entrance/MyUnionEntrance');
-const BusinessEntrance = () => import(/* webpackChunkName: "entrance" */ '@/components/entrance/BusinessEntrance');
-const FinanceEntrance = () => import(/* webpackChunkName: "entrance" */ '@/components/entrance/FinanceEntrance');
-const FrontEntrance = () => import(/* webpackChunkName: "entrance" */ '@/components/entrance/FrontEntrance');
+const MyUnionEntrance = () => import('@/components/entrance/MyUnionEntrance');
+const BusinessEntrance = () => import('@/components/entrance/BusinessEntrance');
+const FinanceEntrance = () => import('@/components/entrance/FinanceEntrance');
+const FrontEntrance = () => import('@/components/entrance/FrontEntrance');
 
 // 我的联盟
 // 我的联盟index
@@ -33,10 +33,10 @@ const MyActivityCard = () =>
   import(/* webpackChunkName: "union-card-setting" */ '@/components/my-union/union-card-setting/MyActivityCard');
 
 // 我的联盟外其他模块
-const Business = () => import(/* webpackChunkName: "others" */ '@/components/business/Business');
-const Finance = () => import(/* webpackChunkName: "others" */ '@/components/finance/Finance');
-const Front = () => import(/* webpackChunkName: "others" */ '@/components/front/Front');
-const NoUnion = () => import(/* webpackChunkName: "others" */ '@/components/public-components/NoUnion');
+const Business = () => import('@/components/business/Business');
+const Finance = () => import('@/components/finance/Finance');
+const Front = () => import('@/components/front/Front');
+const NoUnion = () => import('@/components/public-components/NoUnion');
 
 Vue.use(Router);
 

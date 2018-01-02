@@ -24,9 +24,9 @@
             <el-radio-group v-model="ruleForm1.unionId">
               <el-radio-button v-for="item in options1" :key="item.value" :label="item.value">
                 <div class="dddddd clearfix">
-                  <img v-bind:src="item.union.img" alt="" class="fl unionImg">
+                  <img v-bind:src="item.img" alt="" class="fl unionImg">
                   <div class="fl" style="margin-left: 20px">
-                    <h6 style="margin-bottom: 17px">{{item.union.name}}</h6>
+                    <h6 style="margin-bottom: 17px">{{item.name}}</h6>
                   </div>
                   <i></i>
                 </div>
