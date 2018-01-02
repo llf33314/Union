@@ -81,7 +81,35 @@ public class WxPayServiceImpl implements WxPayService {
         return PropertiesUtil.getWxmpUrl() + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/payapi.do?obj=" + obj;
     }
 
-    @Override
+	@Override
+	public String wxAppPay(PayParam payParam) {
+        SubQrPayParams subQrPayParams = new SubQrPayParams();
+        subQrPayParams.setAppid(payParam.getPayDuoFen() ? PropertiesUtil.getDuofenAppid() : payParam.getAppid());
+        subQrPayParams.setAppidType(1);
+        subQrPayParams.setBusId(CommonUtil.isEmpty(payParam.getBusId()) ? PropertiesUtil.getDuofenBusId() : payParam.getBusId());
+        subQrPayParams.setDesc(CommonUtil.isEmpty(payParam.getDesc()) ? "" : payParam.getDesc());
+        subQrPayParams.setIsreturn(payParam.getIsreturn());
+        subQrPayParams.setReturnUrl(CommonUtil.isEmpty(payParam.getReturnUrl()) ? "" : payParam.getReturnUrl());
+        subQrPayParams.setIsSendMessage(payParam.getIsSendMessage());
+        subQrPayParams.setSendUrl(CommonUtil.isEmpty(payParam.getSendUrl()) ? "" : payParam.getSendUrl());
+        subQrPayParams.setModel(ConfigConstant.PAY_MODEL);
+        subQrPayParams.setSourceType(1);
+        subQrPayParams.setOrderNum(payParam.getOrderNum());
+        subQrPayParams.setTotalFee(payParam.getTotalFee());
+        subQrPayParams.setPayWay(payParam.getPayWay());
+        subQrPayParams.setNotifyUrl(CommonUtil.isEmpty(payParam.getNotifyUrl()) ? "" : payParam.getNotifyUrl());
+        subQrPayParams.setExtend(payParam.getExtend());
+        logger.info("微信小程序支付请求参数：{}", JSON.toJSONString(subQrPayParams));
+        String obj = "";
+        try {
+            obj = KeysUtil.getEncString(JSON.toJSONString(subQrPayParams));
+        }catch (Exception e){
+            logger.error("微信小程序支付错误：=======>",e);
+        }
+        return PropertiesUtil.getWxmpUrl() + "/wxPay/79B4DE7C/commonpayVerApplet2_0.do?obj=" + obj;
+	}
+
+	@Override
     public GtJsonResult enterprisePayment(String partnerTradeNo, String openid, String desc, Double amount, Integer paySource){
         ApiEnterprisePayment payment = new ApiEnterprisePayment();
         payment.setAmount(amount);

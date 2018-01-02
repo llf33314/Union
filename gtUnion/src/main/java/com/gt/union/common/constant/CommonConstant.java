@@ -82,4 +82,14 @@ public interface CommonConstant {
      */
     String CODE_ERROR_MSG = "验证码有误";
 
+    /**
+     * token有误
+     */
+    String TOKEN_ERROR = "无效的token";
+
+    /**
+     * token为空
+     */
+    String TOKEN_NULL = "token不能为空";
+
 }

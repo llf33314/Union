@@ -29,7 +29,7 @@
         <template slot-scope="scope">
           <div class="sizeAndColor">
             <el-button size="small" @click="detail(scope)">详情</el-button>
-            <el-button size="small" v-if="isUnionOwner && !scope.row.memberOut" @click="remove(scope)">移出</el-button>
+            <el-button size="small" v-if="(isUnionOwner && !scope.row.member.isUnionOwner) && !scope.row.memberOut.type" @click="remove(scope)">移出</el-button>
             <el-button size="small" v-if="isUnionOwner && scope.row.memberOut.type === 2" @click="withdraw(scope)">撤回移出</el-button>
           </div>
         </template>
@@ -152,6 +152,10 @@ export default {
             this.tableData = res.data.data.records || [];
             this.tableData.forEach((v, i) => {
               v.member.createTime = timeFilter(v.member.createTime);
+              if (!v.memberOut) {
+                v.memberOut = {};
+                v.memberOut.type = '';
+              }
             });
             this.totalAll = res.data.data.total;
           } else {
@@ -173,6 +177,10 @@ export default {
             this.tableData = res.data.data.records || [];
             this.tableData.forEach((v, i) => {
               v.member.createTime = timeFilter(v.createTime);
+              if (!v.memberOut) {
+                v.memberOut = {};
+                v.memberOut.type = '';
+              }
             });
             this.totalAll = res.data.data.total;
           }

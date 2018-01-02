@@ -24,7 +24,9 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author hongjiye
@@ -92,7 +94,10 @@ public class H5CardController {
 		Member member = SessionUtils.getLoginMember(request, busId);
 		url = url + "/" + busId;
 		if(CommonUtil.isEmpty(member)){
-			return memberService.authorizeMember(request, busId, true, ConfigConstant.CARD_PHONE_BASE_URL + url, null).toString();
+			Map<String,Object> login = new HashMap<String,Object>();
+			login.put("login",1);
+//			return memberService.authorizeMember(request, busId, true, ConfigConstant.CARD_PHONE_BASE_URL + url, null).toString();
+			return GtJsonResult.instanceSuccessMsg(login).toString();
 		}
 		MyCardDetailVO myCardDetailVO = h5CardService.myCardDetail(member.getPhone());
 		myCardDetailVO.setNickName(StringUtil.isEmpty(member.getNickname()) ? "未知用户" : member.getNickname());

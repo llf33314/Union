@@ -64,6 +64,8 @@ public class PropertiesUtil {
 
 	private static String sucUrl;
 
+	private static String tokenKey;
+
 	/**
 	 * 获取资源访问地址
 	 * @return resourceUrl
@@ -280,6 +282,14 @@ public class PropertiesUtil {
 		return carUrl;
 	}
 
+	/**
+	 * 获取token的key
+	 * @return
+	 */
+	public static String getTokenKey() {
+		return tokenKey;
+	}
+
 	@Value("${resource.url.prefix}")
 	public void setResourceUrl(String resourceUrl) {
 		PropertiesUtil.resourceUrl = resourceUrl;
@@ -408,5 +418,10 @@ public class PropertiesUtil {
 	@Value("${suc.url}")
 	public void setSucUrl(String sucUrl) {
 		PropertiesUtil.sucUrl = sucUrl;
+	}
+
+	@Value("${wxapp.sso.token.des_key}")
+	public void setTokenKey(String tokenKey) {
+		PropertiesUtil.tokenKey = tokenKey;
 	}
 }

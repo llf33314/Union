@@ -161,7 +161,6 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         if (h5BrokerageUser == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        //TODO 提现记录 前端需做处理
         Integer busId = h5BrokerageUser.getVerifier().getBusId();
         // 按时间倒序排序
         List<UnionBrokerageWithdrawal> result = unionBrokerageWithdrawalService.listByBusId(busId);
