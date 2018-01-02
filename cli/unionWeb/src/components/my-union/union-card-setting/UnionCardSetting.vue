@@ -66,6 +66,7 @@ export default {
         });
         this.editableTabsValue = newTabName;
         this.$router.push({ path: url });
+        eventBus.$emit('getActivityCardProject');
       }
     });
   },
