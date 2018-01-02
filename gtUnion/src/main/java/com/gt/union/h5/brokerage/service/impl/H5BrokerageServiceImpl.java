@@ -141,7 +141,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
                 OpportunityConstant.ACCEPT_STATUS_CONFIRMED, OpportunityConstant.IS_CLOSE_NO);
         result.setUnPaidOpportunityBrokerage(unPaidOpportunityBrokerage);
         // （3）	获取售卡佣金收入总额
-        Double cardBrokerage = unionBrokerageIncomeService.sumValidMoneyByBusIdAndType(busId, BrokerageConstant.INCOME_TYPE_CARD);//TODO 售卡佣金总和
+        Double cardBrokerage = unionBrokerageIncomeService.sumValidMoneyByBusIdAndType(busId, BrokerageConstant.INCOME_TYPE_CARD);
         result.setCardBrokerage(cardBrokerage);
         // （4）	获取历史提现佣金总额
         Double historyWithdrawal = unionBrokerageWithdrawalService.sumMoneyByBusId(busId);
