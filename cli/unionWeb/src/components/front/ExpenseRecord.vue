@@ -154,10 +154,10 @@ export default {
   },
   watch: {},
   methods: {
-    // 获取我的当前有效的联盟
+    // 获取我参与过的联盟
     getUnionList() {
       $http
-        .get(`/unionMain/busUser/valid`)
+        .get(`/unionMain/busUser`)
         .then(res => {
           if (res.data.data) {
             this.options1 = res.data.data || [];
