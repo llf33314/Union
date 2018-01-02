@@ -294,7 +294,7 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionMember> result = listByUnionId(unionId);
+        List<UnionMember> result = listValidByUnionId(unionId);
         result = filterByStatus(result, status);
 
         return result;
