@@ -75,11 +75,13 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCardProject> result = listValidByActivityId(activityId);
-        result = filterByMemberId(result, memberId);
-        result = filterByUnionId(result, unionId);
+        EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("member_id", memberId)
+                .eq("activity_id", activityId);
 
-        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
+        return unionCardProjectDao.selectOne(entityWrapper);
     }
 
     @Override
@@ -88,9 +90,14 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        UnionCardProject result = getValidByUnionIdAndMemberIdAndActivityId(unionId, memberId, activityId);
+        EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("member_id", memberId)
+                .eq("activity_id", activityId)
+                .eq("status", status);
 
-        return result != null && status.equals(result.getStatus()) ? result : null;
+        return unionCardProjectDao.selectOne(entityWrapper);
     }
 
     @Override
@@ -99,9 +106,13 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        UnionCardProject result = getValidById(projectId);
+        EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("id", projectId)
+                .eq("union_id", unionId)
+                .eq("activity_id", activityId);
 
-        return result != null && activityId.equals(result.getActivityId()) && unionId.equals(result.getUnionId()) ? result : null;
+        return unionCardProjectDao.selectOne(entityWrapper);
     }
 
     @Override
@@ -161,11 +172,13 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCardProject> result = listValidByMemberId(memberId);
-        result = filterByUnionId(result, unionId);
-        result = filterByStatus(result, status);
+        EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("member_id", memberId)
+                .eq("status", status);
 
-        return result;
+        return unionCardProjectDao.selectList(entityWrapper);
     }
 
     @Override
@@ -174,10 +187,12 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCardProject> result = listValidByActivityId(activityId);
-        result = filterByUnionId(result, unionId);
+        EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("activity_id", activityId);
 
-        return result;
+        return unionCardProjectDao.selectList(entityWrapper);
     }
 
     @Override
@@ -186,11 +201,13 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCardProject> result = listValidByActivityId(activityId);
-        result = filterByUnionId(result, unionId);
-        result = filterByStatus(result, status);
+        EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("activity_id", activityId)
+                .eq("status", status);
 
-        return result;
+        return unionCardProjectDao.selectList(entityWrapper);
     }
 
     @Override
@@ -382,9 +399,13 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCardProject> projectList = listValidByUnionIdAndActivityIdAndStatus(unionId, activityId, status);
+        EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("activity_id", activityId)
+                .eq("status", status);
 
-        return ListUtil.isNotEmpty(projectList) ? projectList.size() : 0;
+        return unionCardProjectDao.selectCount(entityWrapper);
     }
 
     @Override
@@ -393,7 +414,14 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        return getValidByUnionIdAndMemberIdAndActivityIdAndStatus(unionId, memberId, activityId, status) != null;
+        EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("member_id", memberId)
+                .eq("activity_id", activityId)
+                .eq("status", status);
+
+        return unionCardProjectDao.selectCount(entityWrapper) > 0;
     }
 
     //********************************************* Base On Business - filter ******************************************
@@ -743,7 +771,7 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
         if (updateUnionCardProjectList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        
+
         unionCardProjectDao.updateBatchById(updateUnionCardProjectList);
     }
 

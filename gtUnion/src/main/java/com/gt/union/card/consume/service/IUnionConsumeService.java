@@ -50,7 +50,7 @@ public interface IUnionConsumeService {
     List<ConsumeRecordVO> listConsumeRecordVO(List<UnionConsume> consumeList) throws Exception;
 
     /**
-     * 缓存穿透-导出：前台-消费核销记录
+     * 导出：前台-消费核销记录
      *
      * @param busId         商家id
      * @param optUnionId    联盟id
@@ -66,7 +66,7 @@ public interface IUnionConsumeService {
             Integer busId, Integer optUnionId, Integer optShopId, String optCardNumber, String optPhone, Date optBeginTime, Date optEndTime) throws Exception;
 
     /**
-     * 缓存穿透-分页：前台-消费核销记录
+     * 分页：前台-消费核销记录
      *
      * @param page          分页对象
      * @param busId         商家id

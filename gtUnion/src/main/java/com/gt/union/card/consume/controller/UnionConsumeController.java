@@ -12,7 +12,6 @@ import com.gt.union.card.project.entity.UnionCardProjectItem;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
-import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.*;
 import com.gt.union.union.main.vo.UnionPayVO;
@@ -80,14 +79,15 @@ public class UnionConsumeController {
                 List<UnionCardProjectItem> erpGoodsList = MockUtil.list(UnionCardProjectItem.class, 3);
                 voList.get(i).setErpGoodsList(erpGoodsList);
             }
+            Page<ConsumeRecordVO> result = (Page<ConsumeRecordVO>) page;
+            result = PageUtil.setRecord(result, voList);
+            return GtJsonResult.instanceSuccessMsg(result).toString();
         } else {
             Date begin = beginTime != null ? (new Date(beginTime)) : null;
             Date end = endTime != null ? (new Date(endTime)) : null;
-            voList = unionConsumeService.listConsumeRecordVOByBusId(busId, unionId, shopId, cardNumber, phone, begin, end);
+            Page result = unionConsumeService.pageConsumeRecordVOByBusId(page, busId, unionId, shopId, cardNumber, phone, begin, end);
+            return GtJsonResult.instanceSuccessMsg(result).toString();
         }
-        Page<ConsumeRecordVO> result = (Page<ConsumeRecordVO>) page;
-        result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     @ApiOperation(value = "导出：前台-消费核销记录", produces = "application/json;charset=UTF-8")

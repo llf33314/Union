@@ -125,7 +125,6 @@ public class UnionCardController {
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
             busId = busUser.getPid();
         }
-
         // mock
         UnionPayVO result;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {

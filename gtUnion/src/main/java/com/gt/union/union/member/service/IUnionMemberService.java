@@ -214,7 +214,7 @@ public interface IUnionMemberService {
      * @throws Exception 统一处理异常
      */
     List<UnionMember> listReadByBusId(Integer busId) throws Exception;
-    
+
     /**
      * 获取未删除的具有读权限的商家盟员列表信息
      *
@@ -453,6 +453,16 @@ public interface IUnionMemberService {
      * @throws Exception 统一处理异常
      */
     List<UnionMember> filterByListDirectorPhone(List<UnionMember> memberList, String likeDirectorPhone) throws Exception;
+
+    /**
+     * 过滤掉联盟已过期的盟员
+     *
+     * @param memberList 数据源
+     * @return List<UnionMember>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMember> filterInvalidUnionId(List<UnionMember> memberList) throws Exception;
+
 
     //****************************************** Object As a Service - get *********************************************
 

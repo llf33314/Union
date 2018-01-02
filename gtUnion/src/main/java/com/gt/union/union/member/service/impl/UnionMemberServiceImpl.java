@@ -838,6 +838,24 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         return result;
     }
 
+    @Override
+    public List<UnionMember> filterInvalidUnionId(List<UnionMember> memberList) throws Exception {
+        if (memberList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMember> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(memberList)) {
+            for (UnionMember member : memberList) {
+                if (unionMainService.isUnionValid(member.getUnionId())) {
+                    result.add(member);
+                }
+            }
+        }
+
+        return result;
+    }
+
     //********************************************* Object As a Service - get ******************************************
 
     @Override

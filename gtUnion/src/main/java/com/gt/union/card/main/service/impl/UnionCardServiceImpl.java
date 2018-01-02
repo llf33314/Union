@@ -3,7 +3,6 @@ package com.gt.union.card.main.service.impl;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
-import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.api.client.socket.SocketService;
 import com.gt.union.card.activity.constant.ActivityConstant;
@@ -32,7 +31,10 @@ import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.constant.SmsCodeConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
-import com.gt.union.common.util.*;
+import com.gt.union.common.util.BigDecimalUtil;
+import com.gt.union.common.util.DateUtil;
+import com.gt.union.common.util.ListUtil;
+import com.gt.union.common.util.StringUtil;
 import com.gt.union.opportunity.brokerage.constant.BrokerageConstant;
 import com.gt.union.opportunity.brokerage.entity.UnionBrokerageIncome;
 import com.gt.union.opportunity.brokerage.service.IUnionBrokerageIncomeService;
@@ -63,9 +65,6 @@ public class UnionCardServiceImpl implements IUnionCardService {
     private IUnionCardDao unionCardDao;
 
     @Autowired
-    private RedisCacheUtil redisCacheUtil;
-
-    @Autowired
     private IUnionCardFanService unionCardFanService;
 
     @Autowired
@@ -79,9 +78,6 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
     @Autowired
     private IUnionCardProjectService unionCardProjectService;
-
-    @Autowired
-    private WxPayService wxPayService;
 
     @Autowired
     private SmsService smsService;
@@ -118,6 +114,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (optUnionId != null) {
             memberList = unionMemberService.filterByUnionId(memberList, optUnionId);
         }
+        memberList = unionMemberService.filterInvalidUnionId(memberList);
 
         List<UnionMember> optionMemberList = new ArrayList<>();
         if (ListUtil.isNotEmpty(memberList)) {
@@ -154,7 +151,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
         Integer currentUnionId = currentMember.getUnionId();
         result.setCurrentMember(currentMember);
 
-        UnionMain currentUnion = unionMainService.getValidById(currentUnionId);
+        UnionMain currentUnion = unionMainService.getById(currentUnionId);
         result.setCurrentUnion(currentUnion);
 
         // 	获取当前联盟粉丝的折扣卡和活动卡情况，若已办理，则不显示；否则，要求活动卡在售卖中状态
@@ -184,9 +181,14 @@ public class UnionCardServiceImpl implements IUnionCardService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCard> result = listValidUnexpiredByUnionIdAndFanIdAndType(unionId, fanId, type);
+        EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .gt("validity", DateUtil.getCurrentDate())
+                .eq("union_id", unionId)
+                .eq("fan_id", fanId)
+                .eq("type", type);
 
-        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
+        return unionCardDao.selectOne(entityWrapper);
     }
 
     @Override
@@ -195,10 +197,14 @@ public class UnionCardServiceImpl implements IUnionCardService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCard> result = listValidUnexpiredByUnionIdAndFanIdAndType(unionId, fanId, CardConstant.TYPE_ACTIVITY);
-        result = filterByActivityId(result, activityId);
+        EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .gt("validity", DateUtil.getCurrentDate())
+                .eq("union_id", unionId)
+                .eq("fan_id", fanId)
+                .eq("activity_id", activityId);
 
-        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
+        return unionCardDao.selectOne(entityWrapper);
     }
 
     //********************************************* Base On Business - list ********************************************
@@ -209,11 +215,13 @@ public class UnionCardServiceImpl implements IUnionCardService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCard> result = listValidByFanId(fanId);
-        result = filterByUnionId(result, unionId);
-        result = filterExpired(result);
+        EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .gt("validity", DateUtil.getCurrentDate())
+                .eq("union_id", unionId)
+                .eq("fan_id", fanId);
 
-        return result;
+        return unionCardDao.selectList(entityWrapper);
     }
 
     @Override
@@ -222,10 +230,14 @@ public class UnionCardServiceImpl implements IUnionCardService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCard> result = listValidUnexpiredByUnionIdAndFanId(unionId, fanId);
-        result = filterByType(result, type);
+        EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .gt("validity", DateUtil.getCurrentDate())
+                .eq("union_id", unionId)
+                .eq("fan_id", fanId)
+                .eq("type", type);
 
-        return result;
+        return unionCardDao.selectList(entityWrapper);
     }
 
     @Override
@@ -234,12 +246,13 @@ public class UnionCardServiceImpl implements IUnionCardService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCard> result = listValidByActivityId(activityId);
-        result = filterByUnionId(result, unionId);
-        result = filterByType(result, CardConstant.TYPE_ACTIVITY);
-        result = filterExpired(result);
+        EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .gt("validity", DateUtil.getCurrentDate())
+                .eq("union_id", unionId)
+                .eq("activity_id", activityId);
 
-        return result;
+        return unionCardDao.selectList(entityWrapper);
     }
 
     @Override
@@ -248,11 +261,13 @@ public class UnionCardServiceImpl implements IUnionCardService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCard> result = listValidByFanId(fanId);
-        result = filterByType(result, type);
-        result = filterExpired(result);
+        EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .gt("validity", DateUtil.getCurrentDate())
+                .eq("fan_id", fanId)
+                .eq("type", type);
 
-        return result;
+        return unionCardDao.selectList(entityWrapper);
     }
 
     //********************************************* Base On Business - save ********************************************
@@ -605,10 +620,12 @@ public class UnionCardServiceImpl implements IUnionCardService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCard> result = listValidByActivityId(activityId);
-        result = filterByUnionId(result, unionId);
+        EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("activity_id", activityId);
 
-        return ListUtil.isNotEmpty(result) ? result.size() : 0;
+        return unionCardDao.selectCount(entityWrapper);
     }
 
     @Override
@@ -617,7 +634,14 @@ public class UnionCardServiceImpl implements IUnionCardService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        return ListUtil.isNotEmpty(listValidUnexpiredByUnionIdAndFanIdAndType(unionId, fanId, type));
+        EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .gt("validity", DateUtil.getCurrentDate())
+                .eq("union_id", unionId)
+                .eq("fan_id", fanId)
+                .eq("type", type);
+
+        return unionCardDao.selectCount(entityWrapper) > 0;
     }
 
     @Override
@@ -626,7 +650,14 @@ public class UnionCardServiceImpl implements IUnionCardService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        return getValidUnexpiredByUnionIdAndFanIdAndActivityId(unionId, fanId, activityId) != null;
+        EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .gt("validity", DateUtil.getCurrentDate())
+                .eq("union_id", unionId)
+                .eq("fan_id", fanId)
+                .eq("activity_id", activityId);
+
+        return unionCardDao.selectCount(entityWrapper) > 0;
     }
 
     //********************************************* Base On Business - filter ******************************************
@@ -1031,7 +1062,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (updateUnionCardList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        
+
         unionCardDao.updateBatchById(updateUnionCardList);
     }
 

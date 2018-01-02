@@ -11,7 +11,6 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
@@ -20,8 +19,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -34,9 +31,6 @@ import java.util.List;
 public class UnionCardProjectFlowServiceImpl implements IUnionCardProjectFlowService {
     @Autowired
     private IUnionCardProjectFlowDao unionCardProjectFlowDao;
-
-    @Autowired
-    private RedisCacheUtil redisCacheUtil;
 
     @Autowired
     private IUnionMainService unionMainService;
@@ -68,14 +62,12 @@ public class UnionCardProjectFlowServiceImpl implements IUnionCardProjectFlowSer
         List<UnionCardProjectFlow> result = new ArrayList<>();
         UnionCardProject project = unionCardProjectService.getValidByUnionIdAndMemberIdAndActivityId(unionId, member.getId(), activityId);
         if (project != null) {
-            result = listValidByProjectId(project.getId());
+            EntityWrapper<UnionCardProjectFlow> entityWrapper = new EntityWrapper<>();
+            entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                    .eq("project_id", project.getId())
+                    .orderBy("create_time", true);
 
-            Collections.sort(result, new Comparator<UnionCardProjectFlow>() {
-                @Override
-                public int compare(UnionCardProjectFlow o1, UnionCardProjectFlow o2) {
-                    return o1.getCreateTime().compareTo(o2.getCreateTime());
-                }
-            });
+            result = unionCardProjectFlowDao.selectList(entityWrapper);
         }
 
         return result;
@@ -294,7 +286,7 @@ public class UnionCardProjectFlowServiceImpl implements IUnionCardProjectFlowSer
         if (updateUnionCardProjectFlowList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        
+
         unionCardProjectFlowDao.updateBatchById(updateUnionCardProjectFlowList);
     }
 

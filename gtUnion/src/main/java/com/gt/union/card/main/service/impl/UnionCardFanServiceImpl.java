@@ -42,9 +42,6 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
     private IUnionCardFanDao unionCardFanDao;
 
     @Autowired
-    private RedisCacheUtil redisCacheUtil;
-
-    @Autowired
     private IUnionMainService unionMainService;
 
     @Autowired
@@ -130,14 +127,10 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         // （5）	判断unionId是否在剩余的union中，如果是，则当前联盟为该union，否则默认为第一个union
         CardFanSearchVO result = new CardFanSearchVO();
         result.setFan(fan);
-        List<UnionMain> tgtUnionList = new ArrayList<>();
-        for (Integer tgtUnionId : tgtUnionIdList) {
-            UnionMain tgtUnion = unionMainService.getValidById(tgtUnionId);
-            tgtUnionList.add(tgtUnion);
-        }
+        List<UnionMain> tgtUnionList = unionMainService.listByIdList(tgtUnionIdList);
         result.setUnionList(tgtUnionList);
 
-        Integer currentUnionId = optUnionId != null && tgtUnionIdList.contains(optUnionId) ? optUnionId : tgtUnionIdList.get(0);
+        Integer currentUnionId = tgtUnionIdList.get(0);
         UnionMain currentUnion = unionMainService.getValidById(currentUnionId);
         result.setCurrentUnion(currentUnion);
 
@@ -234,19 +227,25 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
 
     @Override
     public UnionCardFan getOrSaveByPhone(String phone) throws Exception {
-        String key = RedissonKeyUtil.getUnionCardFanByPhoneKey(phone);
-        RedissonLockUtil.lock(key, 5);
-        UnionCardFan fan = getValidByPhone(phone);
-        if (fan == null) {
-            fan = new UnionCardFan();
-            fan.setDelStatus(CommonConstant.COMMON_NO);
-            fan.setCreateTime(DateUtil.getCurrentDate());
-            fan.setPhone(phone);
-            fan.setNumber(UnionCardUtil.generateCardNo());
-            this.save(fan);
+        String key = null;
+        try {
+            key = RedissonKeyUtil.getUnionCardFanByPhoneKey(phone);
+            RedissonLockUtil.lock(key, 5);
+            UnionCardFan fan = getValidByPhone(phone);
+            if (fan == null) {
+                fan = new UnionCardFan();
+                fan.setDelStatus(CommonConstant.COMMON_NO);
+                fan.setCreateTime(DateUtil.getCurrentDate());
+                fan.setPhone(phone);
+                fan.setNumber(UnionCardUtil.generateCardNo());
+                this.save(fan);
+            }
+            return fan;
+        } finally {
+            if (key != null) {
+                RedissonLockUtil.unlock(key);
+            }
         }
-        RedissonLockUtil.unlock(key);
-        return fan;
     }
 
     //********************************************* Base On Business - remove ******************************************
@@ -422,7 +421,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         if (updateUnionCardFanList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        
+
         unionCardFanDao.updateBatchById(updateUnionCardFanList);
     }
 

@@ -17,7 +17,6 @@ import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.member.constant.MemberConstant;
 import com.gt.union.union.member.entity.UnionMember;
@@ -44,9 +43,6 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
     private IUnionCardSharingRatioDao unionCardSharingRatioDao;
 
     @Autowired
-    private RedisCacheUtil redisCacheUtil;
-
-    @Autowired
     private IUnionMainService unionMainService;
 
     @Autowired
@@ -66,10 +62,13 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCardSharingRatio> result = listValidByUnionIdAndActivityId(unionId, activityId);
-        result = filterByMemberId(result, memberId);
+        EntityWrapper<UnionCardSharingRatio> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("member_id", memberId)
+                .eq("activity_id", activityId);
 
-        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
+        return unionCardSharingRatioDao.selectOne(entityWrapper);
     }
 
     //********************************************* Base On Business - list ********************************************
@@ -80,10 +79,12 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCardSharingRatio> result = listValidByActivityId(activityId);
-        result = filterByUnionId(result, unionId);
+        EntityWrapper<UnionCardSharingRatio> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("activity_id", activityId);
 
-        return result;
+        return unionCardSharingRatioDao.selectList(entityWrapper);
     }
 
     @Override
@@ -235,7 +236,12 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        return ListUtil.isNotEmpty(listValidByUnionIdAndActivityId(unionId, activityId));
+        EntityWrapper<UnionCardSharingRatio> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("activity_id", activityId);
+
+        return unionCardSharingRatioDao.selectCount(entityWrapper) > 0;
     }
 
     //********************************************* Base On Business - filter ******************************************
@@ -585,7 +591,7 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
         if (updateUnionCardSharingRatioList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        
+
         unionCardSharingRatioDao.updateBatchById(updateUnionCardSharingRatioList);
     }
 

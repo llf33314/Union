@@ -9,7 +9,6 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.RedisCacheUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,9 +28,6 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
     @Autowired
     private IUnionCardIntegralDao unionCardIntegralDao;
 
-    @Autowired
-    private RedisCacheUtil redisCacheUtil;
-
     //********************************************* Base On Business - get *********************************************
 
     @Override
@@ -40,9 +36,12 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCardIntegral> result = listValidByUnionIdAndFanId(unionId, fanId);
+        EntityWrapper<UnionCardIntegral> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("fan_id", fanId);
 
-        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
+        return unionCardIntegralDao.selectOne(entityWrapper);
     }
 
     //********************************************* Base On Business - list ********************************************
@@ -53,10 +52,12 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCardIntegral> result = listValidByFanId(fanId);
-        result = filterByUnionId(result, unionId);
+        EntityWrapper<UnionCardIntegral> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("fan_id", fanId);
 
-        return result;
+        return unionCardIntegralDao.selectList(entityWrapper);
     }
 
     //********************************************* Base On Business - save ********************************************
@@ -379,7 +380,7 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
         if (updateUnionCardIntegralList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        
+
         unionCardIntegralDao.updateBatchById(updateUnionCardIntegralList);
     }
 

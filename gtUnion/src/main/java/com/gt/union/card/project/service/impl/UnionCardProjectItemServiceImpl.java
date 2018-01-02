@@ -23,7 +23,6 @@ import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.member.entity.UnionMember;
@@ -45,9 +44,6 @@ import java.util.*;
 public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemService {
     @Autowired
     private IUnionCardProjectItemDao unionCardProjectItemDao;
-
-    @Autowired
-    private RedisCacheUtil redisCacheUtil;
 
     @Autowired
     private IUnionMainService unionMainService;
@@ -81,9 +77,12 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        UnionCardProjectItem result = getValidById(itemId);
+        EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("id", itemId)
+                .eq("project_id", projectId);
 
-        return result != null && projectId.equals(result.getProjectId()) ? result : null;
+        return unionCardProjectItemDao.selectOne(entityWrapper);
     }
 
     //********************************************* Base On Business - list ********************************************
@@ -94,10 +93,12 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCardProjectItem> result = listValidByProjectId(projectId);
-        result = filterByType(result, type);
+        EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("project_id", projectId)
+                .eq("type", type);
 
-        return result;
+        return unionCardProjectItemDao.selectList(entityWrapper);
     }
 
     @Override
@@ -496,9 +497,11 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCardProjectItem> result = listValidByProjectId(projectId);
+        EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("project_id", projectId);
 
-        return ListUtil.isNotEmpty(result) ? result.size() : 0;
+        return unionCardProjectItemDao.selectCount(entityWrapper);
     }
 
     @Override
@@ -508,12 +511,15 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         }
 
         List<UnionCardProject> projectList = unionCardProjectService.listValidByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
+        List<Integer> projectIdList = unionCardProjectService.getIdList(projectList);
 
         Integer result = 0;
-        if (ListUtil.isNotEmpty(projectList)) {
-            for (UnionCardProject project : projectList) {
-                result += countValidByProjectId(project.getId());
-            }
+        if (ListUtil.isNotEmpty(projectIdList)) {
+            EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
+            entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                    .in("project_id", projectIdList);
+
+            result = unionCardProjectItemDao.selectCount(entityWrapper);
         }
 
         return result;
@@ -740,7 +746,7 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         if (updateUnionCardProjectItemList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        
+
         unionCardProjectItemDao.updateBatchById(updateUnionCardProjectItemList);
     }
 

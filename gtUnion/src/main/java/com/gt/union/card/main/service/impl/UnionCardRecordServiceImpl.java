@@ -8,7 +8,6 @@ import com.gt.union.card.main.service.IUnionCardRecordService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.RedisCacheUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,9 +25,6 @@ import java.util.List;
 public class UnionCardRecordServiceImpl implements IUnionCardRecordService {
     @Autowired
     private IUnionCardRecordDao unionCardRecordDao;
-
-    @Autowired
-    private RedisCacheUtil redisCacheUtil;
 
     //********************************************* Base On Business - get *********************************************
 
@@ -412,7 +408,7 @@ public class UnionCardRecordServiceImpl implements IUnionCardRecordService {
         if (updateUnionCardRecordList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        
+
         unionCardRecordDao.updateBatchById(updateUnionCardRecordList);
     }
 

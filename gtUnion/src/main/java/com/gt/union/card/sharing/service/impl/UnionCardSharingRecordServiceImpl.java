@@ -12,7 +12,6 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.member.entity.UnionMember;
@@ -35,9 +34,6 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
     private IUnionCardSharingRecordDao unionCardSharingRecordDao;
 
     @Autowired
-    private RedisCacheUtil redisCacheUtil;
-
-    @Autowired
     private IUnionMainService unionMainService;
 
     @Autowired
@@ -56,10 +52,12 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCardSharingRecord> result = listValidBySharingMemberId(sharingMemberId);
-        result = filterByUnionId(result, unionId);
+        EntityWrapper<UnionCardSharingRecord> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("sharing_member_id", sharingMemberId);
 
-        return result;
+        return unionCardSharingRecordDao.selectList(entityWrapper);
     }
 
     @Override
@@ -529,7 +527,7 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
         if (updateUnionCardSharingRecordList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        
+
         unionCardSharingRecordDao.updateBatchById(updateUnionCardSharingRecordList);
     }
 
