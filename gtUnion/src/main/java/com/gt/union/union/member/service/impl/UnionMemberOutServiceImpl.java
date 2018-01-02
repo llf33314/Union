@@ -142,7 +142,7 @@ public class UnionMemberOutServiceImpl implements IUnionMemberOutService {
                 MemberOutPeriodVO vo = new MemberOutPeriodVO();
                 vo.setMember(periodMember);
 
-                UnionMemberOut out = getValidById(periodMember.getId());
+                UnionMemberOut out = getValidByUnionIdAndApplyMemberId(unionId, periodMember.getId());
                 vo.setMemberOut(out);
 
                 vo.setPeriodDay(DateUtil.getPeriodIntervalDay(currentDate, out.getActualOutTime()));
