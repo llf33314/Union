@@ -102,7 +102,10 @@
     },
     //页面加载后调用的函数
     methods: {
-      //手机登录页面--点击获得验证码--------------------1
+      add() {
+        this.$router.push({path:'/index'})
+      },
+      //手机登录页面--点击获得验证码-----------------1
       getNumber(){
         let that_=this;
         if(that_.isGetCode == 1) {
@@ -154,7 +157,7 @@
             //跳转到主页面中去
             if(res.data.success) {
               //跳转到主页面
-              location.href = '/brokeragePhone/#/Index';
+              location.href = '/#/Index';
             }
           })
           .catch(err => {
@@ -189,7 +192,8 @@
                   success: function (res) {
                     if(res.code == 0){
                       setTimeout(function () {
-                        location.href = '/brokeragePhone/#/Index';
+//                        location.href = '/#/Index';
+                        that_.add();
                       }, 10);
                     }else {
                       that_.$message({showClose: true, message: res.msg, type: 'error', duration: 3000});

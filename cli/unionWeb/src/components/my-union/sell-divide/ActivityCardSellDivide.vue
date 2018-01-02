@@ -54,8 +54,8 @@
           <div class="model_setting">
             <div>
               <el-button type="primary" @click="onAverage()">平均分配</el-button>
+              <span style="margin-left: 15px;">商机总比例之和不得超过100%，当前总比例为{{ sum3 }}%，剩余{{(100 - sum3).toFixed(0)}}%可分配。</span>
             </div>
-            <p>商机总比例之和不得超过100%，当前总比例为{{ sum3 }}%，剩余{{(100 - sum3).toFixed(0)}}%可分配。</p>
             <el-table :data="tableData3" style="width: 100%" height="450">
               <el-table-column prop="member.enterpriseName" label="企业名称">
               </el-table-column>

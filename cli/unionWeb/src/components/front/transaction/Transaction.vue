@@ -46,19 +46,19 @@
               <div>
                 <el-checkbox-group v-model="form2.activityCheckList">
                   <el-checkbox-button v-if="isDiscountCard" :label="form2.currentMember.id" disabled>
-                    <div class="clearfix">
+                    <div class="clearfix" >
                       <!-- todo 更改样式 -->
-                      <img alt="" class="fl SelectunionImg">
-                      <div class="fl" style="margin-left: 20px;position: absolute;top: 125px;left: -7px;">
+                      <img alt="" class="fl SelectunionImg" style="background-image: linear-gradient(90deg, #B1503D 0%, #A52B2C 100%)">
+                      <div class="fl" style="margin-left: 20px;position: absolute;top: 62px;left: 33px;">
                         <h6 style="margin-bottom: 17px;color: #333333"> 联盟折扣卡 </h6>
                       </div>
                       <i></i>
                     </div>
                   </el-checkbox-button>
-                  <el-checkbox-button v-for="item in form2.activityList" :key="item.id" :label="item.id">
+                  <el-checkbox-button v-for="(item,index1) in form2.activityList" :key="item.id" :label="item.id">
                     <div class="clearfix">
-                      <img v-bind:src="item.img" alt="" class="fl SelectunionImg">
-                      <div class="fl" style="margin-left: 20px;position: absolute;top: 125px;left: -7px;">
+                      <img v-bind:src="item.img" alt="" class="fl SelectunionImg" :class="'m'+item.color2+index1">
+                      <div class="fl" style="margin-left: 20px;position: absolute;top: 62px;left: 33px;">
                         <h6 style="margin-bottom: 17px;color: #333333">{{item.name}}</h6>
                       </div>
                       <i></i>
@@ -258,6 +258,15 @@ export default {
                       this.form2.unionList = res.data.data.unionList;
                       this.form2.unionId = res.data.data.currentUnion.id;
                       this.form2.activityList = res.data.data.activityList;
+                      this.form2.activityList .forEach((v, i) => {
+                        //todo
+                        let color1=v.color1 = v.color.split(',')[0];
+                        let color2=v.color2 = v.color.split(',')[1];
+                        let mDiv = 'm' + color2 + i;
+                        // setTimeout(function () {
+                        //   $("." + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
+                        // }, 0)
+                      })
                       this.form2.activityCheckList = [];
                       this.isDiscountCard = res.data.data.isDiscountCard;
                       if (this.isDiscountCard) {
@@ -356,7 +365,7 @@ export default {
                           _this.socketFlag.status = msg.status;
                           _this.visible1 = false;
                         } else if (msg.status == '0') {
-                          _this.$message({ showClose: true, message: '支付失败', type: 'error', duration: 5000 });
+                          _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
                         }
                       }
                     }

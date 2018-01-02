@@ -15,7 +15,7 @@
       </p>
     </div>
     <!-- 活动卡列表 -->
-    <div class="activityCardsList" v-for="item in tableData" :key="item.activity.id">
+    <div class="activityCardsList" v-for="(item,index1) in tableData" :key="item.activity.id">
       <!--表头-->
       <ul class="clearfix nav">
         <li>{{ item.activity.name }}</li>
@@ -27,7 +27,7 @@
       <ul class="clearfix contentList">
         <li>
           <!-- todo  更换样式-->
-          <img :src="item.activity.img">
+          <img :class="'m'+item.color2+index1" :src="item.activity.img">
           <div>
             <span>{{ item.activityStatus }}</span>
           </div>
@@ -84,100 +84,108 @@
 </template>
 
 <script>
-import AddActivityCard from '@/components/my-union/union-card-setting/AddActivityCard';
-import CheckActivity from '@/components/my-union/union-card-setting/CheckActivity';
-import JoinMember from '@/components/my-union/union-card-setting/JoinMember';
-import ActivityDelete from '@/components/my-union/union-card-setting/ActivityDelete';
-import $http from '@/utils/http.js';
-import { timeFilter } from '@/utils/filter.js';
-import { activityCardStatusFilter } from '@/utils/filter.js';
-export default {
-  name: 'ActivityCardSetting',
-  components: {
-    AddActivityCard,
-    CheckActivity,
-    JoinMember,
-    ActivityDelete
-  },
-  data() {
-    return {
-      tableData: [],
-      currentPage: 1,
-      totalAll: 0,
-      form: {
-        isProjectCheck: false
+  import AddActivityCard from '@/components/my-union/union-card-setting/AddActivityCard';
+  import CheckActivity from '@/components/my-union/union-card-setting/CheckActivity';
+  import JoinMember from '@/components/my-union/union-card-setting/JoinMember';
+  import ActivityDelete from '@/components/my-union/union-card-setting/ActivityDelete';
+  import $http from '@/utils/http.js';
+  import { timeFilter } from '@/utils/filter.js';
+  import { activityCardStatusFilter } from '@/utils/filter.js';
+  export default {
+    name: 'ActivityCardSetting',
+    components: {
+      AddActivityCard,
+      CheckActivity,
+      JoinMember,
+      ActivityDelete
+    },
+    data() {
+      return {
+        tableData: [],
+        currentPage: 1,
+        totalAll: 0,
+        form: {
+          isProjectCheck: false
+        }
+      };
+    },
+    computed: {
+      unionId() {
+        return this.$store.state.unionId;
+      },
+      isUnionOwner() {
+        return this.$store.state.isUnionOwner;
       }
-    };
-  },
-  computed: {
-    unionId() {
-      return this.$store.state.unionId;
     },
-    isUnionOwner() {
-      return this.$store.state.isUnionOwner;
-    }
-  },
-  mounted: function() {
-    this.init();
-    eventBus.$on('newActivityCard', () => {
+    mounted: function() {
       this.init();
-    });
-    eventBus.$on('activityDelete', () => {
-      this.init();
-    });
-  },
-  methods: {
-    init() {
-      $http
-        .get(`/unionCardActivity/unionId/${this.unionId}/page?current=1`)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records || [];
-            this.tableData.forEach((v, i) => {
-              v.activityStatus = activityCardStatusFilter(v.activityStatus);
-              v.activity.applyBeginTime = timeFilter(v.activity.applyBeginTime);
-              v.activity.applyEndTime = timeFilter(v.activity.applyEndTime);
-            });
-            this.totalAll = res.data.data.total;
-          } else {
-            this.tableData = [];
-            this.totalAll = 0;
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+      eventBus.$on('newActivityCard', () => {
+        this.init();
+      });
+      eventBus.$on('activityDelete', () => {
+        this.init();
+      });
     },
-    handleCurrentChange(val) {
-      $http
-        .get(`/unionCardActivity/unionId/${this.unionId}/page?current=${val}`)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records || [];
-            this.tableData.forEach((v, i) => {
-              v.activityStatus = activityCardStatusFilter(v.activityStatus);
-              v.activity.applyBeginTime = timeFilter(v.activity.applyBeginTime);
-              v.activity.applyEndTime = timeFilter(v.activity.applyEndTime);
-            });
-          } else {
-            this.tableData = [];
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
-    },
-    // 我的活动项目
-    myActivity(item) {
-      eventBus.$emit('myActivityAddTabs', item);
+    methods: {
+      init() {
+        $http
+          .get(`/unionCardActivity/unionId/${this.unionId}/page?current=1`)
+          .then(res => {
+            if (res.data.data) {
+              this.tableData = res.data.data.records || [];
+              this.tableData.forEach((v, i) => {
+                v.activityStatus = activityCardStatusFilter(v.activityStatus);
+                v.activity.applyBeginTime = timeFilter(v.activity.applyBeginTime);
+                v.activity.applyEndTime = timeFilter(v.activity.applyEndTime);
+                let color1=v.color1=v.activity.color.split(',')[0];
+                let color2=v.color2=v.activity.color.split(',')[1];
+                let mDiv = 'm' + color2 + i;
+                // $("." + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
+              });
+              this.totalAll = res.data.data.total;
+            } else {
+              this.tableData = [];
+              this.totalAll = 0;
+            }
+          })
+          .catch(err => {
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          });
+      },
+      handleCurrentChange(val) {
+        $http
+          .get(`/unionCardActivity/unionId/${this.unionId}/page?current=${val}`)
+          .then(res => {
+            if (res.data.data) {
+              this.tableData = res.data.data.records || [];
+              this.tableData.forEach((v, i) => {
+                v.activityStatus = activityCardStatusFilter(v.activityStatus);
+                v.activity.applyBeginTime = timeFilter(v.activity.applyBeginTime);
+                v.activity.applyEndTime = timeFilter(v.activity.applyEndTime);
+                let color1=v.color1=v.activity.color.split(',')[0];
+                let color2=v.color2=v.activity.color.split(',')[1];
+                let mDiv = 'm' + color2 + i;
+                // $("." + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
+              });
+            } else {
+              this.tableData = [];
+            }
+          })
+          .catch(err => {
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          });
+      },
+      // 我的活动项目
+      myActivity(item) {
+        eventBus.$emit('myActivityAddTabs', item);
+      }
     }
-  }
-};
+  };
 </script>
 
 <style lang='less' rel="stylesheet/less" scoped>
-.unionImg {
-  width: 220px;
-  height: 72px;
-}
+  .unionImg {
+    width: 220px;
+    height: 72px;
+  }
 </style>
