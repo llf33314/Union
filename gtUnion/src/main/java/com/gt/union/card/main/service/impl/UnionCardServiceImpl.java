@@ -1,6 +1,5 @@
 package com.gt.union.card.main.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
@@ -19,7 +18,6 @@ import com.gt.union.card.main.service.IUnionCardApplyService;
 import com.gt.union.card.main.service.IUnionCardFanService;
 import com.gt.union.card.main.service.IUnionCardRecordService;
 import com.gt.union.card.main.service.IUnionCardService;
-import com.gt.union.card.main.util.UnionCardCacheUtil;
 import com.gt.union.card.main.vo.CardApplyVO;
 import com.gt.union.card.main.vo.CardPhoneVO;
 import com.gt.union.card.project.constant.ProjectConstant;
@@ -725,18 +723,8 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        UnionCard result;
-        // (1)cache
-        String idKey = UnionCardCacheUtil.getIdKey(id);
-        if (redisCacheUtil.exists(idKey)) {
-            String tempStr = redisCacheUtil.get(idKey);
-            result = JSONArray.parseObject(tempStr, UnionCard.class);
-            return result;
-        }
-        // (2)db
-        result = unionCardDao.selectById(id);
-        setCache(result, id);
-        return result;
+
+        return unionCardDao.selectById(id);
     }
 
     @Override
@@ -744,9 +732,12 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        UnionCard result = getById(id);
 
-        return result != null && CommonConstant.DEL_STATUS_NO == result.getDelStatus() ? result : null;
+        EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("id", id);
+
+        return unionCardDao.selectOne(entityWrapper);
     }
 
     @Override
@@ -754,9 +745,12 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        UnionCard result = getById(id);
 
-        return result != null && CommonConstant.DEL_STATUS_YES == result.getDelStatus() ? result : null;
+        EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("id", id);
+
+        return unionCardDao.selectOne(entityWrapper);
     }
 
     //********************************************* Object As a Service - list *****************************************
@@ -798,20 +792,11 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionCard> result;
-        // (1)cache
-        String memberIdKey = UnionCardCacheUtil.getMemberIdKey(memberId);
-        if (redisCacheUtil.exists(memberIdKey)) {
-            String tempStr = redisCacheUtil.get(memberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionCard.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("member_id", memberId);
-        result = unionCardDao.selectList(entityWrapper);
-        setCache(result, memberId, UnionCardCacheUtil.TYPE_MEMBER_ID);
-        return result;
+
+        return unionCardDao.selectList(entityWrapper);
     }
 
     @Override
@@ -819,21 +804,12 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionCard> result;
-        // (1)cache
-        String validMemberIdKey = UnionCardCacheUtil.getValidMemberIdKey(memberId);
-        if (redisCacheUtil.exists(validMemberIdKey)) {
-            String tempStr = redisCacheUtil.get(validMemberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionCard.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("member_id", memberId);
-        result = unionCardDao.selectList(entityWrapper);
-        setValidCache(result, memberId, UnionCardCacheUtil.TYPE_MEMBER_ID);
-        return result;
+
+        return unionCardDao.selectList(entityWrapper);
     }
 
     @Override
@@ -841,21 +817,12 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionCard> result;
-        // (1)cache
-        String invalidMemberIdKey = UnionCardCacheUtil.getInvalidMemberIdKey(memberId);
-        if (redisCacheUtil.exists(invalidMemberIdKey)) {
-            String tempStr = redisCacheUtil.get(invalidMemberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionCard.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
                 .eq("member_id", memberId);
-        result = unionCardDao.selectList(entityWrapper);
-        setInvalidCache(result, memberId, UnionCardCacheUtil.TYPE_MEMBER_ID);
-        return result;
+
+        return unionCardDao.selectList(entityWrapper);
     }
 
     @Override
@@ -863,20 +830,11 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionCard> result;
-        // (1)cache
-        String unionIdKey = UnionCardCacheUtil.getUnionIdKey(unionId);
-        if (redisCacheUtil.exists(unionIdKey)) {
-            String tempStr = redisCacheUtil.get(unionIdKey);
-            result = JSONArray.parseArray(tempStr, UnionCard.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("union_id", unionId);
-        result = unionCardDao.selectList(entityWrapper);
-        setCache(result, unionId, UnionCardCacheUtil.TYPE_UNION_ID);
-        return result;
+
+        return unionCardDao.selectList(entityWrapper);
     }
 
     @Override
@@ -884,21 +842,12 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionCard> result;
-        // (1)cache
-        String validUnionIdKey = UnionCardCacheUtil.getValidUnionIdKey(unionId);
-        if (redisCacheUtil.exists(validUnionIdKey)) {
-            String tempStr = redisCacheUtil.get(validUnionIdKey);
-            result = JSONArray.parseArray(tempStr, UnionCard.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("union_id", unionId);
-        result = unionCardDao.selectList(entityWrapper);
-        setValidCache(result, unionId, UnionCardCacheUtil.TYPE_UNION_ID);
-        return result;
+
+        return unionCardDao.selectList(entityWrapper);
     }
 
     @Override
@@ -906,21 +855,12 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionCard> result;
-        // (1)cache
-        String invalidUnionIdKey = UnionCardCacheUtil.getInvalidUnionIdKey(unionId);
-        if (redisCacheUtil.exists(invalidUnionIdKey)) {
-            String tempStr = redisCacheUtil.get(invalidUnionIdKey);
-            result = JSONArray.parseArray(tempStr, UnionCard.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
                 .eq("union_id", unionId);
-        result = unionCardDao.selectList(entityWrapper);
-        setInvalidCache(result, unionId, UnionCardCacheUtil.TYPE_UNION_ID);
-        return result;
+
+        return unionCardDao.selectList(entityWrapper);
     }
 
     @Override
@@ -928,20 +868,11 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (fanId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionCard> result;
-        // (1)cache
-        String fanIdKey = UnionCardCacheUtil.getFanIdKey(fanId);
-        if (redisCacheUtil.exists(fanIdKey)) {
-            String tempStr = redisCacheUtil.get(fanIdKey);
-            result = JSONArray.parseArray(tempStr, UnionCard.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("fan_id", fanId);
-        result = unionCardDao.selectList(entityWrapper);
-        setCache(result, fanId, UnionCardCacheUtil.TYPE_FAN_ID);
-        return result;
+
+        return unionCardDao.selectList(entityWrapper);
     }
 
     @Override
@@ -949,21 +880,12 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (fanId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionCard> result;
-        // (1)cache
-        String validFanIdKey = UnionCardCacheUtil.getValidFanIdKey(fanId);
-        if (redisCacheUtil.exists(validFanIdKey)) {
-            String tempStr = redisCacheUtil.get(validFanIdKey);
-            result = JSONArray.parseArray(tempStr, UnionCard.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("fan_id", fanId);
-        result = unionCardDao.selectList(entityWrapper);
-        setValidCache(result, fanId, UnionCardCacheUtil.TYPE_FAN_ID);
-        return result;
+
+        return unionCardDao.selectList(entityWrapper);
     }
 
     @Override
@@ -971,21 +893,12 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (fanId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionCard> result;
-        // (1)cache
-        String invalidFanIdKey = UnionCardCacheUtil.getInvalidFanIdKey(fanId);
-        if (redisCacheUtil.exists(invalidFanIdKey)) {
-            String tempStr = redisCacheUtil.get(invalidFanIdKey);
-            result = JSONArray.parseArray(tempStr, UnionCard.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
                 .eq("fan_id", fanId);
-        result = unionCardDao.selectList(entityWrapper);
-        setInvalidCache(result, fanId, UnionCardCacheUtil.TYPE_FAN_ID);
-        return result;
+
+        return unionCardDao.selectList(entityWrapper);
     }
 
     @Override
@@ -993,20 +906,11 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (activityId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionCard> result;
-        // (1)cache
-        String activityIdKey = UnionCardCacheUtil.getActivityIdKey(activityId);
-        if (redisCacheUtil.exists(activityIdKey)) {
-            String tempStr = redisCacheUtil.get(activityIdKey);
-            result = JSONArray.parseArray(tempStr, UnionCard.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("activity_id", activityId);
-        result = unionCardDao.selectList(entityWrapper);
-        setCache(result, activityId, UnionCardCacheUtil.TYPE_ACTIVITY_ID);
-        return result;
+
+        return unionCardDao.selectList(entityWrapper);
     }
 
     @Override
@@ -1014,21 +918,12 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (activityId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionCard> result;
-        // (1)cache
-        String validActivityIdKey = UnionCardCacheUtil.getValidActivityIdKey(activityId);
-        if (redisCacheUtil.exists(validActivityIdKey)) {
-            String tempStr = redisCacheUtil.get(validActivityIdKey);
-            result = JSONArray.parseArray(tempStr, UnionCard.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("activity_id", activityId);
-        result = unionCardDao.selectList(entityWrapper);
-        setValidCache(result, activityId, UnionCardCacheUtil.TYPE_ACTIVITY_ID);
-        return result;
+
+        return unionCardDao.selectList(entityWrapper);
     }
 
     @Override
@@ -1036,21 +931,12 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (activityId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionCard> result;
-        // (1)cache
-        String invalidActivityIdKey = UnionCardCacheUtil.getInvalidActivityIdKey(activityId);
-        if (redisCacheUtil.exists(invalidActivityIdKey)) {
-            String tempStr = redisCacheUtil.get(invalidActivityIdKey);
-            result = JSONArray.parseArray(tempStr, UnionCard.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
                 .eq("activity_id", activityId);
-        result = unionCardDao.selectList(entityWrapper);
-        setInvalidCache(result, activityId, UnionCardCacheUtil.TYPE_ACTIVITY_ID);
-        return result;
+
+        return unionCardDao.selectList(entityWrapper);
     }
 
     @Override
@@ -1059,14 +945,10 @@ public class UnionCardServiceImpl implements IUnionCardService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCard> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(idList)) {
-            for (Integer id : idList) {
-                result.add(getById(id));
-            }
-        }
+        EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
+        entityWrapper.in("id", idList);
 
-        return result;
+        return unionCardDao.selectList(entityWrapper);
     }
 
     @Override
@@ -1085,8 +967,8 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (newUnionCard == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+
         unionCardDao.insert(newUnionCard);
-        removeCache(newUnionCard);
     }
 
     @Override
@@ -1095,8 +977,8 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (newUnionCardList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+
         unionCardDao.insertBatch(newUnionCardList);
-        removeCache(newUnionCardList);
     }
 
     //********************************************* Object As a Service - remove ***************************************
@@ -1107,10 +989,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        UnionCard unionCard = getById(id);
-        removeCache(unionCard);
-        // (2)remove in db logically
+
         UnionCard removeUnionCard = new UnionCard();
         removeUnionCard.setId(id);
         removeUnionCard.setDelStatus(CommonConstant.DEL_STATUS_YES);
@@ -1123,10 +1002,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (idList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        List<UnionCard> unionCardList = listByIdList(idList);
-        removeCache(unionCardList);
-        // (2)remove in db logically
+
         List<UnionCard> removeUnionCardList = new ArrayList<>();
         for (Integer id : idList) {
             UnionCard removeUnionCard = new UnionCard();
@@ -1145,11 +1021,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (updateUnionCard == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        Integer id = updateUnionCard.getId();
-        UnionCard unionCard = getById(id);
-        removeCache(unionCard);
-        // (2)update db
+
         unionCardDao.updateById(updateUnionCard);
     }
 
@@ -1159,268 +1031,8 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (updateUnionCardList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        List<Integer> idList = getIdList(updateUnionCardList);
-        List<UnionCard> unionCardList = listByIdList(idList);
-        removeCache(unionCardList);
-        // (2)update db
+        
         unionCardDao.updateBatchById(updateUnionCardList);
-    }
-
-    //********************************************* Object As a Service - cache support ********************************
-
-    private void setCache(UnionCard newUnionCard, Integer id) {
-        if (id == null) {
-            //do nothing,just in case
-            return;
-        }
-        String idKey = UnionCardCacheUtil.getIdKey(id);
-        redisCacheUtil.set(idKey, newUnionCard);
-    }
-
-    private void setCache(List<UnionCard> newUnionCardList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String foreignIdKey = null;
-        switch (foreignIdType) {
-            case UnionCardCacheUtil.TYPE_MEMBER_ID:
-                foreignIdKey = UnionCardCacheUtil.getMemberIdKey(foreignId);
-                break;
-            case UnionCardCacheUtil.TYPE_UNION_ID:
-                foreignIdKey = UnionCardCacheUtil.getUnionIdKey(foreignId);
-                break;
-            case UnionCardCacheUtil.TYPE_FAN_ID:
-                foreignIdKey = UnionCardCacheUtil.getFanIdKey(foreignId);
-                break;
-            case UnionCardCacheUtil.TYPE_ACTIVITY_ID:
-                foreignIdKey = UnionCardCacheUtil.getActivityIdKey(foreignId);
-                break;
-
-            default:
-                break;
-        }
-        if (foreignIdKey != null) {
-            redisCacheUtil.set(foreignIdKey, newUnionCardList);
-        }
-    }
-
-    private void setValidCache(List<UnionCard> newUnionCardList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String validForeignIdKey = null;
-        switch (foreignIdType) {
-            case UnionCardCacheUtil.TYPE_MEMBER_ID:
-                validForeignIdKey = UnionCardCacheUtil.getValidMemberIdKey(foreignId);
-                break;
-            case UnionCardCacheUtil.TYPE_UNION_ID:
-                validForeignIdKey = UnionCardCacheUtil.getValidUnionIdKey(foreignId);
-                break;
-            case UnionCardCacheUtil.TYPE_FAN_ID:
-                validForeignIdKey = UnionCardCacheUtil.getValidFanIdKey(foreignId);
-                break;
-            case UnionCardCacheUtil.TYPE_ACTIVITY_ID:
-                validForeignIdKey = UnionCardCacheUtil.getValidActivityIdKey(foreignId);
-                break;
-
-            default:
-                break;
-        }
-        if (validForeignIdKey != null) {
-            redisCacheUtil.set(validForeignIdKey, newUnionCardList);
-        }
-    }
-
-    private void setInvalidCache(List<UnionCard> newUnionCardList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String invalidForeignIdKey = null;
-        switch (foreignIdType) {
-            case UnionCardCacheUtil.TYPE_MEMBER_ID:
-                invalidForeignIdKey = UnionCardCacheUtil.getInvalidMemberIdKey(foreignId);
-                break;
-            case UnionCardCacheUtil.TYPE_UNION_ID:
-                invalidForeignIdKey = UnionCardCacheUtil.getInvalidUnionIdKey(foreignId);
-                break;
-            case UnionCardCacheUtil.TYPE_FAN_ID:
-                invalidForeignIdKey = UnionCardCacheUtil.getInvalidFanIdKey(foreignId);
-                break;
-            case UnionCardCacheUtil.TYPE_ACTIVITY_ID:
-                invalidForeignIdKey = UnionCardCacheUtil.getInvalidActivityIdKey(foreignId);
-                break;
-
-            default:
-                break;
-        }
-        if (invalidForeignIdKey != null) {
-            redisCacheUtil.set(invalidForeignIdKey, newUnionCardList);
-        }
-    }
-
-    private void removeCache(UnionCard unionCard) {
-        if (unionCard == null) {
-            return;
-        }
-        Integer id = unionCard.getId();
-        String idKey = UnionCardCacheUtil.getIdKey(id);
-        redisCacheUtil.remove(idKey);
-
-        Integer memberId = unionCard.getMemberId();
-        if (memberId != null) {
-            String memberIdKey = UnionCardCacheUtil.getMemberIdKey(memberId);
-            redisCacheUtil.remove(memberIdKey);
-
-            String validMemberIdKey = UnionCardCacheUtil.getValidMemberIdKey(memberId);
-            redisCacheUtil.remove(validMemberIdKey);
-
-            String invalidMemberIdKey = UnionCardCacheUtil.getInvalidMemberIdKey(memberId);
-            redisCacheUtil.remove(invalidMemberIdKey);
-        }
-
-        Integer unionId = unionCard.getUnionId();
-        if (unionId != null) {
-            String unionIdKey = UnionCardCacheUtil.getUnionIdKey(unionId);
-            redisCacheUtil.remove(unionIdKey);
-
-            String validUnionIdKey = UnionCardCacheUtil.getValidUnionIdKey(unionId);
-            redisCacheUtil.remove(validUnionIdKey);
-
-            String invalidUnionIdKey = UnionCardCacheUtil.getInvalidUnionIdKey(unionId);
-            redisCacheUtil.remove(invalidUnionIdKey);
-        }
-
-        Integer fanId = unionCard.getFanId();
-        if (fanId != null) {
-            String fanIdKey = UnionCardCacheUtil.getFanIdKey(fanId);
-            redisCacheUtil.remove(fanIdKey);
-
-            String validFanIdKey = UnionCardCacheUtil.getValidFanIdKey(fanId);
-            redisCacheUtil.remove(validFanIdKey);
-
-            String invalidFanIdKey = UnionCardCacheUtil.getInvalidFanIdKey(fanId);
-            redisCacheUtil.remove(invalidFanIdKey);
-        }
-
-        Integer activityId = unionCard.getActivityId();
-        if (activityId != null) {
-            String activityIdKey = UnionCardCacheUtil.getActivityIdKey(activityId);
-            redisCacheUtil.remove(activityIdKey);
-
-            String validActivityIdKey = UnionCardCacheUtil.getValidActivityIdKey(activityId);
-            redisCacheUtil.remove(validActivityIdKey);
-
-            String invalidActivityIdKey = UnionCardCacheUtil.getInvalidActivityIdKey(activityId);
-            redisCacheUtil.remove(invalidActivityIdKey);
-        }
-
-    }
-
-    private void removeCache(List<UnionCard> unionCardList) {
-        if (ListUtil.isEmpty(unionCardList)) {
-            return;
-        }
-        List<Integer> idList = new ArrayList<>();
-        for (UnionCard unionCard : unionCardList) {
-            idList.add(unionCard.getId());
-        }
-        List<String> idKeyList = UnionCardCacheUtil.getIdKey(idList);
-        redisCacheUtil.remove(idKeyList);
-
-        List<String> memberIdKeyList = getForeignIdKeyList(unionCardList, UnionCardCacheUtil.TYPE_MEMBER_ID);
-        if (ListUtil.isNotEmpty(memberIdKeyList)) {
-            redisCacheUtil.remove(memberIdKeyList);
-        }
-
-        List<String> unionIdKeyList = getForeignIdKeyList(unionCardList, UnionCardCacheUtil.TYPE_UNION_ID);
-        if (ListUtil.isNotEmpty(unionIdKeyList)) {
-            redisCacheUtil.remove(unionIdKeyList);
-        }
-
-        List<String> fanIdKeyList = getForeignIdKeyList(unionCardList, UnionCardCacheUtil.TYPE_FAN_ID);
-        if (ListUtil.isNotEmpty(fanIdKeyList)) {
-            redisCacheUtil.remove(fanIdKeyList);
-        }
-
-        List<String> activityIdKeyList = getForeignIdKeyList(unionCardList, UnionCardCacheUtil.TYPE_ACTIVITY_ID);
-        if (ListUtil.isNotEmpty(activityIdKeyList)) {
-            redisCacheUtil.remove(activityIdKeyList);
-        }
-
-    }
-
-    private List<String> getForeignIdKeyList(List<UnionCard> unionCardList, int foreignIdType) {
-        List<String> result = new ArrayList<>();
-        switch (foreignIdType) {
-            case UnionCardCacheUtil.TYPE_MEMBER_ID:
-                for (UnionCard unionCard : unionCardList) {
-                    Integer memberId = unionCard.getMemberId();
-                    if (memberId != null) {
-                        String memberIdKey = UnionCardCacheUtil.getMemberIdKey(memberId);
-                        result.add(memberIdKey);
-
-                        String validMemberIdKey = UnionCardCacheUtil.getValidMemberIdKey(memberId);
-                        result.add(validMemberIdKey);
-
-                        String invalidMemberIdKey = UnionCardCacheUtil.getInvalidMemberIdKey(memberId);
-                        result.add(invalidMemberIdKey);
-                    }
-                }
-                break;
-            case UnionCardCacheUtil.TYPE_UNION_ID:
-                for (UnionCard unionCard : unionCardList) {
-                    Integer unionId = unionCard.getUnionId();
-                    if (unionId != null) {
-                        String unionIdKey = UnionCardCacheUtil.getUnionIdKey(unionId);
-                        result.add(unionIdKey);
-
-                        String validUnionIdKey = UnionCardCacheUtil.getValidUnionIdKey(unionId);
-                        result.add(validUnionIdKey);
-
-                        String invalidUnionIdKey = UnionCardCacheUtil.getInvalidUnionIdKey(unionId);
-                        result.add(invalidUnionIdKey);
-                    }
-                }
-                break;
-            case UnionCardCacheUtil.TYPE_FAN_ID:
-                for (UnionCard unionCard : unionCardList) {
-                    Integer fanId = unionCard.getFanId();
-                    if (fanId != null) {
-                        String fanIdKey = UnionCardCacheUtil.getFanIdKey(fanId);
-                        result.add(fanIdKey);
-
-                        String validFanIdKey = UnionCardCacheUtil.getValidFanIdKey(fanId);
-                        result.add(validFanIdKey);
-
-                        String invalidFanIdKey = UnionCardCacheUtil.getInvalidFanIdKey(fanId);
-                        result.add(invalidFanIdKey);
-                    }
-                }
-                break;
-            case UnionCardCacheUtil.TYPE_ACTIVITY_ID:
-                for (UnionCard unionCard : unionCardList) {
-                    Integer activityId = unionCard.getActivityId();
-                    if (activityId != null) {
-                        String activityIdKey = UnionCardCacheUtil.getActivityIdKey(activityId);
-                        result.add(activityIdKey);
-
-                        String validActivityIdKey = UnionCardCacheUtil.getValidActivityIdKey(activityId);
-                        result.add(validActivityIdKey);
-
-                        String invalidActivityIdKey = UnionCardCacheUtil.getInvalidActivityIdKey(activityId);
-                        result.add(invalidActivityIdKey);
-                    }
-                }
-                break;
-
-            default:
-                break;
-        }
-        return result;
     }
 
 }
