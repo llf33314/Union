@@ -131,15 +131,15 @@ export default {
   methods: {
     init() {
       if (this.initUnionId) {
-        // 获取联盟列表
+        // 获取我的当前有效的联盟
         $http
-          .get(`/unionMain/my`)
+          .get(`/unionMain/busUser/valid`)
           .then(res => {
             if (res.data.data) {
               this.options1 = res.data.data || [];
               this.options1.forEach((v, i) => {
-                v.value = v.union.id;
-                v.label = v.union.name;
+                v.value = v.id;
+                v.label = v.name;
               });
             } else {
               this.options1 = [];
