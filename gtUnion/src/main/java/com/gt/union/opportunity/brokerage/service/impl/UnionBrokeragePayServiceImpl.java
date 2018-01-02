@@ -308,7 +308,6 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
     //********************************************* Base On Business - update ******************************************
 
     @Override
-    @Transactional(rollbackFor = Exception.class)
     public UnionPayVO batchPayByBusId(Integer busId, List<Integer> opportunityIdList, Integer verifierId, IUnionBrokeragePayStrategyService unionBrokeragePayStrategyService) throws Exception {
         if (busId == null || opportunityIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
