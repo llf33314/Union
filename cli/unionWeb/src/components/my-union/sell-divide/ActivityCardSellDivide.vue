@@ -251,7 +251,7 @@ export default {
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
       } else {
-        this.$message({ showClose: true, message: '售卡分成总比例之和应为100%', type: 'warning', duration: 5000 });
+        this.$message({ showClose: true, message: '售卡分成总比例之和应为100%', type: 'error', duration: 5000 });
       }
     },
     // 关闭弹窗重置数据
