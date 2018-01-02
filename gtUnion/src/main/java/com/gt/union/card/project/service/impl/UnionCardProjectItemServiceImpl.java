@@ -1,6 +1,5 @@
 package com.gt.union.card.project.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.api.client.erp.ErpService;
@@ -17,7 +16,6 @@ import com.gt.union.card.project.entity.UnionCardProjectItem;
 import com.gt.union.card.project.service.IUnionCardProjectFlowService;
 import com.gt.union.card.project.service.IUnionCardProjectItemService;
 import com.gt.union.card.project.service.IUnionCardProjectService;
-import com.gt.union.card.project.util.UnionCardProjectItemCacheUtil;
 import com.gt.union.card.project.vo.CardProjectItemConsumeVO;
 import com.gt.union.card.project.vo.CardProjectVO;
 import com.gt.union.common.constant.CommonConstant;
@@ -25,7 +23,6 @@ import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.member.entity.UnionMember;
@@ -47,9 +44,6 @@ import java.util.*;
 public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemService {
     @Autowired
     private IUnionCardProjectItemDao unionCardProjectItemDao;
-
-    @Autowired
-    private RedisCacheUtil redisCacheUtil;
 
     @Autowired
     private IUnionMainService unionMainService;
@@ -83,9 +77,12 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        UnionCardProjectItem result = getValidById(itemId);
+        EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("id", itemId)
+                .eq("project_id", projectId);
 
-        return result != null && projectId.equals(result.getProjectId()) ? result : null;
+        return unionCardProjectItemDao.selectOne(entityWrapper);
     }
 
     //********************************************* Base On Business - list ********************************************
@@ -96,10 +93,12 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCardProjectItem> result = listValidByProjectId(projectId);
-        result = filterByType(result, type);
+        EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("project_id", projectId)
+                .eq("type", type);
 
-        return result;
+        return unionCardProjectItemDao.selectList(entityWrapper);
     }
 
     @Override
@@ -498,9 +497,11 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCardProjectItem> result = listValidByProjectId(projectId);
+        EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("project_id", projectId);
 
-        return ListUtil.isNotEmpty(result) ? result.size() : 0;
+        return unionCardProjectItemDao.selectCount(entityWrapper);
     }
 
     @Override
@@ -510,12 +511,15 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         }
 
         List<UnionCardProject> projectList = unionCardProjectService.listValidByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
+        List<Integer> projectIdList = unionCardProjectService.getIdList(projectList);
 
         Integer result = 0;
-        if (ListUtil.isNotEmpty(projectList)) {
-            for (UnionCardProject project : projectList) {
-                result += countValidByProjectId(project.getId());
-            }
+        if (ListUtil.isNotEmpty(projectIdList)) {
+            EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
+            entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                    .in("project_id", projectIdList);
+
+            result = unionCardProjectItemDao.selectCount(entityWrapper);
         }
 
         return result;
@@ -564,18 +568,8 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        UnionCardProjectItem result;
-        // (1)cache
-        String idKey = UnionCardProjectItemCacheUtil.getIdKey(id);
-        if (redisCacheUtil.exists(idKey)) {
-            String tempStr = redisCacheUtil.get(idKey);
-            result = JSONArray.parseObject(tempStr, UnionCardProjectItem.class);
-            return result;
-        }
-        // (2)db
-        result = unionCardProjectItemDao.selectById(id);
-        setCache(result, id);
-        return result;
+
+        return unionCardProjectItemDao.selectById(id);
     }
 
     @Override
@@ -583,9 +577,12 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        UnionCardProjectItem result = getById(id);
 
-        return result != null && CommonConstant.DEL_STATUS_NO == result.getDelStatus() ? result : null;
+        EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("id", id);
+
+        return unionCardProjectItemDao.selectOne(entityWrapper);
     }
 
     @Override
@@ -593,9 +590,12 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        UnionCardProjectItem result = getById(id);
 
-        return result != null && CommonConstant.DEL_STATUS_YES == result.getDelStatus() ? result : null;
+        EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("id", id);
+
+        return unionCardProjectItemDao.selectOne(entityWrapper);
     }
 
     //********************************************* Object As a Service - list *****************************************
@@ -621,20 +621,11 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         if (projectId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionCardProjectItem> result;
-        // (1)cache
-        String projectIdKey = UnionCardProjectItemCacheUtil.getProjectIdKey(projectId);
-        if (redisCacheUtil.exists(projectIdKey)) {
-            String tempStr = redisCacheUtil.get(projectIdKey);
-            result = JSONArray.parseArray(tempStr, UnionCardProjectItem.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("project_id", projectId);
-        result = unionCardProjectItemDao.selectList(entityWrapper);
-        setCache(result, projectId, UnionCardProjectItemCacheUtil.TYPE_PROJECT_ID);
-        return result;
+
+        return unionCardProjectItemDao.selectList(entityWrapper);
     }
 
     @Override
@@ -642,21 +633,12 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         if (projectId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionCardProjectItem> result;
-        // (1)cache
-        String validProjectIdKey = UnionCardProjectItemCacheUtil.getValidProjectIdKey(projectId);
-        if (redisCacheUtil.exists(validProjectIdKey)) {
-            String tempStr = redisCacheUtil.get(validProjectIdKey);
-            result = JSONArray.parseArray(tempStr, UnionCardProjectItem.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("project_id", projectId);
-        result = unionCardProjectItemDao.selectList(entityWrapper);
-        setValidCache(result, projectId, UnionCardProjectItemCacheUtil.TYPE_PROJECT_ID);
-        return result;
+
+        return unionCardProjectItemDao.selectList(entityWrapper);
     }
 
     @Override
@@ -664,21 +646,12 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         if (projectId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionCardProjectItem> result;
-        // (1)cache
-        String invalidProjectIdKey = UnionCardProjectItemCacheUtil.getInvalidProjectIdKey(projectId);
-        if (redisCacheUtil.exists(invalidProjectIdKey)) {
-            String tempStr = redisCacheUtil.get(invalidProjectIdKey);
-            result = JSONArray.parseArray(tempStr, UnionCardProjectItem.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
                 .eq("project_id", projectId);
-        result = unionCardProjectItemDao.selectList(entityWrapper);
-        setInvalidCache(result, projectId, UnionCardProjectItemCacheUtil.TYPE_PROJECT_ID);
-        return result;
+
+        return unionCardProjectItemDao.selectList(entityWrapper);
     }
 
     @Override
@@ -687,14 +660,10 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCardProjectItem> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(idList)) {
-            for (Integer id : idList) {
-                result.add(getById(id));
-            }
-        }
+        EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
+        entityWrapper.in("id", idList);
 
-        return result;
+        return unionCardProjectItemDao.selectList(entityWrapper);
     }
 
     @Override
@@ -713,8 +682,8 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         if (newUnionCardProjectItem == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+
         unionCardProjectItemDao.insert(newUnionCardProjectItem);
-        removeCache(newUnionCardProjectItem);
     }
 
     @Override
@@ -723,8 +692,8 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         if (newUnionCardProjectItemList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+
         unionCardProjectItemDao.insertBatch(newUnionCardProjectItemList);
-        removeCache(newUnionCardProjectItemList);
     }
 
     //********************************************* Object As a Service - remove ***************************************
@@ -735,10 +704,7 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        UnionCardProjectItem unionCardProjectItem = getById(id);
-        removeCache(unionCardProjectItem);
-        // (2)remove in db logically
+
         UnionCardProjectItem removeUnionCardProjectItem = new UnionCardProjectItem();
         removeUnionCardProjectItem.setId(id);
         removeUnionCardProjectItem.setDelStatus(CommonConstant.DEL_STATUS_YES);
@@ -751,10 +717,7 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         if (idList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        List<UnionCardProjectItem> unionCardProjectItemList = listByIdList(idList);
-        removeCache(unionCardProjectItemList);
-        // (2)remove in db logically
+
         List<UnionCardProjectItem> removeUnionCardProjectItemList = new ArrayList<>();
         for (Integer id : idList) {
             UnionCardProjectItem removeUnionCardProjectItem = new UnionCardProjectItem();
@@ -773,11 +736,7 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         if (updateUnionCardProjectItem == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        Integer id = updateUnionCardProjectItem.getId();
-        UnionCardProjectItem unionCardProjectItem = getById(id);
-        removeCache(unionCardProjectItem);
-        // (2)update db
+
         unionCardProjectItemDao.updateById(updateUnionCardProjectItem);
     }
 
@@ -787,145 +746,8 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         if (updateUnionCardProjectItemList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        List<Integer> idList = getIdList(updateUnionCardProjectItemList);
-        List<UnionCardProjectItem> unionCardProjectItemList = listByIdList(idList);
-        removeCache(unionCardProjectItemList);
-        // (2)update db
+
         unionCardProjectItemDao.updateBatchById(updateUnionCardProjectItemList);
-    }
-
-    //********************************************* Object As a Service - cache support ********************************
-
-    private void setCache(UnionCardProjectItem newUnionCardProjectItem, Integer id) {
-        if (id == null) {
-            //do nothing,just in case
-            return;
-        }
-        String idKey = UnionCardProjectItemCacheUtil.getIdKey(id);
-        redisCacheUtil.set(idKey, newUnionCardProjectItem);
-    }
-
-    private void setCache(List<UnionCardProjectItem> newUnionCardProjectItemList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String foreignIdKey = null;
-        switch (foreignIdType) {
-            case UnionCardProjectItemCacheUtil.TYPE_PROJECT_ID:
-                foreignIdKey = UnionCardProjectItemCacheUtil.getProjectIdKey(foreignId);
-                break;
-
-            default:
-                break;
-        }
-        if (foreignIdKey != null) {
-            redisCacheUtil.set(foreignIdKey, newUnionCardProjectItemList);
-        }
-    }
-
-    private void setValidCache(List<UnionCardProjectItem> newUnionCardProjectItemList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String validForeignIdKey = null;
-        switch (foreignIdType) {
-            case UnionCardProjectItemCacheUtil.TYPE_PROJECT_ID:
-                validForeignIdKey = UnionCardProjectItemCacheUtil.getValidProjectIdKey(foreignId);
-                break;
-
-            default:
-                break;
-        }
-        if (validForeignIdKey != null) {
-            redisCacheUtil.set(validForeignIdKey, newUnionCardProjectItemList);
-        }
-    }
-
-    private void setInvalidCache(List<UnionCardProjectItem> newUnionCardProjectItemList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String invalidForeignIdKey = null;
-        switch (foreignIdType) {
-            case UnionCardProjectItemCacheUtil.TYPE_PROJECT_ID:
-                invalidForeignIdKey = UnionCardProjectItemCacheUtil.getInvalidProjectIdKey(foreignId);
-                break;
-
-            default:
-                break;
-        }
-        if (invalidForeignIdKey != null) {
-            redisCacheUtil.set(invalidForeignIdKey, newUnionCardProjectItemList);
-        }
-    }
-
-    private void removeCache(UnionCardProjectItem unionCardProjectItem) {
-        if (unionCardProjectItem == null) {
-            return;
-        }
-        Integer id = unionCardProjectItem.getId();
-        String idKey = UnionCardProjectItemCacheUtil.getIdKey(id);
-        redisCacheUtil.remove(idKey);
-
-        Integer projectId = unionCardProjectItem.getProjectId();
-        if (projectId != null) {
-            String projectIdKey = UnionCardProjectItemCacheUtil.getProjectIdKey(projectId);
-            redisCacheUtil.remove(projectIdKey);
-
-            String validProjectIdKey = UnionCardProjectItemCacheUtil.getValidProjectIdKey(projectId);
-            redisCacheUtil.remove(validProjectIdKey);
-
-            String invalidProjectIdKey = UnionCardProjectItemCacheUtil.getInvalidProjectIdKey(projectId);
-            redisCacheUtil.remove(invalidProjectIdKey);
-        }
-
-    }
-
-    private void removeCache(List<UnionCardProjectItem> unionCardProjectItemList) {
-        if (ListUtil.isEmpty(unionCardProjectItemList)) {
-            return;
-        }
-        List<Integer> idList = new ArrayList<>();
-        for (UnionCardProjectItem unionCardProjectItem : unionCardProjectItemList) {
-            idList.add(unionCardProjectItem.getId());
-        }
-        List<String> idKeyList = UnionCardProjectItemCacheUtil.getIdKey(idList);
-        redisCacheUtil.remove(idKeyList);
-
-        List<String> projectIdKeyList = getForeignIdKeyList(unionCardProjectItemList, UnionCardProjectItemCacheUtil.TYPE_PROJECT_ID);
-        if (ListUtil.isNotEmpty(projectIdKeyList)) {
-            redisCacheUtil.remove(projectIdKeyList);
-        }
-
-    }
-
-    private List<String> getForeignIdKeyList(List<UnionCardProjectItem> unionCardProjectItemList, int foreignIdType) {
-        List<String> result = new ArrayList<>();
-        switch (foreignIdType) {
-            case UnionCardProjectItemCacheUtil.TYPE_PROJECT_ID:
-                for (UnionCardProjectItem unionCardProjectItem : unionCardProjectItemList) {
-                    Integer projectId = unionCardProjectItem.getProjectId();
-                    if (projectId != null) {
-                        String projectIdKey = UnionCardProjectItemCacheUtil.getProjectIdKey(projectId);
-                        result.add(projectIdKey);
-
-                        String validProjectIdKey = UnionCardProjectItemCacheUtil.getValidProjectIdKey(projectId);
-                        result.add(validProjectIdKey);
-
-                        String invalidProjectIdKey = UnionCardProjectItemCacheUtil.getInvalidProjectIdKey(projectId);
-                        result.add(invalidProjectIdKey);
-                    }
-                }
-                break;
-
-            default:
-                break;
-        }
-        return result;
     }
 
 }

@@ -270,7 +270,7 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         // （2）	判断fanId有效性
-        UnionCardFan fan = unionCardFanService.getById(fanId);
+        UnionCardFan fan = unionCardFanService.getValidById(fanId);
         if (fan == null) {
             throw new BusinessException("找不到粉丝信息");
         }

@@ -1,6 +1,5 @@
 package com.gt.union.finance.verifier.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
@@ -20,7 +19,6 @@ import com.gt.union.common.util.StringUtil;
 import com.gt.union.finance.verifier.dao.IUnionVerifierDao;
 import com.gt.union.finance.verifier.entity.UnionVerifier;
 import com.gt.union.finance.verifier.service.IUnionVerifierService;
-import com.gt.union.finance.verifier.util.UnionVerifierCacheUtil;
 import com.gt.util.entity.result.shop.WsWxShopInfoExtend;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -63,9 +61,12 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        UnionVerifier result = getValidById(verifierId);
-
-        return result != null && busId.equals(result.getBusId()) ? result : null;
+        EntityWrapper<UnionVerifier> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("id", verifierId)
+                .eq("bus_id", busId);
+        
+        return unionVerifierDao.selectOne(entityWrapper);
     }
 
     //********************************************* Base On Business - list ********************************************
@@ -237,18 +238,8 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        UnionVerifier result;
-        // (1)cache
-        String idKey = UnionVerifierCacheUtil.getIdKey(id);
-        if (redisCacheUtil.exists(idKey)) {
-            String tempStr = redisCacheUtil.get(idKey);
-            result = JSONArray.parseObject(tempStr, UnionVerifier.class);
-            return result;
-        }
-        // (2)db
-        result = unionVerifierDao.selectById(id);
-        setCache(result, id);
-        return result;
+
+        return unionVerifierDao.selectById(id);
     }
 
     @Override
@@ -256,9 +247,12 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        UnionVerifier result = getById(id);
 
-        return result != null && CommonConstant.DEL_STATUS_NO == result.getDelStatus() ? result : null;
+        EntityWrapper<UnionVerifier> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("id", id);
+
+        return unionVerifierDao.selectOne(entityWrapper);
     }
 
     @Override
@@ -266,9 +260,12 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        UnionVerifier result = getById(id);
 
-        return result != null && CommonConstant.DEL_STATUS_YES == result.getDelStatus() ? result : null;
+        EntityWrapper<UnionVerifier> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("id", id);
+
+        return unionVerifierDao.selectOne(entityWrapper);
     }
 
     //********************************************* Object As a Service - list *****************************************
@@ -294,20 +291,11 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionVerifier> result;
-        // (1)cache
-        String busIdKey = UnionVerifierCacheUtil.getBusIdKey(busId);
-        if (redisCacheUtil.exists(busIdKey)) {
-            String tempStr = redisCacheUtil.get(busIdKey);
-            result = JSONArray.parseArray(tempStr, UnionVerifier.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionVerifier> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("bus_id", busId);
-        result = unionVerifierDao.selectList(entityWrapper);
-        setCache(result, busId, UnionVerifierCacheUtil.TYPE_BUS_ID);
-        return result;
+
+        return unionVerifierDao.selectList(entityWrapper);
     }
 
     @Override
@@ -315,21 +303,12 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionVerifier> result;
-        // (1)cache
-        String validBusIdKey = UnionVerifierCacheUtil.getValidBusIdKey(busId);
-        if (redisCacheUtil.exists(validBusIdKey)) {
-            String tempStr = redisCacheUtil.get(validBusIdKey);
-            result = JSONArray.parseArray(tempStr, UnionVerifier.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionVerifier> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("bus_id", busId);
-        result = unionVerifierDao.selectList(entityWrapper);
-        setValidCache(result, busId, UnionVerifierCacheUtil.TYPE_BUS_ID);
-        return result;
+
+        return unionVerifierDao.selectList(entityWrapper);
     }
 
     @Override
@@ -337,21 +316,12 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionVerifier> result;
-        // (1)cache
-        String invalidBusIdKey = UnionVerifierCacheUtil.getInvalidBusIdKey(busId);
-        if (redisCacheUtil.exists(invalidBusIdKey)) {
-            String tempStr = redisCacheUtil.get(invalidBusIdKey);
-            result = JSONArray.parseArray(tempStr, UnionVerifier.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionVerifier> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
                 .eq("bus_id", busId);
-        result = unionVerifierDao.selectList(entityWrapper);
-        setInvalidCache(result, busId, UnionVerifierCacheUtil.TYPE_BUS_ID);
-        return result;
+
+        return unionVerifierDao.selectList(entityWrapper);
     }
 
     @Override
@@ -360,14 +330,10 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionVerifier> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(idList)) {
-            for (Integer id : idList) {
-                result.add(getById(id));
-            }
-        }
+        EntityWrapper<UnionVerifier> entityWrapper = new EntityWrapper<>();
+        entityWrapper.in("id", idList);
 
-        return result;
+        return unionVerifierDao.selectList(entityWrapper);
     }
 
     @Override
@@ -386,8 +352,8 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
         if (newUnionVerifier == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+
         unionVerifierDao.insert(newUnionVerifier);
-        removeCache(newUnionVerifier);
     }
 
     @Override
@@ -396,8 +362,8 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
         if (newUnionVerifierList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+
         unionVerifierDao.insertBatch(newUnionVerifierList);
-        removeCache(newUnionVerifierList);
     }
 
     //********************************************* Object As a Service - remove ***************************************
@@ -408,10 +374,7 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        UnionVerifier unionVerifier = getById(id);
-        removeCache(unionVerifier);
-        // (2)remove in db logically
+
         UnionVerifier removeUnionVerifier = new UnionVerifier();
         removeUnionVerifier.setId(id);
         removeUnionVerifier.setDelStatus(CommonConstant.DEL_STATUS_YES);
@@ -424,10 +387,7 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
         if (idList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        List<UnionVerifier> unionVerifierList = listByIdList(idList);
-        removeCache(unionVerifierList);
-        // (2)remove in db logically
+
         List<UnionVerifier> removeUnionVerifierList = new ArrayList<>();
         for (Integer id : idList) {
             UnionVerifier removeUnionVerifier = new UnionVerifier();
@@ -446,11 +406,7 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
         if (updateUnionVerifier == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        Integer id = updateUnionVerifier.getId();
-        UnionVerifier unionVerifier = getById(id);
-        removeCache(unionVerifier);
-        // (2)update db
+
         unionVerifierDao.updateById(updateUnionVerifier);
     }
 
@@ -460,145 +416,8 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
         if (updateUnionVerifierList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        List<Integer> idList = getIdList(updateUnionVerifierList);
-        List<UnionVerifier> unionVerifierList = listByIdList(idList);
-        removeCache(unionVerifierList);
-        // (2)update db
+        
         unionVerifierDao.updateBatchById(updateUnionVerifierList);
-    }
-
-    //********************************************* Object As a Service - cache support ********************************
-
-    private void setCache(UnionVerifier newUnionVerifier, Integer id) {
-        if (id == null) {
-            //do nothing,just in case
-            return;
-        }
-        String idKey = UnionVerifierCacheUtil.getIdKey(id);
-        redisCacheUtil.set(idKey, newUnionVerifier);
-    }
-
-    private void setCache(List<UnionVerifier> newUnionVerifierList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String foreignIdKey = null;
-        switch (foreignIdType) {
-            case UnionVerifierCacheUtil.TYPE_BUS_ID:
-                foreignIdKey = UnionVerifierCacheUtil.getBusIdKey(foreignId);
-                break;
-
-            default:
-                break;
-        }
-        if (foreignIdKey != null) {
-            redisCacheUtil.set(foreignIdKey, newUnionVerifierList);
-        }
-    }
-
-    private void setValidCache(List<UnionVerifier> newUnionVerifierList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String validForeignIdKey = null;
-        switch (foreignIdType) {
-            case UnionVerifierCacheUtil.TYPE_BUS_ID:
-                validForeignIdKey = UnionVerifierCacheUtil.getValidBusIdKey(foreignId);
-                break;
-
-            default:
-                break;
-        }
-        if (validForeignIdKey != null) {
-            redisCacheUtil.set(validForeignIdKey, newUnionVerifierList);
-        }
-    }
-
-    private void setInvalidCache(List<UnionVerifier> newUnionVerifierList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String invalidForeignIdKey = null;
-        switch (foreignIdType) {
-            case UnionVerifierCacheUtil.TYPE_BUS_ID:
-                invalidForeignIdKey = UnionVerifierCacheUtil.getInvalidBusIdKey(foreignId);
-                break;
-
-            default:
-                break;
-        }
-        if (invalidForeignIdKey != null) {
-            redisCacheUtil.set(invalidForeignIdKey, newUnionVerifierList);
-        }
-    }
-
-    private void removeCache(UnionVerifier unionVerifier) {
-        if (unionVerifier == null) {
-            return;
-        }
-        Integer id = unionVerifier.getId();
-        String idKey = UnionVerifierCacheUtil.getIdKey(id);
-        redisCacheUtil.remove(idKey);
-
-        Integer busId = unionVerifier.getBusId();
-        if (busId != null) {
-            String busIdKey = UnionVerifierCacheUtil.getBusIdKey(busId);
-            redisCacheUtil.remove(busIdKey);
-
-            String validBusIdKey = UnionVerifierCacheUtil.getValidBusIdKey(busId);
-            redisCacheUtil.remove(validBusIdKey);
-
-            String invalidBusIdKey = UnionVerifierCacheUtil.getInvalidBusIdKey(busId);
-            redisCacheUtil.remove(invalidBusIdKey);
-        }
-
-    }
-
-    private void removeCache(List<UnionVerifier> unionVerifierList) {
-        if (ListUtil.isEmpty(unionVerifierList)) {
-            return;
-        }
-        List<Integer> idList = new ArrayList<>();
-        for (UnionVerifier unionVerifier : unionVerifierList) {
-            idList.add(unionVerifier.getId());
-        }
-        List<String> idKeyList = UnionVerifierCacheUtil.getIdKey(idList);
-        redisCacheUtil.remove(idKeyList);
-
-        List<String> busIdKeyList = getForeignIdKeyList(unionVerifierList, UnionVerifierCacheUtil.TYPE_BUS_ID);
-        if (ListUtil.isNotEmpty(busIdKeyList)) {
-            redisCacheUtil.remove(busIdKeyList);
-        }
-
-    }
-
-    private List<String> getForeignIdKeyList(List<UnionVerifier> unionVerifierList, int foreignIdType) {
-        List<String> result = new ArrayList<>();
-        switch (foreignIdType) {
-            case UnionVerifierCacheUtil.TYPE_BUS_ID:
-                for (UnionVerifier unionVerifier : unionVerifierList) {
-                    Integer busId = unionVerifier.getBusId();
-                    if (busId != null) {
-                        String busIdKey = UnionVerifierCacheUtil.getBusIdKey(busId);
-                        result.add(busIdKey);
-
-                        String validBusIdKey = UnionVerifierCacheUtil.getValidBusIdKey(busId);
-                        result.add(validBusIdKey);
-
-                        String invalidBusIdKey = UnionVerifierCacheUtil.getInvalidBusIdKey(busId);
-                        result.add(invalidBusIdKey);
-                    }
-                }
-                break;
-
-            default:
-                break;
-        }
-        return result;
     }
 
 }

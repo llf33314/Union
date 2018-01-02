@@ -1,6 +1,5 @@
 package com.gt.union.card.main.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.api.client.dict.IDictService;
@@ -11,7 +10,6 @@ import com.gt.union.card.main.entity.UnionCardFan;
 import com.gt.union.card.main.service.IUnionCardFanService;
 import com.gt.union.card.main.service.IUnionCardIntegralService;
 import com.gt.union.card.main.service.IUnionCardService;
-import com.gt.union.card.main.util.UnionCardFanCacheUtil;
 import com.gt.union.card.main.vo.CardFanDetailVO;
 import com.gt.union.card.main.vo.CardFanSearchVO;
 import com.gt.union.card.main.vo.CardFanVO;
@@ -42,9 +40,6 @@ import java.util.List;
 public class UnionCardFanServiceImpl implements IUnionCardFanService {
     @Autowired
     private IUnionCardFanDao unionCardFanDao;
-
-    @Autowired
-    private RedisCacheUtil redisCacheUtil;
 
     @Autowired
     private IUnionMainService unionMainService;
@@ -132,14 +127,10 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         // （5）	判断unionId是否在剩余的union中，如果是，则当前联盟为该union，否则默认为第一个union
         CardFanSearchVO result = new CardFanSearchVO();
         result.setFan(fan);
-        List<UnionMain> tgtUnionList = new ArrayList<>();
-        for (Integer tgtUnionId : tgtUnionIdList) {
-            UnionMain tgtUnion = unionMainService.getValidById(tgtUnionId);
-            tgtUnionList.add(tgtUnion);
-        }
+        List<UnionMain> tgtUnionList = unionMainService.listByIdList(tgtUnionIdList);
         result.setUnionList(tgtUnionList);
 
-        Integer currentUnionId = optUnionId != null && tgtUnionIdList.contains(optUnionId) ? optUnionId : tgtUnionIdList.get(0);
+        Integer currentUnionId = tgtUnionIdList.get(0);
         UnionMain currentUnion = unionMainService.getValidById(currentUnionId);
         result.setCurrentUnion(currentUnion);
 
@@ -236,19 +227,25 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
 
     @Override
     public UnionCardFan getOrSaveByPhone(String phone) throws Exception {
-        String key = RedissonKeyUtil.getUnionCardFanByPhoneKey(phone);
-        RedissonLockUtil.lock(key, 5);
-        UnionCardFan fan = getValidByPhone(phone);
-        if (fan == null) {
-            fan = new UnionCardFan();
-            fan.setDelStatus(CommonConstant.COMMON_NO);
-            fan.setCreateTime(DateUtil.getCurrentDate());
-            fan.setPhone(phone);
-            fan.setNumber(UnionCardUtil.generateCardNo());
-            this.save(fan);
+        String key = null;
+        try {
+            key = RedissonKeyUtil.getUnionCardFanByPhoneKey(phone);
+            RedissonLockUtil.lock(key, 5);
+            UnionCardFan fan = getValidByPhone(phone);
+            if (fan == null) {
+                fan = new UnionCardFan();
+                fan.setDelStatus(CommonConstant.COMMON_NO);
+                fan.setCreateTime(DateUtil.getCurrentDate());
+                fan.setPhone(phone);
+                fan.setNumber(UnionCardUtil.generateCardNo());
+                this.save(fan);
+            }
+            return fan;
+        } finally {
+            if (key != null) {
+                RedissonLockUtil.unlock(key);
+            }
         }
-        RedissonLockUtil.unlock(key);
-        return fan;
     }
 
     //********************************************* Base On Business - remove ******************************************
@@ -284,18 +281,8 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        UnionCardFan result;
-        // (1)cache
-        String idKey = UnionCardFanCacheUtil.getIdKey(id);
-        if (redisCacheUtil.exists(idKey)) {
-            String tempStr = redisCacheUtil.get(idKey);
-            result = JSONArray.parseObject(tempStr, UnionCardFan.class);
-            return result;
-        }
-        // (2)db
-        result = unionCardFanDao.selectById(id);
-        setCache(result, id);
-        return result;
+
+        return unionCardFanDao.selectById(id);
     }
 
     @Override
@@ -303,9 +290,12 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        UnionCardFan result = getById(id);
 
-        return result != null && CommonConstant.DEL_STATUS_NO == result.getDelStatus() ? result : null;
+        EntityWrapper<UnionCardFan> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("id", id);
+
+        return unionCardFanDao.selectOne(entityWrapper);
     }
 
     @Override
@@ -313,9 +303,12 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        UnionCardFan result = getById(id);
 
-        return result != null && CommonConstant.DEL_STATUS_YES == result.getDelStatus() ? result : null;
+        EntityWrapper<UnionCardFan> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("id", id);
+
+        return unionCardFanDao.selectOne(entityWrapper);
     }
 
     //********************************************* Object As a Service - list *****************************************
@@ -342,14 +335,10 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionCardFan> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(idList)) {
-            for (Integer id : idList) {
-                result.add(getById(id));
-            }
-        }
+        EntityWrapper<UnionCardFan> entityWrapper = new EntityWrapper<>();
+        entityWrapper.in("id", idList);
 
-        return result;
+        return unionCardFanDao.selectList(entityWrapper);
     }
 
     @Override
@@ -368,8 +357,8 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         if (newUnionCardFan == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+
         unionCardFanDao.insert(newUnionCardFan);
-        removeCache(newUnionCardFan);
     }
 
     @Override
@@ -378,8 +367,8 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         if (newUnionCardFanList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+
         unionCardFanDao.insertBatch(newUnionCardFanList);
-        removeCache(newUnionCardFanList);
     }
 
     //********************************************* Object As a Service - remove ***************************************
@@ -390,10 +379,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        UnionCardFan unionCardFan = getById(id);
-        removeCache(unionCardFan);
-        // (2)remove in db logically
+
         UnionCardFan removeUnionCardFan = new UnionCardFan();
         removeUnionCardFan.setId(id);
         removeUnionCardFan.setDelStatus(CommonConstant.DEL_STATUS_YES);
@@ -406,10 +392,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         if (idList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        List<UnionCardFan> unionCardFanList = listByIdList(idList);
-        removeCache(unionCardFanList);
-        // (2)remove in db logically
+
         List<UnionCardFan> removeUnionCardFanList = new ArrayList<>();
         for (Integer id : idList) {
             UnionCardFan removeUnionCardFan = new UnionCardFan();
@@ -428,11 +411,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         if (updateUnionCardFan == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        Integer id = updateUnionCardFan.getId();
-        UnionCardFan unionCardFan = getById(id);
-        removeCache(unionCardFan);
-        // (2)update db
+
         unionCardFanDao.updateById(updateUnionCardFan);
     }
 
@@ -442,104 +421,8 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         if (updateUnionCardFanList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        List<Integer> idList = getIdList(updateUnionCardFanList);
-        List<UnionCardFan> unionCardFanList = listByIdList(idList);
-        removeCache(unionCardFanList);
-        // (2)update db
+
         unionCardFanDao.updateBatchById(updateUnionCardFanList);
-    }
-
-    //********************************************* Object As a Service - cache support ********************************
-
-    private void setCache(UnionCardFan newUnionCardFan, Integer id) {
-        if (id == null) {
-            //do nothing,just in case
-            return;
-        }
-        String idKey = UnionCardFanCacheUtil.getIdKey(id);
-        redisCacheUtil.set(idKey, newUnionCardFan);
-    }
-
-    private void setCache(List<UnionCardFan> newUnionCardFanList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String foreignIdKey = null;
-        switch (foreignIdType) {
-
-            default:
-                break;
-        }
-        if (foreignIdKey != null) {
-            redisCacheUtil.set(foreignIdKey, newUnionCardFanList);
-        }
-    }
-
-    private void setValidCache(List<UnionCardFan> newUnionCardFanList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String validForeignIdKey = null;
-        switch (foreignIdType) {
-
-            default:
-                break;
-        }
-        if (validForeignIdKey != null) {
-            redisCacheUtil.set(validForeignIdKey, newUnionCardFanList);
-        }
-    }
-
-    private void setInvalidCache(List<UnionCardFan> newUnionCardFanList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String invalidForeignIdKey = null;
-        switch (foreignIdType) {
-
-            default:
-                break;
-        }
-        if (invalidForeignIdKey != null) {
-            redisCacheUtil.set(invalidForeignIdKey, newUnionCardFanList);
-        }
-    }
-
-    private void removeCache(UnionCardFan unionCardFan) {
-        if (unionCardFan == null) {
-            return;
-        }
-        Integer id = unionCardFan.getId();
-        String idKey = UnionCardFanCacheUtil.getIdKey(id);
-        redisCacheUtil.remove(idKey);
-
-    }
-
-    private void removeCache(List<UnionCardFan> unionCardFanList) {
-        if (ListUtil.isEmpty(unionCardFanList)) {
-            return;
-        }
-        List<Integer> idList = new ArrayList<>();
-        for (UnionCardFan unionCardFan : unionCardFanList) {
-            idList.add(unionCardFan.getId());
-        }
-        List<String> idKeyList = UnionCardFanCacheUtil.getIdKey(idList);
-        redisCacheUtil.remove(idKeyList);
-
-    }
-
-    private List<String> getForeignIdKeyList(List<UnionCardFan> unionCardFanList, int foreignIdType) {
-        List<String> result = new ArrayList<>();
-        switch (foreignIdType) {
-
-            default:
-                break;
-        }
-        return result;
     }
 
 }
