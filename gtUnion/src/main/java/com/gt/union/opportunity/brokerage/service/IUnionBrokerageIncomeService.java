@@ -3,6 +3,7 @@ package com.gt.union.opportunity.brokerage.service;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.opportunity.brokerage.entity.UnionBrokerageIncome;
+import com.gt.union.union.member.entity.UnionMember;
 
 import java.util.List;
 
@@ -16,7 +17,7 @@ public interface IUnionBrokerageIncomeService {
     //********************************************* Base On Business - get *********************************************
 
     /**
-     * 缓存穿透-获取未删除的商机佣金收入信息
+     * 获取未删除的商机佣金收入信息
      *
      * @param unionId       联盟id
      * @param memberId      盟员id
@@ -29,7 +30,7 @@ public interface IUnionBrokerageIncomeService {
     //********************************************* Base On Business - list ********************************************
 
     /**
-     * 缓存穿透-获取未删除的佣金收入列表信息
+     * 获取未删除的佣金收入列表信息
      *
      * @param busId 商家id
      * @param type  类型
@@ -39,7 +40,7 @@ public interface IUnionBrokerageIncomeService {
     List<UnionBrokerageIncome> listValidByBusIdAndType(Integer busId, Integer type) throws Exception;
 
     /**
-     * 缓存穿透-获取未删除的佣金收入列表信息
+     * 获取未删除的佣金收入列表信息
      *
      * @param busId        商家id
      * @param type         类型
@@ -50,7 +51,7 @@ public interface IUnionBrokerageIncomeService {
     List<UnionBrokerageIncome> listValidByBusIdAndTypeAndMemberIdList(Integer busId, Integer type, List<Integer> memberIdList) throws Exception;
 
     /**
-     * 缓存穿透-获取未删除的佣金收入列表信息
+     * 获取未删除的佣金收入列表信息
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -61,7 +62,7 @@ public interface IUnionBrokerageIncomeService {
     List<UnionBrokerageIncome> listValidByBusIdAndUnionIdAndType(Integer busId, Integer unionId, Integer type) throws Exception;
 
     /**
-     * 缓存穿透-分页：商机-佣金结算-我的佣金收入
+     * 分页：商机-佣金结算-我的佣金收入
      *
      * @param page           分页对象
      * @param busId          商家id
@@ -86,15 +87,16 @@ public interface IUnionBrokerageIncomeService {
     //********************************************* Base On Business - other *******************************************
 
     /**
-     *  缓存穿透-统计商家的佣金总和
-     * @param busId  商家id
+     * 统计商家的佣金总和
+     *
+     * @param busId 商家id
      * @return Double
      * @throws Exception 统一处理异常
      */
     Double sumMoneyByBusId(Integer busId) throws Exception;
 
     /**
-     * 缓存穿透-统计未删除的佣金收入总和
+     * 统计未删除的佣金收入总和
      *
      * @param busId 商家id
      * @return Double
@@ -103,7 +105,7 @@ public interface IUnionBrokerageIncomeService {
     Double sumValidMoneyByBusId(Integer busId) throws Exception;
 
     /**
-     * 缓存穿透-统计未删除的佣金收入总和
+     * 统计未删除的佣金收入总和
      *
      * @param busId 商家id
      * @param type  类型(1:售卡 2:商机)
@@ -113,7 +115,7 @@ public interface IUnionBrokerageIncomeService {
     Double sumValidMoneyByBusIdAndType(Integer busId, Integer type) throws Exception;
 
     /**
-     * 缓存穿透-统计未删除的佣金收入总和
+     * 统计未删除的佣金收入总和
      *
      * @param busId   商家id
      * @param unionId 联盟id
@@ -124,7 +126,7 @@ public interface IUnionBrokerageIncomeService {
     Double sumValidMoneyByBusIdAndUnionIdAndType(Integer busId, Integer unionId, Integer type) throws Exception;
 
     /**
-     * 缓存穿透-统计未删除的佣金收入总和
+     * 统计未删除的佣金收入总和
      *
      * @param busId        商家id
      * @param type         类型(1:售卡 2:商机)
@@ -135,7 +137,7 @@ public interface IUnionBrokerageIncomeService {
     Double sumValidMoneyByBusIdAndTypeAndMemberIdList(Integer busId, Integer type, List<Integer> memberIdList) throws Exception;
 
     /**
-     * 缓存穿透-判断未删除的商机佣金收入是否存在
+     * 判断未删除的商机佣金收入是否存在
      *
      * @param unionId       联盟id
      * @param memberId      盟员id

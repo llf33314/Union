@@ -50,15 +50,15 @@ public class UnionOpportunityRatioController {
             busId = busUser.getPid();
         }
         // mock
-        List<OpportunityRatioVO> voList;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            voList = MockUtil.list(OpportunityRatioVO.class, page.getSize());
+            List<OpportunityRatioVO> voList = MockUtil.list(OpportunityRatioVO.class, page.getSize());
+            Page<OpportunityRatioVO> result = (Page<OpportunityRatioVO>) page;
+            result = PageUtil.setRecord(result, voList);
+            return GtJsonResult.instanceSuccessMsg(result).toString();
         } else {
-            voList = unionOpportunityRatioService.listOpportunityRatioVOByBusIdAndUnionId(busId, unionId);
+            Page result = unionOpportunityRatioService.pageOpportunityRatioVOByBusIdAndUnionId(page, busId, unionId);
+            return GtJsonResult.instanceSuccessMsg(result).toString();
         }
-        Page<OpportunityRatioVO> result = (Page<OpportunityRatioVO>) page;
-        result = PageUtil.setRecord(result, voList);
-        return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
     //-------------------------------------------------- put -----------------------------------------------------------
@@ -79,7 +79,7 @@ public class UnionOpportunityRatioController {
             throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
         }
         if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
-            unionOpportunityRatioService.updateRatioByBusIdAndUnionIdAndToMemberId(busId, unionId, toMemberId, ratio);
+            unionOpportunityRatioService.updateByBusIdAndUnionIdAndToMemberId(busId, unionId, toMemberId, ratio);
         }
         return GtJsonResult.instanceSuccessMsg().toString();
     }

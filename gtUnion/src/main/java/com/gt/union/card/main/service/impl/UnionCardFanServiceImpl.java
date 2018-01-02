@@ -68,7 +68,6 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         if (fanId == null || busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-
         // （1）	判断union有效性和member读权限
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
@@ -89,7 +88,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         if (ListUtil.isNotEmpty(discountCardList)) {
             UnionCard discountCard = discountCardList.get(0);
             result.setDiscountCard(discountCard);
-            UnionMember discountCardMember = unionMemberService.getValidReadByIdAndUnionId(discountCard.getMemberId(), unionId);
+            UnionMember discountCardMember = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
             result.setDiscount(discountCardMember != null ? discountCardMember.getDiscount() : null);
         }
         // （4）获取有效的活动卡信息，并按时间倒序排序
@@ -199,7 +198,6 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-
         // （1）	判断union有效性和member读权限
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
@@ -208,7 +206,6 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-
         // （2）	获取union下具有有效折扣卡的fan，并根据卡号和手机号进行过滤
         EntityWrapper<UnionCardFan> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
@@ -221,7 +218,6 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
                         + " AND c.del_status=" + CommonConstant.COMMON_NO
                         + " AND c.validity >= now() ");
         List<UnionCardFan> fanList = unionCardFanDao.selectList(entityWrapper);
-
         // （3）	统计粉丝联盟积分，即fan在union下所有有效的折扣卡和活动卡的积分之和
         List<CardFanVO> result = new ArrayList<>();
         if (ListUtil.isNotEmpty(fanList)) {

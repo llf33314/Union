@@ -1,6 +1,5 @@
 package com.gt.union.opportunity.main.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.common.constant.CommonConstant;
@@ -12,7 +11,6 @@ import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.opportunity.main.dao.IUnionOpportunityRatioDao;
 import com.gt.union.opportunity.main.entity.UnionOpportunityRatio;
 import com.gt.union.opportunity.main.service.IUnionOpportunityRatioService;
-import com.gt.union.opportunity.main.util.UnionOpportunityRatioCacheUtil;
 import com.gt.union.opportunity.main.vo.OpportunityRatioVO;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.member.entity.UnionMember;
@@ -22,8 +20,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 /**
@@ -54,18 +50,20 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionOpportunityRatio> result = listValidByUnionId(unionId);
-        result = filterByFromMemberId(result, fromMemberId);
-        result = filterByToMemberId(result, toMemberId);
+        EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("from_member_id", fromMemberId)
+                .eq("to_member_id", toMemberId);
 
-        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
+        return unionOpportunityRatioDao.selectOne(entityWrapper);
     }
 
     //********************************************* Base On Business - list ********************************************
 
     @Override
-    public List<OpportunityRatioVO> listOpportunityRatioVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
-        if (busId == null || unionId == null) {
+    public Page pageOpportunityRatioVOByBusIdAndUnionId(Page page, Integer busId, Integer unionId) throws Exception {
+        if (page == null || busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // （1）	判断union有效性和member读权限
@@ -77,29 +75,35 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
         // （2）	获取所有，但不包括自己的member列表
-        List<OpportunityRatioVO> result = new ArrayList<>();
-        List<UnionMember> otherMemberList = unionMemberService.listOtherValidReadByBusIdAndUnionId(busId, unionId);
-        if (ListUtil.isNotEmpty(otherMemberList)) {
-            for (UnionMember otherMember : otherMemberList) {
-                OpportunityRatioVO vo = new OpportunityRatioVO();
-                vo.setMember(otherMember);
+        EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .ne("bus_id", busId)
+                .orderBy("create_time", true);
+        Page result = unionMemberService.pageSupport(page, entityWrapper);
+        result.setRecords(ListOpportunityRatioVO(result.getRecords(), member.getId()));
 
-                UnionOpportunityRatio ratioFromMe = getValidByUnionIdAndFromMemberIdAndToMemberId(unionId, member.getId(), otherMember.getId());
+        return result;
+    }
+
+    private List<OpportunityRatioVO> ListOpportunityRatioVO(List<UnionMember> memberList, Integer memberId) throws Exception {
+        List<OpportunityRatioVO> result = new ArrayList<>();
+
+        if (ListUtil.isNotEmpty(memberList)) {
+            for (UnionMember member : memberList) {
+                OpportunityRatioVO vo = new OpportunityRatioVO();
+                vo.setMember(member);
+
+                UnionOpportunityRatio ratioFromMe = getValidByUnionIdAndFromMemberIdAndToMemberId(member.getUnionId(), memberId, member.getId());
                 vo.setRatioFromMe(ratioFromMe != null ? ratioFromMe.getRatio() : null);
 
-                UnionOpportunityRatio ratioToMe = getValidByUnionIdAndFromMemberIdAndToMemberId(unionId, otherMember.getId(), member.getId());
+                UnionOpportunityRatio ratioToMe = getValidByUnionIdAndFromMemberIdAndToMemberId(member.getUnionId(), member.getId(), memberId);
                 vo.setRatioToMe(ratioToMe != null ? ratioToMe.getRatio() : null);
 
                 result.add(vo);
             }
         }
-        // （3）	按时间顺序排序
-        Collections.sort(result, new Comparator<OpportunityRatioVO>() {
-            @Override
-            public int compare(OpportunityRatioVO o1, OpportunityRatioVO o2) {
-                return o1.getMember().getCreateTime().compareTo(o2.getMember().getCreateTime());
-            }
-        });
+
         return result;
     }
 
@@ -111,7 +115,7 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateRatioByBusIdAndUnionIdAndToMemberId(Integer busId, Integer unionId, Integer toMemberId, Double ratio) throws Exception {
+    public void updateByBusIdAndUnionIdAndToMemberId(Integer busId, Integer unionId, Integer toMemberId, Double ratio) throws Exception {
         if (busId == null || unionId == null || toMemberId == null || ratio == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -237,18 +241,8 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        UnionOpportunityRatio result;
-        // (1)cache
-        String idKey = UnionOpportunityRatioCacheUtil.getIdKey(id);
-        if (redisCacheUtil.exists(idKey)) {
-            String tempStr = redisCacheUtil.get(idKey);
-            result = JSONArray.parseObject(tempStr, UnionOpportunityRatio.class);
-            return result;
-        }
-        // (2)db
-        result = unionOpportunityRatioDao.selectById(id);
-        setCache(result, id);
-        return result;
+
+        return unionOpportunityRatioDao.selectById(id);
     }
 
     @Override
@@ -256,9 +250,12 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        UnionOpportunityRatio result = getById(id);
 
-        return result != null && CommonConstant.DEL_STATUS_NO == result.getDelStatus() ? result : null;
+        EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("id", id);
+
+        return unionOpportunityRatioDao.selectOne(entityWrapper);
     }
 
     @Override
@@ -266,9 +263,12 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        UnionOpportunityRatio result = getById(id);
 
-        return result != null && CommonConstant.DEL_STATUS_YES == result.getDelStatus() ? result : null;
+        EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("id", id);
+
+        return unionOpportunityRatioDao.selectOne(entityWrapper);
     }
 
     //********************************************* Object As a Service - list *****************************************
@@ -294,20 +294,11 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         if (fromMemberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionOpportunityRatio> result;
-        // (1)cache
-        String fromMemberIdKey = UnionOpportunityRatioCacheUtil.getFromMemberIdKey(fromMemberId);
-        if (redisCacheUtil.exists(fromMemberIdKey)) {
-            String tempStr = redisCacheUtil.get(fromMemberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionOpportunityRatio.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("from_member_id", fromMemberId);
-        result = unionOpportunityRatioDao.selectList(entityWrapper);
-        setCache(result, fromMemberId, UnionOpportunityRatioCacheUtil.TYPE_FROM_MEMBER_ID);
-        return result;
+
+        return unionOpportunityRatioDao.selectList(entityWrapper);
     }
 
     @Override
@@ -315,21 +306,12 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         if (fromMemberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionOpportunityRatio> result;
-        // (1)cache
-        String validFromMemberIdKey = UnionOpportunityRatioCacheUtil.getValidFromMemberIdKey(fromMemberId);
-        if (redisCacheUtil.exists(validFromMemberIdKey)) {
-            String tempStr = redisCacheUtil.get(validFromMemberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionOpportunityRatio.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("from_member_id", fromMemberId);
-        result = unionOpportunityRatioDao.selectList(entityWrapper);
-        setValidCache(result, fromMemberId, UnionOpportunityRatioCacheUtil.TYPE_FROM_MEMBER_ID);
-        return result;
+
+        return unionOpportunityRatioDao.selectList(entityWrapper);
     }
 
     @Override
@@ -337,21 +319,12 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         if (fromMemberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionOpportunityRatio> result;
-        // (1)cache
-        String invalidFromMemberIdKey = UnionOpportunityRatioCacheUtil.getInvalidFromMemberIdKey(fromMemberId);
-        if (redisCacheUtil.exists(invalidFromMemberIdKey)) {
-            String tempStr = redisCacheUtil.get(invalidFromMemberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionOpportunityRatio.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
                 .eq("from_member_id", fromMemberId);
-        result = unionOpportunityRatioDao.selectList(entityWrapper);
-        setInvalidCache(result, fromMemberId, UnionOpportunityRatioCacheUtil.TYPE_FROM_MEMBER_ID);
-        return result;
+
+        return unionOpportunityRatioDao.selectList(entityWrapper);
     }
 
     @Override
@@ -359,20 +332,11 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         if (toMemberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionOpportunityRatio> result;
-        // (1)cache
-        String toMemberIdKey = UnionOpportunityRatioCacheUtil.getToMemberIdKey(toMemberId);
-        if (redisCacheUtil.exists(toMemberIdKey)) {
-            String tempStr = redisCacheUtil.get(toMemberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionOpportunityRatio.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("to_member_id", toMemberId);
-        result = unionOpportunityRatioDao.selectList(entityWrapper);
-        setCache(result, toMemberId, UnionOpportunityRatioCacheUtil.TYPE_TO_MEMBER_ID);
-        return result;
+
+        return unionOpportunityRatioDao.selectList(entityWrapper);
     }
 
     @Override
@@ -380,21 +344,12 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         if (toMemberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionOpportunityRatio> result;
-        // (1)cache
-        String validToMemberIdKey = UnionOpportunityRatioCacheUtil.getValidToMemberIdKey(toMemberId);
-        if (redisCacheUtil.exists(validToMemberIdKey)) {
-            String tempStr = redisCacheUtil.get(validToMemberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionOpportunityRatio.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("to_member_id", toMemberId);
-        result = unionOpportunityRatioDao.selectList(entityWrapper);
-        setValidCache(result, toMemberId, UnionOpportunityRatioCacheUtil.TYPE_TO_MEMBER_ID);
-        return result;
+
+        return unionOpportunityRatioDao.selectList(entityWrapper);
     }
 
     @Override
@@ -402,21 +357,12 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         if (toMemberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionOpportunityRatio> result;
-        // (1)cache
-        String invalidToMemberIdKey = UnionOpportunityRatioCacheUtil.getInvalidToMemberIdKey(toMemberId);
-        if (redisCacheUtil.exists(invalidToMemberIdKey)) {
-            String tempStr = redisCacheUtil.get(invalidToMemberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionOpportunityRatio.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
                 .eq("to_member_id", toMemberId);
-        result = unionOpportunityRatioDao.selectList(entityWrapper);
-        setInvalidCache(result, toMemberId, UnionOpportunityRatioCacheUtil.TYPE_TO_MEMBER_ID);
-        return result;
+
+        return unionOpportunityRatioDao.selectList(entityWrapper);
     }
 
     @Override
@@ -424,20 +370,11 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionOpportunityRatio> result;
-        // (1)cache
-        String unionIdKey = UnionOpportunityRatioCacheUtil.getUnionIdKey(unionId);
-        if (redisCacheUtil.exists(unionIdKey)) {
-            String tempStr = redisCacheUtil.get(unionIdKey);
-            result = JSONArray.parseArray(tempStr, UnionOpportunityRatio.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("union_id", unionId);
-        result = unionOpportunityRatioDao.selectList(entityWrapper);
-        setCache(result, unionId, UnionOpportunityRatioCacheUtil.TYPE_UNION_ID);
-        return result;
+
+        return unionOpportunityRatioDao.selectList(entityWrapper);
     }
 
     @Override
@@ -445,21 +382,12 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionOpportunityRatio> result;
-        // (1)cache
-        String validUnionIdKey = UnionOpportunityRatioCacheUtil.getValidUnionIdKey(unionId);
-        if (redisCacheUtil.exists(validUnionIdKey)) {
-            String tempStr = redisCacheUtil.get(validUnionIdKey);
-            result = JSONArray.parseArray(tempStr, UnionOpportunityRatio.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("union_id", unionId);
-        result = unionOpportunityRatioDao.selectList(entityWrapper);
-        setValidCache(result, unionId, UnionOpportunityRatioCacheUtil.TYPE_UNION_ID);
-        return result;
+
+        return unionOpportunityRatioDao.selectList(entityWrapper);
     }
 
     @Override
@@ -467,21 +395,12 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionOpportunityRatio> result;
-        // (1)cache
-        String invalidUnionIdKey = UnionOpportunityRatioCacheUtil.getInvalidUnionIdKey(unionId);
-        if (redisCacheUtil.exists(invalidUnionIdKey)) {
-            String tempStr = redisCacheUtil.get(invalidUnionIdKey);
-            result = JSONArray.parseArray(tempStr, UnionOpportunityRatio.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
                 .eq("union_id", unionId);
-        result = unionOpportunityRatioDao.selectList(entityWrapper);
-        setInvalidCache(result, unionId, UnionOpportunityRatioCacheUtil.TYPE_UNION_ID);
-        return result;
+
+        return unionOpportunityRatioDao.selectList(entityWrapper);
     }
 
     @Override
@@ -490,14 +409,10 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionOpportunityRatio> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(idList)) {
-            for (Integer id : idList) {
-                result.add(getById(id));
-            }
-        }
+        EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
+        entityWrapper.in("id", idList);
 
-        return result;
+        return unionOpportunityRatioDao.selectList(entityWrapper);
     }
 
     @Override
@@ -516,8 +431,8 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         if (newUnionOpportunityRatio == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+
         unionOpportunityRatioDao.insert(newUnionOpportunityRatio);
-        removeCache(newUnionOpportunityRatio);
     }
 
     @Override
@@ -526,8 +441,8 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         if (newUnionOpportunityRatioList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+
         unionOpportunityRatioDao.insertBatch(newUnionOpportunityRatioList);
-        removeCache(newUnionOpportunityRatioList);
     }
 
     //********************************************* Object As a Service - remove ***************************************
@@ -538,10 +453,7 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        UnionOpportunityRatio unionOpportunityRatio = getById(id);
-        removeCache(unionOpportunityRatio);
-        // (2)remove in db logically
+
         UnionOpportunityRatio removeUnionOpportunityRatio = new UnionOpportunityRatio();
         removeUnionOpportunityRatio.setId(id);
         removeUnionOpportunityRatio.setDelStatus(CommonConstant.DEL_STATUS_YES);
@@ -554,10 +466,7 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         if (idList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        List<UnionOpportunityRatio> unionOpportunityRatioList = listByIdList(idList);
-        removeCache(unionOpportunityRatioList);
-        // (2)remove in db logically
+
         List<UnionOpportunityRatio> removeUnionOpportunityRatioList = new ArrayList<>();
         for (Integer id : idList) {
             UnionOpportunityRatio removeUnionOpportunityRatio = new UnionOpportunityRatio();
@@ -576,11 +485,7 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         if (updateUnionOpportunityRatio == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        Integer id = updateUnionOpportunityRatio.getId();
-        UnionOpportunityRatio unionOpportunityRatio = getById(id);
-        removeCache(unionOpportunityRatio);
-        // (2)update db
+
         unionOpportunityRatioDao.updateById(updateUnionOpportunityRatio);
     }
 
@@ -590,227 +495,8 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         if (updateUnionOpportunityRatioList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        List<Integer> idList = getIdList(updateUnionOpportunityRatioList);
-        List<UnionOpportunityRatio> unionOpportunityRatioList = listByIdList(idList);
-        removeCache(unionOpportunityRatioList);
-        // (2)update db
+
         unionOpportunityRatioDao.updateBatchById(updateUnionOpportunityRatioList);
-    }
-
-    //********************************************* Object As a Service - cache support ********************************
-
-    private void setCache(UnionOpportunityRatio newUnionOpportunityRatio, Integer id) {
-        if (id == null) {
-            //do nothing,just in case
-            return;
-        }
-        String idKey = UnionOpportunityRatioCacheUtil.getIdKey(id);
-        redisCacheUtil.set(idKey, newUnionOpportunityRatio);
-    }
-
-    private void setCache(List<UnionOpportunityRatio> newUnionOpportunityRatioList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String foreignIdKey = null;
-        switch (foreignIdType) {
-            case UnionOpportunityRatioCacheUtil.TYPE_FROM_MEMBER_ID:
-                foreignIdKey = UnionOpportunityRatioCacheUtil.getFromMemberIdKey(foreignId);
-                break;
-            case UnionOpportunityRatioCacheUtil.TYPE_TO_MEMBER_ID:
-                foreignIdKey = UnionOpportunityRatioCacheUtil.getToMemberIdKey(foreignId);
-                break;
-            case UnionOpportunityRatioCacheUtil.TYPE_UNION_ID:
-                foreignIdKey = UnionOpportunityRatioCacheUtil.getUnionIdKey(foreignId);
-                break;
-
-            default:
-                break;
-        }
-        if (foreignIdKey != null) {
-            redisCacheUtil.set(foreignIdKey, newUnionOpportunityRatioList);
-        }
-    }
-
-    private void setValidCache(List<UnionOpportunityRatio> newUnionOpportunityRatioList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String validForeignIdKey = null;
-        switch (foreignIdType) {
-            case UnionOpportunityRatioCacheUtil.TYPE_FROM_MEMBER_ID:
-                validForeignIdKey = UnionOpportunityRatioCacheUtil.getValidFromMemberIdKey(foreignId);
-                break;
-            case UnionOpportunityRatioCacheUtil.TYPE_TO_MEMBER_ID:
-                validForeignIdKey = UnionOpportunityRatioCacheUtil.getValidToMemberIdKey(foreignId);
-                break;
-            case UnionOpportunityRatioCacheUtil.TYPE_UNION_ID:
-                validForeignIdKey = UnionOpportunityRatioCacheUtil.getValidUnionIdKey(foreignId);
-                break;
-
-            default:
-                break;
-        }
-        if (validForeignIdKey != null) {
-            redisCacheUtil.set(validForeignIdKey, newUnionOpportunityRatioList);
-        }
-    }
-
-    private void setInvalidCache(List<UnionOpportunityRatio> newUnionOpportunityRatioList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String invalidForeignIdKey = null;
-        switch (foreignIdType) {
-            case UnionOpportunityRatioCacheUtil.TYPE_FROM_MEMBER_ID:
-                invalidForeignIdKey = UnionOpportunityRatioCacheUtil.getInvalidFromMemberIdKey(foreignId);
-                break;
-            case UnionOpportunityRatioCacheUtil.TYPE_TO_MEMBER_ID:
-                invalidForeignIdKey = UnionOpportunityRatioCacheUtil.getInvalidToMemberIdKey(foreignId);
-                break;
-            case UnionOpportunityRatioCacheUtil.TYPE_UNION_ID:
-                invalidForeignIdKey = UnionOpportunityRatioCacheUtil.getInvalidUnionIdKey(foreignId);
-                break;
-
-            default:
-                break;
-        }
-        if (invalidForeignIdKey != null) {
-            redisCacheUtil.set(invalidForeignIdKey, newUnionOpportunityRatioList);
-        }
-    }
-
-    private void removeCache(UnionOpportunityRatio unionOpportunityRatio) {
-        if (unionOpportunityRatio == null) {
-            return;
-        }
-        Integer id = unionOpportunityRatio.getId();
-        String idKey = UnionOpportunityRatioCacheUtil.getIdKey(id);
-        redisCacheUtil.remove(idKey);
-
-        Integer fromMemberId = unionOpportunityRatio.getFromMemberId();
-        if (fromMemberId != null) {
-            String fromMemberIdKey = UnionOpportunityRatioCacheUtil.getFromMemberIdKey(fromMemberId);
-            redisCacheUtil.remove(fromMemberIdKey);
-
-            String validFromMemberIdKey = UnionOpportunityRatioCacheUtil.getValidFromMemberIdKey(fromMemberId);
-            redisCacheUtil.remove(validFromMemberIdKey);
-
-            String invalidFromMemberIdKey = UnionOpportunityRatioCacheUtil.getInvalidFromMemberIdKey(fromMemberId);
-            redisCacheUtil.remove(invalidFromMemberIdKey);
-        }
-
-        Integer toMemberId = unionOpportunityRatio.getToMemberId();
-        if (toMemberId != null) {
-            String toMemberIdKey = UnionOpportunityRatioCacheUtil.getToMemberIdKey(toMemberId);
-            redisCacheUtil.remove(toMemberIdKey);
-
-            String validToMemberIdKey = UnionOpportunityRatioCacheUtil.getValidToMemberIdKey(toMemberId);
-            redisCacheUtil.remove(validToMemberIdKey);
-
-            String invalidToMemberIdKey = UnionOpportunityRatioCacheUtil.getInvalidToMemberIdKey(toMemberId);
-            redisCacheUtil.remove(invalidToMemberIdKey);
-        }
-
-        Integer unionId = unionOpportunityRatio.getUnionId();
-        if (unionId != null) {
-            String unionIdKey = UnionOpportunityRatioCacheUtil.getUnionIdKey(unionId);
-            redisCacheUtil.remove(unionIdKey);
-
-            String validUnionIdKey = UnionOpportunityRatioCacheUtil.getValidUnionIdKey(unionId);
-            redisCacheUtil.remove(validUnionIdKey);
-
-            String invalidUnionIdKey = UnionOpportunityRatioCacheUtil.getInvalidUnionIdKey(unionId);
-            redisCacheUtil.remove(invalidUnionIdKey);
-        }
-
-    }
-
-    private void removeCache(List<UnionOpportunityRatio> unionOpportunityRatioList) {
-        if (ListUtil.isEmpty(unionOpportunityRatioList)) {
-            return;
-        }
-        List<Integer> idList = new ArrayList<>();
-        for (UnionOpportunityRatio unionOpportunityRatio : unionOpportunityRatioList) {
-            idList.add(unionOpportunityRatio.getId());
-        }
-        List<String> idKeyList = UnionOpportunityRatioCacheUtil.getIdKey(idList);
-        redisCacheUtil.remove(idKeyList);
-
-        List<String> fromMemberIdKeyList = getForeignIdKeyList(unionOpportunityRatioList, UnionOpportunityRatioCacheUtil.TYPE_FROM_MEMBER_ID);
-        if (ListUtil.isNotEmpty(fromMemberIdKeyList)) {
-            redisCacheUtil.remove(fromMemberIdKeyList);
-        }
-
-        List<String> toMemberIdKeyList = getForeignIdKeyList(unionOpportunityRatioList, UnionOpportunityRatioCacheUtil.TYPE_TO_MEMBER_ID);
-        if (ListUtil.isNotEmpty(toMemberIdKeyList)) {
-            redisCacheUtil.remove(toMemberIdKeyList);
-        }
-
-        List<String> unionIdKeyList = getForeignIdKeyList(unionOpportunityRatioList, UnionOpportunityRatioCacheUtil.TYPE_UNION_ID);
-        if (ListUtil.isNotEmpty(unionIdKeyList)) {
-            redisCacheUtil.remove(unionIdKeyList);
-        }
-
-    }
-
-    private List<String> getForeignIdKeyList(List<UnionOpportunityRatio> unionOpportunityRatioList, int foreignIdType) {
-        List<String> result = new ArrayList<>();
-        switch (foreignIdType) {
-            case UnionOpportunityRatioCacheUtil.TYPE_FROM_MEMBER_ID:
-                for (UnionOpportunityRatio unionOpportunityRatio : unionOpportunityRatioList) {
-                    Integer fromMemberId = unionOpportunityRatio.getFromMemberId();
-                    if (fromMemberId != null) {
-                        String fromMemberIdKey = UnionOpportunityRatioCacheUtil.getFromMemberIdKey(fromMemberId);
-                        result.add(fromMemberIdKey);
-
-                        String validFromMemberIdKey = UnionOpportunityRatioCacheUtil.getValidFromMemberIdKey(fromMemberId);
-                        result.add(validFromMemberIdKey);
-
-                        String invalidFromMemberIdKey = UnionOpportunityRatioCacheUtil.getInvalidFromMemberIdKey(fromMemberId);
-                        result.add(invalidFromMemberIdKey);
-                    }
-                }
-                break;
-            case UnionOpportunityRatioCacheUtil.TYPE_TO_MEMBER_ID:
-                for (UnionOpportunityRatio unionOpportunityRatio : unionOpportunityRatioList) {
-                    Integer toMemberId = unionOpportunityRatio.getToMemberId();
-                    if (toMemberId != null) {
-                        String toMemberIdKey = UnionOpportunityRatioCacheUtil.getToMemberIdKey(toMemberId);
-                        result.add(toMemberIdKey);
-
-                        String validToMemberIdKey = UnionOpportunityRatioCacheUtil.getValidToMemberIdKey(toMemberId);
-                        result.add(validToMemberIdKey);
-
-                        String invalidToMemberIdKey = UnionOpportunityRatioCacheUtil.getInvalidToMemberIdKey(toMemberId);
-                        result.add(invalidToMemberIdKey);
-                    }
-                }
-                break;
-            case UnionOpportunityRatioCacheUtil.TYPE_UNION_ID:
-                for (UnionOpportunityRatio unionOpportunityRatio : unionOpportunityRatioList) {
-                    Integer unionId = unionOpportunityRatio.getUnionId();
-                    if (unionId != null) {
-                        String unionIdKey = UnionOpportunityRatioCacheUtil.getUnionIdKey(unionId);
-                        result.add(unionIdKey);
-
-                        String validUnionIdKey = UnionOpportunityRatioCacheUtil.getValidUnionIdKey(unionId);
-                        result.add(validUnionIdKey);
-
-                        String invalidUnionIdKey = UnionOpportunityRatioCacheUtil.getInvalidUnionIdKey(unionId);
-                        result.add(invalidUnionIdKey);
-                    }
-                }
-                break;
-
-            default:
-                break;
-        }
-        return result;
     }
 
 }

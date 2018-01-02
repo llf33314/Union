@@ -148,4 +148,25 @@ public class UnionMemberOutController {
         }
         return GtJsonResult.instanceSuccessMsg().toString();
     }
+
+    //-------------------------------------------------- delete --------------------------------------------------------
+
+    @ApiOperation(value = "我的联盟-首页-盟员列表-分页数据-撤消移出", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/{outId}/unionId/{unionId}", method = RequestMethod.DELETE, produces = "application/json;charset=UTF-8")
+    public String removeByIdAndUnionId(
+            HttpServletRequest request,
+            @ApiParam(value = "退盟申请id", name = "outId")
+            @PathVariable("outId") Integer outId,
+            @ApiParam(value = "联盟id", name = "unionId")
+            @PathVariable("unionId") Integer unionId) throws Exception {
+        BusUser busUser = SessionUtils.getLoginUser(request);
+        Integer busId = busUser.getId();
+        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+            throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
+        }
+        if (CommonConstant.COMMON_YES != ConfigConstant.IS_MOCK) {
+            unionMemberOutService.removeByBusIdAndIdAndUnionId(busId, outId, unionId);
+        }
+        return GtJsonResult.instanceSuccessMsg().toString();
+    }
 }

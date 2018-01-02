@@ -64,9 +64,8 @@ public class UnionMainPackageServiceImpl implements IUnionMainPackageService {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-
-        UnionPackageVO result = new UnionPackageVO();
         // （1）	获取商家版本名称(如升级版)
+        UnionPackageVO result = new UnionPackageVO();
         BusUser busUser = busUserService.getBusUserById(busId);
         if (busUser == null) {
             throw new BusinessException(CommonConstant.BUS_NOT_FOUND);
@@ -399,5 +398,5 @@ public class UnionMainPackageServiceImpl implements IUnionMainPackageService {
         }
         return result;
     }
-    
+
 }

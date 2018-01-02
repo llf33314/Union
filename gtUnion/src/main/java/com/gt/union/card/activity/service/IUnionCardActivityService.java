@@ -100,7 +100,7 @@ public interface IUnionCardActivityService {
      * @throws Exception 统一处理异常
      */
     List<CardActivityApplyItemVO> listCardActivityApplyItemVOByBusIdAndIdAndUnionId(Integer busId, Integer activityId, Integer unionId) throws Exception;
-    
+
     //********************************************* Base On Business - save ********************************************
 
     /**
@@ -112,7 +112,7 @@ public interface IUnionCardActivityService {
      * @throws Exception 统一处理异常
      */
     void saveByBusIdAndUnionId(Integer busId, Integer unionId, UnionCardActivity vo) throws Exception;
-    
+
     //********************************************* Base On Business - remove ******************************************
 
     /**
@@ -124,7 +124,7 @@ public interface IUnionCardActivityService {
      * @throws Exception 统一处理异常
      */
     void removeByBusIdAndIdAndUnionId(Integer busId, Integer activityId, Integer unionId) throws Exception;
-    
+
     //********************************************* Base On Business - update ******************************************
 
     //********************************************* Base On Business - other *******************************************
@@ -140,6 +140,16 @@ public interface IUnionCardActivityService {
      * @throws Exception 统一处理异常
      */
     List<UnionCardActivity> filterByDelStatus(List<UnionCardActivity> unionCardActivityList, Integer delStatus) throws Exception;
+
+    /**
+     * 根据活动状态进行过滤(by myBatisGenerator)
+     *
+     * @param unionCardActivityList 数据源
+     * @param status                活动状态
+     * @return List<UnionCardActivity>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardActivity> filterByStatus(List<UnionCardActivity> unionCardActivityList, Integer status) throws Exception;
 
     //****************************************** Object As a Service - get *********************************************
 

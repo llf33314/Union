@@ -78,7 +78,6 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-
         // （2）	按时间倒序排序
         List<CardSharingRecordVO> result = new ArrayList<>();
         List<UnionCardSharingRecord> recordList = listValidByUnionIdAndSharingMemberId(unionId, member.getId());

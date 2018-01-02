@@ -120,7 +120,6 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-
         // （1）	判断union有效性和member读权限、盟主权限
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
@@ -186,36 +185,26 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
         if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
             throw new BusinessException(CommonConstant.UNION_OWNER_ERROR);
         }
-        // （2）	判断是否已存在其他转移申请:
-        //   （2-1）如果是，则报错；
-        //   （2-2）如果不是，则进行下一步；
+        // （2）	要求不能存在其他转移申请
         if (existValidByUnionIdAndConfirmStatus(unionId, UnionConstant.TRANSFER_CONFIRM_STATUS_PROCESS)) {
             throw new BusinessException("已存在联盟盟主权限转移申请，请撤消后再操作");
         }
-        // （3）	判断toMemberId有效性和写权限；
+        // （3）	判断toMemberId有效性；
         UnionMember toMember = unionMemberService.getValidWriteByIdAndUnionId(toMemberId, unionId);
         if (toMember == null) {
-            throw new BusinessException("联盟盟主权限转移的目标盟员不存在，或处于退盟过渡期，或已退盟");
+            throw new BusinessException("联盟盟主权限转移的目标盟员不存在、处于退盟过渡期，或已退盟");
         }
-        // （4）	判断toMember是否是另一个联盟的盟主：
-        //   （4-1）如果是，则报错；
-        //   （4-2）如果不是，则进行下一步；
+        // （4）	要求toMember不能是另一个联盟的盟主
         UnionMember toMemberOwner = unionMemberService.getValidOwnerByBusId(toMember.getBusId());
         if (toMemberOwner != null) {
             throw new BusinessException("联盟盟主权限转移的目标盟员已经是另一个联盟的盟主，无法同时成为多个联盟的盟主");
         }
-        // （5）	判断toMember是否具有联盟基础服务（调接口）
-        //   （5-1）如果不是，则报错；
-        //   （5-2）如果是，则进行下一步；
+        // （5）	要求toMember具有联盟基础服务（调接口）
         UserUnionAuthority authority = busUserService.getUserUnionAuthority(busId);
         if (authority == null || !authority.getAuthority()) {
             throw new BusinessException("联盟盟主权限转移的目标盟员不具有联盟基础服务");
         }
-        // （6）	判断toMember是否具有联盟许可:
-        //   （6-1）如果不是，则判断是否需要付费：
-        //     （6-1-1）如果不是，则新增免费的联盟许可；
-        //     （6-1-2）如果是，则报错；
-        //   （6-2）如果是，则进行下一步；
+        // （6）	要求toMember是否具有联盟许可
         UnionMainPermit permit = unionMainPermitService.getValidByBusId(toMember.getBusId());
         if (permit == null) {
             if (!authority.getPay()) {
@@ -224,9 +213,6 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
                     throw new BusinessException("找不到联盟盟主权限转移目标盟员的商家信息");
                 }
                 UnionMainPackage unionPackage = unionMainPackageService.getValidByLevel(toMemberBusUser.getLevel());
-                if (unionPackage == null) {
-                    throw new BusinessException("找不到商家等级为" + toMemberBusUser.getLevel() + "的联盟套餐");
-                }
                 permit = new UnionMainPermit();
                 permit.setDelStatus(CommonConstant.COMMON_NO);
                 permit.setCreateTime(DateUtil.getCurrentDate());
@@ -268,12 +254,11 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
             throw new BusinessException(CommonConstant.UNION_OWNER_ERROR);
         }
         // （2）	判断transferId有效性
-        //   （2-1）如果transfer不存在，则直接返回成功；
-        //   （2-2）如果transfer存在，则删除后直接返回成功。
         UnionMainTransfer transfer = getValidByIdAndUnionIdAndConfirmStatus(transferId, unionId, UnionConstant.TRANSFER_CONFIRM_STATUS_PROCESS);
-        if (transfer != null) {
-            removeById(transferId);
+        if (transfer == null) {
+            throw new BusinessException("找不到联盟盟主服务转移申请信息");
         }
+        removeById(transferId);
     }
 
     //********************************************* Base On Business - update ******************************************
@@ -352,9 +337,6 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
             newOwner.setIsUnionOwner(MemberConstant.IS_UNION_OWNER_YES);
 
             UnionMember oldOwner = unionMemberService.getValidOwnerByUnionId(unionId);
-            if (oldOwner == null) {
-                throw new BusinessException("找不到盟主信息");
-            }
             oldOwner.setId(oldOwner.getId());
             oldOwner.setIsUnionOwner(MemberConstant.IS_UNION_OWNER_NO);
 

@@ -1,6 +1,5 @@
 package com.gt.union.opportunity.brokerage.service.impl;
 
-import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.common.constant.CommonConstant;
@@ -12,7 +11,6 @@ import com.gt.union.common.util.StringUtil;
 import com.gt.union.opportunity.brokerage.dao.IUnionBrokerageIncomeDao;
 import com.gt.union.opportunity.brokerage.entity.UnionBrokerageIncome;
 import com.gt.union.opportunity.brokerage.service.IUnionBrokerageIncomeService;
-import com.gt.union.opportunity.brokerage.util.UnionBrokerageIncomeCacheUtil;
 import com.gt.union.opportunity.main.entity.UnionOpportunity;
 import com.gt.union.opportunity.main.service.IUnionOpportunityService;
 import com.gt.union.union.member.entity.UnionMember;
@@ -35,9 +33,6 @@ import java.util.List;
 public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeService {
     @Autowired
     private IUnionBrokerageIncomeDao unionBrokerageIncomeDao;
-
-    @Autowired
-    private RedisCacheUtil redisCacheUtil;
 
     @Autowired
     private IUnionOpportunityService unionOpportunityService;
@@ -368,18 +363,8 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        UnionBrokerageIncome result;
-        // (1)cache
-        String idKey = UnionBrokerageIncomeCacheUtil.getIdKey(id);
-        if (redisCacheUtil.exists(idKey)) {
-            String tempStr = redisCacheUtil.get(idKey);
-            result = JSONArray.parseObject(tempStr, UnionBrokerageIncome.class);
-            return result;
-        }
-        // (2)db
-        result = unionBrokerageIncomeDao.selectById(id);
-        setCache(result, id);
-        return result;
+
+        return unionBrokerageIncomeDao.selectById(id);
     }
 
     @Override
@@ -387,9 +372,12 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        UnionBrokerageIncome result = getById(id);
 
-        return result != null && CommonConstant.DEL_STATUS_NO == result.getDelStatus() ? result : null;
+        EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("id", id);
+
+        return unionBrokerageIncomeDao.selectOne(entityWrapper);
     }
 
     @Override
@@ -397,9 +385,12 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        UnionBrokerageIncome result = getById(id);
 
-        return result != null && CommonConstant.DEL_STATUS_YES == result.getDelStatus() ? result : null;
+        EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("id", id);
+
+        return unionBrokerageIncomeDao.selectOne(entityWrapper);
     }
 
     //********************************************* Object As a Service - list *****************************************
@@ -425,20 +416,11 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionBrokerageIncome> result;
-        // (1)cache
-        String busIdKey = UnionBrokerageIncomeCacheUtil.getBusIdKey(busId);
-        if (redisCacheUtil.exists(busIdKey)) {
-            String tempStr = redisCacheUtil.get(busIdKey);
-            result = JSONArray.parseArray(tempStr, UnionBrokerageIncome.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("bus_id", busId);
-        result = unionBrokerageIncomeDao.selectList(entityWrapper);
-        setCache(result, busId, UnionBrokerageIncomeCacheUtil.TYPE_BUS_ID);
-        return result;
+
+        return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
 
     @Override
@@ -446,21 +428,12 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionBrokerageIncome> result;
-        // (1)cache
-        String validBusIdKey = UnionBrokerageIncomeCacheUtil.getValidBusIdKey(busId);
-        if (redisCacheUtil.exists(validBusIdKey)) {
-            String tempStr = redisCacheUtil.get(validBusIdKey);
-            result = JSONArray.parseArray(tempStr, UnionBrokerageIncome.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("bus_id", busId);
-        result = unionBrokerageIncomeDao.selectList(entityWrapper);
-        setValidCache(result, busId, UnionBrokerageIncomeCacheUtil.TYPE_BUS_ID);
-        return result;
+
+        return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
 
     @Override
@@ -468,21 +441,12 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionBrokerageIncome> result;
-        // (1)cache
-        String invalidBusIdKey = UnionBrokerageIncomeCacheUtil.getInvalidBusIdKey(busId);
-        if (redisCacheUtil.exists(invalidBusIdKey)) {
-            String tempStr = redisCacheUtil.get(invalidBusIdKey);
-            result = JSONArray.parseArray(tempStr, UnionBrokerageIncome.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
                 .eq("bus_id", busId);
-        result = unionBrokerageIncomeDao.selectList(entityWrapper);
-        setInvalidCache(result, busId, UnionBrokerageIncomeCacheUtil.TYPE_BUS_ID);
-        return result;
+
+        return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
 
     @Override
@@ -490,20 +454,11 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionBrokerageIncome> result;
-        // (1)cache
-        String memberIdKey = UnionBrokerageIncomeCacheUtil.getMemberIdKey(memberId);
-        if (redisCacheUtil.exists(memberIdKey)) {
-            String tempStr = redisCacheUtil.get(memberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionBrokerageIncome.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("member_id", memberId);
-        result = unionBrokerageIncomeDao.selectList(entityWrapper);
-        setCache(result, memberId, UnionBrokerageIncomeCacheUtil.TYPE_MEMBER_ID);
-        return result;
+
+        return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
 
     @Override
@@ -511,21 +466,12 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionBrokerageIncome> result;
-        // (1)cache
-        String validMemberIdKey = UnionBrokerageIncomeCacheUtil.getValidMemberIdKey(memberId);
-        if (redisCacheUtil.exists(validMemberIdKey)) {
-            String tempStr = redisCacheUtil.get(validMemberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionBrokerageIncome.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("member_id", memberId);
-        result = unionBrokerageIncomeDao.selectList(entityWrapper);
-        setValidCache(result, memberId, UnionBrokerageIncomeCacheUtil.TYPE_MEMBER_ID);
-        return result;
+
+        return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
 
     @Override
@@ -533,21 +479,12 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionBrokerageIncome> result;
-        // (1)cache
-        String invalidMemberIdKey = UnionBrokerageIncomeCacheUtil.getInvalidMemberIdKey(memberId);
-        if (redisCacheUtil.exists(invalidMemberIdKey)) {
-            String tempStr = redisCacheUtil.get(invalidMemberIdKey);
-            result = JSONArray.parseArray(tempStr, UnionBrokerageIncome.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
                 .eq("member_id", memberId);
-        result = unionBrokerageIncomeDao.selectList(entityWrapper);
-        setInvalidCache(result, memberId, UnionBrokerageIncomeCacheUtil.TYPE_MEMBER_ID);
-        return result;
+
+        return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
 
     @Override
@@ -555,20 +492,11 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionBrokerageIncome> result;
-        // (1)cache
-        String unionIdKey = UnionBrokerageIncomeCacheUtil.getUnionIdKey(unionId);
-        if (redisCacheUtil.exists(unionIdKey)) {
-            String tempStr = redisCacheUtil.get(unionIdKey);
-            result = JSONArray.parseArray(tempStr, UnionBrokerageIncome.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("union_id", unionId);
-        result = unionBrokerageIncomeDao.selectList(entityWrapper);
-        setCache(result, unionId, UnionBrokerageIncomeCacheUtil.TYPE_UNION_ID);
-        return result;
+
+        return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
 
     @Override
@@ -576,21 +504,12 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionBrokerageIncome> result;
-        // (1)cache
-        String validUnionIdKey = UnionBrokerageIncomeCacheUtil.getValidUnionIdKey(unionId);
-        if (redisCacheUtil.exists(validUnionIdKey)) {
-            String tempStr = redisCacheUtil.get(validUnionIdKey);
-            result = JSONArray.parseArray(tempStr, UnionBrokerageIncome.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("union_id", unionId);
-        result = unionBrokerageIncomeDao.selectList(entityWrapper);
-        setValidCache(result, unionId, UnionBrokerageIncomeCacheUtil.TYPE_UNION_ID);
-        return result;
+
+        return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
 
     @Override
@@ -598,21 +517,12 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionBrokerageIncome> result;
-        // (1)cache
-        String invalidUnionIdKey = UnionBrokerageIncomeCacheUtil.getInvalidUnionIdKey(unionId);
-        if (redisCacheUtil.exists(invalidUnionIdKey)) {
-            String tempStr = redisCacheUtil.get(invalidUnionIdKey);
-            result = JSONArray.parseArray(tempStr, UnionBrokerageIncome.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
                 .eq("union_id", unionId);
-        result = unionBrokerageIncomeDao.selectList(entityWrapper);
-        setInvalidCache(result, unionId, UnionBrokerageIncomeCacheUtil.TYPE_UNION_ID);
-        return result;
+
+        return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
 
     @Override
@@ -620,20 +530,11 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (cardId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionBrokerageIncome> result;
-        // (1)cache
-        String cardIdKey = UnionBrokerageIncomeCacheUtil.getCardIdKey(cardId);
-        if (redisCacheUtil.exists(cardIdKey)) {
-            String tempStr = redisCacheUtil.get(cardIdKey);
-            result = JSONArray.parseArray(tempStr, UnionBrokerageIncome.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("card_id", cardId);
-        result = unionBrokerageIncomeDao.selectList(entityWrapper);
-        setCache(result, cardId, UnionBrokerageIncomeCacheUtil.TYPE_CARD_ID);
-        return result;
+
+        return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
 
     @Override
@@ -641,21 +542,12 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (cardId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionBrokerageIncome> result;
-        // (1)cache
-        String validCardIdKey = UnionBrokerageIncomeCacheUtil.getValidCardIdKey(cardId);
-        if (redisCacheUtil.exists(validCardIdKey)) {
-            String tempStr = redisCacheUtil.get(validCardIdKey);
-            result = JSONArray.parseArray(tempStr, UnionBrokerageIncome.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("card_id", cardId);
-        result = unionBrokerageIncomeDao.selectList(entityWrapper);
-        setValidCache(result, cardId, UnionBrokerageIncomeCacheUtil.TYPE_CARD_ID);
-        return result;
+
+        return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
 
     @Override
@@ -663,21 +555,12 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (cardId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionBrokerageIncome> result;
-        // (1)cache
-        String invalidCardIdKey = UnionBrokerageIncomeCacheUtil.getInvalidCardIdKey(cardId);
-        if (redisCacheUtil.exists(invalidCardIdKey)) {
-            String tempStr = redisCacheUtil.get(invalidCardIdKey);
-            result = JSONArray.parseArray(tempStr, UnionBrokerageIncome.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
                 .eq("card_id", cardId);
-        result = unionBrokerageIncomeDao.selectList(entityWrapper);
-        setInvalidCache(result, cardId, UnionBrokerageIncomeCacheUtil.TYPE_CARD_ID);
-        return result;
+
+        return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
 
     @Override
@@ -685,20 +568,11 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (opportunityId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionBrokerageIncome> result;
-        // (1)cache
-        String opportunityIdKey = UnionBrokerageIncomeCacheUtil.getOpportunityIdKey(opportunityId);
-        if (redisCacheUtil.exists(opportunityIdKey)) {
-            String tempStr = redisCacheUtil.get(opportunityIdKey);
-            result = JSONArray.parseArray(tempStr, UnionBrokerageIncome.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("opportunity_id", opportunityId);
-        result = unionBrokerageIncomeDao.selectList(entityWrapper);
-        setCache(result, opportunityId, UnionBrokerageIncomeCacheUtil.TYPE_OPPORTUNITY_ID);
-        return result;
+
+        return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
 
     @Override
@@ -706,21 +580,12 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (opportunityId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionBrokerageIncome> result;
-        // (1)cache
-        String validOpportunityIdKey = UnionBrokerageIncomeCacheUtil.getValidOpportunityIdKey(opportunityId);
-        if (redisCacheUtil.exists(validOpportunityIdKey)) {
-            String tempStr = redisCacheUtil.get(validOpportunityIdKey);
-            result = JSONArray.parseArray(tempStr, UnionBrokerageIncome.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("opportunity_id", opportunityId);
-        result = unionBrokerageIncomeDao.selectList(entityWrapper);
-        setValidCache(result, opportunityId, UnionBrokerageIncomeCacheUtil.TYPE_OPPORTUNITY_ID);
-        return result;
+
+        return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
 
     @Override
@@ -728,21 +593,12 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (opportunityId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionBrokerageIncome> result;
-        // (1)cache
-        String invalidOpportunityIdKey = UnionBrokerageIncomeCacheUtil.getInvalidOpportunityIdKey(opportunityId);
-        if (redisCacheUtil.exists(invalidOpportunityIdKey)) {
-            String tempStr = redisCacheUtil.get(invalidOpportunityIdKey);
-            result = JSONArray.parseArray(tempStr, UnionBrokerageIncome.class);
-            return result;
-        }
-        // (2)db
+
         EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
                 .eq("opportunity_id", opportunityId);
-        result = unionBrokerageIncomeDao.selectList(entityWrapper);
-        setInvalidCache(result, opportunityId, UnionBrokerageIncomeCacheUtil.TYPE_OPPORTUNITY_ID);
-        return result;
+
+        return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
 
     @Override
@@ -751,14 +607,10 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        List<UnionBrokerageIncome> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(idList)) {
-            for (Integer id : idList) {
-                result.add(getById(id));
-            }
-        }
+        EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
+        entityWrapper.in("id", idList);
 
-        return result;
+        return unionBrokerageIncomeDao.selectList(entityWrapper);
     }
 
     @Override
@@ -777,8 +629,8 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (newUnionBrokerageIncome == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+
         unionBrokerageIncomeDao.insert(newUnionBrokerageIncome);
-        removeCache(newUnionBrokerageIncome);
     }
 
     @Override
@@ -787,8 +639,8 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (newUnionBrokerageIncomeList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
+
         unionBrokerageIncomeDao.insertBatch(newUnionBrokerageIncomeList);
-        removeCache(newUnionBrokerageIncomeList);
     }
 
     //********************************************* Object As a Service - remove ***************************************
@@ -799,10 +651,7 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        UnionBrokerageIncome unionBrokerageIncome = getById(id);
-        removeCache(unionBrokerageIncome);
-        // (2)remove in db logically
+
         UnionBrokerageIncome removeUnionBrokerageIncome = new UnionBrokerageIncome();
         removeUnionBrokerageIncome.setId(id);
         removeUnionBrokerageIncome.setDelStatus(CommonConstant.DEL_STATUS_YES);
@@ -815,10 +664,7 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (idList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        List<UnionBrokerageIncome> unionBrokerageIncomeList = listByIdList(idList);
-        removeCache(unionBrokerageIncomeList);
-        // (2)remove in db logically
+
         List<UnionBrokerageIncome> removeUnionBrokerageIncomeList = new ArrayList<>();
         for (Integer id : idList) {
             UnionBrokerageIncome removeUnionBrokerageIncome = new UnionBrokerageIncome();
@@ -837,11 +683,7 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (updateUnionBrokerageIncome == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        Integer id = updateUnionBrokerageIncome.getId();
-        UnionBrokerageIncome unionBrokerageIncome = getById(id);
-        removeCache(unionBrokerageIncome);
-        // (2)update db
+
         unionBrokerageIncomeDao.updateById(updateUnionBrokerageIncome);
     }
 
@@ -851,309 +693,8 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (updateUnionBrokerageIncomeList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // (1)remove cache
-        List<Integer> idList = getIdList(updateUnionBrokerageIncomeList);
-        List<UnionBrokerageIncome> unionBrokerageIncomeList = listByIdList(idList);
-        removeCache(unionBrokerageIncomeList);
-        // (2)update db
+        
         unionBrokerageIncomeDao.updateBatchById(updateUnionBrokerageIncomeList);
-    }
-
-    //********************************************* Object As a Service - cache support ********************************
-
-    private void setCache(UnionBrokerageIncome newUnionBrokerageIncome, Integer id) {
-        if (id == null) {
-            //do nothing,just in case
-            return;
-        }
-        String idKey = UnionBrokerageIncomeCacheUtil.getIdKey(id);
-        redisCacheUtil.set(idKey, newUnionBrokerageIncome);
-    }
-
-    private void setCache(List<UnionBrokerageIncome> newUnionBrokerageIncomeList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String foreignIdKey = null;
-        switch (foreignIdType) {
-            case UnionBrokerageIncomeCacheUtil.TYPE_BUS_ID:
-                foreignIdKey = UnionBrokerageIncomeCacheUtil.getBusIdKey(foreignId);
-                break;
-            case UnionBrokerageIncomeCacheUtil.TYPE_MEMBER_ID:
-                foreignIdKey = UnionBrokerageIncomeCacheUtil.getMemberIdKey(foreignId);
-                break;
-            case UnionBrokerageIncomeCacheUtil.TYPE_UNION_ID:
-                foreignIdKey = UnionBrokerageIncomeCacheUtil.getUnionIdKey(foreignId);
-                break;
-            case UnionBrokerageIncomeCacheUtil.TYPE_CARD_ID:
-                foreignIdKey = UnionBrokerageIncomeCacheUtil.getCardIdKey(foreignId);
-                break;
-            case UnionBrokerageIncomeCacheUtil.TYPE_OPPORTUNITY_ID:
-                foreignIdKey = UnionBrokerageIncomeCacheUtil.getOpportunityIdKey(foreignId);
-                break;
-
-            default:
-                break;
-        }
-        if (foreignIdKey != null) {
-            redisCacheUtil.set(foreignIdKey, newUnionBrokerageIncomeList);
-        }
-    }
-
-    private void setValidCache(List<UnionBrokerageIncome> newUnionBrokerageIncomeList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String validForeignIdKey = null;
-        switch (foreignIdType) {
-            case UnionBrokerageIncomeCacheUtil.TYPE_BUS_ID:
-                validForeignIdKey = UnionBrokerageIncomeCacheUtil.getValidBusIdKey(foreignId);
-                break;
-            case UnionBrokerageIncomeCacheUtil.TYPE_MEMBER_ID:
-                validForeignIdKey = UnionBrokerageIncomeCacheUtil.getValidMemberIdKey(foreignId);
-                break;
-            case UnionBrokerageIncomeCacheUtil.TYPE_UNION_ID:
-                validForeignIdKey = UnionBrokerageIncomeCacheUtil.getValidUnionIdKey(foreignId);
-                break;
-            case UnionBrokerageIncomeCacheUtil.TYPE_CARD_ID:
-                validForeignIdKey = UnionBrokerageIncomeCacheUtil.getValidCardIdKey(foreignId);
-                break;
-            case UnionBrokerageIncomeCacheUtil.TYPE_OPPORTUNITY_ID:
-                validForeignIdKey = UnionBrokerageIncomeCacheUtil.getValidOpportunityIdKey(foreignId);
-                break;
-
-            default:
-                break;
-        }
-        if (validForeignIdKey != null) {
-            redisCacheUtil.set(validForeignIdKey, newUnionBrokerageIncomeList);
-        }
-    }
-
-    private void setInvalidCache(List<UnionBrokerageIncome> newUnionBrokerageIncomeList, Integer foreignId, int foreignIdType) {
-        if (foreignId == null) {
-            //do nothing,just in case
-            return;
-        }
-        String invalidForeignIdKey = null;
-        switch (foreignIdType) {
-            case UnionBrokerageIncomeCacheUtil.TYPE_BUS_ID:
-                invalidForeignIdKey = UnionBrokerageIncomeCacheUtil.getInvalidBusIdKey(foreignId);
-                break;
-            case UnionBrokerageIncomeCacheUtil.TYPE_MEMBER_ID:
-                invalidForeignIdKey = UnionBrokerageIncomeCacheUtil.getInvalidMemberIdKey(foreignId);
-                break;
-            case UnionBrokerageIncomeCacheUtil.TYPE_UNION_ID:
-                invalidForeignIdKey = UnionBrokerageIncomeCacheUtil.getInvalidUnionIdKey(foreignId);
-                break;
-            case UnionBrokerageIncomeCacheUtil.TYPE_CARD_ID:
-                invalidForeignIdKey = UnionBrokerageIncomeCacheUtil.getInvalidCardIdKey(foreignId);
-                break;
-            case UnionBrokerageIncomeCacheUtil.TYPE_OPPORTUNITY_ID:
-                invalidForeignIdKey = UnionBrokerageIncomeCacheUtil.getInvalidOpportunityIdKey(foreignId);
-                break;
-
-            default:
-                break;
-        }
-        if (invalidForeignIdKey != null) {
-            redisCacheUtil.set(invalidForeignIdKey, newUnionBrokerageIncomeList);
-        }
-    }
-
-    private void removeCache(UnionBrokerageIncome unionBrokerageIncome) {
-        if (unionBrokerageIncome == null) {
-            return;
-        }
-        Integer id = unionBrokerageIncome.getId();
-        String idKey = UnionBrokerageIncomeCacheUtil.getIdKey(id);
-        redisCacheUtil.remove(idKey);
-
-        Integer busId = unionBrokerageIncome.getBusId();
-        if (busId != null) {
-            String busIdKey = UnionBrokerageIncomeCacheUtil.getBusIdKey(busId);
-            redisCacheUtil.remove(busIdKey);
-
-            String validBusIdKey = UnionBrokerageIncomeCacheUtil.getValidBusIdKey(busId);
-            redisCacheUtil.remove(validBusIdKey);
-
-            String invalidBusIdKey = UnionBrokerageIncomeCacheUtil.getInvalidBusIdKey(busId);
-            redisCacheUtil.remove(invalidBusIdKey);
-        }
-
-        Integer memberId = unionBrokerageIncome.getMemberId();
-        if (memberId != null) {
-            String memberIdKey = UnionBrokerageIncomeCacheUtil.getMemberIdKey(memberId);
-            redisCacheUtil.remove(memberIdKey);
-
-            String validMemberIdKey = UnionBrokerageIncomeCacheUtil.getValidMemberIdKey(memberId);
-            redisCacheUtil.remove(validMemberIdKey);
-
-            String invalidMemberIdKey = UnionBrokerageIncomeCacheUtil.getInvalidMemberIdKey(memberId);
-            redisCacheUtil.remove(invalidMemberIdKey);
-        }
-
-        Integer unionId = unionBrokerageIncome.getUnionId();
-        if (unionId != null) {
-            String unionIdKey = UnionBrokerageIncomeCacheUtil.getUnionIdKey(unionId);
-            redisCacheUtil.remove(unionIdKey);
-
-            String validUnionIdKey = UnionBrokerageIncomeCacheUtil.getValidUnionIdKey(unionId);
-            redisCacheUtil.remove(validUnionIdKey);
-
-            String invalidUnionIdKey = UnionBrokerageIncomeCacheUtil.getInvalidUnionIdKey(unionId);
-            redisCacheUtil.remove(invalidUnionIdKey);
-        }
-
-        Integer cardId = unionBrokerageIncome.getCardId();
-        if (cardId != null) {
-            String cardIdKey = UnionBrokerageIncomeCacheUtil.getCardIdKey(cardId);
-            redisCacheUtil.remove(cardIdKey);
-
-            String validCardIdKey = UnionBrokerageIncomeCacheUtil.getValidCardIdKey(cardId);
-            redisCacheUtil.remove(validCardIdKey);
-
-            String invalidCardIdKey = UnionBrokerageIncomeCacheUtil.getInvalidCardIdKey(cardId);
-            redisCacheUtil.remove(invalidCardIdKey);
-        }
-
-        Integer opportunityId = unionBrokerageIncome.getOpportunityId();
-        if (opportunityId != null) {
-            String opportunityIdKey = UnionBrokerageIncomeCacheUtil.getOpportunityIdKey(opportunityId);
-            redisCacheUtil.remove(opportunityIdKey);
-
-            String validOpportunityIdKey = UnionBrokerageIncomeCacheUtil.getValidOpportunityIdKey(opportunityId);
-            redisCacheUtil.remove(validOpportunityIdKey);
-
-            String invalidOpportunityIdKey = UnionBrokerageIncomeCacheUtil.getInvalidOpportunityIdKey(opportunityId);
-            redisCacheUtil.remove(invalidOpportunityIdKey);
-        }
-
-    }
-
-    private void removeCache(List<UnionBrokerageIncome> unionBrokerageIncomeList) {
-        if (ListUtil.isEmpty(unionBrokerageIncomeList)) {
-            return;
-        }
-        List<Integer> idList = new ArrayList<>();
-        for (UnionBrokerageIncome unionBrokerageIncome : unionBrokerageIncomeList) {
-            idList.add(unionBrokerageIncome.getId());
-        }
-        List<String> idKeyList = UnionBrokerageIncomeCacheUtil.getIdKey(idList);
-        redisCacheUtil.remove(idKeyList);
-
-        List<String> busIdKeyList = getForeignIdKeyList(unionBrokerageIncomeList, UnionBrokerageIncomeCacheUtil.TYPE_BUS_ID);
-        if (ListUtil.isNotEmpty(busIdKeyList)) {
-            redisCacheUtil.remove(busIdKeyList);
-        }
-
-        List<String> memberIdKeyList = getForeignIdKeyList(unionBrokerageIncomeList, UnionBrokerageIncomeCacheUtil.TYPE_MEMBER_ID);
-        if (ListUtil.isNotEmpty(memberIdKeyList)) {
-            redisCacheUtil.remove(memberIdKeyList);
-        }
-
-        List<String> unionIdKeyList = getForeignIdKeyList(unionBrokerageIncomeList, UnionBrokerageIncomeCacheUtil.TYPE_UNION_ID);
-        if (ListUtil.isNotEmpty(unionIdKeyList)) {
-            redisCacheUtil.remove(unionIdKeyList);
-        }
-
-        List<String> cardIdKeyList = getForeignIdKeyList(unionBrokerageIncomeList, UnionBrokerageIncomeCacheUtil.TYPE_CARD_ID);
-        if (ListUtil.isNotEmpty(cardIdKeyList)) {
-            redisCacheUtil.remove(cardIdKeyList);
-        }
-
-        List<String> opportunityIdKeyList = getForeignIdKeyList(unionBrokerageIncomeList, UnionBrokerageIncomeCacheUtil.TYPE_OPPORTUNITY_ID);
-        if (ListUtil.isNotEmpty(opportunityIdKeyList)) {
-            redisCacheUtil.remove(opportunityIdKeyList);
-        }
-
-    }
-
-    private List<String> getForeignIdKeyList(List<UnionBrokerageIncome> unionBrokerageIncomeList, int foreignIdType) {
-        List<String> result = new ArrayList<>();
-        switch (foreignIdType) {
-            case UnionBrokerageIncomeCacheUtil.TYPE_BUS_ID:
-                for (UnionBrokerageIncome unionBrokerageIncome : unionBrokerageIncomeList) {
-                    Integer busId = unionBrokerageIncome.getBusId();
-                    if (busId != null) {
-                        String busIdKey = UnionBrokerageIncomeCacheUtil.getBusIdKey(busId);
-                        result.add(busIdKey);
-
-                        String validBusIdKey = UnionBrokerageIncomeCacheUtil.getValidBusIdKey(busId);
-                        result.add(validBusIdKey);
-
-                        String invalidBusIdKey = UnionBrokerageIncomeCacheUtil.getInvalidBusIdKey(busId);
-                        result.add(invalidBusIdKey);
-                    }
-                }
-                break;
-            case UnionBrokerageIncomeCacheUtil.TYPE_MEMBER_ID:
-                for (UnionBrokerageIncome unionBrokerageIncome : unionBrokerageIncomeList) {
-                    Integer memberId = unionBrokerageIncome.getMemberId();
-                    if (memberId != null) {
-                        String memberIdKey = UnionBrokerageIncomeCacheUtil.getMemberIdKey(memberId);
-                        result.add(memberIdKey);
-
-                        String validMemberIdKey = UnionBrokerageIncomeCacheUtil.getValidMemberIdKey(memberId);
-                        result.add(validMemberIdKey);
-
-                        String invalidMemberIdKey = UnionBrokerageIncomeCacheUtil.getInvalidMemberIdKey(memberId);
-                        result.add(invalidMemberIdKey);
-                    }
-                }
-                break;
-            case UnionBrokerageIncomeCacheUtil.TYPE_UNION_ID:
-                for (UnionBrokerageIncome unionBrokerageIncome : unionBrokerageIncomeList) {
-                    Integer unionId = unionBrokerageIncome.getUnionId();
-                    if (unionId != null) {
-                        String unionIdKey = UnionBrokerageIncomeCacheUtil.getUnionIdKey(unionId);
-                        result.add(unionIdKey);
-
-                        String validUnionIdKey = UnionBrokerageIncomeCacheUtil.getValidUnionIdKey(unionId);
-                        result.add(validUnionIdKey);
-
-                        String invalidUnionIdKey = UnionBrokerageIncomeCacheUtil.getInvalidUnionIdKey(unionId);
-                        result.add(invalidUnionIdKey);
-                    }
-                }
-                break;
-            case UnionBrokerageIncomeCacheUtil.TYPE_CARD_ID:
-                for (UnionBrokerageIncome unionBrokerageIncome : unionBrokerageIncomeList) {
-                    Integer cardId = unionBrokerageIncome.getCardId();
-                    if (cardId != null) {
-                        String cardIdKey = UnionBrokerageIncomeCacheUtil.getCardIdKey(cardId);
-                        result.add(cardIdKey);
-
-                        String validCardIdKey = UnionBrokerageIncomeCacheUtil.getValidCardIdKey(cardId);
-                        result.add(validCardIdKey);
-
-                        String invalidCardIdKey = UnionBrokerageIncomeCacheUtil.getInvalidCardIdKey(cardId);
-                        result.add(invalidCardIdKey);
-                    }
-                }
-                break;
-            case UnionBrokerageIncomeCacheUtil.TYPE_OPPORTUNITY_ID:
-                for (UnionBrokerageIncome unionBrokerageIncome : unionBrokerageIncomeList) {
-                    Integer opportunityId = unionBrokerageIncome.getOpportunityId();
-                    if (opportunityId != null) {
-                        String opportunityIdKey = UnionBrokerageIncomeCacheUtil.getOpportunityIdKey(opportunityId);
-                        result.add(opportunityIdKey);
-
-                        String validOpportunityIdKey = UnionBrokerageIncomeCacheUtil.getValidOpportunityIdKey(opportunityId);
-                        result.add(validOpportunityIdKey);
-
-                        String invalidOpportunityIdKey = UnionBrokerageIncomeCacheUtil.getInvalidOpportunityIdKey(opportunityId);
-                        result.add(invalidOpportunityIdKey);
-                    }
-                }
-                break;
-
-            default:
-                break;
-        }
-        return result;
     }
 
 }
