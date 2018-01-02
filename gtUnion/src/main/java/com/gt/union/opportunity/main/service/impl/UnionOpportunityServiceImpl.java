@@ -436,7 +436,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         // （1）	获取商家所有有效的member
         List<UnionMember> memberList = unionMemberService.listValidReadByBusId(busId);
         // （2）	根据unionId过滤掉一些member
-        if (optUnionId == null) {
+        if (optUnionId != null) {
             memberList = unionMemberService.filterByUnionId(memberList, optUnionId);
         }
         List<Integer> toMemberIdList = unionMemberService.getIdList(memberList);
