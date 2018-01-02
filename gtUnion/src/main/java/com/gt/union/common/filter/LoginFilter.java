@@ -1,16 +1,15 @@
 package com.gt.union.common.filter;
 
+import com.alibaba.fastjson.JSONObject;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.Member;
+import com.gt.api.enums.ResponseEnums;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.response.GtJsonResult;
-import com.gt.union.common.util.DateUtil;
-import com.gt.union.common.util.PropertiesUtil;
-import com.gt.union.common.util.StringUtil;
-import com.gt.union.common.util.UnionSessionUtil;
+import com.gt.union.common.util.*;
 import com.gt.union.finance.verifier.entity.UnionVerifier;
 import com.gt.union.h5.brokerage.vo.H5BrokerageUser;
 
@@ -117,14 +116,26 @@ public class LoginFilter implements Filter {
             } else {
                 chain.doFilter(request, response);
             }
+        } else if(url.indexOf("wxAppCard") > -1){
+            //联盟卡小程序
+            if(url.indexOf("37FD66FE") > -1){
+                //登录
+                String token = req.getHeader("token");
+                if (CommonUtil.isEmpty(token)){
+                    // token为空
+                    response.getWriter().write(GtJsonResult.instanceErrorMsg(CommonConstant.TOKEN_NULL).toString());
+                    return;
+                }
+            }
+            chain.doFilter(request, response);
         } else {
             // 后台
             BusUser busUser = SessionUtils.getLoginUser(req);
-//            if (busUser == null && "dev".equals(PropertiesUtil.getProfiles())) {
-//                justForDev(req);
-//                chain.doFilter(request, response);
-//                return;
-//            }
+            if (busUser == null && "dev".equals(PropertiesUtil.getProfiles())) {
+                justForDev(req);
+                chain.doFilter(request, response);
+                return;
+            }
             if (busUser == null) {
                 response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getWxmpUrl() + "/user/tologin.do").toString());
             } else {

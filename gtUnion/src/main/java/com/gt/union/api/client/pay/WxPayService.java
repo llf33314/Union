@@ -23,10 +23,18 @@ public interface WxPayService {
 
 	/**
 	 * 手机端支付，返回支付页面链接
-	 * @param payParam  支付参赛者
+	 * @param payParam  支付参数
 	 * @return
 	 */
 	String pay(PayParam payParam);
+
+	/**
+	 * 微信小程序支付，返回支付链接
+	 * @param payParam	支付参数
+	 * @return
+	 */
+	String wxAppPay(PayParam payParam);
+
 
 	/**
 	 * 商家提现

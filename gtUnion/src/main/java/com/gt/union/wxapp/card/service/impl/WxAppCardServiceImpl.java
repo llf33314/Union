@@ -1,7 +1,9 @@
-package com.gt.union.h5.card.service.impl;
+package com.gt.union.wxapp.card.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.Member;
+import com.gt.api.util.DESKeysUtil;
 import com.gt.union.api.client.member.MemberService;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.card.activity.constant.ActivityConstant;
@@ -26,13 +28,14 @@ import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.*;
-import com.gt.union.h5.card.service.IH5CardService;
-import com.gt.union.h5.card.vo.*;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.main.vo.UnionPayVO;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
+import com.gt.union.wxapp.card.constant.WxAppCardConstant;
+import com.gt.union.wxapp.card.service.IWxAppCardService;
+import com.gt.union.wxapp.card.vo.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,10 +45,10 @@ import java.util.*;
 
 /**
  * @author hongjiye
- * @time 2017-12-19 11:38
+ * @time 2017-12-29 15:07
  **/
 @Service
-public class H5CardServiceImpl implements IH5CardService {
+public class WxAppCardServiceImpl implements IWxAppCardService{
 
 	@Autowired
 	private IUnionMainService unionMainService;
@@ -74,14 +77,18 @@ public class H5CardServiceImpl implements IH5CardService {
 	@Autowired
 	private SmsService smsService;
 
-	@Resource(name = "unionPhoneCardApplyService")
+	@Resource(name = "unionWxAppCardApplyService")
 	private IUnionCardApplyService unionCardApplyService;
 
 	@Autowired
 	private IUnionConsumeService unionConsumeService;
-	
+
 	@Autowired
 	private IUnionCardIntegralService unionCardIntegralService;
+
+	@Autowired
+	private RedisCacheUtil redisCacheUtil;
+
 
 	@Override
 	public IndexVO getIndexVO(String phone, Integer busId) throws Exception {
@@ -412,7 +419,6 @@ public class H5CardServiceImpl implements IH5CardService {
 		}
 		UnionCardFan fan = unionCardFanService.getOrSaveByPhone(phone);
 		UnionPayVO result = unionCardService.saveApplyByBusIdAndUnionIdAndFanId(busId, unionId, fan.getId(), list, unionCardApplyService);
-		data.put("phone", 1);
 		if(result != null){
 			data.put("payUrl", result.getPayUrl());
 		}
@@ -421,12 +427,34 @@ public class H5CardServiceImpl implements IH5CardService {
 
 	@Override
 	public Page pageConsumeByPhone(Page page, String phone) throws Exception {
-        if(StringUtil.isNotEmpty(phone)){
-            UnionCardFan fan = unionCardFanService.getValidByPhone(phone);
-            if(fan != null){
-                return  unionConsumeService.pageConsumeByFanId(page, fan.getId());
+		if(StringUtil.isNotEmpty(phone)){
+			UnionCardFan fan = unionCardFanService.getValidByPhone(phone);
+			if(fan != null){
+				return  unionConsumeService.pageConsumeByFanId(page, fan.getId());
 			}
 		}
 		return page;
+	}
+
+	@Override
+	public String login(Integer busId, Integer memberId) throws Exception {
+		if(busId == null || memberId == null){
+			throw new ParamException(CommonConstant.PARAM_ERROR);
+		}
+		Member member = memberService.getById(memberId);
+		if(CommonUtil.isEmpty(member)){
+			throw new BusinessException("用户不存在");
+		}
+		if(!busId.equals(member.getBusid())){
+			throw new BusinessException("用户不存在");
+		}
+
+		String redisMemberKey = WxAppCardConstant.REDIS_MEMBER_KEY + busId + ":" + memberId;
+		redisCacheUtil.set(redisMemberKey, JSONObject.toJSONString(member), 10800L);//3小时
+
+		// 生成token
+		int random = (int) (Math.random() * 100);
+		String token = new DESKeysUtil(PropertiesUtil.getTokenKey()).getEncString(WxAppCardConstant.UNION_TOKEN_KEY + redisMemberKey + WxAppCardConstant.REDIS_MEMBER_LINK + random);
+		return token;
 	}
 }
