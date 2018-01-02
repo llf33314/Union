@@ -1,23 +1,23 @@
 @import "./normalize.css";
 body{
-    background: #FFFFFF;
-    font-family: "Microsoft YaHei";
-    min-width: 1280px;
-    font-size:16px;
-    overflow-y:auto;
-    //overflow-x:hidden;
-    width: 100%;
+  background: #FFFFFF;
+  font-family: "Microsoft YaHei";
+  min-width: 1280px;
+  font-size:16px;
+  overflow-y:auto;
+  //overflow-x:hidden;
+  width: 100%;
 }
 a{
-    text-decoration: none;
+  text-decoration: none;
 }
 div,p,ul,ul,h1,h2,h3,h4,h5,h6,*{
-    margin: 0;
-    padding: 0;
+  margin: 0;
+  padding: 0;
 }
 textarea.el-textarea__inner{
-    resize:none;
-    width: 240px;
+  resize:none;
+  width: 240px;
 }
 .fr {
   float: right;
@@ -38,8 +38,8 @@ li{
   list-style: none;
 }
 h2{
-    font-size: 16px;
-    color: #333333;
+  font-size: 16px;
+  color: #333333;
 }
 hr{
   border: 0!important;
@@ -143,36 +143,36 @@ hr{
 }
 //选择点击图片切换的公共样式类--------------------
 .selectUnion{
-    .ruleForm1{
-      margin-top:10px;
+  .ruleForm1{
+    margin-top:10px;
+  }
+  //块和块之间的右边距
+  .el-radio-button{
+    margin-right: 20px;
+  }
+  .el-radio-button__inner{
+    border: none;
+    border-left: 0;
+    padding: 0;
+    border-radius: 0;
+  }
+  //点击按钮里边的默认样式
+  .el-radio-button:first-child .el-radio-button__inner {
+    border-left: 0
+  }
+  //点击按钮时，浮现背景图和图标--------
+  .is-active{
+    div{
+      i{
+        display: block;
+        width:80px;
+        height:80px;
+        position: absolute;
+        background: rgba(35,34,34,.5) url('../../assets/images/dagou.png') no-repeat center;
+        top: 0;
+        left:0;
+      }
     }
-    //块和块之间的右边距
-    .el-radio-button{
-      margin-right: 20px;
-    }
-    .el-radio-button__inner{
-      border: none;
-      border-left: 0;
-      padding: 0;
-      border-radius: 0;
-    }
-    //点击按钮里边的默认样式
-    .el-radio-button:first-child .el-radio-button__inner {
-      border-left: 0
-    }
-    //点击按钮时，浮现背景图和图标--------
-    .is-active{
-        div{
-            i{
-              display: block;
-              width:80px;
-              height:80px;
-              position: absolute;
-              background: rgba(35,34,34,.5) url('../../assets/images/dagou.png') no-repeat center;
-              top: 0;
-              left:0;
-            }
-        }
   }
   //点击对象的字体样式
   .el-radio-button__orig-radio:checked+.el-radio-button__inner {
@@ -391,16 +391,16 @@ hr{
 }
 //我的联盟公告输入框信息
 #unionNotice{
-    textarea.el-textarea__inner{
+  textarea.el-textarea__inner{
     width:100%;
-      border:none;
+    border:none;
   }
 }
 #memberName{
-    .el-table .cell, .el-table th>div{
-      padding-left: 38px!important;
-      padding-right: 1px!important;
-    }
+  .el-table .cell, .el-table th>div{
+    padding-left: 38px!important;
+    padding-right: 1px!important;
+  }
 }
 //我的联盟底部联盟卡的样式-------------------------
 #myUnionCard1{
@@ -634,12 +634,12 @@ hr{
   }
   //盟主权限转移样
   .el-table_1_column_3{
-     //操作样式处理
-     .el-button{
-       border: 1px solid #1c8de0;
-       color: #1c8de0;
-     }
-   }
+    //操作样式处理
+    .el-button{
+      border: 1px solid #1c8de0;
+      color: #1c8de0;
+    }
+  }
   .theLeader{
     .el-dialog--tiny{
       width: 550px;
@@ -720,8 +720,8 @@ hr{
         }
         span{
           position: absolute;
-          left: -30px;
-          top: 18px;
+          left: -40px;
+          top: 6px;
           display: inline-block;
           width: 117px;
           background-color: #467DCB;
@@ -797,9 +797,9 @@ hr{
         .el-dialog__body{
           margin-top: 10px;
           padding: 0;
-            >div{
-              margin:40px 0 33px 55px;
-            }
+          >div{
+            margin:40px 0 33px 55px;
+          }
           >p{
             margin-left: 55px;
           }
@@ -867,8 +867,8 @@ hr{
               overflow: hidden;
               >span{
                 position: absolute;
-                left: -30px;
-                top: 18px;
+                left: -40px;
+                top: 6px;
                 display: inline-block;
                 width: 117px;
                 background-color: #467DCB;
@@ -989,17 +989,27 @@ hr{
               .OptionalColor{
                 .el-radio-group{
                   border: 1px solid #ddd;
+                  border-radius: 5px;
                 }
                 .el-radio-button:first-child .el-radio-button__inner{
                   border-left: none!important;
                 }
                 .el-radio-button__inner{
                   border: none;
-                  padding: 5px;
+                  padding: 6px 5px 5px 1px;
+                  box-sizing: border-box;
+                  height: 33px;
+                  width: 50px;
+                  overflow: hidden;
                   >div{
                     margin-left: 14px;
-                    margin-bottom: 3px;
+                    margin-bottom: 10px;
                   }
+                }
+                .el-radio-button__orig-radio:checked+.el-radio-button__inner{
+                  //background-color: #ffffff!important;
+                  //border-color: #ffffff!important;
+                  //box-shadow:inherit;
                 }
               }
             }
@@ -1672,7 +1682,7 @@ hr{
               border-top:none;
               padding-left: 30px;
               >.el-radio-group{
-                  margin: 20px 0;
+                margin: 20px 0;
                 .el-radio-button {
                   margin-right: 10px;
                 }
@@ -1735,7 +1745,7 @@ hr{
     }
   }
 
-//消费核销记录--------------------------------   2
+  //消费核销记录--------------------------------   2
   #ExpenseRecord{
     .el-table .cell {
       white-space: normal;
@@ -1807,8 +1817,8 @@ hr{
           font-weight: bold;
         }
         form{
-            margin-top: 20px;
-            margin-left: 28px;
+          margin-top: 20px;
+          margin-left: 28px;
           >.el-form-item:nth-last-child(1){
             margin-bottom: 0!important;
             position: relative;top:-44px;  left:-5px;
@@ -1862,7 +1872,7 @@ hr{
               line-height: 50px;
               z-index: 20;
               border: none;
-              top: 35%;
+              top: 32%;
             }
             .forward{
               left:0;
@@ -1872,7 +1882,7 @@ hr{
             }
             >div {
               width: 864px;
-              height: 175px;
+              height: 120px;
               position: relative;
               left: 26px;
               overflow: hidden;
@@ -1881,19 +1891,24 @@ hr{
                 transition: all .5s;
                 position: absolute;
                 left:0;
+                margin-top: 35px;
                 .el-checkbox-button {
                   position: relative;
                   display: inline-block;
                   margin-left: 13px;
-                  margin-top: 20px;
+                  margin-top: 5px;
                   .el-checkbox-button__inner {
                     padding: 0;
                     border: none;
+                    >.clearfix{
+                      border-radius: 4px 0 0 4px;
+                    }
                   }
                 }
                 .SelectunionImg {
                   width: 200px;
-                  height: 120px;
+                  height: 46px;
+                  background-image: linear-gradient(90deg, #06bd7d 0%, #00935f 100%);
                 }
                 .el-checkbox-button.is-checked .el-checkbox-button__inner{
                   background-color: #96a3ad;
@@ -1902,11 +1917,12 @@ hr{
                   i{
                     display: block;
                     width:200px;
-                    height:120px;
+                    height:46px;
                     position: absolute;
                     background: rgba(35,34,34,.5) url('../../assets/images/dagou.png') no-repeat center;
                     top: 0;
                     left:0;
+                    border-radius: 4px 0 0 4px;
                   }
                 }
               }
@@ -2023,10 +2039,10 @@ hr{
       height: 445px;
     }
   }
-    .el-dialog__body {
-      padding: 0;
-      margin-top: 15px;
-    }
+  .el-dialog__body {
+    padding: 0;
+    margin-top: 15px;
+  }
   .Popup_ {
     margin-top:30px;
     padding-left: 50px;
@@ -2044,9 +2060,9 @@ hr{
       }
     }
   }
-    .el-form-item__error:nth-child(3){
-      left: 62%;
-    }
+  .el-form-item__error:nth-child(3){
+    left: 62%;
+  }
 }
 
 
