@@ -114,7 +114,7 @@ public class UnionMemberJoinServiceImpl implements IUnionMemberJoinService {
                 MemberJoinVO vo = new MemberJoinVO();
                 vo.setJoinMember(joinMember);
 
-                UnionMemberJoin memberJoin = getValidById(joinMember.getId());
+                UnionMemberJoin memberJoin = getValidByUnionIdAndApplyMemberId(unionId, joinMember.getId());
                 vo.setMemberJoin(memberJoin);
 
                 if (MemberConstant.JOIN_TYPE_RECOMMEND == memberJoin.getType() && memberJoin.getRecommendMemberId() != null) {
