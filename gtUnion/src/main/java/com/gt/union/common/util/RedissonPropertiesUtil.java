@@ -9,7 +9,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @ConfigurationProperties(prefix = "redisson")
 public class RedissonPropertiesUtil {
 
-	private int timeout = 3000;
+	private int timeout = 5000;
 
 	private String password;
 

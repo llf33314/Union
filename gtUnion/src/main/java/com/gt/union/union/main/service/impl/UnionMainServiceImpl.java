@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -221,6 +222,11 @@ public class UnionMainServiceImpl implements IUnionMainService {
             unionMainDictService.removeBatchById(removeDictIdList);
         }
         if (ListUtil.isNotEmpty(saveDictList)) {
+            Date currentDate = DateUtil.getCurrentDate();
+            for (UnionMainDict saveDict : saveDictList) {
+                saveDict.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                saveDict.setCreateTime(currentDate);
+            }
             unionMainDictService.saveBatch(saveDictList);
         }
     }

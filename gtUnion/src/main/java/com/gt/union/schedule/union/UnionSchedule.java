@@ -8,6 +8,7 @@ import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.api.client.user.bean.UserUnionAuthority;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
+import com.gt.union.common.util.DateTimeKit;
 import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.PropertiesUtil;
@@ -88,7 +89,7 @@ public class UnionSchedule {
             e.printStackTrace();
             logger.error("", e);
             phoneMessageSender.sendMsg(new PhoneMessage(PropertiesUtil.getDuofenBusId(), ConfigConstant.DEVELOPER_PHONE,
-                    "执行<我的联盟>定时任务器：退盟过渡期结束后，逻辑删除盟员信息和退盟申请->出现异常(" + e.getMessage() + ")"));
+                    "时间：" + DateTimeKit.format(new Date(), DateTimeKit.DEFAULT_DATETIME_FORMAT)+",执行<我的联盟>定时任务器：退盟过渡期结束后，逻辑删除盟员信息和退盟申请->出现异常(" + e.getMessage() + ")"));
         }
     }
 
@@ -112,7 +113,7 @@ public class UnionSchedule {
             e.printStackTrace();
             logger.error("", e);
             phoneMessageSender.sendMsg(new PhoneMessage(PropertiesUtil.getDuofenBusId(), ConfigConstant.DEVELOPER_PHONE,
-                    "执行<我的联盟>定时任务器：联盟过期前一天，自动更新无需付费的联盟有效期->出现异常(" + e.getMessage() + ")"));
+                    "时间：" + DateTimeKit.format(new Date(), DateTimeKit.DEFAULT_DATETIME_FORMAT)+",执行<我的联盟>定时任务器：联盟过期前一天，自动更新无需付费的联盟有效期->出现异常(" + e.getMessage() + ")"));
         }
     }
 
@@ -136,7 +137,7 @@ public class UnionSchedule {
             e.printStackTrace();
             logger.error("", e);
             phoneMessageSender.sendMsg(new PhoneMessage(PropertiesUtil.getDuofenBusId(), ConfigConstant.DEVELOPER_PHONE,
-                    "执行<我的联盟>定时任务器：商家过期后续费，自动更新无需付费的联盟有效期->出现异常(" + e.getMessage() + ")"));
+                    "时间：" + DateTimeKit.format(new Date(), DateTimeKit.DEFAULT_DATETIME_FORMAT)+",执行<我的联盟>定时任务器：商家过期后续费，自动更新无需付费的联盟有效期->出现异常(" + e.getMessage() + ")"));
         }
     }
 

@@ -295,6 +295,8 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
 
         if (ListUtil.isNotEmpty(saveDictList)) {
             for (UnionMainDict dict : saveDictList) {
+                dict.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                dict.setCreateTime(currentDate);
                 dict.setUnionId(saveUnion.getId());
             }
             unionMainDictService.saveBatch(saveDictList);
