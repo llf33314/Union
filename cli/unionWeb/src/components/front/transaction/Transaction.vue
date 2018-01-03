@@ -283,6 +283,7 @@ export default {
                       this.isDiscountCard = '';
                       this.discount = '';
                       this.visible2 = false;
+                      this.$message({ showClose: true, message: '您已办理联盟卡', type: 'error', duration: 5000 });
                     }
                   })
                   .catch(err => {
