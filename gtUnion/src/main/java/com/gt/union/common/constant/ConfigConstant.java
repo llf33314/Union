@@ -78,6 +78,11 @@ public interface ConfigConstant {
     int IS_MOCK = 0;
 
     /**
+     * 是否启用开发调试账号(0：否 1：是)
+     */
+    int IS_DEV = 0;
+
+    /**
      * 联盟卡手机端根路径
      */
     String CARD_PHONE_BASE_URL = PropertiesUtil.getUnionUrl() + "/cardPhone/#/";
@@ -85,6 +90,6 @@ public interface ConfigConstant {
     /**
      * 支付终端 1：pc 2：h5 3：小程序
      */
-    Integer[] appType = {1,2,3};
+    Integer[] appType = {1, 2, 3};
 }
 

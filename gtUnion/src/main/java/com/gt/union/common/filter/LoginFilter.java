@@ -1,6 +1,7 @@
 package com.gt.union.common.filter;
 
 import com.gt.api.bean.session.BusUser;
+import com.gt.api.bean.session.Member;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
@@ -71,123 +72,16 @@ public class LoginFilter implements Filter {
             chain.doFilter(request, response);
             return;
         }
-        //调试手机端，设置member数据
-//        if ("dev".equals(PropertiesUtil.getProfiles())) {
-//            Member member = new Member();
-//            member.setId(998);
-//            member.setPhone("15986670850");
-//            member.setBusid(33);
-//            SessionUtils.setLoginMember(req,member);
-//        }
+
         //(3)判断是否已有登录信息
         // （3-1）佣金平台
         if (url.indexOf("h5Brokerage") > -1) {
-            BusUser busUser = SessionUtils.getUnionBus(req);
-            // 开发调试
-//            if (busUser == null && "dev".equals(PropertiesUtil.getProfiles())) {
-//                justForDev(req);
-//                justForH5BrokerageDev(req);
-//                chain.doFilter(request, response);
-//                return;
-//            }
-            // 发布
-            H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(req);
-            if (h5BrokerageUser == null) {
-                if (busUser == null) {
-                    response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
-                } else if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-                    response.getWriter().write(GtJsonResult.instanceErrorMsg(CommonConstant.BUS_PARENT_TIP).toString());
-                } else {
-                    h5BrokerageUser = new H5BrokerageUser();
-                    h5BrokerageUser.setBusUser(busUser);
-
-                    UnionVerifier adminVerifier = new UnionVerifier();
-                    adminVerifier.setBusId(busUser.getId());
-                    adminVerifier.setEmployeeName("管理员");
-                    h5BrokerageUser.setVerifier(adminVerifier);
-
-                    UnionSessionUtil.setH5BrokerageUser(req, h5BrokerageUser);
-
-                    chain.doFilter(request, response);
-                }
-            } else {
-                chain.doFilter(request, response);
-            }
+            doH5BrokerageFilter(req, res, chain);
         } else if (url.indexOf("wxAppCard") > -1) {
-            //联盟卡小程序
-            if (url.indexOf("37FD66FE") > -1) {
-                //登录
-                String token = req.getHeader("token");
-                if (CommonUtil.isEmpty(token)) {
-                    // token为空
-                    response.getWriter().write(GtJsonResult.instanceErrorMsg(CommonConstant.TOKEN_NULL).toString());
-                    return;
-                }
-            }
-            chain.doFilter(request, response);
+            doWxAppCardFilter(req, res, chain, url);
         } else {
-            // 后台
-            BusUser busUser = SessionUtils.getLoginUser(req);
-//            if (busUser == null && "dev".equals(PropertiesUtil.getProfiles())) {
-//                justForDev(req);
-//                chain.doFilter(request, response);
-//                return;
-//            }
-            if (busUser == null) {
-                response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getWxmpUrl() + "/user/tologin.do").toString());
-            } else {
-                chain.doFilter(request, response);
-            }
+            doWebFilter(req, res, chain, url);
         }
-    }
-
-    /**
-     * 是否前端资源请求
-     *
-     * @param url 请求对象
-     * @return boolean
-     */
-    private boolean isFrontRequest(String url) {
-        return StringUtil.isNotEmpty(url) && (url.contains("brokeragePhone") || url.contains("cardPhone"));
-    }
-
-    /**
-     * 开发测试专用，正式中请注释掉
-     *
-     * @param request 请求对象
-     * @return BusUser
-     */
-    private BusUser justForDev(HttpServletRequest request) {
-        BusUser busUser = new BusUser();
-        busUser.setId(33);
-        busUser.setEndTime(new Date());
-        busUser.setPhone(ConfigConstant.DEVELOPER_PHONE);
-        busUser.setPid(BusUserConstant.ACCOUNT_TYPE_UNVALID);
-        busUser.setLevel(BusUserConstant.LEVEL_EXTREME);
-        SessionUtils.setLoginUser(request, busUser);
-        return busUser;
-    }
-
-    /**
-     * 开发测试专用，正式中请注释掉
-     *
-     * @param request 请求对象
-     * @return BusUser
-     */
-    private H5BrokerageUser justForH5BrokerageDev(HttpServletRequest request) {
-        H5BrokerageUser h5BrokerageUser = new H5BrokerageUser();
-        BusUser busUser = justForDev(request);
-        h5BrokerageUser.setBusUser(busUser);
-
-        UnionVerifier verifier = new UnionVerifier();
-        verifier.setCreateTime(DateUtil.getCurrentDate());
-        verifier.setDelStatus(CommonConstant.DEL_STATUS_NO);
-        verifier.setBusId(busUser.getId());
-        verifier.setPhone(busUser.getPhone());
-        h5BrokerageUser.setVerifier(verifier);
-
-        UnionSessionUtil.setH5BrokerageUser(request, h5BrokerageUser);
-        return h5BrokerageUser;
     }
 
     @Override
@@ -247,5 +141,128 @@ public class LoginFilter implements Filter {
      */
     private boolean isSwaggerUIRequest(String url) {
         return (url.indexOf("v2") > -1 || url.indexOf("swagger") > -1) ? true : false;
+    }
+
+    /**
+     * 是否前端资源请求
+     *
+     * @param url 请求对象
+     * @return boolean
+     */
+    private boolean isFrontRequest(String url) {
+        return StringUtil.isNotEmpty(url) && (url.contains("brokeragePhone") || url.contains("cardPhone"));
+    }
+
+    private void doH5BrokerageFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain) throws IOException, ServletException {
+        BusUser busUser = SessionUtils.getUnionBus(req);
+        // 开发调试
+        if (busUser == null && ConfigConstant.IS_DEV == CommonConstant.COMMON_YES) {
+            justForDev(req);
+            justForH5BrokerageDev(req);
+            chain.doFilter(req, res);
+            return;
+        }
+        // 发布
+        H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(req);
+        if (h5BrokerageUser == null) {
+            if (busUser == null) {
+                res.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
+            } else if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+                res.getWriter().write(GtJsonResult.instanceErrorMsg(CommonConstant.BUS_PARENT_TIP).toString());
+            } else {
+                h5BrokerageUser = new H5BrokerageUser();
+                h5BrokerageUser.setBusUser(busUser);
+
+                UnionVerifier adminVerifier = new UnionVerifier();
+                adminVerifier.setBusId(busUser.getId());
+                adminVerifier.setEmployeeName("管理员");
+                h5BrokerageUser.setVerifier(adminVerifier);
+
+                UnionSessionUtil.setH5BrokerageUser(req, h5BrokerageUser);
+
+                chain.doFilter(req, res);
+            }
+        } else {
+            chain.doFilter(req, res);
+        }
+    }
+
+    private void doWxAppCardFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain, String url) throws IOException, ServletException {
+        //调试手机端，设置member数据
+        if (ConfigConstant.IS_DEV == CommonConstant.COMMON_YES) {
+            Member member = SessionUtils.getLoginMember(req, 33);
+            if (member == null) {
+                member = new Member();
+                member.setId(998);
+                member.setPhone("15986670850");
+                member.setBusid(33);
+                SessionUtils.setLoginMember(req, member);
+            }
+        }
+        //联盟卡小程序
+        if (url.indexOf("37FD66FE") > -1) {
+            //登录
+            String token = req.getHeader("token");
+            if (CommonUtil.isEmpty(token)) {
+                // token为空
+                res.getWriter().write(GtJsonResult.instanceErrorMsg(CommonConstant.TOKEN_NULL).toString());
+                return;
+            }
+        }
+        chain.doFilter(req, res);
+    }
+
+    private void doWebFilter(HttpServletRequest req, HttpServletResponse res, FilterChain chain, String url) throws IOException, ServletException {
+        // 后台
+        BusUser busUser = SessionUtils.getLoginUser(req);
+        if (busUser == null && ConfigConstant.IS_DEV == CommonConstant.COMMON_YES) {
+            justForDev(req);
+            chain.doFilter(req, res);
+            return;
+        }
+        if (busUser == null) {
+            res.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getWxmpUrl() + "/user/tologin.do").toString());
+        } else {
+            chain.doFilter(req, res);
+        }
+    }
+
+    /**
+     * 开发测试专用，正式中请注释掉
+     *
+     * @param request 请求对象
+     * @return BusUser
+     */
+    private BusUser justForDev(HttpServletRequest request) {
+        BusUser busUser = new BusUser();
+        busUser.setId(33);
+        busUser.setEndTime(new Date());
+        busUser.setPhone(ConfigConstant.DEVELOPER_PHONE);
+        busUser.setPid(BusUserConstant.ACCOUNT_TYPE_UNVALID);
+        busUser.setLevel(BusUserConstant.LEVEL_EXTREME);
+        SessionUtils.setLoginUser(request, busUser);
+        return busUser;
+    }
+
+    /**
+     * 开发测试专用，正式中请注释掉
+     *
+     * @param request 请求对象
+     * @return BusUser
+     */
+    private H5BrokerageUser justForH5BrokerageDev(HttpServletRequest request) {
+        H5BrokerageUser h5BrokerageUser = new H5BrokerageUser();
+        BusUser busUser = justForDev(request);
+        h5BrokerageUser.setBusUser(busUser);
+
+        UnionVerifier verifier = new UnionVerifier();
+        verifier.setCreateTime(DateUtil.getCurrentDate());
+        verifier.setDelStatus(CommonConstant.DEL_STATUS_NO);
+        verifier.setBusId(busUser.getId());
+        verifier.setPhone(busUser.getPhone());
+        h5BrokerageUser.setVerifier(verifier);
+
+        UnionSessionUtil.setH5BrokerageUser(request, h5BrokerageUser);
+        return h5BrokerageUser;
     }
 }
