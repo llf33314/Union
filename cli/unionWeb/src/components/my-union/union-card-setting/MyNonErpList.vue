@@ -20,7 +20,7 @@
       </el-table-column>
       <el-table-column prop="number" label="数量">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.number" placeholder="请输入数量"  @keyup.native="check(scope)" @change="nonErpTextListChange"></el-input>
+          <el-input v-model="scope.row.number" placeholder="请输入数量" @keyup.native="check(scope)" @change="nonErpTextListChange"></el-input>
         </template>
       </el-table-column>
       <el-table-column prop="" label="操作" width="180">
@@ -39,19 +39,71 @@
 </template>
 
 <script>
+import $http from '@/utils/http.js';
 import { numberCheck } from '@/utils/filter.js';
 export default {
   name: 'my-non-erp-list',
   props: ['nonErpTextList'],
   data() {
-    return {};
+    return {
+      projectData: {
+        activityStatus: '',
+        isErp: '',
+        project: {
+          status: ''
+        },
+        nonErpTextList: [],
+        erpTextList: [],
+        erpGoodsList: []
+      },
+      canEdit: false
+    };
   },
   computed: {
-    canEdit() {
-      return this.$store.state.activityCanEdit;
+    unionId() {
+      return this.$store.state.unionId;
+    },
+    isUnionOwner() {
+      return this.$store.state.isUnionOwner;
+    },
+    activityId() {
+      return this.$route.params.id;
     }
   },
+  created() {
+    eventBus.$on('myActivityAddTabs', () => {
+      this.init();
+    });
+  },
   methods: {
+    init() {
+      $http
+        .get(`/unionCardProject/activityId/${this.activityId}/unionId/${this.unionId}`)
+        .then(res => {
+          if (res.data.data) {
+            this.projectData = res.data.data;
+            if (this.projectData.project) {
+              this.projectData.project.status = projectStatusFilter(this.projectData.project.status);
+            } else {
+              this.projectData.project = {};
+              this.projectData.project.status = '';
+            }
+            if (
+              this.projectData.activityStatus === 2 &&
+              (this.projectData.project.status === '未提交' ||
+                this.projectData.project.status === '不通过' ||
+                !this.projectData.project.status)
+            ) {
+              this.canEdit = true;
+            } else {
+              this.canEdit = false;
+            }
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    },
     // 校验折扣输入为数字类型
     check(scope) {
       scope.row.number = numberCheck(scope.row.number);

@@ -308,8 +308,10 @@ export default {
     pay(scope) {
       this.brokerageMoney = scope.row.opportunity.brokerageMoney.toFixed(2);
       this.opportunityId = scope.row.opportunity.id;
+      let url = `/unionBrokeragePay/opportunity`;
+      let data = this.opportunityId;
       $http
-        .put(`/unionBrokeragePay/opportunity?opportunityIdList=${this.opportunityId}`)
+        .post(url, data)
         .then(res => {
           if (res.data.data) {
             this.imgSrc = res.data.data.payUrl;
@@ -334,8 +336,10 @@ export default {
         ids += v.opportunity.id + '%2C';
       });
       this.brokerageMoney = this.brokerageMoney.toFixed(2);
+      let url = `/unionBrokeragePay/opportunity`;
+      let data = ids;
       $http
-        .put(`/unionBrokeragePay/opportunity?opportunityIdList=${ids}`)
+        .post(url, data)
         .then(res => {
           if (res.data.data) {
             this.imgSrc = res.data.data.payUrl;

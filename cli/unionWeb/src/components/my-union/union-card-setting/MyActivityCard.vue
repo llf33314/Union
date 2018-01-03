@@ -97,7 +97,7 @@ export default {
       return this.$route.params.id;
     }
   },
-  mounted() {
+  created() {
     eventBus.$on('myActivityAddTabs', () => {
       this.init();
     });
@@ -128,7 +128,6 @@ export default {
             } else {
               this.canEdit = false;
             }
-            this.$store.commit('activityCanEditChange', this.canEdit);
           }
         })
         .catch(err => {

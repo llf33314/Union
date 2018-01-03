@@ -1,7 +1,7 @@
 <template>
-  <div>
+  <div v-if="this.publicId">
     <!-- 是否关注公众号办理 -->
-    <div class="fr drop_down" v-if="this.publicId">
+    <div class="fr drop_down">
       <p>扫码二维码关注公众号</p>
       <div class="middle_">
         <img v-bind:src="codeSrc" class="codeImg" style="width:240px;height:240px;">
@@ -121,14 +121,14 @@ export default {
 };
 </script>
 <style lang='less' rel="stylesheet/less" scoped>
-  /*右边下拉框的样式*/
+/*右边下拉框的样式*/
 
-  .drop_down {
-    margin-top: 30px;
-    border: 1px solid #ddd;
-    height: 720px;
-    overflow: auto;
-    width: 420px;
+.drop_down {
+  margin-top: 30px;
+  border: 1px solid #ddd;
+  height: 720px;
+  overflow: auto;
+  width: 420px;
   > p {
     background: #eef1f6;
     padding: 15px 30px;
@@ -138,30 +138,30 @@ export default {
   .middle_ {
     text-align: center;
     padding: 50px 42px 40px 58px;
-  > img {
-    display: block;
-    margin: 0 40px 30px 40px;
-  }
+    > img {
+      display: block;
+      margin: 0 40px 30px 40px;
+    }
   }
   > span {
     display: block;
     margin: 0px 42px 40px 58px;
     border-top: 1px solid #ddd;
     padding-top: 40px;
-  p {
-    color: #999999;
+    p {
+      color: #999999;
+    }
   }
-  }
-  }
-  .drop_down1 {
-    margin-top: 30px;
-    border: 1px solid #ddd;
-    overflow: auto;
-    width: 420px;
+}
+.drop_down1 {
+  margin-top: 30px;
+  border: 1px solid #ddd;
+  overflow: auto;
+  width: 420px;
   > p {
     background: #eef1f6;
     padding: 15px 30px;
     font-size: 12px;
   }
-  }
+}
 </style>
