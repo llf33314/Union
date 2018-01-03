@@ -22,6 +22,12 @@
               {{ scope.row.periodDay }} 天
             </template>
           </el-table-column>
+          <el-table-column label="操作">
+            <template slot-scope="scope">
+              <el-button v-if="isUnionOwner && scope.row.memberOut.type === '盟主移出'" @click="cancel(scope)">取消移出</el-button>
+              <el-button v-if="!isUnionOwner && memberId === scope.row.member.id && scope.row.memberOut.type === '盟员申请退盟'" @click="cancel(scope)">取消移出</el-button>
+            </template>
+          </el-table-column>
         </el-table>
         <div class="footer">
           <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
@@ -71,6 +77,16 @@
           </span>
         </el-dialog>
       </div>
+      <!-- 弹出框 确认取消移出 -->
+      <el-dialog title="" :visible.sync="visible3" size="tiny">
+        <div class="model_12">
+          <p>是否确认取消移出“ {{ enterpriseName }} ”</p>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="confirm3">确定</el-button>
+          <el-button @click="visible3=false">取消</el-button>
+        </span>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -91,7 +107,10 @@ export default {
       form: {},
       rules: {
         outReason: [{ validator: reasonPass, trigger: 'blur' }]
-      }
+      },
+      enterpriseName: '',
+      visible3: false,
+      outId: ''
     };
   },
   computed: {
@@ -100,6 +119,9 @@ export default {
     },
     unionId() {
       return this.$store.state.unionId;
+    },
+    memberId() {
+      return this.$store.state.memberId;
     }
   },
   mounted: function() {
@@ -168,6 +190,26 @@ export default {
     // 关闭弹窗重置数据
     resetData() {
       this.form.outReason = '';
+    },
+    // 取消移出
+    cancel(scope) {
+      this.enterpriseName = scope.row.member.enterpriseName;
+      this.outId = scope.row.memberOut.id;
+      this.visible3 = true;
+    },
+    // 确认取消移出
+    confirm3() {
+      $http
+        .del(`/unionMemberOut/${this.outId}/unionId/${this.unionId}`)
+        .then(res => {
+          if (res.data.success) {
+            this.$message({ showClose: true, message: '取消移出成功', type: 'success', duration: 5000 });
+            this.init();
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
     }
   }
 };

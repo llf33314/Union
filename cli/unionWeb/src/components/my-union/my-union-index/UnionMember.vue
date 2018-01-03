@@ -65,7 +65,7 @@
         </div>
       </el-dialog>
     </div>
-    <!-- 弹出框 移出确认 -->
+    <!-- 弹出框 确认移出 -->
     <el-dialog title="" :visible.sync="visible" size="tiny">
       <div class="model_12">
         <p>是否确认移出“ {{ enterpriseName }} ”</p>
@@ -75,7 +75,7 @@
         <el-button @click="visible1=false">取消</el-button>
       </span>
     </el-dialog>
-    <!-- 弹出框 移出确认 -->
+    <!-- 弹出框 确认撤回移出 -->
     <el-dialog title="" :visible.sync="visible" size="tiny">
       <div class="model_12">
         <p>是否确认撤回移出“ {{ enterpriseName }} ”</p>

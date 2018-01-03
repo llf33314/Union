@@ -39,9 +39,6 @@ export default {
     };
   },
   computed: {
-    unionMemberId() {
-      return this.$store.state.unionMemberId;
-    },
     isUnionOwner() {
       return this.$store.state.isUnionOwner;
     }
