@@ -97,7 +97,7 @@ public class UnionSchedule {
      */
     @Scheduled(cron = "0 0 1 * * *")
     @Transactional(rollbackFor = Exception.class)
-    public void autoRenewUnionValidity() {
+    public void autoRenewUnionValidityBeforeBusUserExpired() {
         try {
             Date currentDate = DateUtil.getCurrentDate();
             System.out.println(currentDate + " 开始执行<我的联盟>定时任务器：联盟过期前一天，自动更新无需付费的联盟有效期");
@@ -106,51 +106,81 @@ public class UnionSchedule {
                     .between("validity", DateUtil.addDays(currentDate, -1), currentDate);
             List<UnionMain> unionList = unionMainService.listSupport(entityWrapper);
             if (ListUtil.isNotEmpty(unionList)) {
-                for (UnionMain union : unionList) {
-                    Integer unionId = union.getId();
-
-                    UnionMember owner = unionMemberService.getValidOwnerByUnionId(unionId);
-                    Integer busId = owner.getBusId();
-
-                    BusUser busUser = busUserService.getBusUserById(busId);
-                    if (busUser == null || busUser.getEndTime().compareTo(union.getValidity()) < 0) {
-                        continue;
-                    }
-                    UserUnionAuthority authority = busUserService.getUserUnionAuthority(busId);
-                    if (authority == null || !authority.getAuthority() || authority.getPay()) {
-                        continue;
-                    }
-
-                    UnionMainPackage unionPackage = unionMainPackageService.getValidByLevel(busUser.getLevel());
-                    UnionMainPermit savePermit = new UnionMainPermit();
-                    savePermit.setDelStatus(CommonConstant.DEL_STATUS_NO);
-                    savePermit.setCreateTime(currentDate);
-                    savePermit.setBusId(busId);
-                    savePermit.setPackageId(unionPackage.getId());
-                    savePermit.setValidity(busUser.getEndTime());
-                    savePermit.setSysOrderNo("系统自动续期");
-
-                    UnionMain updateUnion = new UnionMain();
-                    updateUnion.setId(unionId);
-                    updateUnion.setModifyTime(currentDate);
-                    updateUnion.setValidity(busUser.getEndTime());
-                    Integer unionMemberCount = unionMemberService.countValidReadByUnionId(unionId);
-                    Integer packageMemberLimit = unionPackage.getNumber();
-                    updateUnion.setMemberLimit(unionMemberCount > packageMemberLimit ? unionMemberCount : packageMemberLimit);
-
-                    unionMainPermitService.save(savePermit);
-                    unionMainService.update(updateUnion);
-                    UnionMainPermit removePermit = unionMainPermitService.getValidByBusId(busId);
-                    if (removePermit != null) {
-                        unionMainPermitService.removeById(removePermit.getId());
-                    }
-                }
+                autoRenewUnionValidity(currentDate, unionList);
             }
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("", e);
             phoneMessageSender.sendMsg(new PhoneMessage(PropertiesUtil.getDuofenBusId(), ConfigConstant.DEVELOPER_PHONE,
                     "执行<我的联盟>定时任务器：联盟过期前一天，自动更新无需付费的联盟有效期->出现异常(" + e.getMessage() + ")"));
+        }
+    }
+
+    /**
+     * 商家过期后续费，自动更新无需付费的联盟有效期
+     */
+    @Scheduled(cron = "0 30 0/1 * * *")
+    @Transactional(rollbackFor = Exception.class)
+    public void autoRenewUnionValidityAfterBusUserExpired() {
+        try {
+            Date currentDate = DateUtil.getCurrentDate();
+            System.out.println(currentDate + " 开始执行<我的联盟>定时任务器：商家过期后续费，自动更新无需付费的联盟有效期");
+            EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<>();
+            entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                    .lt("validity", currentDate);
+            List<UnionMain> unionList = unionMainService.listSupport(entityWrapper);
+            if (ListUtil.isNotEmpty(unionList)) {
+                autoRenewUnionValidity(currentDate, unionList);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            logger.error("", e);
+            phoneMessageSender.sendMsg(new PhoneMessage(PropertiesUtil.getDuofenBusId(), ConfigConstant.DEVELOPER_PHONE,
+                    "执行<我的联盟>定时任务器：商家过期后续费，自动更新无需付费的联盟有效期->出现异常(" + e.getMessage() + ")"));
+        }
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public void autoRenewUnionValidity(Date currentDate, List<UnionMain> unionList) throws Exception {
+        if (ListUtil.isNotEmpty(unionList)) {
+            for (UnionMain union : unionList) {
+                Integer unionId = union.getId();
+
+                UnionMember owner = unionMemberService.getValidOwnerByUnionId(unionId);
+                Integer busId = owner.getBusId();
+
+                BusUser busUser = busUserService.getBusUserById(busId);
+                if (busUser == null || busUser.getEndTime().compareTo(union.getValidity()) < 0) {
+                    continue;
+                }
+                UserUnionAuthority authority = busUserService.getUserUnionAuthority(busId);
+                if (authority == null || !authority.getAuthority() || authority.getPay()) {
+                    continue;
+                }
+
+                UnionMainPackage unionPackage = unionMainPackageService.getValidByLevel(busUser.getLevel());
+                UnionMainPermit savePermit = new UnionMainPermit();
+                savePermit.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                savePermit.setCreateTime(currentDate);
+                savePermit.setBusId(busId);
+                savePermit.setPackageId(unionPackage.getId());
+                savePermit.setValidity(busUser.getEndTime());
+
+                UnionMain updateUnion = new UnionMain();
+                updateUnion.setId(unionId);
+                updateUnion.setModifyTime(currentDate);
+                updateUnion.setValidity(busUser.getEndTime());
+                Integer unionMemberCount = unionMemberService.countValidReadByUnionId(unionId);
+                Integer packageMemberLimit = unionPackage.getNumber();
+                updateUnion.setMemberLimit(unionMemberCount > packageMemberLimit ? unionMemberCount : packageMemberLimit);
+
+                unionMainPermitService.save(savePermit);
+                unionMainService.update(updateUnion);
+                UnionMainPermit removePermit = unionMainPermitService.getValidByBusId(busId);
+                if (removePermit != null) {
+                    unionMainPermitService.removeById(removePermit.getId());
+                }
+            }
         }
     }
 }
