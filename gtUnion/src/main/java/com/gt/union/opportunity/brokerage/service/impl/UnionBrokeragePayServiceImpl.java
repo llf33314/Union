@@ -196,6 +196,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
         // （3）获取已被接受的商机推荐
         EntityWrapper<UnionOpportunity> opportunityEntityWrapper = new EntityWrapper<>();
         opportunityEntityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("accept_status", OpportunityConstant.ACCEPT_STATUS_CONFIRMED)
                 .in("to_member_id", toMemberIdList)
                 .eq(optUnionId != null, "union_id", optUnionId)
                 .eq(optFromMemberId != null, "from_member_id", optFromMemberId)

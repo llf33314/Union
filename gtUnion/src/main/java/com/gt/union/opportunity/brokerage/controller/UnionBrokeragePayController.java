@@ -236,12 +236,14 @@ public class UnionBrokeragePayController {
 
     //-------------------------------------------------- put -----------------------------------------------------------
 
+    //-------------------------------------------------- post ----------------------------------------------------------
+
     @ApiOperation(value = "商机-佣金结算-我需支付的佣金-批量支付", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/opportunity", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/opportunity", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String batchPay(
             HttpServletRequest request,
             @ApiParam(value = "商机id列表", name = "opportunityIdList", required = true)
-            @RequestParam(value = "opportunityIdList") List<Integer> opportunityIdList) throws Exception {
+            @RequestBody List<Integer> opportunityIdList) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
@@ -256,7 +258,5 @@ public class UnionBrokeragePayController {
         }
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
-
-    //-------------------------------------------------- post ----------------------------------------------------------
 
 }
