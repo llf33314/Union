@@ -1,9 +1,6 @@
 package com.gt.union.common.filter;
 
-import com.alibaba.fastjson.JSONObject;
 import com.gt.api.bean.session.BusUser;
-import com.gt.api.bean.session.Member;
-import com.gt.api.enums.ResponseEnums;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
@@ -75,24 +72,24 @@ public class LoginFilter implements Filter {
             return;
         }
         //调试手机端，设置member数据
-        if ("dev".equals(PropertiesUtil.getProfiles())) {
-            Member member = new Member();
-            member.setId(998);
-            member.setPhone("15986670850");
-            member.setBusid(33);
-            SessionUtils.setLoginMember(req,member);
-        }
+//        if ("dev".equals(PropertiesUtil.getProfiles())) {
+//            Member member = new Member();
+//            member.setId(998);
+//            member.setPhone("15986670850");
+//            member.setBusid(33);
+//            SessionUtils.setLoginMember(req,member);
+//        }
         //(3)判断是否已有登录信息
         // （3-1）佣金平台
         if (url.indexOf("h5Brokerage") > -1) {
-            // 开发调试
             BusUser busUser = SessionUtils.getUnionBus(req);
-            if (busUser == null && "dev".equals(PropertiesUtil.getProfiles())) {
-                justForDev(req);
-                justForH5BrokerageDev(req);
-                chain.doFilter(request, response);
-                return;
-            }
+            // 开发调试
+//            if (busUser == null && "dev".equals(PropertiesUtil.getProfiles())) {
+//                justForDev(req);
+//                justForH5BrokerageDev(req);
+//                chain.doFilter(request, response);
+//                return;
+//            }
             // 发布
             H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(req);
             if (h5BrokerageUser == null) {
@@ -116,12 +113,12 @@ public class LoginFilter implements Filter {
             } else {
                 chain.doFilter(request, response);
             }
-        } else if(url.indexOf("wxAppCard") > -1){
+        } else if (url.indexOf("wxAppCard") > -1) {
             //联盟卡小程序
-            if(url.indexOf("37FD66FE") > -1){
+            if (url.indexOf("37FD66FE") > -1) {
                 //登录
                 String token = req.getHeader("token");
-                if (CommonUtil.isEmpty(token)){
+                if (CommonUtil.isEmpty(token)) {
                     // token为空
                     response.getWriter().write(GtJsonResult.instanceErrorMsg(CommonConstant.TOKEN_NULL).toString());
                     return;
@@ -131,11 +128,11 @@ public class LoginFilter implements Filter {
         } else {
             // 后台
             BusUser busUser = SessionUtils.getLoginUser(req);
-            if (busUser == null && "dev".equals(PropertiesUtil.getProfiles())) {
-                justForDev(req);
-                chain.doFilter(request, response);
-                return;
-            }
+//            if (busUser == null && "dev".equals(PropertiesUtil.getProfiles())) {
+//                justForDev(req);
+//                chain.doFilter(request, response);
+//                return;
+//            }
             if (busUser == null) {
                 response.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getWxmpUrl() + "/user/tologin.do").toString());
             } else {
