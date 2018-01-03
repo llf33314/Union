@@ -9,6 +9,7 @@ import com.gt.union.common.util.StringUtil;
 import com.gt.union.opportunity.brokerage.dao.IUnionBrokerageIncomeDao;
 import com.gt.union.opportunity.brokerage.entity.UnionBrokerageIncome;
 import com.gt.union.opportunity.brokerage.service.IUnionBrokerageIncomeService;
+import com.gt.union.opportunity.main.constant.OpportunityConstant;
 import com.gt.union.opportunity.main.entity.UnionOpportunity;
 import com.gt.union.opportunity.main.service.IUnionOpportunityService;
 import com.gt.union.union.member.entity.UnionMember;
@@ -114,6 +115,7 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         // （2）分页查询结果
         EntityWrapper<UnionOpportunity> opportunityEntityWrapper = new EntityWrapper<>();
         opportunityEntityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("accept_status", OpportunityConstant.ACCEPT_STATUS_CONFIRMED)
                 .in("from_member_id", fromMemberIdList)
                 .eq(optUnionId != null, "union_id", optUnionId)
                 .eq(optToMemberId != null, "to_member_id", optToMemberId)
