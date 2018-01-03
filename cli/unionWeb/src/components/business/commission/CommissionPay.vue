@@ -309,7 +309,7 @@ export default {
       this.brokerageMoney = scope.row.opportunity.brokerageMoney.toFixed(2);
       this.opportunityId = scope.row.opportunity.id;
       let url = `/unionBrokeragePay/opportunity`;
-      let data = this.opportunityId;
+      let data = [this.opportunityId];
       $http
         .post(url, data)
         .then(res => {

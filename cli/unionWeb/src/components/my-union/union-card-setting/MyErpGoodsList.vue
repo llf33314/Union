@@ -115,15 +115,54 @@ export default {
       tableData: [],
       currentPage: 1,
       totalAll: 0,
-      selectedErpRight: []
+      selectedErpRight: [],
+      projectData: {},
+      canEdit: ''
     };
   },
   computed: {
-    canEdit() {
-      return this.$store.state.activityCanEdit;
+    unionId() {
+      return this.$store.state.unionId;
+    },
+    activityId() {
+      return this.$route.params.id;
     }
   },
+  mounted() {
+    this.init();
+  },
   methods: {
+    init() {
+      $http
+        .get(`/unionCardProject/activityId/${this.activityId}/unionId/${this.unionId}`)
+        .then(res => {
+          if (res.data.data) {
+            this.projectData = res.data.data;
+            if (this.projectData.project) {
+              this.projectData.project.status = projectStatusFilter(this.projectData.project.status);
+            } else {
+              this.projectData.project = {};
+              this.projectData.project.status = '';
+            }
+            if (
+              this.projectData.activityStatus === 2 &&
+              (this.projectData.project.status === '未提交' ||
+                this.projectData.project.status === '不通过' ||
+                !this.projectData.project.status)
+            ) {
+              this.canEdit = true;
+            } else {
+              this.canEdit = false;
+            }
+            setTimeout(() => {
+              this.loading = false;
+            }, 500);
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    },
     handleDelete(scope) {
       this.erpGoodsList.splice(scope.$index, 1);
       this.erpGoodsListChange();

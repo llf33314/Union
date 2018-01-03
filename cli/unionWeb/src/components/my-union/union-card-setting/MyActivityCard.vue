@@ -123,7 +123,6 @@ export default {
             } else {
               this.canEdit = false;
             }
-            this.$store.commit('activityCanEditChange', this.canEdit);
             setTimeout(() => {
               this.loading = false;
             }, 500);

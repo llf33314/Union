@@ -99,7 +99,7 @@ export default {
         });
     },
     // 带条件查询盟员列表
-    search(value) {
+    search() {
       let val = value || 1;
       $http
         .get(`/unionMember/unionId/${this.unionId}/discount/page?current=${val}&memberName=${this.input}`)
