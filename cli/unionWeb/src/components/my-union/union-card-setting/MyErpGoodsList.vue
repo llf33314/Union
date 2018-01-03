@@ -115,65 +115,15 @@ export default {
       tableData: [],
       currentPage: 1,
       totalAll: 0,
-      selectedErpRight: [],
-      projectData: {
-        activityStatus: '',
-        isErp: '',
-        project: {
-          status: ''
-        },
-        nonErpTextList: [],
-        erpTextList: [],
-        erpGoodsList: []
-      },
-      canEdit: false
+      selectedErpRight: []
     };
   },
   computed: {
-    unionId() {
-      return this.$store.state.unionId;
-    },
-    isUnionOwner() {
-      return this.$store.state.isUnionOwner;
-    },
-    activityId() {
-      return this.$route.params.id;
+    canEdit() {
+      return this.$store.state.activityCanEdit;
     }
   },
-  created() {
-    eventBus.$on('myActivityAddTabs', () => {
-      this.init();
-    });
-  },
   methods: {
-    init() {
-      $http
-        .get(`/unionCardProject/activityId/${this.activityId}/unionId/${this.unionId}`)
-        .then(res => {
-          if (res.data.data) {
-            this.projectData = res.data.data;
-            if (this.projectData.project) {
-              this.projectData.project.status = projectStatusFilter(this.projectData.project.status);
-            } else {
-              this.projectData.project = {};
-              this.projectData.project.status = '';
-            }
-            if (
-              this.projectData.activityStatus === 2 &&
-              (this.projectData.project.status === '未提交' ||
-                this.projectData.project.status === '不通过' ||
-                !this.projectData.project.status)
-            ) {
-              this.canEdit = true;
-            } else {
-              this.canEdit = false;
-            }
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
-    },
     handleDelete(scope) {
       this.erpGoodsList.splice(scope.$index, 1);
       this.erpGoodsListChange();

@@ -337,10 +337,11 @@ export default {
         if (valid) {
           let url = `/unionCard/fanId/${this.fanId}/unionId/${this.form2.unionId}/apply`;
           let data = [];
-          console.log(this.form2, 222);
-          this.form2.activityCheckList.forEach(v => {
-            data.push(v);
-          });
+          if (!this.isDiscountCard) {
+            this.form2.activityCheckList.forEach(v => {
+              data.push(v);
+            });
+          }
           $http
             .post(url, data)
             .then(res => {

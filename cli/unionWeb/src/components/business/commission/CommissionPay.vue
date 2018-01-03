@@ -329,11 +329,11 @@ export default {
     },
     // 批量支付
     payAll() {
-      let ids = '';
+      let ids = [];
       this.brokerageMoney = 0;
       this.multipleSelection.forEach((v, i) => {
         this.brokerageMoney += Number(v.opportunity.brokerageMoney);
-        ids += v.opportunity.id + '%2C';
+        ids.push(v.opportunity.id);
       });
       this.brokerageMoney = this.brokerageMoney.toFixed(2);
       let url = `/unionBrokeragePay/opportunity`;

@@ -20,11 +20,11 @@
     <!-- 项目列表 -->
     <div class="unionList">
       <!-- 非ERP -->
-      <div v-if="!projectData.isErp">
+      <div v-show="!projectData.isErp">
         <my-non-erp-list :nonErpTextList="projectData.nonErpTextList" @nonErpTextListChange="nonErpTextListUpdate"></my-non-erp-list>
       </div>
       <!-- ERP -->
-      <div v-if="projectData.isErp">
+      <div v-show="projectData.isErp">
         <!-- ERP项目 -->
         <my-erp-list :erpTextList="projectData.erpTextList" @erpTextListChange="erpTextListUpdate"></my-erp-list>
         <!-- ERP项目商品 -->
@@ -97,13 +97,8 @@ export default {
       return this.$route.params.id;
     }
   },
-  created() {
-    eventBus.$on('myActivityAddTabs', () => {
-      this.init();
-    });
-    setTimeout(() => {
-      this.loading = false;
-    }, 500);
+  mounted() {
+    this.init();
   },
   methods: {
     init() {
@@ -128,6 +123,10 @@ export default {
             } else {
               this.canEdit = false;
             }
+            this.$store.commit('activityCanEditChange', this.canEdit);
+            setTimeout(() => {
+              this.loading = false;
+            }, 500);
           }
         })
         .catch(err => {
