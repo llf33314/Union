@@ -66,7 +66,7 @@
       </el-dialog>
     </div>
     <!-- 弹出框 确认移出 -->
-    <el-dialog title="" :visible.sync="visible" size="tiny">
+    <el-dialog title="" :visible.sync="visible1" size="tiny">
       <div class="model_12">
         <p>是否确认移出“ {{ enterpriseName }} ”</p>
       </div>
@@ -76,7 +76,7 @@
       </span>
     </el-dialog>
     <!-- 弹出框 确认撤回移出 -->
-    <el-dialog title="" :visible.sync="visible" size="tiny">
+    <el-dialog title="" :visible.sync="visible2" size="tiny">
       <div class="model_12">
         <p>是否确认撤回移出“ {{ enterpriseName }} ”</p>
       </div>
@@ -98,7 +98,8 @@ export default {
       input: '',
       tableData: [],
       currentPage: 1,
-      visible: false,
+      visible1: false,
+      visible2: false,
       form: {
         busAddress: '',
         createTime: '',
@@ -201,7 +202,7 @@ export default {
           if (res.data.data) {
             this.form = res.data.data;
             this.form.createTime = timeFilter(this.form.createTime);
-            this.visible = true;
+            this.visible1 = true;
           }
         })
         .catch(err => {
@@ -212,7 +213,7 @@ export default {
     remove(scope) {
       this.enterpriseName = scope.row.member.enterpriseName;
       this.memberId = scope.row.member.id;
-      this.visible1 = true;
+      this.visible2 = true;
     },
     // 确认移出
     confirm1() {
