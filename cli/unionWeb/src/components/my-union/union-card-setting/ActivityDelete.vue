@@ -11,9 +11,9 @@
           <p>点击确定后，盟员的项目立即删除，该操作不可撤回。</p>
         </div>
         <span slot="footer" class="dialog-footer">
-              <el-button type="primary" @click="confirm">确定</el-button>
-              <el-button @click="visible=false">取消</el-button>
-            </span>
+          <el-button type="primary" @click="confirm">确定</el-button>
+          <el-button @click="visible=false">取消</el-button>
+        </span>
       </el-dialog>
     </div>
   </div>
@@ -41,7 +41,8 @@ export default {
         .then(res => {
           if (res.data.success) {
             this.$message({ showClose: true, message: '删除成功', type: 'success', duration: 5000 });
-            eventBus.$emit('activityDelete')
+            this.visible = false;
+            eventBus.$emit('activityDelete');
           }
         })
         .catch(err => {

@@ -83,10 +83,10 @@ export function commissionTypeFilter(value) {
 export function commissionIsCloseFilter(value) {
   switch (value) {
     case 0:
-      value = '未结算';
+      value = '未支付';
       break;
     case 1:
-      value = '已结算';
+      value = '已支付';
       break;
     default:
       value = value;
