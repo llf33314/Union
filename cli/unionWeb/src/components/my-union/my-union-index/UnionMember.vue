@@ -98,8 +98,6 @@ export default {
       input: '',
       tableData: [],
       currentPage: 1,
-      visible1: false,
-      visible2: false,
       form: {
         busAddress: '',
         createTime: '',
@@ -111,6 +109,7 @@ export default {
       current: 1,
       tgtMemberId: '',
       totalAll: 0,
+      visible: false,
       visible1: false,
       visible2: false,
       enterpriseName: '',
@@ -202,7 +201,7 @@ export default {
           if (res.data.data) {
             this.form = res.data.data;
             this.form.createTime = timeFilter(this.form.createTime);
-            this.visible1 = true;
+            this.visible = true;
           }
         })
         .catch(err => {
@@ -213,7 +212,7 @@ export default {
     remove(scope) {
       this.enterpriseName = scope.row.member.enterpriseName;
       this.memberId = scope.row.member.id;
-      this.visible2 = true;
+      this.visible1 = true;
     },
     // 确认移出
     confirm1() {
