@@ -136,7 +136,7 @@ public class UnionSchedule {
             e.printStackTrace();
             logger.error("", e);
             phoneMessageSender.sendMsg(new PhoneMessage(PropertiesUtil.getDuofenBusId(), ConfigConstant.DEVELOPER_PHONE,
-                    "执行<我的联盟>定时任务器：联盟过期前一天，自动更新无需付费的联盟有效期->出现异常(" + e.getMessage() + ")"));
+                    "执行<我的联盟>定时任务器：商家过期后续费，自动更新无需付费的联盟有效期->出现异常(" + e.getMessage() + ")"));
         }
     }
 
