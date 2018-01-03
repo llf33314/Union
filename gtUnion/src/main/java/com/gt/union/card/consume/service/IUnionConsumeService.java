@@ -38,6 +38,16 @@ public interface IUnionConsumeService {
      */
     UnionConsume getValidByOrderNoAndModel(String orderNo, Integer model) throws Exception;
 
+    /**
+     * 缓存穿透-根据行业订单id和行业模型查询未删除的消费记录
+     *
+     * @param businessOrderId 行业订单id
+     * @param businessModel   行业模型
+     * @return UnionConsume
+     * @throws Exception 统一处理异常
+     */
+    UnionConsume getValidByBusinessOrderIdAndModel(Integer businessOrderId, Integer businessModel) throws Exception;
+
     //********************************************* Base On Business - list ********************************************
 
     /**
@@ -376,5 +386,6 @@ public interface IUnionConsumeService {
      * @throws Exception 统一处理异常
      */
     void updateBatch(List<UnionConsume> updateUnionConsumeList) throws Exception;
+
 
 }

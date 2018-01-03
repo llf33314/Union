@@ -125,6 +125,20 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         return unionConsumeDao.selectOne(entityWrapper);
     }
 
+    @Override
+    public UnionConsume getValidByBusinessOrderIdAndModel(Integer businessOrderId, Integer businessModel) throws Exception {
+        if (businessOrderId == null || businessModel == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("business_order_id", businessOrderId)
+                .eq("business_type", businessModel);
+
+        return unionConsumeDao.selectOne(entityWrapper);
+    }
+
     //********************************************* Base On Business - list ********************************************
 
     @Override

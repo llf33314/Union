@@ -13,7 +13,7 @@
       </p>
     </div>
     <!-- ERP项目商品 列表数据-->
-    <el-table v-if="erpGoodsList.length > 0" :data="erpGoodsList" style="width: 100%" hight="450"   v-show="canEdit">
+    <el-table v-if="erpGoodsList.length > 0" :data="erpGoodsList" style="width: 100%" hight="450" v-show="canEdit">
       <el-table-column prop="name" label="商品名称">
       </el-table-column>
       <el-table-column prop="spec" label="规格">
@@ -29,7 +29,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-table v-if="erpGoodsList.length > 0" :data="erpGoodsList" style="width: 100%" hight="450"  v-show="!canEdit">
+    <el-table v-if="erpGoodsList.length > 0" :data="erpGoodsList" style="width: 100%" hight="450" v-show="!canEdit">
       <el-table-column prop="name" label="商品名称">
       </el-table-column>
       <el-table-column prop="spec" label="规格">
@@ -38,7 +38,6 @@
       </el-table-column>
     </el-table>
     <!-- 弹出框 新增ERP商品 -->
-
     <div class="model_4">
       <el-dialog title="添加商品" :visible.sync="visible" @close="resetData">
         <hr>
@@ -79,13 +78,13 @@
                 </el-table-column>
               </el-table>
               <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
-        </el-pagination>
+              </el-pagination>
             </div>
             <div class="rightContent">
               <p>已选择：{{ selectedErpRight.length }}</p>
               <div v-for="(item, index) in selectedErpRight" :key="item.id">
-                  <el-input-number v-model="item.number" :min="1" size="small" :max="item.amount"></el-input-number>
-                  <el-button @click="handleDelete2(index)">删除</el-button>
+                <el-input-number v-model="item.number" :min="1" size="small" :max="item.amount"></el-input-number>
+                <el-button @click="handleDelete2(index)">删除</el-button>
               </div>
             </div>
           </div>
@@ -116,15 +115,54 @@ export default {
       tableData: [],
       currentPage: 1,
       totalAll: 0,
-      selectedErpRight: []
+      selectedErpRight: [],
+      projectData: {},
+      canEdit: ''
     };
   },
   computed: {
-    canEdit() {
-      return this.$store.state.activityCanEdit;
+    unionId() {
+      return this.$store.state.unionId;
+    },
+    activityId() {
+      return this.$route.params.id;
     }
   },
+  mounted() {
+    this.init();
+  },
   methods: {
+    init() {
+      $http
+        .get(`/unionCardProject/activityId/${this.activityId}/unionId/${this.unionId}`)
+        .then(res => {
+          if (res.data.data) {
+            this.projectData = res.data.data;
+            if (this.projectData.project) {
+              this.projectData.project.status = projectStatusFilter(this.projectData.project.status);
+            } else {
+              this.projectData.project = {};
+              this.projectData.project.status = '';
+            }
+            if (
+              this.projectData.activityStatus === 2 &&
+              (this.projectData.project.status === '未提交' ||
+                this.projectData.project.status === '不通过' ||
+                !this.projectData.project.status)
+            ) {
+              this.canEdit = true;
+            } else {
+              this.canEdit = false;
+            }
+            setTimeout(() => {
+              this.loading = false;
+            }, 500);
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    },
     handleDelete(scope) {
       this.erpGoodsList.splice(scope.$index, 1);
       this.erpGoodsListChange();

@@ -14,7 +14,6 @@ export default new Vuex.Store({
     enterpriseAddress: '',
     address: '',
     permitId: '',
-    activityCanEdit: '',
     myColor: '',
     // baseUrl: 'http://192.168.3.40:8080',
     // baseUrl: 'http://192.168.3.59:8080',
@@ -56,9 +55,6 @@ export default new Vuex.Store({
     // 创建联盟permitId
     permitIdChange(state, value) {
       state.permitId = value;
-    },
-    activityCanEditChange(state, value) {
-      state.activityCanEdit = value;
     },
     myColorChange(state, value) {
       state.myColor = value;

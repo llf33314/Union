@@ -308,8 +308,10 @@ export default {
     pay(scope) {
       this.brokerageMoney = scope.row.opportunity.brokerageMoney.toFixed(2);
       this.opportunityId = scope.row.opportunity.id;
+      let url = `/unionBrokeragePay/opportunity`;
+      let data = [this.opportunityId];
       $http
-        .put(`/unionBrokeragePay/opportunity?opportunityIdList=${this.opportunityId}`)
+        .post(url, data)
         .then(res => {
           if (res.data.data) {
             this.imgSrc = res.data.data.payUrl;
@@ -327,15 +329,17 @@ export default {
     },
     // 批量支付
     payAll() {
-      let ids = '';
+      let ids = [];
       this.brokerageMoney = 0;
       this.multipleSelection.forEach((v, i) => {
         this.brokerageMoney += Number(v.opportunity.brokerageMoney);
-        ids += v.opportunity.id + '%2C';
+        ids.push(v.opportunity.id);
       });
       this.brokerageMoney = this.brokerageMoney.toFixed(2);
+      let url = `/unionBrokeragePay/opportunity`;
+      let data = ids;
       $http
-        .put(`/unionBrokeragePay/opportunity?opportunityIdList=${ids}`)
+        .post(url, data)
         .then(res => {
           if (res.data.data) {
             this.imgSrc = res.data.data.payUrl;
