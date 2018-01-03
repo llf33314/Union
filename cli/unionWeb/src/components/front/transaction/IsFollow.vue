@@ -1,5 +1,5 @@
 <template>
-  <div v-if="this.publicId">
+  <div v-if="codeSrc">
     <!-- 是否关注公众号办理 -->
     <div class="fr drop_down">
       <p>扫码二维码关注公众号</p>
