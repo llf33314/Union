@@ -162,7 +162,9 @@ export default {
                     _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
                     _this.socketFlag.socketKey = msg.socketKey;
                     _this.socketFlag.status = msg.status;
-                    // _this.$router.push({ path: '/my-union' });
+                    setTimeout(() => {
+                      _this.$router.push({ path: '/my-union' });
+                    }, 0);
                   } else if (msg.status == '0') {
                     _this.$message({ showClose: true, message: '支付失败', type: 'error', duration: 5000 });
                   }
