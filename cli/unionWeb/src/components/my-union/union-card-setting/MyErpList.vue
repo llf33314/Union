@@ -13,7 +13,7 @@
       </p>
     </div>
     <!-- ERP项目 列表数据-->
-    <el-table v-if="erpTextList.length > 0" :data="erpTextList" style="width: 95%" hight="450"  v-show="canEdit">
+    <el-table v-if="erpTextList.length > 0" :data="erpTextList" style="width: 95%" hight="450" v-show="canEdit">
       <el-table-column prop="name" label="项目名称">
       </el-table-column>
       <el-table-column prop="number" label="数量">
@@ -27,7 +27,7 @@
         </template>
       </el-table-column>
     </el-table>
-    <el-table v-if="erpTextList.length > 0" :data="erpTextList" style="width: 100%"  hight="450"  v-show="!canEdit">
+    <el-table v-if="erpTextList.length > 0" :data="erpTextList" style="width: 100%" hight="450" v-show="!canEdit">
       <el-table-column prop="name" label="项目名称">
       </el-table-column>
       <el-table-column prop="number" label="数量">
@@ -36,60 +36,60 @@
     <!-- 弹出框 新增ERP项目 -->
     <div class="model_4">
       <el-dialog title="添加ERP项目" :visible.sync="visible" @close="resetData">
-      <div>
-        <el-row>
-          <el-col style="width:220px;">
-            <el-form :inline="true" class="demo-form-inline">
-              <el-select v-model="erpType" clearable placeholder="请选择行业" @change="erpModelChange">
-                <el-option v-for="item in options1" :key="item.erpType" :label="item.erpName" :value="item.erpType">
-                </el-option>
-              </el-select>
-            </el-form>
-          </el-col>
-          <el-col style="width:220px;">
-            <el-form :inline="true" class="demo-form-inline">
-              <el-select v-model="shopId" clearable placeholder="请选择门店" @change="search">
-                <el-option v-for="item in options2" :key="item.id" :label="item.name" :value="item.id">
-                </el-option>
-              </el-select>
-            </el-form>
-          </el-col>
-          <el-col style="width:200px;">
-            <div class="grid-content1 bg-purple">
-              <el-input placeholder="请输入关键字" @keyup.enter.native="search" icon="search" v-model="input" :on-icon-click="search" class="input-search2 fl">
-              </el-input>
+        <div>
+          <el-row>
+            <el-col style="width:220px;">
+              <el-form :inline="true" class="demo-form-inline">
+                <el-select v-model="erpType" clearable placeholder="请选择行业" @change="erpModelChange">
+                  <el-option v-for="item in options1" :key="item.erpType" :label="item.erpName" :value="item.erpType">
+                  </el-option>
+                </el-select>
+              </el-form>
+            </el-col>
+            <el-col style="width:220px;">
+              <el-form :inline="true" class="demo-form-inline">
+                <el-select v-model="shopId" clearable placeholder="请选择门店" @change="search">
+                  <el-option v-for="item in options2" :key="item.id" :label="item.name" :value="item.id">
+                  </el-option>
+                </el-select>
+              </el-form>
+            </el-col>
+            <el-col style="width:200px;">
+              <div class="grid-content1 bg-purple">
+                <el-input placeholder="请输入关键字" @keyup.enter.native="search" icon="search" v-model="input" :on-icon-click="search" class="input-search2 fl">
+                </el-input>
+              </div>
+            </el-col>
+          </el-row>
+          <div class="section_ clearfix">
+            <div style="float:left;width: 580px;height: 445px;">
+              <el-table :data="tableData" style="width: 100%;height: 100%;" ref="multipleTable" @select="handleSelect" @select-all="handleSelectAll" @row-click="handleRowClick">
+                <el-table-column type="selection" min-width="55px"></el-table-column>
+                <el-table-column prop="name" label="ERP项目名称" min-width="100px">
+                </el-table-column>
+              </el-table>
+              <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
+              </el-pagination>
             </div>
-          </el-col>
-        </el-row>
-        <div class="section_ clearfix">
-          <div style="float:left;width: 580px;height: 445px;">
-            <el-table :data="tableData" style="width: 100%;height: 100%;" ref="multipleTable" @select="handleSelect" @select-all="handleSelectAll" @row-click="handleRowClick">
-              <el-table-column type="selection" min-width="55px"></el-table-column>
-              <el-table-column prop="name" label="ERP项目名称" min-width="100px">
-              </el-table-column>
-            </el-table>
-            <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
-            </el-pagination>
-          </div>
-          <div class="rightContent">
-            <p>已选择：{{ selectedErpRight.length }}</p>
-            <p v-for="(item, index) in selectedErpRight" :key="item.id">
-              <span> {{ item.name }} </span>
-              <span>
-                <el-input-number v-model="item.number" :min="1"></el-input-number>
-              </span>
-              <span>
-                <el-button @click="handleDelete2(index)">删除</el-button>
-              </span>
-            </p>
+            <div class="rightContent">
+              <p>已选择：{{ selectedErpRight.length }}</p>
+              <p v-for="(item, index) in selectedErpRight" :key="item.id">
+                <span> {{ item.name }} </span>
+                <span>
+                  <el-input-number v-model="item.number" :min="1"></el-input-number>
+                </span>
+                <span>
+                  <el-button @click="handleDelete2(index)">删除</el-button>
+                </span>
+              </p>
+            </div>
           </div>
         </div>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="confirm">确定</el-button>
-        <el-button @click="visible=false">取消</el-button>
-      </span>
-    </el-dialog>
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="confirm">确定</el-button>
+          <el-button @click="visible=false">取消</el-button>
+        </span>
+      </el-dialog>
     </div>
   </div>
 </template>
@@ -111,15 +111,54 @@ export default {
       tableData: [],
       currentPage: 1,
       totalAll: 0,
-      selectedErpRight: []
+      selectedErpRight: [],
+      projectData: {},
+      canEdit: ''
     };
   },
   computed: {
-    canEdit() {
-      return this.$store.state.activityCanEdit;
+    unionId() {
+      return this.$store.state.unionId;
+    },
+    activityId() {
+      return this.$route.params.id;
     }
   },
+  mounted() {
+    this.init();
+  },
   methods: {
+    init() {
+      $http
+        .get(`/unionCardProject/activityId/${this.activityId}/unionId/${this.unionId}`)
+        .then(res => {
+          if (res.data.data) {
+            this.projectData = res.data.data;
+            if (this.projectData.project) {
+              this.projectData.project.status = projectStatusFilter(this.projectData.project.status);
+            } else {
+              this.projectData.project = {};
+              this.projectData.project.status = '';
+            }
+            if (
+              this.projectData.activityStatus === 2 &&
+              (this.projectData.project.status === '未提交' ||
+                this.projectData.project.status === '不通过' ||
+                !this.projectData.project.status)
+            ) {
+              this.canEdit = true;
+            } else {
+              this.canEdit = false;
+            }
+            setTimeout(() => {
+              this.loading = false;
+            }, 500);
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    },
     handleDelete(scope) {
       this.erpTextList.splice(scope.$index, 1);
       this.erpTextListChange();

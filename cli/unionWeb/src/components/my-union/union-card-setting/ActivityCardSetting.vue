@@ -35,25 +35,37 @@
         <!-- 活动卡规则 -->
         <li>
           <p>
-            <span>项目报名时间</span>
+            <span>项目报名开始时间</span>
             <span style="margin-left: 45px; ">{{ item.activity.applyBeginTime }}</span>
           </p>
           <p>
+            <span>项目报名结束时间</span>
+            <span style="margin-left: 45px; ">{{ item.activity.applyEndTime }}</span>
+          </p>
+          <p>
+            <span>项目售卡开始时间</span>
+            <span style="margin-left: 45px; ">{{ item.activity.sellBeginTime }}</span>
+          </p>
+          <p>
+            <span>项目售卡结束时间</span>
+            <span style="margin-left: 45px; ">{{ item.activity.sellEndTime }}</span>
+          </p>
+          <!-- <p>
             <span>活动卡有效天数</span>
             <span style="margin-left: 30px;">{{ item.activity.validityDay }} 天</span>
-          </p>
+          </p> -->
           <p>
             <span>活动卡对外售价</span>
             <span style="color: #ff4949;margin-left: 28px;">￥{{ (item.activity.price.toFixed(2)) }}</span>
           </p>
-          <p>
+          <!-- <p>
             <span>活动卡发行量</span>
             <span style="margin-left: 45px;">{{ item.activity.amount }}</span>
-          </p>
-          <p>
+          </p> -->
+          <!-- <p>
             <span>活动卡说明</span>
             <span style="margin-left: 62px;">{{ item.activity.illustration }}</span>
-          </p>
+          </p> -->
         </li>
         <!-- 活动卡概况 -->
         <li>
@@ -137,6 +149,8 @@ export default {
               v.activityStatus = activityCardStatusFilter(v.activityStatus);
               v.activity.applyBeginTime = timeFilter(v.activity.applyBeginTime);
               v.activity.applyEndTime = timeFilter(v.activity.applyEndTime);
+              v.activity.sellBeginTime = timeFilter(v.activity.sellBeginTime);
+              v.activity.sellEndTime = timeFilter(v.activity.sellEndTime);
               let color1 = (v.color1 = v.activity.color.split(',')[0]);
               let color2 = (v.color2 = v.activity.color.split(',')[1]);
               let mDiv = 'm' + color2 + i;
@@ -162,6 +176,8 @@ export default {
               v.activityStatus = activityCardStatusFilter(v.activityStatus);
               v.activity.applyBeginTime = timeFilter(v.activity.applyBeginTime);
               v.activity.applyEndTime = timeFilter(v.activity.applyEndTime);
+              v.activity.sellBeginTime = timeFilter(v.activity.sellBeginTime);
+              v.activity.sellEndTime = timeFilter(v.activity.sellEndTime);
               let color1 = (v.color1 = v.activity.color.split(',')[0]);
               let color2 = (v.color2 = v.activity.color.split(',')[1]);
               let mDiv = 'm' + color2 + i;

@@ -78,7 +78,7 @@
 
 <script>
 import $http from '@/utils/http.js';
-import { numberCheck } from '@/utils/filter.js';
+import { numberCheck, activityCardStatusFilter } from '@/utils/filter.js';
 export default {
   name: 'activity-card-sell-divie',
   data() {
@@ -125,6 +125,9 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.data1 = res.data.data.records || [];
+            this.data1.forEach(v => {
+              v.activityStatus = activityCardStatusFilter(v.activityStatus);
+            });
             this.totalAll1 = res.data.data.total;
           } else {
             this.data1 = [];

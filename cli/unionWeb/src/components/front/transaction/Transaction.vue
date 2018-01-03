@@ -283,6 +283,7 @@ export default {
                       this.isDiscountCard = '';
                       this.discount = '';
                       this.visible2 = false;
+                      this.$message({ showClose: true, message: '您已办理联盟卡', type: 'error', duration: 5000 });
                     }
                   })
                   .catch(err => {
@@ -337,9 +338,11 @@ export default {
         if (valid) {
           let url = `/unionCard/fanId/${this.fanId}/unionId/${this.form2.unionId}/apply`;
           let data = [];
-          this.form2.activityCheckList.forEach(v => {
-            data.push(v.id);
-          });
+          if (!this.isDiscountCard) {
+            this.form2.activityCheckList.forEach(v => {
+              data.push(v);
+            });
+          }
           $http
             .post(url, data)
             .then(res => {
