@@ -107,7 +107,7 @@ export default {
       this.options2 = [];
       if (this.unionId) {
         $http
-          .get(`/unionMember/unionId/${this.unionId}/write/other`)
+          .get(`/unionMember/unionId/${this.unionId}/read/other`)
           .then(res => {
             if (res.data.data) {
               this.options2 = res.data.data || [];
