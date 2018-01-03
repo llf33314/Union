@@ -26,6 +26,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -208,8 +209,11 @@ public class UnionMainServiceImpl implements IUnionMainService {
         List<UnionMainDict> dictList = unionMainDictService.listValidByUnionId(unionId);
         List<Integer> removeDictIdList = unionMainDictService.getIdList(dictList);
 
+        Date currentDate = DateUtil.getCurrentDate();
         List<UnionMainDict> saveDictList = vo.getItemList();
         for (UnionMainDict dict : saveDictList) {
+            dict.setDelStatus(CommonConstant.DEL_STATUS_NO);
+            dict.setCreateTime(currentDate);
             if (!unionId.equals(dict.getUnionId())) {
                 throw new BusinessException("入盟申请必填信息不能绑定到其他联盟中");
             }
