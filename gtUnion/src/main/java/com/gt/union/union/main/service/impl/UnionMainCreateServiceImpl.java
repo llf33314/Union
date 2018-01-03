@@ -84,8 +84,14 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
         UnionMainPermit permit = unionMainPermitService.getValidByBusId(busId);
         if (authority.getPay()) {
             if (permit != null) {
-                result.setIsPay(CommonConstant.COMMON_NO);
-                result.setPermitId(permit.getId());
+                // 删除掉定时任务自动生成的许可
+                if (StringUtil.isEmpty(permit.getSysOrderNo())) {
+                    unionMainPermitService.removeById(permit.getId());
+                    result.setIsPay(CommonConstant.COMMON_YES);
+                } else {
+                    result.setIsPay(CommonConstant.COMMON_NO);
+                    result.setPermitId(permit.getId());
+                }
             } else {
                 result.setIsPay(CommonConstant.COMMON_YES);
             }
