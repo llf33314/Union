@@ -7,12 +7,12 @@ export default new Vuex.Store({
   name: 'state',
   state: {
     unionId: sessionStorage.getItem('unionId'),
-    unionMemberId: sessionStorage.getItem('unionMemberId'),
+    memberId: sessionStorage.getItem('memberId'),
+    isUnionOwner: sessionStorage.getItem('isUnionOwner'),
     addressLatitude: '',
     addressLongitude: '',
     enterpriseAddress: '',
     address: '',
-    isUnionOwner: sessionStorage.getItem('isUnionOwner'),
     permitId: '',
     activityCanEdit: '',
     myColor: '',
@@ -34,6 +34,15 @@ export default new Vuex.Store({
       state.unionId = id;
       sessionStorage.setItem('unionId', id);
     },
+    memberIdChange(state, id) {
+      state.memberId = id;
+      sessionStorage.setItem('memberId', id);
+    },
+    // 是否盟主
+    isUnionOwnerChange(state, value) {
+      state.isUnionOwner = value;
+      sessionStorage.setItem('isUnionOwner', value);
+    },
     latitudeChange(state, value) {
       state.addressLatitude = value;
     },
@@ -43,11 +52,6 @@ export default new Vuex.Store({
     // 点击地址
     enterpriseAddress(state, value) {
       state.enterpriseAddress = value;
-    },
-    // 是否盟主
-    isUnionOwnerChange(state, value) {
-      state.isUnionOwner = value;
-      sessionStorage.setItem('isUnionOwner', value);
     },
     // 创建联盟permitId
     permitIdChange(state, value) {

@@ -132,14 +132,14 @@ public class BusUserServiceImpl implements IBusUserService {
         UserUnionAuthority authority = new UserUnionAuthority();
         for(Map map : list){
             //商家等级
+            authority.setAuthority(false);
             if(user.getLevel().toString().equals(map.get("item_key").toString())){
                 String itemValue = map.get("item_value").toString();
                 String[] items = itemValue.split(",");
                 authority.setAuthority(CommonUtil.toInteger(items[0]).equals(1) ? true : false);
                 authority.setPay(CommonUtil.toInteger(items[1]).equals(1) ? true : false);
                 authority.setUnionVersionName(items[2]);
-            }else {
-                authority.setAuthority(false);
+                break;
             }
         }
         return authority;

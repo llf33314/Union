@@ -211,7 +211,7 @@ export default {
     Create,
     UnionMember,
     UnionCard,
-    UnionNotice,
+    UnionNotice
   },
   data() {
     return {
@@ -261,6 +261,7 @@ export default {
               // 全局存储信息
               this.$store.commit('unionIdChange', this.unionMainData.currentUnion.id);
               this.$store.commit('isUnionOwnerChange', this.unionMainData.currentMember.isUnionOwner);
+              this.$store.commit('memberIdChange', this.unionMainData.currentMember.id);
               // 处理当前页面数据展示格式
               this.unionMainData.currentUnion.createTime = timeFilter(this.unionMainData.currentUnion.createTime);
               this.unionMainData.currentMember.isUnionOwner
@@ -300,6 +301,7 @@ export default {
                 // 全局存储信息
                 this.$store.commit('unionIdChange', this.unionMainData.currentUnion.id);
                 this.$store.commit('isUnionOwnerChange', this.unionMainData.currentMember.isUnionOwner);
+                this.$store.commit('memberIdChange', this.unionMainData.currentMember.id);
                 // 处理当前页面数据展示格式
                 this.unionMainData.currentUnion.createTime = timeFilter(this.unionMainData.currentUnion.createTime);
                 this.unionMainData.currentMember.isUnionOwner
@@ -327,6 +329,7 @@ export default {
               // 全局存储信息
               this.$store.commit('unionIdChange', this.unionMainData.currentUnion.id);
               this.$store.commit('isUnionOwnerChange', this.unionMainData.currentMember.isUnionOwner);
+              this.$store.commit('MemberIdChange', this.unionMainData.currentMember.id);
               // 处理当前页面数据展示格式
               this.unionMainData.currentUnion.createTime = timeFilter(this.unionMainData.currentUnion.createTime);
               this.unionMainData.currentMember.isUnionOwner == 1

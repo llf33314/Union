@@ -46,7 +46,7 @@
               <div>
                 <el-checkbox-group v-model="form2.activityCheckList">
                   <el-checkbox-button v-if="isDiscountCard" :label="form2.currentMember.id" disabled>
-                    <div class="clearfix" >
+                    <div class="clearfix">
                       <!-- todo 更改样式 -->
                       <img alt="" class="fl SelectunionImg" style="background-image: linear-gradient(90deg, #B1503D 0%, #A52B2C 100%)">
                       <div class="fl" style="margin-left: 20px;position: absolute;top: 62px;left: 33px;">
@@ -258,15 +258,17 @@ export default {
                       this.form2.unionList = res.data.data.unionList;
                       this.form2.unionId = res.data.data.currentUnion.id;
                       this.form2.activityList = res.data.data.activityList;
-                      this.form2.activityList .forEach((v, i) => {
-                        //todo
-                        let color1=v.color1 = v.color.split(',')[0];
-                        let color2=v.color2 = v.color.split(',')[1];
-                        let mDiv = 'm' + color2 + i;
-                        // setTimeout(function () {
-                        //   $("." + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
-                        // }, 0)
-                      })
+                      if (this.form2.activityList) {
+                        this.form2.activityList.forEach((v, i) => {
+                          //todo
+                          let color1 = (v.color1 = v.color.split(',')[0]);
+                          let color2 = (v.color2 = v.color.split(',')[1]);
+                          let mDiv = 'm' + color2 + i;
+                          // setTimeout(function () {
+                          //   $("." + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
+                          // }, 0)
+                        });
+                      }
                       this.form2.activityCheckList = [];
                       this.isDiscountCard = res.data.data.isDiscountCard;
                       if (this.isDiscountCard) {
