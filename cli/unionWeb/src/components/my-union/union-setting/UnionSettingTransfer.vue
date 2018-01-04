@@ -55,7 +55,7 @@ export default {
       currentPage: 1,
       dialogVisible1: false,
       dialogVisible2: false,
-      id: '',
+      toMemberId: '',
       enterpriseName: '',
       totalAll: 0,
       canTransferFlag: true,
@@ -106,13 +106,13 @@ export default {
     // 转移
     onTransfer(scope) {
       this.dialogVisible1 = true;
-      this.id = scope.row.member.id;
+      this.toMemberId = scope.row.member.id;
       this.enterpriseName = scope.row.member.enterpriseName;
     },
     // 确认转移
     onConfirm1() {
       $http
-        .post(`/unionMainTransfer/unionId/${this.unionId}toMemberId=${this.id}`)
+        .post(`/unionMainTransfer/unionId/${this.unionId}/toMemberId/${this.toMemberId}`)
         .then(res => {
           if (res.data.success) {
             eventBus.$emit('unionUpdata');
