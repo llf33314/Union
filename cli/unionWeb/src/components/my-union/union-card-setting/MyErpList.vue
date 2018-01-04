@@ -77,7 +77,7 @@
                 <div v-for="(item, index) in selectedErpRight" :key="item.id">
                   <span> {{ item.name }} </span>
                     <el-input-number v-model="item.number" :min="1"></el-input-number>
-                    <el-button @click="handleDelete2(index)">删除</el-button>
+                    <el-button @click="handleDelete2(index)" type="text">删除</el-button>
                 </div>
               </div>
             </div>
