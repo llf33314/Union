@@ -79,22 +79,24 @@ export default {
       this.getTableData();
     },
     getTableData() {
-      $http.get(`/unionMainTransfer/unionId/${this.unionId}/page?current=${this.currentPage}`);
-      then(res => {
-        if (res.data.data) {
-          this.tableData = res.data.data.records || [];
-          // 判断canTransferFlag
-          this.tableData.forEach((v, i) => {
-            if (v.unionTransfer) {
-              thisthis.canTransferFlag = false;
-            }
-            v.member.createTime = timeFilter(v.member.createTime);
-          });
-          this.totalAll = res.data.data.total;
-        }
-      }).catch(err => {
-        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-      });
+      $http
+        .get(`/unionMainTransfer/unionId/${this.unionId}/page?current=${this.currentPage}`)
+        .then(res => {
+          if (res.data.data) {
+            this.tableData = res.data.data.records || [];
+            // 判断canTransferFlag
+            this.tableData.forEach((v, i) => {
+              if (v.unionTransfer) {
+                thisthis.canTransferFlag = false;
+              }
+              v.member.createTime = timeFilter(v.member.createTime);
+            });
+            this.totalAll = res.data.data.total;
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
     },
     // 分页查询
     handleCurrentChange(val) {

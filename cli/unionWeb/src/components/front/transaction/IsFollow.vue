@@ -120,7 +120,7 @@ export default {
     },
     // 下载二维码
     downloadCode() {
-      let url = this.$store.state.baseUrl + `api/user/qrCodeUrl?url=${this.codeSrc}`;
+      let url = this.$store.state.baseUrl + `/api/user/qrCodeUrl?url=${this.codeSrc}`;
       window.open(url);
     }
   }
