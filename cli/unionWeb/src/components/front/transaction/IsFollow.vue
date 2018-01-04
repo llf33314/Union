@@ -103,6 +103,7 @@ export default {
                   }
                 });
                 this.socket.on('chatevent', function(data) {
+                  console.log(data, 111)
                   if (_this.visible) {
                     let msg = eval('(' + data.message + ')');
                     _this.wxData = msg;
