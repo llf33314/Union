@@ -87,7 +87,7 @@ export default {
             // 判断canTransferFlag
             this.tableData.forEach((v, i) => {
               if (v.unionTransfer) {
-                thisthis.canTransferFlag = false;
+                this.canTransferFlag = false;
               }
               v.member.createTime = timeFilter(v.member.createTime);
             });
