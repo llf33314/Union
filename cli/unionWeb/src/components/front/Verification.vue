@@ -33,13 +33,12 @@
             <el-form-item label="选择联盟:">
               <el-radio-group v-model="form.unionId" style="margin-top:10px;" @change="unionIdChange">
                 <el-radio-button v-for="item in form.unionList" :key="item.id" :label="item.id">
-                  <div class="dddddd clearfix">
-                    <img v-bind:src="item.img" alt="" class="fl unionImg">
-                    <div class="fl isShow">
-                      <h6>{{item.name}}</h6>
+                  <el-tooltip class="item" effect="dark" :content="item.name" placement="bottom">
+                    <div class="dddddd clearfix">
+                      <img v-bind:src="item.img" alt="" class="fl unionImg">
+                      <i></i>
                     </div>
-                    <i></i>
-                  </div>
+                  </el-tooltip>
                 </el-radio-button>
               </el-radio-group>
             </el-form-item>
