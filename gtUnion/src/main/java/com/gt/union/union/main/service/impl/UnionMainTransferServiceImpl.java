@@ -12,6 +12,7 @@ import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.StringUtil;
 import com.gt.union.union.main.constant.UnionConstant;
 import com.gt.union.union.main.dao.IUnionMainTransferDao;
 import com.gt.union.union.main.entity.UnionMain;
@@ -134,6 +135,7 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
         // （2）	按有转移id排第一，其他按时间顺序排序
         List<UnionTransferVO> result = new ArrayList<>();
         List<UnionMember> writeMemberList = unionMemberService.listValidWriteByUnionId(unionId);
+        writeMemberList = filterWithoutPermit(writeMemberList);
         if (ListUtil.isNotEmpty(writeMemberList)) {
             Integer memberId = member.getId();
             for (UnionMember writeMember : writeMemberList) {
@@ -162,6 +164,35 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
                 return o1.getMember().getCreateTime().compareTo(o2.getMember().getCreateTime());
             }
         });
+
+        return result;
+    }
+
+    private List<UnionMember> filterWithoutPermit(List<UnionMember> writeMemberList) throws Exception {
+        List<UnionMember> result = new ArrayList<>();
+
+        if (ListUtil.isNotEmpty(writeMemberList)) {
+            for (UnionMember writeMember : writeMemberList) {
+                Integer busId = writeMember.getBusId();
+                // （1）	要求不能已经是盟主
+                if (unionMemberService.existValidOwnerByBusId(busId)) {
+                    continue;
+                }
+                // （2）	要求具有联盟基础服务（调接口）
+                UserUnionAuthority authority = busUserService.getUserUnionAuthority(busId);
+                if (authority == null || !authority.getAuthority()) {
+                    continue;
+                }
+                // （3）	判断是否需要付费
+                UnionMainPermit permit = unionMainPermitService.getValidByBusId(busId);
+                if (authority.getPay()) {
+                    if (permit == null || StringUtil.isEmpty(permit.getSysOrderNo())) {
+                        continue;
+                    }
+                }
+                result.add(writeMember);
+            }
+        }
 
         return result;
     }
