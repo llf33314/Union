@@ -140,12 +140,12 @@ public class HttpClientUtil {
 
 	private static String getResult(HttpRequestBase request) {
 		CloseableHttpClient httpClient = getHttpClient();
+		CloseableHttpResponse response = null;
 		try {
-			CloseableHttpResponse response = httpClient.execute(request);
+			response = httpClient.execute(request);
 			HttpEntity entity = response.getEntity();
 			if (entity != null) {
 				String result = EntityUtils.toString(entity);
-				response.close();
 				return result;
 			}
 		} catch (ClientProtocolException e) {
@@ -153,7 +153,13 @@ public class HttpClientUtil {
 		} catch (IOException e) {
 			e.printStackTrace();
 		} finally {
-
+			try{
+				if(response != null){
+					response.close();
+				}
+			}catch (Exception e){
+				e.printStackTrace();
+			}
 		}
 		return EMPTY_STR;
 	}
