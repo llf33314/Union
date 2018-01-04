@@ -107,7 +107,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         // （1）	判断numberOrPhone有效性
         UnionCardFan fan = getValidByNumberOrPhone(numberOrPhone);
         if (fan == null) {
-            throw new BusinessException("找不到联盟卡号");
+            throw new BusinessException("联盟卡不存在");
         }
         // （2）	获取商家所有有效的unionList
         List<UnionMember> busMemberList = unionMemberService.listValidReadByBusId(busId);

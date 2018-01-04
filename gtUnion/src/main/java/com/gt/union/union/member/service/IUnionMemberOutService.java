@@ -2,6 +2,7 @@ package com.gt.union.union.member.service;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.entity.UnionMemberOut;
 import com.gt.union.union.member.vo.MemberOutPeriodVO;
 import com.gt.union.union.member.vo.MemberOutVO;
@@ -58,6 +59,8 @@ public interface IUnionMemberOutService {
      * @throws Exception 统一处理异常
      */
     List<MemberOutPeriodVO> listMemberOutPeriodVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
+    
+    List<MemberOutVO> getMemberOutVOList(List<UnionMember> memberList) throws Exception;
 
     //********************************************* Base On Business - save ********************************************
 
