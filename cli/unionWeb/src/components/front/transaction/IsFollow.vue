@@ -1,7 +1,7 @@
 <template>
   <div v-if="codeSrc">
     <!-- 是否关注公众号办理 -->
-    <div class="fr drop_down">
+    <div class="fr drop_down" v-show="!visible">
       <p>扫码二维码关注公众号</p>
       <div class="middle_">
         <img v-bind:src="codeSrc" class="codeImg" style="width:240px;height:240px;">
@@ -15,7 +15,7 @@
       </span>
     </div>
     <!-- 新增粉丝信息 -->
-    <div class="fr drop_down1 step2" v-if="this.publicId" v-show="visible">
+    <div class="fr drop_down1 step2" v-show="visible">
       <p>新增粉丝信息</p>
       <div class="dddddd clearfix">
         <img v-bind:src="wxData.headurl" alt="" class="fl unionImg">
@@ -55,6 +55,10 @@ export default {
     }
   },
   mounted: function() {
+    // 切换tab清空输入数据
+    eventBus.$on('tabChange3', () => {
+      this.visible = false;
+    });
     this.canFollow();
   },
   methods: {
@@ -103,11 +107,9 @@ export default {
                   }
                 });
                 this.socket.on('chatevent', function(data) {
-                  console.log(data, 111)
-                  if (_this.visible) {
-                    let msg = eval('(' + data.message + ')');
-                    _this.wxData = msg;
-                  }
+                  console.log(data, 111);
+                  let msg = eval('(' + data.message + ')');
+                  _this.wxData = msg;
                 });
               })
               .catch(err => {
@@ -121,7 +123,7 @@ export default {
     },
     // 下载二维码
     downloadCode() {
-      let url = this.$store.state.baseUrl + `/api/user/qrCodeUrl?url=${this.codeSrc}`;
+      let url = this.$store.state.memberUrl + `/addMember/downQcode.do?url=${this.codeSrc}`;
       window.open(url);
     }
   }

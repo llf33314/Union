@@ -27,4 +27,4 @@ INSERT INTO t_union_main_package(`id`, `del_status`, `create_time`, `year`, `pri
 VALUES(12, 0, '2018-01-02 08:30:00', 2, 0.01, 5, 50, '2年');
 
 INSERT INTO t_union_main_package(`id`, `del_status`, `create_time`, `year`, `price`, `level`, `number`, `desc`)
-VALUES(13, 0, '2018-01-02 08:30:00', NULL, 0.01, 5, 50, NULL);
+VALUES(13, 0, '2018-01-02 08:30:00', NULL, 0.01, 6, 50, NULL);

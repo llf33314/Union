@@ -52,7 +52,7 @@
           </p>
           <p>
             <span>活动卡售价</span>
-            <span style="color: #ff4949;margin-left: 58px;">￥{{ item.activity.price }}</span>
+            <span style="color: #ff4949;margin-left: 91px;">￥{{ item.activity.price }}</span>
           </p>
         </li>
         <!-- 活动卡概况 -->
@@ -83,45 +83,49 @@
     <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
     </el-pagination>
     <!-- 弹出框 详情 -->
-    <el-dialog title="详情" :visible.sync="visible">
-      <hr>
-      <p>
-        <span>活动卡名称</span>
-        <span style="margin-left: 45px; ">{{ detail.name }}</span>
-      </p>
-      <p>
-        <span>项目报名开始时间</span>
-        <span style="margin-left: 45px; ">{{ detail.applyBeginTime }}</span>
-      </p>
-      <p>
-        <span>项目报名结束时间</span>
-        <span style="margin-left: 45px; ">{{ detail.applyEndTime }}</span>
-      </p>
-      <p>
-        <span>项目售卡开始时间</span>
-        <span style="margin-left: 45px; ">{{ detail.sellBeginTime }}</span>
-      </p>
-      <p>
-        <span>项目售卡结束时间</span>
-        <span style="margin-left: 45px; ">{{ detail.sellEndTime }}</span>
-      </p>
-      <p>
-        <span>活动卡售价</span>
-        <span style="color: #ff4949;margin-left: 58px;">￥{{ detail.price }}</span>
-      </p>
-      <p>
-        <span>活动卡有效天数</span>
-        <span style="margin-left: 30px;">{{ detail.validityDay }} 天</span>
-      </p>
-      <p>
-        <span>活动卡发行量</span>
-        <span style="margin-left: 45px;">{{ detail.amount }}</span>
-      </p>
-      <p>
-        <span>活动卡说明</span>
-        <span style="margin-left: 62px;">{{ detail.illustration }}</span>
-      </p>
-    </el-dialog>
+    <div class="activityDetails">
+      <el-dialog title="详情" :visible.sync="visible">
+        <hr>
+        <div class="activityDetailsMain">
+          <p>
+            <span>活动卡名称：</span>
+            <span >{{ detail.name }}</span>
+          </p>
+          <p>
+            <span>项目报名开始时间：</span>
+            <span >{{ detail.applyBeginTime }}</span>
+          </p>
+          <p>
+            <span>项目报名结束时间：</span>
+            <span >{{ detail.applyEndTime }}</span>
+          </p>
+          <p>
+            <span>项目售卡开始时间：</span>
+            <span >{{ detail.sellBeginTime }}</span>
+          </p>
+          <p>
+            <span>项目售卡结束时间：</span>
+            <span >{{ detail.sellEndTime }}</span>
+          </p>
+          <p>
+            <span>活动卡售价：</span>
+            <span style="color: #ff4949;">￥{{ detail.price }}</span>
+          </p>
+          <p>
+            <span>活动卡有效天数：</span>
+            <span >{{ detail.validityDay }} 天</span>
+          </p>
+          <p>
+            <span>活动卡发行量：</span>
+            <span >{{ detail.amount }}</span>
+          </p>
+          <p>
+            <span>活动卡说明：</span>
+            <span >{{ detail.illustration }}</span>
+          </p>
+        </div>
+      </el-dialog>
+    </div>
   </div>
 </template>
 
@@ -191,7 +195,9 @@ export default {
               let color1 = (v.color1 = v.activity.color.split(',')[0]);
               let color2 = (v.color2 = v.activity.color.split(',')[1]);
               let mDiv = 'm' + color2 + i;
-              // $("." + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
+              setTimeout(function () {
+                $("." + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
+              },0);
             });
             this.totalAll = res.data.data.total;
           } else {

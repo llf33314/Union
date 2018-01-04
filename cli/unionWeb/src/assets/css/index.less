@@ -399,6 +399,11 @@ hr{
     padding-left: 38px!important;
     padding-right: 1px!important;
   }
+  .model_13{
+    .el-dialog--tiny {
+      width: 550px;
+    }
+  }
 }
 //我的联盟底部联盟卡的样式-------------------------
 #myUnionCard1{
@@ -463,6 +468,11 @@ hr{
         margin-bottom: 65px;
         margin-top: 15px;
       }
+    }
+  }
+  .model_03{
+    .el-dialog--tiny{
+      width: 550px;
     }
   }
 }
@@ -698,7 +708,7 @@ hr{
     //图片列表的一整套式
     .contentList{
       width: 370px!important;
-      height: 187px!important;
+      height: 181px!important;
       background-color: #ffffff;
       border: solid 1px #dddddd;
       display: inline-block;
@@ -806,6 +816,31 @@ hr{
     }
     //活动卡设置
     #ActivityCardSetting{
+      //详情的弹出框
+      .activityDetails{
+        .el-dialog--small{
+          width: 800px;
+          height: 500px;
+          .el-dialog__body{
+            padding: 0;
+            margin-top: 15px;
+            .activityDetailsMain{
+              margin: 30px ;
+              >p{
+                margin-bottom: 20px;
+                >span:nth-child(1){
+                  display: inline-block;
+                  width: 150px;
+                  text-align: right;
+                }
+                >span:nth-child(2){
+                  margin-left: 50px;
+                }
+              }
+            }
+          }
+        }
+      }
       .explain{
         background-color: #f4f4f4;
         margin-top: 20px;
@@ -1065,8 +1100,6 @@ hr{
           }
         }
       }
-      //通过的弹出框
-
       .model_2{
         .el-dialog__body{
           padding: 0;
@@ -1182,10 +1215,6 @@ hr{
         #noUnion,#noUnion1{
           margin: 0!important;
         }
-        //.el-input__inner{
-        //  width: 120px;
-        //  margin: 5px;
-        //}
       }
       footer{
         width: 100%;
@@ -1255,6 +1284,15 @@ hr{
                       .el-input-number{
                         width: 100px;
                       }
+                    }
+                  }
+                }
+                .ErpRight{
+                  width: 325px;
+                  .rightContentBottom{
+                    >div{
+                      display: flex;
+                      justify-content:space-between;
                     }
                   }
                 }

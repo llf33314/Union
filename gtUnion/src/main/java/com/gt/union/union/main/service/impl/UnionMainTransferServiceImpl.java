@@ -184,7 +184,7 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
                     continue;
                 }
                 // （3）	判断是否需要付费
-                UnionMainPermit permit = unionMainPermitService.getValidByBusId(busId);
+                UnionMainPermit permit = unionMainPermitService.getValidByBusIdAndOrderStatus(busId, UnionConstant.PERMIT_ORDER_STATUS_SUCCESS);
                 if (authority.getPay()) {
                     if (permit == null || StringUtil.isEmpty(permit.getSysOrderNo())) {
                         continue;
@@ -236,7 +236,7 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
             throw new BusinessException("联盟盟主权限转移的目标盟员不具有联盟基础服务");
         }
         // （6）	要求toMember是否具有联盟许可
-        UnionMainPermit permit = unionMainPermitService.getValidByBusId(toMember.getBusId());
+        UnionMainPermit permit = unionMainPermitService.getValidByBusIdAndOrderStatus(toMember.getBusId(), UnionConstant.PERMIT_ORDER_STATUS_SUCCESS);
         if (permit == null) {
             if (!authority.getPay()) {
                 BusUser toMemberBusUser = busUserService.getBusUserById(toMember.getBusId());
@@ -335,7 +335,7 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
             if (authority == null || !authority.getAuthority()) {
                 throw new BusinessException("不具有联盟基础服务");
             }
-            UnionMainPermit permit = unionMainPermitService.getValidByBusId(busId);
+            UnionMainPermit permit = unionMainPermitService.getValidByBusIdAndOrderStatus(busId, UnionConstant.PERMIT_ORDER_STATUS_SUCCESS);
             if (permit == null) {
                 if (!authority.getPay()) {
                     BusUser busUser = busUserService.getBusUserById(busId);

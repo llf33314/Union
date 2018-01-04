@@ -337,6 +337,9 @@ hr {
   padding-left: 38px!important;
   padding-right: 1px!important;
 }
+#memberName .model_13 .el-dialog--tiny {
+  width: 550px;
+}
 #myUnionCard1 .select_ .el-select .el-input__inner {
   background: #F6F6F6;
 }
@@ -425,6 +428,9 @@ hr {
   padding: 0;
   margin-bottom: 65px;
   margin-top: 15px;
+}
+#apply_for .model_03 .el-dialog--tiny {
+  width: 550px;
 }
 .el-pagination {
   margin-top: 10px;
@@ -596,7 +602,7 @@ hr {
 }
 #sellCard #ActivityCardSellDivide .contentList {
   width: 370px!important;
-  height: 187px!important;
+  height: 181px!important;
   background-color: #ffffff;
   border: solid 1px #dddddd;
   display: inline-block;
@@ -694,6 +700,28 @@ hr {
 }
 #UnionCardSetting > .container #DiscountCardSetting .el-dialog--tiny .el-dialog__body > p {
   margin-left: 55px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small {
+  width: 800px;
+  height: 500px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body {
+  padding: 0;
+  margin-top: 15px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain {
+  margin: 30px ;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain > p {
+  margin-bottom: 20px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain > p > span:nth-child(1) {
+  display: inline-block;
+  width: 150px;
+  text-align: right;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain > p > span:nth-child(2) {
+  margin-left: 50px;
 }
 #UnionCardSetting > .container #ActivityCardSetting .explain {
   background-color: #f4f4f4;
@@ -1109,6 +1137,13 @@ hr {
 }
 #UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .rightContent .rightContentBottom > div .el-input-number {
   width: 100px;
+}
+#UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .ErpRight {
+  width: 325px;
+}
+#UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .ErpRight .rightContentBottom > div {
+  display: flex;
+  justify-content: space-between;
 }
 #UnionQuit .container {
   margin: 40px 50px;

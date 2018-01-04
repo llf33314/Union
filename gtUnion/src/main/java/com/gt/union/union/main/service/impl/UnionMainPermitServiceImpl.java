@@ -66,6 +66,17 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
     }
 
     @Override
+    public UnionMainPermit getValidByBusIdAndOrderStatus(Integer busId, Integer orderStatus) throws Exception {
+        if (busId == null || orderStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMainPermit> result = listValidByBusIdAndOrderStatus(busId, orderStatus);
+
+        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
+    }
+
+    @Override
     public UnionMainPermit getValidBySysOrderNo(String sysOrderNo) throws Exception {
         if (sysOrderNo == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -78,7 +89,20 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
         return unionMainPermitDao.selectOne(entityWrapper);
     }
 
+
     //********************************************* Base On Business - list ********************************************
+
+    @Override
+    public List<UnionMainPermit> listValidByBusIdAndOrderStatus(Integer busId, Integer orderStatus) throws Exception {
+        if (busId == null || orderStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMainPermit> result = listValidByBusId(busId);
+        result = filterByOrderStatus(result, orderStatus);
+
+        return result;
+    }
 
     //********************************************* Base On Business - save ********************************************
 
@@ -206,6 +230,24 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
         if (ListUtil.isNotEmpty(unionMainPermitList)) {
             for (UnionMainPermit unionMainPermit : unionMainPermitList) {
                 if (delStatus.equals(unionMainPermit.getDelStatus())) {
+                    result.add(unionMainPermit);
+                }
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<UnionMainPermit> filterByOrderStatus(List<UnionMainPermit> unionMainPermitList, Integer orderStatus) throws Exception {
+        if (orderStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<UnionMainPermit> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(unionMainPermitList)) {
+            for (UnionMainPermit unionMainPermit : unionMainPermitList) {
+                if (orderStatus.equals(unionMainPermit.getOrderStatus())) {
                     result.add(unionMainPermit);
                 }
             }
