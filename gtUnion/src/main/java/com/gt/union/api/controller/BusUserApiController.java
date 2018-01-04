@@ -83,10 +83,7 @@ public class BusUserApiController {
 	public void downloadWXQrCode(HttpServletRequest request,HttpServletResponse response,
 								  @ApiParam(value = "公众号二维码链接", name = "url", required = true)
 								  @RequestParam(value = "url") String url) throws Exception {
-		response.setHeader("Content-Disposition",
-				"attachment;filename=\"" + URLEncoder.encode("关注公众号二维码.jpg",
-						"UTF-8") + "\"");
-		QRcodeKit.buildQRcode(url, 250, 250, response);
+		response.sendRedirect(PropertiesUtil.getMemberUrl() + "/addMember/downQcode.do?url=" + url);
 	}
 
 	/**
