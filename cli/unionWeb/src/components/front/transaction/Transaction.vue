@@ -80,13 +80,13 @@
           <div class="cardService" v-for="item in form2.activityList" :key="item.id" v-show="form2.activityCheckList.indexOf(item.id) > -1">
             <p> {{ item.name }} </p>
             <div style="margin-left: 82px;">服务项目：
-              <span @click="showDetail(item.id)"> {{ item.itemCount }} 个</span>
+              <span @click="showDetail(item.id)"> {{ item.amount }} 个</span>
             </div>
             <div>联盟卡有效天数：
               <span> {{ item.validityDay }} 天</span>
             </div>
             <div style="margin-left: 112px;">价格：
-              <span> ￥{{ item.price }}</span>
+              <span> ￥{{ (item.price).toFixed(2) }}</span>
             </div>
           </div>
         </div>
@@ -271,9 +271,6 @@ export default {
                       }
                       this.form2.activityCheckList = [];
                       this.isDiscountCard = res.data.data.isDiscountCard;
-                      if (this.isDiscountCard) {
-                        this.form2.activityCheckList.push(this.form2.unionId);
-                      }
                       this.discount = res.data.data.currentMember.discount;
                       this.visible2 = true;
                     } else {
@@ -297,23 +294,6 @@ export default {
         } else {
           return false;
         }
-      });
-    },
-    // 获取活动卡详情
-    getActivityDetal() {
-      this.form2.activityList.forEach((v, i) => {
-        $http
-          .get(`/unionCardActivity/${v.id}/unionId/${this.form2.unionId}/apply`)
-          .then(res => {
-            if (res.data.data) {
-              v.itemCount = res.data.data.itemCount;
-              v.validityDay = res.data.data.activity.validityDay;
-              v.price = res.data.data.activity.price;
-            }
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          });
       });
     },
     // 显示项目详情

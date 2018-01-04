@@ -285,8 +285,6 @@ export default {
       this.tableData.forEach((v, i) => {
         this.selectedErpRight.forEach(val => {
           if (v.id === val.id) {
-            // this.handleSelect(null, v, false);
-            console.log(this.$refs.multipleTable);
             this.$refs.multipleTable.toggleRowSelection(this.tableData[i]);
           }
         });
