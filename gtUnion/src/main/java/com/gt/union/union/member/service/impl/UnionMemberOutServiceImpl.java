@@ -96,19 +96,8 @@ public class UnionMemberOutServiceImpl implements IUnionMemberOutService {
             throw new BusinessException(CommonConstant.UNION_OWNER_ERROR);
         }
         // （2）	获取union下所有退盟申请状态的member，并获取对应的out
-        List<MemberOutVO> result = new ArrayList<>();
         List<UnionMember> outMemberList = unionMemberService.listValidByUnionIdAndStatus(unionId, MemberConstant.STATUS_APPLY_OUT);
-        if (ListUtil.isNotEmpty(outMemberList)) {
-            for (UnionMember outMember : outMemberList) {
-                MemberOutVO vo = new MemberOutVO();
-                vo.setMember(outMember);
-
-                UnionMemberOut out = getValidById(outMember.getId());
-                vo.setMemberOut(out);
-
-                result.add(vo);
-            }
-        }
+        List<MemberOutVO> result = getMemberOutVOList(outMemberList);
         // （3）	按时间倒序排序
         Collections.sort(result, new Comparator<MemberOutVO>() {
             @Override
@@ -156,6 +145,25 @@ public class UnionMemberOutServiceImpl implements IUnionMemberOutService {
                 return o2.getMemberOut().getConfirmOutTime().compareTo(o1.getMemberOut().getConfirmOutTime());
             }
         });
+
+        return result;
+    }
+
+    @Override
+    public List<MemberOutVO> getMemberOutVOList(List<UnionMember> memberList) throws Exception {
+        List<MemberOutVO> result = new ArrayList<>();
+
+        if (ListUtil.isNotEmpty(memberList)) {
+            for (UnionMember member : memberList) {
+                MemberOutVO vo = new MemberOutVO();
+                vo.setMember(member);
+
+                UnionMemberOut out = getValidByUnionIdAndApplyMemberId(member.getUnionId(), member.getId());
+                vo.setMemberOut(out);
+
+                result.add(vo);
+            }
+        }
 
         return result;
     }

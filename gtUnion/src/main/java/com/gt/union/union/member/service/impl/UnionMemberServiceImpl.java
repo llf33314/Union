@@ -442,18 +442,7 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         if (StringUtil.isNotEmpty(optMemberName)) {
             unionMemberList = filterByListEnterpriseName(unionMemberList, optMemberName);
         }
-        List<MemberOutVO> result = new ArrayList<>();
-        if (ListUtil.isNotEmpty(unionMemberList)) {
-            for (UnionMember unionMember : unionMemberList) {
-                MemberOutVO vo = new MemberOutVO();
-                vo.setMember(unionMember);
-
-                UnionMemberOut memberOut = unionMemberOutService.getValidByUnionIdAndApplyMemberId(unionId, unionMember.getId());
-                vo.setMemberOut(memberOut);
-
-                result.add(vo);
-            }
-        }
+        List<MemberOutVO> result = unionMemberOutService.getMemberOutVOList(unionMemberList);
         // （4）	按盟主>商家盟员>其他盟员，其他盟员按时间顺序排序
         Collections.sort(result, new Comparator<MemberOutVO>() {
             @Override
