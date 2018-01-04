@@ -120,10 +120,8 @@ export default {
     },
     // 下载二维码
     downloadCode() {
-      let alink = document.createElement('a');
-      alink.href = this.codeSrc;
-      alink.download = 'wx.jpg';
-      alink.click();
+      let url = this.$store.state.baseUrl + `api/user/qrCodeUrl?url=${this.codeSrc}`;
+      window.open(url);
     }
   }
 };
