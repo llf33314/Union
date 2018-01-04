@@ -81,7 +81,7 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
         }
         // （3）	判断是否需要付费
         UnionPermitCheckVO result = new UnionPermitCheckVO();
-        UnionMainPermit permit = unionMainPermitService.getValidByBusId(busId);
+        UnionMainPermit permit = unionMainPermitService.getValidByBusIdAndOrderStatus(busId, UnionConstant.PERMIT_ORDER_STATUS_SUCCESS);
         if (authority.getPay()) {
             if (permit != null) {
                 // 删除掉定时任务自动生成的许可
@@ -148,7 +148,7 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
         if (permitId == null) {
             throw new BusinessException("不具有联盟许可");
         }
-        UnionMainPermit permit = unionMainPermitService.getValidByBusId(busId);
+        UnionMainPermit permit = unionMainPermitService.getValidByBusIdAndOrderStatus(busId, UnionConstant.PERMIT_ORDER_STATUS_SUCCESS);
         if (permit == null || !permitId.equals(permit.getId())) {
             throw new BusinessException("找不到有效的联盟许可信息");
         }

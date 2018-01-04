@@ -24,7 +24,17 @@ public interface IUnionMainPermitService {
      * @throws Exception 统一处理异常
      */
     UnionMainPermit getValidByBusId(Integer busId) throws Exception;
-    
+
+    /**
+     * 获取未删除的有效联盟许可信息
+     *
+     * @param busId       商家id
+     * @param orderStatus 订单状态
+     * @return UnionMainPermit
+     * @throws Exception 统一处理异常
+     */
+    UnionMainPermit getValidByBusIdAndOrderStatus(Integer busId, Integer orderStatus) throws Exception;
+
     /**
      * 获取未删除的联盟许可信息
      *
@@ -35,6 +45,16 @@ public interface IUnionMainPermitService {
     UnionMainPermit getValidBySysOrderNo(String sysOrderNo) throws Exception;
 
     //********************************************* Base On Business - list ********************************************
+
+    /**
+     * 获取未删除的有效联盟许可信息
+     *
+     * @param busId       商家id
+     * @param orderStatus 订单状态
+     * @return List<UnionMainPermit>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMainPermit> listValidByBusIdAndOrderStatus(Integer busId, Integer orderStatus) throws Exception;
 
     //********************************************* Base On Business - save ********************************************
 
@@ -77,6 +97,16 @@ public interface IUnionMainPermitService {
      * @throws Exception 统一处理异常
      */
     List<UnionMainPermit> filterByDelStatus(List<UnionMainPermit> unionMainPermitList, Integer delStatus) throws Exception;
+
+    /**
+     * 根据订单状态进行过滤(by myBatisGenerator)
+     *
+     * @param unionMainPermitList 数据源
+     * @param orderStatus         订单状态
+     * @return List<UnionMainPermit>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionMainPermit> filterByOrderStatus(List<UnionMainPermit> unionMainPermitList, Integer orderStatus) throws Exception;
 
     //****************************************** Object As a Service - get *********************************************
 
