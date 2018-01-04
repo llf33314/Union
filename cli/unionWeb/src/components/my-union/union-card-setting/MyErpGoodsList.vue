@@ -67,7 +67,7 @@
             </el-col>
           </el-row>
           <div class="section_ clearfix">
-            <div style="float:left;width: 580px;height: 445px;">
+            <div style="float:left;width: 520px;height: 440px;">
               <el-table :data="tableData" style="width: 100%;" height="446" ref="multipleTable" @select="handleSelect" @select-all="handleSelectAll" @row-click="handleRowClick">
                 <el-table-column type="selection" min-width="55px"></el-table-column>
                 <el-table-column prop="name" label="商品名称" min-width="100px">
@@ -80,13 +80,15 @@
               <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
               </el-pagination>
             </div>
-            <div class="rightContent">
+            <div class="rightContent" style="width: 313px;">
               <p>已选择：{{ selectedErpRight.length }}</p>
               <div class="rightContentBottom">
                 <div v-for="(item, index) in selectedErpRight" :key="item.id">
-                  <span> {{ item.name }} </span>
-                  <el-input-number v-model="item.number" :min="1" size="small" :max="item.amount"></el-input-number>
-                  <el-button @click="handleDelete2(index)" type="text">删除</el-button>
+                  <div class="rightContentBottomHidden"> {{ item.name }} </div>
+                  <span>
+                    <el-input-number v-model="item.number" :min="1" size="small" :max="item.amount"></el-input-number>
+                    <el-button @click="handleDelete2(index)" type="text">删除</el-button>
+                  </span>
                 </div>
               </div>
             </div>

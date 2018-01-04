@@ -13,7 +13,7 @@
       </p>
     </div>
     <!-- ERP项目 列表数据-->
-    <el-table v-if="erpTextList.length > 0" :data="erpTextList" style="width: 95%" hight="450" v-show="canEdit">
+    <el-table v-if="erpTextList.length > 0" :data="erpTextList" style="width: 100%" hight="450" v-show="canEdit">
       <el-table-column prop="name" label="项目名称">
       </el-table-column>
       <el-table-column prop="number" label="数量">
@@ -75,7 +75,7 @@
               <p>已选择：{{ selectedErpRight.length }}</p>
               <div class="rightContentBottom">
                 <div v-for="(item, index) in selectedErpRight" :key="item.id">
-                  <div class="rightContentBottomHidden" style=""> {{ item.name }}1213213211231321 </div>
+                  <div class="rightContentBottomHidden" style=""> {{ item.name }}</div>
                   <span>
                     <el-input-number v-model="item.number" :min="1"></el-input-number>
                     <el-button @click="handleDelete2(index)" type="text" style="margin-left: 15px;">删除</el-button>

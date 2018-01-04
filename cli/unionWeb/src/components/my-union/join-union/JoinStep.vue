@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div id="joinStep">
     <Breadcrumb :header-name="['去加入联盟']"></Breadcrumb>
     <div class="container">
       <div class="step-top">
@@ -14,7 +14,7 @@
           <el-radio-button v-for="item in datas" :key="item.id" :label="item.id">
             <div class="dddddd clearfix">
               <img v-bind:src="item.img" alt="" class="fl unionImg">
-              <div class="fl" style="margin-left: 20px">
+              <div class="fl declare" style="margin-left: 20px">
                 <h6 style="margin-bottom: 17px">{{item.name}}</h6>
                 <span>{{item.illustration}}</span>
               </div>
