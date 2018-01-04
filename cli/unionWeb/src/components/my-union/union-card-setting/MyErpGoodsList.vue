@@ -68,7 +68,7 @@
           </el-row>
           <div class="section_ clearfix">
             <div style="float:left;width: 580px;height: 445px;">
-              <el-table :data="tableData" style="width: 100%;"  height="446" ref="multipleTable" @select="handleSelect" @select-all="handleSelectAll" @row-click="handleRowClick">
+              <el-table :data="tableData" style="width: 100%;" height="446" ref="multipleTable" @select="handleSelect" @select-all="handleSelectAll" @row-click="handleRowClick">
                 <el-table-column type="selection" min-width="55px"></el-table-column>
                 <el-table-column prop="name" label="商品名称" min-width="100px">
                 </el-table-column>
@@ -84,6 +84,7 @@
               <p>已选择：{{ selectedErpRight.length }}</p>
               <div class="rightContentBottom">
                 <div v-for="(item, index) in selectedErpRight" :key="item.id">
+                  <span> {{ item.name }} </span>
                   <el-input-number v-model="item.number" :min="1" size="small" :max="item.amount"></el-input-number>
                   <el-button @click="handleDelete2(index)" type="text">删除</el-button>
                 </div>
@@ -186,6 +187,7 @@ export default {
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
+      this.selectedErpRight = this.projectData.erpGoodsList;
       this.visible = true;
     },
     // 选择门店，获取分类数据，商品列表
@@ -205,49 +207,40 @@ export default {
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
         // 商品列表
-        $http
-          .get(
-            `/jxc/api/list/jxcProduct?current=1&shopId=${this.shopId}&classId=${this.ProductClass}&search=${this.input}`
-          )
-          .then(res => {
-            if (res.data.data) {
-              this.tableData = res.data.data.records || [];
-              this.totalAll = res.data.data.total;
-            } else {
-              this.tableData = [];
-              this.totalAll = 0;
-            }
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          });
+        this.currentPage = 1;
+        this.getTableData();
       } else {
         this.options2 = [];
         this.shopId = '';
       }
     },
+    getTableData() {
+      $http
+        .get(
+          `/jxc/api/list/jxcProduct?current=${this.currentPage}&shopId=${this.shopId}&classId=${this
+            .ProductClass}&search=${this.input}`
+        )
+        .then(res => {
+          if (res.data.data) {
+            this.tableData = res.data.data.records || [];
+            this.totalAll = res.data.data.total;
+            this.$nextTick(() => {
+              this.checkToggle();
+            });
+          } else {
+            this.tableData = [];
+            this.totalAll = 0;
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+    },
     // 分页获取商品列表
     handleCurrentChange(val) {
       this.currentPage = val;
       if (this.shopId) {
-        $http
-          .get(
-            `/jxc/api/list/jxcProduct?current=${this.currentPage}&shopId=${this.shopId}&classId=${this
-              .ProductClass}&search=${this.input}`
-          )
-          .then(res => {
-            if (res.data.data) {
-              this.tableData = res.data.data.records || [];
-              this.$nextTick(() => {
-                this.checkToggle();
-              });
-            } else {
-              this.tableData = [];
-            }
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          });
+        this.getTableData();
       }
     },
     // 点击行
@@ -305,8 +298,9 @@ export default {
     check(scope) {
       scope.row.number = numberCheck(scope.row.number);
     },
-    // 确定所选ERP项目
+    // 确定所选ERP商品
     confirm() {
+      this.erpGoodsList.splice(0, this.erpGoodsList.length);
       this.selectedErpRight.forEach(v => {
         this.erpGoodsList.push({ shopId: this.shopId, erpGoodsId: v.id, name: v.name, spec: v.spec, number: v.number });
       });
@@ -316,6 +310,8 @@ export default {
     // 关闭弹窗清空所选数据
     resetData() {
       this.shopId = '';
+      this.ProductClass = '';
+      this.input = '';
       this.tableData = [];
       this.selectedErpRight = [];
     }

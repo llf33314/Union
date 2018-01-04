@@ -76,8 +76,8 @@
               <div class="rightContentBottom">
                 <div v-for="(item, index) in selectedErpRight" :key="item.id">
                   <span> {{ item.name }} </span>
-                    <el-input-number v-model="item.number" :min="1"></el-input-number>
-                    <el-button @click="handleDelete2(index)">删除</el-button>
+                  <el-input-number v-model="item.number" :min="1"></el-input-number>
+                  <el-button @click="handleDelete2(index)">删除</el-button>
                 </div>
               </div>
             </div>
@@ -179,6 +179,7 @@ export default {
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
+      this.selectedErpRight = this.projectData.erpTextList;
       this.visible = true;
     },
     // 选择行业，获取门店数据
@@ -204,44 +205,36 @@ export default {
     // 选择门店，获取项目列表
     search() {
       if (this.shopId) {
-        $http
-          .get(`/api/erp/list/server/${this.erpType}?current=1&shopId=${this.shopId}&search=${this.input}`)
-          .then(res => {
-            if (res.data.data) {
-              this.tableData = res.data.data.records || [];
-              this.totalAll = res.data.data.total;
-            } else {
-              this.tableData = [];
-              this.totalAll = 0;
-            }
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          });
+        this.currentPage = 1;
+        this.getTableData();
       }
+    },
+    getTableData() {
+      $http
+        .get(
+          `/api/erp/list/server/${this.erpType}?current=${this.currentPage}&shopId=${this.shopId}&search=${this.input}`
+        )
+        .then(res => {
+          if (res.data.data) {
+            this.tableData = res.data.data.records || [];
+            this.totalAll = res.data.data.total;
+            this.$nextTick(() => {
+              this.checkToggle();
+            });
+          } else {
+            this.tableData = [];
+            this.totalAll = 0;
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
     },
     // 分页获取项目列表
     handleCurrentChange(val) {
       this.currentPage = val;
       if (this.shopId) {
-        $http
-          .get(
-            `/api/erp/list/server/${this.erpType}?current=${this.currentPage}&shopId=${this.shopId}&search=${this
-              .input}`
-          )
-          .then(res => {
-            if (res.data.data) {
-              this.tableData = res.data.data.records || [];
-              this.$nextTick(() => {
-                this.checkToggle();
-              });
-            } else {
-              this.tableData = [];
-            }
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          });
+        this.getTableData();
       }
     },
     // 点击行
@@ -301,6 +294,7 @@ export default {
     },
     // 确定所选ERP项目
     confirm() {
+      this.erpTextList.splice(0, this.erpTextList.length);
       this.selectedErpRight.forEach(v => {
         this.erpTextList.push({
           erpType: this.erpType,
@@ -316,6 +310,8 @@ export default {
     // 关闭弹窗清空所选数据
     resetData() {
       this.erpType = '';
+      this.shopId = '';
+      this.input = '';
       this.tableData = [];
       this.selectedErpRight = [];
     }
