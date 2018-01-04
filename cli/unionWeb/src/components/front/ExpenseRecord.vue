@@ -225,8 +225,7 @@ export default {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
-    // 带条件搜索消费记录
-    search(value) {
+    getTableData() {
       let beginTime, endTime;
       if (this.timeValue[0]) {
         beginTime = this.timeValue[0].getTime();
@@ -235,9 +234,8 @@ export default {
         beginTime = '';
         endTime = '';
       }
-      let val = value || 1;
       let url =
-        `/unionConsume/record/page?current=${val}&unionId=${this.unionId}&shopId=${this.shopId}&` +
+        `/unionConsume/record/page?current=${this.currentPage}&unionId=${this.unionId}&shopId=${this.shopId}&` +
         this.value +
         '=' +
         this.input +
@@ -269,9 +267,15 @@ export default {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
+    // 带条件搜索消费记录
+    search() {
+      this.currentPage = 1;
+      this.getTableData();
+    },
     // 分页搜索本店消费记录
     handleCurrentChange(val) {
-      this.search(val);
+      this.currentPage = val;
+      this.getTableData();
     },
     // 导出本店消费记录
     output() {
