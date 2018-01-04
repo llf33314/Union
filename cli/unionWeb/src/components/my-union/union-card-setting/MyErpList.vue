@@ -18,7 +18,7 @@
       </el-table-column>
       <el-table-column prop="number" label="数量">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.number" placeholder="请输入数量" @keyup.native="check(scope)" @change="erpTextListChange"></el-input>
+          <el-input style="width: 120px;" v-model="scope.row.number" placeholder="请输入数量" @keyup.native="check(scope)" @change="erpTextListChange"></el-input>
         </template>
       </el-table-column>
       <el-table-column prop="handle" label="操作" width="180">
@@ -75,7 +75,7 @@
               <p>已选择：{{ selectedErpRight.length }}</p>
               <div class="rightContentBottom">
                 <div v-for="(item, index) in selectedErpRight" :key="item.id">
-                  <span style="position: relative;top: 8px;"> {{ item.name }} </span>
+                  <div class="rightContentBottomHidden" style=""> {{ item.name }}1213213211231321 </div>
                   <span>
                     <el-input-number v-model="item.number" :min="1"></el-input-number>
                     <el-button @click="handleDelete2(index)" type="text" style="margin-left: 15px;">删除</el-button>
