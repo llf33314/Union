@@ -124,7 +124,7 @@ export default {
       return this.$route.params.id;
     }
   },
-  mounted() {
+  mounted: function() {
     this.init();
   },
   methods: {
@@ -223,9 +223,13 @@ export default {
     },
     // 分页获取项目列表
     handleCurrentChange(val) {
+      this.currentPage = val;
       if (this.shopId) {
         $http
-          .get(`/api/erp/list/server/${this.erpType}?current=${val}&shopId=${this.shopId}&search=${this.input}`)
+          .get(
+            `/api/erp/list/server/${this.erpType}?current=${this.currentPage}&shopId=${this.shopId}&search=${this
+              .input}`
+          )
           .then(res => {
             if (res.data.data) {
               this.tableData = res.data.data.records || [];

@@ -114,8 +114,14 @@ export default {
   },
   methods: {
     init() {
+      this.currentPage = 1;
+      this.value = '';
+      this.input = '';
+      this.getTableData();
+    },
+    getTableData() {
       $http
-        .get(`/unionCardFan/page?current=1&unionId=${this.unionId}`)
+        .get(`/unionCardFan/page?current=${this.currentPage}&unionId=${this.unionId}&` + this.value + '=' + this.input)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
@@ -130,23 +136,14 @@ export default {
         });
     },
     // 带条件查询联盟卡
-    search(value) {
-      let val = value || 1;
-      $http
-        .get(`/unionCardFan/page?current=${val}&unionId=${this.unionId}&` + this.value + '=' + this.input)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records || [];
-            this.totalAll = res.data.data.total;
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+    search() {
+      this.currentPage = 1;
+      this.getTableData();
     },
     // 分页查询联盟卡
     handleCurrentChange(val) {
-      this.search(val);
+      this.currentPage = val;
+      this.getTableData();
     },
     // 导出联盟卡
     output() {

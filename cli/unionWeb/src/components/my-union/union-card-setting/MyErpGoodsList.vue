@@ -128,7 +128,7 @@ export default {
       return this.$route.params.id;
     }
   },
-  mounted() {
+  mounted: function() {
     this.init();
   },
   methods: {
@@ -226,11 +226,12 @@ export default {
     },
     // 分页获取商品列表
     handleCurrentChange(val) {
+      this.currentPage = val;
       if (this.shopId) {
         $http
           .get(
-            `/jxc/api/list/jxcProduct?current=${val}&shopId=${this.shopId}&classId=${this.ProductClass}&search=${this
-              .input}`
+            `/jxc/api/list/jxcProduct?current=${this.currentPage}&shopId=${this.shopId}&classId=${this
+              .ProductClass}&search=${this.input}`
           )
           .then(res => {
             if (res.data.data) {

@@ -97,7 +97,7 @@ export default {
       return this.$route.params.id;
     }
   },
-  mounted() {
+  mounted: function() {
     this.init();
   },
   methods: {
