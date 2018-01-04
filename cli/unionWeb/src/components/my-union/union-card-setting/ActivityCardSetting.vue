@@ -140,8 +140,12 @@ export default {
   },
   methods: {
     init() {
+      this.currentPage = 1;
+      this.getTableData();
+    },
+    getTableData() {
       $http
-        .get(`/unionCardActivity/unionId/${this.unionId}/page?current=1`)
+        .get(`/unionCardActivity/unionId/${this.unionId}/page?current=${this.currentPage}`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
@@ -166,30 +170,10 @@ export default {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
+
     handleCurrentChange(val) {
-      $http
-        .get(`/unionCardActivity/unionId/${this.unionId}/page?current=${val}`)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records || [];
-            this.tableData.forEach((v, i) => {
-              v.activityStatus = activityCardStatusFilter(v.activityStatus);
-              v.activity.applyBeginTime = timeFilter(v.activity.applyBeginTime);
-              v.activity.applyEndTime = timeFilter(v.activity.applyEndTime);
-              v.activity.sellBeginTime = timeFilter(v.activity.sellBeginTime);
-              v.activity.sellEndTime = timeFilter(v.activity.sellEndTime);
-              let color1 = (v.color1 = v.activity.color.split(',')[0]);
-              let color2 = (v.color2 = v.activity.color.split(',')[1]);
-              let mDiv = 'm' + color2 + i;
-              // $("." + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
-            });
-          } else {
-            this.tableData = [];
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+      this.currentPage = val;
+      this.getTableData();
     },
     // 我的活动项目
     myActivity(item) {

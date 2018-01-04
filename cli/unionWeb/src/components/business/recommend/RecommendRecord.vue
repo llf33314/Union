@@ -121,30 +121,21 @@ export default {
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
         // 我推荐的商机数据
-        $http
-          .get(`/unionOpportunity/fromMe/page?current=1`)
-          .then(res => {
-            if (res.data.data) {
-              this.tableData = res.data.data.records || [];
-              this.totalAll = res.data.data.total;
-              this.tableData.forEach((v, i) => {
-                v.opportunity.acceptStatus = bussinessStatusChange(v.opportunity.acceptStatus);
-              });
-            } else {
-              this.tableData = [];
-              this.totalAll = 0;
-            }
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          });
+        this.currentPage = 1;
+        this.unionId = '';
+        this.value = '';
+        this.input = '';
+        this.getTableData();
       }
     },
-    // 带条件搜索
-    search(value) {
-      let val = value || 1;
+    getTableData() {
       $http
-        .get(`/unionOpportunity/fromMe/page?current=${val}&unionId=${this.unionId}&` + this.value + '=' + this.input)
+        .get(
+          `/unionOpportunity/fromMe/page?current=${this.currentPage}&unionId=${this.unionId}&` +
+            this.value +
+            '=' +
+            this.input
+        )
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
@@ -161,9 +152,15 @@ export default {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
+    // 带条件搜索
+    search() {
+      this.currentPage = 1;
+      this.getTableData();
+    },
     // 分页搜索
     handleCurrentChange(val) {
-      this.search(val);
+      this.currentPage = val;
+      this.getTableData();
     },
     filterTag(value, row) {
       return row.opportunity.acceptStatus === value;

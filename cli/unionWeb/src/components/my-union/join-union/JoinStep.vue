@@ -123,20 +123,7 @@ export default {
     };
   },
   mounted: function() {
-    $http
-      .get(`/unionMain/join/page`)
-      .then(res => {
-        if (res.data.data) {
-          this.datas = res.data.data.records || [];
-          this.totalAll = res.data.data.total;
-        } else {
-          this.datas = [];
-          this.totalAll = 0;
-        }
-      })
-      .catch(err => {
-        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-      });
+    this.init();
   },
   methods: {
     next() {
@@ -166,10 +153,13 @@ export default {
     back() {
       this.$router.push({ path: '/my-union' });
     },
-    // 分页查询
-    handleCurrentChange(val) {
+    init() {
+      this.currentPage = 1;
+      this.getDatas();
+    },
+    getDatas() {
       $http
-        .get(`/unionMain/join/page?current=${val}`)
+        .get(`/unionMain/join/page?current=${this.currentPage}`)
         .then(res => {
           if (res.data.data) {
             this.datas = res.data.data.records || [];
@@ -182,6 +172,11 @@ export default {
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
+    },
+    // 分页查询
+    handleCurrentChange(val) {
+      this.currentPage = val;
+      this.getDatas();
     },
     onSubmit(formName) {
       this.$refs[formName].validate(valid => {

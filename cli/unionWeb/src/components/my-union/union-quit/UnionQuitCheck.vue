@@ -100,8 +100,12 @@ export default {
   },
   methods: {
     init() {
+      this.currentPage = 1;
+      this.getTableData();
+    },
+    getTableData() {
       $http
-        .get(`/unionMemberOut/unionId/${this.unionId}/page?current=1`)
+        .get(`/unionMemberOut/unionId/${this.unionId}/page?current=${this.currentPage}`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
@@ -117,16 +121,8 @@ export default {
     },
     // 分页查询
     handleCurrentChange(val) {
-      $http
-        .get(`/unionMemberOut/unionId/${this.unionId}/page?current=${val}`)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records || [];
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+      this.currentPage = val;
+      this.getTableData();
     },
     // 弹出框 同意
     agree(scope) {

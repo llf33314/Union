@@ -179,33 +179,18 @@ export default {
           .catch(err => {
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
-        $http
-          .get(`/unionBrokerageIncome/opportunity/page?current=1`)
-          .then(res => {
-            if (res.data.data) {
-              this.tableData = res.data.data.records || [];
-              this.totalAll = res.data.data.total;
-              this.tableData.forEach((v, i) => {
-                v.opportunity.createTime = timeFilter(v.opportunity.createTime);
-                v.opportunity.acceptStatus = commissionTypeFilter(v.opportunity.acceptStatus);
-                v.opportunity.isClose = commissionIsCloseFilter(v.opportunity.isClose);
-              });
-            } else {
-              this.tableData = [];
-              this.totalAll = 0;
-            }
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          });
+        this.currentPage = 1;
+        this.unionId = '';
+        this.toMemberId = '';
+        this.value = '';
+        this.input = '';
+        this.getTableData();
       }
     },
-    // 带条件搜索
-    search(value) {
-      let val = value || 1;
+    getTableData() {
       $http
         .get(
-          `/unionBrokerageIncome/opportunity/page?current=${val}&unionId=${this.unionId}&toMemberId=${this
+          `/unionBrokerageIncome/opportunity/page?current=${this.currentPage}&unionId=${this.unionId}&toMemberId=${this
             .toMemberId}&` +
             this.value +
             '=' +
@@ -229,9 +214,15 @@ export default {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
+    // 带条件搜索
+    search() {
+      this.currentPage = 1;
+      this.getTableData();
+    },
     // 分页搜索
     handleCurrentChange(val) {
-      this.search(val);
+      this.currentPage = val;
+      this.getTableData();
     },
     filterTag(value, row) {
       return row.opportunity.isClose === value;

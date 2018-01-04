@@ -117,7 +117,8 @@ public class UnionMemberOutController {
             HttpServletRequest request,
             @ApiParam(value = "联盟id", name = "unionId", required = true)
             @PathVariable("unionId") Integer unionId,
-            @ApiParam(value = "退盟理由", name = "reason", required = true) String reason) throws Exception {
+            @ApiParam(value = "退盟理由", name = "reason", required = true)
+            @RequestBody String reason) throws Exception {
         BusUser busUser = SessionUtils.getLoginUser(request);
         Integer busId = busUser.getId();
         if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {

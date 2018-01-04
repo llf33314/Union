@@ -74,9 +74,7 @@ export default {
       });
   },
   methods: {
-    // 带条件搜索
-    search(value) {
-      let val = value || 1;
+    getTableData() {
       let beginTime, endTime;
       if (this.timeValue[0]) {
         beginTime = this.timeValue[0].getTime();
@@ -87,7 +85,7 @@ export default {
       }
       $http
         .get(
-          `/unionCardSharingRecord/unionId/${this.unionId}/page?current=${val}&cardNumber=${this
+          `/unionCardSharingRecord/unionId/${this.unionId}/page?current=${this.currentPage}&cardNumber=${this
             .value1}&beginTime=${beginTime}&endTime=${endTime}`
         )
         .then(res => {
@@ -102,9 +100,15 @@ export default {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
+    // 带条件搜索
+    search() {
+      this.currentPage = 1;
+      this.getTableData();
+    },
     // 分页
     handleCurrentChange(val) {
-      this.search(val);
+      this.currentPage = val;
+      this.getTableData();
     },
     // 导出售卡分成记录
     output() {

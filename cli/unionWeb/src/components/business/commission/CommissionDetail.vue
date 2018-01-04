@@ -112,27 +112,14 @@ export default {
           .catch(err => {
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
-        $http
-          .get(`/unionBrokeragePay/detail/page?current=1`)
-          .then(res => {
-            if (res.data.data) {
-              this.tableData = res.data.data.records || [];
-              this.totalAll = res.data.data.total;
-            } else {
-              this.tableData = [];
-              this.totalAll = 0;
-            }
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          });
+        this.currentPage = 1;
+        this.unionId = '';
+        this.getTableData();
       }
     },
-    // 改变选取联盟
-    search(value) {
-      let val = value || 1;
+    getTableData() {
       $http
-        .get(`/unionBrokeragePay/detail/page?current=${val}&unionId=${this.unionId}`)
+        .get(`/unionBrokeragePay/detail/page?current=${this.currentPage}&unionId=${this.unionId}`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
@@ -146,9 +133,15 @@ export default {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
+    // 改变选取联盟
+    search() {
+      this.currentPage = 1;
+      this.getTableData();
+    },
     // 分页查询
     handleCurrentChange(val) {
-      this.search(val);
+      this.currentPage = val;
+      this.getTableData();
     },
     // 弹出框 佣金详情
     showDialog(scope) {
