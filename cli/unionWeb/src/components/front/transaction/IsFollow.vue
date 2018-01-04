@@ -103,7 +103,7 @@ export default {
                   }
                 });
                 this.socket.on('chatevent', function(data) {
-                  console.log(data, 111)
+                  console.log(data, 111);
                   if (_this.visible) {
                     let msg = eval('(' + data.message + ')');
                     _this.wxData = msg;
@@ -121,7 +121,7 @@ export default {
     },
     // 下载二维码
     downloadCode() {
-      let url = this.$store.state.baseUrl + `/api/user/qrCodeUrl?url=${this.codeSrc}`;
+      let url = this.$store.state.memberUrl + `/addMember/downQcode.do?url=${this.codeSrc}`;
       window.open(url);
     }
   }

@@ -44,7 +44,7 @@
           <span>{{ detailData.discountCard.createTime }}</span>
         </p>
         <p> 享受折扣：
-          <span>{{ detailData.discount }}</span>
+          <span>{{ detailData.discount * 10 }}</span>
         </p>
       </div>
       <div v-for="item in detailData.activityCardList" :key="item.id">
