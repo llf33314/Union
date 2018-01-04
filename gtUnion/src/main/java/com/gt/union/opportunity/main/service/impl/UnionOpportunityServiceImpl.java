@@ -557,8 +557,8 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         if (StringUtil.isEmpty(clientName)) {
             throw new BusinessException("客户名称不能为空");
         }
-        if (StringUtil.getStringLength(clientName) > 20) {
-            throw new BusinessException("客户名称字段长度不能超过20");
+        if (StringUtil.getStringLength(clientName) > 10) {
+            throw new BusinessException("客户名称字段长度不能超过10");
         }
         saveOpportunity.setClientName(clientName);
 
@@ -575,8 +575,8 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         if (StringUtil.isEmpty(businessMsg)) {
             throw new BusinessException("业务备注不能为空");
         }
-        if (StringUtil.getStringLength(businessMsg) > 100) {
-            throw new BusinessException("业务备注字段长度不能超过100");
+        if (StringUtil.getStringLength(businessMsg) > 50) {
+            throw new BusinessException("业务备注字段长度不能超过50");
         }
         saveOpportunity.setBusinessMsg(businessMsg);
 

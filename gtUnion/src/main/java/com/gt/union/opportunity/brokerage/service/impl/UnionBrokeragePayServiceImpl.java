@@ -179,7 +179,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("order_no", orderNo);
+                .eq("sys_order_no", orderNo);
 
         return unionBrokeragePayDao.selectList(entityWrapper);
     }

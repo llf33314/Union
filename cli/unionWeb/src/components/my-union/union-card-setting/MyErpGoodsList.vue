@@ -84,7 +84,7 @@
               <p>已选择：{{ selectedErpRight.length }}</p>
               <div v-for="(item, index) in selectedErpRight" :key="item.id">
                 <el-input-number v-model="item.number" :min="1" size="small" :max="item.amount"></el-input-number>
-                <el-button @click="handleDelete2(index)">删除</el-button>
+                <el-button @click="handleDelete2(index)" type="text">删除</el-button>
               </div>
             </div>
           </div>

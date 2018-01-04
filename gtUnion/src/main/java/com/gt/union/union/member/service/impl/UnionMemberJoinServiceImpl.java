@@ -203,8 +203,8 @@ public class UnionMemberJoinServiceImpl implements IUnionMemberJoinService {
         if (StringUtil.isEmpty(enterpriseName)) {
             throw new BusinessException("企业名称不能为空");
         }
-        if (StringUtil.getStringLength(enterpriseName) > 30) {
-            throw new BusinessException("企业名称字数不能超过30");
+        if (StringUtil.getStringLength(enterpriseName) > 15) {
+            throw new BusinessException("企业名称字数不能超过15");
         }
         saveMember.setEnterpriseName(enterpriseName);
         // （5-2）负责人名称
@@ -212,8 +212,8 @@ public class UnionMemberJoinServiceImpl implements IUnionMemberJoinService {
         if (itemKeyList.contains(UnionConstant.ITEM_KEY_DIRECTOR_NAME) && StringUtil.isEmpty(directorName)) {
             throw new BusinessException("负责人名称不能为空");
         }
-        if (StringUtil.isNotEmpty(directorName) && StringUtil.getStringLength(directorName) > 20) {
-            throw new BusinessException("负责人名称字数不能超过20");
+        if (StringUtil.isNotEmpty(directorName) && StringUtil.getStringLength(directorName) > 10) {
+            throw new BusinessException("负责人名称字数不能超过10");
         }
         saveMember.setDirectorName(directorName);
         // （5-3）负责人电话
@@ -244,8 +244,8 @@ public class UnionMemberJoinServiceImpl implements IUnionMemberJoinService {
         if (itemKeyList.contains(UnionConstant.ITEM_KEY_REASON) && StringUtil.isEmpty(reason)) {
             throw new BusinessException("理由不能为空");
         }
-        if (StringUtil.isNotEmpty(reason) && StringUtil.getStringLength(reason) > 100) {
-            throw new BusinessException("理由字数不能超过100");
+        if (StringUtil.isNotEmpty(reason) && StringUtil.getStringLength(reason) > 50) {
+            throw new BusinessException("理由字数不能超过50");
         }
         saveJoin.setReason(reason);
         // （6）	如果是盟主推荐入盟，则直接入盟成功

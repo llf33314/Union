@@ -172,8 +172,8 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
         if (StringUtil.isEmpty(unionName)) {
             throw new BusinessException("联盟名称不能为空");
         }
-        if (StringUtil.getStringLength(unionName) > 20) {
-            throw new BusinessException("联盟名称字数不能大于20");
+        if (StringUtil.getStringLength(unionName) > 10) {
+            throw new BusinessException("联盟名称字数不能大于10");
         }
         saveUnion.setName(unionName);
         // （4-2）联盟图标
@@ -187,8 +187,8 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
         if (StringUtil.isEmpty(unionIllustration)) {
             throw new BusinessException("联盟说明不能为空");
         }
-        if (StringUtil.getStringLength(unionIllustration) > 60) {
-            throw new BusinessException("联盟说明字数不能大于60");
+        if (StringUtil.getStringLength(unionIllustration) > 30) {
+            throw new BusinessException("联盟说明字数不能大于30");
         }
         saveUnion.setIllustration(unionIllustration);
         // （4-4）加盟方式
@@ -222,8 +222,8 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
         if (StringUtil.isEmpty(memberEnterpriseName)) {
             throw new BusinessException("企业名称不能为空");
         }
-        if (StringUtil.getStringLength(memberEnterpriseName) > 30) {
-            throw new BusinessException("企业名称字数不能大于30");
+        if (StringUtil.getStringLength(memberEnterpriseName) > 15) {
+            throw new BusinessException("企业名称字数不能大于15");
         }
         saveMember.setEnterpriseName(memberEnterpriseName);
         // （4-7）企业地址
@@ -237,8 +237,8 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
         if (StringUtil.isEmpty(memberDirectorName)) {
             throw new BusinessException("负责人名称不能为空");
         }
-        if (StringUtil.getStringLength(memberDirectorName) > 20) {
-            throw new BusinessException("负责人名称字数不能大于20");
+        if (StringUtil.getStringLength(memberDirectorName) > 10) {
+            throw new BusinessException("负责人名称字数不能大于10");
         }
         saveMember.setDirectorName(memberDirectorName);
         // （4-9）负责人联系电话
@@ -295,6 +295,8 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
 
         if (ListUtil.isNotEmpty(saveDictList)) {
             for (UnionMainDict dict : saveDictList) {
+                dict.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                dict.setCreateTime(currentDate);
                 dict.setUnionId(saveUnion.getId());
             }
             unionMainDictService.saveBatch(saveDictList);
