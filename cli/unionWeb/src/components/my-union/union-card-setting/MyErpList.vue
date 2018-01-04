@@ -40,7 +40,7 @@
           <el-row>
             <el-col style="width:220px;">
               <el-form :inline="true" class="demo-form-inline">
-                <el-select v-model="erpType" clearable placeholder="请选择分类" @change="erpModelChange">
+                <el-select v-model="erpType" clearable placeholder="请选择行业" @change="erpModelChange">
                   <el-option v-for="item in options1" :key="item.erpType" :label="item.erpName" :value="item.erpType">
                   </el-option>
                 </el-select>
@@ -203,13 +203,13 @@ export default {
         this.options2 = [];
         this.shopId = '';
       }
+      this.tableData = [];
+      this.selectedErpRight = [];
     },
     // 选择门店，获取项目列表
     search() {
-      if (this.shopId) {
-        this.currentPage = 1;
-        this.getTableData();
-      }
+      this.currentPage = 1;
+      this.getTableData();
     },
     getTableData() {
       $http
@@ -300,7 +300,7 @@ export default {
       this.selectedErpRight.forEach(v => {
         this.erpTextList.push({
           erpType: this.erpType,
-          shopId: this.shopId,
+          shopId: v.shopId,
           erpTextId: v.id,
           name: v.name,
           number: v.number
