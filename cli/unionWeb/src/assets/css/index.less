@@ -116,13 +116,11 @@ hr{
 }
 //步骤条的公共样式
 .step-top{
-  //margin: 0 50px;
   margin-bottom: 35px;
   height: 105px;
   border-bottom: 1px solid #f3f3f3;
   .el-steps {
     height: 105px;
-    //padding-top: 40px;
     box-sizing: border-box;
   }
 }
@@ -495,9 +493,9 @@ hr{
     font-size: 12px;
     line-height: 1;
     padding-top: 4px;
-    position: static !important;
-    float: left;
+    position: absolute!important;
     margin: 10px 0 0 40px;
+    left: 252px;
   }
   .el-form-item__label {
     padding: 11px 12px 18px 0;
@@ -1184,10 +1182,10 @@ hr{
         #noUnion,#noUnion1{
           margin: 0!important;
         }
-        .el-input__inner{
-          width: 120px;
-          margin: 5px;
-        }
+        //.el-input__inner{
+        //  width: 120px;
+        //  margin: 5px;
+        //}
       }
       footer{
         width: 100%;
@@ -1227,8 +1225,10 @@ hr{
           .el-dialog__body{
             padding: 0;
             margin-top: 15px;
-            .el-input__inner{
-              width: 195px;
+            .el-row {
+              .el-input__inner {
+                width: 195px;
+              }
             }
             >div{
               margin-left: 30px;
@@ -1238,6 +1238,7 @@ hr{
                 .rightContent{
                   width: 238px;
                   height: 442px;
+                  overflow-y: auto;
                   border: solid 1px #dfe6ec;
                   float: right;
                   margin-right: 30px;
@@ -1246,10 +1247,9 @@ hr{
                     padding: 11px 10px 10px;
                   }
                   >div{
-                    margin-left: 10px;
+                    margin: 10px 20px 5px 20px;
                     .el-input-number--small{
                       width: 100px;
-                      margin: 5px 15px 0 30px;
                     }
                   }
                 }
@@ -1604,6 +1604,9 @@ hr{
                     margin-left: 50px;
                   }
                 }
+              }
+              .el-button--text{
+                margin-left: 15px;
               }
             }
             .el-table__body-wrapper{

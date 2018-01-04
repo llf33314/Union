@@ -56,7 +56,7 @@
           </p> -->
           <p>
             <span>活动卡对外售价</span>
-            <span style="color: #ff4949;margin-left: 28px;">￥{{ (item.activity.price.toFixed(2)) }}</span>
+            <span style="color: #ff4949;margin-left: 58px;">￥{{ (item.activity.price.toFixed(2)) }}</span>
           </p>
           <!-- <p>
             <span>活动卡发行量</span>
