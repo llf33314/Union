@@ -14,7 +14,7 @@
               <template slot="prepend">￥</template>
             </el-input>
           </el-form-item>
-          <el-form-item label="颜色：" prop="color" style="height: 80px;">
+          <el-form-item label="颜色：" prop="color">
             <!-- todo 需要更改 -->
             <union-color-picker @colorSelect="colorSelect"></union-color-picker>
           </el-form-item>

@@ -102,9 +102,9 @@ public class UnionMainNoticeServiceImpl implements IUnionMainNoticeService {
             throw new BusinessException(CommonConstant.UNION_OWNER_ERROR);
         }
 
-        // （2）公告内容字数不能超过160字
-        if (StringUtil.getStringLength(content) > 160) {
-            throw new BusinessException("公告内容不能为空，且字数不能大于160");
+        // （2）公告内容字数不能超过80字
+        if (StringUtil.getStringLength(content) > 80) {
+            throw new BusinessException("公告内容不能为空，且字数不能大于80");
         }
 
         // （3）更新或新增
