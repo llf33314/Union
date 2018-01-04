@@ -337,6 +337,9 @@ hr {
   padding-left: 38px!important;
   padding-right: 1px!important;
 }
+#memberName .model_13 .el-dialog--tiny {
+  width: 550px;
+}
 #myUnionCard1 .select_ .el-select .el-input__inner {
   background: #F6F6F6;
 }
@@ -425,6 +428,9 @@ hr {
   padding: 0;
   margin-bottom: 65px;
   margin-top: 15px;
+}
+#apply_for .model_03 .el-dialog--tiny {
+  width: 550px;
 }
 .el-pagination {
   margin-top: 10px;
@@ -596,7 +602,7 @@ hr {
 }
 #sellCard #ActivityCardSellDivide .contentList {
   width: 370px!important;
-  height: 187px!important;
+  height: 181px!important;
   background-color: #ffffff;
   border: solid 1px #dddddd;
   display: inline-block;
