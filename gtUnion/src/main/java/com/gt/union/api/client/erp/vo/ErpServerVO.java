@@ -17,6 +17,9 @@ public class ErpServerVO {
 	@ApiModelProperty(value = "erp服务项目名称")
 	private String name;
 
+	@ApiModelProperty(value = "erp类型")
+	private Integer erpType;
+
 	public Integer getId() {
 		return id;
 	}
@@ -31,5 +34,13 @@ public class ErpServerVO {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Integer getErpType() {
+		return erpType;
+	}
+
+	public void setErpType(Integer erpType) {
+		this.erpType = erpType;
 	}
 }
