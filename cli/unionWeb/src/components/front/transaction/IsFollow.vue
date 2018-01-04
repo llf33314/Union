@@ -1,7 +1,7 @@
 <template>
   <div v-if="codeSrc">
     <!-- 是否关注公众号办理 -->
-    <div class="fr drop_down">
+    <div class="fr drop_down" v-show="!visible">
       <p>扫码二维码关注公众号</p>
       <div class="middle_">
         <img v-bind:src="codeSrc" class="codeImg" style="width:240px;height:240px;">
@@ -55,6 +55,10 @@ export default {
     }
   },
   mounted: function() {
+    // 切换tab清空输入数据
+    eventBus.$on('tabChange3', () => {
+      this.visible = false;
+    });
     this.canFollow();
   },
   methods: {

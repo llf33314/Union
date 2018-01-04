@@ -264,9 +264,9 @@ export default {
                           let color1 = (v.color1 = v.color.split(',')[0]);
                           let color2 = (v.color2 = v.color.split(',')[1]);
                           let mDiv = 'm' + color2 + i;
-                          // setTimeout(function () {
-                          //   $("." + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
-                          // }, 0)
+                          setTimeout(function () {
+                            $("." + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
+                          }, 0)
                         });
                       }
                       this.form2.activityCheckList = [];

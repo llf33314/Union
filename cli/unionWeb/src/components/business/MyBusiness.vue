@@ -244,10 +244,6 @@ export default {
     // 校验输入为数字类型
     check() {
       this.acceptancePrice = numberCheck(this.acceptancePrice);
-      if (this.acceptancePrice < 1) {
-        this.$message({ showClose: true, message: '商机的受理价格最小为1元', type: 'error', duration: 5000 });
-        this.acceptancePrice = 1;
-      }
     },
     // 接受
     agree(scope) {
@@ -257,21 +253,29 @@ export default {
     },
     // 接受确认
     confirm() {
-      $http
-        .put(
-          `/unionOpportunity/${this.opportunityId}/unionId/${this.putUnionId}?isAccept=1&acceptPrice=${this
-            .acceptancePrice}`
-        )
-        .then(res => {
-          if (res.data.success) {
-            eventBus.$emit('newCommissionPay');
-            this.dialogVisible1 = false;
-            this.search();
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+      if (this.acceptancePrice) {
+        if (this.acceptancePrice < 1) {
+          this.$message({ showClose: true, message: '商机受理金额最小为1元', type: 'error', duration: 5000 });
+        } else {
+          $http
+            .put(
+              `/unionOpportunity/${this.opportunityId}/unionId/${this.putUnionId}?isAccept=1&acceptPrice=${this
+                .acceptancePrice}`
+            )
+            .then(res => {
+              if (res.data.success) {
+                eventBus.$emit('newCommissionPay');
+                this.dialogVisible1 = false;
+                this.search();
+              }
+            })
+            .catch(err => {
+              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+            });
+        }
+      } else {
+        this.$message({ showClose: true, message: '请输入商机受理金额', type: 'error', duration: 5000 });
+      }
     },
     // 拒绝
     disagree(scope) {

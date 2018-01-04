@@ -66,15 +66,15 @@
       </el-dialog>
     </div>
     <!-- 弹出框 确认移出 -->
-    <el-dialog title="" :visible.sync="visible1" size="tiny">
-      <div class="model_12">
-        <p>是否确认移出“ {{ enterpriseName }} ”</p>
-      </div>
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="confirm1">确定</el-button>
-        <el-button @click="visible1=false">取消</el-button>
-      </span>
-    </el-dialog>
+    <div class="model_13">
+      <el-dialog title="" :visible.sync="visible1" size="tiny">
+          <p>是否确认移出“ {{ enterpriseName }} ”</p>
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="confirm1">确定</el-button>
+          <el-button @click="visible1=false">取消</el-button>
+        </span>
+      </el-dialog>
+    </div>
     <!-- 弹出框 确认撤回移出 -->
     <el-dialog title="" :visible.sync="visible2" size="tiny">
       <div class="model_12">

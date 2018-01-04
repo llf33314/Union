@@ -194,36 +194,12 @@ export default {
     },
     // 消费记录加载
     init() {
-      $http
-        .get(`/unionConsume/record/page?current=1`)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records || [];
-            this.totalAll = res.data.data.total;
-            this.tableData.forEach((v, i) => {
-              v.itemList = [];
-              if (v.nonErpTextList) {
-                v.nonErpTextList.forEach((val, idx) => {
-                  v.itemList.push(val.name);
-                });
-              }
-              if (v.erpTextList) {
-                v.erpTextList.forEach((val, idx) => {
-                  v.itemList.push(val.name);
-                });
-              }
-              v.itemList = v.itemList.join(',');
-              v.consume.createTime = timeFilter(v.consume.createTime);
-              v.consume.payStatus = expenseStatusFilter(v.consume.payStatus);
-            });
-          } else {
-            this.tableData = [];
-            this.totalAll1 = 0;
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+      this.currentPage = 1;
+      this.unionId = '';
+      this.shopId = '';
+      this.value = '';
+      this.input = '';
+      this.getTableData();
     },
     getTableData() {
       let beginTime, endTime;
@@ -247,16 +223,18 @@ export default {
             this.tableData = res.data.data.records || [];
             this.totalAll = res.data.data.total;
             this.tableData.forEach((v, i) => {
-              v.itemList = [];
-              v.nonErpTextList.forEach((val, idx) => {
-                v.itemList.push(val.name);
-              });
-              v.erpTextList.forEach((val, idx) => {
-                v.itemList.push(val.name);
-              });
-              v.itemList.join(',');
-              v.consume.createTime = timeFilter(v.consume.createTime);
-              v.consume.payStatus = expenseStatusFilter(v.consume.payStatus);
+              if (v.nonErpTextList || v.erpTextList || v.erpGoodsList) {
+                v.itemList = [];
+                v.nonErpTextList.forEach((val, idx) => {
+                  v.itemList.push(val.name);
+                });
+                v.erpTextList.forEach((val, idx) => {
+                  v.itemList.push(val.name);
+                });
+                v.itemList.join(',');
+                v.consume.createTime = timeFilter(v.consume.createTime);
+                v.consume.payStatus = expenseStatusFilter(v.consume.payStatus);
+              }
             });
           } else {
             this.tableData = [];

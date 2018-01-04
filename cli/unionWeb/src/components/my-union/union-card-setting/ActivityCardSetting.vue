@@ -195,7 +195,9 @@ export default {
               let color1 = (v.color1 = v.activity.color.split(',')[0]);
               let color2 = (v.color2 = v.activity.color.split(',')[1]);
               let mDiv = 'm' + color2 + i;
-              // $("." + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
+              setTimeout(function () {
+                $("." + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
+              },0);
             });
             this.totalAll = res.data.data.total;
           } else {

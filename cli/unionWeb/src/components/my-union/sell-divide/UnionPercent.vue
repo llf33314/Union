@@ -6,7 +6,7 @@
         <el-tab-pane label="售卡佣金分成记录" name="first">
           <sell-divide-proportion></sell-divide-proportion>
         </el-tab-pane>
-        <el-tab-pane label="活动卡售卡比例设置" name="second">
+        <el-tab-pane label="活动卡售卡比例设置" name="second" v-if="isUnionOwner">
           <activity-card-sell-divide></activity-card-sell-divide>
         </el-tab-pane>
       </el-tabs>
@@ -54,5 +54,4 @@ export default {
 .table_footer {
   margin-top: 22px;
 }
-
 </style>
