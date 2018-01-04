@@ -103,7 +103,7 @@
     </div>
     <!-- 弹出框 支付页面 -->
     <div class="model_0">
-      <el-dialog title="支付" :visible.sync="dialogVisible" size="tiny">
+      <el-dialog title="支付" :visible.sync="visible" size="tiny">
         <hr>
         <div class="middle_">
           <img v-bind:src="imgSrc" class="imgSrc">
@@ -149,7 +149,7 @@ export default {
       tableData: [],
       currentPage: 1,
       brokerageMoney: 0,
-      dialogVisible: false,
+      visible: false,
       opportunityId: '',
       imgSrc: '',
       canPay: false,
@@ -293,7 +293,7 @@ export default {
           if (_this.socketKey == msg.socketKey) {
             if (msg.status == '1') {
               _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
-              _this.visible1 = false;
+              _this.visible = false;
               _this.socketFlag.socketKey = msg.socketKey;
               _this.socketFlag.status = msg.status;
               _this.init();
@@ -316,7 +316,7 @@ export default {
           if (res.data.data) {
             this.imgSrc = res.data.data.payUrl;
             this.socketKey = res.data.data.socketKey;
-            this.dialogVisible = true;
+            this.visible = true;
             this.mySocket();
           } else {
             this.imgSrc = '';
@@ -344,7 +344,7 @@ export default {
           if (res.data.data) {
             this.imgSrc = res.data.data.payUrl;
             this.socketKey = res.data.data.socketKey;
-            this.dialogVisible = true;
+            this.visible = true;
             this.mySocket();
           } else {
             this.imgSrc = '';
