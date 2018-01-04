@@ -40,7 +40,7 @@
           <el-row>
             <el-col style="width:220px;">
               <el-form :inline="true" class="demo-form-inline">
-                <el-select v-model="erpType" clearable placeholder="请选择行业" @change="erpModelChange">
+                <el-select v-model="erpType" clearable placeholder="请选择分类" @change="erpModelChange">
                   <el-option v-for="item in options1" :key="item.erpType" :label="item.erpName" :value="item.erpType">
                   </el-option>
                 </el-select>
@@ -63,7 +63,7 @@
           </el-row>
           <div class="section_ clearfix">
             <div style="float:left;width: 580px;height: 445px;">
-              <el-table :data="tableData" style="width: 100%;height: 100%;" ref="multipleTable" @select="handleSelect" @select-all="handleSelectAll" @row-click="handleRowClick">
+              <el-table :data="tableData" style="width: 100%;" height="446" ref="multipleTable" @select="handleSelect" @select-all="handleSelectAll" @row-click="handleRowClick">
                 <el-table-column type="selection" min-width="55px"></el-table-column>
                 <el-table-column prop="name" label="ERP项目名称" min-width="100px">
                 </el-table-column>
@@ -73,15 +73,13 @@
             </div>
             <div class="rightContent">
               <p>已选择：{{ selectedErpRight.length }}</p>
-              <p v-for="(item, index) in selectedErpRight" :key="item.id">
-                <span> {{ item.name }} </span>
-                <span>
-                  <el-input-number v-model="item.number" :min="1"></el-input-number>
-                </span>
-                <span>
-                  <el-button @click="handleDelete2(index)">删除</el-button>
-                </span>
-              </p>
+              <div class="rightContentBottom">
+                <div v-for="(item, index) in selectedErpRight" :key="item.id">
+                  <span> {{ item.name }} </span>
+                    <el-input-number v-model="item.number" :min="1"></el-input-number>
+                    <el-button @click="handleDelete2(index)">删除</el-button>
+                </div>
+              </div>
             </div>
           </div>
         </div>

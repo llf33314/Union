@@ -5,3 +5,4 @@ webpackJsonp([8],{613:function(t,e,n){var r=n(235)(n(755),n(979),null,null,null)
  * @license  MIT
  */
 t.exports=function(t){return null!=t&&(n(t)||r(t)||!!t._isBuffer)}},755:function(t,e,n){"use strict";Object.defineProperty(e,"__esModule",{value:!0});var r=n(632);e.default={name:"finance-entrance",created:function(){var t=this;r.a.get("/unionIndex").then(function(e){e.data.data&&(e.data.data.currentUnion?t.$router.push({path:"/finance/index"}):t.$router.push({path:"/no-union"}))}).catch(function(e){t.$message({showClose:!0,message:e.toString(),type:"error",duration:5e3})})}}},979:function(t,e){t.exports={render:function(){var t=this,e=t.$createElement;return(t._self._c||e)("div")},staticRenderFns:[]}}});
+//# sourceMappingURL=8.4941b0773b737482d220.js.map

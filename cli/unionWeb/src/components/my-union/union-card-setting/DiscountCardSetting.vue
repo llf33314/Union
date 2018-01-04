@@ -7,7 +7,7 @@
           </el-input>
         </div>
       </el-col>
-      <el-col style="float: right;width: 90px;">
+        <el-col style="float: right;width: 90px;">
         <el-button @click="visible=true" type="primary">折扣设置</el-button>
       </el-col>
     </el-row>

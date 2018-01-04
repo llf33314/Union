@@ -35,8 +35,8 @@
                 <el-radio-button v-for="item in form.unionList" :key="item.id" :label="item.id">
                   <div class="dddddd clearfix">
                     <img v-bind:src="item.img" alt="" class="fl unionImg">
-                    <div class="fl" style="margin-left: 20px;position: absolute;top: 90px;left: -7px;">
-                      <h6 style="margin-bottom: 17px">{{item.name}}</h6>
+                    <div class="fl isShow">
+                      <h6 >{{item.name}}</h6>
                     </div>
                     <i></i>
                   </div>

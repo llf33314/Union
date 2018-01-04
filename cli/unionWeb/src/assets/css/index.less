@@ -131,7 +131,7 @@ hr{
     content: "";
   }
   .el-input__icon{
-    left: 207px;
+    left: 247px;
     background:url('../images/dingwei.png') center no-repeat;
   }
 }
@@ -496,12 +496,13 @@ hr{
     position: absolute!important;
     margin: 10px 0 0 40px;
     left: 252px;
+    top:-2px;
   }
   .el-form-item__label {
     padding: 11px 12px 18px 0;
   }
   .el-input__inner {
-    width: 241px;
+    width: 290px;
     display: inline-block;
   }
   .el-textarea {
@@ -1237,8 +1238,6 @@ hr{
                 margin-top: 18px;
                 .rightContent{
                   width: 238px;
-                  height: 442px;
-                  overflow-y: auto;
                   border: solid 1px #dfe6ec;
                   float: right;
                   margin-right: 30px;
@@ -1246,10 +1245,14 @@ hr{
                     background-color: #eef1f6;
                     padding: 11px 10px 10px;
                   }
-                  >div{
-                    margin: 10px 20px 5px 20px;
-                    .el-input-number--small{
-                      width: 100px;
+                  .rightContentBottom{
+                    height: 404px;
+                    overflow-y: auto;
+                    >div{
+                      margin: 10px 20px 5px 20px;
+                      .el-input-number--small{
+                        width: 100px;
+                      }
                     }
                   }
                 }
@@ -1302,6 +1305,16 @@ hr{
         width: 600px;
       }
     }
+    .model_12{
+      .el-dialog--tiny{
+        width: 450px;
+        .el-dialog__body{
+          >p{
+            margin: 20px;
+          }
+        }
+      }
+    }
     //弹出框的样式
     #popBox {
       //总体弹出框的宽度
@@ -1314,6 +1327,18 @@ hr{
         .el-dialog__title {
           font-size: 15px;
         }
+      }
+    }
+    //表格的样式
+    .second{
+      .el-button{
+        border: 1px solid #20a0ff;
+        color: #20a0ff;
+      }
+      .el-button:focus, .el-button:hover {
+        color: #fff;
+        border-color: #1d90e6;
+        background: #20a0ff;
       }
     }
     .RefundAu {
@@ -1394,6 +1419,11 @@ hr{
       }
       .selectUnion {
         margin-bottom: 35px!important;
+        .el-radio-button__inner:hover{
+          .isShow{
+            display: block!important;
+          }
+        }
         .el-form-item__content {
           //文字提示样式
           .el-form-item__error {
@@ -1406,6 +1436,14 @@ hr{
             position: absolute;
             top: 83px;
             left:-15px;
+          }
+          .isShow{
+            //margin-left: 20px;
+            display:none;
+            text-align: center;
+            h6{
+              margin-bottom: 17px;
+            }
           }
         }
       }
@@ -1549,6 +1587,21 @@ hr{
     .UnionCardInformation{
       min-width:540px;
       margin: auto;
+      .selectUnion{
+        .el-radio-button__inner:hover{
+          .isShow{
+            display: block!important;
+          }
+        }
+        .isShow{
+          position: absolute;top: 90px;left: -7px;
+          display:none;
+          text-align: center;
+          h6{
+            margin-bottom: 17px;
+          }
+        }
+      }
       >div {
         max-width: 1450px;
         margin: 0 auto;
@@ -1589,7 +1642,6 @@ hr{
                 height: 399px;
                 overflow-y: auto;
                 &::-webkit-scrollbar-thumb{
-                  /*width: 10px;*/
                   height: 5px;
                   border-radius: 10px;
                   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);

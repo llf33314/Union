@@ -347,8 +347,8 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
                 savePay.setFromMemberId(opportunity.getFromMemberId());
                 savePay.setToMemberId(opportunity.getToMemberId());
                 savePay.setUnionId(opportunity.getUnionId());
-                savePay.setFromBusId(fromMember.getBusId());
-                savePay.setToBusId(busId);
+                savePay.setFromBusId(busId);
+                savePay.setToBusId(fromMember.getBusId());
                 savePay.setSysOrderNo(orderNo);
                 savePay.setOpportunityId(opportunityId);
                 savePay.setMoney(opportunity.getBrokerageMoney());

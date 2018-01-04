@@ -14,7 +14,7 @@ import { getStrLength } from '@/utils/length-check.js';
 // 手机
 export function cellPhonePass(rule, value, callback) {
   if (!value) {
-    callback(new Error('手机号码不能为空，请重新输入'));
+    callback(new Error('没有意向客户手机'));
   } else if (!value.match(/^1[3|4|5|6|7|8][0-9][0-9]{8}$/)) {
     callback(new Error('请输入正确的手机号码'));
   } else {

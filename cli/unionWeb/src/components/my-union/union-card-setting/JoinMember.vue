@@ -12,7 +12,7 @@
           <el-table-column prop="" label="活动卡项目名称">
             <template slot-scope="scope">
               <el-popover trigger="hover" placement="bottom">
-                <p v-for="item in scope.row.itemList" :key="item.id">活动卡名称：{{ item.name }}, 数量：{{ item.number }}</p>
+                <p v-for="item in scope.row.itemList" :key="item.id">项目名称：{{ item.name }}, 数量：{{ item.number }}</p>
                 <div slot="reference" class="name-wrapper">
                   <span>{{ scope.row.itemList_ }}</span>
                 </div>
