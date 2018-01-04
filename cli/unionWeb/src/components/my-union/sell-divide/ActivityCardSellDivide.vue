@@ -125,11 +125,15 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.data1 = res.data.data.records || [];
+            console.log(this.data1);
             this.data1.forEach((v, i) => {
               v.activityStatus = activityCardStatusFilter(v.activityStatus);
               let color1 = (v.color1 = v.activity.color.split(',')[0]);
               let color2 = (v.color2 = v.activity.color.split(',')[1]);
               let mDiv = 'm' + color2 + i;
+              setTimeout(function () {
+                $("." + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
+              }, 0)
             });
             this.totalAll1 = res.data.data.total;
           } else {
