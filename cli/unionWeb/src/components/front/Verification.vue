@@ -25,7 +25,7 @@
           </el-form-item>
           <el-form-item label="选择门店:">
             <el-select v-model="shopId" placeholder="请选择">
-              <el-option v-for="item in form.shops" :key="item.id" :label="item.name" :value="item.id">
+              <el-option v-for="item in shops" :key="item.id" :label="item.name" :value="item.id">
               </el-option>
             </el-select>
           </el-form-item>
@@ -36,7 +36,7 @@
                   <div class="dddddd clearfix">
                     <img v-bind:src="item.img" alt="" class="fl unionImg">
                     <div class="fl isShow">
-                      <h6 >{{item.name}}</h6>
+                      <h6>{{item.name}}</h6>
                     </div>
                     <i></i>
                   </div>
@@ -227,6 +227,7 @@ export default {
         isProjectAvailable: ''
       },
       isProjectAvailable_: false,
+      shops: [],
       shopId: '',
       price: '',
       isIntegral: '', // 数据传输
@@ -328,9 +329,9 @@ export default {
               .get(`/api/shop/list`)
               .then(res => {
                 if (res.data.data) {
-                  this.form.shops = res.data.data;
+                  this.shops = res.data.data;
                 } else {
-                  this.form.shops = [];
+                  this.shops = [];
                 }
               })
               .catch(err => {
