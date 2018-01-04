@@ -139,7 +139,7 @@ wx:
 
 #会员粉丝
 member:
-  url: http://member.yifriend.net
+  url: http://113.106.202.53:13887
   signkey: MV8MMFQUMU1HJ6F2GNH40ZFJJ7Q8LNVM
 
 #车小算

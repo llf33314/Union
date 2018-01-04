@@ -1,6 +1,6 @@
 <template>
   <!-- 我的佣金收入 -->
-  <div >
+  <div>
     <el-row>
       <el-col style="width:300px;">
         <el-form :inline="true" class="demo-form-inline">

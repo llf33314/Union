@@ -78,16 +78,6 @@ public class BusUserApiController {
 		return GtJsonResult.instanceSuccessMsg(data);
 	}
 
-	@ApiOperation(value = "下载公众号二维码链接", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "qrCodeUrl", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public void downloadWXQrCode(HttpServletRequest request,HttpServletResponse response,
-								  @ApiParam(value = "公众号二维码链接", name = "url", required = true)
-								  @RequestParam(value = "url") String url) throws Exception {
-		response.setHeader("Content-Disposition",
-				"attachment;filename=\"" + URLEncoder.encode("关注公众号二维码.jpg",
-						"UTF-8") + "\"");
-		QRcodeKit.buildQRcode(url, 250, 250, response);
-	}
 
 	/**
 	 * 关注推送回调

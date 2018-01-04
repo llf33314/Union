@@ -461,7 +461,7 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
                 if (erpGoodsId == null) {
                     throw new BusinessException("ERP商品项目id不能为空");
                 }
-                saveItem.setErpTextId(erpGoodsId);
+                saveItem.setErpGoodsId(erpGoodsId);
 
                 String name = erpGoods.getName();
                 if (StringUtil.isEmpty(name)) {
