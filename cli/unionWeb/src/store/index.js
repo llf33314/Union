@@ -20,6 +20,7 @@ export default new Vuex.Store({
     baseUrl: 'http://union.yifriend.net:7884', // 调试
     // baseUrl: 'https://union.deeptel.com.cn', // 测试
     // baseUrl: 'http://nb.union.deeptel.com.cn', // 堡垒
+    memberUrl: 'https://member.deeptel.com.cn',
     socketUrl: 'https://socket.deeptel.com.cn', // 测试
     // socketUrl: 'https://socket1.duofriend.com', // 堡垒
     materialUrl: 'https://suc.deeptel.com.cn/common/material.do?retUrl=', // 测试

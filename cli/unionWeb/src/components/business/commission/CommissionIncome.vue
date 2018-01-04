@@ -71,9 +71,9 @@
       </el-table-column>
       <el-table-column prop="opportunity.acceptStatus" label="交易类型" min-width="100px">
       </el-table-column>
-      <el-table-column prop="isClose" label="佣金结算状态" min-width="140px" :filters="[{ text: '未结算', value: '未结算' }, { text: '已结算', value: '已结算' }]" :filter-method="filterTag" filter-placement="bottom-end">
+      <el-table-column prop="isClose" label="佣金结算状态" min-width="140px" :filters="[{ text: '未支付', value: '未支付' }, { text: '已支付', value: '已支付' }]" :filter-method="filterTag" filter-placement="bottom-end">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.opportunity.isClose === '未结算' ? 'danger' : 'success'">{{scope.row.opportunity.isClose}}</el-tag>
+          <el-tag :type="scope.row.opportunity.isClose === '未支付' ? 'danger' : 'success'">{{scope.row.opportunity.isClose}}</el-tag>
         </template>
       </el-table-column>
       <el-table-column prop="opportunity.createTime" label="交易时间" min-width="150">

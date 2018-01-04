@@ -80,7 +80,7 @@
       <!-- 弹出框 确认取消移出 -->
       <div class="model_12">
         <el-dialog title="" :visible.sync="visible3" size="tiny">
-            <p>是否确认取消移出“ {{ enterpriseName }} ”</p>
+          <p>是否确认取消移出“ {{ enterpriseName }} ”</p>
           <span slot="footer" class="dialog-footer">
             <el-button type="primary" @click="confirm3">确定</el-button>
             <el-button @click="visible3=false">取消</el-button>

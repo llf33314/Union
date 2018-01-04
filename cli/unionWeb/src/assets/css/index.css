@@ -449,7 +449,7 @@ hr {
   padding-top: 4px;
   position: absolute!important;
   margin: 10px 0 0 40px;
-  left: 252px;
+  left: 280px;
   top: -2px;
 }
 .tabs .el-form-item__label {
@@ -596,7 +596,7 @@ hr {
 }
 #sellCard #ActivityCardSellDivide .contentList {
   width: 370px!important;
-  height: 288px!important;
+  height: 187px!important;
   background-color: #ffffff;
   border: solid 1px #dddddd;
   display: inline-block;
@@ -604,7 +604,7 @@ hr {
 }
 #sellCard #ActivityCardSellDivide .contentList > div {
   width: 330px;
-  height: 197px;
+  height: 80px;
   padding-bottom: 20px;
   margin: 0 20px;
   margin-top: 20px;
@@ -614,7 +614,7 @@ hr {
 }
 #sellCard #ActivityCardSellDivide .contentList > div img {
   width: 330px;
-  height: 197px;
+  height: 80px;
 }
 #sellCard #ActivityCardSellDivide .contentList > div span {
   position: absolute;
@@ -1105,6 +1105,9 @@ hr {
   margin: 10px 20px 5px 20px;
 }
 #UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .rightContent .rightContentBottom > div .el-input-number--small {
+  width: 100px;
+}
+#UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .rightContent .rightContentBottom > div .el-input-number {
   width: 100px;
 }
 #UnionQuit .container {

@@ -24,7 +24,7 @@
       </el-form-item>
       <el-form-item label="手机短信通知：" prop="notifyPhone">
         <el-col :span="6">
-          <el-input v-model="form.notifyPhone" placeholder="请输入请输入接收短信手机号"></el-input>
+          <el-input v-model="form.notifyPhone" placeholder="请输入接收短信手机号"></el-input>
         </el-col>
         <el-tooltip content="该手机短信通知可用于催付可提佣金、盟员退盟通知" placement="right">
           <span class="tubiao">!</span>
