@@ -15,7 +15,7 @@
       </span>
     </div>
     <!-- 新增粉丝信息 -->
-    <div class="fr drop_down1 step2" v-if="this.publicId" v-show="visible">
+    <div class="fr drop_down1 step2" v-show="visible">
       <p>新增粉丝信息</p>
       <div class="dddddd clearfix">
         <img v-bind:src="wxData.headurl" alt="" class="fl unionImg">
@@ -104,10 +104,8 @@ export default {
                 });
                 this.socket.on('chatevent', function(data) {
                   console.log(data, 111);
-                  if (_this.visible) {
-                    let msg = eval('(' + data.message + ')');
-                    _this.wxData = msg;
-                  }
+                  let msg = eval('(' + data.message + ')');
+                  _this.wxData = msg;
                 });
               })
               .catch(err => {
