@@ -55,7 +55,7 @@ export default {
       currentPage: 1,
       dialogVisible1: false,
       dialogVisible2: false,
-      id: '',
+      toMemberId: '',
       enterpriseName: '',
       totalAll: 0,
       canTransferFlag: true,
@@ -79,22 +79,24 @@ export default {
       this.getTableData();
     },
     getTableData() {
-      $http.get(`/unionMainTransfer/unionId/${this.unionId}/page?current=${this.currentPage}`);
-      then(res => {
-        if (res.data.data) {
-          this.tableData = res.data.data.records || [];
-          // 判断canTransferFlag
-          this.tableData.forEach((v, i) => {
-            if (v.unionTransfer) {
-              thisthis.canTransferFlag = false;
-            }
-            v.member.createTime = timeFilter(v.member.createTime);
-          });
-          this.totalAll = res.data.data.total;
-        }
-      }).catch(err => {
-        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-      });
+      $http
+        .get(`/unionMainTransfer/unionId/${this.unionId}/page?current=${this.currentPage}`)
+        .then(res => {
+          if (res.data.data) {
+            this.tableData = res.data.data.records || [];
+            // 判断canTransferFlag
+            this.tableData.forEach((v, i) => {
+              if (v.unionTransfer) {
+                thisthis.canTransferFlag = false;
+              }
+              v.member.createTime = timeFilter(v.member.createTime);
+            });
+            this.totalAll = res.data.data.total;
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
     },
     // 分页查询
     handleCurrentChange(val) {
@@ -104,13 +106,13 @@ export default {
     // 转移
     onTransfer(scope) {
       this.dialogVisible1 = true;
-      this.id = scope.row.member.id;
+      this.toMemberId = scope.row.member.id;
       this.enterpriseName = scope.row.member.enterpriseName;
     },
     // 确认转移
     onConfirm1() {
       $http
-        .post(`/unionMainTransfer/unionId/${this.unionId}toMemberId=${this.id}`)
+        .post(`/unionMainTransfer/unionId/${this.unionId}/toMemberId/${this.toMemberId}`)
         .then(res => {
           if (res.data.success) {
             eventBus.$emit('unionUpdata');

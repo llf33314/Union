@@ -178,8 +178,8 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         }
         List<UnionMember> members = unionMemberService.listByBusId(h5BrokerageUser.getVerifier().getBusId());
         List<Integer> ids = new ArrayList<Integer>();
-        if(ListUtil.isNotEmpty(members)){
-            for(UnionMember member : members){
+        if (ListUtil.isNotEmpty(members)) {
+            for (UnionMember member : members) {
                 ids.add(member.getUnionId());
             }
         }
@@ -495,21 +495,21 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
                     return;
                 }
             }
-        } else {
-            BusUser busUser = busUserService.getBusUserByPhone(phone);
-            if (busUser != null && unionMemberService.existValidOwnerByBusId(busUser.getId())) {
-                H5BrokerageUser h5BrokerageUser = new H5BrokerageUser();
-                h5BrokerageUser.setBusUser(busUser);
+        }
+        // 判断是否是管理员
+        BusUser busUser = busUserService.getBusUserByPhone(phone);
+        if (busUser != null) {
+            H5BrokerageUser h5BrokerageUser = new H5BrokerageUser();
+            h5BrokerageUser.setBusUser(busUser);
 
-                UnionVerifier adminVerifier = new UnionVerifier();
-                adminVerifier.setBusId(busUser.getId());
-                adminVerifier.setPhone(phone);
-                adminVerifier.setEmployeeName("管理员");
-                h5BrokerageUser.setVerifier(adminVerifier);
+            UnionVerifier adminVerifier = new UnionVerifier();
+            adminVerifier.setBusId(busUser.getId());
+            adminVerifier.setPhone(phone);
+            adminVerifier.setEmployeeName("管理员");
+            h5BrokerageUser.setVerifier(adminVerifier);
 
-                UnionSessionUtil.setH5BrokerageUser(request, h5BrokerageUser);
-                return;
-            }
+            UnionSessionUtil.setH5BrokerageUser(request, h5BrokerageUser);
+            return;
         }
         throw new BusinessException("登录失败");
     }

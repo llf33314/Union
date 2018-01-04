@@ -45,7 +45,7 @@ public class JxcProductServiceImpl implements JxcProductService{
 			}
 			Map<String,Object> param = new HashMap<String,Object>();
 			param.put("shopId",shopId);
-			param.put("classId",classId);
+			param.put("proTypeId",classId);
 			param.put("search",search);
 			param.put("pageIndex",pageIndex);
 			param.put("pageCount",pageCount);
