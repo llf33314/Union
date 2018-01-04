@@ -695,6 +695,28 @@ hr {
 #UnionCardSetting > .container #DiscountCardSetting .el-dialog--tiny .el-dialog__body > p {
   margin-left: 55px;
 }
+#UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small {
+  width: 800px;
+  height: 500px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body {
+  padding: 0;
+  margin-top: 15px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain {
+  margin: 30px ;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain > p {
+  margin-bottom: 20px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain > p > span:nth-child(1) {
+  display: inline-block;
+  width: 150px;
+  text-align: right;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain > p > span:nth-child(2) {
+  margin-left: 50px;
+}
 #UnionCardSetting > .container #ActivityCardSetting .explain {
   background-color: #f4f4f4;
   margin-top: 20px;
@@ -1109,6 +1131,13 @@ hr {
 }
 #UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .rightContent .rightContentBottom > div .el-input-number {
   width: 100px;
+}
+#UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .ErpRight {
+  width: 325px;
+}
+#UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .ErpRight .rightContentBottom > div {
+  display: flex;
+  justify-content: space-between;
 }
 #UnionQuit .container {
   margin: 40px 50px;
