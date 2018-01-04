@@ -70,6 +70,7 @@ public class ErpServiceImpl implements ErpService {
 				list = carErpService.listErpServer(shopId, search, busId, page);
 				for(ErpServerVO vo : list){
 					vo.setErpType(erpModel);
+					vo.setShopId(shopId);
 				}
 				break;
 			default:
