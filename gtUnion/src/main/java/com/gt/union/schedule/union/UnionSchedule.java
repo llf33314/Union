@@ -12,6 +12,7 @@ import com.gt.union.common.util.DateTimeKit;
 import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.PropertiesUtil;
+import com.gt.union.union.main.constant.UnionConstant;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.entity.UnionMainPackage;
 import com.gt.union.union.main.entity.UnionMainPermit;
@@ -177,7 +178,7 @@ public class UnionSchedule {
 
                 unionMainPermitService.save(savePermit);
                 unionMainService.update(updateUnion);
-                UnionMainPermit removePermit = unionMainPermitService.getValidByBusId(busId);
+                UnionMainPermit removePermit = unionMainPermitService.getValidByBusIdAndOrderStatus(busId, UnionConstant.PERMIT_ORDER_STATUS_SUCCESS);
                 if (removePermit != null) {
                     unionMainPermitService.removeById(removePermit.getId());
                 }
