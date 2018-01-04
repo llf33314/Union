@@ -552,8 +552,8 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         if (StringUtil.isEmpty(memberEnterpriseName)) {
             throw new BusinessException("企业名称不能为空");
         }
-        if (StringUtil.getStringLength(memberEnterpriseName) > 30) {
-            throw new BusinessException("企业名称字数不能大于30");
+        if (StringUtil.getStringLength(memberEnterpriseName) > 15) {
+            throw new BusinessException("企业名称字数不能大于15");
         }
         updateMember.setEnterpriseName(memberEnterpriseName);
         // （3-2）企业地址
@@ -567,8 +567,8 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         if (StringUtil.isEmpty(memberDirectorName)) {
             throw new BusinessException("负责人名称不能为空");
         }
-        if (StringUtil.getStringLength(memberDirectorName) > 20) {
-            throw new BusinessException("负责人名称字数不能大于20");
+        if (StringUtil.getStringLength(memberDirectorName) > 10) {
+            throw new BusinessException("负责人名称字数不能大于10");
         }
         updateMember.setDirectorName(memberDirectorName);
         // （3-4）负责人联系电话
