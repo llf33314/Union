@@ -140,7 +140,24 @@ export default {
     }
     .el-button{
       margin-left: -4px;
+      border-radius: 0 4px 4px 0;
     }
+  }
+  #tipinput::-webkit-input-placeholder {
+    /* WebKit browsers */
+    color: #97a8be;
+  }
+  #tipinput:-moz-placeholder {
+    /* Mozilla Firefox 4 to 18 */
+    color: #97a8be;
+  }
+  #tipinput::-moz-placeholder {
+    /* Mozilla Firefox 19+ */
+    color: #97a8be;
+  }
+  #tipinput::-ms-input-placeholder {
+    /* Internet Explorer 10+ */
+    color: #97a8be;
   }
 </style>
 
