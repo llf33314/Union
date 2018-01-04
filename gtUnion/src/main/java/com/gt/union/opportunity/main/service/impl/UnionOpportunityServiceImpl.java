@@ -617,8 +617,8 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         // （3）	接受时受理金额不能为空，且需大于0
         UnionOpportunity updateOpportunity = new UnionOpportunity();
         if (CommonConstant.COMMON_YES == isAccept) {
-            if (acceptPrice == null || acceptPrice <= 0) {
-                throw new BusinessException("接受商机时受理金额不能为空，且必须大于0");
+            if (acceptPrice == null || acceptPrice < 1) {
+                throw new BusinessException("接受商机时受理金额不能为空，且必须大于1");
             }
             UnionOpportunityRatio ratio = opportunityRatioService.getValidByUnionIdAndFromMemberIdAndToMemberId(unionId, member.getId(), opportunity.getFromMemberId());
             if (ratio == null) {
