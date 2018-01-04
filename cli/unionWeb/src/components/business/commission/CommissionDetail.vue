@@ -14,7 +14,7 @@
       </el-col>
       <!-- 导出按钮 -->
       <el-col style="width:300px;">
-        <el-button type="primary" @click="output2">导出</el-button>
+        <el-button type="primary" @click="output1">导出</el-button>
       </el-col>
     </el-row>
     <el-table :data="tableData" style="width: 100%">
@@ -34,7 +34,7 @@
     </el-table>
     <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
     </el-pagination>
-    <!-- 弹出框 佣金明细 -->
+    <!-- 弹出框 佣金详情 -->
     <el-dialog title="佣金明细" :visible.sync="dialogTableVisible">
       <hr>
       <div class="middle">
@@ -42,7 +42,7 @@
           <span style="margin-right: 20px;"> {{ unionName }} </span>
           <span> {{ enterpriseName }} </span>
           <!-- 导出按钮 -->
-          <el-button type="primary" @click="output1">导出</el-button>
+          <el-button type="primary" @click="output2">导出</el-button>
         </p>
         <el-table :data="gridData" max-height="500">
           <el-table-column prop="createTime" label="时间"></el-table-column>
@@ -112,27 +112,14 @@ export default {
           .catch(err => {
             this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
           });
-        $http
-          .get(`/unionBrokeragePay/detail/page?current=1`)
-          .then(res => {
-            if (res.data.data) {
-              this.tableData = res.data.data.records || [];
-              this.totalAll = res.data.data.total;
-            } else {
-              this.tableData = [];
-              this.totalAll = 0;
-            }
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          });
+        this.currentPage = 1;
+        this.unionId = '';
+        this.getTableData();
       }
     },
-    // 改变选取联盟
-    search(value) {
-      let val = value || 1;
+    getTableData() {
       $http
-        .get(`/unionBrokeragePay/detail/page?current=${val}&unionId=${this.unionId}`)
+        .get(`/unionBrokeragePay/detail/page?current=${this.currentPage}&unionId=${this.unionId}`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
@@ -146,9 +133,15 @@ export default {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
+    // 改变选取联盟
+    search() {
+      this.currentPage = 1;
+      this.getTableData();
+    },
     // 分页查询
     handleCurrentChange(val) {
-      this.search(val);
+      this.currentPage = val;
+      this.getTableData();
     },
     // 弹出框 佣金详情
     showDialog(scope) {
@@ -174,12 +167,12 @@ export default {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
-    // 导出佣金明细详情
+    // 导出支付明细
     output1() {
-      let url = this.$store.state.baseUrl + `/unionBrokeragePay/detail/export`;
+      let url = this.$store.state.baseUrl + `/unionBrokeragePay/detail/export?unionId=${this.unionId}`;
       window.open(url);
     },
-    // 导出支付明细
+    // 导出佣金详情
     output2() {
       let url =
         this.$store.state.baseUrl +

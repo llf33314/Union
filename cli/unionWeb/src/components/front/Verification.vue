@@ -521,6 +521,14 @@ export default {
                 _this.socket.emit('auth', jsonObject);
               });
             }
+            //重连机制
+            let socketindex = 0;
+            this.socket.on('reconnecting', function() {
+              socketindex += 1;
+              if (socketindex > 4) {
+                _this.socket.destroy(); //不在链接
+              }
+            });
             this.socket.on('chatevent', function(data) {
               let msg = eval('(' + data.message + ')');
               // 避免 socket 重复调用

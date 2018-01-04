@@ -169,8 +169,8 @@ public class UnionMainServiceImpl implements IUnionMainService {
         if (StringUtil.isEmpty(voUnionName)) {
             throw new BusinessException("联盟名称不能为空");
         }
-        if (StringUtil.getStringLength(voUnionName) > 20) {
-            throw new BusinessException("联盟名称字数不能大于20");
+        if (StringUtil.getStringLength(voUnionName) > 10) {
+            throw new BusinessException("联盟名称字数不能大于10");
         }
         updateUnion.setName(voUnionName);
         // （2-2）联盟图标
@@ -184,8 +184,8 @@ public class UnionMainServiceImpl implements IUnionMainService {
         if (StringUtil.isEmpty(voUnionIllustration)) {
             throw new BusinessException("联盟说明不能为空");
         }
-        if (StringUtil.getStringLength(voUnionIllustration) > 60) {
-            throw new BusinessException("联盟说明字数不能大于60");
+        if (StringUtil.getStringLength(voUnionIllustration) > 30) {
+            throw new BusinessException("联盟说明字数不能大于30");
         }
         updateUnion.setIllustration(voUnionIllustration);
         // （2-4）加盟方式

@@ -116,10 +116,9 @@ export default {
           });
       }
     },
-    search(value) {
-      let val = value || 1;
+    getTableData() {
       $http
-        .get(`/unionOpportunityRatio/unionId/${this.unionId}/page?current=${val}`)
+        .get(`/unionOpportunityRatio/unionId/${this.unionId}/page?current=${this.currentPage}`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
@@ -137,9 +136,14 @@ export default {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
+    search() {
+      this.currentPage = 1;
+      this.getTableData();
+    },
     // 分页查询
     handleCurrentChange(val) {
-      this.search(val);
+      this.currentPage = val;
+      this.getTableData();
     },
     // 设置比例
     setPercent(scope) {

@@ -292,7 +292,7 @@ public class UnionMemberOutServiceImpl implements IUnionMemberOutService {
         }
         // （3）判断out类型
         if (MemberConstant.OUT_TYPE_REMOVE == out.getType()) {
-            if (MemberConstant.IS_UNION_OWNER_YES != member.getStatus()) {
+            if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
                 throw new BusinessException(CommonConstant.UNION_OWNER_ERROR);
             }
         } else {

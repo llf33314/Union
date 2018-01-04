@@ -40,7 +40,7 @@
 
 <script>
 import $http from '@/utils/http.js';
-import { numberCheck } from '@/utils/filter.js';
+import { numberCheck, projectStatusFilter } from '@/utils/filter.js';
 export default {
   name: 'my-non-erp-list',
   props: ['nonErpTextList'],
@@ -58,7 +58,7 @@ export default {
       return this.$route.params.id;
     }
   },
-  mounted() {
+  mounted: function() {
     this.init();
   },
   methods: {

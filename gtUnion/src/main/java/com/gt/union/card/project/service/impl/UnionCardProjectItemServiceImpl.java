@@ -306,6 +306,9 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         }
 
         List<UnionCardProjectItem> saveItemList = listItemByVO(vo, busId);
+        if (ListUtil.isEmpty(saveItemList)) {
+            throw new BusinessException("请填写项目后再提交");
+        }
 
         // （6）事务操作
         if (project != null) {

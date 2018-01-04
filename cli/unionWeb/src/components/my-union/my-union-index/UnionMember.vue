@@ -145,8 +145,13 @@ export default {
   },
   methods: {
     init() {
+      this.currentPage = 1;
+      this.input = '';
+      this.getTableData();
+    },
+    getTableData() {
       $http
-        .get(`/unionMember/unionId/${this.unionId}/index/page?current=1`)
+        .get(`/unionMember/unionId/${this.unionId}/index/page?current=${this.currentPage}&memberName=${this.input}`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
@@ -168,30 +173,14 @@ export default {
         });
     },
     // 带条件查询盟员列表
-    search(value) {
-      let val = value || 1;
-      $http
-        .get(`/unionMember/unionId/${this.unionId}/index/page?current=${val}&memberName=${this.input}`)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records || [];
-            this.tableData.forEach((v, i) => {
-              v.member.createTime = timeFilter(v.createTime);
-              if (!v.memberOut) {
-                v.memberOut = {};
-                v.memberOut.type = '';
-              }
-            });
-            this.totalAll = res.data.data.total;
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+    search() {
+      this.currentPage = 1;
+      this.getTableData();
     },
     // 分页查询盟员列表
     handleCurrentChange(val) {
-      this.search(val);
+      this.currentPage = val;
+      this.getTableData();
     },
     // 详情
     detail(scope) {

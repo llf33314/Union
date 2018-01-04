@@ -65,24 +65,9 @@ export default {
   },
   methods: {
     init() {
-      $http
-        .get(`/unionMember/unionId/${this.unionId}/discount/page?current=1`)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData = res.data.data.records || [];
-            // 无折扣时填补空白
-            this.tableData.forEach((v, i) => {
-              v.discount = (v.discount * 10).toFixed(1) || '无';
-            });
-            this.totalAll = res.data.data.total;
-          } else {
-            this.tableData = [];
-            this.totalAll = 0;
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+      this.currentPage = 1;
+      this.input = '';
+      this.getTableData();
       $http
         .get(`/unionMember/unionId/${this.unionId}/busUser`)
         .then(res => {
@@ -98,11 +83,9 @@ export default {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
-    // 带条件查询盟员列表
-    search() {
-      let val = value || 1;
+    getTableData() {
       $http
-        .get(`/unionMember/unionId/${this.unionId}/discount/page?current=${val}&memberName=${this.input}`)
+        .get(`/unionMember/unionId/${this.unionId}/discount/page?current=${this.currentPage}&memberName=${this.input}`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
@@ -120,9 +103,15 @@ export default {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
+    // 带条件查询盟员列表
+    search() {
+      this.currentPage = 1;
+      this.getTableData();
+    },
     // 分页查询盟员列表
     handleCurrentChange(val) {
-      this.search(val);
+      this.currentPage = val;
+      this.getTableData();
     },
     // 校验折扣输入为数字类型
     check() {

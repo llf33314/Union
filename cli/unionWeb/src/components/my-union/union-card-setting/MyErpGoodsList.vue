@@ -102,7 +102,7 @@
 
 <script>
 import $http from '@/utils/http.js';
-import { numberCheck } from '@/utils/filter.js';
+import { numberCheck, projectStatusFilter } from '@/utils/filter.js';
 export default {
   name: 'my-erp-goods-list',
   props: ['erpGoodsList'],
@@ -130,7 +130,7 @@ export default {
       return this.$route.params.id;
     }
   },
-  mounted() {
+  mounted: function() {
     this.init();
   },
   methods: {
@@ -228,11 +228,12 @@ export default {
     },
     // 分页获取商品列表
     handleCurrentChange(val) {
+      this.currentPage = val;
       if (this.shopId) {
         $http
           .get(
-            `/jxc/api/list/jxcProduct?current=${val}&shopId=${this.shopId}&classId=${this.ProductClass}&search=${this
-              .input}`
+            `/jxc/api/list/jxcProduct?current=${this.currentPage}&shopId=${this.shopId}&classId=${this
+              .ProductClass}&search=${this.input}`
           )
           .then(res => {
             if (res.data.data) {
@@ -286,8 +287,6 @@ export default {
       this.tableData.forEach((v, i) => {
         this.selectedErpRight.forEach(val => {
           if (v.id === val.id) {
-            // this.handleSelect(null, v, false);
-            console.log(this.$refs.multipleTable);
             this.$refs.multipleTable.toggleRowSelection(this.tableData[i]);
           }
         });

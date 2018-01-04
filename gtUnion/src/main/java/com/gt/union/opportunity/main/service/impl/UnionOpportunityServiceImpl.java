@@ -557,8 +557,8 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         if (StringUtil.isEmpty(clientName)) {
             throw new BusinessException("客户名称不能为空");
         }
-        if (StringUtil.getStringLength(clientName) > 20) {
-            throw new BusinessException("客户名称字段长度不能超过20");
+        if (StringUtil.getStringLength(clientName) > 10) {
+            throw new BusinessException("客户名称字段长度不能超过10");
         }
         saveOpportunity.setClientName(clientName);
 
@@ -575,8 +575,8 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         if (StringUtil.isEmpty(businessMsg)) {
             throw new BusinessException("业务备注不能为空");
         }
-        if (StringUtil.getStringLength(businessMsg) > 100) {
-            throw new BusinessException("业务备注字段长度不能超过100");
+        if (StringUtil.getStringLength(businessMsg) > 50) {
+            throw new BusinessException("业务备注字段长度不能超过50");
         }
         saveOpportunity.setBusinessMsg(businessMsg);
 
@@ -617,8 +617,8 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         // （3）	接受时受理金额不能为空，且需大于0
         UnionOpportunity updateOpportunity = new UnionOpportunity();
         if (CommonConstant.COMMON_YES == isAccept) {
-            if (acceptPrice == null || acceptPrice <= 0) {
-                throw new BusinessException("接受商机时受理金额不能为空，且必须大于0");
+            if (acceptPrice == null || acceptPrice < 1) {
+                throw new BusinessException("接受商机时受理金额不能为空，且必须大于1");
             }
             UnionOpportunityRatio ratio = opportunityRatioService.getValidByUnionIdAndFromMemberIdAndToMemberId(unionId, member.getId(), opportunity.getFromMemberId());
             if (ratio == null) {

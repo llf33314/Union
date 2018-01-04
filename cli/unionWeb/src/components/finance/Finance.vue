@@ -204,9 +204,10 @@ export default {
         });
     },
     // 分页获取佣金平台管理者
-    handleCurrentChange(val) {
+    handleCurrentChange() {
+      this.currentPage = val;
       $http
-        .get(`/unionVerifier/page?current=${val}`)
+        .get(`/unionVerifier/page?current=${this.currentPage}`)
         .then(res => {
           if (res.data.data) {
             this.tableData = res.data.data.records || [];
