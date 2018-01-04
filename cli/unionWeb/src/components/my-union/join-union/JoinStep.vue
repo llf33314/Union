@@ -5,7 +5,7 @@
       <div class="step-top">
         <el-steps :active="active" :center="true" :align-center="true">
           <el-step title="选择联盟" status="finish"></el-step>
-          <el-step title="填写申请信息"></el-step>
+          <el-step title="填写申请信息" ></el-step>
           <el-step title="等待审核通过"></el-step>
         </el-steps>
       </div>

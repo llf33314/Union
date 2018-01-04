@@ -53,7 +53,7 @@
             </el-col>
             <el-col style="width:220px;">
               <el-form :inline="true" class="demo-form-inline">
-                <el-select v-model="ProductClass" clearable placeholder="请选择行业" @change="search">
+                <el-select v-model="ProductClass" clearable placeholder="请选择分类" @change="search">
                   <el-option v-for="item in options2" :key="item.id" :label="item.name" :value="item.id">
                   </el-option>
                 </el-select>
@@ -68,7 +68,7 @@
           </el-row>
           <div class="section_ clearfix">
             <div style="float:left;width: 580px;height: 445px;">
-              <el-table :data="tableData" style="width: 100%;height: 100%;" ref="multipleTable" @select="handleSelect" @select-all="handleSelectAll" @row-click="handleRowClick">
+              <el-table :data="tableData" style="width: 100%;"  height="446" ref="multipleTable" @select="handleSelect" @select-all="handleSelectAll" @row-click="handleRowClick">
                 <el-table-column type="selection" min-width="55px"></el-table-column>
                 <el-table-column prop="name" label="商品名称" min-width="100px">
                 </el-table-column>
@@ -82,9 +82,11 @@
             </div>
             <div class="rightContent">
               <p>已选择：{{ selectedErpRight.length }}</p>
-              <div v-for="(item, index) in selectedErpRight" :key="item.id">
-                <el-input-number v-model="item.number" :min="1" size="small" :max="item.amount"></el-input-number>
-                <el-button @click="handleDelete2(index)" type="text">删除</el-button>
+              <div class="rightContentBottom">
+                <div v-for="(item, index) in selectedErpRight" :key="item.id">
+                  <el-input-number v-model="item.number" :min="1" size="small" :max="item.amount"></el-input-number>
+                  <el-button @click="handleDelete2(index)" type="text">删除</el-button>
+                </div>
               </div>
             </div>
           </div>

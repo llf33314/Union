@@ -1,12 +1,11 @@
 <template>
-  <div>
+  <div class="unionMap">
     <div id="container">
 
     </div>
     <div id="myPageTop">
-      <label>请输入关键字：</label>
-      <input id="tipinput" />
-      <el-button id="search">搜索</el-button>
+      <input id="tipinput"  placeholder="请输入关键字"/>
+      <el-button id="search" type="primary" icon="search">搜索</el-button>
     </div>
   </div>
 </template>
@@ -122,10 +121,26 @@ export default {
 };
 </script>
 
-<style scoped>
-#container {
-  width: 800px;
-  height: 500px;
-}
+<style lang='less' rel="stylesheet/less">
+  .unionMap{
+    position: relative;
+    width: 800px;
+  }
+  #container {
+    width: 800px;
+    height: 500px;
+  }
+  #myPageTop{
+    position: absolute;
+    top: 8px;
+    right: 6px;
+    >input{
+      height: 32px;
+      width: 174px;
+    }
+    .el-button{
+      margin-left: -4px;
+    }
+  }
 </style>
 
