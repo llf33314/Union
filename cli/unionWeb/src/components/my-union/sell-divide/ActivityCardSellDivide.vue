@@ -13,7 +13,7 @@
           还没有相关数据
         </p>
       </div>
-      <div v-if="data1.length > 0" class="contentList" v-for="item in data1" :key="item.activity.id">
+      <div v-if="data1.length > 0" class="contentList" v-for="(item, index1) in data1" :key="item.activity.id">
         <div>
           <img :class="'m'+item.color2+index1" :src="item.activity.img">
           <span>{{ item.activityStatus }}</span>
@@ -121,11 +121,11 @@ export default {
     init(value) {
       let val = value || 1;
       $http
-        .get(`/unionCardActivity/unionId/${this.unionId}/sharingRatio/page?current=${val}`)
+        .get(`/unionCardActivity/unionId/${this.unionId}/sharingRatio/page?current=${this.currentPage1}`)
         .then(res => {
           if (res.data.data) {
             this.data1 = res.data.data.records || [];
-            this.data1.forEach(v => {
+            this.data1.forEach((v, i) => {
               v.activityStatus = activityCardStatusFilter(v.activityStatus);
               let color1 = (v.color1 = v.activity.color.split(',')[0]);
               let color2 = (v.color2 = v.activity.color.split(',')[1]);

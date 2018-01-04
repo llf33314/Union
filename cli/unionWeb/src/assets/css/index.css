@@ -125,7 +125,7 @@ hr {
   content: "";
 }
 .dingwei .el-input__icon {
-  left: 207px;
+  left: 247px;
   background: url('../images/dingwei.png') center no-repeat;
 }
 .footer_public {
@@ -450,12 +450,13 @@ hr {
   position: absolute!important;
   margin: 10px 0 0 40px;
   left: 252px;
+  top: -2px;
 }
 .tabs .el-form-item__label {
   padding: 11px 12px 18px 0;
 }
 .tabs .el-input__inner {
-  width: 241px;
+  width: 290px;
   display: inline-block;
 }
 .tabs .el-textarea {
@@ -1088,8 +1089,6 @@ hr {
 }
 #UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .rightContent {
   width: 238px;
-  height: 442px;
-  overflow-y: auto;
   border: solid 1px #dfe6ec;
   float: right;
   margin-right: 30px;
@@ -1098,10 +1097,14 @@ hr {
   background-color: #eef1f6;
   padding: 11px 10px 10px;
 }
-#UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .rightContent > div {
+#UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .rightContent .rightContentBottom {
+  height: 404px;
+  overflow-y: auto;
+}
+#UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .rightContent .rightContentBottom > div {
   margin: 10px 20px 5px 20px;
 }
-#UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .rightContent > div .el-input-number--small {
+#UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .rightContent .rightContentBottom > div .el-input-number--small {
   width: 100px;
 }
 #UnionQuit .container {
@@ -1130,6 +1133,12 @@ hr {
 #UnionQuit #Refund .tuimeng .el-dialog--tiny {
   width: 600px;
 }
+#UnionQuit #Refund .model_12 .el-dialog--tiny {
+  width: 450px;
+}
+#UnionQuit #Refund .model_12 .el-dialog--tiny .el-dialog__body > p {
+  margin: 20px;
+}
 #UnionQuit #Refund #popBox .el-dialog--tiny {
   width: 615px;
   top: 283px !important;
@@ -1139,6 +1148,16 @@ hr {
 }
 #UnionQuit #Refund #popBox .el-dialog__header .el-dialog__title {
   font-size: 15px;
+}
+#UnionQuit #Refund .second .el-button {
+  border: 1px solid #20a0ff;
+  color: #20a0ff;
+}
+#UnionQuit #Refund .second .el-button:focus,
+#UnionQuit #Refund .second .el-button:hover {
+  color: #fff;
+  border-color: #1d90e6;
+  background: #20a0ff;
 }
 #UnionQuit #Refund .RefundAu .el-dialog--tiny {
   width: 640px;
@@ -1207,6 +1226,9 @@ hr {
 #Business #myRecommend .MyRecommend .selectUnion {
   margin-bottom: 35px!important;
 }
+#Business #myRecommend .MyRecommend .selectUnion .el-radio-button__inner:hover .isShow {
+  display: block!important;
+}
 #Business #myRecommend .MyRecommend .selectUnion .el-form-item__content .el-form-item__error {
   top: 80px;
   left: 305px;
@@ -1215,6 +1237,13 @@ hr {
   position: absolute;
   top: 83px;
   left: -15px;
+}
+#Business #myRecommend .MyRecommend .selectUnion .dddddd .isShow {
+  display: none;
+  text-align: center;
+}
+#Business #myRecommend .MyRecommend .selectUnion .dddddd .isShow h6 {
+  margin-bottom: 17px;
 }
 #Business #myRecommend .MyRecommend .el-form-item__content .el-form-item__error {
   top: 7px;
@@ -1357,6 +1386,19 @@ hr {
   min-width: 540px;
   margin: auto;
 }
+#front #Verification .UnionCardInformation .selectUnion .el-radio-button__inner:hover .isShow {
+  display: block!important;
+}
+#front #Verification .UnionCardInformation .selectUnion .isShow {
+  position: absolute;
+  top: 90px;
+  left: -7px;
+  display: none;
+  text-align: center;
+}
+#front #Verification .UnionCardInformation .selectUnion .isShow h6 {
+  margin-bottom: 17px;
+}
 #front #Verification .UnionCardInformation > div {
   max-width: 1450px;
   margin: 0 auto;
@@ -1401,7 +1443,6 @@ hr {
   overflow-y: auto;
 }
 #front #Verification .UnionCardInformation > div .preferenceItems .section_ .rightContent > div::-webkit-scrollbar-thumb {
-  /*width: 10px;*/
   height: 5px;
   border-radius: 10px;
   -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);

@@ -52,7 +52,7 @@
           </p>
           <p>
             <span>活动卡售价</span>
-            <span style="color: #ff4949;margin-left: 58px;">￥{{ (item.activity.price.toFixed(2)) }}</span>
+            <span style="color: #ff4949;margin-left: 58px;">￥{{ item.activity.price }}</span>
           </p>
         </li>
         <!-- 活动卡概况 -->
@@ -65,7 +65,7 @@
             <span>已售活动卡</span>
             <span>{{ item.cardSellCount }}/{{ item.activity.amount }}</span>
           </p>
-          <el-progress v-if="item.activityStatus === '售卡中' || item.activityStatus === '已停售'" :text-inside="true" :stroke-width="20" :percentage="item.cardSellCount/item.activity.amount*100" status="success">
+          <el-progress v-if="item.activityStatus === '售卡中' || item.activityStatus === '已停售'" :text-inside="true" :stroke-width="20" :percentage="Number((item.cardSellCount/item.activity.amount*100).toFixed(2))" status="success">
           </el-progress>
         </li>
         <!--  操作  -->
@@ -74,7 +74,7 @@
             <el-button @click="myActivity(item)">我的活动项目</el-button>
           </div>
           <div class="btn">
-            <el-button @clikc="showDetail(item)">详情</el-button>
+            <el-button @click="showDetail(item)">详情</el-button>
           </div>
           <activity-delete v-if="isUnionOwner && (item.activityStatus !== '售卡中' && item.activityStatus !== '已停售')" :activityId="item.activity.id"></activity-delete>
         </li>
@@ -83,46 +83,45 @@
     <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
     </el-pagination>
     <!-- 弹出框 详情 -->
-    <el-dialog title="详情" :visible.sync="visible" size="tiny">
+    <el-dialog title="详情" :visible.sync="visible">
       <hr>
       <p>
         <span>活动卡名称</span>
-        <span style="margin-left: 45px; ">{{ item.activity.name }}</span>
+        <span style="margin-left: 45px; ">{{ detail.name }}</span>
       </p>
       <p>
         <span>项目报名开始时间</span>
-        <span style="margin-left: 45px; ">{{ item.activity.applyBeginTime }}</span>
+        <span style="margin-left: 45px; ">{{ detail.applyBeginTime }}</span>
       </p>
       <p>
         <span>项目报名结束时间</span>
-        <span style="margin-left: 45px; ">{{ item.activity.applyEndTime }}</span>
+        <span style="margin-left: 45px; ">{{ detail.applyEndTime }}</span>
       </p>
       <p>
         <span>项目售卡开始时间</span>
-        <span style="margin-left: 45px; ">{{ item.activity.sellBeginTime }}</span>
+        <span style="margin-left: 45px; ">{{ detail.sellBeginTime }}</span>
       </p>
       <p>
         <span>项目售卡结束时间</span>
-        <span style="margin-left: 45px; ">{{ item.activity.sellEndTime }}</span>
+        <span style="margin-left: 45px; ">{{ detail.sellEndTime }}</span>
       </p>
       <p>
         <span>活动卡售价</span>
-        <span style="color: #ff4949;margin-left: 58px;">￥{{ (item.activity.price.toFixed(2)) }}</span>
+        <span style="color: #ff4949;margin-left: 58px;">￥{{ detail.price }}</span>
       </p>
       <p>
         <span>活动卡有效天数</span>
-        <span style="margin-left: 30px;">{{ item.activity.validityDay }} 天</span>
+        <span style="margin-left: 30px;">{{ detail.validityDay }} 天</span>
       </p>
       <p>
         <span>活动卡发行量</span>
-        <span style="margin-left: 45px;">{{ item.activity.amount }}</span>
+        <span style="margin-left: 45px;">{{ detail.amount }}</span>
       </p>
       <p>
         <span>活动卡说明</span>
-        <span style="margin-left: 62px;">{{ item.activity.illustration }}</span>
+        <span style="margin-left: 62px;">{{ detail.illustration }}</span>
       </p>
     </el-dialog>
-
   </div>
 </template>
 
@@ -150,7 +149,8 @@ export default {
       form: {
         isProjectCheck: false
       },
-      visible: false
+      visible: false,
+      detail: {}
     };
   },
   computed: {
@@ -183,6 +183,7 @@ export default {
             this.tableData = res.data.data.records || [];
             this.tableData.forEach((v, i) => {
               v.activityStatus = activityCardStatusFilter(v.activityStatus);
+              v.activity.price = v.activity.price.toFixed(2);
               v.activity.applyBeginTime = timeFilter(v.activity.applyBeginTime);
               v.activity.applyEndTime = timeFilter(v.activity.applyEndTime);
               v.activity.sellBeginTime = timeFilter(v.activity.sellBeginTime);
@@ -202,10 +203,14 @@ export default {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
-
     handleCurrentChange(val) {
       this.currentPage = val;
       this.getTableData();
+    },
+    // 活动卡详情
+    showDetail(item) {
+      this.detail = item.activity;
+      this.visible = true;
     },
     // 我的活动项目
     myActivity(item) {

@@ -243,7 +243,11 @@ export default {
     },
     // 校验输入为数字类型
     check() {
-      value = numberCheck(value);
+      this.acceptancePrice = numberCheck(this.acceptancePrice);
+      if (this.acceptancePrice < 1) {
+        this.$message({ showClose: true, message: '商机的受理价格最小为1元', type: 'error', duration: 5000 });
+        this.acceptancePrice = 1;
+      }
     },
     // 接受
     agree(scope) {

@@ -17,15 +17,15 @@
           </el-table-column>
           <el-table-column prop="memberOut.type" label="申请状态">
           </el-table-column>
-          <el-table-column label="退盟期限" width="150">
+          <el-table-column label="退盟期限">
             <template slot-scope="scope">
               {{ scope.row.periodDay }} 天
             </template>
           </el-table-column>
-          <el-table-column label="操作">
+          <el-table-column label="操作" width="180">
             <template slot-scope="scope">
-              <el-button v-if="isUnionOwner && scope.row.memberOut.type === '盟主移出'" @click="cancel(scope)">取消移出</el-button>
-              <el-button v-if="!isUnionOwner && memberId === scope.row.member.id && scope.row.memberOut.type === '盟员申请退盟'" @click="cancel(scope)">取消移出</el-button>
+              <el-button size="small" v-if="isUnionOwner && scope.row.memberOut.type === '盟主移出'" @click="cancel(scope)">取消移出</el-button>
+              <el-button size="small" v-if="!isUnionOwner && memberId === scope.row.member.id && scope.row.memberOut.type === '盟员申请退盟'" @click="cancel(scope)">取消移出</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -78,15 +78,15 @@
         </el-dialog>
       </div>
       <!-- 弹出框 确认取消移出 -->
-      <el-dialog title="" :visible.sync="visible3" size="tiny">
-        <div class="model_12">
-          <p>是否确认取消移出“ {{ enterpriseName }} ”</p>
-        </div>
-        <span slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="confirm3">确定</el-button>
-          <el-button @click="visible3=false">取消</el-button>
-        </span>
-      </el-dialog>
+      <div class="model_12">
+        <el-dialog title="" :visible.sync="visible3" size="tiny">
+            <p>是否确认取消移出“ {{ enterpriseName }} ”</p>
+          <span slot="footer" class="dialog-footer">
+            <el-button type="primary" @click="confirm3">确定</el-button>
+            <el-button @click="visible3=false">取消</el-button>
+          </span>
+        </el-dialog>
+      </div>
     </div>
   </div>
 </template>
