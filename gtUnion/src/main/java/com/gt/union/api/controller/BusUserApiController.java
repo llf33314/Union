@@ -78,13 +78,6 @@ public class BusUserApiController {
 		return GtJsonResult.instanceSuccessMsg(data);
 	}
 
-	@ApiOperation(value = "下载公众号二维码链接", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "qrCodeUrl", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-	public void downloadWXQrCode(HttpServletRequest request,HttpServletResponse response,
-								  @ApiParam(value = "公众号二维码链接", name = "url", required = true)
-								  @RequestParam(value = "url") String url) throws Exception {
-		response.sendRedirect(PropertiesUtil.getMemberUrl() + "/addMember/downQcode.do?url=" + url);
-	}
 
 	/**
 	 * 关注推送回调
