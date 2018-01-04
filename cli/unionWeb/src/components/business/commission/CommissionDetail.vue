@@ -14,7 +14,7 @@
       </el-col>
       <!-- 导出按钮 -->
       <el-col style="width:300px;">
-        <el-button type="primary" @click="output2">导出</el-button>
+        <el-button type="primary" @click="output1">导出</el-button>
       </el-col>
     </el-row>
     <el-table :data="tableData" style="width: 100%">
@@ -34,7 +34,7 @@
     </el-table>
     <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
     </el-pagination>
-    <!-- 弹出框 佣金明细 -->
+    <!-- 弹出框 佣金详情 -->
     <el-dialog title="佣金明细" :visible.sync="dialogTableVisible">
       <hr>
       <div class="middle">
@@ -42,7 +42,7 @@
           <span style="margin-right: 20px;"> {{ unionName }} </span>
           <span> {{ enterpriseName }} </span>
           <!-- 导出按钮 -->
-          <el-button type="primary" @click="output1">导出</el-button>
+          <el-button type="primary" @click="output2">导出</el-button>
         </p>
         <el-table :data="gridData" max-height="500">
           <el-table-column prop="createTime" label="时间"></el-table-column>
@@ -167,12 +167,12 @@ export default {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
-    // 导出佣金明细详情
+    // 导出支付明细
     output1() {
-      let url = this.$store.state.baseUrl + `/unionBrokeragePay/detail/export`;
+      let url = this.$store.state.baseUrl + `/unionBrokeragePay/detail/export?unionId=${this.unionId}`;
       window.open(url);
     },
-    // 导出支付明细
+    // 导出佣金详情
     output2() {
       let url =
         this.$store.state.baseUrl +

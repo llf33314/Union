@@ -50,22 +50,10 @@
             <span>项目售卡结束时间</span>
             <span style="margin-left: 45px; ">{{ item.activity.sellEndTime }}</span>
           </p>
-          <!-- <p>
-            <span>活动卡有效天数</span>
-            <span style="margin-left: 30px;">{{ item.activity.validityDay }} 天</span>
-          </p> -->
           <p>
-            <span>活动卡对外售价</span>
+            <span>活动卡售价</span>
             <span style="color: #ff4949;margin-left: 58px;">￥{{ (item.activity.price.toFixed(2)) }}</span>
           </p>
-          <!-- <p>
-            <span>活动卡发行量</span>
-            <span style="margin-left: 45px;">{{ item.activity.amount }}</span>
-          </p> -->
-          <!-- <p>
-            <span>活动卡说明</span>
-            <span style="margin-left: 62px;">{{ item.activity.illustration }}</span>
-          </p> -->
         </li>
         <!-- 活动卡概况 -->
         <li>
@@ -85,12 +73,55 @@
           <div class="btn" v-if="item.activityStatus !== '未开始'">
             <el-button @click="myActivity(item)">我的活动项目</el-button>
           </div>
+          <div class="btn">
+            <el-button @clikc="showDetail(item)">详情</el-button>
+          </div>
           <activity-delete v-if="isUnionOwner && (item.activityStatus !== '售卡中' && item.activityStatus !== '已停售')" :activityId="item.activity.id"></activity-delete>
         </li>
       </ul>
     </div>
     <el-pagination @current-change="handleCurrentChange" :current-page.sync="currentPage" :page-size="10" layout="prev, pager, next, jumper" :total="totalAll" v-if="tableData.length>0">
     </el-pagination>
+    <!-- 弹出框 详情 -->
+    <el-dialog title="详情" :visible.sync="visible" size="tiny">
+      <hr>
+      <p>
+        <span>活动卡名称</span>
+        <span style="margin-left: 45px; ">{{ item.activity.name }}</span>
+      </p>
+      <p>
+        <span>项目报名开始时间</span>
+        <span style="margin-left: 45px; ">{{ item.activity.applyBeginTime }}</span>
+      </p>
+      <p>
+        <span>项目报名结束时间</span>
+        <span style="margin-left: 45px; ">{{ item.activity.applyEndTime }}</span>
+      </p>
+      <p>
+        <span>项目售卡开始时间</span>
+        <span style="margin-left: 45px; ">{{ item.activity.sellBeginTime }}</span>
+      </p>
+      <p>
+        <span>项目售卡结束时间</span>
+        <span style="margin-left: 45px; ">{{ item.activity.sellEndTime }}</span>
+      </p>
+      <p>
+        <span>活动卡售价</span>
+        <span style="color: #ff4949;margin-left: 58px;">￥{{ (item.activity.price.toFixed(2)) }}</span>
+      </p>
+      <p>
+        <span>活动卡有效天数</span>
+        <span style="margin-left: 30px;">{{ item.activity.validityDay }} 天</span>
+      </p>
+      <p>
+        <span>活动卡发行量</span>
+        <span style="margin-left: 45px;">{{ item.activity.amount }}</span>
+      </p>
+      <p>
+        <span>活动卡说明</span>
+        <span style="margin-left: 62px;">{{ item.activity.illustration }}</span>
+      </p>
+    </el-dialog>
 
   </div>
 </template>
@@ -118,7 +149,8 @@ export default {
       totalAll: 0,
       form: {
         isProjectCheck: false
-      }
+      },
+      visible: false
     };
   },
   computed: {

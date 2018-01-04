@@ -15,7 +15,7 @@
       </div>
       <div v-if="data1.length > 0" class="contentList" v-for="item in data1" :key="item.activity.id">
         <div>
-          <img :src="item.activity.img">
+          <img :class="'m'+item.color2+index1" :src="item.activity.img">
           <span>{{ item.activityStatus }}</span>
         </div>
         <p>
@@ -127,6 +127,9 @@ export default {
             this.data1 = res.data.data.records || [];
             this.data1.forEach(v => {
               v.activityStatus = activityCardStatusFilter(v.activityStatus);
+              let color1 = (v.color1 = v.activity.color.split(',')[0]);
+              let color2 = (v.color2 = v.activity.color.split(',')[1]);
+              let mDiv = 'm' + color2 + i;
             });
             this.totalAll1 = res.data.data.total;
           } else {
