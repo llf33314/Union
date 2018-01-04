@@ -20,7 +20,7 @@
       </el-table-column>
       <el-table-column prop="number" label="数量">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.number" placeholder="请输入数量" @keyup.native="check(scope)" @change="erpGoodsListChange"></el-input>
+            <el-input style="width:120px" v-model="scope.row.number" placeholder="请输入数量" @keyup.native="check(scope)" @change="erpGoodsListChange"></el-input>
         </template>
       </el-table-column>
       <el-table-column prop="handle" label="操作" width="180">
