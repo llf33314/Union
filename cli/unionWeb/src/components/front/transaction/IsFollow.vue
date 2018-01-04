@@ -15,15 +15,14 @@
       </span>
     </div>
     <!-- 新增粉丝信息 -->
-    <div class="fr drop_down1 step2" v-show="visible">
+    <div class="fr drop_down1" v-show="visible">
       <p>新增粉丝信息</p>
-      <div class="dddddd clearfix">
-        <img v-bind:src="wxData.headurl" alt="" class="fl unionImg">
-        <div class="fl" style="margin-left: 20px">
+      <div class="drop_down1Content">
+        <img v-bind:src="wxData.headurl" alt="" class="unionImg">
+        <div  style="margin-left: 20px">
           <h6 style="margin-bottom: 17px">{{ wxData.nickName }}</h6>
           <span>时间：{{ wxData.time }} </span>
         </div>
-        <i></i>
       </div>
     </div>
   </div>
@@ -130,8 +129,12 @@ export default {
 };
 </script>
 <style lang='less' rel="stylesheet/less" scoped>
-/*右边下拉框的样式*/
+  .unionImg {
+    width: 80px;
+    height: 80px;
+  }
 
+/*右边下拉框的样式*/
 .drop_down {
   margin-top: 30px;
   border: 1px solid #ddd;
@@ -171,6 +174,12 @@ export default {
     background: #eef1f6;
     padding: 15px 30px;
     font-size: 12px;
+  }
+  .drop_down1Content{
+    display: flex;
+    border: solid 1px #dddddd;
+    margin: 30px;
+    padding: 24px;
   }
 }
 </style>

@@ -521,6 +521,10 @@ hr {
   top: -1px !important;
   left: 229px!important;
 }
+.container_one #createStep .second_ .el-input__inner {
+  width: 240px;
+  display: inline-block;
+}
 .container_one #createStep .second_ img {
   cursor: pointer;
 }
@@ -1136,7 +1140,7 @@ hr {
   width: 100px;
 }
 #UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .rightContent .rightContentBottom > div .el-input-number {
-  width: 100px;
+  width: 112px;
 }
 #UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .ErpRight {
   width: 325px;
@@ -1144,6 +1148,15 @@ hr {
 #UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .ErpRight .rightContentBottom > div {
   display: flex;
   justify-content: space-between;
+}
+#UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .ErpRight .rightContentBottom > div .rightContentBottomHidden {
+  position: relative;
+  top: 8px;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 124px;
 }
 #UnionQuit .container {
   margin: 40px 50px;

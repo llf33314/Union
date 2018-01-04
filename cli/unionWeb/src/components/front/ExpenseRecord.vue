@@ -121,8 +121,7 @@
 
 <script>
 import $http from '@/utils/http.js';
-import { timeFilter } from '@/utils/filter.js';
-import { expenseStatusFilter } from '@/utils/filter.js';
+import { timeFilter, expenseStatusFilter } from '@/utils/filter.js';
 export default {
   name: 'expense-record',
   data() {
@@ -232,9 +231,9 @@ export default {
                   v.itemList.push(val.name);
                 });
                 v.itemList.join(',');
-                v.consume.createTime = timeFilter(v.consume.createTime);
-                v.consume.payStatus = expenseStatusFilter(v.consume.payStatus);
               }
+              v.consume.createTime = timeFilter(v.consume.createTime);
+              v.consume.payStatus = expenseStatusFilter(v.consume.payStatus);
             });
           } else {
             this.tableData = [];
