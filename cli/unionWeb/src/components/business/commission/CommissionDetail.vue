@@ -153,6 +153,9 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.gridData = res.data.data.opportunityList;
+            this.gridData.forEach(v => {
+              v.createTime = timeFilter(v.createTime);
+            });
             this.unionName = res.data.data.union.name;
             this.enterpriseName = res.data.data.member.enterpriseName;
             this.contactMoney = res.data.data.contactMoney;
