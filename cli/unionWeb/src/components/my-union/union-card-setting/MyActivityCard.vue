@@ -7,10 +7,10 @@
           <span style="color: #20A0FF"> {{ projectData.project.status }} </span>
           <span class="icon">!</span>
         </div>
-        <span v-if="projectData.isErp">
+        <span v-if="projectData.isErp" style="color: #666;">
           您已开通ERP系统，您可将ERP系统的服务项目添加至联盟活动卡中，联盟会员办理活动卡后即可享受各个ERP系统的服务项目。
         </span>
-        <span v-if="!projectData.isErp">
+        <span v-if="!projectData.isErp" style="color: #666;">
           联盟活动卡可关联ERP项目进行核销，您还没开通行业ERP，优先推荐您开通行业ERP后关联活动卡。
         </span>
       </div>
