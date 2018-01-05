@@ -193,7 +193,7 @@ public class UnionConsumeController {
                 payStatusCell.setCellStyle(centerCellStyle);
                 // 消费时间
                 HSSFCell consumeTimeCell = row.createCell(cellIndex);
-                consumeTimeCell.setCellValue(vo.getConsume().getCreateTime());
+                consumeTimeCell.setCellValue(DateUtil.getDateString(vo.getConsume().getCreateTime(), DateUtil.DATETIME_PATTERN));
                 consumeTimeCell.setCellStyle(centerCellStyle);
 
             }

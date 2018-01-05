@@ -184,6 +184,8 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
                     vo.setErpGoodsList(eErpGoodsList);
                 }
 
+                vo.setShopName(consume.getShopName());
+                
                 result.add(vo);
             }
         }
@@ -335,15 +337,14 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         saveConsume.setUnionId(unionId);
 
         Integer shopId = vo.getShopId();
-        if (shopId == null) {
-            throw new BusinessException("门店不能为空");
+        if (shopId != null) {
+            WsWxShopInfoExtend shop = shopService.getById(shopId);
+            if (shop == null) {
+                throw new BusinessException("找不到门店信息");
+            }
+            saveConsume.setShopId(shopId);
+            saveConsume.setShopName(shop.getBusinessName());
         }
-        WsWxShopInfoExtend shop = shopService.getById(shopId);
-        if (shop == null) {
-            throw new BusinessException("找不到门店信息");
-        }
-        saveConsume.setShopId(shopId);
-        saveConsume.setShopName(shop.getBusinessName());
 
         UnionConsume voConsume = vo.getConsume();
         if (voConsume == null) {
@@ -357,7 +358,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         Double discount = member.getDiscount() != null ? member.getDiscount() : 0.0;
         BigDecimal discountMoney = BigDecimalUtil.multiply(consumeMoney, discount);
         saveConsume.setDiscount(discount);
-        saveConsume.setDiscountMoney(discountMoney.doubleValue());
+        saveConsume.setDiscountMoney(BigDecimalUtil.toDouble(discountMoney));
 
         BigDecimal payMoney = BigDecimalUtil.subtract(consumeMoney, discountMoney);
         Integer isUseIntegral = vo.getIsUseIntegral();
@@ -379,18 +380,18 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             if (useIntegral.doubleValue() > integral.getIntegral()) {
                 throw new BusinessException("抵扣积分数大于可使用积分数");
             }
-            saveConsume.setUseIntegral(useIntegral.doubleValue());
-            saveConsume.setIntegralMoney(integralMoney.doubleValue());
+            saveConsume.setUseIntegral(BigDecimalUtil.toDouble(useIntegral));
+            saveConsume.setIntegralMoney(BigDecimalUtil.toDouble(integralMoney));
 
             Double giveIntegralPerMoney = dictService.getGiveIntegral();
             BigDecimal giveIntegral = BigDecimalUtil.multiply(payMoney, giveIntegralPerMoney);
-            saveConsume.setGiveIntegral(giveIntegral.doubleValue());
+            saveConsume.setGiveIntegral(BigDecimalUtil.toDouble(giveIntegral));
         }
         // 支持0.5元精度失算
         if (Math.abs(BigDecimalUtil.subtract(payMoney, voConsume.getPayMoney()).doubleValue()) > 0.5) {
             throw new BusinessException("实际支付金额错误，请刷新后重试");
         }
-        saveConsume.setPayMoney(payMoney.doubleValue());
+        saveConsume.setPayMoney(BigDecimalUtil.toDouble(payMoney));
 
         Integer voActivityId = vo.getActivityId();
         List<UnionCardProjectItem> voItemList = vo.getTextList();
@@ -474,7 +475,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             updateIntegral.setId(integral.getId());
             BigDecimal tempIntegral = BigDecimalUtil.subtract(integral.getIntegral(), saveConsume.getUseIntegral());
             tempIntegral = BigDecimalUtil.add(tempIntegral, saveConsume.getGiveIntegral());
-            updateIntegral.setIntegral(tempIntegral.doubleValue());
+            updateIntegral.setIntegral(BigDecimalUtil.toDouble(tempIntegral));
             unionCardIntegralService.update(updateIntegral);
         }
 

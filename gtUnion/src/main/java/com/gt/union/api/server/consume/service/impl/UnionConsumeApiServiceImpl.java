@@ -120,11 +120,12 @@ public class UnionConsumeApiServiceImpl implements IUnionConsumeApiService {
 		if (CommonUtil.isNotEmpty(unionConsumeParam.getGiveIntegralNow()) && unionConsumeParam.getGiveIntegralNow()) {//立即赠送
 			UnionMain main = unionMainService.getById(card.getUnionId());
 			if(unionMainService.isUnionValid(main)){
-				if (main.getIsIntegral() != null && main.getIsIntegral() == 1) {//开启积分
+				//开启积分
+				if (main.getIsIntegral() != null && main.getIsIntegral() == 1) {
 					UnionCardIntegral cardIntegral = unionCardIntegralService.getValidByUnionIdAndFanId(card.getUnionId(), card.getFanId());
 					double integral = dictService.getGiveIntegral();
 					//获得的积分
-					double getIntegral = BigDecimalUtil.multiply(unionConsume.getPayMoney(), integral, 2).doubleValue();
+					double getIntegral = BigDecimalUtil.toDouble(BigDecimalUtil.multiply(unionConsume.getPayMoney(), integral));
 					if(cardIntegral != null){
 						UnionCardIntegral uci = new UnionCardIntegral();
 						uci.setId(cardIntegral.getId());

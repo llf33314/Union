@@ -111,7 +111,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         // （2）	获取可提佣金金额=历史佣金收入总额-历史佣金提现总额
         Double withdrawalSum = unionBrokerageWithdrawalService.sumMoneyByBusId(busId);
         BigDecimal availableBrokerage = BigDecimalUtil.subtract(brokerageSum, withdrawalSum);
-        result.setAvailableBrokerage(availableBrokerage.doubleValue());
+        result.setAvailableBrokerage(BigDecimalUtil.toDouble(availableBrokerage));
         // （3）	获取未支付佣金金额，即商机已接受，但仍未支付
         List<UnionMember> memberList = unionMemberService.listByBusId(busId);
         List<Integer> memberIdList = unionMemberService.getIdList(memberList);
@@ -149,7 +149,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         // （5）	获取可提佣金总额 总收入金额-历史提现金额
         Double incomeSum = unionBrokerageIncomeService.sumMoneyByBusId(busId);
         BigDecimal availableBrokerage = BigDecimalUtil.subtract(incomeSum, historyWithdrawal);
-        result.setAvailableBrokerage(availableBrokerage.doubleValue());
+        result.setAvailableBrokerage(BigDecimalUtil.toDouble(availableBrokerage));
 
         return result;
     }

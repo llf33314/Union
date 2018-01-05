@@ -9,10 +9,7 @@ import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.response.GtJsonResult;
-import com.gt.union.common.util.ExportUtil;
-import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.MockUtil;
-import com.gt.union.common.util.PageUtil;
+import com.gt.union.common.util.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -111,7 +108,7 @@ public class UnionCardSharingRecordController {
                 int cellIndex = 0;
                 // 时间
                 HSSFCell createTimeCell = row.createCell(cellIndex++);
-                createTimeCell.setCellValue(vo.getSharingRecord().getCreateTime());
+                createTimeCell.setCellValue(DateUtil.getDateString(vo.getSharingRecord().getCreateTime(), DateUtil.DATETIME_PATTERN));
                 createTimeCell.setCellStyle(centerCellStyle);
                 // 联盟卡号
                 HSSFCell cardNumberCell = row.createCell(cellIndex++);

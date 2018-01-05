@@ -62,5 +62,9 @@ public class UnionCardSharingRatioCacheUtil {
     public static String getInvalidUnionIdKey(Integer unionId) {
         return "unionCardSharingRatio:unionId:" + unionId + ":invalid";
     }
+    
+    public static String getAutoEqualDivisionRatioLockKey() {
+        return "unionCardSharingRatio:autoEqualDivisionRatioLock"; 
+    }
 
 }

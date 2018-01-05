@@ -10,6 +10,7 @@ import com.gt.union.card.project.service.IUnionCardProjectService;
 import com.gt.union.card.sharing.dao.IUnionCardSharingRatioDao;
 import com.gt.union.card.sharing.entity.UnionCardSharingRatio;
 import com.gt.union.card.sharing.service.IUnionCardSharingRatioService;
+import com.gt.union.card.sharing.util.UnionCardSharingRatioCacheUtil;
 import com.gt.union.card.sharing.vo.CardSharingRatioVO;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
@@ -17,6 +18,7 @@ import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.BigDecimalUtil;
 import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
+import com.gt.union.common.util.RedissonLockUtil;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.member.constant.MemberConstant;
 import com.gt.union.union.member.entity.UnionMember;
@@ -26,10 +28,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 /**
  * 联盟卡售卡分成比例 服务实现类
@@ -88,6 +87,22 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
     }
 
     @Override
+    public List<UnionCardSharingRatio> listValidByUnionIdAndActivityId(Integer unionId, Integer activityId, String orderBy, boolean isAsc) throws Exception {
+        if (unionId == null || activityId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionCardSharingRatio> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("activity_id", activityId)
+                .orderBy(orderBy, isAsc);
+
+        return unionCardSharingRatioDao.selectList(entityWrapper);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
     public List<CardSharingRatioVO> listCardSharingRatioVOByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception {
         if (busId == null || unionId == null || activityId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -107,15 +122,19 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
         }
         // （3）	获取已审核通过的报名项目，并获取对应的分成比例设置
         List<CardSharingRatioVO> result = new ArrayList<>();
-        List<UnionCardProject> projectList = unionCardProjectService.listValidByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
+        List<UnionCardProject> projectList = unionCardProjectService.listValidByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT, "create_time", true);
         if (ListUtil.isNotEmpty(projectList)) {
+            if (activity.getSellBeginTime().compareTo(DateUtil.getCurrentDate()) < 0) {
+                if (!existValidByUnionIdAndActivityId(unionId, activityId)) {
+                    autoEqualDivisionRatio(projectList);
+                }
+            } else {
+                projectList = unionCardProjectService.filterInvalidMemberId(projectList);
+            }
             for (UnionCardProject project : projectList) {
                 CardSharingRatioVO vo = new CardSharingRatioVO();
 
-                UnionMember ratioMember = unionMemberService.getValidReadByIdAndUnionId(project.getMemberId(), unionId);
-                if (ratioMember == null) {
-                    continue;
-                }
+                UnionMember ratioMember = unionMemberService.getById(project.getMemberId());
                 vo.setMember(ratioMember);
 
                 UnionCardSharingRatio ratio = getValidByUnionIdAndMemberIdAndActivityId(unionId, project.getMemberId(), activityId);
@@ -228,6 +247,79 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
         }
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void autoEqualDivisionRatio(List<UnionCardProject> projectList) throws Exception {
+        if (projectList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        UnionCardProject project = projectList.get(0);
+        Integer activityId = project.getActivityId();
+        Integer unionId = project.getUnionId();
+        UnionCardActivity activity = unionCardActivityService.getValidByIdAndUnionId(activityId, unionId);
+        String autoEqualDivisionRatioLockKey = UnionCardSharingRatioCacheUtil.getAutoEqualDivisionRatioLockKey();
+        try {
+            RedissonLockUtil.lock(autoEqualDivisionRatioLockKey, 5);
+            if (!existValidByUnionIdAndActivityId(unionId, activityId) && activity.getSellBeginTime().compareTo(DateUtil.getCurrentDate()) > 0) {
+                Date currentDate = DateUtil.getCurrentDate();
+                boolean isIncludeUnionOwnerId = unionCardProjectService.existUnionOwnerId(projectList);
+                projectList = unionCardProjectService.filterInvalidMemberId(projectList);
+
+                List<UnionCardSharingRatio> saveSharingRatioList = new ArrayList<>();
+                if (ListUtil.isNotEmpty(projectList)) {
+                    int size = projectList.size();
+                    BigDecimal averageSharingRatio = BigDecimalUtil.divide(1.0, Double.valueOf(size));
+                    BigDecimal sharedRatioSum = BigDecimal.ZERO;
+                    for (int i = size - 1; i >= 0; i--) {
+                        UnionCardProject tempProject = projectList.get(i);
+
+                        UnionCardSharingRatio saveSharingRatio = new UnionCardSharingRatio();
+                        saveSharingRatio.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                        saveSharingRatio.setCreateTime(currentDate);
+                        saveSharingRatio.setUnionId(unionId);
+                        saveSharingRatio.setMemberId(tempProject.getMemberId());
+                        saveSharingRatio.setActivityId(activityId);
+                        saveSharingRatio.setRatio(BigDecimalUtil.toDouble(averageSharingRatio));
+                        saveSharingRatioList.add(saveSharingRatio);
+
+                        sharedRatioSum = BigDecimalUtil.add(sharedRatioSum, averageSharingRatio);
+                    }
+                    BigDecimal surplusRatio = BigDecimalUtil.subtract(1.0, sharedRatioSum);
+                    if (surplusRatio.doubleValue() > 0) {
+                        if (isIncludeUnionOwnerId) {
+                            for (UnionCardSharingRatio sharingRatio : saveSharingRatioList) {
+                                UnionMember tempMember = unionMemberService.getValidReadById(sharingRatio.getMemberId());
+                                if (tempMember != null && MemberConstant.IS_UNION_OWNER_YES == tempMember.getIsUnionOwner()) {
+                                    BigDecimal ratio = BigDecimalUtil.add(sharingRatio.getRatio(), surplusRatio);
+                                    sharingRatio.setRatio(BigDecimalUtil.toDouble(ratio));
+                                    break;
+                                }
+                            }
+                        } else {
+                            BigDecimal ratio = BigDecimalUtil.add(saveSharingRatioList.get(0).getRatio(), surplusRatio);
+                            saveSharingRatioList.get(0).setRatio(BigDecimalUtil.toDouble(ratio));
+                        }
+                    }
+                } else {
+                    UnionCardSharingRatio saveSharingRatio = new UnionCardSharingRatio();
+                    saveSharingRatio.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                    saveSharingRatio.setCreateTime(currentDate);
+                    saveSharingRatio.setUnionId(unionId);
+                    saveSharingRatio.setMemberId(unionMemberService.getValidOwnerByUnionId(unionId).getId());
+                    saveSharingRatio.setActivityId(activityId);
+                    saveSharingRatio.setRatio(1.0);
+                    saveSharingRatioList.add(saveSharingRatio);
+                }
+
+                saveBatch(saveSharingRatioList);
+            }
+        } finally {
+            RedissonLockUtil.unlock(autoEqualDivisionRatioLockKey);
+        }
+
+    }
+
     //********************************************* Base On Business - other *******************************************
 
     @Override
@@ -242,6 +334,40 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
                 .eq("activity_id", activityId);
 
         return unionCardSharingRatioDao.selectCount(entityWrapper) > 0;
+    }
+
+    @Override
+    public boolean existInvalidMemberId(List<UnionCardSharingRatio> ratioList) throws Exception {
+        if (ratioList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        if (ListUtil.isNotEmpty(ratioList)) {
+            for (UnionCardSharingRatio ratio : ratioList) {
+                if (!unionMemberService.existValidReadById(ratio.getMemberId())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean existUnionOwnerId(List<UnionCardSharingRatio> ratioList) throws Exception {
+        if (ratioList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        if (ListUtil.isNotEmpty(ratioList)) {
+            for (UnionCardSharingRatio ratio : ratioList) {
+                UnionMember member = unionMemberService.getValidReadById(ratio.getMemberId());
+                if (member != null && MemberConstant.IS_UNION_OWNER_YES == member.getIsUnionOwner()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     //********************************************* Base On Business - filter ******************************************

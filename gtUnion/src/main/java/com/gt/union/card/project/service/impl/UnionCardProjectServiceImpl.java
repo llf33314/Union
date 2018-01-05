@@ -23,7 +23,6 @@ import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.member.constant.MemberConstant;
@@ -45,9 +44,6 @@ import java.util.*;
 public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
     @Autowired
     private IUnionCardProjectDao unionCardProjectDao;
-
-    @Autowired
-    private RedisCacheUtil redisCacheUtil;
 
     @Autowired
     private IUnionMainService unionMainService;
@@ -206,6 +202,22 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
                 .eq("union_id", unionId)
                 .eq("activity_id", activityId)
                 .eq("status", status);
+
+        return unionCardProjectDao.selectList(entityWrapper);
+    }
+
+    @Override
+    public List<UnionCardProject> listValidByUnionIdAndActivityIdAndStatus(Integer unionId, Integer activityId, Integer status, String orderBy, boolean isAsc) throws Exception {
+        if (unionId == null || activityId == null || status == null || orderBy == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("activity_id", activityId)
+                .eq("status", status)
+                .orderBy(orderBy, isAsc);
 
         return unionCardProjectDao.selectList(entityWrapper);
     }
@@ -422,6 +434,24 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
                 .eq("status", status);
 
         return unionCardProjectDao.selectCount(entityWrapper) > 0;
+    }
+
+    @Override
+    public boolean existUnionOwnerId(List<UnionCardProject> projectList) throws Exception {
+        if (projectList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        if (ListUtil.isNotEmpty(projectList)) {
+            for (UnionCardProject project : projectList) {
+                UnionMember member = unionMemberService.getValidReadById(project.getMemberId());
+                if (member != null && MemberConstant.IS_UNION_OWNER_YES == member.getIsUnionOwner()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 
     //********************************************* Base On Business - filter ******************************************

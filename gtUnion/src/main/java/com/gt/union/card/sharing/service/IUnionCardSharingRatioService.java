@@ -2,6 +2,7 @@ package com.gt.union.card.sharing.service;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.gt.union.card.project.entity.UnionCardProject;
 import com.gt.union.card.sharing.entity.UnionCardSharingRatio;
 import com.gt.union.card.sharing.vo.CardSharingRatioVO;
 
@@ -40,6 +41,18 @@ public interface IUnionCardSharingRatioService {
     List<UnionCardSharingRatio> listValidByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception;
 
     /**
+     * 获取未删除的售卡分成比例列表信息
+     *
+     * @param unionId    联盟id
+     * @param activityId 活动id
+     * @param orderBy    排序字段
+     * @param isAsc      是否升序
+     * @return List<UnionCardSharingRatio>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardSharingRatio> listValidByUnionIdAndActivityId(Integer unionId, Integer activityId, String orderBy, boolean isAsc) throws Exception;
+
+    /**
      * 分页：我的联盟-售卡佣金分成管理-活动卡售卡比例设置-选择活动卡后；列表：我的联盟-售卡佣金分成管理-活动卡售卡比例设置-选择活动卡后-比例设置
      *
      * @param busId      商家id
@@ -67,6 +80,14 @@ public interface IUnionCardSharingRatioService {
      */
     void updateByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId, List<CardSharingRatioVO> voList) throws Exception;
 
+    /**
+     * 自动分配售卡分成比例
+     *
+     * @param projectList 活动项目列表
+     * @throws Exception 统一处理异常
+     */
+    void autoEqualDivisionRatio(List<UnionCardProject> projectList) throws Exception;
+
     //********************************************* Base On Business - other *******************************************
 
     /**
@@ -78,6 +99,24 @@ public interface IUnionCardSharingRatioService {
      * @throws Exception 统一处理异常
      */
     boolean existValidByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception;
+
+    /**
+     * 是否存在售卡分成比例所有者是已退盟状态的
+     *
+     * @param ratioList 售卡分成比例列表
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean existInvalidMemberId(List<UnionCardSharingRatio> ratioList) throws Exception;
+
+    /**
+     * 是否存在售卡分成比例所有者是盟主
+     *
+     * @param ratioList 售卡分成比例列表
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean existUnionOwnerId(List<UnionCardSharingRatio> ratioList) throws Exception;
 
     //********************************************* Base On Business - filter ******************************************
 

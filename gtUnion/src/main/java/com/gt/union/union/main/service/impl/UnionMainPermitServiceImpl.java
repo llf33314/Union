@@ -122,7 +122,7 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
         savePermit.setDelStatus(CommonConstant.COMMON_NO);
         Date currentDate = DateUtil.getCurrentDate();
         savePermit.setCreateTime(currentDate);
-        int validMonth = BigDecimalUtil.multiply(Double.valueOf(12), unionPackage.getYear()).intValue();
+        int validMonth = BigDecimalUtil.multiply(12.0, unionPackage.getYear()).intValue();
         savePermit.setValidity(DateUtil.addMonths(currentDate, validMonth));
         savePermit.setBusId(busId);
         savePermit.setPackageId(packageId);

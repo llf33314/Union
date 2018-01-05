@@ -104,7 +104,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
                 expenseBrokerage = BigDecimalUtil.add(expenseBrokerage, pay.getMoney());
 
                 UnionOpportunity opportunity = unionOpportunityService.getById(pay.getOpportunityId());
-                opportunity.setBrokerageMoney(BigDecimalUtil.subtract(Double.valueOf(0), opportunity.getBrokerageMoney()).doubleValue());
+                opportunity.setBrokerageMoney(BigDecimalUtil.toDouble(BigDecimalUtil.subtract(0.0, opportunity.getBrokerageMoney())));
                 opportunityList.add(opportunity);
             }
         }
@@ -116,7 +116,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
             }
         });
         result.setOpportunityList(opportunityList);
-        result.setContactMoney(BigDecimalUtil.subtract(incomeBrokerage, expenseBrokerage).doubleValue());
+        result.setContactMoney(BigDecimalUtil.toDouble(BigDecimalUtil.subtract(incomeBrokerage, expenseBrokerage)));
 
         return result;
     }
@@ -293,7 +293,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
 
                 Double incomeMoney = sumValidMoneyByFromBusIdAndToBusIdListAndStatus(contactMember.getBusId(), busIdList, BrokerageConstant.PAY_STATUS_SUCCESS);
                 Double expenseMoney = sumValidMoneyByFromBusIdListAndToBusIdAndStatus(busIdList, contactMember.getBusId(), BrokerageConstant.PAY_STATUS_SUCCESS);
-                vo.setContactMoney(BigDecimalUtil.subtract(incomeMoney, expenseMoney).doubleValue());
+                vo.setContactMoney(BigDecimalUtil.toDouble(BigDecimalUtil.subtract(incomeMoney, expenseMoney)));
 
                 result.add(vo);
             }
@@ -361,7 +361,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
         }
 
         // （4）	调用接口，返回支付链接
-        UnionPayVO result = unionBrokeragePayStrategyService.unionBrokerageApply(orderNo, brokerageSum.doubleValue());
+        UnionPayVO result = unionBrokeragePayStrategyService.unionBrokerageApply(orderNo, BigDecimalUtil.toDouble(brokerageSum));
 
         saveBatch(savePayList);
         return result;

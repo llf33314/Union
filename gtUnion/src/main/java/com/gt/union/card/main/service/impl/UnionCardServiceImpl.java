@@ -41,6 +41,7 @@ import com.gt.union.opportunity.brokerage.service.IUnionBrokerageIncomeService;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.main.vo.UnionPayVO;
+import com.gt.union.union.member.constant.MemberConstant;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
 import org.apache.log4j.Logger;
@@ -142,6 +143,20 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (ListUtil.isEmpty(optionMemberList)) {
             return null;
         }
+        // 按我创建的联盟>我加入的联盟(按时间顺序)
+        Collections.sort(optionMemberList, new Comparator<UnionMember>() {
+            @Override
+            public int compare(UnionMember o1, UnionMember o2) {
+                if (MemberConstant.IS_UNION_OWNER_YES == o1.getIsUnionOwner()) {
+                    return -1;
+                }
+                if (MemberConstant.IS_UNION_OWNER_YES == o2.getIsUnionOwner()) {
+                    return -2;
+                }
+
+                return o1.getCreateTime().compareTo(o2.getCreateTime());
+            }
+        });
         List<Integer> optUnionIdList = unionMemberService.getUnionIdList(optionMemberList);
 
         CardApplyVO result = new CardApplyVO();
@@ -170,6 +185,10 @@ public class UnionCardServiceImpl implements IUnionCardService {
                 }
             }
             result.setActivityList(activityList);
+        }
+
+        if (CommonConstant.COMMON_NO == result.getIsDiscountCard() && ListUtil.isEmpty(result.getActivityList())) {
+            return null;
         }
 
         return result;
@@ -376,7 +395,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
             saveCardRecordList.add(saveCardRecord);
         }
 
-        UnionPayVO result = unionCardApplyService.unionCardApply(orderNo, payMoneySum.doubleValue(), busId, unionId, activityIdList);
+        UnionPayVO result = unionCardApplyService.unionCardApply(orderNo, BigDecimalUtil.toDouble(payMoneySum), busId, unionId, activityIdList);
 
         unionCardRecordService.saveBatch(saveCardRecordList);
         return result;
@@ -490,16 +509,15 @@ public class UnionCardServiceImpl implements IUnionCardService {
     }
 
     private List<UnionCardSharingRecord> shareByRatio(UnionCardRecord record) throws Exception {
-        List<UnionCardSharingRatio> ratioList = unionCardSharingRatioService.listValidByUnionIdAndActivityId(record.getUnionId(), record.getActivityId());
+        List<UnionCardSharingRatio> ratioList = unionCardSharingRatioService.listValidByUnionIdAndActivityId(record.getUnionId(), record.getActivityId(), "create_time", true);
+        boolean isIncludeUnionOwnerId = unionCardSharingRatioService.existUnionOwnerId(ratioList);
+        boolean isIncludeInvalidMemberId = unionCardSharingRatioService.existInvalidMemberId(ratioList);
         ratioList = unionCardSharingRatioService.filterInvalidMemberId(ratioList);
-        if (ListUtil.isEmpty(ratioList)) {
-            return shareByAverage(record);
-        }
 
         List<UnionCardSharingRecord> result = new ArrayList<>();
         Double payMoney = record.getPayMoney();
-        BigDecimal sharedRatio = BigDecimal.ZERO;
-        BigDecimal sharedMoney = BigDecimal.ZERO;
+        BigDecimal sharedRatioSum = BigDecimal.ZERO;
+        BigDecimal sharedMoneySum = BigDecimal.ZERO;
         Date currentDate = DateUtil.getCurrentDate();
         for (UnionCardSharingRatio ratio : ratioList) {
             Double sharingRatio = ratio.getRatio();
@@ -510,7 +528,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
             saveSharingRecord.setCreateTime(currentDate);
             saveSharingRecord.setSellPrice(payMoney);
             saveSharingRecord.setSharingRatio(sharingRatio);
-            saveSharingRecord.setSharingMoney(sharingMoney.doubleValue());
+            saveSharingRecord.setSharingMoney(BigDecimalUtil.toDouble(sharingMoney));
             saveSharingRecord.setSharingMemberId(ratio.getMemberId());
             saveSharingRecord.setFromMemberId(record.getMemberId());
             saveSharingRecord.setActivityId(record.getActivityId());
@@ -519,72 +537,59 @@ public class UnionCardServiceImpl implements IUnionCardService {
             saveSharingRecord.setUnionId(record.getUnionId());
             result.add(saveSharingRecord);
 
-            sharedRatio = BigDecimalUtil.add(sharedRatio, sharingRatio);
-            sharedMoney = BigDecimalUtil.add(sharedMoney, sharingMoney);
+            sharedRatioSum = BigDecimalUtil.add(sharedRatioSum, sharingRatio);
+            sharedMoneySum = BigDecimalUtil.add(sharedMoneySum, sharingMoney);
         }
-        UnionCardSharingRecord ownerSaveSharingRecord = new UnionCardSharingRecord();
-        ownerSaveSharingRecord.setDelStatus(CommonConstant.DEL_STATUS_NO);
-        ownerSaveSharingRecord.setCreateTime(currentDate);
-        ownerSaveSharingRecord.setSellPrice(payMoney);
-        ownerSaveSharingRecord.setSharingRatio(BigDecimalUtil.subtract(1.0, sharedRatio).doubleValue());
-        ownerSaveSharingRecord.setSharingMoney(BigDecimalUtil.subtract(payMoney, sharedMoney).doubleValue());
-        ownerSaveSharingRecord.setSharingMemberId(unionMemberService.getValidOwnerByUnionId(record.getUnionId()).getId());
-        ownerSaveSharingRecord.setFromMemberId(record.getMemberId());
-        ownerSaveSharingRecord.setActivityId(record.getActivityId());
-        ownerSaveSharingRecord.setCardId(record.getCardId());
-        ownerSaveSharingRecord.setFanId(record.getFanId());
-        ownerSaveSharingRecord.setUnionId(record.getUnionId());
-        result.add(ownerSaveSharingRecord);
+        BigDecimal surplusSharingRatio = BigDecimalUtil.subtract(1.0, sharedRatioSum);
+        BigDecimal surplusSharingMoney = BigDecimalUtil.subtract(payMoney, sharedMoneySum);
+        if (surplusSharingRatio.doubleValue() > 0 && surplusSharingMoney.doubleValue() > 0) {
+            Integer surplusSharingRatioMemberId = (isIncludeUnionOwnerId || isIncludeInvalidMemberId)
+                    ? unionMemberService.getValidOwnerByUnionId(record.getUnionId()).getId() : ratioList.get(0).getMemberId();
+
+            UnionCardSharingRecord ownerSaveSharingRecord = new UnionCardSharingRecord();
+            ownerSaveSharingRecord.setDelStatus(CommonConstant.DEL_STATUS_NO);
+            ownerSaveSharingRecord.setCreateTime(currentDate);
+            ownerSaveSharingRecord.setSellPrice(payMoney);
+            ownerSaveSharingRecord.setSharingRatio(BigDecimalUtil.toDouble(surplusSharingRatio, 4));
+            ownerSaveSharingRecord.setSharingMoney(BigDecimalUtil.toDouble(surplusSharingMoney));
+            ownerSaveSharingRecord.setSharingMemberId(surplusSharingRatioMemberId);
+            ownerSaveSharingRecord.setFromMemberId(record.getMemberId());
+            ownerSaveSharingRecord.setActivityId(record.getActivityId());
+            ownerSaveSharingRecord.setCardId(record.getCardId());
+            ownerSaveSharingRecord.setFanId(record.getFanId());
+            ownerSaveSharingRecord.setUnionId(record.getUnionId());
+            result.add(ownerSaveSharingRecord);
+        }
 
         return result;
     }
 
     private List<UnionCardSharingRecord> shareByAverage(UnionCardRecord record) throws Exception {
         List<UnionCardProject> projectList = unionCardProjectService.listValidByUnionIdAndActivityIdAndStatus(record.getUnionId(), record.getActivityId(), ProjectConstant.STATUS_ACCEPT);
-        projectList = unionCardProjectService.filterInvalidMemberId(projectList);
-        int sharingMemberCount = ListUtil.isNotEmpty(projectList) ? projectList.size() + 1 : 1;
-        BigDecimal sharingRatio = BigDecimalUtil.divide(Double.valueOf(1), Double.valueOf(sharingMemberCount));
-        BigDecimal sharingMoney = BigDecimalUtil.multiply(record.getPayMoney(), sharingRatio);
+        if (ListUtil.isNotEmpty(projectList)) {
+            if (!unionCardSharingRatioService.existValidByUnionIdAndActivityId(record.getUnionId(), record.getActivityId())) {
+                unionCardSharingRatioService.autoEqualDivisionRatio(projectList);
+            }
+            return shareByRatio(record);
+        } else {
+            List<UnionCardSharingRecord> result = new ArrayList<>();
 
-        List<UnionCardSharingRecord> result = new ArrayList<>();
-        Double payMoney = record.getPayMoney();
-        BigDecimal sharedRatio = BigDecimal.ZERO;
-        BigDecimal sharedMoney = BigDecimal.ZERO;
-        Date currentDate = DateUtil.getCurrentDate();
-        for (UnionCardProject project : projectList) {
-            UnionCardSharingRecord saveSharingRecord = new UnionCardSharingRecord();
-            saveSharingRecord.setDelStatus(CommonConstant.DEL_STATUS_NO);
-            saveSharingRecord.setCreateTime(currentDate);
-            saveSharingRecord.setSellPrice(payMoney);
-            saveSharingRecord.setSharingRatio(sharingRatio.doubleValue());
-            saveSharingRecord.setSharingMoney(sharingMoney.doubleValue());
-            saveSharingRecord.setSharingMemberId(project.getMemberId());
-            saveSharingRecord.setFromMemberId(record.getMemberId());
-            saveSharingRecord.setActivityId(record.getActivityId());
-            saveSharingRecord.setCardId(record.getCardId());
-            saveSharingRecord.setFanId(record.getFanId());
-            saveSharingRecord.setUnionId(record.getUnionId());
-            result.add(saveSharingRecord);
+            UnionCardSharingRecord ownerSaveSharingRecord = new UnionCardSharingRecord();
+            ownerSaveSharingRecord.setDelStatus(CommonConstant.DEL_STATUS_NO);
+            ownerSaveSharingRecord.setCreateTime(DateUtil.getCurrentDate());
+            ownerSaveSharingRecord.setSellPrice(record.getPayMoney());
+            ownerSaveSharingRecord.setSharingRatio(1.0);
+            ownerSaveSharingRecord.setSharingMoney(record.getPayMoney());
+            ownerSaveSharingRecord.setSharingMemberId(unionMemberService.getValidOwnerByUnionId(record.getUnionId()).getId());
+            ownerSaveSharingRecord.setFromMemberId(record.getMemberId());
+            ownerSaveSharingRecord.setActivityId(record.getActivityId());
+            ownerSaveSharingRecord.setCardId(record.getCardId());
+            ownerSaveSharingRecord.setFanId(record.getFanId());
+            ownerSaveSharingRecord.setUnionId(record.getUnionId());
+            result.add(ownerSaveSharingRecord);
 
-            sharedRatio = BigDecimalUtil.add(sharedRatio, sharingRatio);
-            sharedMoney = BigDecimalUtil.add(sharedMoney, sharingMoney);
+            return result;
         }
-        BigDecimal surplusSharingMoney = BigDecimalUtil.subtract(record.getPayMoney(), sharedMoney);
-        UnionCardSharingRecord ownerSaveSharingRecord = new UnionCardSharingRecord();
-        ownerSaveSharingRecord.setDelStatus(CommonConstant.DEL_STATUS_NO);
-        ownerSaveSharingRecord.setCreateTime(currentDate);
-        ownerSaveSharingRecord.setSellPrice(payMoney);
-        ownerSaveSharingRecord.setSharingRatio(BigDecimalUtil.subtract(1.0, sharedRatio).doubleValue());
-        ownerSaveSharingRecord.setSharingMoney(BigDecimalUtil.subtract(payMoney, sharedMoney).doubleValue());
-        ownerSaveSharingRecord.setSharingMemberId(unionMemberService.getValidOwnerByUnionId(record.getUnionId()).getId());
-        ownerSaveSharingRecord.setFromMemberId(record.getMemberId());
-        ownerSaveSharingRecord.setActivityId(record.getActivityId());
-        ownerSaveSharingRecord.setCardId(record.getCardId());
-        ownerSaveSharingRecord.setFanId(record.getFanId());
-        ownerSaveSharingRecord.setUnionId(record.getUnionId());
-        result.add(ownerSaveSharingRecord);
-
-        return result;
     }
 
     private List<UnionBrokerageIncome> getSaveIncomeList(List<UnionCardSharingRecord> saveSharingRecordList) throws Exception {
