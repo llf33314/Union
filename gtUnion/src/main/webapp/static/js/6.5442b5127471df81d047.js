@@ -5,4 +5,3 @@ webpackJsonp([6],{615:function(t,e,n){var r=n(235)(n(757),n(969),null,null,null)
  * @license  MIT
  */
 t.exports=function(t){return null!=t&&(n(t)||r(t)||!!t._isBuffer)}},757:function(t,e,n){"use strict";Object.defineProperty(e,"__esModule",{value:!0});var r=n(632);e.default={name:"my-union-entrance",created:function(){var t=this;r.a.get("/unionIndex").then(function(e){e.data.data&&(e.data.data.currentUnion?t.$router.push({path:"/my-union/index"}):t.$router.push({path:"/my-union/no-currentUnion"}))}).catch(function(e){t.$message({showClose:!0,message:e.toString(),type:"error",duration:5e3})})}}},969:function(t,e){t.exports={render:function(){var t=this,e=t.$createElement;return(t._self._c||e)("div")},staticRenderFns:[]}}});
-//# sourceMappingURL=6.5442b5127471df81d047.js.map

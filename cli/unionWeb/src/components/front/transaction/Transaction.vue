@@ -29,9 +29,6 @@
                 <el-tooltip class="item" effect="dark" :content="item.name" placement="bottom">
                   <div class="dddddd clearfix">
                     <img v-bind:src="item.img" alt="" class="fl unionImg">
-                    <!--<div class="fl" style="margin-left: 20px;position: absolute;top: 90px;left: -15px;">-->
-                      <!--<h6 style="margin-bottom: 17px">{{item.name}}</h6>-->
-                    <!--</div>-->
                     <i></i>
                   </div>
                 </el-tooltip>
