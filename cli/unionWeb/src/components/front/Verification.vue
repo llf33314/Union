@@ -555,6 +555,12 @@ export default {
       this.visible2 = false;
       this.visible3 = false;
       this.visible4 = false;
+      this.shopId = '';
+      this.form.unionId = '';
+      this.isProjectAvailable_ = '';
+      this.price = '';
+      this.isIntegral_ = '';
+      this.price2 = '';
     }
   }
 };

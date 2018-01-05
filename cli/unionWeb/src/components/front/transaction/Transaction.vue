@@ -26,12 +26,13 @@
           <el-form-item label="选择联盟:" prop="unionId">
             <el-radio-group v-model="form2.unionId" style="margin-top:10px;margin-bottom: 20px;">
               <el-radio-button v-for="item in form2.unionList" :key="item.id" :label="item.id">
-                <el-tooltip class="item" effect="dark" :content="item.name" placement="bottom">
+                11
+                <!-- <el-tooltip class="item" effect="dark" :content="item.name" placement="bottom">
                   <div class="dddddd clearfix">
                     <img v-bind:src="item.img" alt="" class="fl unionImg">
                     <i></i>
                   </div>
-                </el-tooltip>
+                </el-tooltip> -->
               </el-radio-button>
             </el-radio-group>
           </el-form-item>
@@ -263,9 +264,6 @@ export default {
                           let color1 = (v.color1 = v.color.split(',')[0]);
                           let color2 = (v.color2 = v.color.split(',')[1]);
                           let mDiv = 'm' + color2 + i;
-                          // setTimeout(function () {
-                          //   $("." + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
-                          // }, 0)
                         });
                       }
                       this.form2.activityCheckList = [];
@@ -336,7 +334,15 @@ export default {
                   var socketKey3 = this.socketKey3;
                   this.socket3.on('connect', function() {
                     let jsonObject = { userId: socketKey3, message: '0' };
-                    _this.socket2.emit('auth', jsonObject);
+                    _this.socket3.emit('auth', jsonObject);
+                  });
+                  //重连机制
+                  let socketindex = 0;
+                  this.socket3.on('reconnecting', function() {
+                    socketindex += 1;
+                    if (socketindex > 4) {
+                      _this.socket3.destroy(); //不在链接
+                    }
                   });
                   this.socket3.on('chatevent', function(data) {
                     let msg = eval('(' + data.message + ')');

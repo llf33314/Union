@@ -135,6 +135,9 @@ export default {
   },
   mounted: function() {
     this.init();
+    eventBus.$on('newActivityCheck', () => {
+      this.init();
+    });
   },
   methods: {
     init() {
