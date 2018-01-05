@@ -545,7 +545,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         }
 
         String phone = toMember.getNotifyPhone() != null ? toMember.getNotifyPhone() : toMember.getDirectorPhone();
-        String message = "您尚未支付\"" + union.getName() + "\"的\"" + toMember.getEnterpriseName()
+        String message = "您尚未支付\"" + union.getName() + "\"的\"" + member.getEnterpriseName()
                 + "\"" + opportunity.getBrokerageMoney() + "元的商机推荐佣金，请尽快支付，谢谢";
         PhoneMessage phoneMessage = new PhoneMessage(toMember.getBusId(), phone, message);
         phoneMessageSender.sendMsg(phoneMessage);
