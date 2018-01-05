@@ -38,7 +38,7 @@ public class UnionCardRecordServiceImpl implements IUnionCardRecordService {
 
         EntityWrapper<UnionCardRecord> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
-                .eq("order_no", orderNo);
+                .eq("sys_order_no", orderNo);
 
         return unionCardRecordDao.selectList(entityWrapper);
     }
