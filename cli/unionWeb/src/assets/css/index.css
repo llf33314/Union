@@ -721,7 +721,7 @@ hr {
 }
 #UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small {
   width: 800px;
-  height: 500px;
+  min-height: 500px;
 }
 #UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body {
   padding: 0;
@@ -743,10 +743,11 @@ hr {
 }
 #UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain .cardExplain {
   display: flex;
+  margin-bottom: 35px;
 }
 #UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain .cardExplain > span:nth-child(1) {
   display: block;
-  width: 395px;
+  width: 630px;
   text-align: right;
 }
 #UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain .cardExplain > span:nth-child(2) {
@@ -1760,7 +1761,7 @@ hr {
 #front #transaction .uninCardContent > form .selectUnionCard .SwitchAround {
   position: relative;
 }
-#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround > button {
+#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround > i {
   position: absolute;
   width: 20px;
   height: 50px;
@@ -1771,6 +1772,8 @@ hr {
   z-index: 20;
   border: none;
   top: 32%;
+  cursor: pointer;
+  font-style: normal!important;
 }
 #front #transaction .uninCardContent > form .selectUnionCard .SwitchAround .forward {
   left: 0;

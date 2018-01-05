@@ -29,9 +29,6 @@
                 <el-tooltip class="item" effect="dark" :content="item.name" placement="bottom">
                   <div class="dddddd clearfix">
                     <img v-bind:src="item.img" alt="" class="fl unionImg">
-                    <!--<div class="fl" style="margin-left: 20px;position: absolute;top: 90px;left: -15px;">-->
-                      <!--<h6 style="margin-bottom: 17px">{{item.name}}</h6>-->
-                    <!--</div>-->
                     <i></i>
                   </div>
                 </el-tooltip>
@@ -43,8 +40,8 @@
           <p>选择联盟卡</p>
           <el-form-item label="" prop="activityCheckList">
             <div class="SwitchAround">
-              <button class="forward"> &lt; </button>
-              <button class="backward"> &gt; </button>
+              <i class="forward" style="font-style:normal"> &lt;</i>
+              <i class="backward" style="font-style:normal"> &gt;</i>
               <div>
                 <el-checkbox-group v-model="form2.activityCheckList">
                   <el-checkbox-button v-if="isDiscountCard" :label="form2.currentMember.id" disabled>
@@ -136,8 +133,8 @@ export default {
       labelPosition: 'right',
       fanId: '',
       form1: {
-        phone: '',
-        code: '',
+        phone: '18202028209',
+        code: '1234',
         getVerificationCode: false,
         countDownTime: ''
       },
@@ -259,6 +256,7 @@ export default {
                       this.form2 = res.data.data;
                       this.form2.unionList = res.data.data.unionList;
                       this.form2.unionId = res.data.data.currentUnion.id;
+                      console.log(this.form2.unionId );
                       this.form2.activityList = res.data.data.activityList;
                       if (this.form2.activityList) {
                         this.form2.activityList.forEach((v, i) => {
@@ -266,9 +264,9 @@ export default {
                           let color1 = (v.color1 = v.color.split(',')[0]);
                           let color2 = (v.color2 = v.color.split(',')[1]);
                           let mDiv = 'm' + color2 + i;
-                          // setTimeout(function () {
-                          //   $("." + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
-                          // }, 0)
+                          setTimeout(function () {
+                            $("." + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
+                          }, 0)
                         });
                       }
                       this.form2.activityCheckList = [];
