@@ -451,12 +451,6 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
                 saveItem.setCreateTime(currentDate);
                 saveItem.setType(ProjectConstant.TYPE_ERP_GOODS);
 
-                Integer shopId = erpGoods.getShopId();
-                if (shopId == null) {
-                    throw new BusinessException("门店id不能为空");
-                }
-                saveItem.setShopId(shopId);
-
                 Integer erpGoodsId = erpGoods.getErpGoodsId();
                 if (erpGoodsId == null) {
                     throw new BusinessException("ERP商品项目id不能为空");
