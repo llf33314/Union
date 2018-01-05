@@ -485,7 +485,7 @@ export default {
           .post(url, data)
           .then(res => {
             if (res.data.data) {
-              this.payUrl = res.data.data.url;
+              this.payUrl = res.data.data.payUrl;
               this.socketKey = res.data.data.socketKey;
               this.visible4 = true;
             } else {
@@ -538,8 +538,10 @@ export default {
     },
     // 关闭二维码改变付款方式
     resetData() {
-      parent.window.postMessage('openMask()', 'https://deeptel.com.cn/user/toIndex_1.do');
       this.payType = 1;
+      setTimeout(() => {
+        parent.window.postMessage('openMask()', '*');
+      }, 0);
     },
     // 返回
     back() {

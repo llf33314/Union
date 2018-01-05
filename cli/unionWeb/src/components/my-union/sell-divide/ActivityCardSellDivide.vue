@@ -205,7 +205,7 @@ export default {
               v.sharingRatio.ratio = (v.sharingRatio.ratio * 100).toFixed(0);
               this.sum3 += parseFloat(v.sharingRatio.ratio);
             });
-            this.sum3 = this.sum3.toFixed(0);
+            this.sum3 = parseFloat(this.sum3.toFixed(0));
             this.visible3 = true;
           }
         })
