@@ -25,4 +25,11 @@ public interface ErpService {
 	 * @return
 	 */
 	List<ErpServerVO> listErpServer(Integer shopId, Integer erpModel, String search, Page page, Integer busId);
+
+	/**
+	 * 根据商家id判断是否有erp权限
+	 * @param busId		商家id
+	 * @return
+	 */
+	Boolean userHasErpAuthority(Integer busId);
 }
