@@ -684,11 +684,11 @@ hr {
   width: 75%;
   margin: 4px 0;
 }
+#joinStep .step2 .el-radio-button__inner {
+  white-space: inherit!important;
+}
 #joinStep .step2 .dddddd .declare {
   margin-left: 20px;
-}
-#joinStep .step2 .dddddd .declare .el-radio-button__inner {
-  white-space: inherit!important;
 }
 #joinStep .step2 .dddddd .declare > div {
   width: 190px;

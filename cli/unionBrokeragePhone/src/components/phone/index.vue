@@ -8,11 +8,11 @@
       <div class="flex-1">
           <i class="fr tubiao"></i>
           <strong>未支付</strong>
-          <p>{{dataList[1]}}</p>
+          <p>{{dataList[2]}}</p>
       </div>
       <div class="flex-1">
             <strong>所得佣金总和</strong>
-            <p>{{dataList[2]}}</p>
+            <p>{{dataList[1]}}</p>
       </div>
     </div>
     <router-link :to="{ path:'/toExtract',name:'toExtract'}">
