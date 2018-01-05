@@ -685,10 +685,18 @@ hr {
   margin: 4px 0;
 }
 #joinStep .step2 .dddddd .declare {
+  margin-left: 20px;
+}
+#joinStep .step2 .dddddd .declare .el-radio-button__inner {
+  white-space: inherit!important;
+}
+#joinStep .step2 .dddddd .declare > div {
   width: 190px;
-  white-space: nowrap;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
   overflow: hidden;
-  text-overflow: ellipsis;
 }
 #UnionCardSetting > .container {
   margin: 40px 80px 50px 50px;
@@ -732,6 +740,18 @@ hr {
 }
 #UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain > p > span:nth-child(2) {
   margin-left: 50px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain .cardExplain {
+  display: flex;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain .cardExplain > span:nth-child(1) {
+  display: block;
+  width: 395px;
+  text-align: right;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain .cardExplain > span:nth-child(2) {
+  margin-left: 55px;
+  float: left;
 }
 #UnionCardSetting > .container #ActivityCardSetting .explain {
   background-color: #f4f4f4;
@@ -1281,9 +1301,6 @@ hr {
 }
 #Business #myRecommend .MyRecommend .el-form-item__label {
   width: 115px !important;
-}
-#Business #myRecommend .MyRecommend .selectUnion {
-  margin-bottom: 35px!important;
 }
 #Business #myRecommend .MyRecommend .selectUnion .el-form-item__content .el-form-item__error {
   top: 80px;

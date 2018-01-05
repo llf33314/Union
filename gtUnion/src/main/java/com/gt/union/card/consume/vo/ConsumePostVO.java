@@ -24,7 +24,7 @@ public class ConsumePostVO {
     private UnionConsume consume;
 
     @ApiModelProperty(value = "是否使用积分")
-    private Integer isUserIntegral;
+    private Integer isUseIntegral;
 
     @ApiModelProperty(value = "联盟卡活动id")
     private Integer activityId;
@@ -48,12 +48,12 @@ public class ConsumePostVO {
         this.consume = consume;
     }
 
-    public Integer getIsUserIntegral() {
-        return isUserIntegral;
+    public Integer getIsUseIntegral() {
+        return isUseIntegral;
     }
 
-    public void setIsUserIntegral(Integer isUserIntegral) {
-        this.isUserIntegral = isUserIntegral;
+    public void setIsUseIntegral(Integer isUseIntegral) {
+        this.isUseIntegral = isUseIntegral;
     }
 
     public Integer getActivityId() {

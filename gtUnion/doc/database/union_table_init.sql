@@ -16,7 +16,7 @@ CREATE TABLE `t_union_member` (
   `address_longitude` varchar(50) DEFAULT NULL COMMENT '地址经度',
   `address_latitude` varchar(50) DEFAULT NULL COMMENT '地址维度',
   `notify_phone` varchar(20) DEFAULT NULL COMMENT '短信通知手机号',
-  `integral_exchange_ratio` double(8,2) DEFAULT NULL COMMENT '积分兑换率(百分比)',
+  `integral_exchange_ratio` double(8,2) DEFAULT NULL COMMENT '积分抵扣率(百分比)',
   `discount` double(8,2) DEFAULT NULL COMMENT '统一折扣(折)',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='盟员';

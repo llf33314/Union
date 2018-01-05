@@ -360,9 +360,9 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         saveConsume.setDiscountMoney(discountMoney.doubleValue());
 
         BigDecimal payMoney = BigDecimalUtil.subtract(consumeMoney, discountMoney);
-        Integer isUserIntegral = vo.getIsUserIntegral();
+        Integer isUseIntegral = vo.getIsUseIntegral();
         UnionCardIntegral integral = unionCardIntegralService.getValidByUnionIdAndFanId(unionId, fanId);
-        if (CommonConstant.COMMON_YES == isUserIntegral) {
+        if (CommonConstant.COMMON_YES == isUseIntegral) {
             Double integralExchangeRatio = member.getIntegralExchangeRatio();
             if (integralExchangeRatio == null) {
                 throw new BusinessException("未设置积分兑换率");
@@ -386,7 +386,8 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             BigDecimal giveIntegral = BigDecimalUtil.multiply(payMoney, giveIntegralPerMoney);
             saveConsume.setGiveIntegral(giveIntegral.doubleValue());
         }
-        if (BigDecimalUtil.subtract(payMoney, voConsume.getPayMoney()).doubleValue() != 0) {
+        // 支持0.5元精度失算
+        if (Math.abs(BigDecimalUtil.subtract(payMoney, voConsume.getPayMoney()).doubleValue()) > 0.5) {
             throw new BusinessException("实际支付金额错误，请刷新后重试");
         }
         saveConsume.setPayMoney(payMoney.doubleValue());

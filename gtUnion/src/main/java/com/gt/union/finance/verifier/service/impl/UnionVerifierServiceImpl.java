@@ -165,7 +165,7 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
 
         UnionVerifier removeVerifier = getValidByBusIdAndId(busId, verifierId);
         if (removeVerifier == null) {
-            throw new BusinessException("找不到平添管理人员信息");
+            throw new BusinessException("找不到平台管理人员信息");
         }
 
         removeById(verifierId);

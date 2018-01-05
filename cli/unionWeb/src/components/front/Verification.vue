@@ -29,7 +29,7 @@
               </el-option>
             </el-select>
           </el-form-item>
-          <div class="selectUnion" style="margin-bottom: 36px;">
+          <div class="selectUnion">
             <el-form-item label="选择联盟:">
               <el-radio-group v-model="form.unionId" style="margin-top:10px;" @change="unionIdChange">
                 <el-radio-button v-for="item in form.unionList" :key="item.id" :label="item.id">
