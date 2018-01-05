@@ -116,7 +116,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         // （3）	获取未支付佣金金额，即商机已接受，但仍未支付
         List<UnionMember> memberList = unionMemberService.listByBusId(busId);
         List<Integer> memberIdList = unionMemberService.getIdList(memberList);
-        Double unPaidOpportunityBrokerage = unionOpportunityService.sumValidBrokerageMoneyByFromMemberIdListAndAcceptStatusAndIsClose(memberIdList,
+        Double unPaidOpportunityBrokerage = unionOpportunityService.sumValidBrokerageMoneyByToMemberIdListAndAcceptStatusAndIsClose(memberIdList,
                 OpportunityConstant.ACCEPT_STATUS_CONFIRMED, OpportunityConstant.IS_CLOSE_NO);
         result.setUnPaidOpportunityBrokerage(unPaidOpportunityBrokerage);
 
@@ -539,11 +539,15 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         }
 
         UnionMain union = unionMainService.getById(unionId);
+        UnionMember toMember = unionMemberService.getValidById(opportunity.getToMemberId());
+        if(toMember == null){
+            throw new BusinessException("无法催促别人的商机");
+        }
 
-        String phone = member.getNotifyPhone() != null ? member.getNotifyPhone() : member.getDirectorPhone();
+        String phone = toMember.getNotifyPhone() != null ? toMember.getNotifyPhone() : toMember.getDirectorPhone();
         String message = "您尚未支付\"" + union.getName() + "\"的\"" + member.getEnterpriseName()
                 + "\"" + opportunity.getBrokerageMoney() + "元的商机推荐佣金，请尽快支付，谢谢";
-        PhoneMessage phoneMessage = new PhoneMessage(member.getBusId(), phone, message);
+        PhoneMessage phoneMessage = new PhoneMessage(toMember.getBusId(), phone, message);
         phoneMessageSender.sendMsg(phoneMessage);
     }
 
