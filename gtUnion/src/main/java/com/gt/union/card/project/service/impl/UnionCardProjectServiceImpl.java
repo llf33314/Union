@@ -207,6 +207,22 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
     }
 
     @Override
+    public List<UnionCardProject> listValidByUnionIdAndMemberIdAndActivityIdAndStatus(Integer unionId, Integer memberId, Integer activityId, Integer status) throws Exception {
+        if (unionId == null || memberId == null || activityId == null || status == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("member_id", memberId)
+                .eq("activity_id", activityId)
+                .eq("status", status);
+
+        return unionCardProjectDao.selectList(entityWrapper);
+    }
+
+    @Override
     public List<UnionCardProject> listValidByUnionIdAndActivityIdAndStatus(Integer unionId, Integer activityId, Integer status, String orderBy, boolean isAsc) throws Exception {
         if (unionId == null || activityId == null || status == null || orderBy == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);

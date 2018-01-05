@@ -122,7 +122,7 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         // （3）	获取activity关联的非ERP文本项目优惠列表
         // （4）	过滤掉可使用数量为0的项目优惠
         List<CardProjectItemConsumeVO> result = new ArrayList<>();
-        List<UnionCardProject> projectList = unionCardProjectService.listValidByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
+        List<UnionCardProject> projectList = unionCardProjectService.listValidByUnionIdAndMemberIdAndActivityIdAndStatus(unionId, member.getId(), activityId, ProjectConstant.STATUS_ACCEPT);
         if (ListUtil.isNotEmpty(projectList)) {
             for (UnionCardProject project : projectList) {
                 List<UnionCardProjectItem> textItemList = listValidByProjectIdAndType(project.getId(), ProjectConstant.TYPE_TEXT);

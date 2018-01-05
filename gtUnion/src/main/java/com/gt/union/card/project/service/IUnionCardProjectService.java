@@ -102,6 +102,18 @@ public interface IUnionCardProjectService {
      * 获取未删除的项目列表信息
      *
      * @param unionId    联盟id
+     * @param memberId   盟员id
+     * @param activityId 活动id
+     * @param status     项目状态
+     * @return List<UnionCardProject>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardProject> listValidByUnionIdAndMemberIdAndActivityIdAndStatus(Integer unionId, Integer memberId, Integer activityId, Integer status) throws Exception;
+
+    /**
+     * 获取未删除的项目列表信息
+     *
+     * @param unionId    联盟id
      * @param activityId 活动id
      * @param status     项目状态
      * @param orderBy    排序字段
