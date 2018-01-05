@@ -9,6 +9,7 @@ import com.gt.union.api.client.erp.vo.ErpServerVO;
 import com.gt.union.api.erp.car.service.CarErpService;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.util.ApiResultHandlerUtil;
+import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.PropertiesUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,11 +47,13 @@ public class ErpServiceImpl implements ErpService {
 			logger.info("根据商家id获取erp列表，结果：{}", result);
 			Map data = ApiResultHandlerUtil.getDataObject(result,Map.class);
 			List<ErpTypeVO> list = JSON.parseArray(data.get("menusLevelList").toString(),ErpTypeVO.class);
-			for(ErpTypeVO vo : list){
-				for(Integer erpType : ConfigConstant.UNION_USER_ERP_TYPE){
-					if(erpType.equals(vo.getErpModel())){
-						vo.setErpType(vo.getErpModel());
-						dataList.add(vo);
+			if(ListUtil.isNotEmpty(list)){
+				for(ErpTypeVO vo : list){
+					for(Integer erpType : ConfigConstant.UNION_USER_ERP_TYPE){
+						if(erpType.equals(vo.getErpModel())){
+							vo.setErpType(vo.getErpModel());
+							dataList.add(vo);
+						}
 					}
 				}
 			}
@@ -68,9 +71,11 @@ public class ErpServiceImpl implements ErpService {
 			case 2:
 				//车小算
 				list = carErpService.listErpServer(shopId, search, busId, page);
-				for(ErpServerVO vo : list){
-					vo.setErpType(erpModel);
-					vo.setShopId(shopId);
+				if(ListUtil.isNotEmpty(list)){
+					for(ErpServerVO vo : list){
+						vo.setErpType(erpModel);
+						vo.setShopId(shopId);
+					}
 				}
 				break;
 			default:
