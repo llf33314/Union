@@ -177,8 +177,8 @@
                     <span class="color_" v-if="price2 && price2 - price1 >= 0">{{ (price2 - price1) | formatPrice}}</span>
                   </span>
                 </el-col>
-                <el-col style="width:240px;margin-left:50px;position: absolute;top: 40px;left: 72px;">
-                  <span class="color_" v-if="price2 && (price2 - price1 < 0)">收取金额小于支付金额，请重新输入</span>
+                <el-col style="margin-left:70px;">
+                  <span class="color-1" v-if="price2 && (price2 - price1 < 0)">收取金额小于支付金额，请重新输入</span>
                 </el-col>
               </el-row>
             </div>
@@ -597,6 +597,9 @@ export default {
   .color_ {
     color: #ff4949;
     font-size: 20px;
+  }
+  .color-1{
+    color: #ff4949;
   }
   .el-form-item {
     margin-bottom: 5px;

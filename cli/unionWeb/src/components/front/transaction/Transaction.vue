@@ -40,8 +40,8 @@
           <p>选择联盟卡</p>
           <el-form-item>
             <div class="SwitchAround">
-              <button class="forward"> &lt; </button>
-              <button class="backward"> &gt; </button>
+              <i class="forward" style="font-style:normal"> &lt;</i>
+              <i class="backward" style="font-style:normal"> &gt;</i>
               <div>
                 <el-checkbox-group v-model="activityCheckList">
                   <!-- label 写死？ -->
@@ -260,6 +260,9 @@ export default {
                           let color1 = (v.color1 = v.color.split(',')[0]);
                           let color2 = (v.color2 = v.color.split(',')[1]);
                           let mDiv = 'm' + color2 + i;
+                          setTimeout(function () {
+                            $("." + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
+                          }, 0)
                         });
                       }
                       this.activityCheckList = [];
