@@ -14,6 +14,7 @@ import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.constant.SmsCodeConstant;
+import com.gt.union.common.exception.BaseException;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.response.GtJsonResult;
@@ -115,7 +116,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         // （3）	获取未支付佣金金额，即商机已接受，但仍未支付
         List<UnionMember> memberList = unionMemberService.listByBusId(busId);
         List<Integer> memberIdList = unionMemberService.getIdList(memberList);
-        Double unPaidOpportunityBrokerage = unionOpportunityService.sumValidBrokerageMoneyByFromMemberIdListAndAcceptStatusAndIsClose(memberIdList,
+        Double unPaidOpportunityBrokerage = unionOpportunityService.sumValidBrokerageMoneyByToMemberIdListAndAcceptStatusAndIsClose(memberIdList,
                 OpportunityConstant.ACCEPT_STATUS_CONFIRMED, OpportunityConstant.IS_CLOSE_NO);
         result.setUnPaidOpportunityBrokerage(unPaidOpportunityBrokerage);
 
@@ -339,36 +340,41 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         Integer busId = verifier.getBusId();
         // （1）	判断money有效性
         String key = RedissonKeyUtil.getWithdrawalByBusIdKey(busId);
-        //加锁
-        RedissonLockUtil.lock(key, 10);
-        //总是收入
-        Double incomeSum = unionBrokerageIncomeService.sumMoneyByBusId(busId);
-        //总提现
-        Double withdrawalSum = unionBrokerageWithdrawalService.sumValidMoneyByBusId(busId);
-        //可提现金额
-        BigDecimal availableSum = BigDecimalUtil.subtract(incomeSum, withdrawalSum);
-        if (BigDecimalUtil.subtract(availableSum, money).doubleValue() < 0) {
+        try{
+            //加锁
+            RedissonLockUtil.lock(key, 10);
+            //总是收入
+            Double incomeSum = unionBrokerageIncomeService.sumMoneyByBusId(busId);
+            //总提现
+            Double withdrawalSum = unionBrokerageWithdrawalService.sumValidMoneyByBusId(busId);
+            //可提现金额
+            BigDecimal availableSum = BigDecimalUtil.subtract(incomeSum, withdrawalSum);
+            if (BigDecimalUtil.subtract(availableSum, money).doubleValue() < 0) {
+                throw new BusinessException("超过可提现金额");
+            }
+
+            // （2）	调用提现接口，如果成功，则保存记录并返回；否则，直接返回错误提示
+            UnionBrokerageWithdrawal saveWithdrawal = new UnionBrokerageWithdrawal();
+            saveWithdrawal.setCreateTime(DateUtil.getCurrentDate());
+            saveWithdrawal.setDelStatus(CommonConstant.COMMON_NO);
+            saveWithdrawal.setBusId(busId);
+            String orderNo = "LM" + ConfigConstant.PAY_MODEL_WITHDRAWAL + DateUtil.getSerialNumber();
+            saveWithdrawal.setSysOrderNo(orderNo);
+            saveWithdrawal.setVerifierId(verifier.getId());
+            saveWithdrawal.setVerifierName(verifier.getEmployeeName());
+
+            GtJsonResult payResult = wxPayService.enterprisePayment(orderNo, member.getOpenid(), "佣金提现", money, 0);
+            if (payResult.isSuccess()) {
+                unionBrokerageWithdrawalService.save(saveWithdrawal);
+            }
+
+            return payResult;
+        }catch (Exception e){
+            throw new Exception(e.getMessage());
+        }finally {
+            //释放锁
             RedissonLockUtil.unlock(key);
-            throw new BusinessException("超过可提现金额");
         }
-
-        // （2）	调用提现接口，如果成功，则保存记录并返回；否则，直接返回错误提示
-        UnionBrokerageWithdrawal saveWithdrawal = new UnionBrokerageWithdrawal();
-        saveWithdrawal.setCreateTime(DateUtil.getCurrentDate());
-        saveWithdrawal.setDelStatus(CommonConstant.COMMON_NO);
-        saveWithdrawal.setBusId(busId);
-        String orderNo = "LM" + ConfigConstant.PAY_MODEL_WITHDRAWAL + DateUtil.getSerialNumber();
-        saveWithdrawal.setSysOrderNo(orderNo);
-        saveWithdrawal.setVerifierId(verifier.getId());
-        saveWithdrawal.setVerifierName(verifier.getEmployeeName());
-
-        GtJsonResult payResult = wxPayService.enterprisePayment(orderNo, member.getOpenid(), "佣金提现", money, 0);
-        if (payResult.isSuccess()) {
-            unionBrokerageWithdrawalService.save(saveWithdrawal);
-        }
-        //释放锁
-        RedissonLockUtil.unlock(key);
-        return payResult;
     }
 
     //***************************************** Domain Driven Design - save ********************************************
@@ -533,11 +539,15 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         }
 
         UnionMain union = unionMainService.getById(unionId);
+        UnionMember toMember = unionMemberService.getValidById(opportunity.getToMemberId());
+        if(toMember == null){
+            throw new BusinessException("无法催促别人的商机");
+        }
 
-        String phone = member.getNotifyPhone() != null ? member.getNotifyPhone() : member.getDirectorPhone();
+        String phone = toMember.getNotifyPhone() != null ? toMember.getNotifyPhone() : toMember.getDirectorPhone();
         String message = "您尚未支付\"" + union.getName() + "\"的\"" + member.getEnterpriseName()
                 + "\"" + opportunity.getBrokerageMoney() + "元的商机推荐佣金，请尽快支付，谢谢";
-        PhoneMessage phoneMessage = new PhoneMessage(member.getBusId(), phone, message);
+        PhoneMessage phoneMessage = new PhoneMessage(toMember.getBusId(), phone, message);
         phoneMessageSender.sendMsg(phoneMessage);
     }
 

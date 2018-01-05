@@ -5,7 +5,6 @@ body{
   min-width: 1280px;
   font-size:16px;
   overflow-y:auto;
-  //overflow-x:hidden;
   width: 100%;
 }
 a{
@@ -795,12 +794,12 @@ hr{
 //我的联盟、去加入联盟
 #joinStep{
   .step2{
+    .el-radio-button__inner{
+      white-space: inherit!important;
+    }
     .dddddd{
       .declare{
         margin-left: 20px;
-        .el-radio-button__inner{
-          white-space: inherit!important;
-        }
         >div{
           width: 190px;
           line-height: 1.5;
@@ -845,7 +844,7 @@ hr{
       .activityDetails{
         .el-dialog--small{
           width: 800px;
-          height: 500px;
+          min-height: 500px;
           .el-dialog__body{
             padding: 0;
             margin-top: 15px;
@@ -864,9 +863,10 @@ hr{
               }
               .cardExplain{
                 display: flex;
+                margin-bottom: 35px;
                 >span:nth-child(1){
                   display: block;
-                  width: 395px;
+                  width: 630px;
                   text-align: right;
                 }
                 >span:nth-child(2){
@@ -1078,11 +1078,6 @@ hr{
                     margin-bottom: 10px;
                   }
                 }
-                .el-radio-button__orig-radio:checked+.el-radio-button__inner{
-                  //background-color: #ffffff!important;
-                  //border-color: #ffffff!important;
-                  //box-shadow:inherit;
-                }
               }
             }
           }
@@ -1196,7 +1191,6 @@ hr{
       }
       //审核
       .auditRecord{
-        display: none;
         width:500px;
         height: 450px;
         background-color: #ffffff;
@@ -1501,11 +1495,7 @@ hr{
         width: 115px !important;
       }
       .selectUnion {
-        //margin-bottom: 35px!important;
         .el-radio-button__inner:hover{
-          //.isShow{
-          //  display: block!important;
-          //}
         }
         .el-form-item__content {
           //文字提示样式
@@ -1520,14 +1510,6 @@ hr{
             top: 83px;
             left:-15px;
           }
-          //.isShow{
-          //  //margin-left: 20px;
-          //  display:none;
-          //  text-align: center;
-          //  h6{
-          //    margin-bottom: 17px;
-          //  }
-          //}
         }
       }
       .el-form-item__content {
@@ -2000,7 +1982,7 @@ hr{
           }
           .SwitchAround {
             position: relative;
-            >button{
+            >i{
               position:absolute;
               width: 20px;
               height: 50px;
@@ -2011,6 +1993,8 @@ hr{
               z-index: 20;
               border: none;
               top: 32%;
+              cursor: pointer;
+              font-style:normal!important;
             }
             .forward{
               left:0;

@@ -19,7 +19,7 @@
       <p>新增粉丝信息</p>
       <div class="drop_down1Content">
         <img v-bind:src="wxData.headurl" alt="" class="unionImg">
-        <div  style="margin-left: 20px">
+        <div style="margin-left: 20px">
           <h6 style="margin-bottom: 17px">{{ wxData.nickName }}</h6>
           <span>时间：{{ wxData.time }} </span>
         </div>
@@ -106,7 +106,6 @@ export default {
                   }
                 });
                 this.socket.on('chatevent', function(data) {
-                  console.log(data, 111);
                   let msg = eval('(' + data.message + ')');
                   _this.wxData = msg;
                 });
@@ -129,10 +128,10 @@ export default {
 };
 </script>
 <style lang='less' rel="stylesheet/less" scoped>
-  .unionImg {
-    width: 80px;
-    height: 80px;
-  }
+.unionImg {
+  width: 80px;
+  height: 80px;
+}
 
 /*右边下拉框的样式*/
 .drop_down {
@@ -175,7 +174,7 @@ export default {
     padding: 15px 30px;
     font-size: 12px;
   }
-  .drop_down1Content{
+  .drop_down1Content {
     display: flex;
     border: solid 1px #dddddd;
     margin: 30px;

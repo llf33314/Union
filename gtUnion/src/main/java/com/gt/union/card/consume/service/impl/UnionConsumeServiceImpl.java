@@ -106,7 +106,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("order_no", orderNo);
+                .eq("sys_order_no", orderNo);
 
         return unionConsumeDao.selectOne(entityWrapper);
     }
@@ -119,7 +119,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("order_no", orderNo)
+                .eq("sys_order_no", orderNo)
                 .eq("business_type", model);
 
         return unionConsumeDao.selectOne(entityWrapper);
@@ -425,6 +425,8 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         saveConsume.setSysOrderNo(orderNo);
         saveConsume.setType(ConsumeConstant.TYPE_OFFLINE);
         saveConsume.setBusinessType(ConsumeConstant.BUSINESS_TYPE_OFFLINE);
+        saveConsume.setConsumeMoney(vo.getConsume().getConsumeMoney());
+        saveConsume.setPayStatus(ConsumeConstant.PAY_STATUS_PAYING);
         UnionPayVO result = null;
         if (ConsumeConstant.VO_PAY_TYPE_CASH == voConsume.getPayType()) {
             saveConsume.setPayType(ConsumeConstant.PAY_TYPE_CASH);
@@ -433,7 +435,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             result = new UnionPayVO();
             saveConsume.setPayType(ConsumeConstant.PAY_STATUS_PAYING);
             String socketKey = PropertiesUtil.getSocketKey() + orderNo;
-            String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/consume/callback?socketKey=" + socketKey;
+            String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/consume?socketKey=" + socketKey;
 
             PayParam payParam = new PayParam();
             payParam.setTotalFee(saveConsume.getPayMoney())
