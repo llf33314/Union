@@ -454,10 +454,10 @@ export default {
         .post(url, data)
         .then(res => {
           if (res.data.success) {
+            this.$message({ showClose: true, message: '核销成功', type: 'success', duration: 5000 });
             eventBus.$emit('newTransaction');
             eventBus.$emit('unionUpdata');
             this.init();
-            this.$message({ showClose: true, message: '核销成功', type: 'success', duration: 5000 });
           }
         })
         .catch(err => {
@@ -521,7 +521,9 @@ export default {
                     _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
                     _this.socketFlag.socketKey = msg.socketKey;
                     _this.socketFlag.status = msg.status;
-                    _this.visible4 = false;
+                    eventBus.$emit('newTransaction');
+                    eventBus.$emit('unionUpdata');
+                    _this.init();
                   } else if (msg.status == '0') {
                     _this.$message({ showClose: true, message: '支付失败', type: 'error', duration: 5000 });
                   }
@@ -551,32 +553,6 @@ export default {
       this.visible2 = false;
       this.visible3 = false;
       this.visible4 = false;
-      this.form = {
-        enterpriseName: '',
-        discount: '',
-        cardId: '',
-        cardNo: '',
-        integral: '',
-        value1: '',
-        shops: [],
-        unionId: '',
-        validity: '',
-        items: [],
-        illustration: '',
-        exchangeIntegral: '',
-        integralPercent: ''
-      };
-      this.isIntegral = ''; // 数据传输
-      this.isIntegral_ = ''; // 控制显示
-      this.price = '';
-      this.shop = '';
-      this.item = [];
-      this.deductionPrice = '';
-      this.deductionIntegral = '';
-      this.price1 = ''; // 实收金额
-      this.payType = 1;
-      this.price2 = ''; // 收取现金
-      this.payUrl = '';
     }
   }
 };

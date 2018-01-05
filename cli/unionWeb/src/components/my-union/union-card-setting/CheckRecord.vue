@@ -1,8 +1,7 @@
 <template>
-  <div class="auditRecord">
+  <div>
     <div class="top_">
       <span>审核记录</span>
-      <strong @click="closeRecord">×</strong>
     </div>
     <div class="bottom_">
       <div v-for="item in checkRecord" :key="item.id">
@@ -31,13 +30,6 @@ export default {
   },
   mounted: function() {
     this.init();
-    // 鼠标移动事件 显示审核记录
-    $('.icon').mouseenter(function() {
-      $('.auditRecord').show();
-    });
-    $('.auditRecord').mouseenter(function() {
-      $(this).show();
-    });
   },
   methods: {
     init() {
@@ -56,10 +48,6 @@ export default {
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
-    },
-    // 关闭审核记录
-    closeRecord() {
-      $('.auditRecord').hide();
     }
   }
 };
