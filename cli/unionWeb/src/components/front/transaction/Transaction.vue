@@ -26,13 +26,15 @@
           <el-form-item label="选择联盟:" prop="unionId">
             <el-radio-group v-model="form2.unionId" style="margin-top:10px;margin-bottom: 20px;">
               <el-radio-button v-for="item in form2.unionList" :key="item.id" :label="item.id">
-                <div class="dddddd clearfix">
-                  <img v-bind:src="item.img" alt="" class="fl unionImg">
-                  <div class="fl" style="margin-left: 20px;position: absolute;top: 90px;left: -15px;">
-                    <h6 style="margin-bottom: 17px">{{item.name}}</h6>
+                <el-tooltip class="item" effect="dark" :content="item.name" placement="bottom">
+                  <div class="dddddd clearfix">
+                    <img v-bind:src="item.img" alt="" class="fl unionImg">
+                    <!--<div class="fl" style="margin-left: 20px;position: absolute;top: 90px;left: -15px;">-->
+                      <!--<h6 style="margin-bottom: 17px">{{item.name}}</h6>-->
+                    <!--</div>-->
+                    <i></i>
                   </div>
-                  <i></i>
-                </div>
+                </el-tooltip>
               </el-radio-button>
             </el-radio-group>
           </el-form-item>
@@ -264,9 +266,9 @@ export default {
                           let color1 = (v.color1 = v.color.split(',')[0]);
                           let color2 = (v.color2 = v.color.split(',')[1]);
                           let mDiv = 'm' + color2 + i;
-                          setTimeout(function () {
-                            $("." + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
-                          }, 0)
+                          // setTimeout(function () {
+                          //   $("." + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
+                          // }, 0)
                         });
                       }
                       this.form2.activityCheckList = [];
@@ -404,49 +406,6 @@ export default {
 .codeImg {
   width: 200px;
   height: 200px;
-}
-/*右边下拉框的样式*/
-
-.drop_down {
-  margin-top: 30px;
-  border: 1px solid #ddd;
-  height: 720px;
-  overflow: auto;
-  width: 420px;
-  > p {
-    background: #eef1f6;
-    padding: 15px 30px;
-    font-size: 12px;
-  }
-  /*二维码的显示框的样式*/
-  .middle_ {
-    text-align: center;
-    padding: 50px 42px 40px 58px;
-    > img {
-      display: block;
-      margin: 0 40px 30px 40px;
-    }
-  }
-  > span {
-    display: block;
-    margin: 0px 42px 40px 58px;
-    border-top: 1px solid #ddd;
-    padding-top: 40px;
-    p {
-      color: #999999;
-    }
-  }
-}
-.drop_down1 {
-  margin-top: 30px;
-  border: 1px solid #ddd;
-  overflow: auto;
-  width: 420px;
-  > p {
-    background: #eef1f6;
-    padding: 15px 30px;
-    font-size: 12px;
-  }
 }
 </style>
 

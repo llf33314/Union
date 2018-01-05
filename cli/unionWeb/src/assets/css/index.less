@@ -593,6 +593,10 @@ hr{
       left: 229px!important;
     }
     .second_{
+      .el-input__inner {
+        width: 240px;
+        display: inline-block;
+      }
       img{
         cursor: pointer;
       }
@@ -788,6 +792,19 @@ hr{
   }
 }
 
+//我的联盟、去加入联盟
+#joinStep{
+  .step2{
+    .dddddd{
+      .declare{
+        width: 190px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+  }
+}
 
 //我的联盟/联盟卡设置---------------------------------------------------------------5
 #UnionCardSetting{
@@ -1020,6 +1037,8 @@ hr{
                 }
               }
               .OptionalColor{
+                position: absolute;
+                z-index: 10;
                 .el-radio-group{
                   border: 1px solid #ddd;
                   border-radius: 5px;
@@ -1278,23 +1297,27 @@ hr{
                     overflow-y: auto;
                     >div{
                       margin: 10px 20px 5px 20px;
+                      display: flex;
+                      justify-content:space-between;
+                      .rightContentBottomHidden{
+                        position: relative;top: 8px;
+                        display: block;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        width: 110px;
+                      }
                       .el-input-number--small{
                         width: 100px;
                       }
                       .el-input-number{
-                        width: 100px;
+                        width: 110px;
                       }
                     }
                   }
                 }
                 .ErpRight{
                   width: 325px;
-                  .rightContentBottom{
-                    >div{
-                      display: flex;
-                      justify-content:space-between;
-                    }
-                  }
                 }
               }
             }
@@ -1460,9 +1483,9 @@ hr{
       .selectUnion {
         margin-bottom: 35px!important;
         .el-radio-button__inner:hover{
-          .isShow{
-            display: block!important;
-          }
+          //.isShow{
+          //  display: block!important;
+          //}
         }
         .el-form-item__content {
           //文字提示样式
@@ -1477,14 +1500,14 @@ hr{
             top: 83px;
             left:-15px;
           }
-          .isShow{
-            //margin-left: 20px;
-            display:none;
-            text-align: center;
-            h6{
-              margin-bottom: 17px;
-            }
-          }
+          //.isShow{
+          //  //margin-left: 20px;
+          //  display:none;
+          //  text-align: center;
+          //  h6{
+          //    margin-bottom: 17px;
+          //  }
+          //}
         }
       }
       .el-form-item__content {

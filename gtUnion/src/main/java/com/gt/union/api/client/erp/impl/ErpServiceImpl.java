@@ -68,6 +68,10 @@ public class ErpServiceImpl implements ErpService {
 			case 2:
 				//车小算
 				list = carErpService.listErpServer(shopId, search, busId, page);
+				for(ErpServerVO vo : list){
+					vo.setErpType(erpModel);
+					vo.setShopId(shopId);
+				}
 				break;
 			default:
 				break;

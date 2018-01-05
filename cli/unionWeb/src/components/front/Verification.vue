@@ -33,13 +33,12 @@
             <el-form-item label="选择联盟:">
               <el-radio-group v-model="form.unionId" style="margin-top:10px;" @change="unionIdChange">
                 <el-radio-button v-for="item in form.unionList" :key="item.id" :label="item.id">
-                  <div class="dddddd clearfix">
-                    <img v-bind:src="item.img" alt="" class="fl unionImg">
-                    <div class="fl isShow">
-                      <h6>{{item.name}}</h6>
+                  <el-tooltip class="item" effect="dark" :content="item.name" placement="bottom">
+                    <div class="dddddd clearfix">
+                      <img v-bind:src="item.img" alt="" class="fl unionImg">
+                      <i></i>
                     </div>
-                    <i></i>
-                  </div>
+                  </el-tooltip>
                 </el-radio-button>
               </el-radio-group>
             </el-form-item>
@@ -114,12 +113,12 @@
             </el-form-item>
             <el-form-item label="消费金额：">
               <span> ￥
-                <span class="color_">{{ price | formatPrice }} </span>
+                <span class="color_">{{ (price - 0)| formatPrice }} </span>
               </span>
             </el-form-item>
             <el-form-item label="联盟价格：">
               <span> ￥
-                <span class="color_">{{ price * form.currentMember.discount / 10 | formatPrice }}</span>
+                <span class="color_">{{ (price - 0) * form.currentMember.discount / 10 | formatPrice }}</span>
               </span>
             </el-form-item>
             <el-form-item label="联盟积分折扣：" v-if="isIntegral && form.integral > 0">
@@ -132,12 +131,12 @@
             </el-form-item>
             <el-form-item label="抵扣金额：" v-if="isIntegral_ && form.integral > 0">
               <span> ￥
-                <span class="color_">{{ deductionPrice | formatPrice }} </span>
+                <span class="color_">{{ (deductionPrice - 0) | formatPrice }} </span>
               </span>
             </el-form-item>
             <el-form-item label="实收金额：" v-if="isIntegral_ && form.integral > 0">
               <span> ￥
-                <span class="color_">{{ price1 | formatPrice }} </span>
+                <span class="color_">{{ (price1 - 0) | formatPrice }} </span>
               </span>
             </el-form-item>
             <div class="discountsProject">
@@ -175,11 +174,12 @@
                 <el-col style="width:240px;margin-left:50px;padding-top: 2px;">
                   <span style="">找零: ￥
                     <span class="color_" v-if="!price2">0.00</span>
-                    <span class="color_" v-if="(price2*100 - price1*100)/100 > 0 || Number(price2).toFixed(2) - Number(price1).toFixed(2) == 0">{{ (price2*100 - price1*100)/100 | formatPrice }}</span>
+                    <span class="color_">
+                      {{ price2 - 0}} {{ price1}} {{ price2 - price1}}</span>
                   </span>
                 </el-col>
                 <el-col style="width:240px;margin-left:50px;position: absolute;top: 40px;left: 72px;">
-                  <span class="color_" v-if="price2 && (price2*100 - price1*100)/100 < 0">收取金额小于支付金额，请重新输入</span>
+                  <span class="color_" v-if="(price2 - 0) && ((price1 - 0)*100 - (price1 - 0) * 100) / 100 < 0">收取金额小于支付金额，请重新输入</span>
                 </el-col>
               </el-row>
             </div>
@@ -263,9 +263,9 @@ export default {
   filters: {
     formatPrice: function(value) {
       if (!value) {
-        return Number(0).toFixed(2);
+        return Number(0);
       } else {
-        return Number(value).toFixed(2);
+        return Number(value);
       }
     }
   },
@@ -286,21 +286,18 @@ export default {
           that.price2 = '';
         }, 100);
       }
-      if ((this.price2 * 100 - this.price1 * 100) / 100 > 0 || (this.price2 * 100 - this.price1 * 100) / 100 === 0) {
-        //        this.canSubmit = true;
-      }
     },
     // 是否开启联盟积分
     isIntegral_: function() {
       let temData = 0;
       this.isIntegral_ ? (temData = 1) : (temData = 0);
-      this.deductionPrice = this.price * this.form.discount / 10 * this.form.exchangeIntegral / 100 * temData;
+      this.deductionPrice = (this.price - 0) * this.form.discount / 10 * this.form.exchangeIntegral / 100 * temData;
       this.deductionIntegral = this.deductionPrice * 100 / this.form.exchangeIntegral;
       if (this.deductionIntegral > this.form.integral) {
         this.deductionIntegral = this.form.integral;
         this.deductionPrice = this.deductionIntegral / 100 * this.form.exchangeIntegral;
       }
-      this.price1 = ((this.price * this.form.currentMember.discount - this.deductionPrice * 10) / 10).toFixed(2);
+      this.price1 = ((this.price - 0) * this.form.currentMember.discount - this.deductionPrice * 10) / 10;
     }
   },
   methods: {
@@ -319,8 +316,6 @@ export default {
               this.isIntegral ? (this.isIntegral_ = true) : (this.isIntegral_ = false);
               this.visible1 = false;
               this.visible2 = true;
-            } else {
-              this.$message({ showClose: true, message: '不存在该联盟卡', type: 'error', duration: 5000 });
             }
           })
           .then(res => {
@@ -449,7 +444,7 @@ export default {
           this.deductionIntegral = this.form.integral;
           this.deductionPrice = this.deductionIntegral / 100 * this.form.exchangeIntegral;
         }
-        this.price1 = ((this.price * this.form.currentMember.discount - this.deductionPrice * 10) / 10).toFixed(2);
+        this.price1 = (this.price * this.form.currentMember.discount - this.deductionPrice * 10) / 10;
       }
     },
     // 提交
@@ -460,7 +455,8 @@ export default {
       data.fanId = this.form.fan.id - 0;
       data.shopId = this.shopId - 0;
       data.isUserIntegral = this.isIntegral_ && this.form.integral - 0;
-      (data.consume = {}), (data.consume.consumeMoney = this.price - 0);
+      data.consume = {};
+      data.consume.consumeMoney = this.price - 0;
       data.consume.payMoney = this.price1 - 0;
       data.consume.payType = this.payType - 0;
       data.textList = [];
@@ -490,7 +486,8 @@ export default {
         data.fanId = this.form.fan.id - 0;
         data.shopId = this.shopId - 0;
         data.isUserIntegral = this.isIntegral_ && this.form.integral - 0;
-        (data.consume = {}), (data.consume.consumeMoney = this.price - 0);
+        data.consume = {};
+        data.consume.consumeMoney = this.price - 0;
         data.consume.payMoney = this.price1 - 0;
         data.consume.payType = this.payType - 0;
         data.textList = [];

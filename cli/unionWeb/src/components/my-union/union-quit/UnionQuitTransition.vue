@@ -167,6 +167,7 @@ export default {
             .post(url, data)
             .then(res => {
               if (res.data.success) {
+                this.visible1 = false;
                 this.$message({ showClose: true, message: '申请成功，请等待审核', type: 'success', duration: 5000 });
                 eventBus.$emit('newOutApply');
               }

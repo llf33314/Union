@@ -17,6 +17,12 @@ public class ErpServerVO {
 	@ApiModelProperty(value = "erp服务项目名称")
 	private String name;
 
+	@ApiModelProperty(value = "erp类型")
+	private Integer erpType;
+
+	@ApiModelProperty(value = "门店id")
+	private Integer shopId;
+
 	public Integer getId() {
 		return id;
 	}
@@ -31,5 +37,21 @@ public class ErpServerVO {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public Integer getErpType() {
+		return erpType;
+	}
+
+	public void setErpType(Integer erpType) {
+		this.erpType = erpType;
+	}
+
+	public Integer getShopId() {
+		return shopId;
+	}
+
+	public void setShopId(Integer shopId) {
+		this.shopId = shopId;
 	}
 }

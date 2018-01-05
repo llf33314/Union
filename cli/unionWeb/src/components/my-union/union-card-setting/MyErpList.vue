@@ -13,12 +13,12 @@
       </p>
     </div>
     <!-- ERP项目 列表数据-->
-    <el-table v-if="erpTextList.length > 0" :data="erpTextList" style="width: 95%" hight="450" v-show="canEdit">
+    <el-table v-if="erpTextList.length > 0" :data="erpTextList" style="width: 100%" hight="450" v-show="canEdit">
       <el-table-column prop="name" label="项目名称">
       </el-table-column>
       <el-table-column prop="number" label="数量">
         <template slot-scope="scope">
-          <el-input v-model="scope.row.number" placeholder="请输入数量" @keyup.native="check(scope)" @change="erpTextListChange"></el-input>
+          <el-input style="width: 120px;" v-model="scope.row.number" placeholder="请输入数量" @keyup.native="check(scope)" @change="erpTextListChange"></el-input>
         </template>
       </el-table-column>
       <el-table-column prop="handle" label="操作" width="180">
@@ -40,7 +40,7 @@
           <el-row>
             <el-col style="width:220px;">
               <el-form :inline="true" class="demo-form-inline">
-                <el-select v-model="erpType" clearable placeholder="请选择分类" @change="erpModelChange">
+                <el-select v-model="erpType" clearable placeholder="请选择行业" @change="erpModelChange">
                   <el-option v-for="item in options1" :key="item.erpType" :label="item.erpName" :value="item.erpType">
                   </el-option>
                 </el-select>
@@ -75,7 +75,7 @@
               <p>已选择：{{ selectedErpRight.length }}</p>
               <div class="rightContentBottom">
                 <div v-for="(item, index) in selectedErpRight" :key="item.id">
-                  <span style="position: relative;top: 8px;"> {{ item.name }} </span>
+                  <div class="rightContentBottomHidden" style=""> {{ item.name }}</div>
                   <span>
                     <el-input-number v-model="item.number" :min="1"></el-input-number>
                     <el-button @click="handleDelete2(index)" type="text" style="margin-left: 15px;">删除</el-button>
@@ -203,13 +203,13 @@ export default {
         this.options2 = [];
         this.shopId = '';
       }
+      this.tableData = [];
+      this.selectedErpRight = [];
     },
     // 选择门店，获取项目列表
     search() {
-      if (this.shopId) {
-        this.currentPage = 1;
-        this.getTableData();
-      }
+      this.currentPage = 1;
+      this.getTableData();
     },
     getTableData() {
       $http
@@ -300,7 +300,7 @@ export default {
       this.selectedErpRight.forEach(v => {
         this.erpTextList.push({
           erpType: this.erpType,
-          shopId: this.shopId,
+          shopId: v.shopId,
           erpTextId: v.id,
           name: v.name,
           number: v.number
