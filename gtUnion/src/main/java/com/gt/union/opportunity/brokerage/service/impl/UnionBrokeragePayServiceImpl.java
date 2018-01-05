@@ -368,6 +368,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess) {
         Map<String, Object> result = new HashMap<>(2);
         if (orderNo == null || socketKey == null || payType == null || payOrderNo == null || isSuccess == null) {
