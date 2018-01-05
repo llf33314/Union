@@ -138,8 +138,8 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
         result.setMember(member);
         result.setActivity(activity);
         result.setActivityStatus(unionCardActivityService.getStatus(activity));
-        Integer isErp = ListUtil.isNotEmpty(erpService.listErpByBusId(busId)) ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO;
-        result.setIsErp(isErp);
+        boolean isErp = erpService.userHasErpAuthority(busId);
+        result.setIsErp(isErp ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO);
         UnionCardProject project = getValidByUnionIdAndMemberIdAndActivityId(unionId, member.getId(), activityId);
         if (project != null) {
             result.setProject(project);

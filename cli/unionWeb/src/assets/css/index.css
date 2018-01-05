@@ -1045,7 +1045,6 @@ hr {
   margin-left: 10px;
 }
 #UnionCardSetting > .container #MyActivityCard .auditRecord {
-  display: none;
   width: 500px;
   height: 450px;
   background-color: #ffffff;

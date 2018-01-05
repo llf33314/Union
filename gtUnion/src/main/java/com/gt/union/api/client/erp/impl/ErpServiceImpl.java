@@ -6,6 +6,8 @@ import com.gt.api.util.sign.SignHttpUtils;
 import com.gt.union.api.client.erp.ErpService;
 import com.gt.union.api.client.erp.vo.ErpTypeVO;
 import com.gt.union.api.client.erp.vo.ErpServerVO;
+import com.gt.union.api.client.shop.ShopService;
+import com.gt.union.api.client.shop.vo.ShopVO;
 import com.gt.union.api.erp.car.service.CarErpService;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.util.ApiResultHandlerUtil;
@@ -32,6 +34,9 @@ public class ErpServiceImpl implements ErpService {
 
 	@Autowired
 	private CarErpService carErpService;
+
+	@Autowired
+	private ShopService shopService;
 
 	@Override
 	public List<ErpTypeVO> listErpByBusId(Integer busId) {
@@ -83,4 +88,19 @@ public class ErpServiceImpl implements ErpService {
 		}
 		return list;
 	}
+
+	@Override
+	public Boolean userHasErpAuthority(Integer busId) {
+		List<ErpTypeVO> list = listErpByBusId(busId);
+		if(ListUtil.isEmpty(list)){
+			return false;
+		}
+		List<ShopVO> shops = shopService.listByBusId(busId);
+		if(ListUtil.isEmpty(shops)){
+			return false;
+		}
+		return true;
+	}
+
+
 }

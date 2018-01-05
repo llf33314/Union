@@ -343,8 +343,7 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
     private List<UnionCardProjectItem> listItemByVO(CardProjectVO vo, Integer busId) throws Exception {
         List<UnionCardProjectItem> result = new ArrayList<>();
 
-        Integer isErp = ListUtil.isNotEmpty(erpService.listErpByBusId(busId)) ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO;
-        if (CommonConstant.COMMON_YES == isErp) {
+        if (erpService.userHasErpAuthority(busId)) {
             result.addAll(listErpTextByVO(vo));
             result.addAll(listErpGoodsByVO(vo));
         } else {
