@@ -129,6 +129,10 @@ export default {
     confirm3() {
       let url = `/unionCardProject/activityId/${this.activityId}/unionId/${this.unionId}/projectCheck?isPass=0`;
       let data = {};
+      data.projectIdList = [];
+      this.multipleSelection.forEach(v => {
+        data.projectIdList.push(v.project.id);
+      });
       data.rejectReason = this.rejectReason;
       $http
         .put(url, data)
