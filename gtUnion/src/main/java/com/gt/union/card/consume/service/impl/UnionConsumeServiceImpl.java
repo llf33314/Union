@@ -356,7 +356,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         }
 
         Double discount = member.getDiscount() != null ? member.getDiscount() : 0.0;
-        BigDecimal discountMoney = BigDecimalUtil.multiply(consumeMoney, discount);
+        BigDecimal discountMoney = BigDecimalUtil.multiply(consumeMoney, BigDecimalUtil.subtract(1.0, discount));
         saveConsume.setDiscount(discount);
         saveConsume.setDiscountMoney(BigDecimalUtil.toDouble(discountMoney));
 
