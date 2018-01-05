@@ -539,11 +539,15 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         }
 
         UnionMain union = unionMainService.getById(unionId);
+        UnionMember toMember = unionMemberService.getValidById(opportunity.getToMemberId());
+        if(toMember == null){
+            throw new BusinessException("无法催促别人的商机");
+        }
 
-        String phone = member.getNotifyPhone() != null ? member.getNotifyPhone() : member.getDirectorPhone();
-        String message = "您尚未支付\"" + union.getName() + "\"的\"" + member.getEnterpriseName()
+        String phone = toMember.getNotifyPhone() != null ? toMember.getNotifyPhone() : toMember.getDirectorPhone();
+        String message = "您尚未支付\"" + union.getName() + "\"的\"" + toMember.getEnterpriseName()
                 + "\"" + opportunity.getBrokerageMoney() + "元的商机推荐佣金，请尽快支付，谢谢";
-        PhoneMessage phoneMessage = new PhoneMessage(member.getBusId(), phone, message);
+        PhoneMessage phoneMessage = new PhoneMessage(toMember.getBusId(), phone, message);
         phoneMessageSender.sendMsg(phoneMessage);
     }
 
