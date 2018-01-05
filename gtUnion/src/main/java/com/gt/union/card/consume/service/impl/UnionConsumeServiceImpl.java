@@ -433,7 +433,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             result = new UnionPayVO();
             saveConsume.setPayType(ConsumeConstant.PAY_STATUS_PAYING);
             String socketKey = PropertiesUtil.getSocketKey() + orderNo;
-            String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/consume/callback?socketKey=" + socketKey;
+            String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/consume?socketKey=" + socketKey;
 
             PayParam payParam = new PayParam();
             payParam.setTotalFee(saveConsume.getPayMoney())
