@@ -31,7 +31,7 @@
           </el-form-item>
           <div class="selectUnion">
             <el-form-item label="选择联盟:">
-              <el-radio-group v-model="form.unionId" style="margin-top:10px;" @change="unionIdChange">
+              <el-radio-group v-model="unionId" style="margin-top:10px;" @change="unionIdChange">
                 <el-radio-button v-for="item in form.unionList" :key="item.id" :label="item.id">
                   <el-tooltip class="item" effect="dark" :content="item.name" placement="bottom">
                     <div class="dddddd clearfix">
@@ -54,7 +54,7 @@
             </el-col>
           </el-form-item>
           <el-form-item label="优惠项目" v-if="form.isProjectAvailable">
-            <el-switch v-model="isProjectAvailable_" on-text="" off-text="" @change="isProjectAvailable_Change" :disabled="!form.unionId">
+            <el-switch v-model="isProjectAvailable_" on-text="" off-text="" @change="isProjectAvailable_Change" :disabled="!unionId">
             </el-switch>
           </el-form-item>
         </el-form>
@@ -220,11 +220,11 @@ export default {
         exchangeIntegral: '',
         currentUnion: {},
         unionList: [],
-        unionId: '',
         currentUnion: {},
         currentMember: {},
         isProjectAvailable: ''
       },
+      unionId: '',
       isProjectAvailable_: false,
       shops: [],
       shopId: '',
@@ -300,7 +300,7 @@ export default {
             if (res.data.data) {
               this.form = res.data.data;
               if (this.form.unionList.length) {
-                this.form.unionId = this.form.unionList[0].id;
+                this.unionId = this.form.unionList[0].id;
               }
               this.isIntegral = this.form.currentUnion.isIntegral;
               this.isIntegral ? (this.isIntegral_ = true) : (this.isIntegral_ = false);
@@ -330,9 +330,9 @@ export default {
     },
     // 联盟改变
     unionIdChange() {
-      if (this.form.unionId) {
+      if (this.unionId) {
         $http
-          .get(`/unionCardFan/search?numberOrPhone=${this.input}&unionId=${this.form.unionId}`)
+          .get(`/unionCardFan/search?numberOrPhone=${this.input}&unionId=${this.unionId}`)
           .then(res => {
             if (res.data.data) {
               this.form.currentMember.enterpriseName = res.data.data.currentMember.enterpriseName;
@@ -370,7 +370,7 @@ export default {
           transform: 'translate(-420px)'
         });
         $http
-          .get(`/unionCardActivity/unionId/${this.form.unionId}/consume?fanId=${this.form.fan.id}`)
+          .get(`/unionCardActivity/unionId/${this.unionId}/consume?fanId=${this.form.fan.id}`)
           .then(res => {
             if (res.data.data) {
               this.activityCards = res.data.data || [];
@@ -394,7 +394,7 @@ export default {
       // 获取活动卡优惠项目
       if (item.activity.id) {
         $http
-          .get(`/unionCardProjectItem/activityId/${item.activity.id}/unionId/${this.form.unionId}/consume`)
+          .get(`/unionCardProjectItem/activityId/${item.activity.id}/unionId/${this.unionId}/consume`)
           .then(res => {
             if (res.data.data) {
               this.tableData = res.data.data || [];
@@ -436,9 +436,9 @@ export default {
     },
     // 提交
     submit() {
-      let url = `/unionConsume/unionId/${this.form.unionId}/fanId/${this.form.fan.id}`;
+      let url = `/unionConsume/unionId/${this.unionId}/fanId/${this.form.fan.id}`;
       let data = {};
-      data.unionId = this.form.unionId - 0;
+      data.unionId = this.unionId - 0;
       data.fanId = this.form.fan.id - 0;
       data.shopId = this.shopId - 0;
       data.isUseIntegral = (this.isIntegral_ && this.form.integral) - 0;
@@ -467,9 +467,9 @@ export default {
     // 付款二维码
     payTypeChange() {
       if (this.payType == 2) {
-        let url = `/unionConsume/unionId/${this.form.unionId}/fanId/${this.form.fan.id}`;
+        let url = `/unionConsume/unionId/${this.unionId}/fanId/${this.form.fan.id}`;
         let data = {};
-        data.unionId = this.form.unionId - 0;
+        data.unionId = this.unionId - 0;
         data.fanId = this.form.fan.id - 0;
         data.shopId = this.shopId - 0;
         data.isUseIntegral = (this.isIntegral_ && this.form.integral) - 0;
@@ -524,6 +524,9 @@ export default {
                     eventBus.$emit('newTransaction');
                     eventBus.$emit('unionUpdata');
                     _this.init();
+                    setTimeout(() => {
+                      parent.window.postMessage('closeMask()', '*');
+                    }, 0);
                   } else if (msg.status == '0') {
                     _this.$message({ showClose: true, message: '支付失败', type: 'error', duration: 5000 });
                   }
@@ -556,7 +559,7 @@ export default {
       this.visible3 = false;
       this.visible4 = false;
       this.shopId = '';
-      this.form.unionId = '';
+      this.unionId = '';
       this.isProjectAvailable_ = '';
       this.price = '';
       this.isIntegral_ = '';
