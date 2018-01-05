@@ -106,7 +106,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
 
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("order_no", orderNo);
+                .eq("sys_order_no", orderNo);
 
         return unionConsumeDao.selectOne(entityWrapper);
     }
