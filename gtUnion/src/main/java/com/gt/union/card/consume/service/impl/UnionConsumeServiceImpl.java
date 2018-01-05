@@ -425,6 +425,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         saveConsume.setType(ConsumeConstant.TYPE_OFFLINE);
         saveConsume.setBusinessType(ConsumeConstant.BUSINESS_TYPE_OFFLINE);
         saveConsume.setConsumeMoney(vo.getConsume().getConsumeMoney());
+        saveConsume.setPayStatus(ConsumeConstant.PAY_STATUS_PAYING);
         UnionPayVO result = null;
         if (ConsumeConstant.VO_PAY_TYPE_CASH == voConsume.getPayType()) {
             saveConsume.setPayType(ConsumeConstant.PAY_TYPE_CASH);
