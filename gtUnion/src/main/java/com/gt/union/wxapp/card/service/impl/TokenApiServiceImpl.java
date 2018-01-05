@@ -2,6 +2,7 @@ package com.gt.union.wxapp.card.service.impl;
 
 import com.alibaba.fastjson.JSON;
 import com.gt.api.bean.session.Member;
+import com.gt.union.api.client.member.MemberService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.CommonUtil;
@@ -23,6 +24,9 @@ public class TokenApiServiceImpl implements ITokenApiService {
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
 
+	@Autowired
+	private MemberService memberService;
+
 	@Override
 	public Member getMemberByToken(String token, Integer busId) throws Exception{
 		if(busId == null){
@@ -35,6 +39,7 @@ public class TokenApiServiceImpl implements ITokenApiService {
 				return null;
 			}
 		}
+		member = memberService.getById(998);
 		return member;
 	}
 }
