@@ -116,7 +116,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         // （3）	获取未支付佣金金额，即商机已接受，但仍未支付
         List<UnionMember> memberList = unionMemberService.listByBusId(busId);
         List<Integer> memberIdList = unionMemberService.getIdList(memberList);
-        Double unPaidOpportunityBrokerage = unionOpportunityService.sumValidBrokerageMoneyByFromMemberIdListAndAcceptStatusAndIsClose(memberIdList,
+        Double unPaidOpportunityBrokerage = unionOpportunityService.sumValidBrokerageMoneyByToMemberIdListAndAcceptStatusAndIsClose(memberIdList,
                 OpportunityConstant.ACCEPT_STATUS_CONFIRMED, OpportunityConstant.IS_CLOSE_NO);
         result.setUnPaidOpportunityBrokerage(unPaidOpportunityBrokerage);
 
