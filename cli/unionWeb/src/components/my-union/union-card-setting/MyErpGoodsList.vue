@@ -20,7 +20,7 @@
       </el-table-column>
       <el-table-column prop="number" label="数量">
         <template slot-scope="scope">
-            <el-input style="width:120px" v-model="scope.row.number" placeholder="请输入数量" @keyup.native="check(scope)" @change="erpGoodsListChange"></el-input>
+          <el-input style="width:120px" v-model="scope.row.number" placeholder="请输入数量" @keyup.native="check(scope)" @change="erpGoodsListChange"></el-input>
         </template>
       </el-table-column>
       <el-table-column prop="handle" label="操作" width="180">
@@ -214,6 +214,7 @@ export default {
       } else {
         this.options2 = [];
         this.shopId = '';
+        this.tableData = [];
       }
     },
     getTableData() {
@@ -304,7 +305,7 @@ export default {
     confirm() {
       this.erpGoodsList.splice(0, this.erpGoodsList.length);
       this.selectedErpRight.forEach(v => {
-        this.erpGoodsList.push({ shopId: this.shopId, erpGoodsId: v.id, name: v.name, spec: v.spec, number: v.number });
+        this.erpGoodsList.push({ shopId: v.shopId, erpGoodsId: v.id, name: v.name, spec: v.spec, number: v.number });
       });
       this.erpGoodsListChange();
       this.visible = false;

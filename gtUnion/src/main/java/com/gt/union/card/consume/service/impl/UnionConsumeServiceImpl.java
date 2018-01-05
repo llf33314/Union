@@ -386,7 +386,8 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             BigDecimal giveIntegral = BigDecimalUtil.multiply(payMoney, giveIntegralPerMoney);
             saveConsume.setGiveIntegral(giveIntegral.doubleValue());
         }
-        if (BigDecimalUtil.subtract(payMoney, voConsume.getPayMoney()).doubleValue() != 0) {
+        // 支持0.5元精度失算
+        if (Math.abs(BigDecimalUtil.subtract(payMoney, voConsume.getPayMoney()).doubleValue()) > 0.5) {
             throw new BusinessException("实际支付金额错误，请刷新后重试");
         }
         saveConsume.setPayMoney(payMoney.doubleValue());

@@ -6,9 +6,12 @@ Vue.use(Vuex);
 export default new Vuex.Store({
   name: 'state',
   state: {
-    unionId: sessionStorage.getItem('unionId'),
-    memberId: sessionStorage.getItem('memberId'),
-    isUnionOwner: sessionStorage.getItem('isUnionOwner'),
+    // unionId: sessionStorage.getItem('unionId'),
+    // memberId: sessionStorage.getItem('memberId'),
+    // isUnionOwner: sessionStorage.getItem('isUnionOwner'),
+    unionId: '',
+    memberId: '',
+    isUnionOwner: '',
     addressLatitude: '',
     addressLongitude: '',
     enterpriseAddress: '',
@@ -32,16 +35,16 @@ export default new Vuex.Store({
   mutations: {
     unionIdChange(state, id) {
       state.unionId = id;
-      sessionStorage.setItem('unionId', id);
+      // sessionStorage.setItem('unionId', id);
     },
     memberIdChange(state, id) {
       state.memberId = id;
-      sessionStorage.setItem('memberId', id);
+      // sessionStorage.setItem('memberId', id);
     },
     // 是否盟主
     isUnionOwnerChange(state, value) {
       state.isUnionOwner = value;
-      sessionStorage.setItem('isUnionOwner', value);
+      // sessionStorage.setItem('isUnionOwner', value);
     },
     latitudeChange(state, value) {
       state.addressLatitude = value;
