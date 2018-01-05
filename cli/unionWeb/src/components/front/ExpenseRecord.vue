@@ -131,7 +131,7 @@ export default {
       shopId: '',
       options2: [],
       value: '',
-      options3: [{ value: 'cardNo', label: '联盟卡号' }, { value: 'phone', label: '顾客电话' }],
+      options3: [{ value: 'cardNumber', label: '联盟卡号' }, { value: 'phone', label: '顾客电话' }],
       input: '',
       tableData: [],
       currentPage: 1,
@@ -249,14 +249,28 @@ export default {
       this.currentPage = 1;
       this.getTableData();
     },
-    // 分页搜索本店消费记录
+    // 分页搜索消费记录
     handleCurrentChange(val) {
       this.currentPage = val;
       this.getTableData();
     },
-    // 导出本店消费记录
+    // 导出消费记录
     output() {
-      let url = this.$store.state.baseUrl + `/unionConsume/record/export`;
+      let beginTime, endTime;
+      if (this.timeValue[0]) {
+        beginTime = this.timeValue[0].getTime();
+        endTime = this.timeValue[1].getTime();
+      } else {
+        beginTime = '';
+        endTime = '';
+      }
+      let url =
+        this.$store.state.baseUrl +
+        `/unionConsume/record/export?unionId=${this.unionId}&shopId=${this.shopId}&` +
+        this.value +
+        '=' +
+        this.input +
+        `&beginTime=${beginTime}&endTime=${endTime}`;
       window.open(url);
     },
     // 显示核销详情

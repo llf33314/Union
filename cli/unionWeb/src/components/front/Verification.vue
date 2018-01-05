@@ -2,7 +2,7 @@
   <div id="Verification">
     <div class="first_">
       <el-col style="width: 540px;">
-        <el-input placeholder="请用扫码枪扫码或手动输入联盟卡号" icon="search" v-model="input" :on-icon-click="handleIconClick" @keypress.native="keypress($event)">
+        <el-input placeholder="请用扫码枪扫码或手动输入联盟卡号" icon="search" v-model="input" :on-icon-click="handleIconClick" @keyup.enter.native="handleIconClick">
         </el-input>
       </el-col>
     </div>
@@ -48,12 +48,12 @@
           </el-form-item>
           <el-form-item label="消费金额:">
             <el-col style="width: 220px;">
-              <el-input v-model="price">
+              <el-input v-model="price" @keyup.native="check()">
                 <template slot="prepend">￥</template>
               </el-input>
             </el-col>
           </el-form-item>
-          <el-form-item label="优惠项目" v-show="form.isProjectAvailable">
+          <el-form-item label="优惠项目" v-if="form.isProjectAvailable">
             <el-switch v-model="isProjectAvailable_" on-text="" off-text="" @change="isProjectAvailable_Change" :disabled="!form.unionId">
             </el-switch>
           </el-form-item>
@@ -113,30 +113,30 @@
             </el-form-item>
             <el-form-item label="消费金额：">
               <span> ￥
-                <span class="color_">{{ (price - 0)| formatPrice }} </span>
+                <span class="color_">{{ price | formatPrice }} </span>
               </span>
             </el-form-item>
             <el-form-item label="联盟价格：">
               <span> ￥
-                <span class="color_">{{ (price - 0) * form.currentMember.discount / 10 | formatPrice }}</span>
+                <span class="color_">{{ price * form.currentMember.discount | formatPrice }}</span>
               </span>
             </el-form-item>
             <el-form-item label="联盟积分折扣：" v-if="isIntegral && form.integral > 0">
               <el-switch v-model="isIntegral_" on-text="" off-text="">
               </el-switch>
-              <span>积分抵扣率：{{form.currentMember.integralExchangeRatio}}%</span>
+              <span>积分抵扣率：{{ form.currentMember.integralExchangeRatio }}%</span>
             </el-form-item>
             <el-form-item label="消耗联盟积分：" v-if="isIntegral_ && form.integral > 0">
               <span> {{ deductionIntegral | formatPrice }} </span>
             </el-form-item>
             <el-form-item label="抵扣金额：" v-if="isIntegral_ && form.integral > 0">
               <span> ￥
-                <span class="color_">{{ (deductionPrice - 0) | formatPrice }} </span>
+                <span class="color_">{{ deductionPrice | formatPrice }} </span>
               </span>
             </el-form-item>
             <el-form-item label="实收金额：" v-if="isIntegral_ && form.integral > 0">
               <span> ￥
-                <span class="color_">{{ (price1 - 0) | formatPrice }} </span>
+                <span class="color_">{{ price1 | formatPrice }} </span>
               </span>
             </el-form-item>
             <div class="discountsProject">
@@ -151,35 +151,34 @@
             <p>请选择支付方式：</p>
             <div>
               <el-radio-group v-model="payType" @change="payTypeChange">
-                <el-radio-button label="0">
+                <el-radio-button label="1">
                   <p>
                     <i class="iconfont" style="font-size: 33px;">&#xe727;</i>
                   </p>
                   <span>现金支付</span>
                 </el-radio-button>
-                <el-radio-button label="1">
+                <el-radio-button label="2">
                   <p>
                     <i class="iconfont" style="font-size: 33px;">&#xe60d;</i>
                   </p>
                   <span>扫码支付</span>
                 </el-radio-button>
               </el-radio-group>
-              <el-row v-if="payType == 0">
+              <el-row v-if="payType == 1">
                 <el-col style="width:280px;">
                   <span>收取现金：</span>
-                  <el-input v-model="price2" style="width:200px;">
+                  <el-input v-model="price2" style="width:200px;" @keyup.native="check2()">
                     <template slot="prepend">￥</template>
                   </el-input>
                 </el-col>
                 <el-col style="width:240px;margin-left:50px;padding-top: 2px;">
                   <span style="">找零: ￥
                     <span class="color_" v-if="!price2">0.00</span>
-                    <span class="color_">
-                      {{ price2 - 0}} {{ price1}} {{ price2 - price1}}</span>
+                    <span class="color_" v-if="price2 && price2 - price1 >= 0">{{ (price2 - price1) | formatPrice}}</span>
                   </span>
                 </el-col>
                 <el-col style="width:240px;margin-left:50px;position: absolute;top: 40px;left: 72px;">
-                  <span class="color_" v-if="(price2 - 0) && ((price1 - 0)*100 - (price1 - 0) * 100) / 100 < 0">收取金额小于支付金额，请重新输入</span>
+                  <span class="color_" v-if="price2 && (price2 - price1 < 0)">收取金额小于支付金额，请重新输入</span>
                 </el-col>
               </el-row>
             </div>
@@ -205,12 +204,12 @@
 <script>
 import io from 'socket.io-client';
 import $http from '@/utils/http.js';
-import { timeFilter } from '@/utils/filter.js';
+import { timeFilter, numberCheck } from '@/utils/filter.js';
+
 export default {
   name: 'verification',
   data() {
     return {
-      num1: 1,
       input: '',
       imgSrc: '',
       visible1: true,
@@ -263,44 +262,35 @@ export default {
   filters: {
     formatPrice: function(value) {
       if (!value) {
-        return Number(0);
+        return Number(0).toFixed(2);
       } else {
-        return Number(value);
+        return Number(value).toFixed(2);
       }
     }
   },
   watch: {
-    // 输入金额格式化
-    price: function() {
-      if (isNaN(this.price)) {
-        let that = this;
-        setTimeout(function() {
-          that.price = '';
-        }, 100);
-      }
-    },
-    price2: function() {
-      if (isNaN(this.price2)) {
-        let that = this;
-        setTimeout(function() {
-          that.price2 = '';
-        }, 100);
-      }
-    },
     // 是否开启联盟积分
     isIntegral_: function() {
       let temData = 0;
       this.isIntegral_ ? (temData = 1) : (temData = 0);
-      this.deductionPrice = (this.price - 0) * this.form.discount / 10 * this.form.exchangeIntegral / 100 * temData;
+      this.deductionPrice =
+        this.price * this.form.currentMember.discount * this.form.currentMember.integralExchangeRatio * temData;
       this.deductionIntegral = this.deductionPrice * 100 / this.form.exchangeIntegral;
       if (this.deductionIntegral > this.form.integral) {
         this.deductionIntegral = this.form.integral;
-        this.deductionPrice = this.deductionIntegral / 100 * this.form.exchangeIntegral;
+        this.deductionPrice = this.deductionIntegral * this.form.exchangeIntegral;
       }
-      this.price1 = ((this.price - 0) * this.form.currentMember.discount - this.deductionPrice * 10) / 10;
+      this.price1 = this.price * this.form.currentMember.discount - this.deductionPrice;
     }
   },
   methods: {
+    // 校验输入为数字类型
+    check() {
+      this.price = numberCheck(this.price);
+    },
+    check2() {
+      this.price2 = numberCheck(this.price2);
+    },
     // 搜索
     handleIconClick(ev) {
       if (this.input) {
@@ -310,7 +300,7 @@ export default {
             if (res.data.data) {
               this.form = res.data.data;
               if (this.form.unionList.length) {
-                this.form.unionId = this.form.unionList.id;
+                this.form.unionId = this.form.unionList[0].id;
               }
               this.isIntegral = this.form.currentUnion.isIntegral;
               this.isIntegral ? (this.isIntegral_ = true) : (this.isIntegral_ = false);
@@ -338,11 +328,6 @@ export default {
           });
       }
     },
-    keypress(e) {
-      if (e.keyCode == 13) {
-        this.handleIconClick();
-      }
-    },
     // 联盟改变
     unionIdChange() {
       if (this.form.unionId) {
@@ -352,15 +337,17 @@ export default {
             if (res.data.data) {
               this.form.currentMember.enterpriseName = res.data.data.currentMember.enterpriseName;
               this.form.currentMember.discount = res.data.data.currentMember.discount;
+              this.form.currentMember.integralExchangeRatio = res.data.data.currentMember.integralExchangeRatio;
               this.form.fan.number = res.data.data.fan.number;
               this.form.currentUnion.isIntegral = res.data.data.currentUnion.isIntegral;
               this.form.integral = res.data.data.integral;
               this.form.currentUnion.validity = res.data.data.currentUnion.validity;
-              this.isIntegral = this.form.isIntegral;
+              this.isIntegral = this.form.currentUnion.isIntegral;
               this.isIntegral ? (this.isIntegral_ = true) : (this.isIntegral_ = false);
             } else {
               this.form.currentMember.enterpriseName = '';
               this.form.currentMember.discount = '';
+              this.form.currentMember.integralExchangeRatio = '';
               this.form.fan.number = '';
               this.form.currentUnion.isIntegral = '';
               this.form.integral = '';
@@ -438,13 +425,13 @@ export default {
         let temData = 0;
         this.isIntegral_ ? (temData = 1) : (temData = 0);
         this.deductionPrice =
-          this.price * this.form.currentMember.discount / 10 * this.form.integralPercent / 100 * temData;
+          this.price * this.form.currentMember.discount * this.form.currentMember.integralExchangeRatio * temData;
         this.deductionIntegral = this.deductionPrice * 100 / this.form.exchangeIntegral;
         if (this.deductionIntegral > this.form.integral) {
           this.deductionIntegral = this.form.integral;
-          this.deductionPrice = this.deductionIntegral / 100 * this.form.exchangeIntegral;
+          this.deductionPrice = this.deductionIntegral * this.form.exchangeIntegral;
         }
-        this.price1 = (this.price * this.form.currentMember.discount - this.deductionPrice * 10) / 10;
+        this.price1 = this.price * this.form.currentMember.discount - this.deductionPrice;
       }
     },
     // 提交
@@ -454,7 +441,7 @@ export default {
       data.unionId = this.form.unionId - 0;
       data.fanId = this.form.fan.id - 0;
       data.shopId = this.shopId - 0;
-      data.isUserIntegral = this.isIntegral_ && this.form.integral - 0;
+      data.isUseIntegral = (this.isIntegral_ && this.form.integral) - 0;
       data.consume = {};
       data.consume.consumeMoney = this.price - 0;
       data.consume.payMoney = this.price1 - 0;
@@ -467,10 +454,10 @@ export default {
         .post(url, data)
         .then(res => {
           if (res.data.success) {
+            this.$message({ showClose: true, message: '核销成功', type: 'success', duration: 5000 });
             eventBus.$emit('newTransaction');
             eventBus.$emit('unionUpdata');
             this.init();
-            this.$message({ showClose: true, message: '核销成功', type: 'success', duration: 5000 });
           }
         })
         .catch(err => {
@@ -479,13 +466,13 @@ export default {
     },
     // 付款二维码
     payTypeChange() {
-      if (this.payType == 1) {
+      if (this.payType == 2) {
         let url = `/unionConsume/unionId/${this.form.unionId}/fanId/${this.form.fan.id}`;
         let data = {};
         data.unionId = this.form.unionId - 0;
         data.fanId = this.form.fan.id - 0;
         data.shopId = this.shopId - 0;
-        data.isUserIntegral = this.isIntegral_ && this.form.integral - 0;
+        data.isUseIntegral = (this.isIntegral_ && this.form.integral) - 0;
         data.consume = {};
         data.consume.consumeMoney = this.price - 0;
         data.consume.payMoney = this.price1 - 0;
@@ -498,15 +485,13 @@ export default {
           .post(url, data)
           .then(res => {
             if (res.data.data) {
-              this.payUrl = res.data.data.url;
+              this.payUrl = res.data.data.payUrl;
               this.socketKey = res.data.data.socketKey;
+              this.visible4 = true;
             } else {
               this.payUrl = '';
               this.socketKey = '';
             }
-          })
-          .then(res => {
-            this.visible4 = true;
           })
           .then(res => {
             var _this = this;
@@ -536,8 +521,9 @@ export default {
                     _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
                     _this.socketFlag.socketKey = msg.socketKey;
                     _this.socketFlag.status = msg.status;
-                    _this.visible1 = false;
-                    _this.$router.push({ path: '/my-union' });
+                    eventBus.$emit('newTransaction');
+                    eventBus.$emit('unionUpdata');
+                    _this.init();
                   } else if (msg.status == '0') {
                     _this.$message({ showClose: true, message: '支付失败', type: 'error', duration: 5000 });
                   }
@@ -552,8 +538,10 @@ export default {
     },
     // 关闭二维码改变付款方式
     resetData() {
-      parent.window.postMessage('openMask()', 'https://deeptel.com.cn/user/toIndex_1.do');
-      this.payType = 0;
+      this.payType = 1;
+      setTimeout(() => {
+        parent.window.postMessage('openMask()', '*');
+      }, 0);
     },
     // 返回
     back() {
@@ -562,37 +550,11 @@ export default {
     },
     // 初始化
     init() {
-      this.visible4 = false;
       this.input = '';
       this.visible1 = true;
       this.visible2 = false;
-      this.form = {
-        enterpriseName: '',
-        discount: '',
-        cardId: '',
-        cardNo: '',
-        integral: '',
-        value1: '',
-        shops: [],
-        unionId: '',
-        validity: '',
-        items: [],
-        illustration: '',
-        exchangeIntegral: '',
-        integralPercent: ''
-      };
-      this.isIntegral = ''; // 数据传输
-      this.isIntegral_ = ''; // 控制显示
-      this.price = '';
-      this.shop = '';
-      this.item = [];
       this.visible3 = false;
-      this.deductionPrice = '';
-      this.deductionIntegral = '';
-      this.price1 = ''; // 实收金额
-      this.payType = 0;
-      this.price2 = ''; // 收取现金
-      this.payUrl = '';
+      this.visible4 = false;
     }
   }
 };

@@ -299,7 +299,7 @@ export default {
       this.erpTextList.splice(0, this.erpTextList.length);
       this.selectedErpRight.forEach(v => {
         this.erpTextList.push({
-          erpType: this.erpType,
+          erpType: v.erpType,
           shopId: v.shopId,
           erpTextId: v.id,
           name: v.name,

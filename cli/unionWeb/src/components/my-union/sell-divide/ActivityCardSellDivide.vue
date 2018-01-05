@@ -41,7 +41,7 @@
         </el-table-column>
         <el-table-column prop="sharingRatio.ratio" label="售卡分成比例">
           <template slot-scope="scope">
-            {{ (scope.row.sharingRatio.ratio).toFixed(2) }} %
+            {{ (scope.row.sharingRatio.ratio * 100).toFixed(2) }} %
           </template>
         </el-table-column>
       </el-table>
@@ -118,8 +118,11 @@ export default {
   },
   methods: {
     // 获取活动卡列表
-    init(value) {
-      let val = value || 1;
+    init() {
+      this.currentPage1 = 1;
+      this.getData1();
+    },
+    getData1() {
       $http
         .get(`/unionCardActivity/unionId/${this.unionId}/sharingRatio/page?current=${this.currentPage1}`)
         .then(res => {
@@ -131,9 +134,9 @@ export default {
               let color1 = (v.color1 = v.activity.color.split(',')[0]);
               let color2 = (v.color2 = v.activity.color.split(',')[1]);
               let mDiv = 'm' + color2 + i;
-              setTimeout(function () {
-                $("." + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
-              }, 0)
+              setTimeout(function() {
+                $('.' + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
+              }, 0);
             });
             this.totalAll1 = res.data.data.total;
           } else {
@@ -146,13 +149,21 @@ export default {
         });
     },
     handleCurrentChange1(val) {
-      this.init(val);
+      this.currentPage1 = val;
+      this.getData1();
     },
     // 获取活动参加盟员比例分配列表
     setting(value) {
       this.activityId = value;
+      this.currentPage2 = 1;
+      this.getTableData2();
+    },
+    getTableData2() {
       $http
-        .get(`/unionCardSharingRatio/activityId/${this.activityId}/unionId/${this.unionId}/page?current=1`)
+        .get(
+          `/unionCardSharingRatio/activityId/${this.activityId}/unionId/${this.unionId}/page?current=${this
+            .currentPage2}`
+        )
         .then(res => {
           if (res.data.data) {
             this.tableData2 = res.data.data.records || [];
@@ -174,23 +185,9 @@ export default {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
     },
-    handleCurrentChange2() {
-      $http
-        .get(`/unionCardSharingRatio/activityId/${this.activityId}/unionId/${this.unionId}/page?current=${val}`)
-        .then(res => {
-          if (res.data.data) {
-            this.tableData2 = res.data.data.records || [];
-            this.tableData2.forEach(v => {
-              if (!v.sharingRatio) {
-                v.sharingRatio = {};
-                v.sharingRatio.ratio = 0;
-              }
-            });
-          }
-        })
-        .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-        });
+    handleCurrentChange2(val) {
+      this.currentPage2 = val;
+      this.getTableData2();
     },
     // 比例设置 弹出框 获取数据
     showSettingDialog() {
@@ -205,10 +202,10 @@ export default {
                 v.sharingRatio = {};
                 v.sharingRatio.ratio = 0;
               }
-              v.sharingRatio.ratio = v.sharingRatio.ratio.toFixed(0);
+              v.sharingRatio.ratio = (v.sharingRatio.ratio * 100).toFixed(0);
               this.sum3 += parseFloat(v.sharingRatio.ratio);
             });
-            this.sum3 = this.sum3.toFixed(0);
+            this.sum3 = parseFloat(this.sum3.toFixed(0));
             this.visible3 = true;
           }
         })
@@ -245,14 +242,18 @@ export default {
     // 保存
     onSave() {
       if (this.sum3 === 100) {
-        let url = `/union/unionCardSharingRatio/activityId/${this.activityId}/unionId/${this.unionId}`;
+        let url = `unionCardSharingRatio/activityId/${this.activityId}/unionId/${this.unionId}`;
         // 处理数据
         let data = this.tableData3;
+        data.forEach(v => {
+          v.sharingRatio.ratio = v.sharingRatio.ratio / 100;
+        });
         $http
           .put(url, data)
           .then(res => {
             if (res.data.success) {
-              this.init();
+              this.currentPage2 = 1;
+              this.getTableData2();
               this.visible3 = false;
               this.$message({ showClose: true, message: '保存成功', type: 'success', duration: 5000 });
             }

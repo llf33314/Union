@@ -5,7 +5,9 @@
       <div style="margin-top: 10px;">
         <div style="float: right;color: #666666" v-if="projectData.project.status">项目/商品 状态：
           <span style="color: #20A0FF"> {{ projectData.project.status }} </span>
-          <span class="icon">!</span>
+          <span class="icon" @click="visible1 =!visible1">!</span>
+          <!-- 审核记录 -->
+          <check-record :activityId="this.activityId" v-show="visible1" class="auditRecord"></check-record>
         </div>
         <span v-if="projectData.isErp" style="color: #666;">
           您已开通ERP系统，您可将ERP系统的服务项目添加至联盟活动卡中，联盟会员办理活动卡后即可享受各个ERP系统的服务项目。
@@ -15,8 +17,7 @@
         </span>
       </div>
     </div>
-    <!-- 审核记录 -->
-    <check-record :activityId="this.activityId"></check-record>
+
     <!-- 项目列表 -->
     <div class="unionList">
       <!-- 非ERP -->
@@ -83,7 +84,8 @@ export default {
       },
       visible: false,
       loading: true,
-      canEdit: false
+      canEdit: false,
+      visible1: false
     };
   },
   computed: {
