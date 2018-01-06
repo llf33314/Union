@@ -2,7 +2,7 @@ package com.gt.union.card.main.vo;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.gt.union.card.activity.entity.UnionCardActivity;
+import com.gt.union.card.activity.vo.CardActivityApplyVO;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.member.entity.UnionMember;
 import io.swagger.annotations.ApiModel;
@@ -27,8 +27,8 @@ public class CardApplyVO {
     @ApiModelProperty(value = "当前选中联盟下的盟员身份")
     private UnionMember currentMember;
 
-    @ApiModelProperty(value = "联盟卡活动列表")
-    private List<UnionCardActivity> activityList;
+    @ApiModelProperty(value = "联盟卡活动VO列表")
+    private List<CardActivityApplyVO> cardActivityApplyVOList;
 
     @ApiModelProperty(value = "是否需要展示折扣卡(0:否 1:是)")
     private Integer isDiscountCard;
@@ -57,12 +57,12 @@ public class CardApplyVO {
         this.currentMember = currentMember;
     }
 
-    public List<UnionCardActivity> getActivityList() {
-        return activityList;
+    public List<CardActivityApplyVO> getCardActivityApplyVOList() {
+        return cardActivityApplyVOList;
     }
 
-    public void setActivityList(List<UnionCardActivity> activityList) {
-        this.activityList = activityList;
+    public void setCardActivityApplyVOList(List<CardActivityApplyVO> cardActivityApplyVOList) {
+        this.cardActivityApplyVOList = cardActivityApplyVOList;
     }
 
     public Integer getIsDiscountCard() {

@@ -5,7 +5,10 @@ import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.activity.service.IUnionCardActivityService;
-import com.gt.union.card.activity.vo.*;
+import com.gt.union.card.activity.vo.CardActivityApplyItemVO;
+import com.gt.union.card.activity.vo.CardActivityConsumeVO;
+import com.gt.union.card.activity.vo.CardActivityStatusVO;
+import com.gt.union.card.activity.vo.CardActivityVO;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
@@ -105,29 +108,6 @@ public class UnionCardActivityController {
             result = MockUtil.list(CardActivityConsumeVO.class, 20);
         } else {
             result = unionCardActivityService.listCardActivityConsumeVOByBusIdAndUnionIdAndFanId(busId, unionId, fanId);
-        }
-        return GtJsonResult.instanceSuccessMsg(result).toString();
-    }
-
-    @ApiOperation(value = "前台-办理联盟卡-查询联盟和联盟卡-查询联盟卡活动", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/{activityId}/unionId/{unionId}/apply", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
-    public String getApplyVOByIdAndUnionId(
-            HttpServletRequest request,
-            @ApiParam(value = "活动id", name = "activityId", required = true)
-            @PathVariable("activityId") Integer activityId,
-            @ApiParam(value = "联盟id", name = "unionId", required = true)
-            @PathVariable("unionId") Integer unionId) throws Exception {
-        BusUser busUser = SessionUtils.getLoginUser(request);
-        Integer busId = busUser.getId();
-        if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-            busId = busUser.getPid();
-        }
-        // mock
-        CardActivityApplyVO result;
-        if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            result = MockUtil.get(CardActivityApplyVO.class);
-        } else {
-            result = unionCardActivityService.getCardActivityApplyVOByBusIdAndIdAndUnionId(busId, activityId, unionId);
         }
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }

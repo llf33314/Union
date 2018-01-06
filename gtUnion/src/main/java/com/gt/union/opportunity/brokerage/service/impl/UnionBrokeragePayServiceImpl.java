@@ -320,12 +320,12 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
         String orderNo = "LM" + ConfigConstant.PAY_MODEL_OPPORTUNITY + DateUtil.getSerialNumber();
         if (ListUtil.isNotEmpty(opportunityIdList)) {
             for (Integer opportunityId : opportunityIdList) {
-                UnionOpportunity opportunity = unionOpportunityService.getById(opportunityId);
+                UnionOpportunity opportunity = unionOpportunityService.getValidById(opportunityId);
                 if (opportunity == null) {
                     throw new BusinessException("找不到商机信息");
                 }
                 // （2）	判断union有效性和member写权限
-                UnionMember member = unionMemberService.getByBusIdAndId(busId, opportunity.getToMemberId());
+                UnionMember member = unionMemberService.getValidReadByBusIdAndId(busId, opportunity.getToMemberId());
                 if (member == null) {
                     throw new BusinessException("不支持代付商机佣金");
                 }

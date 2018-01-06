@@ -16,7 +16,6 @@ import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.member.constant.MemberConstant;
 import com.gt.union.union.member.dao.IUnionMemberDao;
 import com.gt.union.union.member.entity.UnionMember;
-import com.gt.union.union.member.entity.UnionMemberOut;
 import com.gt.union.union.member.service.IUnionMemberOutService;
 import com.gt.union.union.member.service.IUnionMemberService;
 import com.gt.union.union.member.util.UnionMemberCacheUtil;
@@ -142,6 +141,17 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
     }
 
     @Override
+    public UnionMember getValidReadByBusIdAndId(Integer busId, Integer id) throws Exception {
+        if (busId == null || id == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        UnionMember result = getValidReadById(id);
+
+        return result != null && busId.equals(result.getBusId()) ? result : null;
+    }
+
+    @Override
     public UnionMember getValidReadByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception {
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -182,39 +192,6 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         result = filterByStatus(result, status);
 
         return ListUtil.isNotEmpty(result) ? result.get(0) : null;
-    }
-
-    @Override
-    public UnionMember getByBusIdAndId(Integer busId, Integer memberId) throws Exception {
-        if (busId == null || memberId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        UnionMember result = getById(memberId);
-
-        return result != null && busId.equals(result.getBusId()) ? result : null;
-    }
-
-    @Override
-    public UnionMember getByIdAndUnionId(Integer memberId, Integer unionId) throws Exception {
-        if (memberId == null || unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        UnionMember result = getById(memberId);
-
-        return result != null && unionId.equals(result.getUnionId()) ? result : null;
-    }
-
-    @Override
-    public UnionMember getByBusIdAndIdAndUnionId(Integer busId, Integer memberId, Integer unionId) throws Exception {
-        if (busId == null || memberId == null || unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        UnionMember result = getByBusIdAndId(busId, memberId);
-
-        return result != null && unionId.equals(result.getUnionId()) ? result : null;
     }
 
     @Override

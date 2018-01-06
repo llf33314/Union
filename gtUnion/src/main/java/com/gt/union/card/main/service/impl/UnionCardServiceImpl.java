@@ -8,6 +8,7 @@ import com.gt.union.api.client.socket.SocketService;
 import com.gt.union.card.activity.constant.ActivityConstant;
 import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.activity.service.IUnionCardActivityService;
+import com.gt.union.card.activity.vo.CardActivityApplyVO;
 import com.gt.union.card.main.constant.CardConstant;
 import com.gt.union.card.main.dao.IUnionCardDao;
 import com.gt.union.card.main.entity.UnionCard;
@@ -21,6 +22,7 @@ import com.gt.union.card.main.vo.CardApplyVO;
 import com.gt.union.card.main.vo.CardPhoneVO;
 import com.gt.union.card.project.constant.ProjectConstant;
 import com.gt.union.card.project.entity.UnionCardProject;
+import com.gt.union.card.project.service.IUnionCardProjectItemService;
 import com.gt.union.card.project.service.IUnionCardProjectService;
 import com.gt.union.card.sharing.entity.UnionCardSharingRatio;
 import com.gt.union.card.sharing.entity.UnionCardSharingRecord;
@@ -98,6 +100,9 @@ public class UnionCardServiceImpl implements IUnionCardService {
     @Autowired
     private SocketService socketService;
 
+    @Autowired
+    private IUnionCardProjectItemService unionCardProjectItemService;
+
     //********************************************* Base On Business - get *********************************************
 
     @Override
@@ -174,20 +179,23 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
         List<UnionCardActivity> sellingActivityList = unionCardActivityService.listValidByUnionIdAndStatus(currentUnionId, ActivityConstant.STATUS_SELLING);
         if (ListUtil.isNotEmpty(sellingActivityList)) {
-            List<UnionCardActivity> activityList = new ArrayList<>();
+            List<CardActivityApplyVO> cardActivityApplyVOList = new ArrayList<>();
             for (UnionCardActivity activity : sellingActivityList) {
                 if (!unionCardProjectService.existValidByUnionIdAndMemberIdAndActivityIdAndStatus(currentUnionId, currentMemberId, activity.getId(), ProjectConstant.STATUS_ACCEPT)) {
                     continue;
                 }
                 Integer activityCardCount = countValidByUnionIdAndActivityId(currentUnionId, activity.getId());
                 if (activityCardCount < activity.getAmount()) {
-                    activityList.add(activity);
+                    CardActivityApplyVO cardActivityApplyVO = new CardActivityApplyVO();
+                    cardActivityApplyVO.setActivity(activity);
+                    cardActivityApplyVO.setItemCount(unionCardProjectItemService.countValidCommittedByUnionIdAndActivityId(currentUnionId, activity.getId()));
+                    cardActivityApplyVOList.add(cardActivityApplyVO);
                 }
             }
-            result.setActivityList(activityList);
+            result.setCardActivityApplyVOList(cardActivityApplyVOList);
         }
 
-        if (CommonConstant.COMMON_NO == result.getIsDiscountCard() && ListUtil.isEmpty(result.getActivityList())) {
+        if (CommonConstant.COMMON_NO == result.getIsDiscountCard() && ListUtil.isEmpty(result.getCardActivityApplyVOList())) {
             return null;
         }
 
