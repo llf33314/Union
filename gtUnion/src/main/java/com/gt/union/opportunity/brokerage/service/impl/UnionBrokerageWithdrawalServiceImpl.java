@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,9 +39,9 @@ public class UnionBrokerageWithdrawalServiceImpl implements IUnionBrokerageWithd
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）收入
+        // 收入
         Double incomeSum = unionBrokerageIncomeService.sumValidMoneyByBusId(busId);
-        // （2）已提现
+        // 已提现
         Double withdrawalSum = sumValidMoneyByBusId(busId);
 
         return BigDecimalUtil.toDouble(BigDecimalUtil.subtract(incomeSum, withdrawalSum));

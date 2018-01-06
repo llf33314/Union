@@ -110,7 +110,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (fanId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断fanId有效性
+        // 判断fanId有效性
         UnionCardFan fan = unionCardFanService.getValidById(fanId);
         if (fan == null) {
             throw new BusinessException("找不到粉丝信息");
@@ -375,7 +375,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (vo == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断phone和code有效性
+        // 判断phone和code有效性
         String phone = vo.getPhone();
         if (StringUtil.isEmpty(phone)) {
             throw new BusinessException("手机号不能为空");
@@ -390,7 +390,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (!smsService.checkPhoneCode(SmsCodeConstant.APPLY_UNION_CARD_TYPE, code, phone)) {
             throw new BusinessException("验证码错误");
         }
-        // （2）	根据phone判断fan是否存在，如果已存在，则返回；否则，新增并返回
+        // 根据phone判断fan是否存在，如果已存在，则返回；否则，新增并返回
         return unionCardFanService.getOrSaveByPhone(phone);
     }
 

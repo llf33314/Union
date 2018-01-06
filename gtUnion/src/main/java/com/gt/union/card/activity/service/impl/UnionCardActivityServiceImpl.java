@@ -127,15 +127,16 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member读权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-        // （2）	判断是否是盟主
+        // 判断是否是盟主
         List<CardActivityStatusVO> result = new ArrayList<>();
         List<UnionCardActivity> activityList = null;
         if (MemberConstant.IS_UNION_OWNER_YES == member.getIsUnionOwner()) {
@@ -163,7 +164,7 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
                 result.add(vo);
             }
         }
-        // （3）	按时间倒序排序
+        // 按时间倒序排序
         Collections.sort(result, new Comparator<CardActivityStatusVO>() {
             @Override
             public int compare(CardActivityStatusVO o1, CardActivityStatusVO o2) {
@@ -179,10 +180,11 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member读权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
@@ -191,7 +193,6 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
         List<CardActivityVO> result = new ArrayList<>();
         List<UnionCardActivity> activityList = listValidByUnionId(unionId);
         if (ListUtil.isNotEmpty(activityList)) {
-            Date currentDate = DateUtil.getCurrentDate();
             for (UnionCardActivity activity : activityList) {
                 CardActivityVO vo = new CardActivityVO();
                 vo.setActivity(activity);
@@ -213,12 +214,12 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
                 // 已售活动卡数量
                 Integer cardSellCount = unionCardService.countValidByUnionIdAndActivityId(unionId, activity.getId());
                 vo.setCardSellCount(cardSellCount);
-                
+
                 result.add(vo);
             }
         }
 
-        // （5）	按时间倒序排序
+        // 按时间倒序排序
         Collections.sort(result, new Comparator<CardActivityVO>() {
             @Override
             public int compare(CardActivityVO o1, CardActivityVO o2) {
@@ -233,10 +234,11 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
         if (busId == null || unionId == null || fanId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // 判断union有效性和member读权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
@@ -273,24 +275,26 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
         if (busId == null || activityId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member读权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-        // （2）	判断activityId有效性
+        // 判断activityId有效性
         UnionCardActivity activity = getValidByIdAndUnionId(activityId, unionId);
         if (activity == null) {
             throw new BusinessException("找不到活动信息");
         }
-        // （3）	获取已提交通过的活动项目
-        // （4）	按时间顺序排序
-        List<CardActivityApplyItemVO> result = new ArrayList<>();
+        // 数据源
         List<UnionCardProject> projectList = unionCardProjectService.listValidByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
+        // toVO
+        List<CardActivityApplyItemVO> result = new ArrayList<>();
         if (ListUtil.isNotEmpty(projectList)) {
+            // 按时间顺序排序
             Collections.sort(projectList, new Comparator<UnionCardProject>() {
                 @Override
                 public int compare(UnionCardProject o1, UnionCardProject o2) {
@@ -320,24 +324,26 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
         if (busId == null || unionId == null || vo == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member读权限、盟主权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
+        // 判断盟主权限
         if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
             throw new BusinessException(CommonConstant.UNION_OWNER_ERROR);
         }
-        // （2）	校验表单
+        // 校验表单
         UnionCardActivity saveActivity = new UnionCardActivity();
         Date currentDate = DateUtil.getCurrentDate();
         saveActivity.setCreateTime(currentDate);
         saveActivity.setDelStatus(CommonConstant.COMMON_NO);
         saveActivity.setUnionId(unionId);
-        // （2-1）名称
+        // 校验表单名称
         String name = vo.getName();
         if (StringUtil.isEmpty(name)) {
             throw new BusinessException("名称不能为空");
@@ -346,61 +352,61 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
             throw new BusinessException("名称字数不能大于10");
         }
         saveActivity.setName(name);
-        // （2-2）价格
+        // 校验表单价格
         Double price = vo.getPrice();
         if (price == null || price <= 0) {
             throw new BusinessException("价格不能为空，且不能小于0");
         }
         saveActivity.setPrice(price);
-        // （2-3）发行量
+        // 校验表单发行量
         Integer amount = vo.getAmount();
         if (amount == null || amount <= 0) {
             throw new BusinessException("发行量不能为空，且不能小于0");
         }
         saveActivity.setAmount(amount);
-        // （2-4）有效天数
+        // 校验表单有效天数
         Integer validityDay = vo.getValidityDay();
         if (validityDay == null || validityDay <= 0) {
             throw new BusinessException("有效天数不能为空，且不能小于0");
         }
         saveActivity.setValidityDay(validityDay);
-        // （2-5）报名开始时间
+        // 校验表单报名开始时间
         Date applyBeginTime = vo.getApplyBeginTime();
         if (applyBeginTime == null || applyBeginTime.compareTo(currentDate) < 0) {
             throw new BusinessException("报名开始时间不能为空，且必须不小于当前时间");
         }
         saveActivity.setApplyBeginTime(applyBeginTime);
-        // （2-6）报名结束时间
+        // 校验表单报名结束时间
         Date applyEndTime = vo.getApplyEndTime();
         if (applyEndTime == null || applyEndTime.compareTo(applyBeginTime) < 0) {
             throw new BusinessException("报名结束时间不能为空，且必须不小于报名开始时间");
         }
         saveActivity.setApplyEndTime(applyEndTime);
-        // （2-7）售卡开始时间
+        // 校验表单售卡开始时间
         Date sellBeginTime = vo.getSellBeginTime();
         if (sellBeginTime == null || sellBeginTime.compareTo(applyEndTime) < 0) {
             throw new BusinessException("售卡开始时间不能为空，且必须不小于报名结束时间");
         }
         saveActivity.setSellBeginTime(sellBeginTime);
-        // （2-8）售卡结束时间
+        // 校验表单售卡结束时间
         Date sellEndTime = vo.getSellEndTime();
         if (sellEndTime == null || sellEndTime.compareTo(sellBeginTime) < 0) {
             throw new BusinessException("售卡结束时间不能为空，且必须不小于售卡开始时间");
         }
         saveActivity.setSellEndTime(sellEndTime);
-        // （2-9）颜色
+        // 校验表单颜色
         String color = vo.getColor();
         if (StringUtil.isEmpty(color)) {
             throw new BusinessException("颜色不能为空");
         }
         saveActivity.setColor(color);
-        // （2-10）说明
+        // 校验表单说明
         String illustration = vo.getIllustration();
         if (StringUtil.isEmpty(illustration)) {
             throw new BusinessException("说明不能为空");
         }
         saveActivity.setIllustration(illustration);
-        // （2-11）项目是否需要审核
+        // 校验表单项目是否需要审核
         Integer isProjectCheck = vo.getIsProjectCheck();
         if (isProjectCheck == null) {
             throw new BusinessException("项目是否需要审核不能为空");
@@ -418,23 +424,25 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
         if (busId == null || activityId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member读权限、盟主权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
+        // 判断盟主权限
         if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
             throw new BusinessException(CommonConstant.UNION_OWNER_ERROR);
         }
-        // （2）	判断activityId有效性
+        // 判断activityId有效性
         UnionCardActivity activity = getValidByIdAndUnionId(activityId, unionId);
         if (activity == null) {
             throw new BusinessException("找不到活动卡信息");
         }
-        // （3）	要求活动在售卡开始之前
+        // 要求活动在售卡开始之前
         if (DateUtil.getCurrentDate().compareTo(activity.getSellBeginTime()) >= 0) {
             throw new BusinessException("售卡开始后活动不能删除");
         }
@@ -459,7 +467,7 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
             }
         }
 
-        // （4）事务处理
+        // 事务处理
         removeById(activityId);
         if (ListUtil.isNotEmpty(removeProjectIdtList)) {
             unionCardProjectService.removeBatchById(removeProjectIdtList);
