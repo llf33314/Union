@@ -1,6 +1,6 @@
 <template>
   <div class="btnCheck">
-    <el-button @click="visible1=true" size="small">
+    <el-button @click="showDetail" size="small">
       待审核 ({{ projectCheckCount }})
     </el-button>
     <!-- 弹出框 待审核详情 -->
@@ -64,7 +64,7 @@ export default {
       multipleSelection: [],
       visible2: false,
       visible3: false,
-      rejectReason: ''
+      rejectReason: '',
     };
   },
   computed: {
@@ -72,11 +72,13 @@ export default {
       return this.$store.state.unionId;
     }
   },
-  mounted: function() {
-    this.init();
-  },
+  mounted: function() {},
   methods: {
-    init() {
+    showDetail() {
+      this.getTableData();
+      this.visible1 = true;
+    },
+    getTableData() {
       $http
         .get(`/unionCardProject/activityId/${this.activityId}/unionId/${this.unionId}/projectCheck`)
         .then(res => {
@@ -115,7 +117,7 @@ export default {
         .put(url, data)
         .then(res => {
           if (res.data.success) {
-            this.init();
+            this.getTableData();
             eventBus.$emit('newActivityCheck');
             this.$message({ showClose: true, message: '审核通过', type: 'success', duration: 5000 });
             this.visible2 = false;
@@ -138,7 +140,7 @@ export default {
         .put(url, data)
         .then(res => {
           if (res.data.success) {
-            this.init();
+            this.getTableData();
             eventBus.$emit('newActivityCheck');
             this.$message({ showClose: true, message: '审核不通过', type: 'success', duration: 5000 });
             this.visible3 = false;

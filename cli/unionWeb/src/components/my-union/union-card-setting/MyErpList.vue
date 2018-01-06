@@ -206,13 +206,13 @@ export default {
         this.options2 = [];
         this.shopId = '';
       }
-      this.tableData = [];
-      this.selectedErpRight = [];
     },
     // 选择门店，获取项目列表
     search() {
-      this.currentPage = 1;
-      this.getTableData();
+      if (this.erpType) {
+        this.currentPage = 1;
+        this.getTableData();
+      }
     },
     getTableData() {
       $http
@@ -250,13 +250,13 @@ export default {
     // 单选
     handleSelect(selection, row, isAll) {
       let pass = this.selectedErpRight.some(item => {
-        return item.id === row.id;
+        return item.erpType === row.erpType && item.id === row.id;
       });
       if (!pass) {
         this.selectedErpRight.push(row);
       } else {
         this.selectedErpRight.forEach((item, index) => {
-          if (item.id === row.id && !isAll) {
+          if (item.erpType === row.erpType && item.id === row.id && !isAll) {
             this.selectedErpRight.splice(index, 1);
           }
         });
@@ -278,7 +278,7 @@ export default {
     checkToggle() {
       this.tableData.forEach((v, i) => {
         this.selectedErpRight.forEach(val => {
-          if (v.id === val.id) {
+          if (v.erpType === val.erpType && v.id === val.id) {
             this.$refs.multipleTable.toggleRowSelection(this.tableData[i]);
           }
         });
@@ -288,7 +288,7 @@ export default {
     handleDelete2(index) {
       let deletRow = this.selectedErpRight.splice(index, 1);
       this.tableData.forEach((v, i) => {
-        if (v.id === deletRow[0].id) {
+        if (v.erpType === deletRow[0].erpType && v.id === deletRow[0].id) {
           this.$refs.multipleTable.toggleRowSelection(this.tableData[i], false);
         }
       });
