@@ -199,26 +199,21 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
                 Integer activityStatus = getStatus(activity);
                 vo.setActivityStatus(activityStatus);
 
-                // （2）报名开始后，才有参与盟员数，且	参与盟员数要求报名项目已审核通过
-                if (currentDate.compareTo(activity.getApplyBeginTime()) > 0) {
-                    Integer joinMemberCount = unionCardProjectService.countValidByUnionIdAndActivityIdAndStatus(unionId, activity.getId(), ProjectConstant.STATUS_ACCEPT);
-                    vo.setJoinMemberCount(joinMemberCount);
+                // 参与盟员数
+                Integer joinMemberCount = unionCardProjectService.countValidByUnionIdAndActivityIdAndStatus(unionId, activity.getId(), ProjectConstant.STATUS_ACCEPT);
+                vo.setJoinMemberCount(joinMemberCount);
 
-                    UnionCardProject project = unionCardProjectService.getValidByUnionIdAndMemberIdAndActivityId(unionId, member.getId(), activity.getId());
-                    vo.setProject(project);
-                }
+                UnionCardProject project = unionCardProjectService.getValidByUnionIdAndMemberIdAndActivityId(unionId, member.getId(), activity.getId());
+                vo.setProject(project);
 
-                //（3）在报名中，才有待审核数量
-                if (ActivityConstant.STATUS_APPLYING == activityStatus) {
-                    Integer projectCheckCount = unionCardProjectService.countValidByUnionIdAndActivityIdAndStatus(unionId, activity.getId(), ProjectConstant.STATUS_COMMITTED);
-                    vo.setProjectCheckCount(projectCheckCount);
-                }
+                // 待审核数量
+                Integer projectCheckCount = unionCardProjectService.countValidByUnionIdAndActivityIdAndStatus(unionId, activity.getId(), ProjectConstant.STATUS_COMMITTED);
+                vo.setProjectCheckCount(projectCheckCount);
 
-                // （4）在售卡开始后，才有已售活动卡数量
-                if (currentDate.compareTo(activity.getSellBeginTime()) > 0) {
-                    Integer cardSellCount = unionCardService.countValidByUnionIdAndActivityId(unionId, activity.getId());
-                    vo.setCardSellCount(cardSellCount);
-                }
+                // 已售活动卡数量
+                Integer cardSellCount = unionCardService.countValidByUnionIdAndActivityId(unionId, activity.getId());
+                vo.setCardSellCount(cardSellCount);
+                
                 result.add(vo);
             }
         }

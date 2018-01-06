@@ -55,10 +55,11 @@ public class UnionMainNoticeServiceImpl implements IUnionMainNoticeService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        // （1）检查union有效性和member读权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
@@ -90,24 +91,26 @@ public class UnionMainNoticeServiceImpl implements IUnionMainNoticeService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        // （1）判断union有效性和member读权限、盟主权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
+        // 判断盟主权限
         if (member.getIsUnionOwner() != MemberConstant.IS_UNION_OWNER_YES) {
             throw new BusinessException(CommonConstant.UNION_OWNER_ERROR);
         }
 
-        // （2）公告内容字数不能超过80字
+        // 公告内容字数不能超过80字
         if (StringUtil.getStringLength(content) > 80) {
             throw new BusinessException("公告内容不能为空，且字数不能大于80");
         }
 
-        // （3）更新或新增
+        // 更新或新增
         UnionMainNotice notice = getValidByUnionId(unionId);
         if (notice != null) {
             UnionMainNotice updateNotice = new UnionMainNotice();

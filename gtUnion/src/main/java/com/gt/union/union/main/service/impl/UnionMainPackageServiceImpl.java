@@ -64,7 +64,7 @@ public class UnionMainPackageServiceImpl implements IUnionMainPackageService {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	获取商家版本名称(如升级版)
+        // 获取商家版本名称(如升级版)
         UnionPackageVO result = new UnionPackageVO();
         BusUser busUser = busUserService.getBusUserById(busId);
         if (busUser == null) {
@@ -72,12 +72,12 @@ public class UnionMainPackageServiceImpl implements IUnionMainPackageService {
         }
         String busVersionName = dictService.getBusUserLevel(busUser.getLevel());
         result.setBusVersionName(busVersionName);
-        // （2）获取联盟版本名称(如盟主版)
+        // 获取联盟版本名称(如盟主版)
         UserUnionAuthority authority = busUserService.getUserUnionAuthority(busId);
         if (authority != null) {
             result.setUnionVersionName(authority.getUnionVersionName());
         }
-        // （3）获取套餐列表，并按年限顺序排序
+        // 获取套餐列表，并按年限顺序排序
         List<UnionMainPackage> packageList = listValidByLevel(busUser.getLevel());
         Collections.sort(packageList, new Comparator<UnionMainPackage>() {
             @Override

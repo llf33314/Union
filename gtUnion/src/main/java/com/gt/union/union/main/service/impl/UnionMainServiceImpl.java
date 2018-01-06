@@ -56,11 +56,12 @@ public class UnionMainServiceImpl implements IUnionMainService {
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member读权限
+        // 判断union有效性
         UnionMain union = getValidById(unionId);
         if (!isUnionValid(union)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
@@ -80,10 +81,10 @@ public class UnionMainServiceImpl implements IUnionMainService {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）获取我创建和已加入的联盟id列表
+        // 获取我创建和已加入的联盟id列表
         List<UnionMember> memberList = unionMemberService.listValidByBusId(busId);
         List<Integer> unionIdList = unionMemberService.getUnionIdList(memberList);
-        // （2）缓存穿透：获取所有有效的，但不包括我创建和加入的联盟列表信息
+        // 缓存穿透：获取所有有效的，但不包括我创建和加入的联盟列表信息
         EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
                 .gt("validity", DateUtil.getCurrentDate())
@@ -133,18 +134,20 @@ public class UnionMainServiceImpl implements IUnionMainService {
         if (busId == null || unionId == null || vo == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member读权限、盟主权限
+        // 判断union有效性
         if (!isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = unionMemberService.getValidWriteByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
+        // 判断盟主权限
         if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
             throw new BusinessException(CommonConstant.UNION_OWNER_ERROR);
         }
-        // （2）	校验表单
+        // 校验表单
         UnionMain updateUnion = new UnionMain();
         updateUnion.setId(unionId);
         updateUnion.setModifyTime(DateUtil.getCurrentDate());
@@ -152,7 +155,7 @@ public class UnionMainServiceImpl implements IUnionMainService {
         if (voUnion == null) {
             throw new BusinessException("请填写联盟设置信息");
         }
-        // （2-1）联盟名称
+        // 校验表单联盟名称
         String voUnionName = voUnion.getName();
         if (StringUtil.isEmpty(voUnionName)) {
             throw new BusinessException("联盟名称不能为空");
@@ -161,13 +164,13 @@ public class UnionMainServiceImpl implements IUnionMainService {
             throw new BusinessException("联盟名称字数不能大于10");
         }
         updateUnion.setName(voUnionName);
-        // （2-2）联盟图标
+        // 校验表单联盟图标
         String voUnionImg = voUnion.getImg();
         if (StringUtil.isEmpty(voUnionImg)) {
             throw new BusinessException("联盟图标不能为空");
         }
         updateUnion.setImg(voUnionImg);
-        // （2-3）联盟说明
+        // 校验表单联盟说明
         String voUnionIllustration = voUnion.getIllustration();
         if (StringUtil.isEmpty(voUnionIllustration)) {
             throw new BusinessException("联盟说明不能为空");
@@ -176,7 +179,7 @@ public class UnionMainServiceImpl implements IUnionMainService {
             throw new BusinessException("联盟说明字数不能大于30");
         }
         updateUnion.setIllustration(voUnionIllustration);
-        // （2-4）加盟方式
+        // 校验表单加盟方式
         Integer voUnionJoinType = voUnion.getJoinType();
         if (voUnionJoinType == null) {
             throw new BusinessException("加盟方式不能为空");
@@ -185,7 +188,7 @@ public class UnionMainServiceImpl implements IUnionMainService {
             throw new BusinessException("加盟方式参数值有误");
         }
         updateUnion.setJoinType(voUnionJoinType);
-        // （2-5）是否开启积分
+        // 校验表单是否开启积分
         UnionMain union = getById(unionId);
         if (UnionConstant.IS_INTEGRAL_YES != union.getIsIntegral()) {
             Integer voUnionIsIntegral = voUnion.getIsIntegral();
@@ -193,7 +196,7 @@ public class UnionMainServiceImpl implements IUnionMainService {
                 updateUnion.setIsIntegral(UnionConstant.IS_INTEGRAL_YES);
             }
         }
-        // （2-6）入盟申请必填信息
+        // 校验表单入盟申请必填信息
         List<UnionMainDict> dictList = unionMainDictService.listValidByUnionId(unionId);
         List<Integer> removeDictIdList = unionMainDictService.getIdList(dictList);
 
@@ -203,7 +206,6 @@ public class UnionMainServiceImpl implements IUnionMainService {
                 throw new BusinessException("入盟申请必填信息不能绑定到其他联盟中");
             }
         }
-
         // 事务操作
         update(updateUnion);
         if (ListUtil.isNotEmpty(removeDictIdList)) {
