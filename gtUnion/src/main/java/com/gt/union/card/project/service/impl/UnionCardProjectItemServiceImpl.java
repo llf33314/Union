@@ -326,6 +326,7 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
             }
 
             if (saveFlow != null) {
+                saveFlow.setProjectId(updateProject.getId());
                 unionCardProjectFlowService.save(saveFlow);
             }
         } else {
@@ -519,6 +520,46 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         }
 
         return result;
+    }
+
+    @Override
+    public boolean existValidByUnionIdAndMemberIdAndActivityIdAndProjectStatusAndItemType(Integer unionId, Integer memberId, Integer activityId, Integer projectStatus, Integer itemType) throws Exception {
+        if (unionId == null || memberId == null || activityId == null || projectStatus == null || itemType == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("type", itemType)
+                .exists("SELECT p.id FROM t_union_card_project p"
+                        + " WHERE p.del_status=" + CommonConstant.DEL_STATUS_NO
+                        + " AND p.id=t_union_card_project_item.project_id"
+                        + " AND p.union_id=" + unionId
+                        + " AND p.member_id=" + memberId
+                        + " AND p.activity_id=" + activityId
+                        + " AND p.status=" + projectStatus);
+
+        return unionCardProjectItemDao.selectOne(entityWrapper) != null;
+    }
+
+    @Override
+    public boolean existValidByUnionIdAndMemberIdAndActivityIdListAndProjectStatusAndItemType(Integer unionId, Integer memberId, List<Integer> activityIdList, Integer projectStatus, Integer itemType) throws Exception {
+        if (unionId == null || memberId == null || activityIdList == null || projectStatus == null || itemType == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("type", itemType)
+                .exists("SELECT p.id FROM t_union_card_project p"
+                        + " WHERE p.del_status=" + CommonConstant.DEL_STATUS_NO
+                        + " AND p.id=t_union_card_project_item.project_id"
+                        + " AND p.union_id=" + unionId
+                        + " AND p.member_id=" + memberId
+                        + " AND p.activity_id in (" + ListUtil.toString(activityIdList) + ")"
+                        + " AND p.status=" + projectStatus);
+
+        return unionCardProjectItemDao.selectOne(entityWrapper) != null;
     }
 
     //********************************************* Base On Business - filter ******************************************
