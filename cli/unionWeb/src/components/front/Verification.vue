@@ -556,8 +556,7 @@ export default {
     },
     // 返回
     back() {
-      this.visible1 = true;
-      this.visible2 = false;
+      this.init();
     },
     // 初始化
     init() {

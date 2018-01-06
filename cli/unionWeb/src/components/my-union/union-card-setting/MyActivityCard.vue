@@ -5,7 +5,7 @@
       <div style="margin-top: 10px;">
         <div style="float: right;color: #666666" v-if="projectData.project.status">项目/商品 状态：
           <span style="color: #20A0FF"> {{ projectData.project.status }} </span>
-          <span class="icon" @click="visible1 =!visible1">!</span>
+          <span class="icon" @click="showCheckRecord">!</span>
           <!-- 审核记录 -->
           <check-record :activityId="this.activityId" v-show="visible1" class="auditRecord"></check-record>
         </div>
@@ -115,7 +115,6 @@ export default {
     eventBus.$on('newActivityCheck', () => {
       this.init();
     });
-
   },
   methods: {
     init() {
@@ -148,6 +147,15 @@ export default {
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
+    },
+    // 显示隐藏审核记录
+    showCheckRecord() {
+      if (this.visible1) {
+        this.visible1 = false;
+      } else {
+        eventBus.$emit('showCheckRecord');
+        this.visible1 = true;
+      }
     },
     // 更新非ERP项目
     nonErpTextListUpdate(value) {
