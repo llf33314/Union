@@ -200,10 +200,11 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        // （1）	判断union有效性和member读权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
@@ -217,16 +218,17 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member读权限
+        // 判断union有效性
         UnionMain union = unionMainService.getValidById(unionId);
         if (!unionMainService.isUnionValid(union)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-
+        // toVO
         MemberVO result = new MemberVO();
         result.setUnion(union);
         result.setMember(member);
@@ -350,18 +352,18 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        // （2）获取商家在union的member
+        // 获取商家在union的member
         UnionMember member = getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-        // （3）获取union下readMember，过滤掉member
+        // 获取union下readMember
         List<UnionMember> readMemberList = listValidReadByUnionId(unionId);
-
+        // 过滤掉商家member
         return getOtherMemberList(readMemberList, member);
     }
 
@@ -370,18 +372,18 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
-        // （2）获取商家在union的member
+        // 获取商家在union的member
         UnionMember member = getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-        // （3）获取union下writeMember，过滤掉member
+        // 获取union下writeMember
         List<UnionMember> writeMemberList = listValidWriteByUnionId(unionId);
-
+        // 过滤掉商家member
         return getOtherMemberList(writeMemberList, member);
     }
 
@@ -405,22 +407,24 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）判断union有效性和member读权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         final UnionMember member = getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-        // （2）	获取union下所有具有读权限的member
+        // 获取union下所有具有读权限的member
         List<UnionMember> unionMemberList = listValidReadByUnionId(unionId);
-        // （3）	根据查询条件进行过滤
+        // 根据查询条件进行过滤
         if (StringUtil.isNotEmpty(optMemberName)) {
             unionMemberList = filterByListEnterpriseName(unionMemberList, optMemberName);
         }
+        // toVO
         List<MemberOutVO> result = unionMemberOutService.getMemberOutVOList(unionMemberList);
-        // （4）	按盟主>商家盟员>其他盟员，其他盟员按时间顺序排序
+        // 按盟主>商家盟员>其他盟员，其他盟员按时间顺序排序
         Collections.sort(result, new Comparator<MemberOutVO>() {
             @Override
             public int compare(MemberOutVO o1, MemberOutVO o2) {
@@ -447,21 +451,22 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）判断union有效性和member读权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         final UnionMember member = getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-        // （2）	获取union下所有具有读权限的member
+        // 获取union下所有具有读权限的member
         List<UnionMember> result = listValidReadByUnionId(unionId);
-        // （3）	如果memberName不为空，则进行过滤
+        // 根据查询条件进行过滤
         if (StringUtil.isNotEmpty(optMemberName)) {
             result = filterByListEnterpriseName(result, optMemberName);
         }
-        // （4）	按盟主>商家盟员>其他盟员，其他盟员按时间顺序排序
+        // 按盟主>商家盟员>其他盟员，其他盟员按时间顺序排序
         Collections.sort(result, new Comparator<UnionMember>() {
             @Override
             public int compare(UnionMember o1, UnionMember o2) {
@@ -496,24 +501,25 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         if (busId == null || memberId == null || unionId == null || vo == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member读权限
+        // 判断union有效性
         UnionMain union = unionMainService.getValidById(unionId);
         if (!unionMainService.isUnionValid(union)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-        // （2）	判断memberId有效性
+        // 判断memberId有效性
         if (!memberId.equals(member.getId())) {
             throw new BusinessException("无法更新他人的盟员信息");
         }
-        // （3）	校验表单
+        // 校验表单
         UnionMember updateMember = new UnionMember();
         updateMember.setId(memberId);
         updateMember.setModifyTime(DateUtil.getCurrentDate());
-        // （3-1）企业名称
+        // 校验表单企业名称
         String memberEnterpriseName = vo.getEnterpriseName();
         if (StringUtil.isEmpty(memberEnterpriseName)) {
             throw new BusinessException("企业名称不能为空");
@@ -522,13 +528,13 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
             throw new BusinessException("企业名称字数不能大于15");
         }
         updateMember.setEnterpriseName(memberEnterpriseName);
-        // （3-2）企业地址
+        // 校验表单企业地址
         String memberEnterpriseAddress = vo.getEnterpriseAddress();
         if (StringUtil.isEmpty(memberEnterpriseAddress)) {
             throw new BusinessException("企业地址不能为空");
         }
         updateMember.setEnterpriseAddress(memberEnterpriseAddress);
-        // （3-3）负责人名称
+        // 校验表单负责人名称
         String memberDirectorName = vo.getDirectorName();
         if (StringUtil.isEmpty(memberDirectorName)) {
             throw new BusinessException("负责人名称不能为空");
@@ -537,7 +543,7 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
             throw new BusinessException("负责人名称字数不能大于10");
         }
         updateMember.setDirectorName(memberDirectorName);
-        // （3-4）负责人联系电话
+        // 校验表单负责人联系电话
         String memberDirectorPhone = vo.getDirectorPhone();
         if (StringUtil.isEmpty(memberDirectorPhone)) {
             throw new BusinessException("负责人联系电话不能为空");
@@ -546,7 +552,7 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
             throw new BusinessException("负责人联系电话格式不对，不是有效的联系电话");
         }
         updateMember.setDirectorPhone(memberDirectorPhone);
-        // （3-5）负责人邮箱
+        // 校验表单负责人邮箱
         String memberDirectorEmail = vo.getDirectorEmail();
         if (StringUtil.isEmpty(memberDirectorEmail)) {
             throw new BusinessException("负责人联系邮箱不能为空");
@@ -555,7 +561,7 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
             throw new BusinessException("负责人联系邮箱格式不对，不是有效的联系邮箱");
         }
         updateMember.setDirectorEmail(memberDirectorEmail);
-        // （3-6）地址经纬度
+        // 校验表单地址经纬度
         String memberAddressLongitude = vo.getAddressLongitude();
         String memberAddressLatitude = vo.getAddressLatitude();
         if (StringUtil.isEmpty(memberAddressLongitude) || StringUtil.isEmpty(memberAddressLatitude)) {
@@ -563,7 +569,7 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         }
         updateMember.setAddressLongitude(memberAddressLongitude);
         updateMember.setAddressLatitude(memberAddressLatitude);
-        // （3-7）短信通知手机
+        // 校验表单短信通知手机
         String memberNotifyPhone = vo.getNotifyPhone();
         if (StringUtil.isEmpty(memberNotifyPhone)) {
             throw new BusinessException("短信通知手机不能为空");
@@ -572,7 +578,7 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
             throw new BusinessException("短信通知手机格式不对，不是有效的手机号");
         }
         updateMember.setNotifyPhone(memberNotifyPhone);
-        // （3-8）如果联盟开启积分，则校验积分抵扣率
+        // 如果联盟开启积分，则校验积分抵扣率
         if (CommonConstant.COMMON_YES == union.getIsIntegral()) {
             Double memberIntegralExchangeRatio = vo.getIntegralExchangeRatio();
             Double maxIntegralExchange = dictService.getMaxExchangePercent();
@@ -591,23 +597,24 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
         if (busId == null || memberId == null || unionId == null || discount == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member写权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member写权限
         UnionMember member = getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-        // （2）	判断memberId有效性
+        // 判断memberId有效性
         if (!memberId.equals(member.getId())) {
             throw new BusinessException("无法更新其他盟员的折扣信息");
         }
-        // （3）	要求折扣在(0,10)
+        // 要求折扣在(0,10)
         if (discount <= 0 || discount >= 1) {
             throw new BusinessException("折扣必须大于0且小于10");
         }
-
+        // 事务操作
         UnionMember updateMember = new UnionMember();
         updateMember.setId(memberId);
         updateMember.setModifyTime(DateUtil.getCurrentDate());

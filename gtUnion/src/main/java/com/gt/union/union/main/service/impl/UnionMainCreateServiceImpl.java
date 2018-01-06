@@ -70,16 +70,16 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	要求不能已经是盟主
+        // 要求不能已经是盟主
         if (unionMemberService.existValidOwnerByBusId(busId)) {
             throw new BusinessException("已经具有盟主身份，最多可成为一个联盟的盟主");
         }
-        // （2）	要求具有联盟基础服务（调接口）
+        // 要求具有联盟基础服务（调接口）
         UserUnionAuthority authority = busUserService.getUserUnionAuthority(busId);
         if (authority == null || !authority.getAuthority()) {
             throw new BusinessException("不具有联盟基础服务");
         }
-        // （3）	判断是否需要付费
+        // 判断是否需要付费
         UnionPermitCheckVO result = new UnionPermitCheckVO();
         UnionMainPermit permit = unionMainPermitService.getValidByBusIdAndOrderStatus(busId, UnionConstant.PERMIT_ORDER_STATUS_SUCCESS);
         if (authority.getPay()) {
@@ -134,16 +134,16 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
         if (busId == null || vo == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	要求不能已经是盟主
+        // 要求不能已经是盟主
         if (unionMemberService.existValidOwnerByBusId(busId)) {
             throw new BusinessException("已经具有盟主身份，最多可成为一个联盟的盟主");
         }
-        // （2）	要求具有联盟基础服务（调接口）
+        // 要求具有联盟基础服务（调接口）
         UserUnionAuthority authority = busUserService.getUserUnionAuthority(busId);
         if (authority == null || !authority.getAuthority()) {
             throw new BusinessException("不具有联盟基础服务");
         }
-        // （3）	判断联盟许可有效性
+        // 判断联盟许可有效性
         Integer permitId = vo.getPermitId();
         if (permitId == null) {
             throw new BusinessException("不具有联盟许可");
@@ -157,7 +157,7 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
             throw new BusinessException("找不到许可对应的套餐信息");
         }
         Date currentDate = DateUtil.getCurrentDate();
-        // （4）	校验表单
+        // 校验表单
         UnionMain saveUnion = new UnionMain();
         saveUnion.setDelStatus(CommonConstant.COMMON_NO);
         saveUnion.setCreateTime(currentDate);
@@ -167,7 +167,7 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
         if (voUnion == null) {
             throw new BusinessException("请填写联盟设置信息");
         }
-        // （4-1）联盟名称
+        // 校验表单联盟名称
         String unionName = voUnion.getName();
         if (StringUtil.isEmpty(unionName)) {
             throw new BusinessException("联盟名称不能为空");
@@ -176,13 +176,13 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
             throw new BusinessException("联盟名称字数不能大于10");
         }
         saveUnion.setName(unionName);
-        // （4-2）联盟图标
+        // 校验表单联盟图标
         String unionImg = voUnion.getImg();
         if (StringUtil.isEmpty(unionImg)) {
             throw new BusinessException("联盟图标不能为空");
         }
         saveUnion.setImg(unionImg);
-        // （4-3）联盟说明
+        // 校验表单联盟说明
         String unionIllustration = voUnion.getIllustration();
         if (StringUtil.isEmpty(unionIllustration)) {
             throw new BusinessException("联盟说明不能为空");
@@ -191,7 +191,7 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
             throw new BusinessException("联盟说明字数不能大于30");
         }
         saveUnion.setIllustration(unionIllustration);
-        // （4-4）加盟方式
+        // 校验表单加盟方式
         Integer unionJoinType = voUnion.getJoinType();
         if (unionJoinType == null) {
             throw new BusinessException("加盟方式不能为空");
@@ -200,7 +200,7 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
             throw new BusinessException("加盟方式参数值有误");
         }
         saveUnion.setJoinType(unionJoinType);
-        // （4-5）是否开启积分
+        // 校验表单是否开启积分
         Integer unionIsIntegral = voUnion.getIsIntegral();
         if (unionIsIntegral == null) {
             throw new BusinessException("是否开启积分不能为空");
@@ -217,7 +217,7 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
         saveMember.setStatus(MemberConstant.STATUS_IN);
         saveMember.setIsUnionOwner(MemberConstant.IS_UNION_OWNER_YES);
         UnionMember voMember = vo.getMember();
-        // （4-6）企业名称
+        // 校验表单企业名称
         String memberEnterpriseName = voMember.getEnterpriseName();
         if (StringUtil.isEmpty(memberEnterpriseName)) {
             throw new BusinessException("企业名称不能为空");
@@ -226,13 +226,13 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
             throw new BusinessException("企业名称字数不能大于15");
         }
         saveMember.setEnterpriseName(memberEnterpriseName);
-        // （4-7）企业地址
+        // 校验表单企业地址
         String memberEnterpriseAddress = voMember.getEnterpriseAddress();
         if (StringUtil.isEmpty(memberEnterpriseAddress)) {
             throw new BusinessException("企业地址不能为空");
         }
         saveMember.setEnterpriseAddress(memberEnterpriseAddress);
-        // （4-8）负责人名称
+        // 校验表单负责人名称
         String memberDirectorName = voMember.getDirectorName();
         if (StringUtil.isEmpty(memberDirectorName)) {
             throw new BusinessException("负责人名称不能为空");
@@ -241,7 +241,7 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
             throw new BusinessException("负责人名称字数不能大于10");
         }
         saveMember.setDirectorName(memberDirectorName);
-        // （4-9）负责人联系电话
+        // 校验表单负责人联系电话
         String memberDirectorPhone = voMember.getDirectorPhone();
         if (StringUtil.isEmpty(memberDirectorPhone)) {
             throw new BusinessException("负责人联系电话不能为空");
@@ -250,7 +250,7 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
             throw new BusinessException("负责人联系电话参数值有误");
         }
         saveMember.setDirectorPhone(memberDirectorPhone);
-        // （4-10）负责人邮箱
+        // 校验表单负责人邮箱
         String memberDirectorEmail = voMember.getDirectorEmail();
         if (StringUtil.isEmpty(memberDirectorEmail)) {
             throw new BusinessException("负责人联系邮箱不能为空");
@@ -259,7 +259,7 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
             throw new BusinessException("负责人联系邮箱参数值有误");
         }
         saveMember.setDirectorEmail(memberDirectorEmail);
-        // （4-11）地址经纬度
+        // 校验表单地址经纬度
         String memberAddressLongitude = voMember.getAddressLongitude();
         String memberAddressLatitude = voMember.getAddressLatitude();
         if (StringUtil.isEmpty(memberAddressLongitude) || StringUtil.isEmpty(memberAddressLatitude)) {
@@ -267,7 +267,7 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
         }
         saveMember.setAddressLongitude(memberAddressLongitude);
         saveMember.setAddressLatitude(memberAddressLatitude);
-        // （4-12）短信通知手机
+        // 校验表单短信通知手机
         String memberNotifyPhone = voMember.getNotifyPhone();
         if (StringUtil.isEmpty(memberNotifyPhone)) {
             throw new BusinessException("短信通知手机不能为空");
@@ -276,7 +276,7 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
             throw new BusinessException("短信通知手机参数值有误");
         }
         saveMember.setNotifyPhone(memberNotifyPhone);
-        // （4-13）入盟收集信息
+        // （校验表单入盟收集信息
         List<UnionMainDict> saveDictList = vo.getItemList();
         if (ListUtil.isEmpty(saveDictList)) {
             throw new BusinessException("入盟收集信息不能为空");
@@ -287,7 +287,7 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
         saveCreate.setCreateTime(currentDate);
         saveCreate.setBusId(busId);
         saveCreate.setPermitId(permitId);
-        // （5）事务操作
+        // 事务操作
         unionMainService.save(saveUnion);
 
         saveMember.setUnionId(saveUnion.getId());

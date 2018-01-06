@@ -121,21 +121,25 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member读权限、盟主权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
+        // 判断盟主权限
         if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
             throw new BusinessException(CommonConstant.UNION_OWNER_ERROR);
         }
-        // （2）	按有转移id排第一，其他按时间顺序排序
-        List<UnionTransferVO> result = new ArrayList<>();
+        // 数据源
         List<UnionMember> writeMemberList = unionMemberService.listValidWriteByUnionId(unionId);
+        // 过滤掉没有有效许可的盟员
         writeMemberList = filterWithoutPermit(writeMemberList);
+        // toVO
+        List<UnionTransferVO> result = new ArrayList<>();
         if (ListUtil.isNotEmpty(writeMemberList)) {
             Integer memberId = member.getId();
             for (UnionMember writeMember : writeMemberList) {
@@ -152,6 +156,7 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
                 result.add(vo);
             }
         }
+        // 按有转移id排第一，其他按时间顺序排序
         Collections.sort(result, new Comparator<UnionTransferVO>() {
             @Override
             public int compare(UnionTransferVO o1, UnionTransferVO o2) {
@@ -174,16 +179,16 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
         if (ListUtil.isNotEmpty(writeMemberList)) {
             for (UnionMember writeMember : writeMemberList) {
                 Integer busId = writeMember.getBusId();
-                // （1）	要求不能已经是盟主
+                // 要求不能已经是盟主
                 if (unionMemberService.existValidOwnerByBusId(busId)) {
                     continue;
                 }
-                // （2）	要求具有联盟基础服务（调接口）
+                // 要求具有联盟基础服务（调接口）
                 UserUnionAuthority authority = busUserService.getUserUnionAuthority(busId);
                 if (authority == null || !authority.getAuthority()) {
                     continue;
                 }
-                // （3）	判断是否需要付费
+                // 判断是否需要付费
                 UnionMainPermit permit = unionMainPermitService.getValidByBusIdAndOrderStatus(busId, UnionConstant.PERMIT_ORDER_STATUS_SUCCESS);
                 if (authority.getPay()) {
                     if (permit == null || StringUtil.isEmpty(permit.getSysOrderNo())) {
@@ -205,37 +210,39 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
         if (busId == null || unionId == null || toMemberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member读权限、盟主权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
+        // 判断盟主权限
         if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
             throw new BusinessException(CommonConstant.UNION_OWNER_ERROR);
         }
-        // （2）	要求不能存在其他转移申请
+        // 要求不能存在其他转移申请
         if (existValidByUnionIdAndConfirmStatus(unionId, UnionConstant.TRANSFER_CONFIRM_STATUS_PROCESS)) {
             throw new BusinessException("已存在联盟盟主权限转移申请，请撤消后再操作");
         }
-        // （3）	判断toMemberId有效性；
+        // 判断toMemberId有效性；
         UnionMember toMember = unionMemberService.getValidWriteByIdAndUnionId(toMemberId, unionId);
         if (toMember == null) {
             throw new BusinessException("联盟盟主权限转移的目标盟员不存在、处于退盟过渡期，或已退盟");
         }
-        // （4）	要求toMember不能是另一个联盟的盟主
+        // 要求toMember不能是另一个联盟的盟主
         UnionMember toMemberOwner = unionMemberService.getValidOwnerByBusId(toMember.getBusId());
         if (toMemberOwner != null) {
             throw new BusinessException("联盟盟主权限转移的目标盟员已经是另一个联盟的盟主，无法同时成为多个联盟的盟主");
         }
-        // （5）	要求toMember具有联盟基础服务（调接口）
+        // 要求toMember具有联盟基础服务（调接口）
         UserUnionAuthority authority = busUserService.getUserUnionAuthority(busId);
         if (authority == null || !authority.getAuthority()) {
             throw new BusinessException("联盟盟主权限转移的目标盟员不具有联盟基础服务");
         }
-        // （6）	要求toMember是否具有联盟许可
+        // 要求toMember是否具有联盟许可
         UnionMainPermit permit = unionMainPermitService.getValidByBusIdAndOrderStatus(toMember.getBusId(), UnionConstant.PERMIT_ORDER_STATUS_SUCCESS);
         if (permit == null) {
             if (!authority.getPay()) {
@@ -255,7 +262,7 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
                 throw new BusinessException("联盟盟主权限转移的目标盟员不具有联盟盟主服务");
             }
         }
-        // （7）保存转移申请信息
+        // 保存转移申请信息
         UnionMainTransfer saveTransfer = new UnionMainTransfer();
         saveTransfer.setDelStatus(CommonConstant.COMMON_NO);
         saveTransfer.setCreateTime(DateUtil.getCurrentDate());
@@ -273,18 +280,20 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
         if (busId == null || transferId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member读权限、盟主权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
+        // 判断盟主权限
         if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
             throw new BusinessException(CommonConstant.UNION_OWNER_ERROR);
         }
-        // （2）	判断transferId有效性
+        // 判断transferId有效性
         UnionMainTransfer transfer = getValidByIdAndUnionIdAndConfirmStatus(transferId, unionId, UnionConstant.TRANSFER_CONFIRM_STATUS_PROCESS);
         if (transfer == null) {
             throw new BusinessException("找不到联盟盟主服务转移申请信息");
@@ -300,25 +309,26 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
         if (busId == null || transferId == null || unionId == null || isAccept == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member写权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member写权限
         UnionMember member = unionMemberService.getValidWriteByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-        // （2）	判断transferId有效性
+        // 判断transferId有效性
         UnionMainTransfer transfer = getValidByIdAndUnionIdAndConfirmStatus(transferId, unionId, UnionConstant.TRANSFER_CONFIRM_STATUS_PROCESS);
         if (transfer == null) {
             throw new BusinessException("盟主权限转移申请不存在或已处理");
         }
-        // （3）	如果拒绝，则直接更新，并返回；
-        // （4）如果接受，则：
-        //   （4-1）要求不是盟主；
-        //   （4-2）要求具有盟主基础服务（调接口）；
-        //   （4-3）要求具有有效的联盟盟主服务(如果没有且不用付费时，自动生成)；
-        //   （4-4）事务操作
+        // 如果拒绝，则直接更新，并返回；
+        // 如果接受，则：
+        //   要求不是盟主；
+        //   要求具有盟主基础服务（调接口）；
+        //   要求具有有效的联盟盟主服务(如果没有且不用付费时，自动生成)；
+        //   事务操作
         if (CommonConstant.COMMON_YES != isAccept) {
             UnionMainTransfer updateTransfer = new UnionMainTransfer();
             updateTransfer.setId(transferId);
