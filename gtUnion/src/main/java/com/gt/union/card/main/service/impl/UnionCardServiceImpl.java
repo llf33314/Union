@@ -137,7 +137,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
                         if (!unionCardProjectService.existValidByUnionIdAndMemberIdAndActivityIdAndStatus(unionId, member.getId(), activity.getId(), ProjectConstant.STATUS_ACCEPT)) {
                             continue;
                         }
-                        if (!existValidUnexpiredByUnionIdAndFanIdAndType(unionId, fanId, CardConstant.TYPE_ACTIVITY)) {
+                        if (!existValidUnexpiredByUnionIdAndFanIdAndActivityId(unionId, fanId, activity.getId())) {
                             optionMemberList.add(member);
                             break;
                         }
@@ -181,7 +181,12 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (ListUtil.isNotEmpty(sellingActivityList)) {
             List<CardActivityApplyVO> cardActivityApplyVOList = new ArrayList<>();
             for (UnionCardActivity activity : sellingActivityList) {
+                // 判断是否有审核通过的活动项目
                 if (!unionCardProjectService.existValidByUnionIdAndMemberIdAndActivityIdAndStatus(currentUnionId, currentMemberId, activity.getId(), ProjectConstant.STATUS_ACCEPT)) {
+                    continue;
+                }
+                // 判断是否已办理
+                if (existValidUnexpiredByUnionIdAndFanIdAndActivityId(currentUnionId, fanId, activity.getId())) {
                     continue;
                 }
                 Integer activityCardCount = countValidByUnionIdAndActivityId(currentUnionId, activity.getId());
