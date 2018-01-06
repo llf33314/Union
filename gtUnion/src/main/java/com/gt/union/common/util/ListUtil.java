@@ -122,7 +122,7 @@ public class ListUtil {
 
         String result = sb.toString();
 
-        return StringUtil.isEmpty(result) ? result : result.substring(0, result.length());
+        return StringUtil.isEmpty(result) ? result : result.substring(0, result.length() - 1);
     }
 
 }
