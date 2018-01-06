@@ -19,15 +19,6 @@ public interface IUnionMainPermitService {
     /**
      * 获取未删除的有效联盟许可信息
      *
-     * @param busId 商家id
-     * @return UnionMainPermit
-     * @throws Exception 统一处理异常
-     */
-    UnionMainPermit getValidByBusId(Integer busId) throws Exception;
-
-    /**
-     * 获取未删除的有效联盟许可信息
-     *
      * @param busId       商家id
      * @param orderStatus 订单状态
      * @return UnionMainPermit

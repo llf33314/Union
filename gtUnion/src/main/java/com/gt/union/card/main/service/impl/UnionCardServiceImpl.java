@@ -268,21 +268,6 @@ public class UnionCardServiceImpl implements IUnionCardService {
     }
 
     @Override
-    public List<UnionCard> listValidUnexpiredByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception {
-        if (unionId == null || activityId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .gt("validity", DateUtil.getCurrentDate())
-                .eq("union_id", unionId)
-                .eq("activity_id", activityId);
-
-        return unionCardDao.selectList(entityWrapper);
-    }
-
-    @Override
     public List<UnionCard> listValidUnexpiredByFanIdAndType(Integer fanId, Integer type) throws Exception {
         if (fanId == null || type == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);

@@ -3,7 +3,10 @@ package com.gt.union.card.activity.service;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.card.activity.entity.UnionCardActivity;
-import com.gt.union.card.activity.vo.*;
+import com.gt.union.card.activity.vo.CardActivityApplyItemVO;
+import com.gt.union.card.activity.vo.CardActivityConsumeVO;
+import com.gt.union.card.activity.vo.CardActivityStatusVO;
+import com.gt.union.card.activity.vo.CardActivityVO;
 
 import java.util.List;
 
@@ -34,18 +37,6 @@ public interface IUnionCardActivityService {
      * @throws Exception 统一处理异常
      */
     Integer getStatus(UnionCardActivity activity) throws Exception;
-
-    /**
-     * 前台-办理联盟卡-查询联盟和联盟卡-查询联盟卡活动
-     *
-     * @param busId      商家id
-     * @param activityId 活动id
-     * @param unionId    联盟id
-     * @return CardActivityApplyVO
-     * @throws Exception 统一处理异常
-     */
-    CardActivityApplyVO getCardActivityApplyVOByBusIdAndIdAndUnionId(Integer busId, Integer activityId, Integer unionId) throws Exception;
-
 
     //********************************************* Base On Business - list ********************************************
 

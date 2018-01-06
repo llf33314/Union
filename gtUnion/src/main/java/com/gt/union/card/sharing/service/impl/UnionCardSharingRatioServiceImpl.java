@@ -73,20 +73,6 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
     //********************************************* Base On Business - list ********************************************
 
     @Override
-    public List<UnionCardSharingRatio> listValidByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception {
-        if (unionId == null || activityId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionCardSharingRatio> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("activity_id", activityId);
-
-        return unionCardSharingRatioDao.selectList(entityWrapper);
-    }
-
-    @Override
     public List<UnionCardSharingRatio> listValidByUnionIdAndActivityId(Integer unionId, Integer activityId, String orderBy, boolean isAsc) throws Exception {
         if (unionId == null || activityId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);

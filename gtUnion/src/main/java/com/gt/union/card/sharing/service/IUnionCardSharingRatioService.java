@@ -35,16 +35,6 @@ public interface IUnionCardSharingRatioService {
      *
      * @param unionId    联盟id
      * @param activityId 活动id
-     * @return List<UnionCardSharingRatio>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCardSharingRatio> listValidByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception;
-
-    /**
-     * 获取未删除的售卡分成比例列表信息
-     *
-     * @param unionId    联盟id
-     * @param activityId 活动id
      * @param orderBy    排序字段
      * @param isAsc      是否升序
      * @return List<UnionCardSharingRatio>

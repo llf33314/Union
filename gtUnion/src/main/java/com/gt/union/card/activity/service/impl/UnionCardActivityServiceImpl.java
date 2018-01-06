@@ -6,7 +6,10 @@ import com.gt.union.card.activity.constant.ActivityConstant;
 import com.gt.union.card.activity.dao.IUnionCardActivityDao;
 import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.activity.service.IUnionCardActivityService;
-import com.gt.union.card.activity.vo.*;
+import com.gt.union.card.activity.vo.CardActivityApplyItemVO;
+import com.gt.union.card.activity.vo.CardActivityConsumeVO;
+import com.gt.union.card.activity.vo.CardActivityStatusVO;
+import com.gt.union.card.activity.vo.CardActivityVO;
 import com.gt.union.card.main.constant.CardConstant;
 import com.gt.union.card.main.entity.UnionCard;
 import com.gt.union.card.main.entity.UnionCardFan;
@@ -101,32 +104,6 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
         } else {
             return ActivityConstant.STATUS_BEFORE_APPLY;
         }
-    }
-
-    @Override
-    public CardActivityApplyVO getCardActivityApplyVOByBusIdAndIdAndUnionId(Integer busId, Integer activityId, Integer unionId) throws Exception {
-        if (busId == null || activityId == null || unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-        // （1）	判断union有效性和member读权限
-        if (!unionMainService.isUnionValid(unionId)) {
-            throw new BusinessException(CommonConstant.UNION_INVALID);
-        }
-        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
-        if (member == null) {
-            throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
-        }
-        // （2）	判断activityId有效性
-        UnionCardActivity activity = getValidByIdAndUnionId(activityId, unionId);
-        if (activity == null) {
-            throw new BusinessException("找不到活动卡信息");
-        }
-        // （3）	统计服务项目数
-        CardActivityApplyVO result = new CardActivityApplyVO();
-        result.setActivity(activity);
-        result.setItemCount(unionCardProjectItemService.countValidCommittedByUnionIdAndActivityId(unionId, activityId));
-
-        return result;
     }
 
     //********************************************* Base On Business - list ********************************************

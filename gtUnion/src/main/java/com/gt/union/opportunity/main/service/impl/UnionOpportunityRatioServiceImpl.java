@@ -7,7 +7,6 @@ import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.opportunity.main.dao.IUnionOpportunityRatioDao;
 import com.gt.union.opportunity.main.entity.UnionOpportunityRatio;
 import com.gt.union.opportunity.main.service.IUnionOpportunityRatioService;
@@ -32,9 +31,6 @@ import java.util.List;
 public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioService {
     @Autowired
     private IUnionOpportunityRatioDao unionOpportunityRatioDao;
-
-    @Autowired
-    private RedisCacheUtil redisCacheUtil;
 
     @Autowired
     private IUnionMainService unionMainService;

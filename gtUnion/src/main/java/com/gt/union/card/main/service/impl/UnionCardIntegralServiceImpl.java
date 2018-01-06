@@ -45,20 +45,6 @@ public class UnionCardIntegralServiceImpl implements IUnionCardIntegralService {
 
     //********************************************* Base On Business - list ********************************************
 
-    @Override
-    public List<UnionCardIntegral> listValidByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception {
-        if (unionId == null || fanId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionCardIntegral> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("fan_id", fanId);
-
-        return unionCardIntegralDao.selectList(entityWrapper);
-    }
-
     //********************************************* Base On Business - save ********************************************
 
     //********************************************* Base On Business - remove ******************************************

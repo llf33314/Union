@@ -55,17 +55,6 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
     //********************************************* Base On Business - get *********************************************
 
     @Override
-    public UnionMainPermit getValidByBusId(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionMainPermit> result = listValidByBusId(busId);
-
-        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
-    }
-
-    @Override
     public UnionMainPermit getValidByBusIdAndOrderStatus(Integer busId, Integer orderStatus) throws Exception {
         if (busId == null || orderStatus == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);

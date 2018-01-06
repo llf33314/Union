@@ -124,22 +124,6 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
     //********************************************* Base On Business - list ********************************************
 
     @Override
-    public List<UnionBrokeragePay> listValidByFromBusIdAndToBusIdAndStatus(Integer fromBusId, Integer toBusId, Integer status) throws Exception {
-        if (fromBusId == null || toBusId == null || status == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("from_bus_id", fromBusId)
-                .eq("to_bus_id", toBusId)
-                .eq("status", status)
-                .orderBy("create_time", false);
-
-        return unionBrokeragePayDao.selectList(entityWrapper);
-    }
-
-    @Override
     public List<UnionBrokeragePay> listValidByFromBusIdAndToBusIdListAndStatus(Integer fromBusId, List<Integer> toBusIdList, Integer status) throws Exception {
         if (fromBusId == null || toBusIdList == null || status == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);

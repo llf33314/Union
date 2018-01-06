@@ -78,16 +78,6 @@ public interface IUnionCardService {
     /**
      * 获取未删除的未过期的联盟卡列表信息
      *
-     * @param unionId    联盟id
-     * @param activityId 活动id
-     * @return List<UnionCard>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCard> listValidUnexpiredByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception;
-
-    /**
-     * 获取未删除的未过期的联盟卡列表信息
-     *
      * @param fanId 粉丝id
      * @param type  联盟卡类型
      * @return List<UnionCard>
@@ -105,7 +95,7 @@ public interface IUnionCardService {
      * @param fanId                 粉丝id
      * @param activityIdList        活动id列表
      * @param unionCardApplyService 支付回调策略接口
-	 * @return UnionPayVO
+     * @return UnionPayVO
      * @throws Exception 统一处理异常
      */
     UnionPayVO saveApplyByBusIdAndUnionIdAndFanId(Integer busId, Integer unionId, Integer fanId, List<Integer> activityIdList, IUnionCardApplyService unionCardApplyService) throws Exception;

@@ -81,15 +81,6 @@ public interface IUnionCardProjectItemService {
     //********************************************* Base On Business - other *******************************************
 
     /**
-     * 统计未删除的项目优惠个数
-     *
-     * @param projectId 项目id
-     * @return Integer
-     * @throws Exception 统一处理异常
-     */
-    Integer countValidByProjectId(Integer projectId) throws Exception;
-
-    /**
      * 统计未删除的已提交通过的项目优惠个数;
      *
      * @param unionId    联盟id
@@ -111,8 +102,7 @@ public interface IUnionCardProjectItemService {
      * @throws Exception 统一处理异常
      */
     boolean existValidByUnionIdAndMemberIdAndActivityIdAndProjectStatusAndItemType(Integer unionId, Integer memberId, Integer activityId, Integer projectStatus, Integer itemType) throws Exception;
-
-
+    
     /**
      * 是否存在未删除的项目优惠;
      *

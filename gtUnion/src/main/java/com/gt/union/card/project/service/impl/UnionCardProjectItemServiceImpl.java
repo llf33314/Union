@@ -489,19 +489,6 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
     //********************************************* Base On Business - other *******************************************
 
     @Override
-    public Integer countValidByProjectId(Integer projectId) throws Exception {
-        if (projectId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("project_id", projectId);
-
-        return unionCardProjectItemDao.selectCount(entityWrapper);
-    }
-
-    @Override
     public Integer countValidCommittedByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception {
         if (unionId == null || activityId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
