@@ -87,8 +87,7 @@ public interface IUnionCardProjectFlowService {
      * @throws Exception 统一处理异常
      */
     List<Integer> getIdList(List<UnionCardProjectFlow> unionCardProjectFlowList) throws Exception;
-
-
+    
     /**
      * 获取项目流程列表信息(by myBatisGenerator)
      *

@@ -81,22 +81,6 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
     }
 
     @Override
-    public UnionCardProject getValidByUnionIdAndMemberIdAndActivityIdAndStatus(Integer unionId, Integer memberId, Integer activityId, Integer status) throws Exception {
-        if (unionId == null || memberId == null || activityId == null || status == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("member_id", memberId)
-                .eq("activity_id", activityId)
-                .eq("status", status);
-
-        return unionCardProjectDao.selectOne(entityWrapper);
-    }
-
-    @Override
     public UnionCardProject getValidByIdAndUnionIdAndActivityId(Integer projectId, Integer unionId, Integer activityId) throws Exception {
         if (projectId == null || unionId == null || activityId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -116,20 +100,21 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
         if (activityId == null || unionId == null || busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member读权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-        // （2）	判断activityId有效性
+        // 判断activityId有效性
         UnionCardActivity activity = unionCardActivityService.getValidByIdAndUnionId(activityId, unionId);
         if (activity == null) {
             throw new BusinessException("找不到活动信息");
         }
-        // （3）	获取是否erp信息（调接口），并获取相应的服务内容
+        // 获取是否erp信息（调接口），并获取相应的服务内容
         CardProjectVO result = new CardProjectVO();
         result.setMember(member);
         result.setActivity(activity);
@@ -243,20 +228,21 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
         if (busId == null || unionId == null || activityId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member读权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-        // （2）	判断activityId有效性
+        // 判断activityId有效性
         UnionCardActivity activity = unionCardActivityService.getValidByIdAndUnionId(activityId, unionId);
         if (activity == null) {
             throw new BusinessException("找不到活动信息");
         }
-        // （3）	要求报名项目已审核通过
+        // 要求报名项目已审核通过
         List<CardProjectJoinMemberVO> result = new ArrayList<>();
         List<UnionCardProject> projectList = listValidByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
         if (ListUtil.isNotEmpty(projectList)) {
@@ -276,7 +262,7 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
                 result.add(vo);
             }
         }
-        // （4）	按时间顺序排序 
+        // 按时间顺序排序 
         Collections.sort(result, new Comparator<CardProjectJoinMemberVO>() {
             @Override
             public int compare(CardProjectJoinMemberVO o1, CardProjectJoinMemberVO o2) {
@@ -292,28 +278,30 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
         if (busId == null || activityId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member读权限、盟主权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
+        // 判断盟主权限
         if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
             throw new BusinessException(CommonConstant.UNION_OWNER_ERROR);
         }
-        // （2）	判断activityId有效性
+        // 判断activityId有效性
         UnionCardActivity activity = unionCardActivityService.getValidByIdAndUnionId(activityId, unionId);
         if (activity == null) {
             throw new BusinessException("找不到活动信息");
         }
-        // （3）	要求活动在报名中状态
+        // 要求活动在报名中状态
         Integer activityStatus = unionCardActivityService.getStatus(activity);
         if (ActivityConstant.STATUS_APPLYING != activityStatus && ActivityConstant.STATUS_BEFORE_SELL != activityStatus) {
             throw new BusinessException("活动卡不在可审核状态");
         }
-        // （4）	要求报名项目是审核中状态
+        // 要求报名项目是审核中状态
         List<CardProjectCheckVO> result = new ArrayList<>();
         List<UnionCardProject> projectList = listValidByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_COMMITTED);
         if (ListUtil.isNotEmpty(projectList)) {
@@ -333,7 +321,7 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
                 result.add(vo);
             }
         }
-        // （5）	按时间顺序排序
+        // 按时间顺序排序
         Collections.sort(result, new Comparator<CardProjectCheckVO>() {
             @Override
             public int compare(CardProjectCheckVO o1, CardProjectCheckVO o2) {
@@ -356,32 +344,34 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
         if (busId == null || unionId == null || activityId == null || isPass == null || vo == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member读权限、盟主权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
+        // 判断盟主权限
         if (MemberConstant.IS_UNION_OWNER_YES != member.getIsUnionOwner()) {
             throw new BusinessException(CommonConstant.UNION_OWNER_ERROR);
         }
-        // （2）	判断activityId有效性
+        // 判断activityId有效性
         UnionCardActivity activity = unionCardActivityService.getValidByIdAndUnionId(activityId, unionId);
         if (activity == null) {
             throw new BusinessException("找不到活动信息");
         }
-        // （3）	要求活动在报名中状态
+        // 要求活动在报名中状态
         Integer activityStatus = unionCardActivityService.getStatus(activity);
         if (ActivityConstant.STATUS_APPLYING != activityStatus && ActivityConstant.STATUS_BEFORE_SELL != activityStatus) {
             throw new BusinessException("活动卡状态不在报名中或售卡前");
         }
-        // （4）	不通过时要求理由不能为空
+        // 不通过时要求理由不能为空
         if (CommonConstant.COMMON_YES != isPass && StringUtil.isEmpty(vo.getRejectReason())) {
             throw new BusinessException("不通过时理由不能为空");
         }
-        // （5）	要求报名项目在审核中状态
+        // 要求报名项目在审核中状态
         List<UnionCardProject> updateProjectList = new ArrayList<>();
         List<UnionCardProjectFlow> saveFlowList = new ArrayList<>();
         Date currentDate = DateUtil.getCurrentDate();
@@ -409,7 +399,7 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
             }
         }
 
-        // （6）事务操作
+        // 事务操作
         if (ListUtil.isNotEmpty(updateProjectList)) {
             updateBatch(updateProjectList);
         }

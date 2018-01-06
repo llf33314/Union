@@ -443,7 +443,7 @@ export default {
       if (this.shopId) {
         data.shopId = this.shopId - 0;
       } else {
-        shopId = '';
+        data.shopId = '';
       }
       data.isUseIntegral = (this.isIntegral_ && this.form.integral) - 0;
       data.consume = {};
@@ -478,7 +478,7 @@ export default {
         if (this.shopId) {
           data.shopId = this.shopId - 0;
         } else {
-          shopId = '';
+          data.shopId = '';
         }
         data.isUseIntegral = (this.isIntegral_ && this.form.integral) - 0;
         data.consume = {};

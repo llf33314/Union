@@ -18,7 +18,6 @@ export default {
           if (!res.data.data.currentUnion) {
             this.$router.push({ path: '/no-union' });
           } else {
-            this.$store.commit('unionIdChange', res.data.data.currentUnion.id);
             this.$router.push({ path: '/business/index' });
           }
         }

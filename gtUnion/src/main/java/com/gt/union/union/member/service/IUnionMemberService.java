@@ -87,6 +87,16 @@ public interface IUnionMemberService {
     /**
      * 获取未删除的具有读权限的商家盟员信息
      *
+     * @param busId 商家id
+     * @param id    盟员id
+     * @return UnionMember
+     * @throws Exception 统一处理异常
+     */
+    UnionMember getValidReadByBusIdAndId(Integer busId, Integer id) throws Exception;
+
+    /**
+     * 获取未删除的具有读权限的商家盟员信息
+     *
      * @param busId   商家id
      * @param unionId 联盟id
      * @return UnionMember
@@ -114,37 +124,6 @@ public interface IUnionMemberService {
      * @throws Exception 统一处理异常
      */
     UnionMember getValidByBusIdAndUnionIdAndStatus(Integer busId, Integer unionId, Integer status) throws Exception;
-
-    /**
-     * 获取商家盟员信息
-     *
-     * @param busId    商家id
-     * @param memberId 盟员id
-     * @return UnionMember
-     * @throws Exception 统一处理异常
-     */
-    UnionMember getByBusIdAndId(Integer busId, Integer memberId) throws Exception;
-
-    /**
-     * 获取商家盟员信息
-     *
-     * @param memberId 盟员id
-     * @param unionId  商家id
-     * @return UnionMember
-     * @throws Exception 统一处理异常
-     */
-    UnionMember getByIdAndUnionId(Integer memberId, Integer unionId) throws Exception;
-
-    /**
-     * 获取商家盟员信息
-     *
-     * @param busId    商家id
-     * @param memberId 盟员id
-     * @param unionId  联盟id
-     * @return UnionMember
-     * @throws Exception 统一处理异常
-     */
-    UnionMember getByBusIdAndIdAndUnionId(Integer busId, Integer memberId, Integer unionId) throws Exception;
 
     /**
      * 我的联盟-首页-盟员列表-分页数据-详情

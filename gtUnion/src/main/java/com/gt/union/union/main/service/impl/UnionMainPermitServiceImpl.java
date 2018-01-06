@@ -55,17 +55,6 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
     //********************************************* Base On Business - get *********************************************
 
     @Override
-    public UnionMainPermit getValidByBusId(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionMainPermit> result = listValidByBusId(busId);
-
-        return ListUtil.isNotEmpty(result) ? result.get(0) : null;
-    }
-
-    @Override
     public UnionMainPermit getValidByBusIdAndOrderStatus(Integer busId, Integer orderStatus) throws Exception {
         if (busId == null || orderStatus == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -112,12 +101,12 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
         if (busId == null || packageId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断packageId有效性
+        // 判断packageId有效性
         UnionMainPackage unionPackage = unionMainPackageService.getValidById(packageId);
         if (unionPackage == null) {
             throw new BusinessException("找不到套餐信息");
         }
-        // （2）	生成支付中状态的联盟许可记录
+        // 生成支付中状态的联盟许可记录
         UnionMainPermit savePermit = new UnionMainPermit();
         savePermit.setDelStatus(CommonConstant.COMMON_NO);
         Date currentDate = DateUtil.getCurrentDate();
@@ -130,7 +119,7 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
         savePermit.setOrderStatus(UnionConstant.PERMIT_ORDER_STATUS_PAYING);
         String orderNo = "LM" + ConfigConstant.PAY_MODEL_PERMIT + DateUtil.getSerialNumber();
         savePermit.setSysOrderNo(orderNo);
-        // （3）	调用支付接口，返回支付链接
+        // 调用支付接口，返回支付链接
         UnionPayVO result = new UnionPayVO();
         String socketKey = PropertiesUtil.getSocketKey() + orderNo;
         String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/permit?socketKey=" + socketKey;
@@ -166,7 +155,7 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
             result.put("msg", "参数缺少");
             return JSONObject.toJSONString(result);
         }
-        // （1）	判断permitId有效性
+        // 判断permitId有效性
         UnionMainPermit permit;
         try {
             permit = getValidBySysOrderNo(orderNo);
@@ -181,7 +170,7 @@ public class UnionMainPermitServiceImpl implements IUnionMainPermitService {
             result.put("msg", "找不到联盟许可对象");
             return JSONObject.toJSONString(result);
         }
-        // （2）	判断permit支付状态
+        // 判断permit支付状态
         Integer orderStatus = permit.getOrderStatus();
         if (orderStatus == UnionConstant.PERMIT_ORDER_STATUS_SUCCESS || orderStatus == UnionConstant.PERMIT_ORDER_STATUS_FAIL) {
             result.put("code", 0);

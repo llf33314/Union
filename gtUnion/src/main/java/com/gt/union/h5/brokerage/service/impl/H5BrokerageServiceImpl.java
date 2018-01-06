@@ -247,7 +247,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
                 Integer unionId = income.getUnionId();
                 vo.setUnion(unionMainService.getById(unionId));
 
-                vo.setMember(unionMemberService.getByIdAndUnionId(income.getMemberId(), unionId));
+                vo.setMember(unionMemberService.getById(income.getMemberId()));
 
                 list.add(vo);
             }
@@ -319,9 +319,9 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
                 Integer unionId = opportunity.getUnionId();
                 vo.setUnion(unionMainService.getById(unionId));
 
-                vo.setFromMember(unionMemberService.getByIdAndUnionId(opportunity.getFromMemberId(), unionId));
+                vo.setFromMember(unionMemberService.getById(opportunity.getFromMemberId()));
 
-                vo.setToMember(unionMemberService.getByIdAndUnionId(opportunity.getToMemberId(), unionId));
+                vo.setToMember(unionMemberService.getById(opportunity.getToMemberId()));
 
                 result.add(vo);
             }
@@ -398,7 +398,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
             throw new BusinessException("商机不是未结算状态");
         }
         // （3）生成支付中记录
-        UnionMember fromMember = unionMemberService.getByIdAndUnionId(opportunity.getFromMemberId(), unionId);
+        UnionMember fromMember = unionMemberService.getById(opportunity.getFromMemberId());
         if (fromMember == null) {
             throw new BusinessException("找不到商机推荐者信息");
         }

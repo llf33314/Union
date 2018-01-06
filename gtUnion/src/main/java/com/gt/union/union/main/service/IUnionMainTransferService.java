@@ -59,7 +59,7 @@ public interface IUnionMainTransferService {
      * @throws Exception 统一处理异常
      */
     List<UnionMainTransfer> listValidByUnionIdAndConfirmStatus(Integer unionId, Integer confirmStatus) throws Exception;
-    
+
     /**
      * 分页：我的联盟-联盟设置-盟主权限转移
      *

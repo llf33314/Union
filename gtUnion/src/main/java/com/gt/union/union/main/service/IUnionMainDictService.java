@@ -24,7 +24,7 @@ public interface IUnionMainDictService {
      * @return List<String>
      * @throws Exception 统一处理异常
      */
-    List<String> listItemKeyByUnionId(Integer unionId) throws Exception;
+    List<String> listValidItemKeyByUnionId(Integer unionId) throws Exception;
 
     //********************************************* Base On Business - save ********************************************
 

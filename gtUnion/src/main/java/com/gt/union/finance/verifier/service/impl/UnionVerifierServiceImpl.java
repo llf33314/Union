@@ -65,7 +65,7 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("id", verifierId)
                 .eq("bus_id", busId);
-        
+
         return unionVerifierDao.selectOne(entityWrapper);
     }
 
@@ -110,7 +110,7 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
 
-        // （1）	手机号不能重复
+        // 手机号不能重复
         String phone = verifier.getPhone();
         if (StringUtil.isEmpty(phone)) {
             throw new BusinessException("手机号不能为空");
@@ -129,7 +129,7 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
         saveVerifier.setDelStatus(CommonConstant.DEL_STATUS_NO);
         saveVerifier.setBusId(busId);
         saveVerifier.setPhone(phone);
-        // （2）门店信息
+        // 门店信息
         Integer shopId = verifier.getShopId();
         if (shopId == null) {
             throw new BusinessException("门店信息不能为空");
@@ -140,7 +140,7 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
         }
         saveVerifier.setShopId(shopId);
         saveVerifier.setShopName(shop.getBusinessName());
-        // （3）员工信息
+        // 员工信息
         Integer employeeId = verifier.getEmployeeId();
         if (employeeId == null) {
             throw new BusinessException("员工信息不能为空");
@@ -416,7 +416,7 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
         if (updateUnionVerifierList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        
+
         unionVerifierDao.updateBatchById(updateUnionVerifierList);
     }
 

@@ -7,7 +7,6 @@ import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.DateUtil;
 import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.opportunity.main.dao.IUnionOpportunityRatioDao;
 import com.gt.union.opportunity.main.entity.UnionOpportunityRatio;
 import com.gt.union.opportunity.main.service.IUnionOpportunityRatioService;
@@ -32,9 +31,6 @@ import java.util.List;
 public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioService {
     @Autowired
     private IUnionOpportunityRatioDao unionOpportunityRatioDao;
-
-    @Autowired
-    private RedisCacheUtil redisCacheUtil;
 
     @Autowired
     private IUnionMainService unionMainService;
@@ -66,21 +62,23 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         if (page == null || busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member读权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-        // （2）	获取所有，但不包括自己的member列表
+        // 获取所有，但不包括自己的member列表
         EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("union_id", unionId)
                 .ne("bus_id", busId)
                 .orderBy("create_time", true);
         Page result = unionMemberService.pageSupport(page, entityWrapper);
+        // toVO
         result.setRecords(ListOpportunityRatioVO(result.getRecords(), member.getId()));
 
         return result;
@@ -119,24 +117,25 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         if (busId == null || unionId == null || toMemberId == null || ratio == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member写权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member写权限
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-        // （2）	判断toMemberId有效性
+        // 判断toMemberId有效性
         UnionMember toMember = unionMemberService.getValidReadByIdAndUnionId(toMemberId, unionId);
         if (toMember == null) {
             throw new BusinessException(CommonConstant.MEMBER_NOT_FOUND);
         }
-        // （3）	要求ratio在(0, 100%)
+        // 要求ratio在(0, 100%)
         if (ratio <= 0 || ratio >= 1) {
             throw new BusinessException("比例必须在0至100之间");
         }
-        // （4）	如果存在原设置，则更新，否则新增
+        // 如果存在原设置，则更新，否则新增
         UnionOpportunityRatio oldRatio = getValidByUnionIdAndFromMemberIdAndToMemberId(unionId, member.getId(), toMemberId);
         if (oldRatio != null) {
             UnionOpportunityRatio updateRatio = new UnionOpportunityRatio();

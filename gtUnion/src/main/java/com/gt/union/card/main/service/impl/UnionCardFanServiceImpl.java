@@ -3,7 +3,6 @@ package com.gt.union.card.main.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.api.client.dict.IDictService;
-import com.gt.union.card.activity.service.IUnionCardActivityService;
 import com.gt.union.card.main.constant.CardConstant;
 import com.gt.union.card.main.dao.IUnionCardFanDao;
 import com.gt.union.card.main.entity.UnionCard;
@@ -62,9 +61,6 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
     @Autowired
     private IUnionCardProjectItemService unionCardProjectItemService;
 
-    @Autowired
-    private IUnionCardActivityService unionCardActivityService;
-
     //********************************************* Base On Business - get *********************************************
 
     @Override
@@ -72,20 +68,21 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         if (fanId == null || busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member读权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-        // （2）	判断fanId有效性
+        // 判断fanId有效性
         UnionCardFan fan = getValidById(fanId);
         if (fan == null) {
             throw new BusinessException("找不到粉丝信息");
         }
-        // （3）	获取有效的折扣卡信息
+        // 获取有效的折扣卡信息
         List<UnionCard> cardList = unionCardService.listValidUnexpiredByUnionIdAndFanId(unionId, fanId);
         List<UnionCard> discountCardList = unionCardService.filterByType(cardList, CardConstant.TYPE_DISCOUNT);
         CardFanDetailVO result = new CardFanDetailVO();
@@ -95,7 +92,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
             UnionMember discountCardMember = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
             result.setDiscount(discountCardMember != null ? discountCardMember.getDiscount() : null);
         }
-        // （4）获取有效的活动卡信息，并按时间倒序排序
+        // 获取有效的活动卡信息，并按时间倒序排序
         List<UnionCard> activityCardList = unionCardService.filterByType(cardList, CardConstant.TYPE_ACTIVITY);
         Collections.sort(activityCardList, new Comparator<UnionCard>() {
             @Override
@@ -156,11 +153,11 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         List<UnionCard> activityCardList = unionCardService.listValidUnexpiredByFanIdAndType(fan.getId(), CardConstant.TYPE_ACTIVITY);
         if (ListUtil.isNotEmpty(activityCardList)) {
             isProjectAvailable = unionCardProjectItemService.existValidByUnionIdAndMemberIdAndActivityIdListAndProjectStatusAndItemType(
-                    currentUnionId, currentMember.getId(), unionCardService.getIdList(activityCardList), ProjectConstant.STATUS_ACCEPT, ProjectConstant.TYPE_TEXT);
+                    currentUnionId, currentMember.getId(), unionCardService.getActivityIdList(activityCardList), ProjectConstant.STATUS_ACCEPT, ProjectConstant.TYPE_TEXT);
         }
         result.setIsProjectAvailable(isProjectAvailable ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO);
 
-        // （9）	获取消费多少积分可以抵扣1元配置
+        // 获取消费多少积分可以抵扣1元配置
         Double exchangeIntegral = dictService.getExchangeIntegral();
         result.setExchangeIntegral(exchangeIntegral);
 
@@ -203,15 +200,16 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member读权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-        // （2）	获取union下具有有效折扣卡的fan，并根据卡号和手机号进行过滤
+        // 获取union下具有有效折扣卡的fan，并根据卡号和手机号进行过滤
         EntityWrapper<UnionCardFan> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .like(StringUtil.isNotEmpty(optNumber), "number", optNumber)
@@ -223,7 +221,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
                         + " AND c.del_status=" + CommonConstant.COMMON_NO
                         + " AND c.validity >= now() ");
         List<UnionCardFan> fanList = unionCardFanDao.selectList(entityWrapper);
-        // （3）	统计粉丝联盟积分，即fan在union下所有有效的折扣卡和活动卡的积分之和
+        // 统计粉丝联盟积分，即fan在union下所有有效的折扣卡和活动卡的积分之和
         List<CardFanVO> result = new ArrayList<>();
         if (ListUtil.isNotEmpty(fanList)) {
             for (UnionCardFan fan : fanList) {

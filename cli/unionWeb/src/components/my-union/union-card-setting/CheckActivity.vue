@@ -45,7 +45,7 @@
     </div>
     <!-- 弹出框 确认不通过 -->
     <div class="noPass">
-      <el-dialog title="审核不通过" :visible.sync="visible3">
+      <el-dialog title="审核不通过" :visible.sync="visible3" @close="resetData">
         <hr>
         <div>
           <span>不通过理由：</span>
@@ -72,7 +72,7 @@ export default {
       multipleSelection: [],
       visible2: false,
       visible3: false,
-      rejectReason: '',
+      rejectReason: ''
     };
   },
   computed: {
@@ -157,6 +157,10 @@ export default {
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
+    },
+    // 关闭弹窗清空数据
+    resetData() {
+      this.rejectReason = '';
     }
   }
 };

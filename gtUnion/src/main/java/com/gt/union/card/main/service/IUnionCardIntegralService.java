@@ -27,16 +27,6 @@ public interface IUnionCardIntegralService {
 
     //********************************************* Base On Business - list ********************************************
 
-    /**
-     * 获取未删除的联盟积分列表信息
-     *
-     * @param unionId 联盟id
-     * @param fanId   粉丝id
-     * @return UnionCardIntegral
-     * @throws Exception 统一处理异常
-     */
-    List<UnionCardIntegral> listValidByUnionIdAndFanId(Integer unionId, Integer fanId) throws Exception;
-
     //********************************************* Base On Business - save ********************************************
 
     //********************************************* Base On Business - remove ******************************************

@@ -66,15 +66,16 @@ public class UnionCardSharingRecordServiceImpl implements IUnionCardSharingRecor
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member读权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-        // （2）	按时间倒序排序
+        // 按时间倒序排序
         List<CardSharingRecordVO> result = new ArrayList<>();
         List<UnionCardSharingRecord> recordList = listValidByUnionIdAndSharingMemberId(unionId, member.getId());
         if (ListUtil.isNotEmpty(recordList)) {

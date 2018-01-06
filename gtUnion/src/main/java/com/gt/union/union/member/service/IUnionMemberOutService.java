@@ -59,7 +59,14 @@ public interface IUnionMemberOutService {
      * @throws Exception 统一处理异常
      */
     List<MemberOutPeriodVO> listMemberOutPeriodVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
-    
+
+    /**
+     * UnionMember对象列表转MemberOutVO对象列表
+     *
+     * @param memberList UnionMember对象
+     * @return List<MemberOutVO>
+     * @throws Exception 统一处理异常
+     */
     List<MemberOutVO> getMemberOutVOList(List<UnionMember> memberList) throws Exception;
 
     //********************************************* Base On Business - save ********************************************

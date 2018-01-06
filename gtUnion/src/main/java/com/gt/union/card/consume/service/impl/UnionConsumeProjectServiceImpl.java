@@ -8,7 +8,6 @@ import com.gt.union.card.consume.service.IUnionConsumeProjectService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.RedisCacheUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -334,7 +333,7 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         if (updateUnionConsumeProjectList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        
+
         unionConsumeProjectDao.updateBatchById(updateUnionConsumeProjectList);
     }
 

@@ -43,7 +43,6 @@ public interface IUnionOpportunityService {
      */
     UnionOpportunity getValidByIdAndUnionIdAndToMemberIdAndAcceptStatus(Integer opportunityId, Integer unionId, Integer toMemberId, Integer acceptStatus) throws Exception;
 
-
     /**
      * 商机-数据统计图
      *
@@ -55,24 +54,6 @@ public interface IUnionOpportunityService {
     OpportunityStatisticsVO getOpportunityStatisticsVOByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
 
     //********************************************* Base On Business - list ********************************************
-
-    /**
-     * 获取未删除的商机列表信息
-     *
-     * @param fromMemberIdList 商机推荐盟员id列表
-     * @return List<UnionOpportunity>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionOpportunity> listValidByFromMemberIdList(List<Integer> fromMemberIdList) throws Exception;
-
-    /**
-     * 获取未删除的商机列表信息
-     *
-     * @param toMemberIdList 接收盟员id列表
-     * @return List<UnionOpportunity>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionOpportunity> listValidByToMemberIdList(List<Integer> toMemberIdList) throws Exception;
 
     /**
      * 获取未删除的商机列表信息
@@ -119,17 +100,6 @@ public interface IUnionOpportunityService {
     /**
      * 获取未删除的商机列表信息
      *
-     * @param unionId      联盟id
-     * @param fromMemberId 推荐盟员id
-     * @param acceptStatus 受理状态
-     * @return List<UnionOpportunity>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionOpportunity> listValidByUnionIdAndFromMemberIdAndAcceptStatus(Integer unionId, Integer fromMemberId, Integer acceptStatus) throws Exception;
-
-    /**
-     * 获取未删除的商机列表信息
-     *
      * @param unionId          联盟id
      * @param fromMemberIdList 推荐盟员id列表
      * @param acceptStatus     受理状态
@@ -141,17 +111,6 @@ public interface IUnionOpportunityService {
     /**
      * 获取未删除的商机列表信息
      *
-     * @param unionId      联盟id
-     * @param toMemberId   接收盟员id
-     * @param acceptStatus 受理状态
-     * @return List<UnionOpportunity>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionOpportunity> listValidByUnionIdAndToMemberIdAndAcceptStatus(Integer unionId, Integer toMemberId, Integer acceptStatus) throws Exception;
-
-    /**
-     * 获取未删除的商机列表信息
-     *
      * @param unionId        联盟id
      * @param toMemberIdList 接收盟员id列表
      * @param acceptStatus   受理状态
@@ -159,20 +118,7 @@ public interface IUnionOpportunityService {
      * @throws Exception 统一处理异常
      */
     List<UnionOpportunity> listValidByUnionIdAndToMemberIdListAndAcceptStatus(Integer unionId, List<Integer> toMemberIdList, Integer acceptStatus) throws Exception;
-
-
-    /**
-     * 获取未删除的商机列表信息
-     *
-     * @param unionId      联盟id
-     * @param toMemberId   接收盟员id
-     * @param acceptStatus 受理状态
-     * @param isClose      是否已结算
-     * @return List<UnionOpportunity>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionOpportunity> listValidByUnionIdAndToMemberIdAndAcceptStatusAndIsClose(Integer unionId, Integer toMemberId, Integer acceptStatus, Integer isClose) throws Exception;
-
+    
     /**
      * 列表：我的佣金收入来源
      *
@@ -192,7 +138,7 @@ public interface IUnionOpportunityService {
      * @throws Exception 统一处理异常
      */
     List<UnionMember> listToMemberByBusIdAndUnionId(Integer busId, Integer unionId) throws Exception;
-    
+
     /**
      * 分页：商机-我要推荐
      *

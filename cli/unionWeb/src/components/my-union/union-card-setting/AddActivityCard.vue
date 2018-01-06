@@ -57,8 +57,8 @@
 <script>
 import $http from '@/utils/http.js';
 import UnionColorPicker from '@/components/public-components/UnionColorPicker';
-import { numberCheck } from '@/utils/filter.js';
-import { activityCardIllustrationPass } from '@/utils/validator.js';
+import { numberCheck2, numberCheck1 } from '@/utils/filter.js';
+import { activityCardIllustrationPass, pricePass } from '@/utils/validator.js';
 export default {
   name: 'add-activity-card',
   components: {
@@ -98,11 +98,11 @@ export default {
         isProjectCheck: ''
       },
       rules: {
-        name: [{ required: true, message: '请输入活动卡名称', trigger: 'blur' }],
-        price: [{ required: true, message: '请输入活动卡价格', trigger: 'blur' }],
-        color: [{ required: true, message: '请选择活动卡颜色', trigger: 'blur' }],
-        amount: [{ required: true, message: '请输入活动卡最大发行量', trigger: 'blur' }],
-        validityDay: [{ required: true, message: '请输入活动卡有效天数', trigger: 'blur' }],
+        name: [{ required: true, message: '活动卡名称不能为空，请重新输入', trigger: 'blur' }],
+        price: [{ validator: pricePass, trigger: 'blur' }],
+        color: [{ required: true, message: '活动卡颜色不能为空，请重新输入', trigger: 'blur' }],
+        amount: [{ required: true, message: '活动卡最大发行量不能为空，请重新输入', trigger: 'blur' }],
+        validityDay: [{ required: true, message: '入活动卡有效天数不能为空，请重新输入', trigger: 'blur' }],
         applyTime: [{ validator: applyTimePass, trigger: 'blur' }],
         sellTime: [{ validator: sellTimePass, trigger: 'blur' }],
         illustration: [{ validator: activityCardIllustrationPass, trigger: 'blur' }]
@@ -125,15 +125,13 @@ export default {
     },
     // 校验折扣输入为数字类型
     checkPrice() {
-      this.form.price = numberCheck(this.form.price);
+      this.form.price = numberCheck1(this.form.price);
     },
     checkAmount() {
-      this.form.amount = numberCheck(this.form.amount);
-      this.form.amount = parseFloat(this.form.amount).toFixed(0);
+      this.form.amount = numberCheck2(this.form.amount);
     },
     checkValidityDay() {
-      this.form.validityDay = numberCheck(this.form.validityDay);
-      this.form.validityDay = parseFloat(this.form.validityDay).toFixed(0);
+      this.form.validityDay = numberCheck2(this.form.validityDay);
     },
     // 确定新增活动卡
     activityCardConfirm(formName) {
@@ -142,7 +140,7 @@ export default {
           let url = `/unionCardActivity/unionId/${this.unionId}`;
           let data = {};
           data.name = this.form.name;
-          data.price = this.form.price - 0;
+          data.price = (this.form.price - 0).toFixed(2) - 0;
           data.color = this.form.color;
           data.amount = this.form.amount - 0;
           data.validityDay = this.form.validityDay - 0;

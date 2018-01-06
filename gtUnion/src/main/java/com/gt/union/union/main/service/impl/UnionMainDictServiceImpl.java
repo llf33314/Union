@@ -37,7 +37,7 @@ public class UnionMainDictServiceImpl implements IUnionMainDictService {
     //********************************************* Base On Business - list ********************************************
 
     @Override
-    public List<String> listItemKeyByUnionId(Integer unionId) throws Exception {
+    public List<String> listValidItemKeyByUnionId(Integer unionId) throws Exception {
         if (unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
