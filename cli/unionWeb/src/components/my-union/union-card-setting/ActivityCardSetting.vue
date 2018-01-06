@@ -173,6 +173,9 @@ export default {
     eventBus.$on('newActivityProject', () => {
       this.init();
     });
+    eventBus.$on('newActivityCheck', () => {
+      this.init();
+    });
     eventBus.$on('activityDelete', () => {
       this.init();
     });

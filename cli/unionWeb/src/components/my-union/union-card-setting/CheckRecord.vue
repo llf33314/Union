@@ -29,7 +29,9 @@ export default {
     }
   },
   mounted: function() {
-    this.init();
+    eventBus.$on('showCheckRecord', () => {
+      this.init();
+    });
   },
   methods: {
     init() {
