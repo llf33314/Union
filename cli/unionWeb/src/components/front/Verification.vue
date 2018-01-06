@@ -389,12 +389,15 @@ export default {
       }
     },
     // 活动卡切换
-    activityCardChange(item) {
-      this.activityCardValidity = timeFilter(item.activityCard.validity);
+    activityCardChange() {
+      let activityCard = this.activityCards.find(item => {
+        return item.activity.id === this.activityId;
+      });
+      this.activityCardValidity = timeFilter(activityCard.validity);
       // 获取活动卡优惠项目
-      if (item.activity.id) {
+      if (activityId) {
         $http
-          .get(`/unionCardProjectItem/activityId/${item.activity.id}/unionId/${this.unionId}/consume`)
+          .get(`/unionCardProjectItem/activityId/${this.activityId}/unionId/${this.unionId}/consume`)
           .then(res => {
             if (res.data.data) {
               this.tableData = res.data.data || [];
