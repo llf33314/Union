@@ -315,7 +315,7 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
                 }
                 vo.setMember(projectMember);
 
-                List<UnionCardProjectItem> itemList = unionCardProjectItemService.listByProjectId(project.getId());
+                List<UnionCardProjectItem> itemList = unionCardProjectItemService.listValidByProjectId(project.getId());
                 vo.setItemList(itemList);
 
                 result.add(vo);

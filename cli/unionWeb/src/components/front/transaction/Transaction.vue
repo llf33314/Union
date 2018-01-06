@@ -143,8 +143,8 @@ export default {
       labelPosition: 'right',
       fanId: '',
       form1: {
-        phone: '18202028209',
-        code: '1234',
+        phone: '',
+        code: '',
         getVerificationCode: false,
         countDownTime: ''
       },
@@ -417,8 +417,8 @@ export default {
             this.form1.countDownTime = '';
             this.form1.getVerificationCode = false;
           } else {
-            this.codeSrc = '';
-            this.socketKey = '';
+            this.codeSrc3 = '';
+            this.socketKey3 = '';
           }
         })
         .catch(err => {
