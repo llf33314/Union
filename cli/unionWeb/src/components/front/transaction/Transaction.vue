@@ -119,7 +119,7 @@
             <el-popover trigger="hover" placement="bottom">
               <p v-for="item in scope.row.itemList" :key="item.id">项目名称：{{ item.name }}, 数量：{{ item.number }}</p>
               <div slot="reference" class="name-wrapper">
-                <span>{{ scope.row.itemList_ }}</span>
+                <span>{{ scope.row.nameList }}</span>
               </div>
             </el-popover>
           </template>
