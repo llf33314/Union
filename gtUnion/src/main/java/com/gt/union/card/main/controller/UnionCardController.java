@@ -3,6 +3,7 @@ package com.gt.union.card.main.controller;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.card.activity.entity.UnionCardActivity;
+import com.gt.union.card.activity.vo.CardActivityApplyVO;
 import com.gt.union.card.main.entity.UnionCardFan;
 import com.gt.union.card.main.service.IUnionCardApplyService;
 import com.gt.union.card.main.service.IUnionCardService;
@@ -66,8 +67,8 @@ public class UnionCardController {
             result = MockUtil.get(CardApplyVO.class);
             List<UnionMain> unionList = MockUtil.list(UnionMain.class, 3);
             result.setUnionList(unionList);
-            List<UnionCardActivity> activityList = MockUtil.list(UnionCardActivity.class, 3);
-            result.setActivityList(activityList);
+            List<CardActivityApplyVO> cardActivityApplyVOList = MockUtil.list(CardActivityApplyVO.class, 3);
+            result.setCardActivityApplyVOList(cardActivityApplyVOList);
         } else {
             result = unionCardService.getCardApplyVOByBusIdAndFanId(busId, fanId, unionId);
         }

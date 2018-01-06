@@ -119,18 +119,6 @@ public class UnionMainServiceImpl implements IUnionMainService {
         return result;
     }
 
-    @Override
-    public List<UnionMain> listValidWriteByBusId(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        List<UnionMember> writeMemberList = unionMemberService.listValidWriteByBusId(busId);
-        List<Integer> unionIdList = unionMemberService.getUnionIdList(writeMemberList);
-
-        return listByIdList(unionIdList);
-    }
-
     //********************************************* Base On Business - list ********************************************
 
     //********************************************* Base On Business - save ********************************************
@@ -268,15 +256,6 @@ public class UnionMainServiceImpl implements IUnionMainService {
         }
 
         return union.getValidity().compareTo(DateUtil.getCurrentDate()) >= 0;
-    }
-
-    @Override
-    public boolean existById(Integer unionId) throws Exception {
-        if (unionId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        return getById(unionId) != null;
     }
 
     //********************************************* Base On Business - filter ******************************************

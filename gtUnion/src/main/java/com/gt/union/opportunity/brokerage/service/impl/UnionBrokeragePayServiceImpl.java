@@ -124,22 +124,6 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
     //********************************************* Base On Business - list ********************************************
 
     @Override
-    public List<UnionBrokeragePay> listValidByFromBusIdAndToBusIdAndStatus(Integer fromBusId, Integer toBusId, Integer status) throws Exception {
-        if (fromBusId == null || toBusId == null || status == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("from_bus_id", fromBusId)
-                .eq("to_bus_id", toBusId)
-                .eq("status", status)
-                .orderBy("create_time", false);
-
-        return unionBrokeragePayDao.selectList(entityWrapper);
-    }
-
-    @Override
     public List<UnionBrokeragePay> listValidByFromBusIdAndToBusIdListAndStatus(Integer fromBusId, List<Integer> toBusIdList, Integer status) throws Exception {
         if (fromBusId == null || toBusIdList == null || status == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -320,12 +304,12 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
         String orderNo = "LM" + ConfigConstant.PAY_MODEL_OPPORTUNITY + DateUtil.getSerialNumber();
         if (ListUtil.isNotEmpty(opportunityIdList)) {
             for (Integer opportunityId : opportunityIdList) {
-                UnionOpportunity opportunity = unionOpportunityService.getById(opportunityId);
+                UnionOpportunity opportunity = unionOpportunityService.getValidById(opportunityId);
                 if (opportunity == null) {
                     throw new BusinessException("找不到商机信息");
                 }
                 // （2）	判断union有效性和member写权限
-                UnionMember member = unionMemberService.getByBusIdAndId(busId, opportunity.getToMemberId());
+                UnionMember member = unionMemberService.getValidReadByBusIdAndId(busId, opportunity.getToMemberId());
                 if (member == null) {
                     throw new BusinessException("不支持代付商机佣金");
                 }

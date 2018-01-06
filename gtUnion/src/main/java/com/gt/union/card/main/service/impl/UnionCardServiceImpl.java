@@ -8,6 +8,7 @@ import com.gt.union.api.client.socket.SocketService;
 import com.gt.union.card.activity.constant.ActivityConstant;
 import com.gt.union.card.activity.entity.UnionCardActivity;
 import com.gt.union.card.activity.service.IUnionCardActivityService;
+import com.gt.union.card.activity.vo.CardActivityApplyVO;
 import com.gt.union.card.main.constant.CardConstant;
 import com.gt.union.card.main.dao.IUnionCardDao;
 import com.gt.union.card.main.entity.UnionCard;
@@ -21,6 +22,7 @@ import com.gt.union.card.main.vo.CardApplyVO;
 import com.gt.union.card.main.vo.CardPhoneVO;
 import com.gt.union.card.project.constant.ProjectConstant;
 import com.gt.union.card.project.entity.UnionCardProject;
+import com.gt.union.card.project.service.IUnionCardProjectItemService;
 import com.gt.union.card.project.service.IUnionCardProjectService;
 import com.gt.union.card.sharing.entity.UnionCardSharingRatio;
 import com.gt.union.card.sharing.entity.UnionCardSharingRecord;
@@ -98,6 +100,9 @@ public class UnionCardServiceImpl implements IUnionCardService {
     @Autowired
     private SocketService socketService;
 
+    @Autowired
+    private IUnionCardProjectItemService unionCardProjectItemService;
+
     //********************************************* Base On Business - get *********************************************
 
     @Override
@@ -151,7 +156,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
                     return -1;
                 }
                 if (MemberConstant.IS_UNION_OWNER_YES == o2.getIsUnionOwner()) {
-                    return -2;
+                    return 1;
                 }
 
                 return o1.getCreateTime().compareTo(o2.getCreateTime());
@@ -174,20 +179,23 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
         List<UnionCardActivity> sellingActivityList = unionCardActivityService.listValidByUnionIdAndStatus(currentUnionId, ActivityConstant.STATUS_SELLING);
         if (ListUtil.isNotEmpty(sellingActivityList)) {
-            List<UnionCardActivity> activityList = new ArrayList<>();
+            List<CardActivityApplyVO> cardActivityApplyVOList = new ArrayList<>();
             for (UnionCardActivity activity : sellingActivityList) {
                 if (!unionCardProjectService.existValidByUnionIdAndMemberIdAndActivityIdAndStatus(currentUnionId, currentMemberId, activity.getId(), ProjectConstant.STATUS_ACCEPT)) {
                     continue;
                 }
                 Integer activityCardCount = countValidByUnionIdAndActivityId(currentUnionId, activity.getId());
                 if (activityCardCount < activity.getAmount()) {
-                    activityList.add(activity);
+                    CardActivityApplyVO cardActivityApplyVO = new CardActivityApplyVO();
+                    cardActivityApplyVO.setActivity(activity);
+                    cardActivityApplyVO.setItemCount(unionCardProjectItemService.countValidCommittedByUnionIdAndActivityId(currentUnionId, activity.getId()));
+                    cardActivityApplyVOList.add(cardActivityApplyVO);
                 }
             }
-            result.setActivityList(activityList);
+            result.setCardActivityApplyVOList(cardActivityApplyVOList);
         }
 
-        if (CommonConstant.COMMON_NO == result.getIsDiscountCard() && ListUtil.isEmpty(result.getActivityList())) {
+        if (CommonConstant.COMMON_NO == result.getIsDiscountCard() && ListUtil.isEmpty(result.getCardActivityApplyVOList())) {
             return null;
         }
 
@@ -255,21 +263,6 @@ public class UnionCardServiceImpl implements IUnionCardService {
                 .eq("union_id", unionId)
                 .eq("fan_id", fanId)
                 .eq("type", type);
-
-        return unionCardDao.selectList(entityWrapper);
-    }
-
-    @Override
-    public List<UnionCard> listValidUnexpiredByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception {
-        if (unionId == null || activityId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .gt("validity", DateUtil.getCurrentDate())
-                .eq("union_id", unionId)
-                .eq("activity_id", activityId);
 
         return unionCardDao.selectList(entityWrapper);
     }
@@ -556,7 +549,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
         BigDecimal surplusSharingRatio = BigDecimalUtil.subtract(1.0, sharedRatioSum);
         BigDecimal surplusSharingMoney = BigDecimalUtil.subtract(payMoney, sharedMoneySum);
         if (surplusSharingRatio.doubleValue() > 0 && surplusSharingMoney.doubleValue() > 0) {
-            Integer surplusSharingRatioMemberId = (isIncludeUnionOwnerId || isIncludeInvalidMemberId)
+            Integer surplusSharingRatioMemberId = (isIncludeUnionOwnerId || isIncludeInvalidMemberId || ListUtil.isEmpty(ratioList))
                     ? unionMemberService.getValidOwnerByUnionId(record.getUnionId()).getId() : ratioList.get(0).getMemberId();
 
             UnionCardSharingRecord ownerSaveSharingRecord = new UnionCardSharingRecord();
@@ -830,6 +823,22 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (ListUtil.isNotEmpty(unionCardList)) {
             for (UnionCard unionCard : unionCardList) {
                 result.add(unionCard.getUnionId());
+            }
+        }
+
+        return result;
+    }
+
+    @Override
+    public List<Integer> getActivityIdList(List<UnionCard> unionCardList) throws Exception {
+        if (unionCardList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<Integer> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(unionCardList)) {
+            for (UnionCard unionCard : unionCardList) {
+                result.add(unionCard.getActivityId());
             }
         }
 

@@ -41,66 +41,7 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
 
     //********************************************* Base On Business - get *********************************************
 
-    @Override
-    public UnionBrokerageIncome getValidByUnionIdAndMemberIdAndOpportunityId(Integer unionId, Integer memberId, Integer opportunityId) throws Exception {
-        if (unionId == null || memberId == null || opportunityId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("member_id", memberId)
-                .eq("opportunity_id", opportunityId);
-
-        return unionBrokerageIncomeDao.selectOne(entityWrapper);
-    }
-
     //********************************************* Base On Business - list ********************************************
-
-    @Override
-    public List<UnionBrokerageIncome> listValidByBusIdAndType(Integer busId, Integer type) throws Exception {
-        if (busId == null || type == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("bus_id", busId)
-                .eq("type", type);
-
-        return unionBrokerageIncomeDao.selectList(entityWrapper);
-    }
-
-    @Override
-    public List<UnionBrokerageIncome> listValidByBusIdAndTypeAndMemberIdList(Integer busId, Integer type, List<Integer> memberIdList) throws Exception {
-        if (busId == null || type == null || memberIdList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("bus_id", busId)
-                .eq("type", type)
-                .in("member_id", memberIdList);
-
-        return unionBrokerageIncomeDao.selectList(entityWrapper);
-    }
-
-    @Override
-    public List<UnionBrokerageIncome> listValidByBusIdAndUnionIdAndType(Integer busId, Integer unionId, Integer type) throws Exception {
-        if (busId == null || unionId == null || type == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("bus_id", busId)
-                .eq("union_id", unionId)
-                .eq("type", type);
-
-        return unionBrokerageIncomeDao.selectList(entityWrapper);
-    }
 
     @Override
     public Page pageBrokerageOpportunityVOByBusId(
@@ -204,39 +145,6 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
 
         Map<String, Object> resultMap = unionBrokerageIncomeDao.selectMap(entityWrapper);
         return Double.valueOf(resultMap.get("moneySum").toString());
-    }
-
-    @Override
-    public Double sumValidMoneyByBusIdAndUnionIdAndType(Integer busId, Integer unionId, Integer type) throws Exception {
-        if (busId == null || unionId == null || type == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("bus_id", busId)
-                .eq("type", type)
-                .eq("union_id", unionId);
-
-        entityWrapper.setSqlSelect("IfNull(SUM(money),0) moneySum");
-
-        Map<String, Object> resultMap = unionBrokerageIncomeDao.selectMap(entityWrapper);
-        return Double.valueOf(resultMap.get("moneySum").toString());
-    }
-
-    @Override
-    public boolean existValidByUnionIdAndMemberIdAndOpportunityId(Integer unionId, Integer memberId, Integer opportunityId) throws Exception {
-        if (unionId == null || memberId == null || opportunityId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("member_id", memberId)
-                .eq("opportunity_id", opportunityId);
-
-        return unionBrokerageIncomeDao.selectCount(entityWrapper) > 0;
     }
 
     //********************************************* Base On Business - filter ******************************************

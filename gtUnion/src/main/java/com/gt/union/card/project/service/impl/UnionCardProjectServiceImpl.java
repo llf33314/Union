@@ -81,22 +81,6 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
     }
 
     @Override
-    public UnionCardProject getValidByUnionIdAndMemberIdAndActivityIdAndStatus(Integer unionId, Integer memberId, Integer activityId, Integer status) throws Exception {
-        if (unionId == null || memberId == null || activityId == null || status == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("member_id", memberId)
-                .eq("activity_id", activityId)
-                .eq("status", status);
-
-        return unionCardProjectDao.selectOne(entityWrapper);
-    }
-
-    @Override
     public UnionCardProject getValidByIdAndUnionIdAndActivityId(Integer projectId, Integer unionId, Integer activityId) throws Exception {
         if (projectId == null || unionId == null || activityId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);

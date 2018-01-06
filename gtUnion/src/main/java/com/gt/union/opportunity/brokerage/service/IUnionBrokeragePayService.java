@@ -33,17 +33,6 @@ public interface IUnionBrokeragePayService {
     /**
      * 获取未删除的商机佣金支付列表信息
      *
-     * @param fromBusId 支付商家id
-     * @param toBusId   收款商家id
-     * @param status    支付状态
-     * @return List<UnionBrokeragePay>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionBrokeragePay> listValidByFromBusIdAndToBusIdAndStatus(Integer fromBusId, Integer toBusId, Integer status) throws Exception;
-
-    /**
-     * 获取未删除的商机佣金支付列表信息
-     *
      * @param fromBusId   支付商家id
      * @param toBusIdList 收款商家id列表
      * @param status      支付状态
@@ -53,7 +42,7 @@ public interface IUnionBrokeragePayService {
     List<UnionBrokeragePay> listValidByFromBusIdAndToBusIdListAndStatus(Integer fromBusId, List<Integer> toBusIdList, Integer status) throws Exception;
 
     /**
-     * 缓存穿透-获取未删除的商机佣金支付列表信息
+     * 获取未删除的商机佣金支付列表信息
      *
      * @param fromBusIdList 支付商家id列表
      * @param toBusId       收款商家id
@@ -63,9 +52,8 @@ public interface IUnionBrokeragePayService {
      */
     List<UnionBrokeragePay> listValidByFromBusIdListAndToBusIdAndStatus(List<Integer> fromBusIdList, Integer toBusId, Integer status) throws Exception;
 
-
     /**
-     * 缓存穿透-获取未删除的商机佣金支付列表信息
+     * 获取未删除的商机佣金支付列表信息
      *
      * @param orderNo 订单号
      * @return List<UnionBrokeragePay>
@@ -74,7 +62,7 @@ public interface IUnionBrokeragePayService {
     List<UnionBrokeragePay> listValidByOrderNo(String orderNo) throws Exception;
 
     /**
-     * 缓存穿透-分页：商机-佣金结算-我需支付的佣金
+     * 分页：商机-佣金结算-我需支付的佣金
      *
      * @param page            分页对象
      * @param busId           商家id
@@ -139,7 +127,6 @@ public interface IUnionBrokeragePayService {
      * @return String 返回结果
      */
     String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess);
-
 
     //********************************************* Base On Business - other *******************************************
 

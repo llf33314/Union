@@ -156,7 +156,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         List<UnionCard> activityCardList = unionCardService.listValidUnexpiredByFanIdAndType(fan.getId(), CardConstant.TYPE_ACTIVITY);
         if (ListUtil.isNotEmpty(activityCardList)) {
             isProjectAvailable = unionCardProjectItemService.existValidByUnionIdAndMemberIdAndActivityIdListAndProjectStatusAndItemType(
-                    currentUnionId, currentMember.getId(), unionCardService.getIdList(activityCardList), ProjectConstant.STATUS_ACCEPT, ProjectConstant.TYPE_TEXT);
+                    currentUnionId, currentMember.getId(), unionCardService.getActivityIdList(activityCardList), ProjectConstant.STATUS_ACCEPT, ProjectConstant.TYPE_TEXT);
         }
         result.setIsProjectAvailable(isProjectAvailable ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO);
 

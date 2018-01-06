@@ -55,15 +55,6 @@ public interface IUnionMainService {
      */
     List<UnionMain> listValidReadByBusId(Integer busId) throws Exception;
 
-    /**
-     * 获取我具有写权限的有效联盟列表
-     *
-     * @param busId 商家id
-     * @return List<UnionMain>
-     * @throws Exception 统一处理异常
-     */
-    List<UnionMain> listValidWriteByBusId(Integer busId) throws Exception;
-
     //********************************************* Base On Business - save ********************************************
 
     //********************************************* Base On Business - remove ******************************************
@@ -108,15 +99,6 @@ public interface IUnionMainService {
      * @throws Exception 统一处理异常
      */
     boolean isUnionValid(UnionMain union) throws Exception;
-
-    /**
-     * 判断联盟是否存在
-     *
-     * @param unionId 联盟id
-     * @return boolean
-     * @throws Exception 统一处理异常
-     */
-    boolean existById(Integer unionId) throws Exception;
 
     //********************************************* Base On Business - filter ******************************************
 

@@ -57,7 +57,7 @@ public interface IUnionCardFanService {
      * @throws Exception 统一处理异常
      */
     UnionCardFan getValidByPhone(String phone) throws Exception;
-    
+
     //********************************************* Base On Business - list ********************************************
 
     /**
@@ -79,9 +79,10 @@ public interface IUnionCardFanService {
      *
      * @param phone 手机号
      * @return UnionCardFan
+     * @throws Exception 统一处理异常
      */
     UnionCardFan getOrSaveByPhone(String phone) throws Exception;
-    
+
     //********************************************* Base On Business - remove ******************************************
 
     //********************************************* Base On Business - update ******************************************
@@ -213,5 +214,5 @@ public interface IUnionCardFanService {
      * @throws Exception 统一处理异常
      */
     void updateBatch(List<UnionCardFan> updateUnionCardFanList) throws Exception;
-    
+
 }

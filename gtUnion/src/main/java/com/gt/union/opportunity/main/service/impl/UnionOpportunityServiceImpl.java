@@ -206,32 +206,6 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
     //********************************************* Base On Business - list ********************************************
 
     @Override
-    public List<UnionOpportunity> listValidByFromMemberIdList(List<Integer> fromMemberIdList) throws Exception {
-        if (fromMemberIdList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .in("from_member_id", fromMemberIdList);
-
-        return unionOpportunityDao.selectList(entityWrapper);
-    }
-
-    @Override
-    public List<UnionOpportunity> listValidByToMemberIdList(List<Integer> toMemberIdList) throws Exception {
-        if (toMemberIdList == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .in("to_member_id", toMemberIdList);
-
-        return unionOpportunityDao.selectList(entityWrapper);
-    }
-
-    @Override
     public List<UnionOpportunity> listValidByFromMemberIdListAndAcceptStatus(List<Integer> fromMemberIdList, Integer acceptStatus) throws Exception {
         if (fromMemberIdList == null || acceptStatus == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -291,21 +265,6 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
     }
 
     @Override
-    public List<UnionOpportunity> listValidByUnionIdAndFromMemberIdAndAcceptStatus(Integer unionId, Integer fromMemberId, Integer acceptStatus) throws Exception {
-        if (unionId == null || fromMemberId == null || acceptStatus == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("from_member_id", fromMemberId)
-                .eq("accept_status", acceptStatus);
-
-        return unionOpportunityDao.selectList(entityWrapper);
-    }
-
-    @Override
     public List<UnionOpportunity> listValidByUnionIdAndFromMemberIdListAndAcceptStatus(Integer unionId, List<Integer> fromMemberIdList, Integer acceptStatus) throws Exception {
         if (unionId == null || fromMemberIdList == null || acceptStatus == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -315,21 +274,6 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("union_id", unionId)
                 .in("from_member_id", fromMemberIdList)
-                .eq("accept_status", acceptStatus);
-
-        return unionOpportunityDao.selectList(entityWrapper);
-    }
-
-    @Override
-    public List<UnionOpportunity> listValidByUnionIdAndToMemberIdAndAcceptStatus(Integer unionId, Integer toMemberId, Integer acceptStatus) throws Exception {
-        if (unionId == null || toMemberId == null || acceptStatus == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("to_member_id", toMemberId)
                 .eq("accept_status", acceptStatus);
 
         return unionOpportunityDao.selectList(entityWrapper);
@@ -346,22 +290,6 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
                 .eq("union_id", unionId)
                 .in("to_member_id", toMemberIdList)
                 .eq("accept_status", acceptStatus);
-
-        return unionOpportunityDao.selectList(entityWrapper);
-    }
-
-    @Override
-    public List<UnionOpportunity> listValidByUnionIdAndToMemberIdAndAcceptStatusAndIsClose(Integer unionId, Integer toMemberId, Integer acceptStatus, Integer isClose) throws Exception {
-        if (unionId == null || toMemberId == null || acceptStatus == null || isClose == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("union_id", unionId)
-                .eq("to_member_id", toMemberId)
-                .eq("accept_status", acceptStatus)
-                .eq("is_close", isClose);
 
         return unionOpportunityDao.selectList(entityWrapper);
     }
