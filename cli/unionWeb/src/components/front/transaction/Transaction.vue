@@ -43,7 +43,7 @@
               <i class="forward" style="font-style:normal"> &lt;</i>
               <i class="backward" style="font-style:normal"> &gt;</i>
               <div>
-                <el-checkbox-group v-model="activityCheckList">
+                <el-checkbox-group v-model="activityCheckList" @change="activityCheckListChange">
                   <!-- label 写死？ -->
                   <el-checkbox-button v-if="isDiscountCard" :label="0" disabled>
                     <div class="clearfix">
@@ -55,11 +55,11 @@
                       <i></i>
                     </div>
                   </el-checkbox-button>
-                  <el-checkbox-button v-for="(item,index1) in form2.activityList" :key="item.id" :label="item.id">
+                  <el-checkbox-button v-for="(item,index1) in form2.activityList" :key="item.activity.id" :label="item.activity.id">
                     <div class="clearfix">
-                      <img v-bind:src="item.img" alt="" class="fl SelectunionImg" :class="'m'+item.color2+index1">
+                      <img v-bind:src="item.activity.img" alt="" class="fl SelectunionImg" :class="'m'+item.activity.color2+index1">
                       <div class="fl" style="margin-left: 20px;position: absolute;top: 62px;left: 33px;">
-                        <h6 style="margin-bottom: 17px;color: #333333">{{item.name}}</h6>
+                        <h6 style="margin-bottom: 17px;color: #333333">{{item.activity.name}}</h6>
                       </div>
                       <i></i>
                     </div>
@@ -77,16 +77,16 @@
             <div>享受折扣： {{ discount * 10 }}折 </div>
           </div>
           <!--活动卡服务-->
-          <div class="cardService" v-for="item in form2.activityList" :key="item.id" v-show="activityCheckList.indexOf(item.id) > -1">
-            <p> {{ item.name }} </p>
+          <div class="cardService" v-for="item in form2.activityList" :key="item.activity.id" v-show="activityCheckList.indexOf(item.activity.id) > -1">
+            <p> {{ item.activity.name }} </p>
             <div style="margin-left: 82px;">服务项目：
-              <span @click="showDetail(item.id)"> {{ item.amount }} 个</span>
+              <span @click="showDetail(item.activity.id)"> {{ item.itemCount }} 个</span>
             </div>
             <div>联盟卡有效天数：
-              <span> {{ item.validityDay }} 天</span>
+              <span> {{ item.activity.validityDay }} 天</span>
             </div>
             <div style="margin-left: 112px;">价格：
-              <span> ￥{{ (item.price).toFixed(2) }}</span>
+              <span> ￥{{ (item.activity.price).toFixed(2) }}</span>
             </div>
           </div>
         </div>
@@ -103,7 +103,7 @@
       <el-dialog title="付款" :visible.sync="visible3" size="tiny">
         <hr>
         <div class="model_">
-          <p><img v-bind:src="codeSrc3" class="codeImg"></p>
+          <p><img v-bind:src="codeSrc" class="codeImg"></p>
           <p style="margin-bottom: 50px;">请使用微信扫描该二维码付款</p>
         </div>
       </el-dialog>
@@ -153,10 +153,10 @@ export default {
       isDiscountCard: '',
       discount: '',
       visible3: false,
-      codeSrc3: '',
-      socket3: '',
-      socketKey3: '',
-      socketFlag3: {
+      codeSrc: '',
+      socket: '',
+      socketKey: '',
+      socketFlag: {
         socketKey: '',
         status: ''
       },
@@ -257,8 +257,8 @@ export default {
                       if (this.form2.activityList) {
                         this.form2.activityList.forEach((v, i) => {
                           //todo
-                          let color1 = (v.color1 = v.color.split(',')[0]);
-                          let color2 = (v.color2 = v.color.split(',')[1]);
+                          let color1 = (v.activity.color1 = v.activity.color.split(',')[0]);
+                          let color2 = (v.activity.color2 = v.activity.color.split(',')[1]);
                           let mDiv = 'm' + color2 + i;
                           setTimeout(function() {
                             $(
@@ -300,12 +300,12 @@ export default {
           .get(`/unionCard/fanId/${this.fanId}/apply?unionId=${this.unionId}`)
           .then(res => {
             if (res.data.data) {
-              this.form2.activityList = res.data.data.activityList;
+              this.form2.activityList = res.data.data.cardActivityApplyVOList;
               if (this.form2.activityList) {
                 this.form2.activityList.forEach((v, i) => {
                   //todo
-                  let color1 = (v.color1 = v.color.split(',')[0]);
-                  let color2 = (v.color2 = v.color.split(',')[1]);
+                  let color1 = (v.activity.color1 = v.activity.color.split(',')[0]);
+                  let color2 = (v.activity.color2 = v.activity.color.split(',')[1]);
                   let mDiv = 'm' + color2 + i;
                   setTimeout(function() {
                     $('.' + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
@@ -362,27 +362,27 @@ export default {
         .post(url, data)
         .then(res => {
           if (res.data.data) {
-            this.codeSrc3 = res.data.data.payUrl;
-            this.socketKey3 = res.data.data.socketKey;
+            this.codeSrc = res.data.data.payUrl;
+            this.socketKey = res.data.data.socketKey;
             this.visible3 = true;
             var _this = this;
             var socketUrl = this.$store.state.socketUrl;
-            if (!this.socket3) {
-              this.socket3 = io.connect(socketUrl);
-              var socketKey3 = this.socketKey3;
-              this.socket3.on('connect', function() {
-                let jsonObject = { userId: socketKey3, message: '0' };
-                _this.socket3.emit('auth', jsonObject);
+            if (!this.socket) {
+              this.socket = io.connect(socketUrl);
+              var socketKey = this.socketKey;
+              this.socket.on('connect', function() {
+                let jsonObject = { userId: socketKey, message: '0' };
+                _this.socket.emit('auth', jsonObject);
               });
               //重连机制
               let socketindex = 0;
-              this.socket3.on('reconnecting', function() {
+              this.socket.on('reconnecting', function() {
                 socketindex += 1;
                 if (socketindex > 4) {
-                  _this.socket3.destroy(); //不在链接
+                  _this.socket.destroy(); //不在链接
                 }
               });
-              this.socket3.on('chatevent', function(data) {
+              this.socket.on('chatevent', function(data) {
                 let msg = eval('(' + data.message + ')');
                 // 避免 socket 重复调用
                 if (!(_this.socketFlag.socketKey == msg.socketKey && _this.socketFlag.status == msg.status)) {
@@ -391,7 +391,7 @@ export default {
                       _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
                       _this.socketFlag.socketKey = msg.socketKey;
                       _this.socketFlag.status = msg.status;
-                      _this.visible1 = false;
+                      _this.init();
                     } else if (msg.status == '0') {
                       _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
                     }
@@ -407,8 +407,8 @@ export default {
             this.form1.countDownTime = '';
             this.form1.getVerificationCode = false;
           } else {
-            this.codeSrc3 = '';
-            this.socketKey3 = '';
+            this.codeSrc = '';
+            this.socketKey = '';
           }
         })
         .catch(err => {

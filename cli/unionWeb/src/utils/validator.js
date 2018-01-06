@@ -48,6 +48,19 @@ export function integralExchangeRatioPass(rule, value, callback) {
   }
 }
 
+// 价格 最低1元
+export function pricePass(rule, value, callback) {
+  if (value !== 0 && !value) {
+    callback(new Error('价格不能为空，请重新输入'));
+  } else if (isNaN(value)) {
+    callback(new Error('价格必须为数字值，请重新输入'));
+  } else if (value < 1) {
+    callback(new Error('价格不能小于1元，请重新输入'));
+  } else {
+    callback();
+  }
+}
+
 // 客户姓名 限制20个字符
 export function clientNamePass(rule, value, callback) {
   if (!value) {

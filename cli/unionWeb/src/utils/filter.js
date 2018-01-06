@@ -15,6 +15,33 @@ export function numberCheck(value) {
   return value;
 }
 
+// 只能输入大于0的正数
+export function numberCheck1(value) {
+  value = value + '';
+  //先把非数字的都替换掉，除了数字和.
+  value = value.replace(/[^\d\.]/g, '');
+  //必须保证第一个为数字而不是.
+  value = value.replace(/^\./g, '');
+  //必须保证第一个数字不是0
+  value = value.replace(/^0/g, '');
+  //保证只有出现一个.而没有多个.
+  value = value.replace(/\.{2,}/g, '.');
+  //保证.只出现一次，而不能出现两次以上
+  value = value
+    .replace('.', '$#$')
+    .replace(/\./g, '')
+    .replace('$#$', '.');
+  return value;
+}
+
+// 只能输入正整数
+export function numberCheck2(value) {
+  value = value + '';
+  //先把非数字的都替换掉，除了数字和.
+  value = value.replace(/[^\d]/g, '');
+  return value;
+}
+
 // 时间戳转化为 yyyy-mm-dd hh:mm:ss
 export function timeFilter(value) {
   value = new Date(value);
