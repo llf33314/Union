@@ -556,7 +556,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
         BigDecimal surplusSharingRatio = BigDecimalUtil.subtract(1.0, sharedRatioSum);
         BigDecimal surplusSharingMoney = BigDecimalUtil.subtract(payMoney, sharedMoneySum);
         if (surplusSharingRatio.doubleValue() > 0 && surplusSharingMoney.doubleValue() > 0) {
-            Integer surplusSharingRatioMemberId = (isIncludeUnionOwnerId || isIncludeInvalidMemberId)
+            Integer surplusSharingRatioMemberId = (isIncludeUnionOwnerId || isIncludeInvalidMemberId || ListUtil.isEmpty(ratioList))
                     ? unionMemberService.getValidOwnerByUnionId(record.getUnionId()).getId() : ratioList.get(0).getMemberId();
 
             UnionCardSharingRecord ownerSaveSharingRecord = new UnionCardSharingRecord();
