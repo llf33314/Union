@@ -63,7 +63,7 @@ public class UnionConsumeGiveIntegralServiceImpl implements IUnionConsumeGiveInt
 					if(main.getIsIntegral() == CommonConstant.COMMON_YES){
 						//开启积分
 						Double giveIntegral = dictService.getGiveIntegral();
-						double integral = BigDecimalUtil.multiply(consume.getConsumeMoney() == null ? 0 : consume.getConsumeMoney(), giveIntegral).doubleValue();
+						double integral = BigDecimalUtil.toDouble(BigDecimalUtil.multiply(consume.getConsumeMoney() == null ? 0 : consume.getConsumeMoney(), giveIntegral));
 						UnionConsume unionConsume = new UnionConsume();
 						unionConsume.setId(consume.getId());
 						unionConsume.setGiveIntegral(integral);
@@ -85,7 +85,7 @@ public class UnionConsumeGiveIntegralServiceImpl implements IUnionConsumeGiveInt
 
 							UnionCardIntegral updateIntegral = new UnionCardIntegral();
 							updateIntegral.setId(unionCardIntegral.getId());
-							updateIntegral.setIntegral(tempIntegral.doubleValue());
+							updateIntegral.setIntegral(BigDecimalUtil.toDouble(tempIntegral));
 							unionCardIntegralService.update(updateIntegral);
 						}
 

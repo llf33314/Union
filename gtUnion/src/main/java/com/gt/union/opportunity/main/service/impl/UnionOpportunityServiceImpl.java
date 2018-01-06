@@ -112,7 +112,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
                 paidIncome = BigDecimalUtil.add(paidIncome, opportunity.getBrokerageMoney());
             }
         }
-        result.setPaidIncome(paidIncome.doubleValue());
+        result.setPaidIncome(BigDecimalUtil.toDouble(paidIncome));
 
         List<UnionOpportunity> unPaidIncomeOpportunityList = filterByIsClose(incomeOpportunityList, OpportunityConstant.IS_CLOSE_NO);
         BigDecimal unPaidIncome = BigDecimal.ZERO;
@@ -121,10 +121,10 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
                 unPaidIncome = BigDecimalUtil.add(unPaidIncome, opportunity.getBrokerageMoney());
             }
         }
-        result.setUnPaidIncome(unPaidIncome.doubleValue());
+        result.setUnPaidIncome(BigDecimalUtil.toDouble(unPaidIncome));
 
         BigDecimal incomeSum = BigDecimalUtil.add(paidIncome, unPaidIncome);
-        result.setIncomeSum(incomeSum.doubleValue());
+        result.setIncomeSum(BigDecimalUtil.toDouble(incomeSum));
         // （3）	获取已接受的推荐给我的商机，区分是否已支付
         List<UnionOpportunity> expenseOpportunityList = listValidByUnionIdAndToMemberIdListAndAcceptStatus(unionId, memberIdList, OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
         List<UnionOpportunity> paidExpenseOpportunityList = filterByIsClose(expenseOpportunityList, OpportunityConstant.IS_CLOSE_YES);
@@ -134,7 +134,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
                 paidExpense = BigDecimalUtil.add(paidExpense, opportunity.getBrokerageMoney());
             }
         }
-        result.setPaidExpense(paidExpense.doubleValue());
+        result.setPaidExpense(BigDecimalUtil.toDouble(paidExpense));
 
         List<UnionOpportunity> unPaidExpenseOpportunityList = filterByIsClose(expenseOpportunityList, OpportunityConstant.IS_CLOSE_NO);
         BigDecimal unPaidExpense = BigDecimal.ZERO;
@@ -143,10 +143,10 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
                 unPaidExpense = BigDecimalUtil.add(unPaidExpense, opportunity.getBrokerageMoney());
             }
         }
-        result.setUnPaidExpense(unPaidExpense.doubleValue());
+        result.setUnPaidExpense(BigDecimalUtil.toDouble(unPaidExpense));
 
         BigDecimal expenseSum = BigDecimalUtil.add(paidExpense, unPaidExpense);
-        result.setExpenseSum(expenseSum.doubleValue());
+        result.setExpenseSum(BigDecimalUtil.toDouble(expenseSum));
         // （4）	获取一周内商机收支信息
         Date indexDay = DateUtil.getMondayInWeek();
         String strIndexDay = DateUtil.getDateString(indexDay, DateUtil.DATE_PATTERN);
@@ -162,7 +162,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
                     dayIncome = BigDecimalUtil.add(dayIncome, opportunity.getBrokerageMoney());
                 }
             }
-            dayStatistic.setPaidIncome(dayIncome.doubleValue());
+            dayStatistic.setPaidIncome(BigDecimalUtil.toDouble(dayIncome));
             List<UnionOpportunity> dayExpenseOpportunityList = filterBetweenTime(paidExpenseOpportunityList, beginDate, endDate);
             BigDecimal dayExpense = BigDecimal.ZERO;
             if (ListUtil.isNotEmpty(dayExpenseOpportunityList)) {
@@ -170,7 +170,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
                     dayExpense = BigDecimalUtil.add(dayExpense, opportunity.getBrokerageMoney());
                 }
             }
-            dayStatistic.setPaidExpense(dayExpense.doubleValue());
+            dayStatistic.setPaidExpense(BigDecimalUtil.toDouble(dayExpense));
             switch (i) {
                 case 0:
                     result.setMonday(dayStatistic);
@@ -627,7 +627,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
             updateOpportunity.setId(opportunityId);
             updateOpportunity.setAcceptStatus(OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
             updateOpportunity.setAcceptPrice(acceptPrice);
-            updateOpportunity.setBrokerageMoney(BigDecimalUtil.multiply(acceptPrice, ratio.getRatio()).doubleValue());
+            updateOpportunity.setBrokerageMoney(BigDecimalUtil.toDouble(BigDecimalUtil.multiply(acceptPrice, ratio.getRatio())));
         } else {
             updateOpportunity.setId(opportunityId);
             updateOpportunity.setAcceptStatus(OpportunityConstant.ACCEPT_STATUS_REJECT);

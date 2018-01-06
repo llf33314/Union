@@ -8,10 +8,7 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
-import com.gt.union.common.util.ExportUtil;
-import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.MockUtil;
-import com.gt.union.common.util.PageUtil;
+import com.gt.union.common.util.*;
 import com.gt.union.opportunity.brokerage.service.IUnionBrokeragePayService;
 import com.gt.union.opportunity.brokerage.service.IUnionBrokeragePayStrategyService;
 import com.gt.union.opportunity.brokerage.vo.BrokerageOpportunityVO;
@@ -214,7 +211,7 @@ public class UnionBrokeragePayController {
                 int cellIndex = 0;
                 // 时间
                 HSSFCell createTimeCell = row.createCell(cellIndex++);
-                createTimeCell.setCellValue(opportunity.getCreateTime());
+                createTimeCell.setCellValue(DateUtil.getDateString(opportunity.getCreateTime(), DateUtil.DATETIME_PATTERN));
                 createTimeCell.setCellStyle(centerCellStyle);
                 // 顾客姓名
                 HSSFCell clientNameCell = row.createCell(cellIndex++);

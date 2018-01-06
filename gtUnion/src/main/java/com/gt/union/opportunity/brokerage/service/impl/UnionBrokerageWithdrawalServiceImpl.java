@@ -45,7 +45,7 @@ public class UnionBrokerageWithdrawalServiceImpl implements IUnionBrokerageWithd
         // （2）已提现
         Double withdrawalSum = sumValidMoneyByBusId(busId);
 
-        return BigDecimalUtil.subtract(incomeSum, withdrawalSum).doubleValue();
+        return BigDecimalUtil.toDouble(BigDecimalUtil.subtract(incomeSum, withdrawalSum));
     }
 
 
