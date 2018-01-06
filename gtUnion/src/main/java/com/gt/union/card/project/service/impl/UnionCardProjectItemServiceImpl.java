@@ -326,6 +326,7 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
             }
 
             if (saveFlow != null) {
+                saveFlow.setProjectId(updateProject.getId());
                 unionCardProjectFlowService.save(saveFlow);
             }
         } else {
