@@ -58,9 +58,9 @@
         <!-- 活动卡概况 -->
         <li>
           <p v-if="item.activityStatus !== '未开始'">
-            <join-member @update:joinMemberCount="item.joinMemberCount" @update:activityId="item.activity.id"></join-member>
+            <join-member :joinMemberCount="item.joinMemberCount" :activityId="item.activity.id"></join-member>
           </p>
-          <check-activity v-if="isUnionOwner && (item.activityStatus === '报名中' || item.activityStatus === '报名结束')" @update:projectCheckCount="item.projectCheckCount" @update:activityId="item.activity.id"></check-activity>
+          <check-activity v-if="isUnionOwner && (item.activityStatus === '报名中' || item.activityStatus === '报名结束')" :projectCheckCount="item.projectCheckCount" :activityId="item.activity.id"></check-activity>
           <p v-if="item.activityStatus === '售卡中' || item.activityStatus === '已停售'">
             <span>已售活动卡</span>
             <span>{{ item.cardSellCount }}/{{ item.activity.amount }}</span>
