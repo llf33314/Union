@@ -43,7 +43,7 @@
               <i class="forward" style="font-style:normal"> &lt;</i>
               <i class="backward" style="font-style:normal"> &gt;</i>
               <div>
-                <el-checkbox-group v-model="activityCheckList" @change="activityCheckListChange">
+                <el-checkbox-group v-model="activityCheckList">
                   <!-- label 写死？ -->
                   <el-checkbox-button v-if="isDiscountCard" :label="0" disabled>
                     <div class="clearfix SelectunionImg1">
@@ -80,7 +80,7 @@
           <div class="cardService" v-for="item in form2.activityList" :key="item.activity.id" v-show="activityCheckList.indexOf(item.activity.id) > -1">
             <p> {{ item.activity.name }} </p>
             <div style="margin-left: 82px;cursor: pointer;color: #2a2a2a;">服务项目：
-              <span @click="showDetail(item.id)"><strong style="cursor: pointer;color: #20A0FF;"> {{ item.itemCount }} </strong>个</span>
+              <span @click="showDetail(item.activity.id)"><strong style="cursor: pointer;color: #20A0FF;"> {{ item.itemCount }} </strong>个</span>
             </div>
             <div>联盟卡有效天数：
               <span> {{ item.activity.validityDay }} 天</span>
@@ -393,7 +393,6 @@ export default {
               });
               this.socket.on('chatevent', function(data) {
                 let msg = eval('(' + data.message + ')');
-                console.log(msg, 1111)
                 // 避免 socket 重复调用
                 if (!(_this.socketFlag.socketKey == msg.socketKey && _this.socketFlag.status == msg.status)) {
                   if (_this.socketKey == msg.socketKey) {
