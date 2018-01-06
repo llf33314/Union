@@ -270,6 +270,15 @@ public interface IUnionCardService {
     List<Integer> getUnionIdList(List<UnionCard> unionCardList) throws Exception;
 
     /**
+     * 获取对象集对应的的活动id集
+     *
+     * @param unionCardList 对象集
+     * @return List<Id>
+     * @throws Exception 统一处理异常
+     */
+    List<Integer> getActivityIdList(List<UnionCard> unionCardList) throws Exception;
+
+    /**
      * 获取联盟卡列表信息(by myBatisGenerator)
      *
      * @param memberId memberId

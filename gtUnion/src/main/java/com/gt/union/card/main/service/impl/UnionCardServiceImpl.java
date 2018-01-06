@@ -845,6 +845,22 @@ public class UnionCardServiceImpl implements IUnionCardService {
     }
 
     @Override
+    public List<Integer> getActivityIdList(List<UnionCard> unionCardList) throws Exception {
+        if (unionCardList == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        List<Integer> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(unionCardList)) {
+            for (UnionCard unionCard : unionCardList) {
+                result.add(unionCard.getActivityId());
+            }
+        }
+
+        return result;
+    }
+
+    @Override
     public List<UnionCard> listByMemberId(Integer memberId) throws Exception {
         if (memberId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
