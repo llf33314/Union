@@ -24,7 +24,7 @@
         <div class="selectUnion">
           <p>选择联盟</p>
           <el-form-item label="选择联盟:">
-            <el-radio-group v-model="unionId" style="margin-top:10px;margin-bottom: 20px;">
+            <el-radio-group v-model="unionId" style="margin-top:10px;margin-bottom: 20px;" @change="unionIdChange">
               <el-radio-button v-for="item in form2.unionList" :key="item.id" :label="item.id">
                 <el-tooltip class="item" effect="dark" :content="item.name" placement="bottom">
                   <div class="dddddd clearfix">
@@ -269,9 +269,11 @@ export default {
                           let color1 = (v.color1 = v.color.split(',')[0]);
                           let color2 = (v.color2 = v.color.split(',')[1]);
                           let mDiv = 'm' + color2 + i;
-                          setTimeout(function () {
-                            $("." + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
-                          }, 0)
+                          setTimeout(function() {
+                            $(
+                              '.' + mDiv
+                            )[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
+                          }, 0);
                         });
                       }
                       this.activityCheckList = [];
@@ -299,6 +301,36 @@ export default {
           return false;
         }
       });
+    },
+    // 更换选择联盟
+    unionIdChange() {
+      if (this.unionId) {
+        $http
+          .get(`/unionCard/fanId/${this.fanId}/apply?unionId=${this.unionId}`)
+          .then(res => {
+            if (res.data.data) {
+              this.form2.activityList = res.data.data.activityList;
+              if (this.form2.activityList) {
+                this.form2.activityList.forEach((v, i) => {
+                  //todo
+                  let color1 = (v.color1 = v.color.split(',')[0]);
+                  let color2 = (v.color2 = v.color.split(',')[1]);
+                  let mDiv = 'm' + color2 + i;
+                  setTimeout(function() {
+                    $('.' + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
+                  }, 0);
+                });
+              }
+              this.activityCheckList = [];
+              this.isDiscountCard = res.data.data.isDiscountCard;
+              this.discount = res.data.data.currentMember.discount;
+              this.visible2 = true;
+            }
+          })
+          .catch(err => {
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          });
+      }
     },
     // 显示项目详情
     showDetail(id) {

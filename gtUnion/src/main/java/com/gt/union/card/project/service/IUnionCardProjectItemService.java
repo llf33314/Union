@@ -99,6 +99,33 @@ public interface IUnionCardProjectItemService {
      */
     Integer countValidCommittedByUnionIdAndActivityId(Integer unionId, Integer activityId) throws Exception;
 
+    /**
+     * 是否存在未删除的项目优惠;
+     *
+     * @param unionId       联盟id
+     * @param memberId      盟员id
+     * @param activityId    活动id
+     * @param projectStatus 项目状态
+     * @param itemType      优惠类型
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean existValidByUnionIdAndMemberIdAndActivityIdAndProjectStatusAndItemType(Integer unionId, Integer memberId, Integer activityId, Integer projectStatus, Integer itemType) throws Exception;
+
+
+    /**
+     * 是否存在未删除的项目优惠;
+     *
+     * @param unionId        联盟id
+     * @param memberId       盟员id
+     * @param activityIdList 活动id列表
+     * @param projectStatus  项目状态
+     * @param itemType       优惠类型
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean existValidByUnionIdAndMemberIdAndActivityIdListAndProjectStatusAndItemType(Integer unionId, Integer memberId, List<Integer> activityIdList, Integer projectStatus, Integer itemType) throws Exception;
+
     //********************************************* Base On Business - filter ******************************************
 
     /**

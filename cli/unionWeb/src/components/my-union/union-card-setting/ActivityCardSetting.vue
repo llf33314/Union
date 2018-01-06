@@ -89,23 +89,23 @@
         <div class="activityDetailsMain">
           <p>
             <span>活动卡名称：</span>
-            <span >{{ detail.name }}</span>
+            <span>{{ detail.name }}</span>
           </p>
           <p>
             <span>项目报名开始时间：</span>
-            <span >{{ detail.applyBeginTime }}</span>
+            <span>{{ detail.applyBeginTime }}</span>
           </p>
           <p>
             <span>项目报名结束时间：</span>
-            <span >{{ detail.applyEndTime }}</span>
+            <span>{{ detail.applyEndTime }}</span>
           </p>
           <p>
             <span>项目售卡开始时间：</span>
-            <span >{{ detail.sellBeginTime }}</span>
+            <span>{{ detail.sellBeginTime }}</span>
           </p>
           <p>
             <span>项目售卡结束时间：</span>
-            <span >{{ detail.sellEndTime }}</span>
+            <span>{{ detail.sellEndTime }}</span>
           </p>
           <p>
             <span>活动卡售价：</span>
@@ -113,11 +113,11 @@
           </p>
           <p>
             <span>活动卡有效天数：</span>
-            <span >{{ detail.validityDay }} 天</span>
+            <span>{{ detail.validityDay }} 天</span>
           </p>
           <p>
             <span>活动卡发行量：</span>
-            <span >{{ detail.amount }}</span>
+            <span>{{ detail.amount }}</span>
           </p>
           <div class="cardExplain clearfix">
             <span>活动卡说明：</span>
@@ -170,6 +170,12 @@ export default {
     eventBus.$on('newActivityCard', () => {
       this.init();
     });
+    eventBus.$on('newActivityProject', () => {
+      this.init();
+    });
+    eventBus.$on('newActivityCheck', () => {
+      this.init();
+    });
     eventBus.$on('activityDelete', () => {
       this.init();
     });
@@ -195,9 +201,9 @@ export default {
               let color1 = (v.color1 = v.activity.color.split(',')[0]);
               let color2 = (v.color2 = v.activity.color.split(',')[1]);
               let mDiv = 'm' + color2 + i;
-              setTimeout(function () {
-                $("." + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
-              },0);
+              setTimeout(function() {
+                $('.' + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
+              }, 0);
             });
             this.totalAll = res.data.data.total;
           } else {

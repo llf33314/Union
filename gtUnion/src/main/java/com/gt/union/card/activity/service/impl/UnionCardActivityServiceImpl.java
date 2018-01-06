@@ -261,7 +261,7 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
         if (busId == null || unionId == null || fanId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member读权限
+        // 判断union有效性和member读权限
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
@@ -269,16 +269,20 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-        // （2）	判断fanId有效性
+        // 判断fanId有效性
         UnionCardFan fan = unionCardFanService.getValidById(fanId);
         if (fan == null) {
             throw new BusinessException("找不到粉丝信息");
         }
-        // （3）	获取粉丝所有有效的活动卡信息
+        // 过滤掉商家没有有效的非erp文本优惠的活动卡
         List<CardActivityConsumeVO> result = new ArrayList<>();
         List<UnionCard> validActivityCardList = unionCardService.listValidUnexpiredByUnionIdAndFanIdAndType(unionId, fanId, CardConstant.TYPE_ACTIVITY);
         if (ListUtil.isNotEmpty(validActivityCardList)) {
             for (UnionCard validActivityCard : validActivityCardList) {
+                if (!unionCardProjectItemService.existValidByUnionIdAndMemberIdAndActivityIdAndProjectStatusAndItemType(
+                        unionId, member.getId(), validActivityCard.getActivityId(), ProjectConstant.STATUS_ACCEPT, ProjectConstant.TYPE_TEXT)) {
+                    continue;
+                }
                 CardActivityConsumeVO vo = new CardActivityConsumeVO();
                 vo.setActivityCard(validActivityCard);
 

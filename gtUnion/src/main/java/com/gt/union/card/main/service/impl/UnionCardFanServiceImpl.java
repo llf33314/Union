@@ -3,6 +3,7 @@ package com.gt.union.card.main.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.api.client.dict.IDictService;
+import com.gt.union.card.activity.service.IUnionCardActivityService;
 import com.gt.union.card.main.constant.CardConstant;
 import com.gt.union.card.main.dao.IUnionCardFanDao;
 import com.gt.union.card.main.entity.UnionCard;
@@ -13,6 +14,8 @@ import com.gt.union.card.main.service.IUnionCardService;
 import com.gt.union.card.main.vo.CardFanDetailVO;
 import com.gt.union.card.main.vo.CardFanSearchVO;
 import com.gt.union.card.main.vo.CardFanVO;
+import com.gt.union.card.project.constant.ProjectConstant;
+import com.gt.union.card.project.service.IUnionCardProjectItemService;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
@@ -55,6 +58,12 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
 
     @Autowired
     private IDictService dictService;
+
+    @Autowired
+    private IUnionCardProjectItemService unionCardProjectItemService;
+
+    @Autowired
+    private IUnionCardActivityService unionCardActivityService;
 
     //********************************************* Base On Business - get *********************************************
 
@@ -104,27 +113,27 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         if (busId == null || numberOrPhone == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断numberOrPhone有效性
+        // 判断numberOrPhone有效性
         UnionCardFan fan = getValidByNumberOrPhone(numberOrPhone);
         if (fan == null) {
             throw new BusinessException("联盟卡不存在");
         }
-        // （2）	获取商家所有有效的unionList
+        // 获取商家所有有效的unionList
         List<UnionMember> busMemberList = unionMemberService.listValidReadByBusId(busId);
         if (optUnionId != null) {
             busMemberList = unionMemberService.filterByUnionId(busMemberList, optUnionId);
         }
         List<Integer> busUnionIdList = unionMemberService.getUnionIdList(busMemberList);
-        // （3）	过滤掉一些粉丝没办折扣卡的union
-        List<UnionCard> cardList = unionCardService.listValidUnexpiredByFanIdAndType(fan.getId(), CardConstant.TYPE_DISCOUNT);
-        List<Integer> fanUnionIdList = unionCardService.getUnionIdList(cardList);
+        // 滤掉一些粉丝没办折扣卡的union
+        List<UnionCard> discountCardList = unionCardService.listValidUnexpiredByFanIdAndType(fan.getId(), CardConstant.TYPE_DISCOUNT);
+        List<Integer> fanUnionIdList = unionCardService.getUnionIdList(discountCardList);
 
         List<Integer> tgtUnionIdList = ListUtil.intersection(busUnionIdList, fanUnionIdList);
-        // （4）	如果没有剩余的union，则返回，否则，进行下一步
+        // 如果没有剩余的union，则返回，否则，进行下一步
         if (ListUtil.isEmpty(tgtUnionIdList)) {
             return null;
         }
-        // （5）	判断unionId是否在剩余的union中，如果是，则当前联盟为该union，否则默认为第一个union
+        // 判断unionId是否在剩余的union中，如果是，则当前联盟为该union，否则默认为第一个union
         CardFanSearchVO result = new CardFanSearchVO();
         result.setFan(fan);
         List<UnionMain> tgtUnionList = unionMainService.listByIdList(tgtUnionIdList);
@@ -134,16 +143,21 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         UnionMain currentUnion = unionMainService.getValidById(currentUnionId);
         result.setCurrentUnion(currentUnion);
 
-        // （6）	获取union对应的member，获得折扣信息
+        // 获取union对应的member，获得折扣信息
         UnionMember currentMember = unionMemberService.getValidReadByBusIdAndUnionId(busId, currentUnionId);
         result.setCurrentMember(currentMember);
 
-        // （7）	获取粉丝联盟积分
+        // 获取粉丝联盟积分
         Double unionIntegral = unionCardIntegralService.sumValidIntegralByUnionIdAndFanId(currentUnionId, fan.getId());
         result.setIntegral(unionIntegral);
 
-        // （8）	如果粉丝在union下的存在有效的活动卡，则优惠项目可用；否则，不可用
-        boolean isProjectAvailable = unionCardService.existValidUnexpiredByUnionIdAndFanIdAndType(currentUnionId, fan.getId(), CardConstant.TYPE_ACTIVITY);
+        // 判断优惠项目是否可用
+        boolean isProjectAvailable = false;
+        List<UnionCard> activityCardList = unionCardService.listValidUnexpiredByFanIdAndType(fan.getId(), CardConstant.TYPE_ACTIVITY);
+        if (ListUtil.isNotEmpty(activityCardList)) {
+            isProjectAvailable = unionCardProjectItemService.existValidByUnionIdAndMemberIdAndActivityIdListAndProjectStatusAndItemType(
+                    currentUnionId, currentMember.getId(), unionCardService.getIdList(activityCardList), ProjectConstant.STATUS_ACCEPT, ProjectConstant.TYPE_TEXT);
+        }
         result.setIsProjectAvailable(isProjectAvailable ? CommonConstant.COMMON_YES : CommonConstant.COMMON_NO);
 
         // （9）	获取消费多少积分可以抵扣1元配置

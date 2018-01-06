@@ -151,7 +151,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
                     return -1;
                 }
                 if (MemberConstant.IS_UNION_OWNER_YES == o2.getIsUnionOwner()) {
-                    return -2;
+                    return 1;
                 }
 
                 return o1.getCreateTime().compareTo(o2.getCreateTime());
@@ -297,7 +297,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (busId == null || unionId == null || fanId == null || activityIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member写权限
+        // 判断union有效性和member写权限
         UnionMain union = unionMainService.getValidById(unionId);
         if (!unionMainService.isUnionValid(union)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
@@ -306,12 +306,12 @@ public class UnionCardServiceImpl implements IUnionCardService {
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-        // （2）	判断fanId有效性
+        // 判断fanId有效性
         UnionCardFan fan = unionCardFanService.getValidById(fanId);
         if (fan == null) {
             throw new BusinessException("找不到粉丝信息");
         }
-        // （3）	判断是否已办理过折扣卡，如果没有，则自动办理
+        // 	判断是否已办理过折扣卡，如果没有，且是只办折扣卡，则自动办理
         Date currentDate = DateUtil.getCurrentDate();
         UnionCard discountCard = getValidUnexpiredByUnionIdAndFanIdAndType(unionId, fanId, CardConstant.TYPE_DISCOUNT);
         UnionCard saveDiscountCard = null;
@@ -333,11 +333,9 @@ public class UnionCardServiceImpl implements IUnionCardService {
             }
             throw new BusinessException("请选择活动卡信息");
         }
-        // （4）	判断activity有效性
-        List<UnionCard> saveCardList = new ArrayList<>();
-        if (saveDiscountCard != null) {
-            saveCardList.add(saveDiscountCard);
-        }
+        // 新增未付款的联盟卡购买记录，并返回支付链接
+        List<UnionCardRecord> saveCardRecordList = new ArrayList<>();
+        String orderNo = "LM" + ConfigConstant.PAY_MODEL_CARD + DateUtil.getSerialNumber();
         BigDecimal payMoneySum = BigDecimal.ZERO;
         if (ListUtil.isNotEmpty(activityIdList)) {
             for (Integer activityId : activityIdList) {
@@ -355,44 +353,22 @@ public class UnionCardServiceImpl implements IUnionCardService {
                 if (existValidUnexpiredByUnionIdAndFanIdAndActivityId(unionId, fan.getId(), activity.getId())) {
                     throw new BusinessException("已办理活动卡");
                 }
-                UnionCard saveActivityCard = new UnionCard();
-                saveActivityCard.setDelStatus(CommonConstant.DEL_STATUS_NO);
-                saveActivityCard.setCreateTime(currentDate);
-                saveActivityCard.setType(CardConstant.TYPE_ACTIVITY);
-                saveActivityCard.setFanId(fanId);
-                saveActivityCard.setMemberId(member.getId());
-                saveActivityCard.setUnionId(unionId);
-                saveActivityCard.setActivityId(activityId);
-                saveActivityCard.setName(activity.getName());
-                saveActivityCard.setValidity(DateUtil.addDays(currentDate, activity.getValidityDay()));
-                saveCardList.add(saveActivityCard);
+
+                UnionCardRecord saveCardRecord = new UnionCardRecord();
+                saveCardRecord.setDelStatus(CommonConstant.COMMON_NO);
+                saveCardRecord.setCreateTime(currentDate);
+                saveCardRecord.setFanId(fanId);
+                saveCardRecord.setMemberId(member.getId());
+                saveCardRecord.setUnionId(unionId);
+                saveCardRecord.setActivityId(activityId);
+                saveCardRecord.setSysOrderNo(orderNo);
+                saveCardRecord.setPayMoney(activity.getPrice());
+                saveCardRecord.setPayStatus(CardConstant.PAY_STATUS_PAYING);
+
+                saveCardRecordList.add(saveCardRecord);
 
                 payMoneySum = BigDecimalUtil.add(payMoneySum, activity.getPrice());
             }
-        }
-        saveBatch(saveCardList);
-        // （6）	新增未付款的联盟卡购买记录，并返回支付链接
-        List<UnionCardRecord> saveCardRecordList = new ArrayList<>();
-        String orderNo = "LM" + ConfigConstant.PAY_MODEL_CARD + DateUtil.getSerialNumber();
-        for (UnionCard saveCard : saveCardList) {
-            if (CardConstant.TYPE_ACTIVITY != saveCard.getType()) {
-                continue;
-            }
-            UnionCardActivity activity = unionCardActivityService.getValidByIdAndUnionId(saveCard.getActivityId(), unionId);
-
-            UnionCardRecord saveCardRecord = new UnionCardRecord();
-            saveCardRecord.setDelStatus(CommonConstant.COMMON_NO);
-            saveCardRecord.setCreateTime(currentDate);
-            saveCardRecord.setFanId(fanId);
-            saveCardRecord.setMemberId(member.getId());
-            saveCardRecord.setUnionId(unionId);
-            saveCardRecord.setCardId(saveCard.getId());
-            saveCardRecord.setActivityId(saveCard.getActivityId());
-            saveCardRecord.setSysOrderNo(orderNo);
-            saveCardRecord.setPayMoney(activity.getPrice());
-            saveCardRecord.setPayStatus(CardConstant.PAY_STATUS_PAYING);
-
-            saveCardRecordList.add(saveCardRecord);
         }
 
         UnionPayVO result = unionCardApplyService.unionCardApply(orderNo, BigDecimalUtil.toDouble(payMoneySum), busId, unionId, activityIdList);
@@ -439,23 +415,25 @@ public class UnionCardServiceImpl implements IUnionCardService {
             return JSONObject.toJSONString(result);
         }
 
-        // （1）	判断recordIds有效性
         try {
+            // 判断recordIds有效性
             List<UnionCardRecord> recordList = unionCardRecordService.listValidByOrderNo(orderNo);
             if (ListUtil.isEmpty(recordList)) {
                 throw new BusinessException("没有支付信息");
             }
+
+            List<UnionCardRecord> updateRecordList = new ArrayList<>();
+            Date currentDate = DateUtil.getCurrentDate();
             for (UnionCardRecord record : recordList) {
+                // 如果recordIds的支付状态存在已处理，则直接返回成功
                 Integer payStatus = record.getPayStatus();
                 if (CardConstant.PAY_STATUS_SUCCESS == payStatus || CardConstant.PAY_STATUS_FAIL == payStatus || CardConstant.PAY_STATUS_RETURN == payStatus) {
                     result.put("code", 0);
                     result.put("msg", "重复处理");
                     return JSONObject.toJSONString(result);
                 }
-            }
 
-            List<UnionCardRecord> updateRecordList = new ArrayList<>();
-            for (UnionCardRecord record : recordList) {
+                // 根据订单信息生成活动卡
                 UnionCardRecord updateRecord = new UnionCardRecord();
                 updateRecord.setId(record.getId());
                 updateRecord.setPayStatus(CommonConstant.COMMON_YES == isSuccess ? BrokerageConstant.PAY_STATUS_SUCCESS : BrokerageConstant.PAY_STATUS_FAIL);
@@ -466,7 +444,43 @@ public class UnionCardServiceImpl implements IUnionCardService {
                     updateRecord.setPayType(BrokerageConstant.PAY_TYPE_ALIPAY);
                     updateRecord.setAlipayOrderNo(payOrderNo);
                 }
+
+                UnionCard saveActivityCard = new UnionCard();
+                saveActivityCard.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                saveActivityCard.setCreateTime(currentDate);
+                saveActivityCard.setType(CardConstant.TYPE_ACTIVITY);
+                saveActivityCard.setFanId(record.getFanId());
+                saveActivityCard.setMemberId(record.getMemberId());
+                saveActivityCard.setUnionId(record.getUnionId());
+                UnionCardActivity activity = unionCardActivityService.getById(record.getActivityId());
+                if (activity != null) {
+                    saveActivityCard.setActivityId(activity.getId());
+                    saveActivityCard.setName(activity.getName());
+                    saveActivityCard.setValidity(DateUtil.addDays(currentDate, activity.getValidityDay()));
+                }
+                save(saveActivityCard);
+
+                updateRecord.setCardId(saveActivityCard.getId());
                 updateRecordList.add(updateRecord);
+            }
+
+            // 自动办理折扣卡
+            UnionCardRecord tempRecord = recordList.get(0);
+            Integer unionId = tempRecord.getUnionId();
+            Integer fanId = tempRecord.getFanId();
+            if (!existValidUnexpiredByUnionIdAndFanIdAndType(unionId, fanId, CardConstant.TYPE_DISCOUNT)) {
+                UnionCard saveDiscountCard = new UnionCard();
+                saveDiscountCard.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                saveDiscountCard.setCreateTime(currentDate);
+                saveDiscountCard.setType(CardConstant.TYPE_DISCOUNT);
+                saveDiscountCard.setFanId(fanId);
+                saveDiscountCard.setMemberId(tempRecord.getMemberId());
+                saveDiscountCard.setUnionId(unionId);
+                UnionMain union = unionMainService.getById(unionId);
+                saveDiscountCard.setName((union != null ? union.getName() : "") + "折扣卡");
+                saveDiscountCard.setValidity(DateUtil.addYears(currentDate, 10));
+
+                save(saveDiscountCard);
             }
 
             List<UnionCardSharingRecord> saveSharingRecordList = new ArrayList<>();
@@ -482,7 +496,6 @@ public class UnionCardServiceImpl implements IUnionCardService {
                 saveIncomeList = getSaveIncomeList(saveSharingRecordList);
             }
 
-            // （2）	如果recordIds的支付状态存在已处理，则直接返回成功
             if (ListUtil.isNotEmpty(updateRecordList)) {
                 unionCardRecordService.updateBatch(updateRecordList);
             }
@@ -543,7 +556,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
         BigDecimal surplusSharingRatio = BigDecimalUtil.subtract(1.0, sharedRatioSum);
         BigDecimal surplusSharingMoney = BigDecimalUtil.subtract(payMoney, sharedMoneySum);
         if (surplusSharingRatio.doubleValue() > 0 && surplusSharingMoney.doubleValue() > 0) {
-            Integer surplusSharingRatioMemberId = (isIncludeUnionOwnerId || isIncludeInvalidMemberId)
+            Integer surplusSharingRatioMemberId = (isIncludeUnionOwnerId || isIncludeInvalidMemberId || ListUtil.isEmpty(ratioList))
                     ? unionMemberService.getValidOwnerByUnionId(record.getUnionId()).getId() : ratioList.get(0).getMemberId();
 
             UnionCardSharingRecord ownerSaveSharingRecord = new UnionCardSharingRecord();

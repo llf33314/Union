@@ -440,7 +440,11 @@ export default {
       let data = {};
       data.unionId = this.unionId - 0;
       data.fanId = this.form.fan.id - 0;
-      data.shopId = this.shopId - 0;
+      if (this.shopId) {
+        data.shopId = this.shopId - 0;
+      } else {
+        shopId = '';
+      }
       data.isUseIntegral = (this.isIntegral_ && this.form.integral) - 0;
       data.consume = {};
       data.consume.consumeMoney = this.price - 0;
@@ -471,7 +475,11 @@ export default {
         let data = {};
         data.unionId = this.unionId - 0;
         data.fanId = this.form.fan.id - 0;
-        data.shopId = this.shopId - 0;
+        if (this.shopId) {
+          data.shopId = this.shopId - 0;
+        } else {
+          shopId = '';
+        }
         data.isUseIntegral = (this.isIntegral_ && this.form.integral) - 0;
         data.consume = {};
         data.consume.consumeMoney = this.price - 0;
@@ -548,8 +556,7 @@ export default {
     },
     // 返回
     back() {
-      this.visible1 = true;
-      this.visible2 = false;
+      this.init();
     },
     // 初始化
     init() {
@@ -598,7 +605,7 @@ export default {
     color: #ff4949;
     font-size: 20px;
   }
-  .color-1{
+  .color-1 {
     color: #ff4949;
   }
   .el-form-item {

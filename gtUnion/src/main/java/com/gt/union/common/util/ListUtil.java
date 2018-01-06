@@ -106,4 +106,23 @@ public class ListUtil {
         return toList(toSet(list));
     }
 
+    /**
+     * 以逗号分隔转成字符串
+     *
+     * @param list 列表
+     * @param <T>  类型
+     * @return List<T>
+     */
+    public static <T> String toString(List<T> list) {
+        StringBuilder sb = new StringBuilder();
+
+        for (T e : list) {
+            sb.append(e.toString()).append(",");
+        }
+
+        String result = sb.toString();
+
+        return StringUtil.isEmpty(result) ? result : result.substring(0, result.length() - 1);
+    }
+
 }

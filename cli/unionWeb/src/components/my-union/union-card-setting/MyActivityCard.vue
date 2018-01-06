@@ -5,7 +5,7 @@
       <div style="margin-top: 10px;">
         <div style="float: right;color: #666666" v-if="projectData.project.status">项目/商品 状态：
           <span style="color: #20A0FF"> {{ projectData.project.status }} </span>
-          <span class="icon" @click="visible1 =!visible1">!</span>
+          <span class="icon" @click="showCheckRecord">!</span>
           <!-- 审核记录 -->
           <check-record :activityId="this.activityId" v-show="visible1" class="auditRecord"></check-record>
         </div>
@@ -35,7 +35,7 @@
     <!-- 页面底部固定 -->
     <footer v-if="canEdit">
       <el-button @click="save">保存</el-button>
-      <el-button type="primary" @click="visible=true">提交审核</el-button>
+      <el-button type="primary" @click="visible=true" :disabled="!canSubmitFlag">提交审核</el-button>
     </footer>
     <!-- 弹出框 确认提交审核 -->
     <div class="model_2">
@@ -97,6 +97,17 @@ export default {
     },
     activityId() {
       return this.$route.params.id;
+    },
+    canSubmitFlag() {
+      if (
+        this.projectData.nonErpTextList.length < 1 &&
+        this.projectData.erpTextList.length < 1 &&
+        this.projectData.erpGoodsList.length < 1
+      ) {
+        return false;
+      } else {
+        return true;
+      }
     }
   },
   mounted: function() {
@@ -136,6 +147,15 @@ export default {
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
         });
+    },
+    // 显示隐藏审核记录
+    showCheckRecord() {
+      if (this.visible1) {
+        this.visible1 = false;
+      } else {
+        eventBus.$emit('showCheckRecord');
+        this.visible1 = true;
+      }
     },
     // 更新非ERP项目
     nonErpTextListUpdate(value) {
@@ -218,6 +238,7 @@ export default {
             .then(res => {
               if (res.data.success) {
                 this.$message({ showClose: true, message: '提交审核成功', type: 'success', duration: 5000 });
+                eventBus.$emit('newActivityProject');
                 this.init();
                 this.visible = false;
               }
@@ -245,6 +266,7 @@ export default {
             .then(res => {
               if (res.data.success) {
                 this.$message({ showClose: true, message: '提交审核成功', type: 'success', duration: 5000 });
+                eventBus.$emit('newActivityProject');
                 this.init();
                 this.visible = false;
               }
