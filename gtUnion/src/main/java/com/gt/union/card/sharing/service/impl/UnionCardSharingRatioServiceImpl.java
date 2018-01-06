@@ -261,7 +261,7 @@ public class UnionCardSharingRatioServiceImpl implements IUnionCardSharingRatioS
         String autoEqualDivisionRatioLockKey = UnionCardSharingRatioCacheUtil.getAutoEqualDivisionRatioLockKey();
         try {
             RedissonLockUtil.lock(autoEqualDivisionRatioLockKey, 5);
-            if (!existValidByUnionIdAndActivityId(unionId, activityId) && activity.getSellBeginTime().compareTo(DateUtil.getCurrentDate()) > 0) {
+            if (!existValidByUnionIdAndActivityId(unionId, activityId) && activity.getSellBeginTime().compareTo(DateUtil.getCurrentDate()) < 0) {
                 Date currentDate = DateUtil.getCurrentDate();
                 boolean isIncludeUnionOwnerId = unionCardProjectService.existUnionOwnerId(projectList);
                 projectList = unionCardProjectService.filterInvalidMemberId(projectList);
