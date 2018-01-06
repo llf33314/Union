@@ -151,7 +151,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
                     return -1;
                 }
                 if (MemberConstant.IS_UNION_OWNER_YES == o2.getIsUnionOwner()) {
-                    return -2;
+                    return 1;
                 }
 
                 return o1.getCreateTime().compareTo(o2.getCreateTime());
