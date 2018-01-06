@@ -46,9 +46,9 @@
                 <el-checkbox-group v-model="activityCheckList">
                   <!-- label 写死？ -->
                   <el-checkbox-button v-if="isDiscountCard" :label="0" disabled>
-                    <div class="clearfix">
+                    <div class="clearfix SelectunionImg1">
                       <!-- todo 更改样式 -->
-                      <img alt="" class="fl SelectunionImg" style="background-image: linear-gradient(90deg, #B1503D 0%, #A52B2C 100%)">
+                      <img alt="" class="fl SelectunionImg " style="background-image: linear-gradient(90deg, #B1503D 0%, #A52B2C 100%)">
                       <div class="fl" style="margin-left: 20px;position: absolute;top: 62px;left: 33px;">
                         <h6 style="margin-bottom: 17px;color: #333333"> 联盟折扣卡 </h6>
                       </div>
@@ -79,7 +79,7 @@
           <!--活动卡服务-->
           <div class="cardService" v-for="item in form2.activityList" :key="item.id" v-show="activityCheckList.indexOf(item.id) > -1">
             <p> {{ item.name }} </p>
-            <div style="margin-left: 82px;">服务项目：
+            <div style="margin-left: 82px;cursor: pointer;color: #2a2a2a;">服务项目：
               <span @click="showDetail(item.id)"> {{ item.amount }} 个</span>
             </div>
             <div>联盟卡有效天数：
@@ -113,7 +113,16 @@
       <hr>
       <el-table :data="detailTableData">
         <el-table-column prop="member.enterpriseName" label="企业名称"></el-table-column>
-        <el-table-column prop="nameList" label="活动卡项目名称"></el-table-column>
+        <el-table-column prop="nameList" label="活动卡项目名称">
+          <template slot-scope="scope">
+            <el-popover trigger="hover" placement="bottom">
+              <p v-for="item in scope.row.itemList" :key="item.id">项目名称：{{ item.name }}, 数量：{{ item.number }}</p>
+              <div slot="reference" class="name-wrapper">
+                <span>{{ scope.row.itemList_ }}</span>
+              </div>
+            </el-popover>
+          </template>
+        </el-table-column>
       </el-table>
     </el-dialog>
   </div>
@@ -134,8 +143,8 @@ export default {
       labelPosition: 'right',
       fanId: '',
       form1: {
-        phone: '',
-        code: '',
+        phone: '18202028209',
+        code: '1234',
         getVerificationCode: false,
         countDownTime: ''
       },
@@ -294,7 +303,7 @@ export default {
     // 显示项目详情
     showDetail(id) {
       $http
-        .get(`/unionCardActivity/${id}/unionId/${this.unionId}/apply/itemCount`)
+        .get(`/unionCardActivity/${id}/unionId/2/apply/itemCount`)
         .then(res => {
           if (res.data.data) {
             this.detailTableData = res.data.data;

@@ -12,6 +12,14 @@
           <el-table-column prop="member.enterpriseName" label="盟员名称">
           </el-table-column>
           <el-table-column prop="itemList_" label="项目名称">
+            <template slot-scope="scope">
+              <el-popover trigger="hover" placement="bottom">
+                <p v-for="item in scope.row.itemList" :key="item.id">项目名称：{{ item.name }}, 数量：{{ item.number }}</p>
+                <div slot="reference" class="name-wrapper">
+                  <span>{{ scope.row.itemList_ }}</span>
+                </div>
+              </el-popover>
+            </template>
           </el-table-column>
         </el-table>
         <div style="margin: 15px 0 25px;">

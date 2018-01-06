@@ -119,9 +119,9 @@
             <span>活动卡发行量：</span>
             <span >{{ detail.amount }}</span>
           </p>
-          <div class="cardExplain">
+          <div class="cardExplain clearfix">
             <span>活动卡说明：</span>
-            <span>{{ detail.illustration }}活动卡说明：活动卡说明：活动卡说明：活动卡说明：活动卡说明：活动卡说明：活动卡说明：活动卡说明：活动卡说明：活动卡说明：活动卡说明：活动卡说明：活动卡说明：活动卡说明：活动卡说明：活动卡说明：活动卡说明：</span>
+            <span>{{ detail.illustration}}</span>
           </div>
         </div>
       </el-dialog>

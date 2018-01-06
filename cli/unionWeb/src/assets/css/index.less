@@ -862,16 +862,14 @@ hr{
                 }
               }
               .cardExplain{
-                display: flex;
                 margin-bottom: 35px;
                 >span:nth-child(1){
-                  display: block;
-                  width: 630px;
+                  width: 150px;
                   text-align: right;
+                  float: left;
                 }
                 >span:nth-child(2){
                   margin-left: 55px;
-                  float: left;
                 }
               }
             }
@@ -1169,6 +1167,7 @@ hr{
     }
     //动态切换页面的样式
     #MyActivityCard{
+      min-height: 625px;
       //适应变量
       .explain{
         #ActivityCardSetting> .explain;
@@ -1215,17 +1214,22 @@ hr{
         }
         .bottom_{
           margin: 20px 30px;
-          >p{
-            color: #90a4ae;
-          }
+          height: 378px;
+          overflow-y: auto;
           >div{
-            display: inline-block;
-            height: 30px;
-            line-height: 30px;
-            background-color: #f6f8fa;
-            border-radius: 20px;
-            padding:10px 20px;
-            margin-top: 13px;
+            >p{
+              color: #90a4ae;
+            }
+            >div {
+              display: inline-block;
+              height: 30px;
+              line-height: 30px;
+              background-color: #f6f8fa;
+              color: #54667b;
+              border-radius: 20px;
+              padding: 10px 20px;
+              margin: 13px 0;
+            }
           }
         }
       }
@@ -2031,6 +2035,18 @@ hr{
                   width: 200px;
                   height: 46px;
                   background-image: linear-gradient(90deg, #06bd7d 0%, #00935f 100%);
+                }
+                .SelectunionImg1{
+                  i{
+                    display: block;
+                    width:200px;
+                    height:46px;
+                    position: absolute;
+                    background: rgba(35,34,34,.5) url('../../assets/images/dagou.png') no-repeat center;
+                    top: 0;
+                    left:0;
+                    border-radius: 4px 0 0 4px;
+                  }
                 }
                 .el-checkbox-button.is-checked .el-checkbox-button__inner{
                   background-color: #96a3ad;
