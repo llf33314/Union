@@ -80,7 +80,7 @@
           <div class="cardService" v-for="item in form2.activityList" :key="item.activity.id" v-show="activityCheckList.indexOf(item.activity.id) > -1">
             <p> {{ item.activity.name }} </p>
             <div style="margin-left: 82px;cursor: pointer;color: #2a2a2a;">服务项目：
-              <span @click="showDetail(item.activity.id)"> {{ item.itemCount }} 个</span>
+              <span @click="showDetail(item.id)"><strong style="cursor: pointer;color: #20A0FF;"> {{ item.amount }} </strong>个</span>
             </div>
             <div>联盟卡有效天数：
               <span> {{ item.activity.validityDay }} 天</span>

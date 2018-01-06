@@ -1777,6 +1777,8 @@ hr {
   top: 32%;
   cursor: pointer;
   font-style: normal!important;
+  text-align: center;
+  font-size: 20px;
 }
 #front #transaction .uninCardContent > form .selectUnionCard .SwitchAround .forward {
   left: 0;

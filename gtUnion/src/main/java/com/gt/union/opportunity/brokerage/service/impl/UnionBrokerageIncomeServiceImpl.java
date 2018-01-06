@@ -50,10 +50,10 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	获取商家所有有效的member
+        // 获取商家所有有效的member
         List<UnionMember> memberList = unionMemberService.listByBusId(busId);
         List<Integer> fromMemberIdList = unionMemberService.getIdList(memberList);
-        // （2）分页查询结果
+        // 分页查询结果
         EntityWrapper<UnionOpportunity> opportunityEntityWrapper = new EntityWrapper<>();
         opportunityEntityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("accept_status", OpportunityConstant.ACCEPT_STATUS_CONFIRMED)

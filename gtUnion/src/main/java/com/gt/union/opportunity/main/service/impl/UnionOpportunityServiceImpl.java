@@ -96,13 +96,13 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         if (busId == null || unionId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	获取我的盟员信息
+        // 获取我的盟员信息
         List<UnionMember> memberList = unionMemberService.listByBusIdAndUnionId(busId, unionId);
         if (ListUtil.isEmpty(memberList)) {
             throw new BusinessException(CommonConstant.MEMBER_NOT_FOUND);
         }
         List<Integer> memberIdList = unionMemberService.getIdList(memberList);
-        // （2）	获取已接受的我推荐的商机，区分是否已支付
+        // 获取已接受的我推荐的商机，区分是否已支付
         OpportunityStatisticsVO result = new OpportunityStatisticsVO();
         List<UnionOpportunity> incomeOpportunityList = listValidByUnionIdAndFromMemberIdListAndAcceptStatus(unionId, memberIdList, OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
         List<UnionOpportunity> paidIncomeOpportunityList = filterByIsClose(incomeOpportunityList, OpportunityConstant.IS_CLOSE_YES);
@@ -125,7 +125,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
         BigDecimal incomeSum = BigDecimalUtil.add(paidIncome, unPaidIncome);
         result.setIncomeSum(BigDecimalUtil.toDouble(incomeSum));
-        // （3）	获取已接受的推荐给我的商机，区分是否已支付
+        // 获取已接受的推荐给我的商机，区分是否已支付
         List<UnionOpportunity> expenseOpportunityList = listValidByUnionIdAndToMemberIdListAndAcceptStatus(unionId, memberIdList, OpportunityConstant.ACCEPT_STATUS_CONFIRMED);
         List<UnionOpportunity> paidExpenseOpportunityList = filterByIsClose(expenseOpportunityList, OpportunityConstant.IS_CLOSE_YES);
         BigDecimal paidExpense = BigDecimal.ZERO;
@@ -147,7 +147,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
         BigDecimal expenseSum = BigDecimalUtil.add(paidExpense, unPaidExpense);
         result.setExpenseSum(BigDecimalUtil.toDouble(expenseSum));
-        // （4）	获取一周内商机收支信息
+        // 获取一周内商机收支信息
         Date indexDay = DateUtil.getMondayInWeek();
         String strIndexDay = DateUtil.getDateString(indexDay, DateUtil.DATE_PATTERN);
         for (int i = 0; i < 7; i++) {
@@ -331,14 +331,14 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         if (page == null || busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	获取商家所有有效的member
+        // 获取商家所有有效的member
         List<UnionMember> memberList = unionMemberService.listValidReadByBusId(busId);
-        // （2）	根据unionId过滤掉一些member
+        // 根据unionId过滤掉一些member
         if (optUnionId != null) {
             memberList = unionMemberService.filterByUnionId(memberList, optUnionId);
         }
         List<Integer> fromMemberIdList = unionMemberService.getIdList(memberList);
-        // （3）根据查询条件进行过滤
+        // 数据源
         List<Integer> acceptStatusList = getAcceptStatusList(optAcceptStatus);
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
@@ -351,6 +351,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
                         " AND m.del_status=" + CommonConstant.DEL_STATUS_NO)
                 .orderBy("accept_status ASC,create_time", false);
         Page result = unionOpportunityDao.selectPage(page, entityWrapper);
+        // toVO
         List<UnionOpportunity> resultDataList = result.getRecords();
         result.setRecords(getOpportunityVOList(resultDataList));
 
@@ -362,14 +363,14 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         if (page == null || busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	获取商家所有有效的member
+        // 获取商家所有有效的member
         List<UnionMember> memberList = unionMemberService.listValidReadByBusId(busId);
-        // （2）	根据unionId过滤掉一些member
+        // 根据unionId过滤掉一些member
         if (optUnionId != null) {
             memberList = unionMemberService.filterByUnionId(memberList, optUnionId);
         }
         List<Integer> toMemberIdList = unionMemberService.getIdList(memberList);
-        // （3）根据查询条件进行过滤
+        // 数据源
         List<Integer> acceptStatusList = getAcceptStatusList(optAcceptStatus);
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
@@ -382,6 +383,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
                         " AND m.del_status=" + CommonConstant.DEL_STATUS_NO)
                 .orderBy("accept_status ASC,create_time", false);
         Page result = unionOpportunityDao.selectPage(page, entityWrapper);
+        // toVO
         List<UnionOpportunity> resultDataList = result.getRecords();
         result.setRecords(getOpportunityVOList(resultDataList));
 
@@ -452,16 +454,17 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         if (busId == null || unionId == null || vo == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member读权限
+        // 判断union有效性
         UnionMain union = unionMainService.getValidById(unionId);
         if (!unionMainService.isUnionValid(union)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-        // （2）	校验表单数据
+        // 校验表单数据
         UnionOpportunity saveOpportunity = new UnionOpportunity();
         saveOpportunity.setDelStatus(CommonConstant.DEL_STATUS_NO);
         saveOpportunity.setCreateTime(DateUtil.getCurrentDate());
@@ -510,7 +513,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
         save(saveOpportunity);
 
-        // （3）发送短信通知
+        // 短信通知
         String phone = StringUtil.isNotEmpty(toMember.getNotifyPhone()) ? toMember.getNotifyPhone() : toMember.getDirectorPhone();
         String content = "\"" + union.getName() + "\"的盟员\""
                 + member.getEnterpriseName() + "\"为你推荐了客户，请到商机消息处查看。客户信息："
@@ -528,21 +531,22 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         if (opportunityId == null || unionId == null || busId == null || isAccept == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member读权限
+        // 判断union有效性
         UnionMain union = unionMainService.getValidById(unionId);
         if (!unionMainService.isUnionValid(union)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-        // （2）	判断opportunityId有效性
+        // 判断opportunityId有效性
         UnionOpportunity opportunity = getValidByIdAndUnionIdAndToMemberIdAndAcceptStatus(opportunityId, unionId, member.getId(), OpportunityConstant.ACCEPT_STATUS_CONFIRMING);
         if (opportunity == null) {
             throw new BusinessException("找不到商机信息");
         }
-        // （3）	接受时受理金额不能为空，且需大于0
+        // 接受时受理金额不能为空，且需大于0
         UnionOpportunity updateOpportunity = new UnionOpportunity();
         if (CommonConstant.COMMON_YES == isAccept) {
             if (acceptPrice == null || acceptPrice < 1) {
@@ -562,7 +566,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         }
 
         update(updateOpportunity);
-        // （5）发送短信通知
+        // 短信通知
         UnionMember fromMember = unionMemberService.getValidReadByIdAndUnionId(opportunity.getFromMemberId(), unionId);
         if (fromMember != null) {
             String phone = StringUtil.isNotEmpty(fromMember.getNotifyPhone()) ? fromMember.getNotifyPhone() : fromMember.getDirectorPhone();

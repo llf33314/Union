@@ -185,7 +185,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
                 }
 
                 vo.setShopName(consume.getShopName());
-                
+
                 result.add(vo);
             }
         }
@@ -314,20 +314,21 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         if (busId == null || unionId == null || fanId == null || vo == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        // （1）	判断union有效性和member写权限
+        // 判断union有效性
         if (!unionMainService.isUnionValid(unionId)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
+        // 判断member读权限
         UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
         if (member == null) {
             throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
         }
-        // （2）	判断fanId有效性
+        // 判断fanId有效性
         UnionCardFan fan = unionCardFanService.getValidById(fanId);
         if (fan == null) {
             throw new BusinessException("找不到粉丝信息");
         }
-        // （3）	校验表单数据
+        // 校验表单
         UnionConsume saveConsume = new UnionConsume();
         saveConsume.setDelStatus(CommonConstant.DEL_STATUS_NO);
         Date currentDate = DateUtil.getCurrentDate();
@@ -497,7 +498,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             return JSONObject.toJSONString(result);
         }
 
-        // （1）	判断consumeId有效性
+        // 判断consumeId有效性
         UnionConsume consume;
         try {
             consume = getValidByOrderNo(orderNo);
@@ -512,8 +513,8 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             result.put("msg", "找不到消费记录");
             return JSONObject.toJSONString(result);
         }
-        // （2）	如果consume不是未支付状态，则socket通知，并返回处理成功
-        // （3）	否则，更新consume为支付成功状态，且socket通知，并返回处理成功
+        // 如果consume不是未支付状态，则socket通知，并返回处理成功
+        // 否则，更新consume为支付成功状态，且socket通知，并返回处理成功
         Integer payStatus = consume.getPayStatus();
         if (payStatus == ConsumeConstant.PAY_STATUS_SUCCESS || payStatus == ConsumeConstant.PAY_STATUS_FAIL) {
             // socket通知
