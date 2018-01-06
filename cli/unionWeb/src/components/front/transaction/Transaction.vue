@@ -80,7 +80,8 @@
           <div class="cardService" v-for="item in form2.activityList" :key="item.activity.id" v-show="activityCheckList.indexOf(item.activity.id) > -1">
             <p> {{ item.activity.name }} </p>
             <div style="margin-left: 82px;cursor: pointer;color: #2a2a2a;">服务项目：
-              <span @click="showDetail(item.activity.id)"><strong style="cursor: pointer;color: #20A0FF;"> {{ item.itemCount }} </strong>个</span>
+              <span @click="showDetail(item.activity.id)">
+                <strong style="cursor: pointer;color: #20A0FF;"> {{ item.itemCount }} </strong>个</span>
             </div>
             <div>联盟卡有效天数：
               <span> {{ item.activity.validityDay }} 天</span>
@@ -336,7 +337,7 @@ export default {
     // 显示项目详情
     showDetail(id) {
       $http
-        .get(`/unionCardActivity/${id}/unionId/2/apply/itemCount`)
+        .get(`/unionCardActivity/${id}/unionId/${this.unionId}/apply/itemCount`)
         .then(res => {
           if (res.data.data) {
             this.detailTableData = res.data.data;
