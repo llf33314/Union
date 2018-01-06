@@ -54,7 +54,7 @@
       <el-table :data="tableData" style="width: 100%;">
         <el-table-column prop="union.name" label="所属联盟">
         </el-table-column>
-        <el-table-column prop="shopName" label="消费门店">
+        <el-table-column prop="consume.shopName" label="消费门店">
         </el-table-column>
         <el-table-column prop="fan.number" label="联盟卡号">
         </el-table-column>
