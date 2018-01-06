@@ -262,7 +262,7 @@ export default {
                       this.form2 = res.data.data;
                       this.form2.unionList = res.data.data.unionList;
                       this.unionId = res.data.data.currentUnion.id;
-                      this.form2.activityList = res.data.data.activityList;
+                      this.form2.activityList = res.data.data.cardActivityApplyVOList;
                       if (this.form2.activityList) {
                         this.form2.activityList.forEach((v, i) => {
                           //todo
