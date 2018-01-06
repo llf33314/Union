@@ -20,7 +20,7 @@
         </div>
         <p>
           <span>{{ item.activity.name }} </span>
-          <el-button @click="setting(item.activity.id)" size="small" :disabled="item.activityStatus==='售卡中'||item.activityStatus==='已停售'">设置比例</el-button>
+          <el-button @click="setting(item.activity.id, item.activityStatus)" size="small">设置比例</el-button>
         </p>
       </div>
       <el-row style="margin-bottom: 85px">
@@ -30,7 +30,7 @@
     </div>
     <div v-show="!visible">
       <p v-if="isUnionOwner" style="margin-bottom: 15px">
-        <el-button type="primary" @click="showSettingDialog">比例设置</el-button>
+        <el-button type="primary" @click="showSettingDialog" v-show="canSetFlag">比例设置</el-button>
         <el-button type="warning" style="padding: 10px 15px 10px 32px;position: relative">
           <img src="~assets/images/Videos.png" style="width: 17px;position: absolute;top:8px;left: 7px;"> 视频教程
         </el-button>
@@ -94,7 +94,8 @@ export default {
       visible3: false,
       sum3: 0,
       tableData3: [],
-      activityId: ''
+      activityId: '',
+      canSetFlag: ''
     };
   },
   computed: {
@@ -128,7 +129,6 @@ export default {
         .then(res => {
           if (res.data.data) {
             this.data1 = res.data.data.records || [];
-            console.log(this.data1);
             this.data1.forEach((v, i) => {
               v.activityStatus = activityCardStatusFilter(v.activityStatus);
               let color1 = (v.color1 = v.activity.color.split(',')[0]);
@@ -153,8 +153,13 @@ export default {
       this.getData1();
     },
     // 获取活动参加盟员比例分配列表
-    setting(value) {
-      this.activityId = value;
+    setting(val1, val2) {
+      this.activityId = val1;
+      if (val2 === '售卡中' || val2 === '已停售') {
+        this.canSetFlag = false;
+      } else {
+        this.canSetFlag = true;
+      }
       this.currentPage2 = 1;
       this.getTableData2();
     },
