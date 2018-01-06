@@ -190,7 +190,7 @@ export default {
     var j = 0; //右移次数
     $('.forward').click(() => {
       var COUNT = this_.form2.activityList.length;
-      if (parseFloat(COUNT) / 4 > 1 && j < 0) {
+      if (parseFloat(COUNT) / 3 > 1 && j < 0) {
         i--;
         j++;
         moved -= 4;
@@ -202,7 +202,8 @@ export default {
     });
     $('.backward').click(() => {
       var COUNT = this_.form2.activityList.length;
-      if (parseFloat(COUNT) / 4 > 1 && parseFloat(COUNT) / 4 > i + 1) {
+      console.log(COUNT);
+      if (parseFloat(COUNT) / 3 > 1 && parseFloat(COUNT) / 3 > i + 1) {
         i++;
         j--;
         moved += 4;

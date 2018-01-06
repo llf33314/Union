@@ -342,7 +342,7 @@ public class H5CardServiceImpl implements IH5CardService {
 								List<UnionCardProject> projectList = unionCardProjectService.listValidByUnionIdAndActivityIdAndStatus(union.getId(), activity.getId(), ProjectConstant.STATUS_ACCEPT);
 								if (ListUtil.isNotEmpty(projectList)) {
 									for (UnionCardProject project : projectList) {
-										List<UnionCardProjectItem> textItemList = unionCardProjectItemService.listByProjectId(project.getId());
+										List<UnionCardProjectItem> textItemList = unionCardProjectItemService.listValidByProjectId(project.getId());
 										if (ListUtil.isNotEmpty(textItemList)) {
 											itemCount += textItemList.size();
 										}
