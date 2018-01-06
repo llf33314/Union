@@ -750,7 +750,10 @@ hr {
   float: left;
 }
 #UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain .cardExplain > span:nth-child(2) {
-  margin-left: 55px;
+  margin-left: 205px;
+  float: right;
+  position: relative;
+  top: -18px;
 }
 #UnionCardSetting > .container #ActivityCardSetting .explain {
   background-color: #f4f4f4;
