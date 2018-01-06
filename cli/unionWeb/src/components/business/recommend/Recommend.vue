@@ -77,8 +77,8 @@ export default {
       },
       rules: {
         clientName: [{ validator: clientNamePass, trigger: 'blur' }],
-        unionId: [{ type: 'number', required: true, message: '联盟不能为空，请重新选择', trigger: 'change' }],
-        toMemberId: [{ type: 'number', required: true, message: '推荐商家不能为空，请重新选择', trigger: 'change' }],
+        unionId: [{ type: 'number', required: true, message: '联盟不能为空，请重新选择', trigger: 'blur' }],
+        toMemberId: [{ type: 'number', required: true, message: '推荐商家不能为空，请重新选择', trigger: 'blur' }],
         businessMsg: [{ validator: businessMsgPass, trigger: 'blur' }],
         clientPhone: [{ validator: cellPhonePass, trigger: 'blur' }]
       },

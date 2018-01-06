@@ -127,8 +127,8 @@ export default {
         phone: ''
       },
       rules: {
-        shop: [{ type: 'number', required: true, message: '门店不能为空，请重新输入', trigger: 'change' }],
-        name: [{ type: 'number', required: true, message: '姓名不能为空，请重新输入', trigger: 'change' }],
+        shop: [{ type: 'number', required: true, message: '门店不能为空，请重新输入', trigger: 'blur' }],
+        name: [{ type: 'number', required: true, message: '姓名不能为空，请重新输入', trigger: 'blur' }],
         code: [{ required: true, message: '验证码不能为空，请重新输入', trigger: 'blur' }],
         phone: [{ validator: cellPhonePass, trigger: 'change' }]
       },

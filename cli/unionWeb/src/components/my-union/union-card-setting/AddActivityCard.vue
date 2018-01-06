@@ -27,12 +27,12 @@
             <span>粉丝办理活动卡后，可使用的有效天数</span>
           </el-form-item>
           <el-form-item label="报名时间：" prop="applyTime">
-            <el-date-picker v-model="form.applyTime" type="datetimerange" placeholder="请选择项目报名时间">
+            <el-date-picker v-model="form.applyTime" type="datetimerange" placeholder="请选择项目报名时间" :editable="false">
             </el-date-picker>
             <span>项目报名时间段中，盟员可添加各自的项目至活动卡</span>
           </el-form-item>
           <el-form-item label="售卖时间：" prop="sellTime">
-            <el-date-picker v-model="form.sellTime" type="datetimerange" placeholder="请选择活动卡售卖时间">
+            <el-date-picker v-model="form.sellTime" type="datetimerange" placeholder="请选择活动卡售卖时间" :editable="false">
             </el-date-picker>
             <span>活动卡售卖时间段，粉丝可购买活动卡享受联盟内项目</span>
           </el-form-item>
@@ -100,11 +100,11 @@ export default {
       rules: {
         name: [{ required: true, message: '请输入活动卡名称', trigger: 'blur' }],
         price: [{ required: true, message: '请输入活动卡价格', trigger: 'blur' }],
-        color: [{ required: true, message: '请选择活动卡颜色', trigger: 'change' }],
+        color: [{ required: true, message: '请选择活动卡颜色', trigger: 'blur' }],
         amount: [{ required: true, message: '请输入活动卡最大发行量', trigger: 'blur' }],
         validityDay: [{ required: true, message: '请输入活动卡有效天数', trigger: 'blur' }],
-        applyTime: [{ validator: applyTimePass, trigger: 'change' }],
-        sellTime: [{ validator: sellTimePass, trigger: 'change' }],
+        applyTime: [{ validator: applyTimePass, trigger: 'blur' }],
+        sellTime: [{ validator: sellTimePass, trigger: 'blur' }],
         illustration: [{ validator: activityCardIllustrationPass, trigger: 'blur' }]
       }
     };
@@ -163,17 +163,7 @@ export default {
     },
     // 关闭弹窗清空填写信息
     resetData() {
-      this.form = {
-        name: '',
-        price: '',
-        color: '',
-        amount: '',
-        validityDay: '',
-        applyTime: ['', ''],
-        sellTime: ['', ''],
-        illustration: '',
-        isProjectCheck: ''
-      };
+      this.$refs['form'].resetFields();
       this.$store.commit('myColorChange', this.form.color);
     }
   }
