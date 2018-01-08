@@ -3,9 +3,9 @@
     <div class="footerHight"></div>
     <footer class="footer_">
       <ul class="footerLeft" @click="toUnionCard">
-        <li><i class="iconfont">&#xe66c;</i></li>
-        <li>首页</li>
-      </ul>
+      <li><i class="iconfont">&#xe66c;</i></li>
+      <li>首页</li>
+    </ul>
       <ul class="footerRight" @click="toMyInformation">
         <li><i class="iconfont">&#xe668;</i></li>
         <li>我的</li>

@@ -71,8 +71,6 @@
     name: 'toUnPayList',
     data() {
       return {
-//        底部颜色切换
-//         toLogin: 'ceshi1',
         //未收佣金列表数据
         unCommission:[],
         //盟员列表
@@ -250,8 +248,6 @@
     created (){
       //页面的title变换
       $("#title_").text('我未收佣金');
-      //图片底部的颜色切换（白和灰切换）
-      // this.$emit('getValue',this.toLogin);
       //页面加载前获取数据列表---------------------------------------------------------------1
       let data={
         size:this.size,
