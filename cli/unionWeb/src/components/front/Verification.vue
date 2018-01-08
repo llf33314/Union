@@ -63,8 +63,8 @@
           <div v-show="isProjectAvailable_" class="preferenceItems">
             <div style="margin-top: 10px;">
               <span>活动卡名称：</span>
-              <el-select v-model="activityId" placeholder="请选择" @change="activityCardChange" style="width: 180px">
-                <el-option v-for="item in activityCards" :key="item.activity.id" :label="item.activity.name" :value="item.activity.id">
+              <el-select v-model="activityCardId" placeholder="请选择" @change="activityCardChange" style="width: 180px">
+                <el-option v-for="item in activityCards" :key="item.activityCard.id" :label="item.activityCard.name" :value="item.activityCard.id">
                 </el-option>
               </el-select>
               <span style="margin-left: 15px;">有效时间： {{ activityCardValidity }} </span>
@@ -235,7 +235,7 @@ export default {
       deductionIntegral: '', // 抵扣积分
       tableData: [],
       activityCards: [],
-      activityId: '',
+      activityCardId: '',
       activitySelected: [],
       activityCardValidity: '',
       visible3: false,
@@ -257,6 +257,7 @@ export default {
       this.input = '';
       this.visible1 = true;
       this.visible2 = false;
+      this.isProjectAvailable_ = false;
     });
   },
   filters: {
@@ -293,19 +294,22 @@ export default {
     },
     // 搜索
     handleIconClick(ev) {
+      this.shopId = '';
+      this.price = '';
+      this.isProjectAvailable_ = false;
       if (this.input) {
         $http
           .get(`/unionCardFan/search?numberOrPhone=${this.input}`)
           .then(res => {
             if (res.data.data) {
+              this.visible1 = false;
+              this.visible2 = true;
               this.form = res.data.data;
               if (this.form.unionList.length) {
                 this.unionId = this.form.unionList[0].id;
               }
               this.isIntegral = this.form.currentUnion.isIntegral;
               this.isIntegral ? (this.isIntegral_ = true) : (this.isIntegral_ = false);
-              this.visible1 = false;
-              this.visible2 = true;
             }
           })
           .then(res => {
@@ -330,6 +334,15 @@ export default {
     },
     // 联盟改变
     unionIdChange() {
+      this.form.currentMember.enterpriseName = '';
+      this.form.currentMember.discount = '';
+      this.form.currentMember.integralExchangeRatio = '';
+      this.form.fan.number = '';
+      this.form.currentUnion.isIntegral = '';
+      this.form.integral = '';
+      this.form.isProjectAvailable = '';
+      this.isIntegral = '';
+      this.isIntegral ? (this.isIntegral_ = true) : (this.isIntegral_ = false);
       if (this.unionId) {
         $http
           .get(`/unionCardFan/search?numberOrPhone=${this.input}&unionId=${this.unionId}`)
@@ -341,19 +354,10 @@ export default {
               this.form.fan.number = res.data.data.fan.number;
               this.form.currentUnion.isIntegral = res.data.data.currentUnion.isIntegral;
               this.form.integral = res.data.data.integral;
-              this.form.currentUnion.validity = res.data.data.currentUnion.validity;
+              this.form.isProjectAvailable = res.data.data.isProjectAvailable;
               this.isIntegral = this.form.currentUnion.isIntegral;
               this.isIntegral ? (this.isIntegral_ = true) : (this.isIntegral_ = false);
-            } else {
-              this.form.currentMember.enterpriseName = '';
-              this.form.currentMember.discount = '';
-              this.form.currentMember.integralExchangeRatio = '';
-              this.form.fan.number = '';
-              this.form.currentUnion.isIntegral = '';
-              this.form.integral = '';
-              this.form.currentUnion.validity = '';
-              this.isIntegral = '';
-              this.isIntegral ? (this.isIntegral_ = true) : (this.isIntegral_ = false);
+              this.isProjectAvailable_ = false;
             }
           })
           .catch(err => {
@@ -362,8 +366,11 @@ export default {
       }
     },
     // 是否选择优惠项目
-    isProjectAvailable_Change(isProjectAvailable_) {
-      if (isProjectAvailable_) {
+    isProjectAvailable_Change() {
+      this.activityCards = [];
+      this.activityCardId = '';
+      this.activityCardValidity = '';
+      if (this.isProjectAvailable_) {
         // 获取活动卡名称列表
         $('.UnionCardInformation form').css({
           transition: 'all .3s ease',
@@ -390,14 +397,15 @@ export default {
     },
     // 活动卡切换
     activityCardChange() {
-      let activityCard = this.activityCards.find(item => {
-        return item.activity.id === this.activityId;
-      });
-      this.activityCardValidity = timeFilter(activityCard.validity);
-      // 获取活动卡优惠项目
-      if (activityId) {
+      this.$refs.multipleTable.clearSelection();
+      if (this.activityCardId) {
+        let item = this.activityCards.find(item => {
+          return item.activityCard.id === this.activityCardId;
+        });
+        this.activityCardValidity = timeFilter(item.activityCard.validity);
+        // 获取活动卡优惠项目
         $http
-          .get(`/unionCardProjectItem/activityId/${this.activityId}/unionId/${this.unionId}/consume`)
+          .get(`/unionCardProjectItem/activityId/${item.activity.id}/unionId/${this.unionId}/consume`)
           .then(res => {
             if (res.data.data) {
               this.tableData = res.data.data || [];
@@ -553,9 +561,7 @@ export default {
     // 关闭二维码改变付款方式
     resetData() {
       this.payType = 1;
-      setTimeout(() => {
-        parent.window.postMessage('openMask()', '*');
-      }, 0);
+      parent.window.postMessage('openMask()', '*');
     },
     // 返回
     back() {
