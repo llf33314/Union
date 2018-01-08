@@ -177,15 +177,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         if (h5BrokerageUser == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        List<UnionMember> members = unionMemberService.listByBusId(h5BrokerageUser.getVerifier().getBusId());
-        List<Integer> ids = new ArrayList<Integer>();
-        if (ListUtil.isNotEmpty(members)) {
-            for (UnionMember member : members) {
-                ids.add(member.getUnionId());
-            }
-        }
-
-        return unionMainService.listByIdList(ids);
+        return unionMainService.listReadByBusId(h5BrokerageUser.getVerifier().getBusId());
     }
 
     @Override
