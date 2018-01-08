@@ -244,7 +244,7 @@ table {
     height: 1rem;
   }
   .union_head {
-    width: 4.7rem;
+    min-width: 4.7rem;
     img {
       width: 1rem;
       height: .82rem;
@@ -366,16 +366,7 @@ table {
   }
 }
 
-//最底部固定图片的公共样式
-.supportIcon {
-  margin-bottom: 1rem;
-  margin-top: 1rem;
-  z-index: 2;
-  img{
-    width:8rem;
-    margin-left: 5.90rem;
-  }
-}
+
 
 //底部图片固定的css3样式
 .main{
@@ -393,7 +384,16 @@ table {
     flex: 1;
   }
 }
-
+//最底部固定图片的公共样式
+.supportIcon {
+  margin-bottom: 1rem;
+  margin-top: 1rem;
+  z-index: 2;
+  img{
+    width:8rem;
+    margin-left: 5.90rem;
+  }
+}
 //点击切换的样式
 .focusPay {
   background: #39a7ff;
@@ -505,6 +505,7 @@ table {
       margin: 1rem .827rem .533rem .827rem;
       background-color: #ffffff;
       padding: 1.5rem 0;
+      border-radius: 0.53rem;
       img{
         width:3.2rem;
         height:3.388rem;

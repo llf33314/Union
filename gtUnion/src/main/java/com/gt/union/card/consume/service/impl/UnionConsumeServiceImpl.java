@@ -264,7 +264,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         Page result = pagePayByFanId(page, fanId);
         List<UnionConsume> dataList = result.getRecords();
         List<MyCardConsumeVO> resultDataList = new ArrayList<>();
-        if (ListUtil.isNotEmpty(resultDataList)) {
+        if (ListUtil.isNotEmpty(dataList)) {
             for (UnionConsume consume : dataList) {
                 MyCardConsumeVO vo = new MyCardConsumeVO();
                 vo.setShopName(consume.getShopName());

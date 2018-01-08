@@ -1,5 +1,6 @@
 <template>
-  <div id="toExtract">
+  <div id="toExtract" class="main">
+    <div class="Orders">
         <!--顶部公共样式-->
         <div class="public_stylecss">
           <div class="clear wantMoney">
@@ -89,6 +90,10 @@
           <p class="hasPayLoadMore"  @click="loadMore">加载更多</p>
           <div class="nothing hasPayNothing" >没有更多数据</div>
         </div>
+    </div>
+    <div class="supportIcon">
+      <img src="../../assets/images/supprot-black.png" alt="">
+    </div>
   </div>
 </template>
 
@@ -102,7 +107,7 @@
     data() {
       return {
         //底部颜色切换
-        toLogin: 'ceshi1',
+        // toLogin: 'ceshi1',
         //金额数据列表
         moneyList:[],
         //体现记录数据
@@ -216,7 +221,7 @@
       //页面的title变换
       $("#title_").text('我要提现');
       //图片底部的颜色切换（白和灰切换）
-      this.$emit('getValue',this.toLogin);
+      // this.$emit('getValue',this.toLogin);
       //获取盟员列表的数据
       $http.get(`/h5Brokerage/withdrawal`)
         .then(res => {

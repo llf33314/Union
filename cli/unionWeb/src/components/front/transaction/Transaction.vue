@@ -312,6 +312,10 @@ export default {
           .then(res => {
             if (res.data.data) {
               this.form2.activityList = res.data.data.cardActivityApplyVOList;
+              //底部切换回到原始的位置;
+              $('.SwitchAround .el-checkbox-group').css({
+                left: 0 + 'px'
+              });
               if (this.form2.activityList) {
                 this.form2.activityList.forEach((v, i) => {
                   //todo

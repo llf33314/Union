@@ -1,39 +1,40 @@
 <template>
   <div id="Index0" class="main">
-    <div class="main-title">
-      <p>{{dataList[0]}}</p>
-      <span>可提现</span>
-    </div>
-    <div class="flex main-wrap">
-      <div class="flex-1">
-          <i class="fr tubiao"></i>
-          <strong>未支付</strong>
-          <p>{{dataList[2]}}</p>
+    <div class="Orders">
+      <div class="main-title">
+        <p>{{dataList[0]}}</p>
+        <span>可提现</span>
       </div>
-      <div class="flex-1">
-            <strong>所得佣金总和</strong>
-            <p>{{dataList[1]}}</p>
+      <div class="flex main-wrap">
+        <div class="flex-1">
+            <i class="fr tubiao"></i>
+            <strong>未支付</strong>
+            <p>{{dataList[2]}}</p>
+        </div>
+        <div class="flex-1">
+              <strong>所得佣金总和</strong>
+              <p>{{dataList[1]}}</p>
+        </div>
       </div>
-    </div>
-    <router-link :to="{ path:'/toExtract',name:'toExtract'}">
+      <router-link :to="{ path:'/toExtract',name:'toExtract'}">
+          <div class="main_list clear">
+              <img src="../../assets/images/widthDraw-1.png" class="fl">
+              <div class="fl">
+                <h2>我要提现</h2>
+                <p>提现佣金至微信</p>
+              </div>
+          </div>
+      </router-link>
+      <router-link :to="{ path:'/toPayList',name:'toPayList'}">
         <div class="main_list clear">
-            <img src="../../assets/images/widthDraw-1.png" class="fl">
+            <img src="../../assets/images/widthDraw-3.png" class="fl">
             <div class="fl">
-              <h2>我要提现</h2>
-              <p>提现佣金至微信</p>
+              <h2>我需支付</h2>
+              <p>支付佣金给其他商家</p>
             </div>
         </div>
-    </router-link>
-    <router-link :to="{ path:'/toPayList',name:'toPayList'}">
-      <div class="main_list clear">
-          <img src="../../assets/images/widthDraw-3.png" class="fl">
-          <div class="fl">
-            <h2>我需支付</h2>
-            <p>支付佣金给其他商家</p>
-          </div>
-      </div>
-    </router-link>
-    <router-link :to="{ path: '/toUnPayList', name: 'toUnPayList'}">
+      </router-link>
+      <router-link :to="{ path: '/toUnPayList', name: 'toUnPayList'}">
       <div class="main_list clear">
           <img src="../../assets/images/widthDraw-4.png" class="fl">
           <div class="fl">
@@ -42,6 +43,10 @@
           </div>
       </div>
     </router-link>
+    </div>
+    <div class="supportIcon">
+      <img src="../../assets/images/supprot-black.png" alt="" >
+    </div>
   </div>
 </template>
 
@@ -52,7 +57,7 @@
     data() {
       return {
 //        底部颜色切换
-        toLogin: 'ceshi1',
+//         toLogin: 'ceshi1',
         dataList:[],
         canReflect:'',
         unpaid:'',
@@ -66,7 +71,7 @@
     created (){
       $("#title_").text('商家联盟佣金平台');
       //图片底部的颜色切换（白和灰切换）
-      this.$emit('getValue',this.toLogin);
+      // this.$emit('getValue',this.toLogin);
       //可提现的数据
       $http.get("/h5Brokerage/index")
         .then(res => {
