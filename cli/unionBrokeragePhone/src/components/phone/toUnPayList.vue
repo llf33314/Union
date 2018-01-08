@@ -1,52 +1,53 @@
 <template>
-  <div id="toUnPayList">
-    <div class="public_stylecss">
-      <div class="clear wantMoney">
-        <el-breadcrumb-item :to="{ path: '/index' }">
-          <img class="back__" src="../../assets/images/back.png" alt="" style="width: 1rem;">
-        </el-breadcrumb-item>
-        <p class="fr union_head" @click="boxWarp">
-          <img src="../../assets/images/switchover.png" alt="">
-          <span class="unionName">全部</span>
-        </p>
+  <div id="toUnPayList" class="main">
+    <div class="Orders">
+      <div class="public_stylecss">
+        <div class="clear wantMoney">
+          <el-breadcrumb-item :to="{ path: '/index' }">
+            <img class="back__" src="../../assets/images/back.png" alt="" style="width: 1rem;">
+          </el-breadcrumb-item>
+          <p class="fr union_head" @click="boxWarp">
+            <img src="../../assets/images/switchover.png" alt="">
+            <span class="unionName">全部</span>
+          </p>
+        </div>
+        <div class="union_second payed">
+          <p>{{totalMoney | filtration}}</p>
+          <span>我未收佣金(元)</span>
+        </div>
       </div>
-      <div class="union_second payed">
-        <p>{{totalMoney | filtration}}</p>
-        <span>我未收佣金(元)</span>
-      </div>
-    </div>
-    <p class="record">我未收记录</p>
-    <div class="footer_Css">
-      <ul >
-        <li class="clear" v-for="(item, index) in unCommission">
-          <div class="clear fl">
-            <div class="fl">
-              <p>{{item.union.name}}</p>
-              <span style="color: #7e7e7e">{{item.opportunity.createTime}}</span>
-            </div>
-            <img src="../../assets/images/urge.png" @click="showModel_">
-            <div class="box-wrap2" style="display: none">
-              <div class="mask" @click="hide1_"></div>
-              <div class="box">
-                <p>是否发送佣金支付短信提醒?</p>
-                <div class="fr" @click="send1_(item.opportunity.id)">发送</div>
-                <div style="border-left:none" @click="hide1_">取消</div>
+      <p class="record">我未收记录</p>
+      <div class="footer_Css">
+        <ul >
+          <li class="clear" v-for="(item, index) in unCommission">
+            <div class="clear fl">
+              <div class="fl">
+                <p>{{item.union.name}}</p>
+                <span style="color: #7e7e7e">{{item.opportunity.createTime}}</span>
+              </div>
+              <img src="../../assets/images/urge.png" @click="showModel_">
+              <div class="box-wrap2" style="display: none">
+                <div class="mask" @click="hide1_"></div>
+                <div class="box">
+                  <p>是否发送佣金支付短信提醒?</p>
+                  <div class="fr" @click="send1_(item.opportunity.id)">发送</div>
+                  <div style="border-left:none" @click="hide1_">取消</div>
+                </div>
               </div>
             </div>
-          </div>
-          <div class="clearfr">
-            <div class="fr">
-              <span>{{item.toMember.enterpriseName}}</span>
-              <p class="" style="color: #5EB6FF;text-align: right;">{{item.opportunity.money}}</p>
+            <div class="clearfr">
+              <div class="fr">
+                <span>{{item.toMember.enterpriseName}}</span>
+                <p class="" style="color: #5EB6FF;text-align: right;">{{item.opportunity.money}}</p>
+              </div>
             </div>
-          </div>
-        </li>
-      </ul>
-      <div class="loadMore hasPayLoadMore" @click="loadMore" >加载更多</div>
-      <div class="nothing hasPayNothing" style="color:#868686;" >没有更多数据</div>
-    </div>
-    <!--多粉大联盟按钮弹框-->
-    <div class="box-wrap" style="display: none">
+          </li>
+        </ul>
+        <div class="loadMore hasPayLoadMore" @click="loadMore" >加载更多</div>
+        <div class="nothing hasPayNothing" style="color:#868686;" >没有更多数据</div>
+      </div>
+      <!--多粉大联盟按钮弹框-->
+      <div class="box-wrap" style="display: none">
       <div class="mask" @click="hide_"></div>
       <div class="box">
         <div id="triangle-up"></div>
@@ -55,6 +56,10 @@
           <li v-for="(item, index) in unionList" @click="partLoaded(item.id,item.name)">{{item.name}}</li>
         </ul>
       </div>
+    </div>
+    </div>
+    <div class="supportIcon">
+      <img src="../../assets/images/supprot-black.png" alt="">
     </div>
   </div>
 </template>
@@ -67,7 +72,7 @@
     data() {
       return {
 //        底部颜色切换
-        toLogin: 'ceshi1',
+//         toLogin: 'ceshi1',
         //未收佣金列表数据
         unCommission:[],
         //盟员列表
@@ -246,7 +251,7 @@
       //页面的title变换
       $("#title_").text('我未收佣金');
       //图片底部的颜色切换（白和灰切换）
-      this.$emit('getValue',this.toLogin);
+      // this.$emit('getValue',this.toLogin);
       //页面加载前获取数据列表---------------------------------------------------------------1
       let data={
         size:this.size,

@@ -1,5 +1,6 @@
 <template><!--佣金明细模块-->
-  <div id="toDetailList">
+  <div id="toDetailList" class="main">
+  <div class="Orders">
     <!--公共头部样式-->
     <div class="public_stylecss">
       <div class="clear wantMoney">
@@ -78,8 +79,8 @@
       <div class="nothing hasPayNothing " >没有更多数据</div>
     </div>
   </div>
-  <!--多粉大联盟按钮弹框-->
-  <div class="box-wrap" style="display: none">
+    <!--多粉大联盟按钮弹框-->
+    <div class="box-wrap" style="display: none">
     <div class="mask" @click="hide_"></div>
     <div class="box">
       <div id="triangle-up"></div>
@@ -89,6 +90,10 @@
       </ul>
     </div>
   </div>
+  </div>
+    <div class="supportIcon">
+      <img src="../../assets/images/supprot-black.png" alt="" >
+    </div>
   </div>
 </template>
 
