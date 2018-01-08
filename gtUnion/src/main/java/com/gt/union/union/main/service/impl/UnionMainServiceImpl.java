@@ -77,7 +77,7 @@ public class UnionMainServiceImpl implements IUnionMainService {
     }
 
     @Override
-    public List<UnionMain> listValidJoinByBusId(Integer busId) throws Exception {
+    public List<UnionVO> listValidJoinByBusId(Integer busId) throws Exception {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -91,7 +91,17 @@ public class UnionMainServiceImpl implements IUnionMainService {
                 .notIn("id", unionIdList)
                 .orderBy("create_time", true);
 
-        return unionMainDao.selectList(entityWrapper);
+        List<UnionMain> unionList = unionMainDao.selectList(entityWrapper);
+        List<UnionVO> result = new ArrayList<>();
+        if (ListUtil.isNotEmpty(unionList)) {
+            for (UnionMain union : unionList) {
+                UnionVO vo = new UnionVO();
+                vo.setUnion(union);
+                vo.setItemList(unionMainDictService.listValidByUnionId(union.getId()));
+                result.add(vo);
+            }
+        }
+        return result;
     }
 
     @Override

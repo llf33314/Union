@@ -248,7 +248,7 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         }
 
         EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
-        entityWrapper.in("id", idList);
+        entityWrapper.in("id", idList).eq(ListUtil.isEmpty(idList), "id", null);
 
         return unionConsumeProjectDao.selectList(entityWrapper);
     }

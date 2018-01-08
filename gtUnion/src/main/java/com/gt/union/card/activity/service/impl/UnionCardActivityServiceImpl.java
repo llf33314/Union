@@ -622,7 +622,7 @@ public class UnionCardActivityServiceImpl implements IUnionCardActivityService {
         }
 
         EntityWrapper<UnionCardActivity> entityWrapper = new EntityWrapper<>();
-        entityWrapper.in("id", idList);
+        entityWrapper.in("id", idList).eq(ListUtil.isEmpty(idList), "id", null);
 
         return unionCardActivityDao.selectList(entityWrapper);
     }

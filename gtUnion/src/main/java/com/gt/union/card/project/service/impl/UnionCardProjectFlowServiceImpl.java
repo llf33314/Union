@@ -202,7 +202,7 @@ public class UnionCardProjectFlowServiceImpl implements IUnionCardProjectFlowSer
         }
 
         EntityWrapper<UnionCardProjectFlow> entityWrapper = new EntityWrapper<>();
-        entityWrapper.in("id", idList);
+        entityWrapper.in("id", idList).eq(ListUtil.isEmpty(idList), "id", null);
 
         return unionCardProjectFlowDao.selectList(entityWrapper);
     }
