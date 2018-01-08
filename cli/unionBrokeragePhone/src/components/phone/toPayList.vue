@@ -1,5 +1,6 @@
 <template>
-  <div id="toPayList" >
+  <div id="toPayList" class="main">
+  <div class="Orders">
     <!--公共头部样式-->
     <div class="public_stylecss">
       <div class="clear wantMoney">
@@ -113,6 +114,10 @@
       </div>
     </div>
   </div>
+    <div class="supportIcon">
+      <img src="../../assets/images/supprot-black.png" alt="" >
+    </div>
+  </div>
 
 </template>
 
@@ -124,7 +129,7 @@
     data() {
       return {
 //        底部颜色切换
-        toLogin: 'ceshi1',
+//         toLogin: 'ceshi1',
         //未支付的列表数据
         unPayList:[],
         //已支付的列表数据
@@ -490,7 +495,7 @@
       //页面的title变换
       $("#title_").text('我佣金支出');
       //图片底部的颜色切换（白和灰切换）
-      this.$emit('getValue',this.toLogin);
+      // this.$emit('getValue',this.toLogin);
 //以下部分为未支付的--------------------------------------------------------------------------1
 //      未支付页面（页面加载时就渲染数据）
       let data={
