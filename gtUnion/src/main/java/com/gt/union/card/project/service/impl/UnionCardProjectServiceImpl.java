@@ -722,7 +722,7 @@ public class UnionCardProjectServiceImpl implements IUnionCardProjectService {
         }
 
         EntityWrapper<UnionCardProject> entityWrapper = new EntityWrapper<>();
-        entityWrapper.in("id", idList);
+        entityWrapper.in("id", idList).eq(ListUtil.isEmpty(idList), "id", null);
 
         return unionCardProjectDao.selectList(entityWrapper);
     }

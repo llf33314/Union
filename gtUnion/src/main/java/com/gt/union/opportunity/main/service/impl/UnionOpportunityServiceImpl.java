@@ -214,6 +214,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .in("from_member_id", fromMemberIdList)
+                .eq(ListUtil.isEmpty(fromMemberIdList), "from_member_id", null)
                 .eq("accept_status", acceptStatus);
 
         return unionOpportunityDao.selectList(entityWrapper);
@@ -229,6 +230,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .in("from_member_id", fromMemberIdList)
+                .eq(ListUtil.isEmpty(fromMemberIdList), "from_member_id", null)
                 .eq("accept_status", acceptStatus)
                 .eq("is_close", isClose);
 
@@ -244,6 +246,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .in("to_member_id", toMemberIdList)
+                .eq(ListUtil.isEmpty(toMemberIdList), "to_member_id", null)
                 .eq("accept_status", acceptStatus);
 
         return unionOpportunityDao.selectList(entityWrapper);
@@ -258,6 +261,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .in("to_member_id", toMemberIdList)
+                .eq(ListUtil.isEmpty(toMemberIdList), "to_member_id", toMemberIdList)
                 .eq("accept_status", acceptStatus)
                 .eq("is_close", isClose);
 
@@ -274,6 +278,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("union_id", unionId)
                 .in("from_member_id", fromMemberIdList)
+                .eq(ListUtil.isEmpty(fromMemberIdList), "from_member_id", null)
                 .eq("accept_status", acceptStatus);
 
         return unionOpportunityDao.selectList(entityWrapper);
@@ -289,6 +294,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("union_id", unionId)
                 .in("to_member_id", toMemberIdList)
+                .eq(ListUtil.isEmpty(toMemberIdList), "to_member_id", null)
                 .eq("accept_status", acceptStatus);
 
         return unionOpportunityDao.selectList(entityWrapper);
@@ -343,6 +349,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .in("from_member_id", fromMemberIdList)
+                .eq(ListUtil.isEmpty(fromMemberIdList), "from_member_id", null)
                 .in(ListUtil.isNotEmpty(acceptStatusList), "accept_status", acceptStatusList)
                 .like(StringUtil.isNotEmpty(optClientName), "client_name", optClientName)
                 .like(StringUtil.isNotEmpty(optClientPhone), "client_phone", optClientPhone)
@@ -375,6 +382,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .in("to_member_id", toMemberIdList)
+                .eq(ListUtil.isEmpty(toMemberIdList), "to_member_id", null)
                 .in(ListUtil.isNotEmpty(acceptStatusList), "accept_status", acceptStatusList)
                 .like(StringUtil.isNotEmpty(optClientName), "client_name", optClientName)
                 .like(StringUtil.isNotEmpty(optClientPhone), "client_phone", optClientPhone)
@@ -592,6 +600,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .in("from_member_id", fromMemberIdList)
+                .eq(ListUtil.isEmpty(fromMemberIdList), "from_member_id", null)
                 .eq("accept_status", acceptStatus)
                 .eq("is_close", isClose);
 
@@ -610,6 +619,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .in("to_member_id", toMemberIdList)
+                .eq(ListUtil.isEmpty(toMemberIdList), "to_member_id", null)
                 .eq("accept_status", acceptStatus)
                 .eq("is_close", isClose);
 
@@ -1049,7 +1059,7 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         }
 
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
-        entityWrapper.in("id", idList);
+        entityWrapper.in("id", idList).eq(ListUtil.isEmpty(idList), "id", null);
 
         return unionOpportunityDao.selectList(entityWrapper);
     }

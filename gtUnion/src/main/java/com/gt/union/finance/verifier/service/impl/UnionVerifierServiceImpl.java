@@ -331,7 +331,7 @@ public class UnionVerifierServiceImpl implements IUnionVerifierService {
         }
 
         EntityWrapper<UnionVerifier> entityWrapper = new EntityWrapper<>();
-        entityWrapper.in("id", idList);
+        entityWrapper.in("id", idList).eq(ListUtil.isEmpty(idList), "id", null);
 
         return unionVerifierDao.selectList(entityWrapper);
     }

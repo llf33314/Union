@@ -135,6 +135,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
                 .eq("from_bus_id", fromBusId)
                 .eq("status", status)
                 .in("to_bus_id", toBusIdList)
+                .eq(ListUtil.isEmpty(toBusIdList), "to_bus_id", null)
                 .orderBy("create_time", false);
 
         return unionBrokeragePayDao.selectList(entityWrapper);
@@ -151,6 +152,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
                 .eq("to_bus_id", toBusId)
                 .eq("status", status)
                 .in("from_bus_id", fromBusIdList)
+                .eq(ListUtil.isEmpty(fromBusIdList), "from_bus_id", null)
                 .orderBy("create_time", false);
 
         return unionBrokeragePayDao.selectList(entityWrapper);
@@ -183,6 +185,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
         opportunityEntityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("accept_status", OpportunityConstant.ACCEPT_STATUS_CONFIRMED)
                 .in("to_member_id", toMemberIdList)
+                .eq(ListUtil.isEmpty(toMemberIdList), "to_member_id", null)
                 .eq(optUnionId != null, "union_id", optUnionId)
                 .eq(optFromMemberId != null, "from_member_id", optFromMemberId)
                 .eq(optIsClose != null, "is_close", optIsClose)
@@ -225,6 +228,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
         // 按联盟创建时间顺序、盟员创建时间顺序排序
         EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<>();
         entityWrapper.in("id", contactMemberIdList)
+                .eq(ListUtil.isEmpty(contactMemberIdList), "id", null)
                 .orderBy("union_id ASC, create_time", true);
         Page result = unionMemberService.pageSupport(page, entityWrapper);
         // toVO
@@ -260,6 +264,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
         // 按联盟创建时间顺序、盟员创建时间顺序排序
         EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<>();
         entityWrapper.in("id", contactMemberIdList)
+                .eq(ListUtil.isEmpty(contactMemberIdList), "id", null)
                 .orderBy("union_id ASC, create_time", true);
         List<UnionMember> dataList = unionMemberService.listSupport(entityWrapper);
         // toVO
@@ -451,7 +456,8 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .eq("from_bus_id", fromBusId)
                 .eq("status", status)
-                .in("to_bus_id", toBusIdList);
+                .in("to_bus_id", toBusIdList)
+                .eq(ListUtil.isEmpty(toBusIdList), "to_bus_id", null);
 
         entityWrapper.setSqlSelect("IfNull(SUM(money),0) moneySum");
         Map<String, Object> resultMap = unionBrokeragePayDao.selectMap(entityWrapper);
@@ -468,6 +474,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .in("from_bus_id", fromBusIdList)
+                .eq(ListUtil.isEmpty(fromBusIdList), "from_bus_id", null)
                 .eq("status", status)
                 .eq("to_bus_id", toBusId);
 
@@ -911,7 +918,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
         }
 
         EntityWrapper<UnionBrokeragePay> entityWrapper = new EntityWrapper<>();
-        entityWrapper.in("id", idList);
+        entityWrapper.in("id", idList).eq(ListUtil.isEmpty(idList), "id", null);
 
         return unionBrokeragePayDao.selectList(entityWrapper);
     }

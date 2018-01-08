@@ -204,6 +204,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .in("from_member_id", memberIdList)
+                .eq(ListUtil.isEmpty(memberList), "from_member_id", null)
                 .eq("accept_status", OpportunityConstant.ACCEPT_STATUS_CONFIRMED)
                 .eq("is_close", OpportunityConstant.IS_CLOSE_YES)
                 .orderBy("create_time", false);
@@ -234,6 +235,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
                 .eq("bus_id", busId)
                 .eq("type", BrokerageConstant.INCOME_TYPE_CARD)
                 .in("member_id", memberIdList)
+                .eq(ListUtil.isEmpty(memberList), "member_id", null)
                 .orderBy("create_time", false);
         Page result = unionBrokerageIncomeService.pageSupport(page, entityWrapper);
 
@@ -273,6 +275,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .in("to_member_id", memberIdList)
+                .eq(ListUtil.isEmpty(memberIdList), "to_member_id", null)
                 .eq("accept_status", OpportunityConstant.ACCEPT_STATUS_CONFIRMED)
                 .eq("is_close", OpportunityConstant.IS_CLOSE_NO)
                 .orderBy("create_time", false);
@@ -299,6 +302,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .in("from_member_id", memberIdList)
+                .eq(ListUtil.isEmpty(memberIdList), "from_member_id", null)
                 .eq("accept_status", OpportunityConstant.ACCEPT_STATUS_CONFIRMED)
                 .eq("is_close", OpportunityConstant.IS_CLOSE_NO)
                 .orderBy("create_time", false);

@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -73,13 +74,19 @@ public class UnionMainController {
             busId = busUser.getPid();
         }
         // mock
-        List<UnionMain> voList;
+        List<UnionVO> voList;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            voList = MockUtil.list(UnionMain.class, page.getSize());
+            voList = new ArrayList<>();
+            for (int i = 0; i < page.getSize(); i++) {
+                UnionVO vo = MockUtil.get(UnionVO.class);
+                List<UnionMainDict> dictList = MockUtil.list(UnionMainDict.class, 3);
+                vo.setItemList(dictList);
+                voList.add(vo);
+            }
         } else {
             voList = unionMainService.listValidJoinByBusId(busId);
         }
-        Page<UnionMain> result = (Page<UnionMain>) page;
+        Page<UnionVO> result = (Page<UnionVO>) page;
         result = PageUtil.setRecord(result, voList);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
