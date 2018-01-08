@@ -65,6 +65,8 @@ spring:
 
   session:
        store-type: redis
+  aop:
+    proxy-target-class: true
 
 #jdk 1.7 配置 哨兵地址须加redis:// 如redis://127.0.0.1:6379  redissson 稳定版本使用2.10.5
 #jdk 1.8 配置 哨兵地址不须加redis:// 如127.0.0.1:6379  redissson 稳定版本使用3.5.5
