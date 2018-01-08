@@ -1,52 +1,57 @@
 <template><!--佣金明细模块-->
-  <div id="toLogin">
-    <h1>商家联盟佣金平台</h1>
-    <div class="check-wrap">
-      <div class="check-wrap-div">
-        <div style="width: 30px;display: inline-block">
-          <img src="../../assets/images/phone.png" alt="">
+  <div id="toLogin" class="main">
+    <div class="Orders">
+      <h1>商家联盟佣金平台</h1>
+      <div class="check-wrap">
+        <div class="check-wrap-div">
+          <div style="width: 30px;display: inline-block">
+            <img src="../../assets/images/phone.png" alt="">
+          </div>
+          <input type="text" placeholder="请输入账号" id="username" name="username" style="width: 50%">
         </div>
-        <input type="text" placeholder="请输入账号" id="username" name="username" style="width: 50%">
-      </div>
-      <div class="check-wrap-div">
-        <div style="width: 30px;display: inline-block">
-          <img src="../../assets/images/cher.png" alt="">
+        <div class="check-wrap-div">
+          <div style="width: 30px;display: inline-block">
+            <img src="../../assets/images/cher.png" alt="">
+          </div>
+          <input type="password" placeholder="请输入密码" id="userpwd" name="userpwd" style="width: 50%">
+          <!--   <input class="checkCode" type="button" id="btn" value="发送验证码"/> -->
         </div>
-        <input type="password" placeholder="请输入密码" id="userpwd" name="userpwd" style="width: 50%">
-        <!--   <input class="checkCode" type="button" id="btn" value="发送验证码"/> -->
-      </div>
 
-      <div class="login-btn" @click="accountClick">
-        登录
-      </div>
-    </div>
-    <div class="check-phone passive">
-      <div class="check-wrap-div">
-        <div style="width: 1.6rem;display: inline-block">
-          <img src="../../assets/images/shouji01.png" alt="">
+        <div class="login-btn" @click="accountClick">
+          登录
         </div>
-        <input type="text" placeholder="请输入手机号" id="userPhone" name="username" style="width: 50%;color:#AEDCFF;">
-        <button @click="getNumber" id="getCode">
-          获取验证码
-        </button>
       </div>
-      <div class="check-wrap-div">
-        <div style="width: 1.6rem;display: inline-block">
-          <img src="../../assets/images/shouji02.png" alt="">
+      <div class="check-phone passive">
+        <div class="check-wrap-div">
+          <div style="width: 1.6rem;display: inline-block">
+            <img src="../../assets/images/shouji01.png" alt="">
+          </div>
+          <input type="text" placeholder="请输入手机号" id="userPhone" name="username" style="width: 50%;color:#AEDCFF;">
+          <button @click="getNumber" id="getCode">
+            获取验证码
+          </button>
         </div>
-        <input type="password" placeholder="请输入验证号码" id="userCode" name="userpwd" style="width: 50%">
-        <!--   <input class="checkCode" type="button" id="btn" value="发送验证码"/> -->
+        <div class="check-wrap-div">
+          <div style="width: 1.6rem;display: inline-block">
+            <img src="../../assets/images/shouji02.png" alt="">
+          </div>
+          <input type="password" placeholder="请输入验证号码" id="userCode" name="userpwd" style="width: 50%">
+          <!--   <input class="checkCode" type="button" id="btn" value="发送验证码"/> -->
+        </div>
+        <p id="message_" style="display: none;color:#E21918;">验证码错误</p>
+        <div class="login-btn" @click="phoneClick">
+          登录
+        </div>
       </div>
-      <p id="message_" style="display: none;color:#E21918;">验证码错误</p>
-      <div class="login-btn" @click="phoneClick">
-        登录
+      <div class="User_phone">
+        使用手机号登录
       </div>
-    </div>
-    <div class="User_phone">
-      使用手机号登录
-    </div>
-    <div class="User_name passive">
+      <div class="User_name passive">
       使用账号登录
+    </div>
+    </div>
+    <div class="supportIcon">
+      <img src="../../assets/images/toLogin01.png" alt="">
     </div>
   </div>
 </template>
@@ -59,7 +64,7 @@
     name: 'toDetailList',
     data() {
       return {
-        toLogin: 'ceshi',
+        // toLogin: 'ceshi',
         isGetCode :'',
 
       }
@@ -216,7 +221,7 @@
       //页面的title变换
       $("#title_").text('商家联盟佣金平台');
       //图片底部的颜色切换（白和灰切换）
-      this.$emit('getValue',this.toLogin);
+      // this.$emit('getValue',this.toLogin);
     }
   }
 </script>
