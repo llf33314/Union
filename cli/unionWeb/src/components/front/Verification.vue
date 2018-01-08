@@ -354,7 +354,7 @@ export default {
           .then(res => {
             if (res.data.data) {
               this.form.currentMember.enterpriseName = res.data.data.currentMember.enterpriseName;
-              this.form.currentMember.discount = res.data.data.currentMember.discount;
+              this.form.currentMember.discount = res.data.data.currentMember.discount || 1;
               this.form.currentMember.integralExchangeRatio = res.data.data.currentMember.integralExchangeRatio;
               this.form.fan.number = res.data.data.fan.number;
               this.form.currentUnion.isIntegral = res.data.data.currentUnion.isIntegral;
