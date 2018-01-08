@@ -130,7 +130,7 @@ export default {
       if (this.unionRadio) {
         // 获取必填字段
         let checkList_ = this.datas.find(item => {
-          return (item.union.id = this.unionRadio);
+          return item.union.id === this.unionRadio;
         });
         checkList_.itemList.forEach((v, i) => {
           if (this.checkList.indexOf(v.itemKey) === -1) {
