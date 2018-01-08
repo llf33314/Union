@@ -203,7 +203,6 @@ export default {
     });
     $('.backward').click(() => {
       var COUNT = this_.form2.activityList.length;
-      console.log(COUNT);
       if (parseFloat(COUNT) / 3 > 1 && parseFloat(COUNT) / 3 > i + 1) {
         i++;
         j--;

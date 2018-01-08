@@ -54,7 +54,7 @@
             </el-col>
           </el-form-item>
           <el-form-item label="优惠项目" v-if="form.isProjectAvailable">
-            <el-switch v-model="isProjectAvailable_" on-text="" off-text="" @change="isProjectAvailable_Change" :disabled="!unionId">
+            <el-switch v-model="isProjectAvailable_" on-text="" off-text="" :disabled="!unionId">
             </el-switch>
           </el-form-item>
         </el-form>
@@ -282,6 +282,10 @@ export default {
         this.deductionPrice = this.deductionIntegral * this.form.exchangeIntegral;
       }
       this.price1 = this.price * this.form.currentMember.discount - this.deductionPrice;
+    },
+    // 是否开启优惠项目
+    isProjectAvailable_: function() {
+      this.isProjectAvailable_Change();
     }
   },
   methods: {
@@ -295,8 +299,7 @@ export default {
     // 搜索
     handleIconClick(ev) {
       this.shopId = '';
-      this.price = '';
-      this.isProjectAvailable_ = false;
+      this.unionId = '';
       if (this.input) {
         $http
           .get(`/unionCardFan/search?numberOrPhone=${this.input}`)
@@ -341,6 +344,8 @@ export default {
       this.form.currentUnion.isIntegral = '';
       this.form.integral = '';
       this.form.isProjectAvailable = '';
+      this.price = '';
+      this.isProjectAvailable_ = false;
       this.isIntegral = '';
       this.isIntegral ? (this.isIntegral_ = true) : (this.isIntegral_ = false);
       if (this.unionId) {
@@ -544,7 +549,9 @@ export default {
                     eventBus.$emit('unionUpdata');
                     _this.init();
                     setTimeout(() => {
-                      parent.window.postMessage('closeMask()', '*');
+                      setTimeout(() => {
+                        parent.window.postMessage('closeMash()', '*');
+                      }, 0);
                     }, 0);
                   } else if (msg.status == '0') {
                     _this.$message({ showClose: true, message: '支付失败', type: 'error', duration: 5000 });
@@ -561,7 +568,9 @@ export default {
     // 关闭二维码改变付款方式
     resetData() {
       this.payType = 1;
-      parent.window.postMessage('openMask()', '*');
+      setTimeout(() => {
+        parent.window.postMessage('openMask()', '*');
+      }, 0);
     },
     // 返回
     back() {
@@ -576,7 +585,7 @@ export default {
       this.visible4 = false;
       this.shopId = '';
       this.unionId = '';
-      this.isProjectAvailable_ = '';
+      this.isProjectAvailable_ = false;
       this.price = '';
       this.isIntegral_ = '';
       this.price2 = '';

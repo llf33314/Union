@@ -91,7 +91,7 @@ export default {
           let enterpriseAddress = e.data.pname + e.data.cityname + e.data.adname + e.data.address + e.data.name;
           this.$store.commit('longitudeChange', lng);
           this.$store.commit('latitudeChange', lat);
-          this.$store.commit('enterpriseAddress', enterpriseAddress);
+          this.$store.commit('enterpriseAddressChange', enterpriseAddress);
           setTimeout(() => {
             this.$emit('mapClick');
           }, 0);
@@ -111,12 +111,12 @@ export default {
           geocoder.getAddress([lng, lat], (status, result) => {
             if (status === 'complete' && result.info === 'OK') {
               let enterpriseAddress = result.regeocode.formattedAddress;
-              this.$store.commit('enterpriseAddress', enterpriseAddress);
+              this.$store.commit('enterpriseAddressChange', enterpriseAddress);
+              setTimeout(() => {
+                this.$emit('mapClick');
+              }, 0);
             }
           });
-          setTimeout(() => {
-            this.$emit('mapClick');
-          }, 0);
         });
       });
       map.setFitView();
