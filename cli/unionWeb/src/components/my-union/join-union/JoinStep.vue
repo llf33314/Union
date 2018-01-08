@@ -5,22 +5,21 @@
       <div class="step-top">
         <el-steps :active="active" :center="true" :align-center="true">
           <el-step title="选择联盟" status="finish"></el-step>
-          <el-step title="填写申请信息" ></el-step>
+          <el-step title="填写申请信息"></el-step>
           <el-step title="等待审核通过"></el-step>
         </el-steps>
       </div>
       <div class="step2" v-if="active === 0">
         <el-radio-group v-model="unionRadio">
-          <el-radio-button v-for="item in datas" :key="item.id" :label="item.id">
+          <el-radio-button v-for="item in datas" :key="item.union.id" :label="item.union.id">
             <div class="dddddd clearfix">
-              <img v-bind:src="item.img" alt="" class="fl unionImg">
+              <img v-bind:src="item.union.img" alt="" class="fl unionImg">
               <div class="fl declare">
-                <h6 style="margin-bottom: 17px">{{item.name}}</h6>
-                <div style="color:#999;">{{item.illustration}}</div>
+                <h6 style="margin-bottom: 17px">{{item.union.name}}</h6>
+                <div style="color:#999;">{{item.union.illustration}}</div>
               </div>
               <i></i>
             </div>
-
           </el-radio-button>
         </el-radio-group>
         <el-row v-if="datas.length">
@@ -130,10 +129,10 @@ export default {
     next() {
       if (this.unionRadio) {
         // 获取必填字段
-        let checkList_ = this.datas.filter(item => {
-          return (item.id = this.unionRadio);
+        let checkList_ = this.datas.find(item => {
+          return (item.union.id = this.unionRadio);
         });
-        checkList_.forEach((v, i) => {
+        checkList_.itemList.forEach((v, i) => {
           if (this.checkList.indexOf(v.itemKey) === -1) {
             this.checkList.push(v.itemKey);
           }

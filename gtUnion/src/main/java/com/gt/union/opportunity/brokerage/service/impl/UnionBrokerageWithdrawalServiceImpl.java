@@ -248,7 +248,7 @@ public class UnionBrokerageWithdrawalServiceImpl implements IUnionBrokerageWithd
         }
 
         EntityWrapper<UnionBrokerageWithdrawal> entityWrapper = new EntityWrapper<>();
-        entityWrapper.in("id", idList);
+        entityWrapper.in("id", idList).eq(ListUtil.isEmpty(idList), "id", null);
 
         return unionBrokerageWithdrawalDao.selectList(entityWrapper);
     }

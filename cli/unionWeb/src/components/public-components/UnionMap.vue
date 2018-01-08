@@ -4,7 +4,7 @@
 
     </div>
     <div id="myPageTop">
-      <input id="tipinput"  placeholder="请输入关键字"/>
+      <input id="tipinput" placeholder="请输入关键字" />
       <el-button id="search" type="primary" icon="search">搜索</el-button>
     </div>
   </div>
@@ -92,7 +92,9 @@ export default {
           this.$store.commit('longitudeChange', lng);
           this.$store.commit('latitudeChange', lat);
           this.$store.commit('enterpriseAddress', enterpriseAddress);
-          this.$emit('mapClick');
+          setTimeout(() => {
+            this.$emit('mapClick');
+          }, 0);
         });
         AMap.event.addListener(map, 'click', e => {
           map.clearMap(); // 清除地图覆盖物
@@ -112,7 +114,9 @@ export default {
               this.$store.commit('enterpriseAddress', enterpriseAddress);
             }
           });
-          this.$emit('mapClick');
+          setTimeout(() => {
+            this.$emit('mapClick');
+          }, 0);
         });
       });
       map.setFitView();
@@ -122,42 +126,42 @@ export default {
 </script>
 
 <style lang='less' rel="stylesheet/less">
-  .unionMap{
-    position: relative;
-    width: 800px;
+.unionMap {
+  position: relative;
+  width: 800px;
+}
+#container {
+  width: 800px;
+  height: 500px;
+}
+#myPageTop {
+  position: absolute;
+  top: 8px;
+  right: 6px;
+  > input {
+    height: 32px;
+    width: 174px;
   }
-  #container {
-    width: 800px;
-    height: 500px;
+  .el-button {
+    margin-left: -4px;
+    border-radius: 0 4px 4px 0;
   }
-  #myPageTop{
-    position: absolute;
-    top: 8px;
-    right: 6px;
-    >input{
-      height: 32px;
-      width: 174px;
-    }
-    .el-button{
-      margin-left: -4px;
-      border-radius: 0 4px 4px 0;
-    }
-  }
-  #tipinput::-webkit-input-placeholder {
-    /* WebKit browsers */
-    color: #97a8be;
-  }
-  #tipinput:-moz-placeholder {
-    /* Mozilla Firefox 4 to 18 */
-    color: #97a8be;
-  }
-  #tipinput::-moz-placeholder {
-    /* Mozilla Firefox 19+ */
-    color: #97a8be;
-  }
-  #tipinput::-ms-input-placeholder {
-    /* Internet Explorer 10+ */
-    color: #97a8be;
-  }
+}
+#tipinput::-webkit-input-placeholder {
+  /* WebKit browsers */
+  color: #97a8be;
+}
+#tipinput:-moz-placeholder {
+  /* Mozilla Firefox 4 to 18 */
+  color: #97a8be;
+}
+#tipinput::-moz-placeholder {
+  /* Mozilla Firefox 19+ */
+  color: #97a8be;
+}
+#tipinput::-ms-input-placeholder {
+  /* Internet Explorer 10+ */
+  color: #97a8be;
+}
 </style>
 

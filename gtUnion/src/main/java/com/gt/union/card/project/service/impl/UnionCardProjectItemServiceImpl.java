@@ -504,7 +504,8 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         if (ListUtil.isNotEmpty(projectIdList)) {
             EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
             entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                    .in("project_id", projectIdList);
+                    .in("project_id", projectIdList)
+                    .eq(ListUtil.isEmpty(projectList), "project_id", null);
 
             result = unionCardProjectItemDao.selectCount(entityWrapper);
         }
@@ -688,7 +689,7 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         }
 
         EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
-        entityWrapper.in("id", idList);
+        entityWrapper.in("id", idList).eq(ListUtil.isEmpty(idList), "id", null);
 
         return unionCardProjectItemDao.selectList(entityWrapper);
     }
