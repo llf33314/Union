@@ -53,7 +53,7 @@ export default new Vuex.Store({
       state.addressLongitude = value;
     },
     // 点击地址
-    enterpriseAddress(state, value) {
+    enterpriseAddressChange(state, value) {
       state.enterpriseAddress = value;
     },
     // 创建联盟permitId

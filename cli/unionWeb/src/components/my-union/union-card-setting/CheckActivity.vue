@@ -129,7 +129,9 @@ export default {
             eventBus.$emit('newActivityCheck');
             this.$message({ showClose: true, message: '审核通过', type: 'success', duration: 5000 });
             this.visible2 = false;
-            parent.window.postMessage('openMask()', '*');
+            setTimeout(() => {
+              parent.window.postMessage('openMask()', '*');
+            }, 0);
           }
         })
         .catch(err => {
@@ -153,7 +155,9 @@ export default {
             eventBus.$emit('newActivityCheck');
             this.$message({ showClose: true, message: '审核不通过', type: 'success', duration: 5000 });
             this.visible3 = false;
-            parent.window.postMessage('openMask()', '*');
+            setTimeout(() => {
+              parent.window.postMessage('openMask()', '*');
+            }, 0);
           }
         })
         .catch(err => {
