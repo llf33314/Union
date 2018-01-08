@@ -1,6 +1,7 @@
 package com.gt.union.api.client.sms.impl;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.gt.api.util.HttpClienUtils;
 import com.gt.api.util.RequestUtils;
@@ -54,11 +55,17 @@ public class SmsServiceImpl implements SmsService {
 	public boolean checkPhoneCode(Integer type, String code, String phone) {
 		logger.info("短信验证码校验type：{}，code：{}，phone：{}", type, code, phone);
 		try{
-			String checkCode = redisCacheUtil.get(type + ":" + phone);
-			if(CommonUtil.isEmpty(checkCode)){
-				return false;
-			}
-			if(!checkCode.equals(code)){
+			String key = type + ":" + phone;
+			if(redisCacheUtil.exists(key)){
+				String checkCode = redisCacheUtil.get(type + ":" + phone);
+				checkCode = JSONArray.parseObject(checkCode, String.class);
+				if(CommonUtil.isEmpty(checkCode)){
+					return false;
+				}
+				if(!checkCode.equals(code)){
+					return false;
+				}
+			}else {
 				return false;
 			}
 		}catch (Exception e){
