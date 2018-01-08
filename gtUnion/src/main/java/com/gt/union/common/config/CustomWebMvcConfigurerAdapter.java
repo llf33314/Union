@@ -15,8 +15,10 @@ import java.nio.charset.Charset;
 import java.util.List;
 
 /**
- * 拦截器配置
- * Created by Administrator on 2017/7/25 0025.
+ * 拦截器配置类
+ *
+ * @author linweicong
+ * @version 2017-11-22 17:45:00
  */
 @Configuration
 public class CustomWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter {
@@ -42,7 +44,8 @@ public class CustomWebMvcConfigurerAdapter extends WebMvcConfigurerAdapter {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new SysLogInterceptor()).addPathPatterns("/**");  //对来自/** 这个链接来的请求进行拦截
+        //对来自/** 这个链接来的请求进行拦截
+        registry.addInterceptor(new SysLogInterceptor()).addPathPatterns("/**");
     }
 
     @Override

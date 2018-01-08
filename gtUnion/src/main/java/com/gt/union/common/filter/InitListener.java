@@ -9,8 +9,10 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.annotation.WebListener;
 
 /**
- * 初始化listener
- * Created by Administrator on 2017/7/25 0025.
+ * 监听器初始化
+ *
+ * @author linweicong
+ * @version 2017-11-22 17:45:00
  */
 @WebListener
 public class InitListener implements ServletContextListener {

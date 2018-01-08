@@ -1,11 +1,14 @@
 package com.gt.union.common.exception;
 
 /**
- * Created by Administrator on 2017/8/21 0021.
+ * 数据导出异常类
+ *
+ * @author linweicong
+ * @version 2017-11-22 17:45:00
  */
 public class DataExportException extends Exception {
 
-	public DataExportException(String message){
-		super(message);
-	}
+    public DataExportException(String message) {
+        super(message);
+    }
 }

@@ -11,7 +11,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 
 /**
- * Created by Administrator on 2017/8/24 0024.
+ * MQ配置类
+ *
+ * @author linweicong
+ * @version 2017-11-22 17:45:00
  */
 @Configuration
 public class AmqpConfig {
@@ -40,21 +43,21 @@ public class AmqpConfig {
     @Bean
     public ConnectionFactory amqpConnectionFactory() {
         CachingConnectionFactory factory = new CachingConnectionFactory();
-//        factory.setAddresses("183.47.242.4:5672");
-//        factory.setUsername("guest");
-//        factory.setPassword("yf26609632");
         factory.setAddresses(address);
         factory.setUsername(userName);
         factory.setPassword(password);
         factory.setVirtualHost("/");
-        factory.setPublisherConfirms(true);//必须设置
+        //必须设置
+        factory.setPublisherConfirms(true);
         return factory;
     }
 
+    //必须是prototype类型
     @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE) //必须是prototype类型
+    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public RabbitTemplate rabbitTemplate() {
         RabbitTemplate template = new RabbitTemplate(amqpConnectionFactory());
+        template.setMandatory(true);
         return template;
     }
 

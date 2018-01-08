@@ -3,7 +3,7 @@ import Router from 'vue-router'
 
 //佣金平台手机端路由配置
 import Index from '@/components/phone/Index'
-import toTxtract from '@/components/phone/toTxtract'
+import toExtract from '@/components/phone/toExtract'
 import toPayList from '@/components/phone/toPayList'
 import toUnPayList from '@/components/phone/toUnPayList'
 import toDetailList from '@/components/phone/toDetailList'
@@ -12,7 +12,7 @@ import toLogin from '@/components/phone/toLogin'
 Vue.use(Router);
 
 export default new Router({
-  //mode: 'history',
+  // mode: 'history',
   routes: [
     //默认路由
     {
@@ -28,9 +28,9 @@ export default new Router({
       component: Index,
     },
     {
-      path: '/toTxtract',
-      name: 'toTxtract',
-      component: toTxtract,
+      path: '/toExtract',
+      name: 'toExtract',
+      component: toExtract,
     },
     {
       path: '/toPayList',
@@ -43,7 +43,7 @@ export default new Router({
       component: toUnPayList,
     },
     {
-      path: '/toTxtract/toDetailList',
+      path: '/toExtract/toDetailList',
       name: 'toDetailList',
       component: toDetailList,
     },

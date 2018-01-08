@@ -1,23 +1,22 @@
 @import "./normalize.css";
 body{
-    background: #FFFFFF;
-    font-family: "Microsoft YaHei";
-    min-width: 1280px;
-    font-size:16px;
-    overflow-y:auto;
-    //overflow-x:hidden;
-    width: 100%;
+  background: #FFFFFF;
+  font-family: "Microsoft YaHei";
+  min-width: 1280px;
+  font-size:16px;
+  overflow-y:auto;
+  width: 100%;
 }
 a{
-    text-decoration: none;
+  text-decoration: none;
 }
-div,p,ul,ul,h1,h2,h3,h4,h5,h6{
-    margin: 0;
-    padding: 0;
+div,p,ul,ul,h1,h2,h3,h4,h5,h6,*{
+  margin: 0;
+  padding: 0;
 }
 textarea.el-textarea__inner{
-    resize:none;
-    width: 240px;
+  resize:none;
+  width: 240px;
 }
 .fr {
   float: right;
@@ -38,8 +37,8 @@ li{
   list-style: none;
 }
 h2{
-    font-size: 16px;
-    color: #333333;
+  font-size: 16px;
+  color: #333333;
 }
 hr{
   border: 0!important;
@@ -51,6 +50,24 @@ hr{
   content: '';
 }
 // 注：以下都是公共样式------------------------------------------------------------------------------------------------------------------0
+
+/*一个图标*/
+.tubiao{
+  width: 25px;
+  height: 25px;
+  border: 1px solid #1c8de0;
+  border-radius: 50%;
+  display: block;
+  text-align: center;
+  line-height: 25px;
+  color: #1d90e6;
+  font-weight: bold;
+  position: absolute;
+  top: 5px;
+  left: 250px;
+  cursor: pointer;
+}
+
 //弹出框居中公共样式----------
 .model_{
   text-align: center;
@@ -98,13 +115,11 @@ hr{
 }
 //步骤条的公共样式
 .step-top{
-  //margin: 0 50px;
   margin-bottom: 35px;
   height: 105px;
   border-bottom: 1px solid #f3f3f3;
   .el-steps {
     height: 105px;
-    //padding-top: 40px;
     box-sizing: border-box;
   }
 }
@@ -115,7 +130,7 @@ hr{
     content: "";
   }
   .el-input__icon{
-    left: 207px;
+    left: 247px;
     background:url('../images/dingwei.png') center no-repeat;
   }
 }
@@ -125,36 +140,36 @@ hr{
 }
 //选择点击图片切换的公共样式类--------------------
 .selectUnion{
-    .ruleForm1{
-      margin-top:10px;
+  .ruleForm1{
+    margin-top:10px;
+  }
+  //块和块之间的右边距
+  .el-radio-button{
+    margin-right: 20px;
+  }
+  .el-radio-button__inner{
+    border: none;
+    border-left: 0;
+    padding: 0;
+    border-radius: 0;
+  }
+  //点击按钮里边的默认样式
+  .el-radio-button:first-child .el-radio-button__inner {
+    border-left: 0
+  }
+  //点击按钮时，浮现背景图和图标--------
+  .is-active{
+    div{
+      i{
+        display: block;
+        width:80px;
+        height:80px;
+        position: absolute;
+        background: rgba(35,34,34,.5) url('../../assets/images/dagou.png') no-repeat center;
+        top: 0;
+        left:0;
+      }
     }
-    //块和块之间的右边距
-    .el-radio-button{
-      margin-right: 20px;
-    }
-    .el-radio-button__inner{
-      border: none;
-      border-left: 0;
-      padding: 0;
-      border-radius: 0;
-    }
-    //点击按钮里边的默认样式
-    .el-radio-button:first-child .el-radio-button__inner {
-      border-left: 0
-    }
-    //点击按钮时，浮现背景图和图标--------
-    .is-active{
-        div{
-            i{
-              display: block;
-              width:80px;
-              height:80px;
-              position: absolute;
-              background: rgba(35,34,34,.5) url('../../assets/images/dagou.png') no-repeat center;
-              top: 0;
-              left:0;
-            }
-        }
   }
   //点击对象的字体样式
   .el-radio-button__orig-radio:checked+.el-radio-button__inner {
@@ -169,14 +184,14 @@ hr{
 //修改所有页面操作中所有按钮的颜色
 .sizeAndColor{
   .el-button{
-    border: 1px solid #1c8de0;
+    border: 1px solid #20a0ff;
     padding: 6px 10px;
     span{
-      color: #1c8de0!important;
+      color: #20a0ff!important;
     }
   }
   .el-button:hover{
-    background: #1c8de0;
+    background: #20a0ff;
     span{
       color: #fff!important;
     }
@@ -282,6 +297,7 @@ hr{
     .el-dialog__body{
       >div{
         margin-top: 40px;
+        margin-left: 30px;
         img{
           margin-left: 10px;
           width: 36px;
@@ -372,30 +388,92 @@ hr{
 }
 //我的联盟公告输入框信息
 #unionNotice{
-    textarea.el-textarea__inner{
+  textarea.el-textarea__inner{
     width:100%;
-      border:none;
+    border:none;
   }
 }
 #memberName{
-    .el-table .cell, .el-table th>div{
-      padding-left: 38px!important;
-      padding-right: 1px!important;
+  .el-table .cell, .el-table th>div{
+    padding-left: 38px!important;
+    padding-right: 1px!important;
+  }
+  .model_13{
+    .el-dialog--tiny {
+      width: 550px;
     }
+  }
 }
+//我的联盟底部联盟卡的样式-------------------------
 #myUnionCard1{
-  .selectPublic
+  //使用变量名selectPublic
+  .selectPublic;
+  .el-table tr{
+    .el-button{
+      color: #20a0ff;
+      border: 1px solid #20a0ff;
+    }
+    .el-button:hover{
+      background-color:#20a0ff ;
+      color: #ffffff;
+    }
+  }
+  .el-dialog--tiny{
+    width:900px ;
+    .el-dialog__body{
+      padding: 0;
+      margin-top: 15px;
+      height: 500px;
+      overflow-y: auto;
+      >div{
+        width: 830px;
+        height: 125px;
+        background-color: #ffffff;
+        border: solid 1px #dfe6ec;
+        margin: 30px;
+        >div{
+          padding: 10px 0 10px 31px;
+          background-color:#EEF1F6;
+          color: #333333;
+          font-weight: bold;
+        }
+        >p{
+          margin: 18px 30px;
+          span{
+            margin-left: 25px;
+          }
+        }
+      }
+    }
+  }
 }
+
+
 //入盟审核的样式
 #apply_for {
   .apply_select {
     .el-table_1_column_8 {
       .cell {
-        width: 151px;
+        width: 155px;
       }
     }
   }
-  .selectPublic
+  .selectPublic;
+  .model_02{
+    .el-dialog--tiny{
+      width: 550px;
+      .el-dialog__body{
+        padding: 0;
+        margin-bottom: 65px;
+        margin-top: 15px;
+      }
+    }
+  }
+  .model_03{
+    .el-dialog--tiny{
+      width: 550px;
+    }
+  }
 }
 // 我的联盟分页公共样式
 .el-pagination{
@@ -424,15 +502,16 @@ hr{
     font-size: 12px;
     line-height: 1;
     padding-top: 4px;
-    position: static !important;
-    float: left;
+    position: absolute!important;
     margin: 10px 0 0 40px;
+    left: 280px;
+    top:-2px;
   }
   .el-form-item__label {
     padding: 11px 12px 18px 0;
   }
   .el-input__inner {
-    width: 241px;
+    width: 290px;
     display: inline-block;
   }
   .el-textarea {
@@ -444,7 +523,6 @@ hr{
   .el-col-6 {
     width: 241px;
   }
-
 }
 //*****************************************************
 
@@ -514,6 +592,10 @@ hr{
       left: 229px!important;
     }
     .second_{
+      .el-input__inner {
+        width: 240px;
+        display: inline-block;
+      }
       img{
         cursor: pointer;
       }
@@ -563,15 +645,23 @@ hr{
   }
   //盟主权限转移样
   .el-table_1_column_3{
-     //操作样式处理
-     .el-button{
-       border: 1px solid #1c8de0;
-       color: #1c8de0;
-     }
-   }
+    //操作样式处理
+    .el-button{
+      border: 1px solid #1c8de0;
+      color: #1c8de0;
+    }
+  }
   .theLeader{
     .el-dialog--tiny{
       width: 550px;
+      .el-dialog__body{
+        padding: 0;
+        margin-top: 15px;
+        >span{
+          margin:20px 0 30px 20px ;
+          display: inline-block;
+        }
+      }
     }
   }
   #un_set{
@@ -613,158 +703,756 @@ hr{
   }
 }
 
-//我的联盟/红卡优惠设置样式---------------------------------------------------------
-#redCard,.sell_card{
-  //弹出框的样式
-  .el-dialog__body{
-    padding: 2px;
-  }
-  #setScale{
-    .el-dialog--small{
-      width: 725px!important;
+//我的联盟/售卡佣金分成管理---------------------------------------------------------4
+#sellCard{
+  padding: 40px 80px 0 50px;
+  //活动卡售卡比例设置
+  #ActivityCardSellDivide{
+    //图片列表的一整套式
+    .contentList{
+      width: 370px!important;
+      height: 181px!important;
+      background-color: #ffffff;
+      border: solid 1px #dddddd;
+      display: inline-block;
+      margin: 30px 0 30px 50px;
+      >div{
+        width: 330px;
+        height: 80px;
+        padding-bottom: 20px;
+        margin:  0 20px;
+        margin-top: 20px;
+        position: relative;
+        border-bottom: 1px solid #dddddd;
+        overflow: hidden;
+        img{
+          width: 330px;
+          height: 80px;
+        }
+        span{
+          position: absolute;
+          left: -40px;
+          top: 6px;
+          display: inline-block;
+          width: 117px;
+          background-color: #467DCB;
+          text-align: center;
+          color: #EEEEEE;
+          padding: 5px;
+          transform:rotate(-45deg);
+          -ms-transform:rotate(-45deg); 	/* IE 9 */
+          -moz-transform:rotate(-45deg); 	/* Firefox */
+          -webkit-transform:rotate(-45deg); /* Safari 和 Chrome */
+          -o-transform:rotate(-45deg); 	/* Opera */
+        }
+      }
+      >p{
+        margin: 20px;
+        >span{
+          position: relative;
+          top: -4px;
+        }
+        .el-button{
+          float: right;
+          border: 1px solid #20a0ff;
+          color: #20a0ff;
+          top: -5px;
+          position: relative;
+        }
+        .el-button:hover{
+          color: #ffffff;
+          background: #20a0ff;
+        }
+      }
+    }
+    //弹出框列表的样式
+    .setScale {
+      .el-dialog--small {
+        width: 900px !important;
+        .el-dialog__body {
+          margin-top: 15px;
+          padding: 0;
+          .model_setting {
+            padding: 30px 30px;
+            >div{
+              margin-bottom: 15px;
+            }
+            p {
+              padding: 10px 0 10px 92px;
+            }
+            .el-input{
+              width: 75%;
+              margin: 4px 0;
+            }
+          }
+        }
+      }
     }
   }
-  .selectPublic;
-  #itemDescription{
-    position: relative;
-    top: 3px;
-    >div{
-      margin-bottom: 15px;
+}
+
+//我的联盟、去加入联盟
+#joinStep{
+  .step2{
+    .el-radio-button__inner{
+      white-space: inherit!important;
     }
-    textarea{
-      width:518px!important;
-      height: 80px!important;
+    .dddddd{
+      .declare{
+        margin-left: 20px;
+        >div{
+          width: 190px;
+          line-height: 1.5;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 3;
+          overflow: hidden;
+        }
+      }
+    }
+  }
+}
+
+//我的联盟/联盟卡设置---------------------------------------------------------------5
+#UnionCardSetting{
+  >.container {
+    margin: 40px 80px 50px 50px;
+    //折扣卡设置
+    #DiscountCardSetting{
+      .el-table .cell{
+        padding-left: 38px!important;
+      }
+      .el-dialog--tiny{
+        top: 30%!important;
+        width: 640px;
+        height: 269px;
+        .el-dialog__body{
+          margin-top: 10px;
+          padding: 0;
+          >div{
+            margin:40px 0 33px 55px;
+          }
+          >p{
+            margin-left: 55px;
+          }
+        }
+      }
+    }
+    //活动卡设置
+    #ActivityCardSetting{
+      //详情的弹出框
+      .activityDetails{
+        .el-dialog--small{
+          width: 800px;
+          min-height: 500px;
+          .el-dialog__body{
+            padding: 0;
+            margin-top: 15px;
+            .activityDetailsMain{
+              margin: 30px ;
+              >p{
+                margin-bottom: 20px;
+                >span:nth-child(1){
+                  display: inline-block;
+                  width: 150px;
+                  text-align: right;
+                }
+                >span:nth-child(2){
+                  margin-left: 50px;
+                }
+              }
+              .cardExplain{
+                margin-bottom: 35px;
+                >span:nth-child(1){
+                  width: 150px;
+                  text-align: right;
+                  float: left;
+                }
+                >span:nth-child(2){
+                  margin-left: 205px;
+                  float: right;
+                  position: relative;
+                  top: -18px;
+                }
+              }
+            }
+          }
+        }
+      }
+      .explain{
+        background-color: #f4f4f4;
+        margin-top: 20px;
+        margin-bottom: 20px;
+        padding:20px 30px ;
+        position: relative;
+        >span{
+          font-weight: bold;
+        }
+        >p{
+          margin: 13px 0;
+          color: #666666;
+        }
+      }
+      //活动卡列表
+      .activityCardsList{
+        >ul.nav{
+          height: 40px;
+          background-color: #eef1f6;
+          line-height: 40px;
+          li{
+            float: left;
+            width:25%;
+          }
+          li:nth-child(1){
+            padding-left: 31px;
+          }
+          li:nth-last-child(1){
+            padding-left: 48px;
+            width:18%;
+          }
+        }
+        >ul.contentList{
+          li{
+            float: left;
+            width:25%;
+            margin-top:20px ;
+            margin-bottom:20px ;
+          }
+          li:nth-child(1){
+            padding-left: 31px;
+            position: relative;
+            top: 31px;
+            >img{
+              width: 260px;height:60px;
+              border-radius: 6px;
+              background-image: linear-gradient(90deg,
+              #03abff 0%,
+              #008bd2 100%);
+            }
+            >div{
+              position: absolute;
+              width: 260px;height:60px;
+              border-radius: 6px;
+              top: 0;
+              left:32px;
+              overflow: hidden;
+              >span{
+                position: absolute;
+                left: -40px;
+                top: 6px;
+                display: inline-block;
+                width: 117px;
+                background-color: #467DCB;
+                text-align: center;
+                color: #EEEEEE;
+                padding: 5px;
+                transform:rotate(-45deg);
+                -ms-transform:rotate(-45deg); 	/* IE 9 */
+                -moz-transform:rotate(-45deg); 	/* Firefox */
+                -webkit-transform:rotate(-45deg); /* Safari 和 Chrome */
+                -o-transform:rotate(-45deg); 	/* Opera */
+              }
+            }
+          }
+          li:nth-child(2){
+            position: relative;
+
+            >p{
+              margin-bottom: 6px;
+              span:nth-child(1){
+                color: #99a9bf;
+              }
+              span{
+                color: #1f2d3d;
+              }
+            }
+          }
+          li:nth-child(3){
+            >p{
+              margin-bottom: 11px;
+              >span:nth-child(1){
+                color: #99a9bf;
+              }
+              >span:nth-child(2){
+                margin-left: 30px;
+                color: #1f2b3d;
+              }
+            }
+            .el-progress-bar__outer{
+              width: 300px;
+            }
+            .btnCheck {
+              >button {
+                background: #E8F5FF;
+                >span{
+                  color: #20a0ff!important;
+                }
+              }
+              .checkReview{
+                .el-dialog--small{
+                  width:900px;
+                  .el-dialog__header {
+                    padding: 20px 20px 15px;
+                    border-bottom: 1px solid #ddd;
+                  }
+                  .el-dialog__body{
+                    >p{
+                      height: 54px;
+                      line-height: 54px;
+                      background-color: #f4f4f4;
+                      margin-bottom:30px;
+                      padding-left: 20px;
+                    }
+                  }
+                }
+              }
+            }
+          }
+          li:nth-last-child(1){
+            margin-top: 65px;
+            padding-left: 48px;
+            width:18%;
+            >div{
+              display: inline-block;
+            }
+            .btn{
+              margin-right: 10px;
+              .el-button{
+                border: 1px solid #20a0ff;
+                color: #20a0ff;
+              }
+              .el-button:hover{
+                color: #ffffff;
+                background: #20a0ff;
+              }
+            }
+          }
+        }
+      }
+      //新建弹出框样式
+      .NewActivityCard{
+        .el-dialog--small{
+          width: 900px;
+          .el-dialog__header {
+            padding: 20px 20px 15px;
+          }
+          .el-dialog__body {
+            padding: 0;
+            form{
+              margin: 30px 0 20px 30px;
+              .el-form-item__content{
+                >span{
+                  margin-left: 20px;
+                  color: #999999;
+                }
+                .el-input{
+                  width:220px;
+                }
+                .el-button {
+                  padding: 28px 102px;
+                  border: 1px dotted;
+                }
+                textarea.el-textarea__inner {
+                  width: 220px;
+                  height: 55px;
+                }
+              }
+              .OptionalColor{
+                position: absolute;
+                z-index: 10;
+                .el-radio-group{
+                  border: 1px solid #ddd;
+                  border-radius: 5px;
+                }
+                .el-radio-button:first-child .el-radio-button__inner{
+                  border-left: none!important;
+                }
+                .el-radio-button__inner{
+                  border: none;
+                  padding: 6px 5px 5px 1px;
+                  box-sizing: border-box;
+                  height: 33px;
+                  width: 50px;
+                  overflow: hidden;
+                  >div{
+                    margin-left: 14px;
+                    margin-bottom: 10px;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+      //弹出框 参与盟员数
+      .membership{
+        .el-dialog--small{
+          width: 900px;
+          height: 600px;
+          .el-dialog__title{
+            color: #1f2d3d!important;
+          }
+          .el-dialog__body{
+            padding: 0;
+            margin-top: 15px;
+            hr{
+              margin-top:5px;
+            }
+            .el-table--fit{
+              margin: 30px;
+              width: 94%!important;
+            }
+            >div{
+              margin: 30px;margin-top: 20px;
+            }
+            >p{
+              width: 835px;
+              height: 54px;
+              line-height: 54px;
+              background-color: #f4f4f4;
+              padding-left: 20px;
+              margin: 30px 30px;
+            }
+          }
+        }
+      }
+      //选择卡片样式
+      .SelectCard{
+        .el-dialog--tiny{
+          width: 830px;
+          top: 18%!important;
+          .el-dialog__body{
+            padding: 0;
+            margin-top: 15px;
+            .step2{
+              .el-radio-button{
+                margin: 25px 23px 0 34px;
+                .el-radio-button__inner{
+                  padding: 27px 22px!important;
+                }
+              }
+            }
+          }
+        }
+      }
+      .model_2{
+        .el-dialog__body{
+          padding: 0;
+          margin-top: 15px;
+        }
+      }
+      //不通过弹出框
+      .noPass{
+        .el-dialog--small{
+          width: 640px;
+          height: 260px;
+          .el-dialog__body{
+            padding: 0px;
+            margin: 15px 0 15px;
+            >div {
+              margin: 30px 0 0 74px;
+              >span{
+                position: relative;
+                top:-55px;
+              }
+              .el-textarea {
+                width: 220px;
+                margin-left: 30px;
+                textarea.el-textarea__inner {
+                  width: 220px;
+                  height: 85px;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    //动态切换页面的样式
+    #MyActivityCard{
+      min-height: 625px;
+      //适应变量
+      .explain{
+        #ActivityCardSetting> .explain;
+        margin-bottom: 0!important;
+      }
+      //  ! 图标样式
+      .icon{
+        width:15px ;
+        height:15px ;
+        border: 1px solid #f4f4f4;
+        border-radius: 50%;
+        display: inline-block;
+        text-align: center;
+        line-height: 15px;
+        color: #f4f4f4;
+        font-weight: bold;
+        cursor: pointer;
+        background-color: #d2d2d2;
+        margin-left: 10px;
+      }
+      //审核
+      .auditRecord{
+        width:500px;
+        height: 450px;
+        background-color: #ffffff;
+        box-shadow: 0px 0px 19px 1px
+        rgba(53, 53, 53, 0.1);
+        border-radius: 10px;
+        position: absolute;
+        top: 82px;
+        right: 28px;
+        z-index: 100;
+        >.top_{
+          padding: 15px 20px;
+          border-bottom: 1px solid #EEEEEE;
+          span{
+            color: #333333;
+          }
+          strong{
+            float: right;  font-size: 35px;
+            color: #EEEEEE;position: relative; top: -12px;
+            cursor: pointer;
+          }
+        }
+        .bottom_{
+          margin: 20px 30px;
+          height: 378px;
+          overflow-y: auto;
+          >div{
+            >p{
+              color: #90a4ae;
+            }
+            >div {
+              display: inline-block;
+              height: 30px;
+              line-height: 30px;
+              background-color: #f6f8fa;
+              color: #54667b;
+              border-radius: 20px;
+              padding: 10px 20px;
+              margin: 13px 0;
+            }
+          }
+        }
+      }
+      .unionList{
+        margin-top: 30px;
+        >p{
+          font-weight: bold;
+          padding-bottom: 10px;
+          border-bottom: 1px solid #EEEEEE;
+          margin-bottom: 15px;
+        }
+        .addUnion{
+          margin-top: 20px;
+          margin-bottom:15px;
+          >span{
+            margin-left: 10px;
+            color: #999999;
+          }
+        }
+        #noUnion,#noUnion1{
+          margin: 0!important;
+        }
+      }
+      footer{
+        width: 100%;
+        height: 56px;
+        background-color: #f5f5f5;
+        text-align: center;
+        line-height: 56px;
+        margin-top:50px;
+        position: fixed;
+        bottom: 0;
+        left: 3px;
+      }
+      .model_2{
+        .el-dialog__body{
+          padding: 0;
+          margin-top: 15px;
+
+        }
+      }
+      .model_3{
+        .el-dialog--tiny {
+          width: 640px;
+          .el-dialog__body {
+            padding: 0;
+            margin-top: 15px;
+            >div{
+              margin-top:30px;
+              margin-left: 90px;
+
+            }
+          }
+        }
+      }
+      .model_4{
+        .el-dialog--small{
+          width: 900px;
+          .el-dialog__body{
+            padding: 0;
+            margin-top: 15px;
+            .el-row {
+              .el-input__inner {
+                width: 195px;
+              }
+            }
+            >div{
+              margin-left: 30px;
+              margin-top:20px;
+              .section_{
+                margin-top: 18px;
+                .rightContent{
+                  width: 238px;
+                  border: solid 1px #dfe6ec;
+                  float: right;
+                  margin-right: 30px;
+                  >p{
+                    background-color: #eef1f6;
+                    padding: 11px 10px 10px;
+                  }
+                  .rightContentBottom{
+                    height: 404px;
+                    overflow-y: auto;
+                    >div{
+                      margin: 10px 20px 5px 20px;
+                      display: flex;
+                      justify-content:space-between;
+                      .rightContentBottomHidden{
+                        position: relative;top: 8px;
+                        display: block;
+                        white-space: nowrap;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        width: 110px;
+                      }
+                      .el-input-number--small{
+                        width: 100px;
+                      }
+                      .el-input-number{
+                        width: 110px;
+                      }
+                    }
+                  }
+                }
+                .ErpRight{
+                  width: 325px;
+                }
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
 
 
-//我的联盟/红卡优惠设置样式---------------------------------------------------------------
-#redCard{
-  //优惠项目审核
-  .model_projects{
-    .el-dialog--small{
-      width:825px;
+
+//我的联盟/退盟管理------------------------------------------------------------------6
+#UnionQuit {
+  .container {
+    margin: 40px 50px;
+    .second {
+      margin-top: 11px !important;
     }
-    .el-tabs__active-bar{
-      transition: transform .2s cubic-bezier(.645,.045,.355,1)!important;
+    .main {
+
     }
-    .el-tabs__item.is-active{
-      border-bottom: 3px solid #20a0ff!important;
-    }
-  }
-    .el-table_1_column_4,.el-table_1_column_8,.el-table_1_column_12 {
-      &.is-leaf {
-        .cell {
-          //padding-right: 33px;
-          //text-align: right;
+    .tuimeng {
+      .model_12 {
+        margin-left: 30px;
+        margin-top: 20px;
+        p {
+          margin-bottom: 7px;
+          color: #333333;
         }
       }
-      //操作样式处理
+    }
+  }
+  #Refund {
+    //最后一列样式
+    .el-table_1_column_4, .el-table_1_column_8 {
       .el-button {
         border: 1px solid #1c8de0;
         color: #1c8de0;
       }
     }
-  //优惠项目审核弹出框“通过”样式
-  .el-table_1_column_4 .spacil>.el-button{
-    color:#ffffff
-  }
-  #table5 .butguo{
-    .el-button{
-      border: 1px solid #C4C4C4;
-      color: #6B6B6B;
+    .el-dialog__body {
+      padding: 0px;
+      margin-top: 15px;
     }
-  }
-  //最后一格右浮动
-   .el-table_1_column_4 .cell>.el-button,.el-table_1_column_8 .cell>.el-button,.el-table_1_column_12 .cell>.el-button,.el-table_1_column_17 .cell>.el-button{
-     float:right;
-   }
-    .el-table_1_column_2,.el-table_1_column_6,.el-table_1_column_10{
-      //padding-left: 50px;
-    }
-    .el-table_1_column_3,.el-table_1_column_7,.el-table_1_column_11{
-      //padding-left: 150px;
-    }
-  .notSubmitted{
-    .el-button {
-      border: 1px solid #1c8de0;
-      color: #1c8de0;
-    }
-  }
-  // 我的优惠项目
-  .preferenceItems{
-    div{
-      textarea.el-textarea__inner{
-        width: 518px;
-        height: 90px;
+    .tuimeng {
+      .el-dialog--tiny {
+        width: 600px;
       }
     }
-    .footer{
-      margin-top:140px;
-    }
-    .model_{
-      text-align: inherit;
+    .model_12{
       .el-dialog--tiny{
-        width:560px;
-        height: 250px;
-        .el-dialog__header {
-          padding: 20px 20px 16px;
-          border-bottom: 1px solid #ddd;
+        width: 450px;
+        .el-dialog__body{
+          >p{
+            margin: 20px;
+          }
         }
-        .el-row{
-          padding-top: 35px;
+      }
+    }
+    //弹出框的样式
+    #popBox {
+      //总体弹出框的宽度
+      .el-dialog--tiny {
+        width: 615px;
+        top: 283px !important;
+      }
+      .el-dialog__header {
+        padding: 10px 15px 0;
+        .el-dialog__title {
+          font-size: 15px;
         }
-        .el-dialog__footer{
-          margin-top: 50px;
+      }
+    }
+    //表格的样式
+    .second{
+      .el-button{
+        border: 1px solid #20a0ff;
+        color: #20a0ff;
+      }
+      .el-button:focus, .el-button:hover {
+        color: #fff;
+        border-color: #1d90e6;
+        background: #20a0ff;
+      }
+    }
+    .RefundAu {
+      .el-dialog--tiny {
+        width: 640px;
+        .el-dialog__body {
+          margin-top:17px ;
+          .main {
+            margin-bottom: 45px;
+            .el-form-item {
+              margin-top: 30px;
+              margin-left: 10%;
+              margin-bottom: 0;
+              .el-textarea__inner {
+                min-width: 60%;
+              }
+            }
+            p {
+              margin-left: 140px;
+              color: #999999;
+              margin-top: 20px;
+            }
+          }
         }
       }
     }
   }
 }
 
-//我的联盟/退盟管理--------------------------------------------
-#Refund{
- //最后一列样式
-  .el-table_1_column_4,.el-table_1_column_8{
-    .el-button {
-      border: 1px solid #1c8de0;
-      color: #1c8de0;
-    }
-  }
-  .el-dialog__body{
-    padding:0px;
-  }
-  .tuimeng{
-    .el-dialog--tiny {
-      width: 600px;
-    }
-  }
-  //弹出框的样式
-  #popBox{
-    //总体弹出框的宽度
-    .el-dialog--tiny{
-      width: 615px;
-      top: 283px!important;
-    }
-    .el-dialog__header {
-      padding: 10px 15px 0;
-      .el-dialog__title {
-        font-size:15px;
-      }
-    }
-    .main{
-      .el-form-item{
-        margin-top: 30px;
-        margin-left: 10%;
-        margin-bottom:0;
-        .el-textarea__inner{
-          min-width: 60%;
-        }
-      }
-    }
-  }
-}
+
 
 //我的联盟未登录时的样式(no-register)------------------------
 .container{
@@ -776,6 +1464,7 @@ hr{
     }
   }
 }
+
 
 
 //我的联盟中（商机模块）的所有样式------------------------------------------------------------------------------------------1
@@ -813,11 +1502,20 @@ hr{
         width: 115px !important;
       }
       .selectUnion {
+        .el-radio-button__inner:hover{
+        }
         .el-form-item__content {
           //文字提示样式
           .el-form-item__error {
             top: 80px;
-            left: 265px;
+            left: 305px;
+          }
+        }
+        .dddddd{
+          >div{
+            position: absolute;
+            top: 83px;
+            left:-15px;
           }
         }
       }
@@ -863,11 +1561,13 @@ hr{
         height: 360px;
         .el-dialog__body{
           padding:0;
+          margin-top: 10px;
           .middle_{
             text-align: center;
             margin-top: 25px;
             .imgSrc{
               width: 200px;
+              height: 200px;
             }
             span{
               color: red;
@@ -943,14 +1643,106 @@ hr{
   }
 }
 
+
+
 //我的联盟中(前台模块）里边的所有样式---------------------------------------------------------------------------------------------2
 #front{
   //联盟卡消费核销--首页样式----------------------   1
-  #UnionCard {
+  #Verification {
     .first_ {
       .el-input__inner {
         font-size: 18px;
         height: 35px;
+      }
+    }
+    //首页联盟卡信息的样式
+    .UnionCardInformation{
+      min-width:540px;
+      margin: auto;
+      .selectUnion{
+        .el-radio-button__inner:hover{
+          .isShow{
+            display: block!important;
+          }
+        }
+        .isShow{
+          position: absolute;top: 90px;left: -7px;
+          display:none;
+          text-align: center;
+          h6{
+            margin-bottom: 17px;
+          }
+        }
+      }
+      >div {
+        max-width: 1450px;
+        margin: 0 auto;
+        form {
+          padding-top:10px;
+          width: 540px;
+          height: 532px;
+          background-color: #ffffff;
+          box-shadow: 0px 0px 15px 0px rgba(53, 53, 53, 0.08);
+          float: left;
+          transition: all .5s;
+          position: relative;
+          left: 454px;
+          margin-right: 70px;
+          box-sizing: border-box;
+        }
+        .preferenceItems {
+          max-width: 760px;
+          float: left;
+          height: 532px;
+          box-shadow: 0px 0px 15px 0px
+          rgba(53, 53, 53, 0.08);
+          margin-left: 30px;
+          padding: 0px 37px;
+          .section_ {
+            margin-top: 18px;
+            .rightContent {
+              width: 238px;
+              height: 440px;
+              border: solid 1px #dfe6ec;
+              float: right;
+              margin-left: 20px;
+              > p {
+                background-color: #eef1f6;
+                padding: 11px 10px 10px;
+              }
+              > div {
+                height: 399px;
+                overflow-y: auto;
+                &::-webkit-scrollbar-thumb{
+                  height: 5px;
+                  border-radius: 10px;
+                  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
+                }
+                >div {
+                  margin-left: 10px;
+                  >span{
+                    display: inline-block;
+                    width: 140px;
+                  }
+                  .el-button--text {
+                    margin-left: 50px;
+                  }
+                }
+              }
+              .el-button--text{
+                margin-left: 15px;
+              }
+            }
+            .el-table__body-wrapper{
+              overflow: inherit!important;
+            }
+          }
+        }
+      }
+      .footer_{
+        width:155px;
+        margin: 0 auto;
+        margin-top:60px;
       }
     }
     //支付弹出框页面
@@ -966,8 +1758,6 @@ hr{
         .el-radio-button__inner{
           color: #1c8de0;
         }
-      }
-      .zhifu{
         .is-active {
           .el-radio-button__inner {
             color: #fff;
@@ -975,33 +1765,71 @@ hr{
         }
       }
     }
-
+    //弹出框 核销
     .second_0 {
       .el-dialog--tiny{
-        width:800px;
+        width: 900px;
+        top: 8%!important;
       }
       .el-dialog__body{
         padding: 0;
-        form{
+        margin-top: 15px;
+        >div {
+          width: 840px;
           margin: 30px;
+          > p {
+            height: 40px;
+            background-color: #eef1f6;
+            line-height: 40px;
+            padding-left: 30px;
+            border: solid 1px #dfe6ec;
+            border-bottom: none;
+          }
+          form {
+            border: solid 1px #dfe6ec;
+            border-top:none;
+            .discountsProject{
+              .el-form-item__content{
+                margin-left: 127px;
+              }
+            }
+          }
+          .payWay{
+            margin-top: 20px;
+            width: 840px;
+            height: 255px;
+            border: solid 1px #dfe6ec;
+            >p{
+              height: 40px;
+              background-color: #eef1f6;
+              line-height: 40px;
+              padding-left: 30px;
+            }
+            >div {
+              border-top:none;
+              padding-left: 30px;
+              >.el-radio-group{
+                margin: 20px 0;
+                .el-radio-button {
+                  margin-right: 10px;
+                }
+                .el-radio-button__orig-radio:checked + .el-radio-button__inner {
+                  color: #fff;
+                }
+              }
+              >.el-row{
+                .el-col-24{
+
+                }
+              }
+            }
+          }
         }
       }
       .el-form-item__label{
         width: 124px !important;
       }
-      .payWay{
-        .el-radio-group{
-          position: absolute;
-          top: 26px;
-          left: 38px;
-        }
-        .el-radio-button{
-          margin-right: 10px;
-        }
-        .el-radio-button__orig-radio:checked+.el-radio-button__inner{
-          color: #fff;
-        }
-      }
+
       //点击时候按钮的样式
       .is-active{
         .pay_{
@@ -1028,21 +1856,34 @@ hr{
         height: 360px;
       }
       .el-dialog__body{
+        margin-top: 15px;
         padding:0;
         text-align: center;
         img{
+          margin-top: 35px;
           width:200px;
           height:200px;
         }
         p{
-          margin-top: 30px;
+          margin-top: 20px;
           margin-bottom: 30px;
         }
       }
     }
   }
-//消费核销记录--------------------------------   2
+
+  //消费核销记录--------------------------------   2
   #ExpenseRecord{
+    .el-table .cell {
+      white-space: normal;
+      line-height: 24px;
+      white-space: nowrap;
+    }
+    >.el-row{
+      .el-form-item__label{
+        padding: 11px 3px 11px 0;
+      }
+    }
     .el-date-editor .el-input{
       width:100%
     }
@@ -1054,10 +1895,222 @@ hr{
     .el-tabs__item.is-active{
       border-bottom: 3px solid #20a0ff!important;
     }
+    //弹出框 核销详情
+    .verificationMessage{
+      .el-dialog--small{
+        width: 900px;
+        .el-dialog__body{
+          padding: 0;
+          margin-top: 15px;
+          max-height: 620px;
+          overflow-y: auto;
+          border-top: 1px solid #EEEEEE;
+          >div{
+            width: 840px;
+            margin: 30px;
+            border: solid 1px #dfe6ec;
+            p{
+              height: 40px;
+              background-color: #eef1f6;
+              line-height: 40px;
+              padding-left: 30px;
+            }
+            >div{
+              padding-left: 30px;
+              margin:18px 0;
+            }
+          }
+        }
+      }
+    }
+
   }
 
   //办理联盟卡---------------------------------  3
   #transaction{
+    .uninCardContent{
+      float: left;
+      width: 920px;
+      margin-top: 30px;
+      //办理联盟卡
+      >div{
+        height: 227px;
+        border: 1px solid #EEEEEE;
+        >p{
+          height: 40px;
+          background-color: #eef1f6;
+          line-height: 40px;
+          padding-left: 30px;
+          font-weight: bold;
+        }
+        form{
+          margin-top: 20px;
+          margin-left: 28px;
+          >.el-form-item:nth-last-child(1){
+            margin-bottom: 0!important;
+            position: relative;top:-44px;  left:-5px;
+            .el-form-item__label{
+              width: 124px!important;
+            }
+          }
+        }
+      }
+      >form{
+        margin-top:21px;
+        //选择联盟
+        .selectUnion{
+          border: 1px solid #EEEEEE;
+          >p{
+            height: 40px;
+            background-color: #eef1f6;
+            line-height: 40px;
+            padding-left: 30px;
+            font-weight: bold;
+          }
+          .el-form-item__content{
+            margin-left: 30px!important;
+          }
+        }
+        //选择联盟卡
+        .selectUnionCard{
+          margin-top:21px;
+          border: 1px solid #EEEEEE;
+          p{
+            height: 40px;
+            background-color: #eef1f6;
+            line-height: 40px;
+            padding-left: 30px;
+            font-weight: bold;
+          }
+          .el-form-item__content {
+            margin-left: 0 !important;
+            width: inherit;
+            margin-bottom: 0;
+          }
+          .SwitchAround {
+            position: relative;
+            >i{
+              position:absolute;
+              width: 20px;
+              height: 50px;
+              background-color: #000000;
+              opacity: 0.1;
+              color: #ffffff;
+              line-height: 50px;
+              z-index: 20;
+              border: none;
+              top: 32%;
+              cursor: pointer;
+              font-style:normal!important;
+              text-align: center;
+              font-size: 20px;
+            }
+            .forward{
+              left:0;
+            }
+            .backward{
+              right: 0;
+            }
+            >div {
+              width: 864px;
+              height: 120px;
+              position: relative;
+              left: 26px;
+              overflow: hidden;
+              >div {
+                display: flex;
+                transition: all .5s;
+                position: absolute;
+                left:0;
+                margin-top: 35px;
+                .el-checkbox-button {
+                  position: relative;
+                  display: inline-block;
+                  margin-left: 13px;
+                  margin-top: 5px;
+                  .el-checkbox-button__inner {
+                    padding: 0;
+                    border: none;
+                    >.clearfix{
+                      border-radius: 4px 0 0 4px;
+                    }
+                  }
+                }
+                .SelectunionImg {
+                  width: 200px;
+                  height: 46px;
+                  background-image: linear-gradient(90deg, #06bd7d 0%, #00935f 100%);
+                }
+                .SelectunionImg1{
+                  i{
+                    display: block;
+                    width:200px;
+                    height:46px;
+                    position: absolute;
+                    background: rgba(35,34,34,.5) url('../../assets/images/dagou.png') no-repeat center;
+                    top: 0;
+                    left:0;
+                    border-radius: 4px 0 0 4px;
+                  }
+                }
+                .el-checkbox-button.is-checked .el-checkbox-button__inner{
+                  background-color: #96a3ad;
+                  border-color: #96a3ad;
+                  box-shadow: none;
+                  i{
+                    display: block;
+                    width:200px;
+                    height:46px;
+                    position: absolute;
+                    background: rgba(35,34,34,.5) url('../../assets/images/dagou.png') no-repeat center;
+                    top: 0;
+                    left:0;
+                    border-radius: 4px 0 0 4px;
+                  }
+                }
+              }
+            }
+          }
+        }
+        //联盟卡折扣卡
+        .ActivityCardDetails{
+          margin-top:21px;
+          .UnionDiscountCard{
+            border: 1px solid #EEEEEE;
+            p{
+              height: 40px;
+              background-color: #eef1f6;
+              line-height: 40px;
+              padding-left: 30px;
+              font-weight: bold;
+            }
+            >div{
+              padding: 20px 0 25px 70px;
+            }
+          }
+          .cardService{
+            margin-top:21px;
+            border: 1px solid #EEEEEE;
+            >p{
+              height: 40px;
+              background-color: #eef1f6;
+              line-height: 40px;
+              padding-left: 30px;
+              font-weight: bold;
+            }
+            >div{
+              margin: 20px 0 20px 32px;
+            }
+          }
+        }
+        >.el-form-item{
+          margin-top: 20px;
+          .el-form-item__content{
+            margin-left: 0!important;
+          }
+        }
+      }
+    }
     .el-col-6{
       width:220px;
     }
@@ -1104,30 +2157,41 @@ hr{
       }
     }
   }
+
 }
+
 
 
 //财务页面所有样式---------------------------------------------------------------------------------------------3
 #finance{
+  .el-table .cell {
+    padding-left: 30px;
+  }
   //弹出框样式
   .el-dialog--tiny{
     width:650px;
     height: 360px;
   }
   .footer_{
+    .code_{
+      .el-dialog--tiny{
+        height: 400px;
+      }
+    }
     .el-dialog--tiny{
-      height: 400px;
+      height: 445px;
     }
   }
-    .el-dialog__body {
-      padding: 0;
-    }
+  .el-dialog__body {
+    padding: 0;
+    margin-top: 15px;
+  }
   .Popup_ {
     margin-top:30px;
     padding-left: 50px;
     .el-form-item__error{
       top: 20%;
-      left: 35%;
+      left: 40%;
     }
   }
   .model_1{
@@ -1135,13 +2199,16 @@ hr{
       width:560px;
       img{
         width:200px;
+        height:200px;
       }
     }
   }
-    .el-form-item__error:nth-child(3){
-      left: 62%;
-    }
+  .el-form-item__error:nth-child(3){
+    left: 62%;
+  }
 }
+
+
 
 //没有联盟的弹出框样式
 #noRegister{
@@ -1155,8 +2222,9 @@ hr{
   }
 }
 
+
 //没有数据的样式
-#noUnion{
+#noUnion,#noUnion1{
   margin: 40px 110px 0 50px;
   margin-top: 30px;
   border:1px solid #ddd;

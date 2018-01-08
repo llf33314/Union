@@ -6,7 +6,7 @@
 
     <groupId>com.duofriend.union</groupId>
     <artifactId>gtUnion</artifactId>
-    <version>1.0-SNAPSHOT</version>
+    <version>3.1-SNAPSHOT</version>
     <packaging>war</packaging>
 
     <parent>
@@ -26,7 +26,8 @@
         <fastjson.version>1.2.0</fastjson.version>
         <httpclient.version>4.5.3</httpclient.version>
         <dev.lib.lombok>1.16.18</dev.lib.lombok>
-        <gt.common.api.version>1.3.16-SNAPSHOT</gt.common.api.version>
+        <gt.common.api.version>1.3.27-SNAPSHOT</gt.common.api.version>
+        <gt.union.api.version>1.0.7</gt.union.api.version>
     </properties>
 
     <dependencies>
@@ -178,6 +179,17 @@
             <version>1.0.5</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.redisson</groupId>
+            <artifactId>redisson</artifactId>
+            <version>2.10.5</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.gt.union</groupId>
+            <artifactId>gt_union_api</artifactId>
+            <version>${gt.union.api.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

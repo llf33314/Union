@@ -1,0 +1,808 @@
+@import "./normalize.less";
+//以下为公共样式----------------------------------------------------
+//弹出框的公共样式----------1
+.box-wrap,.box-wrap2{
+  width: 100%;
+  height: 100%;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 10;
+  .mask {
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    left: 0;
+    top: 0;
+    z-index: 1;
+    background: rgba(0, 0, 0, .44);
+  }
+  .box {
+    position: absolute;
+    background: white;
+    z-index: 5;
+    border-radius: 18px;
+    border: 1px solid white;
+    margin:0 28px;
+    width: 92.3%;
+    margin-top: 180px;
+  }
+}
+
+//页面底部公共样式------------------2
+.footer_ {
+  .footerHight{
+    margin-top: 135px;
+    height: 1px;
+  }
+  >footer {
+    position: fixed;
+    z-index: 1000;
+    width: 100%;
+    bottom: 0;
+    height: 100px;
+    background-color: #ffffff;
+    box-shadow: 0px 0px 9px 0px rgba(53, 53, 53, 0.15);
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    > ul {
+      > li {
+        color: #ddd;
+        font-size: 22px;
+        i {
+          font-size: 34px;
+        }
+      }
+      > li:nth-last-child(1) {
+        position: relative;
+        left: -5px;
+        margin-top: 14px;
+      }
+    }
+    .footerLeft {
+      > li {
+        color: #ddd;
+      }
+    }
+  }
+}
+//按钮的公共样式--------------------
+.btn1{
+  width: 75%;
+  height: 92px;
+  line-height: 92px;
+  text-align: center;
+  background: #64C4A8;
+  box-shadow: 0px 11px 18px 0px rgba(68, 191, 151, 0.3);
+  border-radius: 45px;
+  color: #FFFFFF;
+  font-size:30px;
+  margin-left: 110px;
+  margin-top: 110px;
+}
+
+//是否过期样式--------------------
+.outOfDatePublic {
+  font-size: 109px;
+  color: #FFFFFF;
+  margin-right: 23px;
+  z-index:1;
+}
+
+//卡片的公共样式
+.unionListPublic {
+  margin-top: 30px;
+  height: 161px;
+  border-radius: 18px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  .listLeft {
+    margin-left: 32px;
+    display: flex;
+    align-items: center;
+    i:nth-child(1) {
+      font-size: 85px;
+      color: #FFFFFF;
+      margin-right: 30px;
+    }
+    > span {
+      font-size: 30px;
+      color: #FFFFFF;
+      display: inline-block;
+    }
+  }
+  .listRight {
+    width: 124px;
+    height: 50px;
+    border-radius: 25px;
+    border: solid 1px #ffffff;
+    line-height: 50px;
+    text-align: center;
+    color: #FFFFFF;
+    margin-right: 50px;
+  }
+}
+
+//专属权限公共样式
+.exclusivePublic{
+  margin: 30px 30px 0;
+  box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.1);
+  border-radius: 18px;
+  background-color: #fff;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  >.efontSize{
+    margin: 27px 0 35px 29px;
+    .fr{
+      color: rgba(51,51,51,.7);
+      margin-right:28px;
+      font-size:25px;
+    }
+  }
+  >ul{
+    display: flex;
+    margin: 0 0 36px 50px;
+    >li>p{
+      font-size: 22px;
+      margin-top:20px;
+    }
+    >.consumed{
+      i{
+        font-size: 40px;
+        color: #FF585C;
+        position: relative;
+        left: 25px;
+      }
+    }
+    >.unionPoint{
+      margin-left: 85px;
+      i{
+        font-size: 40px;
+        color: #FFBF17;
+        position: relative;
+        left: 25px;
+      }
+    }
+  }
+}
+
+//特权使用
+.privilegedUserPublic{
+  margin: 30px 30px 0;
+  height: 125px;
+  box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.1);
+  border-radius: 18px;
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+  padding-left: 28px;
+  >p{
+    margin: 27px 0 18px;
+  }
+}
+
+//折扣卡列表主页面内容
+.cardListPublic{
+  >.list{
+    margin:30px 30px 0;
+    height: 158px;
+    background-color: #fff;
+    box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.1);
+    border-radius: 18px;
+    display: flex;
+    align-items:center;
+    padding:0 29px;
+    >.listLeft{
+      width: 75%;
+      margin-right: 40px;
+      >p{
+        display: flex;
+        justify-content:space-between;
+        margin-bottom: 17px;
+      }
+      >div{
+        color: rgba(51,51,51,.7);
+      }
+    }
+    >.listRight{
+      font-size:48px;
+    }
+  }
+}
+
+//下拉框的公共样式
+.declarePublic {
+  border: 1px solid #eee;
+  background-color: #FFF;
+  border-radius: 18px;
+  padding: 28px 28px 10px;
+  margin: 0 30px;
+  position: relative;
+  > .content {
+    color: rgba(51, 51, 51, .7);
+    display: block;
+  }
+  > i {
+    display: block;
+    position: absolute;
+    color: #E8ECEF;
+    font-size: 35px;
+  }
+  .left {
+    top: -18px;
+    left: -13px;
+  }
+  .right {
+    top: -18px;
+    right: -13px;
+  }
+}
+
+//没有数据的公共样式
+.noData{
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  -webkit-transform: translate(-50%,-50%);
+  -ms-transform: translate(-50%,-50%);
+  transform: translate(-50%,-50%);
+  text-align: center;
+  p{
+    color: #666666;
+    font-size: 30px;
+  }
+}
+//以上为公共样式---------------------------------------------------------------------
+
+
+//联盟卡主页面--------------------------------------------------------1
+#unionCard{
+  >main {
+    margin: 0  30px/750px*100% 0;
+    .unionList {
+      .unionListPublic;
+      background-image: linear-gradient(90deg, #fe7358 0%, #eb3b3e 100%);
+    }
+    .useRaiders {
+      display: flex;
+      justify-content: center;
+      color: #44bf97;
+      margin-top: 30px;
+      font-size: 30px;
+    }
+  }
+  .box-wrap2{
+    .box{
+      .unionHeader{
+        font-size: 33px;
+        display: flex;
+        justify-content:center;
+        margin: 40px 0;
+      }
+      .boxContent2{
+        margin: 0 30px;
+        p{
+          display: flex;
+          font-weight: normal;
+          font-stretch: normal;
+          line-height: 50px;
+          letter-spacing: 0px;
+          margin-bottom: 30px;
+          >span{
+            font-size: 28px;
+            color: rgba(51,51,51,.7);
+          }
+        }
+
+      }
+      .btn1{
+        width: 75%;
+        height: 92px;
+        line-height: 92px;
+        text-align: center;
+        background-image: linear-gradient(90deg, #00ce96 0%, #00ad7b 100%);
+        box-shadow: 0px 11px 18px 0px rgba(68, 191, 151, 0.3);
+        border-radius: 45px;
+        color: #FFFFFF;
+        font-size:30px;
+        margin-left: 15%;
+        margin-top: 70px;
+        margin-bottom: 40px;
+      }
+    }
+  }
+}
+
+//我的信息页面--------------------------------------------------------2
+#myInformaiton{
+  >.mainContent{
+    margin:0 30px;
+    .unionCard{
+      >p{
+        margin-bottom: 60px;
+        >span{
+          display: inline-block;
+          width:200px;
+          height: 2px;
+          background-color: #dddddd;
+          position: relative;
+          top:-5px;
+        }
+        >strong{
+          margin: 0 37px;
+          color: #333333;
+          font-size: 25px;
+          font-weight: normal;
+        }
+      }
+      .unionList {
+        position: relative;
+        z-index:2;
+        margin-top: -45px;
+        height: 161px;
+        background-image: linear-gradient(90deg, #fe7358 0%, #eb3b3e 100%);
+        border-radius: 18px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        .listLeft {
+          margin-left: 32px;
+          display: flex;
+          align-items: center;
+          >i {
+            font-size: 85px;
+            color: #FFFFFF;
+            margin-right: 30px;
+          }
+          > div {
+            font-size: 30px;
+            color: #FFFFFF;
+            display: block;
+            >p:nth-child(1){
+              font-size: 30px;
+            }
+          }
+        }
+        .outOfDate{
+          .outOfDatePublic;
+        }
+      }
+      .exclusive{
+        display: none;
+        .exclusivePublic;
+        margin: 0!important;
+        margin-bottom: 55px!important;
+        .discounts{
+          margin-right: 85px;
+          i{
+            font-size: 40px;
+            color: #4D7BFE;
+            position: relative;
+            left: 25px;
+          }
+        }
+        .viewDetails{
+          display: flex;
+          justify-content: center;
+          span{
+            display: inline-block;
+            width: 124px;
+            height: 52px;
+            line-height: 52px;
+            font-size: 21px;
+            text-align: center;
+            background-color: #ffffff;
+            border-radius: 25px;
+            color: #44bf97;
+            border: solid 1px #44bf97;
+            margin-bottom: 27px;
+          }
+        }
+      }
+    }
+  }
+  >.cardBag{
+    margin:102px 29px 30px;
+    box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    >.headpPortrait{
+      width: 145px;
+      height: 145px;
+      border: 1px solid #dddddd;
+      border-radius: 50%;
+      position: relative;
+      top:-72px;
+      z-index: 10;
+    }
+    .name_{
+      margin-top: -40px;
+    }
+    .mb20,.mb30{
+      font-size:28px;
+    }
+    .mb30{
+      color: #cccccc;
+    }
+    .QRCode{
+      width: 302px;
+      height: 303px;
+
+    }
+    .UnionNumber{
+      width: 418px;
+      height: 60px;
+      line-height: 60px;
+      text-align: center;
+      background-color: #f6f6f6;
+      border-radius: 22px;
+      font-size: 35px;
+    }
+    .flex{
+      flex-direction: row;
+      margin: 40px 0 45px;
+      i{
+        font-size:45px;
+        margin-right: 15px;
+      }
+      span{
+        font-size: 30px;
+        position: relative;
+        top:-6px;
+      }
+      >p:nth-child(1){
+        margin-right: 110px;
+      }
+    }
+    >.btn1{
+      margin: 30px 0 35px;
+      background-image: linear-gradient(90deg,
+      #00ce96 0%, #00ad7b 100%);
+    }
+  }
+}
+
+//登录页面------------------------------------------------------------3
+#unionLogin{
+  .box {
+    background: white;
+    z-index: 5;
+    border-radius: 18px;
+    border: 1px solid white;
+    height: 700px;
+    margin-top: 180px;
+    .binDing{
+      text-align: center;
+      width: 100%;
+      margin: 87px auto;
+      color: #333333;
+      font-size:33px;
+      font-weight: bold;
+    }
+    .boxContent{
+      position: relative;
+      >div{
+        margin: 60px 49px 0;
+        padding-bottom: 33px;
+        border-bottom: 1px solid #eee;
+        >span{
+          font-size: 27px;
+          color: #333333;
+        }
+        >input{
+          border: none;
+          width: 55%;
+          height: 35px;
+        }
+        #getCode{
+          width: 134px;
+          height: 52px;
+          background: rgb(100, 196, 168);
+          line-height: 52px;
+          text-align: center;
+          color: #FFFFFF;
+          border-radius: 25px;
+        }
+      }
+      .message_{
+        display: none;
+        position: absolute;
+        left:150px;
+        top:230px;
+        color: #ff4949;
+      }
+      .btn1{
+        width: 75%;
+        height: 92px;
+        line-height: 92px;
+        text-align: center;
+        background: #64C4A8;
+        box-shadow: 0px 11px 18px 0px rgba(68, 191, 151, 0.3);
+        border-radius: 45px;
+        color: #FFFFFF;
+        font-size:30px;
+        margin-left: 110px;
+        margin-top: 110px;
+      }
+    }
+  }
+}
+
+//消费记录页面的样式--------------------------------------------------4
+#consumeRecord{
+  .unionTime{
+    display: flex;
+    justify-content:center;
+    margin-top: 30px;
+    span{
+      display: block;
+      padding: 0 10px;
+      text-align: center;
+      height: 43px;
+      line-height: 43px;
+      margin-left: 50px;
+      background-color: #d8d8d8;
+      font-size: 28px;
+      border-radius: 21px;
+      color: #FFFFFF;
+    }
+  }
+  .unionContent{
+    background-color: #ffffff;
+    box-shadow: 0px 0px 30px 0px rgba(0, 0, 0, 0.1);
+    z-index: 5;
+    border-radius: 18px;
+    border: 1px solid white;
+    margin:0 4%;
+    margin-top: 35px;
+    .hair{
+       margin: 27px 28px;
+      color: #333333;
+      font-size:28px;
+    }
+    .ListContent{
+      border-top:1px solid #dddddd;
+      margin-bottom: 26px;
+      >p{
+        margin-left: 28px;
+        font-size:28px;
+        margin-top: 25px;
+        >span{
+          color: rgba(51,51,51,.7);
+          font-size:28px;
+        }
+      }
+      >span{
+        display: block;
+        margin-left:180px;
+        margin-top: 25px;
+        color: rgba(51,51,51,.7);
+        font-size:28px;
+      }
+      .special_P{
+        display: block;
+        margin-left:176px;
+        color: rgba(51,51,51,.7);
+      }
+    }
+    .payMoney{
+      padding:28px 26px;
+      font-size:28px;
+      border-top: 1px solid #dddddd;
+      >span{
+        color:#44bf97;
+        font-size:28px;
+      }
+      >p{
+        float: right;
+        font-size:28px;
+      }
+    }
+  }
+}
+
+//折扣卡页面------------------------------------------------------5
+#discountCard{
+  background-color: #EEF2F5;
+  height: 100%;
+  //美食卡样式
+  .unionList{
+    //引用变量
+    .unionListPublic;
+    background-image: linear-gradient(90deg, #fe7358 0%, #eb3b3e 100%);
+    margin:30px 30px 0;
+  }
+  //专属特权
+  .exclusive1{
+    .exclusivePublic;
+    height: 205px;
+  }
+  //特权使用
+  .privilegedUser{
+    .privilegedUserPublic;
+    background-color: #fff;
+  }
+  //折扣卡列表主页面内容
+  .cardList{
+    .cardListPublic;
+  }
+  //底部公共样式
+  >footer{
+    background-color: #fff;
+    position: fixed;
+    z-index: 1000;
+    color: #44bf97;
+    width: 100%;
+    bottom: 0;
+    height: 100px;
+    line-height: 100px;
+    text-align: center;
+    box-shadow: 0px 0px 9px 0px rgba(53, 53, 53, 0.15);
+    >span{
+      font-size:30px;
+    }
+  }
+  .box-wrap{
+    .close{
+      float: right;
+      font-size: 33px;
+      margin: 24px;
+      color: #d5d5d6;
+    }
+    .binDing{
+      text-align: center;
+      width: 100%;
+      margin: 87px auto;
+      color: #333333;
+      font-size:33px;
+      font-weight: bold;
+    }
+    .boxContent{
+      position: relative;
+      >div{
+        margin: 60px 49px 0;
+        padding-bottom: 33px;
+        border-bottom: 1px solid #eee;
+        >span{
+          font-size: 27px;
+          color: #333333;
+        }
+        >input{
+          border: none;
+          width: 55%;
+          height: 35px;
+        }
+        #getCode{
+          width: 134px;
+          height: 52px;
+          background: rgb(100, 196, 168);
+          line-height: 52px;
+          text-align: center;
+          color: #FFFFFF;
+          border-radius: 25px;
+        }
+      }
+      .message_{
+        display: none;
+        position: absolute;
+        left:150px;
+        top:230px;
+        color: #ff4949;
+      }
+      .btn1{
+        width: 67%;
+        height: 92px;
+        line-height: 92px;
+        text-align: center;
+        background: #64C4A8;
+        box-shadow: 0px 11px 18px 0px rgba(68, 191, 151, 0.3);
+        border-radius: 45px;
+        color: #FFFFFF;
+        font-size:30px;
+        margin-left: 15%;
+        margin-top: 110px;
+        margin-bottom: 88px;
+      }
+    }
+  }
+}
+
+//活动卡页面------------------------------------------------------6
+#activityCard{
+  background-color: #EEF2F5;
+  height: 100%;
+  //感恩活动卡样式
+  .unionList{
+    //引用变量
+    .unionListPublic;
+    .listLeft{
+      >span{
+        display: block!important;
+        p{
+          font-size: 30px;
+          margin-bottom: 10px;
+        }
+        >span{
+          font-size: 26px;
+          color: rgba(255,255,255,.7);
+        }
+      }
+    }
+    .outOfDate{
+      font-size: 109px!important;
+      float: right;
+    }
+    margin:30px 30px 0;
+    background-image: linear-gradient(90deg, #06bd7d 0%, #00935f 100%);
+  }
+  //专属特权
+  .exclusive{
+    .exclusivePublic;
+    height: 205px;
+    .discounts{
+      margin-right: 85px;
+      i{
+        font-size: 40px;
+        color: #4D7BFE;
+        position: relative;
+        left: 25px;
+      }
+    }
+  }
+  //特权使用
+  .privileged {
+    >.privilegedUser {
+      .privilegedUserPublic;
+      background-color: #fff;
+      > .iconfont {
+        float: right;
+        font-size: 30px;
+        margin-right: 24px;
+      }
+    }
+    >.declare{
+      .declarePublic;
+      height: 125px;
+      display: none;
+    }
+  }
+  //活动卡列表主页面内容
+  .cardList{
+    .cardListPublic;
+    >.listConent{
+      .declarePublic;
+      >.discounts{
+        margin: 25px 0 0;
+      }
+      >.iconContent{
+        margin: 13px 0 11px;
+        color: rgba(51,51,51,.7);
+        .iconfont{
+          color: #EEEEEE;
+        }
+      }
+    }
+  }
+  >footer{
+    position: fixed;
+    z-index: 1000;
+    width: 100%;
+    bottom: 0;
+    height: 100px;
+    line-height: 100px;
+    text-align: center;
+    box-shadow: 0px 0px 9px 0px rgba(53, 53, 53, 0.15);
+    background-color: #fff;
+    >.money{
+      color: #44bf97;
+      margin-right:20px;
+    }
+    >span{
+      font-size:30px;
+    }
+  }
+  .box-wrap{
+    //使用变量
+    #discountCard>.box-wrap
+  }
+}

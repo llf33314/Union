@@ -1,6 +1,5 @@
 package com.gt.union.common.util;
 
-import com.gt.union.common.response.GTJsonResult;
 import org.apache.poi.hssf.usermodel.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,8 +61,8 @@ public class ExportUtil {
     /**
      * 根据标题头创建workbook对象
      *
-     * @param titles
-     * @return
+     * @param titles 标题头
+     * @return HSSFWorkbook
      */
     public static HSSFWorkbook newHSSFWorkbook(String[] titles) {
         HSSFWorkbook wb = new HSSFWorkbook();
@@ -72,7 +71,8 @@ public class ExportUtil {
         HSSFFont font = newHSSFFont(wb, HSSFFont.BOLDWEIGHT_BOLD, "宋体", (short) 200);
         cellStyle.setFont(font);
 
-        HSSFSheet sheet = wb.createSheet("sheet1"); //default
+        //default
+        HSSFSheet sheet = wb.createSheet("sheet1");
         HSSFRow rowTitle = sheet.createRow(0);
         for (int i = 0, length = titles.length; i < length; i++) {
             HSSFCell cellTitle = rowTitle.createCell(i);

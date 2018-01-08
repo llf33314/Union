@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.gt.union.union.member.mapper.UnionMemberMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.gt.union.union.member.entity.UnionMember">
+        <id column="id" property="id"/>
+        <result column="del_status" property="delStatus"/>
+        <result column="create_time" property="createTime"/>
+        <result column="modify_time" property="modifyTime"/>
+        <result column="union_id" property="unionId"/>
+        <result column="bus_id" property="busId"/>
+        <result column="is_union_owner" property="isUnionOwner"/>
+        <result column="status" property="status"/>
+        <result column="enterprise_name" property="enterpriseName"/>
+        <result column="enterprise_address" property="enterpriseAddress"/>
+        <result column="director_name" property="directorName"/>
+        <result column="director_phone" property="directorPhone"/>
+        <result column="director_email" property="directorEmail"/>
+        <result column="address_longitude" property="addressLongitude"/>
+        <result column="address_latitude" property="addressLatitude"/>
+        <result column="notify_phone" property="notifyPhone"/>
+        <result column="integral_exchange_ratio" property="integralExchangeRatio"/>
+        <result column="discount" property="discount"/>
+    </resultMap>
+
+</mapper>

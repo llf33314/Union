@@ -3,10 +3,11 @@ import axios from 'axios';
 import { Message } from 'element-ui';
 
 // axios 配置
-// axios.defaults.baseURL = 'http://union.yifriend.net:7884';            //调试
-axios.defaults.baseURL = 'https://union.deeptel.com.cn';           //测试环境
+// axios.defaults.baseURL = 'http://union.yifriend.net:7884';         //调试
+// axios.defaults.baseURL = 'http://192.168.3.59:8080';
+// axios.defaults.baseURL = 'https://union.deeptel.com.cn';           //测试环境
 // axios.defaults.baseURL = 'http://nb.union.deeptel.com.cn';         //堡垒
-// axios.defaults.baseURL = 'http://union.duofee.com';
+axios.defaults.baseURL = 'http://union.duofee.com';             //升级环境
 
 // axios.defaults.timeout = 5000;
 
@@ -53,7 +54,7 @@ function checkCode(res) {
       showClose: true,
       message: res.errorMsg,
       type: 'warning',
-      duration: 0
+      duration: 5000
     });
   }
   if (res.data && (!res.data.success)) {
@@ -61,13 +62,14 @@ function checkCode(res) {
       showClose: true,
       message: res.data.errorMsg,
       type: 'warning',
-      duration: 0
+      duration: 5000
     });
   }
   return res;
 }
 
 export default {
+
   post(url, data) {
     return axios({
       method: 'post',
@@ -90,6 +92,33 @@ export default {
       res => {
         if (res.data.redirectUrl && res.data.redirectUrl !== '') {
           window.location = res.data.redirectUrl;
+        }
+        return res;
+      }
+    )
+  },
+  put(url, data) {
+    return axios({
+      method: 'put',
+      url,
+      data: data,
+      timeout: 10000,
+      headers: {
+        'X-Requested-With': 'XMLHttpRequest',
+        'Content-Type': 'application/json; charset=UTF-8'
+      }
+    }).then(
+      res => {
+        return checkStatus(res);
+      }
+    ).then(
+      res => {
+        return checkCode(res);
+      }
+    ).then(
+      res => {
+        if (res.data.redirectUrl && res.data.redirectUrl !== '') {
+          top.window.location = res.data.redirectUrl;
         }
         return res;
       }

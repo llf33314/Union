@@ -12,9 +12,9 @@ spring:
     # jdbc配置
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.jdbc.Driver
-    url: jdbc:mysql://113.106.202.51:3306/gt_union_ceshi20170907?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false
+    url: jdbc:mysql://183.47.242.2:3306/gt_union?useUnicode=true&characterEncoding=UTF-8&allowMultiQueries=true&autoReconnect=true&failOverReadOnly=false
     username: root
-    password: gt123456
+    password: gt26609632
     # druid连接池配置
     druid:
       initial-size: 5 #初始化大小
@@ -39,27 +39,44 @@ spring:
       web-stat-filter:
         url-pattern: /*
         exclusions: /druid/*,*.js,*.gif,*.jpg,*.png,*.css,*.ico
-      aop-patterns: com.gt.union.*.service.*
+      aop-patterns: com.gt.union.*.*.service.*
 
   # redis配置
   redis:
-      host: 113.106.202.51
-      port: 6379
       password: gt@123456
-      timeout: 0
-      database: 2
+      timeout: 1000
+      database: 3
       pool:
-        max-active: 8
+        max-active: 50
         max-wait: -1
-        max-idle: 8
+        max-idle: 20
         min-idle: 0
+        #redis集群配置
+      cluster:
+        nodes: 183.47.242.2:6379,183.47.242.5:6379,183.47.242.4:9379
+        max-attempts: 6
+        max-redirects: 6
+        #redis哨兵模式配置
+      sentinel:
+        nodes: 183.47.242.2:26379,183.47.242.5:26379,183.47.242.4:29379
+        master: mymaster
+
+
   session:
        store-type: redis
 
+#jdk 1.7 配置 哨兵地址须加redis:// 如redis://127.0.0.1:6379  redissson 稳定版本使用2.10.5
+#jdk 1.8 配置 哨兵地址不须加redis:// 如127.0.0.1:6379  redissson 稳定版本使用3.5.5
+#基于redis的分布式锁 redisson配置
+redisson:
+  master-name: mymaster
+  password: gt@123456
+  sentinel-addresses: redis://183.47.242.2:26379,redis://183.47.242.5:26379,redis://183.47.242.4:29379
+
 # mybatis设置
 mybatis:
-  mapper-locations: classpath:mapper/*/*Mapper.xml
-  type-aliases-package: com.gt.union.entity
+  mapper-locations: classpath:mapper/*/*/*Mapper.xml
+  type-aliases-package: com.gt.union.*.*.entity
 
 
 ######################## 全局配置 ########################
@@ -69,28 +86,30 @@ mybatis:
 #访问资源URL
 resource:
   url:
-    prefix: http://192.168.3.41:9998/upload/
+    prefix: https://maint.duofriend.com/upload/
 socket:
-  url: http://192.168.2.12:8080:8881
+  url: https://socket1.duofriend.com
+  key: "Union_Key_"
 #企业短信通-密码
 
 #域名
 domain:
   df: duofriend.com
-#mq config
+
 mq:
-  uri: 192.168.3.59:5672
-  user: admin
-  password: admin
+  uri: 183.47.242.4
+  user: guest
+  password: gt@123456@
+
 
 #队列转换器
 exchange:
   union:
-    exchange: union_exchange
+    exchange: union.sms.prod.exchange
 #队列名称
 queueName:
   union:
-    queueName: union_routingKey_phone_message
+    queueName: union.sms.prod.queueName
 
 
 #redis:
@@ -98,20 +117,40 @@ redisNamePrefix: "Union:"
 
 
 redisSession:
-  domainName: .deeptel.com
+  domainName: .duofriend.com
   cookiePath: /
   cookieName: WXMPJSESSIONID
 
 #数据请求地址
 wxmp:
-   url: https://deeptel.com.cn
+   url: https://duofriend.com
    signkey: WXMP2017
    company: "多粉平台"
 
 union:
-  url: https://union.deeptel.com
+  url: https://union.duofriend.com
   encryptKey: CFCCBD99C12B62E52952EA90A931A01F
   signkey: SR36E9KIYDLIU1VB6WX20HCW494QL97T
 wx:
   duofen:
-    busId: 33
+    busId: 2274
+    appid: wx61802b78257234fc
+
+#会员粉丝
+member:
+  url: https://member.duofriend.com
+  signkey: MV8MMFQUMU1HJ6F2GNH40ZFJJ7Q8LNVM
+
+#车小算
+car:
+  url: https://che.duofriend.com
+
+#进销存
+jxc:
+  url: https://jxc.duofriend.com
+  account: erp_7
+  pwd: 123456
+
+#素材库
+suc:
+  url: https://suc.duofriend.com

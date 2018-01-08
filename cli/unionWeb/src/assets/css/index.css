@@ -4,6 +4,8 @@ body {
   font-family: "Microsoft YaHei";
   min-width: 1280px;
   font-size: 16px;
+  overflow-y: auto;
+  width: 100%;
 }
 a {
   text-decoration: none;
@@ -17,7 +19,8 @@ h2,
 h3,
 h4,
 h5,
-h6 {
+h6,
+* {
   margin: 0;
   padding: 0;
 }
@@ -46,8 +49,29 @@ h2 {
   font-size: 16px;
   color: #333333;
 }
+hr {
+  border: 0!important;
+  height: 1px!important;
+  background: #EEEEEE!important;
+}
 .el-form-item.is-required .el-form-item__label:before {
   content: '';
+}
+/*一个图标*/
+.tubiao {
+  width: 25px;
+  height: 25px;
+  border: 1px solid #1c8de0;
+  border-radius: 50%;
+  display: block;
+  text-align: center;
+  line-height: 25px;
+  color: #1d90e6;
+  font-weight: bold;
+  position: absolute;
+  top: 5px;
+  left: 250px;
+  cursor: pointer;
 }
 .model_ {
   text-align: center;
@@ -56,8 +80,26 @@ h2 {
   margin-top: 15px;
   margin-bottom: 5px;
 }
+.name-wrapper {
+  min-width: 100px;
+  display: block;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
+}
+.el-popover {
+  background: #fff!important;
+  border: 1px solid #ddd!important;
+}
+.el-popover[x-placement^=bottom] .popper__arrow {
+  border-bottom-color: #ddd!important;
+}
 #gt_lm {
-  padding: 20px;
+  padding: 18px;
+}
+#gt_lm > ul {
+  position: relative;
+  top: -9px;
 }
 #gt_lm img {
   margin-right: 20px;
@@ -83,7 +125,7 @@ h2 {
   content: "";
 }
 .dingwei .el-input__icon {
-  left: 207px;
+  left: 247px;
   background: url('../images/dingwei.png') center no-repeat;
 }
 .footer_public {
@@ -120,6 +162,168 @@ h2 {
   border-color: #ffffff;
   box-shadow: none;
 }
+.sizeAndColor .el-button {
+  border: 1px solid #20a0ff;
+  padding: 6px 10px;
+}
+.sizeAndColor .el-button span {
+  color: #20a0ff!important;
+}
+.sizeAndColor .el-button:hover {
+  background: #20a0ff;
+}
+.sizeAndColor .el-button:hover span {
+  color: #fff!important;
+}
+.sizeAndColor .el-button.is-disabled {
+  background-color: #fff!important;
+  border-color: #1c8de0;
+}
+.sizeAndColor .el-button.is-disabled span {
+  color: #1c8de0!important;
+}
+.sizeAndColor .repeal .el-button {
+  border: 1px solid #f7ba2a!important;
+}
+.sizeAndColor .repeal .el-button span {
+  color: #f7ba2a!important;
+}
+.sizeAndColor .repeal .el-button:hover {
+  background: #1c8de0;
+}
+.sizeAndColor .repeal .el-button:hover span {
+  color: #fff!important;
+}
+.sizeAndColor .repeal .el-button.is-disabled {
+  background-color: #fff!important;
+  border-color: #999999!important;
+}
+.sizeAndColor .repeal .el-button.is-disabled span {
+  color: #999999!important;
+}
+.sizeAndColor .repeal_ .el-button {
+  border: 1px solid #1c8de0!important;
+}
+.sizeAndColor .repeal_ .el-button span {
+  color: #1c8de0!important;
+}
+.step2 .el-radio-button,
+.step2 .el-radio-button__inner {
+  position: relative;
+  display: block;
+  float: left;
+  width: 340px;
+  height: 170px;
+  border: 1px solid #dddddd;
+  cursor: pointer;
+  margin: 25px 49px 0 0;
+}
+.step2 .el-radio-button:hover,
+.step2 .el-radio-button__inner:hover {
+  background-color: #ddd;
+}
+.step2 .el-radio-button .el-radio-button:first-child .el-radio-button__inner,
+.step2 .el-radio-button__inner .el-radio-button:first-child .el-radio-button__inner {
+  border-left: none;
+  border-radius: 0;
+}
+.step2 .el-radio-button .el-radio-button__inner,
+.step2 .el-radio-button__inner .el-radio-button__inner {
+  text-align: left;
+  box-sizing: border-box;
+  outline: 0;
+  margin: 0;
+  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
+  padding: 35px 22px;
+  font-size: 14px;
+}
+.step2 .el-radio-button .el-radio-button__inner:hover,
+.step2 .el-radio-button__inner .el-radio-button__inner:hover {
+  background-color: #fff;
+  border: 1px solid #20A0FF;
+}
+.step2 .el-radio-button .el-radio-button__orig-radio:checked + .el-radio-button__inner,
+.step2 .el-radio-button__inner .el-radio-button__orig-radio:checked + .el-radio-button__inner {
+  color: #1f2d3d;
+  background-color: #fbfdff;
+  border: 1px solid #20a0ff;
+  box-shadow: none;
+}
+.step2 .el-radio-button .el-radio-button__orig-radio:checked + .el-radio-button__inner .dddddd i,
+.step2 .el-radio-button__inner .el-radio-button__orig-radio:checked + .el-radio-button__inner .dddddd i {
+  display: block;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  background: rgba(35, 34, 34, 0) url("../images/images3.png") no-repeat center;
+  top: 119px;
+  left: 289px;
+}
+.model_2 .el-dialog--tiny {
+  width: 560px!important;
+  height: 360px!important;
+}
+.model_2 .el-dialog--tiny .el-dialog__footer {
+  margin-top: 120px;
+}
+.model_2 .el-dialog--tiny .el-dialog__body > div {
+  margin-top: 40px;
+  margin-left: 30px;
+}
+.model_2 .el-dialog--tiny .el-dialog__body > div img {
+  margin-left: 10px;
+  width: 36px;
+  position: relative;
+  top: 5px;
+  left: 0;
+}
+.model_2 .el-dialog--tiny .el-dialog__body > div span {
+  display: inline-block;
+  margin-top: 5px;
+  margin-left: 15px;
+}
+.model_2 .el-dialog--tiny .el-dialog__body > div p {
+  color: #666666;
+  margin-top: 2px;
+  margin-left: 60px;
+}
+.selectPublic .select_ .el-select .el-input__inner {
+  background: #F6F6F6;
+}
+.selectPublic .grid-content .el-select > .el-input .el-input__icon + .el-input__inner {
+  padding-right: 5px;
+  border-radius: 4px 0 0 4px;
+  background-color: #F6F6F6;
+  border-right: none;
+}
+.selectPublic .grid-content .el-input__inner:focus {
+  border-color: #bfcbd9;
+}
+.selectPublic .grid-content .el-input__inner:hover {
+  border-color: #bfcbd9;
+}
+.selectPublic .grid-content .el-select:hover .el-input__inner {
+  border-color: #bfcbd9;
+}
+.selectPublic .grid-content1 .el-input__icon + .el-input__inner {
+  border-radius: 0 4px 4px 0;
+}
+.verSuccess .el-dialog--tiny {
+  width: 520px;
+}
+.verSuccess .el-dialog__body {
+  padding: 0;
+}
+.verSuccess .el-dialog__body .ddd {
+  margin: 50px;
+  padding-bottom: 100px;
+}
+.verSuccess .el-dialog__body .ddd img {
+  margin-right: 20px;
+}
+#myMainUnion .model_2 .el-dialog__body {
+  padding: 2px;
+}
 .union_set {
   margin: 42px 0 31px;
   font-weight: bold;
@@ -128,8 +332,105 @@ h2 {
   width: 100%;
   border: none;
 }
-.apply_select .el-table_1_column_8 .cell {
-  width: 151px;
+#memberName .el-table .cell,
+#memberName .el-table th > div {
+  padding-left: 38px!important;
+  padding-right: 1px!important;
+}
+#memberName .model_13 .el-dialog--tiny {
+  width: 550px;
+}
+#myUnionCard1 .select_ .el-select .el-input__inner {
+  background: #F6F6F6;
+}
+#myUnionCard1 .grid-content .el-select > .el-input .el-input__icon + .el-input__inner {
+  padding-right: 5px;
+  border-radius: 4px 0 0 4px;
+  background-color: #F6F6F6;
+  border-right: none;
+}
+#myUnionCard1 .grid-content .el-input__inner:focus {
+  border-color: #bfcbd9;
+}
+#myUnionCard1 .grid-content .el-input__inner:hover {
+  border-color: #bfcbd9;
+}
+#myUnionCard1 .grid-content .el-select:hover .el-input__inner {
+  border-color: #bfcbd9;
+}
+#myUnionCard1 .grid-content1 .el-input__icon + .el-input__inner {
+  border-radius: 0 4px 4px 0;
+}
+#myUnionCard1 .el-table tr .el-button {
+  color: #20a0ff;
+  border: 1px solid #20a0ff;
+}
+#myUnionCard1 .el-table tr .el-button:hover {
+  background-color: #20a0ff ;
+  color: #ffffff;
+}
+#myUnionCard1 .el-dialog--tiny {
+  width: 900px ;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body {
+  padding: 0;
+  margin-top: 15px;
+  height: 500px;
+  overflow-y: auto;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body > div {
+  width: 830px;
+  height: 125px;
+  background-color: #ffffff;
+  border: solid 1px #dfe6ec;
+  margin: 30px;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body > div > div {
+  padding: 10px 0 10px 31px;
+  background-color: #EEF1F6;
+  color: #333333;
+  font-weight: bold;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body > div > p {
+  margin: 18px 30px;
+}
+#myUnionCard1 .el-dialog--tiny .el-dialog__body > div > p span {
+  margin-left: 25px;
+}
+#apply_for .apply_select .el-table_1_column_8 .cell {
+  width: 155px;
+}
+#apply_for .select_ .el-select .el-input__inner {
+  background: #F6F6F6;
+}
+#apply_for .grid-content .el-select > .el-input .el-input__icon + .el-input__inner {
+  padding-right: 5px;
+  border-radius: 4px 0 0 4px;
+  background-color: #F6F6F6;
+  border-right: none;
+}
+#apply_for .grid-content .el-input__inner:focus {
+  border-color: #bfcbd9;
+}
+#apply_for .grid-content .el-input__inner:hover {
+  border-color: #bfcbd9;
+}
+#apply_for .grid-content .el-select:hover .el-input__inner {
+  border-color: #bfcbd9;
+}
+#apply_for .grid-content1 .el-input__icon + .el-input__inner {
+  border-radius: 0 4px 4px 0;
+}
+#apply_for .model_02 .el-dialog--tiny {
+  width: 550px;
+}
+#apply_for .model_02 .el-dialog--tiny .el-dialog__body {
+  padding: 0;
+  margin-bottom: 65px;
+  margin-top: 15px;
+}
+#apply_for .model_03 .el-dialog--tiny {
+  width: 550px;
 }
 .el-pagination {
   margin-top: 10px;
@@ -152,15 +453,16 @@ h2 {
   font-size: 12px;
   line-height: 1;
   padding-top: 4px;
-  position: static !important;
-  float: left;
+  position: absolute!important;
   margin: 10px 0 0 40px;
+  left: 280px;
+  top: -2px;
 }
 .tabs .el-form-item__label {
   padding: 11px 12px 18px 0;
 }
 .tabs .el-input__inner {
-  width: 241px;
+  width: 290px;
   display: inline-block;
 }
 .tabs .el-textarea {
@@ -191,53 +493,6 @@ h2 {
   background-color: #20a0ff;
   border-color: #20a0ff;
 }
-.container .step2 .el-radio-button,
-.container .step2 .el-radio-button__inner {
-  position: relative;
-  display: block;
-  float: left;
-  width: 340px;
-  height: 170px;
-  border: 1px solid #dddddd;
-  cursor: pointer;
-  margin: 25px 49px 0 0;
-}
-.container .step2 .el-radio-button:hover,
-.container .step2 .el-radio-button__inner:hover {
-  background-color: #ddd;
-}
-.container .step2 .el-radio-button .el-radio-button:first-child .el-radio-button__inner,
-.container .step2 .el-radio-button__inner .el-radio-button:first-child .el-radio-button__inner {
-  border-left: none;
-  border-radius: 0;
-}
-.container .step2 .el-radio-button .el-radio-button__inner,
-.container .step2 .el-radio-button__inner .el-radio-button__inner {
-  text-align: left;
-  box-sizing: border-box;
-  outline: 0;
-  margin: 0;
-  transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
-  padding: 35px 22px;
-  font-size: 14px;
-}
-.container .step2 .el-radio-button .el-radio-button__orig-radio:checked + .el-radio-button__inner,
-.container .step2 .el-radio-button__inner .el-radio-button__orig-radio:checked + .el-radio-button__inner {
-  color: #1f2d3d;
-  background-color: #fbfdff;
-  border: 1px solid #20a0ff;
-  box-shadow: none;
-}
-.container .step2 .el-radio-button .el-radio-button__orig-radio:checked + .el-radio-button__inner .dddddd i,
-.container .step2 .el-radio-button__inner .el-radio-button__orig-radio:checked + .el-radio-button__inner .dddddd i {
-  display: block;
-  width: 50px;
-  height: 50px;
-  position: absolute;
-  background: rgba(35, 34, 34, 0) url("../images/images3.png") no-repeat center;
-  top: 119px;
-  left: 289px;
-}
 .container_one .special .el-input__inner {
   width: 210px!important;
 }
@@ -251,6 +506,38 @@ h2 {
 }
 .container_one .Price_Card .el-input__inner {
   width: 205px;
+}
+.container_one #createStep .el-dialog--small {
+  width: 950px;
+}
+.container_one #createStep .el-dialog--small .el-dialog__body {
+  padding: 0px;
+}
+.container_one #createStep .el-dialog--small .el-dialog__body iframe {
+  margin-left: 20px;
+}
+.container_one #createStep .el-form-item__error {
+  position: absolute!important;
+  top: -1px !important;
+  left: 229px!important;
+}
+.container_one #createStep .second_ .el-input__inner {
+  width: 240px;
+  display: inline-block;
+}
+.container_one #createStep .second_ img {
+  cursor: pointer;
+}
+.container_one #createStep .second_ .el-button {
+  width: 72px;
+  height: 72px;
+  border: 1px dotted;
+}
+.container_one #createStep .second_ .el-button i {
+  font-size: 20px;
+}
+#grid-content-notice .el-textarea textarea.el-textarea__inner {
+  font-size: 16px;
 }
 #UnionSetting .el-tabs__content {
   overflow: inherit;
@@ -272,91 +559,719 @@ h2 {
   border: 1px solid #1c8de0;
   color: #1c8de0;
 }
-#redCard .el-dialog__body,
-.sell_card .el-dialog__body {
-  padding: 2px;
+#UnionSetting .theLeader .el-dialog--tiny {
+  width: 550px;
 }
-#redCard .el-table_1_column_4.is-leaf .cell,
-#redCard .el-table_1_column_8.is-leaf .cell,
-#redCard .el-table_1_column_12.is-leaf .cell {
-  padding-right: 33px;
-  text-align: right;
+#UnionSetting .theLeader .el-dialog--tiny .el-dialog__body {
+  padding: 0;
+  margin-top: 15px;
 }
-#redCard .el-table_1_column_4 .el-button,
-#redCard .el-table_1_column_8 .el-button,
-#redCard .el-table_1_column_12 .el-button {
-  border: 1px solid #1c8de0;
-  color: #1c8de0;
+#UnionSetting .theLeader .el-dialog--tiny .el-dialog__body > span {
+  margin: 20px 0 30px 20px ;
+  display: inline-block;
 }
-#redCard .el-table_1_column_4 .spacil > .el-button {
-  color: #ffffff;
+#UnionSetting #un_set .el-dialog--small {
+  width: 950px;
 }
-#redCard #table5 .butguo .el-button {
-  border: 1px solid #C4C4C4;
-  color: #6B6B6B;
+#UnionSetting #un_set .el-dialog__body {
+  padding: 0;
 }
-#redCard .el-table_1_column_4 .cell > .el-button,
-#redCard .el-table_1_column_8 .cell > .el-button,
-#redCard .el-table_1_column_12 .cell > .el-button,
-#redCard .el-table_1_column_17 .cell > .el-button {
-  float: right;
+#UnionSetting #un_set .el-dialog__body iframe {
+  margin-left: 20px;
 }
-#redCard .el-table_1_column_2,
-#redCard .el-table_1_column_6,
-#redCard .el-table_1_column_10 {
-  padding-left: 50px;
+#UnionSetting #un_set img {
+  cursor: pointer;
 }
-#redCard .el-table_1_column_3,
-#redCard .el-table_1_column_7,
-#redCard .el-table_1_column_11 {
-  padding-left: 150px;
+#UnionSetting #un_set .second_ .el-button {
+  width: 72px;
+  height: 72px;
+  border: 1px dotted;
 }
-#redCard .notSubmitted .el-button {
-  border: 1px solid #1c8de0;
-  color: #1c8de0;
+#UnionSetting #un_set .second_ .el-button i {
+  font-size: 20px;
 }
-#redCard .preferenceItems div textarea.el-textarea__inner {
-  width: 518px;
-  height: 90px;
+#UnionSetting #un_set .second_ .el-switch.is-disabled .el-switch__core {
+  border-color: #20a0ff!important;
+  background: #20a0ff!important;
 }
-#redCard .preferenceItems .footer {
-  margin-top: 140px;
+#recommended textarea {
+  height: 85px;
+  width: 241px;
+  border-radius: 5px;
+  resize: none;
+  padding-left: 10px;
 }
-#Refund .el-table_1_column_4 .el-button,
-#Refund .el-table_1_column_8 .el-button {
-  border: 1px solid #1c8de0;
-  color: #1c8de0;
+#sellCard {
+  padding: 40px 80px 0 50px;
 }
-#Refund .el-dialog__body {
-  padding: 0px;
+#sellCard #ActivityCardSellDivide .contentList {
+  width: 370px!important;
+  height: 181px!important;
+  background-color: #ffffff;
+  border: solid 1px #dddddd;
+  display: inline-block;
+  margin: 30px 0 30px 50px;
 }
-#Refund .tuimeng .el-dialog--tiny {
-  width: 50%;
-}
-#Refund #popBox .el-dialog--tiny {
-  width: 37%;
-  top: 37% !important;
+#sellCard #ActivityCardSellDivide .contentList > div {
+  width: 330px;
+  height: 80px;
+  padding-bottom: 20px;
+  margin: 0 20px;
+  margin-top: 20px;
+  position: relative;
+  border-bottom: 1px solid #dddddd;
   overflow: hidden;
 }
-#Refund #popBox .el-dialog__header {
+#sellCard #ActivityCardSellDivide .contentList > div img {
+  width: 330px;
+  height: 80px;
+}
+#sellCard #ActivityCardSellDivide .contentList > div span {
+  position: absolute;
+  left: -40px;
+  top: 6px;
+  display: inline-block;
+  width: 117px;
+  background-color: #467DCB;
+  text-align: center;
+  color: #EEEEEE;
+  padding: 5px;
+  transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  /* IE 9 */
+  -moz-transform: rotate(-45deg);
+  /* Firefox */
+  -webkit-transform: rotate(-45deg);
+  /* Safari 和 Chrome */
+  -o-transform: rotate(-45deg);
+  /* Opera */
+}
+#sellCard #ActivityCardSellDivide .contentList > p {
+  margin: 20px;
+}
+#sellCard #ActivityCardSellDivide .contentList > p > span {
+  position: relative;
+  top: -4px;
+}
+#sellCard #ActivityCardSellDivide .contentList > p .el-button {
+  float: right;
+  border: 1px solid #20a0ff;
+  color: #20a0ff;
+  top: -5px;
+  position: relative;
+}
+#sellCard #ActivityCardSellDivide .contentList > p .el-button:hover {
+  color: #ffffff;
+  background: #20a0ff;
+}
+#sellCard #ActivityCardSellDivide .setScale .el-dialog--small {
+  width: 900px !important;
+}
+#sellCard #ActivityCardSellDivide .setScale .el-dialog--small .el-dialog__body {
+  margin-top: 15px;
+  padding: 0;
+}
+#sellCard #ActivityCardSellDivide .setScale .el-dialog--small .el-dialog__body .model_setting {
+  padding: 30px 30px;
+}
+#sellCard #ActivityCardSellDivide .setScale .el-dialog--small .el-dialog__body .model_setting > div {
+  margin-bottom: 15px;
+}
+#sellCard #ActivityCardSellDivide .setScale .el-dialog--small .el-dialog__body .model_setting p {
+  padding: 10px 0 10px 92px;
+}
+#sellCard #ActivityCardSellDivide .setScale .el-dialog--small .el-dialog__body .model_setting .el-input {
+  width: 75%;
+  margin: 4px 0;
+}
+#joinStep .step2 .el-radio-button__inner {
+  white-space: inherit!important;
+}
+#joinStep .step2 .dddddd .declare {
+  margin-left: 20px;
+}
+#joinStep .step2 .dddddd .declare > div {
+  width: 190px;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
+}
+#UnionCardSetting > .container {
+  margin: 40px 80px 50px 50px;
+}
+#UnionCardSetting > .container #DiscountCardSetting .el-table .cell {
+  padding-left: 38px!important;
+}
+#UnionCardSetting > .container #DiscountCardSetting .el-dialog--tiny {
+  top: 30%!important;
+  width: 640px;
+  height: 269px;
+}
+#UnionCardSetting > .container #DiscountCardSetting .el-dialog--tiny .el-dialog__body {
+  margin-top: 10px;
+  padding: 0;
+}
+#UnionCardSetting > .container #DiscountCardSetting .el-dialog--tiny .el-dialog__body > div {
+  margin: 40px 0 33px 55px;
+}
+#UnionCardSetting > .container #DiscountCardSetting .el-dialog--tiny .el-dialog__body > p {
+  margin-left: 55px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small {
+  width: 800px;
+  min-height: 500px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body {
+  padding: 0;
+  margin-top: 15px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain {
+  margin: 30px ;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain > p {
+  margin-bottom: 20px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain > p > span:nth-child(1) {
+  display: inline-block;
+  width: 150px;
+  text-align: right;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain > p > span:nth-child(2) {
+  margin-left: 50px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain .cardExplain {
+  margin-bottom: 35px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain .cardExplain > span:nth-child(1) {
+  width: 150px;
+  text-align: right;
+  float: left;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain .cardExplain > span:nth-child(2) {
+  margin-left: 205px;
+  float: right;
+  position: relative;
+  top: -18px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .explain {
+  background-color: #f4f4f4;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 20px 30px ;
+  position: relative;
+}
+#UnionCardSetting > .container #ActivityCardSetting .explain > span {
+  font-weight: bold;
+}
+#UnionCardSetting > .container #ActivityCardSetting .explain > p {
+  margin: 13px 0;
+  color: #666666;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.nav {
+  height: 40px;
+  background-color: #eef1f6;
+  line-height: 40px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.nav li {
+  float: left;
+  width: 25%;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.nav li:nth-child(1) {
+  padding-left: 31px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.nav li:nth-last-child(1) {
+  padding-left: 48px;
+  width: 18%;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li {
+  float: left;
+  width: 25%;
+  margin-top: 20px ;
+  margin-bottom: 20px ;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-child(1) {
+  padding-left: 31px;
+  position: relative;
+  top: 31px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-child(1) > img {
+  width: 260px;
+  height: 60px;
+  border-radius: 6px;
+  background-image: linear-gradient(90deg, #03abff 0%, #008bd2 100%);
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-child(1) > div {
+  position: absolute;
+  width: 260px;
+  height: 60px;
+  border-radius: 6px;
+  top: 0;
+  left: 32px;
+  overflow: hidden;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-child(1) > div > span {
+  position: absolute;
+  left: -40px;
+  top: 6px;
+  display: inline-block;
+  width: 117px;
+  background-color: #467DCB;
+  text-align: center;
+  color: #EEEEEE;
+  padding: 5px;
+  transform: rotate(-45deg);
+  -ms-transform: rotate(-45deg);
+  /* IE 9 */
+  -moz-transform: rotate(-45deg);
+  /* Firefox */
+  -webkit-transform: rotate(-45deg);
+  /* Safari 和 Chrome */
+  -o-transform: rotate(-45deg);
+  /* Opera */
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-child(2) {
+  position: relative;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-child(2) > p {
+  margin-bottom: 6px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-child(2) > p span:nth-child(1) {
+  color: #99a9bf;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-child(2) > p span {
+  color: #1f2d3d;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-child(3) > p {
+  margin-bottom: 11px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-child(3) > p > span:nth-child(1) {
+  color: #99a9bf;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-child(3) > p > span:nth-child(2) {
+  margin-left: 30px;
+  color: #1f2b3d;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-child(3) .el-progress-bar__outer {
+  width: 300px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-child(3) .btnCheck > button {
+  background: #E8F5FF;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-child(3) .btnCheck > button > span {
+  color: #20a0ff!important;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-child(3) .btnCheck .checkReview .el-dialog--small {
+  width: 900px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-child(3) .btnCheck .checkReview .el-dialog--small .el-dialog__header {
+  padding: 20px 20px 15px;
+  border-bottom: 1px solid #ddd;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-child(3) .btnCheck .checkReview .el-dialog--small .el-dialog__body > p {
+  height: 54px;
+  line-height: 54px;
+  background-color: #f4f4f4;
+  margin-bottom: 30px;
+  padding-left: 20px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-last-child(1) {
+  margin-top: 65px;
+  padding-left: 48px;
+  width: 18%;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-last-child(1) > div {
+  display: inline-block;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-last-child(1) .btn {
+  margin-right: 10px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-last-child(1) .btn .el-button {
+  border: 1px solid #20a0ff;
+  color: #20a0ff;
+}
+#UnionCardSetting > .container #ActivityCardSetting .activityCardsList > ul.contentList li:nth-last-child(1) .btn .el-button:hover {
+  color: #ffffff;
+  background: #20a0ff;
+}
+#UnionCardSetting > .container #ActivityCardSetting .NewActivityCard .el-dialog--small {
+  width: 900px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .NewActivityCard .el-dialog--small .el-dialog__header {
+  padding: 20px 20px 15px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .NewActivityCard .el-dialog--small .el-dialog__body {
+  padding: 0;
+}
+#UnionCardSetting > .container #ActivityCardSetting .NewActivityCard .el-dialog--small .el-dialog__body form {
+  margin: 30px 0 20px 30px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .NewActivityCard .el-dialog--small .el-dialog__body form .el-form-item__content > span {
+  margin-left: 20px;
+  color: #999999;
+}
+#UnionCardSetting > .container #ActivityCardSetting .NewActivityCard .el-dialog--small .el-dialog__body form .el-form-item__content .el-input {
+  width: 220px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .NewActivityCard .el-dialog--small .el-dialog__body form .el-form-item__content .el-button {
+  padding: 28px 102px;
+  border: 1px dotted;
+}
+#UnionCardSetting > .container #ActivityCardSetting .NewActivityCard .el-dialog--small .el-dialog__body form .el-form-item__content textarea.el-textarea__inner {
+  width: 220px;
+  height: 55px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .NewActivityCard .el-dialog--small .el-dialog__body form .OptionalColor {
+  position: absolute;
+  z-index: 10;
+}
+#UnionCardSetting > .container #ActivityCardSetting .NewActivityCard .el-dialog--small .el-dialog__body form .OptionalColor .el-radio-group {
+  border: 1px solid #ddd;
+  border-radius: 5px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .NewActivityCard .el-dialog--small .el-dialog__body form .OptionalColor .el-radio-button:first-child .el-radio-button__inner {
+  border-left: none!important;
+}
+#UnionCardSetting > .container #ActivityCardSetting .NewActivityCard .el-dialog--small .el-dialog__body form .OptionalColor .el-radio-button__inner {
+  border: none;
+  padding: 6px 5px 5px 1px;
+  box-sizing: border-box;
+  height: 33px;
+  width: 50px;
+  overflow: hidden;
+}
+#UnionCardSetting > .container #ActivityCardSetting .NewActivityCard .el-dialog--small .el-dialog__body form .OptionalColor .el-radio-button__inner > div {
+  margin-left: 14px;
+  margin-bottom: 10px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .membership .el-dialog--small {
+  width: 900px;
+  height: 600px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .membership .el-dialog--small .el-dialog__title {
+  color: #1f2d3d!important;
+}
+#UnionCardSetting > .container #ActivityCardSetting .membership .el-dialog--small .el-dialog__body {
+  padding: 0;
+  margin-top: 15px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .membership .el-dialog--small .el-dialog__body hr {
+  margin-top: 5px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .membership .el-dialog--small .el-dialog__body .el-table--fit {
+  margin: 30px;
+  width: 94%!important;
+}
+#UnionCardSetting > .container #ActivityCardSetting .membership .el-dialog--small .el-dialog__body > div {
+  margin: 30px;
+  margin-top: 20px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .membership .el-dialog--small .el-dialog__body > p {
+  width: 835px;
+  height: 54px;
+  line-height: 54px;
+  background-color: #f4f4f4;
+  padding-left: 20px;
+  margin: 30px 30px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .SelectCard .el-dialog--tiny {
+  width: 830px;
+  top: 18%!important;
+}
+#UnionCardSetting > .container #ActivityCardSetting .SelectCard .el-dialog--tiny .el-dialog__body {
+  padding: 0;
+  margin-top: 15px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .SelectCard .el-dialog--tiny .el-dialog__body .step2 .el-radio-button {
+  margin: 25px 23px 0 34px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .SelectCard .el-dialog--tiny .el-dialog__body .step2 .el-radio-button .el-radio-button__inner {
+  padding: 27px 22px!important;
+}
+#UnionCardSetting > .container #ActivityCardSetting .model_2 .el-dialog__body {
+  padding: 0;
+  margin-top: 15px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .noPass .el-dialog--small {
+  width: 640px;
+  height: 260px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .noPass .el-dialog--small .el-dialog__body {
+  padding: 0px;
+  margin: 15px 0 15px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .noPass .el-dialog--small .el-dialog__body > div {
+  margin: 30px 0 0 74px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .noPass .el-dialog--small .el-dialog__body > div > span {
+  position: relative;
+  top: -55px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .noPass .el-dialog--small .el-dialog__body > div .el-textarea {
+  width: 220px;
+  margin-left: 30px;
+}
+#UnionCardSetting > .container #ActivityCardSetting .noPass .el-dialog--small .el-dialog__body > div .el-textarea textarea.el-textarea__inner {
+  width: 220px;
+  height: 85px;
+}
+#UnionCardSetting > .container #MyActivityCard {
+  min-height: 625px;
+}
+#UnionCardSetting > .container #MyActivityCard .explain {
+  background-color: #f4f4f4;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 20px 30px ;
+  position: relative;
+  margin-bottom: 0!important;
+}
+#UnionCardSetting > .container #MyActivityCard .explain > span {
+  font-weight: bold;
+}
+#UnionCardSetting > .container #MyActivityCard .explain > p {
+  margin: 13px 0;
+  color: #666666;
+}
+#UnionCardSetting > .container #MyActivityCard .icon {
+  width: 15px ;
+  height: 15px ;
+  border: 1px solid #f4f4f4;
+  border-radius: 50%;
+  display: inline-block;
+  text-align: center;
+  line-height: 15px;
+  color: #f4f4f4;
+  font-weight: bold;
+  cursor: pointer;
+  background-color: #d2d2d2;
+  margin-left: 10px;
+}
+#UnionCardSetting > .container #MyActivityCard .auditRecord {
+  width: 500px;
+  height: 450px;
+  background-color: #ffffff;
+  box-shadow: 0px 0px 19px 1px rgba(53, 53, 53, 0.1);
+  border-radius: 10px;
+  position: absolute;
+  top: 82px;
+  right: 28px;
+  z-index: 100;
+}
+#UnionCardSetting > .container #MyActivityCard .auditRecord > .top_ {
+  padding: 15px 20px;
+  border-bottom: 1px solid #EEEEEE;
+}
+#UnionCardSetting > .container #MyActivityCard .auditRecord > .top_ span {
+  color: #333333;
+}
+#UnionCardSetting > .container #MyActivityCard .auditRecord > .top_ strong {
+  float: right;
+  font-size: 35px;
+  color: #EEEEEE;
+  position: relative;
+  top: -12px;
+  cursor: pointer;
+}
+#UnionCardSetting > .container #MyActivityCard .auditRecord .bottom_ {
+  margin: 20px 30px;
+  height: 378px;
+  overflow-y: auto;
+}
+#UnionCardSetting > .container #MyActivityCard .auditRecord .bottom_ > div > p {
+  color: #90a4ae;
+}
+#UnionCardSetting > .container #MyActivityCard .auditRecord .bottom_ > div > div {
+  display: inline-block;
+  height: 30px;
+  line-height: 30px;
+  background-color: #f6f8fa;
+  color: #54667b;
+  border-radius: 20px;
+  padding: 10px 20px;
+  margin: 13px 0;
+}
+#UnionCardSetting > .container #MyActivityCard .unionList {
+  margin-top: 30px;
+}
+#UnionCardSetting > .container #MyActivityCard .unionList > p {
+  font-weight: bold;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #EEEEEE;
+  margin-bottom: 15px;
+}
+#UnionCardSetting > .container #MyActivityCard .unionList .addUnion {
+  margin-top: 20px;
+  margin-bottom: 15px;
+}
+#UnionCardSetting > .container #MyActivityCard .unionList .addUnion > span {
+  margin-left: 10px;
+  color: #999999;
+}
+#UnionCardSetting > .container #MyActivityCard .unionList #noUnion,
+#UnionCardSetting > .container #MyActivityCard .unionList #noUnion1 {
+  margin: 0!important;
+}
+#UnionCardSetting > .container #MyActivityCard footer {
+  width: 100%;
+  height: 56px;
+  background-color: #f5f5f5;
+  text-align: center;
+  line-height: 56px;
+  margin-top: 50px;
+  position: fixed;
+  bottom: 0;
+  left: 3px;
+}
+#UnionCardSetting > .container #MyActivityCard .model_2 .el-dialog__body {
+  padding: 0;
+  margin-top: 15px;
+}
+#UnionCardSetting > .container #MyActivityCard .model_3 .el-dialog--tiny {
+  width: 640px;
+}
+#UnionCardSetting > .container #MyActivityCard .model_3 .el-dialog--tiny .el-dialog__body {
+  padding: 0;
+  margin-top: 15px;
+}
+#UnionCardSetting > .container #MyActivityCard .model_3 .el-dialog--tiny .el-dialog__body > div {
+  margin-top: 30px;
+  margin-left: 90px;
+}
+#UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small {
+  width: 900px;
+}
+#UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body {
+  padding: 0;
+  margin-top: 15px;
+}
+#UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body .el-row .el-input__inner {
+  width: 195px;
+}
+#UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div {
+  margin-left: 30px;
+  margin-top: 20px;
+}
+#UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ {
+  margin-top: 18px;
+}
+#UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .rightContent {
+  width: 238px;
+  border: solid 1px #dfe6ec;
+  float: right;
+  margin-right: 30px;
+}
+#UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .rightContent > p {
+  background-color: #eef1f6;
+  padding: 11px 10px 10px;
+}
+#UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .rightContent .rightContentBottom {
+  height: 404px;
+  overflow-y: auto;
+}
+#UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .rightContent .rightContentBottom > div {
+  margin: 10px 20px 5px 20px;
+  display: flex;
+  justify-content: space-between;
+}
+#UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .rightContent .rightContentBottom > div .rightContentBottomHidden {
+  position: relative;
+  top: 8px;
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 110px;
+}
+#UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .rightContent .rightContentBottom > div .el-input-number--small {
+  width: 100px;
+}
+#UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .rightContent .rightContentBottom > div .el-input-number {
+  width: 110px;
+}
+#UnionCardSetting > .container #MyActivityCard .model_4 .el-dialog--small .el-dialog__body > div .section_ .ErpRight {
+  width: 325px;
+}
+#UnionQuit .container {
+  margin: 40px 50px;
+}
+#UnionQuit .container .second {
+  margin-top: 11px !important;
+}
+#UnionQuit .container .tuimeng .model_12 {
+  margin-left: 30px;
+  margin-top: 20px;
+}
+#UnionQuit .container .tuimeng .model_12 p {
+  margin-bottom: 7px;
+  color: #333333;
+}
+#UnionQuit #Refund .el-table_1_column_4 .el-button,
+#UnionQuit #Refund .el-table_1_column_8 .el-button {
+  border: 1px solid #1c8de0;
+  color: #1c8de0;
+}
+#UnionQuit #Refund .el-dialog__body {
+  padding: 0px;
+  margin-top: 15px;
+}
+#UnionQuit #Refund .tuimeng .el-dialog--tiny {
+  width: 600px;
+}
+#UnionQuit #Refund .model_12 .el-dialog--tiny {
+  width: 450px;
+}
+#UnionQuit #Refund .model_12 .el-dialog--tiny .el-dialog__body > p {
+  margin: 20px;
+}
+#UnionQuit #Refund #popBox .el-dialog--tiny {
+  width: 615px;
+  top: 283px !important;
+}
+#UnionQuit #Refund #popBox .el-dialog__header {
   padding: 10px 15px 0;
 }
-#Refund #popBox .el-dialog__header .el-dialog__title {
+#UnionQuit #Refund #popBox .el-dialog__header .el-dialog__title {
   font-size: 15px;
 }
-#Refund #popBox .main .el-form-item {
+#UnionQuit #Refund .second .el-button {
+  border: 1px solid #20a0ff;
+  color: #20a0ff;
+}
+#UnionQuit #Refund .second .el-button:focus,
+#UnionQuit #Refund .second .el-button:hover {
+  color: #fff;
+  border-color: #1d90e6;
+  background: #20a0ff;
+}
+#UnionQuit #Refund .RefundAu .el-dialog--tiny {
+  width: 640px;
+}
+#UnionQuit #Refund .RefundAu .el-dialog--tiny .el-dialog__body {
+  margin-top: 17px ;
+}
+#UnionQuit #Refund .RefundAu .el-dialog--tiny .el-dialog__body .main {
+  margin-bottom: 45px;
+}
+#UnionQuit #Refund .RefundAu .el-dialog--tiny .el-dialog__body .main .el-form-item {
   margin-top: 30px;
   margin-left: 10%;
   margin-bottom: 0;
 }
-#Refund #popBox .main .el-form-item .el-textarea__inner {
+#UnionQuit #Refund .RefundAu .el-dialog--tiny .el-dialog__body .main .el-form-item .el-textarea__inner {
   min-width: 60%;
+}
+#UnionQuit #Refund .RefundAu .el-dialog--tiny .el-dialog__body .main p {
+  margin-left: 140px;
+  color: #999999;
+  margin-top: 20px;
 }
 .container .top_top .version .el-button {
   padding: 10px 35px;
 }
 #Business {
-  margin: 40px 120px 40px 50px;
+  margin: 40px 89px 40px 50px;
 }
 #Business h4 {
   margin: 30px 0;
@@ -364,108 +1279,374 @@ h2 {
 #Business .el-col-6 {
   width: 290px;
 }
-#Business .businesTable .el-table_1_column_7 .cell,
-#Business .commissionTable .el-table_1_column_7 .cell,
-#Business .payment .el-table_1_column_7 .cell,
-#Business .businesTable .el-table_1_column_35 .cell,
-#Business .commissionTable .el-table_1_column_35 .cell,
-#Business .payment .el-table_1_column_35 .cell,
-#Business .businesTable .el-table_1_column_39 .cell,
-#Business .commissionTable .el-table_1_column_39 .cell,
-#Business .payment .el-table_1_column_39 .cell {
-  padding-right: 1px;
-  padding-left: 1px;
-}
-#Business .businesTable .el-table_1_column_7 .cell .el-button,
-#Business .commissionTable .el-table_1_column_7 .cell .el-button,
-#Business .payment .el-table_1_column_7 .cell .el-button,
-#Business .businesTable .el-table_1_column_35 .cell .el-button,
-#Business .commissionTable .el-table_1_column_35 .cell .el-button,
-#Business .payment .el-table_1_column_35 .cell .el-button,
-#Business .businesTable .el-table_1_column_39 .cell .el-button,
-#Business .commissionTable .el-table_1_column_39 .cell .el-button,
-#Business .payment .el-table_1_column_39 .cell .el-button {
-  padding: 5px 6px;
-  border: 1px solid #1c8de0;
-}
-#Business .businesTable .el-table_1_column_7 .cell .el-button span,
-#Business .commissionTable .el-table_1_column_7 .cell .el-button span,
-#Business .payment .el-table_1_column_7 .cell .el-button span,
-#Business .businesTable .el-table_1_column_35 .cell .el-button span,
-#Business .commissionTable .el-table_1_column_35 .cell .el-button span,
-#Business .payment .el-table_1_column_35 .cell .el-button span,
-#Business .businesTable .el-table_1_column_39 .cell .el-button span,
-#Business .commissionTable .el-table_1_column_39 .cell .el-button span,
-#Business .payment .el-table_1_column_39 .cell .el-button span {
-  color: #1c8de0;
-}
-#Business .businesTable .el-table_1_column_7 .cell .model_01 .el-dialog__body {
-  padding: 0;
-}
-#Business .businesTable .el-table_1_column_7 .cell .model_01 .el-dialog__footer .el-button {
+#Business #myBusiness .businesTable .el-table_1_column_7 .cell .model_01 .el-dialog__footer .el-button {
   padding: 8px 18px;
 }
-#Business .businesTable .el-table_1_column_7 .cell .model_01 .el-dialog__footer .el-button span {
+#Business #myBusiness .businesTable .el-table_1_column_7 .cell .model_01 .el-dialog__footer .el-button span {
   color: #ffffff !important;
 }
-#Business .MyRecommend .el-form-item__label {
-  width: 110px!important;
+#Business #myBusiness .select_ .el-select .el-input__inner {
+  background: #F6F6F6;
 }
-#Business .MyRecommend .el-form-item__content .el-form-item__error {
+#Business #myBusiness .grid-content .el-select > .el-input .el-input__icon + .el-input__inner {
+  padding-right: 5px;
+  border-radius: 4px 0 0 4px;
+  background-color: #F6F6F6;
+  border-right: none;
+}
+#Business #myBusiness .grid-content .el-input__inner:focus {
+  border-color: #bfcbd9;
+}
+#Business #myBusiness .grid-content .el-input__inner:hover {
+  border-color: #bfcbd9;
+}
+#Business #myBusiness .grid-content .el-select:hover .el-input__inner {
+  border-color: #bfcbd9;
+}
+#Business #myBusiness .grid-content1 .el-input__icon + .el-input__inner {
+  border-radius: 0 4px 4px 0;
+}
+#Business #myRecommend .MyRecommend .el-form-item__label {
+  width: 115px !important;
+}
+#Business #myRecommend .MyRecommend .selectUnion .el-form-item__content .el-form-item__error {
+  top: 80px;
+  left: 305px;
+}
+#Business #myRecommend .MyRecommend .selectUnion .dddddd > div {
+  position: absolute;
+  top: 83px;
+  left: -15px;
+}
+#Business #myRecommend .MyRecommend .el-form-item__content .el-form-item__error {
   top: 7px;
-  left: 250px;
+  left: 265px;
 }
-#Business .MyRecommend .el-select > .el-input,
-#Business .MyRecommend .el-col-5 {
+#Business #myRecommend .MyRecommend .el-select > .el-input,
+#Business #myRecommend .MyRecommend .el-col-5 {
+  width: 238px;
+}
+#Business #myRecommend .MyRecommend .businessNote .el-form-item__content {
+  margin-left: 110px !important;
+}
+#Business #myRecommend .MyRecommend .businessNote .el-form-item__content textarea.el-textarea__inner {
   width: 220px;
 }
-#Business .MyRecommend .businessNote .el-form-item__content {
-  margin-left: 110px!important;
+#Business #myRecommend .MyRecommend textarea {
+  height: 85px;
+  width: 238px;
+  border-radius: 5px;
+  resize: none;
+  padding-left: 10px;
 }
-#Business .MyRecommend .businessNote .el-form-item__content textarea.el-textarea__inner {
-  width: 220px;
+#Business #myRecommend .select_ .el-select .el-input__inner {
+  background: #F6F6F6;
+}
+#Business #myRecommend .grid-content .el-select > .el-input .el-input__icon + .el-input__inner {
+  padding-right: 5px;
+  border-radius: 4px 0 0 4px;
+  background-color: #F6F6F6;
+  border-right: none;
+}
+#Business #myRecommend .grid-content .el-input__inner:focus {
+  border-color: #bfcbd9;
+}
+#Business #myRecommend .grid-content .el-input__inner:hover {
+  border-color: #bfcbd9;
+}
+#Business #myRecommend .grid-content .el-select:hover .el-input__inner {
+  border-color: #bfcbd9;
+}
+#Business #myRecommend .grid-content1 .el-input__icon + .el-input__inner {
+  border-radius: 0 4px 4px 0;
 }
 #Business .commissionTable .el-dialog__body {
   padding: 0;
+}
+#Business #CommossionSettle .model_0 .el-dialog--tiny {
+  width: 560px;
+  height: 360px;
+}
+#Business #CommossionSettle .model_0 .el-dialog--tiny .el-dialog__body {
+  padding: 0;
+  margin-top: 10px;
+}
+#Business #CommossionSettle .model_0 .el-dialog--tiny .el-dialog__body .middle_ {
+  text-align: center;
+  margin-top: 25px;
+}
+#Business #CommossionSettle .model_0 .el-dialog--tiny .el-dialog__body .middle_ .imgSrc {
+  width: 200px;
+  height: 200px;
+}
+#Business #CommossionSettle .model_0 .el-dialog--tiny .el-dialog__body .middle_ span {
+  color: red;
+}
+#Business #CommossionSettle .el-tabs__active-bar {
+  transition: transform 0.2s cubic-bezier(0.645, 0.045, 0.355, 1) !important;
+}
+#Business #CommossionSettle .el-tabs__item.is-active {
+  border-bottom: 3px solid #20a0ff!important;
+}
+#Business #CommossionSettle .select_ .el-select .el-input__inner {
+  background: #F6F6F6;
+}
+#Business #CommossionSettle .grid-content .el-select > .el-input .el-input__icon + .el-input__inner {
+  padding-right: 5px;
+  border-radius: 4px 0 0 4px;
+  background-color: #F6F6F6;
+  border-right: none;
+}
+#Business #CommossionSettle .grid-content .el-input__inner:focus {
+  border-color: #bfcbd9;
+}
+#Business #CommossionSettle .grid-content .el-input__inner:hover {
+  border-color: #bfcbd9;
+}
+#Business #CommossionSettle .grid-content .el-select:hover .el-input__inner {
+  border-color: #bfcbd9;
+}
+#Business #CommossionSettle .grid-content1 .el-input__icon + .el-input__inner {
+  border-radius: 0 4px 4px 0;
+}
+#Business .CommissionDetail .el-dialog--small {
+  width: 800px;
+}
+#Business .CommissionDetail .el-dialog--small .el-dialog__body {
+  padding: 0;
+}
+#Business .CommissionDetail .el-dialog--small .el-dialog__body .middle {
+  padding: 20px;
+}
+#Business .CommissionDetail .el-dialog--small .el-dialog__body .middle > span {
+  display: block;
+  margin-bottom: 20px;
+}
+#Business .CommissionDetail .el-dialog--small .el-dialog__body .middle p {
+  padding-top: 5px;
+}
+#Business .CommissionDetail .el-dialog--small .el-dialog__body .middle .totalAll {
+  background: #eef1f6;
+  padding: 8px 20px;
+}
+#Business .CommissionDetail .el-dialog--small .el-dialog__body .middle .totalAll span {
+  float: right;
+  margin-right: 115px;
+  font-weight: bold;
+}
+#Business .CommissionDetail .el-dialog--small .el-dialog__body .middle .el-button {
+  padding: 5px 17px;
+  margin-bottom: 8px;
+  float: right;
 }
 #Business .ratioSetting .el-table .el-table__body-wrapper .el-table_1_column_43 .el-button {
   border: 1px solid #1c8de0;
   color: #1c8de0;
 }
 #Business .model_03 .el-dialog--tiny {
-  width: 37%;
+  width: 560px;
+  height: 360px;
 }
-#front #UnionCard .first_ .el-input__inner {
+#Business .model_03 .el-dialog--tiny .el-dialog__header {
+  padding: 20px 20px 16px;
+  border-bottom: 1px solid #eeeeee;
+}
+#front #Verification .first_ .el-input__inner {
   font-size: 18px;
   height: 35px;
 }
-#front #UnionCard .model_0 .el-dialog--tiny {
+#front #Verification .UnionCardInformation {
+  min-width: 540px;
+  margin: auto;
+}
+#front #Verification .UnionCardInformation .selectUnion .el-radio-button__inner:hover .isShow {
+  display: block!important;
+}
+#front #Verification .UnionCardInformation .selectUnion .isShow {
+  position: absolute;
+  top: 90px;
+  left: -7px;
+  display: none;
+  text-align: center;
+}
+#front #Verification .UnionCardInformation .selectUnion .isShow h6 {
+  margin-bottom: 17px;
+}
+#front #Verification .UnionCardInformation > div {
+  max-width: 1450px;
+  margin: 0 auto;
+}
+#front #Verification .UnionCardInformation > div form {
+  padding-top: 10px;
+  width: 540px;
+  height: 532px;
+  background-color: #ffffff;
+  box-shadow: 0px 0px 15px 0px rgba(53, 53, 53, 0.08);
+  float: left;
+  transition: all .5s;
+  position: relative;
+  left: 454px;
+  margin-right: 70px;
+  box-sizing: border-box;
+}
+#front #Verification .UnionCardInformation > div .preferenceItems {
+  max-width: 760px;
+  float: left;
+  height: 532px;
+  box-shadow: 0px 0px 15px 0px rgba(53, 53, 53, 0.08);
+  margin-left: 30px;
+  padding: 0px 37px;
+}
+#front #Verification .UnionCardInformation > div .preferenceItems .section_ {
+  margin-top: 18px;
+}
+#front #Verification .UnionCardInformation > div .preferenceItems .section_ .rightContent {
+  width: 238px;
+  height: 440px;
+  border: solid 1px #dfe6ec;
+  float: right;
+  margin-left: 20px;
+}
+#front #Verification .UnionCardInformation > div .preferenceItems .section_ .rightContent > p {
+  background-color: #eef1f6;
+  padding: 11px 10px 10px;
+}
+#front #Verification .UnionCardInformation > div .preferenceItems .section_ .rightContent > div {
+  height: 399px;
+  overflow-y: auto;
+}
+#front #Verification .UnionCardInformation > div .preferenceItems .section_ .rightContent > div::-webkit-scrollbar-thumb {
+  height: 5px;
+  border-radius: 10px;
+  -webkit-box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+#front #Verification .UnionCardInformation > div .preferenceItems .section_ .rightContent > div > div {
+  margin-left: 10px;
+}
+#front #Verification .UnionCardInformation > div .preferenceItems .section_ .rightContent > div > div > span {
+  display: inline-block;
+  width: 140px;
+}
+#front #Verification .UnionCardInformation > div .preferenceItems .section_ .rightContent > div > div .el-button--text {
+  margin-left: 50px;
+}
+#front #Verification .UnionCardInformation > div .preferenceItems .section_ .rightContent .el-button--text {
+  margin-left: 15px;
+}
+#front #Verification .UnionCardInformation > div .preferenceItems .section_ .el-table__body-wrapper {
+  overflow: inherit!important;
+}
+#front #Verification .UnionCardInformation .footer_ {
+  width: 155px;
+  margin: 0 auto;
+  margin-top: 60px;
+}
+#front #Verification .model_0 .el-dialog--tiny {
   width: 63%;
 }
-#front #UnionCard .model_0 .el-dialog__body {
+#front #Verification .model_0 .el-dialog__body {
   padding: 0;
 }
-#front #UnionCard .model_0 .zhifu .el-radio-button__inner {
+#front #Verification .model_0 .zhifu .el-radio-button__inner {
   color: #1c8de0;
 }
-#front #UnionCard .model_0 .zhifu .is-active .el-radio-button__inner {
+#front #Verification .model_0 .zhifu .is-active .el-radio-button__inner {
   color: #fff;
 }
-#front #UnionCard .second_0 .el-form-item__label {
-  width: 130px !important;
+#front #Verification .second_0 .el-dialog--tiny {
+  width: 900px;
+  top: 8%!important;
 }
-#front #UnionCard .second_0 .is-active .pay_ {
+#front #Verification .second_0 .el-dialog__body {
+  padding: 0;
+  margin-top: 15px;
+}
+#front #Verification .second_0 .el-dialog__body > div {
+  width: 840px;
+  margin: 30px;
+}
+#front #Verification .second_0 .el-dialog__body > div > p {
+  height: 40px;
+  background-color: #eef1f6;
+  line-height: 40px;
+  padding-left: 30px;
+  border: solid 1px #dfe6ec;
+  border-bottom: none;
+}
+#front #Verification .second_0 .el-dialog__body > div form {
+  border: solid 1px #dfe6ec;
+  border-top: none;
+}
+#front #Verification .second_0 .el-dialog__body > div form .discountsProject .el-form-item__content {
+  margin-left: 127px;
+}
+#front #Verification .second_0 .el-dialog__body > div .payWay {
+  margin-top: 20px;
+  width: 840px;
+  height: 255px;
+  border: solid 1px #dfe6ec;
+}
+#front #Verification .second_0 .el-dialog__body > div .payWay > p {
+  height: 40px;
+  background-color: #eef1f6;
+  line-height: 40px;
+  padding-left: 30px;
+}
+#front #Verification .second_0 .el-dialog__body > div .payWay > div {
+  border-top: none;
+  padding-left: 30px;
+}
+#front #Verification .second_0 .el-dialog__body > div .payWay > div > .el-radio-group {
+  margin: 20px 0;
+}
+#front #Verification .second_0 .el-dialog__body > div .payWay > div > .el-radio-group .el-radio-button {
+  margin-right: 10px;
+}
+#front #Verification .second_0 .el-dialog__body > div .payWay > div > .el-radio-group .el-radio-button__orig-radio:checked + .el-radio-button__inner {
+  color: #fff;
+}
+#front #Verification .second_0 .el-form-item__label {
+  width: 124px !important;
+}
+#front #Verification .second_0 .is-active .pay_ {
   color: #ffffff;
   margin-right: 10px;
 }
-#front #UnionCard .second_0 .el-radio-button__inner {
+#front #Verification .second_0 .el-radio-button__inner {
   border: 1px solid #1c8de0;
   margin-right: 10px;
   margin-top: 10px;
-  padding: 7px 23px;
+  padding: 16px 47px;
+  color: #20a0ff;
 }
-#front #UnionCard .second_0 .el-col-5 {
+#front #Verification .second_0 .el-col-5 {
   width: 220px;
+}
+#front #Verification .codePayment .el-dialog {
+  width: 560px;
+  height: 360px;
+}
+#front #Verification .codePayment .el-dialog__body {
+  margin-top: 15px;
+  padding: 0;
+  text-align: center;
+}
+#front #Verification .codePayment .el-dialog__body img {
+  margin-top: 35px;
+  width: 200px;
+  height: 200px;
+}
+#front #Verification .codePayment .el-dialog__body p {
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+#front #ExpenseRecord .el-table .cell {
+  white-space: normal;
+  line-height: 24px;
+  white-space: nowrap;
+}
+#front #ExpenseRecord > .el-row .el-form-item__label {
+  padding: 11px 3px 11px 0;
 }
 #front #ExpenseRecord .el-date-editor .el-input {
   width: 100%;
@@ -473,27 +1654,286 @@ h2 {
 #front #ExpenseRecord .select_ .el-select .el-input__inner {
   background: #F6F6F6;
 }
+#front #ExpenseRecord .grid-content .el-select > .el-input .el-input__icon + .el-input__inner {
+  padding-right: 5px;
+  border-radius: 4px 0 0 4px;
+  background-color: #F6F6F6;
+  border-right: none;
+}
+#front #ExpenseRecord .grid-content .el-input__inner:focus {
+  border-color: #bfcbd9;
+}
+#front #ExpenseRecord .grid-content .el-input__inner:hover {
+  border-color: #bfcbd9;
+}
+#front #ExpenseRecord .grid-content .el-select:hover .el-input__inner {
+  border-color: #bfcbd9;
+}
+#front #ExpenseRecord .grid-content1 .el-input__icon + .el-input__inner {
+  border-radius: 0 4px 4px 0;
+}
+#front #ExpenseRecord .el-tabs__active-bar {
+  transition: transform 0.2s cubic-bezier(0.645, 0.045, 0.355, 1) !important;
+}
+#front #ExpenseRecord .el-tabs__item.is-active {
+  border-bottom: 3px solid #20a0ff!important;
+}
+#front #ExpenseRecord .verificationMessage .el-dialog--small {
+  width: 900px;
+}
+#front #ExpenseRecord .verificationMessage .el-dialog--small .el-dialog__body {
+  padding: 0;
+  margin-top: 15px;
+  max-height: 620px;
+  overflow-y: auto;
+  border-top: 1px solid #EEEEEE;
+}
+#front #ExpenseRecord .verificationMessage .el-dialog--small .el-dialog__body > div {
+  width: 840px;
+  margin: 30px;
+  border: solid 1px #dfe6ec;
+}
+#front #ExpenseRecord .verificationMessage .el-dialog--small .el-dialog__body > div p {
+  height: 40px;
+  background-color: #eef1f6;
+  line-height: 40px;
+  padding-left: 30px;
+}
+#front #ExpenseRecord .verificationMessage .el-dialog--small .el-dialog__body > div > div {
+  padding-left: 30px;
+  margin: 18px 0;
+}
+#front #transaction .uninCardContent {
+  float: left;
+  width: 920px;
+  margin-top: 30px;
+}
+#front #transaction .uninCardContent > div {
+  height: 227px;
+  border: 1px solid #EEEEEE;
+}
+#front #transaction .uninCardContent > div > p {
+  height: 40px;
+  background-color: #eef1f6;
+  line-height: 40px;
+  padding-left: 30px;
+  font-weight: bold;
+}
+#front #transaction .uninCardContent > div form {
+  margin-top: 20px;
+  margin-left: 28px;
+}
+#front #transaction .uninCardContent > div form > .el-form-item:nth-last-child(1) {
+  margin-bottom: 0!important;
+  position: relative;
+  top: -44px;
+  left: -5px;
+}
+#front #transaction .uninCardContent > div form > .el-form-item:nth-last-child(1) .el-form-item__label {
+  width: 124px!important;
+}
+#front #transaction .uninCardContent > form {
+  margin-top: 21px;
+}
+#front #transaction .uninCardContent > form .selectUnion {
+  border: 1px solid #EEEEEE;
+}
+#front #transaction .uninCardContent > form .selectUnion > p {
+  height: 40px;
+  background-color: #eef1f6;
+  line-height: 40px;
+  padding-left: 30px;
+  font-weight: bold;
+}
+#front #transaction .uninCardContent > form .selectUnion .el-form-item__content {
+  margin-left: 30px!important;
+}
+#front #transaction .uninCardContent > form .selectUnionCard {
+  margin-top: 21px;
+  border: 1px solid #EEEEEE;
+}
+#front #transaction .uninCardContent > form .selectUnionCard p {
+  height: 40px;
+  background-color: #eef1f6;
+  line-height: 40px;
+  padding-left: 30px;
+  font-weight: bold;
+}
+#front #transaction .uninCardContent > form .selectUnionCard .el-form-item__content {
+  margin-left: 0 !important;
+  width: inherit;
+  margin-bottom: 0;
+}
+#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround {
+  position: relative;
+}
+#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround > i {
+  position: absolute;
+  width: 20px;
+  height: 50px;
+  background-color: #000000;
+  opacity: 0.1;
+  color: #ffffff;
+  line-height: 50px;
+  z-index: 20;
+  border: none;
+  top: 32%;
+  cursor: pointer;
+  font-style: normal!important;
+  text-align: center;
+  font-size: 20px;
+}
+#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround .forward {
+  left: 0;
+}
+#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround .backward {
+  right: 0;
+}
+#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround > div {
+  width: 864px;
+  height: 120px;
+  position: relative;
+  left: 26px;
+  overflow: hidden;
+}
+#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround > div > div {
+  display: flex;
+  transition: all .5s;
+  position: absolute;
+  left: 0;
+  margin-top: 35px;
+}
+#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround > div > div .el-checkbox-button {
+  position: relative;
+  display: inline-block;
+  margin-left: 13px;
+  margin-top: 5px;
+}
+#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround > div > div .el-checkbox-button .el-checkbox-button__inner {
+  padding: 0;
+  border: none;
+}
+#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround > div > div .el-checkbox-button .el-checkbox-button__inner > .clearfix {
+  border-radius: 4px 0 0 4px;
+}
+#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround > div > div .SelectunionImg {
+  width: 200px;
+  height: 46px;
+  background-image: linear-gradient(90deg, #06bd7d 0%, #00935f 100%);
+}
+#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround > div > div .SelectunionImg1 i {
+  display: block;
+  width: 200px;
+  height: 46px;
+  position: absolute;
+  background: rgba(35, 34, 34, 0.5) url('../../assets/images/dagou.png') no-repeat center;
+  top: 0;
+  left: 0;
+  border-radius: 4px 0 0 4px;
+}
+#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround > div > div .el-checkbox-button.is-checked .el-checkbox-button__inner {
+  background-color: #96a3ad;
+  border-color: #96a3ad;
+  box-shadow: none;
+}
+#front #transaction .uninCardContent > form .selectUnionCard .SwitchAround > div > div .el-checkbox-button.is-checked .el-checkbox-button__inner i {
+  display: block;
+  width: 200px;
+  height: 46px;
+  position: absolute;
+  background: rgba(35, 34, 34, 0.5) url('../../assets/images/dagou.png') no-repeat center;
+  top: 0;
+  left: 0;
+  border-radius: 4px 0 0 4px;
+}
+#front #transaction .uninCardContent > form .ActivityCardDetails {
+  margin-top: 21px;
+}
+#front #transaction .uninCardContent > form .ActivityCardDetails .UnionDiscountCard {
+  border: 1px solid #EEEEEE;
+}
+#front #transaction .uninCardContent > form .ActivityCardDetails .UnionDiscountCard p {
+  height: 40px;
+  background-color: #eef1f6;
+  line-height: 40px;
+  padding-left: 30px;
+  font-weight: bold;
+}
+#front #transaction .uninCardContent > form .ActivityCardDetails .UnionDiscountCard > div {
+  padding: 20px 0 25px 70px;
+}
+#front #transaction .uninCardContent > form .ActivityCardDetails .cardService {
+  margin-top: 21px;
+  border: 1px solid #EEEEEE;
+}
+#front #transaction .uninCardContent > form .ActivityCardDetails .cardService > p {
+  height: 40px;
+  background-color: #eef1f6;
+  line-height: 40px;
+  padding-left: 30px;
+  font-weight: bold;
+}
+#front #transaction .uninCardContent > form .ActivityCardDetails .cardService > div {
+  margin: 20px 0 20px 32px;
+}
+#front #transaction .uninCardContent > form > .el-form-item {
+  margin-top: 20px;
+}
+#front #transaction .uninCardContent > form > .el-form-item .el-form-item__content {
+  margin-left: 0!important;
+}
 #front #transaction .el-col-6 {
   width: 220px;
 }
 #front #transaction .el-select .el-input {
   width: 220px;
 }
-#front #transaction .el-form-item__label {
-  width: 124px!important;
-}
-#front #transaction .el-form-item__error {
-  top: 8px;
-  left: 365px;
-}
 #front #transaction .el-form-item__content {
   width: 560px;
 }
+#front #transaction .step2 .el-radio-button {
+  height: inherit;
+  border: none;
+  margin: 20px 22px 25px 32px;
+}
+#front #transaction .step2 .el-radio-button__inner:hover {
+  background-color: #fff;
+  border: 1px solid #20A0FF;
+}
+#front #transaction .code_ .el-button {
+  border: 1px solid #1c8de0;
+  color: #1c8de0;
+}
+#front #transaction .code_ .el-button:hover {
+  background: #1c8de0;
+  color: #fff;
+}
+#front #transaction .model_1 .el-dialog {
+  width: 560px;
+  height: 360px;
+}
+#front #transaction .model_1 .el-dialog img {
+  width: 200px;
+}
+#front #transaction .model_1 .el-dialog__body {
+  padding: 0;
+}
+#finance .el-table .cell {
+  padding-left: 30px;
+}
 #finance .el-dialog--tiny {
-  width: 50%;
+  width: 650px;
+  height: 360px;
+}
+#finance .footer_ .code_ .el-dialog--tiny {
+  height: 400px;
+}
+#finance .footer_ .el-dialog--tiny {
+  height: 445px;
 }
 #finance .el-dialog__body {
   padding: 0;
+  margin-top: 15px;
 }
 #finance .Popup_ {
   margin-top: 30px;
@@ -501,5 +1941,39 @@ h2 {
 }
 #finance .Popup_ .el-form-item__error {
   top: 20%;
-  left: 35%;
+  left: 40%;
+}
+#finance .model_1 .el-dialog--tiny {
+  width: 560px;
+}
+#finance .model_1 .el-dialog--tiny img {
+  width: 200px;
+  height: 200px;
+}
+#finance .el-form-item__error:nth-child(3) {
+  left: 62%;
+}
+#noRegister .model_1 .el-dialog--tiny {
+  width: 450px;
+}
+#noRegister .model_1 .el-dialog__body {
+  padding: 0;
+}
+#noUnion,
+#noUnion1 {
+  margin: 40px 110px 0 50px;
+  margin-top: 30px;
+  border: 1px solid #ddd;
+  text-align: center;
+  padding: 28px 0;
+}
+#noUnion img,
+#noUnion1 img {
+  width: 35px;
+  margin-bottom: 10px;
+}
+#noUnion p,
+#noUnion1 p {
+  font-size: 14px;
+  color: #999999;
 }

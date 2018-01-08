@@ -3,10 +3,9 @@ import axios from 'axios';
 import { Message } from 'element-ui';
 
 // axios 配置
-// axios.defaults.baseURL = 'http://union.yifriend.net:7884';   //调试
-// axios.defaults.baseURL = 'http://union.duofee.com';       //调试
+axios.defaults.baseURL = 'http://union.yifriend.net:7884';   //调试
 // axios.defaults.baseURL = 'http://192.168.3.59:8080';         //调试
-axios.defaults.baseURL = 'https://union.deeptel.com.cn';     //测试
+// axios.defaults.baseURL = 'https://union.deeptel.com.cn';     //测试
 // axios.defaults.baseURL = 'http://nb.union.deeptel.com.cn';   //堡垒
 
 // axios.defaults.timeout = 5000;
@@ -48,6 +47,7 @@ function checkStatus(res) {
 }
 
 function checkCode(res) {
+
   // 如果code异常(这里已经包括网络错误，服务器错误的错，后端抛出误)，可以弹出一个错误提示，告诉用户
   if (res.status === -404) {
     Message({

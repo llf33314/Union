@@ -60,17 +60,17 @@
     data() {
       return {
         toLogin: 'ceshi',
-//        verificationCode:'',
         isGetCode :'',
 
       }
     },
     mounted(){
       let that_=this;
-      userPhone.onblur=function(){
-        if(/^1[3|4|5|6|7|8][0-9][0-9]{8}$/.test(this.value)){
+      var userPhone=document.getElementById('userPhone');
+      userPhone.onblur=()=>{
+        if(/^1[3|4|5|6|7|8][0-9][0-9]{8}$/.test($('#userPhone').val())){
           that_.isGetCode = 1;
-        }else if (this.value==""){
+        }else if ($('#userPhone').val()==""){
           $('#message_').show();
           message_.innerHTML="手机号不能为空，请输入手机号";
           setTimeout(()=>{
@@ -86,7 +86,7 @@
           },3000)
           that_.isGetCode = 0;
         }
-      },
+      };
       $('.User_phone').on('click',function(){
         $('.check-wrap').hide();
         $(this).hide();
@@ -102,15 +102,17 @@
     },
     //页面加载后调用的函数
     methods: {
-      //手机登录页面---------------------1
-      //点击获得验证码
+      add() {
+        this.$router.push({path:'/index'})
+      },
+      //手机登录页面--点击获得验证码-----------------1
       getNumber(){
         let that_=this;
         if(that_.isGetCode == 1) {
           that_.isGetCode = 0;
           let wait = 60;
           let Number_ = $('#userPhone').val();
-          $http.get(`/unionH5Brokerage/79B4DE7C/phone/${Number_}`)
+          $http.get(`/api/sms/3?phone=${Number_}`)
             .then(res => {
               //获得验证码成功
               if(res.data.success){
@@ -141,14 +143,35 @@
             });
         }
       },
-      //账号登录页面----------------------2
+      //手机登录页面---------------------------------1
+      phoneClick(){
+        var uPhone=$('#userPhone').val();
+        var pCode=$('#userCode').val();
+        var data1={
+          "code": pCode,
+          "phone": uPhone
+        };
+        //登录页面
+        $http.post(`/h5Brokerage/login/phone`,data1)
+          .then(res => {
+            //跳转到主页面中去
+            if(res.data.success) {
+              //跳转到主页面
+              location.href = '/#/Index';
+            }
+          })
+          .catch(err => {
+            this.$message({showClose: true, message: err.toString(), type: 'error', duration: 3000});
+          });
+      },
+      //账号登录页面---------------------------------2
       accountClick(){
         var uname=$('#username').val();
         var pwd=$('#userpwd').val();
         var that_=this;
         //登录页面
           var options = {
-            url: "/unionH5Brokerage/loginSign",
+            url: "/h5Brokerage/loginSign",
             data: {username: uname, userpwd: pwd},
             dataType: "json",
             type: "post",
@@ -169,7 +192,8 @@
                   success: function (res) {
                     if(res.code == 0){
                       setTimeout(function () {
-                        location.href = '#/Index';
+//                        location.href = '/#/Index';
+                        that_.add();
                       }, 10);
                     }else {
                       that_.$message({showClose: true, message: res.msg, type: 'error', duration: 3000});
@@ -186,23 +210,6 @@
             }
           $.ajax(options);
           },
-      //手机登录页面
-      phoneClick(){
-        var uPhone=$('#userPhone').val();
-        var pCode=$('#userCode').val();
-        //登录页面
-        $http.post(`/unionH5Brokerage/login?phone=${uPhone}&code=${pCode}`)
-          .then(res => {
-            //跳转到主页面中去
-            if(res.data.success) {
-              //跳转到主页面
-              location.href = '#/Index';
-            }
-          })
-          .catch(err => {
-            this.$message({showClose: true, message: err.toString(), type: 'error', duration: 3000});
-          });
-      },
     },
     //页面创造之前调用函数
     created (){
