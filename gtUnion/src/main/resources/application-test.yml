@@ -154,3 +154,9 @@ jxc:
 #素材库
 suc:
   url: https://suc.deeptel.com.cn
+
+
+wxapp:
+  sso:
+    token:
+      des_key: union_token

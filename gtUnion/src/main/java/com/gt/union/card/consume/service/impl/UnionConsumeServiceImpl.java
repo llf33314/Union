@@ -205,6 +205,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .in("member_id", memberIdList)
+                .eq(ListUtil.isEmpty(memberList), "member_id", null)
                 .eq(optUnionId != null, "union_id = {0}", optUnionId)
                 .eq(optShopId != null, "shop_id = {0}", optShopId)
                 .ge(optBeginTime != null, "create_time >= {0}", optBeginTime)
@@ -234,6 +235,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .in("member_id", memberIdList)
+                .eq(ListUtil.isEmpty(memberList), "member_id", null)
                 .eq(optUnionId != null, "union_id = {0}", optUnionId)
                 .eq(optShopId != null, "shop_id = {0}", optShopId)
                 .ge(optBeginTime != null, "create_time >= {0}", optBeginTime)
@@ -799,7 +801,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         }
 
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
-        entityWrapper.in("id", idList);
+        entityWrapper.in("id", idList).eq(ListUtil.isEmpty(idList), "id", null);
 
         return unionConsumeDao.selectList(entityWrapper);
     }

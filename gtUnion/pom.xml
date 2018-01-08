@@ -48,6 +48,11 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- 添加soring boot-AOP依赖-->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
         <!-- 添加amqp消息队列支持 -->
         <dependency>
             <groupId>org.springframework.boot</groupId>

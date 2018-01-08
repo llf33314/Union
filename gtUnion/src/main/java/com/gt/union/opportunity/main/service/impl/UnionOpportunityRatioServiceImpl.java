@@ -409,7 +409,7 @@ public class UnionOpportunityRatioServiceImpl implements IUnionOpportunityRatioS
         }
 
         EntityWrapper<UnionOpportunityRatio> entityWrapper = new EntityWrapper<>();
-        entityWrapper.in("id", idList);
+        entityWrapper.in("id", idList).eq(ListUtil.isEmpty(idList), "id", null);
 
         return unionOpportunityRatioDao.selectList(entityWrapper);
     }

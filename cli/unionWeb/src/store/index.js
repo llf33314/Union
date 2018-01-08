@@ -28,8 +28,8 @@ export default new Vuex.Store({
     // socketUrl: 'https://socket1.duofriend.com', // 堡垒
     materialUrl: 'https://suc.deeptel.com.cn/common/material.do?retUrl=', // 测试
     // materialUrl: 'http://nb.suc.deeptel.com.cn/common/material.do?retUrl=', // 堡垒
-    wxmpUrl: 'http://hz1.yifriend.net' // 调试
-    // wxmpUrl: 'https://deeptel.com.cn',  // 测试
+    // wxmpUrl: 'http://hz1.yifriend.net' // 调试
+    wxmpUrl: 'https://deeptel.com.cn',  // 测试
   },
   actions: {},
   mutations: {
