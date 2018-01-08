@@ -43,7 +43,7 @@
               <i class="forward" style="font-style:normal"> &lt;</i>
               <i class="backward" style="font-style:normal"> &gt;</i>
               <div>
-                <el-checkbox-group v-model="activityCheckList" @change="activityCheckListChange">
+                <el-checkbox-group v-model="activityCheckList">
                   <!-- label 写死？ -->
                   <el-checkbox-button v-if="isDiscountCard" :label="0" disabled>
                     <div class="clearfix SelectunionImg1">
@@ -80,7 +80,8 @@
           <div class="cardService" v-for="item in form2.activityList" :key="item.activity.id" v-show="activityCheckList.indexOf(item.activity.id) > -1">
             <p> {{ item.activity.name }} </p>
             <div style="margin-left: 82px;cursor: pointer;color: #2a2a2a;">服务项目：
-              <span @click="showDetail(item.id)"><strong style="cursor: pointer;color: #20A0FF;"> {{ item.amount }} </strong>个</span>
+              <span @click="showDetail(item.activity.id)">
+                <strong style="cursor: pointer;color: #20A0FF;"> {{ item.itemCount }} </strong>个</span>
             </div>
             <div>联盟卡有效天数：
               <span> {{ item.activity.validityDay }} 天</span>
@@ -118,7 +119,7 @@
             <el-popover trigger="hover" placement="bottom">
               <p v-for="item in scope.row.itemList" :key="item.id">项目名称：{{ item.name }}, 数量：{{ item.number }}</p>
               <div slot="reference" class="name-wrapper">
-                <span>{{ scope.row.itemList_ }}</span>
+                <span>{{ scope.row.nameList }}</span>
               </div>
             </el-popover>
           </template>
@@ -190,7 +191,7 @@ export default {
     var j = 0; //右移次数
     $('.forward').click(() => {
       var COUNT = this_.form2.activityList.length;
-      if (parseFloat(COUNT) / 4 > 1 && j < 0) {
+      if (parseFloat(COUNT) / 3 > 1 && j < 0) {
         i--;
         j++;
         moved -= 4;
@@ -202,7 +203,8 @@ export default {
     });
     $('.backward').click(() => {
       var COUNT = this_.form2.activityList.length;
-      if (parseFloat(COUNT) / 4 > 1 && parseFloat(COUNT) / 4 > i + 1) {
+      console.log(COUNT);
+      if (parseFloat(COUNT) / 3 > 1 && parseFloat(COUNT) / 3 > i + 1) {
         i++;
         j--;
         moved += 4;
@@ -262,7 +264,7 @@ export default {
                       this.form2 = res.data.data;
                       this.form2.unionList = res.data.data.unionList;
                       this.unionId = res.data.data.currentUnion.id;
-                      this.form2.activityList = res.data.data.activityList;
+                      this.form2.activityList = res.data.data.cardActivityApplyVOList;
                       if (this.form2.activityList) {
                         this.form2.activityList.forEach((v, i) => {
                           //todo
@@ -335,7 +337,7 @@ export default {
     // 显示项目详情
     showDetail(id) {
       $http
-        .get(`/unionCardActivity/${id}/unionId/2/apply/itemCount`)
+        .get(`/unionCardActivity/${id}/unionId/${this.unionId}/apply/itemCount`)
         .then(res => {
           if (res.data.data) {
             this.detailTableData = res.data.data;

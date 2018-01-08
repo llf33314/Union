@@ -745,15 +745,15 @@ hr {
   margin-bottom: 35px;
 }
 #UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain .cardExplain > span:nth-child(1) {
-  width: 150px;
-  text-align: right;
+  display: block;
+  width: 205px;
   float: left;
+  padding-left: 67px;
+  box-sizing: border-box;
 }
 #UnionCardSetting > .container #ActivityCardSetting .activityDetails .el-dialog--small .el-dialog__body .activityDetailsMain .cardExplain > span:nth-child(2) {
-  margin-left: 205px;
-  float: right;
-  position: relative;
-  top: -18px;
+  display: inline-block;
+  width: 500px;
 }
 #UnionCardSetting > .container #ActivityCardSetting .explain {
   background-color: #f4f4f4;
