@@ -43,7 +43,7 @@
               </el-radio-group>
             </el-form-item>
           </div>
-          <el-form-item label="享受折扣:">
+          <el-form-item label="享受折扣:" v-if="form.currentMember.discount">
             <span style="color: #f10b0b"> {{ form.currentMember.discount * 10 }} 折</span>
           </el-form-item>
           <el-form-item label="消费金额:">
@@ -118,7 +118,7 @@
             </el-form-item>
             <el-form-item label="联盟价格：">
               <span> ￥
-                <span class="color_">{{ price * form.currentMember.discount | formatPrice }}</span>
+                <span class="color_">{{ price * (form.currentMember.discount || 1) | formatPrice }}</span>
               </span>
             </el-form-item>
             <el-form-item label="联盟积分折扣：" v-if="isIntegral && form.integral > 0">
