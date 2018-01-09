@@ -358,7 +358,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             throw new BusinessException("消费金额不能为空，且必须大于0");
         }
 
-        Double discount = member.getDiscount() != null ? member.getDiscount() : 0.0;
+        Double discount = member.getDiscount() != null ? member.getDiscount() : 1.0;
         BigDecimal discountMoney = BigDecimalUtil.multiply(consumeMoney, BigDecimalUtil.subtract(1.0, discount));
         saveConsume.setDiscount(discount);
         saveConsume.setDiscountMoney(BigDecimalUtil.toDouble(discountMoney));

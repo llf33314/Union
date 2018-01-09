@@ -134,7 +134,7 @@ export default {
       options1: [],
       fromMemberId: '',
       options2: [],
-      value: '',
+      value: 'clientName',
       options3: [
         {
           value: 'clientName',
@@ -224,7 +224,7 @@ export default {
         this.currentPage = 1;
         this.unionId = '';
         this.fromMemberId = '';
-        this.value = '';
+        this.value = 'clientName';
         this.input = '';
         this.getTableData();
       }

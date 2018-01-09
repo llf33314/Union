@@ -279,13 +279,13 @@ export default {
                       }
                       this.activityCheckList = [];
                       this.isDiscountCard = res.data.data.isDiscountCard;
-                      this.discount = res.data.data.currentMember.discount;
+                      this.discount = res.data.data.currentMember.discount || 1;
                       this.visible2 = true;
                     } else {
                       this.form2.unionList = [];
                       this.form2.activityList = [];
                       this.isDiscountCard = '';
-                      this.discount = '';
+                      this.discount = 1;
                       this.visible2 = false;
                       this.$message({ showClose: true, message: '您已办理联盟卡', type: 'error', duration: 5000 });
                     }
@@ -328,7 +328,7 @@ export default {
               }
               this.activityCheckList = [];
               this.isDiscountCard = res.data.data.isDiscountCard;
-              this.discount = res.data.data.currentMember.discount;
+              this.discount = res.data.data.currentMember.discount || 1;
               this.visible2 = true;
             }
           })

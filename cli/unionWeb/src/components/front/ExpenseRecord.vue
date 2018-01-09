@@ -130,7 +130,7 @@ export default {
       options1: [],
       shopId: '',
       options2: [],
-      value: '',
+      value: 'cardNumber',
       options3: [{ value: 'cardNumber', label: '联盟卡号' }, { value: 'phone', label: '顾客电话' }],
       input: '',
       tableData: [],
@@ -196,7 +196,7 @@ export default {
       this.currentPage = 1;
       this.unionId = '';
       this.shopId = '';
-      this.value = '';
+      this.value = 'cardNumber';
       this.input = '';
       this.getTableData();
     },

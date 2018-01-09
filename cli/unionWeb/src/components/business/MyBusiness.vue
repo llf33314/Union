@@ -121,7 +121,7 @@ export default {
     return {
       unionId: '',
       options1: [],
-      value: '',
+      value: 'clientName',
       options2: [
         {
           value: 'clientName',
@@ -197,7 +197,7 @@ export default {
         // 推荐给我的商机
         this.currentPage = 1;
         this.unionId = '';
-        this.value = '';
+        this.value = 'clientName';
         this.input = '';
         this.getTableData();
       }
