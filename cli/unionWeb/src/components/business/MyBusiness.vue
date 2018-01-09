@@ -209,6 +209,7 @@ export default {
             this.tableData = [];
             this.totalAll = 0;
           }
+          this.$emit('loadingFinish');
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });

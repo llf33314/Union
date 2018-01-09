@@ -3,7 +3,7 @@
     <div v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="拼命加载中">
       <!--显示整页加载，1秒后消失-->
     </div>
-    <div id="container_myUnion" style="display: none">
+    <div id="container_myUnion" v-show="loadVisible">
       <!--创建和加入联盟-->
       <div class="notice">
         <el-row justify="center">
@@ -229,7 +229,8 @@ export default {
       activeName: 'first',
       unionListLength: '',
       visible: false,
-      fullscreenLoading: true
+      fullscreenLoading: true,
+      loadVisible: false
     };
   },
   computed: {
@@ -286,31 +287,29 @@ export default {
         .get(`/unionIndex`)
         .then(res => {
           if (res.data.data) {
-            setTimeout(() => {
-              this.fullscreenLoading = false;
-              this.unionMainData = res.data.data;
-              // 判断是否创建或加入联盟
-              if (!this.unionMainData.currentUnion) {
-                this.$router.push({ path: '/my-union/no-currentUnion' });
-              } else {
-                // 判断创建和加入联盟的数量
-                this.unionMainData.myCreateUnion ? (this.unionListLength = 1) : (this.unionListLength = 0);
-                if (this.unionMainData.myJoinUnionList) {
-                  this.unionListLength += this.unionMainData.myJoinUnionList.length;
-                }
-                // 全局存储信息
-                this.$store.commit('unionIdChange', this.unionMainData.currentUnion.id);
-                this.$store.commit('isUnionOwnerChange', this.unionMainData.currentMember.isUnionOwner);
-                this.$store.commit('memberIdChange', this.unionMainData.currentMember.id);
-                // 处理当前页面数据展示格式
-                this.unionMainData.currentUnion.createTime = timeFilter(this.unionMainData.currentUnion.createTime);
-                this.unionMainData.currentMember.isUnionOwner
-                  ? (this.unionMainData.currentMember.isUnionOwner = '盟主')
-                  : (this.unionMainData.currentMember.isUnionOwner = '盟员');
-                this.unionMainData.integral = res.data.data.integral || 0;
+            this.unionMainData = res.data.data;
+            // 判断是否创建或加入联盟
+            if (!this.unionMainData.currentUnion) {
+              this.$router.push({ path: '/my-union/no-currentUnion' });
+            } else {
+              // 判断创建和加入联盟的数量
+              this.unionMainData.myCreateUnion ? (this.unionListLength = 1) : (this.unionListLength = 0);
+              if (this.unionMainData.myJoinUnionList) {
+                this.unionListLength += this.unionMainData.myJoinUnionList.length;
               }
-              container_myUnion.style.display = 'block';
-            }, 300);
+              // 全局存储信息
+              this.$store.commit('unionIdChange', this.unionMainData.currentUnion.id);
+              this.$store.commit('isUnionOwnerChange', this.unionMainData.currentMember.isUnionOwner);
+              this.$store.commit('memberIdChange', this.unionMainData.currentMember.id);
+              // 处理当前页面数据展示格式
+              this.unionMainData.currentUnion.createTime = timeFilter(this.unionMainData.currentUnion.createTime);
+              this.unionMainData.currentMember.isUnionOwner
+                ? (this.unionMainData.currentMember.isUnionOwner = '盟主')
+                : (this.unionMainData.currentMember.isUnionOwner = '盟员');
+              this.unionMainData.integral = res.data.data.integral || 0;
+            }
+            this.loadVisible = true;
+            this.fullscreenLoading = false;
           }
         })
         .catch(err => {
