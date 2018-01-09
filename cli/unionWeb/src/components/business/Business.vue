@@ -1,25 +1,27 @@
 <template>
   <div class="container" id="Business">
+    <!-- 显示整页加载 -->
     <div v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="拼命加载中">
-      <!--显示整页加载，0.3秒后消失-->
     </div>
-    <el-tabs v-model="activeName" type="card" style="display: none">
-      <el-tab-pane label="我的商机" name="first">
-        <my-business></my-business>
-      </el-tab-pane>
-      <el-tab-pane label="我要推荐" name="second">
-        <recommend></recommend>
-      </el-tab-pane>
-      <el-tab-pane label="佣金结算" name="third">
-        <commission></commission>
-      </el-tab-pane>
-      <el-tab-pane label="数据统计图" name="fourth">
-        <datachart></datachart>
-      </el-tab-pane>
-      <el-tab-pane label="商机佣金比例设置" name="fifth">
-        <percent></percent>
-      </el-tab-pane>
-    </el-tabs>
+    <div v-show="loadingVisible">
+      <el-tabs v-model="activeName" type="card">
+        <el-tab-pane label="我的商机" name="first">
+          <my-business @loadingFinish="loadingFinish"></my-business>
+        </el-tab-pane>
+        <el-tab-pane label="我要推荐" name="second">
+          <recommend></recommend>
+        </el-tab-pane>
+        <el-tab-pane label="佣金结算" name="third">
+          <commission></commission>
+        </el-tab-pane>
+        <el-tab-pane label="数据统计图" name="fourth">
+          <datachart></datachart>
+        </el-tab-pane>
+        <el-tab-pane label="商机佣金比例设置" name="fifth">
+          <percent></percent>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
   </div>
 </template>
 
@@ -42,14 +44,15 @@ export default {
   data() {
     return {
       activeName: 'first',
-      fullscreenLoading: true
+      fullscreenLoading: true,
+      loadingVisible: false
     };
   },
-  mounted: function() {
-    setTimeout(() => {
+  methods: {
+    loadingFinish() {
       this.fullscreenLoading = false;
-      $('.el-tabs--card').show();
-    }, 300);
+      this.loadingVisible = true;
+    }
   }
 };
 </script>

@@ -3,9 +3,12 @@ package com.gt.union.wxapp.card.service;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.Member;
 import com.gt.union.common.exception.ParamException;
+import com.gt.union.wxapp.card.vo.CardDetailListVO;
 import com.gt.union.wxapp.card.vo.CardDetailVO;
 import com.gt.union.wxapp.card.vo.IndexVO;
 import com.gt.union.wxapp.card.vo.MyCardDetailVO;
+
+import java.util.List;
 
 /**
  * @author hongjiye
@@ -78,4 +81,23 @@ public interface IWxAppCardService {
 	 * @return
 	 */
 	String login(Integer busId, Integer memberId) throws Exception;
+
+	/**
+	 * 分页获取联盟卡信息盟员列表信息
+	 * @param phone		手机号
+	 * @param busId		商家id
+	 * @param unionId	联盟id
+	 * @param activityId	活动卡id
+	 * @param page		分页参数
+	 * @return
+	 */
+	Page listCardDetailPage(String phone, Integer busId, Integer unionId, Integer activityId, Page page) throws Exception;
+
+	/**
+	 * 分页获取联我的联盟卡列表信息
+	 * @param phone		手机号
+	 * @param page		分页参数
+	 * @return
+	 */
+	Page listMyCardPage(String phone, Page page) throws Exception;
 }

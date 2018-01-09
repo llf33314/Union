@@ -6,7 +6,7 @@
 import $http from '@/utils/http.js';
 export default {
   name: 'business-entrance',
-  mounted: function() {
+  created: function() {
     // 首页查询我的联盟信息
     $http
       .get(`/unionIndex`)

@@ -3,6 +3,7 @@
     <div v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="拼命加载中">
       <!--显示整页加载，0.3秒后消失-->
     </div>
+    <div v-show="loadingVisible"></div>
     <el-tabs v-model="activeName" type="card" @tab-click="handleClick" style="display: none">
       <el-tab-pane label="联盟卡消费核销" name="first">
         <verification></verification>
@@ -32,28 +33,15 @@ export default {
   data() {
     return {
       activeName: 'first',
-      fullscreenLoading: true
+      fullscreenLoading: true,
+      loadingVisible: false
     };
   },
-  created: function() {
-    // 首页查询我的联盟信息
-    $http
-      .get(`/unionIndex`)
-      .then(res => {
-        if (res.data.data) {
-          setTimeout(() => {
-            this.fullscreenLoading = false;
-            // 判断是否创建或加入联盟
-            if (!res.data.data.currentUnion) {
-              this.$router.push({ path: '/no-union' });
-            }
-            $('.el-tabs--card').show();
-          }, 300);
-        }
-      })
-      .catch(err => {
-        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-      });
+  mounted: function() {
+    setTimeout(() => {
+      this.loadingVisible = true;
+      this.fullscreenLoading = false;
+    }, 300);
   },
   methods: {
     handleClick(tab, event) {

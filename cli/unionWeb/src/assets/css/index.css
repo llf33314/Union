@@ -1643,11 +1643,6 @@ hr {
   margin-top: 20px;
   margin-bottom: 30px;
 }
-#front #ExpenseRecord .el-table .cell {
-  white-space: normal;
-  line-height: 24px;
-  white-space: nowrap;
-}
 #front #ExpenseRecord > .el-row .el-form-item__label {
   padding: 11px 3px 11px 0;
 }
