@@ -50,8 +50,10 @@ export default {
   },
   methods: {
     loadingFinish() {
-      this.fullscreenLoading = false;
-      this.loadingVisible = true;
+      setTimeout(() => {
+        this.fullscreenLoading = false;
+        this.loadingVisible = true;
+      }, 300);
     }
   }
 };

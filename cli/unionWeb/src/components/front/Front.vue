@@ -3,18 +3,19 @@
     <div v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="拼命加载中">
       <!--显示整页加载，0.3秒后消失-->
     </div>
-    <div v-show="loadingVisible"></div>
-    <el-tabs v-model="activeName" type="card" @tab-click="handleClick" style="display: none">
-      <el-tab-pane label="联盟卡消费核销" name="first">
-        <verification></verification>
-      </el-tab-pane>
-      <el-tab-pane label="消费核销记录" name="second">
-        <ExpenseRecord></ExpenseRecord>
-      </el-tab-pane>
-      <el-tab-pane label="办理联盟卡" name="third">
-        <Transaction></Transaction>
-      </el-tab-pane>
-    </el-tabs>
+    <div v-show="loadingVisible">
+      <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+        <el-tab-pane label="联盟卡消费核销" name="first">
+          <verification></verification>
+        </el-tab-pane>
+        <el-tab-pane label="消费核销记录" name="second">
+          <ExpenseRecord></ExpenseRecord>
+        </el-tab-pane>
+        <el-tab-pane label="办理联盟卡" name="third">
+          <Transaction></Transaction>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
   </div>
 </template>
 
