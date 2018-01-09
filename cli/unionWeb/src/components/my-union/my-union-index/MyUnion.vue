@@ -158,11 +158,14 @@
                   {{ unionMainData.currentMember.isUnionOwner }}
                 </li>
                 <li>
-                  <span>已加入盟员数</span> {{ unionMainData.memberCount }}
-                  <span>,剩余盟员数</span> {{ unionMainData.memberSurplus }}
+                  <span>已加入盟员数：</span> {{ unionMainData.memberCount }}
+                  <span>,剩余盟员数：</span> {{ unionMainData.memberSurplus }}
                 </li>
-                <li>
-                  <span>粉丝享受折扣</span> {{ ((unionMainData.currentMember.discount || 0) * 10).toFixed(1) }} 折
+                <li v-if="unionMainData.currentMember.discount && unionMainData.currentMember.discount != 1">
+                  <span>粉丝享受折扣：</span> {{ ((unionMainData.currentMember.discount || 0) * 10).toFixed(1) }} 折
+                </li>
+                <li v-if="!unionMainData.currentMember.discount || unionMainData.currentMember.discount == 1">
+                  <span>粉丝享受折扣：</span> 无
                 </li>
               </ul>
             </div>

@@ -1,7 +1,5 @@
 <template>
-  <div>
-    <div id="MyActivityCard" v-loading="loading" element-loading-text="拼命加载中">
-    </div>
+  <div id="MyActivityCard" v-loading="loading" element-loading-text="拼命加载中">
     <div v-show="loadingVisible">
       <div class="explain">
         <span>说明：</span>
