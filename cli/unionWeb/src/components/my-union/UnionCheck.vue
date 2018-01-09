@@ -90,7 +90,7 @@ export default {
   },
   data() {
     return {
-      value: '',
+      value: 'memberName',
       options: [
         {
           value: 'memberName',
@@ -122,7 +122,7 @@ export default {
     init() {
       if (this.unionId) {
         this.currentPage = 1;
-        this.value = '';
+        this.value = 'memberName';
         this.input = '';
         this.getTableData();
       }
