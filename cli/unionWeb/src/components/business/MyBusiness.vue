@@ -121,7 +121,7 @@ export default {
     return {
       unionId: '',
       options1: [],
-      value: '',
+      value: 'clientName',
       options2: [
         {
           value: 'clientName',
@@ -161,46 +161,34 @@ export default {
       putUnionId: ''
     };
   },
-  computed: {
-    initUnionId() {
-      return this.$store.state.unionId;
-    }
-  },
-  watch: {
-    initUnionId: function() {
-      this.init();
-    }
-  },
   mounted: function() {
     this.init();
   },
   methods: {
     init() {
-      if (this.initUnionId) {
-        // 获取我的当前有效的联盟
-        $http
-          .get(`/unionMain/busUser/valid`)
-          .then(res => {
-            if (res.data.data) {
-              this.options1 = res.data.data || [];
-              this.options1.forEach((v, i) => {
-                v.value = v.id;
-                v.label = v.name;
-              });
-            } else {
-              this.options1 = [];
-            }
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          });
-        // 推荐给我的商机
-        this.currentPage = 1;
-        this.unionId = '';
-        this.value = '';
-        this.input = '';
-        this.getTableData();
-      }
+      // 获取我的当前有效的联盟
+      $http
+        .get(`/unionMain/busUser/valid`)
+        .then(res => {
+          if (res.data.data) {
+            this.options1 = res.data.data || [];
+            this.options1.forEach((v, i) => {
+              v.value = v.id;
+              v.label = v.name;
+            });
+          } else {
+            this.options1 = [];
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+      // 推荐给我的商机
+      this.currentPage = 1;
+      this.unionId = '';
+      this.value = 'clientName';
+      this.input = '';
+      this.getTableData();
     },
     getTableData() {
       $http

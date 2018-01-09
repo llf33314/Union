@@ -107,6 +107,7 @@ export default {
                 });
                 this.socket.on('chatevent', function(data) {
                   let msg = eval('(' + data.message + ')');
+                  console.log(msg, 'wx');
                   _this.wxData = msg;
                 });
               })

@@ -66,7 +66,7 @@ export default {
     return {
       unionId: '',
       options1: [],
-      value: '',
+      value: 'clientName',
       options2: [
         {
           value: 'clientName',
@@ -83,16 +83,6 @@ export default {
       totalAll: 0
     };
   },
-  computed: {
-    initUnionId() {
-      return this.$store.state.unionId;
-    }
-  },
-  watch: {
-    initUnionId: function() {
-      this.init();
-    }
-  },
   mounted: function() {
     this.init();
     // 监听是否有新的推荐
@@ -102,31 +92,29 @@ export default {
   },
   methods: {
     init() {
-      if (this.initUnionId) {
-        // 获取我的当前有效的联盟
-        $http
-          .get(`/unionMain/busUser/valid`)
-          .then(res => {
-            if (res.data.data) {
-              this.options1 = res.data.data || [];
-              this.options1.forEach((v, i) => {
-                v.value = v.id;
-                v.label = v.name;
-              });
-            } else {
-              this.options1 = [];
-            }
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          });
-        // 我推荐的商机数据
-        this.currentPage = 1;
-        this.unionId = '';
-        this.value = '';
-        this.input = '';
-        this.getTableData();
-      }
+      // 获取我的当前有效的联盟
+      $http
+        .get(`/unionMain/busUser/valid`)
+        .then(res => {
+          if (res.data.data) {
+            this.options1 = res.data.data || [];
+            this.options1.forEach((v, i) => {
+              v.value = v.id;
+              v.label = v.name;
+            });
+          } else {
+            this.options1 = [];
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+      // 我推荐的商机数据
+      this.currentPage = 1;
+      this.unionId = '';
+      this.value = 'clientName';
+      this.input = '';
+      this.getTableData();
     },
     getTableData() {
       $http

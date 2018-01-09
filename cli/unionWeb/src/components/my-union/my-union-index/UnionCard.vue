@@ -67,7 +67,7 @@ export default {
   name: 'union-card',
   data() {
     return {
-      value: '',
+      value: 'number',
       options: [
         {
           value: 'number',
@@ -115,7 +115,7 @@ export default {
   methods: {
     init() {
       this.currentPage = 1;
-      this.value = '';
+      this.value = 'number';
       this.input = '';
       this.getTableData();
     },

@@ -7,8 +7,6 @@ import $http from '@/utils/http.js';
 export default {
   name: 'business-entrance',
   mounted: function() {
-    // 清空缓存的数据
-    this.$store.commit('unionIdChange', '');
     // 首页查询我的联盟信息
     $http
       .get(`/unionIndex`)

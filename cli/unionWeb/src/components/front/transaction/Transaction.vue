@@ -13,7 +13,7 @@
           </el-form-item>
           <el-form-item label="短信验证码：" prop="code">
             <el-row style="width: 250px;">
-              <el-input v-model="form1.code"></el-input>
+              <el-input v-model="form1.code" @keyup.enter.native="confirmCode('ruleForm')"></el-input>
             </el-row>
           </el-form-item>
           <el-button type="primary" @click="confirmCode('ruleForm')" style="position: relative;top: -58px;left: 390px;" id="affirm">确认</el-button>
@@ -77,7 +77,7 @@
             <div>享受折扣： {{ discount * 10 }}折 </div>
           </div>
           <!--活动卡服务-->
-          <div class="cardService" v-for="item in form2.activityList" :key="item.activity.id" v-show="activityCheckList.indexOf(item.activity.id) > -1">
+          <div class="cardService" v-for="item in form2.activityList" :key="item.activity.id" v-show="activityCheckList.indexOf(item.activity.id)> -1">
             <p> {{ item.activity.name }} </p>
             <div style="margin-left: 82px;cursor: pointer;color: #2a2a2a;">服务项目：
               <span @click="showDetail(item.activity.id)">
@@ -279,13 +279,13 @@ export default {
                       }
                       this.activityCheckList = [];
                       this.isDiscountCard = res.data.data.isDiscountCard;
-                      this.discount = res.data.data.currentMember.discount;
+                      this.discount = res.data.data.currentMember.discount || 1;
                       this.visible2 = true;
                     } else {
                       this.form2.unionList = [];
                       this.form2.activityList = [];
                       this.isDiscountCard = '';
-                      this.discount = '';
+                      this.discount = 1;
                       this.visible2 = false;
                       this.$message({ showClose: true, message: '您已办理联盟卡', type: 'error', duration: 5000 });
                     }
@@ -328,7 +328,7 @@ export default {
               }
               this.activityCheckList = [];
               this.isDiscountCard = res.data.data.isDiscountCard;
-              this.discount = res.data.data.currentMember.discount;
+              this.discount = res.data.data.currentMember.discount || 1;
               this.visible2 = true;
             }
           })
@@ -398,6 +398,7 @@ export default {
               });
               this.socket.on('chatevent', function(data) {
                 let msg = eval('(' + data.message + ')');
+                console.log(msg, 'transaction');
                 // 避免 socket 重复调用
                 if (!(_this.socketFlag.socketKey == msg.socketKey && _this.socketFlag.status == msg.status)) {
                   if (_this.socketKey == msg.socketKey) {
