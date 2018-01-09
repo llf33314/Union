@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -78,8 +79,43 @@ public class WxAppCardController {
 		return GtJsonResult.instanceSuccessMsg(result).toString();
 	}
 
+
+	@ApiOperation(value = "联盟卡-详情-分页获取列表信息", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/cardDetail/list/{busId}/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String cardDetailList(HttpServletRequest request,
+							 @ApiParam(value = "版本号", name = "version", required = true)
+							 @PathVariable("version") String version,
+							 @ApiParam(value = "商家id", name = "busId", required = true)
+							 @PathVariable("busId") Integer busId,
+							 @ApiParam(value = "活动卡id，如果没有，则是折扣卡", name = "activityId", required = false)
+							 @RequestParam(name = "activityId", required = false) Integer activityId,
+							 @ApiParam(value = "联盟id", name = "unionId", required = true)
+							 @PathVariable("unionId") Integer unionId, Page page, @RequestHeader String token) throws Exception {
+		Member member = tokenApiService.getMemberByToken(token, busId);
+		Page<List<CardDetailListVO>> result = wxAppCardService.listCardDetailPage(member == null ? null : member.getPhone(), busId, unionId, activityId, page);
+		return GtJsonResult.instanceSuccessMsg(result).toString();
+	}
+
+
 	@ApiOperation(value = "联盟卡-我的详情", produces = "application/json;charset=UTF-8")
 	@RequestMapping(value = "/37FD66FE/myCardDetail/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	public String myCardDetail(HttpServletRequest request,
+							   @ApiParam(value = "版本号", name = "version", required = true)
+							   @PathVariable("version") String version,
+							   @ApiParam(value = "商家id", name = "busId", required = true)
+							   @PathVariable("busId") Integer busId, @RequestHeader String token) throws Exception {
+		Member member = tokenApiService.getMemberByToken(token, busId);
+		if(CommonUtil.isEmpty(member)){
+			return loginInfo();
+		}
+		MyCardDetailVO myCardDetailVO = wxAppCardService.myCardDetail(member.getPhone());
+		myCardDetailVO.setNickName(StringUtil.isEmpty(member.getNickname()) ? "未知用户" : member.getNickname());
+		myCardDetailVO.setHeardImg(member.getHeadimgurl());
+		return GtJsonResult.instanceSuccessMsg(myCardDetailVO).toString();
+	}
+
+	@ApiOperation(value = "联盟卡-我的详情-分页获取列表信息", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/37FD66FE/myCardDetail/list/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String myCardDetail(HttpServletRequest request,
 							   @ApiParam(value = "版本号", name = "version", required = true)
 							   @PathVariable("version") String version,
@@ -90,13 +126,8 @@ public class WxAppCardController {
 		if(CommonUtil.isEmpty(member)){
 			return loginInfo();
 		}
-		MyCardDetailVO myCardDetailVO = wxAppCardService.myCardDetail(member.getPhone());
-		myCardDetailVO.setNickName(StringUtil.isEmpty(member.getNickname()) ? "未知用户" : member.getNickname());
-		myCardDetailVO.setHeardImg(member.getHeadimgurl());
-		Page<MyUnionCardDetailVO> result = (Page<MyUnionCardDetailVO>) page;
-		result = PageUtil.setRecord(result, myCardDetailVO.getCardList());
-		myCardDetailVO.setCardList(result.getRecords());
-		return GtJsonResult.instanceSuccessMsg(myCardDetailVO).toString();
+		Page result =  wxAppCardService.listMyCardPage(member.getPhone(), page);
+		return GtJsonResult.instanceSuccessMsg(result).toString();
 	}
 
 	@ApiOperation(value = "联盟卡-消费记录", produces = "application/json;charset=UTF-8")

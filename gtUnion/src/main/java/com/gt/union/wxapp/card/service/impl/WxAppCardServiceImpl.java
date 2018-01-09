@@ -1,6 +1,7 @@
 package com.gt.union.wxapp.card.service.impl;
 
 import com.alibaba.fastjson.JSONObject;
+import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.Member;
 import com.gt.api.util.DESKeysUtil;
@@ -224,15 +225,6 @@ public class WxAppCardServiceImpl implements IWxAppCardService{
 			result.setCardType(CardConstant.TYPE_DISCOUNT);
 			result.setCardName(union.getName() + "折扣卡");
 			List<UnionMember> members = unionMemberService.listValidWriteByUnionId(unionId);
-			List<CardDetailListVO> list = new ArrayList<CardDetailListVO>(members.size());
-			if(ListUtil.isNotEmpty(members)){
-				for(UnionMember member : members){
-					CardDetailListVO listVO = new CardDetailListVO();
-					listVO.setUnionMember(member);
-					list.add(listVO);
-				}
-			}
-			result.setCardDetailListVO(list);
 			result.setUserCount(members.size());
 		}else {
 			//活动卡
@@ -261,55 +253,16 @@ public class WxAppCardServiceImpl implements IWxAppCardService{
 			}else {
 				throw new BusinessException("该联盟卡不可购买");
 			}
-			int itemCount = 0;
-			List<CardDetailListVO> list = new ArrayList<CardDetailListVO>();
-			//已通过审核
-			List<UnionMember> members = unionMemberService.listValidWriteByUnionId(unionId);
-			if(ListUtil.isNotEmpty(members)){
-				//本商家盟员在前面，其他按时间倒序
-				Collections.sort(members, new Comparator<UnionMember>() {
-					@Override
-					public int compare(UnionMember o1, UnionMember o2) {
-						if (o1.getId().equals(unionMember.getId())) {
-							return -1;
-						}
-						if (o2.getId().equals(unionMember.getId())) {
-							return 1;
-						}
-						return o2.getCreateTime().compareTo(o1.getCreateTime());
-					}
-				});
-				List<UnionCardProject> projectList = unionCardProjectService.listValidByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
-				for(UnionMember member : members){
-					CardDetailListVO listVO = new CardDetailListVO();
-					if (ListUtil.isNotEmpty(projectList)) {
-						for (UnionCardProject project : projectList) {
-							if(member.getId().equals(project.getMemberId())){
-								List<UnionCardProjectItem> textItemList = unionCardProjectItemService.listValidByProjectId(project.getId());
-								if (ListUtil.isNotEmpty(textItemList)) {
-									listVO.setUnionCardProjectItems(textItemList);
-									itemCount += textItemList.size();
-								}
-								break;
-							}
-
-						}
-					}
-					listVO.setUnionMember(member);
-					list.add(listVO);
-				}
-			}
 			result.setActivityIllustration(activity.getIllustration());
 			result.setCardName(activity.getName());
 			result.setCardType(CardConstant.TYPE_ACTIVITY);
 			result.setCardPrice(activity.getPrice());
-			result.setCardDetailListVO(list);
 			if(CommonUtil.isNotEmpty(activity.getColor())){
 				String[] c = activity.getColor().split(",");
 				result.setColor1(c[0]);
 				result.setColor2(c[1]);
 			}
-			result.setItemCount(itemCount);
+			result.setItemCount(unionCardProjectItemService.countValidCommittedByUnionIdAndActivityId(unionId, activity.getId()));
 		}
 		return result;
 	}
@@ -317,74 +270,17 @@ public class WxAppCardServiceImpl implements IWxAppCardService{
 	@Override
 	public MyCardDetailVO myCardDetail(String phone) throws Exception{
 		MyCardDetailVO vo = new MyCardDetailVO();
-		List cardList = new ArrayList<>();
 		if(CommonUtil.isNotEmpty(phone)){
 			UnionCardFan fan = unionCardFanService.getValidByPhone(phone);
 			if(fan != null){
-				List<UnionCard> list = unionCardService.listValidByFanId(fan.getId());
-				if(ListUtil.isNotEmpty(list)){
-					for(UnionCard card : list){
-						UnionMain union = unionMainService.getById(card.getUnionId());
-						if (unionMainService.isUnionValid(union)) {
-							MyUnionCardDetailVO detailVO = new MyUnionCardDetailVO();
-							detailVO.setCardType(card.getType());
-							detailVO.setUnionId(union.getId());
-							if(card.getType().equals(CardConstant.TYPE_DISCOUNT)){
-								//折扣卡
-								detailVO.setCardName(union.getName() + "折扣卡");
-							}else if(card.getType().equals(CardConstant.TYPE_ACTIVITY)){
-								//活动卡
-								int itemCount = 0;
-								UnionCardActivity activity = unionCardActivityService.getValidByIdAndUnionId(card.getActivityId(), union.getId());
-								detailVO.setCardName(activity.getName());
-								if(CommonUtil.isNotEmpty(activity.getColor())){
-									String[] c = activity.getColor().split(",");
-									detailVO.setColor1(c[0]);
-									detailVO.setColor2(c[1]);
-								}
-								detailVO.setActivityId(activity.getId());
-								detailVO.setValidityStr(DateTimeKit.format(card.getValidity(), DateTimeKit.DEFAULT_DATE_FORMAT));
-								detailVO.setIsOverdue(DateTimeKit.laterThanNow(card.getValidity()) ? 0 : 1);
-								//优惠项目
-								List<UnionCardProject> projectList = unionCardProjectService.listValidByUnionIdAndActivityIdAndStatus(union.getId(), activity.getId(), ProjectConstant.STATUS_ACCEPT);
-								if (ListUtil.isNotEmpty(projectList)) {
-									for (UnionCardProject project : projectList) {
-										List<UnionCardProjectItem> textItemList = unionCardProjectItemService.listValidByProjectId(project.getId());
-										if (ListUtil.isNotEmpty(textItemList)) {
-											itemCount += textItemList.size();
-										}
-									}
-								}
-								detailVO.setItemCount(itemCount);
-							}
-							detailVO.setCreatetime(card.getCreateTime());
-							cardList.add(detailVO);
-						}
-					}
-					Double integral = unionCardIntegralService.sumValidIntegralByFanId(fan.getId());
-					vo.setIntegral(integral);
-					Integer consumeCount = unionConsumeService.countValidPayByFanId(fan.getId());
-					vo.setConsumeCount(consumeCount);
-				}
+				Double integral = unionCardIntegralService.sumValidIntegralByFanId(fan.getId());
+				vo.setIntegral(integral);
+				Integer consumeCount = unionConsumeService.countValidPayByFanId(fan.getId());
+				vo.setConsumeCount(consumeCount);
 				vo.setCardNo(fan.getNumber());
 				vo.setCardImg(PropertiesUtil.getUnionUrl() + "/h5Card/79B4DE7C/qr/cardNo?cardNo="+fan.getNumber());
 			}
 		}
-		if(ListUtil.isNotEmpty(cardList)){
-			Collections.sort(cardList, new Comparator<MyUnionCardDetailVO>() {
-				@Override
-				public int compare(MyUnionCardDetailVO o1, MyUnionCardDetailVO o2) {
-					if(o1.getCardType() > o2.getCardType()){
-						return 1;
-					}else if(o1.getCardType().equals(o2.getCardType())){
-						return -o1.getCreatetime().compareTo(o2.getCreatetime());
-					}else {
-						return -1;
-					}
-				}
-			});
-		}
-		vo.setCardList(cardList);
 		return vo;
 	}
 
@@ -456,5 +352,131 @@ public class WxAppCardServiceImpl implements IWxAppCardService{
 		int random = (int) (Math.random() * 100);
 		String token = new DESKeysUtil(PropertiesUtil.getTokenKey()).getEncString(WxAppCardConstant.UNION_TOKEN_KEY + redisMemberKey + WxAppCardConstant.REDIS_MEMBER_LINK + random);
 		return token;
+	}
+
+	@Override
+	public Page<List<CardDetailListVO>> listCardDetailPage(String phone, Integer busId, Integer unionId, Integer activityId, Page page) throws Exception {
+		if(busId == null || unionId == null || page == null){
+			throw new ParamException(CommonConstant.PARAM_ERROR);
+		}
+		final UnionMember unionMember = unionMemberService.getValidWriteByBusIdAndUnionId(busId, unionId);
+		if (unionMember == null) {
+			throw new BusinessException(CommonConstant.UNION_MEMBER_ERROR);
+		}
+		List<CardDetailListVO> list = new ArrayList<CardDetailListVO>();
+		EntityWrapper<UnionMember> entityWrapper = new EntityWrapper<>();
+		entityWrapper.eq("union_id", unionId)
+				.eq("del_status", CommonConstant.DEL_STATUS_NO)
+				.orderBy("create_time", true);
+		Page result = unionMemberService.pageSupport(page, entityWrapper);
+		List<UnionMember> members = result.getRecords();
+		if(CommonUtil.isEmpty(activityId)){
+			//折扣卡
+			if(ListUtil.isNotEmpty(members)){
+				for(UnionMember member : members){
+					CardDetailListVO listVO = new CardDetailListVO();
+					listVO.setUnionMember(member);
+					list.add(listVO);
+				}
+			}
+		}else {
+			//活动卡
+			//已通过审核
+			if(ListUtil.isNotEmpty(members)){
+				//本商家盟员在前面，其他按时间倒序
+				Collections.sort(members, new Comparator<UnionMember>() {
+					@Override
+					public int compare(UnionMember o1, UnionMember o2) {
+						if (o1.getId().equals(unionMember.getId())) {
+							return -1;
+						}
+						if (o2.getId().equals(unionMember.getId())) {
+							return 1;
+						}
+						return o2.getCreateTime().compareTo(o1.getCreateTime());
+					}
+				});
+				List<UnionCardProject> projectList = unionCardProjectService.listValidByUnionIdAndActivityIdAndStatus(unionId, activityId, ProjectConstant.STATUS_ACCEPT);
+				for(UnionMember member : members){
+					CardDetailListVO listVO = new CardDetailListVO();
+					if (ListUtil.isNotEmpty(projectList)) {
+						for (UnionCardProject project : projectList) {
+							if(member.getId().equals(project.getMemberId())){
+								List<UnionCardProjectItem> textItemList = unionCardProjectItemService.listValidByProjectId(project.getId());
+								if (ListUtil.isNotEmpty(textItemList)) {
+									listVO.setUnionCardProjectItems(textItemList);
+								}
+								break;
+							}
+						}
+					}
+					listVO.setUnionMember(member);
+					list.add(listVO);
+				}
+			}
+		}
+		result.setRecords(list);
+		return result;
+	}
+
+	@Override
+	public Page listMyCardPage(String phone, Page page) throws Exception {
+		if(page == null){
+			throw new ParamException(CommonConstant.PARAM_ERROR);
+		}
+		List cardList = new ArrayList<>();
+		if(CommonUtil.isNotEmpty(phone)){
+			UnionCardFan fan = unionCardFanService.getValidByPhone(phone);
+			if(fan != null){
+				EntityWrapper<UnionCard> wrapper = new EntityWrapper<UnionCard>();
+				wrapper.eq("fan_id", fan.getId())
+						.eq("del_status", CommonConstant.DEL_STATUS_NO)
+						.orderBy("type asc, create_time", false);
+				page = unionCardService.pageSupport(page, wrapper);
+				List<UnionCard> list = page.getRecords();
+				if(ListUtil.isNotEmpty(list)){
+					for(UnionCard card : list){
+						UnionMain union = unionMainService.getById(card.getUnionId());
+						if (unionMainService.isUnionValid(union)) {
+							MyUnionCardDetailVO detailVO = new MyUnionCardDetailVO();
+							detailVO.setCardType(card.getType());
+							detailVO.setUnionId(union.getId());
+							if(card.getType().equals(CardConstant.TYPE_DISCOUNT)){
+								//折扣卡
+								detailVO.setCardName(union.getName() + "折扣卡");
+							}else if(card.getType().equals(CardConstant.TYPE_ACTIVITY)){
+								//活动卡
+								int itemCount = 0;
+								UnionCardActivity activity = unionCardActivityService.getValidByIdAndUnionId(card.getActivityId(), union.getId());
+								detailVO.setCardName(activity.getName());
+								if(CommonUtil.isNotEmpty(activity.getColor())){
+									String[] c = activity.getColor().split(",");
+									detailVO.setColor1(c[0]);
+									detailVO.setColor2(c[1]);
+								}
+								detailVO.setActivityId(activity.getId());
+								detailVO.setValidityStr(DateTimeKit.format(card.getValidity(), DateTimeKit.DEFAULT_DATE_FORMAT));
+								detailVO.setIsOverdue(DateTimeKit.laterThanNow(card.getValidity()) ? 0 : 1);
+								//优惠项目
+								List<UnionCardProject> projectList = unionCardProjectService.listValidByUnionIdAndActivityIdAndStatus(union.getId(), activity.getId(), ProjectConstant.STATUS_ACCEPT);
+								if (ListUtil.isNotEmpty(projectList)) {
+									for (UnionCardProject project : projectList) {
+										List<UnionCardProjectItem> textItemList = unionCardProjectItemService.listValidByProjectId(project.getId());
+										if (ListUtil.isNotEmpty(textItemList)) {
+											itemCount += textItemList.size();
+										}
+									}
+								}
+								detailVO.setItemCount(itemCount);
+							}
+							detailVO.setCreatetime(card.getCreateTime());
+							cardList.add(detailVO);
+						}
+					}
+					page.setRecords(cardList);
+				}
+			}
+		}
+		return page;
 	}
 }

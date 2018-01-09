@@ -51,9 +51,6 @@ public class CardDetailVO {
 	@ApiModelProperty(value = "联盟id")
 	private Integer unionId;
 
-	@ApiModelProperty(value = "联盟卡详情页-列表信息")
-	private List<CardDetailListVO> cardDetailListVO;
-
 	public Integer getIsTransacted() {
 		return isTransacted;
 	}
@@ -158,11 +155,4 @@ public class CardDetailVO {
 		this.unionId = unionId;
 	}
 
-	public List<CardDetailListVO> getCardDetailListVO() {
-		return cardDetailListVO;
-	}
-
-	public void setCardDetailListVO(List<CardDetailListVO> cardDetailListVO) {
-		this.cardDetailListVO = cardDetailListVO;
-	}
 }
