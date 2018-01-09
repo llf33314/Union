@@ -239,6 +239,21 @@ public class UnionCardServiceImpl implements IUnionCardService {
         return unionCardDao.selectOne(entityWrapper);
     }
 
+    @Override
+    public List<UnionCard> listValidByUnionIdAndFanIdAndActivityId(Integer unionId, Integer fanId, Integer activityId) throws Exception {
+        if (unionId == null || fanId == null || activityId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionCard> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("union_id", unionId)
+                .eq("fan_id", fanId)
+                .eq("activity_id", activityId);
+
+        return unionCardDao.selectList(entityWrapper);
+    }
+
     //********************************************* Base On Business - list ********************************************
 
     @Override
