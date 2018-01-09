@@ -173,7 +173,7 @@ export default {
       this.currentPage = 1;
       this.unionId = '';
       this.toMemberId = '';
-      this.value = 'value';
+      this.value = 'clientName';
       this.input = '';
       this.getTableData();
     },
