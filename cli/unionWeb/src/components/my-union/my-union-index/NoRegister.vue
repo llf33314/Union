@@ -161,6 +161,7 @@ export default {
             });
             this.socket.on('chatevent', function(data) {
               let msg = eval('(' + data.message + ')');
+              console.log(msg, noRegister);
               // 避免 socket 重复调用
               if (!(_this.socketFlag.socketKey == msg.socketKey && _this.socketFlag.status == msg.status)) {
                 if (_this.socketKey == msg.socketKey) {

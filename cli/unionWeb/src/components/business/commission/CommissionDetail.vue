@@ -79,43 +79,31 @@ export default {
       detailMemberId: ''
     };
   },
-  computed: {
-    initUnionId() {
-      return this.$store.state.unionId;
-    }
-  },
-  watch: {
-    initUnionId: function() {
-      this.init();
-    }
-  },
   mounted: function() {
     this.init();
   },
   methods: {
     init() {
-      if (this.initUnionId) {
-        // 获取我参与过的联盟
-        $http
-          .get(`/unionMain/busUser`)
-          .then(res => {
-            if (res.data.data) {
-              this.options1 = res.data.data || [];
-              this.options1.forEach((v, i) => {
-                v.value = v.id;
-                v.label = v.name;
-              });
-            } else {
-              this.options1 = [];
-            }
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          });
-        this.currentPage = 1;
-        this.unionId = '';
-        this.getTableData();
-      }
+      // 获取我参与过的联盟
+      $http
+        .get(`/unionMain/busUser`)
+        .then(res => {
+          if (res.data.data) {
+            this.options1 = res.data.data || [];
+            this.options1.forEach((v, i) => {
+              v.value = v.id;
+              v.label = v.name;
+            });
+          } else {
+            this.options1 = [];
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
+      this.currentPage = 1;
+      this.unionId = '';
+      this.getTableData();
     },
     getTableData() {
       $http

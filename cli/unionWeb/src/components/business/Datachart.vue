@@ -56,42 +56,30 @@ export default {
       statisticData: {}
     };
   },
-  computed: {
-    initUnionId() {
-      return this.$store.state.unionId;
-    }
-  },
-  watch: {
-    initUnionId: function() {
-      this.init();
-    }
-  },
   mounted: function() {
     this.init();
   },
   methods: {
     init() {
-      if (this.initUnionId) {
-        // 获取我参与过的联盟
-        $http
-          .get(`/unionMain/busUser`)
-          .then(res => {
-            if (res.data.data) {
-              this.options = res.data.data || [];
-              this.options.forEach((v, i) => {
-                v.value = v.id;
-                v.label = v.name;
-              });
-              // 给unionId 赋初始值
-              this.unionId = this.options[0].value;
-            } else {
-              this.options = [];
-            }
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          });
-      }
+      // 获取我参与过的联盟
+      $http
+        .get(`/unionMain/busUser`)
+        .then(res => {
+          if (res.data.data) {
+            this.options = res.data.data || [];
+            this.options.forEach((v, i) => {
+              v.value = v.id;
+              v.label = v.name;
+            });
+            // 给unionId 赋初始值
+            this.unionId = this.options[0].value;
+          } else {
+            this.options = [];
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
     },
     search() {
       // 获取商机统计数据
