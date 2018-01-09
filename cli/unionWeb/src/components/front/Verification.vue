@@ -43,8 +43,9 @@
               </el-radio-group>
             </el-form-item>
           </div>
-          <el-form-item label="享受折扣:" v-if="form.currentMember.discount">
-            <span style="color: #f10b0b"> {{ form.currentMember.discount * 10 }} 折</span>
+          <el-form-item label="享受折扣:">
+            <span style="color: #f10b0b" v-if="!form.currentMember.discount || form.currentMember.discount === 1"> 无</span>
+            <span style="color: #f10b0b" v-if="form.currentMember.discount && form.currentMember.discount != 1"> {{ form.currentMember.discount * 10 }} 折</span>
           </el-form-item>
           <el-form-item label="消费金额:">
             <el-col style="width: 220px;">
