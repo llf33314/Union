@@ -493,6 +493,9 @@ hr {
   background-color: #20a0ff;
   border-color: #20a0ff;
 }
+.container_one {
+  min-height: 1000px;
+}
 .container_one .special .el-input__inner {
   width: 210px!important;
 }
