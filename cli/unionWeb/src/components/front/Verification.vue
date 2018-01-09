@@ -48,7 +48,7 @@
           </el-form-item>
           <el-form-item label="消费金额:">
             <el-col style="width: 220px;">
-              <el-input v-model="price" @keyup.native="check()">
+              <el-input v-model="price" @keyup.native="check()" @keyup.enter.native="confirm">
                 <template slot="prepend">￥</template>
               </el-input>
             </el-col>
@@ -100,7 +100,7 @@
     </div>
     <!-- 弹出框 核销 -->
     <div class="second_0">
-      <el-dialog title="消费核销" :visible.sync="visible3" size="tiny">
+      <el-dialog title="消费核销" :visible.sync="visible3" size="tiny" @close="this.price2=''">
         <hr>
         <div>
           <p>消费详情</p>
@@ -167,7 +167,7 @@
               <el-row v-if="payType == 1">
                 <el-col style="width:280px;">
                   <span>收取现金：</span>
-                  <el-input v-model="price2" style="width:200px;" @keyup.native="check2()">
+                  <el-input v-model="price2" style="width:200px;" @keyup.enter.native="submit" @keyup.native="check2()">
                     <template slot="prepend">￥</template>
                   </el-input>
                 </el-col>
@@ -239,7 +239,7 @@ export default {
       activitySelected: [],
       activityCardValidity: '',
       visible3: false,
-      payType: '',
+      payType: 1,
       price1: '',
       price2: '',
       visible4: false,
@@ -538,7 +538,7 @@ export default {
             });
             this.socket.on('chatevent', function(data) {
               let msg = eval('(' + data.message + ')');
-              console.log(msg, verification);
+              console.log(msg, 'verification');
               // 避免 socket 重复调用
               if (!(_this.socketFlag.socketKey == msg.socketKey && _this.socketFlag.status == msg.status)) {
                 if (_this.socketKey == msg.socketKey) {
