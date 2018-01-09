@@ -91,15 +91,9 @@ export default {
   computed: {
     unionId() {
       return this.ruleForm1.unionId;
-    },
-    initUnionId() {
-      return this.$store.state.unionId;
     }
   },
   watch: {
-    initUnionId: function() {
-      this.init();
-    },
     // 获取商家列表
     unionId: function() {
       this.ruleForm1.toMemberId = '';
@@ -129,25 +123,23 @@ export default {
   },
   methods: {
     init() {
-      if (this.initUnionId) {
-        // 获取我的当前有效的联盟
-        $http
-          .get(`/unionMain/busUser/valid`)
-          .then(res => {
-            if (res.data.data) {
-              this.options1 = res.data.data || [];
-              this.options1.forEach((v, i) => {
-                v.value = v.id;
-                v.label = v.name;
-              });
-            } else {
-              this.options1 = [];
-            }
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          });
-      }
+      // 获取我的当前有效的联盟
+      $http
+        .get(`/unionMain/busUser/valid`)
+        .then(res => {
+          if (res.data.data) {
+            this.options1 = res.data.data || [];
+            this.options1.forEach((v, i) => {
+              v.value = v.id;
+              v.label = v.name;
+            });
+          } else {
+            this.options1 = [];
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
     },
     show() {
       this.visible = !this.visible;

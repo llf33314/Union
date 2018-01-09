@@ -33,6 +33,7 @@ import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.*;
 import com.gt.union.h5.card.vo.MyCardConsumeVO;
+import com.gt.union.union.main.constant.UnionConstant;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.main.vo.UnionPayVO;
@@ -317,7 +318,8 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // 判断union有效性
-        if (!unionMainService.isUnionValid(unionId)) {
+        UnionMain union = unionMainService.getValidById(unionId);
+        if (!unionMainService.isUnionValid(union)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
         // 判断member读权限
@@ -385,16 +387,18 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             }
             saveConsume.setUseIntegral(BigDecimalUtil.toDouble(useIntegral));
             saveConsume.setIntegralMoney(BigDecimalUtil.toDouble(integralMoney));
-
-            Double giveIntegralPerMoney = dictService.getGiveIntegral();
-            BigDecimal giveIntegral = BigDecimalUtil.multiply(payMoney, giveIntegralPerMoney);
-            saveConsume.setGiveIntegral(BigDecimalUtil.toDouble(giveIntegral));
         }
         // 支持0.5元精度失算
         if (Math.abs(BigDecimalUtil.subtract(payMoney, voConsume.getPayMoney()).doubleValue()) > 0.5) {
             throw new BusinessException("实际支付金额错误，请刷新后重试");
         }
         saveConsume.setPayMoney(BigDecimalUtil.toDouble(payMoney));
+
+        if (UnionConstant.IS_INTEGRAL_YES == union.getIsIntegral()) {
+            Double giveIntegralPerMoney = dictService.getGiveIntegral();
+            BigDecimal giveIntegral = BigDecimalUtil.multiply(payMoney, giveIntegralPerMoney);
+            saveConsume.setGiveIntegral(BigDecimalUtil.toDouble(giveIntegral));
+        }
 
         Integer voActivityId = vo.getActivityId();
         List<UnionCardProjectItem> voItemList = vo.getTextList();
