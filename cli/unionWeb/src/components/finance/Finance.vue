@@ -3,7 +3,7 @@
     <div v-loading.fullscreen.lock="fullscreenLoading" element-loading-text="拼命加载中">
       <!--显示整页加载，1秒后消失-->
     </div>
-    <div id="container_finance" style="display: none;">
+    <div id="container_finance" v-show="loadingVisible">
       <div id="union_people">
         <ul class="clearfix">
           <li>
@@ -140,7 +140,8 @@ export default {
       employeeName: '',
       id: '',
       timeOut: '',
-      fullscreenLoading: true
+      fullscreenLoading: true,
+      loadingVisible: false
     };
   },
   mounted: function() {
@@ -149,17 +150,13 @@ export default {
       .get(`/unionIndex`)
       .then(res => {
         if (res.data.data) {
-          setTimeout(() => {
-            this.fullscreenLoading = false;
-            // 判断是否创建或加入联盟
-            if (!res.data.data.currentUnion) {
-              this.$router.push({ path: '/no-union' });
-            } else {
-              this.init1();
-              this.init2();
-              container_finance.style.display = 'block';
-            }
-          }, 300);
+          // 判断是否创建或加入联盟
+          if (!res.data.data.currentUnion) {
+            this.$router.push({ path: '/no-union' });
+          } else {
+            this.init1();
+            this.init2();
+          }
         }
       })
       .catch(err => {
@@ -194,6 +191,8 @@ export default {
             this.tableData = [];
             this.totalAll = 0;
           }
+          this.fullscreenLoading = false;
+          this.loadingVisible = true;
         })
         .catch(err => {
           this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });

@@ -53,8 +53,24 @@
       <!-- 记录表格 -->
       <el-table :data="tableData" style="width: 100%;">
         <el-table-column prop="union.name" label="所属联盟">
+          <template slot-scope="scope">
+            <el-popover trigger="hover" placement="top">
+              <p>所属联盟: {{ scope.row.union.name }}</p>
+              <div slot="reference" class="name-wrapper">
+                {{ scope.row.union.name }}
+              </div>
+            </el-popover>
+          </template>
         </el-table-column>
         <el-table-column prop="consume.shopName" label="消费门店">
+          <template slot-scope="scope">
+            <el-popover trigger="hover" placement="top">
+              <p>消费门店: {{ scope.row.consume.shopName }}</p>
+              <div slot="reference" class="name-wrapper">
+                {{ scope.row.consume.shopName }}
+              </div>
+            </el-popover>
+          </template>
         </el-table-column>
         <el-table-column prop="fan.number" label="联盟卡号">
         </el-table-column>

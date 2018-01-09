@@ -100,7 +100,7 @@
     </div>
     <!-- 弹出框 核销 -->
     <div class="second_0">
-      <el-dialog title="消费核销" :visible.sync="visible3" size="tiny" @close="this.price2=''">
+      <el-dialog title="消费核销" :visible.sync="visible3" size="tiny" @close="resetData1">
         <hr>
         <div>
           <p>消费详情</p>
@@ -475,9 +475,9 @@ export default {
         .then(res => {
           if (res.data.success) {
             this.$message({ showClose: true, message: '核销成功', type: 'success', duration: 5000 });
+            this.init();
             eventBus.$emit('newTransaction');
             eventBus.$emit('unionUpdata');
-            this.init();
           }
         })
         .catch(err => {
@@ -551,7 +551,7 @@ export default {
                     _this.init();
                     setTimeout(() => {
                       setTimeout(() => {
-                        parent.window.postMessage('closeMash()', '*');
+                        parent.window.postMessage('closeMask()', '*');
                       }, 0);
                     }, 0);
                   } else if (msg.status == '0') {
@@ -572,6 +572,9 @@ export default {
       setTimeout(() => {
         parent.window.postMessage('openMask()', '*');
       }, 0);
+    },
+    resetData1() {
+      this.price2 = '';
     },
     // 返回
     back() {
