@@ -341,6 +341,11 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
                 }
                 saveBatch(saveItemList);
             }
+
+            if (saveFlow != null) {
+                saveFlow.setProjectId(saveProject.getId());
+                unionCardProjectFlowService.save(saveFlow);
+            }
         }
     }
 
