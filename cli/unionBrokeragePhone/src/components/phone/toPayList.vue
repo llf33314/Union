@@ -200,7 +200,9 @@
           .then(res => {
             if(res.data.success) {
               //跳转到微信支付的页面
-              location.href = "/#/toPayList";
+              if(res.data.payUrl){
+                location.href = res.data.payUrl;
+              }
             }
           })
           .catch(err => {
@@ -226,7 +228,9 @@
         $http.put(`/h5Brokerage/pay/unpaid/batchPay?unionId=${uid}`)
           .then(res => {
             if(res.data.success) {
-              location.href = "/#/toPayList";
+              if(res.data.payUrl){
+                location.href = res.data.payUrl;
+              }
             }
           })
           .catch(err => {

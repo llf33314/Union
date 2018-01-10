@@ -367,6 +367,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
 
             return payResult;
         }catch (Exception e){
+            e.printStackTrace();
             throw new Exception(e.getMessage());
         }finally {
             //释放锁
