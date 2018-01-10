@@ -76,6 +76,11 @@ public class PayParam {
     private Boolean payDuoFen;
 
     /**
+     * 粉丝id
+     */
+    private Integer memberId;
+
+    /**
      * 扩展属性
      */
     private Map extend;
@@ -195,6 +200,15 @@ public class PayParam {
 
     public PayParam setPayDuoFen(Boolean payDuoFen) {
         this.payDuoFen = payDuoFen;
+        return this;
+    }
+
+    public Integer getMemberId() {
+        return memberId;
+    }
+
+    public PayParam setMemberId(Integer memberId) {
+        this.memberId = memberId;
         return this;
     }
 

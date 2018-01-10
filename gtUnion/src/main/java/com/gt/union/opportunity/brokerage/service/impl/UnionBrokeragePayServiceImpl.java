@@ -300,7 +300,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
     //********************************************* Base On Business - update ******************************************
 
     @Override
-    public UnionPayVO batchPayByBusId(Integer busId, List<Integer> opportunityIdList, Integer verifierId, IUnionBrokeragePayStrategyService unionBrokeragePayStrategyService) throws Exception {
+    public UnionPayVO batchPayByBusId(Integer busId, List<Integer> opportunityIdList, Integer verifierId, IUnionBrokeragePayStrategyService unionBrokeragePayStrategyService, Integer memberId) throws Exception {
         if (busId == null || opportunityIdList == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -352,7 +352,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
         }
 
         // 调用接口，返回支付链接
-        UnionPayVO result = unionBrokeragePayStrategyService.unionBrokerageApply(orderNo, BigDecimalUtil.toDouble(brokerageSum));
+        UnionPayVO result = unionBrokeragePayStrategyService.unionBrokerageApply(orderNo, BigDecimalUtil.toDouble(brokerageSum), memberId);
 
         saveBatch(savePayList);
         return result;

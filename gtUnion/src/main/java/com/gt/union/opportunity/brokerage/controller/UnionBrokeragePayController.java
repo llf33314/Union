@@ -251,7 +251,7 @@ public class UnionBrokeragePayController {
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             result = MockUtil.get(UnionPayVO.class);
         } else {
-            result = unionBrokeragePayService.batchPayByBusId(busId, opportunityIdList, null, unionBrokeragePayStrategyService);
+            result = unionBrokeragePayService.batchPayByBusId(busId, opportunityIdList, null, unionBrokeragePayStrategyService, null);
         }
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
