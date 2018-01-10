@@ -74,7 +74,8 @@
           <!--联盟卡折扣-->
           <div class="UnionDiscountCard" v-if="isDiscountCard">
             <p>联盟折扣卡</p>
-            <div>享受折扣： {{ discount * 10 }}折 </div>
+            <div v-if="discount != 1">享受折扣： {{ discount * 10 }}折 </div>
+            <div v-if="discount == 1">享受折扣： 无 </div>
           </div>
           <!--活动卡服务-->
           <div class="cardService" v-for="item in form2.activityList" :key="item.activity.id" v-show="activityCheckList.indexOf(item.activity.id)> -1">

@@ -43,8 +43,9 @@
               </el-radio-group>
             </el-form-item>
           </div>
-          <el-form-item label="享受折扣:" v-if="form.currentMember.discount">
-            <span style="color: #f10b0b"> {{ form.currentMember.discount * 10 }} 折</span>
+          <el-form-item label="享受折扣:">
+            <span style="color: #f10b0b" v-if="form.currentMember.discount == 1"> 无</span>
+            <span style="color: #f10b0b" v-if="form.currentMember.discount != 1"> {{ form.currentMember.discount * 10 }} 折</span>
           </el-form-item>
           <el-form-item label="消费金额:">
             <el-col style="width: 220px;">
@@ -147,7 +148,7 @@
               </el-form-item>
             </div>
           </el-form>
-          <div class="payWay">
+          <div class="payWay" v-show="price">
             <p>请选择支付方式：</p>
             <div>
               <el-radio-group v-model="payType" @change="payTypeChange">
@@ -466,6 +467,7 @@ export default {
       data.consume.consumeMoney = this.price - 0;
       data.consume.payMoney = this.price1 - 0;
       data.consume.payType = this.payType - 0;
+      data.activityId = this.activityCardId - 0;
       data.textList = [];
       this.activitySelected.forEach(v => {
         data.textList.push({ id: v.item.id });
@@ -501,6 +503,7 @@ export default {
         data.consume.consumeMoney = this.price - 0;
         data.consume.payMoney = this.price1 - 0;
         data.consume.payType = this.payType - 0;
+        data.activityId = this.activityCardId - 0;
         data.textList = [];
         this.activitySelected.forEach(v => {
           data.textList.push({ id: v.item.id });

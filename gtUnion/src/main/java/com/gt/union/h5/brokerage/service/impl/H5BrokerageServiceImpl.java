@@ -339,14 +339,15 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         try{
             //加锁
             RedissonLockUtil.lock(key, 10);
-            //总是收入
+            //总收入
             Double incomeSum = unionBrokerageIncomeService.sumMoneyByBusId(busId);
+
             //总提现
             Double withdrawalSum = unionBrokerageWithdrawalService.sumValidMoneyByBusId(busId);
             //可提现金额
             BigDecimal availableSum = BigDecimalUtil.subtract(incomeSum, withdrawalSum);
             if (BigDecimalUtil.subtract(availableSum, money).doubleValue() < 0) {
-                throw new BusinessException("超过可提现金额");
+                throw new BusinessException("提现金额有误");
             }
 
             // （2）	调用提现接口，如果成功，则保存记录并返回；否则，直接返回错误提示
@@ -366,7 +367,12 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
 
             return payResult;
         }catch (Exception e){
-            throw new Exception(e.getMessage());
+            e.printStackTrace();
+            if(e instanceof BaseException){
+                throw new BaseException(e.getMessage());
+            }else {
+                throw new Exception(e.getMessage());
+            }
         }finally {
             //释放锁
             RedissonLockUtil.unlock(key);

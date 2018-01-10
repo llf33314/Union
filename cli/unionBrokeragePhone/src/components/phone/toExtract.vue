@@ -131,7 +131,7 @@
       // 我要提现
       send1_(){
         let data=this.inputNumber;
-        if(parseInt(data)<parseInt(this.moneyList.availableBrokerage)){
+        if(parseFloat(data).toFixed(2) > parseFloat(this.moneyList.availableBrokerage).toFixed(2)){
           Message({
             showClose: true,
             message: '提现的金额不能大于可提佣金',
@@ -149,7 +149,7 @@
                   duration: 3000
                 });
 //                刷新当前页面
-                let hre_url = window.location.href;
+                this.init();
               }
             })
             .catch(err => {
@@ -177,6 +177,46 @@
                 $('.hasPayLoadMore').show();
               }
               this.withdrawRecord = this.withdrawRecord.concat(list);
+              this.withdrawRecord.forEach((v, i) => {
+                v.createTime = $todate.todate(new Date(v.createTime));
+              })
+            }
+          })
+          .catch(err => {
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+          });
+      },
+      init(){
+          //初始化方法
+        $http.get(`/h5Brokerage/withdrawal`)
+          .then(res => {
+            if(res.data.data) {
+              this.moneyList = res.data.data;
+            }
+          })
+          .catch(err => {
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+          });
+        //获取提现记录表的数据
+        let data1={
+          size:this.size,
+          current:1
+        };
+        $http.get(`/h5Brokerage/withdrawal/history/page`,data1)
+          .then(res => {
+            if(res.data.data) {
+              if (res.data.data.records.length === 0) {
+                $('.hasPayNothing').show();
+                $('.hasPayLoadMore').hide();
+              } else if (res.data.data.records.length < 4) {
+                $('.hasPayNothing').hide();
+                $('.hasPayLoadMore').hide();
+              }
+              else {
+                $('.hasPayNothing').hide();
+                $('.hasPayLoadMore').show();
+              }
+              this.withdrawRecord = res.data.data.records;
               this.withdrawRecord.forEach((v, i) => {
                 v.createTime = $todate.todate(new Date(v.createTime));
               })
