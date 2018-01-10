@@ -356,8 +356,8 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             throw new BusinessException("支付信息不能为空");
         }
         Double consumeMoney = voConsume.getConsumeMoney();
-        if (consumeMoney == null || consumeMoney <= 0) {
-            throw new BusinessException("消费金额不能为空，且必须大于0");
+        if (consumeMoney == null || consumeMoney < 0) {
+            throw new BusinessException("消费金额不能为空，且不能小于0");
         }
 
         Double discount = member.getDiscount() != null ? member.getDiscount() : 1.0;
