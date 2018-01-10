@@ -122,20 +122,20 @@
                 <span class="color_">{{ price * (form.currentMember.discount || 1) | formatPrice }}</span>
               </span>
             </el-form-item>
-            <el-form-item label="联盟积分折扣：" v-if="isIntegral && form.integral > 0">
+            <el-form-item label="联盟积分折扣：" v-if="isIntegral && form.currentMember.integralExchangeRatio && form.integral > 0">
               <el-switch v-model="isIntegral_" on-text="" off-text="">
               </el-switch>
-              <span>积分抵扣率：{{ form.currentMember.integralExchangeRatio }}%</span>
+              <span>积分抵扣率：{{ form.currentMember.integralExchangeRatio * 100 }}%</span>
             </el-form-item>
-            <el-form-item label="消耗联盟积分：" v-if="isIntegral_ && form.integral > 0">
+            <el-form-item label="消耗联盟积分：" v-if="isIntegral_ && form.currentMember.integralExchangeRatio && form.integral > 0">
               <span> {{ deductionIntegral | formatPrice }} </span>
             </el-form-item>
-            <el-form-item label="抵扣金额：" v-if="isIntegral_ && form.integral > 0">
+            <el-form-item label="抵扣金额：" v-if="isIntegral_ && form.currentMember.integralExchangeRatio && form.integral > 0">
               <span> ￥
                 <span class="color_">{{ deductionPrice | formatPrice }} </span>
               </span>
             </el-form-item>
-            <el-form-item label="实收金额：" v-if="isIntegral_ && form.integral > 0">
+            <el-form-item label="实收金额：" v-if="isIntegral_ && form.currentMember.integralExchangeRatio && form.integral > 0">
               <span> ￥
                 <span class="color_">{{ price1 | formatPrice }} </span>
               </span>
@@ -283,6 +283,10 @@ export default {
         this.deductionIntegral = this.form.integral;
         this.deductionPrice = this.deductionIntegral * this.form.exchangeIntegral;
       }
+      if (this.deductionPrice > this.price * this.form.currentMember.discount) {
+        this.deductionPrice = this.price * this.form.currentMember.discount;
+        this.deductionIntegral = this.deductionPrice / this.form.exchangeIntegral;
+      }
       this.price1 = this.price * this.form.currentMember.discount - this.deductionPrice;
     },
     // 是否开启优惠项目
@@ -357,7 +361,7 @@ export default {
             if (res.data.data) {
               this.form.currentMember.enterpriseName = res.data.data.currentMember.enterpriseName;
               this.form.currentMember.discount = res.data.data.currentMember.discount || 1;
-              this.form.currentMember.integralExchangeRatio = res.data.data.currentMember.integralExchangeRatio;
+              this.form.currentMember.integralExchangeRatio = res.data.data.currentMember.integralExchangeRatio || 0;
               this.form.fan.number = res.data.data.fan.number;
               this.form.currentUnion.isIntegral = res.data.data.currentUnion.isIntegral;
               this.form.integral = res.data.data.integral;
@@ -449,6 +453,10 @@ export default {
         if (this.deductionIntegral > this.form.integral) {
           this.deductionIntegral = this.form.integral;
           this.deductionPrice = this.deductionIntegral * this.form.exchangeIntegral;
+        }
+        if (this.deductionPrice > this.price * this.form.currentMember.discount) {
+          this.deductionPrice = this.price * this.form.currentMember.discount;
+          this.deductionIntegral = this.deductionPrice / this.form.exchangeIntegral;
         }
         this.price1 = this.price * this.form.currentMember.discount - this.deductionPrice;
       }

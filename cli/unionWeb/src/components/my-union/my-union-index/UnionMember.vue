@@ -68,7 +68,7 @@
     <!-- 弹出框 确认移出 -->
     <div class="model_13">
       <el-dialog title="" :visible.sync="visible1" size="tiny">
-          <p>是否确认移出“ {{ enterpriseName }} ”</p>
+        <p>是否确认移出“ {{ enterpriseName }} ”</p>
         <span slot="footer" class="dialog-footer">
           <el-button type="primary" @click="confirm1">确定</el-button>
           <el-button @click="visible1=false">取消</el-button>
