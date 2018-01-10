@@ -232,26 +232,38 @@ public class WxAppCardServiceImpl implements IWxAppCardService{
 			if(CommonUtil.isEmpty(activity)){
 				throw new BusinessException("找不到该卡信息");
 			}
-			if(DateTimeKit.isBetween(activity.getSellBeginTime(),activity.getSellEndTime())){
-				//有效期 可以卖
-				result.setValidityDay(activity.getValidityDay());
-				if(CommonUtil.isNotEmpty(phone)){
-					UnionCardFan fan = unionCardFanService.getValidByPhone(phone);
-					if(fan != null){
+			if(CommonUtil.isNotEmpty(phone)){
+				UnionCardFan fan = unionCardFanService.getValidByPhone(phone);
+				if(fan != null){
+					List<UnionCard> cards = unionCardService.listValidByUnionIdAndFanIdAndActivityId(unionId, fan.getId(), activityId);
+					if(ListUtil.isNotEmpty(cards)){
+						//办理过该活动卡
 						UnionCard card = unionCardService.getValidUnexpiredByUnionIdAndFanIdAndActivityId(unionId, fan.getId(), activityId);
 						if(card != null){
-							//存在且没过期
+							//有有效的活动卡
 							result.setIsTransacted(CommonConstant.COMMON_NO);
-							result.setValidityStr(DateTimeKit.format(card.getValidity(), DateTimeKit.DEFAULT_DATE_FORMAT));
 							result.setIsOverdue(CommonConstant.COMMON_NO);
-						}else{
-							//不存在或已过期
-							result.setIsOverdue(CommonConstant.COMMON_YES);
+							result.setValidityStr(DateTimeKit.format(card.getValidity(), DateTimeKit.DEFAULT_DATE_FORMAT));
+						}else {
+							//没有有效的活动卡
+							if(DateTimeKit.isBetween(activity.getSellBeginTime(),activity.getSellEndTime())){
+								//有效期 可以卖
+								result.setValidityDay(activity.getValidityDay());
+							}else {
+								result.setIsTransacted(CommonConstant.COMMON_NO);
+								//已过期
+								result.setIsOverdue(CommonConstant.COMMON_YES);
+							}
 						}
+					}else{
+						//没办理过该活动卡
+						result = checkActivity(activity, result);
 					}
+				}else {
+					result = checkActivity(activity, result);
 				}
 			}else {
-				throw new BusinessException("该联盟卡不可购买");
+				result = checkActivity(activity, result);
 			}
 			result.setActivityIllustration(activity.getIllustration());
 			result.setCardName(activity.getName());
@@ -263,6 +275,16 @@ public class WxAppCardServiceImpl implements IWxAppCardService{
 				result.setColor2(c[1]);
 			}
 			result.setItemCount(unionCardProjectItemService.countValidCommittedByUnionIdAndActivityId(unionId, activity.getId()));
+		}
+		return result;
+	}
+
+	CardDetailVO checkActivity(UnionCardActivity activity, CardDetailVO result){
+		if(DateTimeKit.isBetween(activity.getSellBeginTime(),activity.getSellEndTime())){
+			//有效期 可以卖
+			result.setValidityDay(activity.getValidityDay());
+		}else {
+			result.setIsTransacted(CommonConstant.COMMON_NO);
 		}
 		return result;
 	}
@@ -316,7 +338,7 @@ public class WxAppCardServiceImpl implements IWxAppCardService{
 		UnionCardFan fan = unionCardFanService.getOrSaveByPhone(phone);
 		UnionPayVO result = unionCardService.saveApplyByBusIdAndUnionIdAndFanId(busId, unionId, fan.getId(), list, unionCardApplyService);
 		if(result != null){
-			data.put("payUrl", result.getPayUrl());
+			data.put("pay", true);
 		}
 		return GtJsonResult.instanceSuccessMsg(data).toString();
 	}

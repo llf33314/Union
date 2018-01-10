@@ -148,7 +148,7 @@
               </el-form-item>
             </div>
           </el-form>
-          <div class="payWay">
+          <div class="payWay" v-if="this.price">
             <p>请选择支付方式：</p>
             <div>
               <el-radio-group v-model="payType" @change="payTypeChange">

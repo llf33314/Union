@@ -52,6 +52,16 @@ public interface IUnionCardService {
      */
     UnionCard getValidUnexpiredByUnionIdAndFanIdAndActivityId(Integer unionId, Integer fanId, Integer activityId) throws Exception;
 
+    /**
+     * 获取活动卡信息
+     * @param unionId      联盟id
+     * @param fanId        粉丝id
+     * @param activityId    活动id
+     * @return UnionCard
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCard> listValidByUnionIdAndFanIdAndActivityId(Integer unionId, Integer fanId, Integer activityId)  throws Exception;
+
     //********************************************* Base On Business - list ********************************************
 
     /**

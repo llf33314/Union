@@ -60,6 +60,9 @@ export default {
   },
   mounted: function() {
     this.init();
+    eventBus.$on('newActivityProject', () => {
+      this.init();
+    });
     eventBus.$on('newActivityCheck', () => {
       this.init();
     });
