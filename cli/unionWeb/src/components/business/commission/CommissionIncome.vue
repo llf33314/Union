@@ -43,7 +43,7 @@
       </el-table-column>
       <el-table-column prop="opportunity.clientPhone" label="电话" min-width="100px">
         <template slot-scope="scope">
-          <el-popover trigger="hover" placement="top">
+          <el-popover trigger="hover" placement="bottom">
             <p>电话: {{ scope.row.opportunity.clientPhone }}</p>
             <div slot="reference" class="name-wrapper">
               {{ scope.row.opportunity.clientPhone }}
