@@ -187,7 +187,7 @@ public class H5BrokerageController {
     //-------------------------------------------------- put ----------------------------------------------------------
 
     @ApiOperation(value = "佣金平台-首页-我需支付-未支付-去支付", produces = "application/json;charset=UTF-8")
-    @RequestMapping(value = "/pay/unpaid/toPay", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/pay/unpaid/toPay", method = RequestMethod.PUT, produces = "application/json;charset=UTF-8")
     public String toPay(HttpServletRequest request,
                         @ApiParam(value = "联盟id", name = "unionId", required = true)
                         @RequestParam(value = "unionId") Integer unionId,
@@ -196,9 +196,9 @@ public class H5BrokerageController {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
         Member member = SessionUtils.getLoginMember(request, PropertiesUtil.getDuofenBusId());
         if (member == null) {
-            return memberService.authorizeMemberWx(request, PropertiesUtil.getUnionUrl() + "/h5Brokerage/pay/unpaid/toPay?unionId=" + unionId + "&opportunityId=" + opportunityId).toString();
+            return memberService.authorizeMemberWx(request, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toPayList").toString();
         }
-        UnionPayVO result = h5BrokerageService.toPayByUnionIdAndOpportunityId(h5BrokerageUser, unionId, opportunityId);
+        UnionPayVO result = h5BrokerageService.toPayByUnionIdAndOpportunityId(h5BrokerageUser, unionId, opportunityId, member.getId());
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -210,9 +210,9 @@ public class H5BrokerageController {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
         Member member = SessionUtils.getLoginMember(request, PropertiesUtil.getDuofenBusId());
         if (member == null) {
-            return memberService.authorizeMemberWx(request, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toExtract").toString();
+            return memberService.authorizeMemberWx(request, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toPayList").toString();
         }
-        UnionPayVO result = h5BrokerageService.batchPayByUnionId(h5BrokerageUser, unionId, unionBrokeragePayStrategyService);
+        UnionPayVO result = h5BrokerageService.batchPayByUnionId(h5BrokerageUser, unionId, unionBrokeragePayStrategyService, member.getId());
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 

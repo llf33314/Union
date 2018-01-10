@@ -72,6 +72,7 @@ public class WxPayServiceImpl implements WxPayService {
         subQrPayParams.setPayWay(payParam.getPayWay());
         subQrPayParams.setNotifyUrl(CommonUtil.isEmpty(payParam.getNotifyUrl()) ? "" : payParam.getNotifyUrl());
         subQrPayParams.setExtend(payParam.getExtend());
+        subQrPayParams.setMemberId(payParam.getMemberId());
         logger.info("手机端支付请求参数：{}", JSON.toJSONString(subQrPayParams));
         String obj = "";
         try {
