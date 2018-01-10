@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -111,20 +112,20 @@ public class WxPayServiceImpl implements WxPayService {
 
 	@Override
     public GtJsonResult enterprisePayment(String partnerTradeNo, String openid, String desc, Double amount, Integer paySource){
-        ApiEnterprisePayment payment = new ApiEnterprisePayment();
-        payment.setAmount(amount);
-        payment.setDesc(desc);
-        payment.setBusId(PropertiesUtil.getDuofenBusId());
-        payment.setAppid(PropertiesUtil.getDuofenAppid());
-        payment.setModel(ConfigConstant.ENTERPRISE_PAY_MODEL);
-        payment.setPartner_trade_no(partnerTradeNo);
-        payment.setOpenid(openid);
-        payment.setPaySource(paySource);
-        RequestUtils requestUtils = new RequestUtils();
-        requestUtils.setReqdata(payment);
-        logger.info("商家提现请求参数：{}",JSONObject.toJSONString(requestUtils));
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("amount", amount);
+        data.put("desc", desc);
+        data.put("busId", PropertiesUtil.getDuofenBusId());
+        data.put("appid", PropertiesUtil.getDuofenAppid());
+        data.put("model", ConfigConstant.ENTERPRISE_PAY_MODEL);
+        data.put("partner_trade_no", partnerTradeNo);
+        data.put("openid", partnerTradeNo);
+        data.put("paySource", paySource);
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("reqdata", data);
+        logger.info("商家提现请求参数：{}",JSONObject.toJSONString(param));
         String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/payApi/6F6D9AD2/79B4DE7C/enterprisePayment.do";
-        Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(requestUtils),url, Map.class, PropertiesUtil.getWxmpSignKey());
+        Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param),url, Map.class, PropertiesUtil.getWxmpSignKey());
         logger.info("商家提现，结果：{}", result.toString());
         if(CommonUtil.isEmpty(result)){
             return GtJsonResult.instanceErrorMsg("提现失败");
