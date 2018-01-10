@@ -97,10 +97,10 @@ export default {
 </script>
 
 <style scoped lang='less' rel="stylesheet/less">
-.grid-content {
-  font-family: 'Microsoft YaHei';
-  font-size: 16px;
-  font-weight: bold;
-  margin-bottom: 13px;
-}
+  .grid-content {
+    font-family: 'Microsoft YaHei';
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 13px;
+  }
 </style>

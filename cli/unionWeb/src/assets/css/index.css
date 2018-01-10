@@ -100,9 +100,10 @@ hr {
 #gt_lm > ul {
   position: relative;
   top: -9px;
+  left: 10px;
 }
 #gt_lm img {
-  margin-right: 20px;
+  margin-right: 10px;
 }
 #gt_lm li {
   margin-bottom: 8px;

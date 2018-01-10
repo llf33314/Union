@@ -120,7 +120,7 @@ public class WxPayServiceImpl implements WxPayService {
         data.put("appid", PropertiesUtil.getDuofenAppid());
         data.put("model", ConfigConstant.ENTERPRISE_PAY_MODEL);
         data.put("partner_trade_no", partnerTradeNo);
-        data.put("openid", partnerTradeNo);
+        data.put("openid", openid);
         data.put("paySource", paySource);
         Map<String, Object> param = new HashMap<String, Object>();
         param.put("reqdata", data);
