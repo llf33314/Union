@@ -88,6 +88,7 @@ public class UnionMainServiceImpl implements IUnionMainService {
         EntityWrapper<UnionMain> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
                 .gt("validity", DateUtil.getCurrentDate())
+                .eq("join_type", UnionConstant.JOIN_TYPE_APPLY_RECOMMEND)
                 .notIn("id", unionIdList)
                 .orderBy("create_time", true);
 
