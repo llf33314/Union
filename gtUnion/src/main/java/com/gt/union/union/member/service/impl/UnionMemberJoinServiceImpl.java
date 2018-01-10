@@ -14,6 +14,7 @@ import com.gt.union.common.util.ListUtil;
 import com.gt.union.common.util.RedisCacheUtil;
 import com.gt.union.common.util.StringUtil;
 import com.gt.union.union.main.constant.UnionConstant;
+import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.service.IUnionMainDictService;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.member.constant.MemberConstant;
@@ -151,7 +152,8 @@ public class UnionMemberJoinServiceImpl implements IUnionMemberJoinService {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         // 判断union有效性
-        if (!unionMainService.isUnionValid(unionId)) {
+        UnionMain union = unionMainService.getValidById(unionId);
+        if (!unionMainService.isUnionValid(union)) {
             throw new BusinessException(CommonConstant.UNION_INVALID);
         }
         UnionMember member = null;
@@ -170,6 +172,10 @@ public class UnionMemberJoinServiceImpl implements IUnionMemberJoinService {
             busUser = busUserService.getBusUserByName(busUserName);
             if (busUser == null) {
                 throw new BusinessException("找不到被推荐的商家信息(盟员账号)");
+            }
+        } else {
+            if (UnionConstant.JOIN_TYPE_APPLY_RECOMMEND != union.getJoinType()) {
+                throw new BusinessException("联盟只允许推荐入盟");
             }
         }
         // 判断是否重复加入
