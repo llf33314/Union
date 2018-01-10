@@ -237,6 +237,7 @@ export default {
       tableData: [],
       activityCards: [],
       activityCardId: '',
+      activityId: '',
       activitySelected: [],
       activityCardValidity: '',
       visible3: false,
@@ -408,10 +409,11 @@ export default {
         let item = this.activityCards.find(item => {
           return item.activityCard.id === this.activityCardId;
         });
+        this.activityId = item.activity.id;
         this.activityCardValidity = timeFilter(item.activityCard.validity);
         // 获取活动卡优惠项目
         $http
-          .get(`/unionCardProjectItem/activityId/${item.activity.id}/unionId/${this.unionId}/consume`)
+          .get(`/unionCardProjectItem/activityId/${this.activityId}/unionId/${this.unionId}/consume`)
           .then(res => {
             if (res.data.data) {
               this.tableData = res.data.data || [];
@@ -467,7 +469,7 @@ export default {
       data.consume.consumeMoney = this.price - 0;
       data.consume.payMoney = this.price1 - 0;
       data.consume.payType = this.payType - 0;
-      data.activityId = this.activityCardId - 0;
+      data.activityId = this.activityId - 0;
       data.textList = [];
       this.activitySelected.forEach(v => {
         data.textList.push({ id: v.item.id });
@@ -503,7 +505,7 @@ export default {
         data.consume.consumeMoney = this.price - 0;
         data.consume.payMoney = this.price1 - 0;
         data.consume.payType = this.payType - 0;
-        data.activityId = this.activityCardId - 0;
+        data.activityId = this.activityId - 0;
         data.textList = [];
         this.activitySelected.forEach(v => {
           data.textList.push({ id: v.item.id });
