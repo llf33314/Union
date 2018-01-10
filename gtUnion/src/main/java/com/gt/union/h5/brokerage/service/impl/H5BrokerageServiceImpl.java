@@ -367,7 +367,12 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
 
             return payResult;
         }catch (Exception e){
-            throw new Exception(e.getMessage());
+            e.printStackTrace();
+            if(e instanceof BaseException){
+                throw new BaseException(e.getMessage());
+            }else {
+                throw new Exception(e.getMessage());
+            }
         }finally {
             //释放锁
             RedissonLockUtil.unlock(key);

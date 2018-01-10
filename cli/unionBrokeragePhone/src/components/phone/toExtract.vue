@@ -131,7 +131,7 @@
       // 我要提现
       send1_(){
         let data=this.inputNumber;
-        if(parseFloat(data).toFixed(2) < parseFloat(this.moneyList.availableBrokerage).toFixed(2)){
+        if(parseFloat(data).toFixed(2) > parseFloat(this.moneyList.availableBrokerage).toFixed(2)){
           Message({
             showClose: true,
             message: '提现的金额不能大于可提佣金',
