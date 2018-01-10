@@ -338,7 +338,7 @@ public class WxAppCardServiceImpl implements IWxAppCardService{
 		UnionCardFan fan = unionCardFanService.getOrSaveByPhone(phone);
 		UnionPayVO result = unionCardService.saveApplyByBusIdAndUnionIdAndFanId(busId, unionId, fan.getId(), list, unionCardApplyService);
 		if(result != null){
-			data.put("payUrl", result.getPayUrl());
+			data.put("pay", true);
 		}
 		return GtJsonResult.instanceSuccessMsg(data).toString();
 	}
