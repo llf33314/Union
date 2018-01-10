@@ -66,7 +66,7 @@ export default {
       },
       rules: {
         enterpriseName: [{ validator: enterpriseNamePass, trigger: 'blur' }],
-        directorName: [{ alidator: directorNamePass, trigger: 'blur' }],
+        directorName: [{ validator: directorNamePass, trigger: 'blur' }],
         directorPhone: [{ validator: cellPhonePass, trigger: 'blur' }],
         directorEmail: [{ validator: emailPass, trigger: 'blur' }],
         notifyPhone: [{ validator: cellPhonePass, trigger: 'blur' }],

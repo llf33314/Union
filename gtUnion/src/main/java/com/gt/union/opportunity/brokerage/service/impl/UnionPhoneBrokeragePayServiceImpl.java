@@ -20,7 +20,7 @@ public class UnionPhoneBrokeragePayServiceImpl implements IUnionBrokeragePayStra
 	private WxPayService wxPayService;
 
 	@Override
-	public UnionPayVO unionBrokerageApply(String orderNo, Double payMoneySum) {
+	public UnionPayVO unionBrokerageApply(String orderNo, Double payMoneySum, Integer memberId) {
 		UnionPayVO result = new UnionPayVO();
 		String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/opportunity?socketKey=";
 
@@ -34,6 +34,7 @@ public class UnionPhoneBrokeragePayServiceImpl implements IUnionBrokeragePayStra
 		payParam.setPayWay(1);
 		payParam.setDesc("商机佣金");
 		payParam.setPayDuoFen(true);
+		payParam.setMemberId(memberId);
 		String payUrl = wxPayService.pay(payParam);
 
 		result.setPayUrl(payUrl);

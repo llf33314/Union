@@ -382,7 +382,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
     //***************************************** Domain Driven Design - save ********************************************
 
     @Override
-    public UnionPayVO toPayByUnionIdAndOpportunityId(H5BrokerageUser h5BrokerageUser, Integer unionId, Integer opportunityId) throws Exception {
+    public UnionPayVO toPayByUnionIdAndOpportunityId(H5BrokerageUser h5BrokerageUser, Integer unionId, Integer opportunityId, Integer memberId) throws Exception {
         if (h5BrokerageUser == null || unionId == null || opportunityId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -421,14 +421,14 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
 
 
         // （4）调用支付接口
-        UnionPayVO result = unionBrokeragePayStrategyService.unionBrokerageApply(orderNo, opportunity.getBrokerageMoney());
+        UnionPayVO result = unionBrokeragePayStrategyService.unionBrokerageApply(orderNo, opportunity.getBrokerageMoney(), memberId);
 
         unionBrokeragePayService.save(savePay);
         return result;
     }
 
     @Override
-    public UnionPayVO batchPayByUnionId(H5BrokerageUser h5BrokerageUser, Integer unionId, IUnionBrokeragePayStrategyService unionBrokeragePayStrategyService) throws Exception {
+    public UnionPayVO batchPayByUnionId(H5BrokerageUser h5BrokerageUser, Integer unionId, IUnionBrokeragePayStrategyService unionBrokeragePayStrategyService, Integer memberId) throws Exception {
         if (h5BrokerageUser == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -445,8 +445,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
                 OpportunityConstant.ACCEPT_STATUS_CONFIRMED, OpportunityConstant.IS_CLOSE_NO);
         List<Integer> opportunityIdList = unionOpportunityService.getIdList(opportunityList);
 
-        //TODO 一键支付商机
-        return unionBrokeragePayService.batchPayByBusId(busId, opportunityIdList, verifier.getId(), unionBrokeragePayStrategyService);
+        return unionBrokeragePayService.batchPayByBusId(busId, opportunityIdList, verifier.getId(), unionBrokeragePayStrategyService, memberId);
     }
 
     //***************************************** Domain Driven Design - remove ******************************************
