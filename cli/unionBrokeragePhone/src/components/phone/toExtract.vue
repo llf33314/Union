@@ -141,7 +141,7 @@
         }else {
           $http.post(`/h5Brokerage/withdrawal`, data)
             .then(res => {
-              if (res.data.success) {
+              if (res.data.success && !res.data.redirectUrl) {
                 Message({
                   showClose: true,
                   message: '提现成功',

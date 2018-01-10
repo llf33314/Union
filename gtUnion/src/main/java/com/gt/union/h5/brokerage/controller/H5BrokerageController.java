@@ -194,7 +194,11 @@ public class H5BrokerageController {
                         @ApiParam(value = "商机id", name = "opportunityId", required = true)
                         @RequestParam(value = "opportunityId") Integer opportunityId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        UnionPayVO result = h5BrokerageService.toPayByUnionIdAndOpportunityId(h5BrokerageUser, unionId, opportunityId);
+        Member member = SessionUtils.getLoginMember(request, PropertiesUtil.getDuofenBusId());
+        if (member == null) {
+            return memberService.authorizeMemberWx(request, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toPayList").toString();
+        }
+        UnionPayVO result = h5BrokerageService.toPayByUnionIdAndOpportunityId(h5BrokerageUser, unionId, opportunityId, member.getId());
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -204,7 +208,11 @@ public class H5BrokerageController {
                            @ApiParam(value = "联盟id", name = "unionId")
                            @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        UnionPayVO result = h5BrokerageService.batchPayByUnionId(h5BrokerageUser, unionId, unionBrokeragePayStrategyService);
+        Member member = SessionUtils.getLoginMember(request, PropertiesUtil.getDuofenBusId());
+        if (member == null) {
+            return memberService.authorizeMemberWx(request, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toPayList").toString();
+        }
+        UnionPayVO result = h5BrokerageService.batchPayByUnionId(h5BrokerageUser, unionId, unionBrokeragePayStrategyService, member.getId());
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 

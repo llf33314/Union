@@ -54,7 +54,7 @@
       <el-table :data="tableData" style="width: 100%;">
         <el-table-column prop="union.name" label="所属联盟">
           <template slot-scope="scope">
-            <el-popover trigger="hover" placement="top">
+            <el-popover trigger="hover" placement="bottom">
               <p>所属联盟: {{ scope.row.union.name }}</p>
               <div slot="reference" class="name-wrapper">
                 {{ scope.row.union.name }}
@@ -64,7 +64,7 @@
         </el-table-column>
         <el-table-column prop="consume.shopName" label="消费门店">
           <template slot-scope="scope">
-            <el-popover trigger="hover" placement="top">
+            <el-popover trigger="hover" placement="bottom">
               <p>消费门店: {{ scope.row.consume.shopName }}</p>
               <div slot="reference" class="name-wrapper">
                 {{ scope.row.consume.shopName }}
@@ -76,7 +76,7 @@
         </el-table-column>
         <el-table-column prop="fan.phone" label="手机号">
           <template slot-scope="scope">
-            <el-popover trigger="hover" placement="top">
+            <el-popover trigger="hover" placement="bottom">
               <p>手机号: {{ scope.row.fan.phone }}</p>
               <div slot="reference" class="name-wrapper">
                 {{ scope.row.fan.phone }}
@@ -90,14 +90,19 @@
         </el-table-column>
         <el-table-column label="优惠项目">
           <template slot-scope="scope">
-            <span @click="showDetail(scope)" style="color: #20a0ff;cursor: pointer"> {{ scope.row.itemList }} </span>
+            <el-popover trigger="hover" placement="bottom">
+              <p>{{ scope.row.itemList }}</p>
+              <div slot="reference" class="name-wrapper">
+                <span @click="showDetail(scope)" style="color: #20a0ff;cursor: pointer">{{ scope.row.itemList }}</span>
+              </div>
+            </el-popover>
           </template>
         </el-table-column>
         <el-table-column prop="consume.payStatus" label="支付状态">
         </el-table-column>
         <el-table-column prop="consume.createTime" label="消费时间">
           <template slot-scope="scope">
-            <el-popover trigger="hover" placement="top">
+            <el-popover trigger="hover" placement="bottom">
               <p>消费时间: {{ scope.row.consume.createTime }}</p>
               <div slot="reference" class="name-wrapper">
                 {{ scope.row.consume.createTime }}
@@ -246,7 +251,10 @@ export default {
                 v.erpTextList.forEach((val, idx) => {
                   v.itemList.push(val.name);
                 });
-                v.itemList.join(',');
+                v.erpGoodsList.forEach((val, idx) => {
+                  v.itemList.push(val.name);
+                });
+                v.itemList = v.itemList.join(',');
               }
               v.consume.createTime = timeFilter(v.consume.createTime);
               v.consume.payStatus = expenseStatusFilter(v.consume.payStatus);
