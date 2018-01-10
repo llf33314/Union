@@ -120,7 +120,7 @@
             <el-popover trigger="hover" placement="bottom">
               <p v-for="item in scope.row.itemList" :key="item.id">项目名称：{{ item.name }}, 数量：{{ item.number }}</p>
               <div slot="reference" class="name-wrapper">
-                <span>{{ scope.row.nameList }}</span>
+                <span>{{ scope.row.itemList_ }}</span>
               </div>
             </el-popover>
           </template>
@@ -346,11 +346,11 @@ export default {
           if (res.data.data) {
             this.detailTableData = res.data.data;
             this.detailTableData.forEach(v => {
-              v.nameList = [];
+              v.itemList_ = [];
               v.itemList.forEach(val => {
-                v.nameList.push(val.name);
+                v.itemList_.push(val.name);
               });
-              v.nameList = v.nameList.join(',');
+              v.itemList_ = v.nameList.join(',');
             });
             this.detaiVisible = true;
           } else {
