@@ -148,7 +148,7 @@
               </el-form-item>
             </div>
           </el-form>
-          <div class="payWay" v-if="this.price">
+          <div class="payWay" v-show="price">
             <p>请选择支付方式：</p>
             <div>
               <el-radio-group v-model="payType" @change="payTypeChange">
@@ -467,6 +467,7 @@ export default {
       data.consume.consumeMoney = this.price - 0;
       data.consume.payMoney = this.price1 - 0;
       data.consume.payType = this.payType - 0;
+      data.activityId = this.activityCardId - 0;
       data.textList = [];
       this.activitySelected.forEach(v => {
         data.textList.push({ id: v.item.id });
@@ -502,6 +503,7 @@ export default {
         data.consume.consumeMoney = this.price - 0;
         data.consume.payMoney = this.price1 - 0;
         data.consume.payType = this.payType - 0;
+        data.activityId = this.activityCardId - 0;
         data.textList = [];
         this.activitySelected.forEach(v => {
           data.textList.push({ id: v.item.id });
