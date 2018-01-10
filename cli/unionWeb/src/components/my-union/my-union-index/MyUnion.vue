@@ -285,41 +285,39 @@ export default {
   },
   methods: {
     init() {
-      if (!this.unionId) {
-        // 首页查询我的联盟信息
-        $http
-          .get(`/unionIndex`)
-          .then(res => {
-            if (res.data.data) {
-              this.unionMainData = res.data.data;
-              // 判断是否创建或加入联盟
-              if (!this.unionMainData.currentUnion) {
-                this.$router.push({ path: '/my-union/no-currentUnion' });
-              } else {
-                // 判断创建和加入联盟的数量
-                this.unionMainData.myCreateUnion ? (this.unionListLength = 1) : (this.unionListLength = 0);
-                if (this.unionMainData.myJoinUnionList) {
-                  this.unionListLength += this.unionMainData.myJoinUnionList.length;
-                }
-                // 全局存储信息
-                this.$store.commit('unionIdChange', this.unionMainData.currentUnion.id);
-                this.$store.commit('isUnionOwnerChange', this.unionMainData.currentMember.isUnionOwner);
-                this.$store.commit('memberIdChange', this.unionMainData.currentMember.id);
-                // 处理当前页面数据展示格式
-                this.unionMainData.currentUnion.createTime = timeFilter(this.unionMainData.currentUnion.createTime);
-                this.unionMainData.currentMember.isUnionOwner
-                  ? (this.unionMainData.currentMember.isUnionOwner = '盟主')
-                  : (this.unionMainData.currentMember.isUnionOwner = '盟员');
-                this.unionMainData.integral = res.data.data.integral || 0;
+      // 首页查询我的联盟信息
+      $http
+        .get(`/unionIndex`)
+        .then(res => {
+          if (res.data.data) {
+            this.unionMainData = res.data.data;
+            // 判断是否创建或加入联盟
+            if (!this.unionMainData.currentUnion) {
+              this.$router.push({ path: '/my-union/no-currentUnion' });
+            } else {
+              // 判断创建和加入联盟的数量
+              this.unionMainData.myCreateUnion ? (this.unionListLength = 1) : (this.unionListLength = 0);
+              if (this.unionMainData.myJoinUnionList) {
+                this.unionListLength += this.unionMainData.myJoinUnionList.length;
               }
-              this.loadVisible = true;
-              this.fullscreenLoading = false;
+              // 全局存储信息
+              this.$store.commit('unionIdChange', this.unionMainData.currentUnion.id);
+              this.$store.commit('isUnionOwnerChange', this.unionMainData.currentMember.isUnionOwner);
+              this.$store.commit('memberIdChange', this.unionMainData.currentMember.id);
+              // 处理当前页面数据展示格式
+              this.unionMainData.currentUnion.createTime = timeFilter(this.unionMainData.currentUnion.createTime);
+              this.unionMainData.currentMember.isUnionOwner
+                ? (this.unionMainData.currentMember.isUnionOwner = '盟主')
+                : (this.unionMainData.currentMember.isUnionOwner = '盟员');
+              this.unionMainData.integral = res.data.data.integral || 0;
             }
-          })
-          .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
-          });
-      }
+            this.loadVisible = true;
+            this.fullscreenLoading = false;
+          }
+        })
+        .catch(err => {
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        });
     },
     // 点击联盟图片切换联盟
     changUnion(item) {
