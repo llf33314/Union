@@ -98,8 +98,8 @@
             </el-popover>
           </template>
         </el-table-column>
-        <el-table-column prop="consume.payStatus" label="支付状态">
-        </el-table-column>
+        <!-- <el-table-column prop="consume.payStatus" label="支付状态">
+        </el-table-column> -->
         <el-table-column prop="consume.createTime" label="消费时间">
           <template slot-scope="scope">
             <el-popover trigger="hover" placement="bottom">
