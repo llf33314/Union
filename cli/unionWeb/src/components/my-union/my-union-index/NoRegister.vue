@@ -171,7 +171,7 @@ export default {
                     _this.socketFlag.socketKey = msg.socketKey;
                     _this.socketFlag.status = msg.status;
                     setTimeout(() => {
-                      _this.$router.push({ path: '/my-union' });
+                      _this.$router.push({ path: '/my-union/create-step' });
                     }, 0);
                   } else if (msg.status == '0') {
                     _this.$message({ showClose: true, message: '支付失败', type: 'error', duration: 5000 });
