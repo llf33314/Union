@@ -278,7 +278,7 @@ export default {
       this.isIntegral_ ? (temData = 1) : (temData = 0);
       this.deductionPrice =
         this.price * this.form.currentMember.discount * this.form.currentMember.integralExchangeRatio * temData;
-      this.deductionIntegral = this.deductionPrice * 100 / this.form.exchangeIntegral;
+      this.deductionIntegral = this.deductionPrice / this.form.exchangeIntegral;
       if (this.deductionIntegral > this.form.integral) {
         this.deductionIntegral = this.form.integral;
         this.deductionPrice = this.deductionIntegral * this.form.exchangeIntegral;
@@ -449,7 +449,7 @@ export default {
         this.isIntegral_ ? (temData = 1) : (temData = 0);
         this.deductionPrice =
           this.price * this.form.currentMember.discount * this.form.currentMember.integralExchangeRatio * temData;
-        this.deductionIntegral = this.deductionPrice * 100 / this.form.exchangeIntegral;
+        this.deductionIntegral = this.deductionPrice / this.form.exchangeIntegral;
         if (this.deductionIntegral > this.form.integral) {
           this.deductionIntegral = this.form.integral;
           this.deductionPrice = this.deductionIntegral * this.form.exchangeIntegral;
