@@ -199,16 +199,6 @@ public class LoginFilter implements Filter {
                 SessionUtils.setLoginMember(req, member);
             }
         }
-        //联盟卡小程序
-        if (url.indexOf("37FD66FE") > -1) {
-            //登录
-            String token = req.getHeader("token");
-            if (CommonUtil.isEmpty(token)) {
-                // token为空
-                res.getWriter().write(GtJsonResult.instanceErrorMsg(CommonConstant.TOKEN_NULL).toString());
-                return;
-            }
-        }
         chain.doFilter(req, res);
     }
 
