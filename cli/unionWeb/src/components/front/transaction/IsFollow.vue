@@ -58,6 +58,10 @@ export default {
     eventBus.$on('tabChange3', () => {
       this.visible = false;
     });
+    // 办理成功
+    eventBus.$on('newUnionCard', () => {
+      this.visible = false;
+    });
     this.canFollow();
   },
   methods: {
