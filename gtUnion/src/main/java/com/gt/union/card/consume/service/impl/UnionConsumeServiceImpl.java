@@ -203,12 +203,16 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         List<UnionMember> memberList = unionMemberService.listByBusId(busId);
         List<Integer> memberIdList = unionMemberService.getIdList(memberList);
 
+        List<Integer> payStatusList = new ArrayList<>();
+        payStatusList.add(ConsumeConstant.PAY_STATUS_SUCCESS);
+        payStatusList.add(ConsumeConstant.PAY_STATUS_FAIL);
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .in("member_id", memberIdList)
                 .eq(ListUtil.isEmpty(memberList), "member_id", null)
                 .eq(optUnionId != null, "union_id = {0}", optUnionId)
                 .eq(optShopId != null, "shop_id = {0}", optShopId)
+                .in("pay_status", payStatusList)
                 .ge(optBeginTime != null, "create_time >= {0}", optBeginTime)
                 .le(optEndTime != null, "create_time <= {0}", optEndTime)
                 .exists(StringUtil.isNotEmpty(optCardNumber) || StringUtil.isNotEmpty(optPhone),
@@ -233,12 +237,16 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         List<UnionMember> memberList = unionMemberService.listByBusId(busId);
         List<Integer> memberIdList = unionMemberService.getIdList(memberList);
 
+        List<Integer> payStatusList = new ArrayList<>();
+        payStatusList.add(ConsumeConstant.PAY_STATUS_SUCCESS);
+        payStatusList.add(ConsumeConstant.PAY_STATUS_FAIL);
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .in("member_id", memberIdList)
                 .eq(ListUtil.isEmpty(memberList), "member_id", null)
                 .eq(optUnionId != null, "union_id = {0}", optUnionId)
                 .eq(optShopId != null, "shop_id = {0}", optShopId)
+                .in("pay_status", payStatusList)
                 .ge(optBeginTime != null, "create_time >= {0}", optBeginTime)
                 .le(optEndTime != null, "create_time <= {0}", optEndTime)
                 .exists(StringUtil.isNotEmpty(optCardNumber) || StringUtil.isNotEmpty(optPhone),
@@ -374,7 +382,6 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
                 throw new BusinessException("未设置积分兑换率");
             }
             BigDecimal integralMoney = BigDecimalUtil.multiply(payMoney, integralExchangeRatio);
-            payMoney = BigDecimalUtil.subtract(payMoney, integralMoney);
 
             if (integral == null) {
                 throw new BusinessException("不存在积分信息，无法使用积分");
@@ -383,10 +390,13 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             Double useIntegralPerMoney = dictService.getExchangeIntegral();
             BigDecimal useIntegral = BigDecimalUtil.multiply(integralMoney, useIntegralPerMoney);
             if (useIntegral.doubleValue() > integral.getIntegral()) {
-                throw new BusinessException("抵扣积分数大于可使用积分数");
+                useIntegral = BigDecimal.valueOf(integral.getIntegral());
+                integralMoney = BigDecimalUtil.divide(useIntegral, useIntegralPerMoney);
             }
             saveConsume.setUseIntegral(BigDecimalUtil.toDouble(useIntegral));
             saveConsume.setIntegralMoney(BigDecimalUtil.toDouble(integralMoney));
+
+            payMoney = BigDecimalUtil.subtract(payMoney, integralMoney);
         }
         // 支持0.5元精度失算
         if (Math.abs(BigDecimalUtil.subtract(payMoney, voConsume.getPayMoney()).doubleValue()) > 0.5) {
@@ -435,9 +445,26 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         saveConsume.setConsumeMoney(vo.getConsume().getConsumeMoney());
         saveConsume.setPayStatus(ConsumeConstant.PAY_STATUS_PAYING);
         UnionPayVO result = null;
+        UnionCardIntegral saveIntegral = null;
+        UnionCardIntegral updateIntegral = null;
         if (ConsumeConstant.VO_PAY_TYPE_CASH == voConsume.getPayType()) {
             saveConsume.setPayType(ConsumeConstant.PAY_TYPE_CASH);
             saveConsume.setPayStatus(ConsumeConstant.PAY_STATUS_SUCCESS);
+
+            if (integral == null) {
+                saveIntegral = new UnionCardIntegral();
+                saveIntegral.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                saveIntegral.setCreateTime(currentDate);
+                saveIntegral.setFanId(fanId);
+                saveIntegral.setUnionId(unionId);
+                saveIntegral.setIntegral(saveConsume.getGiveIntegral());
+            } else {
+                updateIntegral = new UnionCardIntegral();
+                updateIntegral.setId(integral.getId());
+                BigDecimal tempIntegral = BigDecimalUtil.subtract(integral.getIntegral(), saveConsume.getUseIntegral());
+                tempIntegral = BigDecimalUtil.add(tempIntegral, saveConsume.getGiveIntegral());
+                updateIntegral.setIntegral(BigDecimalUtil.toDouble(tempIntegral));
+            }
         } else {
             result = new UnionPayVO();
             saveConsume.setPayType(ConsumeConstant.PAY_STATUS_PAYING);
@@ -471,20 +498,10 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             unionConsumeProjectService.saveBatch(saveConsumeProjectList);
         }
 
-        if (integral == null) {
-            UnionCardIntegral saveIntegral = new UnionCardIntegral();
-            saveIntegral.setDelStatus(CommonConstant.DEL_STATUS_NO);
-            saveIntegral.setCreateTime(currentDate);
-            saveIntegral.setFanId(fanId);
-            saveIntegral.setUnionId(unionId);
-            saveIntegral.setIntegral(saveConsume.getGiveIntegral());
+        if (saveIntegral != null) {
             unionCardIntegralService.save(saveIntegral);
-        } else {
-            UnionCardIntegral updateIntegral = new UnionCardIntegral();
-            updateIntegral.setId(integral.getId());
-            BigDecimal tempIntegral = BigDecimalUtil.subtract(integral.getIntegral(), saveConsume.getUseIntegral());
-            tempIntegral = BigDecimalUtil.add(tempIntegral, saveConsume.getGiveIntegral());
-            updateIntegral.setIntegral(BigDecimalUtil.toDouble(tempIntegral));
+        }
+        if (updateIntegral != null) {
             unionCardIntegralService.update(updateIntegral);
         }
 
@@ -496,6 +513,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
     //********************************************* Base On Business - update ******************************************
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public String updateCallbackByOrderNo(String orderNo, String socketKey, String payType, String payOrderNo, Integer isSuccess) {
         Map<String, Object> result = new HashMap<>(2);
         if (orderNo == null || socketKey == null || payType == null || payOrderNo == null || isSuccess == null) {
@@ -540,8 +558,39 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
                 updateConsume.setAlipayOrderNo(payOrderNo);
             }
 
+            UnionCardIntegral integral;
+            try {
+                integral = unionCardIntegralService.getValidByUnionIdAndFanId(consume.getUnionId(), consume.getFanId());
+            } catch (Exception e) {
+                logger.error("消费核销支付成功回调错误", e);
+                result.put("code", -1);
+                result.put("msg", e.getMessage());
+                return JSONObject.toJSONString(result);
+            }
+            UnionCardIntegral saveIntegral = null;
+            UnionCardIntegral updateIntegral = null;
+            if (integral == null) {
+                saveIntegral = new UnionCardIntegral();
+                saveIntegral.setDelStatus(CommonConstant.DEL_STATUS_NO);
+                saveIntegral.setCreateTime(DateUtil.getCurrentDate());
+                saveIntegral.setFanId(consume.getFanId());
+                saveIntegral.setUnionId(consume.getUnionId());
+                saveIntegral.setIntegral(consume.getGiveIntegral());
+            } else {
+                updateIntegral = new UnionCardIntegral();
+                updateIntegral.setId(integral.getId());
+                BigDecimal finalIntegral = BigDecimalUtil.add(BigDecimalUtil.subtract(integral.getIntegral(), consume.getUseIntegral()), consume.getGiveIntegral());
+                updateIntegral.setIntegral(BigDecimalUtil.toDouble(finalIntegral));
+            }
+
             try {
                 update(updateConsume);
+                if (saveIntegral != null) {
+                    unionCardIntegralService.save(saveIntegral);
+                }
+                if (updateIntegral != null) {
+                    unionCardIntegralService.update(updateIntegral);
+                }
             } catch (Exception e) {
                 logger.error("消费核销支付成功回调错误", e);
                 result.put("code", -1);
