@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.Member;
 import com.gt.union.api.amqp.entity.PhoneMessage;
 import com.gt.union.api.amqp.sender.PhoneMessageSender;
+import com.gt.union.api.client.member.MemberService;
 import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.pay.entity.PayParam;
 import com.gt.union.common.constant.CommonConstant;
@@ -45,18 +46,19 @@ public class WxAppCardController {
 	private RedisCacheUtil redisCacheUtil;
 
 	@Autowired
-	private ITokenApiService tokenApiService;
+	private MemberService memberService;
 
 	//-------------------------------------------------- get ----------------------------------------------------------
 
 	@ApiOperation(value = "联盟卡-首页", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/index/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/index/{busId}/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String getIndexVO(HttpServletRequest request, Page page,
 							 @ApiParam(value = "版本号", name = "version", required = true)
 							 @PathVariable("version") String version,
 							 @ApiParam(value = "商家id", name = "busId", required = true)
-							 @PathVariable("busId") Integer busId, @RequestHeader String token) throws Exception {
-		Member member = tokenApiService.getMemberByToken(token, busId);
+							 @PathVariable("busId") Integer busId,
+							 @ApiParam(value = "粉丝用户id", name = "memberId", required = true) @PathVariable("memberId") Integer memberId) throws Exception {
+		Member member = memberService.getById(memberId);
 		IndexVO indexVO = wxAppCardService.getIndexVO(member == null ? null : member.getPhone(), busId);
 		Page<UnionCardVO> result = (Page<UnionCardVO>) page;
 		result = PageUtil.setRecord(result, indexVO.getCardList());
@@ -64,7 +66,7 @@ public class WxAppCardController {
 	}
 
 	@ApiOperation(value = "联盟卡-详情", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/cardDetail/{busId}/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/cardDetail/{busId}/{unionId}/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String cardDetail(HttpServletRequest request,
 							 @ApiParam(value = "版本号", name = "version", required = true)
 							 @PathVariable("version") String version,
@@ -73,15 +75,15 @@ public class WxAppCardController {
 							 @ApiParam(value = "活动卡id，如果没有，则是折扣卡", name = "activityId", required = false)
 							 @RequestParam(name = "activityId", required = false) Integer activityId,
 							 @ApiParam(value = "联盟id", name = "unionId", required = true)
-							 @PathVariable("unionId") Integer unionId, @RequestHeader String token) throws Exception {
-		Member member = tokenApiService.getMemberByToken(token, busId);
+							 @PathVariable("unionId") Integer unionId, @ApiParam(value = "粉丝用户id", name = "memberId", required = true) @PathVariable("memberId") Integer memberId) throws Exception {
+		Member member = memberService.getById(memberId);
 		CardDetailVO result = wxAppCardService.getCardDetail(member == null ? null : member.getPhone(), busId, unionId, activityId);
 		return GtJsonResult.instanceSuccessMsg(result).toString();
 	}
 
 
 	@ApiOperation(value = "联盟卡-详情-分页获取列表信息", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/cardDetail/list/{busId}/{unionId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/cardDetail/list/{busId}/{unionId}/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String cardDetailList(HttpServletRequest request,
 							 @ApiParam(value = "版本号", name = "version", required = true)
 							 @PathVariable("version") String version,
@@ -90,24 +92,21 @@ public class WxAppCardController {
 							 @ApiParam(value = "活动卡id，如果没有，则是折扣卡", name = "activityId", required = false)
 							 @RequestParam(name = "activityId", required = false) Integer activityId,
 							 @ApiParam(value = "联盟id", name = "unionId", required = true)
-							 @PathVariable("unionId") Integer unionId, Page page, @RequestHeader String token) throws Exception {
-		Member member = tokenApiService.getMemberByToken(token, busId);
+							 @PathVariable("unionId") Integer unionId, @ApiParam(value = "粉丝用户id", name = "memberId", required = true) @PathVariable("memberId") Integer memberId, Page page) throws Exception {
+		Member member = memberService.getById(memberId);
 		Page<List<CardDetailListVO>> result = wxAppCardService.listCardDetailPage(member == null ? null : member.getPhone(), busId, unionId, activityId, page);
 		return GtJsonResult.instanceSuccessMsg(result).toString();
 	}
 
 
 	@ApiOperation(value = "联盟卡-我的详情", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/myCardDetail/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/37FD66FE/myCardDetail/{busId}/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String myCardDetail(HttpServletRequest request,
 							   @ApiParam(value = "版本号", name = "version", required = true)
 							   @PathVariable("version") String version,
 							   @ApiParam(value = "商家id", name = "busId", required = true)
-							   @PathVariable("busId") Integer busId, @RequestHeader String token) throws Exception {
-		Member member = tokenApiService.getMemberByToken(token, busId);
-		if(CommonUtil.isEmpty(member)){
-			return loginInfo();
-		}
+							   @PathVariable("busId") Integer busId, @ApiParam(value = "粉丝用户id", name = "memberId", required = true) @PathVariable("memberId") Integer memberId) throws Exception {
+		Member member = memberService.getById(memberId);
 		MyCardDetailVO myCardDetailVO = wxAppCardService.myCardDetail(member.getPhone());
 		myCardDetailVO.setNickName(StringUtil.isEmpty(member.getNickname()) ? "未知用户" : member.getNickname());
 		myCardDetailVO.setHeardImg(member.getHeadimgurl());
@@ -115,33 +114,27 @@ public class WxAppCardController {
 	}
 
 	@ApiOperation(value = "联盟卡-我的详情-分页获取列表信息", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/myCardDetail/list/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/37FD66FE/myCardDetail/list/{busId}/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String myCardDetail(HttpServletRequest request,
 							   @ApiParam(value = "版本号", name = "version", required = true)
 							   @PathVariable("version") String version,
 							   @ApiParam(value = "商家id", name = "busId", required = true)
-							   @PathVariable("busId") Integer busId,
-							   Page page, @RequestHeader String token) throws Exception {
-		Member member = tokenApiService.getMemberByToken(token, busId);
-		if(CommonUtil.isEmpty(member)){
-			return loginInfo();
-		}
+							   @PathVariable("busId") Integer busId,@ApiParam(value = "粉丝用户id", name = "memberId", required = true) @PathVariable("memberId") Integer memberId,
+							   Page page) throws Exception {
+		Member member = memberService.getById(memberId);
 		Page result =  wxAppCardService.listMyCardPage(member.getPhone(), page);
 		return GtJsonResult.instanceSuccessMsg(result).toString();
 	}
 
 	@ApiOperation(value = "联盟卡-消费记录", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/myCardConsume/{busId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/37FD66FE/myCardConsume/{busId}/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String myCardConsume(HttpServletRequest request,
 								@ApiParam(value = "版本号", name = "version", required = true)
 								@PathVariable("version") String version,
 								@ApiParam(value = "商家id", name = "busId", required = true)
-								@PathVariable("busId") Integer busId,
-								Page page, @RequestHeader String token) throws Exception {
-		Member member = tokenApiService.getMemberByToken(token, busId);
-		if(CommonUtil.isEmpty(member)){
-			return loginInfo();
-		}
+								@PathVariable("busId") Integer busId, @ApiParam(value = "粉丝用户id", name = "memberId", required = true) @PathVariable("memberId") Integer memberId,
+								Page page) throws Exception {
+		Member member = memberService.getById(memberId);
 		Page result = wxAppCardService.pageConsumeByPhone(page, member.getPhone());
 		return GtJsonResult.instanceSuccessMsg(result).toString();
 	}
@@ -159,18 +152,15 @@ public class WxAppCardController {
 
 
 	@ApiOperation(value = "发送短信验证码", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/{busId}/sms", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/37FD66FE/{busId}/sms/{memberId}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public String sendMsg(HttpServletRequest request,
 								@ApiParam(value = "版本号", name = "version", required = true)
 								@PathVariable("version") String version,
 								@ApiParam(value = "手机号", name = "phone")
 								@RequestParam(value = "phone", required = true) String phone,
 						  		@ApiParam(value = "商家id", name = "busId", required = true)
-							    @PathVariable("busId") Integer busId, @RequestHeader String token) throws Exception {
-		Member member = tokenApiService.getMemberByToken(token, busId);
-		if(CommonUtil.isEmpty(member)){
-			return loginInfo();
-		}
+							    @PathVariable("busId") Integer busId, @ApiParam(value = "粉丝用户id", name = "memberId", required = true) @PathVariable("memberId") Integer memberId) throws Exception {
+		Member member = memberService.getById(memberId);
 		String code = RandomKit.getRandomString(6, 0);
 		String content = SmsCodeConstant.UNION_CARD_PHONE_BIND_MSG;
 		sender.sendMsg(new PhoneMessage(busId, phone, content + code));
@@ -194,44 +184,29 @@ public class WxAppCardController {
 
 
 	@ApiOperation(value = "绑定手机号", notes = "绑定手机号", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/{busId}/bind", produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+	@RequestMapping(value = "/37FD66FE/{busId}/bind/{memberId}", produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
 	public String bindCardPhone(HttpServletRequest request, HttpServletResponse response
 			,@ApiParam(value = "版本号", name = "version", required = true) @PathVariable("version") String version
 			, @ApiParam(name="phone", value = "手机号", required = true) @RequestParam("phone") String phone
 			, @ApiParam(name="busId", value = "商家id", required = true) @PathVariable("busId") Integer busId
-			, @ApiParam(name = "code", value = "验证码" ,required = true) @RequestParam(value = "code") String code, @RequestHeader String token) throws Exception{
-		Member member = tokenApiService.getMemberByToken(token, busId);
-		if(CommonUtil.isEmpty(member)){
-			return loginInfo();
-		}
+			, @ApiParam(name = "code", value = "验证码" ,required = true) @RequestParam(value = "code") String code, @ApiParam(value = "粉丝用户id", name = "memberId", required = true) @PathVariable("memberId") Integer memberId) throws Exception{
+		Member member = memberService.getById(memberId);
 		wxAppCardService.bindCardPhone(member, busId, phone, code);
 		return GtJsonResult.instanceSuccessMsg().toString();
 	}
 
 	@ApiOperation(value = "办理联盟卡", notes = "办理联盟卡", produces = "application/json;charset=UTF-8")
-	@RequestMapping(value = "/37FD66FE/transaction/{busId}/{unionId}", produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
+	@RequestMapping(value = "/37FD66FE/transaction/{busId}/{unionId}/{memberId}", produces = "application/json;charset=UTF-8",method = RequestMethod.POST)
 	public String cardTransaction(HttpServletRequest request, HttpServletResponse response
 			,@ApiParam(value = "版本号", name = "version", required = true) @PathVariable("version") String version
 			,@ApiParam(name="busId", value = "商家id", required = true) @PathVariable("busId") Integer busId
 			,@ApiParam(name="activityId", value = "活动卡id，如果没有，则是折扣卡", required = false) @RequestParam(value = "activityId", required = false) Integer activityId
-			,@ApiParam(value = "联盟id", name = "unionId", required = true) @PathVariable("unionId") Integer unionId, @RequestHeader String token) throws Exception{
-		Member member = tokenApiService.getMemberByToken(token, busId);
-		if(CommonUtil.isEmpty(member)){
-			return loginInfo();
-		}
+			,@ApiParam(value = "联盟id", name = "unionId", required = true) @PathVariable("unionId") Integer unionId, @ApiParam(value = "粉丝用户id", name = "memberId", required = true) @PathVariable("memberId") Integer memberId) throws Exception{
+		Member member = memberService.getById(memberId);
 		return wxAppCardService.cardTransaction(member.getPhone(), busId, activityId, unionId);
 	}
 
 
 
-	//-------------------------------------------------- private ----------------------------------------------------------
-	/**
-	 * 返回登录信息
-	 * @return
-	 */
-	private String loginInfo(){
-		Map<String,Object> login = new HashMap<String,Object>();
-		login.put("login",1);
-		return GtJsonResult.instanceSuccessMsg(login).toString();
-	}
+
 }

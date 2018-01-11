@@ -373,8 +373,10 @@ public class UnionMemberOutServiceImpl implements IUnionMemberOutService {
             updateMember.setStatus(MemberConstant.STATUS_OUT_PERIOD);
 
             UnionMemberOut updateOut = new UnionMemberOut();
+            Date currentDate = DateUtil.getCurrentDate();
             updateOut.setId(outId);
-            updateOut.setConfirmOutTime(DateUtil.getCurrentDate());
+            updateOut.setConfirmOutTime(currentDate);
+            updateOut.setActualOutTime(DateUtil.addDays(currentDate, 15));
 
             unionMemberService.update(updateMember);
             update(updateOut);
