@@ -45,6 +45,20 @@ export default {
       basicFormData: {}
     };
   },
+  created: function() {
+    $http
+      .get(`/unionMainCreate/checkPermit`)
+      .then(res => {
+        if (res.data.success && !res.data.data.isPay) {
+          this.$store.commit('permitIdChange', res.data.data.permitId);
+        } else if (res.data.success && res.data.data.isPay) {
+          this.$router.push({ path: '/my-union/no-register' });
+        }
+      })
+      .catch(err => {
+        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+      });
+  },
   methods: {
     activeChange(v) {
       this.active = v;
