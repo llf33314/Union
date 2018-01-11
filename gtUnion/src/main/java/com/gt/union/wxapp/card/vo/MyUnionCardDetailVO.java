@@ -15,9 +15,6 @@ public class MyUnionCardDetailVO {
 	@ApiModelProperty(value = "联盟卡名称")
 	private String cardName;
 
-	@ApiModelProperty(value = "联盟卡办理时间")
-	private Date createtime;
-
 	@ApiModelProperty(value = "联盟卡类型 1:折扣卡 2:活动卡")
 	private Integer cardType;
 
@@ -36,11 +33,17 @@ public class MyUnionCardDetailVO {
 	@ApiModelProperty(value = "活动卡优惠项目数")
 	private Integer itemCount;
 
+	@ApiModelProperty(value = "折扣")
+	private Double discount;
+
 	@ApiModelProperty(value = "联盟活动卡有效期字符串")
 	private String validityStr;
 
 	@ApiModelProperty(value = "联盟活动卡是否过期 0：未过期  1：已过期")
 	private Integer isOverdue;
+
+	@ApiModelProperty(value = "盟员id")
+	private Integer unionMemberId;
 
 	public String getCardName() {
 		return cardName;
@@ -48,14 +51,6 @@ public class MyUnionCardDetailVO {
 
 	public void setCardName(String cardName) {
 		this.cardName = cardName;
-	}
-
-	public Date getCreatetime() {
-		return createtime;
-	}
-
-	public void setCreatetime(Date createtime) {
-		this.createtime = createtime;
 	}
 
 	public Integer getCardType() {
@@ -106,6 +101,14 @@ public class MyUnionCardDetailVO {
 		this.itemCount = itemCount;
 	}
 
+	public Double getDiscount() {
+		return discount;
+	}
+
+	public void setDiscount(Double discount) {
+		this.discount = discount;
+	}
+
 	public String getValidityStr() {
 		return validityStr;
 	}
@@ -120,5 +123,13 @@ public class MyUnionCardDetailVO {
 
 	public void setIsOverdue(Integer isOverdue) {
 		this.isOverdue = isOverdue;
+	}
+
+	public Integer getUnionMemberId() {
+		return unionMemberId;
+	}
+
+	public void setUnionMemberId(Integer unionMemberId) {
+		this.unionMemberId = unionMemberId;
 	}
 }

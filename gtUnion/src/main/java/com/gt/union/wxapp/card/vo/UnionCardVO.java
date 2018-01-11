@@ -28,6 +28,8 @@ public class UnionCardVO {
 	@ApiModelProperty(value = "联盟id")
 	private Integer unionId;
 
+	private Integer unionMemberId;
+
 	public Integer getCardType() {
 		return cardType;
 	}
@@ -74,5 +76,13 @@ public class UnionCardVO {
 
 	public void setUnionId(Integer unionId) {
 		this.unionId = unionId;
+	}
+
+	public Integer getUnionMemberId() {
+		return unionMemberId;
+	}
+
+	public void setUnionMemberId(Integer unionMemberId) {
+		this.unionMemberId = unionMemberId;
 	}
 }
