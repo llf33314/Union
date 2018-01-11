@@ -420,9 +420,7 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
                     MyUnionCardDetailVO detailVO = new MyUnionCardDetailVO();
                     detailVO.setCardType(card.getType());
                     detailVO.setUnionId(union.getId());
-                    UnionMember member = unionMemberService.getById(card.getMemberId());
-                    detailVO.setDiscount(member.getDiscount());
-                    detailVO.setUnionMemberId(member.getId());
+                    detailVO.setUnionMemberId(card.getMemberId());
                     if (card.getType().equals(CardConstant.TYPE_DISCOUNT)) {
                         //折扣卡
                         detailVO.setCardName(union.getName() + "折扣卡");

@@ -96,8 +96,7 @@ public class WxAppCardController {
 							 @ApiParam(value = "联盟id", name = "unionId", required = true)
 							 @PathVariable("unionId") Integer unionId, @ApiParam(value = "粉丝用户id", name = "memberId", required = true)
 							@PathVariable("memberId") Integer memberId, @ApiParam(value = "盟员id", name = "unionMemberId", required = true)
-									 @PathVariable("unionMemberId") Integer unionMemberId, Page page) throws Exception {
-		Member member = memberService.getById(memberId);
+							@PathVariable("unionMemberId") Integer unionMemberId, Page page) throws Exception {
 		Page result = wxAppCardService.listCardDetailPage(busId, unionId, activityId, page, unionMemberId);
 		return GtJsonResult.instanceSuccessMsg(result).toString();
 	}

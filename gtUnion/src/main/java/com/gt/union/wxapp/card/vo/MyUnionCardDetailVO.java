@@ -33,9 +33,6 @@ public class MyUnionCardDetailVO {
 	@ApiModelProperty(value = "活动卡优惠项目数")
 	private Integer itemCount;
 
-	@ApiModelProperty(value = "折扣")
-	private Double discount;
-
 	@ApiModelProperty(value = "联盟活动卡有效期字符串")
 	private String validityStr;
 
@@ -99,14 +96,6 @@ public class MyUnionCardDetailVO {
 
 	public void setItemCount(Integer itemCount) {
 		this.itemCount = itemCount;
-	}
-
-	public Double getDiscount() {
-		return discount;
-	}
-
-	public void setDiscount(Double discount) {
-		this.discount = discount;
 	}
 
 	public String getValidityStr() {
