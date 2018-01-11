@@ -5,7 +5,10 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.Member;
 import com.gt.api.util.DESKeysUtil;
+import com.gt.api.util.HttpClienUtils;
 import com.gt.union.api.client.member.MemberService;
+import com.gt.union.api.client.pay.WxPayService;
+import com.gt.union.api.client.pay.entity.PayParam;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.card.activity.constant.ActivityConstant;
 import com.gt.union.card.activity.entity.UnionCardActivity;
@@ -14,10 +17,8 @@ import com.gt.union.card.consume.service.IUnionConsumeService;
 import com.gt.union.card.main.constant.CardConstant;
 import com.gt.union.card.main.entity.UnionCard;
 import com.gt.union.card.main.entity.UnionCardFan;
-import com.gt.union.card.main.service.IUnionCardApplyService;
-import com.gt.union.card.main.service.IUnionCardFanService;
-import com.gt.union.card.main.service.IUnionCardIntegralService;
-import com.gt.union.card.main.service.IUnionCardService;
+import com.gt.union.card.main.entity.UnionCardRecord;
+import com.gt.union.card.main.service.*;
 import com.gt.union.card.project.constant.ProjectConstant;
 import com.gt.union.card.project.entity.UnionCardProject;
 import com.gt.union.card.project.entity.UnionCardProjectItem;
@@ -89,6 +90,12 @@ public class WxAppCardServiceImpl implements IWxAppCardService{
 
 	@Autowired
 	private RedisCacheUtil redisCacheUtil;
+
+	@Autowired
+	private IUnionCardRecordService unionCardRecordService;
+
+	@Autowired
+	private WxPayService wxPayService;
 
 
 	@Override
@@ -339,6 +346,7 @@ public class WxAppCardServiceImpl implements IWxAppCardService{
 		UnionPayVO result = unionCardService.saveApplyByBusIdAndUnionIdAndFanId(busId, unionId, fan.getId(), list, unionCardApplyService);
 		if(result != null){
 			data.put("pay", true);
+			data.put("orderNo", result.getOrderNo());
 			data.put("appid", PropertiesUtil.getUnionAppId());
 			data.put("busId", PropertiesUtil.getDuofenBusId());
 		}
@@ -502,5 +510,33 @@ public class WxAppCardServiceImpl implements IWxAppCardService{
 			}
 		}
 		return page;
+	}
+
+	@Override
+	public String getPayParam(Integer duoFenMemberId, String orderNo, String phone) throws Exception {
+		if(duoFenMemberId == null || StringUtil.isEmpty(orderNo) || StringUtil.isEmpty(phone)){
+			throw new ParamException(CommonConstant.PARAM_ERROR);
+		}
+		String notifyUrl = PropertiesUtil.getUnionUrl() + "/callBack/79B4DE7C/card?socketKey=";
+
+		UnionCardRecord record = unionCardRecordService.getValidByOrderNo(orderNo);
+		if(record == null || record.getPayStatus() != CardConstant.PAY_STATUS_PAYING){
+			throw new BusinessException("订单不存在");
+		}
+		PayParam payParam = new PayParam();
+		payParam.setTotalFee(record.getPayMoney());
+		payParam.setOrderNum(orderNo);
+		payParam.setIsreturn(CommonConstant.COMMON_NO);
+		payParam.setReturnUrl("");
+		payParam.setNotifyUrl(notifyUrl);
+		payParam.setIsSendMessage(CommonConstant.COMMON_NO);
+		payParam.setPayWay(1);
+		payParam.setDesc("办理联盟卡");
+		payParam.setPayDuoFen(true);
+		payParam.setMemberId(duoFenMemberId);
+		String payUrl = wxPayService.wxAppPay(payParam);
+		Map data = HttpClienUtils.reqGetUTF8(null,payUrl,Map.class);
+		data.put("signType","MD5");
+		return GtJsonResult.instanceSuccessMsg(data).toString();
 	}
 }

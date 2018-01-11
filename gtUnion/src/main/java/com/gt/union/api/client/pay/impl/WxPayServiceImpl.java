@@ -86,7 +86,7 @@ public class WxPayServiceImpl implements WxPayService {
 	@Override
 	public String wxAppPay(PayParam payParam) {
         SubQrPayParams subQrPayParams = new SubQrPayParams();
-        subQrPayParams.setAppid(payParam.getPayDuoFen() ? PropertiesUtil.getDuofenAppid() : payParam.getAppid());
+        subQrPayParams.setAppid(payParam.getPayDuoFen() ? PropertiesUtil.getUnionAppId() : payParam.getAppid());
         subQrPayParams.setAppidType(1);
         subQrPayParams.setBusId(CommonUtil.isEmpty(payParam.getBusId()) ? PropertiesUtil.getDuofenBusId() : payParam.getBusId());
         subQrPayParams.setDesc(CommonUtil.isEmpty(payParam.getDesc()) ? "" : payParam.getDesc());

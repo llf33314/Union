@@ -108,6 +108,19 @@ public class UnionCardRecordServiceImpl implements IUnionCardRecordService {
         return unionCardRecordDao.selectOne(entityWrapper);
     }
 
+    @Override
+    public UnionCardRecord getValidByOrderNo(String orderNo) throws Exception {
+        if (orderNo == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionCardRecord> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
+                .eq("sys_order_no", orderNo);
+
+        return unionCardRecordDao.selectOne(entityWrapper);
+    }
+
     //********************************************* Object As a Service - list *****************************************
 
     @Override

@@ -206,6 +206,17 @@ public class WxAppCardController {
 		return wxAppCardService.cardTransaction(member.getPhone(), busId, activityId, unionId);
 	}
 
+	@ApiOperation(value = "获取支付参数", notes = "获取支付参数", produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/37FD66FE/payParam/{duoFenMemberId}/{memberId}", produces = "application/json;charset=UTF-8",method = RequestMethod.GET)
+	public String payParam(HttpServletRequest request, HttpServletResponse response
+			,@ApiParam(value = "版本号", name = "version", required = true) @PathVariable("version") String version,
+			 @ApiParam(value = "多粉粉丝用户id", name = "duoFenMemberId", required = true) @PathVariable("duoFenMemberId") Integer duoFenMemberId,
+			 @ApiParam(value = "支付粉丝用户id", name = "memberId", required = true) @PathVariable("memberId") Integer memberId,
+			@ApiParam(value = "订单号", name = "orderNo", required = true) @RequestParam(name = "orderNo", required = true) String orderNo) throws Exception{
+		Member member = memberService.getById(memberId);
+		return wxAppCardService.getPayParam(duoFenMemberId, orderNo, member.getPhone());
+	}
+
 
 
 
