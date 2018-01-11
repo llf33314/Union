@@ -16,7 +16,7 @@ CREATE TABLE `t_union_member` (
   `address_longitude` varchar(50) DEFAULT NULL COMMENT '地址经度',
   `address_latitude` varchar(50) DEFAULT NULL COMMENT '地址维度',
   `notify_phone` varchar(20) DEFAULT NULL COMMENT '短信通知手机号',
-  `integral_exchange_ratio` double(8,2) DEFAULT NULL COMMENT '积分抵扣率(百分比)',
+  `integral_exchange_ratio` double(8,4) DEFAULT NULL COMMENT '积分抵扣率(百分比)',
   `discount` double(8,2) DEFAULT NULL COMMENT '统一折扣(折)',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='盟员';
@@ -167,7 +167,7 @@ CREATE TABLE `t_union_opportunity_ratio` (
   `from_member_id` int(11) DEFAULT NULL COMMENT '设置佣金比率盟员id',
   `to_member_id` int(11) DEFAULT NULL COMMENT '受惠佣金比率盟员id',
   `union_id` int(11) DEFAULT NULL COMMENT '联盟id',
-  `ratio` double(8,2) DEFAULT NULL COMMENT '佣金比率（百分比）',
+  `ratio` double(8,4) DEFAULT NULL COMMENT '佣金比率（百分比）',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_general_mysql500_ci COMMENT='商机佣金比率';
 
@@ -343,7 +343,7 @@ CREATE TABLE `t_union_card_sharing_ratio` (
   `del_status` int(2) DEFAULT NULL COMMENT '是否删除(0:否 1:是)',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `modify_time` datetime DEFAULT NULL COMMENT '修改时间',
-  `ratio` double(8,2) DEFAULT NULL COMMENT '分成比例',
+  `ratio` double(8,4) DEFAULT NULL COMMENT '分成比例',
   `activity_id` int(11) DEFAULT NULL COMMENT '活动id',
   `member_id` int(11) DEFAULT NULL COMMENT '盟员id',
   `union_id` int(11) DEFAULT NULL COMMENT '联盟id',
@@ -356,7 +356,7 @@ CREATE TABLE `t_union_card_sharing_record` (
   `del_status` int(2) DEFAULT NULL COMMENT '是否删除(0:否 1:是)',
   `create_time` datetime DEFAULT NULL COMMENT '创建时间',
   `sell_price` double(8,2) DEFAULT NULL COMMENT '售卡价格',
-  `sharing_ratio` double(8,2) DEFAULT NULL COMMENT '分成比例',
+  `sharing_ratio` double(8,4) DEFAULT NULL COMMENT '分成比例',
   `sharing_money` double(8,2) DEFAULT NULL COMMENT '售卡分成',
   `sharing_member_id` int(11) DEFAULT NULL COMMENT '分成盟员id',
   `from_member_id` int(11) DEFAULT NULL COMMENT '售卡盟员id',
