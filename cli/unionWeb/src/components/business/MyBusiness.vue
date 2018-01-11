@@ -240,7 +240,7 @@ export default {
       this.opportunityId = scope.row.opportunity.id;
       this.putUnionId = scope.row.union.id;
     },
-    // 接受确认
+    // 确认接受
     confirm() {
       if (this.acceptancePrice) {
         if (this.acceptancePrice < 1) {
@@ -253,6 +253,7 @@ export default {
             )
             .then(res => {
               if (res.data.success) {
+                this.$message({ showClose: true, message: '商机接受成功', type: 'success', duration: 5000 });
                 eventBus.$emit('newCommissionPay');
                 this.dialogVisible1 = false;
                 this.search();
@@ -272,13 +273,14 @@ export default {
       this.opportunityId = scope.row.opportunity.id;
       this.putUnionId = scope.row.union.id;
     },
-    // 接受拒绝
+    // 确认拒绝
     confirm1() {
       $http
         .put(`/unionOpportunity/${this.opportunityId}/unionId/${this.putUnionId}?isAccept=0`)
         .then(res => {
           this.dialogVisible2 = false;
           if (res.data.success) {
+            this.$message({ showClose: true, message: '商机拒绝成功', type: 'success', duration: 5000 });
             this.dialogVisible1 = false;
             this.search();
           }
