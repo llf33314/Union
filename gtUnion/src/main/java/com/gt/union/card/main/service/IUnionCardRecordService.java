@@ -75,6 +75,15 @@ public interface IUnionCardRecordService {
      */
     UnionCardRecord getInvalidById(Integer id) throws Exception;
 
+    /**
+     * 根据订单号获取购买联盟卡记录信息
+     *
+     * @param orderNo orderNo
+     * @return UnionCardRecord
+     * @throws Exception 统一处理异常
+     */
+    UnionCardRecord getValidByOrderNo(String orderNo) throws Exception;
+
     //****************************************** Object As a Service - list ********************************************
 
     /**

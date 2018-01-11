@@ -19,6 +19,9 @@ public class UnionPayVO {
     @ApiModelProperty(value = "socket关键字")
     private String socketKey;
 
+    @ApiModelProperty(value = "订单号")
+    private String orderNo;
+
     public String getPayUrl() {
         return payUrl;
     }
@@ -33,6 +36,14 @@ public class UnionPayVO {
 
     public void setSocketKey(String socketKey) {
         this.socketKey = socketKey;
+    }
+
+    public String getOrderNo() {
+        return orderNo;
+    }
+
+    public void setOrderNo(String orderNo) {
+        this.orderNo = orderNo;
     }
 
     @Override

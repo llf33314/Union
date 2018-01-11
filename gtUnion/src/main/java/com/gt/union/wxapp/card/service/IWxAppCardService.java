@@ -100,4 +100,13 @@ public interface IWxAppCardService {
 	 * @return
 	 */
 	Page listMyCardPage(String phone, Page page) throws Exception;
+
+	/**
+	 * 获取支付参数
+	 * @param duoFenMemberId
+	 * @param orderNo
+	 * @param phone
+	 * @return
+	 */
+	String getPayParam(Integer duoFenMemberId, String orderNo, String phone) throws Exception;
 }

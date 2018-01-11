@@ -107,10 +107,10 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         IndexVO result = new IndexVO();
         // （1）获取历史佣金收入总额=售卡佣金+商机佣金(已支付)
         Integer busId = h5BrokerageUser.getVerifier().getBusId();
-        Double brokerageSum = unionBrokerageIncomeService.sumMoneyByBusId(busId);
+        Double brokerageSum = unionBrokerageIncomeService.sumValidMoneyByBusId(busId);
         result.setBrokerageSum(brokerageSum);
         // （2）	获取可提佣金金额=历史佣金收入总额-历史佣金提现总额
-        Double withdrawalSum = unionBrokerageWithdrawalService.sumMoneyByBusId(busId);
+        Double withdrawalSum = unionBrokerageWithdrawalService.sumValidMoneyByBusId(busId);
         BigDecimal availableBrokerage = BigDecimalUtil.subtract(brokerageSum, withdrawalSum);
         result.setAvailableBrokerage(BigDecimalUtil.toDouble(availableBrokerage));
         // （3）	获取未支付佣金金额，即商机已接受，但仍未支付
@@ -145,10 +145,10 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         Double cardBrokerage = unionBrokerageIncomeService.sumValidMoneyByBusIdAndType(busId, BrokerageConstant.INCOME_TYPE_CARD);
         result.setCardBrokerage(cardBrokerage);
         // （4）	获取历史提现佣金总额
-        Double historyWithdrawal = unionBrokerageWithdrawalService.sumMoneyByBusId(busId);
+        Double historyWithdrawal = unionBrokerageWithdrawalService.sumValidMoneyByBusId(busId);
         result.setHistoryWithdrawal(historyWithdrawal);
         // （5）	获取可提佣金总额 总收入金额-历史提现金额
-        Double incomeSum = unionBrokerageIncomeService.sumMoneyByBusId(busId);
+        Double incomeSum = unionBrokerageIncomeService.sumValidMoneyByBusId(busId);
         BigDecimal availableBrokerage = BigDecimalUtil.subtract(incomeSum, historyWithdrawal);
         result.setAvailableBrokerage(BigDecimalUtil.toDouble(availableBrokerage));
 
@@ -158,15 +158,16 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
     //***************************************** Domain Driven Design - list ********************************************
 
     @Override
-    public Page listPageWithdrawalHistory(H5BrokerageUser h5BrokerageUser, Page page) throws Exception {
+    public Page pageWithdrawalHistory(H5BrokerageUser h5BrokerageUser, Page page) throws Exception {
         if (h5BrokerageUser == null || page == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         Integer busId = h5BrokerageUser.getVerifier().getBusId();
         // 按时间倒序排序
-        EntityWrapper<UnionBrokerageWithdrawal> wrapper = new EntityWrapper<UnionBrokerageWithdrawal>();
-        wrapper.eq("bus_id", busId);
-        wrapper.orderBy("create_time", false);
+        EntityWrapper<UnionBrokerageWithdrawal> wrapper = new EntityWrapper<>();
+        wrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .eq("bus_id", busId)
+                .orderBy("create_time", false);
         Page result = unionBrokerageWithdrawalService.pageSupport(page, wrapper);
 
         return result;
@@ -181,7 +182,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
     }
 
     @Override
-    public Page listPageOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception {
+    public Page pageOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception {
         if (h5BrokerageUser == null || page == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -195,8 +196,8 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         List<Integer> memberIdList = unionMemberService.getIdList(memberList);
         EntityWrapper<UnionOpportunity> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .in("from_member_id", memberIdList)
-                .eq(ListUtil.isEmpty(memberList), "from_member_id", null)
+                .in("to_member_id", memberIdList)
+                .eq(ListUtil.isEmpty(memberList), "to_member_id", null)
                 .eq("accept_status", OpportunityConstant.ACCEPT_STATUS_CONFIRMED)
                 .eq("is_close", OpportunityConstant.IS_CLOSE_YES)
                 .orderBy("create_time", false);
@@ -209,7 +210,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
     }
 
     @Override
-    public Page listPageCardBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception {
+    public Page pageCardBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception {
         if (h5BrokerageUser == null || page == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -232,7 +233,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         Page result = unionBrokerageIncomeService.pageSupport(page, entityWrapper);
 
         List<UnionBrokerageIncome> incomeList = result.getRecords();
-        List<CardBrokerageVO> list = new ArrayList<CardBrokerageVO>();
+        List<CardBrokerageVO> list = new ArrayList<>();
         if (ListUtil.isNotEmpty(incomeList)) {
             for (UnionBrokerageIncome income : incomeList) {
                 CardBrokerageVO vo = new CardBrokerageVO();
@@ -252,7 +253,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
     }
 
     @Override
-    public Page listPageUnPaidOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception {
+    public Page pageUnPaidOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception {
         if (h5BrokerageUser == null || page == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -279,7 +280,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
     }
 
     @Override
-    public Page listPageUnReceivedOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception {
+    public Page pageUnReceivedOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception {
         if (h5BrokerageUser == null || page == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -336,11 +337,11 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         Integer busId = verifier.getBusId();
         // （1）	判断money有效性
         String key = RedissonKeyUtil.getWithdrawalByBusIdKey(busId);
-        try{
+        try {
             //加锁
             RedissonLockUtil.lock(key, 10);
             //总收入
-            Double incomeSum = unionBrokerageIncomeService.sumMoneyByBusId(busId);
+            Double incomeSum = unionBrokerageIncomeService.sumValidMoneyByBusId(busId);
 
             //总提现
             Double withdrawalSum = unionBrokerageWithdrawalService.sumValidMoneyByBusId(busId);
@@ -366,14 +367,14 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
             }
 
             return payResult;
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
-            if(e instanceof BaseException){
+            if (e instanceof BaseException) {
                 throw new BaseException(e.getMessage());
-            }else {
+            } else {
                 throw new Exception(e.getMessage());
             }
-        }finally {
+        } finally {
             //释放锁
             RedissonLockUtil.unlock(key);
         }
@@ -534,14 +535,14 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
 
         Integer unionId = opportunity.getUnionId();
         Integer busId = h5BrokerageUser.getVerifier().getBusId();
-        UnionMember member = unionMemberService.getValidReadByBusIdAndUnionId(busId, unionId);
-        if (member == null || !member.getId().equals(opportunity.getFromMemberId())) {
+        UnionMember member = unionMemberService.getByBusIdAndIdAndUnionId(busId, opportunity.getFromMemberId(), unionId);
+        if (member == null) {
             throw new BusinessException("无法催促别人的商机");
         }
 
         UnionMain union = unionMainService.getById(unionId);
-        UnionMember toMember = unionMemberService.getValidById(opportunity.getToMemberId());
-        if(toMember == null){
+        UnionMember toMember = unionMemberService.getById(opportunity.getToMemberId());
+        if (toMember == null) {
             throw new BusinessException("无法催促别人的商机");
         }
 
@@ -567,7 +568,8 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         }
         List<Integer> memberIdList = unionMemberService.getIdList(memberList);
         // （1）	获取已支付的商机佣金收入总额
-        return unionBrokerageIncomeService.sumValidMoneyByBusIdAndTypeAndMemberIdList(busId, BrokerageConstant.INCOME_TYPE_OPPORTUNITY, memberIdList);
+        return unionOpportunityService.sumValidBrokerageMoneyByToMemberIdListAndAcceptStatusAndIsClose(memberIdList,
+                OpportunityConstant.ACCEPT_STATUS_CONFIRMED, OpportunityConstant.IS_CLOSE_YES);
     }
 
     @Override

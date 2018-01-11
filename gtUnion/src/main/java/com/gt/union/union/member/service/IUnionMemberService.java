@@ -76,6 +76,17 @@ public interface IUnionMemberService {
     UnionMember getValidOwnerByUnionId(Integer unionId) throws Exception;
 
     /**
+     * 获取商家盟员信息
+     *
+     * @param busId    商家id
+     * @param memberId 盟员id
+     * @param unionId  联盟id
+     * @return UnionMember
+     * @throws Exception 统一处理异常
+     */
+    UnionMember getByBusIdAndIdAndUnionId(Integer busId, Integer memberId, Integer unionId) throws Exception;
+
+    /**
      * 获取未删除的商家盟主信息
      *
      * @param busId 商家id
