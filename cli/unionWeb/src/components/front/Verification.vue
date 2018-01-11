@@ -319,6 +319,9 @@ export default {
               }
               this.isIntegral = this.form.currentUnion.isIntegral;
               this.isIntegral ? (this.isIntegral_ = true) : (this.isIntegral_ = false);
+            } else {
+              this.visible1 = true;
+              this.visible2 = false;
             }
           })
           .then(res => {
