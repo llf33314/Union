@@ -29,6 +29,7 @@
 </template>
 
 <script>
+import $http from '@/utils/http.js';
 import Breadcrumb from '@/components/public-components/Breadcrumb';
 import CreateStepBasic from './CreateStepBasic';
 import CreateStepUnion from './CreateStepUnion';
