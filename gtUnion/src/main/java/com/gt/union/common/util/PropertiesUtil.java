@@ -66,6 +66,8 @@ public class PropertiesUtil {
 
 	private static String tokenKey;
 
+	private static String unionAppId;
+
 	/**
 	 * 获取资源访问地址
 	 * @return resourceUrl
@@ -283,6 +285,14 @@ public class PropertiesUtil {
 	}
 
 	/**
+	 * 获取小程序appid
+	 * @return
+	 */
+	public static String getUnionAppId() {
+		return unionAppId;
+	}
+
+	/**
 	 * 获取token的key
 	 * @return
 	 */
@@ -423,5 +433,10 @@ public class PropertiesUtil {
 	@Value("${wxapp.sso.token.des_key}")
 	public void setTokenKey(String tokenKey) {
 		PropertiesUtil.tokenKey = tokenKey;
+	}
+
+	@Value("${union.appid}")
+	public void setUnionAppId(String unionAppId) {
+		PropertiesUtil.unionAppId = unionAppId;
 	}
 }
