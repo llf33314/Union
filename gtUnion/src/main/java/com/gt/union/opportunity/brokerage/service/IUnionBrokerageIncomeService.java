@@ -43,15 +43,6 @@ public interface IUnionBrokerageIncomeService {
     //********************************************* Base On Business - other *******************************************
 
     /**
-     * 统计商家的佣金总和
-     *
-     * @param busId 商家id
-     * @return Double
-     * @throws Exception 统一处理异常
-     */
-    Double sumMoneyByBusId(Integer busId) throws Exception;
-
-    /**
      * 统计未删除的佣金收入总和
      *
      * @param busId 商家id
