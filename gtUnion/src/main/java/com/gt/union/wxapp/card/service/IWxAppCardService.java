@@ -2,13 +2,8 @@ package com.gt.union.wxapp.card.service;
 
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.Member;
-import com.gt.union.common.exception.ParamException;
-import com.gt.union.wxapp.card.vo.CardDetailListVO;
 import com.gt.union.wxapp.card.vo.CardDetailVO;
-import com.gt.union.wxapp.card.vo.IndexVO;
 import com.gt.union.wxapp.card.vo.MyCardDetailVO;
-
-import java.util.List;
 
 /**
  * @author hongjiye
@@ -17,13 +12,14 @@ import java.util.List;
 public interface IWxAppCardService {
 
 	/**
-	 * 获取商家h5联盟卡首页信息
-	 *
-	 * @param phone 粉丝用户手机号
-	 * @param busId 商家id
+	 * 联盟卡粉丝端小程序首页列表数据
+	 * @param phone	粉丝用户手机号
+	 * @param busId	商家id
+	 * @param page	分页参数
 	 * @return
+	 * @throws Exception
 	 */
-	IndexVO getIndexVO(String phone, Integer busId) throws Exception;
+	Page listWxAppCardPage(String phone, Integer busId, Page page) throws Exception;
 
 	/**
 	 * 联盟卡详情
@@ -32,9 +28,10 @@ public interface IWxAppCardService {
 	 * @param busId      商家id
 	 * @param unionId    联盟id
 	 * @param activityId 活动卡id
+	 * @param unionMemberId
 	 * @return
 	 */
-	CardDetailVO getCardDetail(String phone, Integer busId, Integer unionId, Integer activityId) throws Exception;
+	CardDetailVO getCardDetail(String phone, Integer busId, Integer unionId, Integer activityId, Integer unionMemberId) throws Exception;
 
 	/**
 	 * 获取我的联盟卡详情
@@ -75,23 +72,15 @@ public interface IWxAppCardService {
 	Page pageConsumeByPhone(Page page, String phone) throws Exception;
 
 	/**
-	 * 小程序登录
-	 * @param busId		商家id
-	 * @param memberId	用户id
-	 * @return
-	 */
-	String login(Integer busId, Integer memberId) throws Exception;
-
-	/**
 	 * 分页获取联盟卡信息盟员列表信息
-	 * @param phone		手机号
-	 * @param busId		商家id
-	 * @param unionId	联盟id
-	 * @param activityId	活动卡id
-	 * @param page		分页参数
+	 * @param busId        商家id
+	 * @param unionId    联盟id
+	 * @param activityId    活动卡id
+	 * @param page        分页参数
+	 * @param unionMemberId
 	 * @return
 	 */
-	Page listCardDetailPage(String phone, Integer busId, Integer unionId, Integer activityId, Page page) throws Exception;
+	Page listCardDetailPage(Integer busId, Integer unionId, Integer activityId, Page page, Integer unionMemberId) throws Exception;
 
 	/**
 	 * 分页获取联我的联盟卡列表信息
@@ -109,4 +98,5 @@ public interface IWxAppCardService {
 	 * @return
 	 */
 	String getPayParam(Integer duoFenMemberId, String orderNo, String phone) throws Exception;
+
 }

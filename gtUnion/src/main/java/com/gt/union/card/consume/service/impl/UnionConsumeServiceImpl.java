@@ -203,12 +203,16 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         List<UnionMember> memberList = unionMemberService.listByBusId(busId);
         List<Integer> memberIdList = unionMemberService.getIdList(memberList);
 
+        List<Integer> payStatusList = new ArrayList<>();
+        payStatusList.add(ConsumeConstant.PAY_STATUS_SUCCESS);
+        payStatusList.add(ConsumeConstant.PAY_STATUS_FAIL);
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .in("member_id", memberIdList)
                 .eq(ListUtil.isEmpty(memberList), "member_id", null)
                 .eq(optUnionId != null, "union_id = {0}", optUnionId)
                 .eq(optShopId != null, "shop_id = {0}", optShopId)
+                .in("pay_status", payStatusList)
                 .ge(optBeginTime != null, "create_time >= {0}", optBeginTime)
                 .le(optEndTime != null, "create_time <= {0}", optEndTime)
                 .exists(StringUtil.isNotEmpty(optCardNumber) || StringUtil.isNotEmpty(optPhone),
@@ -233,12 +237,16 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         List<UnionMember> memberList = unionMemberService.listByBusId(busId);
         List<Integer> memberIdList = unionMemberService.getIdList(memberList);
 
+        List<Integer> payStatusList = new ArrayList<>();
+        payStatusList.add(ConsumeConstant.PAY_STATUS_SUCCESS);
+        payStatusList.add(ConsumeConstant.PAY_STATUS_FAIL);
         EntityWrapper<UnionConsume> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .in("member_id", memberIdList)
                 .eq(ListUtil.isEmpty(memberList), "member_id", null)
                 .eq(optUnionId != null, "union_id = {0}", optUnionId)
                 .eq(optShopId != null, "shop_id = {0}", optShopId)
+                .in("pay_status", payStatusList)
                 .ge(optBeginTime != null, "create_time >= {0}", optBeginTime)
                 .le(optEndTime != null, "create_time <= {0}", optEndTime)
                 .exists(StringUtil.isNotEmpty(optCardNumber) || StringUtil.isNotEmpty(optPhone),
