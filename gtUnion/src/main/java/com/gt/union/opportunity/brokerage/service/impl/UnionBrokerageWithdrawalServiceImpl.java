@@ -60,21 +60,6 @@ public class UnionBrokerageWithdrawalServiceImpl implements IUnionBrokerageWithd
     //********************************************* Base On Business - other *******************************************
 
     @Override
-    public Double sumMoneyByBusId(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionBrokerageWithdrawal> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("bus_id", busId);
-
-        entityWrapper.setSqlSelect("IfNull(SUM(money),0) moneySum");
-        Map<String, Object> resultMap = unionBrokerageWithdrawalDao.selectMap(entityWrapper);
-
-        return Double.valueOf(resultMap.get("moneySum").toString());
-    }
-
-    @Override
     public Double sumValidMoneyByBusId(Integer busId) throws Exception {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);

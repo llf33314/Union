@@ -266,6 +266,19 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
 
     //********************************************* Base On Business - other *******************************************
 
+    @Override
+    public boolean existValidByPhone(String phone) throws Exception {
+        if (phone == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionCardFan> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
+                .eq("phone", phone);
+
+        return unionCardFanDao.selectCount(entityWrapper) > 0;
+    }
+
     //********************************************* Base On Business - filter ******************************************
 
     @Override

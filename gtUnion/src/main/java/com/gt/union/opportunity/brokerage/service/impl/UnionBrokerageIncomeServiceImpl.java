@@ -83,21 +83,6 @@ public class UnionBrokerageIncomeServiceImpl implements IUnionBrokerageIncomeSer
     //********************************************* Base On Business - other *******************************************
 
     @Override
-    public Double sumMoneyByBusId(Integer busId) throws Exception {
-        if (busId == null) {
-            throw new ParamException(CommonConstant.PARAM_ERROR);
-        }
-
-        EntityWrapper<UnionBrokerageIncome> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("bus_id", busId);
-
-        entityWrapper.setSqlSelect("IfNull(SUM(money),0) moneySum");
-
-        Map<String, Object> resultMap = unionBrokerageIncomeDao.selectMap(entityWrapper);
-        return Double.valueOf(resultMap.get("moneySum").toString());
-    }
-
-    @Override
     public Double sumValidMoneyByBusId(Integer busId) throws Exception {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);

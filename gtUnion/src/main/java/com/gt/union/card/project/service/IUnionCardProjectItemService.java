@@ -40,6 +40,18 @@ public interface IUnionCardProjectItemService {
     List<UnionCardProjectItem> listValidByProjectIdAndType(Integer projectId, Integer type) throws Exception;
 
     /**
+     * 获取未删除的优惠列表信息
+     * 
+     * @param unionId       联盟id
+     * @param memberId      盟员id
+     * @param activityId    活动id
+     * @param projectStatus 项目状态
+     * @return List<UnionCardProjectItem>
+     * @throws Exception 统一处理异常
+     */
+    List<UnionCardProjectItem> listValidByUnionIdAndMemberIdAndActivityIdAndProjectStatus(Integer unionId, Integer memberId, Integer activityId, Integer projectStatus) throws Exception;
+
+    /**
      * 前台-联盟卡消费核销-开启优惠项目-查询活动项目优惠列表
      *
      * @param busId      商家id
@@ -102,7 +114,7 @@ public interface IUnionCardProjectItemService {
      * @throws Exception 统一处理异常
      */
     boolean existValidByUnionIdAndMemberIdAndActivityIdAndProjectStatusAndItemType(Integer unionId, Integer memberId, Integer activityId, Integer projectStatus, Integer itemType) throws Exception;
-    
+
     /**
      * 是否存在未删除的项目优惠;
      *
