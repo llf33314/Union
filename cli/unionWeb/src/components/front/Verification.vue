@@ -318,7 +318,9 @@ export default {
                 this.unionId = this.form.unionList[0].id;
               }
               this.isIntegral = this.form.currentUnion.isIntegral;
-              this.isIntegral ? (this.isIntegral_ = true) : (this.isIntegral_ = false);
+              this.isIntegral && this.form.currentMember.integralExchangeRatio && this.form.integral > 0
+                ? (this.isIntegral_ = true)
+                : (this.isIntegral_ = false);
             } else {
               this.visible1 = true;
               this.visible2 = false;
@@ -356,7 +358,9 @@ export default {
       this.price = '';
       this.isProjectAvailable_ = false;
       this.isIntegral = '';
-      this.isIntegral ? (this.isIntegral_ = true) : (this.isIntegral_ = false);
+      this.isIntegral && this.form.currentMember.integralExchangeRatio && this.form.integral > 0
+        ? (this.isIntegral_ = true)
+        : (this.isIntegral_ = false);
       if (this.unionId) {
         $http
           .get(`/unionCardFan/search?numberOrPhone=${this.input}&unionId=${this.unionId}`)
@@ -370,7 +374,9 @@ export default {
               this.form.integral = res.data.data.integral;
               this.form.isProjectAvailable = res.data.data.isProjectAvailable;
               this.isIntegral = this.form.currentUnion.isIntegral;
-              this.isIntegral ? (this.isIntegral_ = true) : (this.isIntegral_ = false);
+              this.isIntegral && this.form.currentMember.integralExchangeRatio && this.form.integral > 0
+                ? (this.isIntegral_ = true)
+                : (this.isIntegral_ = false);
               this.isProjectAvailable_ = false;
             }
           })
