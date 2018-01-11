@@ -129,6 +129,17 @@ public class UnionMemberServiceImpl implements IUnionMemberService {
     }
 
     @Override
+    public UnionMember getByBusIdAndIdAndUnionId(Integer busId, Integer memberId, Integer unionId) throws Exception {
+        if (busId == null || memberId == null || unionId == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        UnionMember result = getById(memberId);
+
+        return result != null && busId.equals(result.getBusId()) && unionId.equals(result.getUnionId()) ? result : null;
+    }
+
+    @Override
     public UnionMember getValidOwnerByBusId(Integer busId) throws Exception {
         if (busId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
