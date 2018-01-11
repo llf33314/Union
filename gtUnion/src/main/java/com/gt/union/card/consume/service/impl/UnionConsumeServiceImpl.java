@@ -374,7 +374,6 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
                 throw new BusinessException("未设置积分兑换率");
             }
             BigDecimal integralMoney = BigDecimalUtil.multiply(payMoney, integralExchangeRatio);
-            payMoney = BigDecimalUtil.subtract(payMoney, integralMoney);
 
             if (integral == null) {
                 throw new BusinessException("不存在积分信息，无法使用积分");
@@ -383,10 +382,13 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
             Double useIntegralPerMoney = dictService.getExchangeIntegral();
             BigDecimal useIntegral = BigDecimalUtil.multiply(integralMoney, useIntegralPerMoney);
             if (useIntegral.doubleValue() > integral.getIntegral()) {
-                throw new BusinessException("抵扣积分数大于可使用积分数");
+                useIntegral = BigDecimal.valueOf(integral.getIntegral());
+                integralMoney = BigDecimalUtil.divide(useIntegral, useIntegralPerMoney);
             }
             saveConsume.setUseIntegral(BigDecimalUtil.toDouble(useIntegral));
             saveConsume.setIntegralMoney(BigDecimalUtil.toDouble(integralMoney));
+
+            payMoney = BigDecimalUtil.subtract(payMoney, integralMoney);
         }
         // 支持0.5元精度失算
         if (Math.abs(BigDecimalUtil.subtract(payMoney, voConsume.getPayMoney()).doubleValue()) > 0.5) {
