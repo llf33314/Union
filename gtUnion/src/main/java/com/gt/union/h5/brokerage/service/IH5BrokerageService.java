@@ -58,7 +58,7 @@ public interface IH5BrokerageService {
      * @return List<UnionBrokerageWithdrawal>
      * @throws Exception 统一处理异常
      */
-    Page listPageWithdrawalHistory(H5BrokerageUser h5BrokerageUser, Page page) throws Exception;
+    Page pageWithdrawalHistory(H5BrokerageUser h5BrokerageUser, Page page) throws Exception;
 
     /**
      * 佣金平台-首页-我要提现-佣金明细-推荐佣金-分页；佣金平台-首页-我需支付-已支付-分页
@@ -69,7 +69,7 @@ public interface IH5BrokerageService {
      * @return List<OpportunityBrokerageVO>
      * @throws Exception 统一处理异常
      */
-    Page listPageOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception;
+    Page pageOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception;
 
     /**
      * 拥挤平台-首页-我要提现-佣金明细-售卡佣金-分页
@@ -80,7 +80,7 @@ public interface IH5BrokerageService {
      * @return
      * @throws Exception 统一处理异常
      */
-    Page listPageCardBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception;
+    Page pageCardBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception;
 
     /**
      * 佣金平台-首页-我需支付-未支付-分页
@@ -91,7 +91,7 @@ public interface IH5BrokerageService {
      * @return List<OpportunityBrokerageVO>
      * @throws Exception 统一处理异常
      */
-    Page listPageUnPaidOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception;
+    Page pageUnPaidOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception;
 
     /**
      * 佣金平台-首页-我未收佣金-分页
@@ -102,7 +102,7 @@ public interface IH5BrokerageService {
      * @return List<OpportunityBrokerageVO>
      * @throws Exception 统一处理异常
      */
-    Page listPageUnReceivedOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception;
+    Page pageUnReceivedOpportunityBrokerageVO(H5BrokerageUser h5BrokerageUser, Integer optUnionId, Page page) throws Exception;
 
     //***************************************** Domain Driven Design - save ********************************************
 

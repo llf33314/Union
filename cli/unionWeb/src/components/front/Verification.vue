@@ -278,14 +278,14 @@ export default {
       this.isIntegral_ ? (temData = 1) : (temData = 0);
       this.deductionPrice =
         this.price * this.form.currentMember.discount * this.form.currentMember.integralExchangeRatio * temData;
-      this.deductionIntegral = this.deductionPrice * 100 / this.form.exchangeIntegral;
+      this.deductionIntegral = this.deductionPrice * this.form.exchangeIntegral;
       if (this.deductionIntegral > this.form.integral) {
         this.deductionIntegral = this.form.integral;
-        this.deductionPrice = this.deductionIntegral * this.form.exchangeIntegral;
+        this.deductionPrice = this.deductionIntegral / this.form.exchangeIntegral;
       }
       if (this.deductionPrice > this.price * this.form.currentMember.discount) {
         this.deductionPrice = this.price * this.form.currentMember.discount;
-        this.deductionIntegral = this.deductionPrice / this.form.exchangeIntegral;
+        this.deductionIntegral = this.deductionPrice * this.form.exchangeIntegral;
       }
       this.price1 = this.price * this.form.currentMember.discount - this.deductionPrice;
     },
@@ -319,6 +319,9 @@ export default {
               }
               this.isIntegral = this.form.currentUnion.isIntegral;
               this.isIntegral ? (this.isIntegral_ = true) : (this.isIntegral_ = false);
+            } else {
+              this.visible1 = true;
+              this.visible2 = false;
             }
           })
           .then(res => {
@@ -449,14 +452,14 @@ export default {
         this.isIntegral_ ? (temData = 1) : (temData = 0);
         this.deductionPrice =
           this.price * this.form.currentMember.discount * this.form.currentMember.integralExchangeRatio * temData;
-        this.deductionIntegral = this.deductionPrice * 100 / this.form.exchangeIntegral;
+        this.deductionIntegral = this.deductionPrice * this.form.exchangeIntegral;
         if (this.deductionIntegral > this.form.integral) {
           this.deductionIntegral = this.form.integral;
-          this.deductionPrice = this.deductionIntegral * this.form.exchangeIntegral;
+          this.deductionPrice = this.deductionIntegral / this.form.exchangeIntegral;
         }
         if (this.deductionPrice > this.price * this.form.currentMember.discount) {
           this.deductionPrice = this.price * this.form.currentMember.discount;
-          this.deductionIntegral = this.deductionPrice / this.form.exchangeIntegral;
+          this.deductionIntegral = this.deductionPrice * this.form.exchangeIntegral;
         }
         this.price1 = this.price * this.form.currentMember.discount - this.deductionPrice;
       }
@@ -472,7 +475,7 @@ export default {
       } else {
         data.shopId = '';
       }
-      data.isUseIntegral = (this.isIntegral_ && this.form.integral) - 0;
+      data.isUseIntegral = this.isIntegral_ - 0;
       data.consume = {};
       data.consume.consumeMoney = this.price - 0;
       data.consume.payMoney = this.price1 - 0;
@@ -508,7 +511,7 @@ export default {
         } else {
           data.shopId = '';
         }
-        data.isUseIntegral = (this.isIntegral_ && this.form.integral) - 0;
+        data.isUseIntegral = this.isIntegral_ - 0;
         data.consume = {};
         data.consume.consumeMoney = this.price - 0;
         data.consume.payMoney = this.price1 - 0;
