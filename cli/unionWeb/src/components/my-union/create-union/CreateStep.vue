@@ -29,6 +29,7 @@
 </template>
 
 <script>
+import $http from '@/utils/http.js';
 import Breadcrumb from '@/components/public-components/Breadcrumb';
 import CreateStepBasic from './CreateStepBasic';
 import CreateStepUnion from './CreateStepUnion';
@@ -44,6 +45,20 @@ export default {
       active: 0,
       basicFormData: {}
     };
+  },
+  created: function() {
+    $http
+      .get(`/unionMainCreate/checkPermit`)
+      .then(res => {
+        if (res.data.success && !res.data.data.isPay) {
+          this.$store.commit('permitIdChange', res.data.data.permitId);
+        } else if (res.data.success && res.data.data.isPay) {
+          this.$router.push({ path: '/my-union/no-register' });
+        }
+      })
+      .catch(err => {
+        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+      });
   },
   methods: {
     activeChange(v) {
