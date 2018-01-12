@@ -36,10 +36,10 @@ public class ErpApiController {
 	@RequestMapping(value = "/list/erpType", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
 	public GtJsonResult<List<ErpTypeVO>> listErpType(HttpServletRequest request) throws Exception {
 		BusUser busUser = SessionUtils.getLoginUser(request);
-		if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-			throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
-		}
 		Integer busId = busUser.getId();
+		if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+			busId = busUser.getPid();
+		}
 		List<ErpTypeVO> list = erpService.listErpByBusId(busId);
 		return GtJsonResult.instanceSuccessMsg(list);
 	}
@@ -54,10 +54,11 @@ public class ErpApiController {
 					@ApiParam(value = "搜索条件", name = "search", required = false)
 					@RequestParam(value = "search", required = false) String search) throws Exception {
 		BusUser busUser = SessionUtils.getLoginUser(request);
+		Integer busId = busUser.getId();
 		if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-			throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
+			busId = busUser.getPid();
 		}
-		List<ErpServerVO> list = erpService.listErpServer(shopId, erpModel, search, page, busUser.getId());
+		List<ErpServerVO> list = erpService.listErpServer(shopId, erpModel, search, page, busId);
 		page.setRecords(list);
 		return GtJsonResult.instanceSuccessMsg(page);
 	}

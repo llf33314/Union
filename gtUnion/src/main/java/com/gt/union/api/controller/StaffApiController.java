@@ -38,9 +38,6 @@ public class StaffApiController {
 					 @ApiParam(value = "门店id", name = "shopId", required = true)
 					 @PathVariable(value = "shopId") Integer shopId) throws Exception {
 		BusUser busUser = SessionUtils.getLoginUser(request);
-		if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-			throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
-		}
 		List<TCommonStaff> list = commonStaffService.listTCommonStaffByShopId(shopId, busUser.getId());
 		return GtJsonResult.instanceSuccessMsg(list);
 	}

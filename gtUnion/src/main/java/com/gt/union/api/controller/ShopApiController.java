@@ -4,6 +4,7 @@ import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.api.client.shop.ShopService;
 import com.gt.union.api.client.shop.vo.ShopVO;
+import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.response.GtJsonResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -34,6 +35,9 @@ public class ShopApiController {
 	public GtJsonResult<List<ShopVO>> listShopByBusId(HttpServletRequest request) throws Exception {
 		BusUser busUser = SessionUtils.getLoginUser(request);
 		Integer busId = busUser.getId();
+		if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+			busId = busUser.getPid();
+		}
 		List<ShopVO> list = shopService.listByBusId(busId);
 		return GtJsonResult.instanceSuccessMsg(list);
 	}
