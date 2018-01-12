@@ -352,7 +352,7 @@ export default {
               v.itemList.forEach(val => {
                 v.itemList_.push(val.name);
               });
-              v.itemList_ = v.nameList.join(',');
+              v.itemList_ = v.itemList_.join(',');
             });
             this.detaiVisible = true;
           } else {
