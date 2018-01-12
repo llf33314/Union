@@ -114,6 +114,7 @@ public class UnionMainCreateServiceImpl implements IUnionMainCreateService {
                 savePermit.setBusId(busId);
                 savePermit.setValidity(busUser.getEndTime());
                 savePermit.setPackageId(unionPackage.getId());
+                savePermit.setOrderStatus(UnionConstant.PERMIT_ORDER_STATUS_SUCCESS);
                 unionMainPermitService.save(savePermit);
 
                 result.setIsPay(CommonConstant.COMMON_NO);
