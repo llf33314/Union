@@ -1,8 +1,6 @@
 package com.gt.union.common.util;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
+import java.lang.reflect.*;
 import java.util.*;
 
 /**
@@ -12,27 +10,29 @@ import java.util.*;
  * @version 2017-11-22 17:45:00
  */
 public class MockUtil {
-    public static final String BASIC_BYTE = "byte";
-    public static final String BASIC_SHORT = "short";
-    public static final String BASIC_INT = "int";
-    public static final String BASIC_LONG = "long";
-    public static final String BASIC_FLOAT = "float";
-    public static final String BASIC_DOUBLE = "double";
-    public static final String BASIC_CHAR = "char";
-    public static final String BASIC_BOOLEAN = "boolean";
-    public static final String OBJECT_BYTE = "java.lang.Byte";
-    public static final String OBJECT_SHORT = "java.lang.Short";
-    public static final String OBJECT_INTEGER = "java.lang.Integer";
-    public static final String OBJECT_LONG = "java.lang.Long";
-    public static final String OBJECT_FLOAT = "java.lang.Float";
-    public static final String OBJECT_DOUBLE = "java.lang.Double";
-    public static final String OBJECT_CHARACTER = "java.lang.Character";
-    public static final String OBJECT_BOOLEAN = "java.lang.Boolean";
-    public static final String OBJECT_CHAR_SEQUENCE = "java.lang.CharSequence";
-    public static final String OBJECT_STRING = "java.lang.String";
-    public static final String OBJECT_DATE = "java.util.Date";
-    public static final String OBJECT_LIST = "java.util.List";
-    private static final Set<String> baseDataTypeSet = new HashSet() {
+    private static final int DEFAULT_LIST_SITE = 15;
+
+    private static final String BASIC_BYTE = "byte";
+    private static final String BASIC_SHORT = "short";
+    private static final String BASIC_INT = "int";
+    private static final String BASIC_LONG = "long";
+    private static final String BASIC_FLOAT = "float";
+    private static final String BASIC_DOUBLE = "double";
+    private static final String BASIC_CHAR = "char";
+    private static final String BASIC_BOOLEAN = "boolean";
+    private static final String OBJECT_BYTE = "java.lang.Byte";
+    private static final String OBJECT_SHORT = "java.lang.Short";
+    private static final String OBJECT_INTEGER = "java.lang.Integer";
+    private static final String OBJECT_LONG = "java.lang.Long";
+    private static final String OBJECT_FLOAT = "java.lang.Float";
+    private static final String OBJECT_DOUBLE = "java.lang.Double";
+    private static final String OBJECT_CHARACTER = "java.lang.Character";
+    private static final String OBJECT_BOOLEAN = "java.lang.Boolean";
+    private static final String OBJECT_CHAR_SEQUENCE = "java.lang.CharSequence";
+    private static final String OBJECT_STRING = "java.lang.String";
+    private static final String OBJECT_DATE = "java.util.Date";
+    private static final String OBJECT_LIST = "java.util.List";
+    private static final Set<String> BASE_DATA_TYPE_SET = new HashSet<String>() {
         {
             add(BASIC_BYTE);
             add(BASIC_BYTE);
@@ -57,38 +57,175 @@ public class MockUtil {
         }
     };
 
-    public static <T> T get(Class<T> tClass) {
-        return get(tClass, null);
+    /**
+     * 获取单个模拟对象
+     *
+     * @param clazz class类
+     * @param <T>   泛型
+     * @return T
+     */
+    public static <T> T get(Class<T> clazz) {
+        return get(clazz, null);
     }
 
-    public static <T> T get(Class<T> tClass, Map<String, List<Object>> field2SourceListMap) {
-        return mock(tClass, field2SourceListMap);
+    /**
+     * 获取单个模拟对象
+     *
+     * @param clazz            class类
+     * @param field2SrcListMap 属性到模拟数据源的映射
+     * @param <T>              泛型
+     * @return T
+     */
+    public static <T> T get(Class<T> clazz, Map<String, List<Object>> field2SrcListMap) {
+        return mock(clazz, field2SrcListMap);
     }
 
-    public static <T> List<T> list(Class<T> tClass, int size) {
-        return list(tClass, size, null);
+    /**
+     * 获取模拟对象列表
+     *
+     * @param clazz class类
+     * @param size  数量
+     * @param <T>   泛型
+     * @return T
+     */
+    public static <T> List<T> list(Class<T> clazz, int size) {
+        return list(clazz, size, null);
     }
 
-    public static <T> List<T> list(Class<T> tClass, int size, Map<String, List<Object>> field2SourceListMap) {
+    /**
+     * 获取模拟对象列表
+     *
+     * @param clazz            class类
+     * @param size             数量
+     * @param field2SrcListMap 属性到模拟数据源的映射
+     * @param <T>              泛型
+     * @return T
+     */
+    public static <T> List<T> list(Class<T> clazz, int size, Map<String, List<Object>> field2SrcListMap) {
         List<T> result = new ArrayList<>(size);
         for (int i = 0; i < size; i++) {
-            result.add(get(tClass, field2SourceListMap));
+            result.add(get(clazz, field2SrcListMap));
         }
         return result;
     }
 
-    private static <T> T mock(Class<T> tClass, Map<String, List<Object>> field2SourceListMap) {
-        Random random = new Random(System.currentTimeMillis());
-        return mockData(tClass, field2SourceListMap, random);
+    /**
+     * 获取联盟常用字段属性值范围
+     *
+     * @return Map
+     */
+    public static Map<String, List<Object>> getUnionMockMap() {
+        Map<String, List<Object>> field2SrcListMap = new HashMap<>();
+        field2SrcListMap.put("delStatus", new ArrayList<Object>() {
+            {
+                add(0);
+                add(1);
+            }
+        });
+        field2SrcListMap.put("joinType", new ArrayList<Object>() {
+            {
+                add(1);
+                add(2);
+            }
+        });
+        field2SrcListMap.put("isIntegral", new ArrayList<Object>() {
+            {
+                add(0);
+                add(1);
+            }
+        });
+        field2SrcListMap.put("isUnionOwner", new ArrayList<Object>() {
+            {
+                add(0);
+                add(1);
+            }
+        });
+        field2SrcListMap.put("status", new ArrayList<Object>() {
+            {
+                add(1);
+                add(2);
+                add(3);
+                add(4);
+            }
+        });
+        field2SrcListMap.put("type", new ArrayList<Object>() {
+            {
+                add(1);
+                add(2);
+                add(3);
+            }
+        });
+        field2SrcListMap.put("isIntegral", new ArrayList<Object>() {
+            {
+                add(0);
+                add(1);
+            }
+        });
+        field2SrcListMap.put("orderStatus", new ArrayList<Object>() {
+            {
+                add(1);
+                add(2);
+                add(3);
+            }
+        });
+        field2SrcListMap.put("payType", new ArrayList<Object>() {
+            {
+                add(1);
+                add(2);
+            }
+        });
+        field2SrcListMap.put("confirmStatus", new ArrayList<Object>() {
+            {
+                add(1);
+                add(2);
+                add(3);
+            }
+        });
+        field2SrcListMap.put("acceptStatus", new ArrayList<Object>() {
+            {
+                add(1);
+                add(2);
+                add(3);
+            }
+        });
+        field2SrcListMap.put("isClose", new ArrayList<Object>() {
+            {
+                add(0);
+                add(1);
+            }
+        });
+        field2SrcListMap.put("isProjectCheck", new ArrayList<Object>() {
+            {
+                add(0);
+                add(1);
+            }
+        });
+        field2SrcListMap.put("payStatus", new ArrayList<Object>() {
+            {
+                add(1);
+                add(2);
+                add(3);
+                add(4);
+            }
+        });
+
+        return field2SrcListMap;
     }
 
-    private static <T> T mockData(Class<T> clazz, Map<String, List<Object>> field2SourceListMap, Random random) {
-        if (baseDataTypeSet.contains(clazz.getName())) {
-            return (T) mockData4BaseDataType(clazz, random);
+    private static <T> T mock(Class<T> clazz, Map<String, List<Object>> field2SrcListMap) {
+        Random random = new Random(System.currentTimeMillis());
+        return mockData(clazz, field2SrcListMap, random);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> T mockData(Class<T> clazz, Map<String, List<Object>> field2SrcListMap, Random random) {
+        if (BASE_DATA_TYPE_SET.contains(clazz.getName())) {
+            return mockData4BaseDataType(clazz, random);
         }
+
         T result;
         try {
-            //防止构造函数私有而报错
+            //防止构造函数私有化而报错
             Constructor defaultConstructor = clazz.getDeclaredConstructors()[0];
             defaultConstructor.setAccessible(true);
             Class[] paramTypeArray = defaultConstructor.getParameterTypes();
@@ -110,7 +247,7 @@ public class MockUtil {
             }
             field.setAccessible(true);
             try {
-                Object obj = mockData4Field(field, field2SourceListMap, random);
+                Object obj = mockData4Field(field, field2SrcListMap, random);
                 field.set(result, obj);
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
@@ -119,54 +256,74 @@ public class MockUtil {
         return result;
     }
 
-    private static Object mockData4Field(Field field, Map<String, List<Object>> field2SourceListMap, Random random) {
-        if (field2SourceListMap != null && field2SourceListMap.containsKey(field.getName())) {
-            //是否指定随机来源范围
-            List<Object> sourceList = field2SourceListMap.get(field.getName());
-            return ListUtil.isEmpty(sourceList) ? null : sourceList.get(random.nextInt(sourceList.size()));
-        }
-        if (baseDataTypeSet.contains(field.getType().getName())) {
-            //是否是基本数据类型
-            return mockData4BaseDataType(field.getType(), random);
-        }
-        return mockData(field.getType(), field2SourceListMap, random);
-    }
-
-    private static Object mockData4BaseDataType(Class tClass, Random random) {
-        switch (tClass.getName()) {
+    @SuppressWarnings("unchecked")
+    private static <T> T mockData4BaseDataType(Class<T> clazz, Random random) {
+        switch (clazz.getName()) {
             case BASIC_BYTE:
             case OBJECT_BYTE:
-                return (byte) random.nextInt(Byte.MAX_VALUE);
+                return (T) (Object) (byte) random.nextInt(Byte.MAX_VALUE);
             case BASIC_SHORT:
             case OBJECT_SHORT:
-                return (short) random.nextInt(Byte.MAX_VALUE);
+                return (T) (Object) (short) random.nextInt(Byte.MAX_VALUE);
             case BASIC_INT:
             case OBJECT_INTEGER:
-                return random.nextInt(Byte.MAX_VALUE);
+                return (T) (Object) random.nextInt(Byte.MAX_VALUE);
             case BASIC_LONG:
             case OBJECT_LONG:
-                return random.nextLong();
+                return (T) (Object) random.nextLong();
             case BASIC_FLOAT:
             case OBJECT_FLOAT:
-                return random.nextFloat();
+                return (T) (Object) random.nextFloat();
             case BASIC_DOUBLE:
             case OBJECT_DOUBLE:
-                return random.nextDouble();
+                return (T) (Object) random.nextDouble();
             case BASIC_CHAR:
             case OBJECT_CHARACTER:
-                return (char) random.nextInt(Byte.MAX_VALUE);
+                return (T) (Object) (char) random.nextInt(Byte.MAX_VALUE);
             case BASIC_BOOLEAN:
             case OBJECT_BOOLEAN:
-                return random.nextBoolean();
+                return (T) (Object) random.nextBoolean();
             case OBJECT_CHAR_SEQUENCE:
             case OBJECT_STRING:
-                return "mock数据" + random.nextInt(Byte.MAX_VALUE);
+                return (T) (Object) ("mock数据" + random.nextInt(Byte.MAX_VALUE));
             case OBJECT_DATE:
-                return Calendar.getInstance().getTime();
-            case OBJECT_LIST:
-                return new ArrayList<>();
+                Calendar calendar = Calendar.getInstance();
+                calendar.add(Calendar.DATE, random.nextInt(365));
+                return (T) (Object) calendar.getTime();
             default:
                 return null;
         }
     }
+
+    private static Object mockData4Field(Field field, Map<String, List<Object>> field2SrcListMap, Random random) {
+        if (field2SrcListMap != null && field2SrcListMap.containsKey(field.getName())) {
+            //是否指定随机来源范围
+            List<Object> sourceList = field2SrcListMap.get(field.getName());
+            return ListUtil.isEmpty(sourceList) ? null : sourceList.get(random.nextInt(sourceList.size()));
+        }
+        if (BASE_DATA_TYPE_SET.contains(field.getType().getName())) {
+            //是否是基本数据类型
+            return mockData4BaseDataType(field.getType(), random);
+        }
+        if (OBJECT_LIST.equals(field.getType().getName())) {
+            ParameterizedType parameterizedType = (ParameterizedType) field.getGenericType();
+            Type[] types = parameterizedType.getActualTypeArguments();
+            Class clazz = (Class) (types[0]);
+            return mockData4ListType(clazz, field2SrcListMap, random);
+        }
+
+        return mockData(field.getType(), field2SrcListMap, random);
+    }
+
+    @SuppressWarnings("unchecked")
+    private static <T> List<T> mockData4ListType(Class<T> clazz, Map<String, List<Object>> field2SrcListMap, Random random) {
+        List<T> result = new ArrayList();
+
+        for (int i = 0; i < DEFAULT_LIST_SITE; i++) {
+            result.add(mockData(clazz, field2SrcListMap, random));
+        }
+
+        return result;
+    }
+
 }
