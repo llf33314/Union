@@ -438,6 +438,7 @@ export default {
     // 取消
     cancel(formName) {
       this.$refs[formName].resetFields();
+      eventBus.$emit('newUnionCard');
       this.init();
       affirm.style.display = 'block';
     },
