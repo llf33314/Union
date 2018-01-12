@@ -94,10 +94,6 @@ public class UnionBrokeragePayController {
         // mock
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             List<BrokeragePayVO> voList = MockUtil.list(BrokeragePayVO.class, page.getSize());
-            for (int i = 0; i < voList.size(); i++) {
-                List<UnionOpportunity> opportunityList = MockUtil.list(UnionOpportunity.class, 20);
-                voList.get(i).setOpportunityList(opportunityList);
-            }
             Page<BrokeragePayVO> result = (Page<BrokeragePayVO>) page;
             result = PageUtil.setRecord(result, voList);
             return GtJsonResult.instanceSuccessMsg(result).toString();
@@ -122,10 +118,6 @@ public class UnionBrokeragePayController {
         List<BrokeragePayVO> voList;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             voList = MockUtil.list(BrokeragePayVO.class, 20);
-            for (int i = 0; i < voList.size(); i++) {
-                List<UnionOpportunity> opportunityList = MockUtil.list(UnionOpportunity.class, 20);
-                voList.get(i).setOpportunityList(opportunityList);
-            }
         } else {
             voList = unionBrokeragePayService.listBrokeragePayVOByBusId(busId, unionId);
         }
