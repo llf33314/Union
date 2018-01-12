@@ -1,6 +1,7 @@
 package com.gt.union.api.amqp.receiver;
 
 import com.alibaba.fastjson.JSONArray;
+import com.gt.union.api.amqp.entity.TemplateSmsMessage;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.api.amqp.entity.PhoneMessage;
 import com.gt.union.common.config.AmqpConfig;
@@ -63,10 +64,16 @@ public class PhoneMessageReceiver {
                 try{
                     String msg = new String(message.getBody(), "UTF-8");
                     logger.info(msg);
-                    PhoneMessage phoneMessage = JSONArray.parseObject(msg, PhoneMessage.class);
-                    smsService.sendSms(phoneMessage);
+                    if(msg.indexOf("tmplId") > -1){
+                        TemplateSmsMessage templateSmsMessage = JSONArray.parseObject(msg, TemplateSmsMessage.class);
+                        smsService.sendTempSms(templateSmsMessage);
+                    }else {
+                        PhoneMessage phoneMessage = JSONArray.parseObject(msg, PhoneMessage.class);
+                        smsService.sendSms(phoneMessage);
+                    }
+
                 }catch (Exception e){
-                    logger.error("错误");
+                    logger.error("发送短信错误");
                 }finally {
                     //确认消息成功消费
                     channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
