@@ -85,7 +85,15 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         if (id == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
-        return unionConsumeProjectDao.selectById(id);
+
+        EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("id", id)
+                .exists(" SELECT c.id FROM t_union_consume c"
+                        + " WHERE c.id=t_union_consume_project.consume_id"
+                        + " AND c.del_status=" + CommonConstant.DEL_STATUS_NO
+                        + " AND c.pay_status=" + ConsumeConstant.PAY_STATUS_SUCCESS);
+        
+        return unionConsumeProjectDao.selectOne(entityWrapper);
     }
 
     @Override
@@ -96,7 +104,11 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
 
         EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("id", id);
+                .eq("id", id)
+                .exists(" SELECT c.id FROM t_union_consume c"
+                        + " WHERE c.id=t_union_consume_project.consume_id"
+                        + " AND c.del_status=" + CommonConstant.DEL_STATUS_NO
+                        + " AND c.pay_status=" + ConsumeConstant.PAY_STATUS_SUCCESS);
 
         return unionConsumeProjectDao.selectOne(entityWrapper);
     }
@@ -109,7 +121,11 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
 
         EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("id", id);
+                .eq("id", id)
+                .exists(" SELECT c.id FROM t_union_consume c"
+                        + " WHERE c.id=t_union_consume_project.consume_id"
+                        + " AND c.del_status=" + CommonConstant.DEL_STATUS_NO
+                        + " AND c.pay_status=" + ConsumeConstant.PAY_STATUS_SUCCESS);
 
         return unionConsumeProjectDao.selectOne(entityWrapper);
     }
@@ -139,7 +155,11 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         }
 
         EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("consume_id", consumeId);
+        entityWrapper.eq("consume_id", consumeId)
+                .exists(" SELECT c.id FROM t_union_consume c"
+                        + " WHERE c.id=t_union_consume_project.consume_id"
+                        + " AND c.del_status=" + CommonConstant.DEL_STATUS_NO
+                        + " AND c.pay_status=" + ConsumeConstant.PAY_STATUS_SUCCESS);
 
         return unionConsumeProjectDao.selectList(entityWrapper);
     }
@@ -152,7 +172,11 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
 
         EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("consume_id", consumeId);
+                .eq("consume_id", consumeId)
+                .exists(" SELECT c.id FROM t_union_consume c"
+                        + " WHERE c.id=t_union_consume_project.consume_id"
+                        + " AND c.del_status=" + CommonConstant.DEL_STATUS_NO
+                        + " AND c.pay_status=" + ConsumeConstant.PAY_STATUS_SUCCESS);
 
         return unionConsumeProjectDao.selectList(entityWrapper);
     }
@@ -165,7 +189,11 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
 
         EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("consume_id", consumeId);
+                .eq("consume_id", consumeId)
+                .exists(" SELECT c.id FROM t_union_consume c"
+                        + " WHERE c.id=t_union_consume_project.consume_id"
+                        + " AND c.del_status=" + CommonConstant.DEL_STATUS_NO
+                        + " AND c.pay_status=" + ConsumeConstant.PAY_STATUS_SUCCESS);
 
         return unionConsumeProjectDao.selectList(entityWrapper);
     }
@@ -177,7 +205,11 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         }
 
         EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("project_item_id", projectItemId);
+        entityWrapper.eq("project_item_id", projectItemId)
+                .exists(" SELECT c.id FROM t_union_consume c"
+                        + " WHERE c.id=t_union_consume_project.consume_id"
+                        + " AND c.del_status=" + CommonConstant.DEL_STATUS_NO
+                        + " AND c.pay_status=" + ConsumeConstant.PAY_STATUS_SUCCESS);
 
         return unionConsumeProjectDao.selectList(entityWrapper);
     }
@@ -190,7 +222,11 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
 
         EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("project_item_id", projectItemId);
+                .eq("project_item_id", projectItemId)
+                .exists(" SELECT c.id FROM t_union_consume c"
+                        + " WHERE c.id=t_union_consume_project.consume_id"
+                        + " AND c.del_status=" + CommonConstant.DEL_STATUS_NO
+                        + " AND c.pay_status=" + ConsumeConstant.PAY_STATUS_SUCCESS);
 
         return unionConsumeProjectDao.selectList(entityWrapper);
     }
@@ -203,7 +239,11 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
 
         EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("project_item_id", projectItemId);
+                .eq("project_item_id", projectItemId)
+                .exists(" SELECT c.id FROM t_union_consume c"
+                        + " WHERE c.id=t_union_consume_project.consume_id"
+                        + " AND c.del_status=" + CommonConstant.DEL_STATUS_NO
+                        + " AND c.pay_status=" + ConsumeConstant.PAY_STATUS_SUCCESS);
 
         return unionConsumeProjectDao.selectList(entityWrapper);
     }
@@ -215,7 +255,11 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         }
 
         EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
-        entityWrapper.eq("project_id", projectId);
+        entityWrapper.eq("project_id", projectId)
+                .exists(" SELECT c.id FROM t_union_consume c"
+                        + " WHERE c.id=t_union_consume_project.consume_id"
+                        + " AND c.del_status=" + CommonConstant.DEL_STATUS_NO
+                        + " AND c.pay_status=" + ConsumeConstant.PAY_STATUS_SUCCESS);
 
         return unionConsumeProjectDao.selectList(entityWrapper);
     }
@@ -228,7 +272,11 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
 
         EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
-                .eq("project_id", projectId);
+                .eq("project_id", projectId)
+                .exists(" SELECT c.id FROM t_union_consume c"
+                        + " WHERE c.id=t_union_consume_project.consume_id"
+                        + " AND c.del_status=" + CommonConstant.DEL_STATUS_NO
+                        + " AND c.pay_status=" + ConsumeConstant.PAY_STATUS_SUCCESS);
 
         return unionConsumeProjectDao.selectList(entityWrapper);
     }
@@ -241,7 +289,11 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
 
         EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_YES)
-                .eq("project_id", projectId);
+                .eq("project_id", projectId)
+                .exists(" SELECT c.id FROM t_union_consume c"
+                        + " WHERE c.id=t_union_consume_project.consume_id"
+                        + " AND c.del_status=" + CommonConstant.DEL_STATUS_NO
+                        + " AND c.pay_status=" + ConsumeConstant.PAY_STATUS_SUCCESS);
 
         return unionConsumeProjectDao.selectList(entityWrapper);
     }
@@ -253,7 +305,12 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         }
 
         EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
-        entityWrapper.in("id", idList).eq(ListUtil.isEmpty(idList), "id", null);
+        entityWrapper.in("id", idList)
+                .eq(ListUtil.isEmpty(idList), "id", null)
+                .exists(" SELECT c.id FROM t_union_consume c"
+                        + " WHERE c.id=t_union_consume_project.consume_id"
+                        + " AND c.del_status=" + CommonConstant.DEL_STATUS_NO
+                        + " AND c.pay_status=" + ConsumeConstant.PAY_STATUS_SUCCESS);
 
         return unionConsumeProjectDao.selectList(entityWrapper);
     }
