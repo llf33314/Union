@@ -312,7 +312,7 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
         if (!smsService.checkPhoneCode(SmsCodeConstant.UNION_CARD_PHONE_BIND_TYPE, code, phone)) {
             throw new ParamException(CommonConstant.CODE_ERROR_MSG);
         }
-        if (!memberService.bindMemberPhone(busId, member.getId(), phone)) {
+        if (!memberService.bindMemberPhoneApp(busId, member.getId(), phone)) {
             throw new BusinessException("绑定失败");
         }
     }
