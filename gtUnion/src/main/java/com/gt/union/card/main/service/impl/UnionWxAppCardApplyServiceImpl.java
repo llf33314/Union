@@ -40,6 +40,7 @@ public class UnionWxAppCardApplyServiceImpl implements IUnionCardApplyService {
 		String payUrl = wxPayService.wxAppPay(payParam);
 
 		result.setPayUrl(payUrl);
+		result.setOrderNo(orderNo);
 		return result;
 	}
 }

@@ -2,8 +2,6 @@ package com.gt.union.card.main.controller;
 
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
-import com.gt.union.card.activity.entity.UnionCardActivity;
-import com.gt.union.card.activity.vo.CardActivityApplyVO;
 import com.gt.union.card.main.entity.UnionCardFan;
 import com.gt.union.card.main.service.IUnionCardApplyService;
 import com.gt.union.card.main.service.IUnionCardService;
@@ -15,7 +13,6 @@ import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.QRcodeKit;
-import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.vo.UnionPayVO;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -65,10 +62,6 @@ public class UnionCardController {
         CardApplyVO result;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             result = MockUtil.get(CardApplyVO.class);
-            List<UnionMain> unionList = MockUtil.list(UnionMain.class, 3);
-            result.setUnionList(unionList);
-            List<CardActivityApplyVO> cardActivityApplyVOList = MockUtil.list(CardActivityApplyVO.class, 3);
-            result.setCardActivityApplyVOList(cardActivityApplyVOList);
         } else {
             result = unionCardService.getCardApplyVOByBusIdAndFanId(busId, fanId, unionId);
         }

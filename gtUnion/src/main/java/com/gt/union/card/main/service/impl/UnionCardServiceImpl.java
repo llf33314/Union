@@ -344,7 +344,7 @@ public class UnionCardServiceImpl implements IUnionCardService {
                 save(saveDiscountCard);
                 return null;
             }
-            throw new BusinessException("请选择活动卡信息");
+            throw new BusinessException("请选择联盟卡");
         }
         // 新增未付款的联盟卡购买记录，并返回支付链接
         List<UnionCardRecord> saveCardRecordList = new ArrayList<>();

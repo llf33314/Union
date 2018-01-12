@@ -89,6 +89,15 @@ public interface IUnionCardFanService {
 
     //********************************************* Base On Business - other *******************************************
 
+    /**
+     * 是否存在未删除的联盟卡粉丝信息
+     *
+     * @param phone 手机号
+     * @return boolean
+     * @throws Exception 统一处理异常
+     */
+    boolean existValidByPhone(String phone) throws Exception;
+
     //********************************************* Base On Business - filter ******************************************
 
     /**

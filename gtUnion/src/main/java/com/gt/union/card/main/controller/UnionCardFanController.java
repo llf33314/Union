@@ -3,7 +3,6 @@ package com.gt.union.card.main.controller;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
-import com.gt.union.card.main.entity.UnionCard;
 import com.gt.union.card.main.service.IUnionCardFanService;
 import com.gt.union.card.main.vo.CardFanDetailVO;
 import com.gt.union.card.main.vo.CardFanSearchVO;
@@ -144,8 +143,6 @@ public class UnionCardFanController {
         CardFanDetailVO result;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             result = MockUtil.get(CardFanDetailVO.class);
-            List<UnionCard> activityCardList = MockUtil.list(UnionCard.class, 20);
-            result.setActivityCardList(activityCardList);
         } else {
             result = unionCardFanService.getFanDetailVOByBusIdAndIdAndUnionId(busId, fanId, unionId);
         }
@@ -169,8 +166,6 @@ public class UnionCardFanController {
         CardFanSearchVO result;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             result = MockUtil.get(CardFanSearchVO.class);
-            List<UnionMain> unionList = MockUtil.list(UnionMain.class, 3);
-            result.setUnionList(unionList);
         } else {
             result = unionCardFanService.getCardFanSearchVOByBusId(busId, numberOrPhone, unionId);
         }

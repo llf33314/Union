@@ -10,9 +10,14 @@ import com.gt.api.util.sign.SignUtils;
 import com.gt.union.api.client.member.MemberService;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
-import com.gt.union.common.util.*;
+import com.gt.union.common.util.CommonUtil;
+import com.gt.union.common.util.PropertiesUtil;
+import com.gt.union.common.util.UnionSessionUtil;
 import com.gt.union.h5.brokerage.service.IH5BrokerageService;
-import com.gt.union.h5.brokerage.vo.*;
+import com.gt.union.h5.brokerage.vo.H5BrokerageUser;
+import com.gt.union.h5.brokerage.vo.IndexVO;
+import com.gt.union.h5.brokerage.vo.LoginPhone;
+import com.gt.union.h5.brokerage.vo.WithdrawalVO;
 import com.gt.union.opportunity.brokerage.service.IUnionBrokeragePayStrategyService;
 import com.gt.union.union.main.entity.UnionMain;
 import com.gt.union.union.main.vo.UnionPayVO;
@@ -79,7 +84,7 @@ public class H5BrokerageController {
     @RequestMapping(value = "/withdrawal/history/page", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
     public String pageWithdrawalHistory(HttpServletRequest request, Page page) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        Page result = h5BrokerageService.listPageWithdrawalHistory(h5BrokerageUser, page);
+        Page result = h5BrokerageService.pageWithdrawalHistory(h5BrokerageUser, page);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -99,7 +104,7 @@ public class H5BrokerageController {
                                                  @ApiParam(value = "联盟id", name = "unionId")
                                                  @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        Page result = h5BrokerageService.listPageOpportunityBrokerageVO(h5BrokerageUser, unionId, page);
+        Page result = h5BrokerageService.pageOpportunityBrokerageVO(h5BrokerageUser, unionId, page);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -119,7 +124,7 @@ public class H5BrokerageController {
                                       @ApiParam(value = "联盟id", name = "unionId")
                                       @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        Page result = h5BrokerageService.listPageCardBrokerageVO(h5BrokerageUser, unionId, page);
+        Page result = h5BrokerageService.pageCardBrokerageVO(h5BrokerageUser, unionId, page);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -139,7 +144,7 @@ public class H5BrokerageController {
                                                    @ApiParam(value = "联盟id", name = "unionId")
                                                    @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        Page result = h5BrokerageService.listPageUnPaidOpportunityBrokerageVO(h5BrokerageUser, unionId, page);
+        Page result = h5BrokerageService.pageUnPaidOpportunityBrokerageVO(h5BrokerageUser, unionId, page);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -159,7 +164,7 @@ public class H5BrokerageController {
                                                   @ApiParam(value = "联盟id", name = "unionId")
                                                   @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        Page result = h5BrokerageService.listPageOpportunityBrokerageVO(h5BrokerageUser, unionId, page);
+        Page result = h5BrokerageService.pageOpportunityBrokerageVO(h5BrokerageUser, unionId, page);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -179,7 +184,7 @@ public class H5BrokerageController {
                                                        @ApiParam(value = "联盟id", name = "unionId")
                                                        @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        Page result = h5BrokerageService.listPageUnReceivedOpportunityBrokerageVO(h5BrokerageUser, unionId, page);
+        Page result = h5BrokerageService.pageUnReceivedOpportunityBrokerageVO(h5BrokerageUser, unionId, page);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -221,20 +226,20 @@ public class H5BrokerageController {
     @ApiOperation(value = "获取佣金平台账号登录秘钥", produces = "application/json;charset=UTF-8")
     @RequestMapping(value = "/loginSign", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
     public String loginSign(HttpServletRequest request, HttpServletResponse response
-            ,@ApiParam(name="username", value = "商家账号", required = true) @RequestParam(name = "username") String username
-            ,@ApiParam(name="userpwd", value = "商家账号密码", required = true) @RequestParam(name = "userpwd") String userpwd
-    ) throws Exception{
-        Map<String,Object> param = new HashMap<String,Object>();
-        param.put("login_name",username);
-        param.put("password",userpwd);
-        SignBean sign = SignUtils.sign(PropertiesUtil.getWxmpSignKey() , JSONObject.toJSONString(param));
-        if(CommonUtil.isEmpty(sign)){
+            , @ApiParam(name = "username", value = "商家账号", required = true) @RequestParam(name = "username") String username
+            , @ApiParam(name = "userpwd", value = "商家账号密码", required = true) @RequestParam(name = "userpwd") String userpwd
+    ) throws Exception {
+        Map<String, Object> param = new HashMap<String, Object>();
+        param.put("login_name", username);
+        param.put("password", userpwd);
+        SignBean sign = SignUtils.sign(PropertiesUtil.getWxmpSignKey(), JSONObject.toJSONString(param));
+        if (CommonUtil.isEmpty(sign)) {
             throw new BusinessException("登录错误");
         }
         String url = PropertiesUtil.getWxmpUrl() + "/ErpMenus/79B4DE7C/UnionErplogin.do";
-        Map<String,Object> data = new HashMap<String,Object>();
-        data.put("sign",JSONObject.parseObject(JSON.toJSONString(sign)));
-        data.put("url",url);
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("sign", JSONObject.parseObject(JSON.toJSONString(sign)));
+        data.put("url", url);
         return GtJsonResult.instanceSuccessMsg(data).toString();
     }
 

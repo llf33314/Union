@@ -11,7 +11,6 @@ import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PageUtil;
 import com.gt.union.opportunity.main.service.IUnionOpportunityService;
-import com.gt.union.opportunity.main.vo.OpportunityStatisticsDay;
 import com.gt.union.opportunity.main.vo.OpportunityStatisticsVO;
 import com.gt.union.opportunity.main.vo.OpportunityVO;
 import com.gt.union.union.member.entity.UnionMember;
@@ -157,20 +156,6 @@ public class UnionOpportunityController {
         OpportunityStatisticsVO result;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             result = MockUtil.get(OpportunityStatisticsVO.class);
-            OpportunityStatisticsDay monday = MockUtil.get(OpportunityStatisticsDay.class);
-            result.setMonday(monday);
-            OpportunityStatisticsDay tuesday = MockUtil.get(OpportunityStatisticsDay.class);
-            result.setTuesday(tuesday);
-            OpportunityStatisticsDay wednesday = MockUtil.get(OpportunityStatisticsDay.class);
-            result.setWednesday(wednesday);
-            OpportunityStatisticsDay thursday = MockUtil.get(OpportunityStatisticsDay.class);
-            result.setThursday(thursday);
-            OpportunityStatisticsDay friday = MockUtil.get(OpportunityStatisticsDay.class);
-            result.setFriday(friday);
-            OpportunityStatisticsDay saturday = MockUtil.get(OpportunityStatisticsDay.class);
-            result.setSaturday(saturday);
-            OpportunityStatisticsDay sunday = MockUtil.get(OpportunityStatisticsDay.class);
-            result.setSunday(sunday);
         } else {
             result = unionOpportunityService.getOpportunityStatisticsVOByBusIdAndUnionId(busId, unionId);
         }

@@ -102,6 +102,25 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
     }
 
     @Override
+    public List<UnionCardProjectItem> listValidByUnionIdAndMemberIdAndActivityIdAndProjectStatus(Integer unionId, Integer memberId, Integer activityId, Integer projectStatus) throws Exception {
+        if (unionId == null || memberId == null || activityId == null || projectStatus == null) {
+            throw new ParamException(CommonConstant.PARAM_ERROR);
+        }
+
+        EntityWrapper<UnionCardProjectItem> entityWrapper = new EntityWrapper<>();
+        entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
+                .exists(" SELECT p.id FROM t_union_card_project p"
+                        + " WHERE p.id=t_union_card_project_item.project_id"
+                        + " AND p.del_status=" + CommonConstant.DEL_STATUS_NO
+                        + " AND p.union_id=" + unionId
+                        + " AND p.member_id=" + memberId
+                        + " AND p.activity_id=" + activityId
+                        + " AND p.status=" + projectStatus);
+
+        return unionCardProjectItemDao.selectList(entityWrapper);
+    }
+
+    @Override
     public List<CardProjectItemConsumeVO> listCardProjectItemConsumeVOByBusIdAndUnionIdAndActivityId(Integer busId, Integer unionId, Integer activityId) throws Exception {
         if (busId == null || unionId == null || activityId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
@@ -122,23 +141,21 @@ public class UnionCardProjectItemServiceImpl implements IUnionCardProjectItemSer
         }
         // 获取activity关联的非ERP文本项目优惠列表
         List<CardProjectItemConsumeVO> result = new ArrayList<>();
-        List<UnionCardProject> projectList = unionCardProjectService.listValidByUnionIdAndMemberIdAndActivityIdAndStatus(unionId, member.getId(), activityId, ProjectConstant.STATUS_ACCEPT);
-        if (ListUtil.isNotEmpty(projectList)) {
-            for (UnionCardProject project : projectList) {
-                List<UnionCardProjectItem> textItemList = listValidByProjectIdAndType(project.getId(), ProjectConstant.TYPE_TEXT);
-                if (ListUtil.isNotEmpty(textItemList)) {
-                    for (UnionCardProjectItem textItem : textItemList) {
-                        // 过滤掉可使用数量为0的项目优惠
-                        Integer consumeItemCount = unionConsumeProjectService.countValidByProjectIdAndProjectItemId(project.getId(), textItem.getId());
-                        Integer textItemNumber = textItem.getNumber() != null ? textItem.getNumber() : 0;
-                        Integer surplusItemCount = textItemNumber - consumeItemCount;
+        UnionCardProject project = unionCardProjectService.getValidByUnionIdAndMemberIdAndActivityIdAndStatus(unionId, member.getId(), activityId, ProjectConstant.STATUS_ACCEPT);
+        if (project != null) {
+            List<UnionCardProjectItem> textItemList = listValidByProjectIdAndType(project.getId(), ProjectConstant.TYPE_TEXT);
+            if (ListUtil.isNotEmpty(textItemList)) {
+                for (UnionCardProjectItem textItem : textItemList) {
+                    // 过滤掉可使用数量为0的项目优惠
+                    Integer consumeItemCount = unionConsumeProjectService.countValidByProjectIdAndProjectItemId(project.getId(), textItem.getId());
+                    Integer textItemNumber = textItem.getNumber() != null ? textItem.getNumber() : 0;
+                    Integer surplusItemCount = textItemNumber - consumeItemCount;
 
-                        if (surplusItemCount > 0) {
-                            CardProjectItemConsumeVO vo = new CardProjectItemConsumeVO();
-                            vo.setItem(textItem);
-                            vo.setAvailableCount(surplusItemCount);
-                            result.add(vo);
-                        }
+                    if (surplusItemCount > 0) {
+                        CardProjectItemConsumeVO vo = new CardProjectItemConsumeVO();
+                        vo.setItem(textItem);
+                        vo.setAvailableCount(surplusItemCount);
+                        result.add(vo);
                     }
                 }
             }
