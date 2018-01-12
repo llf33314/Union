@@ -44,9 +44,6 @@ public class JxcProductController {
 			@ApiParam(value = "搜索条件(名称/条码/编码/全拼码)", name = "search")
 			@RequestParam(value = "search", required = false) String search) throws Exception {
 		BusUser busUser = SessionUtils.getLoginUser(request);
-		if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
-			throw new BusinessException(CommonConstant.BUS_PARENT_TIP);
-		}
 		Page<List<JxcProduct>> resultPage = jxcProductService.listProductByShopIdAndClassIdAndSearchPage(shopId, classId, search, page.getCurrent(), page.getSize());
 		return GtJsonResult.instanceSuccessMsg(resultPage);
 	}
