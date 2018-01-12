@@ -294,6 +294,8 @@ export default {
                   .catch(err => {
                     this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
                   });
+              } else {
+                this.visible2 = false;
               }
             })
             .catch(err => {
@@ -407,8 +409,8 @@ export default {
                       _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
                       _this.socketFlag.socketKey = msg.socketKey;
                       _this.socketFlag.status = msg.status;
-                      _this.init();
                       eventBus.$emit('newUnionCard');
+                      _this.init();
                     } else if (msg.status == '0') {
                       _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
                     }
@@ -418,6 +420,7 @@ export default {
             }
           } else if (res.data.success) {
             this.$message({ showClose: true, message: '办理成功', type: 'success', duration: 5000 });
+            eventBus.$emit('newUnionCard');
             clearInterval(this.timeEnd);
             //灰色倒计时'60s'变为紫蓝色"获取验证码"按钮;
             this.init();
