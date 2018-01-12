@@ -48,6 +48,15 @@ public interface MemberService {
 	boolean bindMemberPhone(Integer busId, Integer memberId, String phone) throws Exception;
 
 	/**
+	 * 小程序绑定粉丝用户手机号
+	 * @param busId		商家id
+	 * @param memberId	粉丝id
+	 * @param phone		手机号
+	 * @return	1：成功 0：失败
+	 */
+	boolean bindMemberPhoneApp(Integer busId, Integer memberId, String phone) throws Exception;
+
+	/**
 	 * 粉丝用户手机号登录 登录成功后 member放入session中
 	 * @param phone		手机号
 	 * @param busId		商家id

@@ -95,12 +95,22 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public boolean loginMemberByPhone(String phone, Integer busId) throws Exception{
-		String url = PropertiesUtil.getMemberUrl() + "/memberAPI/member/loginMemberByPhone";
+	public boolean bindMemberPhoneApp(Integer busId, Integer memberId, String phone) throws Exception {
+		String url = PropertiesUtil.getMemberUrl() + "/memberAPI/member/bingdingPhone";
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("phone",phone);
 		param.put("busId",busId);
-		logger.info("粉丝用户手机号登录，请求参数：{}", JSON.toJSONString(param));
+		logger.info("小程序粉丝用户手机号登录，请求参数：{}", JSON.toJSONString(param));
+		return httpRequestMemberApi(param,url);
+	}
+
+	@Override
+	public boolean loginMemberByPhone(String phone, Integer busId) throws Exception{
+		String url = PropertiesUtil.getMemberUrl() + "/memberAPI/member/bingdingPhoneH5";
+		Map<String,Object> param = new HashMap<String,Object>();
+		param.put("phone",phone);
+		param.put("busId",busId);
+		logger.info("H5粉丝用户手机号登录，请求参数：{}", JSON.toJSONString(param));
 		return httpRequestMemberApi(param,url);
 	}
 
