@@ -417,6 +417,7 @@ export default {
     },
     // 活动卡切换
     activityCardChange() {
+      this.tableData = [];
       this.$refs.multipleTable.clearSelection();
       if (this.activityCardId) {
         let item = this.activityCards.find(item => {
