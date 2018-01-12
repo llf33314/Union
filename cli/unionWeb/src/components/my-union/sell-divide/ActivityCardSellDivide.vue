@@ -20,7 +20,7 @@
         </div>
         <p>
           <span>{{ item.activity.name }} </span>
-          <el-button @click="setting(item.activity.id, item.activityStatus)" size="small">设置比例</el-button>
+          <el-button @click="setting(item.activity.id, item.activityStatus)" size="small">售卡比例</el-button>
         </p>
       </div>
       <el-row style="margin-bottom: 85px">
@@ -29,8 +29,8 @@
       </el-row>
     </div>
     <div v-show="!visible">
-      <p v-if="isUnionOwner" style="margin-bottom: 15px">
-        <el-button type="primary" @click="showSettingDialog" v-show="canSetFlag">比例设置</el-button>
+      <p style="margin-bottom: 15px">
+        <el-button type="primary" @click="showSettingDialog" v-if="isUnionOwner&&canSetFlag">比例设置</el-button>
         <el-button type="warning" style="padding: 10px 15px 10px 32px;position: relative">
           <img src="~assets/images/Videos.png" style="width: 17px;position: absolute;top:8px;left: 7px;"> 视频教程
         </el-button>
