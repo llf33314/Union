@@ -367,8 +367,8 @@ export default {
     submitForm(formName) {
       let url = `/unionCard/fanId/${this.fanId}/unionId/${this.unionId}/apply`;
       let data = [];
-      if (!this.isDiscountCard && this.activityCheckList.length < 0) {
-        this.$message({ showClose: true, message: '请选择活动卡', type: 'error', duration: 5000 });
+      if (!this.isDiscountCard && this.activityCheckList.length < 1) {
+        this.$message({ showClose: true, message: '请选择联盟卡', type: 'error', duration: 5000 });
         return false;
       } else {
         this.activityCheckList.forEach(v => {
