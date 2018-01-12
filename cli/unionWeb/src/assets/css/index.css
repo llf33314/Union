@@ -1504,6 +1504,9 @@ hr {
 #front #Verification .UnionCardInformation > div .preferenceItems .section_ {
   margin-top: 18px;
 }
+#front #Verification .UnionCardInformation > div .preferenceItems .section_ .el-table__header {
+  width: 382px!important;
+}
 #front #Verification .UnionCardInformation > div .preferenceItems .section_ .rightContent {
   width: 238px;
   height: 440px;
