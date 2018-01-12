@@ -26,7 +26,7 @@ public interface IUnionConsumeProjectService {
     //********************************************* Base On Business - other *******************************************
 
     /**
-     * 缓存穿透-统计未删除的消费优惠个数
+     * 统计未删除的消费优惠个数
      *
      * @param projectId     项目id
      * @param projectItemId 项目优惠id

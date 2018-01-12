@@ -2,6 +2,7 @@ package com.gt.union.card.consume.service.impl;
 
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
+import com.gt.union.card.consume.constant.ConsumeConstant;
 import com.gt.union.card.consume.dao.IUnionConsumeProjectDao;
 import com.gt.union.card.consume.entity.UnionConsumeProject;
 import com.gt.union.card.consume.service.IUnionConsumeProjectService;
@@ -48,7 +49,11 @@ public class UnionConsumeProjectServiceImpl implements IUnionConsumeProjectServi
         EntityWrapper<UnionConsumeProject> entityWrapper = new EntityWrapper<>();
         entityWrapper.eq("del_status", CommonConstant.COMMON_NO)
                 .eq("project_id", projectId)
-                .eq("project_item_id", projectItemId);
+                .eq("project_item_id", projectItemId)
+                .exists(" SELECT c.id FROM t_union_consume c"
+                        + " WHERE c.id=t_union_consume_project.consume_id"
+                        + " AND c.del_status=" + CommonConstant.DEL_STATUS_NO
+                        + " AND c.pay_status=" + ConsumeConstant.PAY_STATUS_SUCCESS);
 
         return unionConsumeProjectDao.selectCount(entityWrapper);
     }
