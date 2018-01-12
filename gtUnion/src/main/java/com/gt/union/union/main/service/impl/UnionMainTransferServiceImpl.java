@@ -257,6 +257,7 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
                 permit.setBusId(toMember.getBusId());
                 permit.setValidity(toMemberBusUser.getEndTime());
                 permit.setPackageId(unionPackage.getId());
+                permit.setOrderStatus(UnionConstant.PERMIT_ORDER_STATUS_SUCCESS);
                 unionMainPermitService.save(permit);
             } else {
                 throw new BusinessException("联盟盟主权限转移的目标盟员不具有联盟盟主服务");
@@ -362,6 +363,7 @@ public class UnionMainTransferServiceImpl implements IUnionMainTransferService {
                     permit.setBusId(busId);
                     permit.setPackageId(unionPackage.getId());
                     permit.setValidity(busUser.getEndTime());
+                    permit.setOrderStatus(UnionConstant.PERMIT_ORDER_STATUS_SUCCESS);
                     unionMainPermitService.save(permit);
                 } else {
                     throw new BusinessException("不具有联盟许可");

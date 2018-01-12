@@ -167,6 +167,7 @@ public class UnionSchedule {
                 savePermit.setBusId(busId);
                 savePermit.setPackageId(unionPackage.getId());
                 savePermit.setValidity(busUser.getEndTime());
+                savePermit.setOrderStatus(UnionConstant.PERMIT_ORDER_STATUS_SUCCESS);
 
                 UnionMain updateUnion = new UnionMain();
                 updateUnion.setId(unionId);
