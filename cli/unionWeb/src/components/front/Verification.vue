@@ -72,7 +72,7 @@
             </div>
             <div class="section_ clearfix">
               <div style="float: left">
-                <el-table ref="multipleTable" :data="tableData" style="width:382px;overflow-y: auto" height="442" @selection-change="handleSelectionChange">
+                <el-table ref="multipleTable" :data="tableData" style="width:382px;overflow-y: auto" height="442" @select="handleSelect" @select-all="handleSelectAll" @row-click="handleRowClick">
                   <el-table-column type="selection" width="50">
                   </el-table-column>
                   <el-table-column prop="item.name" label="项目名称">
@@ -440,14 +440,46 @@ export default {
           });
       }
     },
-    // 勾选优惠项目
-    handleSelectionChange(val) {
-      this.multipleSelection = val;
-      this.activitySelected = this.multipleSelection;
+    // 点击行
+    handleRowClick(row) {
+      this.$refs.multipleTable.toggleRowSelection(row);
+      this.handleSelect(null, row, false);
     },
-    // 取消优惠项目
+    // 单选
+    handleSelect(selection, row, isAll) {
+      let pass = this.activitySelected.some(item => {
+        return item.item.id === row.item.id;
+      });
+      if (!pass) {
+        this.activitySelected.push(row);
+      } else {
+        this.activitySelected.forEach((item, index) => {
+          if (item.item.id === row.item.id && !isAll) {
+            this.activitySelected.splice(index, 1);
+          }
+        });
+      }
+    },
+    // 全选
+    handleSelectAll(selection) {
+      if (selection.length) {
+        this.tableData.forEach(item => {
+          this.handleSelect(null, item, true);
+        });
+      } else {
+        this.tableData.forEach(item => {
+          this.handleSelect(null, item, false);
+        });
+      }
+    },
+    // 右侧删除按钮
     cancelActivity(index) {
-      this.activitySelected.splice(index, 1);
+      let deletRow = this.activitySelected.splice(index, 1);
+      this.tableData.forEach((v, i) => {
+        if (v.item.id === deletRow[0].item.id) {
+          this.$refs.multipleTable.toggleRowSelection(v, false);
+        }
+      });
     },
     // 确认
     confirm() {
