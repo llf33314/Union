@@ -157,7 +157,7 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
                 UnionCardFan fan = unionCardFanService.getById(consume.getFanId());
                 vo.setFan(fan);
 
-                List<UnionConsumeProject> consumeProjectList = unionConsumeProjectService.listByConsumeId(consume.getId());
+                List<UnionConsumeProject> consumeProjectList = unionConsumeProjectService.listValidByConsumeId(consume.getId());
                 if (ListUtil.isNotEmpty(consumeProjectList)) {
                     List<UnionCardProjectItem> nonErpTextList = new ArrayList<>();
                     List<UnionCardProjectItem> erpTextList = new ArrayList<>();
