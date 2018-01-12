@@ -45,7 +45,7 @@ public interface MemberService {
 	 * @param phone		手机号
 	 * @return	1：成功 0：失败
 	 */
-	boolean bindMemberPhone(Integer busId, Integer memberId, String phone);
+	boolean bindMemberPhone(Integer busId, Integer memberId, String phone) throws Exception;
 
 	/**
 	 * 粉丝用户手机号登录 登录成功后 member放入session中
@@ -53,7 +53,7 @@ public interface MemberService {
 	 * @param busId		商家id
 	 * @return	1：成功 0：失败
 	 */
-	boolean loginMemberByPhone(String phone, Integer busId);
+	boolean loginMemberByPhone(String phone, Integer busId) throws Exception;
 
 	/**
 	 * uc登录或微信授权登录
