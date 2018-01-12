@@ -8,7 +8,6 @@ import com.gt.union.card.consume.constant.ConsumeConstant;
 import com.gt.union.card.consume.service.IUnionConsumeService;
 import com.gt.union.card.consume.vo.ConsumePostVO;
 import com.gt.union.card.consume.vo.ConsumeRecordVO;
-import com.gt.union.card.project.entity.UnionCardProjectItem;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
@@ -69,16 +68,6 @@ public class UnionConsumeController {
         List<ConsumeRecordVO> voList;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             voList = MockUtil.list(ConsumeRecordVO.class, page.getSize());
-            for (int i = 0; i < voList.size(); i++) {
-                List<UnionCardProjectItem> nonErpTextList = MockUtil.list(UnionCardProjectItem.class, 3);
-                voList.get(i).setNonErpTextList(nonErpTextList);
-
-                List<UnionCardProjectItem> erpTextList = MockUtil.list(UnionCardProjectItem.class, 3);
-                voList.get(i).setErpTextList(erpTextList);
-
-                List<UnionCardProjectItem> erpGoodsList = MockUtil.list(UnionCardProjectItem.class, 3);
-                voList.get(i).setErpGoodsList(erpGoodsList);
-            }
             Page<ConsumeRecordVO> result = (Page<ConsumeRecordVO>) page;
             result = PageUtil.setRecord(result, voList);
             return GtJsonResult.instanceSuccessMsg(result).toString();
@@ -116,16 +105,6 @@ public class UnionConsumeController {
         List<ConsumeRecordVO> voList;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             voList = MockUtil.list(ConsumeRecordVO.class, 20);
-            for (int i = 0; i < voList.size(); i++) {
-                List<UnionCardProjectItem> nonErpTextList = MockUtil.list(UnionCardProjectItem.class, 3);
-                voList.get(i).setNonErpTextList(nonErpTextList);
-
-                List<UnionCardProjectItem> erpTextList = MockUtil.list(UnionCardProjectItem.class, 3);
-                voList.get(i).setErpTextList(erpTextList);
-
-                List<UnionCardProjectItem> erpGoodsList = MockUtil.list(UnionCardProjectItem.class, 3);
-                voList.get(i).setErpGoodsList(erpGoodsList);
-            }
         } else {
             Date begin = beginTime != null ? (new Date(beginTime)) : null;
             Date end = endTime != null ? (new Date(endTime)) : null;

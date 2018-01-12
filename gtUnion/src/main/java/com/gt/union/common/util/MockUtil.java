@@ -56,6 +56,108 @@ public class MockUtil {
             add(OBJECT_DATE);
         }
     };
+    private static final Map<String, List<Object>> DEFAULT_SOURCE_MAP = new HashMap<String, List<Object>>() {
+        {
+            put("delStatus", new ArrayList<Object>() {
+                {
+                    add(0);
+                    add(1);
+                }
+            });
+            put("delStatus", new ArrayList<Object>() {
+                {
+                    add(0);
+                    add(1);
+                }
+            });
+            put("joinType", new ArrayList<Object>() {
+                {
+                    add(1);
+                    add(2);
+                }
+            });
+            put("isIntegral", new ArrayList<Object>() {
+                {
+                    add(0);
+                    add(1);
+                }
+            });
+            put("isUnionOwner", new ArrayList<Object>() {
+                {
+                    add(0);
+                    add(1);
+                }
+            });
+            put("status", new ArrayList<Object>() {
+                {
+                    add(1);
+                    add(2);
+                    add(3);
+                    add(4);
+                }
+            });
+            put("type", new ArrayList<Object>() {
+                {
+                    add(1);
+                    add(2);
+                    add(3);
+                }
+            });
+            put("isIntegral", new ArrayList<Object>() {
+                {
+                    add(0);
+                    add(1);
+                }
+            });
+            put("orderStatus", new ArrayList<Object>() {
+                {
+                    add(1);
+                    add(2);
+                    add(3);
+                }
+            });
+            put("payType", new ArrayList<Object>() {
+                {
+                    add(1);
+                    add(2);
+                }
+            });
+            put("confirmStatus", new ArrayList<Object>() {
+                {
+                    add(1);
+                    add(2);
+                    add(3);
+                }
+            });
+            put("acceptStatus", new ArrayList<Object>() {
+                {
+                    add(1);
+                    add(2);
+                    add(3);
+                }
+            });
+            put("isClose", new ArrayList<Object>() {
+                {
+                    add(0);
+                    add(1);
+                }
+            });
+            put("isProjectCheck", new ArrayList<Object>() {
+                {
+                    add(0);
+                    add(1);
+                }
+            });
+            put("payStatus", new ArrayList<Object>() {
+                {
+                    add(1);
+                    add(2);
+                    add(3);
+                    add(4);
+                }
+            });
+        }
+    };
 
     /**
      * 获取单个模拟对象
@@ -65,7 +167,7 @@ public class MockUtil {
      * @return T
      */
     public static <T> T get(Class<T> clazz) {
-        return get(clazz, null);
+        return get(clazz, DEFAULT_SOURCE_MAP);
     }
 
     /**
@@ -89,7 +191,7 @@ public class MockUtil {
      * @return T
      */
     public static <T> List<T> list(Class<T> clazz, int size) {
-        return list(clazz, size, null);
+        return list(clazz, size, DEFAULT_SOURCE_MAP);
     }
 
     /**
@@ -107,109 +209,6 @@ public class MockUtil {
             result.add(get(clazz, field2SrcListMap));
         }
         return result;
-    }
-
-    /**
-     * 获取联盟常用字段属性值范围
-     *
-     * @return Map
-     */
-    public static Map<String, List<Object>> getUnionMockMap() {
-        Map<String, List<Object>> field2SrcListMap = new HashMap<>();
-        field2SrcListMap.put("delStatus", new ArrayList<Object>() {
-            {
-                add(0);
-                add(1);
-            }
-        });
-        field2SrcListMap.put("joinType", new ArrayList<Object>() {
-            {
-                add(1);
-                add(2);
-            }
-        });
-        field2SrcListMap.put("isIntegral", new ArrayList<Object>() {
-            {
-                add(0);
-                add(1);
-            }
-        });
-        field2SrcListMap.put("isUnionOwner", new ArrayList<Object>() {
-            {
-                add(0);
-                add(1);
-            }
-        });
-        field2SrcListMap.put("status", new ArrayList<Object>() {
-            {
-                add(1);
-                add(2);
-                add(3);
-                add(4);
-            }
-        });
-        field2SrcListMap.put("type", new ArrayList<Object>() {
-            {
-                add(1);
-                add(2);
-                add(3);
-            }
-        });
-        field2SrcListMap.put("isIntegral", new ArrayList<Object>() {
-            {
-                add(0);
-                add(1);
-            }
-        });
-        field2SrcListMap.put("orderStatus", new ArrayList<Object>() {
-            {
-                add(1);
-                add(2);
-                add(3);
-            }
-        });
-        field2SrcListMap.put("payType", new ArrayList<Object>() {
-            {
-                add(1);
-                add(2);
-            }
-        });
-        field2SrcListMap.put("confirmStatus", new ArrayList<Object>() {
-            {
-                add(1);
-                add(2);
-                add(3);
-            }
-        });
-        field2SrcListMap.put("acceptStatus", new ArrayList<Object>() {
-            {
-                add(1);
-                add(2);
-                add(3);
-            }
-        });
-        field2SrcListMap.put("isClose", new ArrayList<Object>() {
-            {
-                add(0);
-                add(1);
-            }
-        });
-        field2SrcListMap.put("isProjectCheck", new ArrayList<Object>() {
-            {
-                add(0);
-                add(1);
-            }
-        });
-        field2SrcListMap.put("payStatus", new ArrayList<Object>() {
-            {
-                add(1);
-                add(2);
-                add(3);
-                add(4);
-            }
-        });
-
-        return field2SrcListMap;
     }
 
     private static <T> T mock(Class<T> clazz, Map<String, List<Object>> field2SrcListMap) {

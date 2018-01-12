@@ -2,7 +2,6 @@ package com.gt.union.card.project.controller;
 
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
-import com.gt.union.card.project.entity.UnionCardProjectItem;
 import com.gt.union.card.project.service.IUnionCardProjectService;
 import com.gt.union.card.project.vo.CardProjectCheckUpdateVO;
 import com.gt.union.card.project.vo.CardProjectCheckVO;
@@ -21,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -56,13 +54,7 @@ public class UnionCardProjectController {
         // mock
         List<CardProjectJoinMemberVO> result;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            result = new ArrayList<>();
-            for (int i = 0; i < 20; i++) {
-                CardProjectJoinMemberVO vo = MockUtil.get(CardProjectJoinMemberVO.class);
-                List<UnionCardProjectItem> itemList = MockUtil.list(UnionCardProjectItem.class, 3);
-                vo.setItemList(itemList);
-                result.add(vo);
-            }
+            result = MockUtil.list(CardProjectJoinMemberVO.class, 20);
         } else {
             result = unionCardProjectService.listJoinMemberByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
         }
@@ -85,13 +77,7 @@ public class UnionCardProjectController {
         // mock
         List<CardProjectCheckVO> result;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            result = new ArrayList<>();
-            for (int i = 0; i < 20; i++) {
-                CardProjectCheckVO vo = MockUtil.get(CardProjectCheckVO.class);
-                List<UnionCardProjectItem> itemList = MockUtil.list(UnionCardProjectItem.class, 3);
-                vo.setItemList(itemList);
-                result.add(vo);
-            }
+            result = MockUtil.list(CardProjectCheckVO.class, 20);
         } else {
             result = unionCardProjectService.listProjectCheckByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
         }
@@ -115,12 +101,6 @@ public class UnionCardProjectController {
         CardProjectVO result;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             result = MockUtil.get(CardProjectVO.class);
-            List<UnionCardProjectItem> nonErpTextList = MockUtil.list(UnionCardProjectItem.class, 10);
-            result.setNonErpTextList(nonErpTextList);
-            List<UnionCardProjectItem> erpTextList = MockUtil.list(UnionCardProjectItem.class, 10);
-            result.setErpTextList(erpTextList);
-            List<UnionCardProjectItem> erpGoodsList = MockUtil.list(UnionCardProjectItem.class, 10);
-            result.setErpGoodsList(erpGoodsList);
         } else {
             result = unionCardProjectService.getProjectVOByBusIdAndUnionIdAndActivityId(busId, unionId, activityId);
         }

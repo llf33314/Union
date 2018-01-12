@@ -11,7 +11,6 @@ import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
 import com.gt.union.common.util.PageUtil;
 import com.gt.union.union.main.entity.UnionMain;
-import com.gt.union.union.main.entity.UnionMainDict;
 import com.gt.union.union.main.service.IUnionMainService;
 import com.gt.union.union.main.vo.UnionVO;
 import io.swagger.annotations.Api;
@@ -21,7 +20,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -55,8 +53,6 @@ public class UnionMainController {
         UnionVO result;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             result = MockUtil.get(UnionVO.class);
-            List<UnionMainDict> itemList = MockUtil.list(UnionMainDict.class, 3);
-            result.setItemList(itemList);
         } else {
             result = unionMainService.getUnionVOByBusIdAndId(busId, unionId);
         }
@@ -76,13 +72,7 @@ public class UnionMainController {
         // mock
         List<UnionVO> voList;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
-            voList = new ArrayList<>();
-            for (int i = 0; i < page.getSize(); i++) {
-                UnionVO vo = MockUtil.get(UnionVO.class);
-                List<UnionMainDict> dictList = MockUtil.list(UnionMainDict.class, 3);
-                vo.setItemList(dictList);
-                voList.add(vo);
-            }
+            voList = MockUtil.list(UnionVO.class, 20);
         } else {
             voList = unionMainService.listValidJoinByBusId(busId);
         }

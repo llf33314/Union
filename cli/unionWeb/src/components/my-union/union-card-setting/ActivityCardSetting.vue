@@ -203,7 +203,7 @@ export default {
               let mDiv = 'm' + color2 + i;
               setTimeout(function() {
                 $('.' + mDiv)[0].style.backgroundImage = `linear-gradient(90deg, #${color1} 0%, #${color2} 100%)`;
-              }, 0);
+              }, 10);
             });
             this.totalAll = res.data.data.total;
           } else {

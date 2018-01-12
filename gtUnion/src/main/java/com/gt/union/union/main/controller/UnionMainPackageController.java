@@ -7,7 +7,6 @@ import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.MockUtil;
-import com.gt.union.union.main.entity.UnionMainPackage;
 import com.gt.union.union.main.service.IUnionMainPackageService;
 import com.gt.union.union.main.vo.UnionPackageVO;
 import io.swagger.annotations.Api;
@@ -18,7 +17,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.List;
 
 /**
  * 盟主服务套餐 前端控制器
@@ -48,8 +46,6 @@ public class UnionMainPackageController {
         UnionPackageVO result;
         if (CommonConstant.COMMON_YES == ConfigConstant.IS_MOCK) {
             result = MockUtil.get(UnionPackageVO.class);
-            List<UnionMainPackage> packageList = MockUtil.list(UnionMainPackage.class, 3);
-            result.setPackageList(packageList);
         } else {
             result = unionMainPackageService.getUnionPackageVOByBusId(busId);
         }

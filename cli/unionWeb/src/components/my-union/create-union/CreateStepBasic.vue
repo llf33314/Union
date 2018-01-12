@@ -123,7 +123,7 @@ export default {
   font-weight: bold;
   position: absolute;
   top: 5px;
-  left: 250px;
+  left: 302px;
   cursor: pointer;
 }
 
