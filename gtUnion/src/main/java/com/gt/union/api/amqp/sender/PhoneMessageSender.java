@@ -1,6 +1,8 @@
 package com.gt.union.api.amqp.sender;
 
 import com.gt.union.api.amqp.entity.PhoneMessage;
+import com.gt.union.api.amqp.entity.SmsMessage;
+import com.gt.union.api.amqp.entity.TemplateSmsMessage;
 import com.gt.union.common.config.AmqpConfig;
 import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -22,14 +24,14 @@ public class PhoneMessageSender implements RabbitTemplate.ConfirmCallback, Rabbi
     @Autowired
     private RabbitTemplate rabbitTemplate;
 
-    public void sendMsg(PhoneMessage phoneMessage) {
+    public void sendMsg(SmsMessage smsMessage) {
         CorrelationData correlationData = new CorrelationData(UUID.randomUUID().toString());
-        System.out.println(correlationData);
         this.rabbitTemplate.convertAndSend(AmqpConfig.UNION_EXCHANGE, AmqpConfig.UNION_ROUTINGKEY_PHONE_MESSAGE,
-                phoneMessage.toString(), correlationData);
+                smsMessage.toString(), correlationData);
         rabbitTemplate.setConfirmCallback(this);
         rabbitTemplate.setReturnCallback(this);
     }
+
 
     @Override
     public void confirm(CorrelationData correlationData, boolean ack, String cause) {

@@ -6,6 +6,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.gt.api.util.HttpClienUtils;
 import com.gt.api.util.RequestUtils;
 import com.gt.union.api.amqp.entity.PhoneMessage;
+import com.gt.union.api.amqp.entity.TemplateSmsMessage;
 import com.gt.union.api.client.sms.SmsService;
 import com.gt.union.common.util.CommonUtil;
 import com.gt.union.common.util.PropertiesUtil;
@@ -46,6 +47,27 @@ public class SmsServiceImpl implements SmsService {
 			}
 		}catch (Exception e){
 			logger.error("发送短信错误", e);
+			return false;
+		}
+		return true;
+	}
+
+	@Override
+	public boolean sendTempSms(TemplateSmsMessage templateSmsMessage) {
+		logger.info("发送模板短信：{}", JSON.toJSONString(templateSmsMessage));
+		String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/smsapi/6F6D9AD2/79B4DE7C/sendSmsNew.do";
+		try {
+			RequestUtils requestUtils = new RequestUtils<TemplateSmsMessage>();
+			requestUtils.setReqdata(templateSmsMessage);
+			Map result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(requestUtils),url, Map.class, PropertiesUtil.getWxmpSignKey());
+			if(CommonUtil.isEmpty(result)){
+				return false;
+			}
+			if(CommonUtil.toInteger(result.get("code")) != 0){
+				return false;
+			}
+		}catch (Exception e){
+			logger.error("发送模板短信错误", e);
 			return false;
 		}
 		return true;

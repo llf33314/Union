@@ -1314,8 +1314,8 @@ hr {
   width: 115px !important;
 }
 #Business #myRecommend .MyRecommend .selectUnion .el-form-item__content .el-form-item__error {
-  top: 80px;
-  left: 305px;
+  top: -11px;
+  left: 267px;
 }
 #Business #myRecommend .MyRecommend .selectUnion .dddddd > div {
   position: absolute;
@@ -1503,6 +1503,9 @@ hr {
 }
 #front #Verification .UnionCardInformation > div .preferenceItems .section_ {
   margin-top: 18px;
+}
+#front #Verification .UnionCardInformation > div .preferenceItems .section_ .el-table__header {
+  width: 382px!important;
 }
 #front #Verification .UnionCardInformation > div .preferenceItems .section_ .rightContent {
   width: 238px;
