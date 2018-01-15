@@ -1,6 +1,7 @@
 package com.gt.union.api.client.sms;
 
 import com.gt.union.api.amqp.entity.PhoneMessage;
+import com.gt.union.api.amqp.entity.TemplateSmsMessage;
 
 
 /**
@@ -16,6 +17,13 @@ public interface SmsService {
 	 * @return
 	 */
 	boolean sendSms(PhoneMessage phoneMessage);
+
+	/**
+	 * 发送模板短信
+	 * @param templateSmsMessage
+	 * @return
+	 */
+	boolean sendTempSms(TemplateSmsMessage templateSmsMessage);
 
 	/**
 	 * 校验验证码
