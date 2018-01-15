@@ -4,8 +4,11 @@ import com.alibaba.fastjson.JSONArray;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.api.amqp.entity.PhoneMessage;
+import com.gt.union.api.amqp.entity.TemplateSmsMessage;
 import com.gt.union.api.amqp.sender.PhoneMessageSender;
+import com.gt.union.api.client.sms.constant.SmsConstant;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.DateUtil;
@@ -277,12 +280,15 @@ public class UnionMemberOutServiceImpl implements IUnionMemberOutService {
         // 短信通知
         UnionMember ownerMember = unionMemberService.getValidOwnerByUnionId(unionId);
         String phone = StringUtil.isNotEmpty(ownerMember.getNotifyPhone()) ? ownerMember.getNotifyPhone() : ownerMember.getDirectorPhone();
-        String content = "\""
-                + member.getEnterpriseName()
-                + "\"申请退出\""
-                + union.getName()
-                + "\",请到退盟审核处查看并处理";
-        phoneMessageSender.sendMsg(new PhoneMessage(ownerMember.getBusId(), phone, content));
+        String content = member.getEnterpriseName() + "," + union.getName();
+
+        TemplateSmsMessage msg = new TemplateSmsMessage();
+        msg.setBusId(ownerMember.getBusId());
+        msg.setMobile(phone);
+        msg.setTmplId(SmsConstant.APPLY_OUT_UNION_NOTIFY_TEMPLATE_ID);
+        msg.setParamsStr(content);
+        msg.setModel(ConfigConstant.SMS_UNION_MODEL);
+        phoneMessageSender.sendMsg(msg);
     }
 
     //********************************************* Base On Business - remove ******************************************

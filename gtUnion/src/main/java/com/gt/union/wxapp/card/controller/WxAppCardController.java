@@ -3,11 +3,14 @@ package com.gt.union.wxapp.card.controller;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.Member;
 import com.gt.union.api.amqp.entity.PhoneMessage;
+import com.gt.union.api.amqp.entity.TemplateSmsMessage;
 import com.gt.union.api.amqp.sender.PhoneMessageSender;
 import com.gt.union.api.client.member.MemberService;
 import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.pay.entity.PayParam;
+import com.gt.union.api.client.sms.constant.SmsConstant;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.constant.SmsCodeConstant;
 import com.gt.union.common.response.GtJsonResult;
 import com.gt.union.common.util.*;
@@ -164,8 +167,13 @@ public class WxAppCardController {
 						  		@ApiParam(value = "商家id", name = "busId", required = true)
 							    @PathVariable("busId") Integer busId) throws Exception {
 		String code = RandomKit.getRandomString(6, 0);
-		String content = SmsCodeConstant.UNION_CARD_PHONE_BIND_MSG;
-		sender.sendMsg(new PhoneMessage(busId, phone, content + code));
+		TemplateSmsMessage msg = new TemplateSmsMessage();
+		msg.setBusId(busId);
+		msg.setMobile(phone);
+		msg.setTmplId(SmsConstant.BINDING_CARD_CODE_TEMPLATE_ID);
+		msg.setParamsStr(code);
+		msg.setModel(ConfigConstant.SMS_UNION_MODEL);
+		sender.sendMsg(msg);
 		redisCacheUtil.set(SmsCodeConstant.UNION_CARD_PHONE_BIND_TYPE + ":" + phone, code, 300L);
 		return GtJsonResult.instanceSuccessMsg().toString();
 	}
