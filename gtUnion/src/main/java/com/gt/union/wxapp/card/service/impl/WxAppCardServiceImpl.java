@@ -315,16 +315,14 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
     }
 
     @Override
-    public void bindCardPhone(Member member, Integer busId, String phone, String code) throws Exception {
+    public Member bindCardPhone(Member member, Integer busId, String phone, String code) throws Exception {
         if (busId == null || StringUtil.isEmpty(phone) || StringUtil.isEmpty(code)) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         if (!smsService.checkPhoneCode(SmsCodeConstant.UNION_CARD_PHONE_BIND_TYPE, code, phone)) {
             throw new ParamException(CommonConstant.CODE_ERROR_MSG);
         }
-        if (!memberService.bindMemberPhoneApp(busId, member.getId(), phone)) {
-            throw new BusinessException("绑定失败");
-        }
+        return memberService.bindMemberPhoneApp(busId, member.getId(), phone);
     }
 
     @Override

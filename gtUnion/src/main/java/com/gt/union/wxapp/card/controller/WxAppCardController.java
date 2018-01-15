@@ -189,8 +189,8 @@ public class WxAppCardController {
 			, @ApiParam(name="busId", value = "商家id", required = true) @PathVariable("busId") Integer busId
 			, @ApiParam(name = "code", value = "验证码" ,required = true) @RequestParam(value = "code") String code, @ApiParam(value = "粉丝用户id", name = "memberId", required = true) @PathVariable("memberId") Integer memberId) throws Exception{
 		Member member = memberService.getById(memberId);
-		wxAppCardService.bindCardPhone(member, busId, phone, code);
-		return GtJsonResult.instanceSuccessMsg().toString();
+		member = wxAppCardService.bindCardPhone(member, busId, phone, code);
+		return GtJsonResult.instanceSuccessMsg(member).toString();
 	}
 
 	@ApiOperation(value = "办理联盟卡", notes = "办理联盟卡", produces = "application/json;charset=UTF-8")
