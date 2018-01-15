@@ -196,6 +196,7 @@ export default {
         .del(`/unionMemberOut/${this.outId}/unionId/${this.unionId}`)
         .then(res => {
           if (res.data.success) {
+            this.visible3 = false;
             this.$message({ showClose: true, message: '取消移出成功', type: 'success', duration: 5000 });
             this.init();
           }
