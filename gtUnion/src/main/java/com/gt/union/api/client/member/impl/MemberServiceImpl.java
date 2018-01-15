@@ -227,13 +227,12 @@ public class MemberServiceImpl implements MemberService {
 			if(!("0".equals(map.get("code").toString()))){
 				throw new BusinessException(CommonUtil.isNotEmpty(map.get("msg")) ? map.get("msg").toString() : "请求失败");
 			}
+		}catch (BaseException e){
+			logger.error("调取会员接口转换数据错误", e);
+			throw new BaseException(e.getMessage());
 		}catch (Exception e){
 			logger.error("调取会员接口转换数据错误", e);
-			if(e instanceof BaseException){
-				throw new BusinessException(e.getMessage());
-			}else{
-				throw new Exception(e.getMessage());
-			}
+			throw new Exception(e.getMessage());
 		}
 		return true;
 	}
