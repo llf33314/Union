@@ -108,7 +108,7 @@ public class MemberServiceImpl implements MemberService {
 				throw new BusinessException("请求失败");
 			}
 			Map map = JSONObject.parseObject(data,Map.class);
-			if(("1".equals(map.get("code").toString()))){
+			if(("0".equals(map.get("code").toString()))){
 				Member member = JSONObject.parseObject(map.get("data").toString(),Member.class);
 				return member;
 			}else {
