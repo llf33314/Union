@@ -254,7 +254,12 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
                         //没有有效的活动卡
                         if (DateTimeKit.isBetween(activity.getSellBeginTime(), activity.getSellEndTime())) {
                             //有效期 可以卖
-                            result.setValidityDay(activity.getValidityDay());
+                            Integer activityCardCount = unionCardService.countValidByUnionIdAndActivityId(unionId, activityId);
+                            if (activityCardCount >= activity.getAmount()) {
+                                result.setIsTransacted(CommonConstant.COMMON_NO);
+                            }else {
+                                result.setValidityDay(activity.getValidityDay());
+                            }
                         } else {
                             result.setIsTransacted(CommonConstant.COMMON_NO);
                             //已过期
@@ -279,10 +284,15 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
         return result;
     }
 
-    CardDetailVO checkActivity(UnionCardActivity activity, CardDetailVO result) {
+    CardDetailVO checkActivity(UnionCardActivity activity, CardDetailVO result) throws Exception{
         if (DateTimeKit.isBetween(activity.getSellBeginTime(), activity.getSellEndTime())) {
             //有效期 可以卖
-            result.setValidityDay(activity.getValidityDay());
+            Integer activityCardCount = unionCardService.countValidByUnionIdAndActivityId(activity.getUnionId(), activity.getId());
+            if (activityCardCount >= activity.getAmount()) {
+                result.setIsTransacted(CommonConstant.COMMON_NO);
+            }else {
+                result.setValidityDay(activity.getValidityDay());
+            }
         } else {
             result.setIsTransacted(CommonConstant.COMMON_NO);
         }
