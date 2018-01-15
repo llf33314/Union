@@ -108,7 +108,7 @@ public class WxPayServiceImpl implements WxPayService {
         }catch (Exception e){
             logger.error("微信小程序支付错误：=======>",e);
         }
-        return PropertiesUtil.getWxmpUrl() + "/wxPay/79B4DE7C/commonpayVerApplet2_0.do?obj=" + obj;
+        return obj;
 	}
 
 	@Override
