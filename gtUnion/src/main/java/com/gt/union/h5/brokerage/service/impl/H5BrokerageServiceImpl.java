@@ -430,7 +430,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
     }
 
     @Override
-    public UnionPayVO batchPayByUnionId(H5BrokerageUser h5BrokerageUser, Integer unionId, IUnionBrokeragePayStrategyService unionBrokeragePayStrategyService, Integer memberId) throws Exception {
+    public UnionPayVO batchPayByUnionId(H5BrokerageUser h5BrokerageUser, Integer unionId, IUnionBrokeragePayStrategyService unionBrokeragePayStrategyService) throws Exception {
         if (h5BrokerageUser == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -447,7 +447,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
                 OpportunityConstant.ACCEPT_STATUS_CONFIRMED, OpportunityConstant.IS_CLOSE_NO);
         List<Integer> opportunityIdList = unionOpportunityService.getIdList(opportunityList);
 
-        return unionBrokeragePayService.batchPayByBusId(busId, opportunityIdList, verifier.getId(), unionBrokeragePayStrategyService, memberId);
+        return unionBrokeragePayService.batchPayByBusId(busId, opportunityIdList, verifier.getId(), unionBrokeragePayStrategyService);
     }
 
     //***************************************** Domain Driven Design - remove ******************************************
