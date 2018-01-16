@@ -68,6 +68,8 @@ public class PropertiesUtil {
 
 	private static String unionAppId;
 
+	private static String appVersion;
+
 	/**
 	 * 获取资源访问地址
 	 * @return resourceUrl
@@ -293,6 +295,14 @@ public class PropertiesUtil {
 	}
 
 	/**
+	 * 获取小程序版本号
+	 * @return
+	 */
+	public static String getAppVersion() {
+		return appVersion;
+	}
+
+	/**
 	 * 获取token的key
 	 * @return
 	 */
@@ -438,5 +448,10 @@ public class PropertiesUtil {
 	@Value("${union.appid}")
 	public void setUnionAppId(String unionAppId) {
 		PropertiesUtil.unionAppId = unionAppId;
+	}
+
+	@Value("${union.appVersion}")
+	public void setAppVersion(String appVersion) {
+		PropertiesUtil.appVersion = appVersion;
 	}
 }
