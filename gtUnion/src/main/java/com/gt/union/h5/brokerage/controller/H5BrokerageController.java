@@ -211,10 +211,10 @@ public class H5BrokerageController {
                         @RequestParam(value = "opportunityId") Integer opportunityId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
         Member member = SessionUtils.getLoginMember(request, PropertiesUtil.getDuofenBusId());
-        if (member == null) {
-            return memberService.authorizeMemberWx(request, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toPayList").toString();
-        }
         UnionPayVO result = h5BrokerageService.toPayByUnionIdAndOpportunityId(h5BrokerageUser, unionId, opportunityId, member.getId());
+        if (member == null) {
+            return memberService.authorizeMemberWx(request, result.getPayUrl()).toString();
+        }
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -225,10 +225,10 @@ public class H5BrokerageController {
                            @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
         Member member = SessionUtils.getLoginMember(request, PropertiesUtil.getDuofenBusId());
-        if (member == null) {
-            return memberService.authorizeMemberWx(request, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toPayList").toString();
-        }
         UnionPayVO result = h5BrokerageService.batchPayByUnionId(h5BrokerageUser, unionId, unionBrokeragePayStrategyService, member.getId());
+        if (member == null) {
+            return memberService.authorizeMemberWx(request, result.getPayUrl()).toString();
+        }
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
