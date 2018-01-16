@@ -95,13 +95,29 @@ public class MemberServiceImpl implements MemberService {
 	}
 
 	@Override
-	public boolean bindMemberPhoneApp(Integer busId, Integer memberId, String phone) throws Exception {
+	public Member bindMemberPhoneApp(Integer busId, Integer memberId, String phone) throws Exception {
 		String url = PropertiesUtil.getMemberUrl() + "/memberAPI/member/bingdingPhone";
 		Map<String,Object> param = new HashMap<String,Object>();
 		param.put("phone",phone);
 		param.put("busId",busId);
+		param.put("memberId",memberId);
 		logger.info("小程序粉丝用户手机号登录，请求参数：{}", JSON.toJSONString(param));
-		return httpRequestMemberApi(param,url);
+		try {
+			String data = SignHttpUtils.WxmppostByHttp(url,param,PropertiesUtil.getMemberSignKey());
+			if(StringUtil.isEmpty(data)){
+				throw new BusinessException("请求失败");
+			}
+			Map map = JSONObject.parseObject(data,Map.class);
+			if(("0".equals(map.get("code").toString()))){
+				Member member = JSONObject.parseObject(map.get("data").toString(),Member.class);
+				return member;
+			}else {
+				throw new BusinessException(CommonUtil.isNotEmpty(map.get("msg")) ? map.get("msg").toString() : "绑定失败");
+			}
+		}catch (Exception e){
+			logger.error("调取会员接口转换数据错误", e);
+			throw new Exception(e.getMessage());
+		}
 	}
 
 	@Override
@@ -227,13 +243,12 @@ public class MemberServiceImpl implements MemberService {
 			if(!("0".equals(map.get("code").toString()))){
 				throw new BusinessException(CommonUtil.isNotEmpty(map.get("msg")) ? map.get("msg").toString() : "请求失败");
 			}
+		}catch (BaseException e){
+			logger.error("调取会员接口转换数据错误", e);
+			throw new BaseException(e.getMessage());
 		}catch (Exception e){
 			logger.error("调取会员接口转换数据错误", e);
-			if(e instanceof BaseException){
-				throw new BusinessException(e.getMessage());
-			}else{
-				throw new Exception(e.getMessage());
-			}
+			throw new Exception(e.getMessage());
 		}
 		return true;
 	}

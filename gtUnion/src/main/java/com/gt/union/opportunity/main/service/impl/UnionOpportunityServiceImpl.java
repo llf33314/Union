@@ -3,8 +3,11 @@ package com.gt.union.opportunity.main.service.impl;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.union.api.amqp.entity.PhoneMessage;
+import com.gt.union.api.amqp.entity.TemplateSmsMessage;
 import com.gt.union.api.amqp.sender.PhoneMessageSender;
+import com.gt.union.api.client.sms.constant.SmsConstant;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.exception.ParamException;
 import com.gt.union.common.util.BigDecimalUtil;
@@ -523,10 +526,17 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
 
         // 短信通知
         String phone = StringUtil.isNotEmpty(toMember.getNotifyPhone()) ? toMember.getNotifyPhone() : toMember.getDirectorPhone();
-        String content = "\"" + union.getName() + "\"的盟员\""
-                + member.getEnterpriseName() + "\"为你推荐了客户，请到商机消息处查看。客户信息："
-                + clientName + "，" + clientPhone + "，" + businessMsg;
-        phoneMessageSender.sendMsg(new PhoneMessage(toMember.getBusId(), phone, content));
+        String content = union.getName() + ","
+                + member.getEnterpriseName() + ","
+                + clientName + "," + clientPhone + "," + businessMsg;
+
+        TemplateSmsMessage msg = new TemplateSmsMessage();
+        msg.setBusId(toMember.getBusId());
+        msg.setMobile(phone);
+        msg.setTmplId(SmsConstant.NOTIFY_MEMBER_HANDLE_BROKERAGE_TEMPLATE_ID);
+        msg.setParamsStr(content);
+        msg.setModel(ConfigConstant.SMS_UNION_MODEL);
+        phoneMessageSender.sendMsg(msg);
     }
 
     //********************************************* Base On Business - remove ******************************************
@@ -578,14 +588,21 @@ public class UnionOpportunityServiceImpl implements IUnionOpportunityService {
         UnionMember fromMember = unionMemberService.getValidReadByIdAndUnionId(opportunity.getFromMemberId(), unionId);
         if (fromMember != null) {
             String phone = StringUtil.isNotEmpty(fromMember.getNotifyPhone()) ? fromMember.getNotifyPhone() : fromMember.getDirectorPhone();
-            String content = "\"" + union.getName() + "\"的盟员\""
-                    + member.getEnterpriseName() + "\""
+            String content = union.getName() + ","
+                    + member.getEnterpriseName() + ","
                     + (CommonConstant.COMMON_YES == isAccept ? "已接受" : "已拒绝")
-                    + "了您推荐的商机消息。客户信息："
-                    + opportunity.getClientName() + "，"
-                    + opportunity.getClientPhone() + "，"
+                    + ","
+                    + opportunity.getClientName() + ","
+                    + opportunity.getClientPhone() + ","
                     + opportunity.getBusinessMsg();
-            phoneMessageSender.sendMsg(new PhoneMessage(fromMember.getBusId(), phone, content));
+
+            TemplateSmsMessage msg = new TemplateSmsMessage();
+            msg.setBusId(fromMember.getBusId());
+            msg.setMobile(phone);
+            msg.setTmplId(SmsConstant.NOTIFY_MEMBER_HANDLED_BROKERAGE_TEMPLATE_ID);
+            msg.setParamsStr(content);
+            msg.setModel(ConfigConstant.SMS_UNION_MODEL);
+            phoneMessageSender.sendMsg(msg);
         }
     }
 

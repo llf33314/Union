@@ -41,6 +41,7 @@ public class LoginFilter implements Filter {
     public void init(FilterConfig filterConfig) throws ServletException {
 
         passUrlMap.put("/h5Brokerage/loginSign", "/h5Brokerage/loginSign");
+        passUrlMap.put("/h5Brokerage/loginStatus", "/h5Brokerage/loginStatus");
         passUrlMap.put("/h5Brokerage/login/phone", "/h5Brokerage/login/phone");
         passUrlMap.put("/api/sms/1", "/api/sms/1");
         passUrlMap.put("/api/sms/3", "/api/sms/3");
@@ -183,6 +184,22 @@ public class LoginFilter implements Filter {
                 chain.doFilter(req, res);
             }
         } else {
+            if(busUser != null){
+                if(!h5BrokerageUser.getBusUser().getId().equals(busUser.getId())){
+
+                    h5BrokerageUser.setBusUser(busUser);
+
+                    UnionVerifier adminVerifier = new UnionVerifier();
+                    adminVerifier.setBusId(busUser.getId());
+                    adminVerifier.setEmployeeName("管理员");
+                    h5BrokerageUser.setVerifier(adminVerifier);
+
+                    UnionSessionUtil.setH5BrokerageUser(req, h5BrokerageUser);
+                }
+            }else {
+                res.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
+                return;
+            }
             chain.doFilter(req, res);
         }
     }
