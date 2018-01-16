@@ -289,10 +289,12 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
                 vo.setConsumeTimeStr(DateTimeKit.format(consume.getCreateTime(), DateTimeKit.DEFAULT_DATETIME_FORMAT_YYYYMMDD_HHMM));
                 List<UnionConsumeProject> consumeProjectList = unionConsumeProjectService.listValidByConsumeId(consume.getId());
                 if (ListUtil.isNotEmpty(consumeProjectList)) {
+                    List<UnionCardProjectItem> items = new ArrayList<>();
                     for (UnionConsumeProject consumeProject : consumeProjectList) {
-                        List<UnionCardProjectItem> items = unionCardProjectItemService.listValidByProjectId(consumeProject.getProjectId());
-                        vo.setItems(items);
+                        UnionCardProjectItem item = unionCardProjectItemService.getById(consumeProject.getProjectItemId());
+                        items.add(item);
                     }
+                    vo.setItems(items);
                 }
                 resultDataList.add(vo);
             }
