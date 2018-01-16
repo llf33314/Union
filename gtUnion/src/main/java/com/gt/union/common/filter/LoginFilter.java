@@ -183,6 +183,22 @@ public class LoginFilter implements Filter {
                 chain.doFilter(req, res);
             }
         } else {
+            if(busUser != null){
+                if(!h5BrokerageUser.getBusUser().getId().equals(busUser.getId())){
+
+                    h5BrokerageUser.setBusUser(busUser);
+
+                    UnionVerifier adminVerifier = new UnionVerifier();
+                    adminVerifier.setBusId(busUser.getId());
+                    adminVerifier.setEmployeeName("管理员");
+                    h5BrokerageUser.setVerifier(adminVerifier);
+
+                    UnionSessionUtil.setH5BrokerageUser(req, h5BrokerageUser);
+                }
+            }else {
+                res.getWriter().write(GtJsonResult.instanceSuccessMsg(null, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin").toString());
+                return;
+            }
             chain.doFilter(req, res);
         }
     }
