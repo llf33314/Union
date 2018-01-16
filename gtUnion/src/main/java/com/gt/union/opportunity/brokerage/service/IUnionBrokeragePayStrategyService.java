@@ -12,7 +12,8 @@ public interface IUnionBrokeragePayStrategyService {
 	 * 佣金支付
 	 * @param orderNo        订单号
 	 * @param payMoneySum    支付金额
+	 * @param memberId
 	 * @return
 	 */
-	UnionPayVO unionBrokerageApply(String orderNo, Double payMoneySum);
+	UnionPayVO unionBrokerageApply(String orderNo, Double payMoneySum, Integer memberId);
 }

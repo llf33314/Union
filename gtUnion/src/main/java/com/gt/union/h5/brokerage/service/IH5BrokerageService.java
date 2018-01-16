@@ -123,10 +123,11 @@ public interface IH5BrokerageService {
      * @param h5BrokerageUser 登录信息
      * @param unionId         联盟id
      * @param opportunityId   商机id
+     * @param memberId
      * @return UnionPayVO
      * @throws Exception 统一处理异常
      */
-    UnionPayVO toPayByUnionIdAndOpportunityId(H5BrokerageUser h5BrokerageUser, Integer unionId, Integer opportunityId) throws Exception;
+    UnionPayVO toPayByUnionIdAndOpportunityId(H5BrokerageUser h5BrokerageUser, Integer unionId, Integer opportunityId, Integer memberId) throws Exception;
 
     /**
      * 佣金平台-首页-我需支付-未支付-一键支付
@@ -134,10 +135,11 @@ public interface IH5BrokerageService {
      * @param h5BrokerageUser 登录信息
      * @param unionId         联盟id
      * @param unionBrokeragePayStrategyService
-	 * @return UnionPayVO
+	 * @param memberId
+     * @return UnionPayVO
      * @throws Exception 统一处理异常
      */
-    UnionPayVO batchPayByUnionId(H5BrokerageUser h5BrokerageUser, Integer unionId, IUnionBrokeragePayStrategyService unionBrokeragePayStrategyService) throws Exception;
+    UnionPayVO batchPayByUnionId(H5BrokerageUser h5BrokerageUser, Integer unionId, IUnionBrokeragePayStrategyService unionBrokeragePayStrategyService, Integer memberId) throws Exception;
 
     //***************************************** Domain Driven Design - remove ******************************************
 
