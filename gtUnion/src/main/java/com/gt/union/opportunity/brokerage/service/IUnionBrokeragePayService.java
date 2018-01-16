@@ -111,11 +111,10 @@ public interface IUnionBrokeragePayService {
      * @param opportunityIdList                商机id列表
      * @param verifierId                       佣金平台管理人员id
      * @param unionBrokeragePayStrategyService 回调策略接口
-     * @param memberId
-	 * @return UnionPayVO
+     * @return UnionPayVO
      * @throws Exception 统一处理异常
      */
-    UnionPayVO batchPayByBusId(Integer busId, List<Integer> opportunityIdList, Integer verifierId, IUnionBrokeragePayStrategyService unionBrokeragePayStrategyService, Integer memberId) throws Exception;
+    UnionPayVO batchPayByBusId(Integer busId, List<Integer> opportunityIdList, Integer verifierId, IUnionBrokeragePayStrategyService unionBrokeragePayStrategyService) throws Exception;
 
     /**
      * 佣金结算-我需支付的佣金-批量支付-回调
