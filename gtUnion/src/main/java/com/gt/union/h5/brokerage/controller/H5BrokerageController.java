@@ -211,7 +211,7 @@ public class H5BrokerageController {
                         @RequestParam(value = "opportunityId") Integer opportunityId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
         Member member = SessionUtils.getLoginMember(request, PropertiesUtil.getDuofenBusId());
-        UnionPayVO result = h5BrokerageService.toPayByUnionIdAndOpportunityId(h5BrokerageUser, unionId, opportunityId, member.getId());
+        UnionPayVO result = h5BrokerageService.toPayByUnionIdAndOpportunityId(h5BrokerageUser, unionId, opportunityId);
         if (member == null) {
             return memberService.authorizeMemberWx(request, result.getPayUrl()).toString();
         }

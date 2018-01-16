@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.Member;
 import com.gt.api.bean.session.TCommonStaff;
-import com.gt.union.api.amqp.entity.PhoneMessage;
 import com.gt.union.api.amqp.entity.TemplateSmsMessage;
 import com.gt.union.api.amqp.sender.PhoneMessageSender;
 import com.gt.union.api.client.pay.WxPayService;
@@ -385,7 +384,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
     //***************************************** Domain Driven Design - save ********************************************
 
     @Override
-    public UnionPayVO toPayByUnionIdAndOpportunityId(H5BrokerageUser h5BrokerageUser, Integer unionId, Integer opportunityId, Integer memberId) throws Exception {
+    public UnionPayVO toPayByUnionIdAndOpportunityId(H5BrokerageUser h5BrokerageUser, Integer unionId, Integer opportunityId) throws Exception {
         if (h5BrokerageUser == null || unionId == null || opportunityId == null) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
@@ -424,7 +423,7 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
 
 
         // （4）调用支付接口
-        UnionPayVO result = unionBrokeragePayStrategyService.unionBrokerageApply(orderNo, opportunity.getBrokerageMoney(), memberId);
+        UnionPayVO result = unionBrokeragePayStrategyService.unionBrokerageApply(orderNo, opportunity.getBrokerageMoney());
 
         unionBrokeragePayService.save(savePay);
         return result;

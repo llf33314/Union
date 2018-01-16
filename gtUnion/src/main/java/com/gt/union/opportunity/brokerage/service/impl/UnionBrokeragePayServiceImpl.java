@@ -352,7 +352,7 @@ public class UnionBrokeragePayServiceImpl implements IUnionBrokeragePayService {
         }
 
         // 调用接口，返回支付链接
-        UnionPayVO result = unionBrokeragePayStrategyService.unionBrokerageApply(orderNo, BigDecimalUtil.toDouble(brokerageSum), memberId);
+        UnionPayVO result = unionBrokeragePayStrategyService.unionBrokerageApply(orderNo, BigDecimalUtil.toDouble(brokerageSum));
 
         saveBatch(savePayList);
         return result;
