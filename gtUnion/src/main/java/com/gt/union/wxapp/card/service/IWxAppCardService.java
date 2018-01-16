@@ -43,13 +43,12 @@ public interface IWxAppCardService {
 
 	/**
 	 * 绑定联盟卡手机号
-	 *
-	 * @param member 用户
+	 *  @param member 用户
 	 * @param busId  商家id
 	 * @param phone  手机号
 	 * @param code   验证码
 	 */
-	void bindCardPhone(Member member, Integer busId, String phone, String code) throws Exception;
+	Member bindCardPhone(Member member, Integer busId, String phone, String code) throws Exception;
 
 	/**
 	 * 办理联盟卡

@@ -160,7 +160,7 @@ export default {
 .percent {
   position: absolute;
   top: 1px;
-  left: 258px;
+  left: 305px;
 }
 
 /*地图的样式*/

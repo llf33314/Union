@@ -189,6 +189,17 @@ public class H5BrokerageController {
     }
 
 
+    @ApiOperation(value = "佣金平台-首页-登录状态", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/loginStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String checkLogin(HttpServletRequest request) throws Exception {
+        H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
+        if(h5BrokerageUser == null){
+            return GtJsonResult.instanceSuccessMsg(0).toString();
+        }
+        return GtJsonResult.instanceSuccessMsg(1).toString();
+    }
+
+
     //-------------------------------------------------- put ----------------------------------------------------------
 
     @ApiOperation(value = "佣金平台-首页-我需支付-未支付-去支付", produces = "application/json;charset=UTF-8")
@@ -220,6 +231,7 @@ public class H5BrokerageController {
         UnionPayVO result = h5BrokerageService.batchPayByUnionId(h5BrokerageUser, unionId, unionBrokeragePayStrategyService, member.getId());
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
+
 
     //------------------------------------------------- post ----------------------------------------------------------
 
