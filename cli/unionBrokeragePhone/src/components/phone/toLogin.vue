@@ -222,6 +222,18 @@
       $("#title_").text('商家联盟佣金平台');
       //图片底部的颜色切换（白和灰切换）
       // this.$emit('getValue',this.toLogin);
+      $http.get(`h5Brokerage/loginStatus`)
+        .then(res => {
+          //获得验证码成功
+          if(res.data.success){
+            if(res.data.data == 1){
+              this.$router.push({path:'/index'})
+            }
+          }
+        })
+        .catch(err => {
+          this.$message({showClose: true, message: err.toString(), type: 'error', duration: 3000});
+        });
     }
   }
 </script>
