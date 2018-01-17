@@ -300,6 +300,10 @@ export default {
     // 校验输入为数字类型
     check() {
       this.price = numberCheck(this.price);
+      if (this.price > 50000) {
+        this.price = 50000;
+        this.$message({ showClose: true, message: '单次核销金额最大为5万元', type: 'error', duration: 3000 });
+      }
     },
     check2() {
       this.price2 = numberCheck(this.price2);
