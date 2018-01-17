@@ -16,7 +16,7 @@
           </el-form-item>
           <el-form-item label="颜色：" prop="color">
             <!-- todo 需要更改 -->
-            <union-color-picker @colorSelect="colorSelect"></union-color-picker>
+            <union-color-picker @colorSelect="colorSelect" class="chooseColor"></union-color-picker>
           </el-form-item>
           <el-form-item label="发行量：" prop="amount">
             <el-input v-model="form.amount" placeholder="请输入活动卡发行量" @keyup.native="checkAmount()"></el-input>
@@ -155,12 +155,12 @@ export default {
             .then(res => {
               if (res.data.success) {
                 eventBus.$emit('newActivityCard');
-                this.$message({ showClose: true, message: '新建活动卡成功', type: 'success', duration: 5000 });
+                this.$message({ showClose: true, message: '新建活动卡成功', type: 'success', duration: 3000 });
                 this.visible = false;
               }
             })
             .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
             });
         } else {
           return false;

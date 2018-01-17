@@ -20,7 +20,7 @@
           </el-col>
         </el-form-item>
         <div class="selectUnion">
-          <el-form-item label="选择联盟：" prop="unionId">
+          <el-form-item label="选择联盟：" prop="unionId" v-if="options1.length>1">
             <el-radio-group v-model="ruleForm1.unionId">
               <el-radio-button v-for="item in options1" :key="item.value" :label="item.value">
                 <el-tooltip class="item" effect="dark" :content="item.name" placement="bottom">
@@ -113,7 +113,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
       }
     }
@@ -138,12 +138,12 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     show() {
-      this.visible = !this.visible;
-      this.visible1 = !this.visible1;
+      this.visible = false;
+      this.visible1 = true;
     },
     submitForm1(formName) {
       this.$refs[formName].validate(valid => {
@@ -164,11 +164,13 @@ export default {
                 eventBus.$emit('newBusinessRecommend');
                 this.$refs[formName].resetFields();
                 this.init();
-                this.$message({ showClose: true, message: '推荐成功', type: 'success', duration: 5000 });
+                this.visible = true;
+                this.visible1 = false;
+                this.$message({ showClose: true, message: '推荐成功', type: 'success', duration: 3000 });
               }
             })
             .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
             });
         } else {
           return false;

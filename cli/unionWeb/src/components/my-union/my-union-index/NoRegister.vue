@@ -50,6 +50,7 @@
           <hr>
           <div class="model_">
             <p><img v-bind:src="codeSrc" class="codeImg" style="width:240px;height:240px;"></p>
+            <p>￥<span>{{ price | formatPrice }}</span>
             <p style="margin-bottom: 50px;">请使用微信/支付宝扫描该二维码付款</p>
           </div>
         </el-dialog>
@@ -110,7 +111,7 @@ export default {
         }
       })
       .catch(err => {
-        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
       });
   },
   watch: {
@@ -145,12 +146,12 @@ export default {
             var socketUrl = this.$store.state.socketUrl;
             if (!this.socket) {
               this.socket = io.connect(socketUrl);
-              var socketKey = this.socketKey;
-              this.socket.on('connect', function() {
-                let jsonObject = { userId: socketKey, message: '0' };
-                _this.socket.emit('auth', jsonObject);
-              });
             }
+            var socketKey = this.socketKey;
+            this.socket.on('connect', function() {
+              let jsonObject = { userId: socketKey, message: '0' };
+              _this.socket.emit('auth', jsonObject);
+            });
             //重连机制
             let socketindex = 0;
             this.socket.on('reconnecting', function() {
@@ -167,24 +168,24 @@ export default {
                 if (_this.socketKey == msg.socketKey) {
                   if (msg.status == '1') {
                     _this.visible1 = false;
-                    _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
+                    _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 3000 });
                     _this.socketFlag.socketKey = msg.socketKey;
                     _this.socketFlag.status = msg.status;
                     setTimeout(() => {
                       _this.$router.push({ path: '/my-union/create-step' });
                     }, 0);
                   } else if (msg.status == '0') {
-                    _this.$message({ showClose: true, message: '支付失败', type: 'error', duration: 5000 });
+                    _this.$message({ showClose: true, message: '支付失败', type: 'error', duration: 3000 });
                   }
                 }
               }
             });
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
       } else {
-        this.$message({ showClose: true, message: '请选择版本', type: 'error', duration: 5000 });
+        this.$message({ showClose: true, message: '请选择版本', type: 'error', duration: 3000 });
       }
     },
     // 免费使用

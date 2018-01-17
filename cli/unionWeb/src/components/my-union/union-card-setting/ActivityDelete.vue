@@ -40,13 +40,13 @@ export default {
         .del(`/unionCardActivity/${this.activityId}/unionId/${this.unionId}`)
         .then(res => {
           if (res.data.success) {
-            this.$message({ showClose: true, message: '删除成功', type: 'success', duration: 5000 });
+            this.$message({ showClose: true, message: '删除成功', type: 'success', duration: 3000 });
             this.visible = false;
             eventBus.$emit('activityDelete');
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     }
   }

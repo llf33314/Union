@@ -278,7 +278,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
       }
     });
@@ -316,7 +316,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 点击联盟图片切换联盟
@@ -341,7 +341,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
       }
     },
@@ -354,13 +354,13 @@ export default {
         .put(`/unionMainTransfer/${this.unionMainData.unionTransfer.id}/unionId/${this.unionId}?isAccept=1`)
         .then(res => {
           if (res.data.success) {
-            this.$message({ showClose: true, message: '接受成功', type: 'success', duration: 5000 });
+            this.$message({ showClose: true, message: '接受成功', type: 'success', duration: 3000 });
             this.init();
             this.visible = false;
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     reject() {
@@ -368,13 +368,13 @@ export default {
         .put(`/unionMainTransfer/${this.unionMainData.unionTransfer.id}/unionId/${this.unionId}?isAccept=0`)
         .then(res => {
           if (res.data.success) {
-            this.$message({ showClose: true, message: '拒绝成功', type: 'success', duration: 5000 });
+            this.$message({ showClose: true, message: '拒绝成功', type: 'success', duration: 3000 });
             this.init();
             this.visible = false;
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     }
   }

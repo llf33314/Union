@@ -80,7 +80,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     getTableData() {
@@ -100,7 +100,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 带条件查询盟员列表
@@ -121,9 +121,9 @@ export default {
     discountConfirm() {
       this.discountInput = Number(this.discountInput).toFixed(2);
       if (this.discountInput > 10) {
-        this.$message({ showClose: true, message: '最大折扣为10，请重新输入', type: 'error', duration: 5000 });
+        this.$message({ showClose: true, message: '最大折扣为10，请重新输入', type: 'error', duration: 3000 });
       } else if (this.discountInput < 0) {
-        this.$message({ showClose: true, message: '最小折扣为0，请重新输入', type: 'error', duration: 5000 });
+        this.$message({ showClose: true, message: '最小折扣为0，请重新输入', type: 'error', duration: 3000 });
       } else {
         let url = `/unionMember/${this.memberId}/unionId/${this.unionId}/discount`;
         let data = this.discountInput / 10;
@@ -131,13 +131,13 @@ export default {
           .put(url, data)
           .then(res => {
             if (res.data.success) {
-              this.$message({ showClose: true, message: '设置成功', type: 'success', duration: 5000 });
+              this.$message({ showClose: true, message: '设置成功', type: 'success', duration: 3000 });
               this.visible = false;
               this.init();
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
       }
     },

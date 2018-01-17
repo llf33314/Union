@@ -5,6 +5,7 @@ import * as $store from '@/store/index.js';
 
 // axios 配置
 axios.defaults.baseURL = $store.default.state.baseUrl;
+
 axios.defaults.timeout = 5000;
 
 // http request 拦截器
@@ -50,7 +51,7 @@ function checkCode(res) {
       showClose: true,
       message: res.errorMsg,
       type: 'warning',
-      duration: 5000
+      duration: 3000
     });
   }
   if (res.data && !res.data.success) {
@@ -58,7 +59,7 @@ function checkCode(res) {
       showClose: true,
       message: res.data.errorMsg,
       type: 'warning',
-      duration: 5000
+      duration: 3000
     });
   }
   return res;

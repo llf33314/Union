@@ -3,7 +3,7 @@
     <h4>商机佣金比例设置</h4>
     <div>
       <el-form :inline="true" :model="formInline1" class="demo-form-inline">
-        <el-form-item label="选择联盟：">
+        <el-form-item label="选择联盟：" v-if="options.length>1">
           <el-select v-model="unionId" placeholder="请选择" @change="search">
             <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
             </el-option>
@@ -101,7 +101,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     getTableData() {
@@ -121,7 +121,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     search() {
@@ -149,13 +149,13 @@ export default {
         )
         .then(res => {
           if (res.data.success) {
-            this.$message({ showClose: true, message: '设置成功', type: 'success', duration: 5000 });
+            this.$message({ showClose: true, message: '设置成功', type: 'success', duration: 3000 });
             this.search();
             this.dialogVisible = false;
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     //点击键盘事件
@@ -194,4 +194,3 @@ export default {
   }
 }
 </style>
-

@@ -30,7 +30,7 @@
             </el-select>
           </el-form-item>
           <div class="selectUnion">
-            <el-form-item label="选择联盟:">
+            <el-form-item label="选择联盟:" v-if="form.unionList.length>1">
               <el-radio-group v-model="unionId" style="margin-top:10px;" @change="unionIdChange">
                 <el-radio-button v-for="item in form.unionList" :key="item.id" :label="item.id">
                   <el-tooltip class="item" effect="dark" :content="item.name" placement="bottom">
@@ -141,7 +141,7 @@
               </span>
             </el-form-item>
             <div class="discountsProject">
-              <el-form-item label="优惠项目：">
+              <el-form-item label="优惠项目：" v-if="activitySelected.length>0">
                 <span v-for="(item, index) in activitySelected" :key="item.item.id">
                   {{ index + 1 }} 、 {{ item.item.name }};
                 </span>
@@ -196,6 +196,7 @@
       <el-dialog title="付款" :visible.sync="visible4" size="tiny" @close="resetData">
         <hr>
         <img v-bind:src="payUrl">
+        <p>￥<span>{{ payPrice }}</span>
         <p>请使用微信/支付宝扫描该二维码付款</p>
       </el-dialog>
     </div>
@@ -251,7 +252,8 @@ export default {
       socketFlag: {
         socketKey: '',
         status: ''
-      }
+      },
+      payPrice: ''
     };
   },
   mounted: function() {
@@ -338,11 +340,11 @@ export default {
                 }
               })
               .catch(err => {
-                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
               });
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
       }
     },
@@ -381,7 +383,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
       }
     },
@@ -406,7 +408,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
       } else {
         $('.UnionCardInformation form').css({
@@ -436,7 +438,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
       }
     },
@@ -484,7 +486,7 @@ export default {
     // 确认
     confirm() {
       if (this.activitySelected.length === 0 && !this.price) {
-        this.$message({ showClose: true, message: '请输入金额', type: 'error', duration: 5000 });
+        this.$message({ showClose: true, message: '请输入金额', type: 'error', duration: 3000 });
       } else {
         this.visible3 = true;
         let temData = 0;
@@ -528,14 +530,20 @@ export default {
         .post(url, data)
         .then(res => {
           if (res.data.success) {
-            this.$message({ showClose: true, message: '核销成功', type: 'success', duration: 5000 });
+            if (data.textList.length > 0 && data.payMoney > 0) {
+              this.$message({ showClose: true, message: '收款与核销成功', type: 'success', duration: 3000 });
+            } else if (data.payMoney > 0) {
+              this.$message({ showClose: true, message: '收款成功', type: 'success', duration: 3000 });
+            } else {
+              this.$message({ showClose: true, message: '核销成功', type: 'success', duration: 3000 });
+            }
             this.init();
             eventBus.$emit('newTransaction');
             eventBus.$emit('unionUpdata');
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 付款二维码
@@ -567,6 +575,7 @@ export default {
               this.payUrl = res.data.data.payUrl;
               this.socketKey = res.data.data.socketKey;
               this.visible4 = true;
+              this.payPrice = (this.price1 - 0).toFixed(2);
             } else {
               this.payUrl = '';
               this.socketKey = '';
@@ -577,12 +586,12 @@ export default {
             var socketUrl = this.$store.state.socketUrl;
             if (!this.socket) {
               this.socket = io.connect(socketUrl);
-              var socketKey = this.socketKey;
-              this.socket.on('connect', function() {
-                let jsonObject = { userId: socketKey, message: '0' };
-                _this.socket.emit('auth', jsonObject);
-              });
             }
+            var socketKey = this.socketKey;
+            this.socket.on('connect', function() {
+              let jsonObject = { userId: socketKey, message: '0' };
+              _this.socket.emit('auth', jsonObject);
+            });
             //重连机制
             let socketindex = 0;
             this.socket.on('reconnecting', function() {
@@ -598,7 +607,13 @@ export default {
               if (!(_this.socketFlag.socketKey == msg.socketKey && _this.socketFlag.status == msg.status)) {
                 if (_this.socketKey == msg.socketKey) {
                   if (msg.status == '1') {
-                    _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
+                    if (data.textList.length > 0 && data.payMoney > 0) {
+                      _this.$message({ showClose: true, message: '收款与核销成功', type: 'success', duration: 3000 });
+                    } else if (data.payMoney > 0) {
+                      _this.$message({ showClose: true, message: '收款成功', type: 'success', duration: 3000 });
+                    } else {
+                      _this.$message({ showClose: true, message: '核销成功', type: 'success', duration: 3000 });
+                    }
                     _this.socketFlag.socketKey = msg.socketKey;
                     _this.socketFlag.status = msg.status;
                     eventBus.$emit('newTransaction');
@@ -610,14 +625,14 @@ export default {
                       }, 0);
                     }, 0);
                   } else if (msg.status == '0') {
-                    _this.$message({ showClose: true, message: '支付失败', type: 'error', duration: 5000 });
+                    _this.$message({ showClose: true, message: '支付失败', type: 'error', duration: 3000 });
                   }
                 }
               }
             });
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
       }
     },

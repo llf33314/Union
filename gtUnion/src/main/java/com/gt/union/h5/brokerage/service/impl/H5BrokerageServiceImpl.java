@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.Member;
 import com.gt.api.bean.session.TCommonStaff;
-import com.gt.union.api.amqp.entity.PhoneMessage;
 import com.gt.union.api.amqp.entity.TemplateSmsMessage;
 import com.gt.union.api.amqp.sender.PhoneMessageSender;
 import com.gt.union.api.client.pay.WxPayService;
@@ -115,10 +114,10 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         Double withdrawalSum = unionBrokerageWithdrawalService.sumValidMoneyByBusId(busId);
         BigDecimal availableBrokerage = BigDecimalUtil.subtract(brokerageSum, withdrawalSum);
         result.setAvailableBrokerage(BigDecimalUtil.toDouble(availableBrokerage));
-        // （3）	获取未支付佣金金额，即商机已接受，但仍未支付
+        // （3）	获取未支付佣金金额，即商机已接受，但仍未支付（别人没有支付给我）
         List<UnionMember> memberList = unionMemberService.listByBusId(busId);
         List<Integer> memberIdList = unionMemberService.getIdList(memberList);
-        Double unPaidOpportunityBrokerage = unionOpportunityService.sumValidBrokerageMoneyByToMemberIdListAndAcceptStatusAndIsClose(memberIdList,
+        Double unPaidOpportunityBrokerage = unionOpportunityService.sumValidBrokerageMoneyByFromMemberIdListAndAcceptStatusAndIsClose(memberIdList,
                 OpportunityConstant.ACCEPT_STATUS_CONFIRMED, OpportunityConstant.IS_CLOSE_NO);
         result.setUnPaidOpportunityBrokerage(unPaidOpportunityBrokerage);
 

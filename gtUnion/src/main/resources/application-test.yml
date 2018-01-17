@@ -132,6 +132,7 @@ union:
   encryptKey: CFCCBD99C12B62E52952EA90A931A01F
   signkey: SR36E9KIYDLIU1VB6WX20HCW494QL97T
   appid: wxa65e97cf48d6110f
+  appVersion: v1.0.0
 wx:
   duofen:
     busId: 36

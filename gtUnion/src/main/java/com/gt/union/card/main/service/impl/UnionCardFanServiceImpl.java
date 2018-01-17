@@ -128,7 +128,7 @@ public class UnionCardFanServiceImpl implements IUnionCardFanService {
         List<Integer> tgtUnionIdList = ListUtil.intersection(busUnionIdList, fanUnionIdList);
         // 如果没有剩余的union，则返回，否则，进行下一步
         if (ListUtil.isEmpty(tgtUnionIdList)) {
-            return null;
+            throw new BusinessException("没有可用的联盟卡");
         }
         // 判断unionId是否在剩余的union中，如果是，则当前联盟为该union，否则默认为第一个union
         CardFanSearchVO result = new CardFanSearchVO();

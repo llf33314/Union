@@ -169,7 +169,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 带条件查询盟员列表
@@ -194,7 +194,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 移出
@@ -210,12 +210,12 @@ export default {
         .then(res => {
           if (res.data.success) {
             this.visible1 = false;
-            this.$message({ showClose: true, message: '移出成功，该盟员将在15天过渡期后正式退盟', type: 'success', duration: 5000 });
+            this.$message({ showClose: true, message: '移出成功，该盟员将在15天过渡期后正式退盟', type: 'success', duration: 3000 });
             this.search();
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 撤回移出
@@ -231,12 +231,12 @@ export default {
         .then(res => {
           if (res.data.success) {
             this.visible2 = false;
-            this.$message({ showClose: true, message: '撤回移出成功', type: 'success', duration: 5000 });
+            this.$message({ showClose: true, message: '撤回移出成功', type: 'success', duration: 3000 });
             this.search();
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 导出盟员列表

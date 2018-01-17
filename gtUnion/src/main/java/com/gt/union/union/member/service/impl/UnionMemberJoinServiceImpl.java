@@ -167,11 +167,12 @@ public class UnionMemberJoinServiceImpl implements IUnionMemberJoinService {
             // 校验被推荐的商家信息
             String busUserName = vo.getBusUserName();
             if (StringUtil.isEmpty(busUserName)) {
-                throw new BusinessException("被推荐的商家名称(盟员账号)不能为空");
+                throw new BusinessException("被推荐的盟员账号或手机号不能为空");
             }
             busUser = busUserService.getBusUserByName(busUserName);
+            busUser = busUser == null ? busUserService.getBusUserByPhone(busUserName) : busUser;
             if (busUser == null) {
-                throw new BusinessException("找不到被推荐的商家信息(盟员账号)");
+                throw new BusinessException("找不到被推荐的商家信息");
             }
         } else {
             if (UnionConstant.JOIN_TYPE_APPLY_RECOMMEND != union.getJoinType()) {

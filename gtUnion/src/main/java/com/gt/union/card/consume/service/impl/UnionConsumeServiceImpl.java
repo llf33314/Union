@@ -210,11 +210,11 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .in("member_id", memberIdList)
                 .eq(ListUtil.isEmpty(memberList), "member_id", null)
-                .eq(optUnionId != null, "union_id = {0}", optUnionId)
-                .eq(optShopId != null, "shop_id = {0}", optShopId)
+                .eq(optUnionId != null, "union_id", optUnionId)
+                .eq(optShopId != null, "shop_id", optShopId)
                 .in("pay_status", payStatusList)
-                .ge(optBeginTime != null, "create_time >= {0}", optBeginTime)
-                .le(optEndTime != null, "create_time <= {0}", optEndTime)
+                .ge(optBeginTime != null, "create_time", optBeginTime)
+                .le(optEndTime != null, "create_time", optEndTime)
                 .exists(StringUtil.isNotEmpty(optCardNumber) || StringUtil.isNotEmpty(optPhone),
                         " SELECT f.id FROM t_union_card_fan f "
                                 + " WHERE f.del_status = " + CommonConstant.DEL_STATUS_NO
@@ -244,11 +244,11 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
         entityWrapper.eq("del_status", CommonConstant.DEL_STATUS_NO)
                 .in("member_id", memberIdList)
                 .eq(ListUtil.isEmpty(memberList), "member_id", null)
-                .eq(optUnionId != null, "union_id = {0}", optUnionId)
-                .eq(optShopId != null, "shop_id = {0}", optShopId)
+                .eq(optUnionId != null, "union_id", optUnionId)
+                .eq(optShopId != null, "shop_id", optShopId)
                 .in("pay_status", payStatusList)
-                .ge(optBeginTime != null, "create_time >= {0}", optBeginTime)
-                .le(optEndTime != null, "create_time <= {0}", optEndTime)
+                .ge(optBeginTime != null, "create_time", optBeginTime)
+                .le(optEndTime != null, "create_time", optEndTime)
                 .exists(StringUtil.isNotEmpty(optCardNumber) || StringUtil.isNotEmpty(optPhone),
                         " SELECT f.id FROM t_union_card_fan f "
                                 + " WHERE f.del_status = " + CommonConstant.DEL_STATUS_NO
@@ -289,10 +289,12 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
                 vo.setConsumeTimeStr(DateTimeKit.format(consume.getCreateTime(), DateTimeKit.DEFAULT_DATETIME_FORMAT_YYYYMMDD_HHMM));
                 List<UnionConsumeProject> consumeProjectList = unionConsumeProjectService.listValidByConsumeId(consume.getId());
                 if (ListUtil.isNotEmpty(consumeProjectList)) {
+                    List<UnionCardProjectItem> items = new ArrayList<>();
                     for (UnionConsumeProject consumeProject : consumeProjectList) {
-                        List<UnionCardProjectItem> items = unionCardProjectItemService.listValidByProjectId(consumeProject.getProjectId());
-                        vo.setItems(items);
+                        UnionCardProjectItem item = unionCardProjectItemService.getById(consumeProject.getProjectItemId());
+                        items.add(item);
                     }
+                    vo.setItems(items);
                 }
                 resultDataList.add(vo);
             }

@@ -475,6 +475,8 @@ public class UnionCardServiceImpl implements IUnionCardService {
 
                 updateRecord.setCardId(saveActivityCard.getId());
                 updateRecordList.add(updateRecord);
+                // 由于下面使用recordList进行操作，所以这里需要更新它的值
+                record.setCardId(updateRecord.getCardId());
             }
 
             // 自动办理折扣卡

@@ -21,7 +21,7 @@
       </div>
       <!-- 其他办理联盟卡信息 -->
       <el-form :label-position="labelPosition" :model="form2" v-show="visible2" ref="ruleForm2" label-width="120px">
-        <div class="selectUnion">
+        <div class="selectUnion" v-if="form2.unionList.length>1">
           <p>选择联盟</p>
           <el-form-item label="选择联盟:">
             <el-radio-group v-model="unionId" style="margin-top:10px;margin-bottom: 20px;" @change="unionIdChange">
@@ -106,6 +106,8 @@
         <hr>
         <div class="model_">
           <p><img v-bind:src="codeSrc" class="codeImg"></p>
+          <p>￥<span>{{ payPrice }}</span>
+          </p>
           <p style="margin-bottom: 50px;">请使用微信扫描该二维码付款</p>
         </div>
       </el-dialog>
@@ -173,7 +175,8 @@ export default {
       },
       timeEnd: '',
       detaiVisible: false,
-      detailTableData: []
+      detailTableData: [],
+      payPrice: ''
     };
   },
   mounted: function() {
@@ -236,7 +239,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 确认验证码
@@ -288,18 +291,18 @@ export default {
                       this.isDiscountCard = '';
                       this.discount = 1;
                       this.visible2 = false;
-                      this.$message({ showClose: true, message: '您已办理联盟卡', type: 'error', duration: 5000 });
+                      this.$message({ showClose: true, message: '您已办理联盟卡', type: 'error', duration: 3000 });
                     }
                   })
                   .catch(err => {
-                    this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+                    this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
                   });
               } else {
                 this.visible2 = false;
               }
             })
             .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
             });
         } else {
           return false;
@@ -336,7 +339,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
       }
     },
@@ -360,7 +363,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 提交
@@ -368,11 +371,13 @@ export default {
       let url = `/unionCard/fanId/${this.fanId}/unionId/${this.unionId}/apply`;
       let data = [];
       if (!this.isDiscountCard && this.activityCheckList.length < 1) {
-        this.$message({ showClose: true, message: '请选择联盟卡', type: 'error', duration: 5000 });
+        this.$message({ showClose: true, message: '请选择联盟卡', type: 'error', duration: 3000 });
         return false;
       } else {
         this.activityCheckList.forEach(v => {
           data.push(v);
+          this.payPrice = this.payPrice - 0;
+          this.payPrice += v.activity.price - 0;
         });
       }
       $http
@@ -382,44 +387,45 @@ export default {
             this.codeSrc = res.data.data.payUrl;
             this.socketKey = res.data.data.socketKey;
             this.visible3 = true;
+            this.payPrice = this.payPrice.toFixed(2);
             var _this = this;
             var socketUrl = this.$store.state.socketUrl;
             if (!this.socket) {
               this.socket = io.connect(socketUrl);
-              var socketKey = this.socketKey;
-              this.socket.on('connect', function() {
-                let jsonObject = { userId: socketKey, message: '0' };
-                _this.socket.emit('auth', jsonObject);
-              });
-              //重连机制
-              let socketindex = 0;
-              this.socket.on('reconnecting', function() {
-                socketindex += 1;
-                if (socketindex > 4) {
-                  _this.socket.destroy(); //不在链接
-                }
-              });
-              this.socket.on('chatevent', function(data) {
-                let msg = eval('(' + data.message + ')');
-                console.log(msg, 'transaction');
-                // 避免 socket 重复调用
-                if (!(_this.socketFlag.socketKey == msg.socketKey && _this.socketFlag.status == msg.status)) {
-                  if (_this.socketKey == msg.socketKey) {
-                    if (msg.status == '1') {
-                      _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
-                      _this.socketFlag.socketKey = msg.socketKey;
-                      _this.socketFlag.status = msg.status;
-                      eventBus.$emit('newUnionCard');
-                      _this.init();
-                    } else if (msg.status == '0') {
-                      _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
-                    }
+            }
+            var socketKey = this.socketKey;
+            this.socket.on('connect', function() {
+              let jsonObject = { userId: socketKey, message: '0' };
+              _this.socket.emit('auth', jsonObject);
+            });
+            //重连机制
+            let socketindex = 0;
+            this.socket.on('reconnecting', function() {
+              socketindex += 1;
+              if (socketindex > 4) {
+                _this.socket.destroy(); //不在链接
+              }
+            });
+            this.socket.on('chatevent', function(data) {
+              let msg = eval('(' + data.message + ')');
+              console.log(msg, 'transaction');
+              // 避免 socket 重复调用
+              if (!(_this.socketFlag.socketKey == msg.socketKey && _this.socketFlag.status == msg.status)) {
+                if (_this.socketKey == msg.socketKey) {
+                  if (msg.status == '1') {
+                    _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 3000 });
+                    _this.socketFlag.socketKey = msg.socketKey;
+                    _this.socketFlag.status = msg.status;
+                    eventBus.$emit('newUnionCard');
+                    _this.init();
+                  } else if (msg.status == '0') {
+                    _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 3000 });
                   }
                 }
-              });
-            }
+              }
+            });
           } else if (res.data.success) {
-            this.$message({ showClose: true, message: '办理成功', type: 'success', duration: 5000 });
+            this.$message({ showClose: true, message: '办理成功', type: 'success', duration: 3000 });
             eventBus.$emit('newUnionCard');
             clearInterval(this.timeEnd);
             //灰色倒计时'60s'变为紫蓝色"获取验证码"按钮;
@@ -432,7 +438,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 取消
@@ -466,4 +472,3 @@ export default {
   height: 200px;
 }
 </style>
-
