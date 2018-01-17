@@ -70,6 +70,8 @@ public class PropertiesUtil {
 
 	private static String appVersion;
 
+	private static Integer appIndustry;
+
 	/**
 	 * 获取资源访问地址
 	 * @return resourceUrl
@@ -287,6 +289,14 @@ public class PropertiesUtil {
 	}
 
 	/**
+	 * 获取token的key
+	 * @return
+	 */
+	public static String getTokenKey() {
+		return tokenKey;
+	}
+
+	/**
 	 * 获取小程序appid
 	 * @return
 	 */
@@ -303,11 +313,11 @@ public class PropertiesUtil {
 	}
 
 	/**
-	 * 获取token的key
+	 * 获取小程序行业id
 	 * @return
 	 */
-	public static String getTokenKey() {
-		return tokenKey;
+	public static Integer getAppIndustry() {
+		return appIndustry;
 	}
 
 	@Value("${resource.url.prefix}")
@@ -453,5 +463,10 @@ public class PropertiesUtil {
 	@Value("${union.appVersion}")
 	public void setAppVersion(String appVersion) {
 		PropertiesUtil.appVersion = appVersion;
+	}
+
+	@Value("${union.appIndustry}")
+	public void setAppIndustry(Integer appIndustry) {
+		PropertiesUtil.appIndustry = appIndustry;
 	}
 }
