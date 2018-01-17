@@ -580,12 +580,12 @@ export default {
             var socketUrl = this.$store.state.socketUrl;
             if (!this.socket) {
               this.socket = io.connect(socketUrl);
-              var socketKey = this.socketKey;
-              this.socket.on('connect', function() {
-                let jsonObject = { userId: socketKey, message: '0' };
-                _this.socket.emit('auth', jsonObject);
-              });
             }
+            var socketKey = this.socketKey;
+            this.socket.on('connect', function() {
+              let jsonObject = { userId: socketKey, message: '0' };
+              _this.socket.emit('auth', jsonObject);
+            });
             //重连机制
             let socketindex = 0;
             this.socket.on('reconnecting', function() {
