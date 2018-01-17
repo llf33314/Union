@@ -150,18 +150,26 @@ export default {
           data.sellEndTime = this.form.sellTime[1].getTime();
           data.illustration = this.form.illustration;
           data.isProjectCheck = this.form.isProjectCheck - 0;
-          $http
-            .post(url, data)
-            .then(res => {
-              if (res.data.success) {
-                eventBus.$emit('newActivityCard');
-                this.$message({ showClose: true, message: '新建活动卡成功', type: 'success', duration: 3000 });
-                this.visible = false;
-              }
-            })
-            .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
-            });
+          if (data.price > 5000) {
+            this.$message({ showClose: true, message: '价格最大为5千元', type: 'error', duration: 3000 });
+          } else if (data.amount > 10000) {
+            this.$message({ showClose: true, message: '发行量最大为10万张', type: 'error', duration: 3000 });
+          } else if (data.validityDay > 730) {
+            this.$message({ showClose: true, message: '有效期最大为730天', type: 'error', duration: 3000 });
+          } else {
+            $http
+              .post(url, data)
+              .then(res => {
+                if (res.data.success) {
+                  eventBus.$emit('newActivityCard');
+                  this.$message({ showClose: true, message: '新建活动卡成功', type: 'success', duration: 3000 });
+                  this.visible = false;
+                }
+              })
+              .catch(err => {
+                this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+              });
+          }
         } else {
           return false;
         }
