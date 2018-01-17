@@ -133,6 +133,8 @@ export default {
               v.value = v.id;
               v.label = v.name;
             });
+            // ruleForm1.unionId 赋初始值
+            this.ruleForm1.unionId = this.options1[0].value;
           } else {
             this.options1 = [];
           }

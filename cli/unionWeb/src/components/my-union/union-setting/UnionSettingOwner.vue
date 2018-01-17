@@ -28,11 +28,11 @@
           </el-checkbox-group>
         </el-form-item>
         <el-form-item label="联盟图标：">
-          <img v-if="this.form.img" v-bind:src="this.form.img" class="unionImg" @click="materiallayer">
-          <el-button @click="materiallayer" v-if="!this.form.img">
+          <img v-if="form.img" v-bind:src="form.img" class="unionImg" @click="materiallayer">
+          <el-button @click="materiallayer" v-if="!form.img">
             <i class="el-icon-plus"></i>
           </el-button>
-          <span style="position: relative;top: -1px;left: 6px;color:#bbbbbb;" v-if="!this.form.unionImg">图片尺寸：100*100px</span>
+          <span style="position: relative;top: -1px;left: 6px;color:#bbbbbb;" v-if="!form.unionImg">图片尺寸：100*100px</span>
           <el-dialog :visible.sync="materialVisible" title="素材库">
             <hr>
             <iframe :src="materialUrl" width="95%" height="500" frameborder="0" scrolling="no"></iframe>
@@ -85,9 +85,8 @@ export default {
   mounted: function() {
     let _this = this;
     window.addEventListener('message', function(e) {
-      console.log(e.data);
       if (e.data && e.data != 'go_back()') {
-        _this.form.unionImg = e.data.split(',')[1].replace(/\'|\)/g, '');
+        _this.form.img = e.data.split(',')[1].replace(/\'|\)/g, '');
       }
       _this.materialVisible = false;
     });
