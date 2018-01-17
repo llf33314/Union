@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.union.api.client.user.IBusUserService;
+import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.exception.BusinessException;
@@ -173,6 +174,9 @@ public class UnionMemberJoinServiceImpl implements IUnionMemberJoinService {
             busUser = busUser == null ? busUserService.getBusUserByPhone(busUserName) : busUser;
             if (busUser == null) {
                 throw new BusinessException("找不到被推荐的商家信息");
+            }
+            if (busUser.getPid() != null && busUser.getPid() != BusUserConstant.ACCOUNT_TYPE_UNVALID) {
+                throw new BusinessException("请推荐商家主账号信息");
             }
         } else {
             if (UnionConstant.JOIN_TYPE_APPLY_RECOMMEND != union.getJoinType()) {

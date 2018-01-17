@@ -110,7 +110,7 @@
           <p>￥
             <span>{{ brokerageMoney }}</span>
           </p>
-          <p style="margin-top: 5px;">扫描二维码进行支付</p>
+          <p style="margin-top: 5px;">使用微信扫描二维码进行支付</p>
         </div>
         <span slot="footer" class="dialog-footer">
         </span>

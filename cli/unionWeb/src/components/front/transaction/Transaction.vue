@@ -21,7 +21,7 @@
       </div>
       <!-- 其他办理联盟卡信息 -->
       <el-form :label-position="labelPosition" :model="form2" v-show="visible2" ref="ruleForm2" label-width="120px">
-        <div class="selectUnion" v-if="form2.unionList.length>1">
+        <div class="selectUnion" v-show="form2.unionList.length>1">
           <p>选择联盟</p>
           <el-form-item label="选择联盟:">
             <el-radio-group v-model="unionId" style="margin-top:10px;margin-bottom: 20px;" @change="unionIdChange">
@@ -266,6 +266,8 @@ export default {
                     if (res.data.data) {
                       this.form2 = res.data.data;
                       this.form2.unionList = res.data.data.unionList;
+                      // 给unionId 赋初始值
+                      // this.unionId = this.form2.unionList[0].id;
                       this.unionId = res.data.data.currentUnion.id;
                       this.form2.activityList = res.data.data.cardActivityApplyVOList.concat(res.data.data.cardActivityApplyVOList).concat(res.data.data.cardActivityApplyVOList).
                       concat(res.data.data.cardActivityApplyVOList).concat(res.data.data.cardActivityApplyVOList);

@@ -7,9 +7,9 @@
       </el-col>
     </div>
     <!--二维码-->
-    <div class="code_" v-show="visible1">
+    <div class="code_" v-show="visible1&&WeChatImg">
       <div class="model_">
-        <p><img v-bind:src="$store.state.baseUrl + '/unionCard/qr/h5Card'" alt=""></p>
+        <p><img v-bind:src="WeChatImg" alt=""></p>
         <p>粉丝扫描二维码可查看联盟卡信息</p>
       </div>
     </div>
@@ -30,7 +30,7 @@
             </el-select>
           </el-form-item>
           <div class="selectUnion">
-            <el-form-item label="选择联盟:" v-if="form.unionList.length>1">
+            <el-form-item label="选择联盟:" v-show="form.unionList.length>1">
               <el-radio-group v-model="unionId" style="margin-top:10px;" @change="unionIdChange">
                 <el-radio-button v-for="item in form.unionList" :key="item.id" :label="item.id">
                   <el-tooltip class="item" effect="dark" :content="item.name" placement="bottom">
@@ -253,10 +253,23 @@ export default {
         socketKey: '',
         status: ''
       },
-      payPrice: ''
+      payPrice: '',
+      WeChatImg: ''
     };
   },
   mounted: function() {
+    $http
+      .get(`/unionCard/qr/applet`)
+      .then(res => {
+        if (res.data.data) {
+          this.WeChatImg = res.data.data;
+        } else {
+          this.WeChatImg = '';
+        }
+      })
+      .catch(err => {
+        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+      });
     eventBus.$on('tabChange1', () => {
       this.input = '';
       this.visible1 = true;
@@ -300,6 +313,10 @@ export default {
     // 校验输入为数字类型
     check() {
       this.price = numberCheck(this.price);
+      if (this.price > 50000) {
+        this.price = 50000;
+        this.$message({ showClose: true, message: '单次核销金额最大为5万元', type: 'error', duration: 3000 });
+      }
     },
     check2() {
       this.price2 = numberCheck(this.price2);
@@ -421,6 +438,7 @@ export default {
     activityCardChange() {
       this.tableData = [];
       this.$refs.multipleTable.clearSelection();
+      this.activitySelected = [];
       if (this.activityCardId) {
         let item = this.activityCards.find(item => {
           return item.activityCard.id === this.activityCardId;
@@ -532,7 +550,7 @@ export default {
           if (res.data.success) {
             if (data.textList.length > 0 && data.payMoney > 0) {
               this.$message({ showClose: true, message: '收款与核销成功', type: 'success', duration: 3000 });
-            } else if (data.payMoney > 0) {
+            } else if (data.consume.payMoney > 0) {
               this.$message({ showClose: true, message: '收款成功', type: 'success', duration: 3000 });
             } else {
               this.$message({ showClose: true, message: '核销成功', type: 'success', duration: 3000 });
@@ -609,7 +627,7 @@ export default {
                   if (msg.status == '1') {
                     if (data.textList.length > 0 && data.payMoney > 0) {
                       _this.$message({ showClose: true, message: '收款与核销成功', type: 'success', duration: 3000 });
-                    } else if (data.payMoney > 0) {
+                    } else if (data.consume.payMoney > 0) {
                       _this.$message({ showClose: true, message: '收款成功', type: 'success', duration: 3000 });
                     } else {
                       _this.$message({ showClose: true, message: '核销成功', type: 'success', duration: 3000 });

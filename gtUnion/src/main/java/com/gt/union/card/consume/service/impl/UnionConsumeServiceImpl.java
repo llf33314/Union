@@ -287,6 +287,8 @@ public class UnionConsumeServiceImpl implements IUnionConsumeService {
                 vo.setPayMoney(consume.getPayMoney());
                 vo.setPayType(consume.getPayType());
                 vo.setConsumeTimeStr(DateTimeKit.format(consume.getCreateTime(), DateTimeKit.DEFAULT_DATETIME_FORMAT_YYYYMMDD_HHMM));
+                Double freeMoney = BigDecimalUtil.add(CommonUtil.isNotEmpty(consume.getDiscountMoney()) ? consume.getDiscountMoney() : 0, CommonUtil.isNotEmpty(consume.getIntegralMoney()) ? consume.getIntegralMoney() : 0).doubleValue();
+                vo.setFreeMoney(freeMoney == 0 ? null : freeMoney);
                 List<UnionConsumeProject> consumeProjectList = unionConsumeProjectService.listValidByConsumeId(consume.getId());
                 if (ListUtil.isNotEmpty(consumeProjectList)) {
                     List<UnionCardProjectItem> items = new ArrayList<>();

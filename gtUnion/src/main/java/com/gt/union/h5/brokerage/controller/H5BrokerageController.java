@@ -94,7 +94,7 @@ public class H5BrokerageController {
                                               @ApiParam(value = "联盟id", name = "unionId")
                                               @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        Double result = h5BrokerageService.sumPaidOpportunityBrokerage(h5BrokerageUser, unionId);
+        Double result = h5BrokerageService.sumPaidFromOpportunityBrokerage(h5BrokerageUser, unionId);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -104,7 +104,7 @@ public class H5BrokerageController {
                                                  @ApiParam(value = "联盟id", name = "unionId")
                                                  @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        Page result = h5BrokerageService.pageOpportunityBrokerageVO(h5BrokerageUser, unionId, page);
+        Page result = h5BrokerageService.pageFromOpportunityBrokerageVO(h5BrokerageUser, unionId, page);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -154,7 +154,7 @@ public class H5BrokerageController {
                                                @ApiParam(value = "联盟id", name = "unionId")
                                                @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        Double result = h5BrokerageService.sumPaidOpportunityBrokerage(h5BrokerageUser, unionId);
+        Double result = h5BrokerageService.sumToPaidOpportunityBrokerage(h5BrokerageUser, unionId);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 
@@ -164,7 +164,7 @@ public class H5BrokerageController {
                                                   @ApiParam(value = "联盟id", name = "unionId")
                                                   @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
-        Page result = h5BrokerageService.pageOpportunityBrokerageVO(h5BrokerageUser, unionId, page);
+        Page result = h5BrokerageService.pageToOpportunityBrokerageVO(h5BrokerageUser, unionId, page);
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
 

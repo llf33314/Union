@@ -20,7 +20,7 @@
           </el-col>
         </el-form-item>
         <div class="selectUnion">
-          <el-form-item label="选择联盟：" prop="unionId" v-if="options1.length>1">
+          <el-form-item label="选择联盟：" prop="unionId" v-show="options1.length>1">
             <el-radio-group v-model="ruleForm1.unionId">
               <el-radio-button v-for="item in options1" :key="item.value" :label="item.value">
                 <el-tooltip class="item" effect="dark" :content="item.name" placement="bottom">
@@ -133,6 +133,8 @@ export default {
               v.value = v.id;
               v.label = v.name;
             });
+            // ruleForm1.unionId 赋初始值
+            this.ruleForm1.unionId = this.options1[0].value;
           } else {
             this.options1 = [];
           }
@@ -178,7 +180,8 @@ export default {
       });
     },
     resetForm1(formName) {
-      this.show();
+      this.visible = true;
+      this.visible1 = false;
       this.$refs[formName].resetFields();
     }
   }

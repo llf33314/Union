@@ -12,6 +12,7 @@ import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.api.client.user.bean.UserUnionAuthority;
 import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.util.*;
+import com.gt.util.entity.result.wx.ApiWxApplet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -160,6 +161,25 @@ public class BusUserServiceImpl implements IBusUserService {
             return null;
         }
 	}
+
+    @Override
+    public ApiWxApplet getBusIdAndIndustry(Integer busId, Integer industry) {
+        logger.info("根据商家id和industry获取商家小程序信息busId：{}，industry：{}", busId, industry);
+        Map<String, Object> param = new HashMap<String, Object>();
+        Map<String, Object> data = new HashMap<String, Object>();
+        data.put("busId",busId);
+        data.put("industry",industry);
+        param.put("reqdata", data);
+        String url = PropertiesUtil.getWxmpUrl() + "/8A5DA52E/wxpublicapi/6F6D9AD2/79B4DE7C/selectBybusIdAndindustry.do";
+        try{
+            String result = HttpClienUtils.reqPostUTF8(JSONObject.toJSONString(param), url, String.class, PropertiesUtil.getWxmpSignKey());
+            logger.info("根据商家id和industry获取商家小程序信息，结果：{}", result);
+            return ApiResultHandlerUtil.getDataObject(result, ApiWxApplet.class);
+        }catch (Exception e){
+            logger.error("根据商家id和industry获取商家小程序信息错误", e);
+            return null;
+        }
+    }
 
 
 }
