@@ -399,10 +399,10 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
         }
         if (ListUtil.isNotEmpty(members)) {
             for (UnionMember member : members) {
-                UnionCardProject project = unionCardProjectService.getValidByUnionIdAndMemberIdAndActivityIdAndStatus(unionId, member.getId(), activityId, ProjectConstant.STATUS_ACCEPT);
                 CardDetailListVO listVO = new CardDetailListVO();
                 listVO.setUnionMember(member);
                 if (CommonUtil.isNotEmpty(activityId)) {
+                    UnionCardProject project = unionCardProjectService.getValidByUnionIdAndMemberIdAndActivityIdAndStatus(unionId, member.getId(), activityId, ProjectConstant.STATUS_ACCEPT);
                     List<UnionCardProjectItem> textItemList = unionCardProjectItemService.listValidByUnionIdAndMemberIdAndActivityIdAndProjectStatus(unionId, member.getId(), activityId, ProjectConstant.STATUS_ACCEPT);
                     if (ListUtil.isNotEmpty(textItemList)) {
                         for (UnionCardProjectItem textItem : textItemList) {
