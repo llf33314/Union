@@ -184,8 +184,13 @@ export default {
         let canSaveFlag = data.nonErpTextList.find(item => {
           return item.name === '' || (item.number === '' || 0);
         });
+        let overAmount = data.nonErpTextList.find(item => {
+          return item.number > 10000;
+        });
         if (canSaveFlag) {
           this.$message({ showClose: true, message: '项目名称或数量不能为空', type: 'error', duration: 3000 });
+        } else if (overAmount) {
+          this.$message({ showClose: true, message: '数量最大为1万', type: 'error', duration: 3000 });
         } else {
           $http
             .post(url, data)
@@ -205,13 +210,23 @@ export default {
         let canSaveFlag1 = data.erpTextList.find(item => {
           return item.number === '' || 0;
         });
+        let overAmount1 = data.erpTextList.find(item => {
+          return item.number > 10000;
+        });
         let canSaveFlag2 = data.erpGoodsList.find(item => {
           return item.number === '' || 0;
         });
+        let overAmount2 = data.erpGoodsList.find(item => {
+          return item.number > 10000;
+        });
         if (canSaveFlag1) {
           this.$message({ showClose: true, message: '项目数量不能为空', type: 'error', duration: 3000 });
+        } else if (overAmount1) {
+          this.$message({ showClose: true, message: '项目数量最大为1万', type: 'error', duration: 3000 });
         } else if (canSaveFlag2) {
           this.$message({ showClose: true, message: '商品数量不能为空', type: 'error', duration: 3000 });
+        } else if (overAmount1) {
+          this.$message({ showClose: true, message: '商品数量最大为1万', type: 'error', duration: 3000 });
         } else {
           $http
             .post(url, data)

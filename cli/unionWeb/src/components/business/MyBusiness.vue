@@ -245,11 +245,14 @@ export default {
       if (this.acceptancePrice) {
         if (this.acceptancePrice < 1) {
           this.$message({ showClose: true, message: '商机受理金额最小为1元', type: 'error', duration: 3000 });
+        } else if (this.acceptancePrice > 50000) {
+          this.$message({ showClose: true, message: '商机受理金额最大为5万元', type: 'error', duration: 3000 });
         } else {
           $http
             .put(
-              `/unionOpportunity/${this.opportunityId}/unionId/${this.putUnionId}?isAccept=1&acceptPrice=${this
-                .acceptancePrice}`
+              `/unionOpportunity/${this.opportunityId}/unionId/${this.putUnionId}?isAccept=1&acceptPrice=${
+                this.acceptancePrice
+              }`
             )
             .then(res => {
               if (res.data.success) {
