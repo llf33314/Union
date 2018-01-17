@@ -65,7 +65,7 @@ export default {
   },
   mounted: function() {
     $('.NewActivityCard').on('click', e => {
-      if ($(e.target).parents('.chooseColor').length === 0) {
+      if ($(e.target).closest('.chooseColor').length === 0) {
         this.visible = false;
       }
     });
