@@ -7,9 +7,9 @@
       </el-col>
     </div>
     <!--二维码-->
-    <div class="code_" v-show="visible1">
+    <div class="code_" v-show="visible1&&WeChatImg">
       <div class="model_">
-        <p><img v-bind:src="$store.state.baseUrl + '/unionCard/qr/h5Card'" alt=""></p>
+        <p><img v-bind:src="WeChatImg" alt=""></p>
         <p>粉丝扫描二维码可查看联盟卡信息</p>
       </div>
     </div>
@@ -253,10 +253,23 @@ export default {
         socketKey: '',
         status: ''
       },
-      payPrice: ''
+      payPrice: '',
+      WeChatImg: ''
     };
   },
   mounted: function() {
+    $http
+      .get(`/unionCard/qr/applet`)
+      .then(res => {
+        if (res.data.data) {
+          this.WeChatImg = res.data.data;
+        } else {
+          this.WeChatImg = '';
+        }
+      })
+      .catch(err => {
+        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
+      });
     eventBus.$on('tabChange1', () => {
       this.input = '';
       this.visible1 = true;
