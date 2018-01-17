@@ -1,15 +1,10 @@
 'use strict';
-import axios from 'axios'
-import {
-  Message
-} from 'element-ui';
+import axios from 'axios';
+import { Message } from 'element-ui';
+import * as $store from '@/store/index.js';
 
 // axios 配置
-// axios.defaults.baseURL = 'http://113.106.199.74:7884';
-// axios.defaults.baseURL = 'http://union.yifriend.net:7884';  // 调试
-// axios.defaults.baseURL = 'http://union.duofee.com';           // 调试
-axios.defaults.baseURL = 'https://union.deeptel.com.cn';   // 测试
-// axios.defaults.baseURL = 'http://nb.union.deeptel.com.cn'; // 堡垒
+axios.defaults.baseURL = $store.default.state.baseUrl;
 
 axios.defaults.timeout = 5000;
 
@@ -46,7 +41,7 @@ function checkStatus(res) {
   return {
     status: -404,
     errorMsg: res.data.errorMsg
-  }
+  };
 }
 
 function checkCode(res) {
@@ -59,7 +54,7 @@ function checkCode(res) {
       duration: 3000
     });
   }
-  if (res.data && (!res.data.success)) {
+  if (res.data && !res.data.success) {
     Message({
       showClose: true,
       message: res.data.errorMsg,
@@ -81,22 +76,19 @@ export default {
         'X-Requested-With': 'XMLHttpRequest',
         'Content-Type': 'application/json; charset=UTF-8'
       }
-    }).then(
-      res => {
+    })
+      .then(res => {
         return checkStatus(res);
-      }
-    ).then(
-      res => {
+      })
+      .then(res => {
         return checkCode(res);
-      }
-    ).then(
-      res => {
+      })
+      .then(res => {
         if (res.data.redirectUrl && res.data.redirectUrl !== '') {
           top.window.location = res.data.redirectUrl;
         }
         return res;
-      }
-    )
+      });
   },
   del(url, data) {
     return axios({
@@ -108,22 +100,19 @@ export default {
         'X-Requested-With': 'XMLHttpRequest',
         'Content-Type': 'application/json; charset=UTF-8'
       }
-    }).then(
-      res => {
+    })
+      .then(res => {
         return checkStatus(res);
-      }
-    ).then(
-      res => {
+      })
+      .then(res => {
         return checkCode(res);
-      }
-    ).then(
-      res => {
+      })
+      .then(res => {
         if (res.data.redirectUrl && res.data.redirectUrl !== '') {
           top.window.location = res.data.redirectUrl;
         }
         return res;
-      }
-    )
+      });
   },
   put(url, data) {
     return axios({
@@ -135,22 +124,19 @@ export default {
         'X-Requested-With': 'XMLHttpRequest',
         'Content-Type': 'application/json; charset=UTF-8'
       }
-    }).then(
-      res => {
+    })
+      .then(res => {
         return checkStatus(res);
-      }
-    ).then(
-      res => {
+      })
+      .then(res => {
         return checkCode(res);
-      }
-    ).then(
-      res => {
+      })
+      .then(res => {
         if (res.data.redirectUrl && res.data.redirectUrl !== '') {
           top.window.location = res.data.redirectUrl;
         }
         return res;
-      }
-    )
+      });
   },
   get(url, params) {
     return axios({
@@ -161,21 +147,18 @@ export default {
       headers: {
         'X-Requested-With': 'XMLHttpRequest'
       }
-    }).then(
-      res => {
+    })
+      .then(res => {
         return checkStatus(res);
-      }
-    ).then(
-      res => {
+      })
+      .then(res => {
         return checkCode(res);
-      }
-    ).then(
-      res => {
+      })
+      .then(res => {
         if (res.data.redirectUrl && res.data.redirectUrl !== '') {
           top.window.location = res.data.redirectUrl;
         }
         return res;
-      }
-    )
+      });
   }
-}
+};
