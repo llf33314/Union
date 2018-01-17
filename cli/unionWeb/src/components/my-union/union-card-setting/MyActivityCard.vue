@@ -4,7 +4,7 @@
       <div class="explain">
         <span>说明：</span>
         <div style="margin-top: 10px;">
-          <div style="float: right;color: #666666" v-if="projectData.project.status">项目/商品 状态：
+          <div style="float: right;color: #666666" v-if="projectData.project.status" class="showCheckRecord">项目/商品 状态：
             <span style="color: #20A0FF"> {{ projectData.project.status }} </span>
             <span class="icon" @click="showCheckRecord">!</span>
             <!-- 审核记录 -->
@@ -116,6 +116,11 @@ export default {
     this.init();
     eventBus.$on('newActivityCheck', () => {
       this.init();
+    });
+    $(document).on('click', e => {
+      if ($(e.target).closest('.showCheckRecord').length === 0) {
+        this.visible1 = false;
+      }
     });
   },
   methods: {
@@ -281,4 +286,3 @@ export default {
   }
 };
 </script>
-

@@ -30,7 +30,7 @@
             </el-select>
           </el-form-item>
           <div class="selectUnion">
-            <el-form-item label="选择联盟:" v-if="form.unionList.length>1">
+            <el-form-item label="选择联盟:" v-show="form.unionList.length>1">
               <el-radio-group v-model="unionId" style="margin-top:10px;" @change="unionIdChange">
                 <el-radio-button v-for="item in form.unionList" :key="item.id" :label="item.id">
                   <el-tooltip class="item" effect="dark" :content="item.name" placement="bottom">
