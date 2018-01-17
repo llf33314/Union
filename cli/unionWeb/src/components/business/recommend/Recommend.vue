@@ -142,8 +142,8 @@ export default {
         });
     },
     show() {
-      this.visible = !this.visible;
-      this.visible1 = !this.visible1;
+      this.visible = false;
+      this.visible1 = true;
     },
     submitForm1(formName) {
       this.$refs[formName].validate(valid => {
@@ -164,6 +164,8 @@ export default {
                 eventBus.$emit('newBusinessRecommend');
                 this.$refs[formName].resetFields();
                 this.init();
+                this.visible = true;
+                this.visible1 = false;
                 this.$message({ showClose: true, message: '推荐成功', type: 'success', duration: 3000 });
               }
             })
