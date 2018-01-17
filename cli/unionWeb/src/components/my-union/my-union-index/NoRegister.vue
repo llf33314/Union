@@ -111,7 +111,7 @@ export default {
         }
       })
       .catch(err => {
-        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
       });
   },
   watch: {
@@ -168,24 +168,24 @@ export default {
                 if (_this.socketKey == msg.socketKey) {
                   if (msg.status == '1') {
                     _this.visible1 = false;
-                    _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
+                    _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 3000 });
                     _this.socketFlag.socketKey = msg.socketKey;
                     _this.socketFlag.status = msg.status;
                     setTimeout(() => {
                       _this.$router.push({ path: '/my-union/create-step' });
                     }, 0);
                   } else if (msg.status == '0') {
-                    _this.$message({ showClose: true, message: '支付失败', type: 'error', duration: 5000 });
+                    _this.$message({ showClose: true, message: '支付失败', type: 'error', duration: 3000 });
                   }
                 }
               }
             });
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
       } else {
-        this.$message({ showClose: true, message: '请选择版本', type: 'error', duration: 5000 });
+        this.$message({ showClose: true, message: '请选择版本', type: 'error', duration: 3000 });
       }
     },
     // 免费使用

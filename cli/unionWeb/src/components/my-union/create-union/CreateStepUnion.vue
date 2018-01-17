@@ -135,7 +135,7 @@ export default {
               }
             })
             .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
             });
         } else {
           return false;

@@ -145,7 +145,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     handleCurrentChange1(val) {
@@ -187,7 +187,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     handleCurrentChange2(val) {
@@ -215,7 +215,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 校验输入为数字类型
@@ -260,14 +260,14 @@ export default {
               this.currentPage2 = 1;
               this.getTableData2();
               this.visible3 = false;
-              this.$message({ showClose: true, message: '保存成功', type: 'success', duration: 5000 });
+              this.$message({ showClose: true, message: '保存成功', type: 'success', duration: 3000 });
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
       } else {
-        this.$message({ showClose: true, message: '售卡分成总比例之和应为100%', type: 'error', duration: 5000 });
+        this.$message({ showClose: true, message: '售卡分成总比例之和应为100%', type: 'error', duration: 3000 });
       }
     },
     // 关闭弹窗重置数据

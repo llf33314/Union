@@ -155,12 +155,12 @@ export default {
             .then(res => {
               if (res.data.success) {
                 eventBus.$emit('newActivityCard');
-                this.$message({ showClose: true, message: '新建活动卡成功', type: 'success', duration: 5000 });
+                this.$message({ showClose: true, message: '新建活动卡成功', type: 'success', duration: 3000 });
                 this.visible = false;
               }
             })
             .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
             });
         } else {
           return false;

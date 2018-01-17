@@ -107,7 +107,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
       // 我推荐的商机数据
       this.currentPage = 1;
@@ -137,7 +137,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 带条件搜索

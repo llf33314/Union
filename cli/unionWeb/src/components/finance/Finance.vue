@@ -160,7 +160,7 @@ export default {
         }
       })
       .catch(err => {
-        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+        this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
       });
   },
   methods: {
@@ -176,7 +176,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 佣金平台管理者
@@ -195,7 +195,7 @@ export default {
           this.loadingVisible = true;
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 分页获取佣金平台管理者
@@ -211,7 +211,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 新增管理者
@@ -228,7 +228,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 选择门店获取店员列表
@@ -244,7 +244,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
       }
     },
@@ -279,7 +279,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 提交新增
@@ -296,7 +296,7 @@ export default {
             .then(res => {
               if (res.data.success) {
                 this.dialogVisible2 = false;
-                this.$message({ showClose: true, message: '新增成功', type: 'success', duration: 5000 });
+                this.$message({ showClose: true, message: '新增成功', type: 'success', duration: 3000 });
                 clearInterval(this.timeOut);
                 this.form1.getVerificationCode = false;
                 this.form1.countDownTime = '';
@@ -304,7 +304,7 @@ export default {
               }
             })
             .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
             });
         } else {
           return false;
@@ -332,12 +332,12 @@ export default {
         .del(`/unionVerifier/${this.id}`)
         .then(res => {
           if (res.data.success) {
-            this.$message({ showClose: true, message: '删除成功', type: 'success', duration: 5000 });
+            this.$message({ showClose: true, message: '删除成功', type: 'success', duration: 3000 });
             this.init2();
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     }
   }

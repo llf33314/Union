@@ -56,7 +56,7 @@ function checkCode(res) {
       showClose: true,
       message: res.errorMsg,
       type: 'warning',
-      duration: 5000
+      duration: 3000
     });
   }
   if (res.data && (!res.data.success)) {
@@ -64,7 +64,7 @@ function checkCode(res) {
       showClose: true,
       message: res.data.errorMsg,
       type: 'warning',
-      duration: 5000
+      duration: 3000
     });
   }
   return res;

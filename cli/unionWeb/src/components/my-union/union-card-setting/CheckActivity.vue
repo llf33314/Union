@@ -104,7 +104,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     handleSelectionChange(val) {
@@ -127,7 +127,7 @@ export default {
           if (res.data.success) {
             this.getTableData();
             eventBus.$emit('newActivityCheck');
-            this.$message({ showClose: true, message: '审核通过', type: 'success', duration: 5000 });
+            this.$message({ showClose: true, message: '审核通过', type: 'success', duration: 3000 });
             this.visible2 = false;
             setTimeout(() => {
               parent.window.postMessage('openMask()', '*');
@@ -135,7 +135,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 确认不通过
@@ -153,7 +153,7 @@ export default {
           if (res.data.success) {
             this.getTableData();
             eventBus.$emit('newActivityCheck');
-            this.$message({ showClose: true, message: '审核不通过', type: 'success', duration: 5000 });
+            this.$message({ showClose: true, message: '审核不通过', type: 'success', duration: 3000 });
             this.visible3 = false;
             setTimeout(() => {
               parent.window.postMessage('openMask()', '*');
@@ -161,7 +161,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 关闭弹窗清空数据

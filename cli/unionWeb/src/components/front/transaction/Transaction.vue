@@ -239,7 +239,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 确认验证码
@@ -291,18 +291,18 @@ export default {
                       this.isDiscountCard = '';
                       this.discount = 1;
                       this.visible2 = false;
-                      this.$message({ showClose: true, message: '您已办理联盟卡', type: 'error', duration: 5000 });
+                      this.$message({ showClose: true, message: '您已办理联盟卡', type: 'error', duration: 3000 });
                     }
                   })
                   .catch(err => {
-                    this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+                    this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
                   });
               } else {
                 this.visible2 = false;
               }
             })
             .catch(err => {
-              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+              this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
             });
         } else {
           return false;
@@ -339,7 +339,7 @@ export default {
             }
           })
           .catch(err => {
-            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+            this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
           });
       }
     },
@@ -363,7 +363,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 提交
@@ -371,7 +371,7 @@ export default {
       let url = `/unionCard/fanId/${this.fanId}/unionId/${this.unionId}/apply`;
       let data = [];
       if (!this.isDiscountCard && this.activityCheckList.length < 1) {
-        this.$message({ showClose: true, message: '请选择联盟卡', type: 'error', duration: 5000 });
+        this.$message({ showClose: true, message: '请选择联盟卡', type: 'error', duration: 3000 });
         return false;
       } else {
         this.activityCheckList.forEach(v => {
@@ -413,19 +413,19 @@ export default {
               if (!(_this.socketFlag.socketKey == msg.socketKey && _this.socketFlag.status == msg.status)) {
                 if (_this.socketKey == msg.socketKey) {
                   if (msg.status == '1') {
-                    _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 5000 });
+                    _this.$message({ showClose: true, message: '支付成功', type: 'success', duration: 3000 });
                     _this.socketFlag.socketKey = msg.socketKey;
                     _this.socketFlag.status = msg.status;
                     eventBus.$emit('newUnionCard');
                     _this.init();
                   } else if (msg.status == '0') {
-                    _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 5000 });
+                    _this.$message({ showClose: true, message: '支付失败', type: 'warning', duration: 3000 });
                   }
                 }
               }
             });
           } else if (res.data.success) {
-            this.$message({ showClose: true, message: '办理成功', type: 'success', duration: 5000 });
+            this.$message({ showClose: true, message: '办理成功', type: 'success', duration: 3000 });
             eventBus.$emit('newUnionCard');
             clearInterval(this.timeEnd);
             //灰色倒计时'60s'变为紫蓝色"获取验证码"按钮;
@@ -438,7 +438,7 @@ export default {
           }
         })
         .catch(err => {
-          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 5000 });
+          this.$message({ showClose: true, message: err.toString(), type: 'error', duration: 3000 });
         });
     },
     // 取消
