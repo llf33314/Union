@@ -189,6 +189,17 @@ public class H5BrokerageController {
     }
 
 
+    @ApiOperation(value = "佣金平台-首页-登录状态", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/loginStatus", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public String checkLogin(HttpServletRequest request) throws Exception {
+        H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
+        if(h5BrokerageUser == null){
+            return GtJsonResult.instanceSuccessMsg(0).toString();
+        }
+        return GtJsonResult.instanceSuccessMsg(1).toString();
+    }
+
+
     //-------------------------------------------------- put ----------------------------------------------------------
 
     @ApiOperation(value = "佣金平台-首页-我需支付-未支付-去支付", produces = "application/json;charset=UTF-8")
@@ -201,7 +212,7 @@ public class H5BrokerageController {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
         Member member = SessionUtils.getLoginMember(request, PropertiesUtil.getDuofenBusId());
         if (member == null) {
-            return memberService.authorizeMemberWx(request, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toPayList").toString();
+            return memberService.authorizeMemberWx(request, PropertiesUtil.getUnionUrl() + "/h5Brokerage/pay/1?opportunityId=" + opportunityId +"&unionId=" + (CommonUtil.isNotEmpty(unionId) ? unionId : "")).toString();
         }
         UnionPayVO result = h5BrokerageService.toPayByUnionIdAndOpportunityId(h5BrokerageUser, unionId, opportunityId, member.getId());
         return GtJsonResult.instanceSuccessMsg(result).toString();
@@ -214,12 +225,38 @@ public class H5BrokerageController {
                            @RequestParam(value = "unionId", required = false) Integer unionId) throws Exception {
         H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
         Member member = SessionUtils.getLoginMember(request, PropertiesUtil.getDuofenBusId());
+
         if (member == null) {
-            return memberService.authorizeMemberWx(request, PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toPayList").toString();
+            return memberService.authorizeMemberWx(request, PropertiesUtil.getUnionUrl() + "/h5Brokerage/pay/2?unionId=" + (CommonUtil.isNotEmpty(unionId) ? unionId : "")).toString();
         }
         UnionPayVO result = h5BrokerageService.batchPayByUnionId(h5BrokerageUser, unionId, unionBrokeragePayStrategyService, member.getId());
         return GtJsonResult.instanceSuccessMsg(result).toString();
     }
+
+    @ApiOperation(value = "佣金平台-粉丝登录回调支付", produces = "application/json;charset=UTF-8")
+    @RequestMapping(value = "/pay/{type}", method = RequestMethod.GET, produces = "application/json;charset=UTF-8")
+    public void pay(HttpServletRequest request, HttpServletResponse response,
+                            @ApiParam(value = "类型", name = "type  1：单个 2：批量", required = true)
+                            @PathVariable(value = "type") Integer type,
+                           @ApiParam(value = "联盟id", name = "unionId")
+                           @RequestParam(value = "unionId", required = false) Integer unionId,
+                          @ApiParam(value = "商机id", name = "opportunityId")
+                          @RequestParam(value = "opportunityId", required = false) Integer opportunityId) throws Exception {
+        H5BrokerageUser h5BrokerageUser = UnionSessionUtil.getH5BrokerageUser(request);
+        Member member = SessionUtils.getLoginMember(request, PropertiesUtil.getDuofenBusId());
+        String url = "";
+        if(type == 1){
+            UnionPayVO result = h5BrokerageService.toPayByUnionIdAndOpportunityId(h5BrokerageUser, unionId, opportunityId, member.getId());
+            url = result.getPayUrl();
+        }else if(type == 2){
+            UnionPayVO result = h5BrokerageService.batchPayByUnionId(h5BrokerageUser, unionId, unionBrokeragePayStrategyService, member.getId());
+            url = result.getPayUrl();
+        }else {
+            url = PropertiesUtil.getUnionUrl() + "/brokeragePhone/#/" + "toLogin";
+        }
+        response.sendRedirect(url);
+    }
+
 
     //------------------------------------------------- post ----------------------------------------------------------
 

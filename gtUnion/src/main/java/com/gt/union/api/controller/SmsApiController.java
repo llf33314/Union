@@ -3,8 +3,10 @@ package com.gt.union.api.controller;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.util.SessionUtils;
 import com.gt.union.api.amqp.entity.PhoneMessage;
+import com.gt.union.api.amqp.entity.TemplateSmsMessage;
 import com.gt.union.api.amqp.sender.PhoneMessageSender;
 import com.gt.union.api.client.sms.SmsService;
+import com.gt.union.api.client.sms.constant.SmsConstant;
 import com.gt.union.api.client.sms.impl.SmsServiceImpl;
 import com.gt.union.card.main.entity.UnionCardFan;
 import com.gt.union.card.main.service.IUnionCardFanService;
@@ -12,13 +14,11 @@ import com.gt.union.card.main.service.IUnionCardService;
 import com.gt.union.card.main.vo.CardApplyVO;
 import com.gt.union.common.constant.BusUserConstant;
 import com.gt.union.common.constant.CommonConstant;
+import com.gt.union.common.constant.ConfigConstant;
 import com.gt.union.common.constant.SmsCodeConstant;
 import com.gt.union.common.exception.BusinessException;
 import com.gt.union.common.response.GtJsonResult;
-import com.gt.union.common.util.CommonUtil;
-import com.gt.union.common.util.ListUtil;
-import com.gt.union.common.util.RandomKit;
-import com.gt.union.common.util.RedisCacheUtil;
+import com.gt.union.common.util.*;
 import com.gt.union.union.member.entity.UnionMember;
 import com.gt.union.union.member.service.IUnionMemberService;
 import io.swagger.annotations.Api;
@@ -68,22 +68,21 @@ public class SmsApiController {
 		BusUser user = SessionUtils.getLoginUser(request);
 
 		String code = RandomKit.getRandomString(6, 0);
-		String content = "";
+		Long templateId = 0L;
 		switch (type){
 			case SmsCodeConstant.UNION_CARD_LOGIN_TYPE:
-				content = SmsCodeConstant.UNION_CARD_LOGIN_MSG;
 				break;
 			case SmsCodeConstant.APPLY_UNION_CARD_TYPE:
-				content = SmsCodeConstant.APPLY_UNION_CARD_MSG;
+				templateId = SmsConstant.APPLY_CARD_TEMPLATE_ID;
 				break;
 			case SmsCodeConstant.BROKERAGE_LOGIN_TYPE:
-				content = SmsCodeConstant.BROKERAGE_LOGIN_MSG;
+				templateId = SmsConstant.BROKERAGE_LOGIN_CODE_TEMPLATE_ID;
 				break;
 			case SmsCodeConstant.UNION_CARD_PHONE_BIND_TYPE:
-				content = SmsCodeConstant.UNION_CARD_PHONE_BIND_MSG;
+				templateId = SmsConstant.BINDING_CARD_CODE_TEMPLATE_ID;
 				break;
 			case SmsCodeConstant.UNION_VERIFIER_TYPE:
-				content = SmsCodeConstant.UNION_VERIFIER_MSG;
+				templateId = SmsConstant.BROKERAGE_VERIFIER_CODE_TEMPLATE_ID;
 				break;
 			default:
 				break;
@@ -105,7 +104,14 @@ public class SmsApiController {
 			}
 
 		}
-		sender.sendMsg(new PhoneMessage(CommonUtil.isNotEmpty(user) ? user.getId() : null,phone, content + code));
+		TemplateSmsMessage msg = new TemplateSmsMessage();
+		msg.setBusId(CommonUtil.isNotEmpty(user) ? user.getId() : PropertiesUtil.getDuofenBusId());
+		msg.setMobile(phone);
+		msg.setTmplId(templateId);
+		msg.setParamsStr(code);
+		msg.setModel(ConfigConstant.SMS_UNION_MODEL);
+		sender.sendMsg(msg);
+
 		redisCacheUtil.set(type + ":" + phone, code, 300L);
 		return GtJsonResult.instanceSuccessMsg();
 	}

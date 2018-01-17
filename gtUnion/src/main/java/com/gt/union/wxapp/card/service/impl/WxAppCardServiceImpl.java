@@ -1,5 +1,6 @@
 package com.gt.union.wxapp.card.service.impl;
 
+import com.alibaba.fastjson.JSONObject;
 import com.baomidou.mybatisplus.mapper.EntityWrapper;
 import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.Member;
@@ -254,7 +255,12 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
                         //没有有效的活动卡
                         if (DateTimeKit.isBetween(activity.getSellBeginTime(), activity.getSellEndTime())) {
                             //有效期 可以卖
-                            result.setValidityDay(activity.getValidityDay());
+                            Integer activityCardCount = unionCardService.countValidByUnionIdAndActivityId(unionId, activityId);
+                            if (activityCardCount >= activity.getAmount()) {
+                                result.setIsTransacted(CommonConstant.COMMON_NO);
+                            }else {
+                                result.setValidityDay(activity.getValidityDay());
+                            }
                         } else {
                             result.setIsTransacted(CommonConstant.COMMON_NO);
                             //已过期
@@ -279,10 +285,15 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
         return result;
     }
 
-    CardDetailVO checkActivity(UnionCardActivity activity, CardDetailVO result) {
+    CardDetailVO checkActivity(UnionCardActivity activity, CardDetailVO result) throws Exception{
         if (DateTimeKit.isBetween(activity.getSellBeginTime(), activity.getSellEndTime())) {
             //有效期 可以卖
-            result.setValidityDay(activity.getValidityDay());
+            Integer activityCardCount = unionCardService.countValidByUnionIdAndActivityId(activity.getUnionId(), activity.getId());
+            if (activityCardCount >= activity.getAmount()) {
+                result.setIsTransacted(CommonConstant.COMMON_NO);
+            }else {
+                result.setValidityDay(activity.getValidityDay());
+            }
         } else {
             result.setIsTransacted(CommonConstant.COMMON_NO);
         }
@@ -299,22 +310,20 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
             Integer consumeCount = unionConsumeService.countValidPayByFanId(fan.getId());
             vo.setConsumeCount(consumeCount);
             vo.setCardNo(fan.getNumber());
-            vo.setCardImg(PropertiesUtil.getUnionUrl() + "/h5Card/79B4DE7C/qr/cardNo?cardNo=" + fan.getNumber());
+            vo.setCardImg(PropertiesUtil.getUnionUrl() + "/union/wxAppCard/"+PropertiesUtil.getAppVersion()+"/qr/cardNo?cardNo=" + fan.getNumber());
         }
         return vo;
     }
 
     @Override
-    public void bindCardPhone(Member member, Integer busId, String phone, String code) throws Exception {
+    public Member bindCardPhone(Member member, Integer busId, String phone, String code) throws Exception {
         if (busId == null || StringUtil.isEmpty(phone) || StringUtil.isEmpty(code)) {
             throw new ParamException(CommonConstant.PARAM_ERROR);
         }
         if (!smsService.checkPhoneCode(SmsCodeConstant.UNION_CARD_PHONE_BIND_TYPE, code, phone)) {
             throw new ParamException(CommonConstant.CODE_ERROR_MSG);
         }
-        if (!memberService.bindMemberPhoneApp(busId, member.getId(), phone)) {
-            throw new BusinessException("绑定失败");
-        }
+        return memberService.bindMemberPhoneApp(busId, member.getId(), phone);
     }
 
     @Override
@@ -470,7 +479,8 @@ public class WxAppCardServiceImpl implements IWxAppCardService {
         payParam.setDesc("办理联盟卡");
         payParam.setPayDuoFen(true);
         payParam.setMemberId(duoFenMemberId);
-        String payUrl = wxPayService.wxAppPay(payParam);
+        String obj = wxPayService.wxAppPay(payParam);
+        String payUrl = PropertiesUtil.getWxmpUrl() + "/wxPay/79B4DE7C/commonpayVerApplet2_0.do?obj="+obj;
         Map data = HttpClienUtils.reqGetUTF8(null, payUrl, Map.class);
         data.put("signType", "MD5");
         return GtJsonResult.instanceSuccessMsg(data).toString();

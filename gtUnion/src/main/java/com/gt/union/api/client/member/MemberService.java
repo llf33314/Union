@@ -54,7 +54,7 @@ public interface MemberService {
 	 * @param phone		手机号
 	 * @return	1：成功 0：失败
 	 */
-	boolean bindMemberPhoneApp(Integer busId, Integer memberId, String phone) throws Exception;
+	Member bindMemberPhoneApp(Integer busId, Integer memberId, String phone) throws Exception;
 
 	/**
 	 * 粉丝用户手机号登录 登录成功后 member放入session中

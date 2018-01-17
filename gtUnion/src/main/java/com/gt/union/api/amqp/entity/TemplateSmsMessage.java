@@ -38,6 +38,9 @@ public class TemplateSmsMessage extends SmsMessage{
 	 */
 	private String country;
 
+	public TemplateSmsMessage() {
+		this.country = "86";
+	}
 
 	public String getMobile() {
 		return mobile;

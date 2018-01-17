@@ -5,10 +5,11 @@ import com.baomidou.mybatisplus.plugins.Page;
 import com.gt.api.bean.session.BusUser;
 import com.gt.api.bean.session.Member;
 import com.gt.api.bean.session.TCommonStaff;
-import com.gt.union.api.amqp.entity.PhoneMessage;
+import com.gt.union.api.amqp.entity.TemplateSmsMessage;
 import com.gt.union.api.amqp.sender.PhoneMessageSender;
 import com.gt.union.api.client.pay.WxPayService;
 import com.gt.union.api.client.sms.SmsService;
+import com.gt.union.api.client.sms.constant.SmsConstant;
 import com.gt.union.api.client.staff.ITCommonStaffService;
 import com.gt.union.api.client.user.IBusUserService;
 import com.gt.union.common.constant.CommonConstant;
@@ -410,11 +411,11 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         savePay.setDelStatus(CommonConstant.COMMON_NO);
         savePay.setCreateTime(DateUtil.getCurrentDate());
         savePay.setStatus(BrokerageConstant.PAY_STATUS_PAYING);
-        savePay.setFromMemberId(fromMember.getId());
-        savePay.setToMemberId(member.getId());
+        savePay.setFromMemberId(member.getId());
+        savePay.setToMemberId(fromMember.getId());
         savePay.setUnionId(opportunity.getUnionId());
-        savePay.setFromBusId(fromMember.getBusId());
-        savePay.setToBusId(member.getBusId());
+        savePay.setFromBusId(member.getBusId());
+        savePay.setToBusId(fromMember.getBusId());
         String orderNo = "LM" + ConfigConstant.PAY_MODEL_OPPORTUNITY + DateUtil.getSerialNumber();
         savePay.setSysOrderNo(orderNo);
         savePay.setOpportunityId(opportunityId);
@@ -547,10 +548,16 @@ public class H5BrokerageServiceImpl implements IH5BrokerageService {
         }
 
         String phone = toMember.getNotifyPhone() != null ? toMember.getNotifyPhone() : toMember.getDirectorPhone();
-        String message = "您尚未支付\"" + union.getName() + "\"的\"" + member.getEnterpriseName()
-                + "\"" + opportunity.getBrokerageMoney() + "元的商机推荐佣金，请尽快支付，谢谢";
-        PhoneMessage phoneMessage = new PhoneMessage(toMember.getBusId(), phone, message);
-        phoneMessageSender.sendMsg(phoneMessage);
+        String message = union.getName() + "," + member.getEnterpriseName()
+                + "," + opportunity.getBrokerageMoney();
+
+        TemplateSmsMessage msg = new TemplateSmsMessage();
+        msg.setBusId(toMember.getBusId());
+        msg.setMobile(phone);
+        msg.setTmplId(SmsConstant.NOTIFY_MEMBER_PAY_BROKERAGE_TEMPLATE_ID);
+        msg.setParamsStr(message);
+        msg.setModel(ConfigConstant.SMS_UNION_MODEL);
+        phoneMessageSender.sendMsg(msg);
     }
 
     //***************************************** Domain Driven Design - count *******************************************
